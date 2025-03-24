@@ -1,7 +1,0 @@
-{
-  "parent": "superbwarfare:custom/gungranade",
-  "textures": {
-    "0": "superbwarfare:block/gungranade",
-    "particle": "superbwarfare:item/gungranade"
-  }
-}

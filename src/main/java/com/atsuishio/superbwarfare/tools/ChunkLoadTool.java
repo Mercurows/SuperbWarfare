@@ -1,11 +1,9 @@
 package com.atsuishio.superbwarfare.tools;
 
-import com.atsuishio.superbwarfare.ModUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.ChunkPos;
-import net.minecraftforge.common.world.ForgeChunkManager;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -32,14 +30,17 @@ public class ChunkLoadTool {
         var chunksToLoad = newChunks.stream().filter(chunk -> !loadedChunks.contains(chunk)).toList();
         var chunksToUnload = loadedChunks.stream().filter(chunk -> !newChunks.contains(chunk)).toList();
 
+        // TODO FORCED CHUNK
+
         chunksToLoad.forEach(chunk -> {
             var chunkPos = new ChunkPos(chunk);
-            ForgeChunkManager.forceChunk(level, ModUtils.MODID, entity, chunkPos.x, chunkPos.z, true, false);
+//            ForcedChunkManager.forceChunk(level, ModUtils.MODID, entity, chunkPos.x, chunkPos.z, true, false);
+//            ForcedChunkManager.forceChunk(level, ModUtils.MODID, entity, chunkPos.x, chunkPos.z, true, false);
         });
 
         chunksToUnload.forEach(chunk -> {
             var chunkPos = new ChunkPos(chunk);
-            ForgeChunkManager.forceChunk(level, ModUtils.MODID, entity, chunkPos.x, chunkPos.z, false, false);
+//            ForgeChunkManager.forceChunk(level, ModUtils.MODID, entity, chunkPos.x, chunkPos.z, false, false);
         });
 
         loadedChunks.clear();
@@ -52,7 +53,7 @@ public class ChunkLoadTool {
     public static void unloadAllChunks(ServerLevel level, Entity entity, Set<Long> loadedChunks) {
         loadedChunks.forEach(chunk -> {
             var chunkPos = new ChunkPos(chunk);
-            ForgeChunkManager.forceChunk(level, ModUtils.MODID, entity, chunkPos.x, chunkPos.z, false, false);
+//            ForgeChunkManager.forceChunk(level, ModUtils.MODID, entity, chunkPos.x, chunkPos.z, false, false);
         });
     }
 }

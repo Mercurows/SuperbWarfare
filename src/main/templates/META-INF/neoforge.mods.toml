@@ -1,0 +1,40 @@
+modLoader = "javafml"
+loaderVersion = "${loader_version_range}"
+license = "${mod_license}"
+
+[[mods]]
+modId = "superbwarfare"
+version = "${mod_version}"
+displayName = "Superb Warfare"
+authors = "${mod_authors}"
+logoFile = "../../resources/logo.png"
+description = "${mod_description}"
+
+[[dependencies.superbwarfare]]
+modId = "neoforge" #mandatory
+mandatory = true #mandatory
+versionRange = "${neo_version_range}" #mandatory
+ordering = "NONE"
+side = "BOTH"# Here's another dependency
+
+[[dependencies.superbwarfare]]
+modId = "minecraft"
+mandatory = true
+versionRange = "${minecraft_version_range}"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.superbwarfare]]
+modId = "curios"
+mandatory = true
+versionRange = "[5.4.0,)"
+ordering = "NONE"
+side = "BOTH"
+
+#[[dependencies.superbwarfare]]
+#modId = "geckolib"
+#mandatory = true
+#versionRange = "[4.4.4,)"
+#ordering = "NONE"
+#side = "BOTH"
+

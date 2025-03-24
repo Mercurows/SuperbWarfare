@@ -1,6 +1,0 @@
-{
-  "parent": "superbwarfare:displaysettings/m98b.item",
-  "textures": {
-    "layer0": "superbwarfare:item/m98b"
-  }
-}

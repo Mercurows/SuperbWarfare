@@ -1,6 +1,0 @@
-{
-  "parent": "superbwarfare:displaysettings/marlin.item",
-  "textures": {
-    "layer0": "superbwarfare:item/marlin"
-  }
-}

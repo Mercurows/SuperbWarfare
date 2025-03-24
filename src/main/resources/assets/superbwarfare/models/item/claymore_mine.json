@@ -1,7 +1,0 @@
-{
-  "parent": "superbwarfare:custom/claymore",
-  "textures": {
-    "1": "superbwarfare:block/claymore",
-    "particle": "superbwarfare:item/claymore"
-  }
-}

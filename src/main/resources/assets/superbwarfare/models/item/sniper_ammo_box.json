@@ -1,7 +1,0 @@
-{
-  "parent": "superbwarfare:custom/sniperammobox",
-  "textures": {
-    "0": "superbwarfare:block/sniperammobox",
-    "particle": "superbwarfare:item/hk4163d"
-  }
-}
