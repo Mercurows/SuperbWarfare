@@ -41,15 +41,15 @@ public class ModUtils {
 //        ModSerializers.REGISTRY.register(bus);
         ModSounds.REGISTRY.register(bus);
         ModBlocks.REGISTRY.register(bus);
-//        ModBlockEntities.REGISTRY.register(bus);
+        ModBlockEntities.REGISTRY.register(bus);
         ModItems.register(bus);
         ModDataComponents.register(bus);
         ModTabs.TABS.register(bus);
-//        ModEntities.REGISTRY.register(bus);
+        ModEntities.REGISTRY.register(bus);
 //        ModMobEffects.REGISTRY.register(bus);
         ModParticleTypes.REGISTRY.register(bus);
 //        ModPotion.POTIONS.register(bus);
-//        ModMenuTypes.REGISTRY.register(bus);
+        ModMenuTypes.REGISTRY.register(bus);
         ModVillagers.register(bus);
 //        ModRecipes.RECIPE_SERIALIZERS.register(bus);
 

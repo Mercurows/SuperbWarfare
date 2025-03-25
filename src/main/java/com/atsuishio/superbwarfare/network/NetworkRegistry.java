@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.network;
 
+import com.atsuishio.superbwarfare.network.message.BreathMessage;
 import com.atsuishio.superbwarfare.network.message.LaserShootMessage;
 import com.atsuishio.superbwarfare.network.message.PlayerVariablesSyncMessage;
 import com.atsuishio.superbwarfare.network.message.ShakeClientMessage;
@@ -26,6 +27,12 @@ public class NetworkRegistry {
                 LaserShootMessage.TYPE,
                 LaserShootMessage.STREAM_CODEC,
                 LaserShootMessage::handler
+        );
+
+        registrar.playToServer(
+                BreathMessage.TYPE,
+                BreathMessage.STREAM_CODEC,
+                BreathMessage::handler
         );
 
     }

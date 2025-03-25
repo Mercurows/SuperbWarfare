@@ -13,6 +13,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 
+// TODO 在退出世界时正确持久化弹药数量
 @EventBusSubscriber(modid = ModUtils.MODID)
 public class PlayerVariable {
     public boolean zoom = false;
