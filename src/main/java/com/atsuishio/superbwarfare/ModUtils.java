@@ -1,12 +1,16 @@
 package com.atsuishio.superbwarfare;
 
 import com.atsuishio.superbwarfare.component.ModDataComponents;
+import com.atsuishio.superbwarfare.config.ClientConfig;
+import com.atsuishio.superbwarfare.config.CommonConfig;
+import com.atsuishio.superbwarfare.config.ServerConfig;
 import com.atsuishio.superbwarfare.init.*;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
@@ -28,14 +32,14 @@ public class ModUtils {
     public static final Logger LOGGER = LogManager.getLogger(ModUtils.class);
 
     public ModUtils(IEventBus bus, ModContainer container) {
-//        container.registerConfig(ModConfig.Type.CLIENT, ClientConfig.init());
-//        container.registerConfig(ModConfig.Type.COMMON, CommonConfig.init());
-//        container.registerConfig(ModConfig.Type.SERVER, ServerConfig.init());
+        container.registerConfig(ModConfig.Type.CLIENT, ClientConfig.init());
+        container.registerConfig(ModConfig.Type.COMMON, CommonConfig.init());
+        container.registerConfig(ModConfig.Type.SERVER, ServerConfig.init());
 
         ModPerks.register(bus);
 //        ModSerializers.REGISTRY.register(bus);
         ModSounds.REGISTRY.register(bus);
-//        ModBlocks.REGISTRY.register(bus);
+        ModBlocks.REGISTRY.register(bus);
 //        ModBlockEntities.REGISTRY.register(bus);
         ModItems.register(bus);
         ModDataComponents.register(bus);
@@ -45,7 +49,7 @@ public class ModUtils {
         ModParticleTypes.REGISTRY.register(bus);
 //        ModPotion.POTIONS.register(bus);
 //        ModMenuTypes.REGISTRY.register(bus);
-//        ModVillagers.register(bus);
+        ModVillagers.register(bus);
 //        ModRecipes.RECIPE_SERIALIZERS.register(bus);
 
 //        bus.addListener(this::onCommonSetup);

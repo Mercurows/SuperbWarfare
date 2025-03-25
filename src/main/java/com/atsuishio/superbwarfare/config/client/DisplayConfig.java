@@ -1,0 +1,33 @@
+package com.atsuishio.superbwarfare.config.client;
+
+import net.neoforged.neoforge.common.ModConfigSpec;
+
+public class DisplayConfig {
+
+    public static ModConfigSpec.BooleanValue KILL_INDICATION;
+    public static ModConfigSpec.BooleanValue AMMO_HUD;
+    public static ModConfigSpec.BooleanValue FLOAT_CROSS_HAIR;
+    public static ModConfigSpec.BooleanValue CAMERA_ROTATE;
+    public static ModConfigSpec.BooleanValue ARMOR_PLATE_HUD;
+
+    public static void init(ModConfigSpec.Builder builder) {
+        builder.push("display");
+
+        builder.comment("Set true if you want to show kill indication while killing an entity");
+        KILL_INDICATION = builder.define("kill_indication", true);
+
+        builder.comment("Set true to show ammo and gun info on HUD");
+        AMMO_HUD = builder.define("ammo_hud", true);
+
+        builder.comment("Set true to enable float cross hair");
+        FLOAT_CROSS_HAIR = builder.define("float_cross_hair", true);
+
+        builder.comment("Set true to enable camera rotate when holding a gun");
+        CAMERA_ROTATE = builder.define("camera_rotate", true);
+
+        builder.comment("Set true to enable armor plate hud");
+        ARMOR_PLATE_HUD = builder.define("armor_plate_hud", true);
+
+        builder.pop();
+    }
+}

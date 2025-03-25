@@ -1,0 +1,54 @@
+package com.atsuishio.superbwarfare.init;
+
+import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.block.BarbedWireBlock;
+import com.atsuishio.superbwarfare.block.DragonTeethBlock;
+import com.atsuishio.superbwarfare.block.JumpPadBlock;
+import com.atsuishio.superbwarfare.block.ReforgingTableBlock;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredRegister;
+
+@SuppressWarnings("unused")
+public class ModBlocks {
+
+    public static final DeferredRegister<Block> REGISTRY = DeferredRegister.create(BuiltInRegistries.BLOCK, ModUtils.MODID);
+
+    public static final DeferredHolder<Block, Block> SANDBAG = REGISTRY.register("sandbag",
+            () -> new Block(BlockBehaviour.Properties.of().instrument(NoteBlockInstrument.SNARE).sound(SoundType.SAND).strength(10f, 20f)));
+    public static final DeferredHolder<Block, Block> BARBED_WIRE = REGISTRY.register("barbed_wire", BarbedWireBlock::new);
+    public static final DeferredHolder<Block, Block> JUMP_PAD = REGISTRY.register("jump_pad", JumpPadBlock::new);
+    public static final DeferredHolder<Block, Block> GALENA_ORE = REGISTRY.register("galena_ore",
+            () -> new Block(BlockBehaviour.Properties.of().instrument(NoteBlockInstrument.BASEDRUM).sound(SoundType.STONE).strength(3f, 5f).requiresCorrectToolForDrops()));
+    public static final DeferredHolder<Block, Block> DEEPSLATE_GALENA_ORE = REGISTRY.register("deepslate_galena_ore",
+            () -> new Block(BlockBehaviour.Properties.of().instrument(NoteBlockInstrument.BASEDRUM).sound(SoundType.STONE).strength(3f, 8f).requiresCorrectToolForDrops()));
+    public static final DeferredHolder<Block, Block> SCHEELITE_ORE = REGISTRY.register("scheelite_ore",
+            () -> new Block(BlockBehaviour.Properties.of().instrument(NoteBlockInstrument.BASEDRUM).sound(SoundType.STONE).strength(3f, 5f).requiresCorrectToolForDrops()));
+    public static final DeferredHolder<Block, Block> DEEPSLATE_SCHEELITE_ORE = REGISTRY.register("deepslate_scheelite_ore",
+            () -> new Block(BlockBehaviour.Properties.of().instrument(NoteBlockInstrument.BASEDRUM).sound(SoundType.STONE).strength(3f, 8f).requiresCorrectToolForDrops()));
+    public static final DeferredHolder<Block, Block> SILVER_ORE = REGISTRY.register("silver_ore",
+            () -> new Block(BlockBehaviour.Properties.of().instrument(NoteBlockInstrument.BASEDRUM).sound(SoundType.STONE).strength(3f, 5f).requiresCorrectToolForDrops()));
+    public static final DeferredHolder<Block, Block> DEEPSLATE_SILVER_ORE = REGISTRY.register("deepslate_silver_ore",
+            () -> new Block(BlockBehaviour.Properties.of().instrument(NoteBlockInstrument.BASEDRUM).sound(SoundType.STONE).strength(3f, 8f).requiresCorrectToolForDrops()));
+    public static final DeferredHolder<Block, Block> DRAGON_TEETH = REGISTRY.register("dragon_teeth", DragonTeethBlock::new);
+    public static final DeferredHolder<Block, Block> REFORGING_TABLE = REGISTRY.register("reforging_table", ReforgingTableBlock::new);
+    public static final DeferredHolder<Block, Block> LEAD_BLOCK = REGISTRY.register("lead_block",
+            () -> new Block(BlockBehaviour.Properties.of().instrument(NoteBlockInstrument.BASEDRUM).sound(SoundType.METAL).strength(5f, 6f).requiresCorrectToolForDrops()));
+    public static final DeferredHolder<Block, Block> STEEL_BLOCK = REGISTRY.register("steel_block",
+            () -> new Block(BlockBehaviour.Properties.of().instrument(NoteBlockInstrument.BASEDRUM).sound(SoundType.METAL).strength(5f, 6f).requiresCorrectToolForDrops()));
+    public static final DeferredHolder<Block, Block> TUNGSTEN_BLOCK = REGISTRY.register("tungsten_block",
+            () -> new Block(BlockBehaviour.Properties.of().instrument(NoteBlockInstrument.BASEDRUM).sound(SoundType.METAL).strength(5f, 6f).requiresCorrectToolForDrops()));
+    public static final DeferredHolder<Block, Block> SILVER_BLOCK = REGISTRY.register("silver_block",
+            () -> new Block(BlockBehaviour.Properties.of().instrument(NoteBlockInstrument.BASEDRUM).sound(SoundType.METAL).strength(5f, 6f).requiresCorrectToolForDrops()));
+    public static final DeferredHolder<Block, Block> CEMENTED_CARBIDE_BLOCK = REGISTRY.register("cemented_carbide_block",
+            () -> new Block(BlockBehaviour.Properties.of().instrument(NoteBlockInstrument.BASEDRUM).sound(SoundType.METAL).strength(5f, 6f).requiresCorrectToolForDrops()));
+    // TODO blocks
+//    public static final DeferredHolder<Block, Block> CONTAINER = REGISTRY.register("container", ContainerBlock::new);
+//    public static final DeferredHolder<Block, Block> CHARGING_STATION = REGISTRY.register("charging_station", ChargingStationBlock::new);
+//    public static final DeferredHolder<Block, Block> CREATIVE_CHARGING_STATION = REGISTRY.register("creative_charging_station", CreativeChargingStationBlock::new);
+//    public static final DeferredHolder<Block, Block> FUMO_25 = REGISTRY.register("fumo_25", FuMO25Block::new);
+}

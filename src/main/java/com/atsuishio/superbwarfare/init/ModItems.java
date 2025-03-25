@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.item.FiringParameters;
 import com.atsuishio.superbwarfare.item.PerkItem;
 import com.atsuishio.superbwarfare.item.ShortcutPack;
 import com.atsuishio.superbwarfare.item.common.BlueprintItem;
+import com.atsuishio.superbwarfare.item.common.CannonShellItem;
 import com.atsuishio.superbwarfare.item.common.MaterialPack;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -83,9 +84,9 @@ public class ModItems {
 //    public static final DeferredHolder<Item, Item> POTION_MORTAR_SHELL = AMMO.register("potion_mortar_shell", PotionMortarShell::new);
 //    public static final DeferredHolder<Item, Item> ROCKET = AMMO.register("rocket", Rocket::new);
 //    public static final DeferredHolder<Item, Item> LUNGE_MINE = AMMO.register("lunge_mine", LungeMine::new);
-//    public static final DeferredHolder<Item, Item> HE_5_INCHES = AMMO.register("he_5_inches", () -> new CannonShellItem(new Item.Properties().rarity(Rarity.RARE)));
-//    public static final DeferredHolder<Item, Item> AP_5_INCHES = AMMO.register("ap_5_inches", () -> new CannonShellItem(new Item.Properties().rarity(Rarity.RARE)));
-//    public static final DeferredHolder<Item, Item> HAND_GRENADE = AMMO.register("hand_grenade", HandGrenade::new);
+    public static final DeferredHolder<Item, Item> HE_5_INCHES = AMMO.register("he_5_inches", () -> new CannonShellItem(new Item.Properties().rarity(Rarity.RARE)));
+    public static final DeferredHolder<Item, Item> AP_5_INCHES = AMMO.register("ap_5_inches", () -> new CannonShellItem(new Item.Properties().rarity(Rarity.RARE)));
+    //    public static final DeferredHolder<Item, Item> HAND_GRENADE = AMMO.register("hand_grenade", HandGrenade::new);
 //    public static final DeferredHolder<Item, Item> RGO_GRENADE = AMMO.register("rgo_grenade", RgoGrenade::new);
 //    public static final DeferredHolder<Item, Item> CLAYMORE_MINE = AMMO.register("claymore_mine", ClaymoreMine::new);
 //    public static final DeferredHolder<Item, Item> C4_BOMB = AMMO.register("c4_bomb", C4Bomb::new);
@@ -231,25 +232,25 @@ public class ModItems {
      */
     public static final DeferredRegister<Item> BLOCKS = DeferredRegister.create(BuiltInRegistries.ITEM, ModUtils.MODID);
 
-//    public static final DeferredHolder<Item, Item> GALENA_ORE = block(ModBlocks.GALENA_ORE);
-//    public static final DeferredHolder<Item, Item> DEEPSLATE_GALENA_ORE = block(ModBlocks.DEEPSLATE_GALENA_ORE);
-//    public static final DeferredHolder<Item, Item> SCHEELITE_ORE = block(ModBlocks.SCHEELITE_ORE);
-//    public static final DeferredHolder<Item, Item> DEEPSLATE_SCHEELITE_ORE = block(ModBlocks.DEEPSLATE_SCHEELITE_ORE);
-//    public static final DeferredHolder<Item, Item> SILVER_ORE = block(ModBlocks.SILVER_ORE);
-//    public static final DeferredHolder<Item, Item> DEEPSLATE_SILVER_ORE = block(ModBlocks.DEEPSLATE_SILVER_ORE);
-//    public static final DeferredHolder<Item, Item> JUMP_PAD = block(ModBlocks.JUMP_PAD);
-//    public static final DeferredHolder<Item, Item> SANDBAG = block(ModBlocks.SANDBAG);
-//    public static final DeferredHolder<Item, Item> BARBED_WIRE = block(ModBlocks.BARBED_WIRE);
-//    public static final DeferredHolder<Item, Item> DRAGON_TEETH = block(ModBlocks.DRAGON_TEETH);
-//    public static final DeferredHolder<Item, Item> REFORGING_TABLE = block(ModBlocks.REFORGING_TABLE);
-//    public static final DeferredHolder<Item, Item> CHARGING_STATION = block(ModBlocks.CHARGING_STATION);
+    public static final DeferredHolder<Item, Item> GALENA_ORE = block(ModBlocks.GALENA_ORE);
+    public static final DeferredHolder<Item, Item> DEEPSLATE_GALENA_ORE = block(ModBlocks.DEEPSLATE_GALENA_ORE);
+    public static final DeferredHolder<Item, Item> SCHEELITE_ORE = block(ModBlocks.SCHEELITE_ORE);
+    public static final DeferredHolder<Item, Item> DEEPSLATE_SCHEELITE_ORE = block(ModBlocks.DEEPSLATE_SCHEELITE_ORE);
+    public static final DeferredHolder<Item, Item> SILVER_ORE = block(ModBlocks.SILVER_ORE);
+    public static final DeferredHolder<Item, Item> DEEPSLATE_SILVER_ORE = block(ModBlocks.DEEPSLATE_SILVER_ORE);
+    public static final DeferredHolder<Item, Item> JUMP_PAD = block(ModBlocks.JUMP_PAD);
+    public static final DeferredHolder<Item, Item> SANDBAG = block(ModBlocks.SANDBAG);
+    public static final DeferredHolder<Item, Item> BARBED_WIRE = block(ModBlocks.BARBED_WIRE);
+    public static final DeferredHolder<Item, Item> DRAGON_TEETH = block(ModBlocks.DRAGON_TEETH);
+    public static final DeferredHolder<Item, Item> REFORGING_TABLE = block(ModBlocks.REFORGING_TABLE);
+    //    public static final DeferredHolder<Item, Item> CHARGING_STATION = block(ModBlocks.CHARGING_STATION);
 //    public static final DeferredHolder<Item, Item> CREATIVE_CHARGING_STATION = BLOCKS.register("creative_charging_station",
 //            () -> new CreativeChargingStationBlockItem(ModBlocks.CREATIVE_CHARGING_STATION.get(), new Item.Properties().rarity(Rarity.EPIC)));
-//    public static final DeferredHolder<Item, Item> LEAD_BLOCK = block(ModBlocks.LEAD_BLOCK);
-//    public static final DeferredHolder<Item, Item> STEEL_BLOCK = block(ModBlocks.STEEL_BLOCK);
-//    public static final DeferredHolder<Item, Item> TUNGSTEN_BLOCK = block(ModBlocks.TUNGSTEN_BLOCK);
-//    public static final DeferredHolder<Item, Item> SILVER_BLOCK = block(ModBlocks.SILVER_BLOCK);
-//    public static final DeferredHolder<Item, Item> CEMENTED_CARBIDE_BLOCK = block(ModBlocks.CEMENTED_CARBIDE_BLOCK);
+    public static final DeferredHolder<Item, Item> LEAD_BLOCK = block(ModBlocks.LEAD_BLOCK);
+    public static final DeferredHolder<Item, Item> STEEL_BLOCK = block(ModBlocks.STEEL_BLOCK);
+    public static final DeferredHolder<Item, Item> TUNGSTEN_BLOCK = block(ModBlocks.TUNGSTEN_BLOCK);
+    public static final DeferredHolder<Item, Item> SILVER_BLOCK = block(ModBlocks.SILVER_BLOCK);
+    public static final DeferredHolder<Item, Item> CEMENTED_CARBIDE_BLOCK = block(ModBlocks.CEMENTED_CARBIDE_BLOCK);
 //    public static final DeferredHolder<Item, Item> FUMO_25 = block(ModBlocks.FUMO_25);
 
     /**

@@ -96,13 +96,13 @@ public static final DeferredHolder<CreativeModeTab, CreativeModeTab> AMMO_TAB = 
                     .displayItems((param, output) -> ModItems.ITEMS.getEntries().forEach(registryObject -> output.accept(registryObject.get())))
                     .build());
 
-//    public static final RegistryObject<CreativeModeTab> BLOCK_TAB = TABS.register("block",
-//            () -> CreativeModeTab.builder()
-//                    .title(Component.translatable("item_group.superbwarfare.block"))
-//                    .icon(() -> new ItemStack(ModItems.SANDBAG.get()))
-//                    .withTabsBefore(ITEM_TAB.getKey())
-//                    .displayItems((param, output) -> ModItems.BLOCKS.getEntries().forEach(registryObject -> output.accept(registryObject.get())))
-//                    .build());
+    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> BLOCK_TAB = TABS.register("block",
+            () -> CreativeModeTab.builder()
+                    .title(Component.translatable("item_group.superbwarfare.block"))
+                    .icon(() -> new ItemStack(ModItems.SANDBAG.get()))
+                    .withTabsBefore(ITEM_TAB.getKey())
+                    .displayItems((param, output) -> ModItems.BLOCKS.getEntries().forEach(registryObject -> output.accept(registryObject.get())))
+                    .build());
 
     @SubscribeEvent
     public static void buildTabContentsVanilla(BuildCreativeModeTabContentsEvent tabData) {
