@@ -1,11 +1,11 @@
 package com.atsuishio.superbwarfare;
 
-import com.atsuishio.superbwarfare.capability.CapabilityHandler;
 import com.atsuishio.superbwarfare.component.ModDataComponents;
 import com.atsuishio.superbwarfare.config.ClientConfig;
 import com.atsuishio.superbwarfare.config.CommonConfig;
 import com.atsuishio.superbwarfare.config.ServerConfig;
 import com.atsuishio.superbwarfare.init.*;
+import com.atsuishio.superbwarfare.network.NetworkRegistry;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -56,7 +56,7 @@ public class ModUtils {
 //        bus.addListener(this::onCommonSetup);
 //        bus.addListener(this::onClientSetup);
 
-        CapabilityHandler.register(bus);
+        bus.addListener(NetworkRegistry::register);
 
         NeoForge.EVENT_BUS.register(this);
     }

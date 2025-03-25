@@ -1,4 +1,4 @@
-package com.atsuishio.superbwarfare.capability;
+package com.atsuishio.superbwarfare.capability.laser;
 
 import com.atsuishio.superbwarfare.entity.projectile.AbstractLaserEntity;
 import net.minecraft.nbt.CompoundTag;

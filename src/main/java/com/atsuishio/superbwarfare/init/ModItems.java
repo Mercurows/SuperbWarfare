@@ -5,6 +5,9 @@ import com.atsuishio.superbwarfare.item.*;
 import com.atsuishio.superbwarfare.item.common.BlueprintItem;
 import com.atsuishio.superbwarfare.item.common.CannonShellItem;
 import com.atsuishio.superbwarfare.item.common.MaterialPack;
+import com.atsuishio.superbwarfare.item.common.ammo.*;
+import com.atsuishio.superbwarfare.item.common.ammo.box.AmmoBox;
+import com.atsuishio.superbwarfare.tools.AmmoType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.BlockItem;
@@ -64,23 +67,23 @@ public class ModItems {
      */
     public static final DeferredRegister<Item> AMMO = DeferredRegister.create(BuiltInRegistries.ITEM, ModUtils.MODID);
 
-    //    public static final DeferredHolder<Item, Item> HANDGUN_AMMO = AMMO.register("handgun_ammo", () -> new AmmoSupplierItem(AmmoType.HANDGUN, 1, new Item.Properties()));
-//    public static final DeferredHolder<Item, Item> RIFLE_AMMO = AMMO.register("rifle_ammo", () -> new AmmoSupplierItem(AmmoType.RIFLE, 1, new Item.Properties()));
-//    public static final DeferredHolder<Item, Item> SNIPER_AMMO = AMMO.register("sniper_ammo", () -> new AmmoSupplierItem(AmmoType.SNIPER, 1, new Item.Properties()));
-//    public static final DeferredHolder<Item, Item> SHOTGUN_AMMO = AMMO.register("shotgun_ammo", () -> new AmmoSupplierItem(AmmoType.SHOTGUN, 1, new Item.Properties()));
-//    public static final DeferredHolder<Item, Item> HEAVY_AMMO = AMMO.register("heavy_ammo", () -> new AmmoSupplierItem(AmmoType.HEAVY, 1, new Item.Properties()));
-//    public static final DeferredHolder<Item, Item> HANDGUN_AMMO_BOX = AMMO.register("handgun_ammo_box", HandgunAmmoBox::new);
-//    public static final DeferredHolder<Item, Item> RIFLE_AMMO_BOX = AMMO.register("rifle_ammo_box", RifleAmmoBox::new);
-//    public static final DeferredHolder<Item, Item> SNIPER_AMMO_BOX = AMMO.register("sniper_ammo_box", SniperAmmoBox::new);
-//    public static final DeferredHolder<Item, Item> SHOTGUN_AMMO_BOX = AMMO.register("shotgun_ammo_box", ShotgunAmmoBox::new);
-//    public static final DeferredHolder<Item, Item> CREATIVE_AMMO_BOX = AMMO.register("creative_ammo_box", CreativeAmmoBox::new);
-//    public static final DeferredHolder<Item, Item> AMMO_BOX = AMMO.register("ammo_box", AmmoBox::new);
+    public static final DeferredHolder<Item, Item> HANDGUN_AMMO = AMMO.register("handgun_ammo", () -> new AmmoSupplierItem(AmmoType.HANDGUN, 1, new Item.Properties()));
+    public static final DeferredHolder<Item, Item> RIFLE_AMMO = AMMO.register("rifle_ammo", () -> new AmmoSupplierItem(AmmoType.RIFLE, 1, new Item.Properties()));
+    public static final DeferredHolder<Item, Item> SNIPER_AMMO = AMMO.register("sniper_ammo", () -> new AmmoSupplierItem(AmmoType.SNIPER, 1, new Item.Properties()));
+    public static final DeferredHolder<Item, Item> SHOTGUN_AMMO = AMMO.register("shotgun_ammo", () -> new AmmoSupplierItem(AmmoType.SHOTGUN, 1, new Item.Properties()));
+    public static final DeferredHolder<Item, Item> HEAVY_AMMO = AMMO.register("heavy_ammo", () -> new AmmoSupplierItem(AmmoType.HEAVY, 1, new Item.Properties()));
+    public static final DeferredHolder<Item, Item> HANDGUN_AMMO_BOX = AMMO.register("handgun_ammo_box", HandgunAmmoBox::new);
+    public static final DeferredHolder<Item, Item> RIFLE_AMMO_BOX = AMMO.register("rifle_ammo_box", RifleAmmoBox::new);
+    public static final DeferredHolder<Item, Item> SNIPER_AMMO_BOX = AMMO.register("sniper_ammo_box", SniperAmmoBox::new);
+    public static final DeferredHolder<Item, Item> SHOTGUN_AMMO_BOX = AMMO.register("shotgun_ammo_box", ShotgunAmmoBox::new);
+    public static final DeferredHolder<Item, Item> CREATIVE_AMMO_BOX = AMMO.register("creative_ammo_box", CreativeAmmoBox::new);
+    public static final DeferredHolder<Item, Item> AMMO_BOX = AMMO.register("ammo_box", AmmoBox::new);
     public static final DeferredHolder<Item, Item> TASER_ELECTRODE = AMMO.register("taser_electrode", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> GRENADE_40MM = AMMO.register("grenade_40mm", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> JAVELIN_MISSILE = AMMO.register("javelin_missile", () -> new Item(new Item.Properties()));
-    //    public static final DeferredHolder<Item, Item> MORTAR_SHELL = AMMO.register("mortar_shell", MortarShell::new);
-//    public static final DeferredHolder<Item, Item> POTION_MORTAR_SHELL = AMMO.register("potion_mortar_shell", PotionMortarShell::new);
-//    public static final DeferredHolder<Item, Item> ROCKET = AMMO.register("rocket", Rocket::new);
+    public static final DeferredHolder<Item, Item> MORTAR_SHELL = AMMO.register("mortar_shell", MortarShell::new);
+    public static final DeferredHolder<Item, Item> POTION_MORTAR_SHELL = AMMO.register("potion_mortar_shell", PotionMortarShell::new);
+    public static final DeferredHolder<Item, Item> ROCKET = AMMO.register("rocket", Rocket::new);
 //    public static final DeferredHolder<Item, Item> LUNGE_MINE = AMMO.register("lunge_mine", LungeMine::new);
     public static final DeferredHolder<Item, Item> HE_5_INCHES = AMMO.register("he_5_inches", () -> new CannonShellItem(new Item.Properties().rarity(Rarity.RARE)));
     public static final DeferredHolder<Item, Item> AP_5_INCHES = AMMO.register("ap_5_inches", () -> new CannonShellItem(new Item.Properties().rarity(Rarity.RARE)));
@@ -116,7 +119,7 @@ public class ModItems {
 //    public static final DeferredHolder<Item, Item> KNIFE = ITEMS.register("knife", Knife::new);
 //    public static final DeferredHolder<Item, Item> HAMMER = ITEMS.register("hammer", Hammer::new);
     public static final DeferredHolder<Item, Item> CROWBAR = ITEMS.register("crowbar", Crowbar::new);
-//    public static final DeferredHolder<Item, Item> DEFUSER = ITEMS.register("defuser", Defuser::new);
+    //    public static final DeferredHolder<Item, Item> DEFUSER = ITEMS.register("defuser", Defuser::new);
 //    public static final DeferredHolder<Item, Item> ARMOR_PLATE = ITEMS.register("armor_plate", ArmorPlate::new);
 //
 //    public static final DeferredHolder<Item, Item> RU_HELMET_6B47 = ITEMS.register("ru_helmet_6b47", RuHelmet6b47::new);

@@ -1,6 +1,8 @@
 package com.atsuishio.superbwarfare.component;
 
 import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.item.common.ammo.box.AmmoBoxInfo;
+import com.atsuishio.superbwarfare.tools.AmmoType;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponentType;
@@ -25,11 +27,20 @@ public class ModDataComponents {
             builder -> builder.persistent(Codec.INT)
     );
 
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<AmmoBoxInfo>> AMMO_BOX_INFO = register(
+            "ammo_box_type",
+            builder -> builder.persistent(AmmoBoxInfo.CODEC)
+    );
+
     private static <T> DeferredHolder<DataComponentType<?>, DataComponentType<T>> register(String name, UnaryOperator<DataComponentType.Builder<T>> builderOperator) {
         return DATA_COMPONENT_TYPES.register(name, () -> builderOperator.apply(DataComponentType.builder()).build());
     }
 
     public static void register(IEventBus eventBus) {
+        for (var type : AmmoType.values()) {
+            type.dataComponent = register("ammo_" + type.name.toLowerCase(), builder -> builder.persistent(Codec.INT));
+        }
+
         DATA_COMPONENT_TYPES.register(eventBus);
     }
 

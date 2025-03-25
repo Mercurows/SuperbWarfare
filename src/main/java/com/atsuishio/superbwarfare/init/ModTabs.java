@@ -16,7 +16,7 @@ public class ModTabs {
 
     public static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, ModUtils.MODID);
 
-//    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> GUN_TAB = TABS.register("guns",
+    //    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> GUN_TAB = TABS.register("guns",
 //            () -> CreativeModeTab.builder()
 //                    .title(Component.translatable("item_group.superbwarfare.guns"))
 //                    .icon(() -> new ItemStack(ModItems.TASER.get()))
@@ -60,34 +60,34 @@ public class ModTabs {
 //                    )
 //                    .build());
 //
-public static final DeferredHolder<CreativeModeTab, CreativeModeTab> PERK_TAB = TABS.register("perk",
-        () -> CreativeModeTab.builder()
-                .title(Component.translatable("item_group.superbwarfare.perk"))
-                .icon(() -> new ItemStack(ModItems.AP_BULLET.get()))
+    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> PERK_TAB = TABS.register("perk",
+            () -> CreativeModeTab.builder()
+                    .title(Component.translatable("item_group.superbwarfare.perk"))
+                    .icon(() -> new ItemStack(ModItems.AP_BULLET.get()))
 //                    .withTabsBefore(GUN_TAB.getKey())
-                .displayItems((param, output) -> ModItems.PERKS.getEntries().forEach(registryObject -> output.accept(registryObject.get())))
-                .build());
-//
-public static final DeferredHolder<CreativeModeTab, CreativeModeTab> AMMO_TAB = TABS.register("ammo",
-        () -> CreativeModeTab.builder()
-                .title(Component.translatable("item_group.superbwarfare.ammo"))
-//                    .icon(() -> new ItemStack(ModItems.SHOTGUN_AMMO_BOX.get()))
-                .withTabsBefore(PERK_TAB.getKey())
-                .displayItems((param, output) -> {
-                    ModItems.AMMO.getEntries().forEach(registryObject -> {
-//                            if (registryObject.get() != ModItems.POTION_MORTAR_SHELL.get()) {
-//                                output.accept(registryObject.get());
-//
+                    .displayItems((param, output) -> ModItems.PERKS.getEntries().forEach(registryObject -> output.accept(registryObject.get())))
+                    .build());
+    //
+    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> AMMO_TAB = TABS.register("ammo",
+            () -> CreativeModeTab.builder()
+                    .title(Component.translatable("item_group.superbwarfare.ammo"))
+                    .icon(() -> new ItemStack(ModItems.SHOTGUN_AMMO_BOX.get()))
+                    .withTabsBefore(PERK_TAB.getKey())
+                    .displayItems((param, output) -> {
+                        ModItems.AMMO.getEntries().forEach(registryObject -> {
+                            if (registryObject.get() != ModItems.POTION_MORTAR_SHELL.get()) {
+                                output.accept(registryObject.get());
+
 //                                if (registryObject.get() == ModItems.C4_BOMB.get()) {
 //                                    output.accept(C4Bomb.makeInstance());
 //                                }
-//                            }
-                    });
+                            }
+                        });
 
 //                        param.holders().lookup(Registries.POTION)
 //                                .ifPresent(potion -> generatePotionEffectTypes(output, potion, ModItems.POTION_MORTAR_SHELL.get()));
-                })
-                .build());
+                    })
+                    .build());
 
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> ITEM_TAB = TABS.register("item",
             () -> CreativeModeTab.builder()

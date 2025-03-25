@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.block;
 
+import com.atsuishio.superbwarfare.capability.ModCapabilities;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -122,10 +123,10 @@ public class JumpPadBlock extends Block {
             level.playLocalSound(pos.getX(), pos.getY(), pos.getZ(), ModSounds.JUMP.get(), SoundSource.BLOCKS, 1, 1, false);
         }
 
-        // TODO capability
-//        entity.getCapability(ModVariables.PLAYER_VARIABLES_CAPABILITY, null).ifPresent(capability -> {
-//            capability.playerDoubleJump = true;
-//            capability.syncPlayerVariables(entity);
-//        });
+        var capability = entity.getCapability(ModCapabilities.PLAYER_VARIABLE);
+        if (capability != null) {
+            capability.playerDoubleJump = true;
+            capability.syncPlayerVariables(entity);
+        }
     }
 }
