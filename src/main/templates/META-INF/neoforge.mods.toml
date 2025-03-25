@@ -31,10 +31,10 @@ versionRange = "[5.4.0,)"
 ordering = "NONE"
 side = "BOTH"
 
-#[[dependencies.superbwarfare]]
-#modId = "geckolib"
-#mandatory = true
-#versionRange = "[4.4.4,)"
-#ordering = "NONE"
-#side = "BOTH"
+[[dependencies.superbwarfare]]
+modId = "geckolib"
+mandatory = true
+versionRange = "[4.7.0,)"
+ordering = "NONE"
+side = "BOTH"
 

@@ -123,31 +123,19 @@ configurations {
 }
 
 dependencies {
-    // What's wrong with you?
-    // implementation "software.bernie.geckolib:geckolib-forge-1.21.1:4.7"
+    implementation "software.bernie.geckolib:geckolib-neoforge-1.21.1:4.7.5"
 
     runtimeOnly "top.theillusivec4.curios:curios-neoforge:9.2.0+1.21.1"
     compileOnly "top.theillusivec4.curios:curios-neoforge:9.2.0+1.21.1:api"
 
+    // 可选mod依赖
     compileOnly "mezz.jei:jei-1.21.1-common-api:${jei_version}"
     compileOnly "mezz.jei:jei-1.21.1-neoforge-api:${jei_version}"
+    runtimeOnly "mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}"
+    implementation "curse.maven:jade-324717:6291517"
 
-//    implementation "curse.maven:jade-324717:6291517"
-
-//    // 可选mod依赖
-//
-//    // JEI相关
-//    // compile against the JEI API but do not include it at runtime
-//    compileOnly(fg.deobf("mezz.jei:jei-${minecraft_version}-common-api:${jei_version}"))
-//    compileOnly(fg.deobf("mezz.jei:jei-${minecraft_version}-forge-api:${jei_version}"))
-//    // at runtime, use the full JEI jar for Forge
-//    runtimeOnly(fg.deobf("mezz.jei:jei-${minecraft_version}-forge:${jei_version}"))
-//
 //    // Cloth Config相关
 //    implementation fg.deobf("me.shedaniel.cloth:cloth-config-forge:${cloth_config_version}")
-//
-//    // Jade相关
-//    implementation fg.deobf("curse.maven:jade-324717:${jade_version}")
 //
 //    // 测试用mod
 //    implementation fg.deobf("curse.maven:oculus-581495:6020952")
