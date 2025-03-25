@@ -3,13 +3,11 @@ package com.atsuishio.superbwarfare.capability.player;
 import com.atsuishio.superbwarfare.ModUtils;
 import com.atsuishio.superbwarfare.capability.ModCapabilities;
 import com.atsuishio.superbwarfare.network.message.PlayerVariablesSyncMessage;
-import com.atsuishio.superbwarfare.network.message.SavedDataSyncMessage;
 import com.atsuishio.superbwarfare.tools.AmmoType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.level.saveddata.SavedData;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
@@ -145,23 +143,5 @@ public class PlayerVariable {
         var player = event.getEntity();
         var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE, null);
         if (cap != null) cap.syncPlayerVariables(player);
-    }
-
-    @SubscribeEvent
-    public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
-        if (event.getEntity().level().isClientSide()) return;
-        SavedData worldData = ModVariables.WorldVariables.get(event.getEntity().level());
-        if (worldData != null) {
-            PacketDistributor.sendToPlayer((ServerPlayer) event.getEntity(), new SavedDataSyncMessage(1, worldData, null));
-        }
-    }
-
-    @SubscribeEvent
-    public static void onPlayerChangedDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
-        if (event.getEntity().level().isClientSide()) return;
-        SavedData worldData = ModVariables.WorldVariables.get(event.getEntity().level());
-        if (worldData != null) {
-            PacketDistributor.sendToPlayer((ServerPlayer) event.getEntity(), new SavedDataSyncMessage(1, worldData, null));
-        }
     }
 }
