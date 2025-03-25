@@ -1,6 +1,8 @@
 package com.atsuishio.superbwarfare.network;
 
+import com.atsuishio.superbwarfare.network.message.LaserShootMessage;
 import com.atsuishio.superbwarfare.network.message.PlayerVariablesSyncMessage;
+import com.atsuishio.superbwarfare.network.message.ShakeClientMessage;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
@@ -13,5 +15,18 @@ public class NetworkRegistry {
                 PlayerVariablesSyncMessage.STREAM_CODEC,
                 PlayerVariablesSyncMessage::handler
         );
+
+        registrar.playToClient(
+                ShakeClientMessage.TYPE,
+                ShakeClientMessage.STREAM_CODEC,
+                ShakeClientMessage::handler
+        );
+
+        registrar.playToServer(
+                LaserShootMessage.TYPE,
+                LaserShootMessage.STREAM_CODEC,
+                LaserShootMessage::handler
+        );
+
     }
 }

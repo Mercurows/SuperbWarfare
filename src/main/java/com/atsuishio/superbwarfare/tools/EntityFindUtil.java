@@ -22,9 +22,7 @@ public class EntityFindUtil {
             return serverLevel.getEntities();
         }
         var clientLevel = (ClientLevel) level;
-//        return clientLevel.getEntities();
-        // TODO getEntities
-        return null;
+        return clientLevel.getEntities();
     }
 
     /**
@@ -43,10 +41,9 @@ public class EntityFindUtil {
                 target = serverLevel.getEntity(uuid);
             } else {
                 var clientLevel = (ClientLevel) level;
-//                target = clientLevel.getEntities().get(uuid);
+                target = clientLevel.getEntities().get(uuid);
             }
-//            return target;
-            return null;
+            return target;
         } catch (Exception ignored) {
         }
 

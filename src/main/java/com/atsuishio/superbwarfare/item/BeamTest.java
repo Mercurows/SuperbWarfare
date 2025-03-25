@@ -4,6 +4,8 @@ import com.atsuishio.superbwarfare.capability.ModCapabilities;
 import com.atsuishio.superbwarfare.capability.laser.LaserHandler;
 import com.atsuishio.superbwarfare.entity.projectile.LaserEntity;
 import com.atsuishio.superbwarfare.init.ModSounds;
+import com.atsuishio.superbwarfare.network.message.LaserShootMessage;
+import com.atsuishio.superbwarfare.network.message.ShakeClientMessage;
 import com.atsuishio.superbwarfare.tools.TraceTool;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundStopSoundPacket;
@@ -21,6 +23,7 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -93,7 +96,8 @@ public class BeamTest extends Item {
     }
 
     @Override
-    public ItemStack finishUsingItem(ItemStack pStack, Level pLevel, LivingEntity pLivingEntity) {
+    @ParametersAreNonnullByDefault
+    public @NotNull ItemStack finishUsingItem(ItemStack pStack, Level pLevel, LivingEntity pLivingEntity) {
         if (pLivingEntity instanceof Player player) {
             var cap = player.getCapability(ModCapabilities.LASER_CAPABILITY);
             if (cap != null) {
@@ -109,8 +113,7 @@ public class BeamTest extends Item {
                 player.playSound(ModSounds.CHARGE_RIFLE_FIRE_BOOM_3P.get(), 4, 1);
             }
             if (player instanceof ServerPlayer serverPlayer) {
-                // TODO network
-//                ModUtils.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> serverPlayer), new ShakeClientMessage(10, 10, 30, serverPlayer.getX(), serverPlayer.getEyeY(), serverPlayer.getZ()));
+                PacketDistributor.sendToPlayer(serverPlayer, new ShakeClientMessage(10, 10, 30, serverPlayer.getX(), serverPlayer.getEyeY(), serverPlayer.getZ()));
             }
         }
         return super.finishUsingItem(pStack, pLevel, pLivingEntity);
@@ -127,7 +130,7 @@ public class BeamTest extends Item {
                 && (!player.isAlliedTo(lookingEntity) || lookingEntity.getTeam() == null || lookingEntity.getTeam().getName().equals("TDM"));
 
         if (canAttack) {
-//            ModUtils.PACKET_HANDLER.sendToServer(new LaserShootMessage(45, lookingEntity.getUUID(), TraceTool.laserHeadshot));
+            PacketDistributor.sendToServer(new LaserShootMessage(45, lookingEntity.getUUID(), TraceTool.laserHeadshot));
         }
     }
 
