@@ -1,9 +1,7 @@
 package com.atsuishio.superbwarfare.init;
 
 import com.atsuishio.superbwarfare.ModUtils;
-import com.atsuishio.superbwarfare.item.FiringParameters;
-import com.atsuishio.superbwarfare.item.PerkItem;
-import com.atsuishio.superbwarfare.item.ShortcutPack;
+import com.atsuishio.superbwarfare.item.*;
 import com.atsuishio.superbwarfare.item.common.BlueprintItem;
 import com.atsuishio.superbwarfare.item.common.CannonShellItem;
 import com.atsuishio.superbwarfare.item.common.MaterialPack;
@@ -93,7 +91,7 @@ public class ModItems {
     public static final DeferredHolder<Item, Item> SMALL_SHELL = AMMO.register("small_shell", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> ROCKET_70 = AMMO.register("rocket_70", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> WIRE_GUIDE_MISSILE = AMMO.register("wire_guide_missile", () -> new Item(new Item.Properties()));
-//    public static final DeferredHolder<Item, Item> BEAM_TEST = AMMO.register("beam_test", BeamTest::new);
+    public static final DeferredHolder<Item, Item> BEAM_TEST = AMMO.register("beam_test", BeamTest::new);
 
     /**
      * items
@@ -117,7 +115,7 @@ public class ModItems {
 //    public static final DeferredHolder<Item, Item> TARGET_DEPLOYER = ITEMS.register("target_deployer", TargetDeployer::new);
 //    public static final DeferredHolder<Item, Item> KNIFE = ITEMS.register("knife", Knife::new);
 //    public static final DeferredHolder<Item, Item> HAMMER = ITEMS.register("hammer", Hammer::new);
-//    public static final DeferredHolder<Item, Item> CROWBAR = ITEMS.register("crowbar", Crowbar::new);
+    public static final DeferredHolder<Item, Item> CROWBAR = ITEMS.register("crowbar", Crowbar::new);
 //    public static final DeferredHolder<Item, Item> DEFUSER = ITEMS.register("defuser", Defuser::new);
 //    public static final DeferredHolder<Item, Item> ARMOR_PLATE = ITEMS.register("armor_plate", ArmorPlate::new);
 //

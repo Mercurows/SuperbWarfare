@@ -1,10 +1,7 @@
 package com.atsuishio.superbwarfare.init;
 
 import com.atsuishio.superbwarfare.ModUtils;
-import com.atsuishio.superbwarfare.block.BarbedWireBlock;
-import com.atsuishio.superbwarfare.block.DragonTeethBlock;
-import com.atsuishio.superbwarfare.block.JumpPadBlock;
-import com.atsuishio.superbwarfare.block.ReforgingTableBlock;
+import com.atsuishio.superbwarfare.block.*;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
@@ -46,9 +43,8 @@ public class ModBlocks {
             () -> new Block(BlockBehaviour.Properties.of().instrument(NoteBlockInstrument.BASEDRUM).sound(SoundType.METAL).strength(5f, 6f).requiresCorrectToolForDrops()));
     public static final DeferredHolder<Block, Block> CEMENTED_CARBIDE_BLOCK = REGISTRY.register("cemented_carbide_block",
             () -> new Block(BlockBehaviour.Properties.of().instrument(NoteBlockInstrument.BASEDRUM).sound(SoundType.METAL).strength(5f, 6f).requiresCorrectToolForDrops()));
-    // TODO blocks
-//    public static final DeferredHolder<Block, Block> CONTAINER = REGISTRY.register("container", ContainerBlock::new);
-//    public static final DeferredHolder<Block, Block> CHARGING_STATION = REGISTRY.register("charging_station", ChargingStationBlock::new);
-//    public static final DeferredHolder<Block, Block> CREATIVE_CHARGING_STATION = REGISTRY.register("creative_charging_station", CreativeChargingStationBlock::new);
-//    public static final DeferredHolder<Block, Block> FUMO_25 = REGISTRY.register("fumo_25", FuMO25Block::new);
+    public static final DeferredHolder<Block, Block> CONTAINER = REGISTRY.register("container", ContainerBlock::new);
+    public static final DeferredHolder<Block, Block> CHARGING_STATION = REGISTRY.register("charging_station", ChargingStationBlock::new);
+    public static final DeferredHolder<Block, Block> CREATIVE_CHARGING_STATION = REGISTRY.register("creative_charging_station", () -> new CreativeChargingStationBlock());
+    public static final DeferredHolder<Block, Block> FUMO_25 = REGISTRY.register("fumo_25", FuMO25Block::new);
 }

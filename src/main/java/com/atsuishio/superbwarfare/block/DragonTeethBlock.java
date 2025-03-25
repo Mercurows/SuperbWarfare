@@ -25,7 +25,7 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
-@SuppressWarnings("deprecation")
+// TODO 解决obj渲染问题
 public class DragonTeethBlock extends Block {
 
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;

@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare;
 
+import com.atsuishio.superbwarfare.capability.CapabilityHandler;
 import com.atsuishio.superbwarfare.component.ModDataComponents;
 import com.atsuishio.superbwarfare.config.ClientConfig;
 import com.atsuishio.superbwarfare.config.CommonConfig;
@@ -54,6 +55,8 @@ public class ModUtils {
 
 //        bus.addListener(this::onCommonSetup);
 //        bus.addListener(this::onClientSetup);
+
+        CapabilityHandler.register(bus);
 
         NeoForge.EVENT_BUS.register(this);
     }

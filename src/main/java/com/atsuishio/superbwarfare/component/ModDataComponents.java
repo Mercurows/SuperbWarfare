@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.component;
 
 import com.atsuishio.superbwarfare.ModUtils;
+import com.mojang.serialization.Codec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
@@ -17,6 +18,11 @@ public class ModDataComponents {
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<BlockPos>> BLOCK_POS = register(
             "coordinates",
             builder -> builder.persistent(BlockPos.CODEC)
+    );
+
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> ENERGY = register(
+            "energy",
+            builder -> builder.persistent(Codec.INT)
     );
 
     private static <T> DeferredHolder<DataComponentType<?>, DataComponentType<T>> register(String name, UnaryOperator<DataComponentType.Builder<T>> builderOperator) {
