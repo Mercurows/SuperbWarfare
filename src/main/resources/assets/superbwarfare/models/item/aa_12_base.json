@@ -1,0 +1,6 @@
+{
+  "parent": "superbwarfare:displaysettings/aa12.item",
+  "textures": {
+    "layer0": "superbwarfare:item/aa12_new"
+  }
+}

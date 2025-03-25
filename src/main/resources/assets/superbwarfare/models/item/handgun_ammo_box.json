@@ -1,0 +1,7 @@
+{
+  "parent": "superbwarfare:custom/handgunammobox",
+  "textures": {
+    "0": "superbwarfare:block/handgunammobox",
+    "particle": "superbwarfare:item/hk4163d"
+  }
+}

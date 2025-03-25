@@ -1,0 +1,6 @@
+{
+  "parent": "superbwarfare:displaysettings/hunting_rifle.item",
+  "textures": {
+    "layer0": "superbwarfare:item/huntingrifle"
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "credit": "Made with Blockbench",
+  "parent": "builtin/entity",
+  "texture_size": [
+    128,
+    128
+  ],
+  "display": {
+    "firstperson_righthand": {
+      "translation": [
+        4.25,
+        -13.5,
+        -26
+      ],
+      "scale": [
+        4,
+        4,
+        4
+      ]
+    },
+    "firstperson_lefthand": {
+      "translation": [
+        -3.5,
+        2.75,
+        -4
+      ],
+      "scale": [
+        0.02,
+        0,
+        0
+      ]
+    }
+  }
+}

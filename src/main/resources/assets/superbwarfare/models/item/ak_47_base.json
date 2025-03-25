@@ -1,0 +1,6 @@
+{
+  "parent": "superbwarfare:displaysettings/ak47.item",
+  "textures": {
+    "layer0": "superbwarfare:item/ak47"
+  }
+}

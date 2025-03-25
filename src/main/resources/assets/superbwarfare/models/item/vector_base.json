@@ -1,0 +1,6 @@
+{
+  "parent": "superbwarfare:displaysettings/vector.item",
+  "textures": {
+    "layer0": "superbwarfare:item/vector"
+  }
+}

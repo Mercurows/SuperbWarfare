@@ -1,0 +1,6 @@
+{
+  "parent": "superbwarfare:displaysettings/svd.item",
+  "textures": {
+    "layer0": "superbwarfare:item/svd"
+  }
+}

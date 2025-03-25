@@ -1,0 +1,6 @@
+{
+  "parent": "superbwarfare:displaysettings/secondary_cataclysm.item",
+  "textures": {
+    "layer0": "superbwarfare:item/secondary_cataclysm"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "superbwarfare:item/monitor"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "superbwarfare:monitor_linked": 1
+      },
+      "model": "superbwarfare:item/monitor_linked"
+    }
+  ]
+}

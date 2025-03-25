@@ -1,0 +1,27 @@
+{
+  "loader": "forge:separate_transforms",
+  "gui_light": "front",
+  "base": {
+    "parent": "superbwarfare:item/lunge_mine_base"
+  },
+  "perspectives": {
+    "gui": {
+      "parent": "superbwarfare:item/lunge_mine_icon"
+    },
+    "thirdperson_righthand": {
+      "parent": "superbwarfare:item/lunge_mine_3d"
+    },
+    "thirdperson_lefthand": {
+      "parent": "superbwarfare:item/lunge_mine_icon"
+    },
+    "ground": {
+      "parent": "superbwarfare:item/lunge_mine_icon"
+    },
+    "fixed": {
+      "parent": "superbwarfare:item/lunge_mine_icon"
+    },
+    "head": {
+      "parent": "superbwarfare:item/lunge_mine_base"
+    }
+  }
+}

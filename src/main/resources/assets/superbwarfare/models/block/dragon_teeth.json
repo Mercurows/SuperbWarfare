@@ -1,0 +1,18 @@
+{
+  "parent": "forge:item/default",
+  "loader": "forge:composite",
+  "children": {
+    "part1": {
+      "loader": "forge:obj",
+      "model": "superbwarfare:models/block/dragon_teeth.obj",
+      "emissive_ambient": true,
+      "textures": {
+        "#m_40ddb3f7-b960-0c4a-147f-2010aa6221ab": "superbwarfare:block/dragon_teeth"
+      }
+    }
+  },
+  "textures": {
+    "particle": "minecraft:block/smooth_stone"
+  },
+  "render_type": "solid"
+}

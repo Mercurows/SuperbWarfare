@@ -1,0 +1,6 @@
+{
+  "parent": "superbwarfare:displaysettings/container.item",
+  "textures": {
+    "particle": "superbwarfare:block/container"
+  }
+}

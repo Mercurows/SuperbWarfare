@@ -1,0 +1,7 @@
+{
+  "parent": "superbwarfare:custom/c4",
+  "textures": {
+    "1": "superbwarfare:block/c4",
+    "particle": "superbwarfare:item/c4"
+  }
+}

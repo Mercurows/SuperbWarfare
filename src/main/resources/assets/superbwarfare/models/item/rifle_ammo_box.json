@@ -1,0 +1,7 @@
+{
+  "parent": "superbwarfare:custom/rifleammobox",
+  "textures": {
+    "0": "superbwarfare:block/rifleammobox",
+    "particle": "superbwarfare:item/hk4163d"
+  }
+}

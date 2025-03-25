@@ -1,0 +1,6 @@
+{
+  "parent": "superbwarfare:displaysettings/lightsaber.item",
+  "textures": {
+    "layer0": "superbwarfare:item/lightsaber"
+  }
+}

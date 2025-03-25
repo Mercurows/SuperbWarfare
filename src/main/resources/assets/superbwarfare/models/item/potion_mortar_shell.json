@@ -1,0 +1,7 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "superbwarfare:item/potion_mortar_shell_base",
+    "layer1": "superbwarfare:item/potion_mortar_shell_overlay"
+  }
+}

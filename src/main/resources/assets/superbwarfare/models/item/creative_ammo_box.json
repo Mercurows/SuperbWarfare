@@ -1,0 +1,7 @@
+{
+  "parent": "superbwarfare:custom/ammobox",
+  "textures": {
+    "0": "superbwarfare:block/creativeammobox",
+    "particle": "superbwarfare:item/hk4163d"
+  }
+}

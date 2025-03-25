@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "superbwarfare:block/sandbagdi",
+    "up": "superbwarfare:block/sand",
+    "north": "superbwarfare:block/sandbag",
+    "east": "superbwarfare:block/sandbag",
+    "south": "superbwarfare:block/sandbag",
+    "west": "superbwarfare:block/sandbag",
+    "particle": "superbwarfare:block/sandbagdi"
+  },
+  "render_type": "solid"
+}

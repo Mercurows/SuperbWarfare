@@ -1,8 +1,7 @@
 package com.atsuishio.superbwarfare;
 
 import com.atsuishio.superbwarfare.component.ModDataComponents;
-import com.atsuishio.superbwarfare.init.ModItems;
-import com.atsuishio.superbwarfare.init.ModTabs;
+import com.atsuishio.superbwarfare.init.*;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -33,18 +32,17 @@ public class ModUtils {
 //        container.registerConfig(ModConfig.Type.COMMON, CommonConfig.init());
 //        container.registerConfig(ModConfig.Type.SERVER, ServerConfig.init());
 
-//        ModPerks.register(bus);
+        ModPerks.register(bus);
 //        ModSerializers.REGISTRY.register(bus);
-//        ModSounds.REGISTRY.register(bus);
+        ModSounds.REGISTRY.register(bus);
 //        ModBlocks.REGISTRY.register(bus);
 //        ModBlockEntities.REGISTRY.register(bus);
         ModItems.register(bus);
         ModDataComponents.register(bus);
         ModTabs.TABS.register(bus);
 //        ModEntities.REGISTRY.register(bus);
-//        ModTabs.TABS.register(bus);
 //        ModMobEffects.REGISTRY.register(bus);
-//        ModParticleTypes.REGISTRY.register(bus);
+        ModParticleTypes.REGISTRY.register(bus);
 //        ModPotion.POTIONS.register(bus);
 //        ModMenuTypes.REGISTRY.register(bus);
 //        ModVillagers.register(bus);
@@ -74,18 +72,15 @@ public class ModUtils {
 
     @SubscribeEvent
     public void tick(ServerTickEvent.Post event) {
-        List<AbstractMap.SimpleEntry<Runnable, Integer>> actions = new ArrayList<>();
-        workQueue.forEach(work -> {
-            work.setValue(work.getValue() - 1);
-            if (work.getValue() == 0)
-                actions.add(work);
-        });
-        actions.forEach(e -> e.getKey().run());
-        workQueue.removeAll(actions);
+        executeWork(workQueue);
     }
 
     @SubscribeEvent
     public void tick(ClientTickEvent.Post event) {
+        executeWork(workQueueC);
+    }
+
+    private void executeWork(Collection<AbstractMap.SimpleEntry<Runnable, Integer>> workQueueC) {
         List<AbstractMap.SimpleEntry<Runnable, Integer>> actions = new ArrayList<>();
         workQueueC.forEach(work -> {
             work.setValue(work.getValue() - 1);

@@ -1,0 +1,6 @@
+{
+  "parent": "superbwarfare:displaysettings/m4.item",
+  "textures": {
+    "layer0": "superbwarfare:item/m4"
+  }
+}

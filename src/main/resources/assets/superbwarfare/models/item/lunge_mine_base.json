@@ -1,0 +1,6 @@
+{
+  "parent": "superbwarfare:displaysettings/lunge_mine",
+  "textures": {
+    "layer0": "superbwarfare:item/lunge_mine"
+  }
+}

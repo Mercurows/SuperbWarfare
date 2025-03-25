@@ -1,0 +1,6 @@
+{
+  "parent": "superbwarfare:displaysettings/sentinel.item",
+  "textures": {
+    "layer0": "superbwarfare:item/sentinel"
+  }
+}

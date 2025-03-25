@@ -1,0 +1,7 @@
+{
+  "parent": "superbwarfare:custom/hammer",
+  "textures": {
+    "0": "superbwarfare:block/hammer",
+    "particle": "superbwarfare:item/hammer"
+  }
+}

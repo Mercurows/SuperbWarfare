@@ -1,0 +1,14 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "superbwarfare:item/armor_plate"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "superbwarfare:armor_plate_infinite": 1
+      },
+      "model": "superbwarfare:item/armor_plate_infinite"
+    }
+  ]
+}

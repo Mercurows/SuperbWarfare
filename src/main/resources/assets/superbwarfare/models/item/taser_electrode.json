@@ -1,0 +1,7 @@
+{
+  "parent": "superbwarfare:custom/taser_electrode",
+  "textures": {
+    "0": "superbwarfare:block/tasergun",
+    "particle": "superbwarfare:item/tasergun"
+  }
+}

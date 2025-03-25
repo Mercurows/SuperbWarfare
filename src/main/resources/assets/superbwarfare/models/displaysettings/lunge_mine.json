@@ -1,0 +1,114 @@
+{
+  "credit": "Made with Blockbench",
+  "parent": "builtin/entity",
+  "texture_size": [
+    32,
+    32
+  ],
+  "display": {
+    "thirdperson_righthand": {
+      "rotation": [
+        67.5,
+        7,
+        0
+      ],
+      "translation": [
+        -1.75,
+        2.5,
+        -0.25
+      ],
+      "scale": [
+        1.1,
+        1.1,
+        1.2
+      ]
+    },
+    "thirdperson_lefthand": {
+      "scale": [
+        0,
+        0,
+        0
+      ]
+    },
+    "firstperson_righthand": {
+      "rotation": [
+        7.14,
+        -1.62,
+        11.61
+      ],
+      "translation": [
+        -3.75,
+        -1,
+        0
+      ],
+      "scale": [
+        1.2,
+        1.2,
+        1.3
+      ]
+    },
+    "firstperson_lefthand": {
+      "scale": [
+        0,
+        0,
+        0
+      ]
+    },
+    "ground": {
+      "rotation": [
+        -90,
+        0,
+        0
+      ],
+      "translation": [
+        0,
+        24.75,
+        0
+      ]
+    },
+    "gui": {
+      "rotation": [
+        138.65,
+        -34.86,
+        151.18
+      ],
+      "translation": [
+        0,
+        -0.25,
+        0
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ]
+    },
+    "head": {
+      "rotation": [
+        -90,
+        0,
+        0
+      ],
+      "translation": [
+        0,
+        29.75,
+        0
+      ]
+    },
+    "fixed": {
+      "rotation": [
+        90,
+        45,
+        -90
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ]
+    }
+  },
+  "textures": {
+    "particle": "item/lunge_mine"
+  }
+}
