@@ -22,7 +22,7 @@ public class LaserCapabilityProvider implements ICapabilityProvider<Player, Void
 
     @Override
     public @Nullable LaserCapability getCapability(@NotNull Player object, Void context) {
-        return object.getCapability(ModCapabilities.LASER_CAPABILITY, context);
+        return instance;
     }
 
     @Override
