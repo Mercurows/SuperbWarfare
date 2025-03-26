@@ -1,6 +1,10 @@
 package com.atsuishio.superbwarfare.init;
 
 import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.client.screens.ChargingStationScreen;
+import com.atsuishio.superbwarfare.client.screens.FuMO25Screen;
+import com.atsuishio.superbwarfare.client.screens.ReforgingTableScreen;
+import com.atsuishio.superbwarfare.client.screens.VehicleScreen;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -11,10 +15,9 @@ public class ModScreens {
 
     @SubscribeEvent
     public static void clientLoad(RegisterMenuScreensEvent event) {
-        // TODO 正确注册menu
-//        event.register(ModMenuTypes.REFORGING_TABLE_MENU.get(), ReforgingTableScreen::new);
-//        event.register(ModMenuTypes.CHARGING_STATION_MENU.get(), ChargingStationScreen::new);
-//        event.register(ModMenuTypes.VEHICLE_MENU.get(), VehicleScreen::new);
-//        event.register(ModMenuTypes.FUMO_25_MENU.get(), FuMO25Screen::new);
+        event.register(ModMenuTypes.REFORGING_TABLE_MENU.get(), ReforgingTableScreen::new);
+        event.register(ModMenuTypes.CHARGING_STATION_MENU.get(), ChargingStationScreen::new);
+        event.register(ModMenuTypes.VEHICLE_MENU.get(), VehicleScreen::new);
+        event.register(ModMenuTypes.FUMO_25_MENU.get(), FuMO25Screen::new);
     }
 }

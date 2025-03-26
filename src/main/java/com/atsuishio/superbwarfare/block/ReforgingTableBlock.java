@@ -1,11 +1,15 @@
 package com.atsuishio.superbwarfare.block;
 
+import com.atsuishio.superbwarfare.menu.ReforgingTableMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -25,6 +29,7 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @SuppressWarnings("deprecation")
@@ -118,11 +123,11 @@ public class ReforgingTableBlock extends Block {
         return super.updateShape(state, facing, facingState, world, currentPos, facingPos);
     }
 
-    // TODO Menu
-//    @Override
-//    @Nullable
-//    public MenuProvider getMenuProvider(BlockState pState, Level pLevel, BlockPos pPos) {
-//        return new SimpleMenuProvider((i, inventory, player) ->
-//                new ReforgingTableMenu(i, inventory, ContainerLevelAccess.create(pLevel, pPos)), CONTAINER_TITLE);
-//    }
+    @Override
+    @Nullable
+    @ParametersAreNonnullByDefault
+    public MenuProvider getMenuProvider(BlockState pState, Level pLevel, BlockPos pPos) {
+        return new SimpleMenuProvider((i, inventory, player) ->
+                new ReforgingTableMenu(i, inventory, ContainerLevelAccess.create(pLevel, pPos)), CONTAINER_TITLE);
+    }
 }

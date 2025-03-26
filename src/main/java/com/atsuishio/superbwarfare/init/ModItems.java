@@ -251,7 +251,7 @@ public class ModItems {
     public static final DeferredHolder<Item, Item> TUNGSTEN_BLOCK = block(ModBlocks.TUNGSTEN_BLOCK);
     public static final DeferredHolder<Item, Item> SILVER_BLOCK = block(ModBlocks.SILVER_BLOCK);
     public static final DeferredHolder<Item, Item> CEMENTED_CARBIDE_BLOCK = block(ModBlocks.CEMENTED_CARBIDE_BLOCK);
-//    public static final DeferredHolder<Item, Item> FUMO_25 = block(ModBlocks.FUMO_25);
+    public static final DeferredHolder<Item, Item> FUMO_25 = block(ModBlocks.FUMO_25);
 
     /**
      * Perk Items
