@@ -48,12 +48,10 @@ public abstract class EnergyMenu extends AbstractContainerMenu {
     }
 
     public void setData(int id, int data) {
+        super.setData(id, data);
         this.containerEnergyDataSlots.get(id).set(data);
     }
 
-    public void setData(int id, long data) {
-        this.containerEnergyDataSlots.get(id).set(data);
-    }
 
 //    @SubscribeEvent
 //    public static void onContainerOpened(PlayerContainerEvent.Open event) {

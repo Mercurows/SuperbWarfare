@@ -10,8 +10,10 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.IntTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Container;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.MenuProvider;
@@ -27,13 +29,17 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
+import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
 import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.ICapabilityProvider;
 import net.neoforged.neoforge.energy.EnergyStorage;
+import net.neoforged.neoforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.wrapper.SidedInvWrapper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Energy Data Slot Code based on @GoryMoon's Chargers
@@ -52,40 +58,63 @@ public class ChargingStationBlockEntity extends BlockEntity implements WorldlyCo
 
     protected NonNullList<ItemStack> items = NonNullList.withSize(2, ItemStack.EMPTY);
 
-    private EnergyStorage energyHandler;
 
-    // TODO SidedInvWrapper Energy
-//    private LazyOptional<?>[] itemHandlers = SidedInvWrapper.create(this, Direction.UP, Direction.DOWN, Direction.NORTH);
+    private BlockCapabilityCache<IEnergyStorage, @Nullable Direction> capCache;
+
+    @Override
+    public void onLoad() {
+        super.onLoad();
+
+        if (level != null && !level.isClientSide) {
+            this.capCache = BlockCapabilityCache.create(
+                    Capabilities.EnergyStorage.BLOCK,
+                    (ServerLevel) level,
+                    this.getBlockPos(),
+                    null
+            );
+        }
+    }
+
 
     public int fuelTick = 0;
     public int maxFuelTick = DEFAULT_FUEL_TIME;
     public boolean showRange = false;
 
     protected final ContainerEnergyData dataAccess = new ContainerEnergyData() {
-        public long get(int pIndex) {
+        public int get(int pIndex) {
             return switch (pIndex) {
                 case 0 -> ChargingStationBlockEntity.this.fuelTick;
                 case 1 -> ChargingStationBlockEntity.this.maxFuelTick;
                 case 2 -> {
-                    AtomicInteger energy = new AtomicInteger();
-//                    ChargingStationBlockEntity.this.getCapability(Capabilities.ENERGY).ifPresent(consumer -> energy.set(consumer.getEnergyStored()));
-                    yield energy.get();
+                    var level = ChargingStationBlockEntity.this.level;
+                    if (level == null) yield 0;
+
+                    var cap = level.getCapability(Capabilities.EnergyStorage.BLOCK, ChargingStationBlockEntity.this.getBlockPos(), null);
+                    if (cap == null) yield 0;
+
+                    yield cap.getEnergyStored();
                 }
                 case 3 -> ChargingStationBlockEntity.this.showRange ? 1 : 0;
                 default -> 0;
             };
         }
 
-        public void set(int pIndex, long pValue) {
+        public void set(int pIndex, int pValue) {
             switch (pIndex) {
                 case 0:
-                    ChargingStationBlockEntity.this.fuelTick = (int) pValue;
+                    ChargingStationBlockEntity.this.fuelTick = pValue;
                     break;
                 case 1:
-                    ChargingStationBlockEntity.this.maxFuelTick = (int) pValue;
+                    ChargingStationBlockEntity.this.maxFuelTick = pValue;
                     break;
                 case 2:
-//                    ChargingStationBlockEntity.this.getCapability(Capabilities.ENERGY).ifPresent(consumer -> consumer.receiveEnergy((int) pValue, false));
+                    var level = ChargingStationBlockEntity.this.level;
+                    if (level == null) return;
+
+                    var cap = level.getCapability(Capabilities.EnergyStorage.BLOCK, ChargingStationBlockEntity.this.getBlockPos(), null);
+                    if (cap == null) return;
+
+                    cap.receiveEnergy((int) pValue, false);
                     break;
                 case 3:
                     ChargingStationBlockEntity.this.showRange = pValue == 1;
@@ -100,8 +129,6 @@ public class ChargingStationBlockEntity extends BlockEntity implements WorldlyCo
 
     public ChargingStationBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.CHARGING_STATION.get(), pos, state);
-
-        this.energyHandler = new EnergyStorage(MAX_ENERGY);
     }
 
     public static void serverTick(Level pLevel, BlockPos pPos, BlockState pState, ChargingStationBlockEntity blockEntity) {
@@ -110,7 +137,9 @@ public class ChargingStationBlockEntity extends BlockEntity implements WorldlyCo
             setChanged(pLevel, pPos, pState);
         }
 
-        var handler = blockEntity.energyHandler;
+        var handler = blockEntity.capCache.getCapability();
+        if (handler == null) return;
+
         int energy = handler.getEnergyStored();
         if (energy > 0) {
             blockEntity.chargeEntity(handler);
@@ -191,7 +220,7 @@ public class ChargingStationBlockEntity extends BlockEntity implements WorldlyCo
         }
     }
 
-    private void chargeEntity(EnergyStorage handler) {
+    private void chargeEntity(IEnergyStorage handler) {
         if (this.level == null) return;
         if (this.level.getGameTime() % 20 != 0) return;
 
@@ -206,7 +235,7 @@ public class ChargingStationBlockEntity extends BlockEntity implements WorldlyCo
         this.setChanged();
     }
 
-    private void chargeItemStack(EnergyStorage handler) {
+    private void chargeItemStack(IEnergyStorage handler) {
         ItemStack stack = this.getItem(SLOT_CHARGE);
         if (stack.isEmpty()) return;
 
@@ -220,7 +249,7 @@ public class ChargingStationBlockEntity extends BlockEntity implements WorldlyCo
         this.setChanged();
     }
 
-    private void chargeBlock(EnergyStorage handler) {
+    private void chargeBlock(IEnergyStorage handler) {
         if (this.level == null) return;
 
         for (Direction direction : Direction.values()) {
@@ -248,8 +277,11 @@ public class ChargingStationBlockEntity extends BlockEntity implements WorldlyCo
     protected void loadAdditional(@NotNull CompoundTag tag, HolderLookup.@NotNull Provider registries) {
         super.loadAdditional(tag, registries);
 
-        if (tag.contains("Energy")) {
-//            getCapability(Capabilities.ENERGY).ifPresent(handler -> ((EnergyStorage) handler).deserializeNBT(tag.get("Energy")));
+        if (tag.contains("Energy") && this.capCache.getCapability() != null) {
+            var energy = tag.get("Energy");
+            if (energy instanceof IntTag) {
+                ((EnergyStorage) this.capCache.getCapability()).deserializeNBT(registries, energy);
+            }
         }
         this.fuelTick = tag.getInt("FuelTick");
         this.maxFuelTick = tag.getInt("MaxFuelTick");
@@ -262,7 +294,9 @@ public class ChargingStationBlockEntity extends BlockEntity implements WorldlyCo
     protected void saveAdditional(@NotNull CompoundTag tag, HolderLookup.@NotNull Provider registries) {
         super.saveAdditional(tag, registries);
 
-//        getCapability(Capabilities.ENERGY).ifPresent(handler -> tag.put("Energy", ((EnergyStorage) handler).serializeNBT()));
+        if (this.capCache != null && this.capCache.getCapability() != null) {
+            tag.put("Energy", IntTag.valueOf(this.capCache.getCapability().getEnergyStored()));
+        }
         tag.putInt("FuelTick", this.fuelTick);
         tag.putInt("MaxFuelTick", this.maxFuelTick);
         tag.putBoolean("ShowRange", this.showRange);
@@ -363,35 +397,39 @@ public class ChargingStationBlockEntity extends BlockEntity implements WorldlyCo
         return compoundtag;
     }
 
+    public static class EnergyStorageProvider implements ICapabilityProvider<ChargingStationBlockEntity, Direction, IEnergyStorage> {
 
-//    @Override
-//    public <T> LazyOptional<T> getCapability(Capability<T> cap, Direction side) {
-//        if (cap == Capabilities.ENERGY) {
-//            return energyHandler.cast();
-//        }
-//        if (!this.remove && side != null && cap == Capabilities.ITEM_HANDLER) {
-//            if (side == Direction.UP) {
-//                return itemHandlers[0].cast();
-//            } else if (side == Direction.DOWN) {
-//                return itemHandlers[1].cast();
-//            } else {
-//                return itemHandlers[2].cast();
-//            }
-//        }
-//        return super.getCapability(cap, side);
-//    }
-//
-//    @Override
-//    public void invalidateCaps() {
-//        super.invalidateCaps();
-//        for (LazyOptional<?> itemHandler : itemHandlers) itemHandler.invalidate();
-//        energyHandler.invalidate();
-//    }
-//
-//    @Override
-//    public void reviveCaps() {
-//        super.reviveCaps();
-//        this.itemHandlers = SidedInvWrapper.create(this, Direction.UP, Direction.DOWN, Direction.NORTH);
-//        this.energyHandler = LazyOptional.of(() -> new EnergyStorage(MAX_ENERGY));
-//    }
+        private final IEnergyStorage energy = new EnergyStorage(MAX_ENERGY);
+
+        @Override
+        public @Nullable IEnergyStorage getCapability(@NotNull ChargingStationBlockEntity object, Direction context) {
+            return energy;
+        }
+    }
+
+
+    public static class ItemHandlerProvider implements ICapabilityProvider<ChargingStationBlockEntity, Direction, IItemHandler> {
+
+        private IItemHandler[] itemHandlers;
+
+        @Override
+        public @Nullable IItemHandler getCapability(@NotNull ChargingStationBlockEntity object, Direction context) {
+            if (context == null || object.isRemoved()) return null;
+
+            if (itemHandlers == null) {
+                this.itemHandlers = new IItemHandler[]{
+                        new SidedInvWrapper(object, Direction.UP),
+                        new SidedInvWrapper(object, Direction.DOWN),
+                        new SidedInvWrapper(object, Direction.NORTH),
+                };
+            }
+
+            return switch (context) {
+                case UP -> itemHandlers[0];
+                case DOWN -> itemHandlers[1];
+                default -> itemHandlers[2];
+            };
+        }
+    }
+
 }

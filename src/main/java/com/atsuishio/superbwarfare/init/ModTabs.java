@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.init;
 
 import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.item.BatteryItem;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
@@ -93,7 +94,21 @@ public class ModTabs {
             () -> CreativeModeTab.builder()
                     .title(Component.translatable("item_group.superbwarfare.item"))
                     .icon(() -> new ItemStack(ModItems.FIRING_PARAMETERS.get()))
-                    .displayItems((param, output) -> ModItems.ITEMS.getEntries().forEach(registryObject -> output.accept(registryObject.get())))
+                    .displayItems((param, output) -> ModItems.ITEMS.getEntries().forEach(registryObject -> {
+                        // TODO container, armor plate
+//                        if (registryObject.get() == ModItems.CONTAINER.get()) {
+                        if (false) {
+//                            CONTAINER_ENTITIES.stream().map(Supplier::get).forEach(output::accept);
+                        } else {
+                            output.accept(registryObject.get());
+//                            if (registryObject.get() == ModItems.ARMOR_PLATE.get()) {
+//                                output.accept(ArmorPlate.getInfiniteInstance());
+//                            }
+                            if (registryObject.get() instanceof BatteryItem batteryItem) {
+                                output.accept(batteryItem.makeFullEnergyStack());
+                            }
+                        }
+                    }))
                     .build());
 
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> BLOCK_TAB = TABS.register("block",

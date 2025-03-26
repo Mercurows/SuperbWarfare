@@ -5,18 +5,17 @@ import net.neoforged.neoforge.capabilities.ICapabilityProvider;
 import net.neoforged.neoforge.energy.EnergyStorage;
 import net.neoforged.neoforge.energy.IEnergyStorage;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class ItemEnergyProvider implements ICapabilityProvider<ItemStack, Void, IEnergyStorage> {
-    private final ItemStack stack;
     private final EnergyStorage energyStorage;
 
-    public ItemEnergyProvider(ItemStack stack, int energyCapacity) {
-        this.stack = stack;
+    public ItemEnergyProvider(int energyCapacity) {
         this.energyStorage = new EnergyStorage(energyCapacity);
     }
 
     @Override
-    public @org.jetbrains.annotations.Nullable IEnergyStorage getCapability(@NotNull ItemStack object, Void context) {
+    public @Nullable IEnergyStorage getCapability(@NotNull ItemStack object, Void context) {
         return energyStorage;
     }
 }

@@ -5,19 +5,19 @@ package com.atsuishio.superbwarfare.network.dataslot;
  */
 public class SimpleEnergyData implements ContainerEnergyData {
 
-    private final long[] data;
+    private final int[] data;
 
     public SimpleEnergyData(int size) {
-        this.data = new long[size];
+        this.data = new int[size];
     }
 
     @Override
-    public long get(int index) {
+    public int get(int index) {
         return this.data[index];
     }
 
     @Override
-    public void set(int index, long value) {
+    public void set(int index, int value) {
         this.data[index] = value;
     }
 
