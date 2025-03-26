@@ -14,6 +14,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import org.jetbrains.annotations.NotNull;
 
 @OnlyIn(Dist.CLIENT)
 public class ReforgingTableScreen extends AbstractContainerScreen<ReforgingTableMenu> {
@@ -36,7 +37,7 @@ public class ReforgingTableScreen extends AbstractContainerScreen<ReforgingTable
     }
 
     @Override
-    public void render(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
+    public void render(@NotNull GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
         this.renderBackground(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
         super.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
 
@@ -117,7 +118,7 @@ public class ReforgingTableScreen extends AbstractContainerScreen<ReforgingTable
         }
 
         @Override
-        protected void updateWidgetNarration(NarrationElementOutput pNarrationElementOutput) {
+        protected void updateWidgetNarration(@NotNull NarrationElementOutput pNarrationElementOutput) {
 
         }
     }
@@ -164,7 +165,7 @@ public class ReforgingTableScreen extends AbstractContainerScreen<ReforgingTable
         }
 
         @Override
-        protected void updateWidgetNarration(NarrationElementOutput pNarrationElementOutput) {
+        protected void updateWidgetNarration(@NotNull NarrationElementOutput pNarrationElementOutput) {
 
         }
     }
@@ -211,8 +212,7 @@ public class ReforgingTableScreen extends AbstractContainerScreen<ReforgingTable
         }
 
         @Override
-        protected void updateWidgetNarration(NarrationElementOutput pNarrationElementOutput) {
-
+        protected void updateWidgetNarration(@NotNull NarrationElementOutput pNarrationElementOutput) {
         }
     }
 }

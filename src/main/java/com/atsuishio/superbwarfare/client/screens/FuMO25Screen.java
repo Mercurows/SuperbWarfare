@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.client.screens;
 
 import com.atsuishio.superbwarfare.ModUtils;
 import com.atsuishio.superbwarfare.block.entity.FuMO25BlockEntity;
+import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.menu.FuMO25Menu;
 import com.atsuishio.superbwarfare.tools.FormatTool;
 import com.mojang.blaze3d.platform.GlStateManager;
@@ -115,9 +116,8 @@ public class FuMO25Screen extends AbstractContainerScreen<FuMO25Menu> {
             double moveX = (entity.getX() - pos.getX()) / range * 74;
             double moveZ = (entity.getZ() - pos.getZ()) / range * 74;
 
-            // TODO preciseBlit
-//            RenderHelper.preciseBlit(guiGraphics, TEXTURE, (float) (centerX + moveX), (float) (centerY + moveZ),
-//                    233, 167, 4, 4, 358, 328);
+            RenderHelper.preciseBlit(guiGraphics, TEXTURE, (float) (centerX + moveX), (float) (centerY + moveZ),
+                    233, 167, 4, 4, 358, 328);
         }
 
         poseStack.popPose();
@@ -157,7 +157,9 @@ public class FuMO25Screen extends AbstractContainerScreen<FuMO25Menu> {
 
         if (this.currentTarget != null) {
             StringBuilder sb = new StringBuilder();
-            sb.append(currentTarget.getDisplayName().getString());
+            if (currentTarget.getDisplayName() != null) {
+                sb.append(currentTarget.getDisplayName().getString());
+            }
             if (currentTarget instanceof LivingEntity living) {
                 sb.append(" (HP: ").append(FormatTool.format1D(living.getHealth()))
                         .append("/").append(FormatTool.format1D(living.getMaxHealth())).append(")");
@@ -220,7 +222,7 @@ public class FuMO25Screen extends AbstractContainerScreen<FuMO25Menu> {
     }
 
     @Override
-    public void render(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
+    public void render(@NotNull GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
         this.renderBackground(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
         pGuiGraphics.pose().pushPose();
         super.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
@@ -229,7 +231,7 @@ public class FuMO25Screen extends AbstractContainerScreen<FuMO25Menu> {
     }
 
     @Override
-    protected void renderTooltip(GuiGraphics pGuiGraphics, int pX, int pY) {
+    protected void renderTooltip(@NotNull GuiGraphics pGuiGraphics, int pX, int pY) {
         super.renderTooltip(pGuiGraphics, pX, pY);
 
         int i = (this.width - this.imageWidth) / 2;
@@ -246,7 +248,7 @@ public class FuMO25Screen extends AbstractContainerScreen<FuMO25Menu> {
 
     // 本方法留空
     @Override
-    protected void renderLabels(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY) {
+    protected void renderLabels(@NotNull GuiGraphics pGuiGraphics, int pMouseX, int pMouseY) {
     }
 
     @Override
@@ -295,7 +297,7 @@ public class FuMO25Screen extends AbstractContainerScreen<FuMO25Menu> {
         }
 
         @Override
-        protected void renderWidget(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
+        protected void renderWidget(@NotNull GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
             if (FuMO25Screen.this.menu.getFuncType() == 3 && FuMO25Screen.this.menu.getSlot(0).getItem().isEmpty()) {
                 pGuiGraphics.blit(TEXTURE, this.getX(), this.getY(), 148, this.isHovered() ? 311 : 295, 29, 15, 358, 328);
             } else {
@@ -304,7 +306,7 @@ public class FuMO25Screen extends AbstractContainerScreen<FuMO25Menu> {
         }
 
         @Override
-        protected void updateWidgetNarration(NarrationElementOutput pNarrationElementOutput) {
+        protected void updateWidgetNarration(@NotNull NarrationElementOutput pNarrationElementOutput) {
         }
     }
 
