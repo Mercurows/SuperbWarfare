@@ -38,7 +38,7 @@ public class ModUtils {
         container.registerConfig(ModConfig.Type.SERVER, ServerConfig.init());
 
         ModPerks.register(bus);
-//        ModSerializers.REGISTRY.register(bus);
+        ModSerializers.REGISTRY.register(bus);
         ModSounds.REGISTRY.register(bus);
         ModBlocks.REGISTRY.register(bus);
         ModBlockEntities.REGISTRY.register(bus);
@@ -46,12 +46,12 @@ public class ModUtils {
         ModDataComponents.register(bus);
         ModTabs.TABS.register(bus);
         ModEntities.REGISTRY.register(bus);
-//        ModMobEffects.REGISTRY.register(bus);
+        ModMobEffects.REGISTRY.register(bus);
         ModParticleTypes.REGISTRY.register(bus);
-//        ModPotion.POTIONS.register(bus);
+        ModPotion.POTIONS.register(bus);
         ModMenuTypes.REGISTRY.register(bus);
         ModVillagers.register(bus);
-//        ModRecipes.RECIPE_SERIALIZERS.register(bus);
+        ModRecipes.RECIPE_SERIALIZERS.register(bus);
 
 //        bus.addListener(this::onCommonSetup);
 //        bus.addListener(this::onClientSetup);
