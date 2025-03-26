@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.tools;
 
+import com.atsuishio.superbwarfare.init.ModItems;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -57,18 +58,18 @@ public class InventoryTool {
      *
      * @param itemList 物品列表
      */
-//    public static boolean hasCreativeAmmoBox(NonNullList<ItemStack> itemList) {
-//        return countItem(itemList, ModItems.CREATIVE_AMMO_BOX.get()) > 0;
-//    }
-//
-//    /**
-//     * 判断玩家背包内是否有创造模式弹药盒
-//     *
-//     * @param player 玩家
-//     */
-//    public static boolean hasCreativeAmmoBox(Player player) {
-//        return hasItem(player, ModItems.CREATIVE_AMMO_BOX.get());
-//    }
+    public static boolean hasCreativeAmmoBox(NonNullList<ItemStack> itemList) {
+        return countItem(itemList, ModItems.CREATIVE_AMMO_BOX.get()) > 0;
+    }
+
+    /**
+     * 判断玩家背包内是否有创造模式弹药盒
+     *
+     * @param player 玩家
+     */
+    public static boolean hasCreativeAmmoBox(Player player) {
+        return hasItem(player, ModItems.CREATIVE_AMMO_BOX.get());
+    }
 
     /**
      * 消耗物品列表内指定物品

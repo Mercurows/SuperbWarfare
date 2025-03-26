@@ -13,9 +13,11 @@ public class NetworkRegistry {
         registrar.playToClient(ClientMotionSyncMessage.TYPE, ClientMotionSyncMessage.STREAM_CODEC, ClientMotionSyncMessage::handler);
         registrar.playToClient(ClientIndicatorMessage.TYPE, ClientIndicatorMessage.STREAM_CODEC, ClientIndicatorMessage::handler);
         registrar.playToClient(PlayerGunKillMessage.TYPE, PlayerGunKillMessage.STREAM_CODEC, PlayerGunKillMessage::handler);
+        registrar.playToClient(GunsDataMessage.TYPE, GunsDataMessage.STREAM_CODEC, GunsDataMessage::handler);
 
         registrar.playToServer(LaserShootMessage.TYPE, LaserShootMessage.STREAM_CODEC, LaserShootMessage::handler);
         registrar.playToServer(BreathMessage.TYPE, BreathMessage.STREAM_CODEC, BreathMessage::handler);
+        registrar.playToServer(ShootMessage.TYPE, ShootMessage.STREAM_CODEC, ShootMessage::handler);
 
     }
 }

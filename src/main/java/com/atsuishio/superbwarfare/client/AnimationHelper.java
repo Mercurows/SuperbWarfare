@@ -1,0 +1,73 @@
+package com.atsuishio.superbwarfare.client;
+
+import com.atsuishio.superbwarfare.event.ClientEventHandler;
+import com.atsuishio.superbwarfare.tools.GunsTool;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.util.FastColor;
+import net.minecraft.util.Mth;
+import net.minecraft.world.item.ItemStack;
+import software.bernie.geckolib.animation.AnimationProcessor;
+import software.bernie.geckolib.cache.object.GeoBone;
+
+public class AnimationHelper {
+
+    public static void renderPartOverBone(ModelPart model, GeoBone bone, PoseStack stack, VertexConsumer buffer, int packedLightIn, int packedOverlayIn, float alpha) {
+        renderPartOverBone(model, bone, stack, buffer, packedLightIn, packedOverlayIn, 1.0f, 1.0f, 1.0f, alpha);
+    }
+
+    public static void renderPartOverBone(ModelPart model, GeoBone bone, PoseStack stack, VertexConsumer buffer, int packedLightIn, int packedOverlayIn, float r, float g, float b, float a) {
+        setupModelFromBone(model, bone);
+        var color = FastColor.ARGB32.color((int) (a * 255), (int) (r * 255), (int) (g * 255), (int) (b * 255));
+        model.render(stack, buffer, packedLightIn, packedOverlayIn, color);
+    }
+
+    public static void setupModelFromBone(ModelPart model, GeoBone bone) {
+        model.setPos(bone.getPivotX(), bone.getPivotY(), bone.getPivotZ());
+        model.xRot = 0.0f;
+        model.yRot = 0.0f;
+        model.zRot = 0.0f;
+    }
+
+    public static void renderPartOverBone2(ModelPart model, GeoBone bone, PoseStack stack, VertexConsumer buffer, int packedLightIn, int packedOverlayIn, float alpha) {
+        renderPartOverBone2(model, bone, stack, buffer, packedLightIn, packedOverlayIn, 1.0f, 1.0f, 1.0f, alpha);
+    }
+
+    public static void renderPartOverBone2(ModelPart model, GeoBone bone, PoseStack stack, VertexConsumer buffer, int packedLightIn, int packedOverlayIn, float r, float g, float b, float a) {
+        setupModelFromBone2(model, bone);
+        var color = FastColor.ARGB32.color((int) (a * 255), (int) (r * 255), (int) (g * 255), (int) (b * 255));
+        model.render(stack, buffer, packedLightIn, packedOverlayIn, color);
+    }
+
+    public static void setupModelFromBone2(ModelPart model, GeoBone bone) {
+        model.setPos(bone.getPivotX(), bone.getPivotY() + 7, bone.getPivotZ());
+        model.xRot = 0.0f;
+        model.yRot = 180 * Mth.DEG_TO_RAD;
+        model.zRot = 180 * Mth.DEG_TO_RAD;
+    }
+
+    public static void handleShellsAnimation(AnimationProcessor<?> animationProcessor, float x, float y) {
+        GeoBone shell1 = animationProcessor.getBone("shell1");
+        GeoBone shell2 = animationProcessor.getBone("shell2");
+        GeoBone shell3 = animationProcessor.getBone("shell3");
+        GeoBone shell4 = animationProcessor.getBone("shell4");
+        GeoBone shell5 = animationProcessor.getBone("shell5");
+
+        ClientEventHandler.handleShells(x, y, shell1, shell2, shell3, shell4, shell5);
+    }
+
+    public static void handleReloadShakeAnimation(ItemStack stack, GeoBone main, GeoBone camera, float roll, float pitch) {
+        if (GunsTool.getGunIntTag(stack, "ReloadTime") > 0) {
+            main.setRotX(roll * main.getRotX());
+            main.setRotY(roll * main.getRotY());
+            main.setRotZ(roll * main.getRotZ());
+            main.setPosX(pitch * main.getPosX());
+            main.setPosY(pitch * main.getPosY());
+            main.setPosZ(pitch * main.getPosZ());
+            camera.setRotX(roll * camera.getRotX());
+            camera.setRotY(roll * camera.getRotY());
+            camera.setRotZ(roll * camera.getRotZ());
+        }
+    }
+}

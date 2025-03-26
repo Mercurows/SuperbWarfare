@@ -1,0 +1,17 @@
+{
+  "Spread": 3.5,
+  "RecoilX": 0.006,
+  "RecoilY": 0.018,
+  "Damage": 2.5,
+  "Headshot": 1.5,
+  "Velocity": 17,
+  "Magazine": 25,
+  "ProjectileAmount": 12,
+  "Weight": 7,
+  "FireMode": 2,
+  "NormalReloadTime": 64,
+  "EmptyReloadTime": 85,
+  "BypassesArmor": 0.05,
+  "SoundRadius": 18,
+  "RPM": 360
+}

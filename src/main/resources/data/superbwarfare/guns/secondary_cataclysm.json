@@ -1,0 +1,15 @@
+{
+  "Spread": 1.5,
+  "RecoilX": 0.004,
+  "RecoilY": 0.023,
+  "Damage": 30,
+  "ExplosionDamage": 50,
+  "ExplosionRadius": 5,
+  "Velocity": 3.75,
+  "Magazine": 8,
+  "Weight": 9,
+  "PrepareLoadTime": 31,
+  "IterativeTime": 20,
+  "FinishTime": 19,
+  "SoundRadius": 8
+}

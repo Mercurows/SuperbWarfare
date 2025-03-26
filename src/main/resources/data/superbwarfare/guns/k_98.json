@@ -1,0 +1,18 @@
+{
+  "Spread": 5,
+  "RecoilX": 0.002,
+  "RecoilY": 0.063,
+  "Damage": 35,
+  "Headshot": 3,
+  "Velocity": 37.75,
+  "Magazine": 5,
+  "BoltActionTime": 22,
+  "Weight": 5,
+  "FireMode": 0,
+  "EmptyReloadTime": 59,
+  "PrepareTime": 29,
+  "IterativeTime": 11,
+  "FinishTime": 18,
+  "BypassesArmor": 0.5,
+  "SoundRadius": 18
+}

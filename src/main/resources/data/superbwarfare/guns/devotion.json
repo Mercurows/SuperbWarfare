@@ -1,0 +1,17 @@
+{
+  "CustomZoom": 0.75,
+  "Spread": 5,
+  "RecoilX": 0.0018,
+  "RecoilY": 0.01,
+  "Damage": 9.5,
+  "Headshot": 2,
+  "Velocity": 40,
+  "Magazine": 55,
+  "Weight": 6,
+  "FireMode": 2,
+  "NormalReloadTime": 73,
+  "EmptyReloadTime": 95,
+  "BypassesArmor": 0.25,
+  "SoundRadius": 13,
+  "RPM": 400
+}

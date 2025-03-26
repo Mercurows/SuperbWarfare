@@ -1,0 +1,10 @@
+{
+  "CustomZoom": 1.75,
+  "Spread": 5,
+  "Magazine": 1,
+  "Weight": 10,
+  "EmptyReloadTime": 78,
+  "Damage": 700,
+  "ExplosionDamage": 60,
+  "ExplosionRadius": 5
+}

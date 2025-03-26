@@ -7,6 +7,7 @@ import com.atsuishio.superbwarfare.item.common.CannonShellItem;
 import com.atsuishio.superbwarfare.item.common.MaterialPack;
 import com.atsuishio.superbwarfare.item.common.ammo.*;
 import com.atsuishio.superbwarfare.item.common.ammo.box.AmmoBox;
+import com.atsuishio.superbwarfare.item.gun.smg.VectorItem;
 import com.atsuishio.superbwarfare.tools.AmmoType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -34,7 +35,7 @@ public class ModItems {
 //    public static final DeferredHolder<Item, Item> M_1911 = GUNS.register("m_1911", M1911Item::new);
 //    public static final DeferredHolder<Item, Item> HOMEMADE_SHOTGUN = GUNS.register("homemade_shotgun", HomemadeShotgunItem::new);
 //    public static final DeferredHolder<Item, Item> TRACHELIUM = GUNS.register("trachelium", Trachelium::new);
-//    public static final DeferredHolder<Item, Item> VECTOR = GUNS.register("vector", VectorItem::new);
+public static final DeferredHolder<Item, VectorItem> VECTOR = GUNS.register("vector", VectorItem::new);
 //    public static final DeferredHolder<Item, Item> AK_47 = GUNS.register("ak_47", AK47Item::new);
 //    public static final DeferredHolder<Item, Item> AK_12 = GUNS.register("ak_12", AK12Item::new);
 //    public static final DeferredHolder<Item, Item> SKS = GUNS.register("sks", SksItem::new);

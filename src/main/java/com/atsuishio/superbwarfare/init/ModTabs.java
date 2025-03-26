@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.init;
 
 import com.atsuishio.superbwarfare.ModUtils;
 import com.atsuishio.superbwarfare.item.BatteryItem;
+import com.atsuishio.superbwarfare.item.gun.smg.VectorItem;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
@@ -18,12 +19,13 @@ public class ModTabs {
 
     public static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, ModUtils.MODID);
 
-    //    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> GUN_TAB = TABS.register("guns",
-//            () -> CreativeModeTab.builder()
-//                    .title(Component.translatable("item_group.superbwarfare.guns"))
+    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> GUN_TAB = TABS.register("guns",
+            () -> CreativeModeTab.builder()
+                    .title(Component.translatable("item_group.superbwarfare.guns"))
 //                    .icon(() -> new ItemStack(ModItems.TASER.get()))
-//                    .displayItems(
-//                            (param, output) -> {
+                    .icon(() -> new ItemStack(ModItems.VECTOR.get()))
+                    .displayItems(
+                            (param, output) -> {
 //                                output.accept(TaserItem.getGunInstance());
 //                                output.accept(Glock17Item.getGunInstance());
 //                                output.accept(Glock18Item.getGunInstance());
@@ -31,7 +33,7 @@ public class ModTabs {
 //                                output.accept(Mp443Item.getGunInstance());
 //                                output.accept(HomemadeShotgunItem.getGunInstance());
 //                                output.accept(Trachelium.getGunInstance());
-//                                output.accept(VectorItem.getGunInstance());
+                                output.accept(VectorItem.getGunInstance());
 //                                output.accept(SksItem.getGunInstance());
 //                                output.accept(AK47Item.getGunInstance());
 //                                output.accept(AK12Item.getGunInstance());
@@ -58,10 +60,10 @@ public class ModTabs {
 //                                output.accept(SecondaryCataclysm.getGunInstance());
 //                                output.accept(RpgItem.getGunInstance());
 //                                output.accept(JavelinItem.getGunInstance());
-//                            }
-//                    )
-//                    .build());
-//
+                            }
+                    )
+                    .build());
+    //
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> PERK_TAB = TABS.register("perk",
             () -> CreativeModeTab.builder()
                     .title(Component.translatable("item_group.superbwarfare.perk"))
