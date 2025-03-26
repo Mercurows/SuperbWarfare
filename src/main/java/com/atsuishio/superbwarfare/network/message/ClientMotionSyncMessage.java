@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 
 public record ClientMotionSyncMessage(int id, float x, float y, float z) implements CustomPacketPayload {
 
-    public static final CustomPacketPayload.Type<ClientMotionSyncMessage> TYPE = new CustomPacketPayload.Type<>(ModUtils.loc("breath"));
+    public static final CustomPacketPayload.Type<ClientMotionSyncMessage> TYPE = new CustomPacketPayload.Type<>(ModUtils.loc("client_motion_sync"));
 
     public static final StreamCodec<ByteBuf, ClientMotionSyncMessage> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.INT,
