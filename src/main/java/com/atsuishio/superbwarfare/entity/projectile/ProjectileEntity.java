@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.block.BarbedWireBlock;
 import com.atsuishio.superbwarfare.config.server.MiscConfig;
 import com.atsuishio.superbwarfare.config.server.ProjectileConfig;
 import com.atsuishio.superbwarfare.entity.ICustomKnockback;
+import com.atsuishio.superbwarfare.entity.TargetEntity;
 import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.network.message.ClientIndicatorMessage;
 import com.atsuishio.superbwarfare.network.message.ClientMotionSyncMessage;
@@ -128,8 +129,7 @@ public class ProjectileEntity extends Projectile implements IEntityWithComplexSp
             if (entity.equals(this.shooter)) continue;
             if (entity.equals(this.shooter.getVehicle())) continue;
 
-            // TODO target entity
-//            if (entity instanceof TargetEntity && entity.getEntityData().get(TargetEntity.DOWN_TIME) > 0) continue;
+            if (entity instanceof TargetEntity && entity.getEntityData().get(TargetEntity.DOWN_TIME) > 0) continue;
 
             EntityResult result = this.getHitResult(entity, startVec, endVec);
             if (result == null) continue;
@@ -225,7 +225,7 @@ public class ProjectileEntity extends Projectile implements IEntityWithComplexSp
     }
 
     @Override
-    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+    protected void defineSynchedData(SynchedEntityData.@NotNull Builder builder) {
         builder.define(COLOR_R, 1.0f)
                 .define(COLOR_G, 222 / 255f)
                 .define(COLOR_B, 39 / 255f);
@@ -267,10 +267,9 @@ public class ProjectileEntity extends Projectile implements IEntityWithComplexSp
                 if (!this.beast) {
                     this.bypassArmorRate -= 0.2F;
                     if (this.bypassArmorRate < 0.8F) {
-                        // TODO target
-//                        if (result != null && !(((EntityHitResult) result).getEntity() instanceof TargetEntity target && target.getEntityData().get(TargetEntity.DOWN_TIME) > 0)) {
-//                            break;
-//                        }
+                        if (result != null && !(((EntityHitResult) result).getEntity() instanceof TargetEntity target && target.getEntityData().get(TargetEntity.DOWN_TIME) > 0)) {
+                            break;
+                        }
                     }
                 }
             }
@@ -424,7 +423,7 @@ public class ProjectileEntity extends Projectile implements IEntityWithComplexSp
         if (!this.shooter.level().isClientSide() && this.shooter instanceof ServerPlayer serverPlayer) {
             var holder = score == 10 ? Holder.direct(ModSounds.HEADSHOT.get()) : Holder.direct(ModSounds.INDICATION.get());
             serverPlayer.connection.send(new ClientboundSoundPacket(holder, SoundSource.PLAYERS, player.getX(), player.getY(), player.getZ(), 1f, 1f, player.level().random.nextLong()));
-            PacketDistributor.sendToPlayer(player, new ClientIndicatorMessage(score == 10 ? 1 : 0, 5));
+            PacketDistributor.sendToPlayer(serverPlayer, new ClientIndicatorMessage(score == 10 ? 1 : 0, 5));
         }
 
         ItemStack stack = player.getOffhandItem();
@@ -482,9 +481,7 @@ public class ProjectileEntity extends Projectile implements IEntityWithComplexSp
 
         if (beast && entity instanceof LivingEntity living) {
             if (living.isDeadOrDying()) return;
-
-            // TODO target entity
-            // if (living instanceof TargetEntity) return;
+            if (living instanceof TargetEntity) return;
 
             if (this.shooter instanceof ServerPlayer player) {
                 PacketDistributor.sendToPlayer(player, new ClientIndicatorMessage(0, 5));

@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.init;
 
 import com.atsuishio.superbwarfare.ModUtils;
 import com.atsuishio.superbwarfare.client.renderer.entity.LaserEntityRenderer;
+import com.atsuishio.superbwarfare.client.renderer.entity.TargetRenderer;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -18,7 +19,7 @@ public class ModEntityRenderers {
 //        event.registerEntityRenderer(ModEntities.C_4.get(), C4Renderer::new);
 //        event.registerEntityRenderer(ModEntities.TASER_BULLET.get(), TaserBulletProjectileRenderer::new);
 //        event.registerEntityRenderer(ModEntities.GUN_GRENADE.get(), GunGrenadeRenderer::new);
-//        event.registerEntityRenderer(ModEntities.TARGET.get(), TargetRenderer::new);
+        event.registerEntityRenderer(ModEntities.TARGET.get(), TargetRenderer::new);
 //        event.registerEntityRenderer(ModEntities.RPG_ROCKET.get(), RpgRocketRenderer::new);
 //        event.registerEntityRenderer(ModEntities.HELI_ROCKET.get(), HeliRocketRenderer::new);
 //        event.registerEntityRenderer(ModEntities.MORTAR_SHELL.get(), MortarShellRenderer::new);

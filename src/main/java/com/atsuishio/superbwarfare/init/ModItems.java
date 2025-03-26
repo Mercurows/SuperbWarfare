@@ -115,7 +115,7 @@ public class ModItems {
 //    public static final DeferredHolder<Item, Item> MONITOR = ITEMS.register("monitor", Monitor::new);
 //
 //    public static final DeferredHolder<Item, Item> DETONATOR = ITEMS.register("detonator", Detonator::new);
-//    public static final DeferredHolder<Item, Item> TARGET_DEPLOYER = ITEMS.register("target_deployer", TargetDeployer::new);
+    public static final DeferredHolder<Item, Item> TARGET_DEPLOYER = ITEMS.register("target_deployer", TargetDeployer::new);
 //    public static final DeferredHolder<Item, Item> KNIFE = ITEMS.register("knife", Knife::new);
 //    public static final DeferredHolder<Item, Item> HAMMER = ITEMS.register("hammer", Hammer::new);
     public static final DeferredHolder<Item, Item> CROWBAR = ITEMS.register("crowbar", Crowbar::new);

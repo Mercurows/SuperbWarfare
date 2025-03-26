@@ -13,6 +13,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.NotNull;
 
@@ -49,14 +50,11 @@ public record LaserShootMessage(
             if (headshot) {
                 entity.hurt(ModDamageTypes.causeLaserHeadshotDamage(level.registryAccess(), player, player), (float) (2 * damage));
                 player.level().playSound(null, player.blockPosition(), ModSounds.HEADSHOT.get(), SoundSource.VOICE, 0.1f, 1);
-
-                // TODO indicator
-//                ModUtils.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> player), new ClientIndicatorMessage(1, 5));
+                PacketDistributor.sendToPlayer(player, new ClientIndicatorMessage(1, 5));
             } else {
                 entity.hurt(ModDamageTypes.causeLaserDamage(level.registryAccess(), player, player), (float) damage);
                 player.level().playSound(null, player.blockPosition(), ModSounds.INDICATION.get(), SoundSource.VOICE, 0.1f, 1);
-
-                //                ModUtils.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> player), new ClientIndicatorMessage(0, 5));
+                PacketDistributor.sendToPlayer(player, new ClientIndicatorMessage(0, 5));
             }
             entity.invulnerableTime = 0;
         }
