@@ -1,0 +1,39 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:air"
+        }
+      ],
+      "functions": [
+        {
+          "function": "minecraft:copy_custom_data",
+          "ops": [
+            {
+              "op": "replace",
+              "source": "Entity",
+              "target": "BlockEntityTag.Entity"
+            },
+            {
+              "op": "replace",
+              "source": "EntityType",
+              "target": "BlockEntityTag.EntityType"
+            }
+          ],
+          "source": "block_entity"
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "superbwarfare:blocks/container"
+}

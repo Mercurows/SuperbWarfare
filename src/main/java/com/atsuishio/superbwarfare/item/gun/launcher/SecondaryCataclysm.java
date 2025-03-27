@@ -44,7 +44,7 @@ public class SecondaryCataclysm extends GunItem implements GeoItem, SpecialFireW
     public SecondaryCataclysm() {
         super(new Properties().stacksTo(1).fireResistant()
                 // TODO rarity
-//                .rarity(RarityTool.LEGENDARY)
+//                .rarity(ModRarity.getLegendary())
         );
     }
 

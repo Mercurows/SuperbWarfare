@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.entity.projectile;
 
 import com.atsuishio.superbwarfare.block.BarbedWireBlock;
+import com.atsuishio.superbwarfare.component.ModDataComponents;
 import com.atsuishio.superbwarfare.config.server.MiscConfig;
 import com.atsuishio.superbwarfare.config.server.ProjectileConfig;
 import com.atsuishio.superbwarfare.entity.ICustomKnockback;
@@ -10,6 +11,7 @@ import com.atsuishio.superbwarfare.network.message.ClientIndicatorMessage;
 import com.atsuishio.superbwarfare.network.message.ClientMotionSyncMessage;
 import com.atsuishio.superbwarfare.network.message.PlayerGunKillMessage;
 import com.atsuishio.superbwarfare.tools.*;
+import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
@@ -57,9 +59,7 @@ import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -428,31 +428,21 @@ public class ProjectileEntity extends Projectile implements IEntityWithComplexSp
 
         ItemStack stack = player.getOffhandItem();
 
-        // TODO transcript
-//        if (stack.is(ModItems.TRANSCRIPT.get())) {
-//            final int size = 10;
-//
-//            ListTag tags = NBTTool.getOrCreateTag(stack).getList(Transcript.TAG_SCORES, Tag.TAG_COMPOUND);
-//
-//            Queue<CompoundTag> queue = new ArrayDeque<>();
-//            for (int i = 0; i < tags.size(); i++) {
-//                queue.add(tags.getCompound(i));
-//            }
-//
-//            CompoundTag tag = new CompoundTag();
-//            tag.putInt("Score", score);
-//            tag.putDouble("Distance", distance);
-//            queue.offer(tag);
-//
-//            while (queue.size() > size) {
-//                queue.poll();
-//            }
-//
-//            ListTag newTags = new ListTag();
-//            newTags.addAll(queue);
-//
-//            NBTTool.getOrCreateTag(stack).put(Transcript.TAG_SCORES, newTags);
-//        }
+        if (stack.is(ModItems.TRANSCRIPT.get())) {
+            final int size = 10;
+
+            var scores = stack.get(ModDataComponents.TRANSCRIPT_SCORE);
+            if (scores == null) scores = List.of();
+
+            Queue<Pair<Integer, Double>> queue = new ArrayDeque<>(scores);
+            queue.offer(new Pair<>(score, distance));
+
+            while (queue.size() > size) {
+                queue.poll();
+            }
+
+            stack.set(ModDataComponents.TRANSCRIPT_SCORE, List.copyOf(queue));
+        }
     }
 
     protected void onHitBlock(Vec3 location) {

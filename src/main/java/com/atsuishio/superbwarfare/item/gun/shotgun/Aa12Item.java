@@ -38,7 +38,7 @@ public class Aa12Item extends GunItem implements GeoItem {
     public Aa12Item() {
         super(new Properties().stacksTo(1)
                 // TODO rarity
-//                .rarity(RarityTool.LEGENDARY)
+//                .rarity(ModRarity.getLegendary())
         );
     }
 

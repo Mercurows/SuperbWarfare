@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.component;
 import com.atsuishio.superbwarfare.ModUtils;
 import com.atsuishio.superbwarfare.item.common.ammo.box.AmmoBoxInfo;
 import com.atsuishio.superbwarfare.tools.AmmoType;
+import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponentType;
@@ -12,6 +13,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
+import java.util.List;
 import java.util.function.UnaryOperator;
 
 public class ModDataComponents {
@@ -26,6 +28,11 @@ public class ModDataComponents {
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> ENERGY = register(
             "energy",
             builder -> builder.persistent(Codec.INT)
+    );
+
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<List<Pair<Integer, Double>>>> TRANSCRIPT_SCORE = register(
+            "transcript_score",
+            builder -> builder.persistent(Codec.pair(Codec.INT, Codec.DOUBLE).listOf())
     );
 
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<AmmoBoxInfo>> AMMO_BOX_INFO = register(

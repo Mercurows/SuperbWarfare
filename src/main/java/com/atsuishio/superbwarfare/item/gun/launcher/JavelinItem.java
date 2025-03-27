@@ -53,7 +53,7 @@ public class JavelinItem extends GunItem implements GeoItem, SpecialFireWeapon {
     public JavelinItem() {
         super(new Properties().stacksTo(1)
                 // TODO rarity
-//                .rarity(RarityTool.LEGENDARY)
+//                .rarity(ModRarity.getLegendary())
         );
     }
 

@@ -4,34 +4,6 @@
     "superbwarfare:gunfire_headshot",
     "minecraft:arrow",
     "minecraft:trident",
-    "minecraft:thrown",
-    {
-      "id": "tacz:bullet",
-      "required": false
-    },
-    {
-      "id": "tacz:bullet_void",
-      "required": false
-    },
-    {
-      "id": "virtuarealcraft:rain_crystal",
-      "required": false
-    },
-    {
-      "id": "virtuarealcraft:rain_shower_butterfly",
-      "required": false
-    },
-    {
-      "id": "virtuarealcraft:sparkle_butterfly",
-      "required": false
-    },
-    {
-      "id": "dreamaticvoyage:blood_crystal",
-      "required": false
-    },
-    {
-      "id": "dreamaticvoyage:leviy_beam",
-      "required": false
-    }
+    "minecraft:thrown"
   ]
 }

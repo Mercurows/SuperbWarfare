@@ -44,7 +44,7 @@ public class SentinelItem extends GunItem implements GeoItem {
     public SentinelItem() {
         super(new Properties().stacksTo(1)
                 // todo rarity
-//                .rarity(RarityTool.LEGENDARY)
+//                .rarity(ModRarity.getLegendary())
         );
 
         this.energyCapacity = () -> 24000;

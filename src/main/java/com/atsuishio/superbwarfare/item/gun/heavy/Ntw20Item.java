@@ -36,7 +36,7 @@ public class Ntw20Item extends GunItem implements GeoItem {
     public Ntw20Item() {
         super(new Properties().stacksTo(1)
                 // TODO rarity
-//                .rarity(RarityTool.LEGENDARY)
+//                .rarity(ModRarity.getLegendary())
         );
     }
 

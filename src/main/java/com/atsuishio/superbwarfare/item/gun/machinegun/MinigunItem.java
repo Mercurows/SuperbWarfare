@@ -43,7 +43,7 @@ public class MinigunItem extends GunItem implements GeoItem {
     public MinigunItem() {
         super(new Properties().stacksTo(1)
                 // TODO rarity
-//                .rarity(RarityTool.LEGENDARY)
+//                .rarity(ModRarity.getLegendary())
         );
     }
 

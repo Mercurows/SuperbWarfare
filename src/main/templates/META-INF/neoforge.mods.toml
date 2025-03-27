@@ -9,6 +9,7 @@ displayName = "Superb Warfare"
 authors = "${mod_authors}"
 logoFile = "../../resources/logo.png"
 description = "${mod_description}"
+enumExtensions = "META-INF/enumextensions.json"
 
 [[dependencies.superbwarfare]]
 modId = "neoforge" #mandatory

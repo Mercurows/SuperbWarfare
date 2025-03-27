@@ -1,0 +1,9 @@
+{
+  "values": [
+    "#superbwarfare:blueprint/common",
+    "#superbwarfare:blueprint/rare",
+    "#superbwarfare:blueprint/epic",
+    "#superbwarfare:blueprint/legendary",
+    "#superbwarfare:blueprint/cannon"
+  ]
+}

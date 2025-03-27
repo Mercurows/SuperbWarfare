@@ -1,18 +1,6 @@
 {
   "values": [
     "superbwarfare:gunfire_absolute",
-    "superbwarfare:gunfire_headshot_absolute",
-    {
-      "id": "tacz:bullet_ignore_armor",
-      "required": false
-    },
-    {
-      "id": "tacz:bullet_void_ignore_armor",
-      "required": false
-    },
-    {
-      "id": "dreamaticvoyage:leviy_beam_absolute",
-      "required": false
-    }
+    "superbwarfare:gunfire_headshot_absolute"
   ]
 }
