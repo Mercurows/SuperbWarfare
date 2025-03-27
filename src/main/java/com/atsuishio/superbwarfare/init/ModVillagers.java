@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.init;
 
 import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.item.SmallContainerBlockItem;
 import com.google.common.collect.ImmutableSet;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.minecraft.core.Holder;
@@ -249,30 +250,8 @@ public class ModVillagers {
     public static void addWandererTrade(WandererTradesEvent event) {
         List<VillagerTrades.ItemListing> rareTrades = event.getRareTrades();
 
-        rareTrades.add(new BasicItemListing(new ItemStack(Items.EMERALD, 64),
-                new ItemStack(ModItems.HUNTING_RIFLE_BLUEPRINT.get()), 1, 0, 0.05f));
-        rareTrades.add(new BasicItemListing(new ItemStack(Items.EMERALD, 64),
-                new ItemStack(ModItems.RPG_BLUEPRINT.get()), 1, 0, 0.05f));
-        rareTrades.add(new BasicItemListing(new ItemStack(Items.EMERALD, 64),
-                new ItemStack(ModItems.HK_416_BLUEPRINT.get()), 1, 0, 0.05f));
-        rareTrades.add(new BasicItemListing(new ItemStack(Items.EMERALD, 64),
-                new ItemStack(ModItems.RPK_BLUEPRINT.get()), 1, 0, 0.05f));
-        rareTrades.add(new BasicItemListing(new ItemStack(Items.EMERALD, 64),
-                new ItemStack(ModItems.VECTOR_BLUEPRINT.get()), 1, 0, 0.05f));
-        rareTrades.add(new BasicItemListing(new ItemStack(Items.EMERALD, 64),
-                new ItemStack(ModItems.MK_14_BLUEPRINT.get()), 1, 0, 0.05f));
-        rareTrades.add(new BasicItemListing(new ItemStack(Items.EMERALD, 64),
-                new ItemStack(ModItems.M_60_BLUEPRINT.get()), 1, 0, 0.05f));
-        rareTrades.add(new BasicItemListing(new ItemStack(Items.EMERALD, 64),
-                new ItemStack(ModItems.SVD_BLUEPRINT.get()), 1, 0, 0.05f));
-        rareTrades.add(new BasicItemListing(new ItemStack(Items.EMERALD, 64),
-                new ItemStack(ModItems.M_98B_BLUEPRINT.get()), 1, 0, 0.05f));
-        rareTrades.add(new BasicItemListing(new ItemStack(Items.EMERALD, 64),
-                new ItemStack(ModItems.DEVOTION_BLUEPRINT.get()), 1, 0, 0.05f));
-        rareTrades.add(new BasicItemListing(new ItemStack(Items.EMERALD, 64),
-                new ItemStack(ModItems.QBZ_95_BLUEPRINT.get()), 1, 0, 0.05f));
-        rareTrades.add(new BasicItemListing(new ItemStack(Items.EMERALD, 64),
-                new ItemStack(ModItems.AK_12_BLUEPRINT.get()), 1, 0, 0.05f));
+        rareTrades.add(new BasicItemListing(new ItemStack(Items.EMERALD, 16),
+                SmallContainerBlockItem.createInstance(ModUtils.loc("containers/blueprints")), 10, 0, 0.05f));
     }
 
     private static Holder<Item> getItemHolder(String name) {
