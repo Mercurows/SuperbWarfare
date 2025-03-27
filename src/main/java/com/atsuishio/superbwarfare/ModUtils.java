@@ -53,6 +53,7 @@ public class ModUtils {
         ModVillagers.register(bus);
         ModRecipes.RECIPE_SERIALIZERS.register(bus);
         ModArmorMaterials.MATERIALS.register(bus);
+        ModAttributes.ATTRIBUTES.register(bus);
 
 //        bus.addListener(this::onCommonSetup);
 //        bus.addListener(this::onClientSetup);

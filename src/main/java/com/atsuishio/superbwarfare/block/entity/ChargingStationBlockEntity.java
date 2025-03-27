@@ -23,6 +23,7 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
@@ -39,6 +40,7 @@ import net.neoforged.neoforge.items.wrapper.SidedInvWrapper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 
 /**
@@ -432,4 +434,17 @@ public class ChargingStationBlockEntity extends BlockEntity implements WorldlyCo
         }
     }
 
+    @Override
+    @ParametersAreNonnullByDefault
+    public void saveToItem(ItemStack stack, HolderLookup.Provider registries) {
+        CompoundTag tag = new CompoundTag();
+        if (this.level != null) {
+            var cap = level.getCapability(Capabilities.EnergyStorage.BLOCK, this.getBlockPos(), null);
+            if (cap instanceof EnergyStorage energy) {
+                tag.put("Energy", energy.serializeNBT(registries));
+            }
+        }
+        BlockItem.setBlockEntityData(stack, this.getType(), tag);
+
+    }
 }

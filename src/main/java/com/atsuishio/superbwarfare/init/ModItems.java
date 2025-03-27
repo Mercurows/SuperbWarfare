@@ -263,8 +263,8 @@ public class ModItems {
     public static final DeferredHolder<Item, Item> BARBED_WIRE = block(ModBlocks.BARBED_WIRE);
     public static final DeferredHolder<Item, Item> DRAGON_TEETH = block(ModBlocks.DRAGON_TEETH);
     public static final DeferredHolder<Item, Item> REFORGING_TABLE = block(ModBlocks.REFORGING_TABLE);
-    public static final DeferredHolder<Item, Item> CHARGING_STATION = block(ModBlocks.CHARGING_STATION);
     public static final DeferredHolder<Item, CreativeChargingStationBlockItem> CREATIVE_CHARGING_STATION = BLOCKS.register("creative_charging_station", CreativeChargingStationBlockItem::new);
+    public static final DeferredHolder<Item, ChargingStationBlockItem> CHARGING_STATION = BLOCKS.register("charging_station", ChargingStationBlockItem::new);
     public static final DeferredHolder<Item, Item> LEAD_BLOCK = block(ModBlocks.LEAD_BLOCK);
     public static final DeferredHolder<Item, Item> STEEL_BLOCK = block(ModBlocks.STEEL_BLOCK);
     public static final DeferredHolder<Item, Item> TUNGSTEN_BLOCK = block(ModBlocks.TUNGSTEN_BLOCK);

@@ -1,0 +1,6 @@
+{
+  "parent": "superbwarfare:item/small_container",
+  "textures": {
+    "particle": "minecraft:block/orange_terracotta"
+  }
+}

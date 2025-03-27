@@ -16,6 +16,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.common.BasicItemListing;
 import net.neoforged.neoforge.event.village.VillagerTradesEvent;
+import net.neoforged.neoforge.event.village.WandererTradesEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
@@ -48,29 +49,29 @@ public class ModVillagers {
             trades.get(1).add(new BasicItemListing(new ItemStack(ModItems.TASER_BLUEPRINT.get()),
                     new ItemStack(Items.EMERALD, 2), 16, 5, 0.05f));
 
-//            trades.get(1).add(new BasicItemListing(new ItemStack(Items.EMERALD, 1),
-//                    new ItemStack(ModItems.HANDGUN_AMMO.get(), 20), 16, 1, 0.05f));
-//            trades.get(1).add(new BasicItemListing(new ItemStack(Items.EMERALD, 1),
-//                    new ItemStack(ModItems.RIFLE_AMMO.get(), 15), 16, 1, 0.05f));
-//            trades.get(1).add(new BasicItemListing(new ItemStack(Items.EMERALD, 1),
-//                    new ItemStack(ModItems.SNIPER_AMMO.get(), 8), 16, 1, 0.05f));
-//            trades.get(1).add(new BasicItemListing(new ItemStack(Items.EMERALD, 1),
-//                    new ItemStack(ModItems.SHOTGUN_AMMO.get(), 8), 16, 1, 0.05f));
-//            trades.get(1).add(new BasicItemListing(new ItemStack(Items.EMERALD, 1),
-//                    new ItemStack(ModItems.HEAVY_AMMO.get(), 6), 32, 1, 0.05f));
+            trades.get(1).add(new BasicItemListing(new ItemStack(Items.EMERALD, 1),
+                    new ItemStack(ModItems.HANDGUN_AMMO.get(), 20), 16, 1, 0.05f));
+            trades.get(1).add(new BasicItemListing(new ItemStack(Items.EMERALD, 1),
+                    new ItemStack(ModItems.RIFLE_AMMO.get(), 15), 16, 1, 0.05f));
+            trades.get(1).add(new BasicItemListing(new ItemStack(Items.EMERALD, 1),
+                    new ItemStack(ModItems.SNIPER_AMMO.get(), 8), 16, 1, 0.05f));
+            trades.get(1).add(new BasicItemListing(new ItemStack(Items.EMERALD, 1),
+                    new ItemStack(ModItems.SHOTGUN_AMMO.get(), 8), 16, 1, 0.05f));
+            trades.get(1).add(new BasicItemListing(new ItemStack(Items.EMERALD, 1),
+                    new ItemStack(ModItems.HEAVY_AMMO.get(), 6), 32, 1, 0.05f));
             trades.get(1).add(new BasicItemListing(new ItemStack(Items.EMERALD, 1),
                     new ItemStack(ModItems.SMALL_SHELL.get(), 4), 32, 1, 0.05f));
 
-//            trades.get(1).add(new BasicItemListing(new ItemStack(ModItems.HANDGUN_AMMO.get(), 40),
-//                    new ItemStack(Items.EMERALD, 1), 32, 2, 0.05f));
-//            trades.get(1).add(new BasicItemListing(new ItemStack(ModItems.RIFLE_AMMO.get(), 30),
-//                    new ItemStack(Items.EMERALD, 1), 32, 2, 0.05f));
-//            trades.get(1).add(new BasicItemListing(new ItemStack(ModItems.SNIPER_AMMO.get(), 16),
-//                    new ItemStack(Items.EMERALD, 1), 32, 2, 0.05f));
-//            trades.get(1).add(new BasicItemListing(new ItemStack(ModItems.SHOTGUN_AMMO.get(), 16),
-//                    new ItemStack(Items.EMERALD, 1), 32, 2, 0.05f));
-//            trades.get(1).add(new BasicItemListing(new ItemStack(ModItems.HEAVY_AMMO.get(), 12),
-//                    new ItemStack(Items.EMERALD, 1), 64, 2, 0.05f));
+            trades.get(1).add(new BasicItemListing(new ItemStack(ModItems.HANDGUN_AMMO.get(), 40),
+                    new ItemStack(Items.EMERALD, 1), 32, 2, 0.05f));
+            trades.get(1).add(new BasicItemListing(new ItemStack(ModItems.RIFLE_AMMO.get(), 30),
+                    new ItemStack(Items.EMERALD, 1), 32, 2, 0.05f));
+            trades.get(1).add(new BasicItemListing(new ItemStack(ModItems.SNIPER_AMMO.get(), 16),
+                    new ItemStack(Items.EMERALD, 1), 32, 2, 0.05f));
+            trades.get(1).add(new BasicItemListing(new ItemStack(ModItems.SHOTGUN_AMMO.get(), 16),
+                    new ItemStack(Items.EMERALD, 1), 32, 2, 0.05f));
+            trades.get(1).add(new BasicItemListing(new ItemStack(ModItems.HEAVY_AMMO.get(), 12),
+                    new ItemStack(Items.EMERALD, 1), 64, 2, 0.05f));
             trades.get(1).add(new BasicItemListing(new ItemStack(ModItems.SMALL_SHELL.get(), 8),
                     new ItemStack(Items.EMERALD, 1), 64, 2, 0.05f));
 
@@ -96,23 +97,23 @@ public class ModVillagers {
                     new ItemStack(ModItems.TASER_BLUEPRINT.get()), 8, 15, 0.05f));
 
             // 等级 3 交易
-//            trades.get(3).add(new BasicItemListing(new ItemStack(Items.EMERALD, 3),
-//                    new ItemStack(ModItems.HANDGUN_AMMO_BOX.get(), 2), 8, 5, 0.05f));
-//            trades.get(3).add(new BasicItemListing(new ItemStack(Items.EMERALD, 2),
-//                    new ItemStack(ModItems.RIFLE_AMMO_BOX.get(), 1), 8, 5, 0.05f));
-//            trades.get(3).add(new BasicItemListing(new ItemStack(Items.EMERALD, 3),
-//                    new ItemStack(ModItems.SNIPER_AMMO_BOX.get(), 1), 8, 5, 0.05f));
-//            trades.get(3).add(new BasicItemListing(new ItemStack(Items.EMERALD, 3),
-//                    new ItemStack(ModItems.SHOTGUN_AMMO_BOX.get(), 1), 8, 5, 0.05f));
+            trades.get(3).add(new BasicItemListing(new ItemStack(Items.EMERALD, 3),
+                    new ItemStack(ModItems.HANDGUN_AMMO_BOX.get(), 2), 8, 5, 0.05f));
+            trades.get(3).add(new BasicItemListing(new ItemStack(Items.EMERALD, 2),
+                    new ItemStack(ModItems.RIFLE_AMMO_BOX.get(), 1), 8, 5, 0.05f));
+            trades.get(3).add(new BasicItemListing(new ItemStack(Items.EMERALD, 3),
+                    new ItemStack(ModItems.SNIPER_AMMO_BOX.get(), 1), 8, 5, 0.05f));
+            trades.get(3).add(new BasicItemListing(new ItemStack(Items.EMERALD, 3),
+                    new ItemStack(ModItems.SHOTGUN_AMMO_BOX.get(), 1), 8, 5, 0.05f));
 
-//            trades.get(3).add(new BasicItemListing(new ItemStack(ModItems.HANDGUN_AMMO_BOX.get(), 4),
-//                    new ItemStack(Items.EMERALD, 3), 16, 5, 0.05f));
-//            trades.get(3).add(new BasicItemListing(new ItemStack(ModItems.RIFLE_AMMO_BOX.get(), 1),
-//                    new ItemStack(Items.EMERALD, 1), 16, 5, 0.05f));
-//            trades.get(3).add(new BasicItemListing(new ItemStack(ModItems.SNIPER_AMMO_BOX.get(), 2),
-//                    new ItemStack(Items.EMERALD, 3), 16, 5, 0.05f));
-//            trades.get(3).add(new BasicItemListing(new ItemStack(ModItems.SHOTGUN_AMMO_BOX.get(), 2),
-//                    new ItemStack(Items.EMERALD, 3), 16, 5, 0.05f));
+            trades.get(3).add(new BasicItemListing(new ItemStack(ModItems.HANDGUN_AMMO_BOX.get(), 4),
+                    new ItemStack(Items.EMERALD, 3), 16, 5, 0.05f));
+            trades.get(3).add(new BasicItemListing(new ItemStack(ModItems.RIFLE_AMMO_BOX.get(), 1),
+                    new ItemStack(Items.EMERALD, 1), 16, 5, 0.05f));
+            trades.get(3).add(new BasicItemListing(new ItemStack(ModItems.SNIPER_AMMO_BOX.get(), 2),
+                    new ItemStack(Items.EMERALD, 3), 16, 5, 0.05f));
+            trades.get(3).add(new BasicItemListing(new ItemStack(ModItems.SHOTGUN_AMMO_BOX.get(), 2),
+                    new ItemStack(Items.EMERALD, 3), 16, 5, 0.05f));
 
             trades.get(3).add(new BasicItemListing(new ItemStack(Items.EMERALD, 16),
                     new ItemStack(ModItems.CEMENTED_CARBIDE_BARREL.get()), 12, 10, 0.05f));
@@ -143,7 +144,7 @@ public class ModVillagers {
             // 等级 4 交易
             trades.get(4).add(new BasicItemListing(new ItemStack(Items.EMERALD, 2),
                     new ItemStack(ModItems.GRENADE_40MM.get(), 1), 16, 5, 0.05f));
-//            trades.get(4).add(new BasicItemListing(new ItemStack(Items.EMERALD, 2)
+//            trades.get(4).add(new BasicItemListing(new ItemStack(Items.EMERALD, 2),
 //                    new ItemStack(ModItems.HAND_GRENADE.get(), 1), 16, 5, 0.05f));
 //            trades.get(4).add(new BasicItemListing(new ItemStack(Items.EMERALD, 2),
 //                    new ItemStack(ModItems.RGO_GRENADE.get(), 1), 16, 5, 0.05f));
@@ -153,11 +154,12 @@ public class ModVillagers {
 //                    new ItemStack(ModItems.CLAYMORE_MINE.get(), 1), 16, 5, 0.05f));
 //            trades.get(4).add(new BasicItemListing(new ItemStack(Items.EMERALD, 4),
 //                    new ItemStack(ModItems.C4_BOMB.get(), 1), 16, 5, 0.05f));
-//            trades.get(4).add(new BasicItemListing(new ItemStack(Items.EMERALD, 4),
-//                    new ItemStack(ModItems.ROCKET.get(), 1), 16, 5, 0.05f));
+            trades.get(4).add(new BasicItemListing(new ItemStack(Items.EMERALD, 4),
+                    new ItemStack(ModItems.ROCKET.get(), 1), 16, 5, 0.05f));
 
             trades.get(4).add(new BasicItemListing(new ItemStack(ModItems.GRENADE_40MM.get(), 1),
                     new ItemStack(Items.EMERALD, 1), 32, 5, 0.05f));
+            // TODO grenade, shell, claymore, c4
 //            trades.get(4).add(new BasicItemListing(new ItemStack(ModItems.HAND_GRENADE.get(), 1),
 //                    new ItemStack(Items.EMERALD, 1), 32, 5, 0.05f));
 //            trades.get(4).add(new BasicItemListing(new ItemStack(ModItems.RGO_GRENADE.get(), 1),
@@ -168,8 +170,8 @@ public class ModVillagers {
 //                    new ItemStack(Items.EMERALD, 2), 32, 5, 0.05f));
 //            trades.get(4).add(new BasicItemListing(new ItemStack(ModItems.C4_BOMB.get(), 1),
 //                    new ItemStack(Items.EMERALD, 2), 32, 5, 0.05f));
-//            trades.get(4).add(new BasicItemListing(new ItemStack(ModItems.ROCKET.get(), 1),
-//                    new ItemStack(Items.EMERALD, 2), 32, 5, 0.05f));
+            trades.get(4).add(new BasicItemListing(new ItemStack(ModItems.ROCKET.get(), 1),
+                    new ItemStack(Items.EMERALD, 2), 32, 5, 0.05f));
 
             trades.get(4).add(new BasicItemListing(new ItemStack(Items.EMERALD, 22),
                     new ItemStack(getItemHolder("poisonous_bullet"), 1), 4, 10, 0.05f));
@@ -223,10 +225,10 @@ public class ModVillagers {
             trades.get(5).add(new BasicItemListing(new ItemStack(Items.EMERALD, 64),
                     new ItemStack(ModItems.AK_12_BLUEPRINT.get()), 10, 30, 0.05f));
 
-//            trades.get(5).add(new BasicItemListing(new ItemStack(Items.EMERALD, 16),
-//                    new ItemStack(ModItems.HE_5_INCHES.get(), 1), 8, 10, 0.05f));
-//            trades.get(5).add(new BasicItemListing(new ItemStack(Items.EMERALD, 14),
-//                    new ItemStack(ModItems.AP_5_INCHES.get(), 1), 8, 10, 0.05f));
+            trades.get(5).add(new BasicItemListing(new ItemStack(Items.EMERALD, 16),
+                    new ItemStack(ModItems.HE_5_INCHES.get(), 1), 8, 10, 0.05f));
+            trades.get(5).add(new BasicItemListing(new ItemStack(Items.EMERALD, 14),
+                    new ItemStack(ModItems.AP_5_INCHES.get(), 1), 8, 10, 0.05f));
             trades.get(5).add(new BasicItemListing(new ItemStack(Items.EMERALD, 24),
                     new ItemStack(ModItems.JAVELIN_MISSILE.get(), 1), 8, 10, 0.05f));
             trades.get(5).add(new BasicItemListing(new ItemStack(Items.EMERALD, 24),
@@ -241,6 +243,36 @@ public class ModVillagers {
             trades.get(5).add(new BasicItemListing(new ItemStack(ModItems.WIRE_GUIDE_MISSILE.get(), 1),
                     new ItemStack(Items.EMERALD, 12), 32, 4, 0.05f));
         }
+    }
+
+    @SubscribeEvent
+    public static void addWandererTrade(WandererTradesEvent event) {
+        List<VillagerTrades.ItemListing> rareTrades = event.getRareTrades();
+
+        rareTrades.add(new BasicItemListing(new ItemStack(Items.EMERALD, 64),
+                new ItemStack(ModItems.HUNTING_RIFLE_BLUEPRINT.get()), 1, 0, 0.05f));
+        rareTrades.add(new BasicItemListing(new ItemStack(Items.EMERALD, 64),
+                new ItemStack(ModItems.RPG_BLUEPRINT.get()), 1, 0, 0.05f));
+        rareTrades.add(new BasicItemListing(new ItemStack(Items.EMERALD, 64),
+                new ItemStack(ModItems.HK_416_BLUEPRINT.get()), 1, 0, 0.05f));
+        rareTrades.add(new BasicItemListing(new ItemStack(Items.EMERALD, 64),
+                new ItemStack(ModItems.RPK_BLUEPRINT.get()), 1, 0, 0.05f));
+        rareTrades.add(new BasicItemListing(new ItemStack(Items.EMERALD, 64),
+                new ItemStack(ModItems.VECTOR_BLUEPRINT.get()), 1, 0, 0.05f));
+        rareTrades.add(new BasicItemListing(new ItemStack(Items.EMERALD, 64),
+                new ItemStack(ModItems.MK_14_BLUEPRINT.get()), 1, 0, 0.05f));
+        rareTrades.add(new BasicItemListing(new ItemStack(Items.EMERALD, 64),
+                new ItemStack(ModItems.M_60_BLUEPRINT.get()), 1, 0, 0.05f));
+        rareTrades.add(new BasicItemListing(new ItemStack(Items.EMERALD, 64),
+                new ItemStack(ModItems.SVD_BLUEPRINT.get()), 1, 0, 0.05f));
+        rareTrades.add(new BasicItemListing(new ItemStack(Items.EMERALD, 64),
+                new ItemStack(ModItems.M_98B_BLUEPRINT.get()), 1, 0, 0.05f));
+        rareTrades.add(new BasicItemListing(new ItemStack(Items.EMERALD, 64),
+                new ItemStack(ModItems.DEVOTION_BLUEPRINT.get()), 1, 0, 0.05f));
+        rareTrades.add(new BasicItemListing(new ItemStack(Items.EMERALD, 64),
+                new ItemStack(ModItems.QBZ_95_BLUEPRINT.get()), 1, 0, 0.05f));
+        rareTrades.add(new BasicItemListing(new ItemStack(Items.EMERALD, 64),
+                new ItemStack(ModItems.AK_12_BLUEPRINT.get()), 1, 0, 0.05f));
     }
 
     private static Holder<Item> getItemHolder(String name) {

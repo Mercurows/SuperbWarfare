@@ -160,9 +160,10 @@ public class ProjectileEntity extends Projectile implements IEntityWithComplexSp
                 PROJECTILE_TARGETS
         );
         for (Entity entity : entities) {
-            if (!entity.equals(this.shooter)) {
+            if (shooter != null && entity != shooter && entity != shooter.getVehicle()) {
                 EntityResult result = this.getHitResult(entity, startVec, endVec);
                 if (result == null) continue;
+                if (entity.getVehicle() != null && entity.getVehicle() == shooter.getVehicle()) continue;
                 hitEntities.add(result);
             }
         }
