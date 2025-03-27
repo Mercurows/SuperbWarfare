@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.item;
 
 import com.atsuishio.superbwarfare.capability.ModCapabilities;
 import com.atsuishio.superbwarfare.capability.laser.LaserHandler;
+import com.atsuishio.superbwarfare.client.TooltipTool;
 import com.atsuishio.superbwarfare.entity.projectile.LaserEntity;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.network.message.LaserShootMessage;
@@ -149,8 +150,7 @@ public class BeamTest extends Item {
     @Override
     @ParametersAreNonnullByDefault
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
-        // TODO developing
-        // TooltipTool.addDevelopingText(pTooltipComponents);
+        TooltipTool.addDevelopingText(tooltipComponents);
     }
 
 }

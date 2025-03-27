@@ -145,17 +145,14 @@ public class ReforgingTableScreen extends AbstractContainerScreen<ReforgingTable
             switch (type) {
                 case AMMO -> {
                     if (ReforgingTableScreen.this.menu.ammoPerkLevel.get() >= ReforgingTableMenu.MAX_PERK_LEVEL) {
-                        return;
                     }
                 }
                 case FUNCTIONAL -> {
                     if (ReforgingTableScreen.this.menu.funcPerkLevel.get() >= ReforgingTableMenu.MAX_PERK_LEVEL) {
-                        return;
                     }
                 }
                 case DAMAGE -> {
                     if (ReforgingTableScreen.this.menu.damagePerkLevel.get() >= ReforgingTableMenu.MAX_PERK_LEVEL) {
-                        return;
                     }
                 }
             }
@@ -192,17 +189,14 @@ public class ReforgingTableScreen extends AbstractContainerScreen<ReforgingTable
             switch (type) {
                 case AMMO -> {
                     if (ReforgingTableScreen.this.menu.ammoPerkLevel.get() <= 1) {
-                        return;
                     }
                 }
                 case FUNCTIONAL -> {
                     if (ReforgingTableScreen.this.menu.funcPerkLevel.get() <= 1) {
-                        return;
                     }
                 }
                 case DAMAGE -> {
                     if (ReforgingTableScreen.this.menu.damagePerkLevel.get() <= 1) {
-                        return;
                     }
                 }
             }

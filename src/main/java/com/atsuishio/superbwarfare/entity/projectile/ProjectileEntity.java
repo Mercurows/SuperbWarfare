@@ -432,7 +432,7 @@ public class ProjectileEntity extends Projectile implements IEntityWithComplexSp
 //        if (stack.is(ModItems.TRANSCRIPT.get())) {
 //            final int size = 10;
 //
-//            ListTag tags = stack.getOrCreateTag().getList(Transcript.TAG_SCORES, Tag.TAG_COMPOUND);
+//            ListTag tags = NBTTool.getOrCreateTag(stack).getList(Transcript.TAG_SCORES, Tag.TAG_COMPOUND);
 //
 //            Queue<CompoundTag> queue = new ArrayDeque<>();
 //            for (int i = 0; i < tags.size(); i++) {
@@ -451,7 +451,7 @@ public class ProjectileEntity extends Projectile implements IEntityWithComplexSp
 //            ListTag newTags = new ListTag();
 //            newTags.addAll(queue);
 //
-//            stack.getOrCreateTag().put(Transcript.TAG_SCORES, newTags);
+//            NBTTool.getOrCreateTag(stack).put(Transcript.TAG_SCORES, newTags);
 //        }
     }
 

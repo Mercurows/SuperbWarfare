@@ -12,7 +12,6 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
-import java.util.function.Supplier;
 
 public class PerkItem<T extends Perk> extends Item {
     private final DeferredHolder<Perk, T> perk;

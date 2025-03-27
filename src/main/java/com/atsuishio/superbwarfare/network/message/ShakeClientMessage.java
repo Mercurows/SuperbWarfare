@@ -71,7 +71,7 @@ public record ShakeClientMessage(
         ItemStack stack = living.getMainHandItem();
 
 //        if (level != null &&
-//                (stack.is(ModItems.MONITOR.get()) && stack.getOrCreateTag().getBoolean("Using") && stack.getOrCreateTag().getBoolean("Linked"))) {
+//                (stack.is(ModItems.MONITOR.get()) && NBTTool.getOrCreateTag(stack).getBoolean("Using") && NBTTool.getOrCreateTag(stack).getBoolean("Linked"))) {
 //            handleDroneCamera(event, living);
 //        } else {
 //            var effect = Minecraft.getInstance().gameRenderer.currentEffect();

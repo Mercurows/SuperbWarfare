@@ -1,7 +1,7 @@
-package com.atsuishio.superbwarfare.client.layer;
+package com.atsuishio.superbwarfare.client.layer.gun;
 
 import com.atsuishio.superbwarfare.ModUtils;
-import com.atsuishio.superbwarfare.item.gun.smg.VectorItem;
+import com.atsuishio.superbwarfare.item.gun.handgun.M1911Item;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -12,15 +12,15 @@ import software.bernie.geckolib.cache.object.BakedGeoModel;
 import software.bernie.geckolib.renderer.GeoRenderer;
 import software.bernie.geckolib.renderer.layer.GeoRenderLayer;
 
-public class VectorLayer extends GeoRenderLayer<VectorItem> {
-    private static final ResourceLocation LAYER = ModUtils.loc("textures/item/vector_e.png");
+public class M1911Layer extends GeoRenderLayer<M1911Item> {
+    private static final ResourceLocation LAYER = ModUtils.loc("textures/item/m1911_e.png");
 
-    public VectorLayer(GeoRenderer<VectorItem> entityRenderer) {
+    public M1911Layer(GeoRenderer<M1911Item> entityRenderer) {
         super(entityRenderer);
     }
 
     @Override
-    public void render(PoseStack poseStack, VectorItem animatable, BakedGeoModel bakedModel, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, float partialTick, int packedLight, int packedOverlay) {
+    public void render(PoseStack poseStack, M1911Item animatable, BakedGeoModel bakedModel, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, float partialTick, int packedLight, int packedOverlay) {
         RenderType glowRenderType = RenderType.eyes(LAYER);
         getRenderer().reRender(getDefaultBakedModel(animatable), poseStack, bufferSource, animatable, glowRenderType, bufferSource.getBuffer(glowRenderType), partialTick, packedLight, OverlayTexture.NO_OVERLAY, 0xFFFFFFFF);
     }

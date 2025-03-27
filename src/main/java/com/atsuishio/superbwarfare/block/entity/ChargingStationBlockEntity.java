@@ -114,7 +114,7 @@ public class ChargingStationBlockEntity extends BlockEntity implements WorldlyCo
                     var cap = level.getCapability(Capabilities.EnergyStorage.BLOCK, ChargingStationBlockEntity.this.getBlockPos(), null);
                     if (cap == null) return;
 
-                    cap.receiveEnergy((int) pValue, false);
+                    cap.receiveEnergy(pValue, false);
                     break;
                 case 3:
                     ChargingStationBlockEntity.this.showRange = pValue == 1;

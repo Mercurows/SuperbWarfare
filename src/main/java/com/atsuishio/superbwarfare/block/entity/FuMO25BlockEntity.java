@@ -76,7 +76,7 @@ public class FuMO25BlockEntity extends BlockEntity implements MenuProvider, GeoB
                 case 0 -> {
                 }
 //                        FuMO25BlockEntity.this.energyHandler.ifPresent(handler -> handler.receiveEnergy((int) pValue, false));
-                case 1 -> FuMO25BlockEntity.this.type = FuncType.values()[(int) pValue];
+                case 1 -> FuMO25BlockEntity.this.type = FuncType.values()[pValue];
                 case 2 -> FuMO25BlockEntity.this.time = pValue;
                 case 3 -> FuMO25BlockEntity.this.powered = pValue == 1;
                 case 4 -> FuMO25BlockEntity.this.tick = pValue;

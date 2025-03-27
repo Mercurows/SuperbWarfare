@@ -256,7 +256,7 @@ public class ClientEventHandler {
 //                    && !(player.getVehicle() instanceof ArmedVehicleEntity iArmedVehicle && iArmedVehicle.banHand(player))
                     && !holdFireVehicle
                     && !notInGame()
-//                    && !player.getCapability(ModVariables.PLAYER_VARIABLES_CAPABILITY, null).orElse(new ModVariables.PlayerVariables()).edit
+//                    && !cap != null && cap.edit
                     && !(NBTTool.getOrCreateTag(stack).getBoolean("is_normal_reloading") || NBTTool.getOrCreateTag(stack).getBoolean("is_empty_reloading"))
                     && !GunsTool.getGunBooleanTag(stack, "Reloading")
                     && !player.getCooldowns().isOnCooldown(stack.getItem())
@@ -1018,7 +1018,7 @@ public class ClientEventHandler {
 //                && !(player.getVehicle() instanceof ArmedVehicleEntity iArmedVehicle && iArmedVehicle.banHand(player))
 //                && !notInGame()
 //                && drawTime < 0.01
-//                && !player.getCapability(ModVariables.PLAYER_VARIABLES_CAPABILITY, null).orElse(new ModVariables.PlayerVariables()).edit) {
+//                && !cap != null && cap.edit) {
 //            if (Minecraft.getInstance().player != null) {
 //                Minecraft.getInstance().player.getPersistentData().putDouble("noRun", 5);
 //            }
@@ -1372,7 +1372,6 @@ public class ClientEventHandler {
                 }
 
             }
-            return;
         }
 
 //        if (stack.is(ModItems.MONITOR.get()) && GunNBTTool.getOrCreateTag(stack).getBoolean("Using") && GunNBTTool.getOrCreateTag(stack).getBoolean("Linked")) {
@@ -1505,6 +1504,7 @@ public class ClientEventHandler {
                     if (e == player) {
 //                        ModUtils.PACKET_HANDLER.sendToServer(new AimVillagerMessage(villager.getId()));
                         aimVillagerCountdown = 80;
+                        break;
                     }
                 }
             }

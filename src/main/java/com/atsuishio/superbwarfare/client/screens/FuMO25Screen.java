@@ -288,7 +288,8 @@ public class FuMO25Screen extends AbstractContainerScreen<FuMO25Menu> {
         @Override
         public void onPress() {
             if (FuMO25Screen.this.menu.getFuncType() == 3 && FuMO25Screen.this.menu.getSlot(0).getItem().isEmpty()) {
-                if (FuMO25Screen.this.currentTarget == null) return;
+                if (FuMO25Screen.this.currentTarget == null) {
+                }
                 // TODO network
 //                ModUtils.PACKET_HANDLER.sendToServer(new RadarSetTargetMessage(FuMO25Screen.this.currentTarget.getUUID()));
             } else {

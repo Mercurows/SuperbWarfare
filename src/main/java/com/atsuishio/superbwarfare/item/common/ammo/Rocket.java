@@ -1,52 +1,74 @@
 package com.atsuishio.superbwarfare.item.common.ammo;
 
+import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.client.PoseTool;
+import com.atsuishio.superbwarfare.client.renderer.item.RocketItemRenderer;
+import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
+import net.minecraft.client.model.HumanoidModel;
+import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
+import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import org.jetbrains.annotations.NotNull;
+import software.bernie.geckolib.animatable.GeoItem;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.util.GeckoLibUtil;
 
-//public class Rocket extends Item implements GeoItem {
-// TODO rewrite
-public class Rocket extends Item {
-    //    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+import javax.annotation.ParametersAreNonnullByDefault;
+
+@EventBusSubscriber(modid = ModUtils.MODID, bus = EventBusSubscriber.Bus.MOD)
+public class Rocket extends Item implements GeoItem {
+    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     public static ItemDisplayContext transformType;
 
     public Rocket() {
         super(new Properties().stacksTo(16));
     }
 
-//    @Override
-//    public void initializeClient(@NotNull Consumer<IClientItemExtensions> consumer) {
-//        super.initializeClient(consumer);
-//        consumer.accept(new IClientItemExtensions() {
-//            private final BlockEntityWithoutLevelRenderer renderer = new RocketItemRenderer();
-//
-//            @Override
-//            public BlockEntityWithoutLevelRenderer getCustomRenderer() {
-//                return renderer;
-//            }
-//        });
-//    }
+    @SubscribeEvent
+    private static void registerGunExtensions(RegisterClientExtensionsEvent event) {
+        event.registerItem(new IClientItemExtensions() {
+            private final BlockEntityWithoutLevelRenderer renderer = new RocketItemRenderer();
+
+            @Override
+            public @NotNull BlockEntityWithoutLevelRenderer getCustomRenderer() {
+                return renderer;
+            }
+
+            @Override
+            @ParametersAreNonnullByDefault
+            public HumanoidModel.ArmPose getArmPose(LivingEntity entityLiving, InteractionHand hand, ItemStack stack) {
+                return PoseTool.pose(entityLiving, hand, stack);
+            }
+        }, ModItems.ROCKET.get());
+    }
 
     public void getTransformType(ItemDisplayContext type) {
         transformType = type;
     }
 
 
-//    @Override
-//    public void registerControllers(AnimatableManager.ControllerRegistrar data) {
-//    }
+    @Override
+    public void registerControllers(AnimatableManager.ControllerRegistrar data) {
+    }
 
-//    @Override
-//    public AnimatableInstanceCache getAnimatableInstanceCache() {
-//        return this.cache;
-//    }
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return this.cache;
+    }
 
+    // TODO attribute modifier
 //    @Override
 //    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlot slot, ItemStack stack) {
 //        Multimap<Attribute, AttributeModifier> map = super.getAttributeModifiers(slot, stack);
