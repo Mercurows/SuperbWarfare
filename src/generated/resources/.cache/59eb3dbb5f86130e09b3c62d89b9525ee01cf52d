@@ -1,8 +1,8 @@
-// 1.21.1	2025-03-27T19:46:28.646366	Loot Tables
+// 1.21.1	2025-03-27T22:36:38.8875256	Loot Tables
 98386b2e65b2afb7cf5b0cabf6a7b0f062c1e640 data/superbwarfare/loot_table/blocks/barbed_wire.json
 811e69929a14e6736015849c220100bb58d914c9 data/superbwarfare/loot_table/blocks/cemented_carbide_block.json
 1f482bc1f0a1026d0e1b75ee28c6f541b56747a5 data/superbwarfare/loot_table/blocks/charging_station.json
-e3d65cec9cd578df0c357c534ba64e2336ea05b7 data/superbwarfare/loot_table/blocks/container.json
+088850d9af31c14153b1e837d14d78ea46682ba4 data/superbwarfare/loot_table/blocks/container.json
 c7b613c897b0eeca4dbade5eb65f718015dcb853 data/superbwarfare/loot_table/blocks/creative_charging_station.json
 f75afc8822e651ec7106271385813e2c6a810866 data/superbwarfare/loot_table/blocks/deepslate_galena_ore.json
 7e0186c30d572478bebcb62171c1c126801258c2 data/superbwarfare/loot_table/blocks/deepslate_scheelite_ore.json
@@ -17,5 +17,6 @@ ff3548e151685da812f1d5df1dff9fe365b5e0f9 data/superbwarfare/loot_table/blocks/ga
 e2fa2e6ba85ec27b3fbb6ad12a731a7ecff1c509 data/superbwarfare/loot_table/blocks/scheelite_ore.json
 a223f61202cf9937e8be5b90791925bba09d17b9 data/superbwarfare/loot_table/blocks/silver_block.json
 fb31a40f6a04000f317823cbb80eda8588ba9c69 data/superbwarfare/loot_table/blocks/silver_ore.json
+073b9c242ea372f7b34883835c0b02a9ca8d94e5 data/superbwarfare/loot_table/blocks/small_container.json
 83112ebff477e322bd3d23ed4653c7c02b230473 data/superbwarfare/loot_table/blocks/steel_block.json
 71fc892124b5343e10688cabc2fb7c87d83cfef8 data/superbwarfare/loot_table/blocks/tungsten_block.json

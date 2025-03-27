@@ -5,6 +5,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 
 // From Botania
+// TODO 修改为使用DataComponents.CUSTOM_DATA
 public final class NBTTool {
     public static boolean verifyExistence(ItemStack stack, String tag) {
         var data = stack.get(ModDataComponents.GUN_DATA);

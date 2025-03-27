@@ -120,7 +120,8 @@ public class ModItems {
      */
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(Registries.ITEM, ModUtils.MODID);
 
-    //    public static final DeferredHolder<Item, Item> CONTAINER = ITEMS.register("container", ContainerBlockItem::new);
+    public static final DeferredHolder<Item, Item> CONTAINER = ITEMS.register("container", ContainerBlockItem::new);
+    public static final DeferredHolder<Item, Item> SMALL_CONTAINER = ITEMS.register("small_container", SmallContainerBlockItem::new);
 //    public static final DeferredHolder<Item, Item> SENPAI_SPAWN_EGG = ITEMS.register("senpai_spawn_egg", () -> new ForgeSpawnEggItem(ModEntities.SENPAI, -11584987, -14014413, new Item.Properties()));
     public static final DeferredHolder<Item, Item> ANCIENT_CPU = ITEMS.register("ancient_cpu", () -> new Item(new Item.Properties().rarity(Rarity.RARE)));
     public static final DeferredHolder<Item, Item> PROPELLER = ITEMS.register("propeller", () -> new Item(new Item.Properties()));

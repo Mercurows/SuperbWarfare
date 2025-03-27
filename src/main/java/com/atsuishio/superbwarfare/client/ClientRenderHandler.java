@@ -1,6 +1,12 @@
-package com.atsuishio.superbwarfare.client.tooltip;
+package com.atsuishio.superbwarfare.client;
 
+import com.atsuishio.superbwarfare.client.renderer.block.ChargingStationBlockEntityRenderer;
+import com.atsuishio.superbwarfare.client.renderer.block.ContainerBlockEntityRenderer;
+import com.atsuishio.superbwarfare.client.renderer.block.FuMO25BlockEntityRenderer;
+import com.atsuishio.superbwarfare.client.renderer.block.SmallContainerBlockEntityRenderer;
+import com.atsuishio.superbwarfare.client.tooltip.*;
 import com.atsuishio.superbwarfare.client.tooltip.component.*;
+import com.atsuishio.superbwarfare.init.ModBlockEntities;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -8,7 +14,7 @@ import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterClientTooltipComponentFactoriesEvent;
 
 @EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
-public class TooltipRegistry {
+public class ClientRenderHandler {
 
     @SubscribeEvent
     public static void registerTooltip(RegisterClientTooltipComponentFactoriesEvent event) {
@@ -25,9 +31,9 @@ public class TooltipRegistry {
 
     @SubscribeEvent
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
-        // TODO block entity renderer
-//        event.registerBlockEntityRenderer(ModBlockEntities.CONTAINER.get(), context -> new ContainerBlockEntityRenderer());
-//        event.registerBlockEntityRenderer(ModBlockEntities.FUMO_25.get(), context -> new FuMO25BlockEntityRenderer());
-//        event.registerBlockEntityRenderer(ModBlockEntities.CHARGING_STATION.get(), context -> new ChargingStationBlockEntityRenderer());
+        event.registerBlockEntityRenderer(ModBlockEntities.CONTAINER.get(), context -> new ContainerBlockEntityRenderer());
+        event.registerBlockEntityRenderer(ModBlockEntities.FUMO_25.get(), context -> new FuMO25BlockEntityRenderer());
+        event.registerBlockEntityRenderer(ModBlockEntities.CHARGING_STATION.get(), context -> new ChargingStationBlockEntityRenderer());
+        event.registerBlockEntityRenderer(ModBlockEntities.SMALL_CONTAINER.get(), context -> new SmallContainerBlockEntityRenderer());
     }
 }

@@ -11,7 +11,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "superbwarfare:container"
+          "name": "superbwarfare:small_container"
         }
       ],
       "functions": [
@@ -20,13 +20,13 @@
           "ops": [
             {
               "op": "replace",
-              "source": "Entity",
-              "target": "BlockEntityTag.Entity"
+              "source": "LootTable",
+              "target": "BlockEntityTag.LootTable"
             },
             {
               "op": "replace",
-              "source": "EntityType",
-              "target": "BlockEntityTag.EntityType"
+              "source": "LootTableSeed",
+              "target": "BlockEntityTag.LootTableSeed"
             }
           ],
           "source": "block_entity"
@@ -35,5 +35,5 @@
       "rolls": 1.0
     }
   ],
-  "random_sequence": "superbwarfare:blocks/container"
+  "random_sequence": "superbwarfare:blocks/small_container"
 }

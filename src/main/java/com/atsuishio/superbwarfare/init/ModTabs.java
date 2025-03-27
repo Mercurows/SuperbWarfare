@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.init;
 
 import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.item.ArmorPlate;
 import com.atsuishio.superbwarfare.item.BatteryItem;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -11,6 +12,10 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
+
+import java.util.function.Supplier;
+
+import static com.atsuishio.superbwarfare.item.ContainerBlockItem.CONTAINER_ENTITIES;
 
 @EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD)
 @SuppressWarnings("unused")
@@ -49,6 +54,7 @@ public class ModTabs {
                             }
                         });
 
+                        // TODO c4, potion
 //                        param.holders().lookup(Registries.POTION)
 //                                .ifPresent(potion -> generatePotionEffectTypes(output, potion, ModItems.POTION_MORTAR_SHELL.get()));
                     })
@@ -59,15 +65,13 @@ public class ModTabs {
                     .title(Component.translatable("item_group.superbwarfare.item"))
                     .icon(() -> new ItemStack(ModItems.FIRING_PARAMETERS.get()))
                     .displayItems((param, output) -> ModItems.ITEMS.getEntries().forEach(registryObject -> {
-                        // TODO container, armor plate
-//                        if (registryObject.get() == ModItems.CONTAINER.get()) {
-                        if (false) {
-//                            CONTAINER_ENTITIES.stream().map(Supplier::get).forEach(output::accept);
+                        if (registryObject.get() == ModItems.CONTAINER.get()) {
+                            CONTAINER_ENTITIES.stream().map(Supplier::get).forEach(output::accept);
                         } else {
                             output.accept(registryObject.get());
-//                            if (registryObject.get() == ModItems.ARMOR_PLATE.get()) {
-//                                output.accept(ArmorPlate.getInfiniteInstance());
-//                            }
+                            if (registryObject.get() == ModItems.ARMOR_PLATE.get()) {
+                                output.accept(ArmorPlate.getInfiniteInstance());
+                            }
                             if (registryObject.get() instanceof BatteryItem batteryItem) {
                                 output.accept(batteryItem.makeFullEnergyStack());
                             }
@@ -85,11 +89,13 @@ public class ModTabs {
 
     @SubscribeEvent
     public static void buildTabContentsVanilla(BuildCreativeModeTabContentsEvent tabData) {
+        // TODO senpai
 //        if (tabData.getTabKey() == CreativeModeTabs.SPAWN_EGGS) {
 //            tabData.accept(ModItems.SENPAI_SPAWN_EGG.get());
 //        }
     }
 
+    // TODO potion shell
 //    private static void generatePotionEffectTypes(CreativeModeTab.Output output, HolderLookup<Potion> potions, Item potionItem) {
 //        potions.listElements().filter(potion -> !potion.is(Potions.EMPTY_ID))
 //                .map(potion -> PotionUtils.setPotion(new ItemStack(potionItem), potion.value()))

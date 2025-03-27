@@ -1,0 +1,183 @@
+package com.atsuishio.superbwarfare.item;
+
+import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.client.renderer.item.ContainerBlockItemRenderer;
+import com.atsuishio.superbwarfare.init.ModBlockEntities;
+import com.atsuishio.superbwarfare.init.ModBlocks;
+import com.atsuishio.superbwarfare.init.ModEntities;
+import com.atsuishio.superbwarfare.init.ModItems;
+import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
+import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
+import org.jetbrains.annotations.NotNull;
+import software.bernie.geckolib.animatable.GeoItem;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.animation.AnimationController;
+import software.bernie.geckolib.animation.AnimationState;
+import software.bernie.geckolib.animation.PlayState;
+import software.bernie.geckolib.util.GeckoLibUtil;
+
+import java.util.List;
+import java.util.function.Supplier;
+
+@EventBusSubscriber(modid = ModUtils.MODID, bus = EventBusSubscriber.Bus.MOD)
+public class ContainerBlockItem extends BlockItem implements GeoItem {
+
+    /**
+     * 集装箱可用实体列表
+     */
+    // TODO 正确生成可用列表
+    public static final List<Supplier<ItemStack>> CONTAINER_ENTITIES = List.of(
+            () -> ContainerBlockItem.createInstance(ModEntities.TARGET.get())
+//            () -> ContainerBlockItem.createInstance(ModEntities.MK_42.get()),
+//            () -> ContainerBlockItem.createInstance(ModEntities.MLE_1934.get()),
+//            () -> ContainerBlockItem.createInstance(ModEntities.ANNIHILATOR.get()),
+//            () -> ContainerBlockItem.createInstance(ModEntities.LASER_TOWER.get()),
+//            () -> ContainerBlockItem.createInstance(ModEntities.SPEEDBOAT.get(), true),
+//            () -> ContainerBlockItem.createInstance(ModEntities.AH_6.get()),
+//            () -> ContainerBlockItem.createInstance(ModEntities.LAV_150.get(), true),
+//            () -> ContainerBlockItem.createInstance(ModEntities.BMP_2.get(), true),
+//            () -> ContainerBlockItem.createInstance(ModEntities.YX_100.get()),
+//            () -> ContainerBlockItem.createInstance(ModEntities.WHEEL_CHAIR.get()),
+//            () -> ContainerBlockItem.createInstance(ModEntities.TOM_6.get())
+    );
+
+    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+
+    public ContainerBlockItem() {
+        super(ModBlocks.CONTAINER.get(), new Properties().stacksTo(1));
+    }
+
+    @Override
+    public @NotNull InteractionResult useOn(UseOnContext context) {
+        ItemStack stack = context.getItemInHand();
+        var data = stack.get(DataComponents.CUSTOM_DATA);
+
+        if (data != null && data.copyTag().getBoolean("CanPlacedAboveWater")) {
+            return InteractionResult.PASS;
+        }
+        return super.useOn(context);
+    }
+
+    @Override
+    public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, Player player, @NotNull InteractionHand hand) {
+        ItemStack stack = player.getItemInHand(hand);
+        var data = stack.get(DataComponents.CUSTOM_DATA);
+
+        if (data != null && data.copyTag().getBoolean("CanPlacedAboveWater")) {
+            BlockHitResult playerPOVHitResult = getPlayerPOVHitResult(level, player, ClipContext.Fluid.WATER);
+            if (playerPOVHitResult.getType() == HitResult.Type.MISS) {
+                return super.use(level, player, hand);
+            }
+            BlockHitResult blockHitResult = playerPOVHitResult.withPosition(playerPOVHitResult.getBlockPos().above());
+            InteractionResult interactionresult = super.useOn(new UseOnContext(player, hand, blockHitResult));
+            return new InteractionResultHolder<>(interactionresult, player.getItemInHand(hand));
+        }
+        return super.use(level, player, hand);
+    }
+
+    @Override
+    public @NotNull InteractionResult place(BlockPlaceContext pContext) {
+        ItemStack stack = pContext.getItemInHand();
+        Player player = pContext.getPlayer();
+        var res = super.place(pContext);
+
+        if (player != null) {
+            var tag = stack.get(DataComponents.BLOCK_ENTITY_DATA);
+            if (tag != null && tag.copyTag().get("Entity") != null) {
+                if (player.level().isClientSide && res == InteractionResult.SUCCESS) {
+                    player.getInventory().removeItem(stack);
+                }
+                if (!player.level().isClientSide && res == InteractionResult.CONSUME) {
+                    player.getInventory().removeItem(stack);
+                }
+            }
+        }
+        return res;
+    }
+
+    private PlayState predicate(AnimationState<ContainerBlockItem> event) {
+        return PlayState.CONTINUE;
+    }
+
+
+    @SubscribeEvent
+    private static void registerArmorExtensions(RegisterClientExtensionsEvent event) {
+        event.registerItem(new IClientItemExtensions() {
+
+            private final BlockEntityWithoutLevelRenderer renderer = new ContainerBlockItemRenderer();
+
+            @Override
+            public @NotNull BlockEntityWithoutLevelRenderer getCustomRenderer() {
+                return renderer;
+            }
+
+        }, ModItems.CONTAINER);
+    }
+
+    @Override
+    public void registerControllers(AnimatableManager.ControllerRegistrar data) {
+        data.add(new AnimationController<>(this, "controller", 0, this::predicate));
+    }
+
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return this.cache;
+    }
+
+    public static ItemStack createInstance(Entity entity) {
+        return createInstance(entity, false);
+    }
+
+    public static ItemStack createInstance(EntityType<?> entityType) {
+        return createInstance(entityType, false);
+    }
+
+    public static ItemStack createInstance(Entity entity, boolean canPlacedAboveWater) {
+        ItemStack stack = new ItemStack(ModBlocks.CONTAINER.get());
+
+        var data = stack.get(DataComponents.CUSTOM_DATA);
+        var tag = data != null ? data.copyTag() : new CompoundTag();
+
+        tag.put("Entity", entity.serializeNBT(entity.level().registryAccess()));
+        tag.putString("EntityType", EntityType.getKey(entity.getType()).toString());
+        BlockItem.setBlockEntityData(stack, ModBlockEntities.CONTAINER.get(), tag);
+        tag.putBoolean("CanPlacedAboveWater", canPlacedAboveWater);
+        stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
+
+        return stack;
+    }
+
+    public static ItemStack createInstance(EntityType<?> entityType, boolean canPlacedAboveWater) {
+        ItemStack stack = new ItemStack(ModBlocks.CONTAINER.get());
+        var data = stack.get(DataComponents.CUSTOM_DATA);
+        var tag = data != null ? data.copyTag() : new CompoundTag();
+
+        tag.putString("EntityType", EntityType.getKey(entityType).toString());
+        BlockItem.setBlockEntityData(stack, ModBlockEntities.CONTAINER.get(), tag);
+        tag.putBoolean("CanPlacedAboveWater", canPlacedAboveWater);
+        stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
+
+        return stack;
+    }
+}
