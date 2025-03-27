@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.init;
 
 import com.atsuishio.superbwarfare.ModUtils;
 import com.atsuishio.superbwarfare.item.*;
+import com.atsuishio.superbwarfare.item.armor.*;
 import com.atsuishio.superbwarfare.item.common.BlueprintItem;
 import com.atsuishio.superbwarfare.item.common.CannonShellItem;
 import com.atsuishio.superbwarfare.item.common.MaterialPack;
@@ -138,13 +139,13 @@ public class ModItems {
 //    public static final DeferredHolder<Item, Item> HAMMER = ITEMS.register("hammer", Hammer::new);
     public static final DeferredHolder<Item, Item> CROWBAR = ITEMS.register("crowbar", Crowbar::new);
     //    public static final DeferredHolder<Item, Item> DEFUSER = ITEMS.register("defuser", Defuser::new);
-//    public static final DeferredHolder<Item, Item> ARMOR_PLATE = ITEMS.register("armor_plate", ArmorPlate::new);
+    public static final DeferredHolder<Item, Item> ARMOR_PLATE = ITEMS.register("armor_plate", ArmorPlate::new);
 //
-//    public static final DeferredHolder<Item, Item> RU_HELMET_6B47 = ITEMS.register("ru_helmet_6b47", RuHelmet6b47::new);
-//    public static final DeferredHolder<Item, Item> RU_CHEST_6B43 = ITEMS.register("ru_chest_6b43", RuChest6b43::new);
-//    public static final DeferredHolder<Item, Item> US_HELMET_PASTG = ITEMS.register("us_helmet_pastg", UsHelmetPastg::new);
-//    public static final DeferredHolder<Item, Item> US_CHEST_IOTV = ITEMS.register("us_chest_iotv", UsChestIotv::new);
-//    public static final DeferredHolder<Item, Item> GE_HELMET_M_35 = ITEMS.register("ge_helmet_m_35", GeHelmetM35::new);
+public static final DeferredHolder<Item, Item> RU_HELMET_6B47 = ITEMS.register("ru_helmet_6b47", RuHelmet6b47::new);
+    public static final DeferredHolder<Item, Item> RU_CHEST_6B43 = ITEMS.register("ru_chest_6b43", RuChest6b43::new);
+    public static final DeferredHolder<Item, Item> US_HELMET_PASTG = ITEMS.register("us_helmet_pastg", UsHelmetPastg::new);
+    public static final DeferredHolder<Item, Item> US_CHEST_IOTV = ITEMS.register("us_chest_iotv", UsChestIotv::new);
+    public static final DeferredHolder<Item, Item> GE_HELMET_M_35 = ITEMS.register("ge_helmet_m_35", GeHelmetM35::new);
 //    public static final DeferredHolder<Item, Item> MORTAR_DEPLOYER = ITEMS.register("mortar_deployer", MortarDeployer::new);
     public static final DeferredHolder<Item, Item> MORTAR_BARREL = ITEMS.register("mortar_barrel", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> MORTAR_BASE_PLATE = ITEMS.register("mortar_base_plate", () -> new Item(new Item.Properties()));

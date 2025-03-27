@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.client.PoseTool;
 import com.atsuishio.superbwarfare.client.tooltip.component.GunImageComponent;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.item.CustomRendererItem;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.tools.AmmoType;
 import com.atsuishio.superbwarfare.tools.GunsTool;
@@ -32,14 +33,13 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import org.jetbrains.annotations.NotNull;
-import software.bernie.geckolib.renderer.GeoItemRenderer;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Optional;
 import java.util.Set;
 
 @EventBusSubscriber(modid = ModUtils.MODID, bus = EventBusSubscriber.Bus.MOD)
-public abstract class GunItem extends Item {
+public abstract class GunItem extends Item implements CustomRendererItem {
 
     public GunItem(Properties properties) {
         super(properties);
@@ -413,8 +413,6 @@ public abstract class GunItem extends Item {
             this.flag = i;
         }
     }
-
-    public abstract GeoItemRenderer<? extends GunItem> getRenderer();
 
     @SubscribeEvent
     private static void registerGunExtensions(RegisterClientExtensionsEvent event) {
