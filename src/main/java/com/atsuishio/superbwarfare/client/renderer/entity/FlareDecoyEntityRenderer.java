@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.client.renderer.entity;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.entity.projectile.FlareDecoyEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -48,7 +48,7 @@ public class FlareDecoyEntityRenderer extends EntityRenderer<FlareDecoyEntity> {
     }
 
     private static ResourceLocation texture(Entity entity) {
-        return ModUtils.loc("textures/particle/fire_star_" + (entity.tickCount % 8 + 1) + ".png");
+        return Mod.loc("textures/particle/fire_star_" + (entity.tickCount % 8 + 1) + ".png");
     }
 
     public ResourceLocation getTextureLocation(FlareDecoyEntity pEntity) {

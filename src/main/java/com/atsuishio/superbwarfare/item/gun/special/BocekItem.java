@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.item.gun.special;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.capability.ModCapabilities;
 import com.atsuishio.superbwarfare.client.renderer.item.BocekItemRenderer;
 import com.atsuishio.superbwarfare.client.tooltip.component.BocekImageComponent;
@@ -132,7 +132,7 @@ public class BocekItem extends GunItem implements GeoItem, SpecialFireWeapon {
 
     @Override
     public ResourceLocation getGunIcon() {
-        return ModUtils.loc("textures/gun_icon/bocek_icon.png");
+        return Mod.loc("textures/gun_icon/bocek_icon.png");
     }
 
     @Override

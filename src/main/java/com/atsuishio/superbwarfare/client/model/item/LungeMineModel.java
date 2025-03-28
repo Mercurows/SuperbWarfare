@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.client.model.item;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.item.LungeMine;
 import net.minecraft.resources.ResourceLocation;
@@ -13,17 +13,17 @@ public class LungeMineModel extends GeoModel<LungeMine> {
 
     @Override
     public ResourceLocation getAnimationResource(LungeMine animatable) {
-        return ModUtils.loc("animations/lunge_mine.animation.json");
+        return Mod.loc("animations/lunge_mine.animation.json");
     }
 
     @Override
     public ResourceLocation getModelResource(LungeMine animatable) {
-        return ModUtils.loc("geo/lunge_mine.geo.json");
+        return Mod.loc("geo/lunge_mine.geo.json");
     }
 
     @Override
     public ResourceLocation getTextureResource(LungeMine animatable) {
-        return ModUtils.loc("textures/item/lunge_mine.png");
+        return Mod.loc("textures/item/lunge_mine.png");
     }
 
     @Override

@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.entity.vehicle;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.entity.vehicle.base.*;
@@ -67,7 +67,7 @@ public class SpeedboatEntity extends ContainerMobileVehicleEntity implements Geo
                                 .damage(VehicleConfig.HEAVY_MACHINE_GUN_DAMAGE.get())
                                 .headShot(2)
                                 .zoom(false)
-                                .icon(ModUtils.loc("textures/screens/vehicle_weapon/gun_12_7mm.png"))
+                                .icon(Mod.loc("textures/screens/vehicle_weapon/gun_12_7mm.png"))
                 }
         };
     }
@@ -552,7 +552,7 @@ public class SpeedboatEntity extends ContainerMobileVehicleEntity implements Geo
 
     @Override
     public ResourceLocation getVehicleIcon() {
-        return ModUtils.loc("textures/vehicle_icon/speedboat_icon.png");
+        return Mod.loc("textures/vehicle_icon/speedboat_icon.png");
     }
 
     @Override

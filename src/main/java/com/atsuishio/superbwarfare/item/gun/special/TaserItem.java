@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.item.gun.special;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.capability.ModCapabilities;
 import com.atsuishio.superbwarfare.client.renderer.item.TaserItemRenderer;
 import com.atsuishio.superbwarfare.client.tooltip.component.EnergyImageComponent;
@@ -201,7 +201,7 @@ public class TaserItem extends GunItem implements GeoItem, SpecialFireWeapon {
 
     @Override
     public ResourceLocation getGunIcon() {
-        return ModUtils.loc("textures/gun_icon/taser_icon.png");
+        return Mod.loc("textures/gun_icon/taser_icon.png");
     }
 
     @Override

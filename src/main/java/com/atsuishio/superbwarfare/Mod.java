@@ -11,7 +11,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
@@ -26,15 +25,15 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-@Mod(ModUtils.MODID)
-public class ModUtils {
+@net.neoforged.fml.common.Mod(Mod.MODID)
+public class Mod {
 
     public static final String MODID = "superbwarfare";
     public static final String ATTRIBUTE_MODIFIER = "superbwarfare_attribute_modifier";
 
-    public static final Logger LOGGER = LogManager.getLogger(ModUtils.class);
+    public static final Logger LOGGER = LogManager.getLogger(Mod.class);
 
-    public ModUtils(IEventBus bus, ModContainer container) {
+    public Mod(IEventBus bus, ModContainer container) {
         container.registerConfig(ModConfig.Type.CLIENT, ClientConfig.init());
         container.registerConfig(ModConfig.Type.COMMON, CommonConfig.init());
         container.registerConfig(ModConfig.Type.SERVER, ServerConfig.init());

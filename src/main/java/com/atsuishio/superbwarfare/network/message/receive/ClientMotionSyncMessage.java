@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.network.message.receive;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 
 public record ClientMotionSyncMessage(int id, float x, float y, float z) implements CustomPacketPayload {
 
-    public static final CustomPacketPayload.Type<ClientMotionSyncMessage> TYPE = new CustomPacketPayload.Type<>(ModUtils.loc("client_motion_sync"));
+    public static final CustomPacketPayload.Type<ClientMotionSyncMessage> TYPE = new CustomPacketPayload.Type<>(Mod.loc("client_motion_sync"));
 
     public static final StreamCodec<ByteBuf, ClientMotionSyncMessage> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.INT,

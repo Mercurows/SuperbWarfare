@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.init;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import net.minecraft.core.Holder;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
@@ -17,25 +17,25 @@ import javax.annotation.Nullable;
 @SuppressWarnings({"OptionalGetWithoutIsPresent", "unused"})
 public class ModDamageTypes {
 
-    public static final ResourceKey<DamageType> GUN_FIRE = ResourceKey.create(Registries.DAMAGE_TYPE, ModUtils.loc("gunfire"));
-    public static final ResourceKey<DamageType> GUN_FIRE_ABSOLUTE = ResourceKey.create(Registries.DAMAGE_TYPE, ModUtils.loc("gunfire_absolute"));
-    public static final ResourceKey<DamageType> GUN_FIRE_HEADSHOT = ResourceKey.create(Registries.DAMAGE_TYPE, ModUtils.loc("gunfire_headshot"));
-    public static final ResourceKey<DamageType> GUN_FIRE_HEADSHOT_ABSOLUTE = ResourceKey.create(Registries.DAMAGE_TYPE, ModUtils.loc("gunfire_headshot_absolute"));
-    public static final ResourceKey<DamageType> BURN = ResourceKey.create(Registries.DAMAGE_TYPE, ModUtils.loc("burn"));
-    public static final ResourceKey<DamageType> MINE = ResourceKey.create(Registries.DAMAGE_TYPE, ModUtils.loc("mine"));
-    public static final ResourceKey<DamageType> BEAST = ResourceKey.create(Registries.DAMAGE_TYPE, ModUtils.loc("beast"));
-    public static final ResourceKey<DamageType> SHOCK = ResourceKey.create(Registries.DAMAGE_TYPE, ModUtils.loc("shock"));
-    public static final ResourceKey<DamageType> PROJECTILE_BOOM = ResourceKey.create(Registries.DAMAGE_TYPE, ModUtils.loc("projectile_boom"));
-    public static final ResourceKey<DamageType> CANNON_FIRE = ResourceKey.create(Registries.DAMAGE_TYPE, ModUtils.loc("cannon_fire"));
-    public static final ResourceKey<DamageType> CUSTOM_EXPLOSION = ResourceKey.create(Registries.DAMAGE_TYPE, ModUtils.loc("custom_explosion"));
-    public static final ResourceKey<DamageType> DRONE_HIT = ResourceKey.create(Registries.DAMAGE_TYPE, ModUtils.loc("drone_hit"));
-    public static final ResourceKey<DamageType> LASER = ResourceKey.create(Registries.DAMAGE_TYPE, ModUtils.loc("laser"));
-    public static final ResourceKey<DamageType> LASER_HEADSHOT = ResourceKey.create(Registries.DAMAGE_TYPE, ModUtils.loc("laser_headshot"));
-    public static final ResourceKey<DamageType> LASER_STATIC = ResourceKey.create(Registries.DAMAGE_TYPE, ModUtils.loc("laser_static"));
-    public static final ResourceKey<DamageType> VEHICLE_STRIKE = ResourceKey.create(Registries.DAMAGE_TYPE, ModUtils.loc("vehicle_strike"));
-    public static final ResourceKey<DamageType> AIR_CRASH = ResourceKey.create(Registries.DAMAGE_TYPE, ModUtils.loc("air_crash"));
-    public static final ResourceKey<DamageType> LUNGE_MINE = ResourceKey.create(Registries.DAMAGE_TYPE, ModUtils.loc("lunge_mine"));
-    public static final ResourceKey<DamageType> VEHICLE_EXPLOSION = ResourceKey.create(Registries.DAMAGE_TYPE, ModUtils.loc("vehicle_explosion"));
+    public static final ResourceKey<DamageType> GUN_FIRE = ResourceKey.create(Registries.DAMAGE_TYPE, Mod.loc("gunfire"));
+    public static final ResourceKey<DamageType> GUN_FIRE_ABSOLUTE = ResourceKey.create(Registries.DAMAGE_TYPE, Mod.loc("gunfire_absolute"));
+    public static final ResourceKey<DamageType> GUN_FIRE_HEADSHOT = ResourceKey.create(Registries.DAMAGE_TYPE, Mod.loc("gunfire_headshot"));
+    public static final ResourceKey<DamageType> GUN_FIRE_HEADSHOT_ABSOLUTE = ResourceKey.create(Registries.DAMAGE_TYPE, Mod.loc("gunfire_headshot_absolute"));
+    public static final ResourceKey<DamageType> BURN = ResourceKey.create(Registries.DAMAGE_TYPE, Mod.loc("burn"));
+    public static final ResourceKey<DamageType> MINE = ResourceKey.create(Registries.DAMAGE_TYPE, Mod.loc("mine"));
+    public static final ResourceKey<DamageType> BEAST = ResourceKey.create(Registries.DAMAGE_TYPE, Mod.loc("beast"));
+    public static final ResourceKey<DamageType> SHOCK = ResourceKey.create(Registries.DAMAGE_TYPE, Mod.loc("shock"));
+    public static final ResourceKey<DamageType> PROJECTILE_BOOM = ResourceKey.create(Registries.DAMAGE_TYPE, Mod.loc("projectile_boom"));
+    public static final ResourceKey<DamageType> CANNON_FIRE = ResourceKey.create(Registries.DAMAGE_TYPE, Mod.loc("cannon_fire"));
+    public static final ResourceKey<DamageType> CUSTOM_EXPLOSION = ResourceKey.create(Registries.DAMAGE_TYPE, Mod.loc("custom_explosion"));
+    public static final ResourceKey<DamageType> DRONE_HIT = ResourceKey.create(Registries.DAMAGE_TYPE, Mod.loc("drone_hit"));
+    public static final ResourceKey<DamageType> LASER = ResourceKey.create(Registries.DAMAGE_TYPE, Mod.loc("laser"));
+    public static final ResourceKey<DamageType> LASER_HEADSHOT = ResourceKey.create(Registries.DAMAGE_TYPE, Mod.loc("laser_headshot"));
+    public static final ResourceKey<DamageType> LASER_STATIC = ResourceKey.create(Registries.DAMAGE_TYPE, Mod.loc("laser_static"));
+    public static final ResourceKey<DamageType> VEHICLE_STRIKE = ResourceKey.create(Registries.DAMAGE_TYPE, Mod.loc("vehicle_strike"));
+    public static final ResourceKey<DamageType> AIR_CRASH = ResourceKey.create(Registries.DAMAGE_TYPE, Mod.loc("air_crash"));
+    public static final ResourceKey<DamageType> LUNGE_MINE = ResourceKey.create(Registries.DAMAGE_TYPE, Mod.loc("lunge_mine"));
+    public static final ResourceKey<DamageType> VEHICLE_EXPLOSION = ResourceKey.create(Registries.DAMAGE_TYPE, Mod.loc("vehicle_explosion"));
 
     public static DamageSource causeGunFireDamage(RegistryAccess registryAccess, @Nullable Entity directEntity, @Nullable Entity attacker) {
         return new DamageMessages(registryAccess.registry(Registries.DAMAGE_TYPE).get().getHolderOrThrow(GUN_FIRE), directEntity, attacker);

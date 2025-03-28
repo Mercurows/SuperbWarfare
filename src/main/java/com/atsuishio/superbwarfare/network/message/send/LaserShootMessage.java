@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.network.message.send;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
@@ -26,7 +26,7 @@ public record LaserShootMessage(
         UUID id,
         boolean headshot
 ) implements CustomPacketPayload {
-    public static final Type<LaserShootMessage> TYPE = new Type<>(ModUtils.loc("laser_shoot"));
+    public static final Type<LaserShootMessage> TYPE = new Type<>(Mod.loc("laser_shoot"));
 
     public static final StreamCodec<ByteBuf, LaserShootMessage> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.DOUBLE,

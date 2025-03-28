@@ -1,12 +1,12 @@
 package com.atsuishio.superbwarfare.command;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import net.minecraft.commands.Commands;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 
-@EventBusSubscriber(modid = ModUtils.MODID)
+@EventBusSubscriber(modid = Mod.MODID)
 public class CommandRegister {
     @SubscribeEvent
     public static void registerCommand(RegisterCommandsEvent event) {

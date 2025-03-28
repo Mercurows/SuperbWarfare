@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.entity.vehicle;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.entity.projectile.MelonBombEntity;
@@ -357,7 +357,7 @@ public class Tom6Entity extends MobileVehicleEntity implements GeoEntity {
 
     @Override
     public ResourceLocation getVehicleIcon() {
-        return ModUtils.loc("textures/vehicle_icon/tom_6_icon.png");
+        return Mod.loc("textures/vehicle_icon/tom_6_icon.png");
     }
 
     @Override

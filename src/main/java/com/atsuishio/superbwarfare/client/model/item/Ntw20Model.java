@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.client.model.item;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModTags;
@@ -26,17 +26,17 @@ public class Ntw20Model extends GeoModel<Ntw20Item> {
 
     @Override
     public ResourceLocation getAnimationResource(Ntw20Item animatable) {
-        return ModUtils.loc("animations/ntw_20.animation.json");
+        return Mod.loc("animations/ntw_20.animation.json");
     }
 
     @Override
     public ResourceLocation getModelResource(Ntw20Item animatable) {
-        return ModUtils.loc("geo/ntw_20.geo.json");
+        return Mod.loc("geo/ntw_20.geo.json");
     }
 
     @Override
     public ResourceLocation getTextureResource(Ntw20Item animatable) {
-        return ModUtils.loc("textures/item/ntw_20.png");
+        return Mod.loc("textures/item/ntw_20.png");
     }
 
     @Override

@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.client.layer.gun;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.ModRenderTypes;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.machinegun.MinigunItem;
@@ -20,7 +20,7 @@ import software.bernie.geckolib.renderer.GeoRenderer;
 import software.bernie.geckolib.renderer.layer.GeoRenderLayer;
 
 public class MinigunHeatLayer extends GeoRenderLayer<MinigunItem> {
-    private static final ResourceLocation LAYER = ModUtils.loc("textures/item/minigun_heat_e.png");
+    private static final ResourceLocation LAYER = Mod.loc("textures/item/minigun_heat_e.png");
 
     public MinigunHeatLayer(GeoRenderer<MinigunItem> itemGeoRenderer) {
         super(itemGeoRenderer);

@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.network.message.receive;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.capability.ModCapabilities;
 import com.atsuishio.superbwarfare.capability.player.PlayerVariable;
 import io.netty.buffer.ByteBuf;
@@ -13,7 +13,7 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.NotNull;
 
 public record PlayerVariablesSyncMessage(int target, CompoundTag data) implements CustomPacketPayload {
-    public static final CustomPacketPayload.Type<PlayerVariablesSyncMessage> TYPE = new CustomPacketPayload.Type<>(ModUtils.loc("player_variable_sync"));
+    public static final CustomPacketPayload.Type<PlayerVariablesSyncMessage> TYPE = new CustomPacketPayload.Type<>(Mod.loc("player_variable_sync"));
 
     public static final StreamCodec<ByteBuf, PlayerVariablesSyncMessage> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.INT,

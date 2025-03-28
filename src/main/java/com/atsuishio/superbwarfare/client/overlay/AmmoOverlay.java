@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.client.overlay;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.capability.ModCapabilities;
 import com.atsuishio.superbwarfare.component.ModDataComponents;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
@@ -22,7 +22,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RenderGuiEvent;
 
-@EventBusSubscriber(modid = ModUtils.MODID, value = Dist.CLIENT)
+@EventBusSubscriber(modid = Mod.MODID, value = Dist.CLIENT)
 public class AmmoOverlay {
 
     private static final AnimationTimer ammoInfoTimer = new AnimationTimer(500, 2000)

@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.network.message.receive;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.network.ClientPacketHandler;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -10,7 +10,7 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.NotNull;
 
 public record ClientIndicatorMessage(int messageType, int value) implements CustomPacketPayload {
-    public static final Type<ClientIndicatorMessage> TYPE = new Type<>(ModUtils.loc("client_indicator"));
+    public static final Type<ClientIndicatorMessage> TYPE = new Type<>(Mod.loc("client_indicator"));
 
     public static final StreamCodec<ByteBuf, ClientIndicatorMessage> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.INT,

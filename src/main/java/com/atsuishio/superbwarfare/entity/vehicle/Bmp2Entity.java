@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.entity.vehicle;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.entity.projectile.MelonBombEntity;
@@ -90,13 +90,13 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
                                 .explosionDamage(VehicleConfig.BMP_2_CANNON_EXPLOSION_DAMAGE.get())
                                 .explosionRadius(VehicleConfig.BMP_2_CANNON_EXPLOSION_RADIUS.get().floatValue())
                                 .sound(ModSounds.INTO_MISSILE.get())
-                                .icon(ModUtils.loc("textures/screens/vehicle_weapon/cannon_30mm.png")),
+                                .icon(Mod.loc("textures/screens/vehicle_weapon/cannon_30mm.png")),
                         new ProjectileWeapon()
                                 .damage(9.5f)
                                 .headShot(2)
                                 .zoom(false)
                                 .sound(ModSounds.INTO_CANNON.get())
-                                .icon(ModUtils.loc("textures/screens/vehicle_weapon/gun_7_62mm.png")),
+                                .icon(Mod.loc("textures/screens/vehicle_weapon/gun_7_62mm.png")),
                         new WgMissileWeapon()
                                 .damage(ExplosionConfig.WIRE_GUIDE_MISSILE_DAMAGE.get())
                                 .explosionDamage(ExplosionConfig.WIRE_GUIDE_MISSILE_EXPLOSION_DAMAGE.get())
@@ -687,6 +687,6 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
 
     @Override
     public ResourceLocation getVehicleIcon() {
-        return ModUtils.loc("textures/vehicle_icon/bmp2_icon.png");
+        return Mod.loc("textures/vehicle_icon/bmp2_icon.png");
     }
 }

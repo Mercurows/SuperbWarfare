@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.item.gun.launcher;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.capability.ModCapabilities;
 import com.atsuishio.superbwarfare.client.renderer.item.M79ItemRenderer;
 import com.atsuishio.superbwarfare.client.tooltip.component.LauncherImageComponent;
@@ -134,7 +134,7 @@ public class M79Item extends GunItem implements GeoItem, SpecialFireWeapon {
 
     @Override
     public ResourceLocation getGunIcon() {
-        return ModUtils.loc("textures/gun_icon/m79_icon.png");
+        return Mod.loc("textures/gun_icon/m79_icon.png");
     }
 
     @Override

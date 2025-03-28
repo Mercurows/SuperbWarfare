@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.client.layer.gun;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.item.gun.handgun.M1911Item;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -13,7 +13,7 @@ import software.bernie.geckolib.renderer.GeoRenderer;
 import software.bernie.geckolib.renderer.layer.GeoRenderLayer;
 
 public class M1911Layer extends GeoRenderLayer<M1911Item> {
-    private static final ResourceLocation LAYER = ModUtils.loc("textures/item/m1911_e.png");
+    private static final ResourceLocation LAYER = Mod.loc("textures/item/m1911_e.png");
 
     public M1911Layer(GeoRenderer<M1911Item> entityRenderer) {
         super(entityRenderer);

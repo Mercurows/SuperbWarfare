@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.item.gun.launcher;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.capability.ModCapabilities;
 import com.atsuishio.superbwarfare.client.renderer.item.SecondaryCataclysmRenderer;
 import com.atsuishio.superbwarfare.client.tooltip.component.SecondaryCataclysmImageComponent;
@@ -213,7 +213,7 @@ public class SecondaryCataclysm extends GunItem implements GeoItem, SpecialFireW
 
     @Override
     public ResourceLocation getGunIcon() {
-        return ModUtils.loc("textures/gun_icon/secondary_cataclysm_icon.png");
+        return Mod.loc("textures/gun_icon/secondary_cataclysm_icon.png");
     }
 
     @Override

@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.item.gun.smg;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.capability.ModCapabilities;
 import com.atsuishio.superbwarfare.client.renderer.item.VectorItemRenderer;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
@@ -155,7 +155,7 @@ public class VectorItem extends GunItem implements GeoItem {
 
     @Override
     public ResourceLocation getGunIcon() {
-        return ModUtils.loc("textures/gun_icon/vector_icon.png");
+        return Mod.loc("textures/gun_icon/vector_icon.png");
     }
 
     @Override

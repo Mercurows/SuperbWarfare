@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.client.model.item;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.AnimationHelper;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
@@ -31,17 +31,17 @@ public class M4ItemModel extends GeoModel<M4Item> {
 
     @Override
     public ResourceLocation getAnimationResource(M4Item animatable) {
-        return ModUtils.loc("animations/m4.animation.json");
+        return Mod.loc("animations/m4.animation.json");
     }
 
     @Override
     public ResourceLocation getModelResource(M4Item animatable) {
-        return ModUtils.loc("geo/m4.geo.json");
+        return Mod.loc("geo/m4.geo.json");
     }
 
     @Override
     public ResourceLocation getTextureResource(M4Item animatable) {
-        return ModUtils.loc("textures/item/m4.png");
+        return Mod.loc("textures/item/m4.png");
     }
 
     @Override

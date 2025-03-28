@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.client.overlay;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.capability.ModCapabilities;
 import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
@@ -35,9 +35,9 @@ import static com.atsuishio.superbwarfare.client.RenderHelper.preciseBlit;
 @EventBusSubscriber(value = Dist.CLIENT)
 public class JavelinHudOverlay {
 
-    private static final ResourceLocation FRAME = ModUtils.loc("textures/screens/frame/frame.png");
-    private static final ResourceLocation FRAME_TARGET = ModUtils.loc("textures/screens/frame/frame_target.png");
-    private static final ResourceLocation FRAME_LOCK = ModUtils.loc("textures/screens/frame/frame_lock.png");
+    private static final ResourceLocation FRAME = Mod.loc("textures/screens/frame/frame.png");
+    private static final ResourceLocation FRAME_TARGET = Mod.loc("textures/screens/frame/frame_target.png");
+    private static final ResourceLocation FRAME_LOCK = Mod.loc("textures/screens/frame/frame_lock.png");
     private static float scopeScale = 1;
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
@@ -76,11 +76,11 @@ public class JavelinHudOverlay {
                 float l = ((h - j) / 2) + moveY;
                 float i1 = k + i;
                 float j1 = l + j;
-                preciseBlit(event.getGuiGraphics(), ModUtils.loc("textures/screens/javelin/javelin_hud.png"), k, l, 0, 0.0F, i, j, i, j);
-                preciseBlit(event.getGuiGraphics(), ModUtils.loc(tag.getBoolean("TopMode") ? "textures/screens/javelin/top.png" : "textures/screens/javelin/dir.png"), k, l, 0, 0.0F, i, j, i, j);
-                preciseBlit(event.getGuiGraphics(), ModUtils.loc(GunsTool.getGunIntTag(stack, "Ammo", 0) > 0 ? "textures/screens/javelin/missile_green.png" : "textures/screens/javelin/missile_red.png"), k, l, 0, 0.0F, i, j, i, j);
+                preciseBlit(event.getGuiGraphics(), Mod.loc("textures/screens/javelin/javelin_hud.png"), k, l, 0, 0.0F, i, j, i, j);
+                preciseBlit(event.getGuiGraphics(), Mod.loc(tag.getBoolean("TopMode") ? "textures/screens/javelin/top.png" : "textures/screens/javelin/dir.png"), k, l, 0, 0.0F, i, j, i, j);
+                preciseBlit(event.getGuiGraphics(), Mod.loc(GunsTool.getGunIntTag(stack, "Ammo", 0) > 0 ? "textures/screens/javelin/missile_green.png" : "textures/screens/javelin/missile_red.png"), k, l, 0, 0.0F, i, j, i, j);
                 if (tag.getInt("SeekTime") > 1 && tag.getInt("SeekTime") < 20) {
-                    preciseBlit(event.getGuiGraphics(), ModUtils.loc("textures/screens/javelin/seek.png"), k, l, 0, 0.0F, i, j, i, j);
+                    preciseBlit(event.getGuiGraphics(), Mod.loc("textures/screens/javelin/seek.png"), k, l, 0, 0.0F, i, j, i, j);
                 }
 
                 event.getGuiGraphics().fill(RenderType.guiOverlay(), 0, (int) l, (int) k + 3, (int) j1, -90, -16777216);

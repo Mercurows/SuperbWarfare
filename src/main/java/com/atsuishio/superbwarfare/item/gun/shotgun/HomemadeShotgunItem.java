@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.item.gun.shotgun;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.renderer.item.HomemadeShotgunItemRenderer;
 import com.atsuishio.superbwarfare.client.tooltip.component.ShotgunImageComponent;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
@@ -98,7 +98,7 @@ public class HomemadeShotgunItem extends GunItem implements GeoItem {
 
     @Override
     public ResourceLocation getGunIcon() {
-        return ModUtils.loc("textures/gun_icon/homemade_shotgun_icon.png");
+        return Mod.loc("textures/gun_icon/homemade_shotgun_icon.png");
     }
 
     @Override

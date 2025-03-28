@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.entity.vehicle;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.entity.projectile.*;
@@ -101,7 +101,7 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
                                 .heBullet(1)
                                 .bypassArmorRate(0.1f)
                                 .sound(ModSounds.INTO_CANNON.get())
-                                .icon(ModUtils.loc("textures/screens/vehicle_weapon/cannon_20mm.png")),
+                                .icon(Mod.loc("textures/screens/vehicle_weapon/cannon_20mm.png")),
                         new HeliRocketWeapon()
                                 .damage(VehicleConfig.AH_6_ROCKET_DAMAGE.get())
                                 .explosionDamage(VehicleConfig.AH_6_ROCKET_EXPLOSION_DAMAGE.get())
@@ -766,7 +766,7 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
 
     @Override
     public ResourceLocation getVehicleIcon() {
-        return ModUtils.loc("textures/vehicle_icon/ah_6_icon.png");
+        return Mod.loc("textures/vehicle_icon/ah_6_icon.png");
     }
 
     @Override

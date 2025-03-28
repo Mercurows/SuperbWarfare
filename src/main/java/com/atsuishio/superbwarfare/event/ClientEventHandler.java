@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.event;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.capability.ModCapabilities;
 import com.atsuishio.superbwarfare.client.ClickHandler;
 import com.atsuishio.superbwarfare.config.client.DisplayConfig;
@@ -61,7 +61,7 @@ import java.util.List;
 import static com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity.COAX_HEAT;
 import static com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity.HEAT;
 
-@EventBusSubscriber(modid = ModUtils.MODID, bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
+@EventBusSubscriber(modid = Mod.MODID, bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
 public class ClientEventHandler {
 
     public static double zoomTime = 0;
@@ -609,7 +609,7 @@ public class ClientEventHandler {
                 double shooterHeight = player.getEyePosition().distanceTo((Vec3.atLowerCornerOf(player.level().clip(new ClipContext(player.getEyePosition(), player.getEyePosition().add(new Vec3(0, -1, 0).scale(10)),
                         ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, player)).getBlockPos())));
 
-                ModUtils.queueClientWork((int) (1 + 1.5 * shooterHeight), () -> player.playSound(ModSounds.SHELL_CASING_NORMAL.get(), (float) Math.max(1.5 - 0.2 * shooterHeight, 0), 1));
+                Mod.queueClientWork((int) (1 + 1.5 * shooterHeight), () -> player.playSound(ModSounds.SHELL_CASING_NORMAL.get(), (float) Math.max(1.5 - 0.2 * shooterHeight, 0), 1));
             }
 
             handleClientShoot();
@@ -671,7 +671,7 @@ public class ClientEventHandler {
             var charged = cap != null && cap.getEnergyStored() > 0;
 
             if (charged) {
-                SoundEvent sound1p = BuiltInRegistries.SOUND_EVENT.get(ModUtils.loc("sentinel_charge_fire_1p"));
+                SoundEvent sound1p = BuiltInRegistries.SOUND_EVENT.get(Mod.loc("sentinel_charge_fire_1p"));
                 if (sound1p != null) {
                     player.playSound(sound1p, 2f, 1);
                 }
@@ -687,7 +687,7 @@ public class ClientEventHandler {
 
         int barrelType = GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.BARREL);
 
-        SoundEvent sound1p = BuiltInRegistries.SOUND_EVENT.get(ModUtils.loc(name + (barrelType == 2 ? "_fire_1p_s" : "_fire_1p")));
+        SoundEvent sound1p = BuiltInRegistries.SOUND_EVENT.get(Mod.loc(name + (barrelType == 2 ? "_fire_1p_s" : "_fire_1p")));
 
         if (sound1p != null) {
             player.playSound(sound1p, 2f, 1);
@@ -696,7 +696,7 @@ public class ClientEventHandler {
         double shooterHeight = player.getEyePosition().distanceTo((Vec3.atLowerCornerOf(player.level().clip(new ClipContext(player.getEyePosition(), player.getEyePosition().add(new Vec3(0, -1, 0).scale(10)),
                 ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, player)).getBlockPos())));
 
-        ModUtils.queueClientWork((int) (1 + 1.5 * shooterHeight), () -> {
+        Mod.queueClientWork((int) (1 + 1.5 * shooterHeight), () -> {
             if (gunItem.canEjectShell(stack)) {
                 if (stack.is(ModTags.Items.SHOTGUN)) {
                     player.playSound(ModSounds.SHELL_CASING_SHOTGUN.get(), (float) Math.max(0.75 - 0.12 * shooterHeight, 0), 1);
@@ -861,7 +861,7 @@ public class ClientEventHandler {
             handleDroneCamera(event, living);
         } else {
             var effect = Minecraft.getInstance().gameRenderer.currentEffect();
-            if (effect != null && effect.getName().equals(ModUtils.MODID + ":shaders/post/scan_pincushion.json")) {
+            if (effect != null && effect.getName().equals(Mod.MODID + ":shaders/post/scan_pincushion.json")) {
                 Minecraft.getInstance().gameRenderer.shutdownEffect();
             }
         }
@@ -926,7 +926,7 @@ public class ClientEventHandler {
 
         if (drone != null && NBTTool.getTag(stack).getBoolean("Using")) {
             if (Minecraft.getInstance().gameRenderer.currentEffect() == null) {
-                Minecraft.getInstance().gameRenderer.loadEffect(ModUtils.loc("shaders/post/scan_pincushion.json"));
+                Minecraft.getInstance().gameRenderer.loadEffect(Mod.loc("shaders/post/scan_pincushion.json"));
             }
         }
     }

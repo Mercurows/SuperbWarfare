@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.entity.vehicle;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.entity.projectile.C4Entity;
@@ -98,7 +98,7 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
                                 .velocity(40)
                                 .sound(ModSounds.INTO_MISSILE.get())
                                 .ammo(ModItems.AP_5_INCHES.get())
-                                .icon(ModUtils.loc("textures/screens/vehicle_weapon/ap_shell.png")),
+                                .icon(Mod.loc("textures/screens/vehicle_weapon/ap_shell.png")),
                         // HE
                         new CannonShellWeapon()
                                 .hitDamage(VehicleConfig.YX_100_HE_CANNON_DAMAGE.get())
@@ -110,7 +110,7 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
                                 .velocity(25)
                                 .sound(ModSounds.INTO_CANNON.get())
                                 .ammo(ModItems.HE_5_INCHES.get())
-                                .icon(ModUtils.loc("textures/screens/vehicle_weapon/he_shell.png")),
+                                .icon(Mod.loc("textures/screens/vehicle_weapon/he_shell.png")),
                 },
                 new VehicleWeapon[]{
                         // 机枪
@@ -120,7 +120,7 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
                                 .zoom(false)
                                 .bypassArmorRate(0.4f)
                                 .ammo(ModItems.HEAVY_AMMO.get())
-                                .icon(ModUtils.loc("textures/screens/vehicle_weapon/gun_12_7mm.png")),
+                                .icon(Mod.loc("textures/screens/vehicle_weapon/gun_12_7mm.png")),
                 }
         };
     }
@@ -888,6 +888,6 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
 
     @Override
     public ResourceLocation getVehicleIcon() {
-        return ModUtils.loc("textures/vehicle_icon/yx_100_icon.png");
+        return Mod.loc("textures/vehicle_icon/yx_100_icon.png");
     }
 }

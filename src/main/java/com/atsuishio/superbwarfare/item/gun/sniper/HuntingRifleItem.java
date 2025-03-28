@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.item.gun.sniper;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.renderer.item.HuntingRifleItemRenderer;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModItems;
@@ -89,7 +89,7 @@ public class HuntingRifleItem extends GunItem implements GeoItem {
 
     @Override
     public ResourceLocation getGunIcon() {
-        return ModUtils.loc("textures/gun_icon/hunting_rifle_icon.png");
+        return Mod.loc("textures/gun_icon/hunting_rifle_icon.png");
     }
 
     @Override

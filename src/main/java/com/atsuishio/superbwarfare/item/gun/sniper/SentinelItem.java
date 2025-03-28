@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.item.gun.sniper;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.renderer.item.SentinelItemRenderer;
 import com.atsuishio.superbwarfare.client.tooltip.component.SentinelImageComponent;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
@@ -175,7 +175,7 @@ public class SentinelItem extends GunItem implements GeoItem {
 
     @Override
     public ResourceLocation getGunIcon() {
-        return ModUtils.loc("textures/gun_icon/sentinel_icon.png");
+        return Mod.loc("textures/gun_icon/sentinel_icon.png");
     }
 
     @Override

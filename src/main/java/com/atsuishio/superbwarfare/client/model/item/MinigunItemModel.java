@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.client.model.item;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModTags;
@@ -19,17 +19,17 @@ public class MinigunItemModel extends GeoModel<MinigunItem> {
 
     @Override
     public ResourceLocation getAnimationResource(MinigunItem animatable) {
-        return ModUtils.loc("animations/minigun.animation.json");
+        return Mod.loc("animations/minigun.animation.json");
     }
 
     @Override
     public ResourceLocation getModelResource(MinigunItem animatable) {
-        return ModUtils.loc("geo/minigun.geo.json");
+        return Mod.loc("geo/minigun.geo.json");
     }
 
     @Override
     public ResourceLocation getTextureResource(MinigunItem animatable) {
-        return ModUtils.loc("textures/item/minigun.png");
+        return Mod.loc("textures/item/minigun.png");
     }
 
     @Override

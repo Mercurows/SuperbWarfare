@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.item.gun.rifle;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.capability.ModCapabilities;
 import com.atsuishio.superbwarfare.client.renderer.item.Mk14ItemRenderer;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
@@ -174,7 +174,7 @@ public class Mk14Item extends GunItem implements GeoItem {
 
     @Override
     public ResourceLocation getGunIcon() {
-        return ModUtils.loc("textures/gun_icon/mk14ebr_icon.png");
+        return Mod.loc("textures/gun_icon/mk14ebr_icon.png");
     }
 
     @Override

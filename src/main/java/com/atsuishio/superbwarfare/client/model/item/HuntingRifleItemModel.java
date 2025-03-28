@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.client.model.item;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.AnimationHelper;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
@@ -19,17 +19,17 @@ public class HuntingRifleItemModel extends GeoModel<HuntingRifleItem> {
 
     @Override
     public ResourceLocation getAnimationResource(HuntingRifleItem animatable) {
-        return ModUtils.loc("animations/hunting_rifle.animation.json");
+        return Mod.loc("animations/hunting_rifle.animation.json");
     }
 
     @Override
     public ResourceLocation getModelResource(HuntingRifleItem animatable) {
-        return ModUtils.loc("geo/hunting_rifle.geo.json");
+        return Mod.loc("geo/hunting_rifle.geo.json");
     }
 
     @Override
     public ResourceLocation getTextureResource(HuntingRifleItem animatable) {
-        return ModUtils.loc("textures/item/hunting_rifle.png");
+        return Mod.loc("textures/item/hunting_rifle.png");
     }
 
     @Override

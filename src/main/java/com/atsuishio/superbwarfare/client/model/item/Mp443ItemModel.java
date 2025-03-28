@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.client.model.item;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.AnimationHelper;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
@@ -20,17 +20,17 @@ public class Mp443ItemModel extends GeoModel<Mp443Item> {
 
     @Override
     public ResourceLocation getAnimationResource(Mp443Item animatable) {
-        return ModUtils.loc("animations/glock17.animation.json");
+        return Mod.loc("animations/glock17.animation.json");
     }
 
     @Override
     public ResourceLocation getModelResource(Mp443Item animatable) {
-        return ModUtils.loc("geo/mp443.geo.json");
+        return Mod.loc("geo/mp443.geo.json");
     }
 
     @Override
     public ResourceLocation getTextureResource(Mp443Item animatable) {
-        return ModUtils.loc("textures/item/mp443.png");
+        return Mod.loc("textures/item/mp443.png");
     }
 
     @Override

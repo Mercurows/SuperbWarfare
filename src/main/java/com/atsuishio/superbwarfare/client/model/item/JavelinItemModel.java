@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.client.model.item;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModTags;
@@ -19,17 +19,17 @@ public class JavelinItemModel extends GeoModel<JavelinItem> {
 
     @Override
     public ResourceLocation getAnimationResource(JavelinItem animatable) {
-        return ModUtils.loc("animations/javelin.animation.json");
+        return Mod.loc("animations/javelin.animation.json");
     }
 
     @Override
     public ResourceLocation getModelResource(JavelinItem animatable) {
-        return ModUtils.loc("geo/javelin.geo.json");
+        return Mod.loc("geo/javelin.geo.json");
     }
 
     @Override
     public ResourceLocation getTextureResource(JavelinItem animatable) {
-        return ModUtils.loc("textures/item/javelin.png");
+        return Mod.loc("textures/item/javelin.png");
     }
 
     @Override

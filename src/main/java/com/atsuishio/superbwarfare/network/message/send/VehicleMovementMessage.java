@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.network.message.send;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ControllableVehicle;
 import com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
@@ -17,7 +17,7 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.NotNull;
 
 public record VehicleMovementMessage(short keys) implements CustomPacketPayload {
-    public static final Type<VehicleMovementMessage> TYPE = new Type<>(ModUtils.loc("vehicle_movement"));
+    public static final Type<VehicleMovementMessage> TYPE = new Type<>(Mod.loc("vehicle_movement"));
 
     public static final StreamCodec<ByteBuf, VehicleMovementMessage> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.SHORT,

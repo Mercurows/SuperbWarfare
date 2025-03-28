@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.client.model.item;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.AnimationHelper;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
@@ -34,17 +34,17 @@ public class Qbz95ItemModel extends GeoModel<Qbz95Item> {
 
     @Override
     public ResourceLocation getAnimationResource(Qbz95Item animatable) {
-        return ModUtils.loc("animations/qbz95.animation.json");
+        return Mod.loc("animations/qbz95.animation.json");
     }
 
     @Override
     public ResourceLocation getModelResource(Qbz95Item animatable) {
-        return ModUtils.loc("geo/qbz95.geo.json");
+        return Mod.loc("geo/qbz95.geo.json");
     }
 
     @Override
     public ResourceLocation getTextureResource(Qbz95Item animatable) {
-        return ModUtils.loc("textures/item/qbz95.png");
+        return Mod.loc("textures/item/qbz95.png");
     }
 
     @Override

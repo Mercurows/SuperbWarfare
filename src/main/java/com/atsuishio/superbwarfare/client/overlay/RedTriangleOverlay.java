@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.client.overlay;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
 import com.atsuishio.superbwarfare.init.ModItems;
@@ -22,7 +22,7 @@ import net.neoforged.neoforge.client.event.RenderGuiEvent;
 @EventBusSubscriber(value = Dist.CLIENT)
 public class RedTriangleOverlay {
 
-    private static final ResourceLocation TRIANGLE = ModUtils.loc("textures/screens/red_triangle.png");
+    private static final ResourceLocation TRIANGLE = Mod.loc("textures/screens/red_triangle.png");
 
     @SubscribeEvent
     public static void eventHandler(RenderGuiEvent.Pre event) {

@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.compat.jade.providers;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.compat.jade.elements.WrenchHealthElement;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import net.minecraft.resources.ResourceLocation;
@@ -12,7 +12,7 @@ import snownee.jade.api.config.IPluginConfig;
 public enum VehicleHealthProvider implements IEntityComponentProvider {
     INSTANCE;
 
-    private static final ResourceLocation ID = ModUtils.loc("vehicle_health");
+    private static final ResourceLocation ID = Mod.loc("vehicle_health");
 
     public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
         // 对EntityHealthAndArmorProvider的拙劣模仿罢了

@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.datagen;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.init.ModBlocks;
 import com.atsuishio.superbwarfare.init.ModTags;
 import net.minecraft.core.HolderLookup;
@@ -19,7 +19,7 @@ import java.util.concurrent.CompletableFuture;
 public class ModBlockTagProvider extends BlockTagsProvider {
 
     public ModBlockTagProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, @Nullable ExistingFileHelper existingFileHelper) {
-        super(output, lookupProvider, ModUtils.MODID, existingFileHelper);
+        super(output, lookupProvider, Mod.MODID, existingFileHelper);
     }
 
     @Override

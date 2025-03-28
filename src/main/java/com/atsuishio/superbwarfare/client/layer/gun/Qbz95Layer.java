@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.client.layer.gun;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.item.gun.rifle.Qbz95Item;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -13,7 +13,7 @@ import software.bernie.geckolib.renderer.GeoRenderer;
 import software.bernie.geckolib.renderer.layer.GeoRenderLayer;
 
 public class Qbz95Layer extends GeoRenderLayer<Qbz95Item> {
-    private static final ResourceLocation LAYER = ModUtils.loc("textures/item/qbz95_e.png");
+    private static final ResourceLocation LAYER = Mod.loc("textures/item/qbz95_e.png");
 
     public Qbz95Layer(GeoRenderer<Qbz95Item> entityRenderer) {
         super(entityRenderer);

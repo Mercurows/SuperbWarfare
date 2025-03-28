@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.entity;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.*;
@@ -197,7 +197,7 @@ public class ClaymoreEntity extends Entity implements GeoEntity, OwnableEntity {
                     this.discard();
                 }
 
-                ModUtils.queueServerWork(1, () -> {
+                Mod.queueServerWork(1, () -> {
                     if (!level.isClientSide()) {
                         triggerExplode();
                     }

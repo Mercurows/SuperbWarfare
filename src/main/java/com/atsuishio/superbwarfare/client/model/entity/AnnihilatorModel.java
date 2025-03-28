@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.client.model.entity;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.entity.vehicle.AnnihilatorEntity;
 import net.minecraft.client.Minecraft;
@@ -19,7 +19,7 @@ public class AnnihilatorModel extends GeoModel<AnnihilatorEntity> {
 
     @Override
     public ResourceLocation getAnimationResource(AnnihilatorEntity entity) {
-        return ModUtils.loc("animations/annihilator.animation.json");
+        return Mod.loc("animations/annihilator.animation.json");
     }
 
     @Override
@@ -33,15 +33,15 @@ public class AnnihilatorModel extends GeoModel<AnnihilatorEntity> {
         }
 
         if (distance < 64) {
-            return ModUtils.loc("geo/annihilator.geo.json");
+            return Mod.loc("geo/annihilator.geo.json");
         } else {
-            return ModUtils.loc("geo/annihilator.lod1.geo.json");
+            return Mod.loc("geo/annihilator.lod1.geo.json");
         }
     }
 
     @Override
     public ResourceLocation getTextureResource(AnnihilatorEntity entity) {
-        return ModUtils.loc("textures/entity/annihilator.png");
+        return Mod.loc("textures/entity/annihilator.png");
     }
 
     @Override

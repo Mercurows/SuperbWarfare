@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.client.model.item;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModTags;
@@ -19,17 +19,17 @@ public class BocekItemModel extends GeoModel<BocekItem> {
 
     @Override
     public ResourceLocation getAnimationResource(BocekItem animatable) {
-        return ModUtils.loc("animations/bocek.animation.json");
+        return Mod.loc("animations/bocek.animation.json");
     }
 
     @Override
     public ResourceLocation getModelResource(BocekItem animatable) {
-        return ModUtils.loc("geo/bocek.geo.json");
+        return Mod.loc("geo/bocek.geo.json");
     }
 
     @Override
     public ResourceLocation getTextureResource(BocekItem animatable) {
-        return ModUtils.loc("textures/item/bocek.png");
+        return Mod.loc("textures/item/bocek.png");
     }
 
     @Override

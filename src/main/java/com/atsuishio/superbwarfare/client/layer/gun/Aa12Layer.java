@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.client.layer.gun;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.item.gun.shotgun.Aa12Item;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -14,7 +14,7 @@ import software.bernie.geckolib.renderer.layer.GeoRenderLayer;
 
 public class Aa12Layer extends GeoRenderLayer<Aa12Item> {
 
-    private static final ResourceLocation LAYER = ModUtils.loc("textures/item/aa12_e.png");
+    private static final ResourceLocation LAYER = Mod.loc("textures/item/aa12_e.png");
 
     public Aa12Layer(GeoRenderer<Aa12Item> entityRenderer) {
         super(entityRenderer);

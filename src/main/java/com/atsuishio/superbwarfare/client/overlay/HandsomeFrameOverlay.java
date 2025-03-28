@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.client.overlay;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.capability.ModCapabilities;
 import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
@@ -31,10 +31,10 @@ import java.util.List;
 @EventBusSubscriber(value = Dist.CLIENT)
 public class HandsomeFrameOverlay {
 
-    private static final ResourceLocation FRAME = ModUtils.loc("textures/screens/frame/frame.png");
-    private static final ResourceLocation FRAME_WEAK = ModUtils.loc("textures/screens/frame/frame_weak.png");
-    private static final ResourceLocation FRAME_TARGET = ModUtils.loc("textures/screens/frame/frame_target.png");
-    private static final ResourceLocation FRAME_LOCK = ModUtils.loc("textures/screens/frame/frame_lock.png");
+    private static final ResourceLocation FRAME = Mod.loc("textures/screens/frame/frame.png");
+    private static final ResourceLocation FRAME_WEAK = Mod.loc("textures/screens/frame/frame_weak.png");
+    private static final ResourceLocation FRAME_TARGET = Mod.loc("textures/screens/frame/frame_target.png");
+    private static final ResourceLocation FRAME_LOCK = Mod.loc("textures/screens/frame/frame_lock.png");
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void eventHandler(RenderGuiEvent.Pre event) {

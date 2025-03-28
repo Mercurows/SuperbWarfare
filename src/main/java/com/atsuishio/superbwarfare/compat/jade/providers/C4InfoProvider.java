@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.compat.jade.providers;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.entity.projectile.C4Entity;
 import net.minecraft.ChatFormatting;
@@ -14,7 +14,7 @@ import snownee.jade.api.config.IPluginConfig;
 public enum C4InfoProvider implements IEntityComponentProvider {
     INSTANCE;
 
-    private static final ResourceLocation ID = ModUtils.loc("c4_info");
+    private static final ResourceLocation ID = Mod.loc("c4_info");
 
     public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
         var c4 = (C4Entity) accessor.getEntity();

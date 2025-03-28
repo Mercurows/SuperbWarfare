@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.client.layer.projectile;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.entity.projectile.SmallCannonShellEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -13,7 +13,7 @@ import software.bernie.geckolib.renderer.GeoRenderer;
 import software.bernie.geckolib.renderer.layer.GeoRenderLayer;
 
 public class SmallCannonShellLayer extends GeoRenderLayer<SmallCannonShellEntity> {
-    private static final ResourceLocation LAYER = ModUtils.loc("textures/entity/cannon_shell_e.png");
+    private static final ResourceLocation LAYER = Mod.loc("textures/entity/cannon_shell_e.png");
 
     public SmallCannonShellLayer(GeoRenderer<SmallCannonShellEntity> entityRenderer) {
         super(entityRenderer);

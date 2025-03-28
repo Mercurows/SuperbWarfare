@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.client.model.entity;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.entity.projectile.HandGrenadeEntity;
 import net.minecraft.resources.ResourceLocation;
 import software.bernie.geckolib.model.GeoModel;
@@ -14,11 +14,11 @@ public class HandGrenadeEntityModel extends GeoModel<HandGrenadeEntity> {
 
     @Override
     public ResourceLocation getModelResource(HandGrenadeEntity entity) {
-        return ModUtils.loc("geo/hand_grenade.geo.json");
+        return Mod.loc("geo/hand_grenade.geo.json");
     }
 
     @Override
     public ResourceLocation getTextureResource(HandGrenadeEntity entity) {
-        return ModUtils.loc("textures/entity/hand_grenade.png");
+        return Mod.loc("textures/entity/hand_grenade.png");
     }
 }

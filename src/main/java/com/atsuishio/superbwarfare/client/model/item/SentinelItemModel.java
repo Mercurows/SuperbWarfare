@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.client.model.item;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModTags;
@@ -20,17 +20,17 @@ public class SentinelItemModel extends GeoModel<SentinelItem> {
 
     @Override
     public ResourceLocation getAnimationResource(SentinelItem animatable) {
-        return ModUtils.loc("animations/sentinel.animation.json");
+        return Mod.loc("animations/sentinel.animation.json");
     }
 
     @Override
     public ResourceLocation getModelResource(SentinelItem animatable) {
-        return ModUtils.loc("geo/sentinel.geo.json");
+        return Mod.loc("geo/sentinel.geo.json");
     }
 
     @Override
     public ResourceLocation getTextureResource(SentinelItem animatable) {
-        return ModUtils.loc("textures/item/sentinel.png");
+        return Mod.loc("textures/item/sentinel.png");
     }
 
     @Override

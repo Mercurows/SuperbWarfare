@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.init;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.item.ArmorPlate;
 import com.atsuishio.superbwarfare.item.BatteryItem;
 import com.atsuishio.superbwarfare.item.C4Bomb;
@@ -23,7 +23,7 @@ import static com.atsuishio.superbwarfare.item.ContainerBlockItem.CONTAINER_ENTI
 @SuppressWarnings("unused")
 public class ModTabs {
 
-    public static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, ModUtils.MODID);
+    public static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, Mod.MODID);
 
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> GUN_TAB = TABS.register("guns",
             () -> CreativeModeTab.builder()

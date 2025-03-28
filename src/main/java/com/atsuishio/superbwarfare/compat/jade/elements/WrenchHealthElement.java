@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.compat.jade.elements;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -27,7 +27,7 @@ public class WrenchHealthElement extends Element {
         return new Vec2(8F + font.width(this.text), 10.0F);
     }
 
-    private static final ResourceLocation WRENCH_ICON = ModUtils.loc("textures/screens/vehicle_health.png");
+    private static final ResourceLocation WRENCH_ICON = Mod.loc("textures/screens/vehicle_health.png");
 
 
     @Override

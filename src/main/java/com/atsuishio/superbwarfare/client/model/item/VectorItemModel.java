@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.client.model.item;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.AnimationHelper;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModTags;
@@ -27,17 +27,17 @@ public class VectorItemModel extends GeoModel<VectorItem> {
 
     @Override
     public ResourceLocation getAnimationResource(VectorItem animatable) {
-        return ModUtils.loc("animations/vector.animation.json");
+        return Mod.loc("animations/vector.animation.json");
     }
 
     @Override
     public ResourceLocation getModelResource(VectorItem animatable) {
-        return ModUtils.loc("geo/vector.geo.json");
+        return Mod.loc("geo/vector.geo.json");
     }
 
     @Override
     public ResourceLocation getTextureResource(VectorItem animatable) {
-        return ModUtils.loc("textures/item/vector.png");
+        return Mod.loc("textures/item/vector.png");
     }
 
     @Override

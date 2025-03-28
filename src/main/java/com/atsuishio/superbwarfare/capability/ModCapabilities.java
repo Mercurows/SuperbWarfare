@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.capability;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.block.entity.ChargingStationBlockEntity;
 import com.atsuishio.superbwarfare.block.entity.CreativeChargingStationBlockEntity;
 import com.atsuishio.superbwarfare.capability.energy.BlockEnergyStorageProvider;
@@ -20,11 +20,11 @@ import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.EntityCapability;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 
-@EventBusSubscriber(modid = ModUtils.MODID, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = Mod.MODID, bus = EventBusSubscriber.Bus.MOD)
 public class ModCapabilities {
 
-    public static final EntityCapability<LaserCapability, Void> LASER_CAPABILITY = EntityCapability.createVoid(ModUtils.loc("laser_capability"), LaserCapability.class);
-    public static final EntityCapability<PlayerVariable, Void> PLAYER_VARIABLE = EntityCapability.createVoid(ModUtils.loc("player_variable"), PlayerVariable.class);
+    public static final EntityCapability<LaserCapability, Void> LASER_CAPABILITY = EntityCapability.createVoid(Mod.loc("laser_capability"), LaserCapability.class);
+    public static final EntityCapability<PlayerVariable, Void> PLAYER_VARIABLE = EntityCapability.createVoid(Mod.loc("player_variable"), PlayerVariable.class);
 
     @SubscribeEvent
     public static void registerCapabilities(RegisterCapabilitiesEvent event) {

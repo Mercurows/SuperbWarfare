@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.client.model.item;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.AnimationHelper;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
@@ -20,17 +20,17 @@ public class RpkItemModel extends GeoModel<RpkItem> {
 
     @Override
     public ResourceLocation getAnimationResource(RpkItem animatable) {
-        return ModUtils.loc("animations/rpk.animation.json");
+        return Mod.loc("animations/rpk.animation.json");
     }
 
     @Override
     public ResourceLocation getModelResource(RpkItem animatable) {
-        return ModUtils.loc("geo/rpk.geo.json");
+        return Mod.loc("geo/rpk.geo.json");
     }
 
     @Override
     public ResourceLocation getTextureResource(RpkItem animatable) {
-        return ModUtils.loc("textures/item/rpk.png");
+        return Mod.loc("textures/item/rpk.png");
     }
 
     @Override

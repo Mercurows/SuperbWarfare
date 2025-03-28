@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.client.screens;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.block.entity.ChargingStationBlockEntity;
 import com.atsuishio.superbwarfare.menu.ChargingStationMenu;
 import net.minecraft.client.gui.GuiGraphics;
@@ -21,7 +21,7 @@ import java.util.Optional;
 @OnlyIn(Dist.CLIENT)
 public class ChargingStationScreen extends AbstractContainerScreen<ChargingStationMenu> {
 
-    private static final ResourceLocation TEXTURE = ModUtils.loc("textures/gui/charging_station.png");
+    private static final ResourceLocation TEXTURE = Mod.loc("textures/gui/charging_station.png");
 
     public ChargingStationScreen(ChargingStationMenu pMenu, Inventory pPlayerInventory, Component pTitle) {
         super(pMenu, pPlayerInventory, pTitle);

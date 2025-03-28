@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.network.message.receive;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.client.KillMessageConfig;
 import com.atsuishio.superbwarfare.event.KillMessageHandler;
 import com.atsuishio.superbwarfare.tools.PlayerKillRecord;
@@ -62,7 +62,7 @@ public class PlayerGunKillMessage implements CustomPacketPayload {
         this.location = location;
     }
 
-    public static final Type<PlayerGunKillMessage> TYPE = new Type<>(ModUtils.loc("player_gun_kill"));
+    public static final Type<PlayerGunKillMessage> TYPE = new Type<>(Mod.loc("player_gun_kill"));
 
     public static final StreamCodec<ByteBuf, PlayerGunKillMessage> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.INT,

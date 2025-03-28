@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.client.model.item;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.AnimationHelper;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
@@ -31,17 +31,17 @@ public class TracheliumItemModel extends GeoModel<Trachelium> {
 
     @Override
     public ResourceLocation getAnimationResource(Trachelium animatable) {
-        return ModUtils.loc("animations/trachelium.animation.json");
+        return Mod.loc("animations/trachelium.animation.json");
     }
 
     @Override
     public ResourceLocation getModelResource(Trachelium animatable) {
-        return ModUtils.loc("geo/trachelium.geo.json");
+        return Mod.loc("geo/trachelium.geo.json");
     }
 
     @Override
     public ResourceLocation getTextureResource(Trachelium animatable) {
-        return ModUtils.loc("textures/item/trachelium_texture.png");
+        return Mod.loc("textures/item/trachelium_texture.png");
     }
 
     @Override

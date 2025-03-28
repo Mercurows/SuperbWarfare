@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.client.screens;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.menu.ReforgingTableMenu;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -19,7 +19,7 @@ import org.jetbrains.annotations.NotNull;
 @OnlyIn(Dist.CLIENT)
 public class ReforgingTableScreen extends AbstractContainerScreen<ReforgingTableMenu> {
 
-    private static final ResourceLocation TEXTURE = ModUtils.loc("textures/gui/reforging_table.png");
+    private static final ResourceLocation TEXTURE = Mod.loc("textures/gui/reforging_table.png");
 
     public ReforgingTableScreen(ReforgingTableMenu pMenu, Inventory pPlayerInventory, Component pTitle) {
         super(pMenu, pPlayerInventory, pTitle);

@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.client.overlay;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
@@ -39,7 +39,7 @@ import static com.atsuishio.superbwarfare.entity.vehicle.DroneEntity.KAMIKAZE_MO
 public class DroneUIOverlay {
 
     public static int MAX_DISTANCE = 256;
-    private static final ResourceLocation FRAME = ModUtils.loc("textures/screens/frame/frame.png");
+    private static final ResourceLocation FRAME = Mod.loc("textures/screens/frame/frame.png");
 
     @SubscribeEvent
     public static void eventHandler(RenderGuiEvent.Pre event) {
@@ -67,10 +67,10 @@ public class DroneUIOverlay {
 
         var tag = NBTTool.getTag(stack);
         if (stack.is(ModItems.MONITOR.get()) && tag.getBoolean("Using") && tag.getBoolean("Linked")) {
-            guiGraphics.blit(ModUtils.loc("textures/screens/drone.png"), w / 2 - 16, h / 2 - 16, 0, 0, 32, 32, 32, 32);
-            guiGraphics.blit(ModUtils.loc("textures/screens/drone_fov.png"), w / 2 + 100, h / 2 - 64, 0, 0, 64, 129, 64, 129);
+            guiGraphics.blit(Mod.loc("textures/screens/drone.png"), w / 2 - 16, h / 2 - 16, 0, 0, 32, 32, 32, 32);
+            guiGraphics.blit(Mod.loc("textures/screens/drone_fov.png"), w / 2 + 100, h / 2 - 64, 0, 0, 64, 129, 64, 129);
 
-            preciseBlit(guiGraphics, ModUtils.loc("textures/screens/drone_fov_move.png"), (float) w / 2 + 100, (float) (h / 2 - 64 - ((ClientEventHandler.droneFovLerp - 1) * 23.8)), 0, 0, 64, 129, 64, 129);
+            preciseBlit(guiGraphics, Mod.loc("textures/screens/drone_fov_move.png"), (float) w / 2 + 100, (float) (h / 2 - 64 - ((ClientEventHandler.droneFovLerp - 1) * 23.8)), 0, 0, 64, 129, 64, 129);
             guiGraphics.drawString(mc.font, Component.literal(FormatTool.format1D(ClientEventHandler.droneFovLerp, "x")),
                     w / 2 + 144, h / 2 + 56 - (int) ((ClientEventHandler.droneFovLerp - 1) * 23.8), -1, false);
 

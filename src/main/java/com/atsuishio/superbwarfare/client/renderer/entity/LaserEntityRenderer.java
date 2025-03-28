@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.client.renderer.entity;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.entity.projectile.LaserEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -27,7 +27,7 @@ public class LaserEntityRenderer extends AbstractLaserEntityRenderer<LaserEntity
     private static final float TEXTURE_WIDTH = 256;
     private static final float TEXTURE_HEIGHT = 32;
 
-    public static final ResourceLocation TEXTURE = ModUtils.loc("textures/entity/temp_laser.png");
+    public static final ResourceLocation TEXTURE = Mod.loc("textures/entity/temp_laser.png");
 
     public LaserEntityRenderer(EntityRendererProvider.Context context) {
         super(context, 0.8f, 0.6f);

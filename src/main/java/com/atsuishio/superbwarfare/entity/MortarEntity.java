@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.entity;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.gui.RangeHelper;
 import com.atsuishio.superbwarfare.entity.projectile.MortarShellEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
@@ -122,7 +122,7 @@ public class MortarEntity extends VehicleEntity implements GeoEntity {
                 this.level().playSound(null, this.getX(), this.getY(), this.getZ(), ModSounds.MORTAR_FIRE.get(), SoundSource.PLAYERS, 8f, 1f);
                 this.level().playSound(null, this.getX(), this.getY(), this.getZ(), ModSounds.MORTAR_DISTANT.get(), SoundSource.PLAYERS, 32f, 1f);
             }
-            ModUtils.queueServerWork(20, () -> {
+            Mod.queueServerWork(20, () -> {
                 Level level = this.level();
                 if (level instanceof ServerLevel server) {
                     MortarShellEntity entityToSpawn = shell.createShell(player, level, stack);

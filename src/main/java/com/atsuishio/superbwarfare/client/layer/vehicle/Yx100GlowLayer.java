@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.client.layer.vehicle;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.ModRenderTypes;
 import com.atsuishio.superbwarfare.entity.vehicle.Yx100Entity;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -15,7 +15,7 @@ import software.bernie.geckolib.renderer.layer.GeoRenderLayer;
 
 public class Yx100GlowLayer extends GeoRenderLayer<Yx100Entity> {
 
-    private static final ResourceLocation LAYER = ModUtils.loc("textures/entity/yx_100_glow.png");
+    private static final ResourceLocation LAYER = Mod.loc("textures/entity/yx_100_glow.png");
 
     public Yx100GlowLayer(GeoRenderer<Yx100Entity> entityRenderer) {
         super(entityRenderer);

@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.client.model.entity;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.entity.vehicle.Mk42Entity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
@@ -16,7 +16,7 @@ public class Mk42Model extends GeoModel<Mk42Entity> {
 
     @Override
     public ResourceLocation getAnimationResource(Mk42Entity entity) {
-        return ModUtils.loc("animations/mk_42.animation.json");
+        return Mod.loc("animations/mk_42.animation.json");
     }
 
     @Override
@@ -30,17 +30,17 @@ public class Mk42Model extends GeoModel<Mk42Entity> {
         }
 
         if (distance < 32) {
-            return ModUtils.loc("geo/sherman.geo.json");
+            return Mod.loc("geo/sherman.geo.json");
         } else if (distance < 64) {
-            return ModUtils.loc("geo/sherman_lod1.geo.json");
+            return Mod.loc("geo/sherman_lod1.geo.json");
         } else {
-            return ModUtils.loc("geo/sherman_lod2.geo.json");
+            return Mod.loc("geo/sherman_lod2.geo.json");
         }
     }
 
     @Override
     public ResourceLocation getTextureResource(Mk42Entity entity) {
-        return ModUtils.loc("textures/entity/mk42.png");
+        return Mod.loc("textures/entity/mk42.png");
     }
 
     @Override

@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.item.gun.launcher;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.capability.ModCapabilities;
 import com.atsuishio.superbwarfare.client.renderer.item.JavelinItemRenderer;
 import com.atsuishio.superbwarfare.client.tooltip.component.LauncherImageComponent;
@@ -212,7 +212,7 @@ public class JavelinItem extends GunItem implements GeoItem, SpecialFireWeapon {
 
     @Override
     public ResourceLocation getGunIcon() {
-        return ModUtils.loc("textures/gun_icon/javelin_icon.png");
+        return Mod.loc("textures/gun_icon/javelin_icon.png");
     }
 
     @Override
@@ -296,7 +296,7 @@ public class JavelinItem extends GunItem implements GeoItem, SpecialFireWeapon {
         tag.putInt("SeekTime", 0);
         tag.putString("TargetEntity", "none");
         if (player instanceof ServerPlayer serverPlayer) {
-            var clientboundstopsoundpacket = new ClientboundStopSoundPacket(ModUtils.loc("javelin_lock"), SoundSource.PLAYERS);
+            var clientboundstopsoundpacket = new ClientboundStopSoundPacket(Mod.loc("javelin_lock"), SoundSource.PLAYERS);
             serverPlayer.connection.send(clientboundstopsoundpacket);
         }
     }

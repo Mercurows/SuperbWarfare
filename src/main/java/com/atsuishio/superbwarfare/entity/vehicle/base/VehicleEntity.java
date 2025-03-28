@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.entity.vehicle.base;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.VehicleWeapon;
@@ -829,7 +829,7 @@ public abstract class VehicleEntity extends Entity {
     }
 
     public ResourceLocation getVehicleIcon() {
-        return ModUtils.loc("textures/gun_icon/default_icon.png");
+        return Mod.loc("textures/gun_icon/default_icon.png");
     }
 
     public boolean allowFreeCam() {

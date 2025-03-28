@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.datagen;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.init.ModBlocks;
 import com.atsuishio.superbwarfare.init.ModItems;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -16,7 +16,7 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 @SuppressWarnings({"ConstantConditions", "UnusedReturnValue", "SameParameterValue", "unused"})
 public class ModItemModelProvider extends ItemModelProvider {
     public ModItemModelProvider(PackOutput output, ExistingFileHelper existingFileHelper) {
-        super(output, ModUtils.MODID, existingFileHelper);
+        super(output, Mod.MODID, existingFileHelper);
     }
 
     @Override
@@ -167,31 +167,31 @@ public class ModItemModelProvider extends ItemModelProvider {
 
     private ItemModelBuilder simpleItem(DeferredHolder<Item, ? extends Item> item, String location) {
         return withExistingParent(item.getId().getPath(), ResourceLocation.withDefaultNamespace("item/generated"))
-                .texture("layer0", ModUtils.loc("item/" + location + item.getId().getPath()));
+                .texture("layer0", Mod.loc("item/" + location + item.getId().getPath()));
     }
 
     private ItemModelBuilder simpleItem(DeferredHolder<Item, ? extends Item> item, String location, String renderType) {
         return withExistingParent(item.getId().getPath(), ResourceLocation.withDefaultNamespace("item/generated"))
-                .texture("layer0", ModUtils.loc("item/" + location + item.getId().getPath())).renderType(renderType);
+                .texture("layer0", Mod.loc("item/" + location + item.getId().getPath())).renderType(renderType);
     }
 
     public void evenSimplerBlockItem(DeferredHolder<Block, Block> block) {
-        this.withExistingParent(ModUtils.MODID + ":" + BuiltInRegistries.BLOCK.getKey(block.get()).getPath(),
+        this.withExistingParent(Mod.MODID + ":" + BuiltInRegistries.BLOCK.getKey(block.get()).getPath(),
                 modLoc("block/" + BuiltInRegistries.BLOCK.getKey(block.get()).getPath()));
     }
 
     private ItemModelBuilder gunBlueprintItem(DeferredHolder<Item, Item> item) {
         return withExistingParent(item.getId().getPath(), ResourceLocation.withDefaultNamespace("item/generated"))
-                .texture("layer0", ModUtils.loc("item/gun_blueprint"));
+                .texture("layer0", Mod.loc("item/gun_blueprint"));
     }
 
     private ItemModelBuilder cannonBlueprintItem(DeferredHolder<Item, Item> item) {
         return withExistingParent(item.getId().getPath(), ResourceLocation.withDefaultNamespace("item/generated"))
-                .texture("layer0", ModUtils.loc("item/cannon_blueprint"));
+                .texture("layer0", Mod.loc("item/cannon_blueprint"));
     }
 
     private ItemModelBuilder handheldItem(DeferredHolder<Item, Item> item) {
         return withExistingParent(item.getId().getPath(), ResourceLocation.withDefaultNamespace("item/handheld"))
-                .texture("layer0", ModUtils.loc("item/" + item.getId().getPath()));
+                .texture("layer0", Mod.loc("item/" + item.getId().getPath()));
     }
 }

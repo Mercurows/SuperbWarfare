@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.init;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.item.SmallContainerBlockItem;
 import com.google.common.collect.ImmutableSet;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
@@ -23,11 +23,11 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.List;
 
-@EventBusSubscriber(modid = ModUtils.MODID)
+@EventBusSubscriber(modid = Mod.MODID)
 public class ModVillagers {
 
-    public static final DeferredRegister<PoiType> POI_TYPES = DeferredRegister.create(BuiltInRegistries.POINT_OF_INTEREST_TYPE, ModUtils.MODID);
-    public static final DeferredRegister<VillagerProfession> VILLAGER_PROFESSIONS = DeferredRegister.create(BuiltInRegistries.VILLAGER_PROFESSION, ModUtils.MODID);
+    public static final DeferredRegister<PoiType> POI_TYPES = DeferredRegister.create(BuiltInRegistries.POINT_OF_INTEREST_TYPE, Mod.MODID);
+    public static final DeferredRegister<VillagerProfession> VILLAGER_PROFESSIONS = DeferredRegister.create(BuiltInRegistries.VILLAGER_PROFESSION, Mod.MODID);
 
     public static final DeferredHolder<PoiType, PoiType> ARMORY_POI = POI_TYPES.register("armory",
             () -> new PoiType(ImmutableSet.copyOf(ModBlocks.REFORGING_TABLE.get().getStateDefinition().getPossibleStates()), 1, 1));
@@ -251,13 +251,13 @@ public class ModVillagers {
         List<VillagerTrades.ItemListing> rareTrades = event.getRareTrades();
 
         rareTrades.add(new BasicItemListing(new ItemStack(Items.EMERALD, 16),
-                SmallContainerBlockItem.createInstance(ModUtils.loc("containers/blueprints")), 10, 0, 0.05f));
+                SmallContainerBlockItem.createInstance(Mod.loc("containers/blueprints")), 10, 0, 0.05f));
     }
 
     private static Holder<Item> getItemHolder(String name) {
-        var item = BuiltInRegistries.ITEM.getHolder(ModUtils.loc(name));
+        var item = BuiltInRegistries.ITEM.getHolder(Mod.loc(name));
         if (item.isEmpty()) {
-            ModUtils.LOGGER.error("Item {} not found", name);
+            Mod.LOGGER.error("Item {} not found", name);
             return Holder.direct(Items.AIR);
         }
 

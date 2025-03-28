@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.item.gun;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.capability.ModCapabilities;
 import com.atsuishio.superbwarfare.client.PoseTool;
 import com.atsuishio.superbwarfare.client.tooltip.component.GunImageComponent;
@@ -42,7 +42,7 @@ import java.util.Set;
 
 import static com.atsuishio.superbwarfare.tools.NBTTool.saveTag;
 
-@EventBusSubscriber(modid = ModUtils.MODID, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = Mod.MODID, bus = EventBusSubscriber.Bus.MOD)
 public abstract class GunItem extends Item implements CustomRendererItem {
 
     public GunItem(Properties properties) {
@@ -154,7 +154,7 @@ public abstract class GunItem extends Item implements CustomRendererItem {
     }
 
     public ResourceLocation getGunIcon() {
-        return ModUtils.loc("textures/gun_icon/default_icon.png");
+        return Mod.loc("textures/gun_icon/default_icon.png");
     }
 
     public String getGunDisplayName() {

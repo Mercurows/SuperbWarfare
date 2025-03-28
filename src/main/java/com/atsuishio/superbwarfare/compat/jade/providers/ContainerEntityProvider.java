@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.compat.jade.providers;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.block.ContainerBlock;
 import com.atsuishio.superbwarfare.block.entity.ContainerBlockEntity;
 import net.minecraft.ChatFormatting;
@@ -15,7 +15,7 @@ import snownee.jade.api.config.IPluginConfig;
 public enum ContainerEntityProvider implements IBlockComponentProvider {
     INSTANCE;
 
-    private static final ResourceLocation ID = ModUtils.loc("container_entity");
+    private static final ResourceLocation ID = Mod.loc("container_entity");
 
     public void appendTooltip(ITooltip iTooltip, BlockAccessor blockAccessor, IPluginConfig iPluginConfig) {
         var container = (ContainerBlockEntity) blockAccessor.getBlockEntity();

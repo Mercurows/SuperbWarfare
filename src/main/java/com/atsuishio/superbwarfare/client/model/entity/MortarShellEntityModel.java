@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.client.model.entity;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.entity.projectile.MortarShellEntity;
 import net.minecraft.resources.ResourceLocation;
 import software.bernie.geckolib.model.GeoModel;
@@ -14,11 +14,11 @@ public class MortarShellEntityModel extends GeoModel<MortarShellEntity> {
 
     @Override
     public ResourceLocation getModelResource(MortarShellEntity entity) {
-        return ModUtils.loc("geo/mortar_shell.geo.json");
+        return Mod.loc("geo/mortar_shell.geo.json");
     }
 
     @Override
     public ResourceLocation getTextureResource(MortarShellEntity entity) {
-        return ModUtils.loc("textures/entity/mortar.png");
+        return Mod.loc("textures/entity/mortar.png");
     }
 }

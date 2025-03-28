@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.client.model.entity;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.entity.projectile.SmallCannonShellEntity;
 import net.minecraft.resources.ResourceLocation;
 import software.bernie.geckolib.animation.AnimationState;
@@ -11,17 +11,17 @@ public class SmallCannonShellModel extends GeoModel<SmallCannonShellEntity> {
 
     @Override
     public ResourceLocation getAnimationResource(SmallCannonShellEntity entity) {
-        return ModUtils.loc("animations/cannon_shell.animation.json");
+        return Mod.loc("animations/cannon_shell.animation.json");
     }
 
     @Override
     public ResourceLocation getModelResource(SmallCannonShellEntity entity) {
-        return ModUtils.loc("geo/cannon_shell.geo.json");
+        return Mod.loc("geo/cannon_shell.geo.json");
     }
 
     @Override
     public ResourceLocation getTextureResource(SmallCannonShellEntity entity) {
-        return ModUtils.loc("textures/entity/cannon_shell.png");
+        return Mod.loc("textures/entity/cannon_shell.png");
     }
 
     @Override

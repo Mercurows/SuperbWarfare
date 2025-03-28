@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.network.message.send;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.capability.ModCapabilities;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -11,7 +11,7 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.NotNull;
 
 public record BreathMessage(boolean messageType) implements CustomPacketPayload {
-    public static final Type<BreathMessage> TYPE = new Type<>(ModUtils.loc("breath"));
+    public static final Type<BreathMessage> TYPE = new Type<>(Mod.loc("breath"));
 
     public static final StreamCodec<ByteBuf, BreathMessage> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.BOOL,

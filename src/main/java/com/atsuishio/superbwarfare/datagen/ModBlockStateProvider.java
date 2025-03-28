@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.datagen;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.init.ModBlocks;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
@@ -15,7 +15,7 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 public class ModBlockStateProvider extends BlockStateProvider {
 
     public ModBlockStateProvider(PackOutput output, ExistingFileHelper exFileHelper) {
-        super(output, ModUtils.MODID, exFileHelper);
+        super(output, Mod.MODID, exFileHelper);
     }
 
     @Override
@@ -52,7 +52,7 @@ public class ModBlockStateProvider extends BlockStateProvider {
     }
 
     private void blockItem(DeferredHolder<Block, Block> blockRegistryObject) {
-        simpleBlockItem(blockRegistryObject.get(), new ModelFile.UncheckedModelFile(ModUtils.MODID +
+        simpleBlockItem(blockRegistryObject.get(), new ModelFile.UncheckedModelFile(Mod.MODID +
                 ":block/" + BuiltInRegistries.BLOCK.getKey(blockRegistryObject.get()).getPath()));
     }
 

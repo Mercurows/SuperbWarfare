@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.client.model.entity;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
@@ -23,7 +23,7 @@ public class ProjectileEntityModel extends GeoModel<ProjectileEntity> {
     public ResourceLocation getModelResource(ProjectileEntity entity) {
         Player player = Minecraft.getInstance().player;
         if (player == null) {
-            return ModUtils.loc("geo/projectile_entity2.geo.json");
+            return Mod.loc("geo/projectile_entity2.geo.json");
         }
 
         if ((ClientEventHandler.zoom && !player.getMainHandItem().is(ModItems.MINIGUN.get()))
@@ -31,15 +31,15 @@ public class ProjectileEntityModel extends GeoModel<ProjectileEntity> {
                 || player.getMainHandItem().is(ModItems.GLOCK_18.get())
                 || player.getMainHandItem().is(ModItems.BOCEK.get())
                 || (player.getVehicle() instanceof ArmedVehicleEntity)) {
-            return ModUtils.loc("geo/projectile_entity.geo.json");
+            return Mod.loc("geo/projectile_entity.geo.json");
         } else {
-            return ModUtils.loc("geo/projectile_entity2.geo.json");
+            return Mod.loc("geo/projectile_entity2.geo.json");
         }
     }
 
     @Override
     public ResourceLocation getTextureResource(ProjectileEntity entity) {
-        return ModUtils.loc("textures/entity/empty.png");
+        return Mod.loc("textures/entity/empty.png");
     }
 
     @Override

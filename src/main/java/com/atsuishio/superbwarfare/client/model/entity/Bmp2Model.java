@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.client.model.entity;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.entity.vehicle.Bmp2Entity;
 import net.minecraft.resources.ResourceLocation;
 import software.bernie.geckolib.model.GeoModel;
@@ -9,12 +9,12 @@ public class Bmp2Model extends GeoModel<Bmp2Entity> {
 
     @Override
     public ResourceLocation getAnimationResource(Bmp2Entity entity) {
-        return ModUtils.loc("animations/lav.animation.json");
+        return Mod.loc("animations/lav.animation.json");
     }
 
     @Override
     public ResourceLocation getModelResource(Bmp2Entity entity) {
-        return ModUtils.loc("geo/bmp2.geo.json");
+        return Mod.loc("geo/bmp2.geo.json");
 //        Player player = Minecraft.getInstance().player;
 //
 //        int distance = 0;
@@ -32,6 +32,6 @@ public class Bmp2Model extends GeoModel<Bmp2Entity> {
 
     @Override
     public ResourceLocation getTextureResource(Bmp2Entity entity) {
-        return ModUtils.loc("textures/entity/bmp2.png");
+        return Mod.loc("textures/entity/bmp2.png");
     }
 }

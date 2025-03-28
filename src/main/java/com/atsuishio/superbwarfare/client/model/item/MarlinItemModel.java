@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.client.model.item;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModTags;
@@ -20,17 +20,17 @@ public class MarlinItemModel extends GeoModel<MarlinItem> {
 
     @Override
     public ResourceLocation getAnimationResource(MarlinItem animatable) {
-        return ModUtils.loc("animations/marlin.animation.json");
+        return Mod.loc("animations/marlin.animation.json");
     }
 
     @Override
     public ResourceLocation getModelResource(MarlinItem animatable) {
-        return ModUtils.loc("geo/marlin.geo.json");
+        return Mod.loc("geo/marlin.geo.json");
     }
 
     @Override
     public ResourceLocation getTextureResource(MarlinItem animatable) {
-        return ModUtils.loc("textures/item/marlin.png");
+        return Mod.loc("textures/item/marlin.png");
     }
 
     @Override

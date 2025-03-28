@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.client.screens;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.menu.VehicleMenu;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -14,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
 @OnlyIn(Dist.CLIENT)
 public class VehicleScreen extends AbstractContainerScreen<VehicleMenu> {
 
-    private static final ResourceLocation TEXTURE = ModUtils.loc("textures/gui/vehicle.png");
+    private static final ResourceLocation TEXTURE = Mod.loc("textures/gui/vehicle.png");
 
     public VehicleScreen(VehicleMenu pMenu, Inventory pPlayerInventory, Component pTitle) {
         super(pMenu, pPlayerInventory, pTitle);

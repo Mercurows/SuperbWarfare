@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.client.model.item;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModTags;
@@ -19,17 +19,17 @@ public class SecondaryCataclysmModel extends GeoModel<SecondaryCataclysm> {
 
     @Override
     public ResourceLocation getAnimationResource(SecondaryCataclysm animatable) {
-        return ModUtils.loc("animations/secondary_cataclysm.animation.json");
+        return Mod.loc("animations/secondary_cataclysm.animation.json");
     }
 
     @Override
     public ResourceLocation getModelResource(SecondaryCataclysm animatable) {
-        return ModUtils.loc("geo/secondary_cataclysm.geo.json");
+        return Mod.loc("geo/secondary_cataclysm.geo.json");
     }
 
     @Override
     public ResourceLocation getTextureResource(SecondaryCataclysm animatable) {
-        return ModUtils.loc("textures/item/secondary_cataclysm.png");
+        return Mod.loc("textures/item/secondary_cataclysm.png");
     }
 
     @Override

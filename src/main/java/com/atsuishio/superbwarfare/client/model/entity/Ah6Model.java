@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.client.model.entity;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.entity.vehicle.Ah6Entity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
@@ -26,18 +26,18 @@ public class Ah6Model extends GeoModel<Ah6Entity> {
         }
 
         if (distance < 32) {
-            return ModUtils.loc("geo/ah_6.geo.json");
+            return Mod.loc("geo/ah_6.geo.json");
         } else if (distance < 64) {
-            return ModUtils.loc("geo/ah_6.lod1.geo.json");
+            return Mod.loc("geo/ah_6.lod1.geo.json");
         } else if (distance < 96) {
-            return ModUtils.loc("geo/ah_6.lod2.geo.json");
+            return Mod.loc("geo/ah_6.lod2.geo.json");
         } else {
-            return ModUtils.loc("geo/ah_6.lod3.geo.json");
+            return Mod.loc("geo/ah_6.lod3.geo.json");
         }
     }
 
     @Override
     public ResourceLocation getTextureResource(Ah6Entity entity) {
-        return ModUtils.loc("textures/entity/ah_6.png");
+        return Mod.loc("textures/entity/ah_6.png");
     }
 }

@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.client.model.item;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.AnimationHelper;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
@@ -19,17 +19,17 @@ public class TaserItemModel extends GeoModel<TaserItem> {
 
     @Override
     public ResourceLocation getAnimationResource(TaserItem animatable) {
-        return ModUtils.loc("animations/taser.animation.json");
+        return Mod.loc("animations/taser.animation.json");
     }
 
     @Override
     public ResourceLocation getModelResource(TaserItem animatable) {
-        return ModUtils.loc("geo/taser.geo.json");
+        return Mod.loc("geo/taser.geo.json");
     }
 
     @Override
     public ResourceLocation getTextureResource(TaserItem animatable) {
-        return ModUtils.loc("textures/item/tasergun.png");
+        return Mod.loc("textures/item/tasergun.png");
     }
 
     @Override

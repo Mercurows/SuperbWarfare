@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.datagen;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModTags;
 import net.minecraft.core.HolderLookup;
@@ -16,7 +16,7 @@ import java.util.concurrent.CompletableFuture;
 public class ModDamageTypeTagProvider extends DamageTypeTagsProvider {
 
     public ModDamageTypeTagProvider(PackOutput pOutput, CompletableFuture<HolderLookup.Provider> pLookupProvider, @Nullable ExistingFileHelper existingFileHelper) {
-        super(pOutput, pLookupProvider, ModUtils.MODID, existingFileHelper);
+        super(pOutput, pLookupProvider, Mod.MODID, existingFileHelper);
     }
 
     @Override

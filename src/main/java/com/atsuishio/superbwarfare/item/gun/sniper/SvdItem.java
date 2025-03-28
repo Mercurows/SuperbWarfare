@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.item.gun.sniper;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.capability.ModCapabilities;
 import com.atsuishio.superbwarfare.client.renderer.item.SvdItemRenderer;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
@@ -138,7 +138,7 @@ public class SvdItem extends GunItem implements GeoItem {
 
     @Override
     public ResourceLocation getGunIcon() {
-        return ModUtils.loc("textures/gun_icon/svd_icon.png");
+        return Mod.loc("textures/gun_icon/svd_icon.png");
     }
 
     @Override

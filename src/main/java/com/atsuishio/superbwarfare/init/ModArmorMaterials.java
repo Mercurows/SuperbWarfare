@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.init;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import net.minecraft.Util;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.sounds.SoundEvents;
@@ -15,7 +15,7 @@ import java.util.List;
 
 public class ModArmorMaterials {
 
-    public static final DeferredRegister<ArmorMaterial> MATERIALS = DeferredRegister.create(BuiltInRegistries.ARMOR_MATERIAL, ModUtils.MODID);
+    public static final DeferredRegister<ArmorMaterial> MATERIALS = DeferredRegister.create(BuiltInRegistries.ARMOR_MATERIAL, Mod.MODID);
 
     public static final DeferredHolder<ArmorMaterial, ArmorMaterial> CEMENTED_CARBIDE = MATERIALS.register("cemented_carbide", () -> new ArmorMaterial(
             Util.make(new EnumMap<>(ArmorItem.Type.class), p -> {

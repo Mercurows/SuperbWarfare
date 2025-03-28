@@ -1,13 +1,13 @@
 package com.atsuishio.superbwarfare.item.gun;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.tools.NBTTool;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent;
 
-@EventBusSubscriber(modid = ModUtils.MODID)
+@EventBusSubscriber(modid = Mod.MODID)
 public class GunEvents {
     @SubscribeEvent
     public static void onPickup(ItemEntityPickupEvent.Pre event) {

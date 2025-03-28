@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.capability.player;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.capability.ModCapabilities;
 import com.atsuishio.superbwarfare.network.message.receive.PlayerVariablesSyncMessage;
 import com.atsuishio.superbwarfare.tools.AmmoType;
@@ -14,7 +14,7 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 // TODO 在退出世界时正确持久化弹药数量
-@EventBusSubscriber(modid = ModUtils.MODID)
+@EventBusSubscriber(modid = Mod.MODID)
 public class PlayerVariable {
     public boolean zoom = false;
     public boolean holdFire = false;

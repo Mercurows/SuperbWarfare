@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.client.model.entity;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.entity.MortarEntity;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -14,17 +14,17 @@ public class MortarModel extends GeoModel<MortarEntity> {
 
     @Override
     public ResourceLocation getAnimationResource(MortarEntity entity) {
-        return ModUtils.loc("animations/mortar.animation.json");
+        return Mod.loc("animations/mortar.animation.json");
     }
 
     @Override
     public ResourceLocation getModelResource(MortarEntity entity) {
-        return ModUtils.loc("geo/mortar.geo.json");
+        return Mod.loc("geo/mortar.geo.json");
     }
 
     @Override
     public ResourceLocation getTextureResource(MortarEntity entity) {
-        return ModUtils.loc("textures/entity/mortar.png");
+        return Mod.loc("textures/entity/mortar.png");
     }
 
     @Override

@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.client.model.entity;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.entity.vehicle.LaserTowerEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
@@ -15,7 +15,7 @@ public class LaserTowerModel extends GeoModel<LaserTowerEntity> {
 
     @Override
     public ResourceLocation getAnimationResource(LaserTowerEntity entity) {
-        return ModUtils.loc("animations/laser_tower.animation.json");
+        return Mod.loc("animations/laser_tower.animation.json");
     }
 
     @Override
@@ -29,17 +29,17 @@ public class LaserTowerModel extends GeoModel<LaserTowerEntity> {
         }
 
         if (distance < 24 || player.isScoping()) {
-            return ModUtils.loc("geo/laser_tower.geo.json");
+            return Mod.loc("geo/laser_tower.geo.json");
         } else if (distance < 48) {
-            return ModUtils.loc("geo/laser_tower.lod1.geo.json");
+            return Mod.loc("geo/laser_tower.lod1.geo.json");
         } else {
-            return ModUtils.loc("geo/laser_tower.lod2.geo.json");
+            return Mod.loc("geo/laser_tower.lod2.geo.json");
         }
     }
 
     @Override
     public ResourceLocation getTextureResource(LaserTowerEntity entity) {
-        return ModUtils.loc("textures/entity/laser_tower.png");
+        return Mod.loc("textures/entity/laser_tower.png");
     }
 
     @Override

@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.client.model.item;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.AnimationHelper;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
@@ -19,17 +19,17 @@ public class HomemadeShotgunItemModel extends GeoModel<HomemadeShotgunItem> {
 
     @Override
     public ResourceLocation getAnimationResource(HomemadeShotgunItem animatable) {
-        return ModUtils.loc("animations/homemade_shotgun.animation.json");
+        return Mod.loc("animations/homemade_shotgun.animation.json");
     }
 
     @Override
     public ResourceLocation getModelResource(HomemadeShotgunItem animatable) {
-        return ModUtils.loc("geo/homemade_shotgun.geo.json");
+        return Mod.loc("geo/homemade_shotgun.geo.json");
     }
 
     @Override
     public ResourceLocation getTextureResource(HomemadeShotgunItem animatable) {
-        return ModUtils.loc("textures/item/homemade_shotgun.png");
+        return Mod.loc("textures/item/homemade_shotgun.png");
     }
 
     @Override

@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.client.layer.vehicle;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.ModRenderTypes;
 import com.atsuishio.superbwarfare.entity.vehicle.AnnihilatorEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -15,7 +15,7 @@ import software.bernie.geckolib.renderer.layer.GeoRenderLayer;
 
 public class AnnihilatorGlowLayer extends GeoRenderLayer<AnnihilatorEntity> {
 
-    private static final ResourceLocation LAYER = ModUtils.loc("textures/entity/annihilator_glow_e.png");
+    private static final ResourceLocation LAYER = Mod.loc("textures/entity/annihilator_glow_e.png");
 
     public AnnihilatorGlowLayer(GeoRenderer<AnnihilatorEntity> entityRenderer) {
         super(entityRenderer);

@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.datagen;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModTags;
 import net.minecraft.core.HolderLookup;
@@ -22,7 +22,7 @@ public class ModItemTagProvider extends ItemTagsProvider {
 
     public ModItemTagProvider(PackOutput packOutput, CompletableFuture<HolderLookup.Provider> providerCompletableFuture,
                               CompletableFuture<TagLookup<Block>> tagLookupCompletableFuture, @Nullable ExistingFileHelper existingFileHelper) {
-        super(packOutput, providerCompletableFuture, tagLookupCompletableFuture, ModUtils.MODID, existingFileHelper);
+        super(packOutput, providerCompletableFuture, tagLookupCompletableFuture, Mod.MODID, existingFileHelper);
     }
 
     @SuppressWarnings("unchecked")

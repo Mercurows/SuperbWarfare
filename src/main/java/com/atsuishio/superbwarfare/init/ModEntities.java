@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.init;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.SpawnConfig;
 import com.atsuishio.superbwarfare.entity.ClaymoreEntity;
 import com.atsuishio.superbwarfare.entity.MortarEntity;
@@ -23,7 +23,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 @EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD)
 public class ModEntities {
 
-    public static final DeferredRegister<EntityType<?>> REGISTRY = DeferredRegister.create(BuiltInRegistries.ENTITY_TYPE, ModUtils.MODID);
+    public static final DeferredRegister<EntityType<?>> REGISTRY = DeferredRegister.create(BuiltInRegistries.ENTITY_TYPE, Mod.MODID);
 
     // Living Entities
     public static final DeferredHolder<EntityType<?>, EntityType<TargetEntity>> TARGET = register("target",

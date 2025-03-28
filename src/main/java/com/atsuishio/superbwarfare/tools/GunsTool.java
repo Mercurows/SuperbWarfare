@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.tools;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.capability.ModCapabilities;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
@@ -26,7 +26,7 @@ import java.util.UUID;
 
 import static com.atsuishio.superbwarfare.tools.NBTTool.saveTag;
 
-@EventBusSubscriber(modid = ModUtils.MODID)
+@EventBusSubscriber(modid = Mod.MODID)
 public class GunsTool {
 
     public static HashMap<String, HashMap<String, Double>> gunsData = new HashMap<>();
@@ -52,7 +52,7 @@ public class GunsTool {
                 reader.endObject();
                 reader.close();
             } catch (Exception e) {
-                ModUtils.LOGGER.error(e.getMessage());
+                Mod.LOGGER.error(e.getMessage());
             }
         }
     }

@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.client.model.item;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.AnimationHelper;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
@@ -21,17 +21,17 @@ public class SksItemModel extends GeoModel<SksItem> {
 
     @Override
     public ResourceLocation getAnimationResource(SksItem animatable) {
-        return ModUtils.loc("animations/sks.animation.json");
+        return Mod.loc("animations/sks.animation.json");
     }
 
     @Override
     public ResourceLocation getModelResource(SksItem animatable) {
-        return ModUtils.loc("geo/sks.geo.json");
+        return Mod.loc("geo/sks.geo.json");
     }
 
     @Override
     public ResourceLocation getTextureResource(SksItem animatable) {
-        return ModUtils.loc("textures/item/sks.png");
+        return Mod.loc("textures/item/sks.png");
     }
 
     @Override

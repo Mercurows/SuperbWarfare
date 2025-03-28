@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.init;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.menu.ChargingStationMenu;
 import com.atsuishio.superbwarfare.menu.FuMO25Menu;
 import com.atsuishio.superbwarfare.menu.ReforgingTableMenu;
@@ -14,7 +14,7 @@ import java.util.function.Supplier;
 
 public class ModMenuTypes {
 
-    public static final DeferredRegister<MenuType<?>> REGISTRY = DeferredRegister.create(BuiltInRegistries.MENU, ModUtils.MODID);
+    public static final DeferredRegister<MenuType<?>> REGISTRY = DeferredRegister.create(BuiltInRegistries.MENU, Mod.MODID);
 
     public static final Supplier<MenuType<ReforgingTableMenu>> REFORGING_TABLE_MENU =
             REGISTRY.register("reforging_table_menu",

@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.network.message.send;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.capability.ModCapabilities;
 import com.atsuishio.superbwarfare.event.GunEventHandler;
 import com.atsuishio.superbwarfare.init.ModItems;
@@ -25,7 +25,7 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.NotNull;
 
 public record ShootMessage(double spread) implements CustomPacketPayload {
-    public static final Type<ShootMessage> TYPE = new Type<>(ModUtils.loc("shoot"));
+    public static final Type<ShootMessage> TYPE = new Type<>(Mod.loc("shoot"));
 
     public static final StreamCodec<ByteBuf, ShootMessage> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.DOUBLE,

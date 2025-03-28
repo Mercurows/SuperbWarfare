@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.network.message.send;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.capability.ModCapabilities;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import io.netty.buffer.ByteBuf;
@@ -15,7 +15,7 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.NotNull;
 
 public record DoubleJumpMessage(boolean canDoubleJump) implements CustomPacketPayload {
-    public static final Type<DoubleJumpMessage> TYPE = new Type<>(ModUtils.loc("double_jump"));
+    public static final Type<DoubleJumpMessage> TYPE = new Type<>(Mod.loc("double_jump"));
 
     public static final StreamCodec<ByteBuf, DoubleJumpMessage> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.BOOL,

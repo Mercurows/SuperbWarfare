@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.client.model.item;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.AnimationHelper;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
@@ -20,17 +20,17 @@ public class Glock18ItemModel extends GeoModel<Glock18Item> {
 
     @Override
     public ResourceLocation getAnimationResource(Glock18Item animatable) {
-        return ModUtils.loc("animations/glock17.animation.json");
+        return Mod.loc("animations/glock17.animation.json");
     }
 
     @Override
     public ResourceLocation getModelResource(Glock18Item animatable) {
-        return ModUtils.loc("geo/glock18.geo.json");
+        return Mod.loc("geo/glock18.geo.json");
     }
 
     @Override
     public ResourceLocation getTextureResource(Glock18Item animatable) {
-        return ModUtils.loc("textures/item/glock17.png");
+        return Mod.loc("textures/item/glock17.png");
     }
 
     @Override

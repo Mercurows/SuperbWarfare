@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.entity.vehicle;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.entity.vehicle.base.CannonEntity;
@@ -82,7 +82,7 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
                                 .explosionRadius(VehicleConfig.MK42_AP_EXPLOSION_RADIUS.get().floatValue())
                                 .durability(60)
                                 .sound(ModSounds.CANNON_RELOAD.get())
-                                .icon(ModUtils.loc("textures/screens/vehicle_weapon/ap_shell.png")),
+                                .icon(Mod.loc("textures/screens/vehicle_weapon/ap_shell.png")),
                         new CannonShellWeapon()
                                 .hitDamage(VehicleConfig.MK42_HE_DAMAGE.get())
                                 .explosionDamage(VehicleConfig.MK42_HE_EXPLOSION_DAMAGE.get())
@@ -91,7 +91,7 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
                                 .fireProbability(0.18F)
                                 .fireTime(2)
                                 .sound(ModSounds.CANNON_RELOAD.get())
-                                .icon(ModUtils.loc("textures/screens/vehicle_weapon/he_shell.png")),
+                                .icon(Mod.loc("textures/screens/vehicle_weapon/he_shell.png")),
                 }
         };
     }
@@ -411,6 +411,6 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
 
     @Override
     public ResourceLocation getVehicleIcon() {
-        return ModUtils.loc("textures/vehicle_icon/sherman_icon.png");
+        return Mod.loc("textures/vehicle_icon/sherman_icon.png");
     }
 }

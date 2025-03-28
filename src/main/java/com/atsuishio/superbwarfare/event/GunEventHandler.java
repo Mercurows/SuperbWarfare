@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.event;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.capability.ModCapabilities;
 import com.atsuishio.superbwarfare.capability.player.PlayerVariable;
 import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity;
@@ -37,7 +37,7 @@ import java.util.ArrayList;
 
 import static com.atsuishio.superbwarfare.tools.NBTTool.saveTag;
 
-@EventBusSubscriber(modid = ModUtils.MODID)
+@EventBusSubscriber(modid = Mod.MODID)
 public class GunEventHandler {
 
     @SubscribeEvent
@@ -95,17 +95,17 @@ public class GunEventHandler {
                 if (cap != null && cap.getEnergyStored() > 0) {
                     float soundRadius = (float) GunsTool.getGunDoubleTag(stack, "SoundRadius");
 
-                    SoundEvent sound3p = BuiltInRegistries.SOUND_EVENT.get(ModUtils.loc("sentinel_charge_fire_3p"));
+                    SoundEvent sound3p = BuiltInRegistries.SOUND_EVENT.get(Mod.loc("sentinel_charge_fire_3p"));
                     if (sound3p != null) {
                         player.playSound(sound3p, soundRadius * 0.4f, 1f);
                     }
 
-                    SoundEvent soundFar = BuiltInRegistries.SOUND_EVENT.get(ModUtils.loc("sentinel_charge_far"));
+                    SoundEvent soundFar = BuiltInRegistries.SOUND_EVENT.get(Mod.loc("sentinel_charge_far"));
                     if (soundFar != null) {
                         player.playSound(soundFar, soundRadius * 0.7f, 1f);
                     }
 
-                    SoundEvent soundVeryFar = BuiltInRegistries.SOUND_EVENT.get(ModUtils.loc("sentinel_charge_veryfar"));
+                    SoundEvent soundVeryFar = BuiltInRegistries.SOUND_EVENT.get(Mod.loc("sentinel_charge_veryfar"));
                     if (soundVeryFar != null) {
                         player.playSound(soundVeryFar, soundRadius, 1f);
                     }
@@ -124,17 +124,17 @@ public class GunEventHandler {
 
             int barrelType = GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.BARREL);
 
-            SoundEvent sound3p = BuiltInRegistries.SOUND_EVENT.get(ModUtils.loc(name + (barrelType == 2 ? "_fire_3p_s" : "_fire_3p")));
+            SoundEvent sound3p = BuiltInRegistries.SOUND_EVENT.get(Mod.loc(name + (barrelType == 2 ? "_fire_3p_s" : "_fire_3p")));
             if (sound3p != null) {
                 player.playSound(sound3p, soundRadius * 0.4f, 1f);
             }
 
-            SoundEvent soundFar = BuiltInRegistries.SOUND_EVENT.get(ModUtils.loc(name + (barrelType == 2 ? "_far_s" : "_far")));
+            SoundEvent soundFar = BuiltInRegistries.SOUND_EVENT.get(Mod.loc(name + (barrelType == 2 ? "_far_s" : "_far")));
             if (soundFar != null) {
                 player.playSound(soundFar, soundRadius * 0.7f, 1f);
             }
 
-            SoundEvent soundVeryFar = BuiltInRegistries.SOUND_EVENT.get(ModUtils.loc(name + (barrelType == 2 ? "_veryfar_s" : "_veryfar")));
+            SoundEvent soundVeryFar = BuiltInRegistries.SOUND_EVENT.get(Mod.loc(name + (barrelType == 2 ? "_veryfar_s" : "_veryfar")));
             if (soundVeryFar != null) {
                 player.playSound(soundVeryFar, soundRadius, 1f);
             }
@@ -151,7 +151,7 @@ public class GunEventHandler {
             String origin = stack.getItem().getDescriptionId();
             String name = origin.substring(origin.lastIndexOf(".") + 1);
 
-            SoundEvent sound1p = BuiltInRegistries.SOUND_EVENT.get(ModUtils.loc(name + "_bolt"));
+            SoundEvent sound1p = BuiltInRegistries.SOUND_EVENT.get(Mod.loc(name + "_bolt"));
             if (sound1p != null && player instanceof ServerPlayer serverPlayer) {
                 SoundTool.playLocalSound(serverPlayer, sound1p, 2f, 1f);
 
@@ -160,7 +160,7 @@ public class GunEventHandler {
 
                 if (stack.is(ModTags.Items.REVOLVER)) return;
 
-                ModUtils.queueServerWork((int) (GunsTool.getGunDoubleTag(stack, "BoltActionTime", 0) / 2 + 1.5 * shooterHeight), () -> {
+                Mod.queueServerWork((int) (GunsTool.getGunDoubleTag(stack, "BoltActionTime", 0) / 2 + 1.5 * shooterHeight), () -> {
                     if (stack.is(ModTags.Items.SHOTGUN)) {
                         SoundTool.playLocalSound(serverPlayer, ModSounds.SHELL_CASING_SHOTGUN.get(), (float) Math.max(0.75 - 0.12 * shooterHeight, 0), 1);
                     } else if (stack.is(ModTags.Items.SNIPER_RIFLE)) {
@@ -483,7 +483,7 @@ public class GunEventHandler {
             String origin = stack.getItem().getDescriptionId();
             String name = origin.substring(origin.lastIndexOf(".") + 1);
 
-            SoundEvent sound1p = BuiltInRegistries.SOUND_EVENT.get(ModUtils.loc(name + "_reload_empty"));
+            SoundEvent sound1p = BuiltInRegistries.SOUND_EVENT.get(Mod.loc(name + "_reload_empty"));
             if (sound1p != null && player instanceof ServerPlayer serverPlayer) {
                 SoundTool.playLocalSound(serverPlayer, sound1p, 10f, 1f);
             }
@@ -502,7 +502,7 @@ public class GunEventHandler {
 
             SoundEvent sound1p;
 
-            sound1p = BuiltInRegistries.SOUND_EVENT.get(ModUtils.loc(name + "_reload_normal"));
+            sound1p = BuiltInRegistries.SOUND_EVENT.get(Mod.loc(name + "_reload_normal"));
 
             if (sound1p != null && player instanceof ServerPlayer serverPlayer) {
                 SoundTool.playLocalSound(serverPlayer, sound1p, 10f, 1f);
@@ -759,7 +759,7 @@ public class GunEventHandler {
             String origin = stack.getItem().getDescriptionId();
             String name = origin.substring(origin.lastIndexOf(".") + 1);
 
-            SoundEvent sound1p = BuiltInRegistries.SOUND_EVENT.get(ModUtils.loc(name + "_prepare"));
+            SoundEvent sound1p = BuiltInRegistries.SOUND_EVENT.get(Mod.loc(name + "_prepare"));
             if (sound1p != null && player instanceof ServerPlayer serverPlayer) {
                 SoundTool.playLocalSound(serverPlayer, sound1p, 10f, 1f);
             }
@@ -776,14 +776,14 @@ public class GunEventHandler {
             String origin = stack.getItem().getDescriptionId();
             String name = origin.substring(origin.lastIndexOf(".") + 1);
 
-            SoundEvent sound1p = BuiltInRegistries.SOUND_EVENT.get(ModUtils.loc(name + "_prepare_empty"));
+            SoundEvent sound1p = BuiltInRegistries.SOUND_EVENT.get(Mod.loc(name + "_prepare_empty"));
             if (sound1p != null && player instanceof ServerPlayer serverPlayer) {
                 SoundTool.playLocalSound(serverPlayer, sound1p, 10f, 1f);
 
                 double shooterHeight = player.getEyePosition().distanceTo((Vec3.atLowerCornerOf(player.level().clip(new ClipContext(player.getEyePosition(), player.getEyePosition().add(new Vec3(0, -1, 0).scale(10)),
                         ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, player)).getBlockPos())));
 
-                ModUtils.queueServerWork((int) (GunsTool.getGunIntTag(stack, "PrepareEmptyTime", 0) / 2 + 3 + 1.5 * shooterHeight), () -> {
+                Mod.queueServerWork((int) (GunsTool.getGunIntTag(stack, "PrepareEmptyTime", 0) / 2 + 3 + 1.5 * shooterHeight), () -> {
                     if (stack.is(ModTags.Items.SHOTGUN)) {
                         SoundTool.playLocalSound(serverPlayer, ModSounds.SHELL_CASING_SHOTGUN.get(), (float) Math.max(0.75 - 0.12 * shooterHeight, 0), 1);
                     } else if (stack.is(ModTags.Items.SNIPER_RIFLE) || stack.is(ModTags.Items.HEAVY_WEAPON)) {
@@ -806,14 +806,14 @@ public class GunEventHandler {
             String origin = stack.getItem().getDescriptionId();
             String name = origin.substring(origin.lastIndexOf(".") + 1);
 
-            SoundEvent sound1p = BuiltInRegistries.SOUND_EVENT.get(ModUtils.loc(name + "_prepare_load"));
+            SoundEvent sound1p = BuiltInRegistries.SOUND_EVENT.get(Mod.loc(name + "_prepare_load"));
             if (sound1p != null && player instanceof ServerPlayer serverPlayer) {
                 SoundTool.playLocalSound(serverPlayer, sound1p, 10f, 1f);
 
                 double shooterHeight = player.getEyePosition().distanceTo((Vec3.atLowerCornerOf(player.level().clip(new ClipContext(player.getEyePosition(), player.getEyePosition().add(new Vec3(0, -1, 0).scale(10)),
                         ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, player)).getBlockPos())));
 
-                ModUtils.queueServerWork((int) (8 + 1.5 * shooterHeight), () -> {
+                Mod.queueServerWork((int) (8 + 1.5 * shooterHeight), () -> {
                     if (stack.is(ModTags.Items.SHOTGUN)) {
                         SoundTool.playLocalSound(serverPlayer, ModSounds.SHELL_CASING_SHOTGUN.get(), (float) Math.max(0.75 - 0.12 * shooterHeight, 0), 1);
                     } else if (stack.is(ModTags.Items.SNIPER_RIFLE) || stack.is(ModTags.Items.HEAVY_WEAPON)) {
@@ -836,7 +836,7 @@ public class GunEventHandler {
             String origin = stack.getItem().getDescriptionId();
             String name = origin.substring(origin.lastIndexOf(".") + 1);
 
-            SoundEvent sound1p = BuiltInRegistries.SOUND_EVENT.get(ModUtils.loc(name + "_loop"));
+            SoundEvent sound1p = BuiltInRegistries.SOUND_EVENT.get(Mod.loc(name + "_loop"));
             if (sound1p != null && player instanceof ServerPlayer serverPlayer) {
                 SoundTool.playLocalSound(serverPlayer, sound1p, 10f, 1f);
             }
@@ -853,7 +853,7 @@ public class GunEventHandler {
             String origin = stack.getItem().getDescriptionId();
             String name = origin.substring(origin.lastIndexOf(".") + 1);
 
-            SoundEvent sound1p = BuiltInRegistries.SOUND_EVENT.get(ModUtils.loc(name + "_end"));
+            SoundEvent sound1p = BuiltInRegistries.SOUND_EVENT.get(Mod.loc(name + "_end"));
             if (sound1p != null && player instanceof ServerPlayer serverPlayer) {
                 SoundTool.playLocalSound(serverPlayer, sound1p, 10f, 1f);
 
@@ -861,7 +861,7 @@ public class GunEventHandler {
                         ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, player)).getBlockPos())));
 
                 if (stack.is(ModItems.MARLIN.get())) {
-                    ModUtils.queueServerWork((int) (5 + 1.5 * shooterHeight), () -> SoundTool.playLocalSound(serverPlayer, ModSounds.SHELL_CASING_NORMAL.get(), (float) Math.max(1.5 - 0.2 * shooterHeight, 0), 1));
+                    Mod.queueServerWork((int) (5 + 1.5 * shooterHeight), () -> SoundTool.playLocalSound(serverPlayer, ModSounds.SHELL_CASING_NORMAL.get(), (float) Math.max(1.5 - 0.2 * shooterHeight, 0), 1));
                 }
             }
         }
@@ -877,7 +877,7 @@ public class GunEventHandler {
             GunsTool.setGunIntTag(stack, "ChargeTime", 127);
             GunsTool.setGunBooleanTag(stack, "Charging", true);
 
-            SoundEvent sound1p = BuiltInRegistries.SOUND_EVENT.get(ModUtils.loc("sentinel_charge"));
+            SoundEvent sound1p = BuiltInRegistries.SOUND_EVENT.get(Mod.loc("sentinel_charge"));
             if (sound1p != null && player instanceof ServerPlayer serverPlayer) {
                 SoundTool.playLocalSound(serverPlayer, sound1p, 2f, 1f);
             }

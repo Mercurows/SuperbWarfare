@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.client.model.item;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModTags;
@@ -20,17 +20,17 @@ public class MosinNagantItemModel extends GeoModel<MosinNagantItem> {
 
     @Override
     public ResourceLocation getAnimationResource(MosinNagantItem animatable) {
-        return ModUtils.loc("animations/mosin_nagant.animation.json");
+        return Mod.loc("animations/mosin_nagant.animation.json");
     }
 
     @Override
     public ResourceLocation getModelResource(MosinNagantItem animatable) {
-        return ModUtils.loc("geo/mosin_nagant.geo.json");
+        return Mod.loc("geo/mosin_nagant.geo.json");
     }
 
     @Override
     public ResourceLocation getTextureResource(MosinNagantItem animatable) {
-        return ModUtils.loc("textures/item/mosin_nagant.png");
+        return Mod.loc("textures/item/mosin_nagant.png");
     }
 
     @Override

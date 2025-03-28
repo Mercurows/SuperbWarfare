@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.client.model.entity;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.entity.vehicle.SpeedboatEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
@@ -11,7 +11,7 @@ public class SpeedboatModel extends GeoModel<SpeedboatEntity> {
 
     @Override
     public ResourceLocation getAnimationResource(SpeedboatEntity entity) {
-        return ModUtils.loc("animations/speedboat.animation.json");
+        return Mod.loc("animations/speedboat.animation.json");
     }
 
     @Override
@@ -25,14 +25,14 @@ public class SpeedboatModel extends GeoModel<SpeedboatEntity> {
         }
 
         if (distance < 32) {
-            return ModUtils.loc("geo/speedboat.geo.json");
+            return Mod.loc("geo/speedboat.geo.json");
         } else {
-            return ModUtils.loc("geo/speedboat.lod1.geo.json");
+            return Mod.loc("geo/speedboat.lod1.geo.json");
         }
     }
 
     @Override
     public ResourceLocation getTextureResource(SpeedboatEntity entity) {
-        return ModUtils.loc("textures/entity/speedboat.png");
+        return Mod.loc("textures/entity/speedboat.png");
     }
 }

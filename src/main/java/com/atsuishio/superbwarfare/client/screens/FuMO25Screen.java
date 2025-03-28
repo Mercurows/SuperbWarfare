@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.client.screens;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.block.entity.FuMO25BlockEntity;
 import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.menu.FuMO25Menu;
@@ -30,8 +30,8 @@ import java.util.Optional;
 @OnlyIn(Dist.CLIENT)
 public class FuMO25Screen extends AbstractContainerScreen<FuMO25Menu> {
 
-    private static final ResourceLocation TEXTURE = ModUtils.loc("textures/gui/radar.png");
-    private static final ResourceLocation SCAN = ModUtils.loc("textures/gui/radar_scan.png");
+    private static final ResourceLocation TEXTURE = Mod.loc("textures/gui/radar.png");
+    private static final ResourceLocation SCAN = Mod.loc("textures/gui/radar_scan.png");
 
     private BlockPos currentPos = null;
     private Entity currentTarget = null;

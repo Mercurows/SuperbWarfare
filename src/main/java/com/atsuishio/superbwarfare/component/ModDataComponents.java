@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.component;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.item.common.ammo.box.AmmoBoxInfo;
 import com.atsuishio.superbwarfare.tools.AmmoType;
 import com.mojang.datafixers.util.Pair;
@@ -17,7 +17,7 @@ import java.util.function.UnaryOperator;
 
 public class ModDataComponents {
     public static final DeferredRegister<DataComponentType<?>> DATA_COMPONENT_TYPES =
-            DeferredRegister.createDataComponents(Registries.DATA_COMPONENT_TYPE, ModUtils.MODID);
+            DeferredRegister.createDataComponents(Registries.DATA_COMPONENT_TYPE, Mod.MODID);
 
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<BlockPos>> BLOCK_POS = register(
             "coordinates",

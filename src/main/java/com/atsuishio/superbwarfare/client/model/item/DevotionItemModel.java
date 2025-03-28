@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.client.model.item;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.AnimationHelper;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
@@ -22,17 +22,17 @@ public class DevotionItemModel extends GeoModel<DevotionItem> {
 
     @Override
     public ResourceLocation getAnimationResource(DevotionItem animatable) {
-        return ModUtils.loc("animations/devotion.animation.json");
+        return Mod.loc("animations/devotion.animation.json");
     }
 
     @Override
     public ResourceLocation getModelResource(DevotionItem animatable) {
-        return ModUtils.loc("geo/devotion.geo.json");
+        return Mod.loc("geo/devotion.geo.json");
     }
 
     @Override
     public ResourceLocation getTextureResource(DevotionItem animatable) {
-        return ModUtils.loc("textures/item/devotion.png");
+        return Mod.loc("textures/item/devotion.png");
     }
 
     @Override

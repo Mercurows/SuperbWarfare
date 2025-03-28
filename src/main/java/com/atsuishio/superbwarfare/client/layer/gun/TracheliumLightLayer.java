@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.client.layer.gun;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.ModRenderTypes;
 import com.atsuishio.superbwarfare.item.gun.handgun.Trachelium;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -14,7 +14,7 @@ import software.bernie.geckolib.renderer.GeoRenderer;
 import software.bernie.geckolib.renderer.layer.GeoRenderLayer;
 
 public class TracheliumLightLayer extends GeoRenderLayer<Trachelium> {
-    private static final ResourceLocation LAYER = ModUtils.loc("textures/item/trachelium_texture_e.png");
+    private static final ResourceLocation LAYER = Mod.loc("textures/item/trachelium_texture_e.png");
 
     public TracheliumLightLayer(GeoRenderer<Trachelium> itemGeoRenderer) {
         super(itemGeoRenderer);

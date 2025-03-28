@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.client.layer.gun;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.item.gun.shotgun.M870Item;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -13,7 +13,7 @@ import software.bernie.geckolib.renderer.GeoRenderer;
 import software.bernie.geckolib.renderer.layer.GeoRenderLayer;
 
 public class M870Layer extends GeoRenderLayer<M870Item> {
-    private static final ResourceLocation LAYER = ModUtils.loc("textures/item/m870_e.png");
+    private static final ResourceLocation LAYER = Mod.loc("textures/item/m870_e.png");
 
     public M870Layer(GeoRenderer<M870Item> entityRenderer) {
         super(entityRenderer);

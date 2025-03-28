@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.client.layer.vehicle;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.entity.vehicle.LaserTowerEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -16,7 +16,7 @@ import static com.atsuishio.superbwarfare.entity.vehicle.LaserTowerEntity.ACTIVE
 
 public class LaserTowerPowerLayer extends GeoRenderLayer<LaserTowerEntity> {
 
-    private static final ResourceLocation LAYER = ModUtils.loc("textures/entity/laser_tower_e.png");
+    private static final ResourceLocation LAYER = Mod.loc("textures/entity/laser_tower_e.png");
 
     public LaserTowerPowerLayer(GeoRenderer<LaserTowerEntity> entityRenderer) {
         super(entityRenderer);

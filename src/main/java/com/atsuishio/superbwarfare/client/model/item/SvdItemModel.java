@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.client.model.item;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.AnimationHelper;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
@@ -27,17 +27,17 @@ public class SvdItemModel extends GeoModel<SvdItem> {
 
     @Override
     public ResourceLocation getAnimationResource(SvdItem animatable) {
-        return ModUtils.loc("animations/svd.animation.json");
+        return Mod.loc("animations/svd.animation.json");
     }
 
     @Override
     public ResourceLocation getModelResource(SvdItem animatable) {
-        return ModUtils.loc("geo/svd.geo.json");
+        return Mod.loc("geo/svd.geo.json");
     }
 
     @Override
     public ResourceLocation getTextureResource(SvdItem animatable) {
-        return ModUtils.loc("textures/item/svd.png");
+        return Mod.loc("textures/item/svd.png");
     }
 
     @Override

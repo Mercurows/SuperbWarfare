@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.client.layer.gun;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.item.gun.handgun.Glock18Item;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -13,7 +13,7 @@ import software.bernie.geckolib.renderer.GeoRenderer;
 import software.bernie.geckolib.renderer.layer.GeoRenderLayer;
 
 public class Glock18Layer extends GeoRenderLayer<Glock18Item> {
-    private static final ResourceLocation LAYER = ModUtils.loc("textures/item/glock17_e.png");
+    private static final ResourceLocation LAYER = Mod.loc("textures/item/glock17_e.png");
 
     public Glock18Layer(GeoRenderer<Glock18Item> entityRenderer) {
         super(entityRenderer);

@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.entity.vehicle;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.entity.projectile.MelonBombEntity;
@@ -82,13 +82,13 @@ public class Lav150Entity extends ContainerMobileVehicleEntity implements GeoEnt
                                 .explosionDamage(VehicleConfig.LAV_150_CANNON_EXPLOSION_DAMAGE.get())
                                 .explosionRadius(VehicleConfig.LAV_150_CANNON_EXPLOSION_RADIUS.get().floatValue())
                                 .sound(ModSounds.INTO_MISSILE.get())
-                                .icon(ModUtils.loc("textures/screens/vehicle_weapon/cannon_20mm.png")),
+                                .icon(Mod.loc("textures/screens/vehicle_weapon/cannon_20mm.png")),
                         new ProjectileWeapon()
                                 .damage(9.5f)
                                 .headShot(2)
                                 .zoom(false)
                                 .sound(ModSounds.INTO_CANNON.get())
-                                .icon(ModUtils.loc("textures/screens/vehicle_weapon/gun_7_62mm.png")),
+                                .icon(Mod.loc("textures/screens/vehicle_weapon/gun_7_62mm.png")),
                 }
         };
     }
@@ -600,6 +600,6 @@ public class Lav150Entity extends ContainerMobileVehicleEntity implements GeoEnt
 
     @Override
     public ResourceLocation getVehicleIcon() {
-        return ModUtils.loc("textures/vehicle_icon/lav150_icon.png");
+        return Mod.loc("textures/vehicle_icon/lav150_icon.png");
     }
 }

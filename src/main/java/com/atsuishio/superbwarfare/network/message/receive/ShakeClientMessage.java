@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.network.message.receive;
 
-import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -11,12 +11,12 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.NotNull;
 
-@EventBusSubscriber(modid = ModUtils.MODID, bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
+@EventBusSubscriber(modid = Mod.MODID, bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
 public record ShakeClientMessage(
         double time, double radius, double amplitude,
         double x, double y, double z
 ) implements CustomPacketPayload {
-    public static final CustomPacketPayload.Type<ShakeClientMessage> TYPE = new CustomPacketPayload.Type<>(ModUtils.loc("shake_client"));
+    public static final CustomPacketPayload.Type<ShakeClientMessage> TYPE = new CustomPacketPayload.Type<>(Mod.loc("shake_client"));
 
     public static final StreamCodec<ByteBuf, ShakeClientMessage> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.DOUBLE,
