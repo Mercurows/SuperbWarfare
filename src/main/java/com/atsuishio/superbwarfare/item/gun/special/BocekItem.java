@@ -12,6 +12,7 @@ import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.SpecialFireWeapon;
 import com.atsuishio.superbwarfare.perk.Perk;
+import com.atsuishio.superbwarfare.perk.PerkHelper;
 import com.atsuishio.superbwarfare.tools.GunsTool;
 import com.atsuishio.superbwarfare.tools.InventoryTool;
 import com.atsuishio.superbwarfare.tools.SoundTool;
@@ -165,8 +166,7 @@ public class BocekItem extends GunItem implements GeoItem, SpecialFireWeapon {
 
         ItemStack stack = player.getMainHandItem();
 
-        // TODO perk
-//        var perk = PerkHelper.getPerkByType(stack, Perk.Type.AMMO);
+        var perk = PerkHelper.getPerkByType(stack, Perk.Type.AMMO);
 
         if (player instanceof ServerPlayer serverPlayer) {
             SoundTool.stopSound(serverPlayer, ModSounds.BOCEK_PULL_1P.getId(), SoundSource.PLAYERS);
@@ -193,13 +193,13 @@ public class BocekItem extends GunItem implements GeoItem, SpecialFireWeapon {
                 player.playSound(ModSounds.BOCEK_SHATTER_CAP_FIRE_3P.get(), 2, 1);
             }
 
-//            if (perk == ModPerks.BEAST_BULLET.get()) {
-//                player.playSound(ModSounds.HENG.get(), 4f, 1f);
-//
-//                if (player instanceof ServerPlayer serverPlayer) {
-//                    SoundTool.playLocalSound(serverPlayer, ModSounds.HENG.get(), 4f, 1f);
-//                }
-//            }
+            if (perk == ModPerks.BEAST_BULLET.get()) {
+                player.playSound(ModSounds.HENG.get(), 4f, 1f);
+
+                if (player instanceof ServerPlayer serverPlayer) {
+                    SoundTool.playLocalSound(serverPlayer, ModSounds.HENG.get(), 4f, 1f);
+                }
+            }
 
             player.getCooldowns().addCooldown(stack.getItem(), 7);
             GunsTool.setGunIntTag(stack, "ArrowEmpty", 7);

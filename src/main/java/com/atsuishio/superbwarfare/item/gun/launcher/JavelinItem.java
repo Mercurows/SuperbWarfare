@@ -11,6 +11,7 @@ import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.SpecialFireWeapon;
 import com.atsuishio.superbwarfare.perk.Perk;
+import com.atsuishio.superbwarfare.perk.PerkHelper;
 import com.atsuishio.superbwarfare.tools.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -221,9 +222,7 @@ public class JavelinItem extends GunItem implements GeoItem, SpecialFireWeapon {
 
     @Override
     public boolean canApplyPerk(Perk perk) {
-        return false;
-        // todo perk
-//        return PerkHelper.LAUNCHER_PERKS.test(perk);
+        return PerkHelper.LAUNCHER_PERKS.test(perk);
     }
 
     @Override

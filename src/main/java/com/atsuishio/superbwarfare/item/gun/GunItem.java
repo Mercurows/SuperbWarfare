@@ -5,9 +5,11 @@ import com.atsuishio.superbwarfare.capability.ModCapabilities;
 import com.atsuishio.superbwarfare.client.PoseTool;
 import com.atsuishio.superbwarfare.client.tooltip.component.GunImageComponent;
 import com.atsuishio.superbwarfare.init.ModItems;
+import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.CustomRendererItem;
 import com.atsuishio.superbwarfare.perk.Perk;
+import com.atsuishio.superbwarfare.perk.PerkHelper;
 import com.atsuishio.superbwarfare.tools.AmmoType;
 import com.atsuishio.superbwarfare.tools.GunsTool;
 import com.atsuishio.superbwarfare.tools.NBTTool;
@@ -180,17 +182,16 @@ public abstract class GunItem extends Item implements CustomRendererItem {
         reducePerkTagCoolDown(stack, "HealClipTime", "KillClipReloadTime", "KillClipTime", "FourthTimesCharmTick", "HeadSeeker",
                 "DesperadoTime", "DesperadoTimePost");
 
-        // TODO perk
-//        if (PerkHelper.getItemPerkLevel(ModPerks.FOURTH_TIMES_CHARM.get(), stack) > 0) {
-//            int count = GunsTool.getPerkIntTag(stack, "FourthTimesCharmCount");
-//            if (count >= 4) {
-//                GunsTool.setPerkIntTag(stack, "FourthTimesCharmTick", 0);
-//                GunsTool.setPerkIntTag(stack, "FourthTimesCharmCount", 0);
-//
-//                int mag = GunsTool.getGunIntTag(stack, "Magazine", 0) + GunsTool.getGunIntTag(stack, "CustomMagazine", 0);
-//                GunsTool.setGunIntTag(stack, "Ammo", Math.min(mag, GunsTool.getGunIntTag(stack, "Ammo", 0) + 2));
-//            }
-//        }
+        if (PerkHelper.getItemPerkLevel(ModPerks.FOURTH_TIMES_CHARM.get(), stack) > 0) {
+            int count = GunsTool.getPerkIntTag(stack, "FourthTimesCharmCount");
+            if (count >= 4) {
+                GunsTool.setPerkIntTag(stack, "FourthTimesCharmTick", 0);
+                GunsTool.setPerkIntTag(stack, "FourthTimesCharmCount", 0);
+
+                int mag = GunsTool.getGunIntTag(stack, "Magazine", 0) + GunsTool.getGunIntTag(stack, "CustomMagazine", 0);
+                GunsTool.setGunIntTag(stack, "Ammo", Math.min(mag, GunsTool.getGunIntTag(stack, "Ammo", 0) + 2));
+            }
+        }
     }
 
     private void handleGunAttachment(ItemStack stack) {

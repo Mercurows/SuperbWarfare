@@ -9,6 +9,7 @@ import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.perk.Perk;
+import com.atsuishio.superbwarfare.perk.PerkHelper;
 import com.atsuishio.superbwarfare.tools.GunsTool;
 import com.atsuishio.superbwarfare.tools.NBTTool;
 import net.minecraft.client.Minecraft;
@@ -164,9 +165,7 @@ public class VectorItem extends GunItem implements GeoItem {
 
     @Override
     public boolean canApplyPerk(Perk perk) {
-        // TODO perk
-//        return PerkHelper.SMG_PERKS.test(perk) || PerkHelper.MAGAZINE_PERKS.test(perk);
-        return false;
+        return PerkHelper.SMG_PERKS.test(perk) || PerkHelper.MAGAZINE_PERKS.test(perk);
     }
 
     @Override

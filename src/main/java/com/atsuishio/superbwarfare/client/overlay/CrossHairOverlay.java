@@ -3,9 +3,14 @@ package com.atsuishio.superbwarfare.client.overlay;
 import com.atsuishio.superbwarfare.ModUtils;
 import com.atsuishio.superbwarfare.capability.ModCapabilities;
 import com.atsuishio.superbwarfare.config.client.DisplayConfig;
+import com.atsuishio.superbwarfare.entity.vehicle.Ah6Entity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.perk.AmmoPerk;
+import com.atsuishio.superbwarfare.perk.Perk;
+import com.atsuishio.superbwarfare.perk.PerkHelper;
 import com.atsuishio.superbwarfare.tools.NBTTool;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -53,9 +58,8 @@ public class CrossHairOverlay {
         var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
         if (cap != null && cap.edit) return;
 
-        // todo ban hand
-//        if (!player.getMainHandItem().is(ModTags.Items.GUN) || (player.getVehicle() instanceof ArmedVehicleEntity iArmedVehicle && iArmedVehicle.banHand(player)))
-//            return;
+        if (!player.getMainHandItem().is(ModTags.Items.GUN) || (player.getVehicle() instanceof ArmedVehicleEntity iArmedVehicle && iArmedVehicle.banHand(player)))
+            return;
 
         GuiGraphics guiGraphics = event.getGuiGraphics();
 
@@ -65,8 +69,7 @@ public class CrossHairOverlay {
         float moveX = 0;
         float moveY = 0;
 
-        // TODO perk
-//        var perk = PerkHelper.getPerkByType(stack, Perk.Type.AMMO);
+        var perk = PerkHelper.getPerkByType(stack, Perk.Type.AMMO);
 
         if (DisplayConfig.FLOAT_CROSS_HAIR.get() && player.getVehicle() == null) {
             moveX = (float) (-6 * ClientEventHandler.turnRot[1] - (player.isSprinting() ? 10 : 6) * ClientEventHandler.movePosX);
@@ -91,11 +94,11 @@ public class CrossHairOverlay {
             preciseBlit(guiGraphics, ModUtils.loc("textures/screens/point.png"), w / 2f - 7.5f + moveX, h / 2f - 7.5f + moveY, 0, 0, 16, 16, 16, 16);
             if (!player.isSprinting() || player.getPersistentData().getDouble("noRun") > 0) {
                 if (stack.is(ModTags.Items.SHOTGUN)) {
-//                    if (perk instanceof AmmoPerk ammoPerk && ammoPerk.slug) {
-//                        normalCrossHair(guiGraphics, w, h, spread, moveX, moveY);
-//                    } else {
-                    shotgunCrossHair(guiGraphics, finPosX, finPosY, finLength);
-//                    }
+                    if (perk instanceof AmmoPerk ammoPerk && ammoPerk.slug) {
+                        normalCrossHair(guiGraphics, w, h, spread, moveX, moveY);
+                    } else {
+                        shotgunCrossHair(guiGraphics, finPosX, finPosY, finLength);
+                    }
                 } else {
                     normalCrossHair(guiGraphics, w, h, spread, moveX, moveY);
                 }
@@ -107,11 +110,11 @@ public class CrossHairOverlay {
                 preciseBlit(guiGraphics, ModUtils.loc("textures/screens/point.png"), w / 2f - 7.5f + moveX, h / 2f - 7.5f + moveY, 0, 0, 16, 16, 16, 16);
                 if (!player.isSprinting() || player.getPersistentData().getDouble("noRun") > 0 || ClientEventHandler.pullPos > 0) {
                     if (ClientEventHandler.zoomTime < 0.1) {
-//                        if (perk instanceof AmmoPerk ammoPerk && ammoPerk.slug) {
-//                            normalCrossHair(guiGraphics, w, h, spread, moveX, moveY);
-//                        } else {
-                        shotgunCrossHair(guiGraphics, finPosX, finPosY, finLength);
-//                        }
+                        if (perk instanceof AmmoPerk ammoPerk && ammoPerk.slug) {
+                            normalCrossHair(guiGraphics, w, h, spread, moveX, moveY);
+                        } else {
+                            shotgunCrossHair(guiGraphics, finPosX, finPosY, finLength);
+                        }
                     } else {
                         normalCrossHair(guiGraphics, w, h, spread, moveX, moveY);
                     }
@@ -120,10 +123,7 @@ public class CrossHairOverlay {
         }
 
         // 在开启伤害指示器时才进行渲染
-        if (DisplayConfig.KILL_INDICATION.get()
-            // TODO ah6
-//                && !(player.getVehicle() instanceof Ah6Entity ah6Entity && ah6Entity.getFirstPassenger() == player)
-        ) {
+        if (DisplayConfig.KILL_INDICATION.get() && !(player.getVehicle() instanceof Ah6Entity ah6Entity && ah6Entity.getFirstPassenger() == player)) {
             renderKillIndicator(guiGraphics, w, h, moveX, moveY);
         }
 

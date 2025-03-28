@@ -1,12 +1,16 @@
 package com.atsuishio.superbwarfare.event;
 
 import com.atsuishio.superbwarfare.event.events.ReloadEvent;
+import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.perk.PerkHelper;
 import com.atsuishio.superbwarfare.tools.GunsTool;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+
+import java.util.List;
 
 @EventBusSubscriber
 public class ReloadEventHandler {
@@ -61,17 +65,16 @@ public class ReloadEventHandler {
             return;
         }
 
-        // TODO perk
-//        int healClipLevel = PerkHelper.getItemPerkLevel(ModPerks.HEAL_CLIP.get(), stack);
-//        if (healClipLevel == 0) {
-//            healClipLevel = 1;
-//        }
-//
-//        player.heal(12.0f * (0.8f + 0.2f * healClipLevel));
-//        List<Player> players = player.level().getEntitiesOfClass(Player.class, player.getBoundingBox().inflate(5))
-//                .stream().filter(p -> p.isAlliedTo(player)).toList();
-//        int finalHealClipLevel = healClipLevel;
-//        players.forEach(p -> p.heal(6.0f * (0.8f + 0.2f * finalHealClipLevel)));
+        int healClipLevel = PerkHelper.getItemPerkLevel(ModPerks.HEAL_CLIP.get(), stack);
+        if (healClipLevel == 0) {
+            healClipLevel = 1;
+        }
+
+        player.heal(12.0f * (0.8f + 0.2f * healClipLevel));
+        List<Player> players = player.level().getEntitiesOfClass(Player.class, player.getBoundingBox().inflate(5))
+                .stream().filter(p -> p.isAlliedTo(player)).toList();
+        int finalHealClipLevel = healClipLevel;
+        players.forEach(p -> p.heal(6.0f * (0.8f + 0.2f * finalHealClipLevel)));
     }
 
     private static void handleKillClipPre(ItemStack stack) {
@@ -89,19 +92,17 @@ public class ReloadEventHandler {
             return;
         }
 
-        // TODO perk
-//        int level = PerkHelper.getItemPerkLevel(ModPerks.KILL_CLIP.get(), stack);
-//        GunsTool.setPerkIntTag(stack, "KillClipTime", 90 + 10 * level);
+        int level = PerkHelper.getItemPerkLevel(ModPerks.KILL_CLIP.get(), stack);
+        GunsTool.setPerkIntTag(stack, "KillClipTime", 90 + 10 * level);
     }
 
     private static void handleKillingTallyPre(ItemStack stack) {
-        // TODO perk
-//        int level = PerkHelper.getItemPerkLevel(ModPerks.KILLING_TALLY.get(), stack);
-//        if (level == 0) {
-//            return;
-//        }
-//
-//        GunsTool.setPerkIntTag(stack, "KillingTally", 0);
+        int level = PerkHelper.getItemPerkLevel(ModPerks.KILLING_TALLY.get(), stack);
+        if (level == 0) {
+            return;
+        }
+
+        GunsTool.setPerkIntTag(stack, "KillingTally", 0);
     }
 
     private static void handleDesperadoPre(ItemStack stack) {
@@ -115,12 +116,11 @@ public class ReloadEventHandler {
     }
 
     private static void handleDesperadoPost(ItemStack stack) {
-        // TODO perk
-//        if (!GunsTool.getPerkBooleanTag(stack, "Desperado")) {
-//            return;
-//        }
-//
-//        int level = PerkHelper.getItemPerkLevel(ModPerks.DESPERADO.get(), stack);
-//        GunsTool.setPerkIntTag(stack, "DesperadoTimePost", 110 + level * 10);
+        if (!GunsTool.getPerkBooleanTag(stack, "Desperado")) {
+            return;
+        }
+
+        int level = PerkHelper.getItemPerkLevel(ModPerks.DESPERADO.get(), stack);
+        GunsTool.setPerkIntTag(stack, "DesperadoTimePost", 110 + level * 10);
     }
 }

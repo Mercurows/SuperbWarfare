@@ -4,8 +4,12 @@ import com.atsuishio.superbwarfare.ModUtils;
 import com.atsuishio.superbwarfare.capability.ModCapabilities;
 import com.atsuishio.superbwarfare.event.GunEventHandler;
 import com.atsuishio.superbwarfare.init.ModItems;
+import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.perk.AmmoPerk;
+import com.atsuishio.superbwarfare.perk.Perk;
+import com.atsuishio.superbwarfare.perk.PerkHelper;
 import com.atsuishio.superbwarfare.tools.*;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.particles.ParticleTypes;
@@ -79,13 +83,9 @@ public record ShootMessage(double spread) implements CustomPacketPayload {
                     }
                 }
 
-//                var perk = PerkHelper.getPerkByType(stack, Perk.Type.AMMO);
+                var perk = PerkHelper.getPerkByType(stack, Perk.Type.AMMO);
 
-                for (int index0 = 0; index0 < (
-                        // todo perk
-//                        perk instanceof AmmoPerk ammoPerk && ammoPerk.slug ? 1 : projectileAmount
-                        projectileAmount
-                ); index0++) {
+                for (int index0 = 0; index0 < (perk instanceof AmmoPerk ammoPerk && ammoPerk.slug ? 1 : projectileAmount); index0++) {
                     GunEventHandler.gunShoot(player, spared);
                 }
 
@@ -106,8 +106,7 @@ public record ShootMessage(double spread) implements CustomPacketPayload {
                     }
                 }
 
-                // TODO perk
-//                var perk = PerkHelper.getPerkByType(stack, Perk.Type.AMMO);
+                var perk = PerkHelper.getPerkByType(stack, Perk.Type.AMMO);
                 float pitch = tag.getDouble("heat") <= 40 ? 1 : (float) (1 - 0.025 * Math.abs(40 - tag.getDouble("heat")));
 
                 if (!player.level().isClientSide() && player instanceof ServerPlayer) {
@@ -117,9 +116,9 @@ public record ShootMessage(double spread) implements CustomPacketPayload {
                     player.playSound(ModSounds.MINIGUN_FAR.get(), soundRadius * 0.5f, pitch);
                     player.playSound(ModSounds.MINIGUN_VERYFAR.get(), soundRadius, pitch);
 
-//                    if (perk == ModPerks.BEAST_BULLET.get()) {
-//                        player.playSound(ModSounds.HENG.get(), 4f, pitch);
-//                    }
+                    if (perk == ModPerks.BEAST_BULLET.get()) {
+                        player.playSound(ModSounds.HENG.get(), 4f, pitch);
+                    }
                 }
 
                 GunEventHandler.gunShoot(player, spared);

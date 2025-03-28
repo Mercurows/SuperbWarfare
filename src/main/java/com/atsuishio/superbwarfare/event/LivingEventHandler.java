@@ -16,6 +16,10 @@ import com.atsuishio.superbwarfare.event.events.PreKillEvent;
 import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
+import com.atsuishio.superbwarfare.network.message.receive.PlayerGunKillMessage;
+import com.atsuishio.superbwarfare.perk.AmmoPerk;
+import com.atsuishio.superbwarfare.perk.Perk;
+import com.atsuishio.superbwarfare.perk.PerkHelper;
 import com.atsuishio.superbwarfare.tools.*;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -129,19 +133,19 @@ public class LivingEventHandler {
 
         ItemStack stack = sourceEntity instanceof LivingEntity living ? living.getMainHandItem() : ItemStack.EMPTY;
 
-        // TODO perk
-        //        var perk = PerkHelper.getPerkByType(stack, Perk.Type.AMMO);
+
+        var perk = PerkHelper.getPerkByType(stack, Perk.Type.AMMO);
 
         // 距离衰减
         if (DamageTypeTool.isGunDamage(source)) {
             double distance = entity.position().distanceTo(sourceEntity.position());
 
             if (stack.is(ModTags.Items.USE_SHOTGUN_AMMO)) {
-//                if (perk instanceof AmmoPerk ammoPerk && ammoPerk.slug) {
-//                    damage = reduceDamageByDistance(amount, distance, 0.015, 30);
-//                } else {
+                if (perk instanceof AmmoPerk ammoPerk && ammoPerk.slug) {
+                    damage = reduceDamageByDistance(amount, distance, 0.015, 30);
+                } else {
                     damage = reduceDamageByDistance(amount, distance, 0.05, 15);
-//                }
+                }
             } else if (stack.is(ModTags.Items.USE_SNIPER_AMMO)) {
                 damage = reduceDamageByDistance(amount, distance, 0.001, 150);
             } else if (stack.is(ModTags.Items.USE_HEAVY_AMMO)) {
@@ -208,10 +212,7 @@ public class LivingEventHandler {
 
         // 先处理发射器类武器或高爆弹的爆炸伤害
         if (source.is(ModDamageTypes.PROJECTILE_BOOM)) {
-            if (stack.is(ModTags.Items.LAUNCHER)
-                // TODO perk
-//                    || PerkHelper.getItemPerkLevel(ModPerks.HE_BULLET.get(), stack) > 0
-            ) {
+            if (stack.is(ModTags.Items.LAUNCHER) || PerkHelper.getItemPerkLevel(ModPerks.HE_BULLET.get(), stack) > 0) {
                 GunsTool.setGunDoubleTag(stack, "Exp", GunsTool.getGunDoubleTag(stack, "Exp", 0) + amount);
             }
         }
@@ -234,10 +235,7 @@ public class LivingEventHandler {
 
         // 先处理发射器类武器或高爆弹的爆炸伤害
         if (source.is(ModDamageTypes.PROJECTILE_BOOM)) {
-            if (stack.is(ModTags.Items.LAUNCHER)
-                // TODO perk
-//                    || PerkHelper.getItemPerkLevel(ModPerks.HE_BULLET.get(), stack) > 0
-            ) {
+            if (stack.is(ModTags.Items.LAUNCHER) || PerkHelper.getItemPerkLevel(ModPerks.HE_BULLET.get(), stack) > 0) {
                 GunsTool.setGunDoubleTag(stack, "Exp", GunsTool.getGunDoubleTag(stack, "Exp", 0) + amount);
             }
         }
@@ -299,9 +297,13 @@ public class LivingEventHandler {
 
         if (!sourceEntity.level().isClientSide() && sourceEntity instanceof ServerPlayer player) {
             // TODO pre kill event
-//            if (NeoForge.EVENT_BUS.post(new PreKillEvent.Indicator(player, source, event.getEntity()))) {
-//                return;
-//            }
+            if (false
+//                    NeoForge.EVENT_BUS.post(
+//                            new PreKillEvent.Indicator(player, source, event.getEntity())
+//                    )
+            ) {
+                return;
+            }
 
             SoundTool.playLocalSound(player, ModSounds.TARGET_DOWN.get(), 3f, 1f);
             PacketDistributor.sendToPlayer(player, new ClientIndicatorMessage(2, 8));
@@ -416,15 +418,15 @@ public class LivingEventHandler {
                         }
                         NBTTool.saveTag(newStack, newTag);
 
-                        // TODO perk
-//                        int level = PerkHelper.getItemPerkLevel(ModPerks.KILLING_TALLY.get(), newStack);
-//                        if (level != 0) {
-//                            GunsTool.setPerkIntTag(newStack, "KillingTally", 0);
-//                        }
-//
-//                        if (player.level() instanceof ServerLevel) {
+                        int level = PerkHelper.getItemPerkLevel(ModPerks.KILLING_TALLY.get(), newStack);
+                        if (level != 0) {
+                            GunsTool.setPerkIntTag(newStack, "KillingTally", 0);
+                        }
+
+                        if (player.level() instanceof ServerLevel) {
+                            // TODO draw client msg
 //                            ModUtils.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> serverPlayer), new DrawClientMessage(true));
-//                        }
+                        }
 
                         var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
                         if (cap != null) {
@@ -468,10 +470,9 @@ public class LivingEventHandler {
 
         if (attacker != null && MiscConfig.SEND_KILL_FEEDBACK.get()) {
             if (DamageTypeTool.isHeadshotDamage(source)) {
-                // TODO player gun kill msg
-//                ModUtils.PACKET_HANDLER.send(PacketDistributor.ALL.noArg(), new PlayerGunKillMessage(attacker.getId(), entity.getId(), true, damageTypeResourceKey));
+                PacketDistributor.sendToAllPlayers(new PlayerGunKillMessage(attacker.getId(), entity.getId(), true, damageTypeResourceKey));
             } else {
-//                ModUtils.PACKET_HANDLER.send(PacketDistributor.ALL.noArg(), new PlayerGunKillMessage(attacker.getId(), entity.getId(), false, damageTypeResourceKey));
+                PacketDistributor.sendToAllPlayers(new PlayerGunKillMessage(attacker.getId(), entity.getId(), false, damageTypeResourceKey));
             }
         }
     }
@@ -514,15 +515,14 @@ public class LivingEventHandler {
         }
 
         if (source.getDirectEntity() instanceof ProjectileEntity projectile) {
-            // TODO perk
-//            if (PerkHelper.getItemPerkLevel(ModPerks.FOURTH_TIMES_CHARM.get(), stack) > 0) {
-//                float bypassArmorRate = projectile.getBypassArmorRate();
-//                if (bypassArmorRate >= 1.0f && source.is(ModDamageTypes.GUN_FIRE_HEADSHOT_ABSOLUTE)) {
-//                    handleFourthTimesCharm(stack);
-//                } else if (source.is(ModDamageTypes.GUN_FIRE_HEADSHOT)) {
-//                    handleFourthTimesCharm(stack);
-//                }
-//            }
+            if (PerkHelper.getItemPerkLevel(ModPerks.FOURTH_TIMES_CHARM.get(), stack) > 0) {
+                float bypassArmorRate = projectile.getBypassArmorRate();
+                if (bypassArmorRate >= 1.0f && source.is(ModDamageTypes.GUN_FIRE_HEADSHOT_ABSOLUTE)) {
+                    handleFourthTimesCharm(stack);
+                } else if (source.is(ModDamageTypes.GUN_FIRE_HEADSHOT)) {
+                    handleFourthTimesCharm(stack);
+                }
+            }
 
             if (!projectile.isZoom()) {
                 handleFieldDoctor(stack, event, attacker);
@@ -569,91 +569,83 @@ public class LivingEventHandler {
     }
 
     private static void handleClipPerks(ItemStack stack) {
-        // TODO perk
-//        int healClipLevel = PerkHelper.getItemPerkLevel(ModPerks.HEAL_CLIP.get(), stack);
-//        if (healClipLevel != 0) {
-//            GunsTool.setPerkIntTag(stack, "HealClipTime", 80 + healClipLevel * 20);
-//        }
-//
-//        int killClipLevel = PerkHelper.getItemPerkLevel(ModPerks.KILL_CLIP.get(), stack);
-//        if (killClipLevel != 0) {
-//            GunsTool.setPerkIntTag(stack, "KillClipReloadTime", 80);
-//        }
+        int healClipLevel = PerkHelper.getItemPerkLevel(ModPerks.HEAL_CLIP.get(), stack);
+        if (healClipLevel != 0) {
+            GunsTool.setPerkIntTag(stack, "HealClipTime", 80 + healClipLevel * 20);
+        }
+
+        int killClipLevel = PerkHelper.getItemPerkLevel(ModPerks.KILL_CLIP.get(), stack);
+        if (killClipLevel != 0) {
+            GunsTool.setPerkIntTag(stack, "KillClipReloadTime", 80);
+        }
     }
 
     private static void handleKillClipDamage(ItemStack stack, LivingIncomingDamageEvent event) {
-        // TODO perk
-//        if (GunsTool.getPerkIntTag(stack, "KillClipTime") > 0) {
-//            int level = PerkHelper.getItemPerkLevel(ModPerks.KILL_CLIP.get(), stack);
-//            if (level == 0) {
-//                return;
-//            }
-//
-//            event.setAmount(event.getAmount() * (1.2f + 0.05f * level));
-//        }
+        if (GunsTool.getPerkIntTag(stack, "KillClipTime") > 0) {
+            int level = PerkHelper.getItemPerkLevel(ModPerks.KILL_CLIP.get(), stack);
+            if (level == 0) {
+                return;
+            }
+
+            event.setAmount(event.getAmount() * (1.2f + 0.05f * level));
+        }
     }
 
     private static void handleGutshotStraightDamage(ItemStack stack, LivingIncomingDamageEvent event) {
-        // TODO perk
-//        int level = PerkHelper.getItemPerkLevel(ModPerks.GUTSHOT_STRAIGHT.get(), stack);
-//        if (level == 0) {
-//            return;
-//        }
+        int level = PerkHelper.getItemPerkLevel(ModPerks.GUTSHOT_STRAIGHT.get(), stack);
+        if (level == 0) {
+            return;
+        }
 
-//        event.setAmount(event.getAmount() * (1.15f + 0.05f * level));
+        event.setAmount(event.getAmount() * (1.15f + 0.05f * level));
     }
 
     private static void handleKillingTallyDamage(ItemStack stack, LivingIncomingDamageEvent event) {
-        // TODO perk
-//        int level = PerkHelper.getItemPerkLevel(ModPerks.KILLING_TALLY.get(), stack);
-//        if (level == 0) {
-//            return;
-//        }
-//
-//        int killTally = GunsTool.getPerkIntTag(stack, "KillingTally");
-//        if (killTally == 0) {
-//            return;
-//        }
-//
-//        event.setAmount(event.getAmount() * (1.0f + (0.1f * level) * killTally));
+        int level = PerkHelper.getItemPerkLevel(ModPerks.KILLING_TALLY.get(), stack);
+        if (level == 0) {
+            return;
+        }
+
+        int killTally = GunsTool.getPerkIntTag(stack, "KillingTally");
+        if (killTally == 0) {
+            return;
+        }
+
+        event.setAmount(event.getAmount() * (1.0f + (0.1f * level) * killTally));
     }
 
     private static void handleKillingTallyAddCount(ItemStack stack) {
-        // TODO perk
-//        int level = PerkHelper.getItemPerkLevel(ModPerks.KILLING_TALLY.get(), stack);
-//        if (level != 0) {
-//            GunsTool.setPerkIntTag(stack, "KillingTally", Math.min(3, GunsTool.getPerkIntTag(stack, "KillingTally") + 1));
-//        }
+        int level = PerkHelper.getItemPerkLevel(ModPerks.KILLING_TALLY.get(), stack);
+        if (level != 0) {
+            GunsTool.setPerkIntTag(stack, "KillingTally", Math.min(3, GunsTool.getPerkIntTag(stack, "KillingTally") + 1));
+        }
     }
 
     private static void handleFourthTimesCharm(ItemStack stack) {
-        // TODO perk
-//        int level = PerkHelper.getItemPerkLevel(ModPerks.FOURTH_TIMES_CHARM.get(), stack);
-//        if (level == 0) {
-//            return;
-//        }
-//
-//        int fourthTimesCharmTick = GunsTool.getPerkIntTag(stack, "FourthTimesCharmTick");
-//        if (fourthTimesCharmTick <= 0) {
-//            GunsTool.setPerkIntTag(stack, "FourthTimesCharmTick", 40 + 10 * level);
-//            GunsTool.setPerkIntTag(stack, "FourthTimesCharmCount", 1);
-//        } else {
-//            int count = GunsTool.getPerkIntTag(stack, "FourthTimesCharmCount");
-//            if (count < 4) {
-//                GunsTool.setPerkIntTag(stack, "FourthTimesCharmCount", Math.min(4, count + 1));
-//            }
-//        }
+        int level = PerkHelper.getItemPerkLevel(ModPerks.FOURTH_TIMES_CHARM.get(), stack);
+        if (level == 0) {
+            return;
+        }
+
+        int fourthTimesCharmTick = GunsTool.getPerkIntTag(stack, "FourthTimesCharmTick");
+        if (fourthTimesCharmTick <= 0) {
+            GunsTool.setPerkIntTag(stack, "FourthTimesCharmTick", 40 + 10 * level);
+            GunsTool.setPerkIntTag(stack, "FourthTimesCharmCount", 1);
+        } else {
+            int count = GunsTool.getPerkIntTag(stack, "FourthTimesCharmCount");
+            if (count < 4) {
+                GunsTool.setPerkIntTag(stack, "FourthTimesCharmCount", Math.min(4, count + 1));
+            }
+        }
     }
 
     private static void handleSubsistence(ItemStack stack, Player player) {
-        // TODO perk
-//        int level = PerkHelper.getItemPerkLevel(ModPerks.SUBSISTENCE.get(), stack);
-//        if (level == 0) {
-//            return;
-//        }
-//
-//        float rate = level * 0.1f + (stack.is(ModTags.Items.SMG) || stack.is(ModTags.Items.RIFLE) ? 0.07f : 0f);
-        float rate = 1;
+        int level = PerkHelper.getItemPerkLevel(ModPerks.SUBSISTENCE.get(), stack);
+        if (level == 0) {
+            return;
+        }
+
+        float rate = level * 0.1f + (stack.is(ModTags.Items.SMG) || stack.is(ModTags.Items.RIFLE) ? 0.07f : 0f);
 
         var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
         if (cap == null) return;
@@ -687,48 +679,44 @@ public class LivingEventHandler {
 
 
     private static void handleFieldDoctor(ItemStack stack, LivingIncomingDamageEvent event, Player player) {
-        // TODO perk
-        //    int level = PerkHelper.getItemPerkLevel(ModPerks.FIELD_DOCTOR.get(), stack);
-        //    if (level == 0) {
-        //        return;
-        //    }
-        //
-        //    if (event.getEntity().isAlliedTo(player)) {
-        //        event.getEntity().heal(event.getAmount() * Math.min(1.0f, 0.25f + 0.05f * level));
-        //        event.setCanceled(true);
-        //    }
+        int level = PerkHelper.getItemPerkLevel(ModPerks.FIELD_DOCTOR.get(), stack);
+        if (level == 0) {
+            return;
+        }
+
+        if (event.getEntity().isAlliedTo(player)) {
+            event.getEntity().heal(event.getAmount() * Math.min(1.0f, 0.25f + 0.05f * level));
+            event.setCanceled(true);
+        }
     }
 
     private static void handleHeadSeekerTime(ItemStack stack) {
-        // TODO perk
-//        int level = PerkHelper.getItemPerkLevel(ModPerks.HEAD_SEEKER.get(), stack);
-//        if (level == 0) {
-//            return;
-//        }
-//
-//        GunsTool.setPerkIntTag(stack, "HeadSeeker", 11 + level * 2);
+        int level = PerkHelper.getItemPerkLevel(ModPerks.HEAD_SEEKER.get(), stack);
+        if (level == 0) {
+            return;
+        }
+
+        GunsTool.setPerkIntTag(stack, "HeadSeeker", 11 + level * 2);
     }
 
     private static void handleHeadSeekerDamage(ItemStack stack, LivingIncomingDamageEvent event) {
-        // TODO perk
-//        int level = PerkHelper.getItemPerkLevel(ModPerks.HEAD_SEEKER.get(), stack);
-//        if (level == 0) {
-//            return;
-//        }
-//
-//        if (GunsTool.getPerkIntTag(stack, "HeadSeeker") > 0) {
-//            event.setAmount(event.getAmount() * (1.095f + 0.0225f * level));
-//        }
+        int level = PerkHelper.getItemPerkLevel(ModPerks.HEAD_SEEKER.get(), stack);
+        if (level == 0) {
+            return;
+        }
+
+        if (GunsTool.getPerkIntTag(stack, "HeadSeeker") > 0) {
+            event.setAmount(event.getAmount() * (1.095f + 0.0225f * level));
+        }
     }
 
     private static void handleDesperado(ItemStack stack) {
-        // TODO perk
-//        int level = PerkHelper.getItemPerkLevel(ModPerks.DESPERADO.get(), stack);
-//        if (level == 0) {
-//            return;
-//        }
-//
-//        GunsTool.setPerkIntTag(stack, "DesperadoTime", 90 + level * 10);
+        int level = PerkHelper.getItemPerkLevel(ModPerks.DESPERADO.get(), stack);
+        if (level == 0) {
+            return;
+        }
+
+        GunsTool.setPerkIntTag(stack, "DesperadoTime", 90 + level * 10);
     }
 
     /**
@@ -793,17 +781,16 @@ public class LivingEventHandler {
             return;
         }
 
-        // TODO perk
-//        if (stack.is(ModTags.Items.GUN) && PerkHelper.getItemPerkLevel(ModPerks.POWERFUL_ATTRACTION.get(), stack) > 0 && (DamageTypeTool.isGunDamage(source) || DamageTypeTool.isExplosionDamage(source))) {
-//            var drops = event.getDrops();
-//            drops.forEach(itemEntity -> {
-//                ItemStack item = itemEntity.getItem();
-//                if (!player.addItem(item)) {
-//                    player.drop(item, false);
-//                }
-//            });
-//            event.setCanceled(true);
-//        }
+        if (stack.is(ModTags.Items.GUN) && PerkHelper.getItemPerkLevel(ModPerks.POWERFUL_ATTRACTION.get(), stack) > 0 && (DamageTypeTool.isGunDamage(source) || DamageTypeTool.isExplosionDamage(source))) {
+            var drops = event.getDrops();
+            drops.forEach(itemEntity -> {
+                ItemStack item = itemEntity.getItem();
+                if (!player.addItem(item)) {
+                    player.drop(item, false);
+                }
+            });
+            event.setCanceled(true);
+        }
     }
 
     @SubscribeEvent
@@ -820,13 +807,12 @@ public class LivingEventHandler {
         ItemStack stack = player.getMainHandItem();
         if (!stack.is(ModTags.Items.GUN)) return;
 
-        // TODO perk
-//        int level = PerkHelper.getItemPerkLevel(ModPerks.POWERFUL_ATTRACTION.get(), stack);
-//        if (level > 0) {
-//            player.giveExperiencePoints((int) (event.getDroppedExperience() * (0.8f + 0.2f * level)));
-//
-//            event.setCanceled(true);
-//        }
+        int level = PerkHelper.getItemPerkLevel(ModPerks.POWERFUL_ATTRACTION.get(), stack);
+        if (level > 0) {
+            player.giveExperiencePoints((int) (event.getDroppedExperience() * (0.8f + 0.2f * level)));
+
+            event.setCanceled(true);
+        }
     }
 
     public static void handlePlayerBeamReset(Player player) {
@@ -838,9 +824,8 @@ public class LivingEventHandler {
 
     private static void handleVorpalWeaponDamage(ItemStack stack, LivingIncomingDamageEvent event) {
         var entity = event.getEntity();
-        // TODO perk
-//        int level = PerkHelper.getItemPerkLevel(ModPerks.VORPAL_WEAPON.get(), stack);
-        int level = 0;
+
+        int level = PerkHelper.getItemPerkLevel(ModPerks.VORPAL_WEAPON.get(), stack);
         if (level <= 0) return;
         if (entity.getHealth() < 100.0f) return;
 

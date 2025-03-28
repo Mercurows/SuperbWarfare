@@ -1,5 +1,9 @@
 package com.atsuishio.superbwarfare.client;
 
+import com.atsuishio.superbwarfare.init.ModPerks;
+import com.atsuishio.superbwarfare.perk.AmmoPerk;
+import com.atsuishio.superbwarfare.perk.Perk;
+import com.atsuishio.superbwarfare.perk.PerkHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -19,26 +23,24 @@ public class TooltipTool {
         tooltip.add(Component.translatable("des.superbwarfare.developing").withStyle(ChatFormatting.LIGHT_PURPLE).withStyle(ChatFormatting.BOLD));
     }
 
-    // TODO perk
     public static double perkDamage(ItemStack stack) {
-//        var perk = PerkHelper.getPerkByType(stack, Perk.Type.AMMO);
-//        if (perk instanceof AmmoPerk ammoPerk) {
-//            return ammoPerk.damageRate;
-//        }
+        var perk = PerkHelper.getPerkByType(stack, Perk.Type.AMMO);
+        if (perk instanceof AmmoPerk ammoPerk) {
+            return ammoPerk.damageRate;
+        }
         return 1;
     }
 
     public static boolean heBullet(ItemStack stack) {
-//        var perk = PerkHelper.getPerkByType(stack, Perk.Type.AMMO);
-//        return perk == ModPerks.HE_BULLET.get();
-        return false;
+        var perk = PerkHelper.getPerkByType(stack, Perk.Type.AMMO);
+        return perk == ModPerks.HE_BULLET.get();
     }
 
     public static int heBulletLevel(ItemStack stack) {
-//        var perk = PerkHelper.getPerkByType(stack, Perk.Type.AMMO);
-//        if (perk == ModPerks.HE_BULLET.get()) {
-//            return PerkHelper.getItemPerkLevel(perk, stack);
-//        }
+        var perk = PerkHelper.getPerkByType(stack, Perk.Type.AMMO);
+        if (perk == ModPerks.HE_BULLET.get()) {
+            return PerkHelper.getItemPerkLevel(perk, stack);
+        }
         return 0;
     }
 }

@@ -14,6 +14,9 @@ import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.network.message.send.LaserShootMessage;
 import com.atsuishio.superbwarfare.network.message.send.ShootMessage;
 import com.atsuishio.superbwarfare.network.message.send.VehicleMovementMessage;
+import com.atsuishio.superbwarfare.perk.AmmoPerk;
+import com.atsuishio.superbwarfare.perk.Perk;
+import com.atsuishio.superbwarfare.perk.PerkHelper;
 import com.atsuishio.superbwarfare.tools.*;
 import com.atsuishio.superbwarfare.tools.animation.AnimationCurves;
 import net.minecraft.client.CameraType;
@@ -391,8 +394,7 @@ public class ClientEventHandler {
             return;
         }
 
-        // TODO perk
-//        var perk = PerkHelper.getPerkByType(stack, Perk.Type.AMMO);
+        var perk = PerkHelper.getPerkByType(stack, Perk.Type.AMMO);
         int mode = GunsTool.getGunIntTag(stack, "FireMode");
 
         // 精准度
@@ -411,15 +413,13 @@ public class ClientEventHandler {
         if (stack.is(ModTags.Items.SNIPER_RIFLE) || stack.is(ModTags.Items.HEAVY_WEAPON)) {
             zoomSpread = 1 - (0.995 * zoomTime);
         } else if (stack.is(ModTags.Items.SHOTGUN)) {
-//            if (perk instanceof AmmoPerk ammoPerk && ammoPerk.slug) {
-//                zoomSpread = 1 - (0.85 * zoomTime);
-//            } else {
-//                zoomSpread = 1 - (0.25 * zoomTime);
-//            }
-//        } else if (stack.is(ModItems.MINIGUN.get())) {
-//            zoomSpread = 1 - (0.25 * zoomTime);
-            zoomSpread = 1 - (0.9 * zoomTime);
-            // TODO perk
+            if (perk instanceof AmmoPerk ammoPerk && ammoPerk.slug) {
+                zoomSpread = 1 - (0.85 * zoomTime);
+            } else {
+                zoomSpread = 1 - (0.25 * zoomTime);
+            }
+        } else if (stack.is(ModItems.MINIGUN.get())) {
+            zoomSpread = 1 - (0.25 * zoomTime);
         } else {
             zoomSpread = 1 - (0.9 * zoomTime);
         }
@@ -444,9 +444,8 @@ public class ClientEventHandler {
         }
 
         if (GunsTool.getPerkIntTag(stack, "DesperadoTimePost") > 0) {
-            // TODO perk
-//            int perkLevel = PerkHelper.getItemPerkLevel(ModPerks.DESPERADO.get(), stack);
-//            rpm *= (int) (1.285 + 0.015 * perkLevel);
+            int perkLevel = PerkHelper.getItemPerkLevel(ModPerks.DESPERADO.get(), stack);
+            rpm *= (int) (1.285 + 0.015 * perkLevel);
         }
 
         double rps = (double) rpm / 60;
@@ -570,9 +569,8 @@ public class ClientEventHandler {
                 }
 
                 if (stack.is(ModItems.DEVOTION.get())) {
-                    // TODO perk
-//                    int perkLevel = PerkHelper.getItemPerkLevel(ModPerks.TURBO_CHARGER.get(), stack);
-//                    customRpm = Math.min(customRpm + 15 + ((perkLevel > 0 ? 5 : 0) + 3 * perkLevel), 500);
+                    int perkLevel = PerkHelper.getItemPerkLevel(ModPerks.TURBO_CHARGER.get(), stack);
+                    customRpm = Math.min(customRpm + 15 + ((perkLevel > 0 ? 5 : 0) + 3 * perkLevel), 500);
                 }
 
                 if (stack.getItem() == ModItems.SENTINEL.get()) {
@@ -599,15 +597,14 @@ public class ClientEventHandler {
 
             var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
             if (cap != null && cap.rifleAmmo > 0 || InventoryTool.hasCreativeAmmoBox(player)) {
-                // TODO perk
-//                var perk = PerkHelper.getPerkByType(stack, Perk.Type.AMMO);
+                var perk = PerkHelper.getPerkByType(stack, Perk.Type.AMMO);
                 float pitch = tag.getDouble("heat") <= 40 ? 1 : (float) (1 - 0.025 * Math.abs(40 - tag.getDouble("heat")));
 
                 player.playSound(ModSounds.MINIGUN_FIRE_1P.get(), 1f, pitch);
 
-//                if (perk == ModPerks.BEAST_BULLET.get()) {
-//                    player.playSound(ModSounds.HENG.get(), 1f, 1f);
-//                }
+                if (perk == ModPerks.BEAST_BULLET.get()) {
+                    player.playSound(ModSounds.HENG.get(), 1f, 1f);
+                }
 
                 double shooterHeight = player.getEyePosition().distanceTo((Vec3.atLowerCornerOf(player.level().clip(new ClipContext(player.getEyePosition(), player.getEyePosition().add(new Vec3(0, -1, 0).scale(10)),
                         ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, player)).getBlockPos())));
@@ -682,12 +679,11 @@ public class ClientEventHandler {
             }
         }
 
-        // TODO perk
-//        var perk = PerkHelper.getPerkByType(stack, Perk.Type.AMMO);
+        var perk = PerkHelper.getPerkByType(stack, Perk.Type.AMMO);
 
-//        if (perk == ModPerks.BEAST_BULLET.get()) {
-//            player.playSound(ModSounds.HENG.get(), 1f, 1f);
-//        }
+        if (perk == ModPerks.BEAST_BULLET.get()) {
+            player.playSound(ModSounds.HENG.get(), 1f, 1f);
+        }
 
         int barrelType = GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.BARREL);
 
@@ -1403,18 +1399,17 @@ public class ClientEventHandler {
                     && cap != null
                     && !cap.edit) {
                 if (!player.isShiftKeyDown()) {
-                    // TODO perk
-//                    int intelligentChipLevel = PerkHelper.getItemPerkLevel(ModPerks.INTELLIGENT_CHIP.get(), stack);
-//
-//                    if (intelligentChipLevel > 0) {
-//                        if (ClientEventHandler.entity == null || !entity.isAlive()) {
-//                            ClientEventHandler.entity = SeekTool.seekLivingEntity(player, player.level(), 32 + 8 * (intelligentChipLevel - 1), 16 / zoomFov);
-//                        }
-//                        if (entity != null && entity.isAlive()) {
-//                            Vec3 toVec = getVec3(event, player);
-//                            look(player, toVec);
-//                        }
-//                    }
+                    int intelligentChipLevel = PerkHelper.getItemPerkLevel(ModPerks.INTELLIGENT_CHIP.get(), stack);
+
+                    if (intelligentChipLevel > 0) {
+                        if (ClientEventHandler.entity == null || !entity.isAlive()) {
+                            ClientEventHandler.entity = SeekTool.seekLivingEntity(player, player.level(), 32 + 8 * (intelligentChipLevel - 1), 16 / zoomFov);
+                        }
+                        if (entity != null && entity.isAlive()) {
+                            Vec3 toVec = getVec3(event, player);
+                            look(player, toVec);
+                        }
+                    }
                 } else {
                     entity = null;
                 }
