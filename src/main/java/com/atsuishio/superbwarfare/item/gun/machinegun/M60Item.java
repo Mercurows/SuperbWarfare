@@ -66,11 +66,11 @@ public class M60Item extends GunItem implements GeoItem {
         ItemStack stack = player.getMainHandItem();
         if (!stack.is(ModTags.Items.GUN)) return PlayState.STOP;
 
-        if (NBTTool.getOrCreateTag(stack).getBoolean("is_empty_reloading")) {
+        if (NBTTool.getTag(stack).getBoolean("is_empty_reloading")) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m60.reload"));
         }
 
-        if (NBTTool.getOrCreateTag(stack).getBoolean("is_normal_reloading")) {
+        if (NBTTool.getTag(stack).getBoolean("is_normal_reloading")) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m60.reload2"));
         }
 
@@ -112,8 +112,8 @@ public class M60Item extends GunItem implements GeoItem {
     @Override
     @ParametersAreNonnullByDefault
     public void inventoryTick(ItemStack stack, Level level, Entity entity, int slot, boolean selected) {
-        if (NBTTool.getOrCreateTag(stack).getBoolean("draw")) {
-            NBTTool.getOrCreateTag(stack).putBoolean("draw", false);
+        if (NBTTool.getTag(stack).getBoolean("draw")) {
+            NBTTool.getTag(stack).putBoolean("draw", false);
 
             if (GunsTool.getGunIntTag(stack, "Ammo", 0) <= 5) {
                 GunsTool.setGunBooleanTag(stack, "HideBulletChain", true);

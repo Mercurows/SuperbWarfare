@@ -86,15 +86,15 @@ public class SecondaryCataclysm extends GunItem implements GeoItem, SpecialFireW
         ItemStack stack = player.getMainHandItem();
         if (!stack.is(ModTags.Items.GUN)) return PlayState.STOP;
 
-        if (NBTTool.getOrCreateTag(stack).getInt("reload_stage") == 1 && NBTTool.getOrCreateTag(stack).getDouble("prepare_load") > 0) {
+        if (NBTTool.getTag(stack).getInt("reload_stage") == 1 && NBTTool.getTag(stack).getDouble("prepare_load") > 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.sc.prepare"));
         }
 
-        if (NBTTool.getOrCreateTag(stack).getDouble("load_index") == 0 && NBTTool.getOrCreateTag(stack).getInt("reload_stage") == 2) {
+        if (NBTTool.getTag(stack).getDouble("load_index") == 0 && NBTTool.getTag(stack).getInt("reload_stage") == 2) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.sc.iterativeload"));
         }
 
-        if (NBTTool.getOrCreateTag(stack).getDouble("load_index") == 1 && NBTTool.getOrCreateTag(stack).getInt("reload_stage") == 2) {
+        if (NBTTool.getTag(stack).getDouble("load_index") == 1 && NBTTool.getTag(stack).getInt("reload_stage") == 2) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.sc.iterativeload2"));
         }
 
@@ -102,7 +102,7 @@ public class SecondaryCataclysm extends GunItem implements GeoItem, SpecialFireW
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.sc.hit"));
         }
 
-        if (NBTTool.getOrCreateTag(stack).getInt("reload_stage") == 3) {
+        if (NBTTool.getTag(stack).getInt("reload_stage") == 3) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.sc.finish"));
         }
 
@@ -117,10 +117,10 @@ public class SecondaryCataclysm extends GunItem implements GeoItem, SpecialFireW
 
         if (player.isSprinting() && player.onGround()
                 && player.getPersistentData().getDouble("noRun") == 0
-                && !(NBTTool.getOrCreateTag(stack).getBoolean("is_empty_reloading"))
-                && NBTTool.getOrCreateTag(stack).getInt("reload_stage") != 1
-                && NBTTool.getOrCreateTag(stack).getInt("reload_stage") != 2
-                && NBTTool.getOrCreateTag(stack).getInt("reload_stage") != 3
+                && !(NBTTool.getTag(stack).getBoolean("is_empty_reloading"))
+                && NBTTool.getTag(stack).getInt("reload_stage") != 1
+                && NBTTool.getTag(stack).getInt("reload_stage") != 2
+                && NBTTool.getTag(stack).getInt("reload_stage") != 3
                 && ClientEventHandler.drawTime < 0.01
                 && ClientEventHandler.gunMelee == 0
                 && !GunsTool.getGunBooleanTag(stack, "Reloading")) {

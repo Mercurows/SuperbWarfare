@@ -129,7 +129,7 @@ public class MinigunItem extends GunItem implements GeoItem {
             cooldown = -0.1;
         }
 
-        if (entity instanceof ServerPlayer serverPlayer && entity.level() instanceof ServerLevel serverLevel && NBTTool.getOrCreateTag(itemstack).getDouble("heat") > 4 && entity.isInWaterOrRain()) {
+        if (entity instanceof ServerPlayer serverPlayer && entity.level() instanceof ServerLevel serverLevel && NBTTool.getTag(itemstack).getDouble("heat") > 4 && entity.isInWaterOrRain()) {
             if (entity.isInWater()) {
                 ParticleTool.sendParticle(serverLevel, ParticleTypes.BUBBLE_COLUMN_UP,
                         entity.getX() + leftPos.x,
@@ -144,10 +144,10 @@ public class MinigunItem extends GunItem implements GeoItem {
                     1, 0.1, 0.1, 0.1, 0.002, true, serverPlayer);
         }
 
-        NBTTool.getOrCreateTag(itemstack).putDouble("heat", Mth.clamp(NBTTool.getOrCreateTag(itemstack).getDouble("heat") - 0.05 - cooldown, 0, 55));
+        NBTTool.getTag(itemstack).putDouble("heat", Mth.clamp(NBTTool.getTag(itemstack).getDouble("heat") - 0.05 - cooldown, 0, 55));
 
-        if (NBTTool.getOrCreateTag(itemstack).getDouble("overheat") > 0) {
-            NBTTool.getOrCreateTag(itemstack).putDouble("overheat", (NBTTool.getOrCreateTag(itemstack).getDouble("overheat") - 1));
+        if (NBTTool.getTag(itemstack).getDouble("overheat") > 0) {
+            NBTTool.getTag(itemstack).putDouble("overheat", (NBTTool.getTag(itemstack).getDouble("overheat") - 1));
         }
     }
 

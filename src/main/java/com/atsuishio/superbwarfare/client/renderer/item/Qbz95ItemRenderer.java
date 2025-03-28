@@ -87,7 +87,7 @@ public class Qbz95ItemRenderer extends GeoItemRenderer<Qbz95Item> {
         if (!itemStack.is(ModTags.Items.GUN)) return;
 
         if (name.equals("Cross1")) {
-            bone.setHidden(NBTTool.getOrCreateTag(itemStack).getBoolean("HoloHidden")
+            bone.setHidden(NBTTool.getTag(itemStack).getBoolean("HoloHidden")
                     || !ClientEventHandler.zoom
                     || GunsTool.getAttachmentType(itemStack, GunsTool.AttachmentType.SCOPE) != 1);
         }
@@ -105,25 +105,25 @@ public class Qbz95ItemRenderer extends GeoItemRenderer<Qbz95Item> {
         }
 
         if (name.equals("Cross2")) {
-            bone.setHidden(NBTTool.getOrCreateTag(itemStack).getBoolean("HoloHidden")
+            bone.setHidden(NBTTool.getTag(itemStack).getBoolean("HoloHidden")
                     || !ClientEventHandler.zoom
                     || GunsTool.getAttachmentType(itemStack, GunsTool.AttachmentType.SCOPE) != 2);
         }
 
         if (name.equals("Cross3")) {
-            bone.setHidden(NBTTool.getOrCreateTag(itemStack).getBoolean("HoloHidden")
+            bone.setHidden(NBTTool.getTag(itemStack).getBoolean("HoloHidden")
                     || !ClientEventHandler.zoom
                     || GunsTool.getAttachmentType(itemStack, GunsTool.AttachmentType.SCOPE) != 3);
         }
 
         if (GunsTool.getAttachmentType(itemStack, GunsTool.AttachmentType.SCOPE) == 2
                 && (name.equals("hidden"))) {
-            bone.setHidden(!NBTTool.getOrCreateTag(itemStack).getBoolean("HoloHidden") && ClientEventHandler.zoom);
+            bone.setHidden(!NBTTool.getTag(itemStack).getBoolean("HoloHidden") && ClientEventHandler.zoom);
         }
 
         if (GunsTool.getAttachmentType(itemStack, GunsTool.AttachmentType.SCOPE) == 3
                 && (name.equals("hidden2") || name.equals("jimiao2"))) {
-            bone.setHidden(!NBTTool.getOrCreateTag(itemStack).getBoolean("HoloHidden") && ClientEventHandler.zoom);
+            bone.setHidden(!NBTTool.getTag(itemStack).getBoolean("HoloHidden") && ClientEventHandler.zoom);
         }
 
         if (name.equals("flare")) {

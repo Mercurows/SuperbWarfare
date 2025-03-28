@@ -91,31 +91,31 @@ public class Ntw20Renderer extends GeoItemRenderer<Ntw20Item> {
         }
 
         if (name.equals("Cross1")) {
-            bone.setHidden(NBTTool.getOrCreateTag(itemStack).getBoolean("HoloHidden")
+            bone.setHidden(NBTTool.getTag(itemStack).getBoolean("HoloHidden")
                     || !ClientEventHandler.zoom
                     || GunsTool.getAttachmentType(itemStack, GunsTool.AttachmentType.SCOPE) != 1);
         }
 
         if (name.equals("Cross2")) {
-            bone.setHidden(NBTTool.getOrCreateTag(itemStack).getBoolean("HoloHidden")
+            bone.setHidden(NBTTool.getTag(itemStack).getBoolean("HoloHidden")
                     || !ClientEventHandler.zoom
                     || GunsTool.getAttachmentType(itemStack, GunsTool.AttachmentType.SCOPE) != 2);
         }
 
         if (name.equals("Cross3")) {
-            bone.setHidden(NBTTool.getOrCreateTag(itemStack).getBoolean("HoloHidden")
+            bone.setHidden(NBTTool.getTag(itemStack).getBoolean("HoloHidden")
                     || !ClientEventHandler.zoom
                     || GunsTool.getAttachmentType(itemStack, GunsTool.AttachmentType.SCOPE) != 3);
         }
 
         if (GunsTool.getAttachmentType(itemStack, GunsTool.AttachmentType.SCOPE) == 2
                 && (name.equals("bone1") || name.equals("zhituiqi") || name.equals("guan") || name.equals("hidden"))) {
-            bone.setHidden(!NBTTool.getOrCreateTag(itemStack).getBoolean("HoloHidden") && ClientEventHandler.zoom);
+            bone.setHidden(!NBTTool.getTag(itemStack).getBoolean("HoloHidden") && ClientEventHandler.zoom);
         }
 
         if (GunsTool.getAttachmentType(itemStack, GunsTool.AttachmentType.SCOPE) == 3
                 && (name.equals("bone1") || name.equals("zhituiqi") || name.equals("guan") || name.equals("jing") || name.equals("rail") || name.equals("base2") || name.equals("guan7"))) {
-            bone.setHidden(!NBTTool.getOrCreateTag(itemStack).getBoolean("HoloHidden") && ClientEventHandler.zoom);
+            bone.setHidden(!NBTTool.getTag(itemStack).getBoolean("HoloHidden") && ClientEventHandler.zoom);
         }
 
         if (name.equals("flare")) {

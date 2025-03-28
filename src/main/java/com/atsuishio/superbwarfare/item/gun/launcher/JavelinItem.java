@@ -72,7 +72,7 @@ public class JavelinItem extends GunItem implements GeoItem, SpecialFireWeapon {
         ItemStack stack = player.getMainHandItem();
         if (!stack.is(ModTags.Items.GUN)) return PlayState.STOP;
 
-        if (NBTTool.getOrCreateTag(stack).getBoolean("is_empty_reloading")) {
+        if (NBTTool.getTag(stack).getBoolean("is_empty_reloading")) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.javelin.reload"));
         }
 
@@ -129,7 +129,7 @@ public class JavelinItem extends GunItem implements GeoItem, SpecialFireWeapon {
     public void inventoryTick(ItemStack stack, Level world, Entity entity, int slot, boolean selected) {
         super.inventoryTick(stack, world, entity, slot, selected);
         if (entity instanceof Player player && selected) {
-            var tag = NBTTool.getOrCreateTag(stack);
+            var tag = NBTTool.getTag(stack);
             GunsTool.setGunIntTag(stack, "MaxAmmo", getAmmoCount(player));
 
             if (tag.getBoolean("Seeking")) {
@@ -195,7 +195,7 @@ public class JavelinItem extends GunItem implements GeoItem, SpecialFireWeapon {
                 }
             }
         } else {
-            NBTTool.getOrCreateTag(stack).putInt("SeekTime", 0);
+            NBTTool.getTag(stack).putInt("SeekTime", 0);
         }
     }
 
@@ -239,7 +239,7 @@ public class JavelinItem extends GunItem implements GeoItem, SpecialFireWeapon {
     private void fire(Player player) {
         Level level = player.level();
         ItemStack stack = player.getMainHandItem();
-        CompoundTag tag = NBTTool.getOrCreateTag(stack);
+        CompoundTag tag = NBTTool.getTag(stack);
 
         if (tag.getInt("SeekTime") < 20) return;
 
@@ -291,7 +291,7 @@ public class JavelinItem extends GunItem implements GeoItem, SpecialFireWeapon {
 
     @Override
     public void fireOnRelease(Player player) {
-        var tag = NBTTool.getOrCreateTag(player.getMainHandItem());
+        var tag = NBTTool.getTag(player.getMainHandItem());
         fire(player);
         tag.putBoolean("Seeking", false);
         tag.putInt("SeekTime", 0);
@@ -305,7 +305,7 @@ public class JavelinItem extends GunItem implements GeoItem, SpecialFireWeapon {
     @Override
     public void fireOnPress(Player player) {
         var stack = player.getMainHandItem();
-        var tag = NBTTool.getOrCreateTag(stack);
+        var tag = NBTTool.getTag(stack);
 
         var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
         if (cap != null && !cap.zoom || GunsTool.getGunIntTag(stack, "Ammo", 0) <= 0) return;

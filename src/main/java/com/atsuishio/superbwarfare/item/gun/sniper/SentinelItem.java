@@ -93,11 +93,11 @@ public class SentinelItem extends GunItem implements GeoItem {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.sentinel.shift"));
         }
 
-        if (NBTTool.getOrCreateTag(stack).getBoolean("is_empty_reloading")) {
+        if (NBTTool.getTag(stack).getBoolean("is_empty_reloading")) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.sentinel.reload_empty"));
         }
 
-        if (NBTTool.getOrCreateTag(stack).getBoolean("is_normal_reloading")) {
+        if (NBTTool.getTag(stack).getBoolean("is_normal_reloading")) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.sentinel.reload_normal"));
         }
 
@@ -116,7 +116,7 @@ public class SentinelItem extends GunItem implements GeoItem {
 
         if (player.isSprinting() && player.onGround()
                 && player.getPersistentData().getDouble("noRun") == 0
-                && !(NBTTool.getOrCreateTag(stack).getBoolean("is_normal_reloading") || NBTTool.getOrCreateTag(stack).getBoolean("is_empty_reloading"))
+                && !(NBTTool.getTag(stack).getBoolean("is_normal_reloading") || NBTTool.getTag(stack).getBoolean("is_empty_reloading"))
                 && !GunsTool.getGunBooleanTag(stack, "Charging") && ClientEventHandler.drawTime < 0.01) {
             if (player.hasEffect(MobEffects.MOVEMENT_SPEED) && GunsTool.getGunIntTag(stack, "BoltActionTick") == 0) {
                 return event.setAndContinue(RawAnimation.begin().thenLoop("animation.sentinel.run_fast"));

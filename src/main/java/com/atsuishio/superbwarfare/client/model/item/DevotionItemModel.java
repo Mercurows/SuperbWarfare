@@ -74,7 +74,7 @@ public class DevotionItemModel extends GeoModel<DevotionItem> {
         GeoBone shen = getAnimationProcessor().getBone("shen");
         GeoBone holo = getAnimationProcessor().getBone("holo");
 
-        NBTTool.getOrCreateTag(stack).putBoolean("HoloHidden", !(gun.getPosX() > 1.8));
+        NBTTool.getTag(stack).putBoolean("HoloHidden", !(gun.getPosX() > 1.8));
 
         shen.setPosX((float) (0.95f * ClientEventHandler.recoilHorizon * fpz * fp));
         shen.setPosY((float) (0.15f * fp + 0.18f * fr));

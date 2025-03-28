@@ -91,31 +91,31 @@ public class Mk14ItemRenderer extends GeoItemRenderer<Mk14Item> {
         }
 
         if (name.equals("Cross1")) {
-            bone.setHidden(NBTTool.getOrCreateTag(itemStack).getBoolean("HoloHidden")
+            bone.setHidden(NBTTool.getTag(itemStack).getBoolean("HoloHidden")
                     || !ClientEventHandler.zoom
                     || GunsTool.getAttachmentType(itemStack, GunsTool.AttachmentType.SCOPE) != 1);
         }
 
         if (name.equals("Cross2")) {
-            bone.setHidden(NBTTool.getOrCreateTag(itemStack).getBoolean("HoloHidden")
+            bone.setHidden(NBTTool.getTag(itemStack).getBoolean("HoloHidden")
                     || !ClientEventHandler.zoom
                     || GunsTool.getAttachmentType(itemStack, GunsTool.AttachmentType.SCOPE) != 2);
         }
 
         if (name.equals("Cross3")) {
-            bone.setHidden(NBTTool.getOrCreateTag(itemStack).getBoolean("HoloHidden")
+            bone.setHidden(NBTTool.getTag(itemStack).getBoolean("HoloHidden")
                     || !ClientEventHandler.zoom
                     || GunsTool.getAttachmentType(itemStack, GunsTool.AttachmentType.SCOPE) != 3);
         }
 
         if (GunsTool.getAttachmentType(itemStack, GunsTool.AttachmentType.SCOPE) == 2
                 && (name.equals("hidden"))) {
-            bone.setHidden(!NBTTool.getOrCreateTag(itemStack).getBoolean("HoloHidden") && ClientEventHandler.zoom);
+            bone.setHidden(!NBTTool.getTag(itemStack).getBoolean("HoloHidden") && ClientEventHandler.zoom);
         }
 
         if (GunsTool.getAttachmentType(itemStack, GunsTool.AttachmentType.SCOPE) == 3
                 && (name.equals("jing") || name.equals("yugu") || name.equals("qiangguan") || name.equals("Barrel"))) {
-            bone.setHidden(!NBTTool.getOrCreateTag(itemStack).getBoolean("HoloHidden") && ClientEventHandler.zoom);
+            bone.setHidden(!NBTTool.getTag(itemStack).getBoolean("HoloHidden") && ClientEventHandler.zoom);
         }
 
         if (name.equals("flare")) {

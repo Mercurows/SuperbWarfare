@@ -13,7 +13,7 @@ import net.neoforged.api.distmarker.OnlyIn;
 public class PoseTool {
 
     public static HumanoidModel.ArmPose pose(LivingEntity entityLiving, InteractionHand hand, ItemStack stack) {
-        var tag = NBTTool.getOrCreateTag(stack);
+        var tag = NBTTool.getTag(stack);
         if (tag.getBoolean("is_empty_reloading")
                 || tag.getBoolean("is_normal_reloading")
                 || GunsTool.getGunBooleanTag(stack, "Reloading")

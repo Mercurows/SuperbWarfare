@@ -97,7 +97,7 @@ public class VectorItemModel extends GeoModel<VectorItem> {
         gun.setScaleZ(1f - (0.5f * (float) zp));
         scope.setScaleZ(1f - (0.2f * (float) zp));
 
-        NBTTool.getOrCreateTag(stack).putBoolean("HoloHidden", gun.getPosX() <= 2);
+        NBTTool.getTag(stack).putBoolean("HoloHidden", gun.getPosX() <= 2);
 
         GeoBone shen;
         if (zt < 0.5) {

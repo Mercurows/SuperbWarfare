@@ -59,11 +59,11 @@ public class Aa12Item extends GunItem implements GeoItem {
 
         if (this.animationProcedure.equals("empty")) {
 
-            if (NBTTool.getOrCreateTag(stack).getBoolean("is_empty_reloading")) {
+            if (NBTTool.getTag(stack).getBoolean("is_empty_reloading")) {
                 return event.setAndContinue(RawAnimation.begin().thenPlay("animation.aa12.reload_empty"));
             }
 
-            if (NBTTool.getOrCreateTag(stack).getBoolean("is_normal_reloading")) {
+            if (NBTTool.getTag(stack).getBoolean("is_normal_reloading")) {
                 return event.setAndContinue(RawAnimation.begin().thenPlay("animation.aa12.reload_normal"));
             }
 

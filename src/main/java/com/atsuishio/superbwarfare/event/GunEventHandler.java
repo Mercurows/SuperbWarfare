@@ -26,6 +26,8 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 import java.text.DecimalFormat;
 
+import static com.atsuishio.superbwarfare.tools.NBTTool.saveTag;
+
 @EventBusSubscriber(modid = ModUtils.MODID)
 public class GunEventHandler {
 
@@ -61,7 +63,7 @@ public class GunEventHandler {
             if (GunsTool.getGunIntTag(stack, "BoltActionTick") == 1) {
                 GunsTool.setGunBooleanTag(stack, "NeedBoltAction", false);
                 if (stack.is(ModTags.Items.REVOLVER)) {
-                    NBTTool.getOrCreateTag(stack).putBoolean("canImmediatelyShoot", true);
+                    NBTTool.getTag(stack).putBoolean("canImmediatelyShoot", true);
                 }
             }
         }
@@ -317,8 +319,8 @@ public class GunEventHandler {
         ItemStack stack = player.getMainHandItem();
         if (!(stack.getItem() instanceof GunItem gunItem)) return;
 
-        CompoundTag tag = NBTTool.getOrCreateTag(stack);
-        CompoundTag data = NBTTool.getOrCreateTag(stack).getCompound("GunData");
+        CompoundTag tag = NBTTool.getTag(stack);
+        CompoundTag data = NBTTool.getTag(stack).getCompound("GunData");
         // 启动换弹
         if (GunsTool.getGunBooleanTag(stack, "StartReload")) {
 
@@ -327,16 +329,16 @@ public class GunEventHandler {
             if (gunItem.isOpenBolt(stack)) {
                 if (GunsTool.getGunIntTag(stack, "Ammo", 0) == 0) {
                     data.putInt("ReloadTime", data.getInt("EmptyReloadTime") + 1);
-                    NBTTool.getOrCreateTag(stack).putBoolean("is_empty_reloading", true);
+                    NBTTool.getTag(stack).putBoolean("is_empty_reloading", true);
                     playGunEmptyReloadSounds(player);
                 } else {
                     data.putInt("ReloadTime", data.getInt("NormalReloadTime") + 1);
-                    NBTTool.getOrCreateTag(stack).putBoolean("is_normal_reloading", true);
+                    NBTTool.getTag(stack).putBoolean("is_normal_reloading", true);
                     playGunNormalReloadSounds(player);
                 }
             } else {
                 data.putInt("ReloadTime", data.getInt("EmptyReloadTime") + 2);
-                NBTTool.getOrCreateTag(stack).putBoolean("is_empty_reloading", true);
+                NBTTool.getTag(stack).putBoolean("is_empty_reloading", true);
                 playGunEmptyReloadSounds(player);
             }
             data.putBoolean("StartReload", false);
@@ -406,6 +408,7 @@ public class GunEventHandler {
         }
 
         tag.put("GunData", data);
+        saveTag(stack, tag);
     }
 
     public static void playGunNormalReload(Player player) {
@@ -429,8 +432,8 @@ public class GunEventHandler {
                 GunsTool.reload(player, stack, AmmoType.HEAVY, gunItem.hasBulletInBarrel(stack));
             }
         }
-        NBTTool.getOrCreateTag(stack).putBoolean("is_normal_reloading", false);
-        NBTTool.getOrCreateTag(stack).putBoolean("is_empty_reloading", false);
+        NBTTool.getTag(stack).putBoolean("is_normal_reloading", false);
+        NBTTool.getTag(stack).putBoolean("is_empty_reloading", false);
 
         // TODO reload event
 //        NeoForge.EVENT_BUS.post(new ReloadEvent.Post(player, stack));
@@ -470,8 +473,8 @@ public class GunEventHandler {
 //            }
         }
 
-        NBTTool.getOrCreateTag(stack).putBoolean("is_normal_reloading", false);
-        NBTTool.getOrCreateTag(stack).putBoolean("is_empty_reloading", false);
+        NBTTool.getTag(stack).putBoolean("is_normal_reloading", false);
+        NBTTool.getTag(stack).putBoolean("is_empty_reloading", false);
 
         // TODO reload event
 //        NeoForge.EVENT_BUS.post(new ReloadEvent.Post(player, stack));
@@ -519,7 +522,7 @@ public class GunEventHandler {
      */
     private static void handleGunSingleReload(Player player) {
         ItemStack stack = player.getMainHandItem();
-        CompoundTag tag = NBTTool.getOrCreateTag(stack);
+        CompoundTag tag = NBTTool.getTag(stack);
 
         // 换弹流程计时器
         if (tag.getDouble("prepare") > 0) {
@@ -729,6 +732,7 @@ public class GunEventHandler {
             // todo reload event
 //            NeoForge.EVENT_BUS.post(new ReloadEvent.Post(player, stack));
         }
+        saveTag(stack, tag);
     }
 
     public static void singleLoad(Player player) {

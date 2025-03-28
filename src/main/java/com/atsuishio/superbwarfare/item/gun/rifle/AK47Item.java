@@ -62,7 +62,7 @@ public class AK47Item extends GunItem implements GeoItem {
         boolean drum = GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.MAGAZINE) == 2;
         boolean grip = GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.GRIP) == 1 || GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.GRIP) == 2;
 
-        if (NBTTool.getOrCreateTag(stack).getBoolean("is_empty_reloading")) {
+        if (NBTTool.getTag(stack).getBoolean("is_empty_reloading")) {
             if (drum) {
                 if (grip) {
                     return event.setAndContinue(RawAnimation.begin().thenPlay("animation.ak47.reload_empty_drum_grip"));
@@ -78,7 +78,7 @@ public class AK47Item extends GunItem implements GeoItem {
             }
         }
 
-        if (NBTTool.getOrCreateTag(stack).getBoolean("is_normal_reloading")) {
+        if (NBTTool.getTag(stack).getBoolean("is_normal_reloading")) {
             if (drum) {
                 if (grip) {
                     return event.setAndContinue(RawAnimation.begin().thenPlay("animation.ak47.reload_normal_drum_grip"));
@@ -168,7 +168,7 @@ public class AK47Item extends GunItem implements GeoItem {
             default -> GunsTool.getGunDoubleTag(stack, "CustomZoom", 0);
         };
 
-        NBTTool.getOrCreateTag(stack).putBoolean("CanAdjustZoomFov", scopeType == 3);
+        NBTTool.getTag(stack).putBoolean("CanAdjustZoomFov", scopeType == 3);
         GunsTool.setGunDoubleTag(stack, "CustomZoom", customZoom);
         GunsTool.setGunIntTag(stack, "CustomMagazine", customMag);
     }

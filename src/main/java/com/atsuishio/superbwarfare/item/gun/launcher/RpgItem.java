@@ -34,8 +34,11 @@ import software.bernie.geckolib.animation.*;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Optional;
 import java.util.Set;
+
+import static com.atsuishio.superbwarfare.tools.NBTTool.saveTag;
 
 public class RpgItem extends GunItem implements GeoItem, SpecialFireWeapon {
 
@@ -61,7 +64,7 @@ public class RpgItem extends GunItem implements GeoItem, SpecialFireWeapon {
         ItemStack stack = player.getMainHandItem();
         if (!stack.is(ModTags.Items.GUN)) return PlayState.STOP;
 
-        if (NBTTool.getOrCreateTag(stack).getBoolean("is_empty_reloading")) {
+        if (NBTTool.getTag(stack).getBoolean("is_empty_reloading")) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.rpg.reload"));
         }
 
@@ -114,12 +117,13 @@ public class RpgItem extends GunItem implements GeoItem, SpecialFireWeapon {
     }
 
     @Override
+    @ParametersAreNonnullByDefault
     public void inventoryTick(ItemStack stack, Level world, Entity entity, int slot, boolean selected) {
-        if (NBTTool.getOrCreateTag(stack).getBoolean("draw")) {
-            NBTTool.getOrCreateTag(stack).putBoolean("draw", false);
+        if (NBTTool.getTag(stack).getBoolean("draw")) {
+            NBTTool.getTag(stack).putBoolean("draw", false);
 
             if (GunsTool.getGunIntTag(stack, "Ammo", 0) == 0) {
-                NBTTool.getOrCreateTag(stack).putDouble("empty", 1);
+                NBTTool.getTag(stack).putDouble("empty", 1);
             }
         }
 
@@ -171,7 +175,7 @@ public class RpgItem extends GunItem implements GeoItem, SpecialFireWeapon {
     public void fireOnPress(Player player) {
         Level level = player.level();
         ItemStack stack = player.getMainHandItem();
-        CompoundTag tag = NBTTool.getOrCreateTag(stack);
+        CompoundTag tag = NBTTool.getTag(stack);
 
         if (GunsTool.getGunBooleanTag(stack, "Reloading")
                 || player.getCooldowns().isOnCooldown(stack.getItem())
@@ -233,5 +237,6 @@ public class RpgItem extends GunItem implements GeoItem, SpecialFireWeapon {
 
         player.getCooldowns().addCooldown(stack.getItem(), 10);
         GunsTool.setGunIntTag(stack, "Ammo", GunsTool.getGunIntTag(stack, "Ammo", 0) - 1);
+        saveTag(stack, tag);
     }
 }

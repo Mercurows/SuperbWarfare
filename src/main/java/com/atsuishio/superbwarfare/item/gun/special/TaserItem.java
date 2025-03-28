@@ -97,7 +97,7 @@ public class TaserItem extends GunItem implements GeoItem, SpecialFireWeapon {
         ItemStack stack = player.getMainHandItem();
         if (!stack.is(ModTags.Items.GUN)) return PlayState.STOP;
 
-        if (NBTTool.getOrCreateTag(stack).getBoolean("is_empty_reloading")) {
+        if (NBTTool.getTag(stack).getBoolean("is_empty_reloading")) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.taser.reload"));
         }
 
@@ -274,6 +274,6 @@ public class TaserItem extends GunItem implements GeoItem, SpecialFireWeapon {
 
         GunsTool.setGunIntTag(stack, "Ammo", GunsTool.getGunIntTag(stack, "Ammo", 0) - 1);
         energyStorage.extractEnergy(400 + 100 * perkLevel, false);
-        NBTTool.getOrCreateTag(stack).putBoolean("shoot", true);
+        NBTTool.getTag(stack).putBoolean("shoot", true);
     }
 }

@@ -86,9 +86,9 @@ public class M4ItemModel extends GeoModel<M4Item> {
 
         int type = GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.SCOPE);
 
-        posYAlt = Mth.lerp(times, posYAlt, NBTTool.getOrCreateTag(stack).getBoolean("ScopeAlt") ? -0.6875f : 0.5625f);
-        scaleZAlt = Mth.lerp(times, scaleZAlt, NBTTool.getOrCreateTag(stack).getBoolean("ScopeAlt") ? 0.4f : 0.88f);
-        posZAlt = Mth.lerp(times, posZAlt, NBTTool.getOrCreateTag(stack).getBoolean("ScopeAlt") ? 5.5f : 7.6f);
+        posYAlt = Mth.lerp(times, posYAlt, NBTTool.getTag(stack).getBoolean("ScopeAlt") ? -0.6875f : 0.5625f);
+        scaleZAlt = Mth.lerp(times, scaleZAlt, NBTTool.getTag(stack).getBoolean("ScopeAlt") ? 0.4f : 0.88f);
+        posZAlt = Mth.lerp(times, posZAlt, NBTTool.getTag(stack).getBoolean("ScopeAlt") ? 5.5f : 7.6f);
         rotXSight = Mth.lerp(1.5f * times, rotXSight, type == 0 ? 0 : 90);
 
         float posY = switch (type) {
@@ -129,7 +129,7 @@ public class M4ItemModel extends GeoModel<M4Item> {
         button6.setScaleX(1f - (0.5f * (float) zp));
         button7.setScaleX(1f - (0.5f * (float) zp));
 
-        NBTTool.getOrCreateTag(stack).putBoolean("HoloHidden", !(gun.getPosX() > 2.385));
+        NBTTool.getTag(stack).putBoolean("HoloHidden", !(gun.getPosX() > 2.385));
 
         if (type == 3 && zt > 0.5) {
             lh.setPosY((float) (-zt * 4));

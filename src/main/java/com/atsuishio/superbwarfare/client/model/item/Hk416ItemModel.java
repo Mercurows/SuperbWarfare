@@ -108,7 +108,7 @@ public class Hk416ItemModel extends GeoModel<Hk416Item> {
         scope2.setScaleZ(1f - (0.8f * (float) zp));
         scope3.setScaleZ(1f - (0.5f * (float) zp));
 
-        NBTTool.getOrCreateTag(stack).putBoolean("HoloHidden", !(gun.getPosX() > 3.1));
+        NBTTool.getTag(stack).putBoolean("HoloHidden", !(gun.getPosX() > 3.1));
 
         GeoBone shen;
         if (zt < 0.5) {

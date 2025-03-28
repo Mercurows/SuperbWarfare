@@ -84,9 +84,9 @@ public class TracheliumItemModel extends GeoModel<Trachelium> {
         int scopeType = GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.SCOPE);
         int gripType = GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.GRIP);
 
-        posYAlt = Mth.lerp(times, posYAlt, NBTTool.getOrCreateTag(stack).getBoolean("ScopeAlt") ? -1.98f : -0.83f);
-        scaleZAlt = Mth.lerp(times, scaleZAlt, NBTTool.getOrCreateTag(stack).getBoolean("ScopeAlt") ? 0.4f : 0.8f);
-        posZAlt = Mth.lerp(times, posZAlt, NBTTool.getOrCreateTag(stack).getBoolean("ScopeAlt") ? 7.5f : 13.7f);
+        posYAlt = Mth.lerp(times, posYAlt, NBTTool.getTag(stack).getBoolean("ScopeAlt") ? -1.98f : -0.83f);
+        scaleZAlt = Mth.lerp(times, scaleZAlt, NBTTool.getTag(stack).getBoolean("ScopeAlt") ? 0.4f : 0.8f);
+        posZAlt = Mth.lerp(times, posZAlt, NBTTool.getTag(stack).getBoolean("ScopeAlt") ? 7.5f : 13.7f);
 
         float posY = switch (scopeType) {
             case 0 -> 1.1f;
@@ -152,7 +152,7 @@ public class TracheliumItemModel extends GeoModel<Trachelium> {
 
         CrossHairOverlay.gunRot = shen.getRotZ();
 
-        NBTTool.getOrCreateTag(stack).putBoolean("HoloHidden", (gun.getPosX() <= 3 || Mth.abs(shen.getRotX()) > (scopeType == 2 ? 3 : 1) * Mth.DEG_TO_RAD || Mth.abs(main.getRotX()) > (scopeType == 2 ? 5.7 : 1) * Mth.DEG_TO_RAD || Mth.abs(main.getRotY()) > 3 * Mth.DEG_TO_RAD));
+        NBTTool.getTag(stack).putBoolean("HoloHidden", (gun.getPosX() <= 3 || Mth.abs(shen.getRotX()) > (scopeType == 2 ? 3 : 1) * Mth.DEG_TO_RAD || Mth.abs(main.getRotX()) > (scopeType == 2 ? 5.7 : 1) * Mth.DEG_TO_RAD || Mth.abs(main.getRotY()) > 3 * Mth.DEG_TO_RAD));
 
         hammer.setRotX(50 * Mth.DEG_TO_RAD * (float) ClientEventHandler.revolverPreTime);
         lun.setRotZ(-60 * Mth.DEG_TO_RAD * (float) ClientEventHandler.revolverWheelPreTime);
@@ -161,7 +161,7 @@ public class TracheliumItemModel extends GeoModel<Trachelium> {
         ammo.setRotZ(60 * Mth.DEG_TO_RAD * (float) ClientEventHandler.revolverWheelPreTime);
         ammohole.setRotZ(-60 * Mth.DEG_TO_RAD * (float) ClientEventHandler.revolverWheelPreTime);
 
-        if (NBTTool.getOrCreateTag(stack).getBoolean("is_empty_reloading")) {
+        if (NBTTool.getTag(stack).getBoolean("is_empty_reloading")) {
             lun.setRotZ(0);
             ammo.setRotZ(0);
             ammohole.setRotZ(0);
@@ -170,7 +170,7 @@ public class TracheliumItemModel extends GeoModel<Trachelium> {
         GeoBone root = getAnimationProcessor().getBone("root");
         root.setPosX((float) (movePosX + 20 * ClientEventHandler.drawTime + 9.3f * mph));
         root.setPosY((float) (swayY + movePosY - 40 * ClientEventHandler.drawTime - 2f * vY));
-        root.setPosZ(!NBTTool.getOrCreateTag(stack).getBoolean("DA") && !NBTTool.getOrCreateTag(stack).getBoolean("canImmediatelyShoot") ? 0.2f * (float) ClientEventHandler.revolverPreTime : 0);
+        root.setPosZ(!NBTTool.getTag(stack).getBoolean("DA") && !NBTTool.getTag(stack).getBoolean("canImmediatelyShoot") ? 0.2f * (float) ClientEventHandler.revolverPreTime : 0);
         root.setRotX((float) ((swayX - Mth.DEG_TO_RAD * 60 * ClientEventHandler.drawTime + Mth.DEG_TO_RAD * turnRotX - 0.15f * vY)));
         root.setRotY((float) (0.2f * movePosX + Mth.DEG_TO_RAD * 300 * ClientEventHandler.drawTime + Mth.DEG_TO_RAD * turnRotY));
         root.setRotZ((float) (0.2f * movePosX + moveRotZ + Mth.DEG_TO_RAD * 90 * ClientEventHandler.drawTime + 2.7f * mph + Mth.DEG_TO_RAD * turnRotZ));

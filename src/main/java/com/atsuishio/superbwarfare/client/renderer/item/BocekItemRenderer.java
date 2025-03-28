@@ -88,7 +88,7 @@ public class BocekItemRenderer extends GeoItemRenderer<BocekItem> {
         if (!itemStack.is(ModTags.Items.GUN)) return;
 
         if (name.equals("holo")) {
-            bone.setHidden(NBTTool.getOrCreateTag(itemStack).getBoolean("HoloHidden") || !ClientEventHandler.zoom);
+            bone.setHidden(NBTTool.getTag(itemStack).getBoolean("HoloHidden") || !ClientEventHandler.zoom);
         }
 
         if (name.equals("arrow")) {

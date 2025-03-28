@@ -24,6 +24,8 @@ import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.UUID;
 
+import static com.atsuishio.superbwarfare.tools.NBTTool.saveTag;
+
 @EventBusSubscriber(modid = ModUtils.MODID)
 public class GunsTool {
 
@@ -58,20 +60,22 @@ public class GunsTool {
     public static void initGun(Level level, ItemStack stack, String location) {
         if (level.getServer() == null) return;
         gunsData.get(location).forEach((k, v) -> {
-            CompoundTag tag = NBTTool.getOrCreateTag(stack);
+            CompoundTag tag = NBTTool.getTag(stack);
             CompoundTag data = tag.getCompound("GunData");
             data.putDouble(k, v);
             tag.put("GunData", data);
+            saveTag(stack, tag);
         });
     }
 
     public static void initCreativeGun(ItemStack stack, String location) {
         if (gunsData != null && gunsData.get(location) != null) {
             gunsData.get(location).forEach((k, v) -> {
-                CompoundTag tag = NBTTool.getOrCreateTag(stack);
+                CompoundTag tag = NBTTool.getTag(stack);
                 CompoundTag data = tag.getCompound("GunData");
                 data.putDouble(k, v);
                 tag.put("GunData", data);
+                saveTag(stack, tag);
             });
             GunsTool.setGunIntTag(stack, "Ammo", GunsTool.getGunIntTag(stack, "Magazine", 0)
                     + GunsTool.getGunIntTag(stack, "CustomMagazine", 0));
@@ -80,10 +84,11 @@ public class GunsTool {
 
     public static void generateAndSetUUID(ItemStack stack) {
         UUID uuid = UUID.randomUUID();
-        CompoundTag tag = NBTTool.getOrCreateTag(stack);
+        CompoundTag tag = NBTTool.getTag(stack);
         var data = tag.getCompound("GunData");
         data.putUUID("UUID", uuid);
         tag.put("GunData", data);
+        saveTag(stack, tag);
     }
 
     @SubscribeEvent
@@ -103,7 +108,7 @@ public class GunsTool {
     }
 
     public static void reload(Player player, ItemStack stack, AmmoType type, boolean extraOne) {
-        CompoundTag tag = NBTTool.getOrCreateTag(stack);
+        CompoundTag tag = NBTTool.getTag(stack);
         if (!(stack.getItem() instanceof GunItem)) return;
 
         int mag = GunsTool.getGunIntTag(stack, "Magazine", 0) + GunsTool.getGunIntTag(stack, "CustomMagazine", 0);
@@ -130,48 +135,52 @@ public class GunsTool {
         GunsTool.setGunIntTag(stack, "Ammo", needToAdd);
         tag.putBoolean("is_normal_reloading", false);
         tag.putBoolean("is_empty_reloading", false);
+        saveTag(stack, tag);
     }
 
     /* PerkData */
     public static void setPerkIntTag(ItemStack stack, String name, int num) {
-        var rootTag = NBTTool.getOrCreateTag(stack);
+        var rootTag = NBTTool.getTag(stack);
         CompoundTag tag = rootTag.getCompound("PerkData");
         tag.putInt(name, num);
         rootTag.put("PerkData", tag);
+        saveTag(stack, rootTag);
     }
 
     public static int getPerkIntTag(ItemStack stack, String name) {
-        CompoundTag tag = NBTTool.getOrCreateTag(stack).getCompound("PerkData");
+        CompoundTag tag = NBTTool.getTag(stack).getCompound("PerkData");
         return tag.getInt(name);
     }
 
     public static void setPerkDoubleTag(ItemStack stack, String name, double num) {
-        var rootTag = NBTTool.getOrCreateTag(stack);
+        var rootTag = NBTTool.getTag(stack);
         CompoundTag tag = rootTag.getCompound("PerkData");
         tag.putDouble(name, num);
         rootTag.put("PerkData", tag);
+        saveTag(stack, rootTag);
     }
 
     public static double getPerkDoubleTag(ItemStack stack, String name) {
-        CompoundTag tag = NBTTool.getOrCreateTag(stack).getCompound("PerkData");
+        CompoundTag tag = NBTTool.getTag(stack).getCompound("PerkData");
         return tag.getDouble(name);
     }
 
     public static void setPerkBooleanTag(ItemStack stack, String name, boolean flag) {
-        var rootTag = NBTTool.getOrCreateTag(stack);
+        var rootTag = NBTTool.getTag(stack);
         CompoundTag tag = rootTag.getCompound("PerkData");
         tag.putBoolean(name, flag);
         rootTag.put("PerkData", tag);
+        saveTag(stack, rootTag);
     }
 
     public static boolean getPerkBooleanTag(ItemStack stack, String name) {
-        CompoundTag tag = NBTTool.getOrCreateTag(stack).getCompound("PerkData");
+        CompoundTag tag = NBTTool.getTag(stack).getCompound("PerkData");
         return tag.getBoolean(name);
     }
 
     /* Attachments */
     public static int getAttachmentType(ItemStack stack, AttachmentType type) {
-        CompoundTag tag = NBTTool.getOrCreateTag(stack).getCompound("Attachments");
+        CompoundTag tag = NBTTool.getTag(stack).getCompound("Attachments");
         return tag.getInt(type.getName());
     }
 
@@ -195,15 +204,15 @@ public class GunsTool {
 
     /* GunData */
     public static CompoundTag getGunData(ItemStack stack) {
-        CompoundTag tag = NBTTool.getOrCreateTag(stack);
-        return tag.getCompound("GunData");
+        return NBTTool.getTag(stack).getCompound("GunData");
     }
 
     public static void setGunIntTag(ItemStack stack, String name, int num) {
-        CompoundTag tag = NBTTool.getOrCreateTag(stack);
+        CompoundTag tag = NBTTool.getTag(stack);
         var data = tag.getCompound("GunData");
         data.putInt(name, num);
         tag.put("GunData", data);
+        saveTag(stack, tag);
     }
 
     public static int getGunIntTag(ItemStack stack, String name) {
@@ -211,17 +220,18 @@ public class GunsTool {
     }
 
     public static int getGunIntTag(ItemStack stack, String name, int defaultValue) {
-        CompoundTag tag = NBTTool.getOrCreateTag(stack);
+        CompoundTag tag = NBTTool.getTag(stack);
         var data = tag.getCompound("GunData");
         if (!data.contains(name)) return defaultValue;
         return data.getInt(name);
     }
 
     public static void setGunDoubleTag(ItemStack stack, String name, double num) {
-        CompoundTag tag = NBTTool.getOrCreateTag(stack);
+        CompoundTag tag = NBTTool.getTag(stack);
         var data = tag.getCompound("GunData");
         data.putDouble(name, num);
         tag.put("GunData", data);
+        saveTag(stack, tag);
     }
 
     public static double getGunDoubleTag(ItemStack stack, String name) {
@@ -229,17 +239,18 @@ public class GunsTool {
     }
 
     public static double getGunDoubleTag(ItemStack stack, String name, double defaultValue) {
-        CompoundTag tag = NBTTool.getOrCreateTag(stack);
+        CompoundTag tag = NBTTool.getTag(stack);
         var data = tag.getCompound("GunData");
         if (!data.contains(name)) return defaultValue;
         return data.getDouble(name);
     }
 
     public static void setGunBooleanTag(ItemStack stack, String name, boolean flag) {
-        CompoundTag tag = NBTTool.getOrCreateTag(stack);
+        CompoundTag tag = NBTTool.getTag(stack);
         var data = tag.getCompound("GunData");
         data.putBoolean(name, flag);
         tag.put("GunData", data);
+        saveTag(stack, tag);
     }
 
     public static boolean getGunBooleanTag(ItemStack stack, String name) {
@@ -247,7 +258,7 @@ public class GunsTool {
     }
 
     public static boolean getGunBooleanTag(ItemStack stack, String name, boolean defaultValue) {
-        CompoundTag tag = NBTTool.getOrCreateTag(stack);
+        CompoundTag tag = NBTTool.getTag(stack);
         var data = tag.getCompound("GunData");
         if (!data.contains(name)) return defaultValue;
         return data.getBoolean(name);

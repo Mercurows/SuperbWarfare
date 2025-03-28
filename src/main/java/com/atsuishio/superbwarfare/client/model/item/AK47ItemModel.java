@@ -114,7 +114,7 @@ public class AK47ItemModel extends GeoModel<AK47Item> {
         scope2.setScaleZ(1f - (0.3f * (float) zp));
         scope3.setScaleZ(1f - (0.7f * (float) zp));
 
-        NBTTool.getOrCreateTag(stack).putBoolean("HoloHidden", !(gun.getPosX() > 1.8));
+        NBTTool.getTag(stack).putBoolean("HoloHidden", !(gun.getPosX() > 1.8));
 
         GeoBone shen;
         if (zt < 0.5) {

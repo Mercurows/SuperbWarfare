@@ -13,8 +13,8 @@ public class GunEvents {
     public static void onPickup(ItemEntityPickupEvent.Pre event) {
         var stack = event.getItemEntity().getItem();
         if (stack.is(ModTags.Items.GUN)) {
-            NBTTool.getOrCreateTag(stack).putBoolean("draw", true);
-            NBTTool.getOrCreateTag(stack).putBoolean("init", true);
+            NBTTool.getTag(stack).putBoolean("draw", true);
+            NBTTool.getTag(stack).putBoolean("init", true);
         }
     }
 }

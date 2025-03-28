@@ -50,11 +50,11 @@ public class DevotionItem extends GunItem implements GeoItem {
         ItemStack stack = player.getMainHandItem();
         if (!stack.is(ModTags.Items.GUN)) return PlayState.STOP;
 
-        if (NBTTool.getOrCreateTag(stack).getBoolean("is_empty_reloading")) {
+        if (NBTTool.getTag(stack).getBoolean("is_empty_reloading")) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.devotion.reload_empty"));
         }
 
-        if (NBTTool.getOrCreateTag(stack).getBoolean("is_normal_reloading")) {
+        if (NBTTool.getTag(stack).getBoolean("is_normal_reloading")) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.devotion.reload_normal"));
         }
 

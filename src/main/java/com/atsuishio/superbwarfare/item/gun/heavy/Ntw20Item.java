@@ -64,11 +64,11 @@ public class Ntw20Item extends GunItem implements GeoItem {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.ntw_20.shift"));
         }
 
-        if (NBTTool.getOrCreateTag(stack).getBoolean("is_empty_reloading")) {
+        if (NBTTool.getTag(stack).getBoolean("is_empty_reloading")) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.ntw_20.reload_empty"));
         }
 
-        if (NBTTool.getOrCreateTag(stack).getBoolean("is_normal_reloading")) {
+        if (NBTTool.getTag(stack).getBoolean("is_normal_reloading")) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.ntw_20.reload_normal"));
         }
 
@@ -83,7 +83,7 @@ public class Ntw20Item extends GunItem implements GeoItem {
 
         if (player.isSprinting() && player.onGround()
                 && player.getPersistentData().getDouble("noRun") == 0
-                && !(NBTTool.getOrCreateTag(stack).getBoolean("is_normal_reloading") || NBTTool.getOrCreateTag(stack).getBoolean("is_empty_reloading"))
+                && !(NBTTool.getTag(stack).getBoolean("is_normal_reloading") || NBTTool.getTag(stack).getBoolean("is_empty_reloading"))
                 && ClientEventHandler.drawTime < 0.01) {
             if (player.hasEffect(MobEffects.MOVEMENT_SPEED) && GunsTool.getGunIntTag(stack, "BoltActionTick") == 0) {
                 return event.setAndContinue(RawAnimation.begin().thenLoop("animation.ntw_20.run_fast"));
@@ -143,7 +143,7 @@ public class Ntw20Item extends GunItem implements GeoItem {
             default -> GunsTool.getGunDoubleTag(stack, "CustomZoom", 0);
         };
 
-        NBTTool.getOrCreateTag(stack).putBoolean("CanAdjustZoomFov", scopeType == 3);
+        NBTTool.getTag(stack).putBoolean("CanAdjustZoomFov", scopeType == 3);
         GunsTool.setGunDoubleTag(stack, "CustomZoom", customZoom);
         GunsTool.setGunIntTag(stack, "CustomMagazine", customMag);
     }

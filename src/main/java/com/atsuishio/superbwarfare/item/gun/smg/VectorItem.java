@@ -53,7 +53,7 @@ public class VectorItem extends GunItem implements GeoItem {
         boolean drum = GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.MAGAZINE) == 2;
 
 
-        if (NBTTool.getOrCreateTag(stack).getBoolean("is_empty_reloading")) {
+        if (NBTTool.getTag(stack).getBoolean("is_empty_reloading")) {
             if (drum) {
                 return event.setAndContinue(RawAnimation.begin().thenPlay("animation.vec.reload_empty_drum"));
             } else {
@@ -61,7 +61,7 @@ public class VectorItem extends GunItem implements GeoItem {
             }
         }
 
-        if (NBTTool.getOrCreateTag(stack).getBoolean("is_normal_reloading")) {
+        if (NBTTool.getTag(stack).getBoolean("is_normal_reloading")) {
             if (drum) {
                 return event.setAndContinue(RawAnimation.begin().thenPlay("animation.vec.reload_normal_drum"));
             } else {
@@ -127,7 +127,7 @@ public class VectorItem extends GunItem implements GeoItem {
         };
 
         if (scopeType == 3) {
-            CompoundTag tag = NBTTool.getOrCreateTag(stack).getCompound("Attachments");
+            CompoundTag tag = NBTTool.getTag(stack).getCompound("Attachments");
             tag.putInt("Scope", 0);
         }
 

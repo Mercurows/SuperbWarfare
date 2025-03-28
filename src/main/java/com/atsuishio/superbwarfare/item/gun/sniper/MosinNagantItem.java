@@ -54,23 +54,23 @@ public class MosinNagantItem extends GunItem implements GeoItem {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.mosin.shift"));
         }
 
-        if (NBTTool.getOrCreateTag(stack).getInt("reload_stage") == 1 && GunsTool.getGunIntTag(stack, "Ammo", 0) == 0) {
+        if (NBTTool.getTag(stack).getInt("reload_stage") == 1 && GunsTool.getGunIntTag(stack, "Ammo", 0) == 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.mosin.prepare_empty"));
         }
 
-        if (NBTTool.getOrCreateTag(stack).getInt("reload_stage") == 1 && GunsTool.getGunIntTag(stack, "Ammo", 0) > 0) {
+        if (NBTTool.getTag(stack).getInt("reload_stage") == 1 && GunsTool.getGunIntTag(stack, "Ammo", 0) > 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.mosin.prepare"));
         }
 
-        if (NBTTool.getOrCreateTag(stack).getDouble("load_index") == 0 && NBTTool.getOrCreateTag(stack).getInt("reload_stage") == 2) {
+        if (NBTTool.getTag(stack).getDouble("load_index") == 0 && NBTTool.getTag(stack).getInt("reload_stage") == 2) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.mosin.iterativeload"));
         }
 
-        if (NBTTool.getOrCreateTag(stack).getDouble("load_index") == 1 && NBTTool.getOrCreateTag(stack).getInt("reload_stage") == 2) {
+        if (NBTTool.getTag(stack).getDouble("load_index") == 1 && NBTTool.getTag(stack).getInt("reload_stage") == 2) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.mosin.iterativeload2"));
         }
 
-        if (NBTTool.getOrCreateTag(stack).getInt("reload_stage") == 3) {
+        if (NBTTool.getTag(stack).getInt("reload_stage") == 3) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.mosin.finish"));
         }
 
@@ -85,10 +85,10 @@ public class MosinNagantItem extends GunItem implements GeoItem {
 
         if (player.isSprinting() && player.onGround()
                 && player.getPersistentData().getDouble("noRun") == 0
-                && !(NBTTool.getOrCreateTag(stack).getBoolean("is_empty_reloading"))
-                && NBTTool.getOrCreateTag(stack).getInt("reload_stage") != 1
-                && NBTTool.getOrCreateTag(stack).getInt("reload_stage") != 2
-                && NBTTool.getOrCreateTag(stack).getInt("reload_stage") != 3
+                && !(NBTTool.getTag(stack).getBoolean("is_empty_reloading"))
+                && NBTTool.getTag(stack).getInt("reload_stage") != 1
+                && NBTTool.getTag(stack).getInt("reload_stage") != 2
+                && NBTTool.getTag(stack).getInt("reload_stage") != 3
                 && ClientEventHandler.drawTime < 0.01
                 && !GunsTool.getGunBooleanTag(stack, "Reloading")) {
             if (player.hasEffect(MobEffects.MOVEMENT_SPEED) && GunsTool.getGunIntTag(stack, "BoltActionTick") == 0) {

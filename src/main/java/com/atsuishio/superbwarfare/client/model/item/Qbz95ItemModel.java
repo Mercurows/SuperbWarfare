@@ -122,7 +122,7 @@ public class Qbz95ItemModel extends GeoModel<Qbz95Item> {
         button3.setScaleX(1f - (0.5f * (float) zp));
         button6.setScaleX(1f - (0.8f * (float) zp));
 
-        NBTTool.getOrCreateTag(stack).putBoolean("HoloHidden", gun.getPosX() < 3.1);
+        NBTTool.getTag(stack).putBoolean("HoloHidden", gun.getPosX() < 3.1);
 
         GeoBone shen;
         if (zt < 0.5) {
@@ -202,7 +202,7 @@ public class Qbz95ItemModel extends GeoModel<Qbz95Item> {
         lHandRotZ = Mth.lerp(1.5f * times, lHandRotZ, isZooming ? 2.9228f : leftHand.getRotZ());
 
 
-        if (NBTTool.getOrCreateTag(stack).getBoolean("is_empty_reloading")) {
+        if (NBTTool.getTag(stack).getBoolean("is_empty_reloading")) {
             leftHand.setPosX(lHandPosX);
             leftHand.setPosY(lHandPosY);
             leftHand.setPosZ(lHandPosZ);

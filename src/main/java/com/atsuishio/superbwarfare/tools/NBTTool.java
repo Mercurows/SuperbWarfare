@@ -1,63 +1,73 @@
 package com.atsuishio.superbwarfare.tools;
 
-import com.atsuishio.superbwarfare.component.ModDataComponents;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 
 // From Botania
-// TODO 修改为使用DataComponents.CUSTOM_DATA
 public final class NBTTool {
-    public static boolean verifyExistence(ItemStack stack, String tag) {
-        var data = stack.get(ModDataComponents.GUN_DATA);
-        return !stack.isEmpty() && data != null && data.contains(tag);
+    public static boolean verifyExistence(ItemStack stack, String key) {
+        var data = stack.get(DataComponents.CUSTOM_DATA);
+        return !stack.isEmpty() && data != null && data.contains(key);
     }
 
-    public static CompoundTag getOrCreateTag(ItemStack stack) {
-        var data = stack.get(ModDataComponents.GUN_DATA);
-        if (data != null) return data;
+    public static CompoundTag getTag(ItemStack stack) {
+        var data = stack.get(DataComponents.CUSTOM_DATA);
+        if (data != null) return data.copyTag();
 
-        var newTag = new CompoundTag();
-        stack.set(ModDataComponents.GUN_DATA, newTag);
-        return newTag;
+        return new CompoundTag();
     }
 
-    public static void setBoolean(ItemStack stack, String tag, boolean b) {
-        getOrCreateTag(stack).putBoolean(tag, b);
+    public static void setBoolean(ItemStack stack, String key, boolean b) {
+        var tag = getTag(stack);
+        tag.putBoolean(key, b);
+        saveTag(stack, tag);
     }
 
-    public static boolean getBoolean(ItemStack stack, String tag, boolean defaultExpected) {
-        return verifyExistence(stack, tag) ? getOrCreateTag(stack).getBoolean(tag) : defaultExpected;
+    public static boolean getBoolean(ItemStack stack, String key, boolean defaultExpected) {
+        return verifyExistence(stack, key) ? getTag(stack).getBoolean(key) : defaultExpected;
     }
 
-    public static void setFloat(ItemStack stack, String tag, float f) {
-        getOrCreateTag(stack).putFloat(tag, f);
+    public static void setFloat(ItemStack stack, String key, float f) {
+        var tag = getTag(stack);
+        tag.putFloat(key, f);
+        saveTag(stack, tag);
     }
 
-    public static float getFloat(ItemStack stack, String tag, float f) {
-        return verifyExistence(stack, tag) ? getOrCreateTag(stack).getFloat(tag) : f;
+    public static float getFloat(ItemStack stack, String key, float f) {
+        return verifyExistence(stack, key) ? getTag(stack).getFloat(key) : f;
     }
 
-    public static void setInt(ItemStack stack, String tag, int num) {
-        getOrCreateTag(stack).putInt(tag, num);
+    public static void setInt(ItemStack stack, String key, int num) {
+        var tag = getTag(stack);
+        tag.putInt(key, num);
+        saveTag(stack, tag);
     }
 
-    public static int getInt(ItemStack stack, String tag, int num) {
-        return verifyExistence(stack, tag) ? getOrCreateTag(stack).getInt(tag) : num;
+    public static int getInt(ItemStack stack, String key, int num) {
+        return verifyExistence(stack, key) ? getTag(stack).getInt(key) : num;
     }
 
-    public static void setLong(ItemStack stack, String tag, long num) {
-        getOrCreateTag(stack).putLong(tag, num);
+    public static void setLong(ItemStack stack, String key, long num) {
+        var tag = getTag(stack);
+        tag.putLong(key, num);
+        saveTag(stack, tag);
     }
 
-    public static long getLong(ItemStack stack, String tag, long num) {
-        return verifyExistence(stack, tag) ? getOrCreateTag(stack).getLong(tag) : num;
+    public static long getLong(ItemStack stack, String key, long num) {
+        return verifyExistence(stack, key) ? getTag(stack).getLong(key) : num;
     }
 
-    public static void setDouble(ItemStack stack, String tag, double num) {
-        getOrCreateTag(stack).putDouble(tag, num);
+    public static void setDouble(ItemStack stack, String key, double num) {
+        getTag(stack).putDouble(key, num);
     }
 
-    public static double getDouble(ItemStack stack, String tag, double num) {
-        return verifyExistence(stack, tag) ? getOrCreateTag(stack).getDouble(tag) : num;
+    public static double getDouble(ItemStack stack, String key, double num) {
+        return verifyExistence(stack, key) ? getTag(stack).getDouble(key) : num;
+    }
+
+    public static void saveTag(ItemStack stack, CompoundTag tag) {
+        stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
     }
 }

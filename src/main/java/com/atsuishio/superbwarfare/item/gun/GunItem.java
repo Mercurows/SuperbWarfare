@@ -38,6 +38,8 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Optional;
 import java.util.Set;
 
+import static com.atsuishio.superbwarfare.tools.NBTTool.saveTag;
+
 @EventBusSubscriber(modid = ModUtils.MODID, bus = EventBusSubscriber.Bus.MOD)
 public abstract class GunItem extends Item implements CustomRendererItem {
 
@@ -64,8 +66,8 @@ public abstract class GunItem extends Item implements CustomRendererItem {
             NBTTool.setBoolean(stack, "init", true);
         }
 
-        if (NBTTool.getOrCreateTag(stack).getBoolean("draw")) {
-            NBTTool.getOrCreateTag(stack).putBoolean("draw", false);
+        if (NBTTool.getTag(stack).getBoolean("draw")) {
+            NBTTool.getTag(stack).putBoolean("draw", false);
         }
 
         handleGunPerks(stack);
@@ -192,7 +194,7 @@ public abstract class GunItem extends Item implements CustomRendererItem {
     }
 
     private void handleGunAttachment(ItemStack stack) {
-        CompoundTag tag = NBTTool.getOrCreateTag(stack).getCompound("Attachments");
+        CompoundTag tag = NBTTool.getTag(stack).getCompound("Attachments");
 
         double scopeWeight = switch (tag.getInt("Scope")) {
             case 1 -> 0.5;
@@ -236,7 +238,7 @@ public abstract class GunItem extends Item implements CustomRendererItem {
     }
 
     private void reducePerkTagCoolDown(ItemStack stack, String... tags) {
-        var tag = NBTTool.getOrCreateTag(stack);
+        var tag = NBTTool.getTag(stack);
         var compound = tag.getCompound("PerkData");
 
         for (String t : tags) {
@@ -249,6 +251,7 @@ public abstract class GunItem extends Item implements CustomRendererItem {
             }
         }
         tag.put("PerkData", compound);
+        saveTag(stack, tag);
     }
 
     /**

@@ -105,27 +105,27 @@ public class TracheliumItemRenderer extends GeoItemRenderer<Trachelium> {
         }
 
         if (name.equals("Cross1")) {
-            bone.setHidden(NBTTool.getOrCreateTag(itemStack).getBoolean("HoloHidden")
+            bone.setHidden(NBTTool.getTag(itemStack).getBoolean("HoloHidden")
                     || !ClientEventHandler.zoom
                     || GunsTool.getAttachmentType(itemStack, GunsTool.AttachmentType.SCOPE) != 1);
         }
 
         if (name.equals("Cross2")) {
-            bone.setHidden(NBTTool.getOrCreateTag(itemStack).getBoolean("HoloHidden")
+            bone.setHidden(NBTTool.getTag(itemStack).getBoolean("HoloHidden")
                     || !ClientEventHandler.zoom
                     || GunsTool.getAttachmentType(itemStack, GunsTool.AttachmentType.SCOPE) != 2
-                    || NBTTool.getOrCreateTag(itemStack).getBoolean("ScopeAlt"));
+                    || NBTTool.getTag(itemStack).getBoolean("ScopeAlt"));
         }
 
         if (name.equals("CrossAlt")) {
-            bone.setHidden(NBTTool.getOrCreateTag(itemStack).getBoolean("HoloHidden")
+            bone.setHidden(NBTTool.getTag(itemStack).getBoolean("HoloHidden")
                     || !ClientEventHandler.zoom
                     || GunsTool.getAttachmentType(itemStack, GunsTool.AttachmentType.SCOPE) != 2
-                    || !(NBTTool.getOrCreateTag(itemStack).getBoolean("ScopeAlt")));
+                    || !(NBTTool.getTag(itemStack).getBoolean("ScopeAlt")));
         }
 
-        if (GunsTool.getAttachmentType(itemStack, GunsTool.AttachmentType.SCOPE) == 2 && !NBTTool.getOrCreateTag(itemStack).getBoolean("ScopeAlt") && (name.equals("hidden"))) {
-            bone.setHidden(!NBTTool.getOrCreateTag(itemStack).getBoolean("HoloHidden") && ClientEventHandler.zoom);
+        if (GunsTool.getAttachmentType(itemStack, GunsTool.AttachmentType.SCOPE) == 2 && !NBTTool.getTag(itemStack).getBoolean("ScopeAlt") && (name.equals("hidden"))) {
+            bone.setHidden(!NBTTool.getTag(itemStack).getBoolean("HoloHidden") && ClientEventHandler.zoom);
         }
 
         // TODO handle gun attachments

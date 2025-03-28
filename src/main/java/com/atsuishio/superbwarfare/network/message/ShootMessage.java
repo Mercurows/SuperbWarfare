@@ -39,7 +39,7 @@ public record ShootMessage(double spread) implements CustomPacketPayload {
                 }
 
                 if (stack.is(ModTags.Items.REVOLVER)) {
-                    NBTTool.getOrCreateTag(stack).putBoolean("canImmediatelyShoot", false);
+                    NBTTool.getTag(stack).putBoolean("canImmediatelyShoot", false);
                 }
 
                 // 判断是否为栓动武器（BoltActionTime > 0），并在开火后给一个需要上膛的状态
@@ -49,7 +49,7 @@ public record ShootMessage(double spread) implements CustomPacketPayload {
 
                 GunsTool.setGunIntTag(stack, "Ammo", GunsTool.getGunIntTag(stack, "Ammo", 0) - 1);
 
-                NBTTool.getOrCreateTag(stack).putDouble("empty", 1);
+                NBTTool.getTag(stack).putDouble("empty", 1);
 
 //                if (stack.getItem() == ModItems.M_60.get() && GunsTool.getGunIntTag(stack, "Ammo", 0) <= 5) {
 //                    GunsTool.setGunBooleanTag(stack, "HideBulletChain", true);

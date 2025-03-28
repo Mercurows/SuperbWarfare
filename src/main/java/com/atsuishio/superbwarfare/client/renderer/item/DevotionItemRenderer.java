@@ -97,7 +97,7 @@ public class DevotionItemRenderer extends GeoItemRenderer<DevotionItem> {
         }
 
         if (name.equals("holo")) {
-            bone.setHidden(NBTTool.getOrCreateTag(itemStack).getBoolean("HoloHidden") || !ClientEventHandler.zoom);
+            bone.setHidden(NBTTool.getTag(itemStack).getBoolean("HoloHidden") || !ClientEventHandler.zoom);
         }
 
         if (this.transformType.firstPerson() && renderingArms) {

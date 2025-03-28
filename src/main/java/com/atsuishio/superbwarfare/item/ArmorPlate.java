@@ -33,7 +33,7 @@ public class ArmorPlate extends Item {
     @Override
     @ParametersAreNonnullByDefault
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
-        if (NBTTool.getOrCreateTag(stack).getBoolean("Infinite")) {
+        if (NBTTool.getTag(stack).getBoolean("Infinite")) {
             tooltipComponents.add(Component.translatable("des.superbwarfare.armor_plate.infinite").withStyle(ChatFormatting.GRAY));
         }
     }
@@ -54,7 +54,7 @@ public class ArmorPlate extends Item {
         }
 
         // TODO 解决数据双端同步问题
-        if (NBTTool.getOrCreateTag(armor).getDouble("ArmorPlate") < armorLevel * 15) {
+        if (NBTTool.getTag(armor).getDouble("ArmorPlate") < armorLevel * 15) {
             playerIn.startUsingItem(handIn);
         }
 
@@ -79,13 +79,13 @@ public class ArmorPlate extends Item {
                 armorLevel = 3;
             }
 
-            NBTTool.getOrCreateTag(armor).putDouble("ArmorPlate", Mth.clamp(NBTTool.getOrCreateTag(armor).getDouble("ArmorPlate") + 15, 0, armorLevel * 15));
+            NBTTool.getTag(armor).putDouble("ArmorPlate", Mth.clamp(NBTTool.getTag(armor).getDouble("ArmorPlate") + 15, 0, armorLevel * 15));
 
             if (pLivingEntity instanceof ServerPlayer serverPlayer) {
                 serverPlayer.level().playSound((Entity) null, serverPlayer.getOnPos(), SoundEvents.ARMOR_EQUIP_IRON.value(), SoundSource.PLAYERS, 0.5f, 1);
             }
 
-            if (pLivingEntity instanceof Player player && !player.isCreative() && !NBTTool.getOrCreateTag(pStack).getBoolean("Infinite")) {
+            if (pLivingEntity instanceof Player player && !player.isCreative() && !NBTTool.getTag(pStack).getBoolean("Infinite")) {
                 pStack.shrink(1);
             }
         }
@@ -101,7 +101,7 @@ public class ArmorPlate extends Item {
 
     public static ItemStack getInfiniteInstance() {
         ItemStack stack = new ItemStack(ModItems.ARMOR_PLATE.get());
-        NBTTool.getOrCreateTag(stack).putBoolean("Infinite", true);
+        NBTTool.getTag(stack).putBoolean("Infinite", true);
         return stack;
     }
 }

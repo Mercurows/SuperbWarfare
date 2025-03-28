@@ -74,7 +74,7 @@ public class RpkItemModel extends GeoModel<RpkItem> {
         button.setScaleY(1f - (0.3f * (float) zp));
         button.setScaleZ(1f - (0.3f * (float) zp));
 
-        NBTTool.getOrCreateTag(stack).putBoolean("HoloHidden", !(gun.getPosX() > 1.65));
+        NBTTool.getTag(stack).putBoolean("HoloHidden", !(gun.getPosX() > 1.65));
 
         shen.setPosX((float) (0.95f * ClientEventHandler.recoilHorizon * fpz * fp));
         shen.setPosY((float) (0.15f * fp + 0.18f * fr));

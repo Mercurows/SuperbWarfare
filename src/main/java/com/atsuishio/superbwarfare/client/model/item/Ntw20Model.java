@@ -137,7 +137,7 @@ public class Ntw20Model extends GeoModel<Ntw20Item> {
 
         CrossHairOverlay.gunRot = shen.getRotZ();
 
-        NBTTool.getOrCreateTag(stack).putBoolean("HoloHidden", !(gun.getPosX() > 4.3));
+        NBTTool.getTag(stack).putBoolean("HoloHidden", !(gun.getPosX() > 4.3));
 
         action.setPosZ(3f * (float) ClientEventHandler.actionMove);
         lh.setPosZ(-3f * (float) ClientEventHandler.actionMove);

@@ -173,7 +173,7 @@ public class ClientEventHandler {
         ItemStack stack = player.getMainHandItem();
         if (!stack.is(ModTags.Items.REVOLVER)) {
             return true;
-        } else if (stack.is(ModTags.Items.REVOLVER) && (NBTTool.getOrCreateTag(stack).getBoolean("DA") || NBTTool.getOrCreateTag(stack).getBoolean("canImmediatelyShoot"))) {
+        } else if (stack.is(ModTags.Items.REVOLVER) && (NBTTool.getTag(stack).getBoolean("DA") || NBTTool.getTag(stack).getBoolean("canImmediatelyShoot"))) {
             return true;
         } else {
             return revolverPreTime >= 1;
@@ -257,7 +257,7 @@ public class ClientEventHandler {
                     && !holdFireVehicle
                     && !notInGame()
 //                    && !cap != null && cap.edit
-                    && !(NBTTool.getOrCreateTag(stack).getBoolean("is_normal_reloading") || NBTTool.getOrCreateTag(stack).getBoolean("is_empty_reloading"))
+                    && !(NBTTool.getTag(stack).getBoolean("is_normal_reloading") || NBTTool.getTag(stack).getBoolean("is_empty_reloading"))
                     && !GunsTool.getGunBooleanTag(stack, "Reloading")
                     && !player.getCooldowns().isOnCooldown(stack.getItem())
                     && !GunsTool.getGunBooleanTag(stack, "Charging")) {
@@ -400,11 +400,11 @@ public class ClientEventHandler {
         int cooldown = (int) (1000 / rps);
 
         //左轮类
-        if (clientTimer.getProgress() == 0 && stack.is(ModTags.Items.REVOLVER) && ((holdFire && !NBTTool.getOrCreateTag(stack).getBoolean("DA"))
-                || (GunsTool.getGunIntTag(stack, "BoltActionTick") < 7 && GunsTool.getGunIntTag(stack, "BoltActionTick") > 2) || NBTTool.getOrCreateTag(stack).getBoolean("canImmediatelyShoot"))) {
+        if (clientTimer.getProgress() == 0 && stack.is(ModTags.Items.REVOLVER) && ((holdFire && !NBTTool.getTag(stack).getBoolean("DA"))
+                || (GunsTool.getGunIntTag(stack, "BoltActionTick") < 7 && GunsTool.getGunIntTag(stack, "BoltActionTick") > 2) || NBTTool.getTag(stack).getBoolean("canImmediatelyShoot"))) {
             revolverPreTime = Mth.clamp(revolverPreTime + 0.3 * times, 0, 1);
             revolverWheelPreTime = Mth.clamp(revolverWheelPreTime + 0.32 * times, 0, revolverPreTime > 0.7 ? 1 : 0.55);
-        } else if (!NBTTool.getOrCreateTag(stack).getBoolean("DA") && !NBTTool.getOrCreateTag(stack).getBoolean("canImmediatelyShoot")) {
+        } else if (!NBTTool.getTag(stack).getBoolean("DA") && !NBTTool.getTag(stack).getBoolean("canImmediatelyShoot")) {
             revolverPreTime = Mth.clamp(revolverPreTime - 1.2 * times, 0, 1);
         }
 
@@ -419,7 +419,7 @@ public class ClientEventHandler {
                 && drawTime < 0.01
                 && cap != null && !cap.edit
                 && !notInGame()
-                && (!(NBTTool.getOrCreateTag(stack).getBoolean("is_normal_reloading") || NBTTool.getOrCreateTag(stack).getBoolean("is_empty_reloading"))
+                && (!(NBTTool.getTag(stack).getBoolean("is_normal_reloading") || NBTTool.getTag(stack).getBoolean("is_empty_reloading"))
                 && !GunsTool.getGunBooleanTag(stack, "Reloading")
                 && !GunsTool.getGunBooleanTag(stack, "Charging")
                 && GunsTool.getGunIntTag(stack, "Ammo", 0) > 0
@@ -430,7 +430,7 @@ public class ClientEventHandler {
                 // todo minigun
 //                stack.is(ModItems.MINIGUN.get()) &&
                 !player.isSprinting()
-                        && NBTTool.getOrCreateTag(stack).getDouble("overheat") == 0
+                        && NBTTool.getTag(stack).getDouble("overheat") == 0
                         && !player.getCooldowns().isOnCooldown(stack.getItem()) && miniGunRot >= 20
                         && (cap != null && cap.rifleAmmo > 0 || InventoryTool.hasCreativeAmmoBox(player))
         ))) {
@@ -813,7 +813,7 @@ public class ClientEventHandler {
                 && (
                 // todo monitor
 //                stack.is(ModItems.MONITOR.get()) &&
-                NBTTool.getOrCreateTag(stack).getBoolean("Using") && NBTTool.getOrCreateTag(stack).getBoolean("Linked"))) {
+                NBTTool.getTag(stack).getBoolean("Using") && NBTTool.getTag(stack).getBoolean("Linked"))) {
             handleDroneCamera(event, living);
         } else {
             var effect = Minecraft.getInstance().gameRenderer.currentEffect();

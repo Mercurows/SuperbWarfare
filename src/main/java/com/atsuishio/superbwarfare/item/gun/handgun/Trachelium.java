@@ -37,6 +37,8 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 import java.util.Set;
 
+import static com.atsuishio.superbwarfare.tools.NBTTool.saveTag;
+
 public class Trachelium extends GunItem implements GeoItem {
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
@@ -125,7 +127,7 @@ public class Trachelium extends GunItem implements GeoItem {
             }
         }
 
-        if (NBTTool.getOrCreateTag(stack).getBoolean("is_empty_reloading")) {
+        if (NBTTool.getTag(stack).getBoolean("is_empty_reloading")) {
             if (stock) {
                 if (grip) {
                     return event.setAndContinue(RawAnimation.begin().thenPlay("animation.trachelium.reload_stock_grip"));
@@ -240,13 +242,13 @@ public class Trachelium extends GunItem implements GeoItem {
     @ParametersAreNonnullByDefault
     public void inventoryTick(ItemStack stack, Level world, Entity entity, int slot, boolean selected) {
         super.inventoryTick(stack, world, entity, slot, selected);
-        var tag = NBTTool.getOrCreateTag(stack);
+        var tag = NBTTool.getTag(stack);
         GunsTool.setGunIntTag(stack, "BoltActionTime", tag.getBoolean("DA") ? 12 : 0);
 
         int scopeType = GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.SCOPE);
         int gripType = GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.GRIP);
         int stockType = GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.STOCK);
-        CompoundTag tags = NBTTool.getOrCreateTag(stack).getCompound("Attachments");
+        CompoundTag tags = tag.getCompound("Attachments");
 
         if (stockType == 1) {
             tags.putInt("Stock", 2);
@@ -270,12 +272,13 @@ public class Trachelium extends GunItem implements GeoItem {
 
         double customZoom = switch (scopeType) {
             case 0, 1 -> 0;
-            case 2 -> NBTTool.getOrCreateTag(stack).getBoolean("ScopeAlt") ? 0 : 2.75;
+            case 2 -> NBTTool.getTag(stack).getBoolean("ScopeAlt") ? 0 : 2.75;
             default -> 1;
         };
 
         GunsTool.setGunBooleanTag(stack, "CanSwitchScope", scopeType == 2);
         GunsTool.setGunDoubleTag(stack, "CustomZoom", customZoom);
+        saveTag(stack, tag);
     }
 
     @Override

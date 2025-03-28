@@ -33,7 +33,7 @@ public class MinigunHeatLayer extends GeoRenderLayer<MinigunItem> {
         if (player == null) return;
         ItemStack stack = player.getMainHandItem();
         if (!stack.is(ModTags.Items.GUN)) return;
-        float heat = (float) NBTTool.getOrCreateTag(stack).getDouble("heat");
+        float heat = (float) NBTTool.getTag(stack).getDouble("heat");
         var color = FastColor.ARGB32.color(1, (int) (heat / 55 * 255), (int) (heat / 55 * 255), (int) (heat / 55 * 255));
         getRenderer().reRender(getDefaultBakedModel(animatable), poseStack, bufferSource, animatable, glowRenderType, bufferSource.getBuffer(glowRenderType), partialTick, packedLight, OverlayTexture.NO_OVERLAY, color);
     }

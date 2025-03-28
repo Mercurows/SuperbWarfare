@@ -110,7 +110,7 @@ public class SvdItemModel extends GeoModel<SvdItem> {
         cross3.setScaleX((float) (1f + (0.1 * zp)));
         cross3.setScaleY((float) (1f + (0.1 * zp)));
 
-        NBTTool.getOrCreateTag(stack).putBoolean("HoloHidden", gun.getPosX() <= 1.4);
+        NBTTool.getTag(stack).putBoolean("HoloHidden", gun.getPosX() <= 1.4);
 
         GeoBone shen;
         if (zt < 0.5) {

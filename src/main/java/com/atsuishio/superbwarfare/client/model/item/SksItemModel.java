@@ -68,7 +68,7 @@ public class SksItemModel extends GeoModel<SksItem> {
         gun.setPosZ(2.5f * (float) zp + (float) (0.5f * zpz));
         gun.setRotZ((float) (0.05f * zpz));
 
-        NBTTool.getOrCreateTag(stack).putBoolean("HoloHidden", gun.getPosX() <= 1.2);
+        NBTTool.getTag(stack).putBoolean("HoloHidden", gun.getPosX() <= 1.2);
         GeoBone shen = getAnimationProcessor().getBone("shen");
 
         shen.setPosX((float) (0.95f * ClientEventHandler.recoilHorizon * fpz * fp));
