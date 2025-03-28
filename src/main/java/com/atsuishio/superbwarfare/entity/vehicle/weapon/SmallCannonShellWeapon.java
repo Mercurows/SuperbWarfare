@@ -1,5 +1,8 @@
 package com.atsuishio.superbwarfare.entity.vehicle.weapon;
 
+import com.atsuishio.superbwarfare.entity.projectile.SmallCannonShellEntity;
+import net.minecraft.world.entity.LivingEntity;
+
 public class SmallCannonShellWeapon extends VehicleWeapon {
 
     public float damage = 40, explosionDamage = 80, explosionRadius = 5;
@@ -19,8 +22,7 @@ public class SmallCannonShellWeapon extends VehicleWeapon {
         return this;
     }
 
-    // TODO create
-//    public SmallCannonShellEntity create(LivingEntity entity) {
-//        return new SmallCannonShellEntity(entity, entity.level(), damage, explosionDamage, explosionRadius);
-//    }
+    public SmallCannonShellEntity create(LivingEntity entity) {
+        return new SmallCannonShellEntity(entity, entity.level(), damage, explosionDamage, explosionRadius);
+    }
 }

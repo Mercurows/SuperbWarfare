@@ -34,6 +34,7 @@ public record ClientMotionSyncMessage(int id, float x, float y, float z) impleme
     public static void handler(final ClientMotionSyncMessage message, final IPayloadContext context) {
         var level = Minecraft.getInstance().level;
         if (level == null) return;
+
         Entity entity = level.getEntity(message.id);
         if (entity != null) {
             entity.lerpMotion(message.x, message.y, message.z);

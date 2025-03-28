@@ -8,7 +8,6 @@ import com.mojang.serialization.Codec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.nbt.CompoundTag;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -38,11 +37,6 @@ public class ModDataComponents {
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<AmmoBoxInfo>> AMMO_BOX_INFO = register(
             "ammo_box_type",
             builder -> builder.persistent(AmmoBoxInfo.CODEC)
-    );
-
-    public static final DeferredHolder<DataComponentType<?>, DataComponentType<CompoundTag>> GUN_DATA = register(
-            "gun_data",
-            builder -> builder.persistent(CompoundTag.CODEC)
     );
 
     private static <T> DeferredHolder<DataComponentType<?>, DataComponentType<T>> register(String name, UnaryOperator<DataComponentType.Builder<T>> builderOperator) {

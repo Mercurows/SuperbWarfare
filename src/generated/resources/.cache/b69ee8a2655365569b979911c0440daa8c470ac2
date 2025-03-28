@@ -1,4 +1,4 @@
-// 1.21.1	2025-03-27T19:46:28.6502692	Item Models: superbwarfare
+// 1.21.1	2025-03-29T00:41:26.2074689	Item Models: superbwarfare
 13ca8d5676888ff51f3308d88e4bf67691fa34f8 assets/superbwarfare/models/item/aa_12_blueprint.json
 13ca8d5676888ff51f3308d88e4bf67691fa34f8 assets/superbwarfare/models/item/ak_12_blueprint.json
 13ca8d5676888ff51f3308d88e4bf67691fa34f8 assets/superbwarfare/models/item/ak_47_blueprint.json
@@ -21,8 +21,10 @@ a52a7f9dc18d5af69903c2249239c15cb6d38c8e assets/superbwarfare/models/item/coal_p
 fc892b610a110980dbc6f8e2c080672b5dc06e99 assets/superbwarfare/models/item/copper_plate.json
 7e43d8e9c4b8589f7665c46d4b67de645949cc6b assets/superbwarfare/models/item/creative_charging_station.json
 b0296c3d68f3b5ae4945b46384fa20a1ff32cac5 assets/superbwarfare/models/item/crowbar.json
+d81b738e17048945459ff8b59f8f83e872171473 assets/superbwarfare/models/item/defuser.json
 13ca8d5676888ff51f3308d88e4bf67691fa34f8 assets/superbwarfare/models/item/devotion_blueprint.json
 6f4a829dc159f1740f52265d01730ecb6a840d81 assets/superbwarfare/models/item/dog_tag.json
+dd455cf29eed0ef5eb5e90ef3d7140cb8de61efe assets/superbwarfare/models/item/drone.json
 831ce33c5a4c90b71a42515f42f16d4c1a946c50 assets/superbwarfare/models/item/empty_perk.json
 2419503d8b597c92684d1921895a12fca33fec69 assets/superbwarfare/models/item/epic_material_pack.json
 b6f96946b54f44fdd2d8b809945b8d1ae5e776e2 assets/superbwarfare/models/item/firing_parameters.json
@@ -65,6 +67,7 @@ a5cf666a970906ba6ac0af9a4d5d52dd0e093dec assets/superbwarfare/models/item/mle_19
 db96dbb75327701d7901c2de48a539bda9fe31c4 assets/superbwarfare/models/item/mortar_barrel.json
 3922427d3921d3de7195614780ee8f57dfc0ee6f assets/superbwarfare/models/item/mortar_base_plate.json
 ac9c6bc308bd741ada7f19d808d0c0722fceb976 assets/superbwarfare/models/item/mortar_bipod.json
+9baf936f4340d41a0b5581857313240627b00386 assets/superbwarfare/models/item/mortar_deployer.json
 41381cc65305bbfc1324a08b580125073d198e11 assets/superbwarfare/models/item/mortar_shell.json
 13ca8d5676888ff51f3308d88e4bf67691fa34f8 assets/superbwarfare/models/item/mosin_nagant_blueprint.json
 4de8d6e0cddd28963febd35e9b66334a41a25d4c assets/superbwarfare/models/item/motor.json

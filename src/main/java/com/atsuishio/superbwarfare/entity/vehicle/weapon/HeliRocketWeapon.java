@@ -1,6 +1,8 @@
 package com.atsuishio.superbwarfare.entity.vehicle.weapon;
 
 import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.entity.projectile.HeliRocketEntity;
+import net.minecraft.world.entity.LivingEntity;
 
 public class HeliRocketWeapon extends VehicleWeapon {
 
@@ -25,8 +27,7 @@ public class HeliRocketWeapon extends VehicleWeapon {
         return this;
     }
 
-    // TODO create
-//    public HeliRocketEntity create(LivingEntity entity) {
-//        return new HeliRocketEntity(entity, entity.level(), damage, explosionDamage, explosionRadius);
-//    }
+    public HeliRocketEntity create(LivingEntity entity) {
+        return new HeliRocketEntity(entity, entity.level(), damage, explosionDamage, explosionRadius);
+    }
 }

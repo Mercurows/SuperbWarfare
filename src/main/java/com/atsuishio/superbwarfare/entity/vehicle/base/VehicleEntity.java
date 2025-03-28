@@ -246,6 +246,10 @@ public abstract class VehicleEntity extends Entity {
     public VehicleEntity(EntityType<?> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
         this.setHealth(this.getMaxHealth());
+
+        if (this instanceof WeaponVehicleEntity weaponVehicle && weaponVehicle.getAllWeapons().length > 0) {
+            this.entityData.set(SELECTED_WEAPON, IntList.of(initSelectedWeaponArray(weaponVehicle)));
+        }
     }
 
     @Override
@@ -253,11 +257,9 @@ public abstract class VehicleEntity extends Entity {
         builder.define(HEALTH, this.getMaxHealth())
                 .define(LAST_ATTACKER_UUID, "undefined")
                 .define(LAST_DRIVER_UUID, "undefined")
-                .define(DELTA_ROT, 0f);
-
-        if (this instanceof WeaponVehicleEntity weaponVehicle && weaponVehicle.getAllWeapons().length > 0) {
-            builder.define(SELECTED_WEAPON, IntList.of(initSelectedWeaponArray(weaponVehicle)));
-        }
+                .define(DELTA_ROT, 0f)
+                .define(SELECTED_WEAPON, IntList.of(new int[this.getMaxPassengers()]));
+        // 怎么还不给玩动态注册了（恼）
     }
 
     private int[] initSelectedWeaponArray(WeaponVehicleEntity weaponVehicle) {

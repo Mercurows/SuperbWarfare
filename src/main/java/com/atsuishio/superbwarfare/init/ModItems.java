@@ -31,16 +31,21 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ProjectileItem;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.DispenserBlock;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.neoforge.common.DeferredSpawnEggItem;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @SuppressWarnings("unused")
 public class ModItems {
-    public static final DeferredRegister<Item> REGISTRY = DeferredRegister.create(Registries.ITEM, ModUtils.MODID);
-
     /**
      * guns
      */
@@ -103,13 +108,13 @@ public class ModItems {
     public static final DeferredHolder<Item, Item> MORTAR_SHELL = AMMO.register("mortar_shell", MortarShell::new);
     public static final DeferredHolder<Item, Item> POTION_MORTAR_SHELL = AMMO.register("potion_mortar_shell", PotionMortarShell::new);
     public static final DeferredHolder<Item, Item> ROCKET = AMMO.register("rocket", Rocket::new);
-    //    public static final DeferredHolder<Item, Item> LUNGE_MINE = AMMO.register("lunge_mine", LungeMine::new);
+    public static final DeferredHolder<Item, Item> LUNGE_MINE = AMMO.register("lunge_mine", LungeMine::new);
     public static final DeferredHolder<Item, Item> HE_5_INCHES = AMMO.register("he_5_inches", () -> new CannonShellItem(new Item.Properties().rarity(Rarity.RARE)));
     public static final DeferredHolder<Item, Item> AP_5_INCHES = AMMO.register("ap_5_inches", () -> new CannonShellItem(new Item.Properties().rarity(Rarity.RARE)));
-    //    public static final DeferredHolder<Item, Item> HAND_GRENADE = AMMO.register("hand_grenade", HandGrenade::new);
-//    public static final DeferredHolder<Item, Item> RGO_GRENADE = AMMO.register("rgo_grenade", RgoGrenade::new);
-//    public static final DeferredHolder<Item, Item> CLAYMORE_MINE = AMMO.register("claymore_mine", ClaymoreMine::new);
-//    public static final DeferredHolder<Item, Item> C4_BOMB = AMMO.register("c4_bomb", C4Bomb::new);
+    public static final DeferredHolder<Item, Item> HAND_GRENADE = AMMO.register("hand_grenade", HandGrenade::new);
+    public static final DeferredHolder<Item, Item> RGO_GRENADE = AMMO.register("rgo_grenade", RgoGrenade::new);
+    public static final DeferredHolder<Item, Item> CLAYMORE_MINE = AMMO.register("claymore_mine", ClaymoreMine::new);
+    public static final DeferredHolder<Item, Item> C4_BOMB = AMMO.register("c4_bomb", C4Bomb::new);
     public static final DeferredHolder<Item, Item> SMALL_SHELL = AMMO.register("small_shell", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> ROCKET_70 = AMMO.register("rocket_70", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> WIRE_GUIDE_MISSILE = AMMO.register("wire_guide_missile", () -> new Item(new Item.Properties()));
@@ -122,7 +127,7 @@ public class ModItems {
 
     public static final DeferredHolder<Item, Item> CONTAINER = ITEMS.register("container", ContainerBlockItem::new);
     public static final DeferredHolder<Item, Item> SMALL_CONTAINER = ITEMS.register("small_container", SmallContainerBlockItem::new);
-//    public static final DeferredHolder<Item, Item> SENPAI_SPAWN_EGG = ITEMS.register("senpai_spawn_egg", () -> new ForgeSpawnEggItem(ModEntities.SENPAI, -11584987, -14014413, new Item.Properties()));
+    public static final DeferredHolder<Item, Item> SENPAI_SPAWN_EGG = ITEMS.register("senpai_spawn_egg", () -> new DeferredSpawnEggItem(ModEntities.SENPAI::value, -11584987, -14014413, new Item.Properties()));
     public static final DeferredHolder<Item, Item> ANCIENT_CPU = ITEMS.register("ancient_cpu", () -> new Item(new Item.Properties().rarity(Rarity.RARE)));
     public static final DeferredHolder<Item, Item> PROPELLER = ITEMS.register("propeller", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> LARGE_PROPELLER = ITEMS.register("large_propeller", () -> new Item(new Item.Properties()));
@@ -130,16 +135,16 @@ public class ModItems {
     public static final DeferredHolder<Item, Item> LARGE_MOTOR = ITEMS.register("large_motor", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> WHEEL = ITEMS.register("wheel", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> TRACK = ITEMS.register("track", () -> new Item(new Item.Properties()));
-    //    public static final DeferredHolder<Item, Item> DRONE = ITEMS.register("drone", Drone::new);
-//
-//    public static final DeferredHolder<Item, Item> MONITOR = ITEMS.register("monitor", Monitor::new);
-//
-//    public static final DeferredHolder<Item, Item> DETONATOR = ITEMS.register("detonator", Detonator::new);
+    public static final DeferredHolder<Item, Item> DRONE = ITEMS.register("drone", Drone::new);
+
+    public static final DeferredHolder<Item, Item> MONITOR = ITEMS.register("monitor", Monitor::new);
+
+    public static final DeferredHolder<Item, Item> DETONATOR = ITEMS.register("detonator", Detonator::new);
     public static final DeferredHolder<Item, Item> TARGET_DEPLOYER = ITEMS.register("target_deployer", TargetDeployer::new);
     public static final DeferredHolder<Item, Item> KNIFE = ITEMS.register("knife", Knife::new);
     public static final DeferredHolder<Item, Item> HAMMER = ITEMS.register("hammer", Hammer::new);
     public static final DeferredHolder<Item, Item> CROWBAR = ITEMS.register("crowbar", Crowbar::new);
-    //    public static final DeferredHolder<Item, Item> DEFUSER = ITEMS.register("defuser", Defuser::new);
+    public static final DeferredHolder<Item, Item> DEFUSER = ITEMS.register("defuser", Defuser::new);
     public static final DeferredHolder<Item, Item> ARMOR_PLATE = ITEMS.register("armor_plate", ArmorPlate::new);
 
     public static final DeferredHolder<Item, Item> RU_HELMET_6B47 = ITEMS.register("ru_helmet_6b47", RuHelmet6b47::new);
@@ -147,7 +152,7 @@ public class ModItems {
     public static final DeferredHolder<Item, Item> US_HELMET_PASTG = ITEMS.register("us_helmet_pastg", UsHelmetPastg::new);
     public static final DeferredHolder<Item, Item> US_CHEST_IOTV = ITEMS.register("us_chest_iotv", UsChestIotv::new);
     public static final DeferredHolder<Item, Item> GE_HELMET_M_35 = ITEMS.register("ge_helmet_m_35", GeHelmetM35::new);
-    //    public static final DeferredHolder<Item, Item> MORTAR_DEPLOYER = ITEMS.register("mortar_deployer", MortarDeployer::new);
+    public static final DeferredHolder<Item, Item> MORTAR_DEPLOYER = ITEMS.register("mortar_deployer", MortarDeployer::new);
     public static final DeferredHolder<Item, Item> MORTAR_BARREL = ITEMS.register("mortar_barrel", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> MORTAR_BASE_PLATE = ITEMS.register("mortar_base_plate", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> MORTAR_BIPOD = ITEMS.register("mortar_bipod", () -> new Item(new Item.Properties()));
@@ -296,6 +301,18 @@ public class ModItems {
         return BLOCKS.register(block.getId().getPath(), () -> new BlockItem(block.get(), new Item.Properties()));
     }
 
+    public static void registerDispenserBehavior(FMLCommonSetupEvent event) {
+        List<DeferredHolder<Item, ? extends Item>> list = new ArrayList<>();
+        list.addAll(AMMO.getEntries());
+        list.addAll(ITEMS.getEntries());
+
+        for (var item : list) {
+            if (item.get() instanceof ProjectileItem launchable) {
+                DispenserBlock.registerProjectileBehavior(item.get());
+            }
+        }
+    }
+
     public static void register(IEventBus bus) {
         ITEMS.register(bus);
         GUNS.register(bus);
@@ -303,8 +320,6 @@ public class ModItems {
         BLOCKS.register(bus);
         registerPerkItems();
         PERKS.register(bus);
-
-        REGISTRY.register(bus);
     }
 
 }

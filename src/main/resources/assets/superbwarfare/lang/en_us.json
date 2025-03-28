@@ -255,6 +255,7 @@
   "des.superbwarfare.small_container": "Empty",
   "des.superbwarfare.small_container.random": "Random Supplies",
   "des.superbwarfare.small_container.special": "Random SUI-pplies",
+  "des.superbwarfare.small_container.loot.blueprints": "Gun Blueprints",
 
   "item.superbwarfare.high_energy_explosives": "High Energy Explosives",
   "item.superbwarfare.grain": "Grain",
@@ -550,6 +551,9 @@
   "config.jade.plugin_superbwarfare.vehicle_energy": "Vehicle Energy",
   "config.jade.plugin_superbwarfare.vehicle_health": "Vehicle Health",
   "config.jade.plugin_superbwarfare.container_entity": "Container Entity",
+  "config.jade.plugin_superbwarfare.c4_info": "C4 Info",
+  "des.jade_plugin_superbwarfare.c4.remote_control": "Remote Controlled",
+  "des.jade_plugin_superbwarfare.c4.time_left": "Time Before Explosion: %1$ss",
 
   "superbwarfare.advancement.main.root": "Superb Warfare",
   "superbwarfare.advancement.main.root.des": "Welcome to the Superb Warfare!",
@@ -582,5 +586,8 @@
   "superbwarfare.advancement.main.enclave": "Enclave",
   "superbwarfare.advancement.main.enclave.des": "Where is the pendulum?",
   "superbwarfare.advancement.main.boomstick_melee": "Boomstick Melee",
-  "superbwarfare.advancement.main.boomstick_melee.des": "Who said RPGs can't be baseball bats?"
+  "superbwarfare.advancement.main.boomstick_melee.des": "Who said RPGs can't be baseball bats?",
+  "warning.title.example": "[SuperbWarfare Mod Warning]",
+  "warning.content.example": "This mod is Free And Open-Source, No Commercial Use\nCode: GPL-3.0 License; Asserts: Private (No Commercialization)\nBan on paid downloads or EULA-breaking purchases\nReport violations by submitting an issue in the mod's repository",
+  "warning.check.example": "I have read and agreed to the content. Do not show this message again"
 }

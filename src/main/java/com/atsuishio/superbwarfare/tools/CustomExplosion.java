@@ -4,7 +4,9 @@ import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.network.message.ShakeClientMessage;
 import com.google.common.collect.Sets;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -48,7 +50,7 @@ public class CustomExplosion extends Explosion {
                            BlockInteraction pBlockInteraction) {
 
         // TODO what are these options?
-        super(pLevel, pSource, source, null, pToBlowX, pToBlowY, pToBlowZ, pRadius, false, pBlockInteraction, null, null, null);
+        super(pLevel, pSource, source, null, pToBlowX, pToBlowY, pToBlowZ, pRadius, false, pBlockInteraction, ParticleTypes.EXPLOSION, ParticleTypes.EXPLOSION_EMITTER, SoundEvents.GENERIC_EXPLODE);
         //        super(pLevel, pSource, source, null, pToBlowX, pToBlowY, pToBlowZ, pRadius, false, pBlockInteraction
 //                , ?,?,? );
 

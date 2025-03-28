@@ -253,6 +253,7 @@
   "des.superbwarfare.small_container": "空的",
   "des.superbwarfare.small_container.random": "随机补给",
   "des.superbwarfare.small_container.special": "岁己补给",
+  "des.superbwarfare.small_container.loot.blueprints": "枪械蓝图",
 
   "item.superbwarfare.high_energy_explosives": "高能炸药",
   "item.superbwarfare.grain": "推进药柱",
@@ -550,6 +551,9 @@
   "config.jade.plugin_superbwarfare.vehicle_energy": "载具能量",
   "config.jade.plugin_superbwarfare.vehicle_health": "载具血量",
   "config.jade.plugin_superbwarfare.container_entity": "集装箱实体",
+  "config.jade.plugin_superbwarfare.c4_info": "C4信息",
+  "des.jade_plugin_superbwarfare.c4.remote_control": "远程遥控",
+  "des.jade_plugin_superbwarfare.c4.time_left": "爆炸剩余时间：%1$s秒",
 
   "superbwarfare.advancement.main.root": "卓越前线",
   "superbwarfare.advancement.main.root.des": "欢迎来到卓越前线！",
@@ -582,5 +586,8 @@
   "superbwarfare.advancement.main.enclave": "飞地",
   "superbwarfare.advancement.main.enclave.des": "钟摆在哪？",
   "superbwarfare.advancement.main.boomstick_melee": "跟你爆了",
-  "superbwarfare.advancement.main.boomstick_melee.des": "谁说RPG不能当棒球棒用？"
+  "superbwarfare.advancement.main.boomstick_melee.des": "谁说RPG不能当棒球棒用？",
+  "warning.title.example": "【卓越前线 警示声明】",
+  "warning.content.example": "== 本模组完全免费开源，禁止用于任何商业行为 ==\n本模组代码采用GPL-3协议开源，美术资源私有禁止商用\n禁止付费下载、充值获取道具等违反协议和Mojang EULA的行为\n如遇以上行为，请到本模组仓库处提交Issue进行举报",
+  "warning.check.example": "我已阅读并同意，不再显示此警告"
 }

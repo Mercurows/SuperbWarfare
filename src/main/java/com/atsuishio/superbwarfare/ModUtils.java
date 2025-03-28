@@ -57,6 +57,7 @@ public class ModUtils {
 
 //        bus.addListener(this::onCommonSetup);
 //        bus.addListener(this::onClientSetup);
+        bus.addListener(ModItems::registerDispenserBehavior);
 
         bus.addListener(NetworkRegistry::register);
 

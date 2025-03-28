@@ -3,17 +3,23 @@ package com.atsuishio.superbwarfare.item.common.ammo;
 import com.atsuishio.superbwarfare.ModUtils;
 import com.atsuishio.superbwarfare.client.PoseTool;
 import com.atsuishio.superbwarfare.client.renderer.item.RocketItemRenderer;
+import com.atsuishio.superbwarfare.entity.projectile.RpgRocketEntity;
+import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
+import net.minecraft.core.Direction;
+import net.minecraft.core.Position;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ProjectileItem;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -28,7 +34,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @EventBusSubscriber(modid = ModUtils.MODID, bus = EventBusSubscriber.Bus.MOD)
-public class Rocket extends Item implements GeoItem {
+public class Rocket extends Item implements GeoItem, ProjectileItem {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     public static ItemDisplayContext transformType;
 
@@ -105,4 +111,15 @@ public class Rocket extends Item implements GeoItem {
         return super.hurtEnemy(stack, entity, source);
     }
 
+    @Override
+    @ParametersAreNonnullByDefault
+    public @NotNull Projectile asProjectile(Level level, Position pos, ItemStack stack, Direction direction) {
+        return new RpgRocketEntity(ModEntities.RPG_ROCKET.get(), pos.x(), pos.y(), pos.z(), level);
+    }
+
+    // TODO 发射音效
+    @Override
+    public @NotNull DispenseConfig createDispenseConfig() {
+        return DispenseConfig.builder().power(1.5F).build();
+    }
 }

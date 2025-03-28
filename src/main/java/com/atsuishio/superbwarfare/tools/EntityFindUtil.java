@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.tools;
 
+import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
@@ -54,6 +55,15 @@ public class EntityFindUtil {
         var target = findEntity(level, uuidString);
         if (target instanceof Player player) {
             return player;
+        }
+
+        return null;
+    }
+
+    public static DroneEntity findDrone(Level level, String uuidString) {
+        var target = findEntity(level, uuidString);
+        if (target instanceof DroneEntity drone) {
+            return drone;
         }
 
         return null;

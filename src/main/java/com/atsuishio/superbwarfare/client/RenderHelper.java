@@ -217,7 +217,7 @@ public class RenderHelper {
             float blitOffset,
             float minU, float maxU,
             float minV, float maxV,
-            float red, float green, float blue, float alpha
+            int color
     ) {
         RenderSystem.setShaderTexture(0, atlasLocation);
         RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
@@ -226,16 +226,16 @@ public class RenderHelper {
         BufferBuilder bufferbuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
         bufferbuilder.addVertex(matrix4f, x1, y1, blitOffset)
                 .setUv(minU, minV)
-                .setColor(red, green, blue, alpha);
+                .setColor(color);
         bufferbuilder.addVertex(matrix4f, x1, y2, blitOffset)
                 .setUv(minU, maxV)
-                .setColor(red, green, blue, alpha);
+                .setColor(color);
         bufferbuilder.addVertex(matrix4f, x2, y2, blitOffset)
                 .setUv(maxU, maxV)
-                .setColor(red, green, blue, alpha);
+                .setColor(color);
         bufferbuilder.addVertex(matrix4f, x2, y1, blitOffset)
                 .setUv(maxU, minV)
-                .setColor(red, green, blue, alpha);
+                .setColor(color);
         BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
         RenderSystem.disableBlend();
     }

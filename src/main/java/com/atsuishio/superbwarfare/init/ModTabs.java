@@ -3,9 +3,11 @@ package com.atsuishio.superbwarfare.init;
 import com.atsuishio.superbwarfare.ModUtils;
 import com.atsuishio.superbwarfare.item.ArmorPlate;
 import com.atsuishio.superbwarfare.item.BatteryItem;
+import com.atsuishio.superbwarfare.item.C4Bomb;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -48,13 +50,13 @@ public class ModTabs {
                             if (registryObject.get() != ModItems.POTION_MORTAR_SHELL.get()) {
                                 output.accept(registryObject.get());
 
-//                                if (registryObject.get() == ModItems.C4_BOMB.get()) {
-//                                    output.accept(C4Bomb.makeInstance());
-//                                }
+                                if (registryObject.get() == ModItems.C4_BOMB.get()) {
+                                    output.accept(C4Bomb.makeInstance());
+                                }
                             }
                         });
 
-                        // TODO c4, potion
+                        // TODO potion mortar shell
 //                        param.holders().lookup(Registries.POTION)
 //                                .ifPresent(potion -> generatePotionEffectTypes(output, potion, ModItems.POTION_MORTAR_SHELL.get()));
                     })
@@ -89,10 +91,9 @@ public class ModTabs {
 
     @SubscribeEvent
     public static void buildTabContentsVanilla(BuildCreativeModeTabContentsEvent tabData) {
-        // TODO senpai
-//        if (tabData.getTabKey() == CreativeModeTabs.SPAWN_EGGS) {
-//            tabData.accept(ModItems.SENPAI_SPAWN_EGG.get());
-//        }
+        if (tabData.getTabKey() == CreativeModeTabs.SPAWN_EGGS) {
+            tabData.accept(ModItems.SENPAI_SPAWN_EGG.get());
+        }
     }
 
     // TODO potion shell

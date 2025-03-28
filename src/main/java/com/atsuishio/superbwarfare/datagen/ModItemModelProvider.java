@@ -33,15 +33,13 @@ public class ModItemModelProvider extends ItemModelProvider {
         simpleItem(ModItems.LARGE_MOTOR);
         simpleItem(ModItems.WHEEL);
         simpleItem(ModItems.TRACK);
-        // TODO drone
-//        simpleItem(ModItems.DRONE);
+        simpleItem(ModItems.DRONE);
         simpleItem(ModItems.LIGHT_ARMAMENT_MODULE);
         simpleItem(ModItems.MEDIUM_ARMAMENT_MODULE);
         simpleItem(ModItems.HEAVY_ARMAMENT_MODULE);
 
         simpleItem(ModItems.TARGET_DEPLOYER);
-        // TODO mortar
-//        simpleItem(ModItems.MORTAR_DEPLOYER);
+        simpleItem(ModItems.MORTAR_DEPLOYER);
         simpleItem(ModItems.MORTAR_BARREL);
         simpleItem(ModItems.MORTAR_BASE_PLATE);
         simpleItem(ModItems.MORTAR_BIPOD);
@@ -71,8 +69,7 @@ public class ModItemModelProvider extends ItemModelProvider {
         simpleItem(ModItems.RAW_SILVER);
         simpleItem(ModItems.SILVER_INGOT);
         handheldItem(ModItems.CROWBAR);
-        // TODO defuser
-//        handheldItem(ModItems.DEFUSER);
+        handheldItem(ModItems.DEFUSER);
         simpleItem(ModItems.FIRING_PARAMETERS);
         simpleItem(ModItems.BEAM_TEST);
         simpleItem(ModItems.HANDGUN_AMMO);

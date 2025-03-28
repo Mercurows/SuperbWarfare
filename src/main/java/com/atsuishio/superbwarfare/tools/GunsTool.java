@@ -2,11 +2,11 @@ package com.atsuishio.superbwarfare.tools;
 
 import com.atsuishio.superbwarfare.ModUtils;
 import com.atsuishio.superbwarfare.capability.ModCapabilities;
-import com.atsuishio.superbwarfare.component.ModDataComponents;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.network.message.GunsDataMessage;
 import com.google.gson.stream.JsonReader;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -266,8 +266,9 @@ public class GunsTool {
 
     @Nullable
     public static UUID getGunUUID(ItemStack stack) {
-        CompoundTag tag = stack.get(ModDataComponents.GUN_DATA);
-        if (tag == null || !tag.contains("GunData")) return null;
+        var customData = stack.get(DataComponents.CUSTOM_DATA);
+        CompoundTag tag = customData != null ? customData.copyTag() : new CompoundTag();
+        if (!tag.contains("GunData")) return null;
 
         CompoundTag data = tag.getCompound("GunData");
         if (!data.hasUUID("UUID")) return null;

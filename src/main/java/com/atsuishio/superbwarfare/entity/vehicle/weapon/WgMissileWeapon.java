@@ -1,6 +1,8 @@
 package com.atsuishio.superbwarfare.entity.vehicle.weapon;
 
 import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.entity.projectile.WgMissileEntity;
+import net.minecraft.world.entity.LivingEntity;
 
 public class WgMissileWeapon extends VehicleWeapon {
 
@@ -25,8 +27,7 @@ public class WgMissileWeapon extends VehicleWeapon {
         return this;
     }
 
-    // TODO create
-//    public WgMissileEntity create(LivingEntity entity) {
-//        return new WgMissileEntity(entity, entity.level(), damage, explosionDamage, explosionRadius);
-//    }
+    public WgMissileEntity create(LivingEntity entity) {
+        return new WgMissileEntity(entity, entity.level(), damage, explosionDamage, explosionRadius);
+    }
 }

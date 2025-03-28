@@ -46,20 +46,18 @@ public class ContainerBlockItem extends BlockItem implements GeoItem {
     /**
      * 集装箱可用实体列表
      */
-    // TODO 正确生成可用列表
     public static final List<Supplier<ItemStack>> CONTAINER_ENTITIES = List.of(
-            () -> ContainerBlockItem.createInstance(ModEntities.TARGET.get())
-//            () -> ContainerBlockItem.createInstance(ModEntities.MK_42.get()),
-//            () -> ContainerBlockItem.createInstance(ModEntities.MLE_1934.get()),
-//            () -> ContainerBlockItem.createInstance(ModEntities.ANNIHILATOR.get()),
-//            () -> ContainerBlockItem.createInstance(ModEntities.LASER_TOWER.get()),
-//            () -> ContainerBlockItem.createInstance(ModEntities.SPEEDBOAT.get(), true),
-//            () -> ContainerBlockItem.createInstance(ModEntities.AH_6.get()),
-//            () -> ContainerBlockItem.createInstance(ModEntities.LAV_150.get(), true),
-//            () -> ContainerBlockItem.createInstance(ModEntities.BMP_2.get(), true),
-//            () -> ContainerBlockItem.createInstance(ModEntities.YX_100.get()),
-//            () -> ContainerBlockItem.createInstance(ModEntities.WHEEL_CHAIR.get()),
-//            () -> ContainerBlockItem.createInstance(ModEntities.TOM_6.get())
+            () -> ContainerBlockItem.createInstance(ModEntities.MK_42.get()),
+            () -> ContainerBlockItem.createInstance(ModEntities.MLE_1934.get()),
+            () -> ContainerBlockItem.createInstance(ModEntities.ANNIHILATOR.get()),
+            () -> ContainerBlockItem.createInstance(ModEntities.LASER_TOWER.get()),
+            () -> ContainerBlockItem.createInstance(ModEntities.SPEEDBOAT.get(), true),
+            () -> ContainerBlockItem.createInstance(ModEntities.AH_6.get()),
+            () -> ContainerBlockItem.createInstance(ModEntities.LAV_150.get(), true),
+            () -> ContainerBlockItem.createInstance(ModEntities.BMP_2.get(), true),
+            () -> ContainerBlockItem.createInstance(ModEntities.YX_100.get()),
+            () -> ContainerBlockItem.createInstance(ModEntities.WHEEL_CHAIR.get()),
+            () -> ContainerBlockItem.createInstance(ModEntities.TOM_6.get())
     );
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
