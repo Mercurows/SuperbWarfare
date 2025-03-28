@@ -28,6 +28,7 @@ public class ModCapabilities {
 
     @SubscribeEvent
     public static void registerCapabilities(RegisterCapabilitiesEvent event) {
+        // 玩家变量和激光
         event.registerEntity(ModCapabilities.LASER_CAPABILITY, EntityType.PLAYER, new LaserCapabilityProvider());
         event.registerEntity(ModCapabilities.PLAYER_VARIABLE, EntityType.PLAYER, new PlayerVariablesProvider());
 
@@ -46,6 +47,10 @@ public class ModCapabilities {
                 event.registerItem(Capabilities.EnergyStorage.ITEM, new ItemEnergyProvider(battery.maxEnergy), battery);
             }
         }
+
+        // 载具
+        // TODO 载具能量
+//        event.registerEntity(Capabilities.EnergyStorage.ENTITY,                ModEntities., );
 
     }
 }

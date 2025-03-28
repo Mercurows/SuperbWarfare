@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.config.server.MiscConfig;
 import com.atsuishio.superbwarfare.config.server.ProjectileConfig;
 import com.atsuishio.superbwarfare.entity.ICustomKnockback;
 import com.atsuishio.superbwarfare.entity.TargetEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.network.message.ClientIndicatorMessage;
 import com.atsuishio.superbwarfare.network.message.ClientMotionSyncMessage;
@@ -739,10 +740,9 @@ public class ProjectileEntity extends Projectile implements IEntityWithComplexSp
             entity.hurt(ModDamageTypes.causeGunFireHeadshotAbsoluteDamage(this.level().registryAccess(), this, this.shooter), absoluteDamage * headShotModifier);
             entity.invulnerableTime = 0;
 
-            // TODO 大于1的穿甲对载具造成额外伤害
-//            if (entity instanceof VehicleEntity vehicle && this.bypassArmorRate > 1) {
-//                vehicle.hurt(ModDamageTypes.causeGunFireAbsoluteDamage(this.level().registryAccess(), this, this.shooter), absoluteDamage * (this.bypassArmorRate - 1) * 0.5f);
-//            }
+            if (entity instanceof VehicleEntity vehicle && this.bypassArmorRate > 1) {
+                vehicle.hurt(ModDamageTypes.causeGunFireAbsoluteDamage(this.level().registryAccess(), this, this.shooter), absoluteDamage * (this.bypassArmorRate - 1) * 0.5f);
+            }
         }
     }
 
