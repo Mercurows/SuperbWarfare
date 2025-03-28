@@ -16,9 +16,6 @@ import com.atsuishio.superbwarfare.event.events.PreKillEvent;
 import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
-import com.atsuishio.superbwarfare.perk.AmmoPerk;
-import com.atsuishio.superbwarfare.perk.Perk;
-import com.atsuishio.superbwarfare.perk.PerkHelper;
 import com.atsuishio.superbwarfare.tools.*;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -40,7 +37,6 @@ import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.block.entity.HopperBlockEntity;
-import net.minecraftforge.event.entity.living.*;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.common.util.TriState;
@@ -132,18 +128,20 @@ public class LivingEventHandler {
         double damage = amount;
 
         ItemStack stack = sourceEntity instanceof LivingEntity living ? living.getMainHandItem() : ItemStack.EMPTY;
-        var perk = PerkHelper.getPerkByType(stack, Perk.Type.AMMO);
+
+        // TODO perk
+        //        var perk = PerkHelper.getPerkByType(stack, Perk.Type.AMMO);
 
         // 距离衰减
         if (DamageTypeTool.isGunDamage(source)) {
             double distance = entity.position().distanceTo(sourceEntity.position());
 
             if (stack.is(ModTags.Items.USE_SHOTGUN_AMMO)) {
-                if (perk instanceof AmmoPerk ammoPerk && ammoPerk.slug) {
-                    damage = reduceDamageByDistance(amount, distance, 0.015, 30);
-                } else {
+//                if (perk instanceof AmmoPerk ammoPerk && ammoPerk.slug) {
+//                    damage = reduceDamageByDistance(amount, distance, 0.015, 30);
+//                } else {
                     damage = reduceDamageByDistance(amount, distance, 0.05, 15);
-                }
+//                }
             } else if (stack.is(ModTags.Items.USE_SNIPER_AMMO)) {
                 damage = reduceDamageByDistance(amount, distance, 0.001, 150);
             } else if (stack.is(ModTags.Items.USE_HEAVY_AMMO)) {
@@ -161,7 +159,7 @@ public class LivingEventHandler {
         ItemStack armor = entity.getItemBySlot(EquipmentSlot.CHEST);
         var tag = NBTTool.getTag(armor);
 
-        if (armor != ItemStack.EMPTY && tag != null && tag.contains("ArmorPlate")) {
+        if (armor != ItemStack.EMPTY && tag.contains("ArmorPlate")) {
             double armorValue;
             armorValue = tag.getDouble("ArmorPlate");
             tag.putDouble("ArmorPlate", Math.max(tag.getDouble("ArmorPlate") - damage, 0));

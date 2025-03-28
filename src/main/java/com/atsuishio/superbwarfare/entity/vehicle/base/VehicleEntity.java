@@ -161,7 +161,7 @@ public abstract class VehicleEntity extends Entity {
     @Nullable
     @Override
     public Entity getFirstPassenger() {
-        return orderedPassengers.get(0);
+        return orderedPassengers.getFirst();
     }
 
     /**
