@@ -40,7 +40,7 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
-public abstract class MobileVehicleEntity extends EnergyVehicleEntity {
+public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements ControllableVehicle {
     public static final EntityDataAccessor<Integer> CANNON_RECOIL_TIME = SynchedEntityData.defineId(MobileVehicleEntity.class, EntityDataSerializers.INT);
 
     public static final EntityDataAccessor<Float> POWER = SynchedEntityData.defineId(MobileVehicleEntity.class, EntityDataSerializers.FLOAT);
@@ -106,6 +106,24 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity {
             this.setDeltaMovement(this.getDeltaMovement().add(new Vec3(pPlayer.position().vectorTo(this.position()).toVector3f()).scale(0.15 * f * pPlayer.getDeltaMovement().length())));
             pPlayer.setDeltaMovement(pPlayer.getDeltaMovement().add(new Vec3(this.position().vectorTo(pPlayer.position()).toVector3f()).scale(0.1 * f1 * pPlayer.getDeltaMovement().length())));
         }
+    }
+
+    @Override
+    public void processInput(short keys) {
+        leftInputDown
+                = (keys & 0b0000001) > 0;
+        rightInputDown
+                = (keys & 0b0000010) > 0;
+        forwardInputDown
+                = (keys & 0b0000100) > 0;
+        backInputDown
+                = (keys & 0b0001000) > 0;
+        upInputDown
+                = (keys & 0b0010000) > 0;
+        downInputDown
+                = (keys & 0b0100000) > 0;
+        decoyInputDown
+                = (keys & 0b1000000) > 0;
     }
 
     @Override

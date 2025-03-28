@@ -1,6 +1,7 @@
-package com.atsuishio.superbwarfare.network.message;
+package com.atsuishio.superbwarfare.network.message.receive;
 
 import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.network.ClientPacketHandler;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -20,8 +21,7 @@ public record ClientIndicatorMessage(int messageType, int value) implements Cust
     );
 
     public static void handler(final ClientIndicatorMessage message, final IPayloadContext context) {
-        // TODO indicator process
-//        ClientPacketHandler.handleClientIndicatorMessage(message, ctx);
+        ClientPacketHandler.handleClientIndicatorMessage(message, context);
     }
 
     @Override

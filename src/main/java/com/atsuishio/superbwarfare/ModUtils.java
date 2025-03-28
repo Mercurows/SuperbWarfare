@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare;
 
+import com.atsuishio.superbwarfare.client.MouseMovementHandler;
 import com.atsuishio.superbwarfare.component.ModDataComponents;
 import com.atsuishio.superbwarfare.config.ClientConfig;
 import com.atsuishio.superbwarfare.config.CommonConfig;
@@ -12,6 +13,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
@@ -56,7 +58,7 @@ public class ModUtils {
         ModAttributes.ATTRIBUTES.register(bus);
 
 //        bus.addListener(this::onCommonSetup);
-//        bus.addListener(this::onClientSetup);
+        bus.addListener(this::onClientSetup);
         bus.addListener(ModItems::registerDispenserBehavior);
 
         bus.addListener(NetworkRegistry::register);
@@ -99,6 +101,10 @@ public class ModUtils {
         });
         actions.forEach(e -> e.getKey().run());
         workQueueC.removeAll(actions);
+    }
+
+    public void onClientSetup(final FMLClientSetupEvent event) {
+        MouseMovementHandler.init();
     }
 
 }

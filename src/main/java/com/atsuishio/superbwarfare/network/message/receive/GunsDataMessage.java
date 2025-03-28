@@ -1,4 +1,4 @@
-package com.atsuishio.superbwarfare.network.message;
+package com.atsuishio.superbwarfare.network.message.receive;
 
 import com.atsuishio.superbwarfare.ModUtils;
 import com.atsuishio.superbwarfare.tools.GunsTool;

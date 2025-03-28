@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.client.overlay;
 import com.atsuishio.superbwarfare.ModUtils;
 import com.atsuishio.superbwarfare.capability.ModCapabilities;
 import com.atsuishio.superbwarfare.component.ModDataComponents;
+import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.item.common.ammo.AmmoSupplierItem;
 import com.atsuishio.superbwarfare.item.common.ammo.box.AmmoBoxInfo;
@@ -53,10 +54,7 @@ public class AmmoOverlay {
         // 动画计算
         var currentTime = System.currentTimeMillis();
         ItemStack stack = player.getMainHandItem();
-        if ((stack.getItem() instanceof AmmoSupplierItem || stack.getItem() == ModItems.AMMO_BOX.get())
-            // TODO vehicle
-//                && !(player.getVehicle() instanceof ArmedVehicleEntity vehicle && vehicle.banHand(player))
-        ) {
+        if ((stack.getItem() instanceof AmmoSupplierItem || stack.getItem() == ModItems.AMMO_BOX.get()) && !(player.getVehicle() instanceof ArmedVehicleEntity vehicle && vehicle.banHand(player))) {
             // 刚拿出弹药物品时，视为开始弹药信息渲染
             startRenderingAmmoInfo = ammoInfoTimer.getProgress(currentTime) == 0;
             ammoInfoTimer.forward(currentTime);

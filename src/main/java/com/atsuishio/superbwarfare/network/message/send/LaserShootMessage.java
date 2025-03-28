@@ -1,8 +1,9 @@
-package com.atsuishio.superbwarfare.network.message;
+package com.atsuishio.superbwarfare.network.message.send;
 
 import com.atsuishio.superbwarfare.ModUtils;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModSounds;
+import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
 import com.atsuishio.superbwarfare.tools.EntityFindUtil;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.UUIDUtil;

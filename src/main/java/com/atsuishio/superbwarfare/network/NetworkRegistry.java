@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.network;
 
-import com.atsuishio.superbwarfare.network.message.*;
+import com.atsuishio.superbwarfare.network.message.receive.*;
+import com.atsuishio.superbwarfare.network.message.send.*;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
@@ -18,6 +19,7 @@ public class NetworkRegistry {
         registrar.playToServer(LaserShootMessage.TYPE, LaserShootMessage.STREAM_CODEC, LaserShootMessage::handler);
         registrar.playToServer(BreathMessage.TYPE, BreathMessage.STREAM_CODEC, BreathMessage::handler);
         registrar.playToServer(ShootMessage.TYPE, ShootMessage.STREAM_CODEC, ShootMessage::handler);
-
+        registrar.playToServer(DoubleJumpMessage.TYPE, DoubleJumpMessage.STREAM_CODEC, DoubleJumpMessage::handler);
+        registrar.playToServer(VehicleMovementMessage.TYPE, VehicleMovementMessage.STREAM_CODEC, VehicleMovementMessage::handler);
     }
 }

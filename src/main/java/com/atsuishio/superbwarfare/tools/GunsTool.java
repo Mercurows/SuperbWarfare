@@ -4,7 +4,7 @@ import com.atsuishio.superbwarfare.ModUtils;
 import com.atsuishio.superbwarfare.capability.ModCapabilities;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
-import com.atsuishio.superbwarfare.network.message.GunsDataMessage;
+import com.atsuishio.superbwarfare.network.message.receive.GunsDataMessage;
 import com.google.gson.stream.JsonReader;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;

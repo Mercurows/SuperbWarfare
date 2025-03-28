@@ -1,6 +1,9 @@
-package com.atsuishio.superbwarfare.network.message;
+package com.atsuishio.superbwarfare.network.message.receive;
 
 import com.atsuishio.superbwarfare.ModUtils;
+import com.atsuishio.superbwarfare.config.client.KillMessageConfig;
+import com.atsuishio.superbwarfare.event.KillMessageHandler;
+import com.atsuishio.superbwarfare.tools.PlayerKillRecord;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -83,8 +86,10 @@ public class PlayerGunKillMessage implements CustomPacketPayload {
             if (player != null && target != null) {
                 var type = message.getDamageType();
 
-                // TODO 处理kill message
-                // DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> ClientPacketHandler.handlePlayerKillMessage(player, target, message.headshot, type, ctx));
+                if (KillMessageHandler.QUEUE.size() >= KillMessageConfig.KILL_MESSAGE_COUNT.get()) {
+                    KillMessageHandler.QUEUE.poll();
+                }
+                KillMessageHandler.QUEUE.offer(new PlayerKillRecord(player, target, player.getMainHandItem(), message.headshot, type));
             }
         }
     }

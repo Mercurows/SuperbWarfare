@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.ModUtils;
 import com.atsuishio.superbwarfare.capability.ModCapabilities;
 import com.atsuishio.superbwarfare.capability.player.PlayerVariable;
 import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity;
+import com.atsuishio.superbwarfare.event.events.ReloadEvent;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
@@ -22,6 +23,7 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 import java.text.DecimalFormat;
@@ -54,16 +56,14 @@ public class GunEventHandler {
             if (GunsTool.getGunIntTag(stack, "BoltActionTick") > 0) {
                 GunsTool.setGunIntTag(stack, "BoltActionTick", GunsTool.getGunIntTag(stack, "BoltActionTick") - 1);
             }
-
-            // todo marlin
-//            if (stack.getItem() == ModItems.MARLIN.get() && GunsTool.getGunIntTag(stack, "BoltActionTick") == 9) {
-//                GunNBTTool.getOrCreateTag(stack).putBoolean("empty", false);
-//            }
+            if (stack.getItem() == ModItems.MARLIN.get() && GunsTool.getGunIntTag(stack, "BoltActionTick") == 9) {
+                NBTTool.setBoolean(stack, "empty", false);
+            }
 
             if (GunsTool.getGunIntTag(stack, "BoltActionTick") == 1) {
                 GunsTool.setGunBooleanTag(stack, "NeedBoltAction", false);
                 if (stack.is(ModTags.Items.REVOLVER)) {
-                    NBTTool.getTag(stack).putBoolean("canImmediatelyShoot", true);
+                    NBTTool.setBoolean(stack, "canImmediatelyShoot", true);
                 }
             }
         }
@@ -82,36 +82,32 @@ public class GunEventHandler {
             String origin = stack.getItem().getDescriptionId();
             String name = origin.substring(origin.lastIndexOf(".") + 1);
 
-            // todo other guns
-//            if (stack.getItem() == ModItems.SENTINEL.get()) {
-//                AtomicBoolean charged = new AtomicBoolean(false);
-//
-//                stack.getCapability(ForgeCapabilities.ENERGY).ifPresent(
-//                        e -> charged.set(e.getEnergyStored() > 0)
-//                );
-//
-//                if (charged.get()) {
-//                    float soundRadius = (float) GunsTool.getGunDoubleTag(stack, "SoundRadius");
-//
-//                    SoundEvent sound3p = BuiltInRegistries.SOUND_EVENT.get(ModUtils.loc( "sentinel_charge_fire_3p"));
-//                    if (sound3p != null) {
-//                        player.playSound(sound3p, soundRadius * 0.4f, 1f);
-//                    }
-//
-//                    SoundEvent soundFar = BuiltInRegistries.SOUND_EVENT.get(ModUtils.loc( "sentinel_charge_far"));
-//                    if (soundFar != null) {
-//                        player.playSound(soundFar, soundRadius * 0.7f, 1f);
-//                    }
-//
-//                    SoundEvent soundVeryFar = BuiltInRegistries.SOUND_EVENT.get(ModUtils.loc( "sentinel_charge_veryfar"));
-//                    if (soundVeryFar != null) {
-//                        player.playSound(soundVeryFar, soundRadius, 1f);
-//                    }
-//
-//                    return;
-//                }
-//            }
+            if (stack.getItem() == ModItems.SENTINEL.get()) {
+                var cap = stack.getCapability(Capabilities.EnergyStorage.ITEM);
 
+                if (cap != null && cap.getEnergyStored() > 0) {
+                    float soundRadius = (float) GunsTool.getGunDoubleTag(stack, "SoundRadius");
+
+                    SoundEvent sound3p = BuiltInRegistries.SOUND_EVENT.get(ModUtils.loc("sentinel_charge_fire_3p"));
+                    if (sound3p != null) {
+                        player.playSound(sound3p, soundRadius * 0.4f, 1f);
+                    }
+
+                    SoundEvent soundFar = BuiltInRegistries.SOUND_EVENT.get(ModUtils.loc("sentinel_charge_far"));
+                    if (soundFar != null) {
+                        player.playSound(soundFar, soundRadius * 0.7f, 1f);
+                    }
+
+                    SoundEvent soundVeryFar = BuiltInRegistries.SOUND_EVENT.get(ModUtils.loc("sentinel_charge_veryfar"));
+                    if (soundVeryFar != null) {
+                        player.playSound(soundVeryFar, soundRadius, 1f);
+                    }
+
+                    return;
+                }
+            }
+
+            // TODO perk
 //            var perk = PerkHelper.getPerkByType(stack, Perk.Type.AMMO);
 //
 //            if (perk == ModPerks.BEAST_BULLET.get()) {
@@ -255,7 +251,7 @@ public class GunEventHandler {
 
             projectile.setPos(player.getX() - 0.1 * player.getLookAngle().x, player.getEyeY() - 0.1 - 0.1 * player.getLookAngle().y, player.getZ() + -0.1 * player.getLookAngle().z);
             projectile.shoot(player, player.getLookAngle().x, player.getLookAngle().y + 0.001f, player.getLookAngle().z,
-//                  TODO incendiary bullet
+//                  TODO perk incendiary bullet
 //                    stack.is(ModTags.Items.SHOTGUN) && perk == ModPerks.INCENDIARY_BULLET.get() ? 4.5f : velocity,
                     velocity,
                     (float) spared);
@@ -324,8 +320,7 @@ public class GunEventHandler {
         // 启动换弹
         if (GunsTool.getGunBooleanTag(stack, "StartReload")) {
 
-            // TODO reload event
-//            NeoForge.EVENT_BUS.post(new ReloadEvent.Pre(player, stack));
+            NeoForge.EVENT_BUS.post(new ReloadEvent.Pre(player, stack));
             if (gunItem.isOpenBolt(stack)) {
                 if (GunsTool.getGunIntTag(stack, "Ammo", 0) == 0) {
                     data.putInt("ReloadTime", data.getInt("EmptyReloadTime") + 1);
@@ -348,51 +343,50 @@ public class GunEventHandler {
             data.putInt("ReloadTime", data.getInt("ReloadTime") - 1);
         }
 
-        // todo other guns
-//        if (stack.getItem() == ModItems.RPG.get()) {
-//            if (data.getInt("ReloadTime") == 84) {
-//                tag.putBoolean("empty", false);
-//            }
-//            if (data.getInt("ReloadTime") == 9) {
-//                data.putBoolean("CloseHammer", false);
-//            }
-//        }
-//
-//        if (stack.getItem() == ModItems.MK_14.get()) {
-//            if (data.getInt("ReloadTime") == 18) {
-//                data.putBoolean("HoldOpen", false);
-//            }
-//        }
-//
-//        if (stack.getItem() == ModItems.SVD.get()) {
-//            if (data.getInt("ReloadTime") == 17) {
-//                data.putBoolean("HoldOpen", false);
-//            }
-//        }
-//
-//        if (stack.getItem() == ModItems.SKS.get()) {
-//            if (data.getInt("ReloadTime") == 14) {
-//                data.putBoolean("HoldOpen", false);
-//            }
-//        }
-//
-//        if (stack.getItem() == ModItems.M_60.get()) {
-//            if (data.getInt("ReloadTime") == 55) {
-//                data.putBoolean("HideBulletChain", false);
-//            }
-//        }
-//
-//        if (stack.getItem() == ModItems.GLOCK_17.get() || stack.getItem() == ModItems.GLOCK_18.get() || stack.getItem() == ModItems.M_1911.get() || stack.getItem() == ModItems.MP_443.get()) {
-//            if (data.getInt("ReloadTime") == 9) {
-//                data.putBoolean("HoldOpen", false);
-//            }
-//        }
-//
-//        if (stack.getItem() == ModItems.QBZ_95.get()) {
-//            if (data.getInt("ReloadTime") == 14) {
-//                data.putBoolean("HoldOpen", false);
-//            }
-//        }
+        if (stack.getItem() == ModItems.RPG.get()) {
+            if (data.getInt("ReloadTime") == 84) {
+                tag.putBoolean("empty", false);
+            }
+            if (data.getInt("ReloadTime") == 9) {
+                data.putBoolean("CloseHammer", false);
+            }
+        }
+
+        if (stack.getItem() == ModItems.MK_14.get()) {
+            if (data.getInt("ReloadTime") == 18) {
+                data.putBoolean("HoldOpen", false);
+            }
+        }
+
+        if (stack.getItem() == ModItems.SVD.get()) {
+            if (data.getInt("ReloadTime") == 17) {
+                data.putBoolean("HoldOpen", false);
+            }
+        }
+
+        if (stack.getItem() == ModItems.SKS.get()) {
+            if (data.getInt("ReloadTime") == 14) {
+                data.putBoolean("HoldOpen", false);
+            }
+        }
+
+        if (stack.getItem() == ModItems.M_60.get()) {
+            if (data.getInt("ReloadTime") == 55) {
+                data.putBoolean("HideBulletChain", false);
+            }
+        }
+
+        if (stack.getItem() == ModItems.GLOCK_17.get() || stack.getItem() == ModItems.GLOCK_18.get() || stack.getItem() == ModItems.M_1911.get() || stack.getItem() == ModItems.MP_443.get()) {
+            if (data.getInt("ReloadTime") == 9) {
+                data.putBoolean("HoldOpen", false);
+            }
+        }
+
+        if (stack.getItem() == ModItems.QBZ_95.get()) {
+            if (data.getInt("ReloadTime") == 14) {
+                data.putBoolean("HoldOpen", false);
+            }
+        }
 
         if (data.getInt("ReloadTime") == 1) {
             if (gunItem.isOpenBolt(stack)) {
@@ -435,8 +429,7 @@ public class GunEventHandler {
         NBTTool.getTag(stack).putBoolean("is_normal_reloading", false);
         NBTTool.getTag(stack).putBoolean("is_empty_reloading", false);
 
-        // TODO reload event
-//        NeoForge.EVENT_BUS.post(new ReloadEvent.Post(player, stack));
+        NeoForge.EVENT_BUS.post(new ReloadEvent.Post(player, stack));
     }
 
     public static void playGunEmptyReload(Player player) {
@@ -456,28 +449,25 @@ public class GunEventHandler {
                 GunsTool.reload(player, stack, AmmoType.RIFLE);
             } else if (stack.is(ModTags.Items.USE_HEAVY_AMMO)) {
                 GunsTool.reload(player, stack, AmmoType.HEAVY);
+            } else if (stack.getItem() == ModItems.TASER.get()) {
+                GunsTool.setGunIntTag(stack, "Ammo", 1);
+                player.getInventory().clearOrCountMatchingItems(p -> p.getItem() == ModItems.TASER_ELECTRODE.get(), 1, player.inventoryMenu.getCraftSlots());
+            } else if (stack.getItem() == ModItems.M_79.get()) {
+                GunsTool.setGunIntTag(stack, "Ammo", 1);
+                player.getInventory().clearOrCountMatchingItems(p -> p.getItem() == ModItems.GRENADE_40MM.get(), 1, player.inventoryMenu.getCraftSlots());
+            } else if (stack.getItem() == ModItems.RPG.get()) {
+                GunsTool.setGunIntTag(stack, "Ammo", 1);
+                player.getInventory().clearOrCountMatchingItems(p -> p.getItem() == ModItems.ROCKET.get(), 1, player.inventoryMenu.getCraftSlots());
+            } else if (stack.getItem() == ModItems.JAVELIN.get()) {
+                GunsTool.setGunIntTag(stack, "Ammo", 1);
+                player.getInventory().clearOrCountMatchingItems(p -> p.getItem() == ModItems.JAVELIN_MISSILE.get(), 1, player.inventoryMenu.getCraftSlots());
             }
-            // todo other guns
-//            } else if (stack.getItem() == ModItems.TASER.get()) {
-//                GunsTool.setGunIntTag(stack, "Ammo", 1);
-//                player.getInventory().clearOrCountMatchingItems(p -> p.getItem() == ModItems.TASER_ELECTRODE.get(), 1, player.inventoryMenu.getCraftSlots());
-//            } else if (stack.getItem() == ModItems.M_79.get()) {
-//                GunsTool.setGunIntTag(stack, "Ammo", 1);
-//                player.getInventory().clearOrCountMatchingItems(p -> p.getItem() == ModItems.GRENADE_40MM.get(), 1, player.inventoryMenu.getCraftSlots());
-//            } else if (stack.getItem() == ModItems.RPG.get()) {
-//                GunsTool.setGunIntTag(stack, "Ammo", 1);
-//                player.getInventory().clearOrCountMatchingItems(p -> p.getItem() == ModItems.ROCKET.get(), 1, player.inventoryMenu.getCraftSlots());
-//            } else if (stack.getItem() == ModItems.JAVELIN.get()) {
-//                GunsTool.setGunIntTag(stack, "Ammo", 1);
-//                player.getInventory().clearOrCountMatchingItems(p -> p.getItem() == ModItems.JAVELIN_MISSILE.get(), 1, player.inventoryMenu.getCraftSlots());
-//            }
         }
 
         NBTTool.getTag(stack).putBoolean("is_normal_reloading", false);
         NBTTool.getTag(stack).putBoolean("is_empty_reloading", false);
 
-        // TODO reload event
-//        NeoForge.EVENT_BUS.post(new ReloadEvent.Post(player, stack));
+        NeoForge.EVENT_BUS.post(new ReloadEvent.Post(player, stack));
     }
 
     public static void playGunEmptyReloadSounds(Player player) {
@@ -547,12 +537,11 @@ public class GunEventHandler {
 
         // 一阶段
         if (tag.getBoolean("start_single_reload")) {
-            // todo reload event
-//            NeoForge.EVENT_BUS.post(new ReloadEvent.Pre(player, stack));
+            NeoForge.EVENT_BUS.post(new ReloadEvent.Pre(player, stack));
 
-            if ((GunsTool.getGunIntTag(stack, "PrepareLoadTime", 0) != 0 && GunsTool.getGunIntTag(stack, "Ammo", 0) == 0)
-// todo 2nd
-//                    || stack.is(ModItems.SECONDARY_CATACLYSM.get())
+            if ((GunsTool.getGunIntTag(stack, "PrepareLoadTime", 0) != 0
+                    && GunsTool.getGunIntTag(stack, "Ammo", 0) == 0)
+                    || stack.is(ModItems.SECONDARY_CATACLYSM.get())
             ) {
                 // 此处判断空仓换弹的时候，是否在准备阶段就需要装填一发，如M870
                 playGunPrepareLoadReloadSounds(player);
@@ -579,18 +568,17 @@ public class GunEventHandler {
             tag.putBoolean("start_single_reload", false);
         }
 
-        // todo other guns
-//        if (stack.getItem() == ModItems.M_870.get()) {
-//            if (tag.getInt("prepare_load") == 10) {
-//                singleLoad(player);
-//            }
-//        }
-//
-//        if (stack.getItem() == ModItems.SECONDARY_CATACLYSM.get()) {
-//            if (tag.getInt("prepare_load") == 3) {
-//                singleLoad(player);
-//            }
-//        }
+        if (stack.getItem() == ModItems.M_870.get()) {
+            if (tag.getInt("prepare_load") == 10) {
+                singleLoad(player);
+            }
+        }
+
+        if (stack.getItem() == ModItems.SECONDARY_CATACLYSM.get()) {
+            if (tag.getInt("prepare_load") == 3) {
+                singleLoad(player);
+            }
+        }
 
         // 一阶段结束，检查备弹，如果有则二阶段启动，无则直接跳到三阶段
         if ((tag.getDouble("prepare") == 1 || tag.getDouble("prepare_load") == 1)) {
@@ -610,19 +598,17 @@ public class GunEventHandler {
                     tag.putBoolean("force_stage3_start", true);
                 } else if (stack.is(ModTags.Items.LAUNCHER) && GunsTool.getGunIntTag(stack, "MaxAmmo") == 0) {
                     tag.putBoolean("force_stage3_start", true);
-                    // todo 2nd
-//                } else if (stack.is(ModItems.SECONDARY_CATACLYSM.get()) && GunsTool.getGunIntTag(stack, "Ammo", 0) >= GunsTool.getGunIntTag(stack, "Magazine", 0)) {
-//                    tag.putBoolean("force_stage3_start", true);
+                } else if (stack.is(ModItems.SECONDARY_CATACLYSM.get()) && GunsTool.getGunIntTag(stack, "Ammo", 0) >= GunsTool.getGunIntTag(stack, "Magazine", 0)) {
+                    tag.putBoolean("force_stage3_start", true);
                 } else {
                     tag.putInt("reload_stage", 2);
                 }
             } else {
-                // todo 2nd
-//                if (stack.is(ModItems.SECONDARY_CATACLYSM.get()) && GunsTool.getGunIntTag(stack, "Ammo", 0) >= GunsTool.getGunIntTag(stack, "Magazine", 0)) {
-//                    tag.putBoolean("force_stage3_start", true);
-//                } else {
-                tag.putInt("reload_stage", 2);
-//                }
+                if (stack.is(ModItems.SECONDARY_CATACLYSM.get()) && GunsTool.getGunIntTag(stack, "Ammo", 0) >= GunsTool.getGunIntTag(stack, "Magazine", 0)) {
+                    tag.putBoolean("force_stage3_start", true);
+                } else {
+                    tag.putInt("reload_stage", 2);
+                }
             }
             // 检查备弹
         }
@@ -652,24 +638,24 @@ public class GunEventHandler {
             }
         }
 
-        // 装填 todo other guns
-//        if (stack.getItem() == ModItems.M_870.get() || stack.getItem() == ModItems.MARLIN.get()) {
-//            if (tag.getInt("iterative") == 3) {
-//                singleLoad(player);
-//            }
-//        }
-//
-//        if (stack.getItem() == ModItems.SECONDARY_CATACLYSM.get()) {
-//            if (tag.getInt("iterative") == 16) {
-//                singleLoad(player);
-//            }
-//        }
-//
-//        if (stack.getItem() == ModItems.K_98.get() || stack.getItem() == ModItems.MOSIN_NAGANT.get()) {
-//            if (tag.getInt("iterative") == 1) {
-//                singleLoad(player);
-//            }
-//        }
+        // 装填
+        if (stack.getItem() == ModItems.M_870.get() || stack.getItem() == ModItems.MARLIN.get()) {
+            if (tag.getInt("iterative") == 3) {
+                singleLoad(player);
+            }
+        }
+
+        if (stack.getItem() == ModItems.SECONDARY_CATACLYSM.get()) {
+            if (tag.getInt("iterative") == 16) {
+                singleLoad(player);
+            }
+        }
+
+        if (stack.getItem() == ModItems.K_98.get() || stack.getItem() == ModItems.MOSIN_NAGANT.get()) {
+            if (tag.getInt("iterative") == 1) {
+                singleLoad(player);
+            }
+        }
 
         // 二阶段结束
         if (tag.getInt("iterative") == 1) {
@@ -715,10 +701,9 @@ public class GunEventHandler {
             playGunEndReloadSounds(player);
         }
 
-        // todo marlin
-//        if (stack.getItem() == ModItems.MARLIN.get() && tag.getInt("finish") == 10) {
-//            tag.putBoolean("empty", false);
-//        }
+        if (stack.getItem() == ModItems.MARLIN.get() && tag.getInt("finish") == 10) {
+            tag.putBoolean("empty", false);
+        }
 
         // 三阶段结束
         if (tag.getInt("finish") == 1) {
@@ -729,8 +714,7 @@ public class GunEventHandler {
             GunsTool.setGunBooleanTag(stack, "Reloading", false);
             tag.putBoolean("start_single_reload", false);
 
-            // todo reload event
-//            NeoForge.EVENT_BUS.post(new ReloadEvent.Post(player, stack));
+            NeoForge.EVENT_BUS.post(new ReloadEvent.Post(player, stack));
         }
         saveTag(stack, tag);
     }
@@ -754,12 +738,9 @@ public class GunEventHandler {
                 AmmoType.RIFLE.add(cap, -1);
             } else if (stack.is(ModTags.Items.USE_HEAVY_AMMO)) {
                 AmmoType.HEAVY.add(cap, -1);
+            } else if (stack.getItem() == ModItems.SECONDARY_CATACLYSM.get()) {
+                player.getInventory().clearOrCountMatchingItems(p -> p.getItem() == ModItems.GRENADE_40MM.get(), 1, player.inventoryMenu.getCraftSlots());
             }
-
-            // todo secondary
-//            } else if (stack.getItem() == ModItems.SECONDARY_CATACLYSM.get()) {
-//                player.getInventory().clearOrCountMatchingItems(p -> p.getItem() == ModItems.GRENADE_40MM.get(), 1, player.inventoryMenu.getCraftSlots());
-//            }
 
             cap.syncPlayerVariables(player);
         }
@@ -876,10 +857,9 @@ public class GunEventHandler {
                 double shooterHeight = player.getEyePosition().distanceTo((Vec3.atLowerCornerOf(player.level().clip(new ClipContext(player.getEyePosition(), player.getEyePosition().add(new Vec3(0, -1, 0).scale(10)),
                         ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, player)).getBlockPos())));
 
-                // todo marlin
-//                if (stack.is(ModItems.MARLIN.get())) {
-//                    ModUtils.queueServerWork((int) (5 + 1.5 * shooterHeight), () -> SoundTool.playLocalSound(serverPlayer, ModSounds.SHELL_CASING_NORMAL.get(), (float) Math.max(1.5 - 0.2 * shooterHeight, 0), 1));
-//                }
+                if (stack.is(ModItems.MARLIN.get())) {
+                    ModUtils.queueServerWork((int) (5 + 1.5 * shooterHeight), () -> SoundTool.playLocalSound(serverPlayer, ModSounds.SHELL_CASING_NORMAL.get(), (float) Math.max(1.5 - 0.2 * shooterHeight, 0), 1));
+                }
             }
         }
     }
