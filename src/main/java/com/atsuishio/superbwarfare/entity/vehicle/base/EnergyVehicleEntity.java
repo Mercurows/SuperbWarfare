@@ -11,14 +11,11 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.energy.IEnergyStorage;
 
-import java.util.function.Supplier;
-
 public abstract class EnergyVehicleEntity extends VehicleEntity {
 
     public static final EntityDataAccessor<Integer> ENERGY = SynchedEntityData.defineId(EnergyVehicleEntity.class, EntityDataSerializers.INT);
 
-    protected final SyncedEntityEnergyStorage energyStorage = new SyncedEntityEnergyStorage(this.getMaxEnergy(), this.entityData, ENERGY);
-    protected final Supplier<IEnergyStorage> energy = () -> energyStorage;
+    protected final IEnergyStorage energyStorage = new SyncedEntityEnergyStorage(this.getMaxEnergy(), this.entityData, ENERGY);
 
     public EnergyVehicleEntity(EntityType<?> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
@@ -36,14 +33,14 @@ public abstract class EnergyVehicleEntity extends VehicleEntity {
     protected void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
         if (compound.get("Energy") instanceof IntTag energyNBT) {
-            energyStorage.deserializeNBT(level().registryAccess(), energyNBT);
+            ((SyncedEntityEnergyStorage) energyStorage).deserializeNBT(level().registryAccess(), energyNBT);
         }
     }
 
     @Override
     public void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
-        compound.put("Energy", energyStorage.serializeNBT(level().registryAccess()));
+        compound.put("Energy", ((SyncedEntityEnergyStorage) energyStorage).serializeNBT(level().registryAccess()));
     }
 
     /**
@@ -61,6 +58,10 @@ public abstract class EnergyVehicleEntity extends VehicleEntity {
 
     public int getEnergy() {
         return this.energyStorage.getEnergyStored();
+    }
+
+    public IEnergyStorage getEnergyStorage() {
+        return this.energyStorage;
     }
 
     public void setEnergy(int pEnergy) {

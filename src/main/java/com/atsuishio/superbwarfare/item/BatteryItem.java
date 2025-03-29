@@ -5,6 +5,8 @@ import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.energy.EnergyStorage;
+import net.neoforged.neoforge.energy.IEnergyStorage;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
@@ -13,9 +15,16 @@ public class BatteryItem extends Item {
 
     public int maxEnergy;
 
+    public IEnergyStorage getEnergyStorage() {
+        return energy;
+    }
+
+    private final IEnergyStorage energy;
+
     public BatteryItem(int maxEnergy, Properties properties) {
         super(properties.stacksTo(1));
         this.maxEnergy = maxEnergy;
+        this.energy = new EnergyStorage(maxEnergy);
     }
 
     @Override

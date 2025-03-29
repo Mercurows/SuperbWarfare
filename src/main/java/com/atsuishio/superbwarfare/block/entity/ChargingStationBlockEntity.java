@@ -13,7 +13,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.IntTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Container;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.MenuProvider;
@@ -30,7 +29,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
-import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.ICapabilityProvider;
 import net.neoforged.neoforge.energy.EnergyStorage;
@@ -59,23 +57,6 @@ public class ChargingStationBlockEntity extends BlockEntity implements WorldlyCo
     public static final int CHARGE_RADIUS = 8;
 
     protected NonNullList<ItemStack> items = NonNullList.withSize(2, ItemStack.EMPTY);
-
-
-    private BlockCapabilityCache<IEnergyStorage, @Nullable Direction> capCache;
-
-    @Override
-    public void onLoad() {
-        super.onLoad();
-
-        if (level != null && !level.isClientSide) {
-            this.capCache = BlockCapabilityCache.create(
-                    Capabilities.EnergyStorage.BLOCK,
-                    (ServerLevel) level,
-                    this.getBlockPos(),
-                    null
-            );
-        }
-    }
 
 
     public int fuelTick = 0;
@@ -139,7 +120,7 @@ public class ChargingStationBlockEntity extends BlockEntity implements WorldlyCo
             setChanged(pLevel, pPos, pState);
         }
 
-        var handler = blockEntity.capCache.getCapability();
+        var handler = blockEntity.getEnergyStorage(null);
         if (handler == null) return;
 
         int energy = handler.getEnergyStored();
@@ -256,10 +237,10 @@ public class ChargingStationBlockEntity extends BlockEntity implements WorldlyCo
 
         for (Direction direction : Direction.values()) {
             var blockEntity = this.level.getBlockEntity(this.getBlockPos().relative(direction));
-            if (blockEntity == null) return;
+            if (blockEntity == null) continue;
 
             var energy = level.getCapability(Capabilities.EnergyStorage.BLOCK, blockEntity.getBlockPos(), direction);
-            if (energy == null || !(blockEntity instanceof ChargingStationBlockEntity)) return;
+            if (energy == null || blockEntity instanceof ChargingStationBlockEntity) return;
 
             if (energy.canReceive() && energy.getEnergyStored() < energy.getMaxEnergyStored()) {
                 int receiveEnergy = energy.receiveEnergy(Math.min(handler.getEnergyStored(), CHARGE_OTHER_SPEED), false);
@@ -279,10 +260,10 @@ public class ChargingStationBlockEntity extends BlockEntity implements WorldlyCo
     protected void loadAdditional(@NotNull CompoundTag tag, HolderLookup.@NotNull Provider registries) {
         super.loadAdditional(tag, registries);
 
-        if (tag.contains("Energy") && this.capCache.getCapability() != null) {
+        if (tag.contains("Energy")) {
             var energy = tag.get("Energy");
             if (energy instanceof IntTag) {
-                ((EnergyStorage) this.capCache.getCapability()).deserializeNBT(registries, energy);
+                ((EnergyStorage) this.energyStorage).deserializeNBT(registries, energy);
             }
         }
         this.fuelTick = tag.getInt("FuelTick");
@@ -296,9 +277,8 @@ public class ChargingStationBlockEntity extends BlockEntity implements WorldlyCo
     protected void saveAdditional(@NotNull CompoundTag tag, HolderLookup.@NotNull Provider registries) {
         super.saveAdditional(tag, registries);
 
-        if (this.capCache != null && this.capCache.getCapability() != null) {
-            tag.put("Energy", IntTag.valueOf(this.capCache.getCapability().getEnergyStored()));
-        }
+        tag.putInt("Energy", this.energyStorage.getEnergyStored());
+
         tag.putInt("FuelTick", this.fuelTick);
         tag.putInt("MaxFuelTick", this.maxFuelTick);
         tag.putBoolean("ShowRange", this.showRange);
@@ -399,17 +379,6 @@ public class ChargingStationBlockEntity extends BlockEntity implements WorldlyCo
         return compoundtag;
     }
 
-    public static class EnergyStorageProvider implements ICapabilityProvider<ChargingStationBlockEntity, Direction, IEnergyStorage> {
-
-        private final IEnergyStorage energy = new EnergyStorage(MAX_ENERGY);
-
-        @Override
-        public @Nullable IEnergyStorage getCapability(@NotNull ChargingStationBlockEntity object, Direction context) {
-            return energy;
-        }
-    }
-
-
     public static class ItemHandlerProvider implements ICapabilityProvider<ChargingStationBlockEntity, Direction, IItemHandler> {
 
         private IItemHandler[] itemHandlers;
@@ -439,12 +408,15 @@ public class ChargingStationBlockEntity extends BlockEntity implements WorldlyCo
     public void saveToItem(ItemStack stack, HolderLookup.Provider registries) {
         CompoundTag tag = new CompoundTag();
         if (this.level != null) {
-            var cap = level.getCapability(Capabilities.EnergyStorage.BLOCK, this.getBlockPos(), null);
-            if (cap instanceof EnergyStorage energy) {
-                tag.put("Energy", energy.serializeNBT(registries));
-            }
+            tag.put("Energy", ((EnergyStorage) energyStorage).serializeNBT(registries));
         }
         BlockItem.setBlockEntityData(stack, this.getType(), tag);
+    }
 
+    private final IEnergyStorage energyStorage = new EnergyStorage(MAX_ENERGY);
+
+    @Nullable
+    public IEnergyStorage getEnergyStorage(@Nullable Direction side) {
+        return energyStorage;
     }
 }
