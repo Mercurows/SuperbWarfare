@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "c",
+    "a",
+    "b"
+  ],
+  "key": {
+    "a": {
+      "item": "superbwarfare:he_head"
+    },
+    "b": {
+      "item": "superbwarfare:grain"
+    },
+    "c": {
+      "item": "superbwarfare:fusee"
+    }
+  },
+  "result": {
+    "item": "superbwarfare:he_5_inches",
+    "count": 1
+  }
+}

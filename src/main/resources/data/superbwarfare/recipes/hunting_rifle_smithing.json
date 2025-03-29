@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": {
+    "item": "superbwarfare:hunting_rifle_blueprint"
+  },
+  "base": {
+    "item": "superbwarfare:epic_material_pack"
+  },
+  "addition": {
+    "tag": "minecraft:logs"
+  },
+  "result": {
+    "item": "superbwarfare:hunting_rifle"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aba"
+  ],
+  "key": {
+    "a": {
+      "tag": "superbwarfare:ingots/steel"
+    },
+    "b": {
+      "item": "superbwarfare:steel_ingot"
+    }
+  },
+  "result": {
+    "item": "superbwarfare:steel_barrel",
+    "count": 1
+  }
+}

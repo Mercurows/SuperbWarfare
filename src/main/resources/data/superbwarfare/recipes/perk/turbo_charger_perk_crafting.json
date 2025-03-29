@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "bcb",
+    "cac",
+    "bcb"
+  ],
+  "key": {
+    "a": {
+      "item": "superbwarfare:empty_perk"
+    },
+    "b": {
+      "tag": "superbwarfare:ingots/steel"
+    },
+    "c": {
+      "item": "minecraft:piston"
+    }
+  },
+  "result": {
+    "item": "superbwarfare:turbo_charger",
+    "count": 1
+  }
+}

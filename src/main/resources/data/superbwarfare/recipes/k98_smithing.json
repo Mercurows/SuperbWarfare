@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": {
+    "item": "superbwarfare:k_98_blueprint"
+  },
+  "base": {
+    "item": "superbwarfare:rare_material_pack"
+  },
+  "addition": {
+    "tag": "minecraft:logs"
+  },
+  "result": {
+    "item": "superbwarfare:k_98"
+  }
+}

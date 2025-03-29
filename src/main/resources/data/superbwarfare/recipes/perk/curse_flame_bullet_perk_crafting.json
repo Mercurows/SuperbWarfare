@@ -1,0 +1,22 @@
+{
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "virtuarealcraft"
+    }
+  ],
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "virtuarealcraft:eternal_touch"
+    },
+    {
+      "item": "superbwarfare:empty_perk"
+    }
+  ],
+  "result": {
+    "item": "superbwarfare:curse_flame_bullet",
+    "count": 1
+  }
+}

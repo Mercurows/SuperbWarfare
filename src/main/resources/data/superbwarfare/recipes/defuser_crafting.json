@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "  i",
+    "/I ",
+    " / "
+  ],
+  "key": {
+    "i": {
+      "item": "superbwarfare:steel_ingot"
+    },
+    "/": {
+      "item": "minecraft:stick"
+    },
+    "I": {
+      "item": "minecraft:iron_nugget"
+    }
+  },
+  "result": {
+    "item": "superbwarfare:defuser",
+    "count": 1
+  }
+}

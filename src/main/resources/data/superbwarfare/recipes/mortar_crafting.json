@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "a ",
+    "bc"
+  ],
+  "key": {
+    "a": {
+      "item": "superbwarfare:mortar_barrel"
+    },
+    "b": {
+      "item": "superbwarfare:mortar_bipod"
+    },
+    "c": {
+      "item": "superbwarfare:mortar_base_plate"
+    }
+  },
+  "result": {
+    "item": "superbwarfare:mortar_deployer",
+    "count": 1
+  }
+}

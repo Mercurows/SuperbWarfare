@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "superbwarfare:netherite_barrel"
+    },
+    {
+      "item": "superbwarfare:netherite_spring"
+    },
+    {
+      "item": "superbwarfare:netherite_action"
+    },
+    {
+      "item": "superbwarfare:netherite_trigger"
+    }
+  ],
+  "result": {
+    "item": "superbwarfare:legendary_material_pack",
+    "count": 1
+  }
+}

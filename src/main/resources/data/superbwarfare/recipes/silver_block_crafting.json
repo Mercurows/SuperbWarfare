@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "aaa",
+    "aba",
+    "aaa"
+  ],
+  "key": {
+    "a": {
+      "item": "superbwarfare:silver_ingot"
+    },
+    "b": {
+      "tag":"forge:ingots/silver"
+    }
+  },
+  "result": {
+    "item": "superbwarfare:silver_block",
+    "count": 1
+  }
+}

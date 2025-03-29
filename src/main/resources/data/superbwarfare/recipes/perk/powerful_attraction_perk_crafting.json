@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "dbe",
+    "cac",
+    " c "
+  ],
+  "key": {
+    "a": {
+      "item": "superbwarfare:empty_perk"
+    },
+    "b": {
+      "tag": "forge:ender_pearls"
+    },
+    "c": {
+      "tag": "forge:ingots/iron"
+    },
+    "d": {
+      "tag": "forge:dusts/redstone"
+    },
+    "e": {
+      "tag": "forge:gems/lapis"
+    }
+  },
+  "result": {
+    "item": "superbwarfare:powerful_attraction",
+    "count": 1
+  }
+}

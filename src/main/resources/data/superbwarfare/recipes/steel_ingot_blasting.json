@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:blasting",
+  "category": "misc",
+  "experience": 1,
+  "cookingtime": 400,
+  "ingredient": {
+    "item": "superbwarfare:coal_iron_powder"
+  },
+  "result": "superbwarfare:steel_ingot"
+}

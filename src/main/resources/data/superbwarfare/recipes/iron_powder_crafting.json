@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "minecraft:iron_ingot"
+    },
+    {
+      "item": "superbwarfare:hammer"
+    }
+  ],
+  "result": {
+    "item": "superbwarfare:iron_powder",
+    "count": 1
+  }
+}

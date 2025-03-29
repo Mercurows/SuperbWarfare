@@ -1,0 +1,22 @@
+{
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "virtuarealcraft"
+    }
+  ],
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "virtuarealcraft:endless_rain_shower"
+    },
+    {
+      "item": "superbwarfare:empty_perk"
+    }
+  ],
+  "result": {
+    "item": "superbwarfare:butterfly_bullet",
+    "count": 1
+  }
+}

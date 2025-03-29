@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "aa",
+    "aa"
+  ],
+  "key": {
+    "a": {
+      "item": "superbwarfare:battery"
+    }
+  },
+  "result": {
+    "item": "superbwarfare:small_battery_pack",
+    "count": 1
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "tag": "forge:dusts/iron"
+    },
+    {
+      "tag": "forge:dusts/coal_coke"
+    }
+  ],
+  "result": {
+    "item": "superbwarfare:coal_iron_powder",
+    "count": 1
+  }
+}

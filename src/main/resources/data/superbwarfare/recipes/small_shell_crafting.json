@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "ea ",
+    "bcb",
+    " d "
+  ],
+  "key": {
+    "a": {
+      "tag": "superbwarfare:ingots/steel"
+    },
+    "b": {
+      "tag": "forge:ingots/copper"
+    },
+    "c": {
+      "item": "minecraft:gunpowder"
+    },
+    "d": {
+      "item": "superbwarfare:primer"
+    },
+    "e": {
+      "item": "superbwarfare:high_energy_explosives"
+    }
+  },
+  "result": {
+    "item": "superbwarfare:small_shell",
+    "count": 4
+  }
+}

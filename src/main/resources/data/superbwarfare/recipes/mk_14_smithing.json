@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": {
+    "item": "superbwarfare:mk_14_blueprint"
+  },
+  "base": {
+    "item": "superbwarfare:epic_material_pack"
+  },
+  "addition": {
+    "tag": "superbwarfare:ingots/cemented_carbide"
+  },
+  "result": {
+    "item": "superbwarfare:mk_14"
+  }
+}

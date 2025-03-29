@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " ab",
+    "cdc"
+  ],
+  "key": {
+    "a": {
+      "item": "minecraft:minecart"
+    },
+    "b": {
+      "item": "superbwarfare:cell"
+    },
+    "c": {
+      "item": "superbwarfare:wheel"
+    },
+    "d": {
+      "item": "superbwarfare:motor"
+    }
+  },
+  "result": {
+    "item": "superbwarfare:container",
+    "nbt": {
+      "BlockEntityTag": {
+        "EntityType": "superbwarfare:wheel_chair"
+      }
+    }
+  }
+}

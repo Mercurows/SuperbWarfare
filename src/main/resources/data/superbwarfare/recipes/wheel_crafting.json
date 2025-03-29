@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    " a ",
+    "aba",
+    " a "
+  ],
+  "key": {
+    "a": {
+      "item": "minecraft:black_wool"
+    },
+    "b": {
+      "tag":"forge:ingots/iron"
+    }
+  },
+  "result": {
+    "item": "superbwarfare:wheel",
+    "count": 1
+  }
+}

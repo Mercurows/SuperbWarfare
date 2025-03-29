@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": {
+    "item": "superbwarfare:ntw_20_blueprint"
+  },
+  "base": {
+    "item": "superbwarfare:legendary_material_pack"
+  },
+  "addition": {
+    "item": "minecraft:spyglass"
+  },
+  "result": {
+    "item": "superbwarfare:ntw_20"
+  }
+}

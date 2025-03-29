@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "ab",
+    " c"
+  ],
+  "key": {
+    "a": {
+      "item": "minecraft:tripwire_hook"
+    },
+    "b": {
+      "tag": "superbwarfare:ingots/cemented_carbide"
+    },
+    "c": {
+      "item": "superbwarfare:cemented_carbide_ingot"
+    }
+  },
+  "result": {
+    "item": "superbwarfare:cemented_carbide_trigger",
+    "count": 1
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "ddd",
+    "dcd",
+    "ddd"
+  ],
+  "key": {
+    "d": {
+      "item": "superbwarfare:high_energy_explosives"
+    },
+    "c": {
+      "item": "minecraft:clock"
+    }
+  },
+  "result": {
+    "item": "superbwarfare:c4_bomb",
+    "count": 2
+  }
+}

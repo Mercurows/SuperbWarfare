@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "cbc",
+    "bab",
+    "cbc"
+  ],
+  "key": {
+    "a": {
+      "item": "superbwarfare:empty_perk"
+    },
+    "b": {
+      "item":"minecraft:tnt"
+    },
+    "c": {
+      "item": "superbwarfare:high_energy_explosives"
+    }
+  },
+  "result": {
+    "item": "superbwarfare:he_bullet",
+    "count": 1
+  }
+}

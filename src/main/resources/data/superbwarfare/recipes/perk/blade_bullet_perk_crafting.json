@@ -1,0 +1,22 @@
+{
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "dreamaticvoyage"
+    }
+  ],
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "dreamaticvoyage:momo_knife"
+    },
+    {
+      "item": "superbwarfare:empty_perk"
+    }
+  ],
+  "result": {
+    "item": "superbwarfare:blade_bullet",
+    "count": 1
+  }
+}

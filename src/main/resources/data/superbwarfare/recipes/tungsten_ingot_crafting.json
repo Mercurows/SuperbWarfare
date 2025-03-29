@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category":"misc",
+  "ingredients": [
+    {
+      "item":"superbwarfare:tungsten_block"
+    }
+  ],
+  "result": {
+    "item": "superbwarfare:tungsten_ingot",
+    "count": 9
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aaa",
+    "aaa",
+    "abc"
+  ],
+  "key": {
+    "a": {
+      "tag": "forge:dusts/tungsten"
+    },
+    "b": {
+      "tag": "forge:dusts/iron"
+    },
+    "c": {
+      "tag": "forge:dusts/coal_coke"
+    }
+  },
+  "result": {
+    "item": "superbwarfare:raw_cemented_carbide_powder",
+    "count": 8
+  }
+}

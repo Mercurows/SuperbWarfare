@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": {
+    "item": "superbwarfare:aa_12_blueprint"
+  },
+  "base": {
+    "item": "superbwarfare:legendary_material_pack"
+  },
+  "addition": {
+    "item": "minecraft:netherite_ingot"
+  },
+  "result": {
+    "item": "superbwarfare:aa_12"
+  }
+}

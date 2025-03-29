@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category":"misc",
+  "ingredients": [
+    {
+      "item":"superbwarfare:silver_block"
+    }
+  ],
+  "result": {
+    "item": "superbwarfare:silver_ingot",
+    "count": 9
+  }
+}

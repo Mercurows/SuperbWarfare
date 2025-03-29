@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "dad",
+    "afa",
+    "dad"
+  ],
+  "key": {
+    "a": {
+      "item": "minecraft:netherite_scrap"
+    },
+    "d": {
+      "item": "minecraft:diamond"
+    },
+    "f": {
+      "item": "superbwarfare:ancient_cpu"
+    }
+  },
+  "result": {
+    "item": "superbwarfare:ancient_cpu",
+    "count": 2
+  }
+}

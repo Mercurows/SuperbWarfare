@@ -1,0 +1,31 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " a ",
+    " b ",
+    "dcd"
+  ],
+  "key": {
+    "a": {
+      "item": "minecraft:beacon"
+    },
+    "b": {
+      "item": "superbwarfare:motor"
+    },
+    "c": {
+      "item": "superbwarfare:small_battery_pack"
+    },
+    "d": {
+      "item": "minecraft:iron_ingot"
+    }
+  },
+  "result": {
+    "item": "superbwarfare:container",
+    "nbt": {
+      "BlockEntityTag": {
+        "EntityType": "superbwarfare:laser_tower"
+      }
+    }
+  }
+}

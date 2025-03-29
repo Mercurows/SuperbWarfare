@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [
+    "superbwarfare:projectile_boom",
+    "superbwarfare:custom_explosion",
+    "superbwarfare:laser",
+    "superbwarfare:laser_headshot",
+    "superbwarfare:laser_static"
+  ]
+}

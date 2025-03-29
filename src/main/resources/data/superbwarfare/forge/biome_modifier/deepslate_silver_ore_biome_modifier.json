@@ -1,0 +1,6 @@
+{
+  "type": "forge:add_features",
+  "biomes": "#is_overworld",
+  "features": "superbwarfare:deepslate_silver_ore",
+  "step": "underground_ores"
+}

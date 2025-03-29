@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "aaa",
+    "bcb",
+    "aaa"
+  ],
+  "key": {
+    "a": {
+      "tag": "superbwarfare:ingots/steel"
+    },
+    "b": {
+      "item": "superbwarfare:wheel"
+    },
+    "c": {
+      "tag": "superbwarfare:storage_blocks/steel"
+    }
+  },
+  "result": {
+    "item": "superbwarfare:track",
+    "count": 1
+  }
+}

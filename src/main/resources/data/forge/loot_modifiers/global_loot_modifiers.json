@@ -1,0 +1,25 @@
+{
+  "entries": [
+    "superbwarfare:common_chest",
+    "superbwarfare:common_chest_2",
+    "superbwarfare:common_chest_3",
+    "superbwarfare:common_chest_4",
+    "superbwarfare:common_chest_5",
+    "superbwarfare:rare_chest",
+    "superbwarfare:rare_chest_2",
+    "superbwarfare:common_chest_6",
+    "superbwarfare:rare_chest_3",
+    "superbwarfare:rare_chest_4",
+    "superbwarfare:rare_chest_5",
+    "superbwarfare:rare_chest_6",
+    "superbwarfare:rare_chest_7",
+    "superbwarfare:rare_chest_8",
+    "superbwarfare:rare_chest_9",
+    "superbwarfare:epic_chest",
+    "superbwarfare:epic_chest_2",
+    "superbwarfare:epic_chest_3",
+    "superbwarfare:epic_chest_4",
+    "superbwarfare:ancient_cpu_chest"
+  ],
+  "replace": false
+}

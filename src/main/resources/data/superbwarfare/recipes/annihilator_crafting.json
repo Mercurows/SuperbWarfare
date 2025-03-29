@@ -1,0 +1,34 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aaa",
+    "bbb",
+    "dce"
+  ],
+  "key": {
+    "a": {
+      "item": "minecraft:beacon"
+    },
+    "b": {
+      "item": "superbwarfare:cannon_core"
+    },
+    "c": {
+      "item": "superbwarfare:annihilator_blueprint"
+    },
+    "d": {
+      "item": "minecraft:netherite_block"
+    },
+    "e": {
+      "item": "superbwarfare:large_battery_pack"
+    }
+  },
+  "result": {
+    "item": "superbwarfare:container",
+    "nbt": {
+      "BlockEntityTag": {
+        "EntityType": "superbwarfare:annihilator"
+      }
+    }
+  }
+}

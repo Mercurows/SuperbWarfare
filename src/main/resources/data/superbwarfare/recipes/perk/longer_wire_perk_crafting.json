@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "bbb",
+    "bab",
+    "bbb"
+  ],
+  "key": {
+    "a": {
+      "item": "superbwarfare:empty_perk"
+    },
+    "b": {
+      "item":"minecraft:string"
+    }
+  },
+  "result": {
+    "item": "superbwarfare:longer_wire",
+    "count": 1
+  }
+}

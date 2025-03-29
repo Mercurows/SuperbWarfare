@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "a",
+    "a"
+  ],
+  "key": {
+    "a": {
+      "tag": "forge:ingots/tungsten"
+    }
+  },
+  "result": {
+    "item": "superbwarfare:tungsten_rod",
+    "count": 4
+  }
+}

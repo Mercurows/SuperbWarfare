@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": {
+    "item": "superbwarfare:javelin_blueprint"
+  },
+  "base": {
+    "item": "superbwarfare:legendary_material_pack"
+  },
+  "addition": {
+    "item": "superbwarfare:ancient_cpu"
+  },
+  "result": {
+    "item": "superbwarfare:javelin"
+  }
+}

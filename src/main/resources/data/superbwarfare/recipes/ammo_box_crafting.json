@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aba",
+    "aaa"
+  ],
+  "key": {
+    "a": {
+      "item": "minecraft:iron_ingot"
+    },
+    "b": {
+      "tag": "forge:dyes/green"
+    }
+  },
+  "result": {
+    "item": "superbwarfare:ammo_box",
+    "count": 1
+  }
+}

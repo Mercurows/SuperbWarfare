@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "#",
+    "N"
+  ],
+  "key": {
+    "#": {
+      "item": "minecraft:chain"
+    },
+    "N": {
+      "item": "minecraft:name_tag"
+    }
+  },
+  "result": {
+    "item": "superbwarfare:dog_tag",
+    "count": 1
+  }
+}

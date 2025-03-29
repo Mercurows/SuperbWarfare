@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "superbwarfare:iron_barrel"
+    },
+    {
+      "item": "superbwarfare:iron_action"
+    },
+    {
+      "item": "superbwarfare:iron_spring"
+    },
+    {
+      "item": "superbwarfare:iron_trigger"
+    }
+  ],
+  "result": {
+    "item": "superbwarfare:common_material_pack",
+    "count": 1
+  }
+}

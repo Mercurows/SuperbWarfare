@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "a a",
+    "bcb",
+    "ded"
+  ],
+  "key": {
+    "a": {
+      "item": "superbwarfare:propeller"
+    },
+    "b": {
+      "item": "superbwarfare:motor"
+    },
+    "c": {
+      "item": "minecraft:compass"
+    },
+    "d": {
+      "item": "minecraft:iron_nugget"
+    },
+    "e": {
+      "item": "superbwarfare:cell"
+    }
+  },
+  "result": {
+    "item": "superbwarfare:drone",
+    "count": 4
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "ab",
+    " c"
+  ],
+  "key": {
+    "a": {
+      "item": "minecraft:tripwire_hook"
+    },
+    "b": {
+      "tag": "superbwarfare:ingots/steel"
+    },
+    "c": {
+      "item": "superbwarfare:steel_ingot"
+    }
+  },
+  "result": {
+    "item": "superbwarfare:steel_trigger",
+    "count": 1
+  }
+}

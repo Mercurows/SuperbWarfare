@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "cbc",
+    "bab",
+    "cbc"
+  ],
+  "key": {
+    "a": {
+      "item": "superbwarfare:empty_perk"
+    },
+    "b": {
+      "tag":"forge:storage_blocks/silver"
+    },
+    "c": {
+      "tag":"forge:ingots/silver"
+    }
+  },
+  "result": {
+    "item": "superbwarfare:silver_bullet",
+    "count": 1
+  }
+}

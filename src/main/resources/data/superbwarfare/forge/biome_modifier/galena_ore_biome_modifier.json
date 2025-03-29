@@ -1,0 +1,6 @@
+{
+  "type": "forge:add_features",
+  "biomes": "#is_overworld",
+  "features": "superbwarfare:galena_ore",
+  "step": "underground_ores"
+}

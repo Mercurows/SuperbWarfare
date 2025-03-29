@@ -1,0 +1,43 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "abc",
+    "def",
+    "hgh"
+  ],
+  "key": {
+    "a": {
+      "item": "superbwarfare:large_propeller"
+    },
+    "b": {
+      "item": "superbwarfare:large_motor"
+    },
+    "c": {
+      "item": "superbwarfare:propeller"
+    },
+    "d": {
+      "item": "minecraft:compass"
+    },
+    "e": {
+      "tag": "superbwarfare:storage_blocks/steel"
+    },
+    "f": {
+      "item": "minecraft:chest"
+    },
+    "g": {
+      "item": "superbwarfare:medium_battery_pack"
+    },
+    "h": {
+      "item": "superbwarfare:light_armament_module"
+    }
+  },
+  "result": {
+    "item": "superbwarfare:container",
+    "nbt": {
+      "BlockEntityTag": {
+        "EntityType": "superbwarfare:ah_6"
+      }
+    }
+  }
+}

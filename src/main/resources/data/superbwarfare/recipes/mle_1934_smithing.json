@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": {
+    "item": "superbwarfare:mle_1934_blueprint"
+  },
+  "base": {
+    "item": "superbwarfare:cannon_core"
+  },
+  "addition": {
+    "tag": "superbwarfare:storage_blocks/steel"
+  },
+  "result": {
+    "item": "superbwarfare:container",
+    "nbt": {
+      "BlockEntityTag": {
+        "EntityType": "superbwarfare:mle_1934"
+      }
+    }
+  }
+}

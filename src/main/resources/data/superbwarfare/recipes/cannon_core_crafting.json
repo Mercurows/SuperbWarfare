@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aaa",
+    "bcd",
+    "aaa"
+  ],
+  "key": {
+    "a": {
+      "tag": "superbwarfare:storage_blocks/steel"
+    },
+    "b": {
+      "item": "minecraft:dispenser"
+    },
+    "c": {
+      "item": "superbwarfare:cemented_carbide_action"
+    },
+    "d": {
+      "item": "minecraft:piston"
+    }
+  },
+  "result": {
+    "item": "superbwarfare:cannon_core",
+    "count": 1
+  }
+}

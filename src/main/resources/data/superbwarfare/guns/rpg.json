@@ -3,6 +3,8 @@
   "RecoilX": 0.008,
   "RecoilY": 0.018,
   "Damage": 270,
+  "ExplosionDamage": 130,
+  "ExplosionRadius": 10,
   "Velocity": 4,
   "Magazine": 1,
   "Weight": 7,

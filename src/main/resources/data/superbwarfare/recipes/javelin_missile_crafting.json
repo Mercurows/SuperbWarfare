@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " b ",
+    "cdc",
+    " e "
+  ],
+  "key": {
+    "b": {
+      "item": "superbwarfare:seeker"
+    },
+    "c": {
+      "item": "minecraft:iron_ingot"
+    },
+    "d": {
+      "item": "superbwarfare:high_energy_explosives"
+    },
+    "e": {
+      "item": "superbwarfare:missile_engine"
+    }
+  },
+  "result": {
+    "item": "superbwarfare:javelin_missile",
+    "count": 1
+  }
+}

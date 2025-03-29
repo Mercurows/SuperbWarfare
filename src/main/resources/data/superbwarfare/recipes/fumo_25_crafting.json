@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "ada",
+    " c ",
+    "beb"
+  ],
+  "key": {
+    "a": {
+      "item": "minecraft:iron_bars"
+    },
+    "b": {
+      "item": "minecraft:iron_ingot"
+    },
+    "c": {
+      "item": "superbwarfare:motor"
+    },
+    "e": {
+      "item": "superbwarfare:cell"
+    },
+    "d": {
+      "item": "minecraft:observer"
+    }
+  },
+  "result": {
+    "item": "superbwarfare:fumo_25",
+    "count": 1
+  }
+}

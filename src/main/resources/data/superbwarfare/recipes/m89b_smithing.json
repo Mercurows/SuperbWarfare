@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": {
+    "item": "superbwarfare:m_98b_blueprint"
+  },
+  "base": {
+    "item": "superbwarfare:epic_material_pack"
+  },
+  "addition": {
+    "item": "minecraft:spyglass"
+  },
+  "result": {
+    "item": "superbwarfare:m_98b"
+  }
+}

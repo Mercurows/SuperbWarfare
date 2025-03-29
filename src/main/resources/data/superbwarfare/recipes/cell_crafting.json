@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "b  ",
+    "d  ",
+    "e  "
+  ],
+  "key": {
+    "b": {
+      "item": "minecraft:gold_nugget"
+    },
+    "d": {
+      "item": "minecraft:redstone"
+    },
+    "e": {
+      "item": "minecraft:iron_nugget"
+    }
+  },
+  "result": {
+    "item": "superbwarfare:cell",
+    "count": 1
+  }
+}

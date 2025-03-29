@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": {
+    "item": "superbwarfare:bocek_blueprint"
+  },
+  "base": {
+    "item": "superbwarfare:epic_material_pack"
+  },
+  "addition": {
+    "item": "minecraft:bow"
+  },
+  "result": {
+    "item": "superbwarfare:bocek"
+  }
+}

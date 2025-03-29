@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category":"misc",
+  "ingredients": [
+    {
+      "item":"superbwarfare:cemented_carbide_block"
+    }
+  ],
+  "result": {
+    "item": "superbwarfare:cemented_carbide_ingot",
+    "count": 9
+  }
+}

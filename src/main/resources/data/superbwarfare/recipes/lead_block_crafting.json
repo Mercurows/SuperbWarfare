@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "aaa",
+    "aba",
+    "aaa"
+  ],
+  "key": {
+    "a": {
+      "item": "superbwarfare:lead_ingot"
+    },
+    "b": {
+      "tag":"forge:ingots/lead"
+    }
+  },
+  "result": {
+    "item": "superbwarfare:lead_block",
+    "count": 1
+  }
+}

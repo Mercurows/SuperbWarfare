@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category":"misc",
+  "ingredients": [
+    {
+      "item":"superbwarfare:lead_block"
+    }
+  ],
+  "result": {
+    "item": "superbwarfare:lead_ingot",
+    "count": 9
+  }
+}
