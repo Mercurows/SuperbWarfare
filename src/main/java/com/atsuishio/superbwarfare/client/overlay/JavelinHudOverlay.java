@@ -64,7 +64,7 @@ public class JavelinHudOverlay {
                 RenderSystem.setShader(GameRenderer::getPositionTexShader);
                 RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
                 RenderSystem.setShaderColor(1, 1, 1, 1);
-                float deltaFrame = Minecraft.getInstance().getTimer().getGameTimeDeltaTicks();
+                float deltaFrame = Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true);
                 float moveX = (float) (-32 * ClientEventHandler.turnRot[1] - (player.isSprinting() ? 100 : 67) * ClientEventHandler.movePosX + 3 * ClientEventHandler.cameraRot[2]);
                 float moveY = (float) (-32 * ClientEventHandler.turnRot[0] + 100 * (float) ClientEventHandler.velocityY - (player.isSprinting() ? 100 : 67) * ClientEventHandler.movePosY - 12 * ClientEventHandler.firePos + 3 * ClientEventHandler.cameraRot[1]);
                 scopeScale = (float) Mth.lerp(0.5F * deltaFrame, scopeScale, 1.35F + (0.2f * ClientEventHandler.firePos));
@@ -101,11 +101,11 @@ public class JavelinHudOverlay {
 
                 double zoom = Minecraft.getInstance().options.fov().get() / ClientEventHandler.fov + 0.5 * fovAdjust2;
 
-                Vec3 playerVec = new Vec3(Mth.lerp(event.getPartialTick().getGameTimeDeltaTicks(), player.xo, player.getX()), Mth.lerp(event.getPartialTick().getGameTimeDeltaTicks(), player.yo + player.getEyeHeight(), player.getEyeY()), Mth.lerp(event.getPartialTick().getGameTimeDeltaTicks(), player.zo, player.getZ()));
+                Vec3 playerVec = new Vec3(Mth.lerp(event.getPartialTick().getGameTimeDeltaPartialTick(true), player.xo, player.getX()), Mth.lerp(event.getPartialTick().getGameTimeDeltaPartialTick(true), player.yo + player.getEyeHeight(), player.getEyeY()), Mth.lerp(event.getPartialTick().getGameTimeDeltaPartialTick(true), player.zo, player.getZ()));
 
                 if (tag.getInt("GuideType") == 0) {
                     for (var e : entities) {
-                        Vec3 pos = new Vec3(Mth.lerp(event.getPartialTick().getGameTimeDeltaTicks(), e.xo, e.getX()), Mth.lerp(event.getPartialTick().getGameTimeDeltaTicks(), e.yo + e.getEyeHeight(), e.getEyeY()), Mth.lerp(event.getPartialTick().getGameTimeDeltaTicks(), e.zo, e.getZ()));
+                        Vec3 pos = new Vec3(Mth.lerp(event.getPartialTick().getGameTimeDeltaPartialTick(true), e.xo, e.getX()), Mth.lerp(event.getPartialTick().getGameTimeDeltaPartialTick(true), e.yo + e.getEyeHeight(), e.getEyeY()), Mth.lerp(event.getPartialTick().getGameTimeDeltaPartialTick(true), e.zo, e.getZ()));
                         Vec3 lookAngle = player.getLookAngle().normalize().scale(pos.distanceTo(playerVec) * (1 - 1.0 / zoom));
 
                         var cPos = playerVec.add(lookAngle);

@@ -63,21 +63,21 @@ public class CannonHudOverlay {
             RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
             RenderSystem.setShaderColor(1, 1, 1, 1);
 
-            preciseBlit(event.getGuiGraphics(), Mod.loc("textures/screens/compass_white.png"), (float) w / 2 - 128, (float) 10, 128 + ((float) 64 / 45 * (Mth.lerp(event.getPartialTick().getGameTimeDeltaTicks(), cannon.yRotO, cannon.getYRot()))), 0, 256, 16, 512, 16);
+            preciseBlit(event.getGuiGraphics(), Mod.loc("textures/screens/compass_white.png"), (float) w / 2 - 128, (float) 10, 128 + ((float) 64 / 45 * (Mth.lerp(event.getPartialTick().getGameTimeDeltaPartialTick(true), cannon.yRotO, cannon.getYRot()))), 0, 256, 16, 512, 16);
             preciseBlit(event.getGuiGraphics(), Mod.loc("textures/screens/roll_ind_white.png"), w / 2F - 4, 27, 0, 0.0F, 8, 8, 8, 8);
 
-            String angle = FormatTool.DECIMAL_FORMAT_1ZZ.format(Mth.lerp(event.getPartialTick().getGameTimeDeltaTicks(), cannon.yRotO, cannon.getYRot()));
+            String angle = FormatTool.DECIMAL_FORMAT_1ZZ.format(Mth.lerp(event.getPartialTick().getGameTimeDeltaPartialTick(true), cannon.yRotO, cannon.getYRot()));
             int width = Minecraft.getInstance().font.width(angle);
             event.getGuiGraphics().drawString(Minecraft.getInstance().font, Component.literal(angle), w / 2 - width / 2, 40, -1, false);
 
             preciseBlit(event.getGuiGraphics(), Mod.loc("textures/screens/cannon/cannon_pitch.png"), w / 2F + 166, h / 2F - 64, 0, 0.0F, 8, 128, 8, 128);
 
-            String pitch = FormatTool.DECIMAL_FORMAT_1ZZ.format(-Mth.lerp(event.getPartialTick().getGameTimeDeltaTicks(), cannon.xRotO, cannon.getXRot()));
+            String pitch = FormatTool.DECIMAL_FORMAT_1ZZ.format(-Mth.lerp(event.getPartialTick().getGameTimeDeltaPartialTick(true), cannon.xRotO, cannon.getXRot()));
             int widthP = Minecraft.getInstance().font.width(pitch);
 
             poseStack.pushPose();
 
-            event.getGuiGraphics().pose().translate(0, Mth.lerp(event.getPartialTick().getGameTimeDeltaTicks(), cannon.xRotO, cannon.getXRot()) * 0.7, 0);
+            event.getGuiGraphics().pose().translate(0, Mth.lerp(event.getPartialTick().getGameTimeDeltaPartialTick(true), cannon.xRotO, cannon.getXRot()) * 0.7, 0);
             preciseBlit(event.getGuiGraphics(), Mod.loc("textures/screens/cannon/cannon_pitch_ind.png"), w / 2F + 158, h / 2F - 4, 0, 0.0F, 8, 8, 8, 8);
             event.getGuiGraphics().drawString(Minecraft.getInstance().font, Component.literal(pitch), w / 2 + 157 - widthP, h / 2 - 4, -1, false);
             poseStack.popPose();
@@ -127,7 +127,7 @@ public class CannonHudOverlay {
                     } else {
                         preciseBlit(event.getGuiGraphics(), Mod.loc("textures/screens/cannon/cannon_crosshair.png"), k, l, 0, 0.0F, i, j, i, j);
                     }
-                    float diffY = -Mth.wrapDegrees(Mth.lerp(event.getPartialTick().getGameTimeDeltaTicks(), player.yHeadRotO, player.getYHeadRot()) - Mth.lerp(event.getPartialTick().getGameTimeDeltaTicks(), cannon.yRotO, cannon.getYRot()));
+                    float diffY = -Mth.wrapDegrees(Mth.lerp(event.getPartialTick().getGameTimeDeltaPartialTick(true), player.yHeadRotO, player.getYHeadRot()) - Mth.lerp(event.getPartialTick().getGameTimeDeltaPartialTick(true), cannon.yRotO, cannon.getYRot()));
 
                     preciseBlit(event.getGuiGraphics(), Mod.loc("textures/screens/cannon/indicator.png"), w / 2F - 4.3f + 0.45f * diffY, h / 2F - 10, 0, 0.0F, 8, 8, 8, 8);
                 } else {
@@ -135,8 +135,8 @@ public class CannonHudOverlay {
                 }
                 renderKillIndicator(guiGraphics, w, h);
             } else if (Minecraft.getInstance().options.getCameraType() == CameraType.THIRD_PERSON_BACK && !ClientEventHandler.zoomVehicle) {
-                Vec3 p = RenderHelper.worldToScreen(new Vec3(Mth.lerp(event.getPartialTick().getGameTimeDeltaTicks(), player.xo, player.getX()), Mth.lerp(event.getPartialTick().getGameTimeDeltaTicks(), player.yo, player.getY()),
-                        Mth.lerp(event.getPartialTick().getGameTimeDeltaTicks(), player.zo, player.getZ())).add(cannon.getViewVector(event.getPartialTick().getGameTimeDeltaTicks()).scale(128)), cameraPos);
+                Vec3 p = RenderHelper.worldToScreen(new Vec3(Mth.lerp(event.getPartialTick().getGameTimeDeltaPartialTick(true), player.xo, player.getX()), Mth.lerp(event.getPartialTick().getGameTimeDeltaPartialTick(true), player.yo, player.getY()),
+                        Mth.lerp(event.getPartialTick().getGameTimeDeltaPartialTick(true), player.zo, player.getZ())).add(cannon.getViewVector(event.getPartialTick().getGameTimeDeltaPartialTick(true)).scale(128)), cameraPos);
 
                 // 第三人称准星
                 if (p != null) {

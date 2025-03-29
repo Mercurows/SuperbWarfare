@@ -39,9 +39,9 @@ public class RedTriangleOverlay {
 
         Entity idf = SeekTool.seekLivingEntity(player, player.level(), 128, 6);
         if (idf == null) return;
-        Vec3 playerVec = new Vec3(Mth.lerp(event.getPartialTick().getGameTimeDeltaTicks(), player.xo, player.getX()), Mth.lerp(event.getPartialTick().getGameTimeDeltaTicks(), player.yo + player.getEyeHeight(), player.getEyeY()), Mth.lerp(event.getPartialTick().getGameTimeDeltaTicks(), player.zo, player.getZ()));
+        Vec3 playerVec = new Vec3(Mth.lerp(event.getPartialTick().getGameTimeDeltaPartialTick(true), player.xo, player.getX()), Mth.lerp(event.getPartialTick().getGameTimeDeltaPartialTick(true), player.yo + player.getEyeHeight(), player.getEyeY()), Mth.lerp(event.getPartialTick().getGameTimeDeltaPartialTick(true), player.zo, player.getZ()));
         double distance = idf.position().distanceTo(playerVec);
-        Vec3 pos = new Vec3(Mth.lerp(event.getPartialTick().getGameTimeDeltaTicks(), idf.xo, idf.getX()), Mth.lerp(event.getPartialTick().getGameTimeDeltaTicks(), idf.yo + idf.getEyeHeight() + 0.5 + 0.07 * distance, idf.getEyeY() + 0.5 + 0.07 * distance), Mth.lerp(event.getPartialTick().getGameTimeDeltaTicks(), idf.zo, idf.getZ()));
+        Vec3 pos = new Vec3(Mth.lerp(event.getPartialTick().getGameTimeDeltaPartialTick(true), idf.xo, idf.getX()), Mth.lerp(event.getPartialTick().getGameTimeDeltaPartialTick(true), idf.yo + idf.getEyeHeight() + 0.5 + 0.07 * distance, idf.getEyeY() + 0.5 + 0.07 * distance), Mth.lerp(event.getPartialTick().getGameTimeDeltaPartialTick(true), idf.zo, idf.getZ()));
         Vec3 point = RenderHelper.worldToScreen(pos, playerVec);
         if (point == null) return;
 

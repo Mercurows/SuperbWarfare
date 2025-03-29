@@ -74,8 +74,8 @@ public class VehicleMgHudOverlay {
                 RenderHelper.preciseBlit(guiGraphics, Mod.loc("textures/screens/cannon/cannon_crosshair_notzoom.png"), k, l, 0, 0.0F, i, j, i, j);
                 VehicleHudOverlay.renderKillIndicator(guiGraphics, w, h);
             } else if (Minecraft.getInstance().options.getCameraType() == CameraType.THIRD_PERSON_BACK && !ClientEventHandler.zoomVehicle) {
-                Vec3 p = RenderHelper.worldToScreen(new Vec3(Mth.lerp(event.getPartialTick().getGameTimeDeltaTicks(), player.xo, player.getX()), Mth.lerp(event.getPartialTick().getGameTimeDeltaTicks(), player.yo + player.getEyeHeight(), player.getEyeY()),
-                        Mth.lerp(event.getPartialTick().getGameTimeDeltaTicks(), player.zo, player.getZ())).add(iLand.getGunVec(event.getPartialTick().getGameTimeDeltaTicks()).scale(192)), cameraPos);
+                Vec3 p = RenderHelper.worldToScreen(new Vec3(Mth.lerp(event.getPartialTick().getGameTimeDeltaPartialTick(true), player.xo, player.getX()), Mth.lerp(event.getPartialTick().getGameTimeDeltaPartialTick(true), player.yo + player.getEyeHeight(), player.getEyeY()),
+                        Mth.lerp(event.getPartialTick().getGameTimeDeltaPartialTick(true), player.zo, player.getZ())).add(iLand.getGunVec(event.getPartialTick().getGameTimeDeltaPartialTick(true)).scale(192)), cameraPos);
 
                 // 第三人称准星
                 if (p != null) {

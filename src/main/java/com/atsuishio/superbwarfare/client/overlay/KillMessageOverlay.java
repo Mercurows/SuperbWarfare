@@ -120,13 +120,13 @@ public class KillMessageOverlay {
 
         // 入场效果
         if (record.tick < 3) {
-            gui.pose().translate((3 - record.tick - event.getPartialTick().getGameTimeDeltaTicks()) * 33, 0, 0);
+            gui.pose().translate((3 - record.tick - event.getPartialTick().getGameTimeDeltaPartialTick(true)) * 33, 0, 0);
         }
 
         // 4s后开始消失
         if (record.tick >= 80) {
             int animationTickCount = record.fastRemove ? 2 : 20;
-            float rate = (float) Math.pow((record.tick + event.getPartialTick().getGameTimeDeltaTicks() - 80) / animationTickCount, 5);
+            float rate = (float) Math.pow((record.tick + event.getPartialTick().getGameTimeDeltaPartialTick(true) - 80) / animationTickCount, 5);
             gui.pose().translate(rate * 100, 0, 0);
             gui.setColor(1, 1, 1, 1 - rate);
             baseTop += 10 * (1 - rate);

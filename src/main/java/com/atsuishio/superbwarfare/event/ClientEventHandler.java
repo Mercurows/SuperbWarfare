@@ -397,7 +397,7 @@ public class ClientEventHandler {
         int mode = GunsTool.getGunIntTag(tag, "FireMode");
 
         // 精准度
-        float times = (float) Math.min(Minecraft.getInstance().getTimer().getGameTimeDeltaTicks(), 0.8);
+        float times = (float) Math.min(Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true), 0.8);
 
         double basicDev = GunsTool.getGunDoubleTag(tag, "Spread");
         double walk = isMoving() ? 0.3 * basicDev : 0;
@@ -808,7 +808,7 @@ public class ClientEventHandler {
             return;
 
         float pose;
-        float times = 2 * (float) Math.min(Minecraft.getInstance().getTimer().getGameTimeDeltaTicks(), 0.8);
+        float times = 2 * (float) Math.min(Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true), 0.8);
 
         if (player.isCrouching() && player.getBbHeight() >= 1 && !isProne(player)) {
             pose = 0.85f;
@@ -863,7 +863,7 @@ public class ClientEventHandler {
             }
         }
 
-        float times = Minecraft.getInstance().getTimer().getGameTimeDeltaTicks();
+        float times = Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true);
         LocalPlayer player = Minecraft.getInstance().player;
 
         float yaw = event.getYaw();
@@ -961,7 +961,7 @@ public class ClientEventHandler {
     private static void handleWeaponSway(LivingEntity entity, final CompoundTag tag) {
         ItemStack stack = entity.getMainHandItem();
         if (stack.getItem() instanceof GunItem gunItem && entity instanceof Player player) {
-            float times = 2 * (float) Math.min(Minecraft.getInstance().getTimer().getGameTimeDeltaTicks(), 0.8);
+            float times = 2 * (float) Math.min(Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true), 0.8);
             double pose;
 
             if (player.isShiftKeyDown() && player.getBbHeight() >= 1 && isProne(player)) {
@@ -981,7 +981,7 @@ public class ClientEventHandler {
 
     private static void handleWeaponMove(LivingEntity entity) {
         if (entity.getMainHandItem().is(ModTags.Items.GUN)) {
-            float times = 3.7f * (float) Math.min(Minecraft.getInstance().getTimer().getGameTimeDeltaTicks(), 0.8);
+            float times = 3.7f * (float) Math.min(Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true), 0.8);
             double moveSpeed = (float) Mth.clamp(entity.getDeltaMovement().horizontalDistanceSqr(), 0, 0.02);
             double onGround;
 
@@ -1045,7 +1045,7 @@ public class ClientEventHandler {
     private static void handleWeaponZoom(LivingEntity entity) {
         if (!(entity instanceof Player player)) return;
         final var tag = NBTTool.getTag(player.getMainHandItem());
-        float times = 5 * Minecraft.getInstance().getTimer().getGameTimeDeltaTicks();
+        float times = 5 * Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true);
 
         double weight = GunsTool.getGunDoubleTag(tag, "Weight") + GunsTool.getGunDoubleTag(tag, "CustomWeight");
         double speed = 1.5 - (0.07 * weight);
@@ -1071,7 +1071,7 @@ public class ClientEventHandler {
     }
 
     private static void handleWeaponFire(ViewportEvent.ComputeCameraAngles event, LivingEntity entity, final CompoundTag tag) {
-        float times = 2f * Math.min(Minecraft.getInstance().getTimer().getGameTimeDeltaTicks(), 0.48f);
+        float times = 2f * Math.min(Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true), 0.48f);
         float yaw = event.getYaw();
         float pitch = event.getPitch();
         float roll = event.getRoll();
@@ -1145,7 +1145,7 @@ public class ClientEventHandler {
         Player player = Minecraft.getInstance().player;
         if (player == null) return;
 
-        float times = (float) Math.min(Minecraft.getInstance().getTimer().getGameTimeDeltaTicks(), 0.8);
+        float times = (float) Math.min(Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true), 0.8);
 
         if (shellIndex >= 5) {
             shellIndex = 0;
@@ -1168,7 +1168,7 @@ public class ClientEventHandler {
         ItemStack stack = player.getMainHandItem();
         if (!(stack.getItem() instanceof GunItem gunItem)) return;
 
-        float times = (float) Math.min(Minecraft.getInstance().getTimer().getGameTimeDeltaTicks(), 1.6);
+        float times = (float) Math.min(Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true), 1.6);
         int barrelType = GunsTool.getAttachmentType(tag, GunsTool.AttachmentType.BARREL);
         int gripType = GunsTool.getAttachmentType(tag, GunsTool.AttachmentType.GRIP);
 
@@ -1255,7 +1255,7 @@ public class ClientEventHandler {
     }
 
     private static void handlePlayerBreath(LivingEntity entity) {
-        float times = (float) Math.min(Minecraft.getInstance().getTimer().getGameTimeDeltaTicks(), 0.8);
+        float times = (float) Math.min(Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true), 0.8);
         var cap = entity.getCapability(ModCapabilities.PLAYER_VARIABLE);
         boolean breath = cap != null && cap.breath;
 
@@ -1283,15 +1283,15 @@ public class ClientEventHandler {
         double yaw = event.getYaw();
         double pitch = event.getPitch();
         double roll = event.getRoll();
-        float times = (float) Math.min(Minecraft.getInstance().getTimer().getGameTimeDeltaTicks(), 0.8);
+        float times = (float) Math.min(Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true), 0.8);
         LocalPlayer player = Minecraft.getInstance().player;
 
         if (GLFW.glfwGetKey(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_RIGHT) == GLFW.GLFW_PRESS) {
-            cameraLocation = Mth.clamp(cameraLocation - 0.05 * Minecraft.getInstance().getTimer().getGameTimeDeltaTicks(), -0.6, 0.6);
+            cameraLocation = Mth.clamp(cameraLocation - 0.05 * Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true), -0.6, 0.6);
         }
 
         if (GLFW.glfwGetKey(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT) == GLFW.GLFW_PRESS) {
-            cameraLocation = Mth.clamp(cameraLocation + 0.05 * Minecraft.getInstance().getTimer().getGameTimeDeltaTicks(), -0.6, 0.6);
+            cameraLocation = Mth.clamp(cameraLocation + 0.05 * Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true), -0.6, 0.6);
         }
 
         if (player == null) return;
@@ -1326,7 +1326,7 @@ public class ClientEventHandler {
     }
 
     private static void handleBowPullAnimation(LivingEntity entity) {
-        float times = 4 * (float) Math.min(Minecraft.getInstance().getTimer().getGameTimeDeltaTicks(), 0.8);
+        float times = 4 * (float) Math.min(Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true), 0.8);
 
         var cap = entity.getCapability(ModCapabilities.PLAYER_VARIABLE);
         if (cap != null && cap.bowPull) {
@@ -1349,7 +1349,7 @@ public class ClientEventHandler {
     @SubscribeEvent
     public static void onFovUpdate(ViewportEvent.ComputeFov event) {
         Minecraft mc = Minecraft.getInstance();
-        float times = (float) Math.min(Minecraft.getInstance().getTimer().getGameTimeDeltaTicks(), 1.6);
+        float times = (float) Math.min(Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true), 1.6);
         Player player = mc.player;
         if (player == null) {
             return;
@@ -1413,7 +1413,7 @@ public class ClientEventHandler {
         }
 
         if (stack.is(ModItems.MONITOR.get()) && tag.getBoolean("Using") && tag.getBoolean("Linked")) {
-            droneFovLerp = Mth.lerp(0.1 * Minecraft.getInstance().getTimer().getGameTimeDeltaTicks(), droneFovLerp, droneFov);
+            droneFovLerp = Mth.lerp(0.1 * Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true), droneFovLerp, droneFov);
             event.setFOV(event.getFOV() / droneFovLerp);
             fov = event.getFOV();
         }
@@ -1501,7 +1501,7 @@ public class ClientEventHandler {
     }
 
     private static void handleWeaponDraw(LivingEntity entity, final CompoundTag tag) {
-        float times = Minecraft.getInstance().getTimer().getGameTimeDeltaTicks();
+        float times = Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true);
 
         double weight = GunsTool.getGunDoubleTag(tag, "Weight") + GunsTool.getGunDoubleTag(tag, "CustomWeight");
         double speed = 3.2 - (0.13 * weight);

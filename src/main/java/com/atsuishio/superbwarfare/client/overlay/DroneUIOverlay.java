@@ -146,8 +146,8 @@ public class DroneUIOverlay {
                 double zoom = 0.975 * ClientEventHandler.droneFovLerp + 0.06 * fovAdjust2;
 
                 for (var e : entities) {
-                    Vec3 droneVec = new Vec3(Mth.lerp(event.getPartialTick().getGameTimeDeltaTicks(), entity.xo, entity.getX()), Mth.lerp(event.getPartialTick().getGameTimeDeltaTicks(), entity.yo + entity.getEyeHeight(), entity.getEyeY()), Mth.lerp(event.getPartialTick().getGameTimeDeltaTicks(), entity.zo, entity.getZ()));
-                    Vec3 pos = new Vec3(Mth.lerp(event.getPartialTick().getGameTimeDeltaTicks(), e.xo, e.getX()), Mth.lerp(event.getPartialTick().getGameTimeDeltaTicks(), e.yo + e.getEyeHeight(), e.getEyeY()), Mth.lerp(event.getPartialTick().getGameTimeDeltaTicks(), e.zo, e.getZ()));
+                    Vec3 droneVec = new Vec3(Mth.lerp(event.getPartialTick().getGameTimeDeltaPartialTick(true), entity.xo, entity.getX()), Mth.lerp(event.getPartialTick().getGameTimeDeltaPartialTick(true), entity.yo + entity.getEyeHeight(), entity.getEyeY()), Mth.lerp(event.getPartialTick().getGameTimeDeltaPartialTick(true), entity.zo, entity.getZ()));
+                    Vec3 pos = new Vec3(Mth.lerp(event.getPartialTick().getGameTimeDeltaPartialTick(true), e.xo, e.getX()), Mth.lerp(event.getPartialTick().getGameTimeDeltaPartialTick(true), e.yo + e.getEyeHeight(), e.getEyeY()), Mth.lerp(event.getPartialTick().getGameTimeDeltaPartialTick(true), e.zo, e.getZ()));
 
                     Vec3 lookAngle = entity.getLookAngle().normalize().scale(pos.distanceTo(droneVec) * (1 - 1.0 / zoom));
 

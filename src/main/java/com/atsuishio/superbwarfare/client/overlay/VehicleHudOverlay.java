@@ -165,7 +165,7 @@ public class VehicleHudOverlay {
             RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
             RenderSystem.setShaderColor(1, 1, 1, 1);
 
-            scopeScale = Mth.lerp(event.getPartialTick().getGameTimeDeltaTicks(), scopeScale, 1F);
+            scopeScale = Mth.lerp(event.getPartialTick().getGameTimeDeltaPartialTick(true), scopeScale, 1F);
             float f = (float) Math.min(w, h);
             float f1 = Math.min((float) w / f, (float) h / f) * scopeScale;
             float i = Mth.floor(f * f1);
@@ -204,7 +204,7 @@ public class VehicleHudOverlay {
 
                 // 炮塔方向
                 poseStack.pushPose();
-                poseStack.rotateAround(Axis.ZP.rotationDegrees(Mth.lerp(event.getPartialTick().getGameTimeDeltaTicks(), iLand.turretYRotO(), iLand.turretYRot())), w / 2f + 112, h - 56, 0);
+                poseStack.rotateAround(Axis.ZP.rotationDegrees(Mth.lerp(event.getPartialTick().getGameTimeDeltaPartialTick(true), iLand.turretYRotO(), iLand.turretYRot())), w / 2f + 112, h - 56, 0);
                 preciseBlit(guiGraphics, Mod.loc("textures/screens/land/body.png"), w / 2f + 96, h - 72, 0, 0.0F, 32, 32, 32, 32);
                 poseStack.popPose();
 
@@ -294,7 +294,7 @@ public class VehicleHudOverlay {
 
                 renderKillIndicator(guiGraphics, w, h);
             } else if (Minecraft.getInstance().options.getCameraType() == CameraType.THIRD_PERSON_BACK && !ClientEventHandler.zoomVehicle) {
-                Vec3 p = RenderHelper.worldToScreen(new Vec3(Mth.lerp(event.getPartialTick().getGameTimeDeltaTicks(), player.xo, player.getX()), Mth.lerp(event.getPartialTick().getGameTimeDeltaTicks(), player.yo + player.getEyeHeight(), player.getEyeY()), Mth.lerp(event.getPartialTick().getGameTimeDeltaTicks(), player.zo, player.getZ())).add(iLand.getBarrelVec(event.getPartialTick().getGameTimeDeltaTicks()).scale(192)), cameraPos);
+                Vec3 p = RenderHelper.worldToScreen(new Vec3(Mth.lerp(event.getPartialTick().getGameTimeDeltaPartialTick(true), player.xo, player.getX()), Mth.lerp(event.getPartialTick().getGameTimeDeltaPartialTick(true), player.yo + player.getEyeHeight(), player.getEyeY()), Mth.lerp(event.getPartialTick().getGameTimeDeltaPartialTick(true), player.zo, player.getZ())).add(iLand.getBarrelVec(event.getPartialTick().getGameTimeDeltaPartialTick(true)).scale(192)), cameraPos);
                 // 第三人称准星
                 if (p != null) {
                     poseStack.pushPose();

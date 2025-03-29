@@ -65,7 +65,7 @@ public class CrossHairOverlay {
 
         ItemStack stack = player.getMainHandItem();
         double spread = ClientEventHandler.gunSpread + 1 * ClientEventHandler.firePos;
-        float deltaFrame = event.getPartialTick().getGameTimeDeltaTicks();
+        float deltaFrame = event.getPartialTick().getGameTimeDeltaPartialTick(true);
         float moveX = 0;
         float moveY = 0;
 
