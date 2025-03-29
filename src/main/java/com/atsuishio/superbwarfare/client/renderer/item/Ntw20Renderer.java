@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.client.renderer.item;
 
 import com.atsuishio.superbwarfare.client.AnimationHelper;
+import com.atsuishio.superbwarfare.client.ItemModelHelper;
 import com.atsuishio.superbwarfare.client.layer.gun.Ntw20Layer;
 import com.atsuishio.superbwarfare.client.model.item.Ntw20Model;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
@@ -129,8 +130,7 @@ public class Ntw20Renderer extends GeoItemRenderer<Ntw20Item> {
             }
         }
 
-        // TODO handle gun attachments
-//            ItemModelHelper.handleGunAttachments(bone, itemStack, name);
+        ItemModelHelper.handleGunAttachments(bone, itemStack, name);
 
         if (this.transformType.firstPerson() && renderingArms) {
             AbstractClientPlayer localPlayer = mc.player;

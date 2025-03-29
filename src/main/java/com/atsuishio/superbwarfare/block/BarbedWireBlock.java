@@ -1,7 +1,11 @@
 package com.atsuishio.superbwarfare.block;
 
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
@@ -16,6 +20,7 @@ import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -84,10 +89,9 @@ public class BarbedWireBlock extends Block {
     public void entityInside(BlockState blockstate, Level world, BlockPos pos, Entity entity) {
         super.entityInside(blockstate, world, pos, entity);
 
-        // TODO vehicle process
-//        if (!(entity instanceof VehicleEntity)) {
-//            entity.makeStuckInBlock(Blocks.AIR.defaultBlockState(), new Vec3(0.15, 0.04, 0.15));
-//            entity.hurt(new DamageSource(world.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(DamageTypes.CACTUS)), 2);
-//        }
+        if (!(entity instanceof VehicleEntity)) {
+            entity.makeStuckInBlock(Blocks.AIR.defaultBlockState(), new Vec3(0.15, 0.04, 0.15));
+            entity.hurt(new DamageSource(world.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(DamageTypes.CACTUS)), 2);
+        }
     }
 }

@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.client.renderer.item;
 
 import com.atsuishio.superbwarfare.client.AnimationHelper;
+import com.atsuishio.superbwarfare.client.ItemModelHelper;
 import com.atsuishio.superbwarfare.client.layer.gun.Mk14Layer;
 import com.atsuishio.superbwarfare.client.model.item.Mk14ItemModel;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
@@ -129,8 +130,7 @@ public class Mk14ItemRenderer extends GeoItemRenderer<Mk14Item> {
             }
         }
 
-        // TODO handle gun attachments
-//            ItemModelHelper.handleGunAttachments(bone, itemStack, name);
+        ItemModelHelper.handleGunAttachments(bone, itemStack, name);
 
         if (this.transformType.firstPerson() && renderingArms) {
             AbstractClientPlayer localPlayer = mc.player;

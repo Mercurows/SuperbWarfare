@@ -29,7 +29,7 @@ import static com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntit
 @EventBusSubscriber(bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
 public class ClientSoundHandler {
     @SubscribeEvent
-    public static void handleClientTick(ClientTickEvent event) {
+    public static void handleClientTick(ClientTickEvent.Pre event) {
         LocalPlayer player = Minecraft.getInstance().player;
         if (player == null) return;
 

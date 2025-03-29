@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.client.renderer.item;
 
 import com.atsuishio.superbwarfare.client.AnimationHelper;
+import com.atsuishio.superbwarfare.client.ItemModelHelper;
 import com.atsuishio.superbwarfare.client.layer.gun.TracheliumLayer;
 import com.atsuishio.superbwarfare.client.layer.gun.TracheliumLightLayer;
 import com.atsuishio.superbwarfare.client.model.item.TracheliumItemModel;
@@ -128,8 +129,7 @@ public class TracheliumItemRenderer extends GeoItemRenderer<Trachelium> {
             bone.setHidden(!NBTTool.getTag(itemStack).getBoolean("HoloHidden") && ClientEventHandler.zoom);
         }
 
-        // TODO handle gun attachments
-//            ItemModelHelper.handleGunAttachments(bone, itemStack, name);
+        ItemModelHelper.handleGunAttachments(bone, itemStack, name);
 
         if (name.equals("flare")) {
             if (ClientEventHandler.firePosTimer == 0 || ClientEventHandler.firePosTimer > 0.5 || GunsTool.getAttachmentType(itemStack, GunsTool.AttachmentType.BARREL) == 2) {

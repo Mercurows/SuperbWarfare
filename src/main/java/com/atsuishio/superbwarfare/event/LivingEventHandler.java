@@ -5,7 +5,6 @@ import com.atsuishio.superbwarfare.capability.player.PlayerVariable;
 import com.atsuishio.superbwarfare.config.common.GameplayConfig;
 import com.atsuishio.superbwarfare.config.server.MiscConfig;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
-import com.atsuishio.superbwarfare.entity.ICustomKnockback;
 import com.atsuishio.superbwarfare.entity.TargetEntity;
 import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.LaserTowerEntity;
@@ -834,10 +833,10 @@ public class LivingEventHandler {
 
     @SubscribeEvent
     public static void onKnockback(LivingKnockBackEvent event) {
-        ICustomKnockback knockback = ICustomKnockback.getInstance(event.getEntity());
-        if (knockback.superbWarfare$getKnockbackStrength() >= 0) {
-            event.setStrength((float) knockback.superbWarfare$getKnockbackStrength());
-        }
+//        ICustomKnockback knockback = ICustomKnockback.getInstance(event.getEntity());
+//        if (knockback.superbWarfare$getKnockbackStrength() >= 0) {
+//            event.setStrength((float) knockback.superbWarfare$getKnockbackStrength());
+//        }
     }
 
     @SubscribeEvent

@@ -4,10 +4,7 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.renderer.item.Aa12ItemRenderer;
 import com.atsuishio.superbwarfare.client.tooltip.component.ShotgunImageComponent;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
-import com.atsuishio.superbwarfare.init.ModItems;
-import com.atsuishio.superbwarfare.init.ModPerks;
-import com.atsuishio.superbwarfare.init.ModSounds;
-import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
@@ -38,10 +35,7 @@ public class Aa12Item extends GunItem implements GeoItem {
     public static ItemDisplayContext transformType;
 
     public Aa12Item() {
-        super(new Properties().stacksTo(1)
-                // TODO rarity
-//                .rarity(ModRarity.getLegendary())
-        );
+        super(new Properties().stacksTo(1).rarity(ModRarity.getLegendary()));
     }
 
     @Override

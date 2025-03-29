@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.client.screens;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.block.entity.FuMO25BlockEntity;
 import com.atsuishio.superbwarfare.client.RenderHelper;
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.menu.FuMO25Menu;
 import com.atsuishio.superbwarfare.tools.FormatTool;
 import com.mojang.blaze3d.platform.GlStateManager;
@@ -163,12 +164,10 @@ public class FuMO25Screen extends AbstractContainerScreen<FuMO25Menu> {
             if (currentTarget instanceof LivingEntity living) {
                 sb.append(" (HP: ").append(FormatTool.format1D(living.getHealth()))
                         .append("/").append(FormatTool.format1D(living.getMaxHealth())).append(")");
+            } else if (currentTarget instanceof VehicleEntity vehicle) {
+                sb.append(" (HP: ").append(FormatTool.format1D(vehicle.getHealth()))
+                        .append("/").append(FormatTool.format1D(vehicle.getMaxHealth())).append(")");
             }
-            // TODO vehicle
-//            else if (currentTarget instanceof VehicleEntity vehicle) {
-//                sb.append(" (HP: ").append(FormatTool.format1D(vehicle.getHealth()))
-//                        .append("/").append(FormatTool.format1D(vehicle.getMaxHealth())).append(")");
-//            }
 
             guiGraphics.drawString(this.font, Component.translatable("des.superbwarfare.fumo_25.current_target", sb),
                     i + 173, j + 24, 0xffffff);

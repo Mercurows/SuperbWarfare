@@ -8,6 +8,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
@@ -19,8 +21,9 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
+import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
+import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 @EventBusSubscriber(bus = EventBusSubscriber.Bus.GAME)
@@ -109,19 +112,18 @@ public class ShockMobEffect extends MobEffect {
         }
     }
 
-    // TODO tick event?
-//    @SubscribeEvent
-//    public static void onLivingTick(LivingEvent.LivingTickEvent event) {
-//        LivingEntity living = event.getEntity();
-//
-//        if (living.hasEffect(ModMobEffects.SHOCK)) {
-//            living.setXRot((float) Mth.nextDouble(RandomSource.create(), -23, -36));
-//            living.xRotO = living.getXRot();
-//        }
-//    }
+    @SubscribeEvent
+    public static void onLivingTick(EntityTickEvent.Pre event) {
+        if (!(event.getEntity() instanceof LivingEntity living)) return;
+
+        if (living.hasEffect(ModMobEffects.SHOCK)) {
+            living.setXRot((float) Mth.nextDouble(RandomSource.create(), -23, -36));
+            living.xRotO = living.getXRot();
+        }
+    }
 
     @SubscribeEvent
-    public static void onEntityAttacked(LivingDamageEvent.Pre event) {
+    public static void onEntityAttacked(LivingIncomingDamageEvent event) {
         if (event == null) return;
 
         DamageSource source = event.getSource();
@@ -129,8 +131,7 @@ public class ShockMobEffect extends MobEffect {
         if (entity == null) return;
 
         if (entity instanceof LivingEntity living && living.hasEffect(ModMobEffects.SHOCK)) {
-            // TODO how to cancel?
-//            event.setCanceled(true);
+            event.setCanceled(true);
         }
     }
 }

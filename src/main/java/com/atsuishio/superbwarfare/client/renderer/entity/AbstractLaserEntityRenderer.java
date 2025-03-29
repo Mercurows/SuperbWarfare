@@ -157,7 +157,9 @@ public abstract class AbstractLaserEntityRenderer<T extends AbstractLaserEntity>
 
     protected void drawVertex(Matrix4f matrix, Matrix3f normals, VertexConsumer vertexBuilder, float offsetX, float offsetY, float offsetZ, float textureX, float textureY, int packedLightIn) {
         // TODO drawVertex
-//        vertexBuilder.addVertex(matrix, offsetX, offsetY, offsetZ).setColor(1F, 1F, 1F, 1F).setUv(textureX, textureY).setOverlay(OverlayTexture.NO_OVERLAY).setLight(packedLightIn).setNormal(normals, 0.0F, 1.0F, 0.0F).endVertex();
+//        vertexBuilder.addVertex(matrix, offsetX, offsetY, offsetZ).setColor(1F, 1F, 1F, 1F).setUv(textureX, textureY).setOverlay(OverlayTexture.NO_OVERLAY).setLight(packedLightIn)
+//                .setNormal(normals, 0.0F, 1.0F, 0.0F)
+//                .endVertex();
     }
 
 }

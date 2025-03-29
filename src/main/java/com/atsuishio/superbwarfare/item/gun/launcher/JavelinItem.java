@@ -4,8 +4,11 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.capability.ModCapabilities;
 import com.atsuishio.superbwarfare.client.renderer.item.JavelinItemRenderer;
 import com.atsuishio.superbwarfare.client.tooltip.component.LauncherImageComponent;
+import com.atsuishio.superbwarfare.entity.projectile.FlareDecoyEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModItems;
+import com.atsuishio.superbwarfare.init.ModRarity;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
@@ -21,10 +24,12 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.animal.Pig;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -52,10 +57,7 @@ public class JavelinItem extends GunItem implements GeoItem, SpecialFireWeapon {
     public static ItemDisplayContext transformType;
 
     public JavelinItem() {
-        super(new Properties().stacksTo(1)
-                // TODO rarity
-//                .rarity(ModRarity.getLegendary())
-        );
+        super(new Properties().stacksTo(1).rarity(ModRarity.getLegendary()));
     }
 
     @Override
@@ -137,13 +139,12 @@ public class JavelinItem extends GunItem implements GeoItem, SpecialFireWeapon {
 
                 List<Entity> decoy = SeekTool.seekLivingEntities(player, player.level(), 512, 8);
                 for (var e : decoy) {
-                    // todo flare decoy
-//                    if (e instanceof FlareDecoyEntity flareDecoy) {
-//                        tag.putString("TargetEntity", flareDecoy.getStringUUID());
-//                        tag.putDouble("TargetPosX", flareDecoy.getX());
-//                        tag.putDouble("TargetPosY", flareDecoy.getEyeY());
-//                        tag.putDouble("TargetPosZ", flareDecoy.getZ());
-//                    }
+                    if (e instanceof FlareDecoyEntity flareDecoy) {
+                        tag.putString("TargetEntity", flareDecoy.getStringUUID());
+                        tag.putDouble("TargetPosX", flareDecoy.getX());
+                        tag.putDouble("TargetPosY", flareDecoy.getEyeY());
+                        tag.putDouble("TargetPosZ", flareDecoy.getZ());
+                    }
                 }
 
                 Entity targetEntity = EntityFindUtil.findEntity(player.level(), tag.getString("TargetEntity"));
@@ -153,10 +154,9 @@ public class JavelinItem extends GunItem implements GeoItem, SpecialFireWeapon {
                 if (tag.getInt("GuideType") == 0) {
                     if (seekingEntity != null && seekingEntity == targetEntity) {
                         tag.putInt("SeekTime", tag.getInt("SeekTime") + 1);
-                        // TODO vehicle
-//                        if (tag.getInt("SeekTime") > 0 && (!seekingEntity.getPassengers().isEmpty() || seekingEntity instanceof VehicleEntity) && seekingEntity.tickCount % 3 == 0) {
-//                            seekingEntity.level().playSound(null, seekingEntity.getOnPos(), seekingEntity instanceof Pig ? SoundEvents.PIG_HURT : ModSounds.LOCKING_WARNING.get(), SoundSource.PLAYERS, 1, 1f);
-//                        }
+                        if (tag.getInt("SeekTime") > 0 && (!seekingEntity.getPassengers().isEmpty() || seekingEntity instanceof VehicleEntity) && seekingEntity.tickCount % 3 == 0) {
+                            seekingEntity.level().playSound(null, seekingEntity.getOnPos(), seekingEntity instanceof Pig ? SoundEvents.PIG_HURT : ModSounds.LOCKING_WARNING.get(), SoundSource.PLAYERS, 1, 1f);
+                        }
                     } else {
                         tag.putInt("SeekTime", 0);
                     }

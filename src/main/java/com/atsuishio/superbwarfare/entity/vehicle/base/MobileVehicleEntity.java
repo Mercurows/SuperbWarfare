@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.entity.vehicle.base;
 
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.entity.TargetEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
@@ -209,10 +210,9 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
         preventStacking();
         crushEntities(this.getDeltaMovement());
 
-        // TODO drone
-//        if (!(this instanceof DroneEntity)) {
-//            this.setDeltaMovement(this.getDeltaMovement().add(0.0, -0.06, 0.0));
-//        }
+        if (!(this instanceof DroneEntity)) {
+            this.setDeltaMovement(this.getDeltaMovement().add(0.0, -0.06, 0.0));
+        }
 
         this.move(MoverType.SELF, this.getDeltaMovement());
         collideLilyPadBlock();
@@ -380,10 +380,7 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
     public void move(@NotNull MoverType movementType, @NotNull Vec3 movement) {
         super.move(movementType, movement);
         if (level() instanceof ServerLevel) {
-            if (lastTickSpeed < 0.3 || collisionCoolDown > 0
-                // TODO drone
-//                    || this instanceof DroneEntity
-            ) return;
+            if (lastTickSpeed < 0.3 || collisionCoolDown > 0 || this instanceof DroneEntity) return;
             Entity driver = EntityFindUtil.findEntity(this.level(), this.entityData.get(LAST_DRIVER_UUID));
 
             if ((verticalCollision)) {

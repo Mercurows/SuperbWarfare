@@ -1533,7 +1533,7 @@ public class ClientEventHandler {
                 List<Entity> entities = SeekTool.seekLivingEntities(villager, villager.level(), 16, 120);
                 for (var e : entities) {
                     if (e == player) {
-                        // TODO aimVillager
+                        // TODO aim villager msg
 //                        ModUtils.PACKET_HANDLER.sendToServer(new AimVillagerMessage(villager.getId()));
                         aimVillagerCountdown = 80;
                         break;

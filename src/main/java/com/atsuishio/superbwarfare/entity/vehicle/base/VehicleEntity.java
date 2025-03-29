@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.entity.vehicle.base;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
+import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.VehicleWeapon;
 import com.atsuishio.superbwarfare.init.*;
@@ -456,10 +457,7 @@ public abstract class VehicleEntity extends Entity {
     public void onHurt(float pHealAmount, Entity attacker, boolean send) {
         if (this.level() instanceof ServerLevel) {
             var holder = Holder.direct(ModSounds.INDICATION_VEHICLE.get());
-            if (attacker instanceof ServerPlayer player && pHealAmount > 0 && this.getHealth() > 0
-                // TODO Drone
-//                    && send && !(this instanceof DroneEntity)
-            ) {
+            if (attacker instanceof ServerPlayer player && pHealAmount > 0 && this.getHealth() > 0 && send && !(this instanceof DroneEntity)) {
                 player.connection.send(new ClientboundSoundPacket(holder, SoundSource.PLAYERS, player.getX(), player.getEyeY(), player.getZ(), 0.25f + (2.75f * pHealAmount / getMaxHealth()), random.nextFloat() * 0.1f + 0.9f, player.level().random.nextLong()));
                 PacketDistributor.sendToPlayer(player, new ClientIndicatorMessage(3, 5));
             }

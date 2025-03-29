@@ -5,8 +5,11 @@ import com.atsuishio.superbwarfare.init.ModBlockEntities;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.mojang.serialization.MapCodec;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -132,33 +135,40 @@ public class ContainerBlock extends BaseEntityBlock {
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
         super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
 
-        // TODO read NBT
-//        CompoundTag tag = BlockItem.getBlockEntityData(pStack);
-//        if (tag != null && tag.contains("EntityType")) {
-//            String s = getEntityTranslationKey(tag.getString("EntityType"));
-//            tooltipComponents.add(Component.translatable(s == null ? "des.superbwarfare.container.empty" : s).withStyle(ChatFormatting.GRAY));
-//
-//            var entityType = EntityType.byString(tag.getString("EntityType")).orElse(null);
-//            if (entityType != null) {
-//                int w = 0, h = 0;
-//                if (level instanceof Level level && tag.contains("Entity")) {
-//                    var entity = entityType.create(level);
-//                    if (entity != null) {
-//                        entity.load(tag.getCompound("Entity"));
-//                        w = (int) (entity.getType().getDimensions().width() + 1);
-//                        if (w % 2 == 0) w++;
-//                        h = (int) (entity.getType().getDimensions().height() + 1);
-//                    }
-//                } else {
-//                    w = (int) (entityType.getDimensions().width() + 1);
-//                    if (w % 2 == 0) w++;
-//                    h = (int) (entityType.getDimensions().height() + 1);
-//                }
-//                if (w != 0 && h != 0) {
-//                    tooltipComponents.add(Component.literal(w + " x " + w + " x " + h).withStyle(ChatFormatting.YELLOW));
-//                }
-//            }
-//        }
+        var data = stack.get(DataComponents.BLOCK_ENTITY_DATA);
+        CompoundTag tag = data != null ? data.copyTag() : new CompoundTag();
+        if (tag.contains("EntityType")) {
+            String s = getEntityTranslationKey(tag.getString("EntityType"));
+            tooltipComponents.add(Component.translatable(s == null ? "des.superbwarfare.container.empty" : s).withStyle(ChatFormatting.GRAY));
+
+            var entityType = EntityType.byString(tag.getString("EntityType")).orElse(null);
+            if (entityType != null) {
+                int w = 0, h = 0;
+
+                Level level = null;
+                try {
+                    level = context.level();
+                } catch (Exception ignored) {
+                }
+
+                if (level != null && tag.contains("Entity")) {
+                    var entity = entityType.create(level);
+                    if (entity != null) {
+                        entity.load(tag.getCompound("Entity"));
+                        w = (int) (entity.getType().getDimensions().width() + 1);
+                        if (w % 2 == 0) w++;
+                        h = (int) (entity.getType().getDimensions().height() + 1);
+                    }
+                } else {
+                    w = (int) (entityType.getDimensions().width() + 1);
+                    if (w % 2 == 0) w++;
+                    h = (int) (entityType.getDimensions().height() + 1);
+                }
+                if (w != 0 && h != 0) {
+                    tooltipComponents.add(Component.literal(w + " x " + w + " x " + h).withStyle(ChatFormatting.YELLOW));
+                }
+            }
+        }
     }
 
     @Nullable
@@ -209,8 +219,7 @@ public class ContainerBlock extends BaseEntityBlock {
     @ParametersAreNonnullByDefault
     public @NotNull ItemStack getCloneItemStack(BlockState state, HitResult target, LevelReader level, BlockPos pos, Player player) {
         var itemStack = super.getCloneItemStack(state, target, level, pos, player);
-        // TODO saveToItem
-//        level.getBlockEntity(pos, ModBlockEntities.CONTAINER.get()).ifPresent((blockEntity) -> blockEntity.saveToItem(itemStack));
+        level.getBlockEntity(pos, ModBlockEntities.CONTAINER.get()).ifPresent((blockEntity) -> blockEntity.saveToItem(itemStack, level.registryAccess()));
         return itemStack;
     }
 

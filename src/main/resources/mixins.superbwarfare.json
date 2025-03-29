@@ -3,7 +3,9 @@
   "package": "com.atsuishio.superbwarfare.mixins",
   "compatibilityLevel": "JAVA_21",
   "refmap": "mixins.superbwarfare.refmap.json",
-  "mixins": [],
+  "mixins": [
+    "LivingEntityMixin"
+  ],
   "client": [],
   "minVersion": "0.8",
   "injectors": {

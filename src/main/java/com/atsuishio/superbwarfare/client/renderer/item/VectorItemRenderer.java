@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.client.renderer.item;
 
 import com.atsuishio.superbwarfare.client.AnimationHelper;
+import com.atsuishio.superbwarfare.client.ItemModelHelper;
 import com.atsuishio.superbwarfare.client.layer.gun.VectorLayer;
 import com.atsuishio.superbwarfare.client.model.item.VectorItemModel;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
@@ -113,8 +114,7 @@ public class VectorItemRenderer extends GeoItemRenderer<VectorItem> {
             }
         }
 
-        // TODO handle gun attachments
-//            ItemModelHelper.handleGunAttachments(bone, itemStack, name);
+        ItemModelHelper.handleGunAttachments(bone, itemStack, name);
 
         if (this.transformType.firstPerson() && renderingArms) {
             AbstractClientPlayer localPlayer = mc.player;

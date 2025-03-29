@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.client.renderer.item;
 
 import com.atsuishio.superbwarfare.client.AnimationHelper;
+import com.atsuishio.superbwarfare.client.ItemModelHelper;
 import com.atsuishio.superbwarfare.client.layer.gun.AK47Layer;
 import com.atsuishio.superbwarfare.client.model.item.AK47ItemModel;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
@@ -146,8 +147,7 @@ public class AK47ItemRenderer extends GeoItemRenderer<AK47Item> {
                 bone.setHidden(GunsTool.getAttachmentType(itemStack, GunsTool.AttachmentType.MAGAZINE) != 2);
             }
 
-            // TODO handle gun attachments
-//            ItemModelHelper.handleGunAttachments(bone, itemStack, name);
+            ItemModelHelper.handleGunAttachments(bone, itemStack, name);
         }
 
 

@@ -7,6 +7,7 @@ import com.atsuishio.superbwarfare.client.tooltip.component.SecondaryCataclysmIm
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModPerks;
+import com.atsuishio.superbwarfare.init.ModRarity;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.SpecialFireWeapon;
@@ -44,10 +45,7 @@ public class SecondaryCataclysm extends GunItem implements GeoItem, SpecialFireW
     public static ItemDisplayContext transformType;
 
     public SecondaryCataclysm() {
-        super(new Properties().stacksTo(1).fireResistant()
-                // TODO rarity
-//                .rarity(ModRarity.getLegendary())
-        );
+        super(new Properties().stacksTo(1).fireResistant().rarity(ModRarity.getLegendary()));
     }
 
     @Override

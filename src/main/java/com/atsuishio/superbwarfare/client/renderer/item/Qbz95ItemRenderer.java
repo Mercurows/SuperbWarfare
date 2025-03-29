@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.client.renderer.item;
 
 import com.atsuishio.superbwarfare.client.AnimationHelper;
+import com.atsuishio.superbwarfare.client.ItemModelHelper;
 import com.atsuishio.superbwarfare.client.layer.gun.Qbz95Layer;
 import com.atsuishio.superbwarfare.client.model.item.Qbz95ItemModel;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
@@ -137,8 +138,7 @@ public class Qbz95ItemRenderer extends GeoItemRenderer<Qbz95Item> {
             }
         }
 
-        // TODO handle gun attachments
-//            ItemModelHelper.handleGunAttachments(bone, itemStack, name);
+        ItemModelHelper.handleGunAttachments(bone, itemStack, name);
 
         if (this.transformType.firstPerson() && renderingArms) {
             AbstractClientPlayer localPlayer = mc.player;

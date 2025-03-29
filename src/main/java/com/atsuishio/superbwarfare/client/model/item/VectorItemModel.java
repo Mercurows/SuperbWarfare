@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.client.model.item;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.AnimationHelper;
+import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.smg.VectorItem;
@@ -128,8 +129,7 @@ public class VectorItemModel extends GeoModel<VectorItem> {
         shen.setRotY((float) (shen.getRotY() * (1 - (type == 3 ? 0.95 : 0.9) * zt)));
         shen.setRotZ((float) (shen.getRotZ() * (1 - 0.4 * zt)));
 
-        // TODO cross hair overlay gun rot
-//        CrossHairOverlay.gunRot = shen.getRotZ();
+        CrossHairOverlay.gunRot = shen.getRotZ();
 
         cross1.setPosY(-0.25f * (float) fpz);
 

@@ -145,32 +145,31 @@ public class ModVillagers {
             // 等级 4 交易
             trades.get(4).add(new BasicItemListing(new ItemStack(Items.EMERALD, 2),
                     new ItemStack(ModItems.GRENADE_40MM.get(), 1), 16, 5, 0.05f));
-//            trades.get(4).add(new BasicItemListing(new ItemStack(Items.EMERALD, 2),
-//                    new ItemStack(ModItems.HAND_GRENADE.get(), 1), 16, 5, 0.05f));
-//            trades.get(4).add(new BasicItemListing(new ItemStack(Items.EMERALD, 2),
-//                    new ItemStack(ModItems.RGO_GRENADE.get(), 1), 16, 5, 0.05f));
-//            trades.get(4).add(new BasicItemListing(new ItemStack(Items.EMERALD, 3),
-//                    new ItemStack(ModItems.MORTAR_SHELL.get(), 1), 16, 5, 0.05f));
-//            trades.get(4).add(new BasicItemListing(new ItemStack(Items.EMERALD, 4),
-//                    new ItemStack(ModItems.CLAYMORE_MINE.get(), 1), 16, 5, 0.05f));
-//            trades.get(4).add(new BasicItemListing(new ItemStack(Items.EMERALD, 4),
-//                    new ItemStack(ModItems.C4_BOMB.get(), 1), 16, 5, 0.05f));
+            trades.get(4).add(new BasicItemListing(new ItemStack(Items.EMERALD, 2),
+                    new ItemStack(ModItems.HAND_GRENADE.get(), 1), 16, 5, 0.05f));
+            trades.get(4).add(new BasicItemListing(new ItemStack(Items.EMERALD, 2),
+                    new ItemStack(ModItems.RGO_GRENADE.get(), 1), 16, 5, 0.05f));
+            trades.get(4).add(new BasicItemListing(new ItemStack(Items.EMERALD, 3),
+                    new ItemStack(ModItems.MORTAR_SHELL.get(), 1), 16, 5, 0.05f));
+            trades.get(4).add(new BasicItemListing(new ItemStack(Items.EMERALD, 4),
+                    new ItemStack(ModItems.CLAYMORE_MINE.get(), 1), 16, 5, 0.05f));
+            trades.get(4).add(new BasicItemListing(new ItemStack(Items.EMERALD, 4),
+                    new ItemStack(ModItems.C4_BOMB.get(), 1), 16, 5, 0.05f));
             trades.get(4).add(new BasicItemListing(new ItemStack(Items.EMERALD, 4),
                     new ItemStack(ModItems.ROCKET.get(), 1), 16, 5, 0.05f));
 
             trades.get(4).add(new BasicItemListing(new ItemStack(ModItems.GRENADE_40MM.get(), 1),
                     new ItemStack(Items.EMERALD, 1), 32, 5, 0.05f));
-            // TODO grenade, shell, claymore, c4
-//            trades.get(4).add(new BasicItemListing(new ItemStack(ModItems.HAND_GRENADE.get(), 1),
-//                    new ItemStack(Items.EMERALD, 1), 32, 5, 0.05f));
-//            trades.get(4).add(new BasicItemListing(new ItemStack(ModItems.RGO_GRENADE.get(), 1),
-//                    new ItemStack(Items.EMERALD, 1), 32, 5, 0.05f));
-//            trades.get(4).add(new BasicItemListing(new ItemStack(ModItems.MORTAR_SHELL.get(), 3),
-//                    new ItemStack(Items.EMERALD, 2), 32, 5, 0.05f));
-//            trades.get(4).add(new BasicItemListing(new ItemStack(ModItems.CLAYMORE_MINE.get(), 1),
-//                    new ItemStack(Items.EMERALD, 2), 32, 5, 0.05f));
-//            trades.get(4).add(new BasicItemListing(new ItemStack(ModItems.C4_BOMB.get(), 1),
-//                    new ItemStack(Items.EMERALD, 2), 32, 5, 0.05f));
+            trades.get(4).add(new BasicItemListing(new ItemStack(ModItems.HAND_GRENADE.get(), 1),
+                    new ItemStack(Items.EMERALD, 1), 32, 5, 0.05f));
+            trades.get(4).add(new BasicItemListing(new ItemStack(ModItems.RGO_GRENADE.get(), 1),
+                    new ItemStack(Items.EMERALD, 1), 32, 5, 0.05f));
+            trades.get(4).add(new BasicItemListing(new ItemStack(ModItems.MORTAR_SHELL.get(), 3),
+                    new ItemStack(Items.EMERALD, 2), 32, 5, 0.05f));
+            trades.get(4).add(new BasicItemListing(new ItemStack(ModItems.CLAYMORE_MINE.get(), 1),
+                    new ItemStack(Items.EMERALD, 2), 32, 5, 0.05f));
+            trades.get(4).add(new BasicItemListing(new ItemStack(ModItems.C4_BOMB.get(), 1),
+                    new ItemStack(Items.EMERALD, 2), 32, 5, 0.05f));
             trades.get(4).add(new BasicItemListing(new ItemStack(ModItems.ROCKET.get(), 1),
                     new ItemStack(Items.EMERALD, 2), 32, 5, 0.05f));
 
