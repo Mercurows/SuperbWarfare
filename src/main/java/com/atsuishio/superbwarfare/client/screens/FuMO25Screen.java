@@ -5,6 +5,10 @@ import com.atsuishio.superbwarfare.block.entity.FuMO25BlockEntity;
 import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.menu.FuMO25Menu;
+import com.atsuishio.superbwarfare.network.message.send.RadarChangeModeMessage;
+import com.atsuishio.superbwarfare.network.message.send.RadarSetParametersMessage;
+import com.atsuishio.superbwarfare.network.message.send.RadarSetPosMessage;
+import com.atsuishio.superbwarfare.network.message.send.RadarSetTargetMessage;
 import com.atsuishio.superbwarfare.tools.FormatTool;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -22,6 +26,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -209,8 +214,7 @@ public class FuMO25Screen extends AbstractContainerScreen<FuMO25Menu> {
             double moveZ = (entity.getZ() - pos.getZ()) / range * 74;
 
             if (pMouseX >= centerX + moveX && pMouseX <= centerX + moveX + 4 && pMouseY >= centerY + moveZ && pMouseY <= centerY + moveZ + 4) {
-                // TODO network
-                //                ModUtils.PACKET_HANDLER.sendToServer(new RadarSetPosMessage(entity.getOnPos()));
+                PacketDistributor.sendToServer(new RadarSetPosMessage(entity.getOnPos()));
                 this.currentPos = entity.getOnPos();
                 this.currentTarget = entity;
                 return true;
@@ -287,12 +291,10 @@ public class FuMO25Screen extends AbstractContainerScreen<FuMO25Menu> {
         @Override
         public void onPress() {
             if (FuMO25Screen.this.menu.getFuncType() == 3 && FuMO25Screen.this.menu.getSlot(0).getItem().isEmpty()) {
-                if (FuMO25Screen.this.currentTarget == null) {
-                }
-                // TODO network
-//                ModUtils.PACKET_HANDLER.sendToServer(new RadarSetTargetMessage(FuMO25Screen.this.currentTarget.getUUID()));
+                if (FuMO25Screen.this.currentTarget == null) return;
+                PacketDistributor.sendToServer(new RadarSetTargetMessage(FuMO25Screen.this.currentTarget.getUUID()));
             } else {
-//                ModUtils.PACKET_HANDLER.sendToServer(new RadarSetParametersMessage((byte) 0));
+                PacketDistributor.sendToServer(new RadarSetParametersMessage((byte) 0));
             }
         }
 
@@ -322,8 +324,7 @@ public class FuMO25Screen extends AbstractContainerScreen<FuMO25Menu> {
 
         @Override
         public void onPress() {
-            // TODO network
-//            ModUtils.PACKET_HANDLER.sendToServer(new RadarChangeModeMessage((byte) this.mode));
+            PacketDistributor.sendToServer(new RadarChangeModeMessage((byte) this.mode));
         }
 
         @Override

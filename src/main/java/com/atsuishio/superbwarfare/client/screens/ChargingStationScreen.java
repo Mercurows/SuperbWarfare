@@ -92,7 +92,7 @@ public class ChargingStationScreen extends AbstractContainerScreen<ChargingStati
         @Override
         public void onPress() {
             // TODO show range message
-//            ModUtils.PACKET_HANDLER.sendToServer(new ShowChargingRangeMessage(!ChargingStationScreen.this.menu.showRange()));
+//            PacketDistributor.sendToServer(new ShowChargingRangeMessage(!ChargingStationScreen.this.menu.showRange()));
         }
 
         @Override

@@ -10,7 +10,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
-import com.atsuishio.superbwarfare.network.message.send.DoubleJumpMessage;
+import com.atsuishio.superbwarfare.network.message.send.*;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
 import com.atsuishio.superbwarfare.tools.GunsTool;
 import com.atsuishio.superbwarfare.tools.NBTTool;
@@ -40,7 +40,7 @@ import org.lwjgl.glfw.GLFW;
 import static com.atsuishio.superbwarfare.event.ClientEventHandler.cantFireTime;
 import static com.atsuishio.superbwarfare.event.ClientEventHandler.drawTime;
 
-// TODO 发送亿堆网络包
+
 @EventBusSubscriber(bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
 public class ClickHandler {
 
@@ -156,7 +156,7 @@ public class ClickHandler {
                 && weaponVehicle.hasWeapon(vehicle.getSeatIndex(player))
         ) {
             int index = vehicle.getSeatIndex(player);
-//            PacketDistributor.sendToServer(new SwitchVehicleWeaponMessage(index, -scroll, true));
+            PacketDistributor.sendToServer(new SwitchVehicleWeaponMessage(index, -scroll, true));
             event.setCanceled(true);
         }
 
@@ -164,9 +164,9 @@ public class ClickHandler {
 
         if (stack.is(ModTags.Items.GUN) && ClientEventHandler.zoom) {
             if (GunsTool.getGunBooleanTag(stack, "CanSwitchScope", false)) {
-//                PacketDistributor.sendToServer(new SwitchScopeMessage(scroll));
+                PacketDistributor.sendToServer(new SwitchScopeMessage(scroll));
             } else if (tag.getBoolean("CanAdjustZoomFov") || stack.is(ModItems.MINIGUN.get())) {
-//                PacketDistributor.sendToServer(new AdjustZoomFovMessage(scroll));
+                PacketDistributor.sendToServer(new AdjustZoomFovMessage(scroll));
             }
             event.setCanceled(true);
         }
@@ -179,7 +179,7 @@ public class ClickHandler {
         Entity looking = TraceTool.findLookingEntity(player, 6);
         if (looking == null) return;
         if (looking instanceof MortarEntity && player.isShiftKeyDown()) {
-//            PacketDistributor.sendToServer(new AdjustMortarAngleMessage(scroll));
+            PacketDistributor.sendToServer(new AdjustMortarAngleMessage(scroll));
             event.setCanceled(true);
         }
     }
@@ -208,20 +208,20 @@ public class ClickHandler {
 //            }
 
             if (key == ModKeyMappings.RELOAD.getKey().getValue()) {
-//                PacketDistributor.sendToServer(new ReloadMessage(0));
+                PacketDistributor.sendToServer(new ReloadMessage(0));
             }
             if (key == ModKeyMappings.FIRE_MODE.getKey().getValue()) {
-//                PacketDistributor.sendToServer(new FireModeMessage(0));
+                PacketDistributor.sendToServer(new FireModeMessage(0));
             }
             if (key == ModKeyMappings.INTERACT.getKey().getValue()) {
-//                PacketDistributor.sendToServer(new InteractMessage(0));
+                PacketDistributor.sendToServer(new InteractMessage(0));
             }
             if (key == ModKeyMappings.DISMOUNT.getKey().getValue()) {
                 handleDismountPress(player);
             }
             if (key == ModKeyMappings.EDIT_MODE.getKey().getValue() && ClientEventHandler.burstFireSize == 0) {
                 ClientEventHandler.holdFire = false;
-//                PacketDistributor.sendToServer(new EditModeMessage(0));
+                PacketDistributor.sendToServer(new EditModeMessage(0));
             }
 
             var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
@@ -229,30 +229,30 @@ public class ClickHandler {
                 if (!(stack.getItem() instanceof GunItem gunItem)) return;
                 if (ModKeyMappings.EDIT_GRIP.getKeyModifier().isActive(KeyConflictContext.IN_GAME)) {
                     if (key == ModKeyMappings.EDIT_GRIP.getKey().getValue() && gunItem.hasCustomGrip(stack)) {
-//                        PacketDistributor.sendToServer(new EditMessage(4));
+                        PacketDistributor.sendToServer(new EditMessage(4));
                         editModelShake();
                     }
                 } else {
                     if (key == ModKeyMappings.EDIT_SCOPE.getKey().getValue() && gunItem.hasCustomScope(stack)) {
-//                        PacketDistributor.sendToServer(new EditMessage(0));
+                        PacketDistributor.sendToServer(new EditMessage(0));
                         editModelShake();
                     } else if (key == ModKeyMappings.EDIT_BARREL.getKey().getValue() && gunItem.hasCustomBarrel(stack)) {
-//                        PacketDistributor.sendToServer(new EditMessage(1));
+                        PacketDistributor.sendToServer(new EditMessage(1));
                         editModelShake();
                     } else if (key == ModKeyMappings.EDIT_MAGAZINE.getKey().getValue() && gunItem.hasCustomMagazine(stack)) {
-//                        PacketDistributor.sendToServer(new EditMessage(2));
+                        PacketDistributor.sendToServer(new EditMessage(2));
                         editModelShake();
                     } else if (key == ModKeyMappings.EDIT_STOCK.getKey().getValue() && gunItem.hasCustomStock(stack)) {
-//                        PacketDistributor.sendToServer(new EditMessage(3));
+                        PacketDistributor.sendToServer(new EditMessage(3));
                         editModelShake();
                     }
                 }
             }
             if (key == ModKeyMappings.SENSITIVITY_INCREASE.getKey().getValue()) {
-//                PacketDistributor.sendToServer(new SensitivityMessage(true));
+                PacketDistributor.sendToServer(new SensitivityMessage(true));
             }
             if (key == ModKeyMappings.SENSITIVITY_REDUCE.getKey().getValue()) {
-//                PacketDistributor.sendToServer(new SensitivityMessage(false));
+                PacketDistributor.sendToServer(new SensitivityMessage(false));
             }
 
             if (stack.is(ModTags.Items.GUN)
@@ -295,11 +295,11 @@ public class ClickHandler {
         if (player.hasEffect(ModMobEffects.SHOCK)) return;
 
         if (stack.is(Items.SPYGLASS) && player.isScoping() && player.getOffhandItem().is(ModItems.FIRING_PARAMETERS.get())) {
-//            PacketDistributor.sendToServer(new SetFiringParametersMessage(0));
+            PacketDistributor.sendToServer(new SetFiringParametersMessage(0));
         }
 
         if (stack.is(ModItems.MONITOR.get())) {
-//            PacketDistributor.sendToServer(new DroneFireMessage(0));
+            PacketDistributor.sendToServer(new DroneFireMessage(0));
         }
 
 
@@ -328,10 +328,10 @@ public class ClickHandler {
 
             if (!gunItem.useBackpackAmmo(stack) && GunsTool.getGunIntTag(stack, "Ammo", 0) <= 0 && GunsTool.getGunIntTag(stack, "ReloadTime") == 0) {
                 if (ReloadConfig.LEFT_CLICK_RELOAD.get()) {
-//                    PacketDistributor.sendToServer(new ReloadMessage(0));
+                    PacketDistributor.sendToServer(new ReloadMessage(0));
                 }
             } else {
-//                PacketDistributor.sendToServer(new FireMessage(0));
+                PacketDistributor.sendToServer(new FireMessage(0));
                 if (!stack.is(ModItems.BOCEK.get())) {
                     ClientEventHandler.holdFire = true;
                 }
@@ -343,14 +343,14 @@ public class ClickHandler {
     }
 
     public static void handleWeaponFireRelease() {
-//        PacketDistributor.sendToServer(new FireMessage(1));
+        PacketDistributor.sendToServer(new FireMessage(1));
         ClientEventHandler.holdFire = false;
         ClientEventHandler.holdFireVehicle = false;
         ClientEventHandler.customRpm = 0;
     }
 
     public static void handleWeaponZoomPress(Player player, ItemStack stack) {
-//        PacketDistributor.sendToServer(new ZoomMessage(0));
+        PacketDistributor.sendToServer(new ZoomMessage(0));
 
         if (player.getVehicle() instanceof VehicleEntity pVehicle && player.getVehicle() instanceof WeaponVehicleEntity iVehicle && iVehicle.hasWeapon(pVehicle.getSeatIndex(player))) {
             ClientEventHandler.zoomVehicle = true;
@@ -367,7 +367,7 @@ public class ClickHandler {
     }
 
     public static void handleWeaponZoomRelease() {
-//        PacketDistributor.sendToServer(new ZoomMessage(1));
+        PacketDistributor.sendToServer(new ZoomMessage(1));
         ClientEventHandler.zoom = false;
         ClientEventHandler.zoomVehicle = false;
         ClientEventHandler.entity = null;
@@ -415,6 +415,6 @@ public class ClickHandler {
             ClientEventHandler.dismountCountdown = 20;
             return;
         }
-//        PacketDistributor.sendToServer(new PlayerStopRidingMessage(0));
+        PacketDistributor.sendToServer(new PlayerStopRidingMessage(0));
     }
 }

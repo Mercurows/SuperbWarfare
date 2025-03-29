@@ -5,19 +5,19 @@ import com.atsuishio.superbwarfare.capability.ModCapabilities;
 import com.atsuishio.superbwarfare.client.renderer.item.JavelinItemRenderer;
 import com.atsuishio.superbwarfare.client.tooltip.component.LauncherImageComponent;
 import com.atsuishio.superbwarfare.entity.projectile.FlareDecoyEntity;
+import com.atsuishio.superbwarfare.entity.projectile.JavelinMissileEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
-import com.atsuishio.superbwarfare.init.ModItems;
-import com.atsuishio.superbwarfare.init.ModRarity;
-import com.atsuishio.superbwarfare.init.ModSounds;
-import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.SpecialFireWeapon;
+import com.atsuishio.superbwarfare.network.message.receive.ShootClientMessage;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
 import com.atsuishio.superbwarfare.tools.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.game.ClientboundStopSoundPacket;
 import net.minecraft.resources.ResourceLocation;
@@ -38,6 +38,7 @@ import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3d;
 import software.bernie.geckolib.animatable.GeoItem;
@@ -169,10 +170,9 @@ public class JavelinItem extends GunItem implements GeoItem, SpecialFireWeapon {
                         if (player instanceof ServerPlayer serverPlayer) {
                             SoundTool.playLocalSound(serverPlayer, ModSounds.JAVELIN_LOCKON.get(), 1, 1);
                         }
-                        // TODO vehicle
-//                        if ((!seekingEntity.getPassengers().isEmpty() || seekingEntity instanceof VehicleEntity) && seekingEntity.tickCount % 2 == 0) {
-//                            seekingEntity.level().playSound(null, seekingEntity.getOnPos(), seekingEntity instanceof Pig ? SoundEvents.PIG_HURT : ModSounds.LOCKED_WARNING.get(), SoundSource.PLAYERS, 1, 0.95f);
-//                        }
+                        if ((!seekingEntity.getPassengers().isEmpty() || seekingEntity instanceof VehicleEntity) && seekingEntity.tickCount % 2 == 0) {
+                            seekingEntity.level().playSound(null, seekingEntity.getOnPos(), seekingEntity instanceof Pig ? SoundEvents.PIG_HURT : ModSounds.LOCKED_WARNING.get(), SoundSource.PLAYERS, 1, 0.95f);
+                        }
                     }
 
                 } else if (tag.getInt("GuideType") == 1) {
@@ -250,38 +250,37 @@ public class JavelinItem extends GunItem implements GeoItem, SpecialFireWeapon {
         firePos.rotateY(-yRot * Mth.DEG_TO_RAD);
 
         if (player.level() instanceof ServerLevel serverLevel) {
-            // TODO launch
-//            JavelinMissileEntity missileEntity = new JavelinMissileEntity(player, level,
-//                    (float) GunsTool.getGunDoubleTag(stack, "Damage", 0),
-//                    (float) GunsTool.getGunDoubleTag(stack, "ExplosionDamage", 0),
-//                    (float) GunsTool.getGunDoubleTag(stack, "ExplosionRadius", 0),
-//                    NBTTool.getOrCreateTag(stack).getInt("GuideType"),
-//                    new Vec3(NBTTool.getOrCreateTag(stack).getDouble("TargetPosX"), NBTTool.getOrCreateTag(stack).getDouble("TargetPosY"), NBTTool.getOrCreateTag(stack).getDouble("TargetPosZ")));
-//
-//            var dmgPerk = PerkHelper.getPerkByType(stack, Perk.Type.DAMAGE);
-//            if (dmgPerk == ModPerks.MONSTER_HUNTER.get()) {
-//                int perkLevel = PerkHelper.getItemPerkLevel(dmgPerk, stack);
-//                missileEntity.setMonsterMultiplier(0.1f + 0.1f * perkLevel);
-//            }
-//
-//            missileEntity.setPos(player.getX() + firePos.x, player.getEyeY() + firePos.y, player.getZ() + firePos.z);
-//            missileEntity.shoot(player.getLookAngle().x, player.getLookAngle().y + 0.3, player.getLookAngle().z, 3f, 1);
-//            missileEntity.setTargetUuid(tag.getString("TargetEntity"));
-//            missileEntity.setAttackMode(tag.getBoolean("TopMode"));
-//
-//            level.addFreshEntity(missileEntity);
-//            ParticleTool.sendParticle(serverLevel, ParticleTypes.CLOUD, player.getX() + 1.8 * player.getLookAngle().x,
-//                    player.getY() + player.getBbHeight() - 0.1 + 1.8 * player.getLookAngle().y,
-//                    player.getZ() + 1.8 * player.getLookAngle().z,
-//                    30, 0.4, 0.4, 0.4, 0.005, true);
-//
-//            var serverPlayer = (ServerPlayer) player;
-//
-//            SoundTool.playLocalSound(serverPlayer, ModSounds.JAVELIN_FIRE_1P.get(), 2, 1);
-//            serverPlayer.level().playSound(null, serverPlayer.getOnPos(), ModSounds.JAVELIN_FIRE_3P.get(), SoundSource.PLAYERS, 4, 1);
-//            serverPlayer.level().playSound(null, serverPlayer.getOnPos(), ModSounds.JAVELIN_FAR.get(), SoundSource.PLAYERS, 10, 1);
-//
-//            ModUtils.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> serverPlayer), new ShootClientMessage(10));
+            JavelinMissileEntity missileEntity = new JavelinMissileEntity(player, level,
+                    (float) GunsTool.getGunDoubleTag(stack, "Damage", 0),
+                    (float) GunsTool.getGunDoubleTag(stack, "ExplosionDamage", 0),
+                    (float) GunsTool.getGunDoubleTag(stack, "ExplosionRadius", 0),
+                    tag.getInt("GuideType"),
+                    new Vec3(tag.getDouble("TargetPosX"), tag.getDouble("TargetPosY"), tag.getDouble("TargetPosZ")));
+
+            var dmgPerk = PerkHelper.getPerkByType(stack, Perk.Type.DAMAGE);
+            if (dmgPerk == ModPerks.MONSTER_HUNTER.get()) {
+                int perkLevel = PerkHelper.getItemPerkLevel(dmgPerk, stack);
+                missileEntity.setMonsterMultiplier(0.1f + 0.1f * perkLevel);
+            }
+
+            missileEntity.setPos(player.getX() + firePos.x, player.getEyeY() + firePos.y, player.getZ() + firePos.z);
+            missileEntity.shoot(player.getLookAngle().x, player.getLookAngle().y + 0.3, player.getLookAngle().z, 3f, 1);
+            missileEntity.setTargetUuid(tag.getString("TargetEntity"));
+            missileEntity.setAttackMode(tag.getBoolean("TopMode"));
+
+            level.addFreshEntity(missileEntity);
+            ParticleTool.sendParticle(serverLevel, ParticleTypes.CLOUD, player.getX() + 1.8 * player.getLookAngle().x,
+                    player.getY() + player.getBbHeight() - 0.1 + 1.8 * player.getLookAngle().y,
+                    player.getZ() + 1.8 * player.getLookAngle().z,
+                    30, 0.4, 0.4, 0.4, 0.005, true);
+
+            var serverPlayer = (ServerPlayer) player;
+
+            SoundTool.playLocalSound(serverPlayer, ModSounds.JAVELIN_FIRE_1P.get(), 2, 1);
+            serverPlayer.level().playSound(null, serverPlayer.getOnPos(), ModSounds.JAVELIN_FIRE_3P.get(), SoundSource.PLAYERS, 4, 1);
+            serverPlayer.level().playSound(null, serverPlayer.getOnPos(), ModSounds.JAVELIN_FAR.get(), SoundSource.PLAYERS, 10, 1);
+
+            PacketDistributor.sendToPlayer(serverPlayer, new ShootClientMessage(10));
         }
 
         player.getCooldowns().addCooldown(stack.getItem(), 10);

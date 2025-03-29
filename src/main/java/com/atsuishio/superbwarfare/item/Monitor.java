@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.item;
 
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
+import com.atsuishio.superbwarfare.network.message.receive.ResetCameraTypeMessage;
 import com.atsuishio.superbwarfare.tools.EntityFindUtil;
 import com.atsuishio.superbwarfare.tools.FormatTool;
 import com.atsuishio.superbwarfare.tools.NBTTool;
@@ -21,6 +22,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -47,8 +49,7 @@ public class Monitor extends Item {
         NBTTool.setBoolean(stack, LINKED, false);
         tag.putString(LINKED_DRONE, "none");
         if (player instanceof ServerPlayer serverPlayer) {
-            // TODO reset camera type msg
-//            ModUtils.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> serverPlayer), new ResetCameraTypeMessage(0));
+            PacketDistributor.sendToPlayer(serverPlayer, new ResetCameraTypeMessage(0));
         }
         NBTTool.saveTag(stack, tag);
     }

@@ -15,6 +15,7 @@ import com.atsuishio.superbwarfare.event.events.PreKillEvent;
 import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
+import com.atsuishio.superbwarfare.network.message.receive.DrawClientMessage;
 import com.atsuishio.superbwarfare.network.message.receive.PlayerGunKillMessage;
 import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
@@ -423,8 +424,7 @@ public class LivingEventHandler {
                         }
 
                         if (player.level() instanceof ServerLevel) {
-                            // TODO draw client msg
-//                            ModUtils.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> serverPlayer), new DrawClientMessage(true));
+                            PacketDistributor.sendToPlayer(serverPlayer, new DrawClientMessage(true));
                         }
 
                         var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);

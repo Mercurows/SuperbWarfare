@@ -4,9 +4,22 @@
   "compatibilityLevel": "JAVA_21",
   "refmap": "mixins.superbwarfare.refmap.json",
   "mixins": [
-    "LivingEntityMixin"
+    "ClientboundSetPassengersPacketMixin",
+    "LivingEntityMixin",
+    "PlayerMixin"
   ],
-  "client": [],
+  "client": [
+    "CameraMixin",
+    "ClientPacketListenerMixin",
+    "ClientPlayerEntityMixin",
+    "GameRendererMixin",
+    "ItemInHandLayerMixin",
+    "KeyboardInputMixin",
+    "KeymappingMixin",
+    "LivingEntityRendererMixin",
+    "MinecraftMixin",
+    "MouseHandlerMixin"
+  ],
   "minVersion": "0.8",
   "injectors": {
     "defaultRequire": 1

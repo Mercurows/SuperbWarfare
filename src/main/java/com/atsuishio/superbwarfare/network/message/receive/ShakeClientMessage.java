@@ -32,7 +32,7 @@ public record ShakeClientMessage(
     );
 
     public static void handler(final ShakeClientMessage message, final IPayloadContext context) {
-        ClientEventHandler.handleShakeClient(message.time, message.radius, message.amplitude, message.x, message.y, message.z, context);
+        ClientEventHandler.handleShakeClient(message.time, message.radius, message.amplitude, message.x, message.y, message.z);
     }
 
 

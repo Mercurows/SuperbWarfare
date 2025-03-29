@@ -2,6 +2,8 @@ package com.atsuishio.superbwarfare.client.screens;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.menu.ReforgingTableMenu;
+import com.atsuishio.superbwarfare.network.message.send.GunReforgeMessage;
+import com.atsuishio.superbwarfare.network.message.send.SetPerkLevelMessage;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.GuiGraphics;
@@ -14,6 +16,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 
 @OnlyIn(Dist.CLIENT)
@@ -113,13 +116,11 @@ public class ReforgingTableScreen extends AbstractContainerScreen<ReforgingTable
 
         @Override
         public void onPress() {
-            // TODO network
-//            ModUtils.PACKET_HANDLER.sendToServer(new GunReforgeMessage(0));
+            PacketDistributor.sendToServer(new GunReforgeMessage(0));
         }
 
         @Override
         protected void updateWidgetNarration(@NotNull NarrationElementOutput pNarrationElementOutput) {
-
         }
     }
 
@@ -145,20 +146,23 @@ public class ReforgingTableScreen extends AbstractContainerScreen<ReforgingTable
             switch (type) {
                 case AMMO -> {
                     if (ReforgingTableScreen.this.menu.ammoPerkLevel.get() >= ReforgingTableMenu.MAX_PERK_LEVEL) {
+                        return;
                     }
                 }
                 case FUNCTIONAL -> {
                     if (ReforgingTableScreen.this.menu.funcPerkLevel.get() >= ReforgingTableMenu.MAX_PERK_LEVEL) {
+
+                        return;
                     }
                 }
                 case DAMAGE -> {
                     if (ReforgingTableScreen.this.menu.damagePerkLevel.get() >= ReforgingTableMenu.MAX_PERK_LEVEL) {
+                        return;
                     }
                 }
             }
 
-            // TODO network
-//            ModUtils.PACKET_HANDLER.sendToServer(new SetPerkLevelMessage(type.ordinal(), true));
+            PacketDistributor.sendToServer(new SetPerkLevelMessage(type.ordinal(), true));
         }
 
         @Override
@@ -189,20 +193,22 @@ public class ReforgingTableScreen extends AbstractContainerScreen<ReforgingTable
             switch (type) {
                 case AMMO -> {
                     if (ReforgingTableScreen.this.menu.ammoPerkLevel.get() <= 1) {
+                        return;
                     }
                 }
                 case FUNCTIONAL -> {
                     if (ReforgingTableScreen.this.menu.funcPerkLevel.get() <= 1) {
+                        return;
                     }
                 }
                 case DAMAGE -> {
                     if (ReforgingTableScreen.this.menu.damagePerkLevel.get() <= 1) {
+                        return;
                     }
                 }
             }
 
-            // TODO network
-//            ModUtils.PACKET_HANDLER.sendToServer(new SetPerkLevelMessage(type.ordinal(), false));
+            PacketDistributor.sendToServer(new SetPerkLevelMessage(type.ordinal(), false));
         }
 
         @Override

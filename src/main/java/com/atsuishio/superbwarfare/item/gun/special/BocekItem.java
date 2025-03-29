@@ -11,6 +11,8 @@ import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.SpecialFireWeapon;
+import com.atsuishio.superbwarfare.network.message.receive.ShootClientMessage;
+import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
 import com.atsuishio.superbwarfare.tools.GunsTool;
@@ -30,6 +32,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoItem;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
@@ -39,6 +42,8 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Optional;
+
+import static com.atsuishio.superbwarfare.network.message.send.FireMessage.spawnBullet;
 
 public class BocekItem extends GunItem implements GeoItem, SpecialFireWeapon {
 
@@ -172,22 +177,20 @@ public class BocekItem extends GunItem implements GeoItem, SpecialFireWeapon {
             SoundTool.stopSound(serverPlayer, ModSounds.BOCEK_PULL_1P.getId(), SoundSource.PLAYERS);
             SoundTool.stopSound(serverPlayer, ModSounds.BOCEK_PULL_3P.getId(), SoundSource.PLAYERS);
 
-            // TODO shoot client msg
-//            ModUtils.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> serverPlayer), new ShootClientMessage(10));
+            PacketDistributor.sendToPlayer(serverPlayer, new ShootClientMessage(10));
         }
 
         if (GunsTool.getGunDoubleTag(stack, "Power") >= 6) {
             var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
             if (cap != null && cap.zoom) {
-                // TODO FireMessage.spawnBullet
-//                spawnBullet(player);
+                spawnBullet(player);
 
                 SoundTool.playLocalSound(player, ModSounds.BOCEK_ZOOM_FIRE_1P.get(), 10, 1);
                 player.playSound(ModSounds.BOCEK_ZOOM_FIRE_3P.get(), 2, 1);
             } else {
-//                for (int i = 0; i < (perk instanceof AmmoPerk ammoPerk && ammoPerk.slug ? 1 : 10); i++) {
-//                    spawnBullet(player);
-//                }
+                for (int i = 0; i < (perk instanceof AmmoPerk ammoPerk && ammoPerk.slug ? 1 : 10); i++) {
+                    spawnBullet(player);
+                }
 
                 SoundTool.playLocalSound(player, ModSounds.BOCEK_SHATTER_CAP_FIRE_1P.get(), 10, 1);
                 player.playSound(ModSounds.BOCEK_SHATTER_CAP_FIRE_3P.get(), 2, 1);

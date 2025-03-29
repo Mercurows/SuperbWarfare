@@ -2,16 +2,23 @@ package com.atsuishio.superbwarfare.menu;
 
 import com.atsuishio.superbwarfare.network.dataslot.ContainerEnergyData;
 import com.atsuishio.superbwarfare.network.dataslot.ContainerEnergyDataSlot;
+import com.atsuishio.superbwarfare.network.message.receive.ContainerDataMessage;
+import com.atsuishio.superbwarfare.network.message.send.RadarMenuCloseMessage;
+import com.atsuishio.superbwarfare.network.message.send.RadarMenuOpenMessage;
 import com.google.common.collect.Lists;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.player.PlayerContainerEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 
-//@EventBusSubscriber(bus = EventBusSubscriber.Bus.GAME)
+@EventBusSubscriber(bus = EventBusSubscriber.Bus.GAME)
 public abstract class EnergyMenu extends AbstractContainerMenu {
 
     private final List<ContainerEnergyDataSlot> containerEnergyDataSlots = Lists.newArrayList();
@@ -31,18 +38,16 @@ public abstract class EnergyMenu extends AbstractContainerMenu {
 
     @Override
     public void broadcastChanges() {
-        // TODO network
-//        List<ContainerDataMessage.Pair> pairs = new ArrayList<>();
-//        for (int i = 0; i < this.containerEnergyDataSlots.size(); ++i) {
-//            ContainerEnergyDataSlot dataSlot = this.containerEnergyDataSlots.get(i);
-//            if (dataSlot.checkAndClearUpdateFlag())
-//                pairs.add(new ContainerDataMessage.Pair(i, dataSlot.get()));
-//        }
-//
-//        if (!pairs.isEmpty()) {
-//            PacketDistributor.PacketTarget target = PacketDistributor.NMLIST.with(this.usingPlayers.stream().map(serverPlayer -> serverPlayer.connection.connection)::toList);
-//            ModUtils.PACKET_HANDLER.send(target, new ContainerDataMessage(this.containerId, pairs));
-//        }
+        List<ContainerDataMessage.Pair> pairs = new ArrayList<>();
+        for (int i = 0; i < this.containerEnergyDataSlots.size(); ++i) {
+            ContainerEnergyDataSlot dataSlot = this.containerEnergyDataSlots.get(i);
+            if (dataSlot.checkAndClearUpdateFlag())
+                pairs.add(new ContainerDataMessage.Pair(i, dataSlot.get()));
+        }
+
+        if (!pairs.isEmpty()) {
+            this.usingPlayers.forEach(p -> PacketDistributor.sendToPlayer(p, new ContainerDataMessage(this.containerId, pairs)));
+        }
 
         super.broadcastChanges();
     }
@@ -52,24 +57,38 @@ public abstract class EnergyMenu extends AbstractContainerMenu {
         this.containerEnergyDataSlots.get(id).set(data);
     }
 
+    @SubscribeEvent
+    public static void onContainerOpened(PlayerContainerEvent.Open event) {
+        if (event.getContainer() instanceof EnergyMenu menu && event.getEntity() instanceof ServerPlayer serverPlayer) {
+            menu.usingPlayers.add(serverPlayer);
 
-//    @SubscribeEvent
-//    public static void onContainerOpened(PlayerContainerEvent.Open event) {
-//        if (event.getContainer() instanceof EnergyMenu menu && event.getEntity() instanceof ServerPlayer serverPlayer) {
-//            menu.usingPlayers.add(serverPlayer);
-//
-////            List<ContainerDataMessage.Pair> toSync = new ArrayList<>();
-////            for (int i = 0; i < menu.containerEnergyDataSlots.size(); ++i) {
-////                toSync.add(new ContainerDataMessage.Pair(i, menu.containerEnergyDataSlots.get(i).get()));
-////            }
-////            ModUtils.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> serverPlayer), new ContainerDataMessage(menu.containerId, toSync));
-//        }
-//    }
-//
-//    @SubscribeEvent
-//    public static void onContainerClosed(PlayerContainerEvent.Close event) {
-//        if (event.getContainer() instanceof EnergyMenu menu && event.getEntity() instanceof ServerPlayer serverPlayer) {
-//            menu.usingPlayers.remove(serverPlayer);
-//        }
-//    }
+            List<ContainerDataMessage.Pair> toSync = new ArrayList<>();
+            for (int i = 0; i < menu.containerEnergyDataSlots.size(); ++i) {
+                toSync.add(new ContainerDataMessage.Pair(i, menu.containerEnergyDataSlots.get(i).get()));
+            }
+            PacketDistributor.sendToPlayer(serverPlayer, new ContainerDataMessage(menu.containerId, toSync));
+        }
+    }
+
+    @SubscribeEvent
+    public static void onContainerClosed(PlayerContainerEvent.Close event) {
+        if (event.getContainer() instanceof EnergyMenu menu && event.getEntity() instanceof ServerPlayer serverPlayer) {
+            menu.usingPlayers.remove(serverPlayer);
+        }
+    }
+
+
+    @SubscribeEvent
+    public static void onFuMO25Opened(PlayerContainerEvent.Open event) {
+        if (event.getContainer() instanceof FuMO25Menu fuMO25Menu && event.getEntity() instanceof ServerPlayer serverPlayer) {
+            fuMO25Menu.getSelfPos().ifPresent(pos -> PacketDistributor.sendToPlayer(serverPlayer, new RadarMenuOpenMessage(pos)));
+        }
+    }
+
+    @SubscribeEvent
+    public static void onFuMO25Closed(PlayerContainerEvent.Close event) {
+        if (event.getContainer() instanceof FuMO25Menu && event.getEntity() instanceof ServerPlayer serverPlayer) {
+            PacketDistributor.sendToPlayer(serverPlayer, new RadarMenuCloseMessage(0));
+        }
+    }
 }

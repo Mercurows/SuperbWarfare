@@ -8,7 +8,6 @@ import com.atsuishio.superbwarfare.init.ModMenuTypes;
 import com.atsuishio.superbwarfare.network.dataslot.ContainerEnergyData;
 import com.atsuishio.superbwarfare.network.dataslot.SimpleEnergyData;
 import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
@@ -16,15 +15,11 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.player.PlayerContainerEvent;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
 
-@EventBusSubscriber(bus = EventBusSubscriber.Bus.GAME)
 public class FuMO25Menu extends EnergyMenu {
 
     protected final Container container;
@@ -198,25 +193,6 @@ public class FuMO25Menu extends EnergyMenu {
         @Override
         public boolean mayPlace(ItemStack pStack) {
             return pStack.is(ModItems.FIRING_PARAMETERS.get());
-        }
-    }
-
-    @SubscribeEvent
-    public static void onContainerOpened(PlayerContainerEvent.Open event) {
-        if (event.getContainer() instanceof FuMO25Menu fuMO25Menu && event.getEntity() instanceof ServerPlayer serverPlayer) {
-            fuMO25Menu.getSelfPos().ifPresent(pos -> {
-                    }
-                    // TODO send packet
-//                    ModUtils.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> serverPlayer), new RadarMenuOpenMessage(pos))
-            );
-        }
-    }
-
-    @SubscribeEvent
-    public static void onContainerClosed(PlayerContainerEvent.Close event) {
-        if (event.getContainer() instanceof FuMO25Menu && event.getEntity() instanceof ServerPlayer serverPlayer) {
-            // TODO send packet
-//            ModUtils.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> serverPlayer), new RadarMenuCloseMessage(0));
         }
     }
 }

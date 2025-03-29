@@ -11,9 +11,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
-import com.atsuishio.superbwarfare.network.message.send.LaserShootMessage;
-import com.atsuishio.superbwarfare.network.message.send.ShootMessage;
-import com.atsuishio.superbwarfare.network.message.send.VehicleMovementMessage;
+import com.atsuishio.superbwarfare.network.message.send.*;
 import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
@@ -319,9 +317,7 @@ public class ClientEventHandler {
             if (gunMelee == 22) {
                 Entity lookingEntity = TraceTool.findMeleeEntity(player, player.entityInteractionRange());
                 if (lookingEntity != null) {
-
-                    // TODO melee attack msg
-//                    ModUtils.PACKET_HANDLER.sendToServer(new MeleeAttackMessage(lookingEntity.getUUID()));
+                    PacketDistributor.sendToServer(new MeleeAttackMessage(lookingEntity.getUUID()));
                 }
             }
         }
@@ -348,13 +344,12 @@ public class ClientEventHandler {
             BlockState blockState = player.level().getBlockState(BlockPos.containing(looking.x(), looking.y(), looking.z()));
 
             if (lookingEntity != null) {
-                // TODO lunge mine attack msg
-//                ModUtils.PACKET_HANDLER.sendToServer(new LungeMineAttackMessage(0, lookingEntity.getUUID(), result));
+                PacketDistributor.sendToServer(new LungeMineAttackMessage(0, lookingEntity.getUUID(), result.getLocation()));
                 lungeSprint = 0;
                 lungeAttack = 0;
                 lungeDraw = 30;
             } else if ((blockState.canOcclude() || blockState.getBlock() instanceof DoorBlock || blockState.getBlock() instanceof CrossCollisionBlock || blockState.getBlock() instanceof BellBlock) && lungeSprint == 0) {
-//                ModUtils.PACKET_HANDLER.sendToServer(new LungeMineAttackMessage(1, player.getUUID(), result));
+                PacketDistributor.sendToServer(new LungeMineAttackMessage(1, player.getUUID(), result.getLocation()));
                 lungeSprint = 0;
                 lungeAttack = 0;
                 lungeDraw = 30;
@@ -645,7 +640,7 @@ public class ClientEventHandler {
         randomShell[2] = (0.7 + (Math.random() - 0.5));
     }
 
-    public static void handleShakeClient(double time, double radius, double amplitude, double x, double y, double z, final IPayloadContext context) {
+    public static void handleShakeClient(double time, double radius, double amplitude, double x, double y, double z) {
         Player player = Minecraft.getInstance().player;
         if (player == null) return;
         shakeTime = time;
@@ -739,8 +734,7 @@ public class ClientEventHandler {
                 }
 
                 if (clientTimerVehicle.getProgress() >= cooldown) {
-                    // TODO vehicle fire msg
-//                    ModUtils.PACKET_HANDLER.sendToServer(new VehicleFireMessage(pVehicle.getSeatIndex(player)));
+                    PacketDistributor.sendToServer(new VehicleFireMessage(pVehicle.getSeatIndex(player)));
 
                     playVehicleClientSounds(player, iVehicle, pVehicle.getSeatIndex(player));
                     clientTimerVehicle.setProgress((clientTimerVehicle.getProgress() - cooldown));
@@ -1533,8 +1527,7 @@ public class ClientEventHandler {
                 List<Entity> entities = SeekTool.seekLivingEntities(villager, villager.level(), 16, 120);
                 for (var e : entities) {
                     if (e == player) {
-                        // TODO aim villager msg
-//                        ModUtils.PACKET_HANDLER.sendToServer(new AimVillagerMessage(villager.getId()));
+                        PacketDistributor.sendToServer(new AimVillagerMessage(villager.getId()));
                         aimVillagerCountdown = 80;
                         break;
                     }

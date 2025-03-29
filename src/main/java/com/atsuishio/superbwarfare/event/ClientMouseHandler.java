@@ -1,15 +1,28 @@
 package com.atsuishio.superbwarfare.event;
 
 import com.atsuishio.superbwarfare.client.MouseMovementHandler;
+import com.atsuishio.superbwarfare.config.client.VehicleControlConfig;
+import com.atsuishio.superbwarfare.entity.vehicle.*;
+import com.atsuishio.superbwarfare.entity.vehicle.base.CannonEntity;
+import com.atsuishio.superbwarfare.init.ModItems;
+import com.atsuishio.superbwarfare.init.ModMobEffects;
+import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.tools.GunsTool;
+import com.atsuishio.superbwarfare.tools.NBTTool;
+import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec2;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.CalculatePlayerTurnEvent;
 import net.neoforged.neoforge.client.event.ViewportEvent;
 
+import static com.atsuishio.superbwarfare.event.ClientEventHandler.droneFovLerp;
 import static com.atsuishio.superbwarfare.event.ClientEventHandler.isFreeCam;
 
 @EventBusSubscriber(bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
@@ -72,5 +85,89 @@ public class ClientMouseHandler {
             freeCameraYaw *= 0.8;
             freeCameraPitch *= 0.8;
         }
+    }
+
+    @SubscribeEvent
+    public static void calculatePlayerTurn(CalculatePlayerTurnEvent event) {
+        var newSensitivity = changeSensitivity(event.getMouseSensitivity()) * invertY();
+    }
+
+    public static float invertY() {
+        Minecraft mc = Minecraft.getInstance();
+        Player player = mc.player;
+
+        if (player == null) return 1;
+
+        if (player.getVehicle() instanceof Ah6Entity ah6Entity && ah6Entity.getFirstPassenger() == player) {
+            return VehicleControlConfig.INVERT_AIRCRAFT_CONTROL.get() ? -1 : 1;
+        }
+
+        if (player.getVehicle() instanceof Tom6Entity tom6 && tom6.getFirstPassenger() == player) {
+            return VehicleControlConfig.INVERT_AIRCRAFT_CONTROL.get() ? -1 : 1;
+        }
+        return 1;
+    }
+
+    private static double changeSensitivity(double original) {
+        Minecraft mc = Minecraft.getInstance();
+        Player player = mc.player;
+
+        if (player == null) return original;
+
+        if (player.hasEffect(ModMobEffects.SHOCK) && !player.isSpectator()) {
+            return 0;
+        }
+
+        ItemStack stack = mc.player.getMainHandItem();
+
+        if (isFreeCam(player)) {
+            return 0;
+        }
+
+        if (player.getVehicle() instanceof CannonEntity) {
+            return ClientEventHandler.zoomVehicle ? 0.15 : 0.3;
+        }
+
+        if (player.getVehicle() instanceof Lav150Entity) {
+            return ClientEventHandler.zoomVehicle ? 0.23 : 0.3;
+        }
+
+        if (player.getVehicle() instanceof Bmp2Entity) {
+            return ClientEventHandler.zoomVehicle ? 0.22 : 0.27;
+        }
+
+        if (player.getVehicle() instanceof Yx100Entity yx100) {
+            if (player == yx100.getFirstPassenger()) {
+                return ClientEventHandler.zoomVehicle ? 0.17 : 0.22;
+            } else if (player == yx100.getNthEntity(1)) {
+                return ClientEventHandler.zoomVehicle ? 0.25 : 0.35;
+            }
+        }
+
+        if (player.getVehicle() instanceof Ah6Entity ah6Entity && !ah6Entity.onGround() && ah6Entity.getFirstPassenger() == player) {
+            return 0.33;
+        }
+
+        if (player.getVehicle() instanceof Tom6Entity) {
+            return 0.3;
+        }
+
+        var tag = NBTTool.getTag(stack);
+        if (stack.is(ModItems.MONITOR.get()) && tag.getBoolean("Using") && tag.getBoolean("Linked")) {
+            return 0.33 / (1 + 0.08 * (droneFovLerp - 1));
+        }
+
+        if (!stack.is(ModTags.Items.GUN)) {
+            return original;
+        }
+
+        double zoom = 1.25 + GunsTool.getGunDoubleTag(stack, "CustomZoom", 0);
+        float customSens = (float) tag.getInt("sensitivity");
+
+        if (!player.getMainHandItem().isEmpty() && mc.options.getCameraType() == CameraType.FIRST_PERSON) {
+            return original / Math.max((1 + (0.2 * (zoom - (0.3 * customSens)) * ClientEventHandler.zoomTime)), 0.1);
+        }
+
+        return original;
     }
 }

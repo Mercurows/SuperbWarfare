@@ -12,6 +12,7 @@ import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.SpecialFireWeapon;
+import com.atsuishio.superbwarfare.network.message.receive.ShootClientMessage;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
 import com.atsuishio.superbwarfare.tools.GunsTool;
@@ -32,6 +33,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoItem;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
@@ -266,8 +268,7 @@ public class TaserItem extends GunItem implements GeoItem, SpecialFireWeapon {
                     (float) (zoom ? 0.1 : spread));
             level.addFreshEntity(taserBulletProjectile);
 
-            // TODO shoot client msg
-//            PacketDistributor.sendToPlayer(serverPlayer, new ShootClientMessage(10));
+            PacketDistributor.sendToPlayer(serverPlayer, new ShootClientMessage(10));
         }
 
         GunsTool.setGunIntTag(stack, "Ammo", GunsTool.getGunIntTag(stack, "Ammo", 0) - 1);
