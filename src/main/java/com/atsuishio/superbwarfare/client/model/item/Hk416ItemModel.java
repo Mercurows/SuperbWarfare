@@ -108,7 +108,9 @@ public class Hk416ItemModel extends GeoModel<Hk416Item> {
         scope2.setScaleZ(1f - (0.8f * (float) zp));
         scope3.setScaleZ(1f - (0.5f * (float) zp));
 
-        NBTTool.getTag(stack).putBoolean("HoloHidden", !(gun.getPosX() > 3.1));
+        final var tag = NBTTool.getTag(stack);
+        tag.putBoolean("HoloHidden", !(gun.getPosX() > 3.1));
+        NBTTool.saveTag(stack, tag);
 
         GeoBone shen;
         if (zt < 0.5) {
@@ -152,7 +154,7 @@ public class Hk416ItemModel extends GeoModel<Hk416Item> {
         l.setRotX(rotXBipod * Mth.DEG_TO_RAD);
         r.setRotX(rotXBipod * Mth.DEG_TO_RAD);
 
-        int mode = GunsTool.getGunIntTag(stack, "FireMode");
+        int mode = GunsTool.getGunIntTag(tag, "FireMode");
 
         kuaimanji.setRotX(mode == 2 ? 90 * Mth.DEG_TO_RAD : 0);
 

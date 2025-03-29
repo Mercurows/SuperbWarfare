@@ -8,7 +8,6 @@ import com.atsuishio.superbwarfare.tools.GunsTool;
 import com.atsuishio.superbwarfare.tools.NBTTool;
 import com.atsuishio.superbwarfare.tools.SoundTool;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -35,7 +34,7 @@ public record FireModeMessage(int msgType) implements CustomPacketPayload {
     public static void changeFireMode(Player player) {
         ItemStack stack = player.getMainHandItem();
         if (stack.getItem() instanceof GunItem gunItem) {
-            CompoundTag tag = NBTTool.getTag(stack);
+            final var tag = NBTTool.getTag(stack);
             int fireMode = tag.getInt("FireMode");
 
             int mode = gunItem.getAvailableFireModes();
@@ -43,39 +42,45 @@ public record FireModeMessage(int msgType) implements CustomPacketPayload {
 
             if (fireMode == 0) {
                 if ((mode & 2) != 0) {
-                    GunsTool.setGunIntTag(stack, "FireMode", 1);
+                    GunsTool.setGunIntTag(tag, "FireMode", 1);
                     playChangeModeSound(player);
+                    NBTTool.saveTag(stack, tag);
                     return;
                 }
                 if ((mode & 4) != 0) {
-                    GunsTool.setGunIntTag(stack, "FireMode", 2);
+                    GunsTool.setGunIntTag(tag, "FireMode", 2);
                     playChangeModeSound(player);
+                    NBTTool.saveTag(stack, tag);
                     return;
                 }
             }
 
             if (fireMode == 1) {
                 if ((mode & 4) != 0) {
-                    GunsTool.setGunIntTag(stack, "FireMode", 2);
+                    GunsTool.setGunIntTag(tag, "FireMode", 2);
                     playChangeModeSound(player);
+                    NBTTool.saveTag(stack, tag);
                     return;
                 }
                 if ((mode & 1) != 0) {
-                    GunsTool.setGunIntTag(stack, "FireMode", 0);
+                    GunsTool.setGunIntTag(tag, "FireMode", 0);
                     playChangeModeSound(player);
+                    NBTTool.saveTag(stack, tag);
                     return;
                 }
             }
 
             if (fireMode == 2) {
                 if ((mode & 1) != 0) {
-                    GunsTool.setGunIntTag(stack, "FireMode", 0);
+                    GunsTool.setGunIntTag(tag, "FireMode", 0);
                     playChangeModeSound(player);
+                    NBTTool.saveTag(stack, tag);
                     return;
                 }
                 if ((mode & 2) != 0) {
-                    GunsTool.setGunIntTag(stack, "FireMode", 1);
+                    GunsTool.setGunIntTag(tag, "FireMode", 1);
                     playChangeModeSound(player);
+                    NBTTool.saveTag(stack, tag);
                     return;
                 }
             }
@@ -83,14 +88,14 @@ public record FireModeMessage(int msgType) implements CustomPacketPayload {
             if (stack.getItem() == ModItems.SENTINEL.get()
                     && !player.isSpectator()
                     && !(player.getCooldowns().isOnCooldown(stack.getItem()))
-                    && GunsTool.getGunIntTag(stack, "ReloadTime") == 0
-                    && !GunsTool.getGunBooleanTag(stack, "Charging")) {
+                    && GunsTool.getGunIntTag(tag, "ReloadTime") == 0
+                    && !GunsTool.getGunBooleanTag(tag, "Charging")) {
 
                 for (var cell : player.getInventory().items) {
                     if (cell.is(ModItems.CELL.get())) {
                         var cap = cell.getCapability(Capabilities.EnergyStorage.ITEM);
                         if (cap != null && cap.getEnergyStored() > 0) {
-                            GunsTool.setGunBooleanTag(stack, "StartCharge", true);
+                            GunsTool.setGunBooleanTag(tag, "StartCharge", true);
                         }
                     }
                 }
@@ -104,13 +109,15 @@ public record FireModeMessage(int msgType) implements CustomPacketPayload {
                 }
             }
 
-            if (stack.getItem() == ModItems.TRACHELIUM.get() && !GunsTool.getGunBooleanTag(stack, "NeedBoltAction", false)) {
+            if (stack.getItem() == ModItems.TRACHELIUM.get() && !GunsTool.getGunBooleanTag(tag, "NeedBoltAction", false)) {
                 tag.putBoolean("DA", !tag.getBoolean("DA"));
                 NBTTool.saveTag(stack, tag);
                 if (!tag.getBoolean("canImmediatelyShoot")) {
-                    GunsTool.setGunBooleanTag(stack, "NeedBoltAction", true);
+                    GunsTool.setGunBooleanTag(tag, "NeedBoltAction", true);
                 }
             }
+
+            NBTTool.saveTag(stack, tag);
         }
     }
 

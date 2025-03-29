@@ -38,16 +38,19 @@ public record ReloadMessage(int msgType) implements CustomPacketPayload {
         }
 
         ItemStack stack = player.getMainHandItem();
+        var tag = NBTTool.getTag(stack);
+        var data = tag.getCompound("GunData");
+
         if (!player.isSpectator()
                 && stack.getItem() instanceof GunItem gunItem
-                && !GunsTool.getGunBooleanTag(stack, "Charging")
-                && GunsTool.getGunIntTag(stack, "ReloadTime") == 0
-                && GunsTool.getGunIntTag(stack, "BoltActionTick") == 0
-                && !GunsTool.getGunBooleanTag(stack, "Reloading")
+                && !GunsTool.getGunBooleanTag(tag, "Charging")
+                && GunsTool.getGunIntTag(tag, "ReloadTime") == 0
+                && GunsTool.getGunIntTag(tag, "BoltActionTick") == 0
+                && !GunsTool.getGunBooleanTag(tag, "Reloading")
         ) {
             boolean canSingleReload = gunItem.isIterativeReload(stack);
             boolean canReload = gunItem.isMagazineReload(stack) && !gunItem.isClipReload(stack);
-            boolean clipLoad = GunsTool.getGunIntTag(stack, "Ammo", 0) == 0 && gunItem.isClipReload(stack);
+            boolean clipLoad = GunsTool.getGunIntTag(tag, "Ammo", 0) == 0 && gunItem.isClipReload(stack);
 
             // 检查备弹
             boolean hasCreativeAmmoBox = player.getInventory().hasAnyMatching(item -> item.is(ModItems.CREATIVE_AMMO_BOX.get()));
@@ -63,38 +66,41 @@ public record ReloadMessage(int msgType) implements CustomPacketPayload {
                     return;
                 } else if (stack.is(ModTags.Items.USE_HEAVY_AMMO) && cap.heavyAmmo == 0) {
                     return;
-                } else if (stack.getItem() == ModItems.TASER.get() && GunsTool.getGunIntTag(stack, "MaxAmmo") == 0) {
+                } else if (stack.getItem() == ModItems.TASER.get() && GunsTool.getGunIntTag(tag, "MaxAmmo") == 0) {
                     return;
-                } else if (stack.is(ModTags.Items.LAUNCHER) && GunsTool.getGunIntTag(stack, "MaxAmmo") == 0) {
+                } else if (stack.is(ModTags.Items.LAUNCHER) && GunsTool.getGunIntTag(tag, "MaxAmmo") == 0) {
                     return;
                 }
             }
 
             if (canReload || clipLoad) {
-                int magazine = GunsTool.getGunIntTag(stack, "Magazine", 0);
+                int magazine = GunsTool.getGunIntTag(tag, "Magazine", 0);
+                int ammo = GunsTool.getGunIntTag(tag, "Ammo", 0);
+                int customMagazine = GunsTool.getGunIntTag(tag, "CustomMagazine", 0);
 
                 if (gunItem.isOpenBolt(stack)) {
                     if (gunItem.hasBulletInBarrel(stack)) {
-                        if (GunsTool.getGunIntTag(stack, "Ammo", 0) < magazine + GunsTool.getGunIntTag(stack, "CustomMagazine", 0) + 1) {
-                            GunsTool.setGunBooleanTag(stack, "StartReload", true);
+                        if (ammo < magazine + customMagazine + 1) {
+                            data.putBoolean("StartReload", true);
                         }
-                    } else {
-                        if (GunsTool.getGunIntTag(stack, "Ammo", 0) < magazine + GunsTool.getGunIntTag(stack, "CustomMagazine", 0)) {
-                            GunsTool.setGunBooleanTag(stack, "StartReload", true);
-                        }
+                    } else if (ammo < magazine + customMagazine) {
+                        data.putBoolean("StartReload", true);
                     }
-                } else if (GunsTool.getGunIntTag(stack, "Ammo", 0) < magazine + GunsTool.getGunIntTag(stack, "CustomMagazine", 0)) {
-                    GunsTool.setGunBooleanTag(stack, "StartReload", true);
+                } else if (ammo < magazine + customMagazine) {
+                    data.putBoolean("StartReload", true);
                 }
+                NBTTool.saveTag(stack, tag);
                 return;
             }
 
             if (canSingleReload
-                    && GunsTool.getGunIntTag(stack, "Ammo", 0)
-                    < GunsTool.getGunIntTag(stack, "Magazine", 0)
-                    + GunsTool.getGunIntTag(stack, "CustomMagazine", 0)) {
-                NBTTool.setBoolean(stack, "start_single_reload", true);
+                    && GunsTool.getGunIntTag(tag, "Ammo", 0)
+                    < GunsTool.getGunIntTag(tag, "Magazine", 0)
+                    + GunsTool.getGunIntTag(tag, "CustomMagazine", 0)) {
+
+                data.putBoolean("start_single_reload", true);
             }
+            NBTTool.saveTag(stack, tag);
         }
     }
 

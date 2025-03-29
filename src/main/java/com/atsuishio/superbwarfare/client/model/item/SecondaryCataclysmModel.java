@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.launcher.SecondaryCataclysm;
 import com.atsuishio.superbwarfare.tools.GunsTool;
+import com.atsuishio.superbwarfare.tools.NBTTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -99,7 +100,8 @@ public class SecondaryCataclysmModel extends GeoModel<SecondaryCataclysm> {
         float numR = (float) (1 - 0.12 * zt);
         float numP = (float) (1 - 0.68 * zt);
 
-        if (GunsTool.getGunIntTag(stack, "ReloadTime") > 0) {
+        final var tag = NBTTool.getTag(stack);
+        if (GunsTool.getGunIntTag(tag, "ReloadTime") > 0) {
             main.setRotX(numR * main.getRotX());
             main.setRotY(numR * main.getRotY());
             main.setRotZ(numR * main.getRotZ());

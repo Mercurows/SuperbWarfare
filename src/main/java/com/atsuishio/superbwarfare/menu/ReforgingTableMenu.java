@@ -8,6 +8,7 @@ import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
 import com.atsuishio.superbwarfare.tools.GunsTool;
+import com.atsuishio.superbwarfare.tools.NBTTool;
 import net.minecraft.util.Mth;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
@@ -164,7 +165,8 @@ public class ReforgingTableMenu extends AbstractContainerMenu {
                 ItemStack itemstack = this.container.getItem(i);
 
                 if (itemstack.getItem() instanceof PerkItem<?> perkItem) {
-                    if (!copy.isEmpty() && PerkHelper.getItemPerkLevel(perkItem.getPerk(), copy) > 0) {
+                    final var tag = NBTTool.getTag(copy);
+                    if (!copy.isEmpty() && PerkHelper.getItemPerkLevel(perkItem.getPerk(), tag) > 0) {
                         continue;
                     }
                 }
@@ -206,13 +208,15 @@ public class ReforgingTableMenu extends AbstractContainerMenu {
             return;
         }
 
-        double oldPoint = GunsTool.getGunDoubleTag(stack, "UpgradePoint", 0);
+        final var tag = NBTTool.getTag(stack);
+        double oldPoint = GunsTool.getGunDoubleTag(tag, "UpgradePoint", 0);
         int point = (int) oldPoint;
         int newPoint = this.upgradePoint.get();
         int delta = newPoint - point;
 
         if (delta != 0) {
-            GunsTool.setGunDoubleTag(stack, "UpgradePoint", oldPoint + delta);
+            GunsTool.setGunDoubleTag(tag, "UpgradePoint", oldPoint + delta);
+            NBTTool.saveTag(stack, tag);
         }
     }
 
@@ -233,28 +237,30 @@ public class ReforgingTableMenu extends AbstractContainerMenu {
         }
 
         ItemStack result = gun.copy();
+        final var tag = NBTTool.getTag(result);
 
-        if (!ammo.isEmpty() && ammo.getItem() instanceof PerkItem perkItem) {
+        if (!ammo.isEmpty() && ammo.getItem() instanceof PerkItem<?> perkItem) {
             if (gunItem.canApplyPerk(perkItem.getPerk())) {
-                PerkHelper.setPerk(result, perkItem.getPerk(), this.ammoPerkLevel.get());
+                PerkHelper.setPerk(tag, perkItem.getPerk(), this.ammoPerkLevel.get());
                 this.container.setItem(AMMO_PERK_SLOT, ItemStack.EMPTY);
             }
         }
 
-        if (!func.isEmpty() && func.getItem() instanceof PerkItem perkItem) {
+        if (!func.isEmpty() && func.getItem() instanceof PerkItem<?> perkItem) {
             if (gunItem.canApplyPerk(perkItem.getPerk())) {
-                PerkHelper.setPerk(result, perkItem.getPerk(), this.funcPerkLevel.get());
+                PerkHelper.setPerk(tag, perkItem.getPerk(), this.funcPerkLevel.get());
                 this.container.setItem(FUNC_PERK_SLOT, ItemStack.EMPTY);
             }
         }
 
-        if (!damage.isEmpty() && damage.getItem() instanceof PerkItem perkItem) {
+        if (!damage.isEmpty() && damage.getItem() instanceof PerkItem<?> perkItem) {
             if (gunItem.canApplyPerk(perkItem.getPerk())) {
-                PerkHelper.setPerk(result, perkItem.getPerk(), this.damagePerkLevel.get());
+                PerkHelper.setPerk(tag, perkItem.getPerk(), this.damagePerkLevel.get());
                 this.container.setItem(DAMAGE_PERK_SLOT, ItemStack.EMPTY);
             }
         }
 
+        NBTTool.saveTag(result, tag);
         handleUpgradePoint(result);
 
         this.ammoPerkLevel.set(0);
@@ -278,25 +284,28 @@ public class ReforgingTableMenu extends AbstractContainerMenu {
             return;
         }
 
-        if (perk.getItem() instanceof PerkItem perkItem) {
+        if (perk.getItem() instanceof PerkItem<?> perkItem) {
             switch (perkItem.getPerk().type) {
                 case AMMO -> this.ammoPerkLevel.set(0);
                 case FUNCTIONAL -> this.funcPerkLevel.set(0);
                 case DAMAGE -> this.damagePerkLevel.set(0);
             }
 
-            int level = PerkHelper.getItemPerkLevel(perkItem.getPerk(), gun);
+            final var tag = NBTTool.getTag(gun);
+            int level = PerkHelper.getItemPerkLevel(perkItem.getPerk(), tag);
 
             if (level <= 0) {
-                this.upgradePoint.set((int) GunsTool.getGunDoubleTag(gun, "UpgradePoint", 0));
+                this.upgradePoint.set((int) GunsTool.getGunDoubleTag(tag, "UpgradePoint", 0));
                 return;
             }
 
             ItemStack output = gun.copy();
-            PerkHelper.removePerkByType(output, perkItem.getPerk().type);
-            GunsTool.setGunDoubleTag(output, "UpgradePoint", Math.min(MAX_UPGRADE_POINT, level - 1 + GunsTool.getGunDoubleTag(output, "UpgradePoint", 0)));
-            this.upgradePoint.set((int) GunsTool.getGunDoubleTag(output, "UpgradePoint", 0));
+            final var outputTag = NBTTool.getTag(output);
+            PerkHelper.removePerkByType(outputTag, perkItem.getPerk().type);
+            GunsTool.setGunDoubleTag(outputTag, "UpgradePoint", Math.min(MAX_UPGRADE_POINT, level - 1 + GunsTool.getGunDoubleTag(outputTag, "UpgradePoint", 0)));
+            this.upgradePoint.set((int) GunsTool.getGunDoubleTag(outputTag, "UpgradePoint", 0));
 
+            NBTTool.saveTag(output, outputTag);
             this.container.setItem(INPUT_SLOT, output);
             this.container.setChanged();
         }
@@ -328,27 +337,27 @@ public class ReforgingTableMenu extends AbstractContainerMenu {
         if (!(stack.getItem() instanceof GunItem)) {
             return;
         }
-
-        int point = (int) GunsTool.getGunDoubleTag(stack, "UpgradePoint", 0);
+        final var tag = NBTTool.getTag(stack);
+        int point = (int) GunsTool.getGunDoubleTag(tag, "UpgradePoint", 0);
         this.upgradePoint.set(Mth.clamp(point, 0, MAX_UPGRADE_POINT));
 
-        var ammoPerk = PerkHelper.getPerkByType(stack, Perk.Type.AMMO);
+        var ammoPerk = PerkHelper.getPerkByType(tag, Perk.Type.AMMO);
         if (ammoPerk != null) {
-            this.ammoPerkLevel.set(PerkHelper.getItemPerkLevel(ammoPerk, stack));
+            this.ammoPerkLevel.set(PerkHelper.getItemPerkLevel(ammoPerk, tag));
             var ammoPerkItem = PerkHelper.getPerkItem(ammoPerk);
             ammoPerkItem.ifPresent(registryObject -> this.container.setItem(AMMO_PERK_SLOT, registryObject.get().getDefaultInstance()));
         }
 
-        var funcPerk = PerkHelper.getPerkByType(stack, Perk.Type.FUNCTIONAL);
+        var funcPerk = PerkHelper.getPerkByType(tag, Perk.Type.FUNCTIONAL);
         if (funcPerk != null) {
-            this.funcPerkLevel.set(PerkHelper.getItemPerkLevel(funcPerk, stack));
+            this.funcPerkLevel.set(PerkHelper.getItemPerkLevel(funcPerk, tag));
             var funcPerkItem = PerkHelper.getPerkItem(funcPerk);
             funcPerkItem.ifPresent(registryObject -> this.container.setItem(FUNC_PERK_SLOT, registryObject.get().getDefaultInstance()));
         }
 
-        var damagePerk = PerkHelper.getPerkByType(stack, Perk.Type.DAMAGE);
+        var damagePerk = PerkHelper.getPerkByType(tag, Perk.Type.DAMAGE);
         if (damagePerk != null) {
-            this.damagePerkLevel.set(PerkHelper.getItemPerkLevel(damagePerk, stack));
+            this.damagePerkLevel.set(PerkHelper.getItemPerkLevel(damagePerk, tag));
             var damagePerkItem = PerkHelper.getPerkItem(damagePerk);
             damagePerkItem.ifPresent(registryObject -> this.container.setItem(DAMAGE_PERK_SLOT, registryObject.get().getDefaultInstance()));
         }
@@ -360,28 +369,28 @@ public class ReforgingTableMenu extends AbstractContainerMenu {
     /**
      * 拿走输入槽中的枪械时，如果Perk槽中存在放入枪械时生成的Perk物品，则将其移除，如果是没有的Perk则无视
      *
-     * @param pStack 输入的枪械
+     * @param stack 输入的枪械
      */
-    private void onTakeGun(ItemStack pStack) {
-        if (!(pStack.getItem() instanceof GunItem)) {
+    private void onTakeGun(ItemStack stack) {
+        if (!(stack.getItem() instanceof GunItem)) {
             return;
         }
-
-        var ammoPerk = PerkHelper.getPerkByType(pStack, Perk.Type.AMMO);
+        final var tag = NBTTool.getTag(stack);
+        var ammoPerk = PerkHelper.getPerkByType(tag, Perk.Type.AMMO);
         if (ammoPerk != null) {
             if (this.container.getItem(AMMO_PERK_SLOT).getItem() instanceof PerkItem<?> perkItem && perkItem.getPerk() == ammoPerk) {
                 this.container.setItem(AMMO_PERK_SLOT, ItemStack.EMPTY);
             }
         }
 
-        var funcPerk = PerkHelper.getPerkByType(pStack, Perk.Type.FUNCTIONAL);
+        var funcPerk = PerkHelper.getPerkByType(tag, Perk.Type.FUNCTIONAL);
         if (funcPerk != null) {
             if (this.container.getItem(FUNC_PERK_SLOT).getItem() instanceof PerkItem<?> perkItem && perkItem.getPerk() == funcPerk) {
                 this.container.setItem(FUNC_PERK_SLOT, ItemStack.EMPTY);
             }
         }
 
-        var damagePerk = PerkHelper.getPerkByType(pStack, Perk.Type.DAMAGE);
+        var damagePerk = PerkHelper.getPerkByType(tag, Perk.Type.DAMAGE);
         if (damagePerk != null) {
             if (this.container.getItem(DAMAGE_PERK_SLOT).getItem() instanceof PerkItem<?> perkItem && perkItem.getPerk() == damagePerk) {
                 this.container.setItem(DAMAGE_PERK_SLOT, ItemStack.EMPTY);

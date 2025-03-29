@@ -28,6 +28,7 @@ import software.bernie.geckolib.animation.*;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Set;
 
 public class SvdItem extends GunItem implements GeoItem {
@@ -113,11 +114,13 @@ public class SvdItem extends GunItem implements GeoItem {
     }
 
     @Override
+    @ParametersAreNonnullByDefault
     public void inventoryTick(ItemStack stack, Level world, Entity entity, int slot, boolean selected) {
         super.inventoryTick(stack, world, entity, slot, selected);
 
-        int scopeType = GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.SCOPE);
-        int magType = GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.MAGAZINE);
+        final var tag = NBTTool.getTag(stack);
+        int scopeType = GunsTool.getAttachmentType(tag, GunsTool.AttachmentType.SCOPE);
+        int magType = GunsTool.getAttachmentType(tag, GunsTool.AttachmentType.MAGAZINE);
 
         int customMag = switch (magType) {
             case 1 -> 10;
@@ -128,12 +131,13 @@ public class SvdItem extends GunItem implements GeoItem {
         double customZoom = switch (scopeType) {
             case 0, 1 -> 0;
             case 2 -> 3.75;
-            default -> GunsTool.getGunDoubleTag(stack, "CustomZoom", 0);
+            default -> GunsTool.getGunDoubleTag(tag, "CustomZoom", 0);
         };
 
-        NBTTool.getTag(stack).putBoolean("CanAdjustZoomFov", scopeType == 3);
-        GunsTool.setGunDoubleTag(stack, "CustomZoom", customZoom);
-        GunsTool.setGunIntTag(stack, "CustomMagazine", customMag);
+        tag.putBoolean("CanAdjustZoomFov", scopeType == 3);
+        GunsTool.setGunDoubleTag(tag, "CustomZoom", customZoom);
+        GunsTool.setGunIntTag(tag, "CustomMagazine", customMag);
+        NBTTool.saveTag(stack, tag);
     }
 
     @Override

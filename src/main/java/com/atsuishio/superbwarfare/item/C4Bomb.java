@@ -64,7 +64,7 @@ public class C4Bomb extends Item implements ProjectileItem {
     @Override
     @ParametersAreNonnullByDefault
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
-        if (NBTTool.getBoolean(stack, TAG_CONTROL, false)) {
+        if (NBTTool.getTag(stack).getBoolean(TAG_CONTROL)) {
             tooltipComponents.add(Component.translatable("des.superbwarfare.c4_bomb.control").withStyle(ChatFormatting.GRAY));
         } else {
             tooltipComponents.add(Component.translatable("des.superbwarfare.c4_bomb.time").withStyle(ChatFormatting.GRAY));
@@ -73,7 +73,9 @@ public class C4Bomb extends Item implements ProjectileItem {
 
     public static ItemStack makeInstance() {
         ItemStack stack = new ItemStack(ModItems.C4_BOMB.get());
-        NBTTool.setBoolean(stack, TAG_CONTROL, true);
+        final var tag = NBTTool.getTag(stack);
+        tag.putBoolean(TAG_CONTROL, true);
+        NBTTool.saveTag(stack, tag);
         return stack;
     }
 

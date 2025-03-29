@@ -28,6 +28,7 @@ import software.bernie.geckolib.animation.*;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Set;
 
 public class Ntw20Item extends GunItem implements GeoItem {
@@ -58,16 +59,17 @@ public class Ntw20Item extends GunItem implements GeoItem {
         if (player == null) return PlayState.STOP;
         ItemStack stack = player.getMainHandItem();
         if (!stack.is(ModTags.Items.GUN)) return PlayState.STOP;
+        final var tag = NBTTool.getTag(stack);
 
-        if (GunsTool.getGunIntTag(stack, "BoltActionTick") > 0) {
+        if (GunsTool.getGunIntTag(tag, "BoltActionTick") > 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.ntw_20.shift"));
         }
 
-        if (NBTTool.getTag(stack).getBoolean("is_empty_reloading")) {
+        if (tag.getBoolean("is_empty_reloading")) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.ntw_20.reload_empty"));
         }
 
-        if (NBTTool.getTag(stack).getBoolean("is_normal_reloading")) {
+        if (tag.getBoolean("is_normal_reloading")) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.ntw_20.reload_normal"));
         }
 
@@ -79,12 +81,13 @@ public class Ntw20Item extends GunItem implements GeoItem {
         if (player == null) return PlayState.STOP;
         ItemStack stack = player.getMainHandItem();
         if (!stack.is(ModTags.Items.GUN)) return PlayState.STOP;
+        final var tag = NBTTool.getTag(stack);
 
         if (player.isSprinting() && player.onGround()
                 && player.getPersistentData().getDouble("noRun") == 0
-                && !(NBTTool.getTag(stack).getBoolean("is_normal_reloading") || NBTTool.getTag(stack).getBoolean("is_empty_reloading"))
+                && !(tag.getBoolean("is_normal_reloading") || tag.getBoolean("is_empty_reloading"))
                 && ClientEventHandler.drawTime < 0.01) {
-            if (player.hasEffect(MobEffects.MOVEMENT_SPEED) && GunsTool.getGunIntTag(stack, "BoltActionTick") == 0) {
+            if (player.hasEffect(MobEffects.MOVEMENT_SPEED) && GunsTool.getGunIntTag(tag, "BoltActionTick") == 0) {
                 return event.setAndContinue(RawAnimation.begin().thenLoop("animation.ntw_20.run_fast"));
             } else {
                 return event.setAndContinue(RawAnimation.begin().thenLoop("animation.ntw_20.run"));
@@ -124,11 +127,13 @@ public class Ntw20Item extends GunItem implements GeoItem {
     }
 
     @Override
+    @ParametersAreNonnullByDefault
     public void inventoryTick(ItemStack stack, Level world, Entity entity, int slot, boolean selected) {
         super.inventoryTick(stack, world, entity, slot, selected);
 
-        int scopeType = GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.SCOPE);
-        int magType = GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.MAGAZINE);
+        final var tag = NBTTool.getTag(stack);
+        int scopeType = GunsTool.getAttachmentType(tag, GunsTool.AttachmentType.SCOPE);
+        int magType = GunsTool.getAttachmentType(tag, GunsTool.AttachmentType.MAGAZINE);
 
         int customMag = switch (magType) {
             case 1 -> 3;
@@ -139,12 +144,13 @@ public class Ntw20Item extends GunItem implements GeoItem {
         double customZoom = switch (scopeType) {
             case 0, 1 -> 0;
             case 2 -> 2.25;
-            default -> GunsTool.getGunDoubleTag(stack, "CustomZoom", 0);
+            default -> GunsTool.getGunDoubleTag(tag, "CustomZoom", 0);
         };
 
-        NBTTool.getTag(stack).putBoolean("CanAdjustZoomFov", scopeType == 3);
-        GunsTool.setGunDoubleTag(stack, "CustomZoom", customZoom);
-        GunsTool.setGunIntTag(stack, "CustomMagazine", customMag);
+        tag.putBoolean("CanAdjustZoomFov", scopeType == 3);
+        GunsTool.setGunDoubleTag(tag, "CustomZoom", customZoom);
+        GunsTool.setGunIntTag(tag, "CustomMagazine", customMag);
+        NBTTool.saveTag(stack, tag);
     }
 
     public static ItemStack getGunInstance() {

@@ -17,9 +17,11 @@ import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
 import com.atsuishio.superbwarfare.tools.GunsTool;
 import com.atsuishio.superbwarfare.tools.InventoryTool;
+import com.atsuishio.superbwarfare.tools.NBTTool;
 import com.atsuishio.superbwarfare.tools.SoundTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
@@ -116,12 +118,15 @@ public class BocekItem extends GunItem implements GeoItem, SpecialFireWeapon {
     @ParametersAreNonnullByDefault
     public void inventoryTick(ItemStack stack, Level world, Entity entity, int slot, boolean selected) {
         super.inventoryTick(stack, world, entity, slot, selected);
+        final var tag = NBTTool.getTag(stack);
         if (entity instanceof Player player) {
-            GunsTool.setGunIntTag(stack, "MaxAmmo", getAmmoCount(player));
+            GunsTool.setGunIntTag(tag, "MaxAmmo", getAmmoCount(player));
+            NBTTool.saveTag(stack, tag);
         }
 
-        if (GunsTool.getGunIntTag(stack, "ArrowEmpty") > 0) {
-            GunsTool.setGunIntTag(stack, "ArrowEmpty", GunsTool.getGunIntTag(stack, "ArrowEmpty") - 1);
+        if (GunsTool.getGunIntTag(tag, "ArrowEmpty") > 0) {
+            GunsTool.setGunIntTag(tag, "ArrowEmpty", GunsTool.getGunIntTag(tag, "ArrowEmpty") - 1);
+            NBTTool.saveTag(stack, tag);
         }
     }
 
@@ -166,12 +171,11 @@ public class BocekItem extends GunItem implements GeoItem, SpecialFireWeapon {
 
 
     @Override
-    public void fireOnRelease(Player player) {
+    public void fireOnRelease(Player player, final CompoundTag tag) {
         if (player.level().isClientSide()) return;
 
         ItemStack stack = player.getMainHandItem();
-
-        var perk = PerkHelper.getPerkByType(stack, Perk.Type.AMMO);
+        var perk = PerkHelper.getPerkByType(tag, Perk.Type.AMMO);
 
         if (player instanceof ServerPlayer serverPlayer) {
             SoundTool.stopSound(serverPlayer, ModSounds.BOCEK_PULL_1P.getId(), SoundSource.PLAYERS);
@@ -180,16 +184,16 @@ public class BocekItem extends GunItem implements GeoItem, SpecialFireWeapon {
             PacketDistributor.sendToPlayer(serverPlayer, new ShootClientMessage(10));
         }
 
-        if (GunsTool.getGunDoubleTag(stack, "Power") >= 6) {
+        if (GunsTool.getGunDoubleTag(tag, "Power") >= 6) {
             var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
             if (cap != null && cap.zoom) {
-                spawnBullet(player);
+                spawnBullet(player, tag);
 
                 SoundTool.playLocalSound(player, ModSounds.BOCEK_ZOOM_FIRE_1P.get(), 10, 1);
                 player.playSound(ModSounds.BOCEK_ZOOM_FIRE_3P.get(), 2, 1);
             } else {
                 for (int i = 0; i < (perk instanceof AmmoPerk ammoPerk && ammoPerk.slug ? 1 : 10); i++) {
-                    spawnBullet(player);
+                    spawnBullet(player, tag);
                 }
 
                 SoundTool.playLocalSound(player, ModSounds.BOCEK_SHATTER_CAP_FIRE_1P.get(), 10, 1);
@@ -205,8 +209,9 @@ public class BocekItem extends GunItem implements GeoItem, SpecialFireWeapon {
             }
 
             player.getCooldowns().addCooldown(stack.getItem(), 7);
-            GunsTool.setGunIntTag(stack, "ArrowEmpty", 7);
-            GunsTool.setGunDoubleTag(stack, "Power", 0);
+            GunsTool.setGunIntTag(tag, "ArrowEmpty", 7);
+            GunsTool.setGunDoubleTag(tag, "Power", 0);
+            NBTTool.saveTag(stack, tag);
 
             if (!InventoryTool.hasCreativeAmmoBox(player) && !player.isCreative()) {
                 player.getInventory().clearOrCountMatchingItems(p -> Items.ARROW == p.getItem(), 1, player.inventoryMenu.getCraftSlots());
@@ -215,7 +220,7 @@ public class BocekItem extends GunItem implements GeoItem, SpecialFireWeapon {
     }
 
     @Override
-    public void fireOnPress(Player player) {
+    public void fireOnPress(Player player, final CompoundTag tag) {
         var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
         if (cap != null) {
             cap.bowPullHold = true;

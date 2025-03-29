@@ -44,8 +44,8 @@ public class K98ItemModel extends GeoModel<K98Item> {
         ItemStack stack = player.getMainHandItem();
         if (!stack.is(ModTags.Items.GUN)) return;
 
-
-        if (NBTTool.getTag(stack).getDouble("prepare") > 11 && GunsTool.getGunIntTag(stack, "Ammo", 0) == 1) {
+        final var tag = NBTTool.getTag(stack);
+        if (NBTTool.getTag(stack).getDouble("prepare") > 11 && GunsTool.getGunIntTag(tag, "Ammo", 0) == 1) {
             clip.setScaleX(0);
             clip.setScaleY(0);
             clip.setScaleZ(0);
@@ -108,7 +108,7 @@ public class K98ItemModel extends GeoModel<K98Item> {
         float numR = (float) (1 - 0.52 * zt);
         float numP = (float) (1 - 0.58 * zt);
 
-        if (GunsTool.getGunIntTag(stack, "ReloadTime") > 0 || GunsTool.getGunBooleanTag(stack, "Reloading")) {
+        if (GunsTool.getGunIntTag(tag, "ReloadTime") > 0 || GunsTool.getGunBooleanTag(tag, "Reloading")) {
             main.setRotX(numR * main.getRotX());
             main.setRotY(numR * main.getRotY());
             main.setRotZ(numR * main.getRotZ());

@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.shotgun.M870Item;
 import com.atsuishio.superbwarfare.tools.GunsTool;
+import com.atsuishio.superbwarfare.tools.NBTTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -99,7 +100,8 @@ public class M870ItemModel extends GeoModel<M870Item> {
         float numR = (float) (1 - 0.72 * zt);
         float numP = (float) (1 - 0.82 * zt);
 
-        if (GunsTool.getGunBooleanTag(stack, "Reloading")) {
+        final var tag = NBTTool.getTag(stack);
+        if (GunsTool.getGunBooleanTag(tag, "Reloading")) {
             main.setRotX(numR * main.getRotX());
             main.setRotY(numR * main.getRotY());
             main.setRotZ(numR * main.getRotZ());

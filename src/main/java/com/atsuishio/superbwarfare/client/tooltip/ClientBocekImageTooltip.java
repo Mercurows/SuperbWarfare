@@ -20,12 +20,12 @@ public class ClientBocekImageTooltip extends ClientGunImageTooltip {
     protected Component getDamageComponent() {
         boolean slug = false;
 
-        var perk = PerkHelper.getPerkByType(stack, Perk.Type.AMMO);
+        var perk = PerkHelper.getPerkByType(tag, Perk.Type.AMMO);
         if (perk instanceof AmmoPerk ammoPerk && ammoPerk.slug) {
             slug = true;
         }
 
-        double total = GunsTool.getGunDoubleTag(stack, "Damage", 0) * TooltipTool.perkDamage(stack);
+        double total = GunsTool.getGunDoubleTag(tag, "Damage", 0) * TooltipTool.perkDamage(stack);
 
         if (slug) {
             return Component.translatable("des.superbwarfare.guns.damage").withStyle(ChatFormatting.GRAY)

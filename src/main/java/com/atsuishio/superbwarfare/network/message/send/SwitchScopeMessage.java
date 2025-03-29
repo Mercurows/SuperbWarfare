@@ -27,7 +27,9 @@ public record SwitchScopeMessage(double scroll) implements CustomPacketPayload {
         ItemStack stack = player.getMainHandItem();
         if (!stack.is(ModTags.Items.GUN)) return;
 
-        NBTTool.setBoolean(stack, "ScopeAlt", NBTTool.getBoolean(stack, "ScopeAlt", false));
+        final var tag = NBTTool.getTag(stack);
+        tag.putBoolean("ScopeAlt", tag.getBoolean("ScopeAlt"));
+        NBTTool.saveTag(stack, tag);
     }
 
     @Override

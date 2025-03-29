@@ -133,8 +133,8 @@ public class LivingEventHandler {
 
         ItemStack stack = sourceEntity instanceof LivingEntity living ? living.getMainHandItem() : ItemStack.EMPTY;
 
-
-        var perk = PerkHelper.getPerkByType(stack, Perk.Type.AMMO);
+        final var tag = NBTTool.getTag(stack);
+        var perk = PerkHelper.getPerkByType(tag, Perk.Type.AMMO);
 
         // 距离衰减
         if (DamageTypeTool.isGunDamage(source)) {
@@ -161,7 +161,6 @@ public class LivingEventHandler {
 
         // 计算防弹插板减伤
         ItemStack armor = entity.getItemBySlot(EquipmentSlot.CHEST);
-        var tag = NBTTool.getTag(armor);
 
         if (armor != ItemStack.EMPTY && tag.contains("ArmorPlate")) {
             double armorValue;
@@ -209,18 +208,21 @@ public class LivingEventHandler {
         if (event.getEntity() instanceof TargetEntity) return;
 
         double amount = Math.min(0.125 * event.getAmount(), event.getEntity().getMaxHealth());
+        final var tag = NBTTool.getTag(stack);
 
         // 先处理发射器类武器或高爆弹的爆炸伤害
         if (source.is(ModDamageTypes.PROJECTILE_BOOM)) {
-            if (stack.is(ModTags.Items.LAUNCHER) || PerkHelper.getItemPerkLevel(ModPerks.HE_BULLET.get(), stack) > 0) {
-                GunsTool.setGunDoubleTag(stack, "Exp", GunsTool.getGunDoubleTag(stack, "Exp", 0) + amount);
+            if (stack.is(ModTags.Items.LAUNCHER) || PerkHelper.getItemPerkLevel(ModPerks.HE_BULLET.get(), tag) > 0) {
+                GunsTool.setGunDoubleTag(tag, "Exp", GunsTool.getGunDoubleTag(tag, "Exp", 0) + amount);
             }
         }
 
         // 再判断是不是枪械能造成的伤害
         if (!DamageTypeTool.isGunDamage(source)) return;
 
-        GunsTool.setGunDoubleTag(stack, "Exp", GunsTool.getGunDoubleTag(stack, "Exp", 0) + amount);
+        GunsTool.setGunDoubleTag(tag, "Exp", GunsTool.getGunDoubleTag(tag, "Exp", 0) + amount);
+
+        NBTTool.saveTag(stack, tag);
     }
 
     private static void giveKillExpToWeapon(LivingDeathEvent event) {
@@ -232,32 +234,34 @@ public class LivingEventHandler {
         if (event.getEntity() instanceof TargetEntity) return;
 
         double amount = 20 + 2 * event.getEntity().getMaxHealth();
+        final var tag = NBTTool.getTag(stack);
 
         // 先处理发射器类武器或高爆弹的爆炸伤害
         if (source.is(ModDamageTypes.PROJECTILE_BOOM)) {
-            if (stack.is(ModTags.Items.LAUNCHER) || PerkHelper.getItemPerkLevel(ModPerks.HE_BULLET.get(), stack) > 0) {
-                GunsTool.setGunDoubleTag(stack, "Exp", GunsTool.getGunDoubleTag(stack, "Exp", 0) + amount);
+            if (stack.is(ModTags.Items.LAUNCHER) || PerkHelper.getItemPerkLevel(ModPerks.HE_BULLET.get(), tag) > 0) {
+                GunsTool.setGunDoubleTag(tag, "Exp", GunsTool.getGunDoubleTag(tag, "Exp", 0) + amount);
             }
         }
 
         // 再判断是不是枪械能造成的伤害
         if (DamageTypeTool.isGunDamage(source)) {
-            GunsTool.setGunDoubleTag(stack, "Exp", GunsTool.getGunDoubleTag(stack, "Exp", 0) + amount);
+            GunsTool.setGunDoubleTag(tag, "Exp", GunsTool.getGunDoubleTag(tag, "Exp", 0) + amount);
         }
 
         // 提升武器等级
-        int level = GunsTool.getGunIntTag(stack, "Level", 0);
-        double exp = GunsTool.getGunDoubleTag(stack, "Exp", 0);
+        int level = GunsTool.getGunIntTag(tag, "Level", 0);
+        double exp = GunsTool.getGunDoubleTag(tag, "Exp", 0);
         double upgradeExpNeeded = 20 * Math.pow(level, 2) + 160 * level + 20;
 
         while (exp >= upgradeExpNeeded) {
             exp -= upgradeExpNeeded;
-            level = GunsTool.getGunIntTag(stack, "Level", 0) + 1;
+            level = GunsTool.getGunIntTag(tag, "Level", 0) + 1;
             upgradeExpNeeded = 20 * Math.pow(level, 2) + 160 * level + 20;
-            GunsTool.setGunDoubleTag(stack, "Exp", exp);
-            GunsTool.setGunIntTag(stack, "Level", level);
-            GunsTool.setGunDoubleTag(stack, "UpgradePoint", GunsTool.getGunDoubleTag(stack, "UpgradePoint", 0) + 0.5);
+            GunsTool.setGunDoubleTag(tag, "Exp", exp);
+            GunsTool.setGunIntTag(tag, "Level", level);
+            GunsTool.setGunDoubleTag(tag, "UpgradePoint", GunsTool.getGunDoubleTag(tag, "UpgradePoint", 0) + 0.5);
         }
+        NBTTool.saveTag(stack, tag);
     }
 
     private static void handleGunLevels(LivingIncomingDamageEvent event) {
@@ -268,18 +272,20 @@ public class LivingEventHandler {
         if (!stack.is(ModTags.Items.GUN)) return;
         if (event.getEntity() instanceof TargetEntity) return;
 
-        int level = GunsTool.getGunIntTag(stack, "Level", 0);
-        double exp = GunsTool.getGunDoubleTag(stack, "Exp", 0);
+        final var tag = NBTTool.getTag(stack);
+        int level = GunsTool.getGunIntTag(tag, "Level", 0);
+        double exp = GunsTool.getGunDoubleTag(tag, "Exp", 0);
         double upgradeExpNeeded = 20 * Math.pow(level, 2) + 160 * level + 20;
 
         while (exp >= upgradeExpNeeded) {
             exp -= upgradeExpNeeded;
-            level = GunsTool.getGunIntTag(stack, "Level", 0) + 1;
+            level = GunsTool.getGunIntTag(tag, "Level", 0) + 1;
             upgradeExpNeeded = 20 * Math.pow(level, 2) + 160 * level + 20;
-            GunsTool.setGunDoubleTag(stack, "Exp", exp);
-            GunsTool.setGunIntTag(stack, "Level", level);
-            GunsTool.setGunDoubleTag(stack, "UpgradePoint", GunsTool.getGunDoubleTag(stack, "UpgradePoint", 0) + 0.5);
+            GunsTool.setGunDoubleTag(tag, "Exp", exp);
+            GunsTool.setGunIntTag(tag, "Level", level);
+            GunsTool.setGunDoubleTag(tag, "UpgradePoint", GunsTool.getGunDoubleTag(tag, "UpgradePoint", 0) + 0.5);
         }
+        NBTTool.saveTag(stack, tag);
     }
 
     private static void killIndication(LivingDeathEvent event) {
@@ -331,9 +337,7 @@ public class LivingEventHandler {
     @SubscribeEvent
     public static void handleChangeSlot(LivingEquipmentChangeEvent event) {
         if (event.getEntity() instanceof Player player && event.getSlot() == EquipmentSlot.MAINHAND) {
-            if (player.level().isClientSide) {
-                return;
-            }
+            if (player.level().isClientSide) return;
 
             ItemStack oldStack = event.getFrom();
             ItemStack newStack = event.getTo();
@@ -343,97 +347,97 @@ public class LivingEventHandler {
 
             var oldTag = NBTTool.getTag(oldStack);
             var newTag = NBTTool.getTag(newStack);
-            if (player instanceof ServerPlayer serverPlayer) {
-                if (newStack.getItem() != oldStack.getItem()
-                        || (newStack.is(ModTags.Items.GUN) && !GunsTool.getGunData(newStack).hasUUID("UUID"))
-                        || (oldStack.is(ModTags.Items.GUN) && !GunsTool.getGunData(oldStack).hasUUID("UUID"))
-                        || (newStack.is(ModTags.Items.GUN) && oldStack.is(ModTags.Items.GUN) && !Objects.equals(GunsTool.getGunUUID(newStack), GunsTool.getGunUUID(oldStack)))
-                ) {
-                    if (oldStack.getItem() instanceof GunItem oldGun) {
-                        stopGunReloadSound(serverPlayer, oldGun);
+            if (player instanceof ServerPlayer serverPlayer
+                    && (newStack.getItem() != oldStack.getItem()
+                    || (newStack.is(ModTags.Items.GUN) && !GunsTool.getGunData(newTag).hasUUID("UUID"))
+                    || (oldStack.is(ModTags.Items.GUN) && !GunsTool.getGunData(oldTag).hasUUID("UUID"))
+                    || (newStack.is(ModTags.Items.GUN) && oldStack.is(ModTags.Items.GUN) && !Objects.equals(GunsTool.getGunUUID(newTag), GunsTool.getGunUUID(oldTag)))
+            )) {
+                if (oldStack.getItem() instanceof GunItem oldGun) {
+                    stopGunReloadSound(serverPlayer, oldGun);
 
-                        CompoundTag data = oldTag.getCompound("GunData");
+                    CompoundTag data = oldTag.getCompound("GunData");
 
-                        if (GunsTool.getGunDoubleTag(oldStack, "BoltActionTime", 0) > 0) {
-                            data.putInt("BoltActionTick", 0);
-                        }
-
-                        data.putInt("ReloadTime", 0);
-                        oldTag.put("GunData", data);
-
-                        oldTag.putBoolean("is_normal_reloading", false);
-                        oldTag.putBoolean("is_empty_reloading", false);
-
-                        if (GunsTool.getGunIntTag(oldStack, "IterativeTime", 0) != 0) {
-                            oldTag.putBoolean("force_stop", false);
-                            oldTag.putBoolean("stop", false);
-                            oldTag.putInt("reload_stage", 0);
-                            data.putBoolean("Reloading", false);
-                            oldTag.putDouble("prepare", 0);
-                            oldTag.putDouble("prepare_load", 0);
-                            oldTag.putDouble("iterative", 0);
-                            oldTag.putDouble("finish", 0);
-                        }
-                        NBTTool.saveTag(oldStack, oldTag);
-
-                        if (oldStack.is(ModItems.SENTINEL.get())) {
-                            data.putBoolean("Charging", false);
-                            data.putInt("ChargeTime", 0);
-                        }
-
-                        var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
-                        if (cap != null) {
-                            cap.edit = false;
-                            cap.syncPlayerVariables(player);
-                        }
+                    if (GunsTool.getGunDoubleTag(oldTag, "BoltActionTime", 0) > 0) {
+                        data.putInt("BoltActionTick", 0);
                     }
 
-                    if (newStack.getItem() instanceof GunItem) {
-                        player.getPersistentData().putDouble("noRun", 40);
-                        newTag.putBoolean("draw", true);
-                        if (GunsTool.getGunIntTag(newStack, "BoltActionTime", 0) > 0) {
-                            GunsTool.setGunIntTag(newStack, "BoltActionTick", 0);
-                        }
-                        newTag.putBoolean("is_normal_reloading", false);
-                        newTag.putBoolean("is_empty_reloading", false);
+                    data.putInt("ReloadTime", 0);
+                    oldTag.put("GunData", data);
 
-                        CompoundTag data = newTag.getCompound("GunData");
-                        data.putInt("ReloadTime", 0);
-                        newTag.put("GunData", data);
+                    oldTag.putBoolean("is_normal_reloading", false);
+                    oldTag.putBoolean("is_empty_reloading", false);
 
-                        if (GunsTool.getGunIntTag(newStack, "IterativeTime", 0) != 0) {
-                            newTag.putBoolean("force_stop", false);
-                            newTag.putBoolean("stop", false);
-                            newTag.putInt("reload_stage", 0);
-                            GunsTool.setGunBooleanTag(newStack, "Reloading", false);
-                            newTag.putDouble("prepare", 0);
-                            newTag.putDouble("prepare_load", 0);
-                            newTag.putDouble("iterative", 0);
-                            newTag.putDouble("finish", 0);
-                        }
+                    if (GunsTool.getGunIntTag(oldTag, "IterativeTime", 0) != 0) {
+                        oldTag.putBoolean("force_stop", false);
+                        oldTag.putBoolean("stop", false);
+                        oldTag.putInt("reload_stage", 0);
+                        data.putBoolean("Reloading", false);
+                        oldTag.putDouble("prepare", 0);
+                        oldTag.putDouble("prepare_load", 0);
+                        oldTag.putDouble("iterative", 0);
+                        oldTag.putDouble("finish", 0);
+                    }
 
-                        if (newStack.is(ModItems.SENTINEL.get())) {
-                            GunsTool.setGunBooleanTag(newStack, "Charging", false);
-                            GunsTool.setGunIntTag(newStack, "ChargeTime", 0);
-                        }
-                        NBTTool.saveTag(newStack, newTag);
+                    if (oldStack.is(ModItems.SENTINEL.get())) {
+                        data.putBoolean("Charging", false);
+                        data.putInt("ChargeTime", 0);
+                    }
 
-                        int level = PerkHelper.getItemPerkLevel(ModPerks.KILLING_TALLY.get(), newStack);
-                        if (level != 0) {
-                            GunsTool.setPerkIntTag(newStack, "KillingTally", 0);
-                        }
-
-                        if (player.level() instanceof ServerLevel) {
-                            PacketDistributor.sendToPlayer(serverPlayer, new DrawClientMessage(true));
-                        }
-
-                        var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
-                        if (cap != null) {
-                            cap.tacticalSprint = false;
-                            cap.syncPlayerVariables(player);
-                        }
+                    var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
+                    if (cap != null) {
+                        cap.edit = false;
+                        cap.syncPlayerVariables(player);
                     }
                 }
+
+                if (newStack.getItem() instanceof GunItem) {
+                    player.getPersistentData().putDouble("noRun", 40);
+                    newTag.putBoolean("draw", true);
+                    if (GunsTool.getGunIntTag(newTag, "BoltActionTime", 0) > 0) {
+                        GunsTool.setGunIntTag(newTag, "BoltActionTick", 0);
+                    }
+                    newTag.putBoolean("is_normal_reloading", false);
+                    newTag.putBoolean("is_empty_reloading", false);
+
+                    CompoundTag data = newTag.getCompound("GunData");
+                    data.putInt("ReloadTime", 0);
+                    newTag.put("GunData", data);
+
+                    if (GunsTool.getGunIntTag(newTag, "IterativeTime", 0) != 0) {
+                        newTag.putBoolean("force_stop", false);
+                        newTag.putBoolean("stop", false);
+                        newTag.putInt("reload_stage", 0);
+                        GunsTool.setGunBooleanTag(newTag, "Reloading", false);
+                        newTag.putDouble("prepare", 0);
+                        newTag.putDouble("prepare_load", 0);
+                        newTag.putDouble("iterative", 0);
+                        newTag.putDouble("finish", 0);
+                    }
+
+                    if (newStack.is(ModItems.SENTINEL.get())) {
+                        GunsTool.setGunBooleanTag(newTag, "Charging", false);
+                        GunsTool.setGunIntTag(newTag, "ChargeTime", 0);
+                    }
+                    NBTTool.saveTag(newStack, newTag);
+
+                    int level = PerkHelper.getItemPerkLevel(ModPerks.KILLING_TALLY.get(), newTag);
+                    if (level != 0) {
+                        GunsTool.setPerkIntTag(newTag, "KillingTally", 0);
+                    }
+
+                    if (player.level() instanceof ServerLevel) {
+                        PacketDistributor.sendToPlayer(serverPlayer, new DrawClientMessage(true));
+                    }
+
+                    var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
+                    if (cap != null) {
+                        cap.tacticalSprint = false;
+                        cap.syncPlayerVariables(player);
+                    }
+                }
+                NBTTool.saveTag(oldStack, oldTag);
+                NBTTool.saveTag(newStack, newTag);
             }
         }
     }
@@ -514,7 +518,8 @@ public class LivingEventHandler {
         }
 
         if (source.getDirectEntity() instanceof ProjectileEntity projectile) {
-            if (PerkHelper.getItemPerkLevel(ModPerks.FOURTH_TIMES_CHARM.get(), stack) > 0) {
+            final var tag = NBTTool.getTag(stack);
+            if (PerkHelper.getItemPerkLevel(ModPerks.FOURTH_TIMES_CHARM.get(), tag) > 0) {
                 float bypassArmorRate = projectile.getBypassArmorRate();
                 if (bypassArmorRate >= 1.0f && source.is(ModDamageTypes.GUN_FIRE_HEADSHOT_ABSOLUTE)) {
                     handleFourthTimesCharm(stack);
@@ -568,20 +573,23 @@ public class LivingEventHandler {
     }
 
     private static void handleClipPerks(ItemStack stack) {
-        int healClipLevel = PerkHelper.getItemPerkLevel(ModPerks.HEAL_CLIP.get(), stack);
+        final var tag = NBTTool.getTag(stack);
+        int healClipLevel = PerkHelper.getItemPerkLevel(ModPerks.HEAL_CLIP.get(), tag);
         if (healClipLevel != 0) {
-            GunsTool.setPerkIntTag(stack, "HealClipTime", 80 + healClipLevel * 20);
+            GunsTool.setPerkIntTag(tag, "HealClipTime", 80 + healClipLevel * 20);
         }
 
-        int killClipLevel = PerkHelper.getItemPerkLevel(ModPerks.KILL_CLIP.get(), stack);
+        int killClipLevel = PerkHelper.getItemPerkLevel(ModPerks.KILL_CLIP.get(), tag);
         if (killClipLevel != 0) {
-            GunsTool.setPerkIntTag(stack, "KillClipReloadTime", 80);
+            GunsTool.setPerkIntTag(tag, "KillClipReloadTime", 80);
         }
+        NBTTool.saveTag(stack, tag);
     }
 
     private static void handleKillClipDamage(ItemStack stack, LivingIncomingDamageEvent event) {
-        if (GunsTool.getPerkIntTag(stack, "KillClipTime") > 0) {
-            int level = PerkHelper.getItemPerkLevel(ModPerks.KILL_CLIP.get(), stack);
+        final var tag = NBTTool.getTag(stack);
+        if (GunsTool.getPerkIntTag(tag, "KillClipTime") > 0) {
+            int level = PerkHelper.getItemPerkLevel(ModPerks.KILL_CLIP.get(), tag);
             if (level == 0) {
                 return;
             }
@@ -591,21 +599,19 @@ public class LivingEventHandler {
     }
 
     private static void handleGutshotStraightDamage(ItemStack stack, LivingIncomingDamageEvent event) {
-        int level = PerkHelper.getItemPerkLevel(ModPerks.GUTSHOT_STRAIGHT.get(), stack);
-        if (level == 0) {
-            return;
-        }
+        final var tag = NBTTool.getTag(stack);
+        int level = PerkHelper.getItemPerkLevel(ModPerks.GUTSHOT_STRAIGHT.get(), tag);
+        if (level == 0) return;
 
         event.setAmount(event.getAmount() * (1.15f + 0.05f * level));
     }
 
     private static void handleKillingTallyDamage(ItemStack stack, LivingIncomingDamageEvent event) {
-        int level = PerkHelper.getItemPerkLevel(ModPerks.KILLING_TALLY.get(), stack);
-        if (level == 0) {
-            return;
-        }
+        final var tag = NBTTool.getTag(stack);
+        int level = PerkHelper.getItemPerkLevel(ModPerks.KILLING_TALLY.get(), tag);
+        if (level == 0) return;
 
-        int killTally = GunsTool.getPerkIntTag(stack, "KillingTally");
+        int killTally = GunsTool.getPerkIntTag(tag, "KillingTally");
         if (killTally == 0) {
             return;
         }
@@ -614,43 +620,44 @@ public class LivingEventHandler {
     }
 
     private static void handleKillingTallyAddCount(ItemStack stack) {
-        int level = PerkHelper.getItemPerkLevel(ModPerks.KILLING_TALLY.get(), stack);
+        final var tag = NBTTool.getTag(stack);
+        int level = PerkHelper.getItemPerkLevel(ModPerks.KILLING_TALLY.get(), tag);
         if (level != 0) {
-            GunsTool.setPerkIntTag(stack, "KillingTally", Math.min(3, GunsTool.getPerkIntTag(stack, "KillingTally") + 1));
+            GunsTool.setPerkIntTag(tag, "KillingTally", Math.min(3, GunsTool.getPerkIntTag(tag, "KillingTally") + 1));
+            NBTTool.saveTag(stack, tag);
         }
     }
 
     private static void handleFourthTimesCharm(ItemStack stack) {
-        int level = PerkHelper.getItemPerkLevel(ModPerks.FOURTH_TIMES_CHARM.get(), stack);
-        if (level == 0) {
-            return;
-        }
+        final var tag = NBTTool.getTag(stack);
+        int level = PerkHelper.getItemPerkLevel(ModPerks.FOURTH_TIMES_CHARM.get(), tag);
+        if (level == 0) return;
 
-        int fourthTimesCharmTick = GunsTool.getPerkIntTag(stack, "FourthTimesCharmTick");
+        int fourthTimesCharmTick = GunsTool.getPerkIntTag(tag, "FourthTimesCharmTick");
         if (fourthTimesCharmTick <= 0) {
-            GunsTool.setPerkIntTag(stack, "FourthTimesCharmTick", 40 + 10 * level);
-            GunsTool.setPerkIntTag(stack, "FourthTimesCharmCount", 1);
+            GunsTool.setPerkIntTag(tag, "FourthTimesCharmTick", 40 + 10 * level);
+            GunsTool.setPerkIntTag(tag, "FourthTimesCharmCount", 1);
         } else {
-            int count = GunsTool.getPerkIntTag(stack, "FourthTimesCharmCount");
+            int count = GunsTool.getPerkIntTag(tag, "FourthTimesCharmCount");
             if (count < 4) {
-                GunsTool.setPerkIntTag(stack, "FourthTimesCharmCount", Math.min(4, count + 1));
+                GunsTool.setPerkIntTag(tag, "FourthTimesCharmCount", Math.min(4, count + 1));
             }
         }
+        NBTTool.saveTag(stack, tag);
     }
 
     private static void handleSubsistence(ItemStack stack, Player player) {
-        int level = PerkHelper.getItemPerkLevel(ModPerks.SUBSISTENCE.get(), stack);
-        if (level == 0) {
-            return;
-        }
+        final var tag = NBTTool.getTag(stack);
+        int level = PerkHelper.getItemPerkLevel(ModPerks.SUBSISTENCE.get(), tag);
+        if (level == 0) return;
 
         float rate = level * 0.1f + (stack.is(ModTags.Items.SMG) || stack.is(ModTags.Items.RIFLE) ? 0.07f : 0f);
 
         var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
         if (cap == null) return;
 
-        int mag = GunsTool.getGunIntTag(stack, "Magazine", 0) + GunsTool.getGunIntTag(stack, "CustomMagazine", 0);
-        int ammo = GunsTool.getGunIntTag(stack, "Ammo", 0);
+        int mag = GunsTool.getGunIntTag(tag, "Magazine", 0) + GunsTool.getGunIntTag(tag, "CustomMagazine", 0);
+        int ammo = GunsTool.getGunIntTag(tag, "Ammo", 0);
         int ammoReload = (int) Math.min(mag, mag * rate);
         int ammoNeed = Math.min(mag - ammo, ammoReload);
 
@@ -663,7 +670,7 @@ public class LivingEventHandler {
             } else {
                 cap.rifleAmmo -= ammoFinal;
             }
-            GunsTool.setGunIntTag(stack, "Ammo", Math.min(mag, ammo + ammoFinal));
+            GunsTool.setGunIntTag(tag, "Ammo", Math.min(mag, ammo + ammoFinal));
         } else if (stack.is(ModTags.Items.USE_HANDGUN_AMMO)) {
             int ammoFinal = Math.min(cap.handgunAmmo, ammoNeed);
             if (flag) {
@@ -671,17 +678,17 @@ public class LivingEventHandler {
             } else {
                 cap.handgunAmmo -= ammoFinal;
             }
-            GunsTool.setGunIntTag(stack, "Ammo", Math.min(mag, ammo + ammoFinal));
+            GunsTool.setGunIntTag(tag, "Ammo", Math.min(mag, ammo + ammoFinal));
         }
+        NBTTool.saveTag(stack, tag);
         cap.syncPlayerVariables(player);
     }
 
 
     private static void handleFieldDoctor(ItemStack stack, LivingIncomingDamageEvent event, Player player) {
-        int level = PerkHelper.getItemPerkLevel(ModPerks.FIELD_DOCTOR.get(), stack);
-        if (level == 0) {
-            return;
-        }
+        final var tag = NBTTool.getTag(stack);
+        int level = PerkHelper.getItemPerkLevel(ModPerks.FIELD_DOCTOR.get(), tag);
+        if (level == 0) return;
 
         if (event.getEntity().isAlliedTo(player)) {
             event.getEntity().heal(event.getAmount() * Math.min(1.0f, 0.25f + 0.05f * level));
@@ -690,32 +697,31 @@ public class LivingEventHandler {
     }
 
     private static void handleHeadSeekerTime(ItemStack stack) {
-        int level = PerkHelper.getItemPerkLevel(ModPerks.HEAD_SEEKER.get(), stack);
-        if (level == 0) {
-            return;
-        }
+        final var tag = NBTTool.getTag(stack);
+        int level = PerkHelper.getItemPerkLevel(ModPerks.HEAD_SEEKER.get(), tag);
+        if (level == 0) return;
 
-        GunsTool.setPerkIntTag(stack, "HeadSeeker", 11 + level * 2);
+        GunsTool.setPerkIntTag(tag, "HeadSeeker", 11 + level * 2);
+        NBTTool.saveTag(stack, tag);
     }
 
     private static void handleHeadSeekerDamage(ItemStack stack, LivingIncomingDamageEvent event) {
-        int level = PerkHelper.getItemPerkLevel(ModPerks.HEAD_SEEKER.get(), stack);
-        if (level == 0) {
-            return;
-        }
+        final var tag = NBTTool.getTag(stack);
+        int level = PerkHelper.getItemPerkLevel(ModPerks.HEAD_SEEKER.get(), tag);
+        if (level == 0) return;
 
-        if (GunsTool.getPerkIntTag(stack, "HeadSeeker") > 0) {
+        if (GunsTool.getPerkIntTag(tag, "HeadSeeker") > 0) {
             event.setAmount(event.getAmount() * (1.095f + 0.0225f * level));
         }
     }
 
     private static void handleDesperado(ItemStack stack) {
-        int level = PerkHelper.getItemPerkLevel(ModPerks.DESPERADO.get(), stack);
-        if (level == 0) {
-            return;
-        }
+        final var tag = NBTTool.getTag(stack);
+        int level = PerkHelper.getItemPerkLevel(ModPerks.DESPERADO.get(), tag);
+        if (level == 0) return;
 
-        GunsTool.setPerkIntTag(stack, "DesperadoTime", 90 + level * 10);
+        GunsTool.setPerkIntTag(tag, "DesperadoTime", 90 + level * 10);
+        NBTTool.saveTag(stack, tag);
     }
 
     /**
@@ -780,7 +786,9 @@ public class LivingEventHandler {
             return;
         }
 
-        if (stack.is(ModTags.Items.GUN) && PerkHelper.getItemPerkLevel(ModPerks.POWERFUL_ATTRACTION.get(), stack) > 0 && (DamageTypeTool.isGunDamage(source) || DamageTypeTool.isExplosionDamage(source))) {
+
+        final var tag = NBTTool.getTag(stack);
+        if (stack.is(ModTags.Items.GUN) && PerkHelper.getItemPerkLevel(ModPerks.POWERFUL_ATTRACTION.get(), tag) > 0 && (DamageTypeTool.isGunDamage(source) || DamageTypeTool.isExplosionDamage(source))) {
             var drops = event.getDrops();
             drops.forEach(itemEntity -> {
                 ItemStack item = itemEntity.getItem();
@@ -806,7 +814,8 @@ public class LivingEventHandler {
         ItemStack stack = player.getMainHandItem();
         if (!stack.is(ModTags.Items.GUN)) return;
 
-        int level = PerkHelper.getItemPerkLevel(ModPerks.POWERFUL_ATTRACTION.get(), stack);
+        final var tag = NBTTool.getTag(stack);
+        int level = PerkHelper.getItemPerkLevel(ModPerks.POWERFUL_ATTRACTION.get(), tag);
         if (level > 0) {
             player.giveExperiencePoints((int) (event.getDroppedExperience() * (0.8f + 0.2f * level)));
 
@@ -824,7 +833,8 @@ public class LivingEventHandler {
     private static void handleVorpalWeaponDamage(ItemStack stack, LivingIncomingDamageEvent event) {
         var entity = event.getEntity();
 
-        int level = PerkHelper.getItemPerkLevel(ModPerks.VORPAL_WEAPON.get(), stack);
+        final var tag = NBTTool.getTag(stack);
+        int level = PerkHelper.getItemPerkLevel(ModPerks.VORPAL_WEAPON.get(), tag);
         if (level <= 0) return;
         if (entity.getHealth() < 100.0f) return;
 

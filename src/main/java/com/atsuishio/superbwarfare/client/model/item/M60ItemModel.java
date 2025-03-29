@@ -7,6 +7,7 @@ import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.machinegun.M60Item;
 import com.atsuishio.superbwarfare.tools.GunsTool;
+import com.atsuishio.superbwarfare.tools.NBTTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -58,8 +59,9 @@ public class M60ItemModel extends GeoModel<M60Item> {
             r.setRotX(1.5f);
         }
 
-        int ammo = GunsTool.getGunIntTag(stack, "Ammo", 0);
-        boolean flag = GunsTool.getGunBooleanTag(stack, "HideBulletChain");
+        final var tag = NBTTool.getTag(stack);
+        int ammo = GunsTool.getGunIntTag(tag, "Ammo", 0);
+        boolean flag = GunsTool.getGunBooleanTag(tag, "HideBulletChain");
 
         if (ammo < 5 && flag) {
             b5.setScaleX(0);
@@ -151,7 +153,7 @@ public class M60ItemModel extends GeoModel<M60Item> {
         AnimationHelper.handleShellsAnimation(getAnimationProcessor(), 1f, 0.45f);
         GeoBone shell = getAnimationProcessor().getBone("shell");
 
-        if (GunsTool.getGunIntTag(stack, "ReloadTime") > 0) {
+        if (GunsTool.getGunIntTag(tag, "ReloadTime") > 0) {
             main.setRotX(numR * main.getRotX());
             main.setRotY(numR * main.getRotY());
             main.setRotZ(numR * main.getRotZ());

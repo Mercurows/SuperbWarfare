@@ -40,8 +40,6 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Optional;
 import java.util.Set;
 
-import static com.atsuishio.superbwarfare.tools.NBTTool.saveTag;
-
 @EventBusSubscriber(modid = Mod.MODID, bus = EventBusSubscriber.Bus.MOD)
 public abstract class GunItem extends Item implements CustomRendererItem {
 
@@ -58,33 +56,33 @@ public abstract class GunItem extends Item implements CustomRendererItem {
     @Override
     @ParametersAreNonnullByDefault
     public void inventoryTick(ItemStack stack, Level level, Entity entity, int slot, boolean selected) {
-        if (!(entity instanceof LivingEntity)) return;
-        if (!stack.is(ModTags.Items.GUN)) return;
-        if (!(stack.getItem() instanceof GunItem gunItem)) return;
+        if (!(entity instanceof LivingEntity)
+                || !stack.is(ModTags.Items.GUN)
+                || !(stack.getItem() instanceof GunItem gunItem)
+        ) return;
 
-        if (!NBTTool.getBoolean(stack, "init", false)) {
-            GunsTool.initGun(level, stack, this.getDescriptionId().substring(this.getDescriptionId().lastIndexOf('.') + 1));
-            GunsTool.generateAndSetUUID(stack);
-            NBTTool.setBoolean(stack, "init", true);
+        var tag = NBTTool.getTag(stack);
+        if (!tag.getBoolean("init")) {
+            GunsTool.initGun(level, tag, this.getDescriptionId().substring(this.getDescriptionId().lastIndexOf('.') + 1));
+            GunsTool.generateAndSetUUID(tag);
+            tag.putBoolean("init", true);
         }
+        tag.putBoolean("draw", false);
 
-        if (NBTTool.getTag(stack).getBoolean("draw")) {
-            NBTTool.getTag(stack).putBoolean("draw", false);
-        }
+        handleGunPerks(tag);
+        handleGunAttachment(tag);
 
-        handleGunPerks(stack);
-        handleGunAttachment(stack);
+        var hasBulletInBarrel = gunItem.hasBulletInBarrel(stack);
+        var ammoCount = GunsTool.getGunIntTag(tag, "Ammo", 0);
+        var magazine = GunsTool.getGunIntTag(tag, "Magazine", 0);
+        var customMagazine = GunsTool.getGunIntTag(tag, "CustomMagazine", 0);
 
-        if ((gunItem.hasBulletInBarrel(stack) && GunsTool.getGunIntTag(stack, "Ammo", 0) >
-                GunsTool.getGunIntTag(stack, "Magazine", 0) + GunsTool.getGunIntTag(stack, "CustomMagazine", 0) + 1)
-                || (!gunItem.hasBulletInBarrel(stack) && GunsTool.getGunIntTag(stack, "Ammo", 0) >
-                GunsTool.getGunIntTag(stack, "Magazine", 0) + GunsTool.getGunIntTag(stack, "CustomMagazine", 0))
+        if ((hasBulletInBarrel && ammoCount > magazine + customMagazine + 1)
+                || (!hasBulletInBarrel && ammoCount > magazine + customMagazine)
         ) {
-            int count = GunsTool.getGunIntTag(stack, "Ammo", 0) - GunsTool.getGunIntTag(stack, "Magazine", 0)
-                    + GunsTool.getGunIntTag(stack, "CustomMagazine", 0) - (gunItem.hasBulletInBarrel(stack) ? 1 : 0);
+            int count = ammoCount - magazine + customMagazine - (hasBulletInBarrel ? 1 : 0);
 
             var capability = entity.getCapability(ModCapabilities.PLAYER_VARIABLE);
-
             if (capability != null) {
                 if (stack.is(ModTags.Items.USE_SHOTGUN_AMMO)) {
                     AmmoType.SHOTGUN.add(capability, count);
@@ -97,13 +95,11 @@ public abstract class GunItem extends Item implements CustomRendererItem {
                 } else if (stack.is(ModTags.Items.USE_HEAVY_AMMO)) {
                     AmmoType.HEAVY.add(capability, count);
                 }
-
                 capability.syncPlayerVariables(entity);
             }
-
-            GunsTool.setGunIntTag(stack, "Ammo", GunsTool.getGunIntTag(stack, "Magazine", 0)
-                    + GunsTool.getGunIntTag(stack, "CustomMagazine", 0) + (gunItem.hasBulletInBarrel(stack) ? 1 : 0));
+            GunsTool.setGunIntTag(tag, "Ammo", magazine + customMagazine + (hasBulletInBarrel ? 1 : 0));
         }
+        NBTTool.saveTag(stack, tag);
     }
 
     @Override
@@ -119,13 +115,13 @@ public abstract class GunItem extends Item implements CustomRendererItem {
 //        map.builder().add(
 //                Attribute.BASE,
 //                new AttributeModifier(uuid, ModUtils.ATTRIBUTE_MODIFIER,
-//                        -0.01f - 0.005f * (GunsTool.getGunDoubleTag(stack, "Weight") + GunsTool.getGunDoubleTag(stack, "CustomWeight")),
+//                        -0.01f - 0.005f * (GunsTool.getGunDoubleTag(tag, "Weight") + GunsTool.getGunDoubleTag(tag, "CustomWeight")),
 //                        AttributeModifier.Operation.ADD_MULTIPLIED_BASE)
 //        )
 //
 //        map.put(Attributes.MOVEMENT_SPEED,
 //                new AttributeModifier(uuid, ModUtils.ATTRIBUTE_MODIFIER,
-//                        -0.01f - 0.005f * (GunsTool.getGunDoubleTag(stack, "Weight") + GunsTool.getGunDoubleTag(stack, "CustomWeight")),
+//                        -0.01f - 0.005f * (GunsTool.getGunDoubleTag(tag, "Weight") + GunsTool.getGunDoubleTag(tag, "CustomWeight")),
 //                        AttributeModifier.Operation.ADD_MULTIPLIED_BASE));
 //        return map;
 //    }
@@ -138,7 +134,7 @@ public abstract class GunItem extends Item implements CustomRendererItem {
 //            map = HashMultimap.create(map);
 //            map.put(Attributes.MOVEMENT_SPEED,
 //                    new AttributeModifier(uuid, ModUtils.ATTRIBUTE_MODIFIER,
-//                            -0.01f - 0.005f * (GunsTool.getGunDoubleTag(stack, "Weight") + GunsTool.getGunDoubleTag(stack, "CustomWeight")),
+//                            -0.01f - 0.005f * (GunsTool.getGunDoubleTag(tag, "Weight") + GunsTool.getGunDoubleTag(tag, "CustomWeight")),
 //                            AttributeModifier.Operation.ADD_MULTIPLIED_BASE));
 //        }
 //        return map;
@@ -178,24 +174,24 @@ public abstract class GunItem extends Item implements CustomRendererItem {
     }
 
 
-    private void handleGunPerks(ItemStack stack) {
-        reducePerkTagCoolDown(stack, "HealClipTime", "KillClipReloadTime", "KillClipTime", "FourthTimesCharmTick", "HeadSeeker",
+    private void handleGunPerks(final CompoundTag tag) {
+        reducePerkTagCoolDown(tag, "HealClipTime", "KillClipReloadTime", "KillClipTime", "FourthTimesCharmTick", "HeadSeeker",
                 "DesperadoTime", "DesperadoTimePost");
 
-        if (PerkHelper.getItemPerkLevel(ModPerks.FOURTH_TIMES_CHARM.get(), stack) > 0) {
-            int count = GunsTool.getPerkIntTag(stack, "FourthTimesCharmCount");
+        if (PerkHelper.getItemPerkLevel(ModPerks.FOURTH_TIMES_CHARM.get(), tag) > 0) {
+            int count = GunsTool.getPerkIntTag(tag, "FourthTimesCharmCount");
             if (count >= 4) {
-                GunsTool.setPerkIntTag(stack, "FourthTimesCharmTick", 0);
-                GunsTool.setPerkIntTag(stack, "FourthTimesCharmCount", 0);
+                GunsTool.setPerkIntTag(tag, "FourthTimesCharmTick", 0);
+                GunsTool.setPerkIntTag(tag, "FourthTimesCharmCount", 0);
 
-                int mag = GunsTool.getGunIntTag(stack, "Magazine", 0) + GunsTool.getGunIntTag(stack, "CustomMagazine", 0);
-                GunsTool.setGunIntTag(stack, "Ammo", Math.min(mag, GunsTool.getGunIntTag(stack, "Ammo", 0) + 2));
+                int mag = GunsTool.getGunIntTag(tag, "Magazine", 0) + GunsTool.getGunIntTag(tag, "CustomMagazine", 0);
+                GunsTool.setGunIntTag(tag, "Ammo", Math.min(mag, GunsTool.getGunIntTag(tag, "Ammo", 0) + 2));
             }
         }
     }
 
-    private void handleGunAttachment(ItemStack stack) {
-        CompoundTag tag = NBTTool.getTag(stack).getCompound("Attachments");
+    private void handleGunAttachment(final CompoundTag rootTag) {
+        CompoundTag tag = rootTag.getCompound("Attachments");
 
         double scopeWeight = switch (tag.getInt("Scope")) {
             case 1 -> 0.5;
@@ -230,16 +226,15 @@ public abstract class GunItem extends Item implements CustomRendererItem {
 
         double soundRadius = tag.getInt("Barrel") == 2 ? 0.6 : 1;
 
-        GunsTool.setGunDoubleTag(stack, "CustomWeight", scopeWeight + barrelWeight + magazineWeight + stockWeight + gripWeight);
-        GunsTool.setGunDoubleTag(stack, "CustomSoundRadius", soundRadius);
+        GunsTool.setGunDoubleTag(tag, "CustomWeight", scopeWeight + barrelWeight + magazineWeight + stockWeight + gripWeight);
+        GunsTool.setGunDoubleTag(tag, "CustomSoundRadius", soundRadius);
     }
 
     public boolean canApplyPerk(Perk perk) {
         return true;
     }
 
-    private void reducePerkTagCoolDown(ItemStack stack, String... tags) {
-        var tag = NBTTool.getTag(stack);
+    private void reducePerkTagCoolDown(final CompoundTag tag, String... tags) {
         var compound = tag.getCompound("PerkData");
 
         for (String t : tags) {
@@ -252,7 +247,6 @@ public abstract class GunItem extends Item implements CustomRendererItem {
             }
         }
         tag.put("PerkData", compound);
-        saveTag(stack, tag);
     }
 
     /**

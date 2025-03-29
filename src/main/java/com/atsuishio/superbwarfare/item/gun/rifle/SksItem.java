@@ -99,11 +99,13 @@ public class SksItem extends GunItem implements GeoItem {
     @ParametersAreNonnullByDefault
     public void inventoryTick(ItemStack stack, Level level, Entity entity, int slot, boolean selected) {
         if (NBTTool.getTag(stack).getBoolean("draw")) {
-            NBTTool.getTag(stack).putBoolean("draw", false);
+            final var tag = NBTTool.getTag(stack);
+            tag.putBoolean("draw", false);
 
-            if (GunsTool.getGunIntTag(stack, "Ammo", 0) == 0) {
-                GunsTool.setGunBooleanTag(stack, "HoldOpen", true);
+            if (GunsTool.getGunIntTag(tag, "Ammo", 0) == 0) {
+                GunsTool.setGunBooleanTag(tag, "HoldOpen", true);
             }
+            NBTTool.saveTag(stack, tag);
         }
         super.inventoryTick(stack, level, entity, slot, selected);
     }

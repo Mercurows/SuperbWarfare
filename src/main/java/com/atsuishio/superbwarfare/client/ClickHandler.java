@@ -20,6 +20,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
@@ -89,6 +90,7 @@ public class ClickHandler {
         if (player.isSpectator()) return;
 
         ItemStack stack = player.getMainHandItem();
+        final var tag = NBTTool.getTag(stack);
 
         int button = event.getButton();
 
@@ -124,13 +126,13 @@ public class ClickHandler {
             }
 
             if (button == ModKeyMappings.HOLD_ZOOM.getKey().getValue()) {
-                handleWeaponZoomPress(player, stack);
+                handleWeaponZoomPress(player, tag);
                 switchZoom = false;
                 return;
             }
 
             if (button == ModKeyMappings.SWITCH_ZOOM.getKey().getValue()) {
-                handleWeaponZoomPress(player, stack);
+                handleWeaponZoomPress(player, tag);
                 switchZoom = !switchZoom;
             }
         }
@@ -163,7 +165,7 @@ public class ClickHandler {
         var tag = NBTTool.getTag(stack);
 
         if (stack.is(ModTags.Items.GUN) && ClientEventHandler.zoom) {
-            if (GunsTool.getGunBooleanTag(stack, "CanSwitchScope", false)) {
+            if (GunsTool.getGunBooleanTag(tag, "CanSwitchScope", false)) {
                 PacketDistributor.sendToServer(new SwitchScopeMessage(scroll));
             } else if (tag.getBoolean("CanAdjustZoomFov") || stack.is(ModItems.MINIGUN.get())) {
                 PacketDistributor.sendToServer(new AdjustZoomFovMessage(scroll));
@@ -193,6 +195,7 @@ public class ClickHandler {
         if (player.isSpectator()) return;
 
         ItemStack stack = player.getMainHandItem();
+        final var tag = NBTTool.getTag(stack);
 
         int key = event.getKey();
         if (event.getAction() == GLFW.GLFW_PRESS) {
@@ -264,13 +267,13 @@ public class ClickHandler {
                 }
 
                 if (key == ModKeyMappings.HOLD_ZOOM.getKey().getValue()) {
-                    handleWeaponZoomPress(player, stack);
+                    handleWeaponZoomPress(player, tag);
                     switchZoom = false;
                     return;
                 }
 
                 if (key == ModKeyMappings.SWITCH_ZOOM.getKey().getValue()) {
-                    handleWeaponZoomPress(player, stack);
+                    handleWeaponZoomPress(player, tag);
                     switchZoom = !switchZoom;
                 }
             }
@@ -317,16 +320,16 @@ public class ClickHandler {
         if (stack.getItem() instanceof GunItem gunItem && !(player.getVehicle() != null && player.getVehicle() instanceof CannonEntity)) {
             var tag = NBTTool.getTag(stack);
             if ((!(tag.getBoolean("is_normal_reloading") || tag.getBoolean("is_empty_reloading"))
-                    && !GunsTool.getGunBooleanTag(stack, "Reloading")
-                    && !GunsTool.getGunBooleanTag(stack, "Charging")
-                    && !GunsTool.getGunBooleanTag(stack, "NeedBoltAction", false))
+                    && !GunsTool.getGunBooleanTag(tag, "Reloading")
+                    && !GunsTool.getGunBooleanTag(tag, "Charging")
+                    && !GunsTool.getGunBooleanTag(tag, "NeedBoltAction", false))
                     && cantFireTime == 0
                     && drawTime < 0.01
                     && !notInGame()) {
                 player.playSound(ModSounds.TRIGGER_CLICK.get(), 1, 1);
             }
 
-            if (!gunItem.useBackpackAmmo(stack) && GunsTool.getGunIntTag(stack, "Ammo", 0) <= 0 && GunsTool.getGunIntTag(stack, "ReloadTime") == 0) {
+            if (!gunItem.useBackpackAmmo(stack) && GunsTool.getGunIntTag(tag, "Ammo", 0) <= 0 && GunsTool.getGunIntTag(tag, "ReloadTime") == 0) {
                 if (ReloadConfig.LEFT_CLICK_RELOAD.get()) {
                     PacketDistributor.sendToServer(new ReloadMessage(0));
                 }
@@ -335,8 +338,8 @@ public class ClickHandler {
                 if (!stack.is(ModItems.BOCEK.get())) {
                     ClientEventHandler.holdFire = true;
                 }
-                if (GunsTool.getGunIntTag(stack, "FireMode") == 1 && ClientEventHandler.burstFireSize == 0) {
-                    ClientEventHandler.burstFireSize = GunsTool.getGunIntTag(stack, "BurstSize", 1);
+                if (GunsTool.getGunIntTag(tag, "FireMode") == 1 && ClientEventHandler.burstFireSize == 0) {
+                    ClientEventHandler.burstFireSize = GunsTool.getGunIntTag(tag, "BurstSize", 1);
                 }
             }
         }
@@ -349,7 +352,7 @@ public class ClickHandler {
         ClientEventHandler.customRpm = 0;
     }
 
-    public static void handleWeaponZoomPress(Player player, ItemStack stack) {
+    public static void handleWeaponZoomPress(Player player, final CompoundTag tag) {
         PacketDistributor.sendToServer(new ZoomMessage(0));
 
         if (player.getVehicle() instanceof VehicleEntity pVehicle && player.getVehicle() instanceof WeaponVehicleEntity iVehicle && iVehicle.hasWeapon(pVehicle.getSeatIndex(player))) {
@@ -358,7 +361,7 @@ public class ClickHandler {
         }
 
         ClientEventHandler.zoom = true;
-        int level = PerkHelper.getItemPerkLevel(ModPerks.INTELLIGENT_CHIP.get(), stack);
+        int level = PerkHelper.getItemPerkLevel(ModPerks.INTELLIGENT_CHIP.get(), tag);
         if (level > 0) {
             if (ClientEventHandler.entity == null) {
                 ClientEventHandler.entity = SeekTool.seekLivingEntity(player, player.level(), 32 + 8 * (level - 1), 20);

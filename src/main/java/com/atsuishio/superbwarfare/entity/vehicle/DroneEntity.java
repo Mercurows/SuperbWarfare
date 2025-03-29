@@ -236,8 +236,11 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
             }
             if (this.entityData.get(KAMIKAZE_MODE) != 0) {
                 if (controller != null) {
-                    if (controller.getMainHandItem().is(ModItems.MONITOR.get())) {
-                        Monitor.disLink(controller.getMainHandItem(), controller);
+                    var stack = controller.getMainHandItem();
+                    if (stack.is(ModItems.MONITOR.get())) {
+                        var tag = NBTTool.getTag(stack);
+                        Monitor.disLink(tag, controller);
+                        NBTTool.saveTag(stack, tag);
                     }
                     this.hurt(new DamageSource(level().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(DamageTypes.EXPLOSION), controller), 10000);
                 }
@@ -275,7 +278,7 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
                     this.entityData.set(LINKED, true);
                     this.entityData.set(CONTROLLER, player.getStringUUID());
 
-                    Monitor.link(stack, this.getStringUUID());
+                    Monitor.link(tag, this.getStringUUID());
                     player.displayClientMessage(Component.translatable("tips.superbwarfare.monitor.linked").withStyle(ChatFormatting.GREEN), true);
 
                     if (player instanceof ServerPlayer serverPlayer) {
@@ -294,7 +297,7 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
                     this.entityData.set(CONTROLLER, "none");
                     this.entityData.set(LINKED, false);
 
-                    Monitor.disLink(stack, player);
+                    Monitor.disLink(tag, player);
                     player.displayClientMessage(Component.translatable("tips.superbwarfare.monitor.unlinked").withStyle(ChatFormatting.RED), true);
 
                     if (player instanceof ServerPlayer serverPlayer) {
@@ -318,8 +321,9 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
 
             player.getInventory().items.stream().filter(stack_ -> stack_.getItem() == ModItems.MONITOR.get())
                     .forEach(itemStack -> {
-                        if (NBTTool.getTag(itemStack).getString(Monitor.LINKED_DRONE).equals(this.getStringUUID())) {
-                            Monitor.disLink(itemStack, player);
+                        var tag = NBTTool.getTag(itemStack);
+                        if (tag.getString(Monitor.LINKED_DRONE).equals(this.getStringUUID())) {
+                            Monitor.disLink(tag, player);
                         }
                     });
 
@@ -487,7 +491,10 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
                 }
 
                 if (controller != null && controller.getMainHandItem().is(ModItems.MONITOR.get())) {
-                    Monitor.disLink(controller.getMainHandItem(), controller);
+                    var stack = controller.getMainHandItem();
+                    var tag = NBTTool.getTag(stack);
+                    Monitor.disLink(tag, controller);
+                    NBTTool.saveTag(stack, tag);
                 }
             }
             target.hurt(ModDamageTypes.causeDroneHitDamage(this.level().registryAccess(), this, controller), (float) (5 * lastTickSpeed));
@@ -542,7 +549,10 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
         Player controller = EntityFindUtil.findPlayer(this.level(), this.entityData.get(CONTROLLER));
         if (controller != null) {
             if (controller.getMainHandItem().is(ModItems.MONITOR.get())) {
-                Monitor.disLink(controller.getMainHandItem(), controller);
+                var item = controller.getMainHandItem();
+                var tag = NBTTool.getTag(item);
+                Monitor.disLink(tag, controller);
+                NBTTool.saveTag(item, tag);
             }
         }
 
@@ -559,8 +569,10 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
         if (player != null) {
             player.getInventory().items.stream().filter(stack -> stack.getItem() == ModItems.MONITOR.get())
                     .forEach(stack -> {
-                        if (NBTTool.getTag(stack).getString(Monitor.LINKED_DRONE).equals(this.getStringUUID())) {
-                            Monitor.disLink(stack, player);
+                        var tag = NBTTool.getTag(stack);
+                        if (tag.getString(Monitor.LINKED_DRONE).equals(this.getStringUUID())) {
+                            Monitor.disLink(tag, player);
+                            NBTTool.saveTag(stack, tag);
                         }
                     });
         }

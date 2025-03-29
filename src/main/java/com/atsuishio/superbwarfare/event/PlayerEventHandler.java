@@ -115,7 +115,8 @@ public class PlayerEventHandler {
         int sprintCost;
 
         if (stack.is(ModTags.Items.GUN)) {
-            double weight = GunsTool.getGunDoubleTag(stack, "Weight") + GunsTool.getGunDoubleTag(stack, "CustomWeight");
+            final var tag = NBTTool.getTag(stack);
+            double weight = GunsTool.getGunDoubleTag(tag, "Weight") + GunsTool.getGunDoubleTag(tag, "CustomWeight");
             sprintCost = (int) (5 + 0.2 * weight);
         } else {
             sprintCost = 5;
@@ -196,8 +197,10 @@ public class PlayerEventHandler {
     private static void handleSpecialWeaponAmmo(Player player) {
         ItemStack stack = player.getMainHandItem();
 
-        if ((stack.is(ModItems.RPG.get()) || stack.is(ModItems.BOCEK.get())) && GunsTool.getGunIntTag(stack, "Ammo", 0) == 1) {
-            NBTTool.setDouble(stack, "empty", 0);
+        final var tag = NBTTool.getTag(stack);
+        if ((stack.is(ModItems.RPG.get()) || stack.is(ModItems.BOCEK.get())) && GunsTool.getGunIntTag(tag, "Ammo", 0) == 1) {
+            tag.putDouble("empty", 0);
+            NBTTool.saveTag(stack, tag);
         }
     }
 
@@ -207,20 +210,21 @@ public class PlayerEventHandler {
         var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
         if (cap == null) return;
 
+        final var tag = NBTTool.getTag(stack);
         if (cap.bowPullHold) {
             if (stack.getItem() == ModItems.BOCEK.get()
-                    && GunsTool.getGunIntTag(stack, "MaxAmmo") > 0
+                    && GunsTool.getGunIntTag(tag, "MaxAmmo") > 0
                     && !player.getCooldowns().isOnCooldown(stack.getItem())
-                    && GunsTool.getGunDoubleTag(stack, "Power") < 12
+                    && GunsTool.getGunDoubleTag(tag, "Power") < 12
             ) {
-                GunsTool.setGunDoubleTag(stack, "Power", GunsTool.getGunDoubleTag(stack, "Power") + 1);
+                GunsTool.setGunDoubleTag(tag, "Power", GunsTool.getGunDoubleTag(tag, "Power") + 1);
 
                 cap.bowPull = true;
                 cap.tacticalSprint = false;
                 cap.syncPlayerVariables(player);
                 player.setSprinting(false);
             }
-            if (GunsTool.getGunDoubleTag(stack, "Power") == 1) {
+            if (GunsTool.getGunDoubleTag(tag, "Power") == 1) {
                 if (!player.level().isClientSide() && player instanceof ServerPlayer serverPlayer) {
                     SoundTool.playLocalSound(serverPlayer, ModSounds.BOCEK_PULL_1P.get(), 2f, 1f);
                     player.level().playSound(null, player.blockPosition(), ModSounds.BOCEK_PULL_3P.get(), SoundSource.PLAYERS, 0.5f, 1);
@@ -228,17 +232,19 @@ public class PlayerEventHandler {
             }
         } else {
             if (stack.getItem() == ModItems.BOCEK.get()) {
-                GunsTool.setGunDoubleTag(stack, "Power", 0);
+                GunsTool.setGunDoubleTag(tag, "Power", 0);
             }
             cap.bowPull = false;
             cap.syncPlayerVariables(player);
         }
 
-        if (GunsTool.getGunDoubleTag(stack, "Power") > 0) {
+        if (GunsTool.getGunDoubleTag(tag, "Power") > 0) {
             cap.tacticalSprint = false;
             cap.syncPlayerVariables(player);
             player.setSprinting(false);
         }
+
+        NBTTool.saveTag(stack, tag);
     }
 
     private static void handleSimulationDistance(Player player) {
@@ -257,47 +263,49 @@ public class PlayerEventHandler {
 
         for (ItemStack stack : player.getInventory().items) {
             if (stack.is(ModTags.Items.GUN)) {
+                final var tag = NBTTool.getTag(stack);
                 if (!InventoryTool.hasCreativeAmmoBox(player)) {
                     var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
                     if (cap == null) return;
 
                     if (stack.is(ModTags.Items.USE_SHOTGUN_AMMO) && cap.shotgunAmmo > 0) {
-                        GunsTool.reload(player, stack, AmmoType.SHOTGUN);
+                        GunsTool.reload(player, stack, tag, AmmoType.SHOTGUN);
                     }
                     if (stack.is(ModTags.Items.USE_SNIPER_AMMO) && cap.sniperAmmo > 0) {
-                        GunsTool.reload(player, stack, AmmoType.SNIPER);
+                        GunsTool.reload(player, stack, tag, AmmoType.SNIPER);
                     }
                     if (stack.is(ModTags.Items.USE_HANDGUN_AMMO) && cap.handgunAmmo > 0) {
-                        GunsTool.reload(player, stack, AmmoType.HANDGUN);
+                        GunsTool.reload(player, stack, tag, AmmoType.HANDGUN);
                     }
                     if (stack.is(ModTags.Items.USE_RIFLE_AMMO) && cap.rifleAmmo > 0) {
-                        GunsTool.reload(player, stack, AmmoType.RIFLE);
+                        GunsTool.reload(player, stack, tag, AmmoType.RIFLE);
                     }
                     if (stack.is(ModTags.Items.USE_HEAVY_AMMO) && cap.heavyAmmo > 0) {
-                        GunsTool.reload(player, stack, AmmoType.HEAVY);
+                        GunsTool.reload(player, stack, tag, AmmoType.HEAVY);
                     }
 
-                    if (stack.getItem() == ModItems.TASER.get() && GunsTool.getGunIntTag(stack, "MaxAmmo") > 0 && GunsTool.getGunIntTag(stack, "Ammo", 0) == 0) {
-                        GunsTool.setGunIntTag(stack, "Ammo", 1);
+                    if (stack.getItem() == ModItems.TASER.get() && GunsTool.getGunIntTag(tag, "MaxAmmo") > 0 && GunsTool.getGunIntTag(tag, "Ammo", 0) == 0) {
+                        GunsTool.setGunIntTag(tag, "Ammo", 1);
                         player.getInventory().clearOrCountMatchingItems(p -> p.getItem() == ModItems.TASER_ELECTRODE.get(), 1, player.inventoryMenu.getCraftSlots());
                     }
-                    if (stack.getItem() == ModItems.M_79.get() && GunsTool.getGunIntTag(stack, "MaxAmmo") > 0 && GunsTool.getGunIntTag(stack, "Ammo", 0) == 0) {
-                        GunsTool.setGunIntTag(stack, "Ammo", 1);
+                    if (stack.getItem() == ModItems.M_79.get() && GunsTool.getGunIntTag(tag, "MaxAmmo") > 0 && GunsTool.getGunIntTag(tag, "Ammo", 0) == 0) {
+                        GunsTool.setGunIntTag(tag, "Ammo", 1);
                         player.getInventory().clearOrCountMatchingItems(p -> p.getItem() == ModItems.GRENADE_40MM.get(), 1, player.inventoryMenu.getCraftSlots());
                     }
-                    if (stack.getItem() == ModItems.RPG.get() && GunsTool.getGunIntTag(stack, "MaxAmmo") > 0 && GunsTool.getGunIntTag(stack, "Ammo", 0) == 0) {
-                        GunsTool.setGunIntTag(stack, "Ammo", 1);
+                    if (stack.getItem() == ModItems.RPG.get() && GunsTool.getGunIntTag(tag, "MaxAmmo") > 0 && GunsTool.getGunIntTag(tag, "Ammo", 0) == 0) {
+                        GunsTool.setGunIntTag(tag, "Ammo", 1);
                         player.getInventory().clearOrCountMatchingItems(p -> p.getItem() == ModItems.ROCKET.get(), 1, player.inventoryMenu.getCraftSlots());
                     }
-                    if (stack.getItem() == ModItems.JAVELIN.get() && GunsTool.getGunIntTag(stack, "MaxAmmo") > 0 && GunsTool.getGunIntTag(stack, "Ammo", 0) == 0) {
-                        GunsTool.setGunIntTag(stack, "Ammo", 1);
+                    if (stack.getItem() == ModItems.JAVELIN.get() && GunsTool.getGunIntTag(tag, "MaxAmmo") > 0 && GunsTool.getGunIntTag(tag, "Ammo", 0) == 0) {
+                        GunsTool.setGunIntTag(tag, "Ammo", 1);
                         player.getInventory().clearOrCountMatchingItems(p -> p.getItem() == ModItems.JAVELIN_MISSILE.get(), 1, player.inventoryMenu.getCraftSlots());
                     }
                 } else {
-                    GunsTool.setGunIntTag(stack, "Ammo", GunsTool.getGunIntTag(stack, "Magazine", 0)
-                            + GunsTool.getGunIntTag(stack, "CustomMagazine", 0));
+                    GunsTool.setGunIntTag(tag, "Ammo", GunsTool.getGunIntTag(tag, "Magazine", 0)
+                            + GunsTool.getGunIntTag(tag, "CustomMagazine", 0));
                 }
-                GunsTool.setGunBooleanTag(stack, "HoldOpen", false);
+                GunsTool.setGunBooleanTag(tag, "HoldOpen", false);
+                NBTTool.saveTag(stack, tag);
             }
         }
     }
@@ -345,7 +353,9 @@ public class PlayerEventHandler {
         if (left.is(ModTags.Items.GUN) && right.getItem() == ModItems.SHORTCUT_PACK.get()) {
             ItemStack output = left.copy();
 
-            GunsTool.setGunDoubleTag(output, "UpgradePoint", GunsTool.getGunDoubleTag(output, "UpgradePoint", 0) + 1);
+            final var outputTag = NBTTool.getTag(output);
+            GunsTool.setGunDoubleTag(outputTag, "UpgradePoint", GunsTool.getGunDoubleTag(outputTag, "UpgradePoint", 0) + 1);
+            NBTTool.saveTag(output, outputTag);
 
             event.setOutput(output);
             event.setCost(10);

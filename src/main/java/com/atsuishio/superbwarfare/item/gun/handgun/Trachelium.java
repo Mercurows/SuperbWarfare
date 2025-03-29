@@ -69,8 +69,9 @@ public class Trachelium extends GunItem implements GeoItem {
         ItemStack stack = player.getMainHandItem();
         if (!stack.is(ModTags.Items.GUN)) return PlayState.STOP;
 
-        boolean stock = GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.STOCK) == 2;
-        boolean grip = GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.GRIP) > 0 || GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.SCOPE) > 0;
+        final var tag = NBTTool.getTag(stack);
+        boolean stock = GunsTool.getAttachmentType(tag, GunsTool.AttachmentType.STOCK) == 2;
+        boolean grip = GunsTool.getAttachmentType(tag, GunsTool.AttachmentType.GRIP) > 0 || GunsTool.getAttachmentType(tag, GunsTool.AttachmentType.SCOPE) > 0;
 
         if (ClientEventHandler.firePosTimer > 0 && ClientEventHandler.firePosTimer < 1.7) {
             if (stock) {
@@ -108,11 +109,12 @@ public class Trachelium extends GunItem implements GeoItem {
         if (player == null) return PlayState.STOP;
         ItemStack stack = player.getMainHandItem();
         if (!stack.is(ModTags.Items.GUN)) return PlayState.STOP;
+        final var tag = NBTTool.getTag(stack);
 
-        boolean stock = GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.STOCK) == 2;
-        boolean grip = GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.GRIP) > 0 || GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.SCOPE) > 0;
+        boolean stock = GunsTool.getAttachmentType(tag, GunsTool.AttachmentType.STOCK) == 2;
+        boolean grip = GunsTool.getAttachmentType(tag, GunsTool.AttachmentType.GRIP) > 0 || GunsTool.getAttachmentType(tag, GunsTool.AttachmentType.SCOPE) > 0;
 
-        if (GunsTool.getGunIntTag(stack, "BoltActionTick") > 0) {
+        if (GunsTool.getGunIntTag(tag, "BoltActionTick") > 0) {
             if (stock) {
                 if (grip) {
                     return event.setAndContinue(RawAnimation.begin().thenPlay("animation.trachelium.action_stock_grip"));
@@ -243,12 +245,12 @@ public class Trachelium extends GunItem implements GeoItem {
     @ParametersAreNonnullByDefault
     public void inventoryTick(ItemStack stack, Level world, Entity entity, int slot, boolean selected) {
         super.inventoryTick(stack, world, entity, slot, selected);
-        var tag = NBTTool.getTag(stack);
-        GunsTool.setGunIntTag(stack, "BoltActionTime", tag.getBoolean("DA") ? 12 : 0);
+        final var tag = NBTTool.getTag(stack);
+        GunsTool.setGunIntTag(tag, "BoltActionTime", tag.getBoolean("DA") ? 12 : 0);
 
-        int scopeType = GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.SCOPE);
-        int gripType = GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.GRIP);
-        int stockType = GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.STOCK);
+        int scopeType = GunsTool.getAttachmentType(tag, GunsTool.AttachmentType.SCOPE);
+        int gripType = GunsTool.getAttachmentType(tag, GunsTool.AttachmentType.GRIP);
+        int stockType = GunsTool.getAttachmentType(tag, GunsTool.AttachmentType.STOCK);
         CompoundTag tags = tag.getCompound("Attachments");
 
         if (stockType == 1) {
@@ -260,15 +262,15 @@ public class Trachelium extends GunItem implements GeoItem {
         }
 
         if (scopeType > 0 || gripType > 0) {
-            GunsTool.setGunDoubleTag(stack, "CustomVelocity", 15);
-            GunsTool.setGunDoubleTag(stack, "BypassesArmor", 0.4);
-            GunsTool.setGunDoubleTag(stack, "Damage", 21);
-            GunsTool.setGunDoubleTag(stack, "Headshot", 2.5);
+            GunsTool.setGunDoubleTag(tag, "CustomVelocity", 15);
+            GunsTool.setGunDoubleTag(tag, "BypassesArmor", 0.4);
+            GunsTool.setGunDoubleTag(tag, "Damage", 21);
+            GunsTool.setGunDoubleTag(tag, "Headshot", 2.5);
         } else {
-            GunsTool.setGunDoubleTag(stack, "CustomVelocity", 0);
-            GunsTool.setGunDoubleTag(stack, "BypassesArmor", 0.3);
-            GunsTool.setGunDoubleTag(stack, "Damage", 19);
-            GunsTool.setGunDoubleTag(stack, "Headshot", 2);
+            GunsTool.setGunDoubleTag(tag, "CustomVelocity", 0);
+            GunsTool.setGunDoubleTag(tag, "BypassesArmor", 0.3);
+            GunsTool.setGunDoubleTag(tag, "Damage", 19);
+            GunsTool.setGunDoubleTag(tag, "Headshot", 2);
         }
 
         double customZoom = switch (scopeType) {
@@ -277,8 +279,8 @@ public class Trachelium extends GunItem implements GeoItem {
             default -> 1;
         };
 
-        GunsTool.setGunBooleanTag(stack, "CanSwitchScope", scopeType == 2);
-        GunsTool.setGunDoubleTag(stack, "CustomZoom", customZoom);
+        GunsTool.setGunBooleanTag(tag, "CanSwitchScope", scopeType == 2);
+        GunsTool.setGunDoubleTag(tag, "CustomZoom", customZoom);
         saveTag(stack, tag);
     }
 

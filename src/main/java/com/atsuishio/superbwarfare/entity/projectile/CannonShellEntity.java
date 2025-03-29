@@ -13,9 +13,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.network.syncher.EntityDataAccessor;
-import net.minecraft.network.syncher.EntityDataSerializers;
-import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
@@ -44,8 +41,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class CannonShellEntity extends FastThrowableProjectile implements GeoEntity {
-
-    public static final EntityDataAccessor<String> ANIMATION = SynchedEntityData.defineId(CannonShellEntity.class, EntityDataSerializers.STRING);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     public String animationProcedure = "empty";
@@ -364,10 +359,6 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
     @Override
     protected double getDefaultGravity() {
         return 0.05F;
-    }
-
-    public void setAnimation(String animation) {
-        this.entityData.set(ANIMATION, animation);
     }
 
     @Override

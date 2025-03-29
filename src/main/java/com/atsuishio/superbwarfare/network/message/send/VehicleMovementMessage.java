@@ -29,14 +29,15 @@ public record VehicleMovementMessage(short keys) implements CustomPacketPayload 
         var player = (ServerPlayer) context.player();
         var entity = player.getVehicle();
         ItemStack stack = player.getMainHandItem();
+        final var tag = NBTTool.getTag(stack);
 
         VehicleEntity vehicle = null;
         if (entity instanceof MobileVehicleEntity mobileVehicleEntity) {
             if (mobileVehicleEntity.getFirstPassenger() != player) return;
             vehicle = mobileVehicleEntity;
         } else if (stack.is(ModItems.MONITOR.get())
-                && NBTTool.getBoolean(stack, "Using", false)
-                && NBTTool.getBoolean(stack, "Linked", false)
+                && tag.getBoolean("Using")
+                && tag.getBoolean("Linked")
         ) vehicle = EntityFindUtil.findDrone(player.level(), NBTTool.getTag(stack).getString("LinkedDrone"));
 
         if (!(vehicle instanceof ControllableVehicle controllable)) return;

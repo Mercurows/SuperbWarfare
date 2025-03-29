@@ -9,6 +9,7 @@ import com.atsuishio.superbwarfare.tools.NBTTool;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -37,21 +38,17 @@ public class Monitor extends Item {
         super(new Properties().stacksTo(1));
     }
 
-    public static void link(ItemStack stack, String id) {
-        var tag = NBTTool.getTag(stack);
-        NBTTool.setBoolean(stack, LINKED, true);
+    public static void link(CompoundTag tag, String id) {
+        tag.putBoolean(LINKED, true);
         tag.putString(LINKED_DRONE, id);
-        NBTTool.saveTag(stack, tag);
     }
 
-    public static void disLink(ItemStack stack, Player player) {
-        var tag = NBTTool.getTag(stack);
-        NBTTool.setBoolean(stack, LINKED, false);
+    public static void disLink(CompoundTag tag, Player player) {
+        tag.putBoolean(LINKED, false);
         tag.putString(LINKED_DRONE, "none");
         if (player instanceof ServerPlayer serverPlayer) {
             PacketDistributor.sendToPlayer(serverPlayer, new ResetCameraTypeMessage(0));
         }
-        NBTTool.saveTag(stack, tag);
     }
 
     private void resetDroneData(DroneEntity drone) {
@@ -69,12 +66,12 @@ public class Monitor extends Item {
     @ParametersAreNonnullByDefault
     public @NotNull InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand) {
         ItemStack stack = player.getMainHandItem();
+        var tag = NBTTool.getTag(stack);
 
-        if (!NBTTool.getBoolean(stack, LINKED, false)) {
+        if (!tag.getBoolean(LINKED)) {
             return super.use(world, player, hand);
         }
 
-        var tag = NBTTool.getTag(stack);
         if (tag.getBoolean("Using")) {
             tag.putBoolean("Using", false);
             if (world.isClientSide) {

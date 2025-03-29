@@ -81,7 +81,8 @@ public class ClientSoundHandler {
                 if (e instanceof DroneEntity drone) {
                     distanceReduce = (float) Math.max((1 - distance / 64), 0);
                     ItemStack stack = player.getMainHandItem();
-                    if (stack.is(ModItems.MONITOR.get()) && NBTTool.getBoolean(stack, "Using", false)) {
+                    final var tag = NBTTool.getTag(stack);
+                    if (stack.is(ModItems.MONITOR.get()) && tag.getBoolean("Using")) {
                         player.playSound(engineSound, 1, (float) ((2 * Math.random() - 1) * 0.002f + 1.05));
                     } else {
                         player.level().playLocalSound(BlockPos.containing(engineSoundPos), engineSound, mobileVehicle.getSoundSource(), e.onGround() ? 0 : distanceReduce * distanceReduce, (float) ((2 * Math.random() - 1) * 0.002f + 1.05), false);

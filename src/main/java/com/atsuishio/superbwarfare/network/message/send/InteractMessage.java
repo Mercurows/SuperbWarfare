@@ -42,6 +42,7 @@ public record InteractMessage(int msgType) implements CustomPacketPayload {
         Level level = player.level();
 
         ItemStack stack = player.getMainHandItem();
+        var tag = NBTTool.getTag(stack);
         if (stack.is(ModTags.Items.GUN)) {
             double blockRange = player.blockInteractionRange();
             double entityRange = player.blockInteractionRange();
@@ -59,11 +60,10 @@ public record InteractMessage(int msgType) implements CustomPacketPayload {
 
             player.interactOn(lookingEntity, InteractionHand.MAIN_HAND);
         } else if (stack.is(ModItems.MONITOR.get())
-                && NBTTool.getBoolean(stack, "Using", false)
-                && NBTTool.getBoolean(stack, "Linked", false)
+                && tag.getBoolean("Using")
+                && tag.getBoolean("Linked")
                 && !player.getCooldowns().isOnCooldown(stack.getItem())
         ) {
-            var tag = NBTTool.getTag(stack);
             DroneEntity drone = EntityFindUtil.findDrone(player.level(), tag.getString("LinkedDrone"));
 
             if (drone != null) {

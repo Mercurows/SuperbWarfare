@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.entity.vehicle.base;
 
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.VehicleWeapon;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -139,7 +140,7 @@ public interface WeaponVehicleEntity extends ArmedVehicleEntity {
     default void setWeaponIndex(int index, int type) {
         if (!(this instanceof VehicleEntity vehicle)) return;
 
-        var selectedWeapons = vehicle.getEntityData().get(VehicleEntity.SELECTED_WEAPON);
+        var selectedWeapons = new ArrayList<>(vehicle.getEntityData().get(VehicleEntity.SELECTED_WEAPON));
         selectedWeapons.set(index, type);
         vehicle.getEntityData().set(VehicleEntity.SELECTED_WEAPON, selectedWeapons);
     }

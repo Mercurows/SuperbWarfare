@@ -55,7 +55,8 @@ public class VectorItemModel extends GeoModel<VectorItem> {
         ItemStack stack = player.getMainHandItem();
         if (!stack.is(ModTags.Items.GUN)) return;
 
-        int mode = GunsTool.getGunIntTag(stack, "FireMode");
+        final var tag = NBTTool.getTag(stack);
+        int mode = GunsTool.getGunIntTag(tag, "FireMode");
         if (mode == 0) {
             kmj.setRotX(-120 * Mth.DEG_TO_RAD);
         }
@@ -98,7 +99,8 @@ public class VectorItemModel extends GeoModel<VectorItem> {
         gun.setScaleZ(1f - (0.5f * (float) zp));
         scope.setScaleZ(1f - (0.2f * (float) zp));
 
-        NBTTool.getTag(stack).putBoolean("HoloHidden", gun.getPosX() <= 2);
+        tag.putBoolean("HoloHidden", gun.getPosX() <= 2);
+        NBTTool.saveTag(stack, tag);
 
         GeoBone shen;
         if (zt < 0.5) {

@@ -43,17 +43,17 @@ public class MinigunItem extends GunItem implements GeoItem {
 
     @Override
     public boolean isBarVisible(@NotNull ItemStack pStack) {
-        return NBTTool.getDouble(pStack, TAG_HEAT, 0) != 0;
+        return NBTTool.getTag(pStack).getDouble(TAG_HEAT) != 0;
     }
 
     @Override
     public int getBarWidth(@NotNull ItemStack pStack) {
-        return Math.round((float) NBTTool.getDouble(pStack, TAG_HEAT, 0) * 13.0F / 51F);
+        return Math.round((float) NBTTool.getTag(pStack).getDouble(TAG_HEAT) * 13.0F / 51F);
     }
 
     @Override
     public int getBarColor(@NotNull ItemStack pStack) {
-        double f = 1 - NBTTool.getDouble(pStack, TAG_HEAT, 0) / 55.0F;
+        double f = 1 - NBTTool.getTag(pStack).getDouble(TAG_HEAT) / 55.0F;
         return Mth.hsvToRgb((float) f / 3.0F, 1.0F, 1.0F);
     }
 

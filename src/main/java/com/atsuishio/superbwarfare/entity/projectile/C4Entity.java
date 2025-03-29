@@ -387,7 +387,9 @@ public class C4Entity extends Projectile implements GeoEntity {
     public ItemStack getItemStack() {
         ItemStack stack = new ItemStack(ModItems.C4_BOMB.get());
         if (this.getEntityData().get(IS_CONTROLLABLE)) {
-            NBTTool.setBoolean(stack, TAG_CONTROL, true);
+            final var tag = NBTTool.getTag(stack);
+            tag.putBoolean(TAG_CONTROL, true);
+            NBTTool.saveTag(stack, tag);
         }
         return stack;
     }

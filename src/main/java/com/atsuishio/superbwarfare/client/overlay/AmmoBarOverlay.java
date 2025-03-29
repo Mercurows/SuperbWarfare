@@ -21,6 +21,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FastColor;
@@ -60,6 +61,7 @@ public class AmmoBarOverlay {
         if (player.isSpectator()) return;
 
         ItemStack stack = player.getMainHandItem();
+        final var tag = NBTTool.getTag(stack);
         if (stack.getItem() instanceof GunItem gunItem && !(player.getVehicle() instanceof ArmedVehicleEntity vehicle && vehicle.banHand(player))) {
             PoseStack poseStack = event.getGuiGraphics().pose();
 
@@ -87,10 +89,10 @@ public class AmmoBarOverlay {
             }
 
             // 渲染开火模式
-            ResourceLocation fireMode = getFireMode(stack);
+            ResourceLocation fireMode = getFireMode(tag);
 
             if (stack.getItem() == ModItems.JAVELIN.get()) {
-                fireMode = NBTTool.getBoolean(stack, "TopMode", false) ? TOP : DIR;
+                fireMode = tag.getBoolean("TopMode") ? TOP : DIR;
             }
 
             if (stack.getItem() == ModItems.MINIGUN.get()) {
@@ -98,7 +100,7 @@ public class AmmoBarOverlay {
                 // 渲染加特林射速
                 event.getGuiGraphics().drawString(
                         Minecraft.getInstance().font,
-                        GunsTool.getGunIntTag(stack, "RPM", 0) + " RPM",
+                        GunsTool.getGunIntTag(tag, "RPM", 0) + " RPM",
                         w - 111f,
                         h - 20,
                         0xFFFFFF,
@@ -128,7 +130,7 @@ public class AmmoBarOverlay {
                 } else {
                     event.getGuiGraphics().drawString(
                             Minecraft.getInstance().font,
-                            NBTTool.getBoolean(stack, "DA", false) ? Component.translatable("des.superbwarfare.revolver.sa").withStyle(ChatFormatting.BOLD) : Component.translatable("des.superbwarfare.revolver.da").withStyle(ChatFormatting.BOLD),
+                            tag.getBoolean("DA") ? Component.translatable("des.superbwarfare.revolver.sa").withStyle(ChatFormatting.BOLD) : Component.translatable("des.superbwarfare.revolver.da").withStyle(ChatFormatting.BOLD),
                             w - 96,
                             h - 20,
                             0xFFFFFF,
@@ -387,8 +389,8 @@ public class AmmoBarOverlay {
         poseStack.popPose();
     }
 
-    private static ResourceLocation getFireMode(ItemStack stack) {
-        return switch (GunsTool.getGunIntTag(stack, "FireMode")) {
+    private static ResourceLocation getFireMode(CompoundTag tag) {
+        return switch (GunsTool.getGunIntTag(tag, "FireMode")) {
             case 1 -> BURST;
             case 2 -> AUTO;
             default -> SEMI;
@@ -397,6 +399,7 @@ public class AmmoBarOverlay {
 
     private static int getGunAmmoCount(Player player) {
         ItemStack stack = player.getMainHandItem();
+        final var tag = NBTTool.getTag(stack);
 
         if (stack.getItem() == ModItems.MINIGUN.get()) {
             var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
@@ -404,14 +407,15 @@ public class AmmoBarOverlay {
         }
 
         if (stack.getItem() == ModItems.BOCEK.get()) {
-            return GunsTool.getGunIntTag(stack, "MaxAmmo");
+            return GunsTool.getGunIntTag(tag, "MaxAmmo");
         }
 
-        return GunsTool.getGunIntTag(stack, "Ammo", 0);
+        return GunsTool.getGunIntTag(tag, "Ammo", 0);
     }
 
     private static String getPlayerAmmoCount(Player player) {
         ItemStack stack = player.getMainHandItem();
+        final var tag = NBTTool.getTag(stack);
 
         if (stack.getItem() == ModItems.MINIGUN.get() || stack.getItem() == ModItems.BOCEK.get()) {
             return "";
@@ -419,7 +423,7 @@ public class AmmoBarOverlay {
 
         if (!hasCreativeAmmo()) {
             if (stack.is(ModTags.Items.LAUNCHER) || stack.getItem() == ModItems.TASER.get()) {
-                return "" + GunsTool.getGunIntTag(stack, "MaxAmmo");
+                return "" + GunsTool.getGunIntTag(tag, "MaxAmmo");
             }
 
             var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);

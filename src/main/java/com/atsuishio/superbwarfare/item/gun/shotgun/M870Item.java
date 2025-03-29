@@ -54,28 +54,29 @@ public class M870Item extends GunItem implements GeoItem {
         if (player == null) return PlayState.STOP;
         ItemStack stack = player.getMainHandItem();
         if (!stack.is(ModTags.Items.GUN)) return PlayState.STOP;
+        final var tag = NBTTool.getTag(stack);
 
-        if (GunsTool.getGunIntTag(stack, "BoltActionTick") > 0) {
+        if (GunsTool.getGunIntTag(tag, "BoltActionTick") > 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m870.shift"));
         }
 
-        if (NBTTool.getTag(stack).getInt("reload_stage") == 1 && NBTTool.getTag(stack).getDouble("prepare_load") > 0) {
+        if (tag.getInt("reload_stage") == 1 && tag.getDouble("prepare_load") > 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m870.preparealt"));
         }
 
-        if (NBTTool.getTag(stack).getInt("reload_stage") == 1 && NBTTool.getTag(stack).getDouble("prepare") > 0) {
+        if (tag.getInt("reload_stage") == 1 && tag.getDouble("prepare") > 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m870.prepare"));
         }
 
-        if (NBTTool.getTag(stack).getDouble("load_index") == 0 && NBTTool.getTag(stack).getInt("reload_stage") == 2) {
+        if (tag.getDouble("load_index") == 0 && tag.getInt("reload_stage") == 2) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m870.iterativeload"));
         }
 
-        if (NBTTool.getTag(stack).getDouble("load_index") == 1 && NBTTool.getTag(stack).getInt("reload_stage") == 2) {
+        if (tag.getDouble("load_index") == 1 && tag.getInt("reload_stage") == 2) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m870.iterativeload2"));
         }
 
-        if (NBTTool.getTag(stack).getInt("reload_stage") == 3) {
+        if (tag.getInt("reload_stage") == 3) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m870.finish"));
         }
 
@@ -87,12 +88,13 @@ public class M870Item extends GunItem implements GeoItem {
         if (player == null) return PlayState.STOP;
         ItemStack stack = player.getMainHandItem();
         if (!stack.is(ModTags.Items.GUN)) return PlayState.STOP;
+        final var tag = NBTTool.getTag(stack);
 
         if (player.isSprinting()
                 && player.onGround()
                 && player.getPersistentData().getDouble("noRun") == 0
                 && ClientEventHandler.drawTime < 0.01
-                && !GunsTool.getGunBooleanTag(stack, "Reloading")) {
+                && !GunsTool.getGunBooleanTag(tag, "Reloading")) {
             if (player.hasEffect(MobEffects.MOVEMENT_SPEED)) {
                 return event.setAndContinue(RawAnimation.begin().thenLoop("animation.m870.run_fast"));
             } else {

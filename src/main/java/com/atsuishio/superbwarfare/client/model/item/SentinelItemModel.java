@@ -75,7 +75,10 @@ public class SentinelItemModel extends GeoModel<SentinelItem> {
 
         GeoBone holo = getAnimationProcessor().getBone("holo");
         holo.setPosY(0.09f);
-        NBTTool.getTag(stack).putBoolean("HoloHidden", !(gun.getPosX() > 2.4));
+
+        final var tag = NBTTool.getTag(stack);
+        tag.putBoolean("HoloHidden", !(gun.getPosX() > 2.4));
+        NBTTool.saveTag(stack, tag);
 
         shen.setPosX((float) (0.95f * ClientEventHandler.recoilHorizon * fpz * fp));
         shen.setPosY((float) (0.4f * fp + 0.44f * fr));
@@ -104,8 +107,8 @@ public class SentinelItemModel extends GeoModel<SentinelItem> {
         root.setRotY((float) (0.2f * movePosX + Mth.DEG_TO_RAD * 300 * ClientEventHandler.drawTime + Mth.DEG_TO_RAD * turnRotY));
         root.setRotZ((float) (0.2f * movePosX + moveRotZ + Mth.DEG_TO_RAD * 90 * ClientEventHandler.drawTime + 2.7f * mph + Mth.DEG_TO_RAD * turnRotZ));
 
-        if (GunsTool.getGunIntTag(stack, "Ammo", 0) <= 5) {
-            ammo.setScaleX((float) GunsTool.getGunIntTag(stack, "Ammo", 0) / 5);
+        if (GunsTool.getGunIntTag(tag, "Ammo", 0) <= 5) {
+            ammo.setScaleX((float) GunsTool.getGunIntTag(tag, "Ammo", 0) / 5);
         }
 
         GeoBone camera = getAnimationProcessor().getBone("camera");
@@ -114,7 +117,7 @@ public class SentinelItemModel extends GeoModel<SentinelItem> {
         float numR = (float) (1 - 0.9 * zt);
         float numP = (float) (1 - 0.98 * zt);
 
-        if (GunsTool.getGunIntTag(stack, "ReloadTime") > 0 || GunsTool.getGunBooleanTag(stack, "Charging")) {
+        if (GunsTool.getGunIntTag(tag, "ReloadTime") > 0 || GunsTool.getGunBooleanTag(tag, "Charging")) {
             main.setRotX(numR * main.getRotX());
             main.setRotY(numR * main.getRotY());
             main.setRotZ(numR * main.getRotZ());

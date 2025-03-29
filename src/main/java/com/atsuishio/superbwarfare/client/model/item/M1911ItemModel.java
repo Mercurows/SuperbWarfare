@@ -7,6 +7,7 @@ import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.handgun.M1911Item;
 import com.atsuishio.superbwarfare.tools.GunsTool;
+import com.atsuishio.superbwarfare.tools.NBTTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -104,7 +105,8 @@ public class M1911ItemModel extends GeoModel<M1911Item> {
         float numR = (float) (1 - 0.12 * zt);
         float numP = (float) (1 - 0.68 * zt);
 
-        if (GunsTool.getGunIntTag(stack, "ReloadTime") > 0) {
+        final var tag = NBTTool.getTag(stack);
+        if (GunsTool.getGunIntTag(tag, "ReloadTime") > 0) {
             main.setRotX(numR * main.getRotX());
             main.setRotY(numR * main.getRotY());
             main.setRotZ(numR * main.getRotZ());
@@ -120,7 +122,7 @@ public class M1911ItemModel extends GeoModel<M1911Item> {
         AnimationHelper.handleShellsAnimation(getAnimationProcessor(), 0.7f, 1f);
         GeoBone shell = getAnimationProcessor().getBone("shell");
 
-        if (GunsTool.getGunBooleanTag(stack, "HoldOpen")) {
+        if (GunsTool.getGunBooleanTag(tag, "HoldOpen")) {
             slide.setPosZ(1.5f);
             bullet.setScaleX(0);
             bullet.setScaleY(0);

@@ -73,7 +73,8 @@ public class AK12ItemModel extends GeoModel<AK12Item> {
         double fp = ClientEventHandler.firePos;
         double fr = ClientEventHandler.fireRot;
 
-        int type = GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.SCOPE);
+        final var tag = NBTTool.getTag(stack);
+        int type = GunsTool.getAttachmentType(tag, GunsTool.AttachmentType.SCOPE);
 
         float posY = switch (type) {
             case 0 -> 0.781f;
@@ -110,7 +111,7 @@ public class AK12ItemModel extends GeoModel<AK12Item> {
         scope2.setScaleZ(1f - (0.3f * (float) zp));
         scope3.setScaleZ(1f - (0.7f * (float) zp));
 
-        NBTTool.getTag(stack).putBoolean("HoloHidden", !(gun.getPosX() > 1.85));
+        tag.putBoolean("HoloHidden", !(gun.getPosX() > 1.85));
 
         GeoBone shen;
         if (zt < 0.5) {
@@ -172,5 +173,6 @@ public class AK12ItemModel extends GeoModel<AK12Item> {
         AnimationHelper.handleReloadShakeAnimation(stack, main, camera, numR, numP);
         ClientEventHandler.shake(Mth.RAD_TO_DEG * camera.getRotX(), Mth.RAD_TO_DEG * camera.getRotY(), Mth.RAD_TO_DEG * camera.getRotZ());
         AnimationHelper.handleShellsAnimation(getAnimationProcessor(), 1f, 0.35f);
+        NBTTool.saveTag(stack, tag);
     }
 }

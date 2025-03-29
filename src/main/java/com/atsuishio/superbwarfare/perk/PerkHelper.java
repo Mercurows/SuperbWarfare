@@ -3,12 +3,10 @@ package com.atsuishio.superbwarfare.perk;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.item.PerkItem;
-import com.atsuishio.superbwarfare.tools.NBTTool;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.registries.DeferredHolder;
 
 import javax.annotation.Nullable;
@@ -66,13 +64,7 @@ public class PerkHelper {
         };
     }
 
-    public static int getItemPerkLevel(Perk perk, ItemStack stack) {
-        if (stack.isEmpty()) {
-            return 0;
-        }
-
-        var tag = NBTTool.getTag(stack);
-
+    public static int getItemPerkLevel(Perk perk, final CompoundTag tag) {
         var tagPerk = tag.getCompound(TAG_PERK);
         if (!tagPerk.contains(perk.type.getName())) {
             return 0;
@@ -88,20 +80,16 @@ public class PerkHelper {
             return 0;
         }
 
-        return getPerkLevel(getPerkTag(stack, perk.type));
+        return getPerkLevel(getPerkTag(tag, perk.type));
     }
 
-    public static CompoundTag getPerkTag(ItemStack stack, Perk.Type type) {
-        var tag = NBTTool.getTag(stack);
-
+    public static CompoundTag getPerkTag(final CompoundTag tag, Perk.Type type) {
         var tagPerk = tag.getCompound(TAG_PERK);
         if (!tagPerk.contains(type.getName())) return new CompoundTag();
         return tagPerk.getCompound(type.getName());
     }
 
-    public static void setPerk(ItemStack stack, Perk perk, int level) {
-        var tag = NBTTool.getTag(stack);
-
+    public static void setPerk(final CompoundTag tag, Perk perk, int level) {
         var perkTag = tag.getCompound(TAG_PERK);
         if (perkTag.isEmpty()) {
             perkTag = new CompoundTag();
@@ -109,17 +97,14 @@ public class PerkHelper {
 
         perkTag.put(perk.type.getName(), makePerk(getPerkId(perk), level));
         tag.put(TAG_PERK, perkTag);
-        NBTTool.saveTag(stack, tag);
     }
 
-    public static void setPerk(ItemStack stack, Perk perk) {
-        setPerk(stack, perk, 1);
+    public static void setPerk(final CompoundTag tag, Perk perk) {
+        setPerk(tag, perk, 1);
     }
 
     @Nullable
-    public static Perk getPerkByType(ItemStack stack, Perk.Type type) {
-        var tag = NBTTool.getTag(stack);
-
+    public static Perk getPerkByType(final CompoundTag tag, Perk.Type type) {
         var tagPerk = tag.getCompound(TAG_PERK);
         if (!tagPerk.contains(type.getName())) {
             return null;
@@ -144,9 +129,7 @@ public class PerkHelper {
         };
     }
 
-    public static void removePerkByType(ItemStack stack, Perk.Type type) {
-        var tag = NBTTool.getTag(stack);
-
+    public static void removePerkByType(final CompoundTag tag, Perk.Type type) {
         var tagPerk = tag.getCompound(TAG_PERK);
         if (!tagPerk.contains(type.getName())) {
             return;

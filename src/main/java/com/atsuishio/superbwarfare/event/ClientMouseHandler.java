@@ -90,6 +90,7 @@ public class ClientMouseHandler {
     @SubscribeEvent
     public static void calculatePlayerTurn(CalculatePlayerTurnEvent event) {
         var newSensitivity = changeSensitivity(event.getMouseSensitivity()) * invertY();
+        event.setMouseSensitivity(newSensitivity);
     }
 
     public static float invertY() {
@@ -161,7 +162,7 @@ public class ClientMouseHandler {
             return original;
         }
 
-        double zoom = 1.25 + GunsTool.getGunDoubleTag(stack, "CustomZoom", 0);
+        double zoom = 1.25 + GunsTool.getGunDoubleTag(tag, "CustomZoom", 0);
         float customSens = (float) tag.getInt("sensitivity");
 
         if (!player.getMainHandItem().isEmpty() && mc.options.getCameraType() == CameraType.FIRST_PERSON) {

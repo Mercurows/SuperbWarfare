@@ -107,9 +107,11 @@ public class CannonHudOverlay {
                         entityRange = player.distanceTo(living);
                     }
                     if (lookAtEntity) {
-                        event.getGuiGraphics().drawString(Minecraft.getInstance().font, Component.translatable("tips.superbwarfare.drone.range")
-                                        .append(Component.literal(FormatTool.format1D(entityRange, "m ") + lookingEntity.getDisplayName())),
-                                w / 2 + 14, h / 2 - 20, -1, false);
+                        var component = Component.translatable("tips.superbwarfare.drone.range").append(Component.literal(FormatTool.format1D(entityRange, "m ")));
+                        if (lookingEntity.getDisplayName() != null) {
+                            component.append(lookingEntity.getDisplayName());
+                        }
+                        event.getGuiGraphics().drawString(Minecraft.getInstance().font, component, w / 2 + 14, h / 2 - 20, -1, false);
                     } else {
                         if (blockRange > 511) {
                             event.getGuiGraphics().drawString(Minecraft.getInstance().font, Component.translatable("tips.superbwarfare.drone.range")

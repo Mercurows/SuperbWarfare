@@ -24,6 +24,7 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
@@ -185,13 +186,13 @@ public class ClientEventHandler {
         return player.getVehicle() instanceof VehicleEntity vehicle && vehicle.allowFreeCam() && Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON && ModKeyMappings.FREE_CAMERA.isDown();
     }
 
-    private static boolean revolverPre() {
+    private static boolean revolverPre(final CompoundTag tag) {
         Player player = Minecraft.getInstance().player;
         if (player == null) return false;
         ItemStack stack = player.getMainHandItem();
         if (!stack.is(ModTags.Items.REVOLVER)) {
             return true;
-        } else if (stack.is(ModTags.Items.REVOLVER) && (NBTTool.getTag(stack).getBoolean("DA") || NBTTool.getTag(stack).getBoolean("canImmediatelyShoot"))) {
+        } else if (stack.is(ModTags.Items.REVOLVER) && (tag.getBoolean("DA") || tag.getBoolean("canImmediatelyShoot"))) {
             return true;
         } else {
             return revolverPreTime >= 1;
@@ -212,14 +213,15 @@ public class ClientEventHandler {
     @SubscribeEvent
     public static void handleClientTick(ClientTickEvent.Pre event) {
         LocalPlayer player = Minecraft.getInstance().player;
-        if (player == null) {
-            return;
-        }
+        if (player == null) return;
+
         ItemStack stack = player.getMainHandItem();
+        final var tag = NBTTool.getTag(stack);
+
         if (stack.is(ModItems.MINIGUN.get())) {
             if (holdFire || zoom) {
                 miniGunRot = Math.min(miniGunRot + 5, 21);
-                float rpm = (float) GunsTool.getGunIntTag(stack, "RPM", 0) / 3600;
+                float rpm = (float) GunsTool.getGunIntTag(tag, "RPM", 0) / 3600;
                 player.playSound(ModSounds.MINIGUN_ROT.get(), 1, 0.7f + rpm);
             }
         }
@@ -231,7 +233,7 @@ public class ClientEventHandler {
         isProne(player);
         beamShoot(player, stack);
         handleLungeAttack(player, stack);
-        handleGunMelee(player, stack);
+        handleGunMelee(player, stack, tag);
 
         var options = Minecraft.getInstance().options;
         short keys = 0;
@@ -240,8 +242,8 @@ public class ClientEventHandler {
         if (!notInGame() && (player.getVehicle() instanceof MobileVehicleEntity mobileVehicle
                 && mobileVehicle.getFirstPassenger() == player
                 || stack.is(ModItems.MONITOR.get())
-                && NBTTool.getBoolean(stack, "Using", false)
-                && NBTTool.getBoolean(stack, "Linked", false))
+                && tag.getBoolean("Using")
+                && tag.getBoolean("Linked"))
         ) {
             if (options.keyLeft.isDown()) {
                 keys |= 0b0000001;
@@ -297,7 +299,7 @@ public class ClientEventHandler {
                 && !level.getBlockState(BlockPos.containing(player.getX() + 0.7 * player.getLookAngle().x, player.getY() + 1.5, player.getZ() + 0.7 * player.getLookAngle().z)).canOcclude();
     }
 
-    public static void handleGunMelee(Player player, ItemStack stack) {
+    public static void handleGunMelee(Player player, ItemStack stack, final CompoundTag tag) {
         if (stack.getItem() instanceof GunItem gunItem) {
             var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
             if (gunItem.hasMeleeAttack(stack) && gunMelee == 0 && drawTime < 0.01
@@ -306,10 +308,10 @@ public class ClientEventHandler {
                     && !holdFireVehicle
                     && !notInGame()
                     && cap != null && !cap.edit
-                    && !(NBTTool.getTag(stack).getBoolean("is_normal_reloading") || NBTTool.getTag(stack).getBoolean("is_empty_reloading"))
-                    && !GunsTool.getGunBooleanTag(stack, "Reloading")
+                    && !(tag.getBoolean("is_normal_reloading") || tag.getBoolean("is_empty_reloading"))
+                    && !GunsTool.getGunBooleanTag(tag, "Reloading")
                     && !player.getCooldowns().isOnCooldown(stack.getItem())
-                    && !GunsTool.getGunBooleanTag(stack, "Charging")) {
+                    && !GunsTool.getGunBooleanTag(tag, "Charging")) {
                 gunMelee = 36;
                 cantFireTime = 40;
                 player.playSound(SoundEvents.PLAYER_ATTACK_SWEEP, 1f, 1);
@@ -389,13 +391,15 @@ public class ClientEventHandler {
             return;
         }
 
-        var perk = PerkHelper.getPerkByType(stack, Perk.Type.AMMO);
-        int mode = GunsTool.getGunIntTag(stack, "FireMode");
+        final var tag = NBTTool.getTag(stack);
+
+        var perk = PerkHelper.getPerkByType(tag, Perk.Type.AMMO);
+        int mode = GunsTool.getGunIntTag(tag, "FireMode");
 
         // 精准度
         float times = (float) Math.min(Minecraft.getInstance().getTimer().getGameTimeDeltaTicks(), 0.8);
 
-        double basicDev = GunsTool.getGunDoubleTag(stack, "Spread");
+        double basicDev = GunsTool.getGunDoubleTag(tag, "Spread");
         double walk = isMoving() ? 0.3 * basicDev : 0;
         double sprint = player.isSprinting() ? 0.25 * basicDev : 0;
         double crouching = player.isCrouching() ? -0.15 * basicDev : 0;
@@ -424,7 +428,7 @@ public class ClientEventHandler {
         gunSpread = Mth.lerp(0.14 * times, gunSpread, spread);
 
         // 开火部分
-        double weight = GunsTool.getGunDoubleTag(stack, "Weight") + GunsTool.getGunDoubleTag(stack, "CustomWeight");
+        double weight = GunsTool.getGunDoubleTag(tag, "Weight") + GunsTool.getGunDoubleTag(tag, "CustomWeight");
         double speed = 1 - (0.04 * weight);
 
         if (player.getPersistentData().getDouble("noRun") == 0 && player.isSprinting() && !zoom) {
@@ -433,13 +437,13 @@ public class ClientEventHandler {
             cantFireTime = Mth.clamp(cantFireTime - 6 * speed * times, 0, 40);
         }
 
-        int rpm = GunsTool.getGunIntTag(stack, "RPM", 0) + customRpm;
+        int rpm = GunsTool.getGunIntTag(tag, "RPM", 0) + customRpm;
         if (rpm == 0) {
             rpm = 600;
         }
 
-        if (GunsTool.getPerkIntTag(stack, "DesperadoTimePost") > 0) {
-            int perkLevel = PerkHelper.getItemPerkLevel(ModPerks.DESPERADO.get(), stack);
+        if (GunsTool.getPerkIntTag(tag, "DesperadoTimePost") > 0) {
+            int perkLevel = PerkHelper.getItemPerkLevel(ModPerks.DESPERADO.get(), tag);
             rpm *= (int) (1.285 + 0.015 * perkLevel);
         }
 
@@ -449,11 +453,11 @@ public class ClientEventHandler {
         int cooldown = (int) (1000 / rps);
 
         //左轮类
-        if (clientTimer.getProgress() == 0 && stack.is(ModTags.Items.REVOLVER) && ((holdFire && !NBTTool.getTag(stack).getBoolean("DA"))
-                || (GunsTool.getGunIntTag(stack, "BoltActionTick") < 7 && GunsTool.getGunIntTag(stack, "BoltActionTick") > 2) || NBTTool.getTag(stack).getBoolean("canImmediatelyShoot"))) {
+        if (clientTimer.getProgress() == 0 && stack.is(ModTags.Items.REVOLVER) && ((holdFire && !tag.getBoolean("DA"))
+                || (GunsTool.getGunIntTag(tag, "BoltActionTick") < 7 && GunsTool.getGunIntTag(tag, "BoltActionTick") > 2) || tag.getBoolean("canImmediatelyShoot"))) {
             revolverPreTime = Mth.clamp(revolverPreTime + 0.3 * times, 0, 1);
             revolverWheelPreTime = Mth.clamp(revolverWheelPreTime + 0.32 * times, 0, revolverPreTime > 0.7 ? 1 : 0.55);
-        } else if (!NBTTool.getTag(stack).getBoolean("DA") && !NBTTool.getTag(stack).getBoolean("canImmediatelyShoot")) {
+        } else if (!tag.getBoolean("DA") && !tag.getBoolean("canImmediatelyShoot")) {
             revolverPreTime = Mth.clamp(revolverPreTime - 1.2 * times, 0, 1);
         }
 
@@ -467,23 +471,23 @@ public class ClientEventHandler {
                 && drawTime < 0.01
                 && cap != null && !cap.edit
                 && !notInGame()
-                && (!(NBTTool.getTag(stack).getBoolean("is_normal_reloading") || NBTTool.getTag(stack).getBoolean("is_empty_reloading"))
-                && !GunsTool.getGunBooleanTag(stack, "Reloading")
-                && !GunsTool.getGunBooleanTag(stack, "Charging")
-                && GunsTool.getGunIntTag(stack, "Ammo", 0) > 0
+                && (!(tag.getBoolean("is_normal_reloading") || tag.getBoolean("is_empty_reloading"))
+                && !GunsTool.getGunBooleanTag(tag, "Reloading")
+                && !GunsTool.getGunBooleanTag(tag, "Charging")
+                && GunsTool.getGunIntTag(tag, "Ammo", 0) > 0
                 && !player.getCooldowns().isOnCooldown(stack.getItem())
-                && !GunsTool.getGunBooleanTag(stack, "NeedBoltAction", false)
-                && revolverPre())
+                && !GunsTool.getGunBooleanTag(tag, "NeedBoltAction", false)
+                && revolverPre(tag))
                 || (stack.is(ModItems.MINIGUN.get())
                 && !player.isSprinting()
-                && NBTTool.getTag(stack).getDouble("overheat") == 0
+                && tag.getDouble("overheat") == 0
                 && !player.getCooldowns().isOnCooldown(stack.getItem()) && miniGunRot >= 20
                 && (cap != null && cap.rifleAmmo > 0 || InventoryTool.hasCreativeAmmoBox(player))
         ))) {
             if (mode == 0) {
                 if (clientTimer.getProgress() == 0) {
                     clientTimer.start();
-                    shootClient(player);
+                    shootClient(player, tag);
                 }
             } else {
                 if (!clientTimer.started()) {
@@ -493,7 +497,7 @@ public class ClientEventHandler {
                 }
 
                 if (clientTimer.getProgress() >= cooldown) {
-                    shootClient(player);
+                    shootClient(player, tag);
                     clientTimer.setProgress((clientTimer.getProgress() - cooldown));
                 }
             }
@@ -515,7 +519,7 @@ public class ClientEventHandler {
             clientTimer.stop();
         }
 
-        if (stack.getItem() == ModItems.DEVOTION.get() && (NBTTool.getTag(stack).getBoolean("is_normal_reloading") || NBTTool.getTag(stack).getBoolean("is_empty_reloading"))) {
+        if (stack.getItem() == ModItems.DEVOTION.get() && (tag.getBoolean("is_normal_reloading") || tag.getBoolean("is_empty_reloading"))) {
             customRpm = 0;
         }
     }
@@ -541,17 +545,17 @@ public class ClientEventHandler {
         }
     }
 
-    public static void shootClient(Player player) {
+    public static void shootClient(Player player, final CompoundTag tag) {
         ItemStack stack = player.getMainHandItem();
         if (stack.is(ModTags.Items.NORMAL_GUN)) {
-            if (GunsTool.getGunIntTag(stack, "Ammo", 0) > 0) {
-                int mode = GunsTool.getGunIntTag(stack, "FireMode");
+            if (GunsTool.getGunIntTag(tag, "Ammo", 0) > 0) {
+                int mode = GunsTool.getGunIntTag(tag, "FireMode");
                 if (mode != 2) {
                     holdFire = false;
                 }
 
                 if (mode == 1) {
-                    if (GunsTool.getGunIntTag(stack, "Ammo", 0) == 1) {
+                    if (GunsTool.getGunIntTag(tag, "Ammo", 0) == 1) {
                         burstFireSize = 1;
                     }
                     if (burstFireSize == 1) {
@@ -564,7 +568,7 @@ public class ClientEventHandler {
                 }
 
                 if (stack.is(ModItems.DEVOTION.get())) {
-                    int perkLevel = PerkHelper.getItemPerkLevel(ModPerks.TURBO_CHARGER.get(), stack);
+                    int perkLevel = PerkHelper.getItemPerkLevel(ModPerks.TURBO_CHARGER.get(), tag);
                     customRpm = Math.min(customRpm + 15 + ((perkLevel > 0 ? 5 : 0) + 3 * perkLevel), 500);
                 }
 
@@ -577,22 +581,20 @@ public class ClientEventHandler {
                 }
 
                 // 判断是否为栓动武器（BoltActionTime > 0），并在开火后给一个需要上膛的状态
-                if (GunsTool.getGunIntTag(stack, "BoltActionTime", 0) > 0 && GunsTool.getGunIntTag(stack, "Ammo", 0) > (stack.is(ModTags.Items.REVOLVER) ? 0 : 1)) {
-                    GunsTool.setGunBooleanTag(stack, "NeedBoltAction", true);
+                if (GunsTool.getGunIntTag(tag, "BoltActionTime", 0) > 0 && GunsTool.getGunIntTag(tag, "Ammo", 0) > (stack.is(ModTags.Items.REVOLVER) ? 0 : 1)) {
+                    GunsTool.setGunBooleanTag(tag, "NeedBoltAction", true);
                 }
 
                 revolverPreTime = 0;
                 revolverWheelPreTime = 0;
 
-                playGunClientSounds(player);
-                handleClientShoot();
+                playGunClientSounds(player, tag);
+                handleClientShoot(tag);
             }
         } else if (stack.is(ModItems.MINIGUN.get())) {
-            var tag = NBTTool.getTag(stack);
-
             var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
             if (cap != null && cap.rifleAmmo > 0 || InventoryTool.hasCreativeAmmoBox(player)) {
-                var perk = PerkHelper.getPerkByType(stack, Perk.Type.AMMO);
+                var perk = PerkHelper.getPerkByType(tag, Perk.Type.AMMO);
                 float pitch = tag.getDouble("heat") <= 40 ? 1 : (float) (1 - 0.025 * Math.abs(40 - tag.getDouble("heat")));
 
                 player.playSound(ModSounds.MINIGUN_FIRE_1P.get(), 1f, pitch);
@@ -607,7 +609,7 @@ public class ClientEventHandler {
                 Mod.queueClientWork((int) (1 + 1.5 * shooterHeight), () -> player.playSound(ModSounds.SHELL_CASING_NORMAL.get(), (float) Math.max(1.5 - 0.2 * shooterHeight, 0), 1));
             }
 
-            handleClientShoot();
+            handleClientShoot(tag);
         }
     }
 
@@ -616,7 +618,7 @@ public class ClientEventHandler {
         actionMove = Mth.lerp(0.125 * times, actionMove, 0);
     }
 
-    public static void handleClientShoot() {
+    public static void handleClientShoot(final CompoundTag tag) {
         Player player = Minecraft.getInstance().player;
         if (player == null) return;
         ItemStack stack = player.getMainHandItem();
@@ -625,7 +627,7 @@ public class ClientEventHandler {
         PacketDistributor.sendToServer(new ShootMessage(gunSpread));
         fireRecoilTime = 10;
 
-        float gunRecoilY = (float) GunsTool.getGunDoubleTag(stack, "RecoilY", 0) * 10;
+        float gunRecoilY = (float) GunsTool.getGunDoubleTag(tag, "RecoilY", 0) * 10;
 
         recoilY = (float) (2 * Math.random() - 1) * gunRecoilY;
 
@@ -652,11 +654,9 @@ public class ClientEventHandler {
         shakeType = 2 * (Math.random() - 0.5);
     }
 
-    public static void playGunClientSounds(Player player) {
+    public static void playGunClientSounds(Player player, final CompoundTag tag) {
         ItemStack stack = player.getMainHandItem();
-        if (!(stack.getItem() instanceof GunItem gunItem)) {
-            return;
-        }
+        if (!(stack.getItem() instanceof GunItem gunItem)) return;
 
         String origin = stack.getItem().getDescriptionId();
         String name = origin.substring(origin.lastIndexOf(".") + 1);
@@ -674,13 +674,13 @@ public class ClientEventHandler {
             }
         }
 
-        var perk = PerkHelper.getPerkByType(stack, Perk.Type.AMMO);
+        var perk = PerkHelper.getPerkByType(tag, Perk.Type.AMMO);
 
         if (perk == ModPerks.BEAST_BULLET.get()) {
             player.playSound(ModSounds.HENG.get(), 1f, 1f);
         }
 
-        int barrelType = GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.BARREL);
+        int barrelType = GunsTool.getAttachmentType(tag, GunsTool.AttachmentType.BARREL);
 
         SoundEvent sound1p = BuiltInRegistries.SOUND_EVENT.get(Mod.loc(name + (barrelType == 2 ? "_fire_1p_s" : "_fire_1p")));
 
@@ -802,6 +802,8 @@ public class ClientEventHandler {
         if (player == null) return;
         ItemStack stack = player.getMainHandItem();
         if (!(stack.getItem() instanceof GunItem gunItem)) return;
+        final var tag = NBTTool.getTag(stack);
+
         if (player.getVehicle() instanceof ArmedVehicleEntity iArmedVehicle && iArmedVehicle.isDriver(player) && iArmedVehicle.hidePassenger(player))
             return;
 
@@ -811,12 +813,12 @@ public class ClientEventHandler {
         if (player.isCrouching() && player.getBbHeight() >= 1 && !isProne(player)) {
             pose = 0.85f;
         } else if (isProne(player)) {
-            pose = (GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.GRIP) == 3 || gunItem.hasBipod(stack)) ? 0 : 0.25f;
+            pose = (GunsTool.getAttachmentType(tag, GunsTool.AttachmentType.GRIP) == 3 || gunItem.hasBipod(stack)) ? 0 : 0.25f;
         } else {
             pose = 1;
         }
 
-        int stockType = GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.STOCK);
+        int stockType = GunsTool.getAttachmentType(tag, GunsTool.AttachmentType.STOCK);
 
         double sway = switch (stockType) {
             case 1 -> 1;
@@ -824,7 +826,7 @@ public class ClientEventHandler {
             default -> 0.8;
         };
 
-        double customWeight = GunsTool.getGunDoubleTag(stack, "CustomWeight");
+        double customWeight = GunsTool.getGunDoubleTag(tag, "CustomWeight");
 
         var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE, null);
 
@@ -846,13 +848,14 @@ public class ClientEventHandler {
 
         if (!(entity instanceof LivingEntity living)) return;
         ItemStack stack = living.getMainHandItem();
+        final var tag = NBTTool.getTag(stack);
 
         if (level != null
                 && (stack.is(ModItems.MONITOR.get())
-                && NBTTool.getTag(stack).getBoolean("Using")
-                && NBTTool.getTag(stack).getBoolean("Linked"))
+                && tag.getBoolean("Using")
+                && tag.getBoolean("Linked"))
         ) {
-            handleDroneCamera(event, living);
+            handleDroneCamera(event, living, tag);
         } else {
             var effect = Minecraft.getInstance().gameRenderer.currentEffect();
             if (effect != null && effect.getName().equals(Mod.MODID + ":shaders/post/scan_pincushion.json")) {
@@ -894,31 +897,29 @@ public class ClientEventHandler {
         }
 
         if (level != null && stack.is(ModTags.Items.GUN)) {
-            handleWeaponSway(living);
+            handleWeaponSway(living, tag);
             handleWeaponMove(living);
             handleWeaponZoom(living);
             handlePlayerBreath(living);
-            handleWeaponFire(event, living);
+            handleWeaponFire(event, living, tag);
             handleWeaponShell();
-            handleGunRecoil();
+            handleGunRecoil(tag);
             handleBowPullAnimation(living);
-            handleWeaponDraw(living);
+            handleWeaponDraw(living, tag);
             handlePlayerCamera(event);
         }
 
         handleShockCamera(event, living);
     }
 
-    public static void handleDroneCamera(ViewportEvent.ComputeCameraAngles event, LivingEntity entity) {
-        ItemStack stack = entity.getMainHandItem();
-
-        DroneEntity drone = EntityFindUtil.findDrone(entity.level(), NBTTool.getTag(stack).getString("LinkedDrone"));
+    public static void handleDroneCamera(ViewportEvent.ComputeCameraAngles event, LivingEntity entity, final CompoundTag tag) {
+        DroneEntity drone = EntityFindUtil.findDrone(entity.level(), tag.getString("LinkedDrone"));
 
         if (drone != null) {
             event.setRoll(drone.getRoll((float) event.getPartialTick()) * (1 - (drone.getPitch((float) event.getPartialTick()) / 90)));
         }
 
-        if (drone != null && NBTTool.getTag(stack).getBoolean("Using")) {
+        if (drone != null && tag.getBoolean("Using")) {
             if (Minecraft.getInstance().gameRenderer.currentEffect() == null) {
                 Minecraft.getInstance().gameRenderer.loadEffect(Mod.loc("shaders/post/scan_pincushion.json"));
             }
@@ -930,28 +931,26 @@ public class ClientEventHandler {
         Player player = Minecraft.getInstance().player;
         if (player == null) return;
 
-        InteractionHand leftHand = Minecraft.getInstance().options.mainHand().get() == HumanoidArm.RIGHT ? InteractionHand.OFF_HAND : InteractionHand.MAIN_HAND;
-        InteractionHand rightHand = Minecraft.getInstance().options.mainHand().get() == HumanoidArm.RIGHT ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND;
+        var mainHand = Minecraft.getInstance().options.mainHand().get();
+        InteractionHand leftHand = mainHand == HumanoidArm.RIGHT ? InteractionHand.OFF_HAND : InteractionHand.MAIN_HAND;
+        InteractionHand rightHand = mainHand == HumanoidArm.RIGHT ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND;
 
         ItemStack rightHandItem = player.getItemInHand(rightHand);
+        final var tag = NBTTool.getTag(rightHandItem);
 
-        if (event.getHand() == leftHand) {
-            if (rightHandItem.is(ModTags.Items.GUN)) {
-                event.setCanceled(true);
-            }
+        if (event.getHand() == leftHand && rightHandItem.is(ModTags.Items.GUN)) {
+            event.setCanceled(true);
         }
 
-        if (event.getHand() == rightHand) {
-            if (rightHandItem.is(ModTags.Items.GUN) && drawTime > 0.15) {
-                event.setCanceled(true);
-            }
+        if (event.getHand() == rightHand && rightHandItem.is(ModTags.Items.GUN) && drawTime > 0.15) {
+            event.setCanceled(true);
         }
 
         ItemStack stack = player.getMainHandItem();
-        if (stack.is(ModItems.MONITOR.get()) && NBTTool.getTag(stack).getBoolean("Using") && NBTTool.getTag(stack).getBoolean("Linked")) {
-            if (EntityFindUtil.findDrone(player.level(), NBTTool.getTag(stack).getString("LinkedDrone")) != null) {
-                event.setCanceled(true);
-            }
+        if (stack.is(ModItems.MONITOR.get()) && tag.getBoolean("Using")
+                && tag.getBoolean("Linked")
+                && EntityFindUtil.findDrone(player.level(), tag.getString("LinkedDrone")) != null) {
+            event.setCanceled(true);
         }
 
         if (player.getVehicle() instanceof ArmedVehicleEntity iArmedVehicle && iArmedVehicle.banHand(player)) {
@@ -959,7 +958,7 @@ public class ClientEventHandler {
         }
     }
 
-    private static void handleWeaponSway(LivingEntity entity) {
+    private static void handleWeaponSway(LivingEntity entity, final CompoundTag tag) {
         ItemStack stack = entity.getMainHandItem();
         if (stack.getItem() instanceof GunItem gunItem && entity instanceof Player player) {
             float times = 2 * (float) Math.min(Minecraft.getInstance().getTimer().getGameTimeDeltaTicks(), 0.8);
@@ -968,7 +967,7 @@ public class ClientEventHandler {
             if (player.isShiftKeyDown() && player.getBbHeight() >= 1 && isProne(player)) {
                 pose = 0.85;
             } else if (isProne(player)) {
-                pose = (GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.GRIP) == 3 || gunItem.hasBipod(stack)) ? 0 : 0.25f;
+                pose = (GunsTool.getAttachmentType(tag, GunsTool.AttachmentType.GRIP) == 3 || gunItem.hasBipod(stack)) ? 0 : 0.25f;
             } else {
                 pose = 1;
             }
@@ -1045,10 +1044,10 @@ public class ClientEventHandler {
 
     private static void handleWeaponZoom(LivingEntity entity) {
         if (!(entity instanceof Player player)) return;
-        ItemStack stack = player.getMainHandItem();
+        final var tag = NBTTool.getTag(player.getMainHandItem());
         float times = 5 * Minecraft.getInstance().getTimer().getGameTimeDeltaTicks();
 
-        double weight = GunsTool.getGunDoubleTag(stack, "Weight") + GunsTool.getGunDoubleTag(stack, "CustomWeight");
+        double weight = GunsTool.getGunDoubleTag(tag, "Weight") + GunsTool.getGunDoubleTag(tag, "CustomWeight");
         double speed = 1.5 - (0.07 * weight);
 
         var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
@@ -1071,13 +1070,14 @@ public class ClientEventHandler {
         zoomPosZ = AnimationCurves.PARABOLA.apply(zoomTime);
     }
 
-    private static void handleWeaponFire(ViewportEvent.ComputeCameraAngles event, LivingEntity entity) {
+    private static void handleWeaponFire(ViewportEvent.ComputeCameraAngles event, LivingEntity entity, final CompoundTag tag) {
         float times = 2f * Math.min(Minecraft.getInstance().getTimer().getGameTimeDeltaTicks(), 0.48f);
         float yaw = event.getYaw();
         float pitch = event.getPitch();
         float roll = event.getRoll();
         ItemStack stack = entity.getMainHandItem();
-        double amplitude = 15000 * GunsTool.getGunDoubleTag(stack, "RecoilY", 0) * GunsTool.getGunDoubleTag(stack, "RecoilX", 0);
+
+        double amplitude = 15000 * GunsTool.getGunDoubleTag(tag, "RecoilY", 0) * GunsTool.getGunDoubleTag(tag, "RecoilX", 0);
 
         if (fireRecoilTime > 0) {
             firePosTimer = 0.001;
@@ -1112,7 +1112,7 @@ public class ClientEventHandler {
         double rpm = 1;
 
         if (stack.is(ModItems.MINIGUN.get())) {
-            rpm = (double) GunsTool.getGunIntTag(stack, "RPM", 0) / 1800;
+            rpm = (double) GunsTool.getGunIntTag(tag, "RPM", 0) / 1800;
         }
 
         float[] shake = {0, 0};
@@ -1162,15 +1162,15 @@ public class ClientEventHandler {
         }
     }
 
-    private static void handleGunRecoil() {
+    private static void handleGunRecoil(final CompoundTag tag) {
         Player player = Minecraft.getInstance().player;
         if (player == null) return;
         ItemStack stack = player.getMainHandItem();
         if (!(stack.getItem() instanceof GunItem gunItem)) return;
 
         float times = (float) Math.min(Minecraft.getInstance().getTimer().getGameTimeDeltaTicks(), 1.6);
-        int barrelType = GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.BARREL);
-        int gripType = GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.GRIP);
+        int barrelType = GunsTool.getAttachmentType(tag, GunsTool.AttachmentType.BARREL);
+        int gripType = GunsTool.getAttachmentType(tag, GunsTool.AttachmentType.GRIP);
 
         double recoil = switch (barrelType) {
             case 1 -> 1.5;
@@ -1196,15 +1196,15 @@ public class ClientEventHandler {
             gripRecoilY = 1.25;
         }
 
-        double customWeight = GunsTool.getGunDoubleTag(stack, "CustomWeight");
+        double customWeight = GunsTool.getGunDoubleTag(tag, "CustomWeight");
 
         double rpm = 1;
 
         if (stack.is(ModItems.MINIGUN.get())) {
-            rpm = (double) GunsTool.getGunIntTag(stack, "RPM", 0) / 1800;
+            rpm = (double) GunsTool.getGunIntTag(tag, "RPM", 0) / 1800;
         }
 
-        float gunRecoilX = (float) GunsTool.getGunDoubleTag(stack, "RecoilX", 0) * 60;
+        float gunRecoilX = (float) GunsTool.getGunDoubleTag(tag, "RecoilX", 0) * 60;
 
         recoilHorizon = Mth.lerp(0.2 * times, recoilHorizon, 0) + recoilY;
         recoilY = 0;
@@ -1214,7 +1214,7 @@ public class ClientEventHandler {
         if (player.isShiftKeyDown() && player.getBbHeight() >= 1 && !isProne(player)) {
             pose = 0.7f;
         } else if (isProne(player)) {
-            if (GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.GRIP) == 3 || gunItem.hasBipod(stack)) {
+            if (GunsTool.getAttachmentType(tag, GunsTool.AttachmentType.GRIP) == 3 || gunItem.hasBipod(stack)) {
                 pose = 0.1f;
             } else {
                 pose = 0.5f;
@@ -1356,6 +1356,7 @@ public class ClientEventHandler {
         }
 
         ItemStack stack = player.getMainHandItem();
+        final var tag = NBTTool.getTag(stack);
 
         if (player.getVehicle() instanceof WeaponVehicleEntity iVehicle && zoomVehicle) {
             event.setFOV(event.getFOV() / iVehicle.zoomFov());
@@ -1374,7 +1375,7 @@ public class ClientEventHandler {
                 p = zoomPos;
             }
 
-            customZoom = Mth.lerp(0.6 * times, customZoom, GunsTool.getGunDoubleTag(stack, "CustomZoom", 0));
+            customZoom = Mth.lerp(0.6 * times, customZoom, GunsTool.getGunDoubleTag(tag, "CustomZoom", 0));
 
             double zoomFov = 1.25 + customZoom;
 
@@ -1393,7 +1394,7 @@ public class ClientEventHandler {
                     && cap != null
                     && !cap.edit) {
                 if (!player.isShiftKeyDown()) {
-                    int intelligentChipLevel = PerkHelper.getItemPerkLevel(ModPerks.INTELLIGENT_CHIP.get(), stack);
+                    int intelligentChipLevel = PerkHelper.getItemPerkLevel(ModPerks.INTELLIGENT_CHIP.get(), tag);
 
                     if (intelligentChipLevel > 0) {
                         if (ClientEventHandler.entity == null || !entity.isAlive()) {
@@ -1411,7 +1412,7 @@ public class ClientEventHandler {
             }
         }
 
-        if (stack.is(ModItems.MONITOR.get()) && NBTTool.getTag(stack).getBoolean("Using") && NBTTool.getTag(stack).getBoolean("Linked")) {
+        if (stack.is(ModItems.MONITOR.get()) && tag.getBoolean("Using") && tag.getBoolean("Linked")) {
             droneFovLerp = Mth.lerp(0.1 * Minecraft.getInstance().getTimer().getGameTimeDeltaTicks(), droneFovLerp, droneFov);
             event.setFOV(event.getFOV() / droneFovLerp);
             fov = event.getFOV();
@@ -1455,6 +1456,7 @@ public class ClientEventHandler {
         if (!mc.options.getCameraType().isFirstPerson()) return;
 
         ItemStack stack = player.getMainHandItem();
+        final var tag = NBTTool.getTag(stack);
 
         if (stack.getItem() instanceof GunItem) {
             event.setCanceled(true);
@@ -1464,7 +1466,7 @@ public class ClientEventHandler {
             event.setCanceled(true);
         }
 
-        if (stack.is(ModItems.MONITOR.get()) && NBTTool.getTag(stack).getBoolean("Using") && NBTTool.getTag(stack).getBoolean("Linked")) {
+        if (stack.is(ModItems.MONITOR.get()) && tag.getBoolean("Using") && tag.getBoolean("Linked")) {
             event.setCanceled(true);
         }
     }
@@ -1498,10 +1500,10 @@ public class ClientEventHandler {
         lungeAttack = 0;
     }
 
-    private static void handleWeaponDraw(LivingEntity entity) {
+    private static void handleWeaponDraw(LivingEntity entity, final CompoundTag tag) {
         float times = Minecraft.getInstance().getTimer().getGameTimeDeltaTicks();
-        ItemStack stack = entity.getMainHandItem();
-        double weight = GunsTool.getGunDoubleTag(stack, "Weight") + GunsTool.getGunDoubleTag(stack, "CustomWeight");
+
+        double weight = GunsTool.getGunDoubleTag(tag, "Weight") + GunsTool.getGunDoubleTag(tag, "CustomWeight");
         double speed = 3.2 - (0.13 * weight);
         drawTime = Math.max(drawTime - Math.max(0.2 * speed * times * drawTime, 0.0008), 0);
     }

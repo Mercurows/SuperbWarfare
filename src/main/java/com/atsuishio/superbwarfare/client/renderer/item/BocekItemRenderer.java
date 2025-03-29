@@ -87,16 +87,17 @@ public class BocekItemRenderer extends GeoItemRenderer<BocekItem> {
         ItemStack itemStack = player.getMainHandItem();
         if (!itemStack.is(ModTags.Items.GUN)) return;
 
+        final var tag = NBTTool.getTag(itemStack);
         if (name.equals("holo")) {
-            bone.setHidden(NBTTool.getTag(itemStack).getBoolean("HoloHidden") || !ClientEventHandler.zoom);
+            bone.setHidden(tag.getBoolean("HoloHidden") || !ClientEventHandler.zoom);
         }
 
         if (name.equals("arrow")) {
-            bone.setHidden(GunsTool.getGunIntTag(itemStack, "ArrowEmpty") > 0);
+            bone.setHidden(GunsTool.getGunIntTag(tag, "ArrowEmpty") > 0);
         }
 
         if (name.equals("jian")) {
-            bone.setHidden(GunsTool.getGunIntTag(itemStack, "MaxAmmo") == 0);
+            bone.setHidden(GunsTool.getGunIntTag(tag, "MaxAmmo") == 0);
         }
 
         if (this.transformType.firstPerson() && renderingArms) {

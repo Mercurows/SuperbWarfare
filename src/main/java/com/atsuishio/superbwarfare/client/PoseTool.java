@@ -16,8 +16,8 @@ public class PoseTool {
         var tag = NBTTool.getTag(stack);
         if (tag.getBoolean("is_empty_reloading")
                 || tag.getBoolean("is_normal_reloading")
-                || GunsTool.getGunBooleanTag(stack, "Reloading")
-                || GunsTool.getGunBooleanTag(stack, "Charging")) {
+                || GunsTool.getGunBooleanTag(tag, "Reloading")
+                || GunsTool.getGunBooleanTag(tag, "Charging")) {
             return HumanoidModel.ArmPose.CROSSBOW_CHARGE;
         } else if (entityLiving.isSprinting() && entityLiving.onGround() && entityLiving.getPersistentData().getDouble("noRun") == 0) {
             return HumanoidModel.ArmPose.CROSSBOW_CHARGE;

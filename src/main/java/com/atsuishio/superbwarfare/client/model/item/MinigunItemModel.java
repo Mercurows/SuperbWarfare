@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.machinegun.MinigunItem;
 import com.atsuishio.superbwarfare.tools.GunsTool;
+import com.atsuishio.superbwarfare.tools.NBTTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -58,7 +59,8 @@ public class MinigunItemModel extends GeoModel<MinigunItem> {
         double fp = ClientEventHandler.firePos;
         double fr = ClientEventHandler.fireRot;
 
-        int rpm = GunsTool.getGunIntTag(stack, "RPM", 0);
+        final var tag = NBTTool.getTag(stack);
+        int rpm = GunsTool.getGunIntTag(tag, "RPM", 0);
 
         gun.setRotZ(gun.getRotZ() + times * -0.07f * ((float) rpm / 1200) * ClientEventHandler.miniGunRot);
 

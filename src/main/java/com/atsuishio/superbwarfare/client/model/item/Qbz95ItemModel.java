@@ -83,7 +83,8 @@ public class Qbz95ItemModel extends GeoModel<Qbz95Item> {
         double fp = ClientEventHandler.firePos;
         double fr = ClientEventHandler.fireRot;
 
-        int type = GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.SCOPE);
+        var tag = NBTTool.getTag(stack);
+        int type = GunsTool.getAttachmentType(tag, GunsTool.AttachmentType.SCOPE);
 
         float posYAlt = switch (type) {
             case 2 -> 0.85f;
@@ -122,7 +123,7 @@ public class Qbz95ItemModel extends GeoModel<Qbz95Item> {
         button3.setScaleX(1f - (0.5f * (float) zp));
         button6.setScaleX(1f - (0.8f * (float) zp));
 
-        NBTTool.getTag(stack).putBoolean("HoloHidden", gun.getPosX() < 3.1);
+        tag.putBoolean("HoloHidden", gun.getPosX() < 3.1);
 
         GeoBone shen;
         if (zt < 0.5) {
@@ -168,12 +169,12 @@ public class Qbz95ItemModel extends GeoModel<Qbz95Item> {
         l.setRotX(rotXBipod * Mth.DEG_TO_RAD);
         r.setRotX(rotXBipod * Mth.DEG_TO_RAD);
 
-        if (GunsTool.getGunBooleanTag(stack, "HoldOpen")) {
+        if (GunsTool.getGunBooleanTag(tag, "HoldOpen")) {
             bolt.setPosZ(5f);
         }
 
         GeoBone flare = getAnimationProcessor().getBone("flare");
-        int BarrelType = GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.BARREL);
+        int BarrelType = GunsTool.getAttachmentType(tag, GunsTool.AttachmentType.BARREL);
 
         if (BarrelType == 1) {
             flare.setPosZ(-2);

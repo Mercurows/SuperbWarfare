@@ -20,6 +20,7 @@ import com.atsuishio.superbwarfare.tools.NBTTool;
 import com.atsuishio.superbwarfare.tools.SoundTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
@@ -153,12 +154,14 @@ public class TaserItem extends GunItem implements GeoItem, SpecialFireWeapon {
     @ParametersAreNonnullByDefault
     public void inventoryTick(ItemStack stack, Level world, Entity entity, int slot, boolean selected) {
         super.inventoryTick(stack, world, entity, slot, selected);
+        final var tag = NBTTool.getTag(stack);
 
         if (entity instanceof Player player) {
-            GunsTool.setGunIntTag(stack, "MaxAmmo", getAmmoCount(player));
+            GunsTool.setGunIntTag(tag, "MaxAmmo", getAmmoCount(player));
+            NBTTool.saveTag(stack, tag);
         }
 
-        int perkLevel = PerkHelper.getItemPerkLevel(ModPerks.REGENERATION.get(), stack);
+        int perkLevel = PerkHelper.getItemPerkLevel(ModPerks.REGENERATION.get(), tag);
 
         var stackStorage = stack.getCapability(Capabilities.EnergyStorage.ITEM);
         if (stackStorage != null) {
@@ -232,16 +235,16 @@ public class TaserItem extends GunItem implements GeoItem, SpecialFireWeapon {
     }
 
     @Override
-    public void fireOnPress(Player player) {
+    public void fireOnPress(Player player, final CompoundTag tag) {
         ItemStack stack = player.getMainHandItem();
-        if (GunsTool.getGunBooleanTag(stack, "Reloading")) return;
+        if (GunsTool.getGunBooleanTag(tag, "Reloading")) return;
 
-        int perkLevel = PerkHelper.getItemPerkLevel(ModPerks.VOLT_OVERLOAD.get(), stack);
+        int perkLevel = PerkHelper.getItemPerkLevel(ModPerks.VOLT_OVERLOAD.get(), tag);
         var energyStorage = stack.getCapability(Capabilities.EnergyStorage.ITEM);
         var hasEnoughEnergy = energyStorage != null && energyStorage.getEnergyStored() >= 400 + 100 * perkLevel;
 
         if (player.getCooldowns().isOnCooldown(stack.getItem())
-                || GunsTool.getGunIntTag(stack, "Ammo", 0) <= 0
+                || GunsTool.getGunIntTag(tag, "Ammo", 0) <= 0
                 || !hasEnoughEnergy
         ) return;
 
@@ -250,10 +253,10 @@ public class TaserItem extends GunItem implements GeoItem, SpecialFireWeapon {
         if (player instanceof ServerPlayer serverPlayer) {
             var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
             boolean zoom = cap != null && cap.zoom;
-            double spread = GunsTool.getGunDoubleTag(stack, "Spread");
+            double spread = GunsTool.getGunDoubleTag(tag, "Spread");
 
-            int volt = PerkHelper.getItemPerkLevel(ModPerks.VOLT_OVERLOAD.get(), stack);
-            int wireLength = PerkHelper.getItemPerkLevel(ModPerks.LONGER_WIRE.get(), stack);
+            int volt = PerkHelper.getItemPerkLevel(ModPerks.VOLT_OVERLOAD.get(), tag);
+            int wireLength = PerkHelper.getItemPerkLevel(ModPerks.LONGER_WIRE.get(), tag);
 
             SoundTool.playLocalSound(serverPlayer, ModSounds.TASER_FIRE_1P.get(), 1, 1);
             serverPlayer.level().playSound(null, serverPlayer.getOnPos(), ModSounds.TASER_FIRE_3P.get(), SoundSource.PLAYERS, 1, 1);
@@ -261,18 +264,18 @@ public class TaserItem extends GunItem implements GeoItem, SpecialFireWeapon {
             var level = serverPlayer.level();
 
             TaserBulletEntity taserBulletProjectile = new TaserBulletEntity(player, level,
-                    (float) GunsTool.getGunDoubleTag(stack, "Damage", 0), volt, wireLength);
+                    (float) GunsTool.getGunDoubleTag(tag, "Damage", 0), volt, wireLength);
 
             taserBulletProjectile.setPos(player.getX(), player.getEyeY() - 0.1, player.getZ());
-            taserBulletProjectile.shoot(player.getLookAngle().x, player.getLookAngle().y, player.getLookAngle().z, (float) GunsTool.getGunDoubleTag(stack, "Velocity", 0),
+            taserBulletProjectile.shoot(player.getLookAngle().x, player.getLookAngle().y, player.getLookAngle().z, (float) GunsTool.getGunDoubleTag(tag, "Velocity", 0),
                     (float) (zoom ? 0.1 : spread));
             level.addFreshEntity(taserBulletProjectile);
 
             PacketDistributor.sendToPlayer(serverPlayer, new ShootClientMessage(10));
         }
 
-        GunsTool.setGunIntTag(stack, "Ammo", GunsTool.getGunIntTag(stack, "Ammo", 0) - 1);
+        GunsTool.setGunIntTag(tag, "Ammo", GunsTool.getGunIntTag(tag, "Ammo", 0) - 1);
         energyStorage.extractEnergy(400 + 100 * perkLevel, false);
-        NBTTool.getTag(stack).putBoolean("shoot", true);
+        tag.putBoolean("shoot", true);
     }
 }

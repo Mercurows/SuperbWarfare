@@ -14,6 +14,7 @@ import com.atsuishio.superbwarfare.tools.GunsTool;
 import com.atsuishio.superbwarfare.tools.NBTTool;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.Holder;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -44,13 +45,13 @@ public record FireMessage(int msgType) implements CustomPacketPayload {
         if (player.isSpectator()) return;
         ItemStack stack = player.getMainHandItem();
         if (!stack.is(ModTags.Items.GUN)) return;
+        final var tag = NBTTool.getTag(stack);
 
-        handleGunBolt(player, stack);
+        handleGunBolt(player, stack, tag);
 
         var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
         if (type == 0) {
-            var tag = NBTTool.getTag(stack);
-            if (tag.getDouble("prepare") == 0 && GunsTool.getGunBooleanTag(stack, "Reloading") && GunsTool.getGunIntTag(stack, "Ammo", 0) > 0) {
+            if (tag.getDouble("prepare") == 0 && GunsTool.getGunBooleanTag(tag, "Reloading") && GunsTool.getGunIntTag(tag, "Ammo", 0) > 0) {
                 tag.putDouble("force_stop", 1);
                 NBTTool.saveTag(stack, tag);
             }
@@ -64,7 +65,7 @@ public record FireMessage(int msgType) implements CustomPacketPayload {
                 if (cap != null) cap.syncPlayerVariables(player);
                 return;
             }
-            specialFireWeapon.fireOnPress(player);
+            specialFireWeapon.fireOnPress(player, tag);
 
             if (cap != null) {
                 cap.holdFire = true;
@@ -79,52 +80,55 @@ public record FireMessage(int msgType) implements CustomPacketPayload {
 
             // 松开开火
             if (stack.getItem() instanceof SpecialFireWeapon specialFireWeapon) {
-                specialFireWeapon.fireOnRelease(player);
+                specialFireWeapon.fireOnRelease(player, tag);
             }
         }
+
+        NBTTool.saveTag(stack, tag);
     }
 
-    private static void handleGunBolt(Player player, ItemStack stack) {
+    private static void handleGunBolt(Player player, ItemStack stack, final CompoundTag tag) {
         if (!stack.is(ModTags.Items.GUN)) return;
 
-        if (GunsTool.getGunIntTag(stack, "BoltActionTime", 0) > 0
-                && GunsTool.getGunIntTag(stack, "Ammo", 0) > (stack.is(ModTags.Items.REVOLVER) ? -1 : 0)
-                && GunsTool.getGunIntTag(stack, "BoltActionTick") == 0
-                && !(NBTTool.getBoolean(stack, "is_normal_reloading", false)
-                || NBTTool.getBoolean(stack, "is_empty_reloading", false))
-                && !GunsTool.getGunBooleanTag(stack, "Reloading")
-                && !GunsTool.getGunBooleanTag(stack, "Charging")) {
-            if (!player.getCooldowns().isOnCooldown(stack.getItem()) && GunsTool.getGunBooleanTag(stack, "NeedBoltAction", false)) {
-                GunsTool.setGunIntTag(stack, "BoltActionTick", GunsTool.getGunIntTag(stack, "BoltActionTime", 0) + 1);
+        if (GunsTool.getGunIntTag(tag, "BoltActionTime", 0) > 0
+                && GunsTool.getGunIntTag(tag, "Ammo", 0) > (stack.is(ModTags.Items.REVOLVER) ? -1 : 0)
+                && GunsTool.getGunIntTag(tag, "BoltActionTick") == 0
+                && !(tag.getBoolean("is_normal_reloading")
+                || tag.getBoolean("is_empty_reloading"))
+                && !GunsTool.getGunBooleanTag(tag, "Reloading")
+                && !GunsTool.getGunBooleanTag(tag, "Charging")) {
+            if (!player.getCooldowns().isOnCooldown(stack.getItem()) && GunsTool.getGunBooleanTag(tag, "NeedBoltAction", false)) {
+                GunsTool.setGunIntTag(tag, "BoltActionTick", GunsTool.getGunIntTag(tag, "BoltActionTime", 0) + 1);
                 GunEventHandler.playGunBoltSounds(player);
             }
         }
     }
 
     public static double perkDamage(ItemStack stack) {
-        var perk = PerkHelper.getPerkByType(stack, Perk.Type.AMMO);
+        final var tag = NBTTool.getTag(stack);
+        var perk = PerkHelper.getPerkByType(tag, Perk.Type.AMMO);
         if (perk instanceof AmmoPerk ammoPerk) {
             return ammoPerk.damageRate;
         }
         return 1;
     }
 
-    public static double perkSpeed(ItemStack stack) {
-        var perk = PerkHelper.getPerkByType(stack, Perk.Type.AMMO);
+    public static double perkSpeed(final CompoundTag tag) {
+        var perk = PerkHelper.getPerkByType(tag, Perk.Type.AMMO);
         if (perk instanceof AmmoPerk ammoPerk) {
             return ammoPerk.speedRate;
         }
         return 1;
     }
 
-    public static void spawnBullet(Player player) {
+    public static void spawnBullet(Player player, final CompoundTag tag) {
         ItemStack stack = player.getMainHandItem();
         if (player.level().isClientSide()) return;
 
-        var perk = PerkHelper.getPerkByType(stack, Perk.Type.AMMO);
-        float headshot = (float) GunsTool.getGunDoubleTag(stack, "Headshot", 0);
-        float velocity = 2 * (float) GunsTool.getGunDoubleTag(stack, "Power", 6) * (float) perkSpeed(stack);
-        float bypassArmorRate = (float) GunsTool.getGunDoubleTag(stack, "BypassesArmor", 0);
+        var perk = PerkHelper.getPerkByType(tag, Perk.Type.AMMO);
+        float headshot = (float) GunsTool.getGunDoubleTag(tag, "Headshot", 0);
+        float velocity = 2 * (float) GunsTool.getGunDoubleTag(tag, "Power", 6) * (float) perkSpeed(tag);
+        float bypassArmorRate = (float) GunsTool.getGunDoubleTag(tag, "BypassesArmor", 0);
         double damage;
 
         var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
@@ -133,13 +137,13 @@ public record FireMessage(int msgType) implements CustomPacketPayload {
         float spread;
         if (zoom) {
             spread = 0.01f;
-            damage = 0.08333333 * GunsTool.getGunDoubleTag(stack, "Damage", 0) *
-                    GunsTool.getGunDoubleTag(stack, "Power", 6) * perkDamage(stack);
+            damage = 0.08333333 * GunsTool.getGunDoubleTag(tag, "Damage", 0) *
+                    GunsTool.getGunDoubleTag(tag, "Power", 6) * perkDamage(stack);
         } else {
             spread = perk instanceof AmmoPerk ammoPerk && ammoPerk.slug ? 0.5f : 2.5f;
             damage = (perk instanceof AmmoPerk ammoPerk && ammoPerk.slug ? 0.08333333 : 0.008333333) *
-                    GunsTool.getGunDoubleTag(stack, "Damage", 0) *
-                    GunsTool.getGunDoubleTag(stack, "Power", 6) * perkDamage(stack);
+                    GunsTool.getGunDoubleTag(tag, "Damage", 0) *
+                    GunsTool.getGunDoubleTag(tag, "Power", 6) * perkDamage(stack);
         }
 
         ProjectileEntity projectile = new ProjectileEntity(player.level())
@@ -148,7 +152,7 @@ public record FireMessage(int msgType) implements CustomPacketPayload {
                 .zoom(zoom);
 
         if (perk instanceof AmmoPerk ammoPerk) {
-            int level = PerkHelper.getItemPerkLevel(perk, stack);
+            int level = PerkHelper.getItemPerkLevel(perk, tag);
 
             bypassArmorRate += ammoPerk.bypassArmorRate + (perk == ModPerks.AP_BULLET.get() ? 0.05f * (level - 1) : 0);
             projectile.setRGB(ammoPerk.rgb);
@@ -180,24 +184,24 @@ public record FireMessage(int msgType) implements CustomPacketPayload {
         projectile.bypassArmorRate(bypassArmorRate);
 
         if (perk == ModPerks.SILVER_BULLET.get()) {
-            int level = PerkHelper.getItemPerkLevel(perk, stack);
+            int level = PerkHelper.getItemPerkLevel(perk, tag);
             projectile.undeadMultiple(1.0f + 0.5f * level);
         } else if (perk == ModPerks.BEAST_BULLET.get()) {
             projectile.beast();
         } else if (perk == ModPerks.JHP_BULLET.get()) {
-            int level = PerkHelper.getItemPerkLevel(perk, stack);
+            int level = PerkHelper.getItemPerkLevel(perk, tag);
             projectile.jhpBullet(level);
         } else if (perk == ModPerks.HE_BULLET.get()) {
-            int level = PerkHelper.getItemPerkLevel(perk, stack);
+            int level = PerkHelper.getItemPerkLevel(perk, tag);
             projectile.heBullet(level);
         } else if (perk == ModPerks.INCENDIARY_BULLET.get()) {
-            int level = PerkHelper.getItemPerkLevel(perk, stack);
+            int level = PerkHelper.getItemPerkLevel(perk, tag);
             projectile.fireBullet(level, !zoom);
         }
 
-        var dmgPerk = PerkHelper.getPerkByType(stack, Perk.Type.DAMAGE);
+        var dmgPerk = PerkHelper.getPerkByType(tag, Perk.Type.DAMAGE);
         if (dmgPerk == ModPerks.MONSTER_HUNTER.get()) {
-            int perkLevel = PerkHelper.getItemPerkLevel(dmgPerk, stack);
+            int perkLevel = PerkHelper.getItemPerkLevel(dmgPerk, tag);
             projectile.monsterMultiple(0.1f + 0.1f * perkLevel);
         }
 

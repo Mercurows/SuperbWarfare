@@ -51,10 +51,11 @@ public class VectorItem extends GunItem implements GeoItem {
         if (player == null) return PlayState.STOP;
         ItemStack stack = player.getMainHandItem();
         if (!stack.is(ModTags.Items.GUN)) return PlayState.STOP;
-        boolean drum = GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.MAGAZINE) == 2;
+        final var tag = NBTTool.getTag(stack);
 
+        boolean drum = GunsTool.getAttachmentType(tag, GunsTool.AttachmentType.MAGAZINE) == 2;
 
-        if (NBTTool.getTag(stack).getBoolean("is_empty_reloading")) {
+        if (tag.getBoolean("is_empty_reloading")) {
             if (drum) {
                 return event.setAndContinue(RawAnimation.begin().thenPlay("animation.vec.reload_empty_drum"));
             } else {
@@ -62,7 +63,7 @@ public class VectorItem extends GunItem implements GeoItem {
             }
         }
 
-        if (NBTTool.getTag(stack).getBoolean("is_normal_reloading")) {
+        if (tag.getBoolean("is_normal_reloading")) {
             if (drum) {
                 return event.setAndContinue(RawAnimation.begin().thenPlay("animation.vec.reload_normal_drum"));
             } else {
@@ -118,8 +119,9 @@ public class VectorItem extends GunItem implements GeoItem {
     public void inventoryTick(ItemStack stack, Level world, Entity entity, int slot, boolean selected) {
         super.inventoryTick(stack, world, entity, slot, selected);
 
-        int scopeType = GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.SCOPE);
-        int magType = GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.MAGAZINE);
+        final var tag = NBTTool.getTag(stack);
+        int scopeType = GunsTool.getAttachmentType(tag, GunsTool.AttachmentType.SCOPE);
+        int magType = GunsTool.getAttachmentType(tag, GunsTool.AttachmentType.MAGAZINE);
 
         int customMag = switch (magType) {
             case 1 -> 20;
@@ -128,18 +130,19 @@ public class VectorItem extends GunItem implements GeoItem {
         };
 
         if (scopeType == 3) {
-            CompoundTag tag = NBTTool.getTag(stack).getCompound("Attachments");
-            tag.putInt("Scope", 0);
+            CompoundTag attachments = tag.getCompound("Attachments");
+            attachments.putInt("Scope", 0);
         }
 
         double customZoom = switch (scopeType) {
             case 0, 1 -> 0;
             case 2 -> 0.75;
-            default -> GunsTool.getGunDoubleTag(stack, "CustomZoom", 0);
+            default -> GunsTool.getGunDoubleTag(tag, "CustomZoom", 0);
         };
 
-        GunsTool.setGunDoubleTag(stack, "CustomZoom", customZoom);
-        GunsTool.setGunDoubleTag(stack, "CustomMagazine", customMag);
+        GunsTool.setGunDoubleTag(tag, "CustomZoom", customZoom);
+        GunsTool.setGunDoubleTag(tag, "CustomMagazine", customMag);
+        NBTTool.saveTag(stack, tag);
     }
 
     public static ItemStack getGunInstance() {

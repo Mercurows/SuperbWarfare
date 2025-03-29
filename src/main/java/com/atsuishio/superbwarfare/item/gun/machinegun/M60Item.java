@@ -114,12 +114,14 @@ public class M60Item extends GunItem implements GeoItem {
     @Override
     @ParametersAreNonnullByDefault
     public void inventoryTick(ItemStack stack, Level level, Entity entity, int slot, boolean selected) {
-        if (NBTTool.getTag(stack).getBoolean("draw")) {
-            NBTTool.getTag(stack).putBoolean("draw", false);
+        final var tag = NBTTool.getTag(stack);
+        if (tag.getBoolean("draw")) {
+            tag.putBoolean("draw", false);
 
-            if (GunsTool.getGunIntTag(stack, "Ammo", 0) <= 5) {
-                GunsTool.setGunBooleanTag(stack, "HideBulletChain", true);
+            if (GunsTool.getGunIntTag(tag, "Ammo", 0) <= 5) {
+                GunsTool.setGunBooleanTag(tag, "HideBulletChain", true);
             }
+            NBTTool.saveTag(stack, tag);
         }
         super.inventoryTick(stack, level, entity, slot, selected);
     }

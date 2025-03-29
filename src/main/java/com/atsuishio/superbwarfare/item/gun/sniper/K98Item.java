@@ -50,28 +50,29 @@ public class K98Item extends GunItem implements GeoItem {
         if (player == null) return PlayState.STOP;
         ItemStack stack = player.getMainHandItem();
         if (!stack.is(ModTags.Items.GUN)) return PlayState.STOP;
+        final var tag = NBTTool.getTag(stack);
 
-        if (GunsTool.getGunIntTag(stack, "BoltActionTick") > 0) {
+        if (GunsTool.getGunIntTag(tag, "BoltActionTick") > 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.k98.shift"));
         }
 
-        if (NBTTool.getTag(stack).getBoolean("is_empty_reloading")) {
+        if (tag.getBoolean("is_empty_reloading")) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.k98.reload_empty"));
         }
 
-        if (NBTTool.getTag(stack).getInt("reload_stage") == 1 && NBTTool.getTag(stack).getDouble("prepare") > 0) {
+        if (tag.getInt("reload_stage") == 1 && tag.getDouble("prepare") > 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.k98.prepare"));
         }
 
-        if (NBTTool.getTag(stack).getDouble("load_index") == 0 && NBTTool.getTag(stack).getInt("reload_stage") == 2) {
+        if (tag.getDouble("load_index") == 0 && tag.getInt("reload_stage") == 2) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.k98.iterativeload"));
         }
 
-        if (NBTTool.getTag(stack).getDouble("load_index") == 1 && NBTTool.getTag(stack).getInt("reload_stage") == 2) {
+        if (tag.getDouble("load_index") == 1 && tag.getInt("reload_stage") == 2) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.k98.iterativeload2"));
         }
 
-        if (NBTTool.getTag(stack).getInt("reload_stage") == 3) {
+        if (tag.getInt("reload_stage") == 3) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.k98.finish"));
         }
 
@@ -83,16 +84,17 @@ public class K98Item extends GunItem implements GeoItem {
         if (player == null) return PlayState.STOP;
         ItemStack stack = player.getMainHandItem();
         if (!stack.is(ModTags.Items.GUN)) return PlayState.STOP;
+        final var tag = NBTTool.getTag(stack);
 
         if (player.isSprinting() && player.onGround()
                 && player.getPersistentData().getDouble("noRun") == 0
-                && !(NBTTool.getTag(stack).getBoolean("is_empty_reloading"))
-                && NBTTool.getTag(stack).getInt("reload_stage") != 1
-                && NBTTool.getTag(stack).getInt("reload_stage") != 2
-                && NBTTool.getTag(stack).getInt("reload_stage") != 3
+                && !(tag.getBoolean("is_empty_reloading"))
+                && tag.getInt("reload_stage") != 1
+                && tag.getInt("reload_stage") != 2
+                && tag.getInt("reload_stage") != 3
                 && ClientEventHandler.drawTime < 0.01
-                && !GunsTool.getGunBooleanTag(stack, "Reloading")) {
-            if (player.hasEffect(MobEffects.MOVEMENT_SPEED) && GunsTool.getGunIntTag(stack, "BoltActionTick") == 0) {
+                && !GunsTool.getGunBooleanTag(tag, "Reloading")) {
+            if (player.hasEffect(MobEffects.MOVEMENT_SPEED) && GunsTool.getGunIntTag(tag, "BoltActionTick") == 0) {
                 return event.setAndContinue(RawAnimation.begin().thenLoop("animation.k98.run_fast"));
             } else {
                 return event.setAndContinue(RawAnimation.begin().thenLoop("animation.k98.run"));

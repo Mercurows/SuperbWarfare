@@ -101,7 +101,8 @@ public class MarlinItemModel extends GeoModel<MarlinItem> {
         float numR = (float) (1 - 0.55 * zt);
         float numP = (float) (1 - 0.88 * zt);
 
-        if (GunsTool.getGunBooleanTag(stack, "Reloading")) {
+        final var tag = NBTTool.getTag(stack);
+        if (GunsTool.getGunBooleanTag(tag, "Reloading")) {
             main.setRotX(numR * main.getRotX());
             main.setRotY(numR * main.getRotY());
             main.setRotZ(numR * main.getRotZ());

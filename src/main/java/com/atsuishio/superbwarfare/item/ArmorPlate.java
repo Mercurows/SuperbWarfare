@@ -101,7 +101,9 @@ public class ArmorPlate extends Item {
 
     public static ItemStack getInfiniteInstance() {
         ItemStack stack = new ItemStack(ModItems.ARMOR_PLATE.get());
-        NBTTool.getTag(stack).putBoolean("Infinite", true);
+        final var tag = NBTTool.getTag(stack);
+        tag.putBoolean("Infinite", true);
+        NBTTool.saveTag(stack, tag);
         return stack;
     }
 }

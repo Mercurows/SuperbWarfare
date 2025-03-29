@@ -132,9 +132,10 @@ public class JavelinItem extends GunItem implements GeoItem, SpecialFireWeapon {
     @ParametersAreNonnullByDefault
     public void inventoryTick(ItemStack stack, Level world, Entity entity, int slot, boolean selected) {
         super.inventoryTick(stack, world, entity, slot, selected);
+        var tag = NBTTool.getTag(stack);
+
         if (entity instanceof Player player && selected) {
-            var tag = NBTTool.getTag(stack);
-            GunsTool.setGunIntTag(stack, "MaxAmmo", getAmmoCount(player));
+            GunsTool.setGunIntTag(tag, "MaxAmmo", getAmmoCount(player));
 
             if (tag.getBoolean("Seeking")) {
 
@@ -196,8 +197,9 @@ public class JavelinItem extends GunItem implements GeoItem, SpecialFireWeapon {
                 }
             }
         } else {
-            NBTTool.getTag(stack).putInt("SeekTime", 0);
+            tag.putInt("SeekTime", 0);
         }
+        NBTTool.saveTag(stack, tag);
     }
 
     protected static boolean check(ItemStack stack) {
@@ -251,15 +253,15 @@ public class JavelinItem extends GunItem implements GeoItem, SpecialFireWeapon {
 
         if (player.level() instanceof ServerLevel serverLevel) {
             JavelinMissileEntity missileEntity = new JavelinMissileEntity(player, level,
-                    (float) GunsTool.getGunDoubleTag(stack, "Damage", 0),
-                    (float) GunsTool.getGunDoubleTag(stack, "ExplosionDamage", 0),
-                    (float) GunsTool.getGunDoubleTag(stack, "ExplosionRadius", 0),
+                    (float) GunsTool.getGunDoubleTag(tag, "Damage", 0),
+                    (float) GunsTool.getGunDoubleTag(tag, "ExplosionDamage", 0),
+                    (float) GunsTool.getGunDoubleTag(tag, "ExplosionRadius", 0),
                     tag.getInt("GuideType"),
                     new Vec3(tag.getDouble("TargetPosX"), tag.getDouble("TargetPosY"), tag.getDouble("TargetPosZ")));
 
-            var dmgPerk = PerkHelper.getPerkByType(stack, Perk.Type.DAMAGE);
+            var dmgPerk = PerkHelper.getPerkByType(tag, Perk.Type.DAMAGE);
             if (dmgPerk == ModPerks.MONSTER_HUNTER.get()) {
-                int perkLevel = PerkHelper.getItemPerkLevel(dmgPerk, stack);
+                int perkLevel = PerkHelper.getItemPerkLevel(dmgPerk, tag);
                 missileEntity.setMonsterMultiplier(0.1f + 0.1f * perkLevel);
             }
 
@@ -284,12 +286,12 @@ public class JavelinItem extends GunItem implements GeoItem, SpecialFireWeapon {
         }
 
         player.getCooldowns().addCooldown(stack.getItem(), 10);
-        GunsTool.setGunIntTag(stack, "Ammo", GunsTool.getGunIntTag(stack, "Ammo", 0) - 1);
+        GunsTool.setGunIntTag(tag, "Ammo", GunsTool.getGunIntTag(tag, "Ammo", 0) - 1);
+        NBTTool.saveTag(stack, tag);
     }
 
     @Override
-    public void fireOnRelease(Player player) {
-        var tag = NBTTool.getTag(player.getMainHandItem());
+    public void fireOnRelease(Player player, final CompoundTag tag) {
         fire(player);
         tag.putBoolean("Seeking", false);
         tag.putInt("SeekTime", 0);
@@ -301,12 +303,9 @@ public class JavelinItem extends GunItem implements GeoItem, SpecialFireWeapon {
     }
 
     @Override
-    public void fireOnPress(Player player) {
-        var stack = player.getMainHandItem();
-        var tag = NBTTool.getTag(stack);
-
+    public void fireOnPress(Player player, final CompoundTag tag) {
         var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
-        if (cap != null && !cap.zoom || GunsTool.getGunIntTag(stack, "Ammo", 0) <= 0) return;
+        if (cap != null && !cap.zoom || GunsTool.getGunIntTag(tag, "Ammo", 0) <= 0) return;
 
         Entity seekingEntity = SeekTool.seekEntity(player, player.level(), 512, 8);
 

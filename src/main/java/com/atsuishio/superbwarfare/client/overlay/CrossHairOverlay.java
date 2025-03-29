@@ -69,7 +69,8 @@ public class CrossHairOverlay {
         float moveX = 0;
         float moveY = 0;
 
-        var perk = PerkHelper.getPerkByType(stack, Perk.Type.AMMO);
+        final var tag = NBTTool.getTag(stack);
+        var perk = PerkHelper.getPerkByType(tag, Perk.Type.AMMO);
 
         if (DisplayConfig.FLOAT_CROSS_HAIR.get() && player.getVehicle() == null) {
             moveX = (float) (-6 * ClientEventHandler.turnRot[1] - (player.isSprinting() ? 10 : 6) * ClientEventHandler.movePosX);

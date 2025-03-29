@@ -39,30 +39,31 @@ public record ShootMessage(double spread) implements CustomPacketPayload {
 
     public static void pressAction(Player player, double spared) {
         ItemStack stack = player.getMainHandItem();
-        if (stack.is(ModTags.Items.NORMAL_GUN)) {
-            int projectileAmount = GunsTool.getGunIntTag(stack, "ProjectileAmount", 1);
+        final var tag = NBTTool.getTag(stack);
 
-            if (GunsTool.getGunIntTag(stack, "Ammo", 0) > 0) {
+        if (stack.is(ModTags.Items.NORMAL_GUN)) {
+            int projectileAmount = GunsTool.getGunIntTag(tag, "ProjectileAmount", 1);
+
+            if (GunsTool.getGunIntTag(tag, "Ammo", 0) > 0) {
                 // 空仓挂机
-                if (GunsTool.getGunIntTag(stack, "Ammo", 0) == 1) {
-                    GunsTool.setGunBooleanTag(stack, "HoldOpen", true);
+                if (GunsTool.getGunIntTag(tag, "Ammo", 0) == 1) {
+                    GunsTool.setGunBooleanTag(tag, "HoldOpen", true);
                 }
 
                 if (stack.is(ModTags.Items.REVOLVER)) {
-                    NBTTool.getTag(stack).putBoolean("canImmediatelyShoot", false);
+                    tag.putBoolean("canImmediatelyShoot", false);
                 }
 
                 // 判断是否为栓动武器（BoltActionTime > 0），并在开火后给一个需要上膛的状态
-                if (GunsTool.getGunIntTag(stack, "BoltActionTime", 0) > 0 && GunsTool.getGunIntTag(stack, "Ammo", 0) > (stack.is(ModTags.Items.REVOLVER) ? 0 : 1)) {
-                    GunsTool.setGunBooleanTag(stack, "NeedBoltAction", true);
+                if (GunsTool.getGunIntTag(tag, "BoltActionTime", 0) > 0 && GunsTool.getGunIntTag(tag, "Ammo", 0) > (stack.is(ModTags.Items.REVOLVER) ? 0 : 1)) {
+                    GunsTool.setGunBooleanTag(tag, "NeedBoltAction", true);
                 }
 
-                GunsTool.setGunIntTag(stack, "Ammo", GunsTool.getGunIntTag(stack, "Ammo", 0) - 1);
+                GunsTool.setGunIntTag(tag, "Ammo", GunsTool.getGunIntTag(tag, "Ammo", 0) - 1);
+                tag.putDouble("empty", 1);
 
-                NBTTool.getTag(stack).putDouble("empty", 1);
-
-                if (stack.getItem() == ModItems.M_60.get() && GunsTool.getGunIntTag(stack, "Ammo", 0) <= 5) {
-                    GunsTool.setGunBooleanTag(stack, "HideBulletChain", true);
+                if (stack.getItem() == ModItems.M_60.get() && GunsTool.getGunIntTag(tag, "Ammo", 0) <= 5) {
+                    GunsTool.setGunBooleanTag(tag, "HideBulletChain", true);
                 }
 
                 if (stack.getItem() == ModItems.HOMEMADE_SHOTGUN.get()) {
@@ -83,16 +84,16 @@ public record ShootMessage(double spread) implements CustomPacketPayload {
                     }
                 }
 
-                var perk = PerkHelper.getPerkByType(stack, Perk.Type.AMMO);
+                var perk = PerkHelper.getPerkByType(tag, Perk.Type.AMMO);
 
                 for (int index0 = 0; index0 < (perk instanceof AmmoPerk ammoPerk && ammoPerk.slug ? 1 : projectileAmount); index0++) {
-                    GunEventHandler.gunShoot(player, spared);
+                    GunEventHandler.gunShoot(player, tag, spared);
                 }
 
                 GunEventHandler.playGunSounds(player);
+                NBTTool.saveTag(stack, tag);
             }
         } else if (stack.is(ModItems.MINIGUN.get())) {
-            var tag = NBTTool.getTag(stack);
             var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
             if (cap == null) return;
 
@@ -106,11 +107,11 @@ public record ShootMessage(double spread) implements CustomPacketPayload {
                     }
                 }
 
-                var perk = PerkHelper.getPerkByType(stack, Perk.Type.AMMO);
+                var perk = PerkHelper.getPerkByType(tag, Perk.Type.AMMO);
                 float pitch = tag.getDouble("heat") <= 40 ? 1 : (float) (1 - 0.025 * Math.abs(40 - tag.getDouble("heat")));
 
                 if (!player.level().isClientSide() && player instanceof ServerPlayer) {
-                    float soundRadius = (float) GunsTool.getGunDoubleTag(stack, "SoundRadius");
+                    float soundRadius = (float) GunsTool.getGunDoubleTag(tag, "SoundRadius");
 
                     player.playSound(ModSounds.MINIGUN_FIRE_3P.get(), soundRadius * 0.2f, pitch);
                     player.playSound(ModSounds.MINIGUN_FAR.get(), soundRadius * 0.5f, pitch);
@@ -121,11 +122,13 @@ public record ShootMessage(double spread) implements CustomPacketPayload {
                     }
                 }
 
-                GunEventHandler.gunShoot(player, spared);
+                GunEventHandler.gunShoot(player, tag, spared);
                 if (!InventoryTool.hasCreativeAmmoBox(player)) {
                     cap.rifleAmmo = cap.rifleAmmo - 1;
                     cap.syncPlayerVariables(player);
                 }
+
+                NBTTool.saveTag(stack, tag);
             }
         }
     }

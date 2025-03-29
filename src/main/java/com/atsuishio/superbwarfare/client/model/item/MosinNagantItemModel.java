@@ -86,7 +86,9 @@ public class MosinNagantItemModel extends GeoModel<MosinNagantItem> {
             qiangshen.setScaleZ(1);
         }
 
-        NBTTool.getTag(stack).putBoolean("HoloHidden", !(gun.getPosX() > 1.4));
+        final var tag = NBTTool.getTag(stack);
+        tag.putBoolean("HoloHidden", !(gun.getPosX() > 1.4));
+        NBTTool.saveTag(stack, tag);
 
         shen.setPosX((float) (0.95f * ClientEventHandler.recoilHorizon * fpz * fp));
         shen.setPosY((float) (0.4f * fp + 0.44f * fr));
@@ -122,7 +124,7 @@ public class MosinNagantItemModel extends GeoModel<MosinNagantItem> {
         float numR = (float) (1 - 0.97 * zt);
         float numP = (float) (1 - 0.81 * zt);
 
-        if (GunsTool.getGunBooleanTag(stack, "Reloading") || GunsTool.getGunIntTag(stack, "BoltActionTick") > 0) {
+        if (GunsTool.getGunBooleanTag(tag, "Reloading") || GunsTool.getGunIntTag(tag, "BoltActionTick") > 0) {
             main.setRotX(numR * main.getRotX());
             main.setRotY(numR * main.getRotY());
             main.setRotZ(numR * main.getRotZ());

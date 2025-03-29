@@ -50,16 +50,17 @@ public class MosinNagantItem extends GunItem implements GeoItem {
         if (player == null) return PlayState.STOP;
         ItemStack stack = player.getMainHandItem();
         if (!stack.is(ModTags.Items.GUN)) return PlayState.STOP;
+        final var tag = NBTTool.getTag(stack);
 
-        if (GunsTool.getGunIntTag(stack, "BoltActionTick") > 0) {
+        if (GunsTool.getGunIntTag(tag, "BoltActionTick") > 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.mosin.shift"));
         }
 
-        if (NBTTool.getTag(stack).getInt("reload_stage") == 1 && GunsTool.getGunIntTag(stack, "Ammo", 0) == 0) {
+        if (NBTTool.getTag(stack).getInt("reload_stage") == 1 && GunsTool.getGunIntTag(tag, "Ammo", 0) == 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.mosin.prepare_empty"));
         }
 
-        if (NBTTool.getTag(stack).getInt("reload_stage") == 1 && GunsTool.getGunIntTag(stack, "Ammo", 0) > 0) {
+        if (NBTTool.getTag(stack).getInt("reload_stage") == 1 && GunsTool.getGunIntTag(tag, "Ammo", 0) > 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.mosin.prepare"));
         }
 
@@ -83,6 +84,7 @@ public class MosinNagantItem extends GunItem implements GeoItem {
         if (player == null) return PlayState.STOP;
         ItemStack stack = player.getMainHandItem();
         if (!stack.is(ModTags.Items.GUN)) return PlayState.STOP;
+        final var tag = NBTTool.getTag(stack);
 
         if (player.isSprinting() && player.onGround()
                 && player.getPersistentData().getDouble("noRun") == 0
@@ -91,8 +93,8 @@ public class MosinNagantItem extends GunItem implements GeoItem {
                 && NBTTool.getTag(stack).getInt("reload_stage") != 2
                 && NBTTool.getTag(stack).getInt("reload_stage") != 3
                 && ClientEventHandler.drawTime < 0.01
-                && !GunsTool.getGunBooleanTag(stack, "Reloading")) {
-            if (player.hasEffect(MobEffects.MOVEMENT_SPEED) && GunsTool.getGunIntTag(stack, "BoltActionTick") == 0) {
+                && !GunsTool.getGunBooleanTag(tag, "Reloading")) {
+            if (player.hasEffect(MobEffects.MOVEMENT_SPEED) && GunsTool.getGunIntTag(tag, "BoltActionTick") == 0) {
                 return event.setAndContinue(RawAnimation.begin().thenLoop("animation.mosin.run_fast"));
             } else {
                 return event.setAndContinue(RawAnimation.begin().thenLoop("animation.mosin.run"));

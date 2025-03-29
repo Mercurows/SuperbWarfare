@@ -88,7 +88,9 @@ public class M98bItemModel extends GeoModel<M98bItem> {
         gun.setPosZ(4.2f * (float) zp + (float) (0.3f * zpz));
         gun.setRotZ((float) (0.02f * zpz));
 
-        NBTTool.getTag(stack).putBoolean("HoloHidden", !(gun.getPosX() > 1.8));
+        final var tag = NBTTool.getTag(stack);
+        tag.putBoolean("HoloHidden", !(gun.getPosX() > 1.8));
+        NBTTool.saveTag(stack, tag);
 
         GeoBone root = getAnimationProcessor().getBone("root");
         GeoBone zhunxing = getAnimationProcessor().getBone("shi");
@@ -105,7 +107,7 @@ public class M98bItemModel extends GeoModel<M98bItem> {
         float numR = (float) (1 - 0.88 * zt);
         float numP = (float) (1 - 0.68 * zt);
 
-        if (GunsTool.getGunIntTag(stack, "ReloadTime") > 0) {
+        if (GunsTool.getGunIntTag(tag, "ReloadTime") > 0) {
             main.setRotX(numR * main.getRotX());
             main.setRotY(numR * main.getRotY());
             main.setRotZ(numR * main.getRotZ());

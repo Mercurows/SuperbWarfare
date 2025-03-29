@@ -10,6 +10,7 @@ import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
 import com.atsuishio.superbwarfare.tools.FormatTool;
 import com.atsuishio.superbwarfare.tools.GunsTool;
+import com.atsuishio.superbwarfare.tools.NBTTool;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -26,11 +27,13 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
     protected final int width;
     protected final int height;
     protected final ItemStack stack;
+    protected final CompoundTag tag;
 
     public ClientGunImageTooltip(GunImageComponent tooltip) {
         this.width = tooltip.width;
         this.height = tooltip.height;
         this.stack = tooltip.stack;
+        this.tag = NBTTool.getTag(stack).copy();
     }
 
     @Override
@@ -62,7 +65,7 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
     }
 
     protected boolean shouldRenderBypassAndHeadshotTooltip() {
-        return GunsTool.getGunDoubleTag(stack, "BypassesArmor", 0) > 0 || GunsTool.getGunDoubleTag(stack, "Headshot", 0) > 0;
+        return GunsTool.getGunDoubleTag(tag, "BypassesArmor", 0) > 0 || GunsTool.getGunDoubleTag(tag, "Headshot", 0) > 0;
     }
 
     protected boolean shouldRenderEditTooltip() {
@@ -73,7 +76,7 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
     }
 
     protected boolean shouldRenderPerks() {
-        return PerkHelper.getPerkByType(stack, Perk.Type.AMMO) != null || PerkHelper.getPerkByType(stack, Perk.Type.DAMAGE) != null || PerkHelper.getPerkByType(stack, Perk.Type.FUNCTIONAL) != null;
+        return PerkHelper.getPerkByType(tag, Perk.Type.AMMO) != null || PerkHelper.getPerkByType(tag, Perk.Type.DAMAGE) != null || PerkHelper.getPerkByType(tag, Perk.Type.FUNCTIONAL) != null;
     }
 
     /**
@@ -89,7 +92,7 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
      * 获取武器伤害的文本组件
      */
     protected Component getDamageComponent() {
-        double damage = GunsTool.getGunDoubleTag(stack, "Damage", 0) * TooltipTool.perkDamage(stack);
+        double damage = GunsTool.getGunDoubleTag(tag, "Damage", 0) * TooltipTool.perkDamage(stack);
         return Component.translatable("des.superbwarfare.guns.damage").withStyle(ChatFormatting.GRAY)
                 .append(Component.literal("").withStyle(ChatFormatting.RESET))
                 .append(Component.literal(FormatTool.format1D(damage) + (TooltipTool.heBullet(stack) ? " + "
@@ -103,7 +106,7 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
         if (this.stack.getItem() instanceof GunItem gunItem && gunItem.isAutoWeapon(this.stack)) {
             return Component.translatable("des.superbwarfare.guns.rpm").withStyle(ChatFormatting.GRAY)
                     .append(Component.literal("").withStyle(ChatFormatting.RESET))
-                    .append(Component.literal(FormatTool.format0D(GunsTool.getGunIntTag(stack, "RPM", 0)))
+                    .append(Component.literal(FormatTool.format0D(GunsTool.getGunIntTag(tag, "RPM", 0)))
                             .withStyle(ChatFormatting.GREEN));
         }
         return Component.literal("");
@@ -122,8 +125,8 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
      * 获取武器等级文本组件
      */
     protected Component getLevelComponent() {
-        int level = GunsTool.getGunIntTag(stack, "Level", 0);
-        double rate = GunsTool.getGunDoubleTag(stack, "Exp", 0) / (20 * Math.pow(level, 2) + 160 * level + 20);
+        int level = GunsTool.getGunIntTag(tag, "Level", 0);
+        double rate = GunsTool.getGunDoubleTag(tag, "Exp", 0) / (20 * Math.pow(level, 2) + 160 * level + 20);
 
         ChatFormatting formatting;
         if (level < 10) {
@@ -149,7 +152,7 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
      * 获取武器强化点数文本组件
      */
     protected Component getUpgradePointComponent() {
-        int upgradePoint = Mth.floor(GunsTool.getGunDoubleTag(stack, "UpgradePoint", 0));
+        int upgradePoint = Mth.floor(GunsTool.getGunDoubleTag(tag, "UpgradePoint", 0));
         return Component.translatable("des.superbwarfare.guns.upgrade_point").withStyle(ChatFormatting.GRAY)
                 .append(Component.literal("").withStyle(ChatFormatting.RESET))
                 .append(Component.literal(String.valueOf(upgradePoint)).withStyle(ChatFormatting.WHITE).withStyle(ChatFormatting.BOLD));
@@ -169,13 +172,13 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
      */
     protected Component getBypassComponent() {
         double perkBypassArmorRate = 0;
-        var perk = PerkHelper.getPerkByType(stack, Perk.Type.AMMO);
+        var perk = PerkHelper.getPerkByType(tag, Perk.Type.AMMO);
 
         if (perk instanceof AmmoPerk ammoPerk) {
-            int level = PerkHelper.getItemPerkLevel(perk, stack);
+            int level = PerkHelper.getItemPerkLevel(perk, tag);
             perkBypassArmorRate = ammoPerk.bypassArmorRate + (perk == ModPerks.AP_BULLET.get() ? 0.05f * (level - 1) : 0);
         }
-        double bypassRate = Math.max(GunsTool.getGunDoubleTag(stack, "BypassesArmor", 0) + perkBypassArmorRate, 0);
+        double bypassRate = Math.max(GunsTool.getGunDoubleTag(tag, "BypassesArmor", 0) + perkBypassArmorRate, 0);
 
         return Component.translatable("des.superbwarfare.guns.bypass").withStyle(ChatFormatting.GRAY)
                 .append(Component.literal("").withStyle(ChatFormatting.RESET))
@@ -186,7 +189,7 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
      * 获取武器爆头倍率文本组件
      */
     protected Component getHeadshotComponent() {
-        double headshot = GunsTool.getGunDoubleTag(stack, "Headshot", 0);
+        double headshot = GunsTool.getGunDoubleTag(tag, "Headshot", 0);
         return Component.translatable("des.superbwarfare.guns.headshot").withStyle(ChatFormatting.GRAY)
                 .append(Component.literal("").withStyle(ChatFormatting.RESET))
                 .append(Component.literal(FormatTool.format1D(headshot, "x")).withStyle(ChatFormatting.AQUA));
@@ -215,32 +218,32 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
 
         int xOffset = -20;
 
-        Perk ammoPerk = PerkHelper.getPerkByType(stack, Perk.Type.AMMO);
+        Perk ammoPerk = PerkHelper.getPerkByType(tag, Perk.Type.AMMO);
         if (ammoPerk != null && PerkHelper.getPerkItem(ammoPerk).isPresent()) {
             xOffset += 20;
 
             var ammoItem = PerkHelper.getPerkItem(ammoPerk).get().get();
             ItemStack perkStack = ammoItem.getDefaultInstance();
 
-            CompoundTag ammoTag = PerkHelper.getPerkTag(stack, Perk.Type.AMMO);
+            CompoundTag ammoTag = PerkHelper.getPerkTag(tag, Perk.Type.AMMO);
             if (!ammoTag.isEmpty()) {
-                int level = PerkHelper.getItemPerkLevel(ammoPerk, stack);
+                int level = PerkHelper.getItemPerkLevel(ammoPerk, tag);
                 perkStack.setCount(level);
             }
             guiGraphics.renderItem(perkStack, x + xOffset, y + 2);
             guiGraphics.renderItemDecorations(font, perkStack, x + xOffset, y + 2);
         }
 
-        Perk funcPerk = PerkHelper.getPerkByType(stack, Perk.Type.FUNCTIONAL);
+        Perk funcPerk = PerkHelper.getPerkByType(tag, Perk.Type.FUNCTIONAL);
         if (funcPerk != null && PerkHelper.getPerkItem(funcPerk).isPresent()) {
             xOffset += 20;
 
             var funcItem = PerkHelper.getPerkItem(funcPerk).get().get();
             ItemStack perkStack = funcItem.getDefaultInstance();
 
-            CompoundTag funcTag = PerkHelper.getPerkTag(stack, Perk.Type.FUNCTIONAL);
+            CompoundTag funcTag = PerkHelper.getPerkTag(tag, Perk.Type.FUNCTIONAL);
             if (!funcTag.isEmpty()) {
-                int level = PerkHelper.getItemPerkLevel(funcPerk, stack);
+                int level = PerkHelper.getItemPerkLevel(funcPerk, tag);
                 perkStack.setCount(level);
             }
 
@@ -248,16 +251,16 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
             guiGraphics.renderItemDecorations(font, perkStack, x + xOffset, y + 2);
         }
 
-        Perk damagePerk = PerkHelper.getPerkByType(stack, Perk.Type.DAMAGE);
+        Perk damagePerk = PerkHelper.getPerkByType(tag, Perk.Type.DAMAGE);
         if (damagePerk != null && PerkHelper.getPerkItem(damagePerk).isPresent()) {
             xOffset += 20;
 
             var damageItem = PerkHelper.getPerkItem(damagePerk).get().get();
             ItemStack perkStack = damageItem.getDefaultInstance();
 
-            CompoundTag damageTag = PerkHelper.getPerkTag(stack, Perk.Type.DAMAGE);
+            CompoundTag damageTag = PerkHelper.getPerkTag(tag, Perk.Type.DAMAGE);
             if (!damageTag.isEmpty()) {
-                int level = PerkHelper.getItemPerkLevel(damagePerk, stack);
+                int level = PerkHelper.getItemPerkLevel(damagePerk, tag);
                 perkStack.setCount(level);
             }
 
@@ -278,13 +281,13 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
 
         int yOffset = -5;
 
-        Perk ammoPerk = PerkHelper.getPerkByType(stack, Perk.Type.AMMO);
+        Perk ammoPerk = PerkHelper.getPerkByType(tag, Perk.Type.AMMO);
         if (ammoPerk != null && PerkHelper.getPerkItem(ammoPerk).isPresent()) {
             yOffset += 25;
             var ammoItem = PerkHelper.getPerkItem(ammoPerk).get().get();
             guiGraphics.renderItem(ammoItem.getDefaultInstance(), x, y + 4 + yOffset);
 
-            CompoundTag ammoTag = PerkHelper.getPerkTag(stack, Perk.Type.AMMO);
+            CompoundTag ammoTag = PerkHelper.getPerkTag(tag, Perk.Type.AMMO);
             if (!ammoTag.isEmpty()) {
                 var ids = ammoTag.getString("id").split(":");
                 if (ids.length > 1) {
@@ -300,13 +303,13 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
             }
         }
 
-        Perk funcPerk = PerkHelper.getPerkByType(stack, Perk.Type.FUNCTIONAL);
+        Perk funcPerk = PerkHelper.getPerkByType(tag, Perk.Type.FUNCTIONAL);
         if (funcPerk != null && PerkHelper.getPerkItem(funcPerk).isPresent()) {
             yOffset += 25;
             var funcItem = PerkHelper.getPerkItem(funcPerk).get().get();
             guiGraphics.renderItem(funcItem.getDefaultInstance(), x, y + 4 + yOffset);
 
-            CompoundTag funcTag = PerkHelper.getPerkTag(stack, Perk.Type.FUNCTIONAL);
+            CompoundTag funcTag = PerkHelper.getPerkTag(tag, Perk.Type.FUNCTIONAL);
             if (!funcTag.isEmpty()) {
                 var ids = funcTag.getString("id").split(":");
                 if (ids.length > 1) {
@@ -322,13 +325,13 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
             }
         }
 
-        Perk damagePerk = PerkHelper.getPerkByType(stack, Perk.Type.DAMAGE);
+        Perk damagePerk = PerkHelper.getPerkByType(tag, Perk.Type.DAMAGE);
         if (damagePerk != null && PerkHelper.getPerkItem(damagePerk).isPresent()) {
             yOffset += 25;
             var damageItem = PerkHelper.getPerkItem(damagePerk).get().get();
             guiGraphics.renderItem(damageItem.getDefaultInstance(), x, y + 4 + yOffset);
 
-            CompoundTag damageTag = PerkHelper.getPerkTag(stack, Perk.Type.DAMAGE);
+            CompoundTag damageTag = PerkHelper.getPerkTag(tag, Perk.Type.DAMAGE);
             if (!damageTag.isEmpty()) {
                 var ids = damageTag.getString("id").split(":");
                 if (ids.length > 1) {
@@ -365,7 +368,7 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
 
         int width = 0;
 
-        CompoundTag ammoTag = PerkHelper.getPerkTag(stack, Perk.Type.AMMO);
+        CompoundTag ammoTag = PerkHelper.getPerkTag(tag, Perk.Type.AMMO);
         if (!ammoTag.isEmpty()) {
             var ids = ammoTag.getString("id").split(":");
             if (ids.length > 1) {
@@ -375,7 +378,7 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
             }
         }
 
-        CompoundTag funcTag = PerkHelper.getPerkTag(stack, Perk.Type.FUNCTIONAL);
+        CompoundTag funcTag = PerkHelper.getPerkTag(tag, Perk.Type.FUNCTIONAL);
         if (!funcTag.isEmpty()) {
             var ids = funcTag.getString("id").split(":");
             if (ids.length > 1) {
@@ -385,7 +388,7 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
             }
         }
 
-        CompoundTag damageTag = PerkHelper.getPerkTag(stack, Perk.Type.DAMAGE);
+        CompoundTag damageTag = PerkHelper.getPerkTag(tag, Perk.Type.DAMAGE);
         if (!damageTag.isEmpty()) {
             var ids = damageTag.getString("id").split(":");
             if (ids.length > 1) {
@@ -409,13 +412,14 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
                 height += 16;
             } else {
                 height += 16;
-                if (PerkHelper.getPerkByType(stack, Perk.Type.AMMO) != null) {
+                final var tag = NBTTool.getTag(stack);
+                if (PerkHelper.getPerkByType(tag, Perk.Type.AMMO) != null) {
                     height += 25;
                 }
-                if (PerkHelper.getPerkByType(stack, Perk.Type.FUNCTIONAL) != null) {
+                if (PerkHelper.getPerkByType(tag, Perk.Type.FUNCTIONAL) != null) {
                     height += 25;
                 }
-                if (PerkHelper.getPerkByType(stack, Perk.Type.DAMAGE) != null) {
+                if (PerkHelper.getPerkByType(tag, Perk.Type.DAMAGE) != null) {
                     height += 25;
                 }
             }

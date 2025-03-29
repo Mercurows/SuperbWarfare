@@ -17,11 +17,11 @@ public class ClientSecondaryCataclysmImageTooltip extends ClientEnergyImageToolt
 
     @Override
     protected Component getDamageComponent() {
-        double damage = GunsTool.getGunDoubleTag(stack, "Damage", 0) * TooltipTool.perkDamage(stack);
-        int perkLevel = PerkHelper.getItemPerkLevel(ModPerks.MICRO_MISSILE.get(), stack);
+        double damage = GunsTool.getGunDoubleTag(tag, "Damage", 0) * TooltipTool.perkDamage(stack);
+        int perkLevel = PerkHelper.getItemPerkLevel(ModPerks.MICRO_MISSILE.get(), tag);
         if (perkLevel > 0) damage *= 1.1f + perkLevel * 0.1f;
 
-        double explosionDamage = GunsTool.getGunDoubleTag(stack, "ExplosionDamage", 0);
+        double explosionDamage = GunsTool.getGunDoubleTag(tag, "ExplosionDamage", 0);
 
         return Component.translatable("des.superbwarfare.guns.damage").withStyle(ChatFormatting.GRAY)
                 .append(Component.literal("").withStyle(ChatFormatting.RESET))
