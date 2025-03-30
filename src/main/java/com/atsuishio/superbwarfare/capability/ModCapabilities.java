@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.block.entity.ChargingStationBlockEntity;
 import com.atsuishio.superbwarfare.block.entity.CreativeChargingStationBlockEntity;
 import com.atsuishio.superbwarfare.block.entity.FuMO25BlockEntity;
+import com.atsuishio.superbwarfare.capability.energy.ItemEnergyStorage;
 import com.atsuishio.superbwarfare.capability.laser.LaserCapability;
 import com.atsuishio.superbwarfare.capability.laser.LaserCapabilityProvider;
 import com.atsuishio.superbwarfare.capability.player.PlayerVariable;
@@ -12,17 +13,18 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.EnergyVehicleEntity;
 import com.atsuishio.superbwarfare.init.ModBlockEntities;
 import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModItems;
-import com.atsuishio.superbwarfare.item.BatteryItem;
 import com.atsuishio.superbwarfare.item.CreativeChargingStationBlockItem;
-import com.atsuishio.superbwarfare.item.gun.launcher.SecondaryCataclysm;
-import com.atsuishio.superbwarfare.item.gun.sniper.SentinelItem;
-import com.atsuishio.superbwarfare.item.gun.special.TaserItem;
+import com.atsuishio.superbwarfare.item.EnergyStorageItem;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.Item;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.EntityCapability;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+import net.neoforged.neoforge.registries.DeferredHolder;
+
+import java.util.ArrayList;
 
 @EventBusSubscriber(modid = Mod.MODID, bus = EventBusSubscriber.Bus.MOD)
 public class ModCapabilities {
@@ -48,34 +50,20 @@ public class ModCapabilities {
         // FuMO25
         event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, ModBlockEntities.FUMO_25.value(), FuMO25BlockEntity::getEnergyStorage);
 
-        // 电池
-        // TODO 电池到底怎么回事
-        for (var item : ModItems.ITEMS.getEntries()) {
-            if (item.get() instanceof BatteryItem battery) {
-                event.registerItem(Capabilities.EnergyStorage.ITEM,
-                        (obj, ctx) -> ((BatteryItem) obj.getItem()).getEnergyStorage(),
-                        battery
+        // 所有能存能量的物品
+        var list = new ArrayList<DeferredHolder<Item, ? extends Item>>();
+        list.addAll(ModItems.ITEMS.getEntries());
+        list.addAll(ModItems.GUNS.getEntries());
+
+        for (var item : list) {
+            if (item.get() instanceof EnergyStorageItem) {
+                event.registerItem(
+                        Capabilities.EnergyStorage.ITEM,
+                        (stack, ctx) -> new ItemEnergyStorage(stack, ((EnergyStorageItem) stack.getItem()).getMaxEnergy())
+                        , item.get()
                 );
             }
         }
-
-        // 泰瑟枪
-        event.registerItem(Capabilities.EnergyStorage.ITEM,
-                (obj, ctx) -> (obj.getItem() instanceof TaserItem taser) ? taser.getEnergyStorage() : null,
-                ModItems.TASER.value()
-        );
-
-        // 哨兵
-        event.registerItem(Capabilities.EnergyStorage.ITEM,
-                (obj, ctx) -> (obj.getItem() instanceof SentinelItem sentinel) ? sentinel.getEnergyStorage() : null,
-                ModItems.SENTINEL.value()
-        );
-
-        // 二次灾变
-        event.registerItem(Capabilities.EnergyStorage.ITEM,
-                (obj, ctx) -> (obj.getItem() instanceof SecondaryCataclysm cataclysm) ? cataclysm.getEnergyStorage() : null,
-                ModItems.SECONDARY_CATACLYSM.value()
-        );
 
         // 载具
         for (var entity : ModEntities.REGISTRY.getEntries()) {
