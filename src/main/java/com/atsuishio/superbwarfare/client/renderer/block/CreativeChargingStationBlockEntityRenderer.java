@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.client.renderer.block;
 
 import com.atsuishio.superbwarfare.block.ChargingStationBlock;
-import com.atsuishio.superbwarfare.block.entity.ChargingStationBlockEntity;
+import com.atsuishio.superbwarfare.block.entity.CreativeChargingStationBlockEntity;
 import com.atsuishio.superbwarfare.client.renderer.CustomRenderType;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -15,17 +15,18 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @OnlyIn(Dist.CLIENT)
-public class ChargingStationBlockEntityRenderer implements BlockEntityRenderer<ChargingStationBlockEntity> {
+public class CreativeChargingStationBlockEntityRenderer implements BlockEntityRenderer<CreativeChargingStationBlockEntity> {
 
     @Override
-    public void render(ChargingStationBlockEntity blockEntity, float partialTick, @NotNull PoseStack poseStack, @NotNull MultiBufferSource bufferSource, int packedLight, int packedOverlay) {
-        if (!blockEntity.getBlockState().getValue(ChargingStationBlock.SHOW_RANGE)) return;
+    public void render(CreativeChargingStationBlockEntity blockEntity, float partialTick, @NotNull PoseStack poseStack, @NotNull MultiBufferSource bufferSource, int packedLight, int packedOverlay) {
+        if (!blockEntity.getBlockState().hasProperty(ChargingStationBlock.SHOW_RANGE) || !blockEntity.getBlockState().getValue(ChargingStationBlock.SHOW_RANGE))
+            return;
 
         poseStack.pushPose();
         var pos = blockEntity.getBlockPos();
         poseStack.translate(-pos.getX(), -pos.getY(), -pos.getZ());
 
-        var aabb = new AABB(pos).inflate(ChargingStationBlockEntity.CHARGE_RADIUS);
+        var aabb = new AABB(pos).inflate(CreativeChargingStationBlockEntity.CHARGE_RADIUS);
 
         float startX = (float) aabb.minX - 0.001f;
         float startY = (float) aabb.minY - 0.001f;
@@ -83,13 +84,13 @@ public class ChargingStationBlockEntityRenderer implements BlockEntityRenderer<C
     }
 
     @Override
-    public boolean shouldRenderOffScreen(@NotNull ChargingStationBlockEntity blockEntity) {
+    public boolean shouldRenderOffScreen(@NotNull CreativeChargingStationBlockEntity blockEntity) {
         return true;
     }
 
     @Override
     @ParametersAreNonnullByDefault
-    public boolean shouldRender(ChargingStationBlockEntity blockEntity, Vec3 pCameraPos) {
+    public boolean shouldRender(CreativeChargingStationBlockEntity blockEntity, Vec3 pCameraPos) {
         return true;
     }
 

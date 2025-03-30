@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.client.screens;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.block.entity.ChargingStationBlockEntity;
 import com.atsuishio.superbwarfare.menu.ChargingStationMenu;
+import com.atsuishio.superbwarfare.network.message.send.ShowChargingRangeMessage;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
@@ -12,6 +13,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -91,8 +93,7 @@ public class ChargingStationScreen extends AbstractContainerScreen<ChargingStati
 
         @Override
         public void onPress() {
-            // TODO show range message
-//            PacketDistributor.sendToServer(new ShowChargingRangeMessage(!ChargingStationScreen.this.menu.showRange()));
+            PacketDistributor.sendToServer(new ShowChargingRangeMessage(!ChargingStationScreen.this.menu.showRange()));
         }
 
         @Override

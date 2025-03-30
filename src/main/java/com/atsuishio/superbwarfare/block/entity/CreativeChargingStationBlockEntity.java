@@ -4,6 +4,11 @@ import com.atsuishio.superbwarfare.capability.energy.InfinityEnergyStorage;
 import com.atsuishio.superbwarfare.init.ModBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.Connection;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -11,8 +16,10 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.energy.IEnergyStorage;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 
 /**
@@ -22,6 +29,27 @@ public class CreativeChargingStationBlockEntity extends BlockEntity {
 
     public static final int CHARGE_RADIUS = 8;
 
+    public boolean showRange = false;
+
+    @Override
+    public @NotNull CompoundTag getUpdateTag(HolderLookup.@NotNull Provider registries) {
+        CompoundTag tag = new CompoundTag();
+        tag.putBoolean("ShowRange", this.showRange);
+        saveAdditional(tag, registries);
+        return tag;
+    }
+
+    @Override
+    public Packet<ClientGamePacketListener> getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
+    }
+
+    @Override
+    @ParametersAreNonnullByDefault
+    public void onDataPacket(Connection connection, ClientboundBlockEntityDataPacket packet, HolderLookup.Provider registries) {
+        super.onDataPacket(connection, packet, registries);
+        this.showRange = packet.getTag().getBoolean("ShowRange");
+    }
 
     public CreativeChargingStationBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.CREATIVE_CHARGING_STATION.get(), pos, state);
@@ -62,11 +90,6 @@ public class CreativeChargingStationBlockEntity extends BlockEntity {
                 blockEntity.setChanged();
             }
         }
-    }
-
-    @Override
-    public ClientboundBlockEntityDataPacket getUpdatePacket() {
-        return ClientboundBlockEntityDataPacket.create(this);
     }
 
     private final IEnergyStorage energyStorage = new InfinityEnergyStorage();
