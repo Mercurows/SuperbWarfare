@@ -53,5 +53,6 @@ public class NetworkRegistry {
         registrar.playToServer(InteractMessage.TYPE, InteractMessage.STREAM_CODEC, InteractMessage::handler);
         registrar.playToServer(AdjustMortarAngleMessage.TYPE, AdjustMortarAngleMessage.STREAM_CODEC, AdjustMortarAngleMessage::handler);
         registrar.playToServer(ChangeVehicleSeatMessage.TYPE, ChangeVehicleSeatMessage.STREAM_CODEC, ChangeVehicleSeatMessage::handler);
+        registrar.playToServer(ShowChargingRangeMessage.TYPE, ShowChargingRangeMessage.STREAM_CODEC, ShowChargingRangeMessage::handler);
     }
 }

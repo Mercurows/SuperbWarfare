@@ -8,6 +8,7 @@ import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModRarity;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.item.EnergyStorageItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
@@ -24,8 +25,6 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.energy.EnergyStorage;
-import net.neoforged.neoforge.energy.IEnergyStorage;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoItem;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
@@ -37,21 +36,13 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Optional;
 import java.util.Set;
 
-public class SentinelItem extends GunItem implements GeoItem {
-
-    public IEnergyStorage getEnergyStorage() {
-        return energyStorage;
-    }
-
-    private final IEnergyStorage energyStorage;
+public class SentinelItem extends GunItem implements GeoItem, EnergyStorageItem {
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     public static ItemDisplayContext transformType;
 
     public SentinelItem() {
         super(new Properties().stacksTo(1).rarity(ModRarity.getLegendary()));
-
-        this.energyStorage = new EnergyStorage(24000);
     }
 
     @Override
@@ -212,5 +203,10 @@ public class SentinelItem extends GunItem implements GeoItem {
     @Override
     public int getAvailableFireModes() {
         return FireMode.SEMI.flag;
+    }
+
+    @Override
+    public int getMaxEnergy() {
+        return 24000;
     }
 }

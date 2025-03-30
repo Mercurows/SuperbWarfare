@@ -10,6 +10,7 @@ import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.item.EnergyStorageItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.SpecialFireWeapon;
 import com.atsuishio.superbwarfare.network.message.receive.ShootClientMessage;
@@ -34,8 +35,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.energy.EnergyStorage;
-import net.neoforged.neoforge.energy.IEnergyStorage;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoItem;
@@ -48,22 +47,16 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Optional;
 import java.util.Set;
 
-public class TaserItem extends GunItem implements GeoItem, SpecialFireWeapon {
+public class TaserItem extends GunItem implements GeoItem, SpecialFireWeapon, EnergyStorageItem {
 
     public static final int MAX_ENERGY = 6000;
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     public static ItemDisplayContext transformType;
 
-    public IEnergyStorage getEnergyStorage() {
-        return energyStorage;
-    }
-
-    private final IEnergyStorage energyStorage;
 
     public TaserItem() {
         super(new Properties().stacksTo(1).rarity(Rarity.COMMON));
-        this.energyStorage = new EnergyStorage(MAX_ENERGY);
     }
 
     @Override
@@ -283,5 +276,10 @@ public class TaserItem extends GunItem implements GeoItem, SpecialFireWeapon {
         GunsTool.setGunIntTag(tag, "Ammo", GunsTool.getGunIntTag(tag, "Ammo", 0) - 1);
         energyStorage.extractEnergy(400 + 100 * perkLevel, false);
         tag.putBoolean("shoot", true);
+    }
+
+    @Override
+    public int getMaxEnergy() {
+        return MAX_ENERGY;
     }
 }

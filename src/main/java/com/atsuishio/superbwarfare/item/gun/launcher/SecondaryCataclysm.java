@@ -7,6 +7,7 @@ import com.atsuishio.superbwarfare.client.tooltip.component.SecondaryCataclysmIm
 import com.atsuishio.superbwarfare.entity.projectile.GunGrenadeEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.*;
+import com.atsuishio.superbwarfare.item.EnergyStorageItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.SpecialFireWeapon;
 import com.atsuishio.superbwarfare.network.message.receive.ShootClientMessage;
@@ -32,8 +33,6 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.energy.EnergyStorage;
-import net.neoforged.neoforge.energy.IEnergyStorage;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoItem;
@@ -45,13 +44,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Optional;
 
-public class SecondaryCataclysm extends GunItem implements GeoItem, SpecialFireWeapon {
-    private final IEnergyStorage energyStorage = new EnergyStorage(24000);
-
-    public IEnergyStorage getEnergyStorage() {
-        return energyStorage;
-    }
-
+public class SecondaryCataclysm extends GunItem implements GeoItem, SpecialFireWeapon, EnergyStorageItem {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     public static ItemDisplayContext transformType;
 
@@ -70,12 +63,6 @@ public class SecondaryCataclysm extends GunItem implements GeoItem, SpecialFireW
         var cap = stack.getCapability(Capabilities.EnergyStorage.ITEM);
         return Math.round((float) (cap != null ? cap.getEnergyStored() : 0) * 13.0F / 24000F);
     }
-
-    // TODO register cap
-//    @Override
-//    public ICapabilityProvider initCapabilities(ItemStack stack, CompoundTag tag) {
-//        return new ItemEnergyProvider(stack, energyCapacity.get());
-//    }
 
     @Override
     public int getBarColor(@NotNull ItemStack pStack) {
@@ -346,5 +333,10 @@ public class SecondaryCataclysm extends GunItem implements GeoItem, SpecialFireW
 
         GunsTool.setGunIntTag(tag, "Ammo", GunsTool.getGunIntTag(tag, "Ammo", 0) - 1);
         player.getCooldowns().addCooldown(stack.getItem(), 6);
+    }
+
+    @Override
+    public int getMaxEnergy() {
+        return 24000;
     }
 }
