@@ -4,7 +4,9 @@ import com.atsuishio.superbwarfare.client.layer.vehicle.SpeedBoatHeatLayer;
 import com.atsuishio.superbwarfare.client.layer.vehicle.SpeedBoatLayer;
 import com.atsuishio.superbwarfare.client.layer.vehicle.SpeedBoatPowerLayer;
 import com.atsuishio.superbwarfare.client.model.entity.SpeedboatModel;
+import com.atsuishio.superbwarfare.entity.WaterMaskEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.SpeedboatEntity;
+import com.atsuishio.superbwarfare.init.ModEntities;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
@@ -13,6 +15,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 import software.bernie.geckolib.cache.object.BakedGeoModel;
 import software.bernie.geckolib.cache.object.GeoBone;
@@ -50,6 +53,14 @@ public class SpeedboatRenderer extends GeoEntityRenderer<SpeedboatEntity> {
         poseStack.rotateAround(Axis.XP.rotationDegrees(Mth.lerp(partialTicks, entityIn.xRotO, entityIn.getXRot())), (float) root.x, (float) root.y, (float) root.z);
         poseStack.rotateAround(Axis.ZP.rotationDegrees(Mth.lerp(partialTicks, entityIn.prevRoll, entityIn.getRoll())), (float) root.x, (float) root.y, (float) root.z);
         super.render(entityIn, entityYaw, partialTicks, poseStack, bufferIn, packedLightIn);
+
+        poseStack.pushPose();
+        poseStack.scale(2.4f, 0.4f, 4.05f);
+        poseStack.translate(0, 1.5, -0.22);
+        Entity entity = new WaterMaskEntity(ModEntities.WATER_MASK.get(), entityIn.level());
+        entityRenderDispatcher.render(entity, 0, 0, 0, entityYaw, partialTicks, poseStack, bufferIn, packedLightIn);
+        poseStack.popPose();
+
         poseStack.popPose();
     }
 

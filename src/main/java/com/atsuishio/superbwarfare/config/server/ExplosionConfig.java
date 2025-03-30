@@ -122,10 +122,10 @@ public class ExplosionConfig {
 
         builder.push("RPG");
 
-        builder.comment("The explosion damage of RPG");
+        builder.comment("The explosion damage of RPG in the drone");
         RPG_EXPLOSION_DAMAGE = builder.defineInRange("rpg_explosion_damage", 130, 1, Integer.MAX_VALUE);
 
-        builder.comment("The explosion radius of RPG");
+        builder.comment("The explosion radius of RPG in the drone");
         RPG_EXPLOSION_RADIUS = builder.defineInRange("rpg_explosion_radius", 10, 1, Integer.MAX_VALUE);
 
         builder.pop();

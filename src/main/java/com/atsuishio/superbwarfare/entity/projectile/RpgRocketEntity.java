@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.entity.projectile;
 
-import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModItems;
@@ -38,7 +37,8 @@ public class RpgRocketEntity extends FastThrowableProjectile implements GeoEntit
     private float monsterMultiplier = 0.0f;
     private float damage = 250f;
 
-    private float explosionRadius = 1;
+    private float explosionDamage = 200f;
+    private float explosionRadius = 10;
 
     public RpgRocketEntity(EntityType<? extends RpgRocketEntity> type, Level world) {
         super(type, world);
@@ -50,9 +50,19 @@ public class RpgRocketEntity extends FastThrowableProjectile implements GeoEntit
         this.noCulling = true;
     }
 
-    public RpgRocketEntity(LivingEntity entity, Level level, float damage) {
+    public RpgRocketEntity(LivingEntity entity, Level level) {
         super(ModEntities.RPG_ROCKET.get(), entity, level);
+    }
+
+    public RpgRocketEntity(LivingEntity entity, Level level, float damage) {
+        this(entity, level);
         this.damage = damage;
+    }
+
+    public RpgRocketEntity(LivingEntity entity, Level level, float damage, float explosionDamage, float explosionRadius) {
+        this(entity, level, damage);
+        this.explosionDamage = explosionDamage;
+        this.explosionRadius = explosionRadius;
     }
 
     public void setExplosionRadius(float explosionRadius) {
@@ -61,6 +71,10 @@ public class RpgRocketEntity extends FastThrowableProjectile implements GeoEntit
 
     public void setDamage(float damage) {
         this.damage = damage;
+    }
+
+    public void setExplosionDamage(float explosionDamage) {
+        this.explosionDamage = explosionDamage;
     }
 
 
@@ -109,7 +123,7 @@ public class RpgRocketEntity extends FastThrowableProjectile implements GeoEntit
 
         if (this.tickCount > 1) {
             if (this.level() instanceof ServerLevel) {
-                ProjectileTool.causeCustomExplode(this, ExplosionConfig.RPG_EXPLOSION_DAMAGE.get(), ExplosionConfig.RPG_EXPLOSION_RADIUS.get() * explosionRadius, this.monsterMultiplier);
+                ProjectileTool.causeCustomExplode(this, this.explosionDamage, this.explosionRadius, this.monsterMultiplier);
             }
         }
 
@@ -128,7 +142,7 @@ public class RpgRocketEntity extends FastThrowableProjectile implements GeoEntit
 
         if (this.tickCount > 1) {
             if (this.level() instanceof ServerLevel) {
-                ProjectileTool.causeCustomExplode(this, ExplosionConfig.RPG_EXPLOSION_DAMAGE.get(), ExplosionConfig.RPG_EXPLOSION_RADIUS.get() * explosionRadius, this.monsterMultiplier);
+                ProjectileTool.causeCustomExplode(this, this.explosionDamage, this.explosionRadius, this.monsterMultiplier);
             }
         }
 
@@ -155,7 +169,7 @@ public class RpgRocketEntity extends FastThrowableProjectile implements GeoEntit
 
         if (this.tickCount > 100 || this.isInWater()) {
             if (this.level() instanceof ServerLevel) {
-                ProjectileTool.causeCustomExplode(this, ExplosionConfig.RPG_EXPLOSION_DAMAGE.get(), ExplosionConfig.RPG_EXPLOSION_RADIUS.get() * explosionRadius, this.monsterMultiplier);
+                ProjectileTool.causeCustomExplode(this, this.explosionDamage, this.explosionRadius, this.monsterMultiplier);
             }
             this.discard();
         }

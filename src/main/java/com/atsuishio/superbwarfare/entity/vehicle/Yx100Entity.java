@@ -403,7 +403,7 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
 
             for (Entity target : level.getEntitiesOfClass(Entity.class, new AABB(center, center).inflate(8), e -> true).stream().sorted(Comparator.comparingDouble(e -> e.distanceToSqr(center))).toList()) {
                 if (target instanceof ServerPlayer serverPlayer) {
-                    PacketDistributor.sendToPlayer(serverPlayer, new ShakeClientMessage(10, 8, 40, this.getX(), this.getEyeY(), this.getZ()));
+                    PacketDistributor.sendToPlayer(serverPlayer, new ShakeClientMessage(10, 8, 60, this.getX(), this.getEyeY(), this.getZ()));
                 }
             }
         }
@@ -439,7 +439,7 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
 
             for (Entity target : level.getEntitiesOfClass(Entity.class, new AABB(center, center).inflate(4), e -> true).stream().sorted(Comparator.comparingDouble(e -> e.distanceToSqr(center))).toList()) {
                 if (target instanceof ServerPlayer serverPlayer) {
-                    PacketDistributor.sendToPlayer(serverPlayer, new ShakeClientMessage(6, 4, 8, this.getX(), this.getEyeY(), this.getZ()));
+                    PacketDistributor.sendToPlayer(serverPlayer, new ShakeClientMessage(6, 4, 6, this.getX(), this.getEyeY(), this.getZ()));
                 }
             }
 

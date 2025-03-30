@@ -292,7 +292,7 @@ public class SpeedboatEntity extends ContainerMobileVehicleEntity implements Geo
             this.entityData.set(POWER, this.entityData.get(POWER) * 0.96f);
             this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) * 0.8f);
 
-            this.setRotorRot(this.getRotorRot() + 10 * this.entityData.get(POWER));
+            this.setRotorRot(this.getRotorRot() + 30 * this.entityData.get(POWER));
             this.setRudderRot(Mth.clamp(this.getRudderRot() - this.entityData.get(DELTA_ROT), -1.25f, 1.25f) * 0.7f * (this.entityData.get(POWER) > 0 ? 1 : -1));
 
             if (this.isInWater() || this.isUnderWater()) {

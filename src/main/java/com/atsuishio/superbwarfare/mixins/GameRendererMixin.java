@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.mixins;
 
+import com.atsuishio.superbwarfare.entity.vehicle.SpeedboatEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
-import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
@@ -70,7 +70,7 @@ public class GameRendererMixin {
             // TODO game render mixin matrices
 //            matrices.mulPose(Axis.ZP.rotationDegrees(-r * vehicle.getRoll(tickDelta) + r2 * vehicle.getViewXRot(tickDelta)));
 
-            if (!ClientEventHandler.zoomVehicle) {
+            if (!(vehicle instanceof SpeedboatEntity)) {
                 // fetch eye offset
                 float eye = entity.getEyeHeight();
 

@@ -9,6 +9,8 @@ import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
 import net.neoforged.neoforge.network.PacketDistributor;
 
+import javax.annotation.Nullable;
+
 public abstract class FastThrowableProjectile extends ThrowableItemProjectile implements CustomSyncMotionEntity, IEntityWithComplexSpawn {
 
     public FastThrowableProjectile(EntityType<? extends ThrowableItemProjectile> pEntityType, Level pLevel) {
@@ -19,8 +21,12 @@ public abstract class FastThrowableProjectile extends ThrowableItemProjectile im
         super(pEntityType, pX, pY, pZ, pLevel);
     }
 
-    public FastThrowableProjectile(EntityType<? extends ThrowableItemProjectile> pEntityType, LivingEntity pShooter, Level pLevel) {
-        super(pEntityType, pShooter, pLevel);
+    public FastThrowableProjectile(EntityType<? extends ThrowableItemProjectile> pEntityType, @Nullable LivingEntity pShooter, Level pLevel) {
+        super(pEntityType, pLevel);
+        this.setOwner(pShooter);
+        if (pShooter != null) {
+            this.setPos(pShooter.getX(), pShooter.getEyeY() - (double) 0.1F, pShooter.getZ());
+        }
     }
 
     @Override
