@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.datagen;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.init.ModBlocks;
 import com.atsuishio.superbwarfare.init.ModItems;
+import com.atsuishio.superbwarfare.item.common.BlueprintItem;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
@@ -68,8 +69,8 @@ public class ModItemModelProvider extends ItemModelProvider {
         simpleItem(ModItems.TRANSCRIPT);
         simpleItem(ModItems.RAW_SILVER);
         simpleItem(ModItems.SILVER_INGOT);
-        handheldItem(ModItems.CROWBAR);
-        handheldItem(ModItems.DEFUSER);
+        handheldItem(ModItems.CROWBAR.getId());
+        handheldItem(ModItems.DEFUSER.getId());
         simpleItem(ModItems.FIRING_PARAMETERS);
         simpleItem(ModItems.BEAM_TEST);
         simpleItem(ModItems.HANDGUN_AMMO);
@@ -180,12 +181,12 @@ public class ModItemModelProvider extends ItemModelProvider {
                 modLoc("block/" + BuiltInRegistries.BLOCK.getKey(block.get()).getPath()));
     }
 
-    private ItemModelBuilder gunBlueprintItem(DeferredHolder<Item, Item> item) {
+    private ItemModelBuilder gunBlueprintItem(DeferredHolder<Item, BlueprintItem> item) {
         return withExistingParent(item.getId().getPath(), ResourceLocation.withDefaultNamespace("item/generated"))
                 .texture("layer0", Mod.loc("item/gun_blueprint"));
     }
 
-    private ItemModelBuilder cannonBlueprintItem(DeferredHolder<Item, Item> item) {
+    private ItemModelBuilder cannonBlueprintItem(DeferredHolder<Item, BlueprintItem> item) {
         return withExistingParent(item.getId().getPath(), ResourceLocation.withDefaultNamespace("item/generated"))
                 .texture("layer0", Mod.loc("item/cannon_blueprint"));
     }

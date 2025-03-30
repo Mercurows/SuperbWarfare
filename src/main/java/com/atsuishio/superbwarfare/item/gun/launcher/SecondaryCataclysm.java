@@ -32,6 +32,8 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.energy.EnergyStorage;
+import net.neoforged.neoforge.energy.IEnergyStorage;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoItem;
@@ -42,10 +44,13 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Optional;
-import java.util.function.Supplier;
 
 public class SecondaryCataclysm extends GunItem implements GeoItem, SpecialFireWeapon {
-    private final Supplier<Integer> energyCapacity = () -> 24000;
+    private final IEnergyStorage energyStorage = new EnergyStorage(24000);
+
+    public IEnergyStorage getEnergyStorage() {
+        return energyStorage;
+    }
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     public static ItemDisplayContext transformType;

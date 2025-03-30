@@ -14,6 +14,9 @@ import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.item.BatteryItem;
 import com.atsuishio.superbwarfare.item.CreativeChargingStationBlockItem;
+import com.atsuishio.superbwarfare.item.gun.launcher.SecondaryCataclysm;
+import com.atsuishio.superbwarfare.item.gun.sniper.SentinelItem;
+import com.atsuishio.superbwarfare.item.gun.special.TaserItem;
 import net.minecraft.world.entity.EntityType;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -55,6 +58,24 @@ public class ModCapabilities {
                 );
             }
         }
+
+        // 泰瑟枪
+        event.registerItem(Capabilities.EnergyStorage.ITEM,
+                (obj, ctx) -> (obj.getItem() instanceof TaserItem taser) ? taser.getEnergyStorage() : null,
+                ModItems.TASER.value()
+        );
+
+        // 哨兵
+        event.registerItem(Capabilities.EnergyStorage.ITEM,
+                (obj, ctx) -> (obj.getItem() instanceof SentinelItem sentinel) ? sentinel.getEnergyStorage() : null,
+                ModItems.SENTINEL.value()
+        );
+
+        // 二次灾变
+        event.registerItem(Capabilities.EnergyStorage.ITEM,
+                (obj, ctx) -> (obj.getItem() instanceof SecondaryCataclysm cataclysm) ? cataclysm.getEnergyStorage() : null,
+                ModItems.SECONDARY_CATACLYSM.value()
+        );
 
         // 载具
         for (var entity : ModEntities.REGISTRY.getEntries()) {

@@ -24,6 +24,8 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.energy.EnergyStorage;
+import net.neoforged.neoforge.energy.IEnergyStorage;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoItem;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
@@ -34,11 +36,14 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Supplier;
 
 public class SentinelItem extends GunItem implements GeoItem {
 
-    private final Supplier<Integer> energyCapacity;
+    public IEnergyStorage getEnergyStorage() {
+        return energyStorage;
+    }
+
+    private final IEnergyStorage energyStorage;
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     public static ItemDisplayContext transformType;
@@ -46,7 +51,7 @@ public class SentinelItem extends GunItem implements GeoItem {
     public SentinelItem() {
         super(new Properties().stacksTo(1).rarity(ModRarity.getLegendary()));
 
-        this.energyCapacity = () -> 24000;
+        this.energyStorage = new EnergyStorage(24000);
     }
 
     @Override
@@ -61,12 +66,6 @@ public class SentinelItem extends GunItem implements GeoItem {
 
         return Math.round((float) (cap != null ? cap.getEnergyStored() : 0) * 13.0F / 24000F);
     }
-
-    // TODO register cap
-//    @Override
-//    public ICapabilityProvider initCapabilities(ItemStack stack, CompoundTag tag) {
-//        return new ItemEnergyProvider(stack, energyCapacity.get());
-//    }
 
     @Override
     public int getBarColor(@NotNull ItemStack pStack) {

@@ -202,7 +202,7 @@ public class AmmoBarOverlay {
             );
 
             // 渲染弹药类型
-            String ammoName = getGunAmmoType(stack);
+            String ammoName = getGunAmmoTypeString(stack);
             event.getGuiGraphics().drawString(
                     Minecraft.getInstance().font,
                     ammoName,
@@ -450,7 +450,8 @@ public class AmmoBarOverlay {
         return "∞";
     }
 
-    private static String getGunAmmoType(ItemStack stack) {
+    // TODO i18n
+    private static String getGunAmmoTypeString(ItemStack stack) {
         if (stack.getItem() == ModItems.BOCEK.get()) {
             return "Arrow";
         }

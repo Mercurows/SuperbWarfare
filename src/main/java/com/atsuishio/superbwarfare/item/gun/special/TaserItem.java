@@ -34,6 +34,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.energy.EnergyStorage;
+import net.neoforged.neoforge.energy.IEnergyStorage;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoItem;
@@ -45,7 +47,6 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Supplier;
 
 public class TaserItem extends GunItem implements GeoItem, SpecialFireWeapon {
 
@@ -53,11 +54,16 @@ public class TaserItem extends GunItem implements GeoItem, SpecialFireWeapon {
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     public static ItemDisplayContext transformType;
-    private final Supplier<Integer> energyCapacity;
+
+    public IEnergyStorage getEnergyStorage() {
+        return energyStorage;
+    }
+
+    private final IEnergyStorage energyStorage;
 
     public TaserItem() {
         super(new Properties().stacksTo(1).rarity(Rarity.COMMON));
-        this.energyCapacity = () -> MAX_ENERGY;
+        this.energyStorage = new EnergyStorage(MAX_ENERGY);
     }
 
     @Override
