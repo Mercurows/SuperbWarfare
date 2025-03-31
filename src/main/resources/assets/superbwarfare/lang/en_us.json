@@ -590,5 +590,8 @@
   "superbwarfare.advancement.main.boomstick_melee.des": "Who said RPGs can't be baseball bats?",
   "warning.title.example": "[SuperbWarfare Mod Warning]",
   "warning.content.example": "This mod is Free And Open-Source, No Commercial Use\nCode: GPL-3.0 License; Asserts: Private (No Commercialization)\nBan on paid downloads or EULA-breaking purchases\nReport violations by submitting an issue in the mod's repository",
-  "warning.check.example": "I have read and agreed to the content. Do not show this message again"
+  "warning.check.example": "I have read and agreed to the content. Do not show this message again",
+  "apr1st.screen.title": "Warning",
+  "apr1st.screen.content": "This version of Superb Warfare contains major content updates, and may damage your current world.\nPlease use a new world to test this version.",
+  "apr1st.screen.check": "I have Confirmed That This Version May Damage My Saves"
 }
