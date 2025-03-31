@@ -12,6 +12,7 @@ import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
 import com.atsuishio.superbwarfare.tools.GunsTool;
+import com.atsuishio.superbwarfare.tools.RarityTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.player.LocalPlayer;
@@ -25,7 +26,6 @@ import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Rarity;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoItem;
@@ -52,7 +52,7 @@ public class HomemadeShotgunItem extends GunItem implements GeoItem {
     }
 
     public HomemadeShotgunItem() {
-        super(new Item.Properties().durability(24).rarity(Rarity.COMMON));
+        super(new Item.Properties().durability(24).rarity(RarityTool.LEGENDARY));
     }
 
     @Override

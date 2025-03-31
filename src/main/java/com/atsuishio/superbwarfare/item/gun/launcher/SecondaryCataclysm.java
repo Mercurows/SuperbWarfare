@@ -19,7 +19,6 @@ import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
 import com.atsuishio.superbwarfare.tools.GunsTool;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
-import com.atsuishio.superbwarfare.tools.RarityTool;
 import com.atsuishio.superbwarfare.tools.SoundTool;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
@@ -45,6 +44,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
@@ -73,7 +73,7 @@ public class SecondaryCataclysm extends GunItem implements GeoItem, SpecialFireW
     public static ItemDisplayContext transformType;
 
     public SecondaryCataclysm() {
-        super(new Properties().stacksTo(1).fireResistant().rarity(RarityTool.LEGENDARY));
+        super(new Properties().stacksTo(1).fireResistant().rarity(Rarity.COMMON));
     }
 
     @Override

@@ -42,6 +42,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
@@ -70,7 +71,7 @@ public class JavelinItem extends GunItem implements GeoItem, SpecialFireWeapon {
     public static ItemDisplayContext transformType;
 
     public JavelinItem() {
-        super(new Properties().stacksTo(1).rarity(RarityTool.LEGENDARY));
+        super(new Properties().stacksTo(1).rarity(Rarity.COMMON));
     }
 
     @Override

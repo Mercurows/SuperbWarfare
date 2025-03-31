@@ -12,7 +12,6 @@ import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.tools.GunsTool;
 import com.atsuishio.superbwarfare.tools.ItemNBTTool;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
-import com.atsuishio.superbwarfare.tools.RarityTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.player.LocalPlayer;
@@ -30,6 +29,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import org.joml.Vector3d;
@@ -51,7 +51,7 @@ public class MinigunItem extends GunItem implements GeoItem {
     public static ItemDisplayContext transformType;
 
     public MinigunItem() {
-        super(new Item.Properties().stacksTo(1).rarity(RarityTool.LEGENDARY));
+        super(new Item.Properties().stacksTo(1).rarity(Rarity.COMMON));
     }
 
     @Override

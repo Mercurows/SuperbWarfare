@@ -18,6 +18,7 @@ import com.atsuishio.superbwarfare.network.message.ShootClientMessage;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
 import com.atsuishio.superbwarfare.tools.GunsTool;
+import com.atsuishio.superbwarfare.tools.RarityTool;
 import com.atsuishio.superbwarfare.tools.SoundTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.HumanoidModel;
@@ -37,7 +38,6 @@ import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
@@ -68,7 +68,7 @@ public class TaserItem extends GunItem implements GeoItem, SpecialFireWeapon {
     private final Supplier<Integer> energyCapacity;
 
     public TaserItem() {
-        super(new Item.Properties().stacksTo(1).rarity(Rarity.COMMON));
+        super(new Item.Properties().stacksTo(1).rarity(RarityTool.LEGENDARY));
         this.energyCapacity = () -> MAX_ENERGY;
     }
 

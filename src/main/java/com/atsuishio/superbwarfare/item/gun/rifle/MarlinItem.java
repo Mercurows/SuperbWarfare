@@ -11,6 +11,7 @@ import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
 import com.atsuishio.superbwarfare.tools.GunsTool;
+import com.atsuishio.superbwarfare.tools.RarityTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.player.LocalPlayer;
@@ -23,7 +24,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Rarity;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import software.bernie.geckolib.animatable.GeoItem;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
@@ -43,7 +43,7 @@ public class MarlinItem extends GunItem implements GeoItem {
     public static ItemDisplayContext transformType;
 
     public MarlinItem() {
-        super(new Item.Properties().stacksTo(1).rarity(Rarity.COMMON));
+        super(new Item.Properties().stacksTo(1).rarity(RarityTool.LEGENDARY));
     }
 
     @Override
