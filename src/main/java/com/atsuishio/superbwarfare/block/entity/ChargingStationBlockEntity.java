@@ -15,27 +15,24 @@ import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.EnergyStorage;
 import net.minecraftforge.items.wrapper.SidedInvWrapper;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -58,7 +55,7 @@ public class ChargingStationBlockEntity extends BlockEntity implements WorldlyCo
     private LazyOptional<EnergyStorage> energyHandler;
     private LazyOptional<?>[] itemHandlers = SidedInvWrapper.create(this, Direction.UP, Direction.DOWN, Direction.NORTH);
 
-    public int fuelTick = 0;
+    public int fuelTick = DEFAULT_FUEL_TIME;
     public int maxFuelTick = DEFAULT_FUEL_TIME;
     public boolean showRange = false;
 
@@ -124,82 +121,13 @@ public class ChargingStationBlockEntity extends BlockEntity implements WorldlyCo
             }
         });
 
-        if (blockEntity.fuelTick > 0) {
-            blockEntity.fuelTick--;
-            blockEntity.energyHandler.ifPresent(handler -> {
-                int energy = handler.getEnergyStored();
-                if (energy < handler.getMaxEnergyStored()) {
-                    handler.receiveEnergy(CHARGE_SPEED, false);
-                }
-            });
-        } else if (!blockEntity.getItem(SLOT_FUEL).isEmpty()) {
-            AtomicBoolean flag = new AtomicBoolean(false);
-            blockEntity.energyHandler.ifPresent(handler -> {
-                if (handler.getEnergyStored() >= handler.getMaxEnergyStored()) {
-                    flag.set(true);
-                }
-            });
-            if (flag.get()) return;
-
-            ItemStack fuel = blockEntity.getItem(SLOT_FUEL);
-            int burnTime = ForgeHooks.getBurnTime(fuel, RecipeType.SMELTING);
-
-            if (fuel.getCapability(ForgeCapabilities.ENERGY).isPresent()) {
-                // 优先当作电池处理
-                fuel.getCapability(ForgeCapabilities.ENERGY).ifPresent(itemEnergy -> blockEntity.energyHandler.ifPresent(energy -> {
-                    var energyToExtract = Math.min(CHARGE_OTHER_SPEED, energy.getMaxEnergyStored() - energy.getEnergyStored());
-                    if (itemEnergy.canExtract() && energy.canReceive()) {
-                        energy.receiveEnergy(itemEnergy.extractEnergy(energyToExtract, false), false);
-                    }
-                }));
-
-                blockEntity.setChanged();
-            } else if (burnTime > 0) {
-                // 其次尝试作为燃料处理
-                blockEntity.fuelTick = burnTime;
-                blockEntity.maxFuelTick = burnTime;
-
-                if (fuel.hasCraftingRemainingItem()) {
-                    if (fuel.getCount() <= 1) {
-                        blockEntity.setItem(SLOT_FUEL, fuel.getCraftingRemainingItem());
-                    } else {
-                        ItemStack copy = fuel.getCraftingRemainingItem().copy();
-                        copy.setCount(1);
-
-                        ItemEntity itemEntity = new ItemEntity(pLevel,
-                                pPos.getX() + 0.5,
-                                pPos.getY() + 0.2,
-                                pPos.getZ() + 0.5,
-                                copy);
-                        pLevel.addFreshEntity(itemEntity);
-
-                        fuel.shrink(1);
-                    }
-                } else {
-                    fuel.shrink(1);
-                }
-
-                blockEntity.setChanged();
-            } else if (fuel.getItem().isEdible()) {
-                // 最后作为食物处理
-                var properties = fuel.getFoodProperties(null);
-                if (properties == null) return;
-
-                int nutrition = properties.getNutrition();
-                float saturation = properties.getSaturationModifier() * 2.0f * nutrition;
-                int tick = nutrition * 80 + (int) (saturation * 200);
-
-                if (fuel.hasCraftingRemainingItem()) {
-                    tick += 400;
-                }
-
-                fuel.shrink(1);
-
-                blockEntity.fuelTick = tick;
-                blockEntity.maxFuelTick = tick;
-                blockEntity.setChanged();
+        // 持续供电
+        blockEntity.energyHandler.ifPresent(handler -> {
+            int energy = handler.getEnergyStored();
+            if (energy < handler.getMaxEnergyStored()) {
+                handler.receiveEnergy(CHARGE_SPEED, false);
             }
-        }
+        });
     }
 
     private void chargeEntity(EnergyStorage handler) {
@@ -255,7 +183,7 @@ public class ChargingStationBlockEntity extends BlockEntity implements WorldlyCo
     }
 
     @Override
-    public void load(CompoundTag pTag) {
+    public void load(@NotNull CompoundTag pTag) {
         super.load(pTag);
 
         if (pTag.contains("Energy")) {
@@ -269,7 +197,7 @@ public class ChargingStationBlockEntity extends BlockEntity implements WorldlyCo
     }
 
     @Override
-    protected void saveAdditional(CompoundTag pTag) {
+    protected void saveAdditional(@NotNull CompoundTag pTag) {
         super.saveAdditional(pTag);
 
         getCapability(ForgeCapabilities.ENERGY).ifPresent(handler -> pTag.put("Energy", ((EnergyStorage) handler).serializeNBT()));
@@ -280,17 +208,17 @@ public class ChargingStationBlockEntity extends BlockEntity implements WorldlyCo
     }
 
     @Override
-    public int[] getSlotsForFace(Direction pSide) {
+    public int @NotNull [] getSlotsForFace(@NotNull Direction pSide) {
         return new int[]{SLOT_FUEL};
     }
 
     @Override
-    public boolean canPlaceItemThroughFace(int pIndex, ItemStack pItemStack, @Nullable Direction pDirection) {
-        return pIndex == SLOT_FUEL;
+    public boolean canPlaceItemThroughFace(int pIndex, @NotNull ItemStack pItemStack, @Nullable Direction pDirection) {
+        return false;
     }
 
     @Override
-    public boolean canTakeItemThroughFace(int pIndex, ItemStack pStack, Direction pDirection) {
+    public boolean canTakeItemThroughFace(int pIndex, @NotNull ItemStack pStack, @NotNull Direction pDirection) {
         return false;
     }
 
@@ -311,17 +239,17 @@ public class ChargingStationBlockEntity extends BlockEntity implements WorldlyCo
     }
 
     @Override
-    public ItemStack getItem(int pSlot) {
+    public @NotNull ItemStack getItem(int pSlot) {
         return this.items.get(pSlot);
     }
 
     @Override
-    public ItemStack removeItem(int pSlot, int pAmount) {
+    public @NotNull ItemStack removeItem(int pSlot, int pAmount) {
         return ContainerHelper.removeItem(this.items, pSlot, pAmount);
     }
 
     @Override
-    public ItemStack removeItemNoUpdate(int pSlot) {
+    public @NotNull ItemStack removeItemNoUpdate(int pSlot) {
         return ContainerHelper.takeItem(this.items, pSlot);
     }
 
@@ -340,7 +268,7 @@ public class ChargingStationBlockEntity extends BlockEntity implements WorldlyCo
     }
 
     @Override
-    public boolean stillValid(Player pPlayer) {
+    public boolean stillValid(@NotNull Player pPlayer) {
         return Container.stillValidBlockEntity(this, pPlayer);
     }
 
@@ -350,13 +278,13 @@ public class ChargingStationBlockEntity extends BlockEntity implements WorldlyCo
     }
 
     @Override
-    public Component getDisplayName() {
+    public @NotNull Component getDisplayName() {
         return Component.translatable("container.superbwarfare.charging_station");
     }
 
     @Nullable
     @Override
-    public AbstractContainerMenu createMenu(int pContainerId, Inventory pPlayerInventory, Player pPlayer) {
+    public AbstractContainerMenu createMenu(int pContainerId, @NotNull Inventory pPlayerInventory, @NotNull Player pPlayer) {
         return new ChargingStationMenu(pContainerId, pPlayerInventory, this, this.dataAccess);
     }
 
@@ -366,7 +294,7 @@ public class ChargingStationBlockEntity extends BlockEntity implements WorldlyCo
     }
 
     @Override
-    public CompoundTag getUpdateTag() {
+    public @NotNull CompoundTag getUpdateTag() {
         CompoundTag compoundtag = new CompoundTag();
         ContainerHelper.saveAllItems(compoundtag, this.items, true);
         compoundtag.putBoolean("ShowRange", this.showRange);
@@ -374,7 +302,7 @@ public class ChargingStationBlockEntity extends BlockEntity implements WorldlyCo
     }
 
     @Override
-    public <T> LazyOptional<T> getCapability(Capability<T> cap, Direction side) {
+    public <T> @NotNull LazyOptional<T> getCapability(@NotNull Capability<T> cap, Direction side) {
         if (cap == ForgeCapabilities.ENERGY) {
             return energyHandler.cast();
         }
@@ -404,7 +332,7 @@ public class ChargingStationBlockEntity extends BlockEntity implements WorldlyCo
     }
 
     @Override
-    public void saveToItem(ItemStack pStack) {
+    public void saveToItem(@NotNull ItemStack pStack) {
         CompoundTag tag = new CompoundTag();
         this.getCapability(ForgeCapabilities.ENERGY).ifPresent(handler -> tag.put("Energy", ((EnergyStorage) handler).serializeNBT()));
         BlockItem.setBlockEntityData(pStack, this.getType(), tag);
