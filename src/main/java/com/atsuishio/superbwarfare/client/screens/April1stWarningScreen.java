@@ -26,10 +26,10 @@ public class April1stWarningScreen extends WarningScreen {
 
     public April1stWarningScreen(Screen lastScreen) {
         super(
-                Component.translatable("apr1st.screen.title").withStyle(ChatFormatting.BOLD),
-                Component.translatable("apr1st.screen.content"),
-                Component.translatable("apr1st.screen.check"),
-                Component.translatable("apr1st.screen.title").withStyle(ChatFormatting.BOLD).append("\n").append(Component.literal(TranslationRecord.get(TranslationRecord.CONTENT)))
+                Component.translatable("superbwarfare.apr1st.screen.title").withStyle(ChatFormatting.BOLD),
+                Component.translatable("superbwarfare.apr1st.screen.content"),
+                Component.translatable("superbwarfare.apr1st.screen.check"),
+                Component.translatable("superbwarfare.apr1st.screen.title").withStyle(ChatFormatting.BOLD).append("\n").append(Component.literal(TranslationRecord.get(TranslationRecord.CONTENT)))
         );
         this.lastScreen = lastScreen;
     }

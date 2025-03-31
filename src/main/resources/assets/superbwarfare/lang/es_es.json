@@ -584,7 +584,7 @@
   "superbwarfare.advancement.main.enclave.des": "¿Dónde está el péndulo?",
   "superbwarfare.advancement.main.boomstick_melee": "Melee con la palanca",
   "superbwarfare.advancement.main.boomstick_melee.des": "¿Quién dijo que los RPG no pueden ser bates de béisbol?",
-  "warning.title.example": "[SuperbWarfare Mod Warning]",
-  "warning.content.example": "Este mod es Gratis y de Código Abierto, Sin Uso Comercial\nCódigo: Licencia GPL-3.0; Afirmaciones: Privado (Sin Comercialización)\nProhibidas las descargas de pago o las compras que incumplan el EULA\nInforme de las infracciones enviando una incidencia en el repositorio del mod",
-  "warning.check.example":"He leído y estoy de acuerdo con el contenido. No volver a mostrar este mensaje"
+  "superbwarfare.warning.title.example": "[SuperbWarfare Mod Warning]",
+  "superbwarfare.warning.content.example": "Este mod es Gratis y de Código Abierto, Sin Uso Comercial\nCódigo: Licencia GPL-3.0; Afirmaciones: Privado (Sin Comercialización)\nProhibidas las descargas de pago o las compras que incumplan el EULA\nInforme de las infracciones enviando una incidencia en el repositorio del mod",
+  "superbwarfare.warning.check.example":"He leído y estoy de acuerdo con el contenido. No volver a mostrar este mensaje"
 }
