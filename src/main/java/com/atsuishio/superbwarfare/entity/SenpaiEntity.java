@@ -147,11 +147,11 @@ public class SenpaiEntity extends Monster implements GeoEntity {
     public static AttributeSupplier.Builder createAttributes() {
         return Mob.createMobAttributes()
                 .add(Attributes.MOVEMENT_SPEED, 0.23)
-                .add(Attributes.MAX_HEALTH, 24)
-                .add(Attributes.ARMOR, 0)
-                .add(Attributes.ATTACK_DAMAGE, 5)
-                .add(Attributes.FOLLOW_RANGE, 64)
-                .add(Attributes.KNOCKBACK_RESISTANCE, 0.5);
+                .add(Attributes.MAX_HEALTH, 114)
+                .add(Attributes.ARMOR, 5)
+                .add(Attributes.ATTACK_DAMAGE, 14)
+                .add(Attributes.FOLLOW_RANGE, 191)
+                .add(Attributes.KNOCKBACK_RESISTANCE, 9.810);
     }
 
     private PlayState movementPredicate(AnimationState<SenpaiEntity> event) {

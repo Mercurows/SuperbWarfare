@@ -42,8 +42,8 @@
   ],
   "spawners": {
     "type": "superbwarfare:senpai",
-    "weight": 20,
-    "minCount": 4,
-    "maxCount": 4
+    "weight": 514,
+    "minCount": 9,
+    "maxCount": 19
   }
 }
