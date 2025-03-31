@@ -33,6 +33,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.LargeFireball;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
@@ -53,6 +54,7 @@ import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.Comparator;
+import java.util.Random;
 
 public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity {
 
@@ -280,11 +282,20 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
                 InventoryTool.consumeItem(player.getInventory().items, ammo, 1);
             }
 
-            var entityToSpawn = ((CannonShellWeapon) getWeapon(0)).create(player);
+            double random = new Random().nextDouble();
+            if (random < 0.114) {
+                LargeFireball fireball = new LargeFireball(EntityType.FIREBALL, level());
 
-            entityToSpawn.setPos(this.getX(), this.getEyeY(), this.getZ());
-            entityToSpawn.shoot(this.getLookAngle().x, this.getLookAngle().y, this.getLookAngle().z, 15, 0.05f);
-            level.addFreshEntity(entityToSpawn);
+                fireball.setPos(this.getX(), this.getEyeY(), this.getZ());
+                fireball.shoot(this.getLookAngle().x, this.getLookAngle().y, this.getLookAngle().z, 3.8f, 0.05f);
+                level.addFreshEntity(fireball);
+            } else {
+                var entityToSpawn = ((CannonShellWeapon) getWeapon(0)).create(player);
+
+                entityToSpawn.setPos(this.getX(), this.getEyeY(), this.getZ());
+                entityToSpawn.shoot(this.getLookAngle().x, this.getLookAngle().y, this.getLookAngle().z, 15, 0.05f);
+                level.addFreshEntity(entityToSpawn);
+            }
 
             if (player instanceof ServerPlayer serverPlayer) {
                 SoundTool.playLocalSound(serverPlayer, ModSounds.MK_42_FIRE_1P.get(), 2, 1);

@@ -33,6 +33,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.LargeFireball;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
@@ -54,6 +55,7 @@ import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.Comparator;
+import java.util.Random;
 
 public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEntity {
 
@@ -309,14 +311,28 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
             leftPos.rotateZ(-this.getXRot() * Mth.DEG_TO_RAD);
             leftPos.rotateY(-yRot * Mth.DEG_TO_RAD);
 
-            // 左炮管
-            var entityToSpawnLeft = ((CannonShellWeapon) getWeapon(0)).create(player);
 
-            entityToSpawnLeft.setPos(this.getX() + leftPos.x,
-                    this.getEyeY() - 0.2 + leftPos.y,
-                    this.getZ() + leftPos.z);
-            entityToSpawnLeft.shoot(this.getLookAngle().x, this.getLookAngle().y, this.getLookAngle().z, 15, 0.05f);
-            level.addFreshEntity(entityToSpawnLeft);
+
+            // 左炮管
+            double random = new Random().nextDouble();
+            if (random < 0.114) {
+                LargeFireball fireball = new LargeFireball(EntityType.FIREBALL, level());
+
+                fireball.setPos(this.getX() + leftPos.x,
+                        this.getEyeY() - 0.2 + leftPos.y,
+                        this.getZ() + leftPos.z);
+                fireball.shoot(this.getLookAngle().x, this.getLookAngle().y, this.getLookAngle().z, 3.9f, 0.05f);
+                level.addFreshEntity(fireball);
+            } else {
+
+                var entityToSpawnLeft = ((CannonShellWeapon) getWeapon(0)).create(player);
+
+                entityToSpawnLeft.setPos(this.getX() + leftPos.x,
+                        this.getEyeY() - 0.2 + leftPos.y,
+                        this.getZ() + leftPos.z);
+                entityToSpawnLeft.shoot(this.getLookAngle().x, this.getLookAngle().y, this.getLookAngle().z, 15, 0.05f);
+                level.addFreshEntity(entityToSpawnLeft);
+            }
 
             var leftPosP1 = new Vector3d(8, 0, -0.45);
             leftPosP1.rotateZ(-this.getXRot() * Mth.DEG_TO_RAD);
@@ -354,13 +370,24 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
                 rightPos.rotateZ(-this.getXRot() * Mth.DEG_TO_RAD);
                 rightPos.rotateY(-yRot * Mth.DEG_TO_RAD);
 
-                var entityToSpawnRight = ((CannonShellWeapon) getWeapon(0)).create(player);
+                if (random < 0.114) {
+                    LargeFireball fireball = new LargeFireball(EntityType.FIREBALL, level());
 
-                entityToSpawnRight.setPos(this.getX() + rightPos.x,
-                        this.getEyeY() - 0.2 + rightPos.y,
-                        this.getZ() + rightPos.z);
-                entityToSpawnRight.shoot(this.getLookAngle().x, this.getLookAngle().y, this.getLookAngle().z, 15, 0.05f);
-                level.addFreshEntity(entityToSpawnRight);
+                    fireball.setPos(this.getX() + rightPos.x,
+                            this.getEyeY() - 0.2 + rightPos.y,
+                            this.getZ() + rightPos.z);
+                    fireball.shoot(this.getLookAngle().x, this.getLookAngle().y, this.getLookAngle().z, 3.9f, 0.05f);
+                    level.addFreshEntity(fireball);
+                } else {
+
+                    var entityToSpawnRight = ((CannonShellWeapon) getWeapon(0)).create(player);
+
+                    entityToSpawnRight.setPos(this.getX() + rightPos.x,
+                            this.getEyeY() - 0.2 + rightPos.y,
+                            this.getZ() + rightPos.z);
+                    entityToSpawnRight.shoot(this.getLookAngle().x, this.getLookAngle().y, this.getLookAngle().z, 15, 0.05f);
+                    level.addFreshEntity(entityToSpawnRight);
+                }
 
                 var rightPosP1 = new Vector3d(8, 0, 0.45);
                 rightPosP1.rotateZ(-this.getXRot() * Mth.DEG_TO_RAD);
