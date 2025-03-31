@@ -52,6 +52,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.network.PacketDistributor;
 
 import java.util.Objects;
+import java.util.Random;
 
 @Mod.EventBusSubscriber
 public class LivingEventHandler {
@@ -191,7 +192,12 @@ public class LivingEventHandler {
 
         event.setAmount((float) damage);
 
-        if (entity instanceof TargetEntity && sourceEntity instanceof Player player) {
+        if (entity instanceof TargetEntity targetEntity && sourceEntity instanceof Player player) {
+            double random = new Random().nextDouble();
+            if (random < 0.114) {
+                player.hurt(player.level().damageSources().mobAttack(targetEntity), (float) amount);
+            }
+
             player.displayClientMessage(Component.translatable("tips.superbwarfare.target.damage",
                     FormatTool.format2D(damage),
                     FormatTool.format1D(entity.position().distanceTo(sourceEntity.position())), "m"), false);
