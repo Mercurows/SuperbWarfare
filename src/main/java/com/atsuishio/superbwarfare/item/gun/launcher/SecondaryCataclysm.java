@@ -290,7 +290,7 @@ public class SecondaryCataclysm extends GunItem implements GeoItem, SpecialFireW
         if (slot == EquipmentSlot.MAINHAND) {
             map = HashMultimap.create(map);
             map.put(Attributes.ATTACK_DAMAGE,
-                    new AttributeModifier(uuid, ModUtils.ATTRIBUTE_MODIFIER, 19, AttributeModifier.Operation.ADDITION));
+                    new AttributeModifier(uuid, ModUtils.ATTRIBUTE_MODIFIER, 199, AttributeModifier.Operation.ADDITION));
         }
         return map;
     }
