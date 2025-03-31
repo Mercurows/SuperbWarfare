@@ -19,7 +19,7 @@ def getGitCommitHash() {
     }
 }
 
-version = "${mod_version}-SNAPSHOT-${getGitCommitHash()}"
+version = "${mod_version}-BEaST"
 group = 'com.atsushio.superbwarfare'
 
 base {
