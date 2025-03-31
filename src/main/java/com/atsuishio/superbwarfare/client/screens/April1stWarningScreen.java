@@ -23,6 +23,7 @@ import net.minecraftforge.fml.common.Mod;
 public class April1stWarningScreen extends WarningScreen {
 
     private final Screen lastScreen;
+    private static Screen nextScreen;
 
     public April1stWarningScreen(Screen lastScreen) {
         super(
@@ -49,7 +50,7 @@ public class April1stWarningScreen extends WarningScreen {
     private AbstractButton createProceedButton(int pYOffset) {
         return Button.builder(CommonComponents.GUI_PROCEED, button -> {
             if (this.stopShowing != null && this.stopShowing.selected()) {
-                Minecraft.getInstance().setScreen(new JoinMultiplayerScreen(this.lastScreen));
+                Minecraft.getInstance().setScreen(nextScreen);
             }
         }).bounds(this.width / 2 - 155, 100 + pYOffset, 150, 20).build();
     }
@@ -62,6 +63,7 @@ public class April1stWarningScreen extends WarningScreen {
 
         // 拦截单人和多人游戏界面加载
         event.setCanceled(true);
+        nextScreen = event.getNewScreen();
         Minecraft.getInstance().setScreen(new April1stWarningScreen(event.getCurrentScreen()));
     }
 }
