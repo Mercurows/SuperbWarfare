@@ -4,11 +4,14 @@ import com.atsuishio.superbwarfare.ModUtils;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.entity.MortarEntity;
+import com.atsuishio.superbwarfare.entity.projectile.C4Entity;
+import com.atsuishio.superbwarfare.entity.projectile.MelonBombEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModSounds;
+import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.tools.CustomExplosion;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
 import com.mojang.math.Axis;
@@ -24,6 +27,7 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -75,7 +79,33 @@ public class WheelChairEntity extends MobileVehicleEntity implements GeoEntity {
     @Override
     public DamageModifier getDamageModifier() {
         return super.getDamageModifier()
-                .multiply(2, ModDamageTypes.VEHICLE_STRIKE);
+                .multiply(0.1f)
+                .immuneTo(DamageTypes.ARROW)
+                .immuneTo(DamageTypes.TRIDENT)
+                .immuneTo(DamageTypes.MOB_ATTACK)
+                .immuneTo(DamageTypes.MOB_ATTACK_NO_AGGRO)
+                .immuneTo(DamageTypes.MOB_PROJECTILE)
+                .immuneTo(DamageTypes.PLAYER_ATTACK)
+                .immuneTo(ModTags.DamageTypes.PROJECTILE)
+                .immuneTo(ModDamageTypes.VEHICLE_STRIKE)
+                .multiply(0.7f, DamageTypes.EXPLOSION)
+                .multiply(0.2f, ModDamageTypes.CUSTOM_EXPLOSION)
+                .multiply(0.2f, ModDamageTypes.PROJECTILE_BOOM)
+                .multiply(0.2f, ModDamageTypes.MINE)
+                .multiply(0.24f, ModDamageTypes.LUNGE_MINE)
+                .multiply(0.3f, ModDamageTypes.CANNON_FIRE)
+                .multiply(0.04f, ModTags.DamageTypes.PROJECTILE_ABSOLUTE)
+                .custom((source, damage) -> getSourceAngle(source, 3) * damage)
+                .custom((source, damage) -> {
+                    if (source.getDirectEntity() instanceof C4Entity) {
+                        return 10f * damage;
+                    }
+                    if (source.getDirectEntity() instanceof MelonBombEntity) {
+                        return 8f * damage;
+                    }
+                    return damage;
+                })
+                .reduce(12);
     }
 
     @Override
@@ -191,7 +221,7 @@ public class WheelChairEntity extends MobileVehicleEntity implements GeoEntity {
                 serverPlayer.level().playSound(null, serverPlayer.getOnPos(), ModSounds.WHEEL_CHAIR_JUMP.get(), SoundSource.PLAYERS, 1, 1);
             }
             this.consumeEnergy(VehicleConfig.WHEELCHAIR_JUMP_ENERGY_COST.get());
-            this.setDeltaMovement(this.getDeltaMovement().add(0, 0.6, 0));
+            this.setDeltaMovement(this.getDeltaMovement().add(0, 2, 0));
             jumpCoolDown = 3;
         }
 
@@ -317,7 +347,7 @@ public class WheelChairEntity extends MobileVehicleEntity implements GeoEntity {
 
     @Override
     public float getMaxHealth() {
-        return VehicleConfig.WHEELCHAIR_HP.get();
+        return VehicleConfig.ANNIHILATOR_HP.get();
     }
 
     @Override
