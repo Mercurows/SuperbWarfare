@@ -191,6 +191,11 @@ public class Ntw20Item extends GunItem implements GeoItem {
     }
 
     @Override
+    public boolean isAutoWeapon(ItemStack stack) {
+        return super.isAutoWeapon(stack);
+    }
+
+    @Override
     public boolean isMagazineReload(ItemStack stack) {
         return true;
     }
@@ -227,6 +232,6 @@ public class Ntw20Item extends GunItem implements GeoItem {
 
     @Override
     public int getAvailableFireModes() {
-        return FireMode.SEMI.flag;
+        return FireMode.AUTO.flag;
     }
 }
