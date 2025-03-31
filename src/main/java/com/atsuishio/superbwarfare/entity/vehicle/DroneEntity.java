@@ -9,12 +9,12 @@ import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.Monitor;
 import com.atsuishio.superbwarfare.item.common.ammo.MortarShell;
-import com.atsuishio.superbwarfare.tools.CustomExplosion;
 import com.atsuishio.superbwarfare.tools.EntityFindUtil;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
@@ -37,18 +37,19 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.FireworkRocketEntity;
 import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.item.FireworkRocketItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.alchemy.Potions;
-import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.network.PlayMessages;
@@ -573,33 +574,9 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
     }
 
     private void kamikazeExplosion(int mode) {
-        var attacker = EntityFindUtil.findEntity(this.level(), this.entityData.get(LAST_ATTACKER_UUID));
+        FireworkRocketEntity rocketEntity = new FireworkRocketEntity(this.level(), this.getX(), this.getY(), this.getZ(), this.createFirework());
+        this.level().addFreshEntity(rocketEntity);
 
-        var mortarShell = new MortarShellEntity(ModEntities.MORTAR_SHELL.get(), level());
-        var c4 = new C4Entity(ModEntities.C_4.get(), level());
-        var rpg = new RpgRocketEntity(ModEntities.RPG_ROCKET.get(), level());
-
-        CustomExplosion explosion = switch (mode) {
-            case 1 -> new CustomExplosion(this.level(), this,
-                    ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(), mortarShell, attacker), ExplosionConfig.DRONE_KAMIKAZE_EXPLOSION_DAMAGE.get(),
-                    this.getX(), this.getY(), this.getZ(), ExplosionConfig.DRONE_KAMIKAZE_EXPLOSION_RADIUS.get(), ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP).setDamageMultiplier(1);
-
-            case 2 -> new CustomExplosion(this.level(), this,
-                    ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(), c4, attacker), ExplosionConfig.C4_EXPLOSION_DAMAGE.get(),
-                    this.getX(), this.getY(), this.getZ(), ExplosionConfig.C4_EXPLOSION_RADIUS.get(), ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP).setDamageMultiplier(1);
-
-            case 3 -> new CustomExplosion(this.level(), this,
-                    ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(), rpg, attacker), ExplosionConfig.RPG_EXPLOSION_DAMAGE.get(),
-                    this.getX(), this.getY(), this.getZ(), ExplosionConfig.RPG_EXPLOSION_RADIUS.get(), ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP).setDamageMultiplier(1);
-
-            default -> null;
-        };
-
-        if (explosion == null) return;
-
-        explosion.explode();
-        ForgeEventFactory.onExplosionStart(this.level(), explosion);
-        explosion.finalizeExplosion(false);
         if (mode == 1) {
             ParticleTool.spawnMediumExplosionParticles(this.level(), this.position());
 
@@ -611,6 +588,22 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
         if (mode == 2 || mode == 3) {
             ParticleTool.spawnHugeExplosionParticles(this.level(), this.position());
         }
+    }
+
+    private ItemStack createFirework() {
+        ItemStack itemstack = new ItemStack(Items.FIREWORK_ROCKET);
+        FireworkRocketItem.setDuration(itemstack, (byte) 1);
+        var tag = new CompoundTag();
+
+        var listTag = new ListTag();
+        var exp = new CompoundTag();
+        FireworkRocketItem.Shape.LARGE_BALL.save(exp);
+        exp.putIntArray("Colors", new int[]{11743532});
+        listTag.add(exp);
+        tag.put("Explosions", listTag);
+        itemstack.getOrCreateTag().put("Fireworks", tag);
+
+        return itemstack;
     }
 
     private void createAreaCloud(Potion potion, Level level, int duration, float radius) {
