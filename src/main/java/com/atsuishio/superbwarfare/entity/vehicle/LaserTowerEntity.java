@@ -256,7 +256,7 @@ public class LaserTowerEntity extends EnergyVehicleEntity implements GeoEntity, 
         }
 
         if (entityData.get(TARGET_UUID).equals("none") && tickCount % 10 == 0) {
-            Entity naerestEntity = seekNearLivingEntity(72);
+            Entity naerestEntity = this.getOwner();
             if (naerestEntity != null) {
                 entityData.set(TARGET_UUID, naerestEntity.getStringUUID());
             }
