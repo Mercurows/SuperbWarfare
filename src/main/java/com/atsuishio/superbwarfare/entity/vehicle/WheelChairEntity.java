@@ -4,9 +4,11 @@ import com.atsuishio.superbwarfare.ModUtils;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.entity.MortarEntity;
+import com.atsuishio.superbwarfare.entity.TargetEntity;
 import com.atsuishio.superbwarfare.entity.projectile.C4Entity;
 import com.atsuishio.superbwarfare.entity.projectile.MelonBombEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModEntities;
@@ -33,12 +35,16 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.WaterAnimal;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.vehicle.Boat;
+import net.minecraft.world.entity.vehicle.Minecart;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.entity.EntityTypeTest;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.network.PlayMessages;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Math;
 import org.joml.Matrix4f;
@@ -366,5 +372,60 @@ public class WheelChairEntity extends MobileVehicleEntity implements GeoEntity {
 
     @Override
     public void collideHardBlock() {
+    }
+
+    @Override
+    public void crushEntities(Vec3 velocity) {
+        if (level() instanceof ServerLevel) {
+            if (!this.canCrushEntities()) return;
+            if (velocity.horizontalDistance() < 0.25) return;
+            if (isRemoved()) return;
+            var frontBox = getBoundingBox().move(velocity.scale(0.6));
+            var velAdd = velocity.add(0, 0, 0).scale(0.9);
+
+            var entities = level().getEntities(EntityTypeTest.forClass(Entity.class), frontBox,
+                            entity -> entity != this && entity != getFirstPassenger() && entity.getVehicle() == null)
+                    .stream().filter(entity -> {
+                                if (entity.isAlive()) {
+                                    var type = ForgeRegistries.ENTITY_TYPES.getKey(entity.getType());
+                                    if (type == null) return false;
+                                    return (entity instanceof VehicleEntity || entity instanceof Boat || entity instanceof Minecart
+                                            || (entity instanceof LivingEntity living && !(living instanceof Player player && player.isSpectator())))
+                                            || VehicleConfig.COLLISION_ENTITY_WHITELIST.get().contains(type.toString());
+                                }
+                                return false;
+                            }
+                    )
+                    .toList();
+
+            for (var entity : entities) {
+                double entitySize = entity.getBbWidth() * entity.getBbHeight();
+                double thisSize = this.getBbWidth() * this.getBbHeight();
+                double f = Math.min(entitySize / thisSize, 2) * 0.5;
+                double f1 = Math.min(thisSize / entitySize, 4) * 2;
+
+                if (velocity.length() > 0.3 && getBoundingBox().distanceToSqr(entity.getBoundingBox().getCenter()) < 1) {
+                    if (!this.level().isClientSide) {
+                        this.level().playSound(null, this, ModSounds.VEHICLE_STRIKE.get(), this.getSoundSource(), 1, 1);
+                    }
+                    if (!(entity instanceof TargetEntity)) {
+                        this.pushNew(-f * velAdd.x, -f * velAdd.y, -f * velAdd.z);
+                    }
+
+                    if (entity instanceof MobileVehicleEntity mobileVehicle) {
+                        mobileVehicle.pushNew(f1 * velAdd.x, f1 * velAdd.y, f1 * velAdd.z);
+                    } else {
+                        entity.push(f1 * velAdd.x, f1 * velAdd.y, f1 * velAdd.z);
+                    }
+
+                    entity.hurt(ModDamageTypes.causeVehicleStrikeDamage(this.level().registryAccess(), this, this.getFirstPassenger() == null ? this : this.getFirstPassenger()), (float) (thisSize * 2000 * ((velocity.length() - 0.3) * (velocity.length() - 0.3))));
+                    if (entities instanceof VehicleEntity) {
+                        this.hurt(ModDamageTypes.causeVehicleStrikeDamage(this.level().registryAccess(), entity, entity.getFirstPassenger() == null ? entity : entity.getFirstPassenger()), (float) (entitySize * 10 * ((velocity.length() - 0.3) * (velocity.length() - 0.3))));
+                    }
+                } else {
+                    entity.push(0.3 * f1 * velAdd.x, 0.3 * f1 * velAdd.y, 0.3 * f1 * velAdd.z);
+                }
+            }
+        }
     }
 }
