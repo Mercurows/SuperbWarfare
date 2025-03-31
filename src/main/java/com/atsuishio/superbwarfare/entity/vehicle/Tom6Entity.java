@@ -209,7 +209,7 @@ public class Tom6Entity extends MobileVehicleEntity implements GeoEntity {
                 melonBomb.shoot(getDeltaMovement().x, getDeltaMovement().y, getDeltaMovement().z, (float) getDeltaMovement().length(), 0);
                 passenger.level().addFreshEntity(melonBomb);
 
-                this.level().playSound(null, getOnPos(), SoundEvents.IRON_DOOR_OPEN, SoundSource.PLAYERS, 1, 1);
+                this.level().playSound(null, getOnPos(), ModSounds.ALERT.get(), SoundSource.PLAYERS, 16, 1);
                 upInputDown = false;
             }
         }

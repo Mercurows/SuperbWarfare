@@ -2979,5 +2979,13 @@
         "stream": false
       }
     ]
+  },
+  "alert": {
+    "sounds": [
+      {
+        "name": "superbwarfare:alert",
+        "stream": false
+      }
+    ]
   }
 }
