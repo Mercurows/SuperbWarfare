@@ -32,8 +32,8 @@ public class ClaymoreMine extends Item implements DispenserLaunchable {
         if (!level.isClientSide) {
             ClaymoreEntity entity = new ClaymoreEntity(player, level);
             entity.moveTo(player.getX(), player.getY() + 1.1, player.getZ(), player.getYRot(), 0);
-            entity.setYBodyRot(player.getYRot());
-            entity.setYHeadRot(player.getYRot());
+            entity.setYBodyRot(player.getYRot() + 180);
+            entity.setYHeadRot(player.getYRot() + 180);
             entity.setDeltaMovement(0.5 * player.getLookAngle().x, 0.5 * player.getLookAngle().y, 0.5 * player.getLookAngle().z);
 
             level.addFreshEntity(entity);
@@ -67,7 +67,7 @@ public class ClaymoreMine extends Item implements DispenserLaunchable {
                 Vec3 vec3 = (new Vec3(pX, pY, pZ)).normalize().scale(0.05);
                 claymore.setDeltaMovement(vec3);
                 double d0 = vec3.horizontalDistance();
-                claymore.setYRot((float) (Mth.atan2(vec3.x, vec3.z) * (double) (180F / (float) Math.PI)));
+                claymore.setYRot((float) (Mth.atan2(vec3.x, vec3.z) * (double) (180F / (float) Math.PI)) + 180);
                 claymore.setXRot((float) (Mth.atan2(vec3.y, d0) * (double) (180F / (float) Math.PI)));
                 claymore.yRotO = claymore.getYRot();
                 claymore.xRotO = claymore.getXRot();

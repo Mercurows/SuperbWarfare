@@ -7,6 +7,7 @@ import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.tools.CustomExplosion;
 import com.atsuishio.superbwarfare.tools.EntityFindUtil;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
+import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -173,15 +174,19 @@ public class ClaymoreEntity extends Entity implements GeoEntity, OwnableEntity {
         var y = this.getY();
         var z = this.getZ();
 
+        if (getOwner() != null) {
+            this.lookAt(EntityAnchorArgument.Anchor.EYES, this.getOwner().getEyePosition());
+        }
+
         if (this.tickCount >= 12000) {
             if (!this.level().isClientSide()) this.discard();
         }
 
-        if (this.tickCount >= 40) {
+        if (this.tickCount >= 20) {
             final Vec3 center = new Vec3(x + 1.5 * this.getLookAngle().x, y + 1.5 * this.getLookAngle().y, z + 1.5 * this.getLookAngle().z);
             for (Entity target : level.getEntitiesOfClass(Entity.class, new AABB(center, center).inflate(2.5 / 2d), e -> true).stream().sorted(Comparator.comparingDouble(e -> e.distanceToSqr(center))).toList()) {
-                var condition = this.getOwner() != target
-                        && (target instanceof LivingEntity || target instanceof VehicleEntity)
+                var condition =
+                        (target instanceof LivingEntity || target instanceof VehicleEntity)
                         && !(target instanceof TargetEntity)
                         && !(target instanceof Player player && (player.isCreative() || player.isSpectator()))
                         && (this.getOwner() != null && !this.getOwner().isAlliedTo(target) || target.getTeam() == null || target.getTeam().getName().equals("TDM"))
@@ -228,6 +233,8 @@ public class ClaymoreEntity extends Entity implements GeoEntity, OwnableEntity {
 
         this.refreshDimensions();
     }
+
+
 
     public void destroy() {
         if (level() instanceof ServerLevel) {
