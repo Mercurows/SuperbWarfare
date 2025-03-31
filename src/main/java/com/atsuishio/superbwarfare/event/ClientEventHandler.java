@@ -250,22 +250,22 @@ public class ClientEventHandler {
                 && ItemNBTTool.getBoolean(stack, "Using", false)
                 && ItemNBTTool.getBoolean(stack, "Linked", false))
         ) {
-            if (options.keyLeft.isDown()) {
+            if (options.keyRight.isDown()) {
                 keys |= 0b0000001;
             }
-            if (options.keyRight.isDown()) {
+            if (options.keyLeft.isDown()) {
                 keys |= 0b0000010;
             }
-            if (options.keyUp.isDown()) {
+            if (options.keyDown.isDown()) {
                 keys |= 0b0000100;
             }
-            if (options.keyDown.isDown()) {
+            if (options.keyUp.isDown()) {
                 keys |= 0b0001000;
             }
-            if (options.keyJump.isDown()) {
+            if (options.keyShift.isDown()) {
                 keys |= 0b0010000;
             }
-            if (options.keyShift.isDown()) {
+            if (options.keyJump.isDown()) {
                 keys |= 0b0100000;
             }
             if (ModKeyMappings.RELEASE_DECOY.isDown()) {

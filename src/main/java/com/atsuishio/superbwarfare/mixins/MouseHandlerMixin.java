@@ -122,7 +122,6 @@ public class MouseHandlerMixin {
         Player player = mc.player;
 
         if (player == null) return d;
-        if (mc.options.getCameraType() != CameraType.FIRST_PERSON) return d;
 
         if (player.getVehicle() instanceof VehicleEntity vehicle) {
             x = d;
@@ -139,7 +138,7 @@ public class MouseHandlerMixin {
                 i *= (1 - (Mth.abs(vehicle.getRoll()) - 90) / 90);
             }
 
-            return (1 - (Mth.abs(vehicle.getRoll()) / 90)) * d + ((Mth.abs(vehicle.getRoll()) / 90)) * y * i;
+            return -(1 - (Mth.abs(vehicle.getRoll()) / 90)) * d + ((Mth.abs(vehicle.getRoll()) / 90)) * y * i;
         }
         return d;
     }
@@ -150,11 +149,10 @@ public class MouseHandlerMixin {
         Player player = mc.player;
 
         if (player == null) return d;
-        if (mc.options.getCameraType() != CameraType.FIRST_PERSON) return d;
 
         if (player.getVehicle() instanceof VehicleEntity vehicle) {
             y = d;
-            return (1 - (Mth.abs(vehicle.getRoll()) / 90)) * d + ((Mth.abs(vehicle.getRoll()) / 90)) * x * (vehicle.getRoll() < 0 ? -1 : 1);
+            return -(1 - (Mth.abs(vehicle.getRoll()) / 90)) * d + ((Mth.abs(vehicle.getRoll()) / 90)) * x * (vehicle.getRoll() < 0 ? -1 : 1);
         }
 
         return d;
