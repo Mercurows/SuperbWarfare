@@ -1,7 +1,9 @@
 package com.atsuishio.superbwarfare.block.entity;
 
 import com.atsuishio.superbwarfare.block.ContainerBlock;
+import com.atsuishio.superbwarfare.entity.SenpaiEntity;
 import com.atsuishio.superbwarfare.init.ModBlockEntities;
+import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -27,6 +29,8 @@ import software.bernie.geckolib.core.animation.AnimationState;
 import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
+
+import java.util.Random;
 
 public class ContainerBlockEntity extends BlockEntity implements GeoBlockEntity {
 
@@ -55,10 +59,21 @@ public class ContainerBlockEntity extends BlockEntity implements GeoBlockEntity 
             }
         } else {
             if (blockEntity.entity != null) {
+                double random = new Random().nextDouble();
+                if (random < 0.114) {
+                    blockEntity.entity = new SenpaiEntity(ModEntities.SENPAI.get(), pLevel);
+                }
+
                 blockEntity.entity.setPos(pPos.getX() + 0.5 + (2 * Math.random() - 1) * 0.1f, pPos.getY() + 0.5 + (2 * Math.random() - 1) * 0.1f, pPos.getZ() + 0.5 + (2 * Math.random() - 1) * 0.1f);
                 pLevel.addFreshEntity(blockEntity.entity);
             } else if (blockEntity.entityType != null) {
                 var entity = blockEntity.entityType.create(pLevel);
+
+                double random = new Random().nextDouble();
+                if (random < 0.114) {
+                    entity = new SenpaiEntity(ModEntities.SENPAI.get(), pLevel);
+                }
+
                 if (entity != null) {
                     entity.setPos(pPos.getX() + 0.5 + (2 * Math.random() - 1) * 0.1f, pPos.getY() + 0.5 + (2 * Math.random() - 1) * 0.1f, pPos.getZ() + 0.5 + (2 * Math.random() - 1) * 0.1f);
                     pLevel.addFreshEntity(entity);
