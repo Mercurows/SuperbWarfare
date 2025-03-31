@@ -1,7 +1,5 @@
 package com.atsuishio.superbwarfare.network.message;
 
-import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
-import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.tools.CustomExplosion;
@@ -57,7 +55,7 @@ public class LungeMineAttackMessage {
                         }
                         Entity lookingEntity = EntityFindUtil.findEntity(player.level(), String.valueOf(message.uuid));
                         if (lookingEntity != null) {
-                            lookingEntity.hurt(ModDamageTypes.causeLungeMineDamage(player.level().registryAccess(), player, player), lookingEntity instanceof VehicleEntity ? 600 : 150);
+                            lookingEntity.setDeltaMovement(0 , 2, 0);
                             causeLungeMineExplode(player.level(), player, lookingEntity);
                         }
                     } else if (message.type == 1) {
@@ -65,8 +63,8 @@ public class LungeMineAttackMessage {
                             stack.shrink(1);
                         }
                         CustomExplosion explosion = new CustomExplosion(player.level(), null,
-                                ModDamageTypes.causeProjectileBoomDamage(player.level().registryAccess(), player, player), 60,
-                                message.hitResult.getLocation().x, message.hitResult.getLocation().y, message.hitResult.getLocation().z, 4f, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP).setDamageMultiplier(1.25f);
+                                ModDamageTypes.causeProjectileBoomDamage(player.level().registryAccess(), player, player), 0,
+                                message.hitResult.getLocation().x, message.hitResult.getLocation().y, message.hitResult.getLocation().z, 0f, Explosion.BlockInteraction.KEEP);
                         explosion.explode();
                         net.minecraftforge.event.ForgeEventFactory.onExplosionStart(player.level(), explosion);
                         explosion.finalizeExplosion(false);
@@ -82,8 +80,8 @@ public class LungeMineAttackMessage {
 
     public static void causeLungeMineExplode(Level pLevel, Entity entity, Entity pLivingEntity) {
         CustomExplosion explosion = new CustomExplosion(pLevel, pLivingEntity,
-                ModDamageTypes.causeProjectileBoomDamage(pLevel.registryAccess(), pLivingEntity, entity), 60,
-                pLivingEntity.getX(), pLivingEntity.getEyeY(), pLivingEntity.getZ(), 4f, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP).setDamageMultiplier(1.25f);
+                ModDamageTypes.causeProjectileBoomDamage(pLevel.registryAccess(), pLivingEntity, entity), 0,
+                pLivingEntity.getX(), pLivingEntity.getEyeY(), pLivingEntity.getZ(), 0f,  Explosion.BlockInteraction.KEEP);
         explosion.explode();
         net.minecraftforge.event.ForgeEventFactory.onExplosionStart(pLevel, explosion);
         explosion.finalizeExplosion(false);
