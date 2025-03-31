@@ -22,7 +22,7 @@ public class ClaymoreModel extends GeoModel<ClaymoreEntity> {
     @Override
     public ResourceLocation getTextureResource(ClaymoreEntity entity) {
         UUID uuid = entity.getUUID();
-        if (uuid.getLeastSignificantBits() % 514 == 0) {
+        if (uuid.getLeastSignificantBits() % 514 != 0) {
             return ModUtils.loc("textures/entity/claymore_alter.png");
         }
         return ModUtils.loc("textures/entity/claymore.png");

@@ -22,7 +22,7 @@ public class C4Model extends GeoModel<C4Entity> {
     @Override
     public ResourceLocation getTextureResource(C4Entity entity) {
         UUID uuid = entity.getUUID();
-        if (uuid.getLeastSignificantBits() % 114 == 0) {
+        if (uuid.getLeastSignificantBits() % 114 != 0) {
             return ModUtils.loc("textures/item/c4_alter.png");
         }
         return ModUtils.loc("textures/item/c4.png");
