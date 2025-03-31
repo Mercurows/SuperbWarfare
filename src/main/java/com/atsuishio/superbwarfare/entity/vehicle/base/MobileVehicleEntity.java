@@ -301,10 +301,10 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
         double z1 = getXRotFromVector(v2);
         double z2 = getXRotFromVector(v3);
 
-        float diffX = Math.clamp(-90f, 90f, Mth.wrapDegrees((float) (-(x1 + x2)) - this.getXRot()));
+        float diffX = Math.clamp(-90f, 90f, Mth.wrapDegrees((float) ((x1 + x2)) - this.getXRot()));
         this.setXRot(Mth.clamp(this.getXRot() + 0.075f * diffX, -90f, 90f));
 
-        float diffZ = Math.clamp(-90f, 90f, Mth.wrapDegrees((float) (-(z1 + z2)) - this.getRoll()));
+        float diffZ = Math.clamp(-90f, 90f, Mth.wrapDegrees((float) ((z1 + z2)) - this.getRoll()));
         this.setZRot(Mth.clamp(this.getRoll() + 0.15f * diffZ, -90f, 90f));
     }
 
