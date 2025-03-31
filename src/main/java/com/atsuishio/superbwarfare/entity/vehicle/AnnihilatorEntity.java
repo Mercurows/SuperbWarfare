@@ -326,10 +326,10 @@ public class AnnihilatorEntity extends EnergyVehicleEntity implements GeoEntity,
             }
 
             if (this.getFirstPassenger() != null) {
-                this.level().explode(this.getFirstPassenger(), hitPos.x, hitPos.y, hitPos.z, 5, ExplosionConfig.EXPLOSION_DESTROY.get() ? Level.ExplosionInteraction.BLOCK : Level.ExplosionInteraction.NONE);
+                this.level().explode(this.getFirstPassenger(), hitPos.x, hitPos.y, hitPos.z, 1, ExplosionConfig.EXPLOSION_DESTROY.get() ? Level.ExplosionInteraction.BLOCK : Level.ExplosionInteraction.NONE);
             } else {
                 Entity shooter = EntityFindUtil.findEntity(this.level(), this.entityData.get(SHOOTER_UUID));
-                this.level().explode(shooter, hitPos.x, hitPos.y, hitPos.z, 5, ExplosionConfig.EXPLOSION_DESTROY.get() ? Level.ExplosionInteraction.BLOCK : Level.ExplosionInteraction.NONE);
+                this.level().explode(shooter, hitPos.x, hitPos.y, hitPos.z, 1, ExplosionConfig.EXPLOSION_DESTROY.get() ? Level.ExplosionInteraction.BLOCK : Level.ExplosionInteraction.NONE);
             }
         }
 
@@ -367,11 +367,10 @@ public class AnnihilatorEntity extends EnergyVehicleEntity implements GeoEntity,
                     Entity target = ((EntityHitResult) hitResult).getEntity();
 
                     if (passenger != null) {
-                        target.hurt(ModDamageTypes.causeLaserDamage(this.level().registryAccess(), this, passenger), (float) 200);
+                        target.hurt(ModDamageTypes.causeLaserDamage(this.level().registryAccess(), this, passenger), 0.2f);
                     } else {
                         Entity shooter = EntityFindUtil.findEntity(this.level(), this.entityData.get(SHOOTER_UUID));
-                        target.hurt(ModDamageTypes.causeLaserDamage(this.level().registryAccess(), this, shooter), (float) 200);
-
+                        target.hurt(ModDamageTypes.causeLaserDamage(this.level().registryAccess(), this, shooter), 0.2f);
                     }
 
                     target.invulnerableTime = 0;
@@ -390,8 +389,8 @@ public class AnnihilatorEntity extends EnergyVehicleEntity implements GeoEntity,
 
         if (passenger != null) {
             CustomExplosion explosion = new CustomExplosion(this.level(), passenger,
-                    ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(), this, passenger), 300f,
-                    pos.x, pos.y, pos.z, 15f, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP).setDamageMultiplier(1);
+                    ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(), this, passenger), 3f,
+                    pos.x, pos.y, pos.z, 1.5f, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP).setDamageMultiplier(1);
             explosion.explode();
             ForgeEventFactory.onExplosionStart(this.level(), explosion);
             explosion.finalizeExplosion(false);
@@ -399,8 +398,8 @@ public class AnnihilatorEntity extends EnergyVehicleEntity implements GeoEntity,
         } else {
             Entity shooter = EntityFindUtil.findEntity(this.level(), this.entityData.get(SHOOTER_UUID));
             CustomExplosion explosion = new CustomExplosion(this.level(), shooter,
-                    ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(), this, shooter), 300f,
-                    pos.x, pos.y, pos.z, 15f, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP).setDamageMultiplier(1);
+                    ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(), this, shooter), 3f,
+                    pos.x, pos.y, pos.z, 1.5f, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP).setDamageMultiplier(1);
             explosion.explode();
             ForgeEventFactory.onExplosionStart(this.level(), explosion);
             explosion.finalizeExplosion(false);
@@ -430,7 +429,7 @@ public class AnnihilatorEntity extends EnergyVehicleEntity implements GeoEntity,
             return;
         }
 
-        if (!this.canConsume(VehicleConfig.ANNIHILATOR_SHOOT_COST.get())) {
+        if (!this.canConsume(20)) {
             player.displayClientMessage(Component.translatable("tips.superbwarfare.annihilator.energy_not_enough").withStyle(ChatFormatting.RED), true);
             return;
         }
@@ -445,7 +444,7 @@ public class AnnihilatorEntity extends EnergyVehicleEntity implements GeoEntity,
             }
 
             this.entityData.set(COOL_DOWN, 100);
-            this.consumeEnergy(VehicleConfig.ANNIHILATOR_SHOOT_COST.get());
+            this.consumeEnergy(20);
             final Vec3 center = new Vec3(this.getX(), this.getEyeY(), this.getZ());
             for (Entity target : level.getEntitiesOfClass(Entity.class, new AABB(center, center).inflate(20), e -> true).stream().sorted(Comparator.comparingDouble(e -> e.distanceToSqr(center))).toList()) {
                 if (target instanceof ServerPlayer serverPlayer) {
@@ -563,7 +562,7 @@ public class AnnihilatorEntity extends EnergyVehicleEntity implements GeoEntity,
 
     @Override
     public int getMaxEnergy() {
-        return VehicleConfig.ANNIHILATOR_MAX_ENERGY.get();
+        return 2400;
     }
 
     @Override
