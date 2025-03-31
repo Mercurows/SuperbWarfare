@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.entity.projectile;
 
 import com.atsuishio.superbwarfare.ModUtils;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
-import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
 import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
@@ -77,6 +76,11 @@ public class RgoGrenadeEntity extends FastThrowableProjectile implements GeoEnti
 
     @Override
     protected void onHit(HitResult result) {
+        double v = getDeltaMovement().length();
+        setDeltaMovement(new Vec3(0, 0,0));
+//        setNoGravity(true);
+        setDeltaMovement(getDeltaMovement().add(new Vec3(0, v,0)));
+
         if (level() instanceof ServerLevel) {
             switch (result.getType()) {
                 case BLOCK:
@@ -86,7 +90,6 @@ public class RgoGrenadeEntity extends FastThrowableProjectile implements GeoEnti
                     if (state.getBlock() instanceof BellBlock bell) {
                         bell.attemptToRing(this.level(), resultPos, blockResult.getDirection());
                     }
-                    ProjectileTool.causeCustomExplode(this, ExplosionConfig.RGO_GRENADE_EXPLOSION_DAMAGE.get(), ExplosionConfig.RGO_GRENADE_EXPLOSION_RADIUS.get(), 1.2f);
 
                     break;
                 case ENTITY:
@@ -99,9 +102,7 @@ public class RgoGrenadeEntity extends FastThrowableProjectile implements GeoEnti
                             ModUtils.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> player), new ClientIndicatorMessage(0, 5));
                         }
                     }
-                    if (!(entity instanceof DroneEntity)) {
-                        ProjectileTool.causeCustomExplode(this, ExplosionConfig.RGO_GRENADE_EXPLOSION_DAMAGE.get(), ExplosionConfig.RGO_GRENADE_EXPLOSION_RADIUS.get(), 1.2f);
-                    }
+
                     break;
                 default:
                     break;

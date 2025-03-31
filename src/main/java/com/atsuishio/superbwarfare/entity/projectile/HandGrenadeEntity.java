@@ -86,7 +86,7 @@ public class HandGrenadeEntity extends FastThrowableProjectile implements GeoEnt
                 if (speed > 0.1) {
                     this.level().playSound(null, result.getLocation().x, result.getLocation().y, result.getLocation().z, event, SoundSource.AMBIENT, 1.0F, 1.0F);
                 }
-                this.bounce(blockResult.getDirection());
+                setDeltaMovement(getDeltaMovement().scale(-1));
 
                 if (state.getBlock() instanceof BellBlock bell) {
                     bell.attemptToRing(this.level(), resultPos, blockResult.getDirection());
@@ -108,8 +108,7 @@ public class HandGrenadeEntity extends FastThrowableProjectile implements GeoEnt
                     }
                     entity.hurt(entity.damageSources().thrown(this, this.getOwner()), 1.0F);
                 }
-                this.bounce(Direction.getNearest(this.getDeltaMovement().x(), this.getDeltaMovement().y(), this.getDeltaMovement().z()).getOpposite());
-                this.setDeltaMovement(this.getDeltaMovement().multiply(0.25, 1.0, 0.25));
+                setDeltaMovement(getDeltaMovement().scale(-1));
                 break;
             default:
                 break;
