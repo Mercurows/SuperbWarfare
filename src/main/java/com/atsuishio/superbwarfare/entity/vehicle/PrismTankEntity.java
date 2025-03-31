@@ -328,7 +328,7 @@ public class PrismTankEntity extends ContainerMobileVehicleEntity implements Geo
 
     private void hitBlock(Vec3 pos) {
         if (this.level() instanceof ServerLevel) {
-            BlockHitResult result = this.level().clip(new ClipContext(pos, pos.add(this.getBarrelVector(1).scale(512)),
+            BlockHitResult result = this.level().clip(new ClipContext(pos, pos.add(this.getBarrelVector(1).scale(5)),
                     ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this));
 
             Vec3 hitPos = result.getLocation();
@@ -347,14 +347,14 @@ public class PrismTankEntity extends ContainerMobileVehicleEntity implements Geo
 
     private float laserLength(Vec3 pos) {
         return (float) pos.distanceTo((Vec3.atLowerCornerOf(level().clip(
-                new ClipContext(pos, pos.add(this.getBarrelVector(1).scale(512)),
+                new ClipContext(pos, pos.add(this.getBarrelVector(1).scale(5)),
                         ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this)).getBlockPos())));
     }
 
     private float laserLengthEntity(Vec3 pos) {
         if (this.level() instanceof ServerLevel) {
-            double distance = 512 * 512;
-            HitResult hitResult = pickNew(pos, 512);
+            double distance = 5 * 5;
+            HitResult hitResult = pickNew(pos, 5);
             if (hitResult.getType() != HitResult.Type.MISS) {
                 distance = hitResult.getLocation().distanceToSqr(pos);
                 double blockReach = 5;
@@ -364,13 +364,13 @@ public class PrismTankEntity extends ContainerMobileVehicleEntity implements Geo
                 }
             }
             Vec3 viewVec = getBarrelVector(1);
-            Vec3 toVec = pos.add(viewVec.x * 512, viewVec.y * 512, viewVec.z * 512);
-            AABB aabb = getBoundingBox().expandTowards(viewVec.scale(512)).inflate(1.0D, 1.0D, 1.0D);
+            Vec3 toVec = pos.add(viewVec.x * 5, viewVec.y * 5, viewVec.z * 5);
+            AABB aabb = getBoundingBox().expandTowards(viewVec.scale(5)).inflate(1.0D, 1.0D, 1.0D);
             EntityHitResult entityhitresult = ProjectileUtil.getEntityHitResult(this, pos, toVec, aabb, p -> !p.isSpectator(), distance);
             if (entityhitresult != null) {
                 Vec3 targetPos = entityhitresult.getLocation();
                 double distanceToTarget = pos.distanceToSqr(targetPos);
-                if (distanceToTarget > distance || distanceToTarget > 512 * 512) {
+                if (distanceToTarget > distance || distanceToTarget > 5 * 5) {
                     hitResult = BlockHitResult.miss(targetPos, Direction.getNearest(viewVec.x, viewVec.y, viewVec.z), BlockPos.containing(targetPos));
                 } else if (distanceToTarget < distance) {
                     hitResult = entityhitresult;
@@ -405,7 +405,7 @@ public class PrismTankEntity extends ContainerMobileVehicleEntity implements Geo
                 }
             }
         }
-        return 512;
+        return 5;
     }
 
     public void findNearEntity(Vec3 vec) {
@@ -694,7 +694,7 @@ public class PrismTankEntity extends ContainerMobileVehicleEntity implements Geo
 
     @Override
     public float getMaxHealth() {
-        return VehicleConfig.PRISM_TANK_HP.get();
+        return 40;
     }
 
     @Override
