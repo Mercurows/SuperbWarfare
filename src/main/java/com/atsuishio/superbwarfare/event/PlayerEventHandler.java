@@ -29,6 +29,8 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.network.PacketDistributor;
 
+import java.util.Random;
+
 @Mod.EventBusSubscriber
 public class PlayerEventHandler {
 
@@ -377,7 +379,10 @@ public class PlayerEventHandler {
         if (left.is(ModTags.Items.GUN) && right.getItem() == ModItems.SHORTCUT_PACK.get()) {
             ItemStack output = left.copy();
 
-            GunsTool.setGunDoubleTag(output, "UpgradePoint", GunsTool.getGunDoubleTag(output, "UpgradePoint", 0) + 1);
+            double random = new Random().nextDouble();
+            if (random < 0.05) {
+                GunsTool.setGunDoubleTag(output, "UpgradePoint", GunsTool.getGunDoubleTag(output, "UpgradePoint", 0) + 1);
+            }
 
             event.setOutput(output);
             event.setCost(10);

@@ -3,14 +3,14 @@
   "category": "misc",
   "ingredients": [
     {
-      "item": "superbwarfare:epic_material_pack"
+      "item": "superbwarfare:common_material_pack"
     },
     {
-      "item": "minecraft:nether_star"
+      "item": "minecraft:dirt"
     }
   ],
   "result": {
     "item": "superbwarfare:shortcut_pack",
-    "count": 1
+    "count": 4
   }
 }
