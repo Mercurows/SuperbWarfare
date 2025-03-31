@@ -633,6 +633,11 @@ public class ClientEventHandler {
         if (!stack.is(ModTags.Items.GUN)) return;
 
         ModUtils.PACKET_HANDLER.sendToServer(new ShootMessage(gunSpread));
+
+        float damage = (float) (GunsTool.getGunDoubleTag(stack, "Damage", 0) +
+                GunsTool.getGunDoubleTag(stack, "ChargedDamage", 0));
+
+        player.setDeltaMovement(player.getDeltaMovement().add(player.getViewVector(1).scale(-0.02 * damage)));
         fireRecoilTime = 10;
 
         float gunRecoilY = (float) GunsTool.getGunDoubleTag(stack, "RecoilY", 0) * 10;
@@ -1253,7 +1258,7 @@ public class ClientEventHandler {
 
         // 竖直后座
         if (0 < recoilTime && recoilTime < 0.5) {
-            float newPitch = (float) (player.getXRot() - 0.02f * gunRecoilX * times * recoil * (1 - 0.06 * customWeight) * gripRecoilY * rpm);
+            float newPitch = (float) (player.getXRot() + 0.02f * gunRecoilX * times * recoil * (1 - 0.06 * customWeight) * gripRecoilY * rpm);
             player.setXRot(newPitch);
             player.xRotO = player.getXRot();
         }
@@ -1269,7 +1274,7 @@ public class ClientEventHandler {
         }
 
         if (0 < recoilTime && recoilTime < 2.5) {
-            float newPitch = player.getXRot() - (float) (1.5 * pose * gunRecoilX * (sinRes + Mth.clamp(0.5 - recoilTime, 0, 0.5)) * times * (0.5 + fireSpread) * recoil * (1 - 0.06 * customWeight) * gripRecoilY * rpm);
+            float newPitch = player.getXRot() + (float) (1.5 * pose * gunRecoilX * (sinRes + Mth.clamp(0.5 - recoilTime, 0, 0.5)) * times * (0.5 + fireSpread) * recoil * (1 - 0.06 * customWeight) * gripRecoilY * rpm);
             player.setXRot(newPitch);
             player.xRotO = player.getXRot();
         }
