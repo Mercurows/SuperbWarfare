@@ -35,7 +35,7 @@ public class Hammer extends SwordItem {
             public Ingredient getRepairIngredient() {
                 return Ingredient.of(new ItemStack(Items.IRON_INGOT));
             }
-        }, 3, -3.2f, new Item.Properties());
+        }, 71, -3.2f, new Item.Properties());
     }
 
     @Override
