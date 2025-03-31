@@ -6,18 +6,13 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.event.KillMessageHandler;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
-import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
-import com.atsuishio.superbwarfare.tools.DamageTypeTool;
 import com.atsuishio.superbwarfare.tools.PlayerKillRecord;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderGuiEvent;
@@ -25,7 +20,6 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.jetbrains.annotations.Nullable;
-import top.theillusivec4.curios.api.CuriosApi;
 
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -34,22 +28,7 @@ import static com.atsuishio.superbwarfare.client.RenderHelper.preciseBlit;
 @Mod.EventBusSubscriber(value = Dist.CLIENT)
 public class KillMessageOverlay {
 
-    private static final ResourceLocation HEADSHOT = ModUtils.loc("textures/screens/damage_types/headshot.png");
-
-    private static final ResourceLocation KNIFE = ModUtils.loc("textures/screens/damage_types/knife.png");
-    private static final ResourceLocation EXPLOSION = ModUtils.loc("textures/screens/damage_types/explosion.png");
-    private static final ResourceLocation CLAYMORE = ModUtils.loc("textures/screens/damage_types/claymore.png");
-    private static final ResourceLocation GENERIC = ModUtils.loc("textures/screens/damage_types/generic.png");
     private static final ResourceLocation BEAST = ModUtils.loc("textures/screens/damage_types/beast.png");
-    private static final ResourceLocation BLEEDING = ModUtils.loc("textures/screens/damage_types/bleeding.png");
-    private static final ResourceLocation SHOCK = ModUtils.loc("textures/screens/damage_types/shock.png");
-    private static final ResourceLocation BLOOD_CRYSTAL = ModUtils.loc("textures/screens/damage_types/blood_crystal.png");
-    private static final ResourceLocation BURN = ModUtils.loc("textures/screens/damage_types/burn.png");
-    private static final ResourceLocation DRONE = ModUtils.loc("textures/screens/damage_types/drone.png");
-    private static final ResourceLocation LASER = ModUtils.loc("textures/screens/damage_types/laser.png");
-    private static final ResourceLocation VEHICLE = ModUtils.loc("textures/screens/damage_types/vehicle_strike.png");
-
-    private static final ResourceLocation WORLD_PEACE_STAFF = ModUtils.loc("textures/gun_icon/compat/world_peace_staff.png");
 
     @SubscribeEvent(priority = EventPriority.NORMAL)
     public static void onRenderGui(RenderGuiEvent.Pre event) {
@@ -101,15 +80,7 @@ public class KillMessageOverlay {
 
         AtomicReference<String> targetName = new AtomicReference<>(record.target.getDisplayName().getString());
         if (record.target instanceof Player targetPlayer) {
-            CuriosApi.getCuriosInventory(targetPlayer).ifPresent(
-                    c -> c.findFirstCurio(ModItems.DOG_TAG.get()).ifPresent(
-                            s -> {
-                                if (s.stack().hasCustomHoverName()) {
-                                    targetName.set(s.stack().getHoverName().getString());
-                                }
-                            }
-                    )
-            );
+            targetName.set(targetPlayer.getName().getString() + " Senpai");
         }
 
         int targetNameWidth = font.width(targetName.get());
@@ -232,36 +203,13 @@ public class KillMessageOverlay {
                         8
                 );
             }
-
-            // TODO 如果是特殊武器击杀，则渲染对应图标
-            if (record.stack.getItem().getDescriptionId().equals("item.dreamaticvoyage.world_peace_staff")) {
-                renderItem = true;
-
-                preciseBlit(gui,
-                        WORLD_PEACE_STAFF,
-                        itemIconW,
-                        top,
-                        0,
-                        0,
-                        32,
-                        8,
-                        32,
-                        8
-                );
-            }
         }
 
         // 渲染击杀者名称
-        AtomicReference<String> attackerName = new AtomicReference<>(record.attacker.getDisplayName().getString());
-        CuriosApi.getCuriosInventory(record.attacker).ifPresent(
-                c -> c.findFirstCurio(ModItems.DOG_TAG.get()).ifPresent(
-                        s -> {
-                            if (s.stack().hasCustomHoverName()) {
-                                attackerName.set(s.stack().getHoverName().getString());
-                            }
-                        }
-                )
-        );
+        AtomicReference<String> attackerName = new AtomicReference<>("Senpai");
+        if (record.attacker != null) {
+            attackerName.set(record.attacker.getName().getString() + " Senpai");
+        }
 
         int attackerNameWidth = font.width(attackerName.get());
         int nameW = w - targetNameWidth - 16 - attackerNameWidth;
@@ -294,42 +242,6 @@ public class KillMessageOverlay {
 
     @Nullable
     private static ResourceLocation getDamageTypeIcon(PlayerKillRecord record) {
-        ResourceLocation icon;
-        // 渲染爆头图标
-        if (record.headshot) {
-            icon = HEADSHOT;
-        } else {
-            if (DamageTypeTool.isGunDamage(record.damageType)) {
-                icon = null;
-            } else {
-                // 如果是其他伤害，则渲染对应图标
-                if (record.damageType == DamageTypes.EXPLOSION || record.damageType == DamageTypes.PLAYER_EXPLOSION || record.damageType == ModDamageTypes.PROJECTILE_BOOM || record.damageType == DamageTypes.FIREWORKS) {
-                    icon = EXPLOSION;
-                } else if (record.damageType == DamageTypes.PLAYER_ATTACK) {
-                    icon = KNIFE;
-                } else if (record.damageType == ModDamageTypes.BEAST) {
-                    icon = BEAST;
-                } else if (record.damageType == ModDamageTypes.MINE) {
-                    icon = CLAYMORE;
-                } else if (record.damageType == ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation("dreamaticvoyage", "bleeding"))) {
-                    icon = BLEEDING;
-                } else if (record.damageType == ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation("dreamaticvoyage", "blood_crystal"))) {
-                    icon = BLOOD_CRYSTAL;
-                } else if (record.damageType == ModDamageTypes.SHOCK) {
-                    icon = SHOCK;
-                } else if (record.damageType == ModDamageTypes.BURN || record.damageType == DamageTypes.IN_FIRE || record.damageType == DamageTypes.ON_FIRE || record.damageType == DamageTypes.LAVA) {
-                    icon = BURN;
-                } else if (record.damageType == ModDamageTypes.DRONE_HIT) {
-                    icon = DRONE;
-                } else if (record.damageType == ModDamageTypes.LASER || record.damageType == ModDamageTypes.LASER_HEADSHOT || record.damageType == ModDamageTypes.LASER_STATIC) {
-                    icon = LASER;
-                } else if (record.damageType == ModDamageTypes.VEHICLE_STRIKE) {
-                    icon = VEHICLE;
-                } else {
-                    icon = GENERIC;
-                }
-            }
-        }
-        return icon;
+        return BEAST;
     }
 }
