@@ -29,6 +29,7 @@ public class MelonBombEntityRenderer extends EntityRenderer<MelonBombEntity> {
         matrixStack.mulPose(Axis.YP.rotationDegrees(-90.0f));
         matrixStack.translate(-0.5, -0.5, 0.5);
         matrixStack.mulPose(Axis.YP.rotationDegrees(90.0f));
+        matrixStack.scale(0.16f, 0.16f, 0.16f);
         TntMinecartRenderer.renderWhiteSolidBlock(this.blockRenderer, Blocks.MELON.defaultBlockState(), matrixStack, buffer, packedLight, false);
         matrixStack.popPose();
         super.render(entity, entityYaw, partialTicks, matrixStack, buffer, packedLight);

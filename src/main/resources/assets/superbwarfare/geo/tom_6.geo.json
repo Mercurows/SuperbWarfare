@@ -382,7 +382,7 @@
 				{
 					"name": "melon",
 					"parent": "bone",
-					"pivot": [0, 0, 0],
+					"pivot": [0, 2.55, 0],
 					"cubes": [
 						{
 							"origin": [-6.8, 2.55, -6.8],

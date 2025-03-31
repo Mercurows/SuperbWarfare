@@ -54,6 +54,9 @@ public class Tom6Renderer extends GeoEntityRenderer<Tom6Entity> {
         String name = bone.getName();
         if (name.equals("melon")) {
             bone.setHidden(!animatable.getEntityData().get(MELON));
+            bone.setScaleX(0.2f);
+            bone.setScaleY(0.2f);
+            bone.setScaleZ(0.2f);
         }
         super.renderRecursively(poseStack, animatable, bone, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, red, green, blue, alpha);
     }

@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.entity.projectile;
 
-import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.tools.ProjectileTool;
 import net.minecraft.network.protocol.Packet;
@@ -47,7 +46,7 @@ public class MelonBombEntity extends FastThrowableProjectile {
     @Override
     public void onHitBlock(BlockHitResult blockHitResult) {
         super.onHitBlock(blockHitResult);
-        ProjectileTool.causeCustomExplode(this, VehicleConfig.TOM_6_BOMB_EXPLOSION_DAMAGE.get(), VehicleConfig.TOM_6_BOMB_EXPLOSION_RADIUS.get().floatValue(), 1.5f);
+        ProjectileTool.causeCustomExplode(this, 1145f, 51.4f, 1.5f);
         this.discard();
     }
 
@@ -57,7 +56,7 @@ public class MelonBombEntity extends FastThrowableProjectile {
         if (tickCount > 600) {
             this.discard();
             if (!this.level().isClientSide) {
-                ProjectileTool.causeCustomExplode(this, VehicleConfig.TOM_6_BOMB_EXPLOSION_DAMAGE.get(), VehicleConfig.TOM_6_BOMB_EXPLOSION_RADIUS.get().floatValue(), 1.5f);
+                ProjectileTool.causeCustomExplode(this, 1145f, 51.4f, 1.5f);
             }
         }
     }
