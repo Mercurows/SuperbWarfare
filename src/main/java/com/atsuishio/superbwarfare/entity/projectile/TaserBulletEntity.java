@@ -122,7 +122,7 @@ public class TaserBulletEntity extends AbstractArrow implements GeoEntity {
     public void tick() {
         super.tick();
 
-        if (this.getOwner() != null && this.position().distanceTo(this.getOwner().position()) > 10 + 4 * wireLength && !stop) {
+        if (this.getOwner() != null && this.position().distanceTo(this.getOwner().position()) > 100 + 40 * wireLength && !stop) {
             stop = true;
             this.setDeltaMovement(new Vec3(0, 0, 0));
         }

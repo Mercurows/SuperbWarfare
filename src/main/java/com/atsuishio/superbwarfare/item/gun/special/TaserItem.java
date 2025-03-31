@@ -299,7 +299,7 @@ public class TaserItem extends GunItem implements GeoItem, SpecialFireWeapon {
                     (float) GunsTool.getGunDoubleTag(stack, "Damage", 0), volt, wireLength);
 
             taserBulletProjectile.setPos(player.getX(), player.getEyeY() - 0.1, player.getZ());
-            taserBulletProjectile.shoot(player.getLookAngle().x, player.getLookAngle().y, player.getLookAngle().z, (float) GunsTool.getGunDoubleTag(stack, "Velocity", 0),
+            taserBulletProjectile.shoot(player.getLookAngle().x, player.getLookAngle().y, player.getLookAngle().z, (float) GunsTool.getGunDoubleTag(stack, "Velocity", 0) * 2,
                     (float) (zoom ? 0.1 : spread));
             level.addFreshEntity(taserBulletProjectile);
 
