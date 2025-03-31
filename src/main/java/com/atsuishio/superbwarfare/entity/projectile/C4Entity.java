@@ -129,11 +129,11 @@ public class C4Entity extends Projectile implements GeoEntity {
         super.tick();
 
         if (!this.entityData.get(IS_CONTROLLABLE)) {
-            if (this.tickCount >= ExplosionConfig.C4_EXPLOSION_COUNTDOWN.get()) {
+            if (this.tickCount >= 228) {
                 this.explode();
             }
 
-            int countdown = ExplosionConfig.C4_EXPLOSION_COUNTDOWN.get();
+            int countdown = 228;
             if (countdown - tickCount > 39 && tickCount % ((20 * (countdown - tickCount)) / countdown + 1) == 0) {
                 this.level().playSound(null, this.getOnPos(), ModSounds.C4_BEEP.get(), SoundSource.PLAYERS, 1, 1);
             }
