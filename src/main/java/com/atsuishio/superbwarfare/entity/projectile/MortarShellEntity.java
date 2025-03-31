@@ -46,7 +46,7 @@ import java.util.Set;
 public class MortarShellEntity extends FastThrowableProjectile implements GeoEntity {
 
     private float damage = ExplosionConfig.MORTAR_SHELL_EXPLOSION_DAMAGE.get();
-    private int life = 600;
+    private int life = 6000;
     private float radius = ExplosionConfig.MORTAR_SHELL_EXPLOSION_RADIUS.get();
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     public Set<Long> loadedChunks = new HashSet<>();
@@ -224,6 +224,9 @@ public class MortarShellEntity extends FastThrowableProjectile implements GeoEnt
             }
             this.discard();
         }
+
+        var fac = 0.998995471291750051F / 0.99F;
+        this.setDeltaMovement(this.getDeltaMovement().multiply(fac, fac, fac));
     }
 
     @Override
@@ -237,7 +240,7 @@ public class MortarShellEntity extends FastThrowableProjectile implements GeoEnt
 
     @Override
     protected float getGravity() {
-        return 0.146F;
+        return 0.00146F;
     }
 
     @Override
