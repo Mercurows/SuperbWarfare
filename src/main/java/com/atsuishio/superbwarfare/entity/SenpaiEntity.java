@@ -55,7 +55,7 @@ public class SenpaiEntity extends Monster implements GeoEntity {
 
     @Override
     protected float getStandingEyeHeight(Pose poseIn, EntityDimensions sizeIn) {
-        return 1.75F;
+        return 1.75F / 2;
     }
 
     @Override
@@ -86,15 +86,7 @@ public class SenpaiEntity extends Monster implements GeoEntity {
 
     protected void dropCustomDeathLoot(DamageSource source, int looting, boolean recentlyHitIn) {
         super.dropCustomDeathLoot(source, looting, recentlyHitIn);
-
-        double random = Math.random();
-        if (random < 0.01) {
-            this.spawnAtLocation(new ItemStack(Items.ENCHANTED_GOLDEN_APPLE));
-        } else if (random < 0.2) {
-            this.spawnAtLocation(new ItemStack(Items.GOLDEN_APPLE));
-        } else {
-            this.spawnAtLocation(new ItemStack(Items.APPLE));
-        }
+        this.spawnAtLocation(new ItemStack(Items.ENCHANTED_GOLDEN_APPLE));
     }
 
     @Override
@@ -104,7 +96,7 @@ public class SenpaiEntity extends Monster implements GeoEntity {
 
     @Override
     public void playStepSound(BlockPos pos, BlockState blockIn) {
-        this.playSound(ModSounds.STEP.get(), 0.25f, 1);
+        this.playSound(ModSounds.STEP.get(), 1f, 1.25f);
     }
 
     @Override
@@ -146,7 +138,7 @@ public class SenpaiEntity extends Monster implements GeoEntity {
 
     public static AttributeSupplier.Builder createAttributes() {
         return Mob.createMobAttributes()
-                .add(Attributes.MOVEMENT_SPEED, 0.23)
+                .add(Attributes.MOVEMENT_SPEED, 0.32)
                 .add(Attributes.MAX_HEALTH, 114)
                 .add(Attributes.ARMOR, 5)
                 .add(Attributes.ATTACK_DAMAGE, 14)

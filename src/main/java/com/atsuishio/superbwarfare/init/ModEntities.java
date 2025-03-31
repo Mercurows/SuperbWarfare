@@ -4,7 +4,6 @@ import com.atsuishio.superbwarfare.ModUtils;
 import com.atsuishio.superbwarfare.entity.*;
 import com.atsuishio.superbwarfare.entity.projectile.*;
 import com.atsuishio.superbwarfare.entity.vehicle.*;
-import net.minecraft.world.Difficulty;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
@@ -25,7 +24,7 @@ public class ModEntities {
             EntityType.Builder.<TargetEntity>of(TargetEntity::new, MobCategory.CREATURE).setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(TargetEntity::new).fireImmune().sized(0.875f, 2f));
     public static final RegistryObject<EntityType<SenpaiEntity>> SENPAI = register("senpai",
             EntityType.Builder.<SenpaiEntity>of(SenpaiEntity::new, MobCategory.MONSTER).setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(SenpaiEntity::new)
-                    .sized(0.6f, 2f));
+                    .sized(0.4f, 1.2f));
 
     // Misc Entities
     public static final RegistryObject<EntityType<MortarEntity>> MORTAR = register("mortar",
@@ -109,7 +108,7 @@ public class ModEntities {
     @SubscribeEvent
     public static void onRegisterSpawnPlacement(SpawnPlacementRegisterEvent event) {
         event.register(ModEntities.SENPAI.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
-                (entityType, world, reason, pos, random) -> (world.getDifficulty() != Difficulty.PEACEFUL && Mob.checkMobSpawnRules(entityType, world, reason, pos, random)),
+                Mob::checkMobSpawnRules,
                 SpawnPlacementRegisterEvent.Operation.OR);
     }
 
