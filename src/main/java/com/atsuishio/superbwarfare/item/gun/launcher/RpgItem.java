@@ -67,7 +67,7 @@ public class RpgItem extends GunItem implements GeoItem, SpecialFireWeapon {
     }
 
     @Override
-    public void initializeClient(Consumer<IClientItemExtensions> consumer) {
+    public void initializeClient(@NotNull Consumer<IClientItemExtensions> consumer) {
         super.initializeClient(consumer);
         consumer.accept(new IClientItemExtensions() {
             private final BlockEntityWithoutLevelRenderer renderer = new RpgItemRenderer();
@@ -224,10 +224,10 @@ public class RpgItem extends GunItem implements GeoItem, SpecialFireWeapon {
                 rocket.setMonsterMultiplier(0.1f + 0.1f * perkLevel);
             }
 
-            float velocity = (float) GunsTool.getGunDoubleTag(stack, "Velocity", 0);
+            float velocity = (float) GunsTool.getGunDoubleTag(stack, "Velocity", 0) * 0.1F;
 
+            rocket.setNoGravity(true);
             if (PerkHelper.getPerkByType(stack, Perk.Type.AMMO) == ModPerks.MICRO_MISSILE.get()) {
-                rocket.setNoGravity(true);
 
                 int perkLevel = PerkHelper.getItemPerkLevel(ModPerks.MICRO_MISSILE.get(), stack);
                 if (perkLevel > 0) {
