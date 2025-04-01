@@ -98,7 +98,7 @@ public record ReloadMessage(int msgType) implements CustomPacketPayload {
                     < GunsTool.getGunIntTag(tag, "Magazine", 0)
                     + GunsTool.getGunIntTag(tag, "CustomMagazine", 0)) {
 
-                data.putBoolean("start_single_reload", true);
+                tag.putBoolean("start_single_reload", true);
             }
             NBTTool.saveTag(stack, tag);
         }

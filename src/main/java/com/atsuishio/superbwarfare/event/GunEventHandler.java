@@ -17,7 +17,6 @@ import com.atsuishio.superbwarfare.tools.*;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.effect.MobEffect;
@@ -32,7 +31,6 @@ import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 @EventBusSubscriber(modid = Mod.MODID)
@@ -60,18 +58,18 @@ public class GunEventHandler {
      */
     private static void handleGunBolt(Player player, final CompoundTag tag) {
         ItemStack stack = player.getMainHandItem();
-        if (!(stack.getItem() instanceof GunItem)) return;
-
         if (stack.is(ModTags.Items.NORMAL_GUN)) {
+            var data = tag.getCompound("GunData");
             if (GunsTool.getGunIntTag(tag, "BoltActionTick") > 0) {
-                tag.getCompound("GunData").putInt("BoltActionTick", GunsTool.getGunIntTag(tag, "BoltActionTick") - 1);
+                data.putInt("BoltActionTick", GunsTool.getGunIntTag(tag, "BoltActionTick") - 1);
             }
+
             if (stack.getItem() == ModItems.MARLIN.get() && GunsTool.getGunIntTag(tag, "BoltActionTick") == 9) {
                 tag.putBoolean("empty", false);
             }
 
             if (GunsTool.getGunIntTag(tag, "BoltActionTick") == 1) {
-                tag.getCompound("GunData").putBoolean("NeedBoltAction", false);
+                GunsTool.setGunBooleanTag(tag, "NeedBoltAction", false);
                 if (stack.is(ModTags.Items.REVOLVER)) {
                     tag.putBoolean("canImmediatelyShoot", true);
                 }
@@ -524,11 +522,11 @@ public class GunEventHandler {
             tag.putDouble("finish", tag.getDouble("finish") - 1);
         }
 
-//        player.displayClientMessage(Component.literal("prepare: " + new DecimalFormat("##.#").format(tag.getDouble("prepare"))
-//                + " prepare_load: " + new DecimalFormat("##.#").format(tag.getDouble("prepare_load"))
-//                + " iterative: " + new DecimalFormat("##.#").format(tag.getDouble("iterative"))
-//                + " finish: " + new DecimalFormat("##.#").format(tag.getDouble("finish"))
-//                + " reload_stage: " + new DecimalFormat("##.#").format(tag.getDouble("reload_stage"))
+//        player.displayClientMessage(Component.literal("prepare: " +  new DecimalFormat("##.#").format(tag.getDouble("prepare"))
+//                        + " prepare_load: " +  new DecimalFormat("##.#").format(tag.getDouble("prepare_load"))
+//                        + " iterative: " +  new DecimalFormat("##.#").format(tag.getDouble("iterative"))
+//                        + " finish: " +  new DecimalFormat("##.#").format(tag.getDouble("finish"))
+//                        + " reload_stage: " +  new DecimalFormat("##.#").format(tag.getDouble("reload_stage"))
 //        ), true);
 
         // 一阶段
@@ -560,7 +558,7 @@ public class GunEventHandler {
             tag.putBoolean("force_stop", false);
             tag.putBoolean("stop", false);
             tag.putInt("reload_stage", 1);
-            tag.getCompound("GunData").putBoolean("Reloading", true);
+            GunsTool.setGunBooleanTag(tag, "Reloading", true);
             tag.putBoolean("start_single_reload", false);
         }
 
@@ -631,8 +629,8 @@ public class GunEventHandler {
         }
 
         // 装填
-        if (stack.getItem() == ModItems.M_870.get()
-                || stack.getItem() == ModItems.MARLIN.get()
+        if ((stack.getItem() == ModItems.M_870.get()
+                || stack.getItem() == ModItems.MARLIN.get())
                 && tag.getInt("iterative") == 3
         ) {
             singleLoad(player, tag);
@@ -642,9 +640,10 @@ public class GunEventHandler {
             singleLoad(player, tag);
         }
 
-        if (stack.getItem() == ModItems.K_98.get()
-                || stack.getItem() == ModItems.MOSIN_NAGANT.get()
-                || tag.getInt("iterative") == 1) {
+        if ((stack.getItem() == ModItems.K_98.get()
+                || stack.getItem() == ModItems.MOSIN_NAGANT.get())
+                && tag.getInt("iterative") == 1
+        ) {
             singleLoad(player, tag);
         }
 
