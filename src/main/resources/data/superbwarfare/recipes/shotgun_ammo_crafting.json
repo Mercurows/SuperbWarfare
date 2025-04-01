@@ -8,10 +8,10 @@
   ],
   "key": {
     "a": {
-      "tag": "forge:ingots/lead"
+      "tag": "c:ingots/lead"
     },
     "b": {
-      "tag": "forge:plates/copper"
+      "tag": "c:plates/copper"
     },
     "c": {
       "item": "minecraft:gunpowder"

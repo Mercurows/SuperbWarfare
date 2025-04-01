@@ -524,12 +524,12 @@ public class GunEventHandler {
             tag.putDouble("finish", tag.getDouble("finish") - 1);
         }
 
-        player.displayClientMessage(Component.literal("prepare: " + new DecimalFormat("##.#").format(tag.getDouble("prepare"))
-                + " prepare_load: " + new DecimalFormat("##.#").format(tag.getDouble("prepare_load"))
-                + " iterative: " + new DecimalFormat("##.#").format(tag.getDouble("iterative"))
-                + " finish: " + new DecimalFormat("##.#").format(tag.getDouble("finish"))
-                + " reload_stage: " + new DecimalFormat("##.#").format(tag.getDouble("reload_stage"))
-        ), true);
+//        player.displayClientMessage(Component.literal("prepare: " + new DecimalFormat("##.#").format(tag.getDouble("prepare"))
+//                + " prepare_load: " + new DecimalFormat("##.#").format(tag.getDouble("prepare_load"))
+//                + " iterative: " + new DecimalFormat("##.#").format(tag.getDouble("iterative"))
+//                + " finish: " + new DecimalFormat("##.#").format(tag.getDouble("finish"))
+//                + " reload_stage: " + new DecimalFormat("##.#").format(tag.getDouble("reload_stage"))
+//        ), true);
 
         // 一阶段
         if (tag.getBoolean("start_single_reload")) {

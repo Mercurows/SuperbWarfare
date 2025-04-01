@@ -8,7 +8,7 @@
       "item": "minecraft:gunpowder"
     },
     {
-      "tag": "forge:sand"
+      "tag": "c:sand"
     },
     {
       "item": "minecraft:sugar"
@@ -22,7 +22,7 @@
   ],
   "conditions": [
     {
-      "type": "forge:mod_loaded",
+      "type": "neoforge:mod_loaded",
       "modid": "create"
     }
   ]

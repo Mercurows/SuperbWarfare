@@ -3,7 +3,7 @@
   "category": "misc",
   "ingredients": [
     {
-      "tag": "forge:ingots/tungsten"
+      "tag": "c:ingots/tungsten"
     },
     {
       "item": "superbwarfare:hammer"

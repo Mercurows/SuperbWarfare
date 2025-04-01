@@ -11,7 +11,7 @@
       "tag": "superbwarfare:ingots/steel"
     },
     "b": {
-      "tag": "forge:plates/copper"
+      "tag": "c:plates/copper"
     },
     "c": {
       "item": "minecraft:gunpowder"

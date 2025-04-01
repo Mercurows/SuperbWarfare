@@ -11,10 +11,10 @@
       "item": "superbwarfare:empty_perk"
     },
     "b": {
-      "tag":"forge:storage_blocks/copper"
+      "tag": "neoforge:storage_blocks/copper"
     },
     "c": {
-      "tag":"forge:ingots/copper"
+      "tag": "neoforge:ingots/copper"
     }
   },
   "result": {

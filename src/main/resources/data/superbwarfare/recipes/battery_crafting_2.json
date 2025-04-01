@@ -8,10 +8,10 @@
   ],
   "key": {
     "b": {
-      "tag": "forge:plates/copper"
+      "tag": "c:plates/copper"
     },
     "c": {
-      "tag": "forge:glass_panes"
+      "tag": "c:glass_panes"
     },
     "d": {
       "item": "minecraft:redstone"

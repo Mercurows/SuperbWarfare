@@ -17,7 +17,7 @@
       "item": "minecraft:lightning_rod"
     },
     "d": {
-      "tag": "forge:dusts/coal_coke"
+      "tag": "c:dusts/coal_coke"
     },
     "e": {
       "item": "minecraft:iron_ingot"

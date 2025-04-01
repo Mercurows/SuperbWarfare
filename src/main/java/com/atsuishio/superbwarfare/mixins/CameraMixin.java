@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.CannonEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModItems;
+import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.tools.EntityFindUtil;
 import com.atsuishio.superbwarfare.tools.NBTTool;
 import com.mojang.math.Axis;
@@ -14,6 +15,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import org.joml.Matrix4f;
@@ -146,29 +148,29 @@ public abstract class CameraMixin {
         return transform.transform(new Vector4f(x, y, z, 1));
     }
 
-    // TODO camera mixin
-//    @Inject(method = "setup", at = @At("TAIL"))
-//    public void superbWarfare$setup(BlockGetter area, Entity entity, boolean thirdPerson, boolean inverseView, float tickDelta, CallbackInfo ci) {
-//        if (Minecraft.getInstance().options.getCameraType() == CameraType.THIRD_PERSON_BACK
-//                && entity instanceof Player player
-//                && player.getMainHandItem().is(ModTags.Items.GUN)
-//                && Math.max(ClientEventHandler.pullPos, ClientEventHandler.zoomPos) > 0
-//        ) {
-//            move((float) -getMaxZoom(-2.9 * Math.max(ClientEventHandler.pullPos, ClientEventHandler.zoomPos)), 0, (float) (-ClientEventHandler.cameraLocation * Math.max(ClientEventHandler.pullPos, ClientEventHandler.zoomPos)));
-//            return;
-//        }
-//
-//        if (!thirdPerson || !(entity.getVehicle() instanceof VehicleEntity vehicle)) return;
-//
-//        var cameraPosition = vehicle.getThirdPersonCameraPosition(vehicle.getSeatIndex(entity));
-//        if (cameraPosition != null) {
-//            move((float) -getMaxZoom(cameraPosition.distance()), (float) cameraPosition.y(), (float) cameraPosition.z());
-//        }
-//    }
+    // TODO camera mixin, maybe use CalculateDetachedCameraDistanceEvent instead?
+    @Inject(method = "setup", at = @At("TAIL"))
+    public void superbWarfare$setup(BlockGetter area, Entity entity, boolean thirdPerson, boolean inverseView, float tickDelta, CallbackInfo ci) {
+        if (Minecraft.getInstance().options.getCameraType() == CameraType.THIRD_PERSON_BACK
+                && entity instanceof Player player
+                && player.getMainHandItem().is(ModTags.Items.GUN)
+                && Math.max(ClientEventHandler.pullPos, ClientEventHandler.zoomPos) > 0
+        ) {
+            move(-getMaxZoom((float) (-2.9 * Math.max(ClientEventHandler.pullPos, ClientEventHandler.zoomPos))), 0, (float) (-ClientEventHandler.cameraLocation * Math.max(ClientEventHandler.pullPos, ClientEventHandler.zoomPos)));
+            return;
+        }
+
+        if (!thirdPerson || !(entity.getVehicle() instanceof VehicleEntity vehicle)) return;
+
+        var cameraPosition = vehicle.getThirdPersonCameraPosition(vehicle.getSeatIndex(entity));
+        if (cameraPosition != null) {
+            move(-getMaxZoom((float) cameraPosition.distance()), (float) cameraPosition.y(), (float) cameraPosition.z());
+        }
+    }
 
     @Shadow
     protected abstract void move(float x, float y, float z);
 
-//    @Shadow
-//    protected abstract double getMaxZoom(double desiredCameraDistance);
+    @Shadow
+    protected abstract float getMaxZoom(float maxZoom);
 }

@@ -131,7 +131,8 @@ public class BocekItemRenderer extends GeoItemRenderer<BocekItem> {
             this.currentBuffer.getBuffer(this.renderType);
             stack.popPose();
         }
-        super.renderRecursively(stack, animatable, bone, type, buffer, bufferIn, isReRender, partialTick, packedLightIn, packedOverlayIn, color);
+        // TODO bocek renderer
+//        super.renderRecursively(stack, animatable, bone, type, buffer, bufferIn, isReRender, partialTick, packedLightIn, packedOverlayIn, color);
     }
 
     @Override

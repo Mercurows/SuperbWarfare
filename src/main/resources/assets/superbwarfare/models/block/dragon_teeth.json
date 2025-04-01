@@ -1,9 +1,9 @@
 {
-  "parent": "forge:item/default",
-  "loader": "forge:composite",
+  "parent": "neoforge:item/default",
+  "loader": "neoforge:composite",
   "children": {
     "part1": {
-      "loader": "forge:obj",
+      "loader": "neoforge:obj",
       "model": "superbwarfare:models/block/dragon_teeth.obj",
       "emissive_ambient": true,
       "textures": {

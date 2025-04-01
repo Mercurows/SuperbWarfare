@@ -11,10 +11,10 @@
       "item": "superbwarfare:empty_perk"
     },
     "b": {
-      "tag":"forge:storage_blocks/silver"
+      "tag":"neoforge:storage_blocks/silver"
     },
     "c": {
-      "tag":"forge:ingots/silver"
+      "tag":"neoforge:ingots/silver"
     }
   },
   "result": {

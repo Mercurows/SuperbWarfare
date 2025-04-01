@@ -111,7 +111,8 @@ public class ContainerBlock extends BaseEntityBlock {
                         continue;
                     }
 
-                    if (level.getBlockState(pos.offset(i, j, k)).canOcclude()) {
+                    var state = level.getBlockState(pos.offset(i, j, k));
+                    if (state.canOcclude() && !state.is(Blocks.SNOW)) {
                         flag = false;
                     }
                 }

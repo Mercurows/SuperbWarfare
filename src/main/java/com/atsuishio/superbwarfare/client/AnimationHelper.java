@@ -21,7 +21,9 @@ public class AnimationHelper {
     public static void renderPartOverBone(ModelPart model, GeoBone bone, PoseStack stack, VertexConsumer buffer, int packedLightIn, int packedOverlayIn, float r, float g, float b, float a) {
         setupModelFromBone(model, bone);
         var color = FastColor.ARGB32.color((int) (a * 255), (int) (r * 255), (int) (g * 255), (int) (b * 255));
-        model.render(stack, buffer, packedLightIn, packedOverlayIn, color);
+
+        // TODO model.render ?
+//        model.render(stack, buffer, packedLightIn, packedOverlayIn, color);
     }
 
     public static void setupModelFromBone(ModelPart model, GeoBone bone) {
@@ -38,7 +40,8 @@ public class AnimationHelper {
     public static void renderPartOverBone2(ModelPart model, GeoBone bone, PoseStack stack, VertexConsumer buffer, int packedLightIn, int packedOverlayIn, float r, float g, float b, float a) {
         setupModelFromBone2(model, bone);
         var color = FastColor.ARGB32.color((int) (a * 255), (int) (r * 255), (int) (g * 255), (int) (b * 255));
-        model.render(stack, buffer, packedLightIn, packedOverlayIn, color);
+        // TODO model.render
+//        model.render(stack, buffer, packedLightIn, packedOverlayIn, color);
     }
 
     public static void setupModelFromBone2(ModelPart model, GeoBone bone) {

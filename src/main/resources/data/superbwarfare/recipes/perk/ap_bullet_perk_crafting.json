@@ -11,10 +11,10 @@
       "item": "superbwarfare:empty_perk"
     },
     "b": {
-      "tag":"forge:storage_blocks/tungsten"
+      "tag": "neoforge:storage_blocks/tungsten"
     },
     "c": {
-      "tag":"forge:ingots/tungsten"
+      "tag": "neoforge:ingots/tungsten"
     }
   },
   "result": {

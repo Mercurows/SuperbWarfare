@@ -11,7 +11,7 @@
       "item": "superbwarfare:silver_ingot"
     },
     "b": {
-      "tag":"forge:ingots/silver"
+      "tag":"neoforge:ingots/silver"
     }
   },
   "result": {

@@ -11,7 +11,7 @@
       "item": "superbwarfare:empty_perk"
     },
     "b": {
-      "tag":"forge:storage_blocks/lead"
+      "tag": "neoforge:storage_blocks/lead"
     },
     "c": {
       "item":"minecraft:spider_eye"

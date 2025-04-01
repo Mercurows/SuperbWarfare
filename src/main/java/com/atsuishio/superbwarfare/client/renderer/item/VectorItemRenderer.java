@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.client.renderer.item;
 
 import com.atsuishio.superbwarfare.client.AnimationHelper;
 import com.atsuishio.superbwarfare.client.ItemModelHelper;
-import com.atsuishio.superbwarfare.client.layer.gun.VectorLayer;
 import com.atsuishio.superbwarfare.client.model.item.VectorItemModel;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModTags;
@@ -19,7 +18,6 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import software.bernie.geckolib.cache.object.BakedGeoModel;
@@ -32,29 +30,32 @@ import java.util.Set;
 
 public class VectorItemRenderer extends GeoItemRenderer<VectorItem> {
 
-    public VectorItemRenderer() {
-        super(new VectorItemModel());
-        this.addRenderLayer(new VectorLayer(this));
-    }
-
-    @Override
-    public RenderType getRenderType(VectorItem animatable, ResourceLocation texture, MultiBufferSource bufferSource, float partialTick) {
-        return RenderType.entityTranslucent(getTextureLocation(animatable));
-    }
-
-    private static final float SCALE_RECIPROCAL = 1.0f / 16.0f;
-    protected boolean renderArms = false;
+    private static final float SCALE_RECIPROCAL = 0.0625f;
+    protected boolean renderArms;
     protected MultiBufferSource currentBuffer;
     protected RenderType renderType;
     public ItemDisplayContext transformType;
     protected VectorItem animatable;
-    private final Set<String> hiddenBones = new HashSet<>();
+    private final Set<String> hiddenBones;
+    private final Set<String> suppressedBones;
+
+
+    public VectorItemRenderer() {
+        super(new VectorItemModel());
+        this.renderArms = false;
+        this.hiddenBones = new HashSet<>();
+        this.suppressedBones = new HashSet<>();
+
+    }
+
+    public RenderType getRenderType(VectorItem animatable, ResourceLocation texture, MultiBufferSource bufferSource, float partialTick) {
+        return RenderType.entityTranslucent(getTextureLocation(animatable));
+    }
+
 
     @Override
     public void renderByItem(ItemStack stack, ItemDisplayContext transformType, PoseStack matrixStack, MultiBufferSource bufferIn, int combinedLightIn, int p_239207_6_) {
         this.transformType = transformType;
-        if (this.animatable != null)
-            this.animatable.getTransformType(transformType);
         super.renderByItem(stack, transformType, matrixStack, bufferIn, combinedLightIn, p_239207_6_);
     }
 
@@ -82,7 +83,7 @@ public class VectorItemRenderer extends GeoItemRenderer<VectorItem> {
             bone.setHidden(this.hiddenBones.contains(name));
         }
 
-        Player player = mc.player;
+        var player = mc.player;
         if (player == null) return;
         ItemStack itemStack = player.getMainHandItem();
         if (!itemStack.is(ModTags.Items.GUN)) return;
@@ -151,8 +152,87 @@ public class VectorItemRenderer extends GeoItemRenderer<VectorItem> {
         super.renderRecursively(stack, animatable, bone, type, buffer, bufferIn, isReRender, partialTick, packedLightIn, packedOverlayIn, color);
     }
 
-    @Override
-    public ResourceLocation getTextureLocation(VectorItem instance) {
-        return super.getTextureLocation(instance);
-    }
+
+//    @Override
+//    public void renderRecursively(PoseStack stack, VectorItem animatable, GeoBone bone, RenderType type, MultiBufferSource buffer, VertexConsumer bufferIn, boolean isReRender, float partialTick, int packedLightIn, int packedOverlayIn, int color) {
+//        Minecraft mc = Minecraft.getInstance();
+//        String name = bone.getName();
+//        boolean renderingArms = false;
+//        if (name.equals("Lefthand") || name.equals("Righthand")) {
+//            bone.setHidden(true);
+//            renderingArms = true;
+//        } else {
+//            bone.setHidden(this.hiddenBones.contains(name));
+//        }
+//
+//        Player player = mc.player;
+//        if (player == null) return;
+//        ItemStack itemStack = player.getMainHandItem();
+//        if (!itemStack.is(ModTags.Items.GUN)) return;
+//
+//        if (name.equals("Cross1")) {
+//            bone.setHidden(NBTTool.getTag(itemStack).getBoolean("HoloHidden")
+//                    || !ClientEventHandler.zoom
+//                    || GunsTool.getAttachmentType(itemStack, GunsTool.AttachmentType.SCOPE) != 1);
+//        }
+//
+//        if (name.equals("Cross2")) {
+//            bone.setHidden(NBTTool.getTag(itemStack).getBoolean("HoloHidden")
+//                    || !ClientEventHandler.zoom
+//                    || GunsTool.getAttachmentType(itemStack, GunsTool.AttachmentType.SCOPE) != 2);
+//        }
+//
+//        if (name.equals("tuoxin")) {
+//            bone.setHidden(GunsTool.getAttachmentType(itemStack, GunsTool.AttachmentType.STOCK) == 0);
+//        }
+//
+//        if (name.equals("flare")) {
+//            if (ClientEventHandler.firePosTimer == 0 || Clientdom() - 0.5)));
+////                bone.setScaleY((float) (0.55 + 0.5 * (Math.random() - 0.5)));
+////                bone.setRotZ((float) (0.5 * (Math.random() - 0.5)));
+////            }
+////        }
+////
+////        ItemModelHelper.handleGunAttachments(bone, itemStack, name);EventHandler.firePosTimer > 0.5 || GunsTool.getAttachmentType(itemStack, GunsTool.AttachmentType.BARREL) == 2) {
+//                bone.setHidden(true);
+//            } else {
+//                bone.setHidden(false);
+//                bone.setScaleX((float) (0.55 + 0.5 * (Math.ran
+//
+////        type.
+//        if (this.transformType.firstPerson() && renderingArms) {
+//            AbstractClientPlayer localPlayer = mc.player;
+//
+//            if (localPlayer == null) {
+//                return;
+//            }
+//
+//            PlayerRenderer playerRenderer = (PlayerRenderer) mc.getEntityRenderDispatcher().getRenderer(localPlayer);
+//            PlayerModel<AbstractClientPlayer> model = playerRenderer.getModel();
+//            stack.pushPose();
+//
+//            RenderUtil.translateMatrixToBone(stack, bone);
+//            RenderUtil.translateToPivotPoint(stack, bone);
+//            RenderUtil.rotateMatrixAroundBone(stack, bone);
+//            RenderUtil.scaleMatrixForBone(stack, bone);
+//            RenderUtil.translateAwayFromPivotPoint(stack, bone);
+//            ResourceLocation loc = localPlayer.getSkin().texture();
+//            VertexConsumer armBuilder = this.currentBuffer.getBuffer(RenderType.entitySolid(loc));
+//            VertexConsumer sleeveBuilder = this.currentBuffer.getBuffer(RenderType.entityTranslucent(loc));
+//            if (name.equals("Lefthand")) {
+//                stack.translate(-1.0f * SCALE_RECIPROCAL, 2.0f * SCALE_RECIPROCAL, 0.0f);
+//                AnimationHelper.renderPartOverBone(model.leftArm, bone, stack, armBuilder, packedLightIn, OverlayTexture.NO_OVERLAY, 1);
+//                AnimationHelper.renderPartOverBone(model.leftSleeve, bone, stack, sleeveBuilder, packedLightIn, OverlayTexture.NO_OVERLAY, 1);
+//            } else {
+//                stack.translate(SCALE_RECIPROCAL, 2.0f * SCALE_RECIPROCAL, 0.0f);
+//                AnimationHelper.renderPartOverBone(model.rightArm, bone, stack, armBuilder, packedLightIn, OverlayTexture.NO_OVERLAY, 1);
+//                AnimationHelper.renderPartOverBone(model.rightSleeve, bone, stack, sleeveBuilder, packedLightIn, OverlayTexture.NO_OVERLAY, 1);
+//            }
+//
+//            this.currentBuffer.getBuffer(this.renderType);
+//            stack.popPose();
+//        }
+//        super.renderRecursively(stack, animatable, bone, type, buffer, bufferIn, isReRender, partialTick, packedLightIn, packedOverlayIn, color);
+//    }
+
 }

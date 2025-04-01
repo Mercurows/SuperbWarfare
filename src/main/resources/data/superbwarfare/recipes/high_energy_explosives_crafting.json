@@ -14,7 +14,7 @@
       "item": "minecraft:sugar"
     },
     "c": {
-      "tag": "forge:sand"
+      "tag": "c:sand"
     }
   },
   "result": {
