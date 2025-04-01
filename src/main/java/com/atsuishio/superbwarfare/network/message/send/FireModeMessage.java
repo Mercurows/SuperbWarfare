@@ -35,7 +35,7 @@ public record FireModeMessage(int msgType) implements CustomPacketPayload {
         ItemStack stack = player.getMainHandItem();
         if (stack.getItem() instanceof GunItem gunItem) {
             final var tag = NBTTool.getTag(stack);
-            int fireMode = tag.getInt("FireMode");
+            int fireMode = tag.getCompound("GunData").getInt("FireMode");
 
             int mode = gunItem.getAvailableFireModes();
             mode &= 0b111;
