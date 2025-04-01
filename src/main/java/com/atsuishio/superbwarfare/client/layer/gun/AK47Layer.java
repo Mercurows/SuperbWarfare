@@ -16,8 +16,8 @@ public class AK47Layer extends GeoRenderLayer<AK47Item> {
 
     private static final ResourceLocation LAYER = Mod.loc("textures/item/ak47_e.png");
 
-    public AK47Layer(GeoRenderer<AK47Item> entityRenderer) {
-        super(entityRenderer);
+    public AK47Layer(GeoRenderer<AK47Item> itemGeoRenderer) {
+        super(itemGeoRenderer);
     }
 
     @Override

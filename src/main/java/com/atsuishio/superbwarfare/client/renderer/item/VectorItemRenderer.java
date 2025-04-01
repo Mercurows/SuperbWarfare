@@ -90,14 +90,16 @@ public class VectorItemRenderer extends GeoItemRenderer<VectorItem> {
         ItemStack itemStack = player.getMainHandItem();
         if (!itemStack.is(ModTags.Items.GUN)) return;
 
+        var tag = NBTTool.getTag(itemStack);
+
         if (name.equals("Cross1")) {
-            bone.setHidden(NBTTool.getTag(itemStack).getBoolean("HoloHidden")
+            bone.setHidden(tag.getBoolean("HoloHidden")
                     || !ClientEventHandler.zoom
                     || GunsTool.getAttachmentType(itemStack, GunsTool.AttachmentType.SCOPE) != 1);
         }
 
         if (name.equals("Cross2")) {
-            bone.setHidden(NBTTool.getTag(itemStack).getBoolean("HoloHidden")
+            bone.setHidden(tag.getBoolean("HoloHidden")
                     || !ClientEventHandler.zoom
                     || GunsTool.getAttachmentType(itemStack, GunsTool.AttachmentType.SCOPE) != 2);
         }
@@ -121,34 +123,24 @@ public class VectorItemRenderer extends GeoItemRenderer<VectorItem> {
 
 
         if (this.transformType.firstPerson() && renderingArms) {
-            AbstractClientPlayer localPlayer = mc.player;
-
-            if (localPlayer == null) {
-                return;
-            }
-
-            PlayerRenderer playerRenderer = (PlayerRenderer) mc.getEntityRenderDispatcher().getRenderer(localPlayer);
+            PlayerRenderer playerRenderer = (PlayerRenderer) mc.getEntityRenderDispatcher().getRenderer(player);
             PlayerModel<AbstractClientPlayer> model = playerRenderer.getModel();
             stack.pushPose();
-
             RenderUtil.translateMatrixToBone(stack, bone);
             RenderUtil.translateToPivotPoint(stack, bone);
             RenderUtil.rotateMatrixAroundBone(stack, bone);
             RenderUtil.scaleMatrixForBone(stack, bone);
             RenderUtil.translateAwayFromPivotPoint(stack, bone);
-            ResourceLocation loc = localPlayer.getSkin().texture();
-            VertexConsumer armBuilder = this.currentBuffer.getBuffer(RenderType.entitySolid(loc));
-            VertexConsumer sleeveBuilder = this.currentBuffer.getBuffer(RenderType.entityTranslucent(loc));
+            ResourceLocation loc = player.getSkin().texture();
             if (name.equals("Lefthand")) {
                 stack.translate(-1.0f * SCALE_RECIPROCAL, 2.0f * SCALE_RECIPROCAL, 0.0f);
-                AnimationHelper.renderPartOverBone(model.leftArm, bone, stack, armBuilder, packedLightIn, OverlayTexture.NO_OVERLAY, 1);
-                AnimationHelper.renderPartOverBone(model.leftSleeve, bone, stack, sleeveBuilder, packedLightIn, OverlayTexture.NO_OVERLAY, 1);
+                AnimationHelper.renderPartOverBone(model.leftArm, bone, stack, this.currentBuffer.getBuffer(RenderType.entitySolid(loc)), packedLightIn, OverlayTexture.NO_OVERLAY);
+                AnimationHelper.renderPartOverBone(model.leftSleeve, bone, stack, this.currentBuffer.getBuffer(RenderType.entityTranslucent(loc)), packedLightIn, OverlayTexture.NO_OVERLAY);
             } else {
                 stack.translate(SCALE_RECIPROCAL, 2.0f * SCALE_RECIPROCAL, 0.0f);
-                AnimationHelper.renderPartOverBone(model.rightArm, bone, stack, armBuilder, packedLightIn, OverlayTexture.NO_OVERLAY, 1);
-                AnimationHelper.renderPartOverBone(model.rightSleeve, bone, stack, sleeveBuilder, packedLightIn, OverlayTexture.NO_OVERLAY, 1);
+                AnimationHelper.renderPartOverBoneR(model.leftArm, bone, stack, this.currentBuffer.getBuffer(RenderType.entitySolid(loc)), packedLightIn, OverlayTexture.NO_OVERLAY);
+                AnimationHelper.renderPartOverBoneR(model.leftSleeve, bone, stack, this.currentBuffer.getBuffer(RenderType.entityTranslucent(loc)), packedLightIn, OverlayTexture.NO_OVERLAY);
             }
-
             this.currentBuffer.getBuffer(this.renderType);
             stack.popPose();
         }

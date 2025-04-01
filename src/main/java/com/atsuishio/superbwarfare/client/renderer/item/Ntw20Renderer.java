@@ -18,7 +18,6 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import software.bernie.geckolib.cache.object.BakedGeoModel;
@@ -82,7 +81,7 @@ public class Ntw20Renderer extends GeoItemRenderer<Ntw20Item> {
             bone.setHidden(this.hiddenBones.contains(name));
         }
 
-        Player player = mc.player;
+        var player = mc.player;
         if (player == null) return;
         ItemStack itemStack = player.getMainHandItem();
         if (!itemStack.is(ModTags.Items.GUN)) return;
@@ -133,13 +132,7 @@ public class Ntw20Renderer extends GeoItemRenderer<Ntw20Item> {
         ItemModelHelper.handleGunAttachments(bone, itemStack, name);
 
         if (this.transformType.firstPerson() && renderingArms) {
-            AbstractClientPlayer localPlayer = mc.player;
-
-            if (localPlayer == null) {
-                return;
-            }
-
-            PlayerRenderer playerRenderer = (PlayerRenderer) mc.getEntityRenderDispatcher().getRenderer(localPlayer);
+            PlayerRenderer playerRenderer = (PlayerRenderer) mc.getEntityRenderDispatcher().getRenderer(player);
             PlayerModel<AbstractClientPlayer> model = playerRenderer.getModel();
             stack.pushPose();
             RenderUtil.translateMatrixToBone(stack, bone);
@@ -147,19 +140,16 @@ public class Ntw20Renderer extends GeoItemRenderer<Ntw20Item> {
             RenderUtil.rotateMatrixAroundBone(stack, bone);
             RenderUtil.scaleMatrixForBone(stack, bone);
             RenderUtil.translateAwayFromPivotPoint(stack, bone);
-            ResourceLocation loc = localPlayer.getSkin().texture();
-            VertexConsumer armBuilder = this.currentBuffer.getBuffer(RenderType.entitySolid(loc));
-            VertexConsumer sleeveBuilder = this.currentBuffer.getBuffer(RenderType.entityTranslucent(loc));
+            ResourceLocation loc = player.getSkin().texture();
             if (name.equals("Lefthand")) {
                 stack.translate(-1.0f * SCALE_RECIPROCAL, 2.0f * SCALE_RECIPROCAL, 0.0f);
-                AnimationHelper.renderPartOverBone2(model.leftArm, bone, stack, armBuilder, packedLightIn, OverlayTexture.NO_OVERLAY, 1);
-                AnimationHelper.renderPartOverBone2(model.leftSleeve, bone, stack, sleeveBuilder, packedLightIn, OverlayTexture.NO_OVERLAY, 1);
+                AnimationHelper.renderPartOverBone2(model.leftArm, bone, stack, this.currentBuffer.getBuffer(RenderType.entitySolid(loc)), packedLightIn, OverlayTexture.NO_OVERLAY);
+                AnimationHelper.renderPartOverBone2(model.leftSleeve, bone, stack, this.currentBuffer.getBuffer(RenderType.entityTranslucent(loc)), packedLightIn, OverlayTexture.NO_OVERLAY);
             } else {
                 stack.translate(SCALE_RECIPROCAL, 2.0f * SCALE_RECIPROCAL, 0.0f);
-                AnimationHelper.renderPartOverBone2(model.rightArm, bone, stack, armBuilder, packedLightIn, OverlayTexture.NO_OVERLAY, 1);
-                AnimationHelper.renderPartOverBone2(model.rightSleeve, bone, stack, sleeveBuilder, packedLightIn, OverlayTexture.NO_OVERLAY, 1);
+                AnimationHelper.renderPartOverBone2R(model.leftArm, bone, stack, this.currentBuffer.getBuffer(RenderType.entitySolid(loc)), packedLightIn, OverlayTexture.NO_OVERLAY);
+                AnimationHelper.renderPartOverBone2R(model.leftSleeve, bone, stack, this.currentBuffer.getBuffer(RenderType.entityTranslucent(loc)), packedLightIn, OverlayTexture.NO_OVERLAY);
             }
-
             this.currentBuffer.getBuffer(this.renderType);
             stack.popPose();
         }

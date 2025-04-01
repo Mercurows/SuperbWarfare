@@ -6,7 +6,6 @@ import com.atsuishio.superbwarfare.tools.NBTTool;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.model.geom.ModelPart;
-import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 import software.bernie.geckolib.animation.AnimationProcessor;
@@ -14,15 +13,9 @@ import software.bernie.geckolib.cache.object.GeoBone;
 
 public class AnimationHelper {
 
-    public static void renderPartOverBone(ModelPart model, GeoBone bone, PoseStack stack, VertexConsumer buffer, int packedLightIn, int packedOverlayIn, float alpha) {
-        renderPartOverBone(model, bone, stack, buffer, packedLightIn, packedOverlayIn, 1.0f, 1.0f, 1.0f, alpha);
-    }
-
-    public static void renderPartOverBone(ModelPart model, GeoBone bone, PoseStack stack, VertexConsumer buffer, int packedLightIn, int packedOverlayIn, float r, float g, float b, float a) {
+    public static void renderPartOverBone(ModelPart model, GeoBone bone, PoseStack stack, VertexConsumer buffer, int packedLightIn, int packedOverlayIn) {
         setupModelFromBone(model, bone);
-        var color = FastColor.ARGB32.color((int) (a * 255), (int) (r * 255), (int) (g * 255), (int) (b * 255));
-        // TODO model.render
-        // model.render(stack, buffer, packedLightIn, packedOverlayIn, color);
+        model.render(stack, buffer, packedLightIn, packedOverlayIn);
     }
 
     public static void setupModelFromBone(ModelPart model, GeoBone bone) {
@@ -32,16 +25,21 @@ public class AnimationHelper {
         model.zRot = 0.0f;
     }
 
-    public static void renderPartOverBone2(ModelPart model, GeoBone bone, PoseStack stack, VertexConsumer buffer, int packedLightIn, int packedOverlayIn, float alpha) {
-        renderPartOverBone2(model, bone, stack, buffer, packedLightIn, packedOverlayIn, 1.0f, 1.0f, 1.0f, alpha);
+    public static void renderPartOverBoneR(ModelPart model, GeoBone bone, PoseStack stack, VertexConsumer buffer, int packedLightIn, int packedOverlayIn) {
+        setupModelFromBone(model, bone);
+        model.render(stack, buffer, packedLightIn, packedOverlayIn);
     }
 
-    public static void renderPartOverBone2(ModelPart model, GeoBone bone, PoseStack stack, VertexConsumer buffer, int packedLightIn, int packedOverlayIn, float r, float g, float b, float a) {
-        setupModelFromBone2(model, bone);
-        var color = FastColor.ARGB32.color((int) (a * 255), (int) (r * 255), (int) (g * 255), (int) (b * 255));
+    public static void setupModelFromBoneR(ModelPart model, GeoBone bone) {
+        model.setPos(bone.getPivotX(), bone.getPivotY(), bone.getPivotZ());
+        model.xRot = 0.0f;
+        model.yRot = 0.0f;
+        model.zRot = 0.0f;
+    }
 
-        // TODO model.render
-        // model.render(stack, buffer, packedLightIn, packedOverlayIn, color);
+    public static void renderPartOverBone2(ModelPart model, GeoBone bone, PoseStack stack, VertexConsumer buffer, int packedLightIn, int packedOverlayIn) {
+        setupModelFromBone2(model, bone);
+        model.render(stack, buffer, packedLightIn, packedOverlayIn);
     }
 
     public static void setupModelFromBone2(ModelPart model, GeoBone bone) {
@@ -49,6 +47,18 @@ public class AnimationHelper {
         model.xRot = 0.0f;
         model.yRot = 180 * Mth.DEG_TO_RAD;
         model.zRot = 180 * Mth.DEG_TO_RAD;
+    }
+
+    public static void renderPartOverBone2R(ModelPart model, GeoBone bone, PoseStack stack, VertexConsumer buffer, int packedLightIn, int packedOverlayIn) {
+        setupModelFromBone2R(model, bone);
+        model.render(stack, buffer, packedLightIn, packedOverlayIn);
+    }
+
+    public static void setupModelFromBone2R(ModelPart model, GeoBone bone) {
+        model.setPos(bone.getPivotX(), bone.getPivotY() + 7, bone.getPivotZ());
+        model.xRot = 180 * Mth.DEG_TO_RAD;
+        model.yRot = 180 * Mth.DEG_TO_RAD;
+        model.zRot = 0;
     }
 
     public static void handleShellsAnimation(AnimationProcessor<?> animationProcessor, float x, float y) {
