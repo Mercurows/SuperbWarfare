@@ -1,8 +1,6 @@
 package com.atsuishio.superbwarfare.client.renderer.item;
 
 import com.atsuishio.superbwarfare.client.AnimationHelper;
-import com.atsuishio.superbwarfare.client.layer.gun.Mp443Layer;
-import com.atsuishio.superbwarfare.client.layer.gun.Mp443LightLayer;
 import com.atsuishio.superbwarfare.client.model.item.Mp443ItemModel;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModTags;
@@ -32,8 +30,10 @@ public class Mp443ItemRenderer extends GeoItemRenderer<Mp443Item> {
 
     public Mp443ItemRenderer() {
         super(new Mp443ItemModel());
-        this.addRenderLayer(new Mp443Layer(this));
-        this.addRenderLayer(new Mp443LightLayer(this));
+        // TODO layer
+// this.addRenderLayer(new Mp443Layer(this));
+        // TODO layer
+// this.addRenderLayer(new Mp443LightLayer(this));
     }
 
     @Override

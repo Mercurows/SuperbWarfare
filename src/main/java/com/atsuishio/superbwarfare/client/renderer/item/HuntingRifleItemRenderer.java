@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.client.renderer.item;
 
 import com.atsuishio.superbwarfare.client.AnimationHelper;
-import com.atsuishio.superbwarfare.client.layer.gun.HuntingRifleLayer;
 import com.atsuishio.superbwarfare.client.model.item.HuntingRifleItemModel;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModTags;
@@ -31,7 +30,8 @@ public class HuntingRifleItemRenderer extends GeoItemRenderer<HuntingRifleItem> 
 
     public HuntingRifleItemRenderer() {
         super(new HuntingRifleItemModel());
-        this.addRenderLayer(new HuntingRifleLayer(this));
+        // TODO layer
+// this.addRenderLayer(new HuntingRifleLayer(this));
     }
 
     @Override

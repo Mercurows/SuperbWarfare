@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.client.renderer.item;
 
 import com.atsuishio.superbwarfare.client.AnimationHelper;
 import com.atsuishio.superbwarfare.client.ItemModelHelper;
-import com.atsuishio.superbwarfare.client.layer.gun.SvdLayer;
 import com.atsuishio.superbwarfare.client.model.item.SvdItemModel;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModTags;
@@ -34,7 +33,8 @@ public class SvdItemRenderer extends GeoItemRenderer<SvdItem> {
 
     public SvdItemRenderer() {
         super(new SvdItemModel());
-        this.addRenderLayer(new SvdLayer(this));
+        // TODO layer
+// this.addRenderLayer(new SvdLayer(this));
     }
 
     @Override

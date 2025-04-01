@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.client.renderer.item;
 
 import com.atsuishio.superbwarfare.client.AnimationHelper;
-import com.atsuishio.superbwarfare.client.layer.gun.DevotionLayer;
 import com.atsuishio.superbwarfare.client.model.item.DevotionItemModel;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModTags;
@@ -32,7 +31,8 @@ public class DevotionItemRenderer extends GeoItemRenderer<DevotionItem> {
 
     public DevotionItemRenderer() {
         super(new DevotionItemModel());
-        this.addRenderLayer(new DevotionLayer(this));
+        // TODO layer
+// this.addRenderLayer(new DevotionLayer(this));
     }
 
     @Override

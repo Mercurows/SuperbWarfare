@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.client.renderer.item;
 
 import com.atsuishio.superbwarfare.client.AnimationHelper;
-import com.atsuishio.superbwarfare.client.layer.gun.BocekLayer;
 import com.atsuishio.superbwarfare.client.model.item.BocekItemModel;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModTags;
@@ -18,7 +17,6 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import software.bernie.geckolib.cache.object.BakedGeoModel;
@@ -33,7 +31,8 @@ public class BocekItemRenderer extends GeoItemRenderer<BocekItem> {
 
     public BocekItemRenderer() {
         super(new BocekItemModel());
-        this.addRenderLayer(new BocekLayer(this));
+        // TODO layer
+// this.addRenderLayer(new BocekLayer(this));
     }
 
     @Override
@@ -81,9 +80,8 @@ public class BocekItemRenderer extends GeoItemRenderer<BocekItem> {
             bone.setHidden(this.hiddenBones.contains(name));
         }
 
-        Player player = mc.player;
+        var player = mc.player;
         if (player == null) return;
-
         ItemStack itemStack = player.getMainHandItem();
         if (!itemStack.is(ModTags.Items.GUN)) return;
 
@@ -110,6 +108,7 @@ public class BocekItemRenderer extends GeoItemRenderer<BocekItem> {
             PlayerRenderer playerRenderer = (PlayerRenderer) mc.getEntityRenderDispatcher().getRenderer(localPlayer);
             PlayerModel<AbstractClientPlayer> model = playerRenderer.getModel();
             stack.pushPose();
+
             RenderUtil.translateMatrixToBone(stack, bone);
             RenderUtil.translateToPivotPoint(stack, bone);
             RenderUtil.rotateMatrixAroundBone(stack, bone);
@@ -131,8 +130,7 @@ public class BocekItemRenderer extends GeoItemRenderer<BocekItem> {
             this.currentBuffer.getBuffer(this.renderType);
             stack.popPose();
         }
-        // TODO bocek renderer
-//        super.renderRecursively(stack, animatable, bone, type, buffer, bufferIn, isReRender, partialTick, packedLightIn, packedOverlayIn, color);
+        super.renderRecursively(stack, animatable, bone, type, buffer, bufferIn, isReRender, partialTick, packedLightIn, packedOverlayIn, color);
     }
 
     @Override

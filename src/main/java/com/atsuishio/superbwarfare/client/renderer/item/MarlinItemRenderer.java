@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.client.renderer.item;
 
 import com.atsuishio.superbwarfare.client.AnimationHelper;
-import com.atsuishio.superbwarfare.client.layer.gun.MarlinLayer;
 import com.atsuishio.superbwarfare.client.model.item.MarlinItemModel;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModTags;
@@ -31,7 +30,8 @@ public class MarlinItemRenderer extends GeoItemRenderer<MarlinItem> {
 
     public MarlinItemRenderer() {
         super(new MarlinItemModel());
-        this.addRenderLayer(new MarlinLayer(this));
+        // TODO layer
+// this.addRenderLayer(new MarlinLayer(this));
     }
 
     @Override

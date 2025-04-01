@@ -37,15 +37,17 @@ public class VectorItemRenderer extends GeoItemRenderer<VectorItem> {
     public ItemDisplayContext transformType;
     protected VectorItem animatable;
     private final Set<String> hiddenBones;
-    private final Set<String> suppressedBones;
 
 
     public VectorItemRenderer() {
         super(new VectorItemModel());
+        // TODO layer
+
+//        // TODO layer
+// this.addRenderLayer(new VectorLayer(this));
+        
         this.renderArms = false;
         this.hiddenBones = new HashSet<>();
-        this.suppressedBones = new HashSet<>();
-
     }
 
     public RenderType getRenderType(VectorItem animatable, ResourceLocation texture, MultiBufferSource bufferSource, float partialTick) {
@@ -116,6 +118,7 @@ public class VectorItemRenderer extends GeoItemRenderer<VectorItem> {
         }
 
         ItemModelHelper.handleGunAttachments(bone, itemStack, name);
+
 
         if (this.transformType.firstPerson() && renderingArms) {
             AbstractClientPlayer localPlayer = mc.player;

@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.client.renderer.item;
 
 import com.atsuishio.superbwarfare.client.AnimationHelper;
-import com.atsuishio.superbwarfare.client.layer.gun.SecondaryCataclysmLightLayer;
 import com.atsuishio.superbwarfare.client.model.item.SecondaryCataclysmModel;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModTags;
@@ -31,7 +30,8 @@ public class SecondaryCataclysmRenderer extends GeoItemRenderer<SecondaryCatacly
 
     public SecondaryCataclysmRenderer() {
         super(new SecondaryCataclysmModel());
-        this.addRenderLayer(new SecondaryCataclysmLightLayer(this));
+        // TODO layer
+// this.addRenderLayer(new SecondaryCataclysmLightLayer(this));
     }
 
     @Override

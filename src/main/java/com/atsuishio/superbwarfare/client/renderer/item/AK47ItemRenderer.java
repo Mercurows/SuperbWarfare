@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.client.renderer.item;
 
 import com.atsuishio.superbwarfare.client.AnimationHelper;
 import com.atsuishio.superbwarfare.client.ItemModelHelper;
-import com.atsuishio.superbwarfare.client.layer.gun.AK47Layer;
 import com.atsuishio.superbwarfare.client.model.item.AK47ItemModel;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModTags;
@@ -34,7 +33,8 @@ public class AK47ItemRenderer extends GeoItemRenderer<AK47Item> {
 
     public AK47ItemRenderer() {
         super(new AK47ItemModel());
-        this.addRenderLayer(new AK47Layer(this));
+        // TODO layer
+// this.addRenderLayer(new AK47Layer(this));
     }
 
     @Override

@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.client.renderer.item;
 
 import com.atsuishio.superbwarfare.client.AnimationHelper;
-import com.atsuishio.superbwarfare.client.layer.gun.HomemadeShotgunLayer;
 import com.atsuishio.superbwarfare.client.model.item.HomemadeShotgunItemModel;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModTags;
@@ -31,7 +30,8 @@ public class HomemadeShotgunItemRenderer extends GeoItemRenderer<HomemadeShotgun
 
     public HomemadeShotgunItemRenderer() {
         super(new HomemadeShotgunItemModel());
-        this.addRenderLayer(new HomemadeShotgunLayer(this));
+        // TODO layer
+// this.addRenderLayer(new HomemadeShotgunLayer(this));
     }
 
     @Override

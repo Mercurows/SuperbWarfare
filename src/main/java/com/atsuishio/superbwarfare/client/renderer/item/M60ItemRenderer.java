@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.client.renderer.item;
 
 import com.atsuishio.superbwarfare.client.AnimationHelper;
-import com.atsuishio.superbwarfare.client.layer.gun.M60Layer;
 import com.atsuishio.superbwarfare.client.model.item.M60ItemModel;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModTags;
@@ -31,7 +30,8 @@ public class M60ItemRenderer extends GeoItemRenderer<M60Item> {
 
     public M60ItemRenderer() {
         super(new M60ItemModel());
-        this.addRenderLayer(new M60Layer(this));
+        // TODO layer
+// this.addRenderLayer(new M60Layer(this));
     }
 
     @Override

@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.client.renderer.item;
 
 import com.atsuishio.superbwarfare.client.AnimationHelper;
-import com.atsuishio.superbwarfare.client.layer.gun.K98Layer;
 import com.atsuishio.superbwarfare.client.model.item.K98ItemModel;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModTags;
@@ -31,7 +30,8 @@ public class K98ItemRenderer extends GeoItemRenderer<K98Item> {
 
     public K98ItemRenderer() {
         super(new K98ItemModel());
-        this.addRenderLayer(new K98Layer(this));
+        // TODO layer
+// this.addRenderLayer(new K98Layer(this));
     }
 
     @Override

@@ -1,8 +1,6 @@
 package com.atsuishio.superbwarfare.client.renderer.item;
 
 import com.atsuishio.superbwarfare.client.AnimationHelper;
-import com.atsuishio.superbwarfare.client.layer.gun.Glock18Layer;
-import com.atsuishio.superbwarfare.client.layer.gun.Glock18LightLayer;
 import com.atsuishio.superbwarfare.client.model.item.Glock18ItemModel;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModTags;
@@ -32,8 +30,10 @@ public class Glock18ItemRenderer extends GeoItemRenderer<Glock18Item> {
 
     public Glock18ItemRenderer() {
         super(new Glock18ItemModel());
-        this.addRenderLayer(new Glock18Layer(this));
-        this.addRenderLayer(new Glock18LightLayer(this));
+        // TODO layer
+// this.addRenderLayer(new Glock18Layer(this));
+        // TODO layer
+// this.addRenderLayer(new Glock18LightLayer(this));
     }
 
     @Override

@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.client.renderer.item;
 
 import com.atsuishio.superbwarfare.client.AnimationHelper;
 import com.atsuishio.superbwarfare.client.ItemModelHelper;
-import com.atsuishio.superbwarfare.client.layer.gun.Qbz95Layer;
 import com.atsuishio.superbwarfare.client.model.item.Qbz95ItemModel;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModTags;
@@ -34,7 +33,8 @@ public class Qbz95ItemRenderer extends GeoItemRenderer<Qbz95Item> {
 
     public Qbz95ItemRenderer() {
         super(new Qbz95ItemModel());
-        this.addRenderLayer(new Qbz95Layer(this));
+        // TODO layer
+// this.addRenderLayer(new Qbz95Layer(this));
     }
 
     @Override

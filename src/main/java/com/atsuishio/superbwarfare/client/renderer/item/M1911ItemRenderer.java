@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.client.renderer.item;
 
 import com.atsuishio.superbwarfare.client.AnimationHelper;
-import com.atsuishio.superbwarfare.client.layer.gun.M1911Layer;
 import com.atsuishio.superbwarfare.client.model.item.M1911ItemModel;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModTags;
@@ -31,7 +30,8 @@ public class M1911ItemRenderer extends GeoItemRenderer<M1911Item> {
 
     public M1911ItemRenderer() {
         super(new M1911ItemModel());
-        this.addRenderLayer(new M1911Layer(this));
+        // TODO layer
+// this.addRenderLayer(new M1911Layer(this));
     }
 
     @Override

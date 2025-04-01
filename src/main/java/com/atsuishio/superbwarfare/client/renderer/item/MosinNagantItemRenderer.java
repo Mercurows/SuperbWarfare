@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.client.renderer.item;
 
 import com.atsuishio.superbwarfare.client.AnimationHelper;
-import com.atsuishio.superbwarfare.client.layer.gun.MosinNagantLayer;
 import com.atsuishio.superbwarfare.client.model.item.MosinNagantItemModel;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModTags;
@@ -32,7 +31,8 @@ public class MosinNagantItemRenderer extends GeoItemRenderer<MosinNagantItem> {
 
     public MosinNagantItemRenderer() {
         super(new MosinNagantItemModel());
-        this.addRenderLayer(new MosinNagantLayer(this));
+        // TODO layer
+// this.addRenderLayer(new MosinNagantLayer(this));
     }
 
     @Override

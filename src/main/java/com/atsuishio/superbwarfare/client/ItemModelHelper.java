@@ -8,17 +8,14 @@ import software.bernie.geckolib.cache.object.GeoBone;
 public class ItemModelHelper {
 
     public static void handleGunAttachments(GeoBone bone, ItemStack stack, String name) {
+        var rootTag = NBTTool.getTag(stack);
+        CompoundTag tag = rootTag.getCompound("Attachments");
 
-        // TODO 正确隐藏渲染无关配件
-        return;
-//        var rootTag = NBTTool.getTag(stack);
-//        CompoundTag tag = rootTag.getCompound("Attachments");
-//
-//        splitBoneName(bone, name, "Scope", tag);
-//        splitBoneName(bone, name, "Magazine", tag);
-//        splitBoneName(bone, name, "Barrel", tag);
-//        splitBoneName(bone, name, "Stock", tag);
-//        splitBoneName(bone, name, "Grip", tag);
+        splitBoneName(bone, name, "Scope", tag);
+        splitBoneName(bone, name, "Magazine", tag);
+        splitBoneName(bone, name, "Barrel", tag);
+        splitBoneName(bone, name, "Stock", tag);
+        splitBoneName(bone, name, "Grip", tag);
     }
 
     private static void splitBoneName(GeoBone bone, String boneName, String tagName, CompoundTag tag) {

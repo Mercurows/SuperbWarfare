@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.client.renderer.item;
 
 import com.atsuishio.superbwarfare.client.AnimationHelper;
 import com.atsuishio.superbwarfare.client.ItemModelHelper;
-import com.atsuishio.superbwarfare.client.layer.gun.Ntw20Layer;
 import com.atsuishio.superbwarfare.client.model.item.Ntw20Model;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModTags;
@@ -34,7 +33,8 @@ public class Ntw20Renderer extends GeoItemRenderer<Ntw20Item> {
 
     public Ntw20Renderer() {
         super(new Ntw20Model());
-        this.addRenderLayer(new Ntw20Layer(this));
+        // TODO layer
+// this.addRenderLayer(new Ntw20Layer(this));
     }
 
     @Override

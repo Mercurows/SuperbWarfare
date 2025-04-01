@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.client.renderer.item;
 
 import com.atsuishio.superbwarfare.client.AnimationHelper;
 import com.atsuishio.superbwarfare.client.ItemModelHelper;
-import com.atsuishio.superbwarfare.client.layer.gun.Aa12Layer;
 import com.atsuishio.superbwarfare.client.model.item.Aa12ItemModel;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModTags;
@@ -33,7 +32,8 @@ public class Aa12ItemRenderer extends GeoItemRenderer<Aa12Item> {
 
     public Aa12ItemRenderer() {
         super(new Aa12ItemModel());
-        this.addRenderLayer(new Aa12Layer(this));
+        // TODO layer
+// this.addRenderLayer(new Aa12Layer(this));
     }
 
     @Override

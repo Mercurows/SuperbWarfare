@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.client.renderer.item;
 
 import com.atsuishio.superbwarfare.client.AnimationHelper;
-import com.atsuishio.superbwarfare.client.layer.gun.SksLayer;
 import com.atsuishio.superbwarfare.client.model.item.SksItemModel;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModTags;
@@ -32,7 +31,8 @@ public class SksItemRenderer extends GeoItemRenderer<SksItem> {
 
     public SksItemRenderer() {
         super(new SksItemModel());
-        this.addRenderLayer(new SksLayer(this));
+        // TODO layer
+// this.addRenderLayer(new SksLayer(this));
     }
 
     @Override

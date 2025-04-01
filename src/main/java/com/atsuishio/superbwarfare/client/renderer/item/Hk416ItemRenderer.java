@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.client.renderer.item;
 
 import com.atsuishio.superbwarfare.client.AnimationHelper;
 import com.atsuishio.superbwarfare.client.ItemModelHelper;
-import com.atsuishio.superbwarfare.client.layer.gun.Hk416Layer;
 import com.atsuishio.superbwarfare.client.model.item.Hk416ItemModel;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModTags;
@@ -34,7 +33,8 @@ public class Hk416ItemRenderer extends GeoItemRenderer<Hk416Item> {
 
     public Hk416ItemRenderer() {
         super(new Hk416ItemModel());
-        this.addRenderLayer(new Hk416Layer(this));
+        // TODO layer
+// this.addRenderLayer(new Hk416Layer(this));
     }
 
     @Override
