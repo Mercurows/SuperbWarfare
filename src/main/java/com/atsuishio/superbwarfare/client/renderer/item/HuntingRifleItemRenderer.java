@@ -8,19 +8,14 @@ import com.atsuishio.superbwarfare.item.gun.sniper.HuntingRifleItem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.model.PlayerModel;
-import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.entity.player.PlayerRenderer;
-import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import software.bernie.geckolib.cache.object.BakedGeoModel;
 import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
-import software.bernie.geckolib.util.RenderUtil;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -94,27 +89,8 @@ public class HuntingRifleItemRenderer extends GeoItemRenderer<HuntingRifleItem> 
             }
         }
 
-        if (this.transformType.firstPerson() && renderingArms) {
-            PlayerRenderer playerRenderer = (PlayerRenderer) mc.getEntityRenderDispatcher().getRenderer(player);
-            PlayerModel<AbstractClientPlayer> model = playerRenderer.getModel();
-            stack.pushPose();
-            RenderUtil.translateMatrixToBone(stack, bone);
-            RenderUtil.translateToPivotPoint(stack, bone);
-            RenderUtil.rotateMatrixAroundBone(stack, bone);
-            RenderUtil.scaleMatrixForBone(stack, bone);
-            RenderUtil.translateAwayFromPivotPoint(stack, bone);
-            ResourceLocation loc = player.getSkin().texture();
-            if (name.equals("Lefthand")) {
-                stack.translate(-1.0f * SCALE_RECIPROCAL, 2.0f * SCALE_RECIPROCAL, 0.0f);
-                AnimationHelper.renderPartOverBone(model.leftArm, bone, stack, this.currentBuffer.getBuffer(RenderType.entitySolid(loc)), packedLightIn, OverlayTexture.NO_OVERLAY);
-                AnimationHelper.renderPartOverBone(model.leftSleeve, bone, stack, this.currentBuffer.getBuffer(RenderType.entityTranslucent(loc)), packedLightIn, OverlayTexture.NO_OVERLAY);
-            } else {
-                stack.translate(SCALE_RECIPROCAL, 2.0f * SCALE_RECIPROCAL, 0.0f);
-                AnimationHelper.renderPartOverBoneR(model.leftArm, bone, stack, this.currentBuffer.getBuffer(RenderType.entitySolid(loc)), packedLightIn, OverlayTexture.NO_OVERLAY);
-                AnimationHelper.renderPartOverBoneR(model.leftSleeve, bone, stack, this.currentBuffer.getBuffer(RenderType.entityTranslucent(loc)), packedLightIn, OverlayTexture.NO_OVERLAY);
-            }
-            this.currentBuffer.getBuffer(this.renderType);
-            stack.popPose();
+        if (renderingArms) {
+            AnimationHelper.renderArms(mc, player, this.transformType, stack, name, bone, SCALE_RECIPROCAL, this.currentBuffer, type, packedLightIn, true, true);
         }
         super.renderRecursively(stack, animatable, bone, type, buffer, bufferIn, isReRender, partialTick, packedLightIn, packedOverlayIn, color);
     }

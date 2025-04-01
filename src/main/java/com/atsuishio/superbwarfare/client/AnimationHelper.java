@@ -5,11 +5,22 @@ import com.atsuishio.superbwarfare.tools.GunsTool;
 import com.atsuishio.superbwarfare.tools.NBTTool;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.entity.player.PlayerRenderer;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import software.bernie.geckolib.animation.AnimationProcessor;
 import software.bernie.geckolib.cache.object.GeoBone;
+import software.bernie.geckolib.util.RenderUtil;
 
 public class AnimationHelper {
 
@@ -82,6 +93,54 @@ public class AnimationHelper {
             camera.setRotX(roll * camera.getRotX());
             camera.setRotY(roll * camera.getRotY());
             camera.setRotZ(roll * camera.getRotZ());
+        }
+    }
+
+    public static void renderArms(
+            Minecraft mc,
+            LocalPlayer player,
+            ItemDisplayContext transformType,
+            PoseStack stack,
+            String name,
+            GeoBone bone,
+            float SCALE_RECIPROCAL,
+            MultiBufferSource currentBuffer,
+            RenderType renderType,
+            int packedLightIn,
+            boolean useOldLeftHandRender,
+            boolean useOldRightHandRender
+    ) {
+        if (transformType.firstPerson()) {
+            PlayerRenderer playerRenderer = (PlayerRenderer) mc.getEntityRenderDispatcher().getRenderer(player);
+            PlayerModel<AbstractClientPlayer> model = playerRenderer.getModel();
+            stack.pushPose();
+            RenderUtil.translateMatrixToBone(stack, bone);
+            RenderUtil.translateToPivotPoint(stack, bone);
+            RenderUtil.rotateMatrixAroundBone(stack, bone);
+            RenderUtil.scaleMatrixForBone(stack, bone);
+            RenderUtil.translateAwayFromPivotPoint(stack, bone);
+            ResourceLocation loc = player.getSkin().texture();
+            if (name.equals("Lefthand")) {
+                stack.translate(-1.0f * SCALE_RECIPROCAL, 2.0f * SCALE_RECIPROCAL, 0.0f);
+                if (useOldLeftHandRender) {
+                    AnimationHelper.renderPartOverBone(model.leftArm, bone, stack, currentBuffer.getBuffer(RenderType.entitySolid(loc)), packedLightIn, OverlayTexture.NO_OVERLAY);
+                    AnimationHelper.renderPartOverBone(model.leftSleeve, bone, stack, currentBuffer.getBuffer(RenderType.entityTranslucent(loc)), packedLightIn, OverlayTexture.NO_OVERLAY);
+                } else {
+                    AnimationHelper.renderPartOverBone2(model.leftArm, bone, stack, currentBuffer.getBuffer(RenderType.entitySolid(loc)), packedLightIn, OverlayTexture.NO_OVERLAY);
+                    AnimationHelper.renderPartOverBone2(model.leftSleeve, bone, stack, currentBuffer.getBuffer(RenderType.entityTranslucent(loc)), packedLightIn, OverlayTexture.NO_OVERLAY);
+                }
+            } else {
+                stack.translate(SCALE_RECIPROCAL, 2.0f * SCALE_RECIPROCAL, 0.0f);
+                if (useOldRightHandRender) {
+                    AnimationHelper.renderPartOverBoneR(model.leftArm, bone, stack, currentBuffer.getBuffer(RenderType.entitySolid(loc)), packedLightIn, OverlayTexture.NO_OVERLAY);
+                    AnimationHelper.renderPartOverBoneR(model.leftSleeve, bone, stack, currentBuffer.getBuffer(RenderType.entityTranslucent(loc)), packedLightIn, OverlayTexture.NO_OVERLAY);
+                } else {
+                    AnimationHelper.renderPartOverBone2R(model.leftArm, bone, stack, currentBuffer.getBuffer(RenderType.entitySolid(loc)), packedLightIn, OverlayTexture.NO_OVERLAY);
+                    AnimationHelper.renderPartOverBone2R(model.leftSleeve, bone, stack, currentBuffer.getBuffer(RenderType.entityTranslucent(loc)), packedLightIn, OverlayTexture.NO_OVERLAY);
+                }
+            }
+            currentBuffer.getBuffer(renderType);
+            stack.popPose();
         }
     }
 }
