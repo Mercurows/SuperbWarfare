@@ -95,8 +95,8 @@ public class MinigunItem extends GunItem implements GeoItem {
 
     @Override
     @ParametersAreNonnullByDefault
-    public void inventoryTick(ItemStack itemstack, Level world, Entity entity, int slot, boolean selected) {
-        super.inventoryTick(itemstack, world, entity, slot, selected);
+    public void inventoryTick(ItemStack stack, Level world, Entity entity, int slot, boolean selected) {
+        super.inventoryTick(stack, world, entity, slot, selected);
 
         float yRot = entity.getYRot();
         if (yRot < 0) {
@@ -105,11 +105,9 @@ public class MinigunItem extends GunItem implements GeoItem {
         yRot = yRot + 90 % 360;
 
         var leftPos = new Vector3d(1.2, -0.3, 0.3);
-
         if (entity.isSprinting()) {
             leftPos = new Vector3d(1., -0.4, -0.4);
         }
-
 
         leftPos.rotateZ(-entity.getXRot() * Mth.DEG_TO_RAD);
         leftPos.rotateY(-yRot * Mth.DEG_TO_RAD);
@@ -123,7 +121,8 @@ public class MinigunItem extends GunItem implements GeoItem {
             cooldown = -0.1;
         }
 
-        if (entity instanceof ServerPlayer serverPlayer && entity.level() instanceof ServerLevel serverLevel && NBTTool.getTag(itemstack).getDouble("heat") > 4 && entity.isInWaterOrRain()) {
+        var tag = NBTTool.getTag(stack);
+        if (entity instanceof ServerPlayer serverPlayer && entity.level() instanceof ServerLevel serverLevel && tag.getDouble("heat") > 4 && entity.isInWaterOrRain()) {
             if (entity.isInWater()) {
                 ParticleTool.sendParticle(serverLevel, ParticleTypes.BUBBLE_COLUMN_UP,
                         entity.getX() + leftPos.x,
@@ -138,11 +137,12 @@ public class MinigunItem extends GunItem implements GeoItem {
                     1, 0.1, 0.1, 0.1, 0.002, true, serverPlayer);
         }
 
-        NBTTool.getTag(itemstack).putDouble("heat", Mth.clamp(NBTTool.getTag(itemstack).getDouble("heat") - 0.05 - cooldown, 0, 55));
-
-        if (NBTTool.getTag(itemstack).getDouble("overheat") > 0) {
-            NBTTool.getTag(itemstack).putDouble("overheat", (NBTTool.getTag(itemstack).getDouble("overheat") - 1));
+        tag.putDouble("heat", Mth.clamp(tag.getDouble("heat") - 0.05 - cooldown, 0, 55));
+        if (tag.getDouble("overheat") > 0) {
+            tag.putDouble("overheat", (tag.getDouble("overheat") - 1));
         }
+
+        NBTTool.saveTag(stack, tag);
     }
 
     public static ItemStack getGunInstance() {
