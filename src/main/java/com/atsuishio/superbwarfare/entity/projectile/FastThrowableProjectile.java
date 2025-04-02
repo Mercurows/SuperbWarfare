@@ -48,9 +48,6 @@ public abstract class FastThrowableProjectile extends ThrowableItemProjectile im
         // 重新应用重力
         this.applyGravity();
 
-        //
-        System.out.println(this.getDeltaMovement());
-
         // 同步动量
         this.syncMotion();
     }
