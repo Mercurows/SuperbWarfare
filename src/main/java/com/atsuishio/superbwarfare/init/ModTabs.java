@@ -2,6 +2,24 @@ package com.atsuishio.superbwarfare.init;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.item.*;
+import com.atsuishio.superbwarfare.item.gun.handgun.*;
+import com.atsuishio.superbwarfare.item.gun.heavy.Ntw20Item;
+import com.atsuishio.superbwarfare.item.gun.launcher.JavelinItem;
+import com.atsuishio.superbwarfare.item.gun.launcher.M79Item;
+import com.atsuishio.superbwarfare.item.gun.launcher.RpgItem;
+import com.atsuishio.superbwarfare.item.gun.launcher.SecondaryCataclysm;
+import com.atsuishio.superbwarfare.item.gun.machinegun.DevotionItem;
+import com.atsuishio.superbwarfare.item.gun.machinegun.M60Item;
+import com.atsuishio.superbwarfare.item.gun.machinegun.MinigunItem;
+import com.atsuishio.superbwarfare.item.gun.machinegun.RpkItem;
+import com.atsuishio.superbwarfare.item.gun.rifle.*;
+import com.atsuishio.superbwarfare.item.gun.shotgun.Aa12Item;
+import com.atsuishio.superbwarfare.item.gun.shotgun.HomemadeShotgunItem;
+import com.atsuishio.superbwarfare.item.gun.shotgun.M870Item;
+import com.atsuishio.superbwarfare.item.gun.smg.VectorItem;
+import com.atsuishio.superbwarfare.item.gun.sniper.*;
+import com.atsuishio.superbwarfare.item.gun.special.BocekItem;
+import com.atsuishio.superbwarfare.item.gun.special.TaserItem;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -30,7 +48,43 @@ public class ModTabs {
             () -> CreativeModeTab.builder()
                     .title(Component.translatable("item_group.superbwarfare.guns"))
                     .icon(() -> new ItemStack(ModItems.TASER.get()))
-                    .displayItems((param, output) -> ModItems.GUNS.getEntries().forEach(registryObject -> output.accept(registryObject.get())))
+                    .displayItems((param, output) -> {
+                        output.accept(TaserItem.getGunInstance());
+                        output.accept(Glock17Item.getGunInstance());
+                        output.accept(Glock18Item.getGunInstance());
+                        output.accept(M1911Item.getGunInstance());
+                        output.accept(Mp443Item.getGunInstance());
+                        output.accept(HomemadeShotgunItem.getGunInstance());
+                        output.accept(Trachelium.getGunInstance());
+                        output.accept(VectorItem.getGunInstance());
+                        output.accept(SksItem.getGunInstance());
+                        output.accept(AK47Item.getGunInstance());
+                        output.accept(AK12Item.getGunInstance());
+                        output.accept(M4Item.getGunInstance());
+                        output.accept(Hk416Item.getGunInstance());
+                        output.accept(Qbz95Item.getGunInstance());
+                        output.accept(InsidiousItem.getGunInstance());
+                        output.accept(Mk14Item.getGunInstance());
+                        output.accept(MarlinItem.getGunInstance());
+                        output.accept(K98Item.getGunInstance());
+                        output.accept(MosinNagantItem.getGunInstance());
+                        output.accept(SvdItem.getGunInstance());
+                        output.accept(HuntingRifleItem.getGunInstance());
+                        output.accept(M98bItem.getGunInstance());
+                        output.accept(SentinelItem.getGunInstance());
+                        output.accept(Ntw20Item.getGunInstance());
+                        output.accept(M870Item.getGunInstance());
+                        output.accept(Aa12Item.getGunInstance());
+                        output.accept(DevotionItem.getGunInstance());
+                        output.accept(RpkItem.getGunInstance());
+                        output.accept(M60Item.getGunInstance());
+                        output.accept(MinigunItem.getGunInstance());
+                        output.accept(BocekItem.getGunInstance());
+                        output.accept(M79Item.getGunInstance());
+                        output.accept(SecondaryCataclysm.getGunInstance());
+                        output.accept(RpgItem.getGunInstance());
+                        output.accept(JavelinItem.getGunInstance());
+                    })
                     .build());
 
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> PERK_TAB = TABS.register("perk",
