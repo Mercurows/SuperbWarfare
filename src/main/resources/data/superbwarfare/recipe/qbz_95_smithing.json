@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": {
+    "item": "superbwarfare:qbz_95_blueprint"
+  },
+  "base": {
+    "item": "superbwarfare:rare_material_pack"
+  },
+  "addition": {
+    "tag": "superbwarfare:ingots/steel"
+  },
+  "result": {
+    "id": "superbwarfare:qbz_95"
+  }
+}

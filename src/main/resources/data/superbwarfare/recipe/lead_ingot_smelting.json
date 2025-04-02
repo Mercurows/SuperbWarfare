@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:smelting",
+  "category": "misc",
+  "experience": 0.7,
+  "cookingtime": 200,
+  "ingredient": {
+    "item": "superbwarfare:galena"
+  },
+  "result": {
+    "id": "superbwarfare:lead_ingot"
+  }
+}

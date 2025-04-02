@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "tag": "c:ingots/tungsten"
+    },
+    {
+      "item": "superbwarfare:hammer"
+    }
+  ],
+  "result": {
+    "id": "superbwarfare:tungsten_powder",
+    "count": 1
+  }
+}

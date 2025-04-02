@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:blasting",
+  "category": "misc",
+  "experience": 0.7,
+  "cookingtime": 100,
+  "ingredient": {
+    "item": "superbwarfare:iron_powder"
+  },
+  "result": {
+    "id": "minecraft:iron_ingot"
+  }
+}

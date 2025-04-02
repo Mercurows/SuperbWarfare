@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:blasting",
+  "cookingtime": 100,
+  "experience": 0.3,
+  "ingredient": {
+    "tag": "c:dusts/lead"
+  },
+  "result": {
+    "id": "superbwarfare:lead_ingot"
+  },
+  "conditions": [
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:tag_empty",
+        "tag": "c:dusts/lead"
+      }
+    }
+  ]
+}

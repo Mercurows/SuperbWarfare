@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    " b ",
+    "cdc",
+    " e "
+  ],
+  "key": {
+    "b": {
+      "tag": "c:plates/copper"
+    },
+    "c": {
+      "tag": "c:glass_panes"
+    },
+    "d": {
+      "item": "minecraft:redstone"
+    },
+    "e": {
+      "item": "minecraft:iron_ingot"
+    }
+  },
+  "result": {
+    "id": "superbwarfare:battery",
+    "count": 1
+  }
+}

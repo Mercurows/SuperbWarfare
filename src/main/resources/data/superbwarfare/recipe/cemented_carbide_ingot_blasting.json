@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:blasting",
+  "category": "misc",
+  "experience": 8,
+  "cookingtime": 800,
+  "ingredient": {
+    "item": "superbwarfare:raw_cemented_carbide_powder"
+  },
+  "result": {
+    "id": "superbwarfare:cemented_carbide_ingot"
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " a ",
+    "bcb",
+    " d "
+  ],
+  "key": {
+    "a": {
+      "tag": "c:ingots/tungsten"
+    },
+    "b": {
+      "tag": "c:plates/copper"
+    },
+    "c": {
+      "item": "minecraft:gunpowder"
+    },
+    "d": {
+      "item": "superbwarfare:primer"
+    }
+  },
+  "result": {
+    "id": "superbwarfare:sniper_ammo",
+    "count": 16
+  }
+}

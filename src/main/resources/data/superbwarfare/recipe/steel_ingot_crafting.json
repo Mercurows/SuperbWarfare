@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "superbwarfare:steel_block"
+    }
+  ],
+  "result": {
+    "id": "superbwarfare:steel_ingot",
+    "count": 9
+  }
+}
