@@ -47,12 +47,6 @@ public class SenpaiEntity extends Monster implements GeoEntity {
         return 1.75F;
     }
 
-    // TODO AEP
-//    @Override
-//    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-//        return NetworkHooks.getEntitySpawningPacket(this);
-//    }
-
     @Override
     protected void registerGoals() {
         super.registerGoals();

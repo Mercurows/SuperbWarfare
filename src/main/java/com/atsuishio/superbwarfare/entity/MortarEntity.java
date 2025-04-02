@@ -78,12 +78,6 @@ public class MortarEntity extends VehicleEntity implements GeoEntity {
         return 0.2F;
     }
 
-    // TODO AEP
-//    @Override
-//    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-//        return NetworkHooks.getEntitySpawningPacket(this);
-//    }
-
     @Override
     public boolean sendFireStarParticleOnHurt() {
         return false;
