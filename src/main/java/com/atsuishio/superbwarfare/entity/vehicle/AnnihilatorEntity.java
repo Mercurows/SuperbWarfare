@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.entity.vehicle;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.component.ModDataComponents;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.entity.projectile.C4Entity;
@@ -147,10 +148,14 @@ public class AnnihilatorEntity extends EnergyVehicleEntity implements GeoEntity,
     }
 
     public void setTarget(ItemStack stack) {
-        var tag = NBTTool.getTag(stack);
-        int targetX = tag.getInt("TargetX");
-        int targetY = tag.getInt("TargetY");
-        int targetZ = tag.getInt("TargetZ");
+        var parameters = stack.get(ModDataComponents.FIRING_PARAMETERS);
+        if (parameters == null) return;
+
+        var pos = parameters.pos();
+        int targetX = pos.getX();
+        int targetY = pos.getY();
+        int targetZ = pos.getZ();
+
         this.look(new Vec3(targetX, targetY, targetZ));
     }
 

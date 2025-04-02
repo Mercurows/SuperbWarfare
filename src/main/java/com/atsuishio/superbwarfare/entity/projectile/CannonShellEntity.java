@@ -358,7 +358,7 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
 
     @Override
     protected double getDefaultGravity() {
-        return 0.05F;
+        return 0.2F;
     }
 
     @Override

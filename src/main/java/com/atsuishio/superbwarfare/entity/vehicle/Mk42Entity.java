@@ -1,6 +1,8 @@
 package com.atsuishio.superbwarfare.entity.vehicle;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.client.gui.RangeHelper;
+import com.atsuishio.superbwarfare.component.ModDataComponents;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.entity.vehicle.base.CannonEntity;
@@ -15,16 +17,16 @@ import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.common.ammo.CannonShellItem;
 import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage;
-import com.atsuishio.superbwarfare.tools.*;
+import com.atsuishio.superbwarfare.tools.CustomExplosion;
+import com.atsuishio.superbwarfare.tools.InventoryTool;
+import com.atsuishio.superbwarfare.tools.ParticleTool;
+import com.atsuishio.superbwarfare.tools.SoundTool;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerEntity;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
@@ -144,35 +146,27 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
     }
 
     public void setTarget(ItemStack stack) {
-        var tag = NBTTool.getTag(stack);
-        int targetX = tag.getInt("TargetX");
-        int targetY = tag.getInt("TargetY");
-        int targetZ = tag.getInt("TargetZ");
+        var parameters = stack.get(ModDataComponents.FIRING_PARAMETERS);
+        if (parameters == null) return;
+
+        var pos = parameters.pos();
+        int targetX = pos.getX();
+        int targetY = pos.getY();
+        int targetZ = pos.getZ();
+
+        if (!RangeHelper.canReach(15, 0.2F, this.getEyePosition(), new Vec3(targetX, targetY, targetZ), -14.9, 85, parameters.isDepressed()))
+            return;
+
         this.look(new Vec3(targetX, targetY, targetZ));
+        entityData.set(PITCH, (float) -RangeHelper.calculateAngle(15, 0.2F, this.getEyePosition(), new Vec3(targetX, targetY, targetZ), parameters.isDepressed()));
     }
 
     private void look(Vec3 pTarget) {
         Vec3 vec3 = this.getEyePosition();
         double d0 = pTarget.x - vec3.x;
-        double d1 = pTarget.y - vec3.y;
         double d2 = pTarget.z - vec3.z;
-        double d3 = Math.sqrt(d0 * d0 + d2 * d2);
-        double distance = pTarget.distanceTo(vec3);
         entityData.set(YAW, Mth.wrapDegrees((float) (Mth.atan2(d2, d0) * 57.2957763671875) - 90.0F));
-        entityData.set(PITCH, Mth.wrapDegrees((float) (-(Mth.atan2(d1, d3) * 57.2957763671875))) - (float) (distance * 0.008f));
     }
-
-    // TODO addEntityPacket
-    @Override
-    public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket(@NotNull ServerEntity entity) {
-        return super.getAddEntityPacket(entity);
-    }
-
-//    @Override
-//    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-//        return NetworkHooks.getEntitySpawningPacket(this);
-//    }
-
 
     @Override
     public void positionRider(@NotNull Entity passenger, @NotNull MoveFunction callback) {

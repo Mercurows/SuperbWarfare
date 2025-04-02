@@ -2,13 +2,13 @@ package com.atsuishio.superbwarfare.entity;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.gui.RangeHelper;
+import com.atsuishio.superbwarfare.component.ModDataComponents;
 import com.atsuishio.superbwarfare.entity.projectile.MortarShellEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.common.ammo.MortarShell;
-import com.atsuishio.superbwarfare.tools.NBTTool;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.particles.ParticleTypes;
@@ -168,24 +168,29 @@ public class MortarEntity extends VehicleEntity implements GeoEntity {
     }
 
     public boolean setTarget(ItemStack stack) {
-        var tag = NBTTool.getTag(stack);
-        double targetX = tag.getDouble("TargetX");
-        double targetY = tag.getDouble("TargetY");
-        double targetZ = tag.getDouble("TargetZ");
+        var parameters = stack.get(ModDataComponents.FIRING_PARAMETERS);
+        if (parameters == null) return false;
+
+        var pos = parameters.pos();
+        double targetX = pos.getX();
+        double targetY = pos.getY();
+        double targetZ = pos.getZ();
+        var isDepressed = parameters.isDepressed();
+
+        if (!RangeHelper.canReach(11.4, 0.146, this.getEyePosition(), new Vec3(targetX, targetY, targetZ), 20, 89, isDepressed)) {
+            return false;
+        }
 
         this.look(new Vec3(targetX, targetY, targetZ));
 
-        double[] angles = new double[2];
-        boolean flag = RangeHelper.canReachTarget(11.4, 0.146, 0.99,
-                new Vec3(this.getX(), this.getEyeY(), this.getZ()),
+        entityData.set(PITCH, (float) -RangeHelper.calculateAngle(
+                11.4, 0.146,
+                this.getEyePosition(),
                 new Vec3(targetX, targetY, targetZ),
-                angles);
+                parameters.isDepressed()
+        ));
 
-        if (flag) {
-            entityData.set(PITCH, (float) -angles[1]);
-        }
-
-        return flag;
+        return true;
     }
 
     private void look(Vec3 pTarget) {

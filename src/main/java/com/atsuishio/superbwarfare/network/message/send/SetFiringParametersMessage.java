@@ -1,10 +1,12 @@
 package com.atsuishio.superbwarfare.network.message.send;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.tools.NBTTool;
+import com.atsuishio.superbwarfare.component.ModDataComponents;
+import com.atsuishio.superbwarfare.item.FiringParameters;
 import com.atsuishio.superbwarfare.tools.TraceTool;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -17,6 +19,8 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Objects;
 
 public record SetFiringParametersMessage(int msgType) implements CustomPacketPayload {
     public static final Type<SetFiringParametersMessage> TYPE = new Type<>(Mod.loc("set_firing_parameters"));
@@ -41,25 +45,23 @@ public record SetFiringParametersMessage(int msgType) implements CustomPacketPay
             lookAtEntity = true;
         }
 
-        var tag = NBTTool.getTag(stack);
+        var parameters = stack.get(ModDataComponents.FIRING_PARAMETERS);
+        var isDepressed = parameters != null && parameters.isDepressed();
+
         if (lookAtEntity) {
-            tag.putDouble("TargetX", lookingEntity.getX());
-            tag.putDouble("TargetY", lookingEntity.getY());
-            tag.putDouble("TargetZ", lookingEntity.getZ());
+            stack.set(ModDataComponents.FIRING_PARAMETERS, new FiringParameters.Parameters(lookingEntity.blockPosition(), isDepressed));
         } else {
-            tag.putDouble("TargetX", hitPos.x());
-            tag.putDouble("TargetY", hitPos.y());
-            tag.putDouble("TargetZ", hitPos.z());
+            stack.set(ModDataComponents.FIRING_PARAMETERS, new FiringParameters.Parameters(new BlockPos((int) hitPos.x, (int) hitPos.y, (int) hitPos.z), isDepressed));
         }
-        NBTTool.saveTag(stack, tag);
+
+        var pos = Objects.requireNonNull(stack.get(ModDataComponents.FIRING_PARAMETERS)).pos();
 
         player.displayClientMessage(Component.translatable("tips.superbwarfare.mortar.target_pos")
                 .withStyle(ChatFormatting.GRAY)
-                .append(Component.literal("[" + tag.getInt("TargetX")
-                        + "," + tag.getInt("TargetY")
-                        + "," + tag.getInt("TargetZ")
+                .append(Component.literal("[" + pos.getX()
+                        + "," + pos.getY()
+                        + "," + pos.getZ()
                         + "]")), true);
-
     }
 
     @Override

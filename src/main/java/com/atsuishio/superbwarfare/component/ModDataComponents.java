@@ -1,10 +1,12 @@
 package com.atsuishio.superbwarfare.component;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.item.FiringParameters;
 import com.atsuishio.superbwarfare.item.common.ammo.box.AmmoBoxInfo;
 import com.atsuishio.superbwarfare.tools.AmmoType;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
@@ -19,9 +21,14 @@ public class ModDataComponents {
     public static final DeferredRegister<DataComponentType<?>> DATA_COMPONENT_TYPES =
             DeferredRegister.createDataComponents(Registries.DATA_COMPONENT_TYPE, Mod.MODID);
 
-    public static final DeferredHolder<DataComponentType<?>, DataComponentType<BlockPos>> BLOCK_POS = register(
-            "coordinates",
-            builder -> builder.persistent(BlockPos.CODEC)
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<FiringParameters.Parameters>> FIRING_PARAMETERS = register(
+            "firing_parameters",
+            builder -> builder.persistent(RecordCodecBuilder.create(instance ->
+                    instance.group(
+                            BlockPos.CODEC.fieldOf("pos").forGetter(FiringParameters.Parameters::pos),
+                            Codec.BOOL.fieldOf("is_depressed").forGetter(FiringParameters.Parameters::isDepressed)
+                    ).apply(instance, FiringParameters.Parameters::new)
+            ))
     );
 
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> ENERGY = register(

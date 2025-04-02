@@ -500,6 +500,8 @@
   "tips.superbwarfare.mortar.yaw": "水平朝向：",
   "tips.superbwarfare.mortar.pitch": "俯仰角度：",
   "tips.superbwarfare.mortar.target_pos": "目标坐标：",
+  "tips.superbwarfare.mortar.target_pos.depressed_trajectory": "低伸弹道",
+  "tips.superbwarfare.mortar.target_pos.lofted_trajectory": "传统弹道",
   "tips.superbwarfare.mortar.warn": "迫击炮无法瞄准该位置",
 
   "container.superbwarfare.reforging_table": "枪械重铸台",

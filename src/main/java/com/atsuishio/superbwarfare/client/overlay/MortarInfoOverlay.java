@@ -33,7 +33,7 @@ public class MortarInfoOverlay {
                             .append(Component.literal(FormatTool.format1D(mortar.getYRot(), "°"))),
                     w / 2 - 90, h / 2 - 16, -1, false);
             event.getGuiGraphics().drawString(Minecraft.getInstance().font, Component.translatable("tips.superbwarfare.mortar.range")
-                            .append(Component.literal(FormatTool.format1D((int) RangeHelper.getRange(-mortar.getXRot()), "m"))),
+                            .append(Component.literal(FormatTool.format1D((int) RangeHelper.getRange(-mortar.getXRot(), 11.4, 0.146), "m"))),
                     w / 2 - 90, h / 2 - 6, -1, false);
         }
     }

@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.component.ModDataComponents;
 import com.atsuishio.superbwarfare.init.ModBlocks;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModMenuTypes;
+import com.atsuishio.superbwarfare.item.FiringParameters;
 import com.atsuishio.superbwarfare.network.dataslot.ContainerEnergyData;
 import com.atsuishio.superbwarfare.network.dataslot.SimpleEnergyData;
 import net.minecraft.core.BlockPos;
@@ -80,7 +81,10 @@ public class FuMO25Menu extends EnergyMenu {
             ItemStack stack = this.container.getItem(0);
             if (stack.isEmpty()) return;
 
-            stack.set(ModDataComponents.BLOCK_POS, new BlockPos(this.posX, this.posY, this.posZ));
+            var parameters = stack.get(ModDataComponents.FIRING_PARAMETERS);
+            var isDepressed = parameters != null && parameters.isDepressed();
+
+            stack.set(ModDataComponents.FIRING_PARAMETERS, new FiringParameters.Parameters(new BlockPos(this.posX, this.posY, this.posZ), isDepressed));
 
             this.resetPos();
             this.container.setChanged();
