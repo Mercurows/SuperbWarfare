@@ -4,7 +4,6 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.capability.ModCapabilities;
 import com.atsuishio.superbwarfare.client.renderer.item.Qbz95ItemRenderer;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
-import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
@@ -157,7 +156,7 @@ public class Qbz95Item extends GunItem implements GeoItem {
         double customZoom = switch (scopeType) {
             case 0, 1 -> 0;
             case 2 -> 2.15;
-            default -> GunsTool.getGunDoubleTag(rootTag, "CustomZoom", 0);
+            default -> GunsTool.getGunDoubleTag(rootTag, "CustomZoom");
         };
 
         rootTag.putBoolean("CanAdjustZoomFov", scopeType == 3);
@@ -169,12 +168,6 @@ public class Qbz95Item extends GunItem implements GeoItem {
     @Override
     public Set<SoundEvent> getReloadSound() {
         return Set.of(ModSounds.QBZ_95_RELOAD_EMPTY.get(), ModSounds.QBZ_95_RELOAD_NORMAL.get());
-    }
-
-    public static ItemStack getGunInstance() {
-        ItemStack stack = new ItemStack(ModItems.QBZ_95.get());
-        GunsTool.initCreativeGun(stack, ModItems.QBZ_95.getId().getPath());
-        return stack;
     }
 
     @Override

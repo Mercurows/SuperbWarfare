@@ -10,9 +10,9 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -21,6 +21,7 @@ import javax.annotation.Nullable;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @EventBusSubscriber(modid = Mod.MODID)
 public class GunsTool {
@@ -53,26 +54,26 @@ public class GunsTool {
         }
     }
 
-    public static void initGun(Level level, final CompoundTag tag, String location) {
-        if (level.getServer() == null) return;
-        gunsData.get(location).forEach((k, v) -> {
+    public static void initGun(final CompoundTag tag, String location) {
+        if (gunsData != null && gunsData.get(location) != null) {
             CompoundTag data = tag.getCompound("GunData");
-            data.putDouble(k, v);
+
+            gunsData.get(location).forEach(data::putDouble);
+            data.putBoolean("Init", true);
             tag.put("GunData", data);
-        });
+        }
     }
 
-    public static void initCreativeGun(ItemStack stack, String location) {
-        if (gunsData != null && gunsData.get(location) != null) {
-            final var tag = NBTTool.getTag(stack);
-            gunsData.get(location).forEach((k, v) -> {
-                CompoundTag data = tag.getCompound("GunData");
-                data.putDouble(k, v);
-                tag.put("GunData", data);
-            });
+    public static void initCreativeGun(final CompoundTag tag, String location) {
+        var fillAmmo = !tag.getCompound("GunData").getBoolean("Init");
+
+        initGun(tag, location);
+
+        if (fillAmmo) {
             var data = tag.getCompound("GunData");
-            data.putInt("Ammo", data.getInt("Magazine") + data.getInt("CustomMagazine"));
-            NBTTool.saveTag(stack, tag);
+            data.putInt("Ammo", GunsTool.getGunIntTag(tag, "Magazine")
+                    + GunsTool.getGunIntTag(tag, "CustomMagazine")
+            );
         }
     }
 
@@ -81,6 +82,17 @@ public class GunsTool {
         var data = tag.getCompound("GunData");
         data.putUUID("UUID", uuid);
         tag.put("GunData", data);
+    }
+
+    public static double getGunDefaultData(final CompoundTag tag, String name) {
+        var id = tag.getString("id");
+
+        if (!tag.getBoolean("init")) {
+            return GunsTool.gunsData
+                    .getOrDefault(id, new HashMap<>())
+                    .getOrDefault(name, 0.0);
+        }
+        return getGunDoubleTag(tag, name);
     }
 
     @SubscribeEvent
@@ -93,6 +105,19 @@ public class GunsTool {
     @SubscribeEvent
     public static void serverStarted(ServerStartedEvent event) {
         initJsonData(event.getServer().getResourceManager());
+    }
+
+    @SubscribeEvent
+    public static void datapackSync(OnDatapackSyncEvent event) {
+        AtomicInteger count = new AtomicInteger();
+        event.getRelevantPlayers().forEach(player -> {
+            if (count.get() == 0 && player.getServer() != null) {
+                initJsonData(player.getServer().getResourceManager());
+            }
+            count.getAndIncrement();
+
+            PacketDistributor.sendToPlayer(player, new GunsDataMessage(GunsTool.gunsData));
+        });
     }
 
     public static void reload(Player player, ItemStack stack, final CompoundTag tag, AmmoType type) {
@@ -202,7 +227,9 @@ public class GunsTool {
     }
 
     public static int getGunIntTag(final CompoundTag tag, String name) {
-        return getGunIntTag(tag, name, 0);
+        var data = tag.getCompound("GunData");
+        if (!data.contains(name)) return (int) getGunDefaultData(tag, name);
+        return data.getInt(name);
     }
 
     public static int getGunIntTag(final CompoundTag tag, String name, int defaultValue) {
@@ -218,7 +245,9 @@ public class GunsTool {
     }
 
     public static double getGunDoubleTag(final CompoundTag tag, String name) {
-        return getGunDoubleTag(tag, name, 0);
+        var data = tag.getCompound("GunData");
+        if (!data.contains(name) && !tag.getBoolean("init")) return getGunDefaultData(tag, name);
+        return data.getDouble(name);
     }
 
     public static double getGunDoubleTag(final CompoundTag tag, String name, double defaultValue) {
@@ -234,12 +263,8 @@ public class GunsTool {
     }
 
     public static boolean getGunBooleanTag(final CompoundTag tag, String name) {
-        return getGunBooleanTag(tag, name, false);
-    }
-
-    public static boolean getGunBooleanTag(final CompoundTag tag, String name, boolean defaultValue) {
         var data = tag.getCompound("GunData");
-        if (!data.contains(name)) return defaultValue;
+        if (!data.contains(name)) return getGunDefaultData(tag, name) != 0;
         return data.getBoolean(name);
     }
 

@@ -50,7 +50,7 @@ public record ReloadMessage(int msgType) implements CustomPacketPayload {
         ) {
             boolean canSingleReload = gunItem.isIterativeReload(stack);
             boolean canReload = gunItem.isMagazineReload(stack) && !gunItem.isClipReload(stack);
-            boolean clipLoad = GunsTool.getGunIntTag(tag, "Ammo", 0) == 0 && gunItem.isClipReload(stack);
+            boolean clipLoad = GunsTool.getGunIntTag(tag, "Ammo") == 0 && gunItem.isClipReload(stack);
 
             // 检查备弹
             boolean hasCreativeAmmoBox = player.getInventory().hasAnyMatching(item -> item.is(ModItems.CREATIVE_AMMO_BOX.get()));
@@ -74,9 +74,9 @@ public record ReloadMessage(int msgType) implements CustomPacketPayload {
             }
 
             if (canReload || clipLoad) {
-                int magazine = GunsTool.getGunIntTag(tag, "Magazine", 0);
-                int ammo = GunsTool.getGunIntTag(tag, "Ammo", 0);
-                int customMagazine = GunsTool.getGunIntTag(tag, "CustomMagazine", 0);
+                int magazine = GunsTool.getGunIntTag(tag, "Magazine");
+                int ammo = GunsTool.getGunIntTag(tag, "Ammo");
+                int customMagazine = GunsTool.getGunIntTag(tag, "CustomMagazine");
 
                 if (gunItem.isOpenBolt(stack)) {
                     if (gunItem.hasBulletInBarrel(stack)) {
@@ -94,9 +94,9 @@ public record ReloadMessage(int msgType) implements CustomPacketPayload {
             }
 
             if (canSingleReload
-                    && GunsTool.getGunIntTag(tag, "Ammo", 0)
-                    < GunsTool.getGunIntTag(tag, "Magazine", 0)
-                    + GunsTool.getGunIntTag(tag, "CustomMagazine", 0)) {
+                    && GunsTool.getGunIntTag(tag, "Ammo")
+                    < GunsTool.getGunIntTag(tag, "Magazine")
+                    + GunsTool.getGunIntTag(tag, "CustomMagazine")) {
 
                 tag.putBoolean("start_single_reload", true);
             }

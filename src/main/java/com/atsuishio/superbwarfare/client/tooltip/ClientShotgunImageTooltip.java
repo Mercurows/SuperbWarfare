@@ -26,16 +26,16 @@ public class ClientShotgunImageTooltip extends ClientGunImageTooltip {
         }
 
         if (slug) {
-            double damage = GunsTool.getGunDoubleTag(tag, "Damage", 0) * GunsTool.getGunIntTag(tag, "ProjectileAmount", 1) * TooltipTool.perkDamage(stack);
+            double damage = GunsTool.getGunDoubleTag(tag, "Damage") * GunsTool.getGunIntTag(tag, "ProjectileAmount") * TooltipTool.perkDamage(stack);
             return Component.translatable("des.superbwarfare.guns.damage").withStyle(ChatFormatting.GRAY)
                     .append(Component.literal("").withStyle(ChatFormatting.RESET))
                     .append(Component.literal(FormatTool.format1D(damage) + (TooltipTool.heBullet(stack) ? " + " +
                             FormatTool.format1D(0.8 * damage * (1 + 0.1 * TooltipTool.heBulletLevel(stack))) : "")).withStyle(ChatFormatting.GREEN));
         } else {
-            double damage = GunsTool.getGunDoubleTag(tag, "Damage", 0) * TooltipTool.perkDamage(stack);
+            double damage = GunsTool.getGunDoubleTag(tag, "Damage") * TooltipTool.perkDamage(stack);
             return Component.translatable("des.superbwarfare.guns.damage").withStyle(ChatFormatting.GRAY)
                     .append(Component.literal("").withStyle(ChatFormatting.RESET))
-                    .append(Component.literal(FormatTool.format1D(damage) + " * " + FormatTool.format0D(GunsTool.getGunIntTag(tag, "ProjectileAmount", 1))).withStyle(ChatFormatting.GREEN));
+                    .append(Component.literal(FormatTool.format1D(damage) + " * " + FormatTool.format0D(GunsTool.getGunIntTag(tag, "ProjectileAmount"))).withStyle(ChatFormatting.GREEN));
         }
     }
 }

@@ -214,14 +214,14 @@ public class LivingEventHandler {
         // 先处理发射器类武器或高爆弹的爆炸伤害
         if (source.is(ModDamageTypes.PROJECTILE_BOOM)) {
             if (stack.is(ModTags.Items.LAUNCHER) || PerkHelper.getItemPerkLevel(ModPerks.HE_BULLET.get(), tag) > 0) {
-                GunsTool.setGunDoubleTag(tag, "Exp", GunsTool.getGunDoubleTag(tag, "Exp", 0) + amount);
+                GunsTool.setGunDoubleTag(tag, "Exp", GunsTool.getGunDoubleTag(tag, "Exp") + amount);
             }
         }
 
         // 再判断是不是枪械能造成的伤害
         if (!DamageTypeTool.isGunDamage(source)) return;
 
-        GunsTool.setGunDoubleTag(tag, "Exp", GunsTool.getGunDoubleTag(tag, "Exp", 0) + amount);
+        GunsTool.setGunDoubleTag(tag, "Exp", GunsTool.getGunDoubleTag(tag, "Exp") + amount);
 
         NBTTool.saveTag(stack, tag);
     }
@@ -240,27 +240,27 @@ public class LivingEventHandler {
         // 先处理发射器类武器或高爆弹的爆炸伤害
         if (source.is(ModDamageTypes.PROJECTILE_BOOM)) {
             if (stack.is(ModTags.Items.LAUNCHER) || PerkHelper.getItemPerkLevel(ModPerks.HE_BULLET.get(), tag) > 0) {
-                GunsTool.setGunDoubleTag(tag, "Exp", GunsTool.getGunDoubleTag(tag, "Exp", 0) + amount);
+                GunsTool.setGunDoubleTag(tag, "Exp", GunsTool.getGunDoubleTag(tag, "Exp") + amount);
             }
         }
 
         // 再判断是不是枪械能造成的伤害
         if (DamageTypeTool.isGunDamage(source)) {
-            GunsTool.setGunDoubleTag(tag, "Exp", GunsTool.getGunDoubleTag(tag, "Exp", 0) + amount);
+            GunsTool.setGunDoubleTag(tag, "Exp", GunsTool.getGunDoubleTag(tag, "Exp") + amount);
         }
 
         // 提升武器等级
-        int level = GunsTool.getGunIntTag(tag, "Level", 0);
-        double exp = GunsTool.getGunDoubleTag(tag, "Exp", 0);
+        int level = GunsTool.getGunIntTag(tag, "Level");
+        double exp = GunsTool.getGunDoubleTag(tag, "Exp");
         double upgradeExpNeeded = 20 * Math.pow(level, 2) + 160 * level + 20;
 
         while (exp >= upgradeExpNeeded) {
             exp -= upgradeExpNeeded;
-            level = GunsTool.getGunIntTag(tag, "Level", 0) + 1;
+            level = GunsTool.getGunIntTag(tag, "Level") + 1;
             upgradeExpNeeded = 20 * Math.pow(level, 2) + 160 * level + 20;
             GunsTool.setGunDoubleTag(tag, "Exp", exp);
             GunsTool.setGunIntTag(tag, "Level", level);
-            GunsTool.setGunDoubleTag(tag, "UpgradePoint", GunsTool.getGunDoubleTag(tag, "UpgradePoint", 0) + 0.5);
+            GunsTool.setGunDoubleTag(tag, "UpgradePoint", GunsTool.getGunDoubleTag(tag, "UpgradePoint") + 0.5);
         }
         NBTTool.saveTag(stack, tag);
     }
@@ -274,17 +274,17 @@ public class LivingEventHandler {
         if (event.getEntity() instanceof TargetEntity) return;
 
         final var tag = NBTTool.getTag(stack);
-        int level = GunsTool.getGunIntTag(tag, "Level", 0);
-        double exp = GunsTool.getGunDoubleTag(tag, "Exp", 0);
+        int level = GunsTool.getGunIntTag(tag, "Level");
+        double exp = GunsTool.getGunDoubleTag(tag, "Exp");
         double upgradeExpNeeded = 20 * Math.pow(level, 2) + 160 * level + 20;
 
         while (exp >= upgradeExpNeeded) {
             exp -= upgradeExpNeeded;
-            level = GunsTool.getGunIntTag(tag, "Level", 0) + 1;
+            level = GunsTool.getGunIntTag(tag, "Level") + 1;
             upgradeExpNeeded = 20 * Math.pow(level, 2) + 160 * level + 20;
             GunsTool.setGunDoubleTag(tag, "Exp", exp);
             GunsTool.setGunIntTag(tag, "Level", level);
-            GunsTool.setGunDoubleTag(tag, "UpgradePoint", GunsTool.getGunDoubleTag(tag, "UpgradePoint", 0) + 0.5);
+            GunsTool.setGunDoubleTag(tag, "UpgradePoint", GunsTool.getGunDoubleTag(tag, "UpgradePoint") + 0.5);
         }
         NBTTool.saveTag(stack, tag);
     }
@@ -355,7 +355,7 @@ public class LivingEventHandler {
 
                     CompoundTag data = oldTag.getCompound("GunData");
 
-                    if (GunsTool.getGunDoubleTag(oldTag, "BoltActionTime", 0) > 0) {
+                    if (GunsTool.getGunDoubleTag(oldTag, "BoltActionTime") > 0) {
                         data.putInt("BoltActionTick", 0);
                     }
 
@@ -365,7 +365,7 @@ public class LivingEventHandler {
                     oldTag.putBoolean("is_normal_reloading", false);
                     oldTag.putBoolean("is_empty_reloading", false);
 
-                    if (GunsTool.getGunIntTag(oldTag, "IterativeTime", 0) != 0) {
+                    if (GunsTool.getGunIntTag(oldTag, "IterativeTime") != 0) {
                         oldTag.putBoolean("force_stop", false);
                         oldTag.putBoolean("stop", false);
                         oldTag.putInt("reload_stage", 0);
@@ -391,7 +391,7 @@ public class LivingEventHandler {
                 if (newStack.getItem() instanceof GunItem) {
                     player.getPersistentData().putDouble("noRun", 40);
                     newTag.putBoolean("draw", true);
-                    if (GunsTool.getGunIntTag(newTag, "BoltActionTime", 0) > 0) {
+                    if (GunsTool.getGunIntTag(newTag, "BoltActionTime") > 0) {
                         GunsTool.setGunIntTag(newTag, "BoltActionTick", 0);
                     }
                     newTag.putBoolean("is_normal_reloading", false);
@@ -401,7 +401,7 @@ public class LivingEventHandler {
                     data.putInt("ReloadTime", 0);
                     newTag.put("GunData", data);
 
-                    if (GunsTool.getGunIntTag(newTag, "IterativeTime", 0) != 0) {
+                    if (GunsTool.getGunIntTag(newTag, "IterativeTime") != 0) {
                         newTag.putBoolean("force_stop", false);
                         newTag.putBoolean("stop", false);
                         newTag.putInt("reload_stage", 0);
@@ -653,8 +653,8 @@ public class LivingEventHandler {
         var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
         if (cap == null) return;
 
-        int mag = GunsTool.getGunIntTag(tag, "Magazine", 0) + GunsTool.getGunIntTag(tag, "CustomMagazine", 0);
-        int ammo = GunsTool.getGunIntTag(tag, "Ammo", 0);
+        int mag = GunsTool.getGunIntTag(tag, "Magazine") + GunsTool.getGunIntTag(tag, "CustomMagazine");
+        int ammo = GunsTool.getGunIntTag(tag, "Ammo");
         int ammoReload = (int) Math.min(mag, mag * rate);
         int ammoNeed = Math.min(mag - ammo, ammoReload);
 

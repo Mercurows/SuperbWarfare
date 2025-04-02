@@ -4,7 +4,6 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.capability.ModCapabilities;
 import com.atsuishio.superbwarfare.client.renderer.item.M4ItemRenderer;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
-import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
@@ -142,12 +141,6 @@ public class M4Item extends GunItem implements GeoItem {
         return Set.of(ModSounds.M_4_RELOAD_EMPTY.get(), ModSounds.M_4_RELOAD_NORMAL.get());
     }
 
-    public static ItemStack getGunInstance() {
-        ItemStack stack = new ItemStack(ModItems.M_4.get());
-        GunsTool.initCreativeGun(stack, ModItems.M_4.getId().getPath());
-        return stack;
-    }
-
     @Override
     @ParametersAreNonnullByDefault
     public void inventoryTick(ItemStack stack, Level world, Entity entity, int slot, boolean selected) {
@@ -168,7 +161,7 @@ public class M4Item extends GunItem implements GeoItem {
         double customZoom = switch (scopeType) {
             case 0, 1 -> 0;
             case 2 -> NBTTool.getTag(stack).getBoolean("ScopeAlt") ? 0 : 2.75;
-            default -> GunsTool.getGunDoubleTag(tag, "CustomZoom", 0);
+            default -> GunsTool.getGunDoubleTag(tag, "CustomZoom");
         };
 
         GunsTool.setGunBooleanTag(tag, "CanSwitchScope", scopeType == 2);

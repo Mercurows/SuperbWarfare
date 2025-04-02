@@ -4,7 +4,6 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.renderer.item.SentinelItemRenderer;
 import com.atsuishio.superbwarfare.client.tooltip.component.SentinelImageComponent;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
-import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModRarity;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
@@ -142,7 +141,7 @@ public class SentinelItem extends GunItem implements GeoItem, EnergyStorageItem 
         if (cap != null && cap.getEnergyStored() > 0) {
             cap.extractEnergy(1, false);
             GunsTool.setGunDoubleTag(tag, "ChargedDamage", 0.2857142857142857
-                    * GunsTool.getGunDoubleTag(tag, "Damage", 0));
+                    * GunsTool.getGunDoubleTag(tag, "Damage"));
         } else {
             GunsTool.setGunDoubleTag(tag, "ChargedDamage", 0);
         }
@@ -157,12 +156,6 @@ public class SentinelItem extends GunItem implements GeoItem, EnergyStorageItem 
                 ModSounds.SENTINEL_CHARGE.get(),
                 ModSounds.SENTINEL_BOLT.get()
         );
-    }
-
-    public static ItemStack getGunInstance() {
-        ItemStack stack = new ItemStack(ModItems.SENTINEL.get());
-        GunsTool.initCreativeGun(stack, ModItems.SENTINEL.getId().getPath());
-        return stack;
     }
 
     @Override

@@ -4,7 +4,6 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.capability.ModCapabilities;
 import com.atsuishio.superbwarfare.client.renderer.item.SvdItemRenderer;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
-import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
@@ -107,12 +106,6 @@ public class SvdItem extends GunItem implements GeoItem {
         return Set.of(ModSounds.SVD_RELOAD_EMPTY.get(), ModSounds.SVD_RELOAD_NORMAL.get());
     }
 
-    public static ItemStack getGunInstance() {
-        ItemStack stack = new ItemStack(ModItems.SVD.get());
-        GunsTool.initCreativeGun(stack, ModItems.SVD.getId().getPath());
-        return stack;
-    }
-
     @Override
     @ParametersAreNonnullByDefault
     public void inventoryTick(ItemStack stack, Level world, Entity entity, int slot, boolean selected) {
@@ -131,7 +124,7 @@ public class SvdItem extends GunItem implements GeoItem {
         double customZoom = switch (scopeType) {
             case 0, 1 -> 0;
             case 2 -> 3.75;
-            default -> GunsTool.getGunDoubleTag(tag, "CustomZoom", 0);
+            default -> GunsTool.getGunDoubleTag(tag, "CustomZoom");
         };
 
         tag.putBoolean("CanAdjustZoomFov", scopeType == 3);

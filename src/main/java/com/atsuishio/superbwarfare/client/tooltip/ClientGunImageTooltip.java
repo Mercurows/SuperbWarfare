@@ -65,7 +65,7 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
     }
 
     protected boolean shouldRenderBypassAndHeadshotTooltip() {
-        return GunsTool.getGunDoubleTag(tag, "BypassesArmor", 0) > 0 || GunsTool.getGunDoubleTag(tag, "Headshot", 0) > 0;
+        return GunsTool.getGunDoubleTag(tag, "BypassesArmor") > 0 || GunsTool.getGunDoubleTag(tag, "Headshot") > 0;
     }
 
     protected boolean shouldRenderEditTooltip() {
@@ -92,7 +92,7 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
      * 获取武器伤害的文本组件
      */
     protected Component getDamageComponent() {
-        double damage = GunsTool.getGunDoubleTag(tag, "Damage", 0) * TooltipTool.perkDamage(stack);
+        double damage = GunsTool.getGunDoubleTag(tag, "Damage") * TooltipTool.perkDamage(stack);
         return Component.translatable("des.superbwarfare.guns.damage").withStyle(ChatFormatting.GRAY)
                 .append(Component.literal("").withStyle(ChatFormatting.RESET))
                 .append(Component.literal(FormatTool.format1D(damage) + (TooltipTool.heBullet(stack) ? " + "
@@ -106,7 +106,7 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
         if (this.stack.getItem() instanceof GunItem gunItem && gunItem.isAutoWeapon(this.stack)) {
             return Component.translatable("des.superbwarfare.guns.rpm").withStyle(ChatFormatting.GRAY)
                     .append(Component.literal("").withStyle(ChatFormatting.RESET))
-                    .append(Component.literal(FormatTool.format0D(GunsTool.getGunIntTag(tag, "RPM", 0)))
+                    .append(Component.literal(FormatTool.format0D(GunsTool.getGunIntTag(tag, "RPM")))
                             .withStyle(ChatFormatting.GREEN));
         }
         return Component.literal("");
@@ -125,8 +125,8 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
      * 获取武器等级文本组件
      */
     protected Component getLevelComponent() {
-        int level = GunsTool.getGunIntTag(tag, "Level", 0);
-        double rate = GunsTool.getGunDoubleTag(tag, "Exp", 0) / (20 * Math.pow(level, 2) + 160 * level + 20);
+        int level = GunsTool.getGunIntTag(tag, "Level");
+        double rate = GunsTool.getGunDoubleTag(tag, "Exp") / (20 * Math.pow(level, 2) + 160 * level + 20);
 
         ChatFormatting formatting;
         if (level < 10) {
@@ -152,7 +152,7 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
      * 获取武器强化点数文本组件
      */
     protected Component getUpgradePointComponent() {
-        int upgradePoint = Mth.floor(GunsTool.getGunDoubleTag(tag, "UpgradePoint", 0));
+        int upgradePoint = Mth.floor(GunsTool.getGunDoubleTag(tag, "UpgradePoint"));
         return Component.translatable("des.superbwarfare.guns.upgrade_point").withStyle(ChatFormatting.GRAY)
                 .append(Component.literal("").withStyle(ChatFormatting.RESET))
                 .append(Component.literal(String.valueOf(upgradePoint)).withStyle(ChatFormatting.WHITE).withStyle(ChatFormatting.BOLD));
@@ -178,7 +178,7 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
             int level = PerkHelper.getItemPerkLevel(perk, tag);
             perkBypassArmorRate = ammoPerk.bypassArmorRate + (perk == ModPerks.AP_BULLET.get() ? 0.05f * (level - 1) : 0);
         }
-        double bypassRate = Math.max(GunsTool.getGunDoubleTag(tag, "BypassesArmor", 0) + perkBypassArmorRate, 0);
+        double bypassRate = Math.max(GunsTool.getGunDoubleTag(tag, "BypassesArmor") + perkBypassArmorRate, 0);
 
         return Component.translatable("des.superbwarfare.guns.bypass").withStyle(ChatFormatting.GRAY)
                 .append(Component.literal("").withStyle(ChatFormatting.RESET))
@@ -189,7 +189,7 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
      * 获取武器爆头倍率文本组件
      */
     protected Component getHeadshotComponent() {
-        double headshot = GunsTool.getGunDoubleTag(tag, "Headshot", 0);
+        double headshot = GunsTool.getGunDoubleTag(tag, "Headshot");
         return Component.translatable("des.superbwarfare.guns.headshot").withStyle(ChatFormatting.GRAY)
                 .append(Component.literal("").withStyle(ChatFormatting.RESET))
                 .append(Component.literal(FormatTool.format1D(headshot, "x")).withStyle(ChatFormatting.AQUA));

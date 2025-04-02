@@ -206,12 +206,6 @@ public class JavelinItem extends GunItem implements GeoItem, SpecialFireWeapon {
         return stack.getItem() == ModItems.JAVELIN_MISSILE.get();
     }
 
-    public static ItemStack getGunInstance() {
-        ItemStack stack = new ItemStack(ModItems.JAVELIN.get());
-        GunsTool.initCreativeGun(stack, ModItems.JAVELIN.getId().getPath());
-        return stack;
-    }
-
     @Override
     public ResourceLocation getGunIcon() {
         return Mod.loc("textures/gun_icon/javelin_icon.png");
@@ -253,9 +247,9 @@ public class JavelinItem extends GunItem implements GeoItem, SpecialFireWeapon {
 
         if (player.level() instanceof ServerLevel serverLevel) {
             JavelinMissileEntity missileEntity = new JavelinMissileEntity(player, level,
-                    (float) GunsTool.getGunDoubleTag(tag, "Damage", 0),
-                    (float) GunsTool.getGunDoubleTag(tag, "ExplosionDamage", 0),
-                    (float) GunsTool.getGunDoubleTag(tag, "ExplosionRadius", 0),
+                    (float) GunsTool.getGunDoubleTag(tag, "Damage"),
+                    (float) GunsTool.getGunDoubleTag(tag, "ExplosionDamage"),
+                    (float) GunsTool.getGunDoubleTag(tag, "ExplosionRadius"),
                     tag.getInt("GuideType"),
                     new Vec3(tag.getDouble("TargetPosX"), tag.getDouble("TargetPosY"), tag.getDouble("TargetPosZ")));
 
@@ -286,7 +280,7 @@ public class JavelinItem extends GunItem implements GeoItem, SpecialFireWeapon {
         }
 
         player.getCooldowns().addCooldown(stack.getItem(), 10);
-        GunsTool.setGunIntTag(tag, "Ammo", GunsTool.getGunIntTag(tag, "Ammo", 0) - 1);
+        GunsTool.setGunIntTag(tag, "Ammo", GunsTool.getGunIntTag(tag, "Ammo") - 1);
         NBTTool.saveTag(stack, tag);
     }
 
@@ -305,7 +299,7 @@ public class JavelinItem extends GunItem implements GeoItem, SpecialFireWeapon {
     @Override
     public void fireOnPress(Player player, final CompoundTag tag) {
         var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
-        if (cap != null && !cap.zoom || GunsTool.getGunIntTag(tag, "Ammo", 0) <= 0) return;
+        if (cap != null && !cap.zoom || GunsTool.getGunIntTag(tag, "Ammo") <= 0) return;
 
         Entity seekingEntity = SeekTool.seekEntity(player, player.level(), 512, 8);
 

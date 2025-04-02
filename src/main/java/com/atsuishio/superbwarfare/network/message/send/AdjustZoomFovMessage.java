@@ -39,30 +39,30 @@ public record AdjustZoomFovMessage(double scroll) implements CustomPacketPayload
             double minRpm = 300;
             double maxRpm = 2400;
 
-            GunsTool.setGunIntTag(tag, "RPM", (int) Mth.clamp(GunsTool.getGunIntTag(tag, "RPM", 0) + 50 * message.scroll, minRpm, maxRpm));
-            if (GunsTool.getGunIntTag(tag, "RPM", 0) == 1150) {
+            GunsTool.setGunIntTag(tag, "RPM", (int) Mth.clamp(GunsTool.getGunIntTag(tag, "RPM") + 50 * message.scroll, minRpm, maxRpm));
+            if (GunsTool.getGunIntTag(tag, "RPM") == 1150) {
                 GunsTool.setGunIntTag(tag, "RPM", 1145);
             }
 
-            if (GunsTool.getGunIntTag(tag, "RPM", 0) == 1195) {
+            if (GunsTool.getGunIntTag(tag, "RPM") == 1195) {
                 GunsTool.setGunIntTag(tag, "RPM", 1200);
             }
 
-            if (GunsTool.getGunIntTag(tag, "RPM", 0) == 1095) {
+            if (GunsTool.getGunIntTag(tag, "RPM") == 1095) {
                 GunsTool.setGunIntTag(tag, "RPM", 1100);
             }
-            player.displayClientMessage(Component.literal("RPM: " + FormatTool.format0D(GunsTool.getGunIntTag(tag, "RPM", 0))), true);
-            int rpm = GunsTool.getGunIntTag(tag, "RPM", 0);
+            player.displayClientMessage(Component.literal("RPM: " + FormatTool.format0D(GunsTool.getGunIntTag(tag, "RPM"))), true);
+            int rpm = GunsTool.getGunIntTag(tag, "RPM");
             if (rpm > minRpm && rpm < maxRpm) {
                 SoundTool.playLocalSound(player, ModSounds.ADJUST_FOV.get(), 1f, 0.7f);
             }
         } else {
-            double minZoom = GunsTool.getGunDoubleTag(tag, "MinZoom", 0) - 1.25;
-            double maxZoom = GunsTool.getGunDoubleTag(tag, "MaxZoom", 0) - 1.25;
-            double customZoom = GunsTool.getGunDoubleTag(tag, "CustomZoom", 0);
+            double minZoom = GunsTool.getGunDoubleTag(tag, "MinZoom") - 1.25;
+            double maxZoom = GunsTool.getGunDoubleTag(tag, "MaxZoom") - 1.25;
+            double customZoom = GunsTool.getGunDoubleTag(tag, "CustomZoom");
             GunsTool.setGunDoubleTag(tag, "CustomZoom", Mth.clamp(customZoom + 0.5 * message.scroll, minZoom, maxZoom));
-            if (GunsTool.getGunDoubleTag(tag, "CustomZoom", 0) > minZoom &&
-                    GunsTool.getGunDoubleTag(tag, "CustomZoom", 0) < maxZoom) {
+            if (GunsTool.getGunDoubleTag(tag, "CustomZoom") > minZoom &&
+                    GunsTool.getGunDoubleTag(tag, "CustomZoom") < maxZoom) {
                 SoundTool.playLocalSound(player, ModSounds.ADJUST_FOV.get(), 1f, 0.7f);
             }
         }

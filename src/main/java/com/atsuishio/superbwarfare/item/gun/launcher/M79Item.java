@@ -139,12 +139,6 @@ public class M79Item extends GunItem implements GeoItem, SpecialFireWeapon {
         return stack.getItem() == ModItems.GRENADE_40MM.get();
     }
 
-    public static ItemStack getGunInstance() {
-        ItemStack stack = new ItemStack(ModItems.M_79.get());
-        GunsTool.initCreativeGun(stack, ModItems.M_79.getId().getPath());
-        return stack;
-    }
-
     @Override
     public ResourceLocation getGunIcon() {
         return Mod.loc("textures/gun_icon/m79_icon.png");
@@ -175,7 +169,7 @@ public class M79Item extends GunItem implements GeoItem, SpecialFireWeapon {
         ItemStack stack = player.getMainHandItem();
 
         if (GunsTool.getGunBooleanTag(tag, "Reloading")) return;
-        if (player.getCooldowns().isOnCooldown(stack.getItem()) || GunsTool.getGunIntTag(tag, "Ammo", 0) <= 0) return;
+        if (player.getCooldowns().isOnCooldown(stack.getItem()) || GunsTool.getGunIntTag(tag, "Ammo") <= 0) return;
 
         var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
         boolean zooming = cap != null && cap.zoom;
@@ -183,9 +177,9 @@ public class M79Item extends GunItem implements GeoItem, SpecialFireWeapon {
 
         if (player.level() instanceof ServerLevel serverLevel) {
             GunGrenadeEntity gunGrenadeEntity = new GunGrenadeEntity(player, serverLevel,
-                    (float) GunsTool.getGunDoubleTag(tag, "Damage", 0),
-                    (float) GunsTool.getGunDoubleTag(tag, "ExplosionDamage", 0),
-                    (float) GunsTool.getGunDoubleTag(tag, "ExplosionRadius", 0));
+                    (float) GunsTool.getGunDoubleTag(tag, "Damage"),
+                    (float) GunsTool.getGunDoubleTag(tag, "ExplosionDamage"),
+                    (float) GunsTool.getGunDoubleTag(tag, "ExplosionRadius"));
 
             var dmgPerk = PerkHelper.getPerkByType(tag, Perk.Type.DAMAGE);
             if (dmgPerk == ModPerks.MONSTER_HUNTER.get()) {
@@ -195,11 +189,11 @@ public class M79Item extends GunItem implements GeoItem, SpecialFireWeapon {
 
             gunGrenadeEntity.setNoGravity(PerkHelper.getPerkByType(tag, Perk.Type.AMMO) == ModPerks.MICRO_MISSILE.get());
 
-            float velocity = (float) GunsTool.getGunDoubleTag(tag, "Velocity", 0);
+            float velocity = (float) GunsTool.getGunDoubleTag(tag, "Velocity");
             int perkLevel = PerkHelper.getItemPerkLevel(ModPerks.MICRO_MISSILE.get(), tag);
             if (perkLevel > 0) {
-                gunGrenadeEntity.setExplosionRadius((float) GunsTool.getGunDoubleTag(tag, "ExplosionRadius", 0) * 0.5f);
-                gunGrenadeEntity.setDamage((float) GunsTool.getGunDoubleTag(tag, "Damage", 0) * (1.1f + perkLevel * 0.1f));
+                gunGrenadeEntity.setExplosionRadius((float) GunsTool.getGunDoubleTag(tag, "ExplosionRadius") * 0.5f);
+                gunGrenadeEntity.setDamage((float) GunsTool.getGunDoubleTag(tag, "Damage") * (1.1f + perkLevel * 0.1f));
                 velocity *= 1.2f;
             }
 
@@ -224,6 +218,6 @@ public class M79Item extends GunItem implements GeoItem, SpecialFireWeapon {
         }
 
         player.getCooldowns().addCooldown(stack.getItem(), 2);
-        GunsTool.setGunIntTag(tag, "Ammo", GunsTool.getGunIntTag(tag, "Ammo", 0) - 1);
+        GunsTool.setGunIntTag(tag, "Ammo", GunsTool.getGunIntTag(tag, "Ammo") - 1);
     }
 }

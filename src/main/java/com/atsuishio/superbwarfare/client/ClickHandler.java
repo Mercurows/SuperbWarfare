@@ -164,7 +164,7 @@ public class ClickHandler {
         var tag = NBTTool.getTag(stack);
 
         if (stack.is(ModTags.Items.GUN) && ClientEventHandler.zoom) {
-            if (GunsTool.getGunBooleanTag(tag, "CanSwitchScope", false)) {
+            if (GunsTool.getGunBooleanTag(tag, "CanSwitchScope")) {
                 PacketDistributor.sendToServer(new SwitchScopeMessage(scroll));
             } else if (tag.getBoolean("CanAdjustZoomFov") || stack.is(ModItems.MINIGUN.get())) {
                 PacketDistributor.sendToServer(new AdjustZoomFovMessage(scroll));
@@ -323,7 +323,7 @@ public class ClickHandler {
                 && (!(tag.getBoolean("is_normal_reloading") || tag.getBoolean("is_empty_reloading"))
                 && !GunsTool.getGunBooleanTag(tag, "Reloading")
                 && !GunsTool.getGunBooleanTag(tag, "Charging")
-                && !GunsTool.getGunBooleanTag(tag, "NeedBoltAction", false))
+                && !GunsTool.getGunBooleanTag(tag, "NeedBoltAction"))
                 && cantFireTime == 0
                 && drawTime < 0.01
                 && !notInGame()
@@ -331,14 +331,14 @@ public class ClickHandler {
             if ((!(tag.getBoolean("is_normal_reloading") || tag.getBoolean("is_empty_reloading"))
                     && !GunsTool.getGunBooleanTag(tag, "Reloading")
                     && !GunsTool.getGunBooleanTag(tag, "Charging")
-                    && !GunsTool.getGunBooleanTag(tag, "NeedBoltAction", false))
+                    && !GunsTool.getGunBooleanTag(tag, "NeedBoltAction"))
                     && cantFireTime == 0
                     && drawTime < 0.01
                     && !notInGame()) {
                 player.playSound(ModSounds.TRIGGER_CLICK.get(), 1, 1);
             }
 
-            if (!gunItem.useBackpackAmmo(stack) && GunsTool.getGunIntTag(tag, "Ammo", 0) <= 0 && GunsTool.getGunIntTag(tag, "ReloadTime") == 0) {
+            if (!gunItem.useBackpackAmmo(stack) && GunsTool.getGunIntTag(tag, "Ammo") <= 0 && GunsTool.getGunIntTag(tag, "ReloadTime") == 0) {
                 if (ReloadConfig.LEFT_CLICK_RELOAD.get()) {
                     PacketDistributor.sendToServer(new ReloadMessage(0));
                     ClientEventHandler.burstFireSize = 0;
@@ -347,7 +347,7 @@ public class ClickHandler {
                 PacketDistributor.sendToServer(new FireMessage(0));
                 if (GunsTool.getGunIntTag(tag, "FireMode") == 1) {
                     if (ClientEventHandler.burstFireSize == 0) {
-                        ClientEventHandler.burstFireSize = GunsTool.getGunIntTag(tag, "BurstSize", 1);
+                        ClientEventHandler.burstFireSize = GunsTool.getGunIntTag(tag, "BurstSize");
                     }
                 } else {
                     if (!stack.is(ModItems.BOCEK.get())) {

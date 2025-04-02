@@ -3,7 +3,6 @@ package com.atsuishio.superbwarfare.item.gun.machinegun;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.renderer.item.M60ItemRenderer;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
-import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
@@ -105,12 +104,6 @@ public class M60Item extends GunItem implements GeoItem {
         return Set.of(ModSounds.M_60_RELOAD_EMPTY.get(), ModSounds.M_60_RELOAD_NORMAL.get());
     }
 
-    public static ItemStack getGunInstance() {
-        ItemStack stack = new ItemStack(ModItems.M_60.get());
-        GunsTool.initCreativeGun(stack, ModItems.M_60.getId().getPath());
-        return stack;
-    }
-
     @Override
     @ParametersAreNonnullByDefault
     public void inventoryTick(ItemStack stack, Level level, Entity entity, int slot, boolean selected) {
@@ -118,7 +111,7 @@ public class M60Item extends GunItem implements GeoItem {
         if (tag.getBoolean("draw")) {
             tag.putBoolean("draw", false);
 
-            if (GunsTool.getGunIntTag(tag, "Ammo", 0) <= 5) {
+            if (GunsTool.getGunIntTag(tag, "Ammo") <= 5) {
                 GunsTool.setGunBooleanTag(tag, "HideBulletChain", true);
             }
             NBTTool.saveTag(stack, tag);

@@ -3,7 +3,6 @@ package com.atsuishio.superbwarfare.item.gun.rifle;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.renderer.item.SksItemRenderer;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
-import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
@@ -89,12 +88,6 @@ public class SksItem extends GunItem implements GeoItem {
         return this.cache;
     }
 
-    public static ItemStack getGunInstance() {
-        ItemStack stack = new ItemStack(ModItems.SKS.get());
-        GunsTool.initCreativeGun(stack, ModItems.SKS.getId().getPath());
-        return stack;
-    }
-
     @Override
     @ParametersAreNonnullByDefault
     public void inventoryTick(ItemStack stack, Level level, Entity entity, int slot, boolean selected) {
@@ -102,7 +95,7 @@ public class SksItem extends GunItem implements GeoItem {
             final var tag = NBTTool.getTag(stack);
             tag.putBoolean("draw", false);
 
-            if (GunsTool.getGunIntTag(tag, "Ammo", 0) == 0) {
+            if (GunsTool.getGunIntTag(tag, "Ammo") == 0) {
                 GunsTool.setGunBooleanTag(tag, "HoldOpen", true);
             }
             NBTTool.saveTag(stack, tag);

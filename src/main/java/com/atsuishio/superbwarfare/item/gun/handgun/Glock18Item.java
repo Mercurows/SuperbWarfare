@@ -3,14 +3,12 @@ package com.atsuishio.superbwarfare.item.gun.handgun;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.renderer.item.Glock18ItemRenderer;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
-import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
-import com.atsuishio.superbwarfare.tools.GunsTool;
 import com.atsuishio.superbwarfare.tools.NBTTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -102,12 +100,6 @@ public class Glock18Item extends GunItem implements GeoItem {
                 ModSounds.GLOCK_18_RELOAD_EMPTY.get(),
                 ModSounds.GLOCK_18_RELOAD_NORMAL.get()
         );
-    }
-
-    public static ItemStack getGunInstance() {
-        ItemStack stack = new ItemStack(ModItems.GLOCK_18.get());
-        GunsTool.initCreativeGun(stack, ModItems.GLOCK_18.getId().getPath());
-        return stack;
     }
 
     @Override

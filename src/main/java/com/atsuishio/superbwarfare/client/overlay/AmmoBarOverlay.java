@@ -100,7 +100,7 @@ public class AmmoBarOverlay {
                 // 渲染加特林射速
                 event.getGuiGraphics().drawString(
                         Minecraft.getInstance().font,
-                        GunsTool.getGunIntTag(tag, "RPM", 0) + " RPM",
+                        GunsTool.getGunIntTag(tag, "RPM") + " RPM",
                         w - 111f,
                         h - 20,
                         0xFFFFFF,
@@ -410,7 +410,7 @@ public class AmmoBarOverlay {
             return GunsTool.getGunIntTag(tag, "MaxAmmo");
         }
 
-        return GunsTool.getGunIntTag(tag, "Ammo", 0);
+        return GunsTool.getGunIntTag(tag, "Ammo");
     }
 
     private static String getPlayerAmmoCount(Player player) {

@@ -15,7 +15,7 @@ public class GunEvents {
         if (stack.is(ModTags.Items.GUN)) {
             final var tag = NBTTool.getTag(stack);
             tag.putBoolean("draw", true);
-            tag.putBoolean("init", true);
+            tag.putBoolean("init", false);
             NBTTool.saveTag(stack, tag);
         }
     }

@@ -115,7 +115,7 @@ public class ReforgingTableMenu extends AbstractContainerMenu {
                     if (!this.moveItemStackTo(stack, INPUT_SLOT, INPUT_SLOT + 1, false)) {
                         return ItemStack.EMPTY;
                     }
-                } else if (stack.getItem() instanceof PerkItem perkItem) {
+                } else if (stack.getItem() instanceof PerkItem<?> perkItem) {
                     Perk.Type type = perkItem.getPerk().type;
                     if (type == Perk.Type.AMMO) {
                         if (!this.moveItemStackTo(stack, AMMO_PERK_SLOT, AMMO_PERK_SLOT + 1, false)) {
@@ -209,7 +209,7 @@ public class ReforgingTableMenu extends AbstractContainerMenu {
         }
 
         final var tag = NBTTool.getTag(stack);
-        double oldPoint = GunsTool.getGunDoubleTag(tag, "UpgradePoint", 0);
+        double oldPoint = GunsTool.getGunDoubleTag(tag, "UpgradePoint");
         int point = (int) oldPoint;
         int newPoint = this.upgradePoint.get();
         int delta = newPoint - point;
@@ -295,15 +295,15 @@ public class ReforgingTableMenu extends AbstractContainerMenu {
             int level = PerkHelper.getItemPerkLevel(perkItem.getPerk(), tag);
 
             if (level <= 0) {
-                this.upgradePoint.set((int) GunsTool.getGunDoubleTag(tag, "UpgradePoint", 0));
+                this.upgradePoint.set((int) GunsTool.getGunDoubleTag(tag, "UpgradePoint"));
                 return;
             }
 
             ItemStack output = gun.copy();
             final var outputTag = NBTTool.getTag(output);
             PerkHelper.removePerkByType(outputTag, perkItem.getPerk().type);
-            GunsTool.setGunDoubleTag(outputTag, "UpgradePoint", Math.min(MAX_UPGRADE_POINT, level - 1 + GunsTool.getGunDoubleTag(outputTag, "UpgradePoint", 0)));
-            this.upgradePoint.set((int) GunsTool.getGunDoubleTag(outputTag, "UpgradePoint", 0));
+            GunsTool.setGunDoubleTag(outputTag, "UpgradePoint", Math.min(MAX_UPGRADE_POINT, level - 1 + GunsTool.getGunDoubleTag(outputTag, "UpgradePoint")));
+            this.upgradePoint.set((int) GunsTool.getGunDoubleTag(outputTag, "UpgradePoint"));
 
             NBTTool.saveTag(output, outputTag);
             this.container.setItem(INPUT_SLOT, output);
@@ -338,7 +338,7 @@ public class ReforgingTableMenu extends AbstractContainerMenu {
             return;
         }
         final var tag = NBTTool.getTag(stack);
-        int point = (int) GunsTool.getGunDoubleTag(tag, "UpgradePoint", 0);
+        int point = (int) GunsTool.getGunDoubleTag(tag, "UpgradePoint");
         this.upgradePoint.set(Mth.clamp(point, 0, MAX_UPGRADE_POINT));
 
         var ammoPerk = PerkHelper.getPerkByType(tag, Perk.Type.AMMO);

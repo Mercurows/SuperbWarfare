@@ -109,7 +109,7 @@ public record FireModeMessage(int msgType) implements CustomPacketPayload {
                 }
             }
 
-            if (stack.getItem() == ModItems.TRACHELIUM.get() && !GunsTool.getGunBooleanTag(tag, "NeedBoltAction", false)) {
+            if (stack.getItem() == ModItems.TRACHELIUM.get() && !GunsTool.getGunBooleanTag(tag, "NeedBoltAction")) {
                 tag.putBoolean("DA", !tag.getBoolean("DA"));
                 NBTTool.saveTag(stack, tag);
                 if (!tag.getBoolean("canImmediatelyShoot")) {

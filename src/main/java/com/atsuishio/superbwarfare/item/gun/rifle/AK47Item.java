@@ -4,7 +4,6 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.capability.ModCapabilities;
 import com.atsuishio.superbwarfare.client.renderer.item.AK47ItemRenderer;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
-import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
@@ -142,12 +141,6 @@ public class AK47Item extends GunItem implements GeoItem {
         return this.cache;
     }
 
-    public static ItemStack getGunInstance() {
-        ItemStack stack = new ItemStack(ModItems.AK_47.get());
-        GunsTool.initCreativeGun(stack, ModItems.AK_47.getId().getPath());
-        return stack;
-    }
-
     @Override
     @ParametersAreNonnullByDefault
     public void inventoryTick(ItemStack stack, Level world, Entity entity, int slot, boolean selected) {
@@ -168,7 +161,7 @@ public class AK47Item extends GunItem implements GeoItem {
         double customZoom = switch (scopeType) {
             case 0, 1 -> 0;
             case 2 -> 2.75;
-            default -> GunsTool.getGunDoubleTag(tag, "CustomZoom", 0);
+            default -> GunsTool.getGunDoubleTag(tag, "CustomZoom");
         };
 
         tag.putBoolean("CanAdjustZoomFov", scopeType == 3);

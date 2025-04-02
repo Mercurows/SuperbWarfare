@@ -62,8 +62,21 @@ public abstract class GunItem extends Item implements CustomRendererItem {
         ) return;
 
         var tag = NBTTool.getTag(stack);
+
+        if (tag.getString("id").isEmpty()) {
+            var id = stack.getDescriptionId();
+            tag.putString("id", id.substring(id.lastIndexOf(".") + 1));
+        }
+
         if (!tag.getBoolean("init")) {
-            GunsTool.initGun(level, tag, this.getDescriptionId().substring(this.getDescriptionId().lastIndexOf('.') + 1));
+            var name = this.getDescriptionId().substring(this.getDescriptionId().lastIndexOf('.') + 1);
+
+            if (level.getServer() != null && entity instanceof Player player && player.isCreative()) {
+                GunsTool.initCreativeGun(tag, name);
+            } else {
+                GunsTool.initGun(tag, name);
+            }
+
             GunsTool.generateAndSetUUID(tag);
             tag.putBoolean("init", true);
         }
@@ -73,9 +86,9 @@ public abstract class GunItem extends Item implements CustomRendererItem {
         handleGunAttachment(tag);
 
         var hasBulletInBarrel = gunItem.hasBulletInBarrel(stack);
-        var ammoCount = GunsTool.getGunIntTag(tag, "Ammo", 0);
-        var magazine = GunsTool.getGunIntTag(tag, "Magazine", 0);
-        var customMagazine = GunsTool.getGunIntTag(tag, "CustomMagazine", 0);
+        var ammoCount = GunsTool.getGunIntTag(tag, "Ammo");
+        var magazine = GunsTool.getGunIntTag(tag, "Magazine");
+        var customMagazine = GunsTool.getGunIntTag(tag, "CustomMagazine");
 
         if ((hasBulletInBarrel && ammoCount > magazine + customMagazine + 1)
                 || (!hasBulletInBarrel && ammoCount > magazine + customMagazine)
@@ -184,8 +197,8 @@ public abstract class GunItem extends Item implements CustomRendererItem {
                 GunsTool.setPerkIntTag(tag, "FourthTimesCharmTick", 0);
                 GunsTool.setPerkIntTag(tag, "FourthTimesCharmCount", 0);
 
-                int mag = GunsTool.getGunIntTag(tag, "Magazine", 0) + GunsTool.getGunIntTag(tag, "CustomMagazine", 0);
-                GunsTool.setGunIntTag(tag, "Ammo", Math.min(mag, GunsTool.getGunIntTag(tag, "Ammo", 0) + 2));
+                int mag = GunsTool.getGunIntTag(tag, "Magazine") + GunsTool.getGunIntTag(tag, "CustomMagazine");
+                GunsTool.setGunIntTag(tag, "Ammo", Math.min(mag, GunsTool.getGunIntTag(tag, "Ammo") + 2));
             }
         }
     }

@@ -4,7 +4,6 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.renderer.item.M870ItemRenderer;
 import com.atsuishio.superbwarfare.client.tooltip.component.ShotgunImageComponent;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
-import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
@@ -124,12 +123,6 @@ public class M870Item extends GunItem implements GeoItem {
         return Set.of(ModSounds.M_870_PREPARE_LOAD.get(),
                 ModSounds.M_870_LOOP.get(),
                 ModSounds.M_870_BOLT.get());
-    }
-
-    public static ItemStack getGunInstance() {
-        ItemStack stack = new ItemStack(ModItems.M_870.get());
-        GunsTool.initCreativeGun(stack, ModItems.M_870.getId().getPath());
-        return stack;
     }
 
     @Override
