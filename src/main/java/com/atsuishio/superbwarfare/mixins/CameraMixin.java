@@ -30,16 +30,17 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(Camera.class)
 public abstract class CameraMixin {
 
-    @Shadow(aliases = "Lnet/minecraft/client/Camera;setRotation(FF)V")
-    protected abstract void setRotation(float x, float y);
+    @Shadow
+    @Deprecated
+    protected abstract void setRotation(float yRot, float xRot);
 
-    @Shadow(aliases = "Lnet/minecraft/client/Camera;setPosition(DDD)V")
+    @Shadow
     protected abstract void setPosition(double x, double y, double z);
 
-    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;setRotation(FF)V", ordinal = 0),
-            method = "setup(Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/world/entity/Entity;ZZF)V",
+    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;setRotation(FFF)V", ordinal = 0),
+            method = "setup",
             cancellable = true)
-    private void onSetup(BlockGetter level, Entity entity, boolean detached, boolean mirrored, float partialTicks, CallbackInfo info) {
+    private void onSetup(BlockGetter level, Entity entity, boolean detached, boolean thirdPersonReverse, float partialTicks, CallbackInfo info) {
         Minecraft mc = Minecraft.getInstance();
         LocalPlayer player = mc.player;
         if (player == null) return;
