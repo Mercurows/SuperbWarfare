@@ -199,6 +199,10 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
             this.handleAmmo();
         }
 
+        double fluidFloat;
+        fluidFloat = 0.052 * getSubmergedHeight(this);
+        this.setDeltaMovement(this.getDeltaMovement().add(0.0, fluidFloat, 0.0));
+
         if (this.onGround()) {
             float f0 = 0.54f + 0.25f * Mth.abs(90 - (float) calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90;
             this.setDeltaMovement(this.getDeltaMovement().add(this.getViewVector(1).normalize().scale(0.05 * this.getDeltaMovement().horizontalDistance())));

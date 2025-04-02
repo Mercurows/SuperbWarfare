@@ -244,7 +244,16 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
         }
 
         if (this.level() instanceof ServerLevel) {
-            if (reloadCoolDown > 0 && this.entityData.get(AMMO) > 0) {
+            boolean hasCreativeAmmo = false;
+
+            if (this.getFirstPassenger() instanceof Player player) {
+                hasCreativeAmmo = InventoryTool.hasCreativeAmmoBox(player);
+            }
+
+            if (reloadCoolDown > 0 && (
+                    (entityData.get(LOADED_AMMO_TYPE) == 0 && (hasCreativeAmmo || countItem(ModItems.AP_5_INCHES.get()) > 0)) ||
+                    (entityData.get(LOADED_AMMO_TYPE) == 1 && (hasCreativeAmmo || countItem(ModItems.HE_5_INCHES.get()) > 0))
+            )) {
                 reloadCoolDown--;
             }
             this.handleAmmo();
@@ -308,14 +317,18 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
                 && (hasCreativeAmmo || hasItem(getWeapon(0).ammo))
         ) {
 
-            if (entityData.get(LOADED_AMMO_TYPE) == 0) {
+            if (entityData.get(LOADED_AMMO_TYPE) == 0 && entityData.get(LOADED_AP) == 0) {
                 this.entityData.set(LOADED_AP, 1);
-            } else if (entityData.get(LOADED_AMMO_TYPE) == 1) {
-                this.entityData.set(LOADED_HE, 1);
+                if (!hasCreativeAmmo) {
+                    consumeItem(ModItems.AP_5_INCHES.get(), 1);
+                }
             }
 
-            if (!hasCreativeAmmo) {
-                consumeItem(getWeapon(0).ammo, 1);
+            if (entityData.get(LOADED_AMMO_TYPE) == 1 && entityData.get(LOADED_HE) == 0) {
+                this.entityData.set(LOADED_HE, 1);
+                if (!hasCreativeAmmo) {
+                    consumeItem(ModItems.HE_5_INCHES.get(), 1);
+                }
             }
         }
     }
@@ -966,14 +979,14 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
         if (typeIndex != 2) {
             if (entityData.get(LOADED_AP) > 0 && typeIndex == 1) {
                 if (this.getFirstPassenger() instanceof Player player && !InventoryTool.hasCreativeAmmoBox(player)) {
-                    this.insertItem(getWeapon(0).ammo, 1);
+                    this.insertItem(ModItems.AP_5_INCHES.get(), 1);
                 }
                 entityData.set(LOADED_AP, 0);
             }
 
             if (entityData.get(LOADED_HE) > 0 && typeIndex == 0) {
                 if (this.getFirstPassenger() instanceof Player player && !InventoryTool.hasCreativeAmmoBox(player)) {
-                    this.insertItem(getWeapon(0).ammo, 1);
+                    this.insertItem(ModItems.HE_5_INCHES.get(), 1);
                 }
                 entityData.set(LOADED_HE, 0);
             }
