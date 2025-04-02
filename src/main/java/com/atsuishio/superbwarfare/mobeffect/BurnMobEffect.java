@@ -17,8 +17,10 @@ import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
+import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 
+// TODO 解决加上效果就立刻消失的问题
 @EventBusSubscriber(bus = EventBusSubscriber.Bus.GAME)
 public class BurnMobEffect extends MobEffect {
 
@@ -99,18 +101,17 @@ public class BurnMobEffect extends MobEffect {
         }
     }
 
-    // TODO tick event?
-//    @SubscribeEvent
-//    public static void onLivingTick(EntityTickEvent event) {
-//        var entity = event.getEntity();
-//        if (!(entity instanceof LivingEntity living)) return;
-//
-//        if (living.hasEffect(ModMobEffects.BURN)) {
-//            living.setRemainingFireTicks(2);
-//        }
-//
-//        if (living.isInWater()) {
-//            living.removeEffect(ModMobEffects.BURN);
-//        }
-//    }
+    @SubscribeEvent
+    public static void onLivingTick(EntityTickEvent.Post event) {
+        var entity = event.getEntity();
+        if (!(entity instanceof LivingEntity living)) return;
+
+        if (living.hasEffect(ModMobEffects.BURN)) {
+            living.setRemainingFireTicks(2);
+        }
+
+        if (living.isInWater()) {
+            living.removeEffect(ModMobEffects.BURN);
+        }
+    }
 }
