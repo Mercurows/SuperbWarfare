@@ -440,9 +440,8 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
         Matrix4f transform = getVehicleTransform(1);
 
         float x = 0.6f;
-        float y = 1.2f - 1.45f;
+        float y = -0.85f;
         float z = 1f;
-        y += (float) passenger.getVehicleAttachmentPoint(this).y;
 
         int i = this.getOrderedPassengers().indexOf(passenger);
 

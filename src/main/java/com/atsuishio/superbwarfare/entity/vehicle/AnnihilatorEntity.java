@@ -53,13 +53,14 @@ import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Math;
+import org.joml.Matrix4f;
 import org.joml.Vector3d;
+import org.joml.Vector4f;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.*;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Comparator;
 
 public class AnnihilatorEntity extends EnergyVehicleEntity implements GeoEntity, CannonEntity {
@@ -174,13 +175,20 @@ public class AnnihilatorEntity extends EnergyVehicleEntity implements GeoEntity,
     }
 
     @Override
-    @ParametersAreNonnullByDefault
-    protected void positionRider(Entity pPassenger, MoveFunction pCallback) {
-        if (this.hasPassenger(pPassenger)) {
-            float f1 = (float) ((this.isRemoved() ? 0.009999999776482582 : this.getPassengerRidingPosition(pPassenger).y) + pPassenger.getVehicleAttachmentPoint(this).y);
-            Vec3 vec3 = (new Vec3(1, 0.0, 0.0)).yRot(-this.getYRot() * 0.017453292F - 1.5707964F);
-            pCallback.accept(pPassenger, this.getX() + vec3.x, this.getY() + (double) f1, this.getZ() + vec3.z);
+    public void positionRider(@NotNull Entity passenger, @NotNull MoveFunction callback) {
+        if (!this.hasPassenger(passenger)) {
+            return;
         }
+
+        Matrix4f transform = getVehicleFlatTransform(1);
+
+        float x = 0f;
+        float y = 3.3f;
+        float z = 1.5f;
+
+        Vector4f worldPosition = transformPosition(transform, x, y, z);
+        passenger.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
+        callback.accept(passenger, worldPosition.x, worldPosition.y, worldPosition.z);
     }
 
     // TODO addEntityPacket

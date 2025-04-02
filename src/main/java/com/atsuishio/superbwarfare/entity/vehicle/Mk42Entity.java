@@ -45,6 +45,8 @@ import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Math;
+import org.joml.Matrix4f;
+import org.joml.Vector4f;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.*;
@@ -160,11 +162,6 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
         entityData.set(PITCH, Mth.wrapDegrees((float) (-(Mth.atan2(d1, d3) * 57.2957763671875))) - (float) (distance * 0.008f));
     }
 
-    @Override
-    public double getEyeY() {
-        return 2.16F;
-    }
-
     // TODO addEntityPacket
     @Override
     public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket(@NotNull ServerEntity entity) {
@@ -178,8 +175,20 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
 
 
     @Override
-    public @NotNull Vec3 getPassengerRidingPosition(@NotNull Entity entity) {
-        return super.getPassengerRidingPosition(entity).add(0, -0.25, 0);
+    public void positionRider(@NotNull Entity passenger, @NotNull MoveFunction callback) {
+        if (!this.hasPassenger(passenger)) {
+            return;
+        }
+
+        Matrix4f transform = getVehicleFlatTransform(1);
+
+        float x = 0f;
+        float y = 2.3f;
+        float z = 0f;
+
+        Vector4f worldPosition = transformPosition(transform, x, y, z);
+        passenger.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
+        callback.accept(passenger, worldPosition.x, worldPosition.y, worldPosition.z);
     }
 
     @Override
@@ -284,8 +293,11 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
 
             var entityToSpawn = ((CannonShellWeapon) getWeapon(0)).create(player);
 
-            entityToSpawn.setPos(this.getX(), this.getEyeY(), this.getZ());
-            entityToSpawn.shoot(this.getLookAngle().x, this.getLookAngle().y, this.getLookAngle().z, 15, 0.05f);
+            Matrix4f transform = getVehicleFlatTransform(1);
+            Vector4f worldPosition = transformPosition(transform, 0f, 2.16f, 0.5175f);
+
+            entityToSpawn.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
+            entityToSpawn.shoot(getLookAngle().x, getLookAngle().y, getLookAngle().z, 15, 0.05f);
             level.addFreshEntity(entityToSpawn);
 
             if (player instanceof ServerPlayer serverPlayer) {
@@ -304,9 +316,9 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
                     this.getZ() + 5 * this.getLookAngle().z,
                     100, 7, 0.02, 7, 0.005);
 
-            double x = this.getX() + 9 * this.getLookAngle().x;
-            double y = this.getEyeY() + 9 * this.getLookAngle().y;
-            double z = this.getZ() + 9 * this.getLookAngle().z;
+            double x = worldPosition.x + 9 * this.getLookAngle().x;
+            double y = worldPosition.y + 9 * this.getLookAngle().y;
+            double z = worldPosition.z + 9 * this.getLookAngle().z;
 
             server.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, x, y, z, 10, 0.4, 0.4, 0.4, 0.0075);
             server.sendParticles(ParticleTypes.CLOUD, x, y, z, 10, 0.4, 0.4, 0.4, 0.0075);

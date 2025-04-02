@@ -45,13 +45,13 @@ import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Math;
-import org.joml.Vector3d;
+import org.joml.Matrix4f;
+import org.joml.Vector4f;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.*;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Comparator;
 
 public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEntity {
@@ -182,13 +182,20 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
 //    }
 
     @Override
-    @ParametersAreNonnullByDefault
-    protected void positionRider(Entity pPassenger, MoveFunction pCallback) {
-        if (this.hasPassenger(pPassenger)) {
-            float f1 = (float) ((this.isRemoved() ? 0.009999999776482582 : this.getPassengerRidingPosition(this).y) + pPassenger.getVehicleAttachmentPoint(this).y);
-            Vec3 vec3 = (new Vec3(1, 0.0, 0.0)).yRot(-this.getYRot() * 0.017453292F - 1.5707964F);
-            pCallback.accept(pPassenger, this.getX() + vec3.x, this.getY() + (double) f1, this.getZ() + vec3.z);
+    public void positionRider(@NotNull Entity passenger, @NotNull MoveFunction callback) {
+        if (!this.hasPassenger(passenger)) {
+            return;
         }
+
+        Matrix4f transform = getVehicleFlatTransform(1);
+
+        float x = 0f;
+        float y = 2.0f;
+        float z = 0.5f;
+
+        Vector4f worldPosition = transformPosition(transform, x, y, z);
+        passenger.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
+        callback.accept(passenger, worldPosition.x, worldPosition.y, worldPosition.z);
     }
 
     @Override
@@ -302,97 +309,70 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
 
             boolean salvoShoot = consumed == 2;
 
-            float yRot = this.getYRot();
-            if (yRot < 0) {
-                yRot += 360;
-            }
-            yRot = yRot + 90 % 360;
-
-            var leftPos = new Vector3d(0, 0, -0.45);
-            leftPos.rotateZ(-this.getXRot() * Mth.DEG_TO_RAD);
-            leftPos.rotateY(-yRot * Mth.DEG_TO_RAD);
+            Matrix4f transform = getVehicleFlatTransform(1);
+            Vector4f worldPositionL = transformPosition(transform, 0.486775f, 1.4992625f, 1.52065f);
+            Vector4f worldPositionR = transformPosition(transform, -0.486775f, 1.4992625f, 1.52065f);
 
             // 左炮管
             var entityToSpawnLeft = ((CannonShellWeapon) getWeapon(0)).create(player);
 
-            entityToSpawnLeft.setPos(this.getX() + leftPos.x,
-                    this.getEyeY() - 0.2 + leftPos.y,
-                    this.getZ() + leftPos.z);
+            entityToSpawnLeft.setPos(worldPositionL.x, worldPositionL.y, worldPositionL.z);
             entityToSpawnLeft.shoot(this.getLookAngle().x, this.getLookAngle().y, this.getLookAngle().z, 15, 0.05f);
             level.addFreshEntity(entityToSpawnLeft);
 
-            var leftPosP1 = new Vector3d(8, 0, -0.45);
-            leftPosP1.rotateZ(-this.getXRot() * Mth.DEG_TO_RAD);
-            leftPosP1.rotateY(-yRot * Mth.DEG_TO_RAD);
-
             server.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE,
-                    this.getX() + leftPosP1.x,
-                    this.getEyeY() - 0.2 + leftPosP1.y,
-                    this.getZ() + leftPosP1.z,
-                    10, 0.4, 0.4, 0.4, 0.0075);
+                    this.getX() + 5 * this.getLookAngle().x,
+                    this.getY(),
+                    this.getZ() + 5 * this.getLookAngle().z,
+                    100, 7, 0.02, 7, 0.005);
 
-            server.sendParticles(ParticleTypes.CLOUD,
-                    this.getX() + leftPosP1.x,
-                    this.getEyeY() - 0.2 + leftPosP1.y,
-                    this.getZ() + leftPosP1.z,
-                    10, 0.4, 0.4, 0.4, 0.0075);
+            double x = worldPositionL.x + 9 * this.getLookAngle().x;
+            double y = worldPositionL.y + 9 * this.getLookAngle().y;
+            double z = worldPositionL.z + 9 * this.getLookAngle().z;
 
-            int count = 5;
+            server.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, x, y, z, 10, 0.4, 0.4, 0.4, 0.0075);
+            server.sendParticles(ParticleTypes.CLOUD, x, y, z, 10, 0.4, 0.4, 0.4, 0.0075);
 
-            for (float i = 9.5f; i < 14; i += .5f) {
-                var leftPosP = new Vector3d(i, 0, -0.45);
-                leftPosP.rotateZ(-this.getXRot() * Mth.DEG_TO_RAD);
-                leftPosP.rotateY(-yRot * Mth.DEG_TO_RAD);
+            int count = 6;
 
+            for (float i = 9.5f; i < 16; i += .5f) {
                 server.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE,
-                        this.getX() + leftPosP.x,
-                        this.getEyeY() - 0.2 + leftPosP.y,
-                        this.getZ() + leftPosP.z,
-                        Mth.clamp(count--, 1, 5), 0.1, 0.1, 0.1, 0.002);
+                        worldPositionL.x + i * this.getLookAngle().x,
+                        worldPositionL.y + i * this.getLookAngle().y,
+                        worldPositionL.z + i * this.getLookAngle().z,
+                        Mth.clamp(count--, 1, 5), 0.15, 0.15, 0.15, 0.0025);
             }
+
 
             // 右炮管
             if (salvoShoot) {
-                var rightPos = new Vector3d(0, 0, 0.45);
-                rightPos.rotateZ(-this.getXRot() * Mth.DEG_TO_RAD);
-                rightPos.rotateY(-yRot * Mth.DEG_TO_RAD);
-
                 var entityToSpawnRight = ((CannonShellWeapon) getWeapon(0)).create(player);
 
-                entityToSpawnRight.setPos(this.getX() + rightPos.x,
-                        this.getEyeY() - 0.2 + rightPos.y,
-                        this.getZ() + rightPos.z);
+                entityToSpawnRight.setPos(worldPositionR.x, worldPositionR.y, worldPositionR.z);
                 entityToSpawnRight.shoot(this.getLookAngle().x, this.getLookAngle().y, this.getLookAngle().z, 15, 0.05f);
                 level.addFreshEntity(entityToSpawnRight);
 
-                var rightPosP1 = new Vector3d(8, 0, 0.45);
-                rightPosP1.rotateZ(-this.getXRot() * Mth.DEG_TO_RAD);
-                rightPosP1.rotateY(-yRot * Mth.DEG_TO_RAD);
-
                 server.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE,
-                        this.getX() + rightPosP1.x,
-                        this.getEyeY() - 0.2 + rightPosP1.y,
-                        this.getZ() + rightPosP1.z,
-                        10, 0.4, 0.4, 0.4, 0.0075);
+                        this.getX() + 5 * this.getLookAngle().x,
+                        this.getY(),
+                        this.getZ() + 5 * this.getLookAngle().z,
+                        100, 7, 0.02, 7, 0.005);
 
-                server.sendParticles(ParticleTypes.CLOUD,
-                        this.getX() + rightPosP1.x,
-                        this.getEyeY() - 0.2 + rightPosP1.y,
-                        this.getZ() + rightPosP1.z,
-                        10, 0.4, 0.4, 0.4, 0.0075);
+                double xR = worldPositionR.x + 9 * this.getLookAngle().x;
+                double yR = worldPositionR.y + 9 * this.getLookAngle().y;
+                double zR = worldPositionR.z + 9 * this.getLookAngle().z;
 
-                int countR = 5;
+                server.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, xR, yR, zR, 10, 0.4, 0.4, 0.4, 0.0075);
+                server.sendParticles(ParticleTypes.CLOUD, xR, yR, zR, 10, 0.4, 0.4, 0.4, 0.0075);
 
-                for (float i = 9.5f; i < 14; i += .5f) {
-                    var rightPosP = new Vector3d(i, 0, 0.45);
-                    rightPosP.rotateZ(-this.getXRot() * Mth.DEG_TO_RAD);
-                    rightPosP.rotateY(-yRot * Mth.DEG_TO_RAD);
+                int countR = 6;
 
+                for (float i = 9.5f; i < 16; i += .5f) {
                     server.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE,
-                            this.getX() + rightPosP.x,
-                            this.getEyeY() - 0.2 + rightPosP.y,
-                            this.getZ() + rightPosP.z,
-                            Mth.clamp(countR--, 1, 5), 0.1, 0.1, 0.1, 0.002);
+                            worldPositionR.x + i * this.getLookAngle().x,
+                            worldPositionR.y + i * this.getLookAngle().y,
+                            worldPositionR.z + i * this.getLookAngle().z,
+                            Mth.clamp(countR--, 1, 5), 0.15, 0.15, 0.15, 0.0025);
                 }
 
                 this.entityData.set(TYPE, 1);
