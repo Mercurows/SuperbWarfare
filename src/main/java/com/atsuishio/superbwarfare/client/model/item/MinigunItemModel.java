@@ -43,7 +43,7 @@ public class MinigunItemModel extends GeoModel<MinigunItem> {
         ItemStack stack = player.getMainHandItem();
         if (!stack.is(ModTags.Items.GUN)) return;
 
-        float times = 0.6f * (float) Math.min(Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true), 0.8);
+        float times = 0.6f * (float) Math.min(Minecraft.getInstance().getTimer().getRealtimeDeltaTicks(), 0.8);
 
         double swayX = ClientEventHandler.swayX;
         double swayY = ClientEventHandler.swayY;
