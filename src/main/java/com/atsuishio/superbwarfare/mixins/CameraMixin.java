@@ -163,7 +163,7 @@ public abstract class CameraMixin {
 
         var cameraPosition = vehicle.getThirdPersonCameraPosition(vehicle.getSeatIndex(entity));
         if (cameraPosition != null) {
-            move(-getMaxZoom((float) cameraPosition.distance()), (float) cameraPosition.y(), (float) cameraPosition.z());
+            move(-getMaxZoom((float) cameraPosition.distance()), (float) cameraPosition.y(), -(float) cameraPosition.z());
         }
     }
 
