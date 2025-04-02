@@ -29,7 +29,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class Mod {
 
     public static final String MODID = "superbwarfare";
-    public static final String ATTRIBUTE_MODIFIER = "superbwarfare_attribute_modifier";
+    public static final ResourceLocation ATTRIBUTE_MODIFIER = loc("attribute_modifier");
 
     public static final Logger LOGGER = LogManager.getLogger(Mod.class);
 
