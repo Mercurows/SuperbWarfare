@@ -70,7 +70,7 @@ public class MinecraftMixin {
             if (!options.keyShift.isDown()
                     && weaponVehicle.hasWeapon(seatIndex)
                     && weaponVehicle.getWeaponIndex(seatIndex) != index) {
-                PacketDistributor.sendToServer(new SwitchVehicleWeaponMessage(seatIndex, index, true));
+                PacketDistributor.sendToServer(new SwitchVehicleWeaponMessage(seatIndex, index, false));
             }
         }
     }

@@ -11,6 +11,9 @@ logoFile = "../../resources/logo.png"
 description = "${mod_description}"
 enumExtensions = "META-INF/enumextensions.json"
 
+[[mixins]]
+config = "mixins.superbwarfare.json"
+
 [[dependencies.superbwarfare]]
 modId = "neoforge" #mandatory
 mandatory = true #mandatory

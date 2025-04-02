@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.block.BarbedWireBlock;
 import com.atsuishio.superbwarfare.component.ModDataComponents;
 import com.atsuishio.superbwarfare.config.server.MiscConfig;
 import com.atsuishio.superbwarfare.config.server.ProjectileConfig;
+import com.atsuishio.superbwarfare.entity.ICustomKnockback;
 import com.atsuishio.superbwarfare.entity.TargetEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.*;
@@ -573,10 +574,10 @@ public class ProjectileEntity extends Projectile implements IEntityWithComplexSp
                 living.addDeltaMovement(vec3.scale(knockback));
                 performDamage(entity, damage, headshot);
             } else {
-//                ICustomKnockback iCustomKnockback = ICustomKnockback.getInstance(living);
-//                iCustomKnockback.superbWarfare$setKnockbackStrength(knockback);
+                ICustomKnockback iCustomKnockback = ICustomKnockback.getInstance(living);
+                iCustomKnockback.superbWarfare$setKnockbackStrength(knockback);
                 performDamage(entity, damage, headshot);
-//                iCustomKnockback.superbWarfare$resetKnockbackStrength();
+                iCustomKnockback.superbWarfare$resetKnockbackStrength();
             }
         } else {
             performDamage(entity, damage, headshot);

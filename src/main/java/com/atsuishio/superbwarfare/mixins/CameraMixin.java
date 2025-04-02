@@ -148,7 +148,6 @@ public abstract class CameraMixin {
         return transform.transform(new Vector4f(x, y, z, 1));
     }
 
-    // TODO camera mixin, maybe use CalculateDetachedCameraDistanceEvent instead?
     @Inject(method = "setup", at = @At("TAIL"))
     public void superbWarfare$setup(BlockGetter area, Entity entity, boolean thirdPerson, boolean inverseView, float tickDelta, CallbackInfo ci) {
         if (Minecraft.getInstance().options.getCameraType() == CameraType.THIRD_PERSON_BACK

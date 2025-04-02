@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.capability.player.PlayerVariable;
 import com.atsuishio.superbwarfare.config.common.GameplayConfig;
 import com.atsuishio.superbwarfare.config.server.MiscConfig;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
+import com.atsuishio.superbwarfare.entity.ICustomKnockback;
 import com.atsuishio.superbwarfare.entity.TargetEntity;
 import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.LaserTowerEntity;
@@ -302,14 +303,10 @@ public class LivingEventHandler {
         }
 
         if (!sourceEntity.level().isClientSide() && sourceEntity instanceof ServerPlayer player) {
-            // TODO pre kill event
-            if (false
-//                    NeoForge.EVENT_BUS.post(
-//                            new PreKillEvent.Indicator(player, source, event.getEntity())
-//                    )
-            ) {
-                return;
-            }
+            // TODO 判断 pre kill event 结果
+//            if (NeoForge.EVENT_BUS.post(new PreKillEvent.Indicator(player, source, event.getEntity()))) {
+//                return;
+//            }
 
             SoundTool.playLocalSound(player, ModSounds.TARGET_DOWN.get(), 3f, 1f);
             PacketDistributor.sendToPlayer(player, new ClientIndicatorMessage(2, 8));
@@ -843,10 +840,10 @@ public class LivingEventHandler {
 
     @SubscribeEvent
     public static void onKnockback(LivingKnockBackEvent event) {
-//        ICustomKnockback knockback = ICustomKnockback.getInstance(event.getEntity());
-//        if (knockback.superbWarfare$getKnockbackStrength() >= 0) {
-//            event.setStrength((float) knockback.superbWarfare$getKnockbackStrength());
-//        }
+        ICustomKnockback knockback = ICustomKnockback.getInstance(event.getEntity());
+        if (knockback.superbWarfare$getKnockbackStrength() >= 0) {
+            event.setStrength((float) knockback.superbWarfare$getKnockbackStrength());
+        }
     }
 
     @SubscribeEvent
