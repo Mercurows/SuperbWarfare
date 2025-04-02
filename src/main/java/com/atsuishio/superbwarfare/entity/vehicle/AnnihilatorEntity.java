@@ -176,6 +176,7 @@ public class AnnihilatorEntity extends EnergyVehicleEntity implements GeoEntity,
         entityData.set(PITCH, Mth.wrapDegrees((float) (-(Mth.atan2(d1, d3) * 57.2957763671875))));
     }
 
+
     @Override
     public void positionRider(@NotNull Entity passenger, @NotNull MoveFunction callback) {
         if (!this.hasPassenger(passenger)) {
@@ -191,11 +192,6 @@ public class AnnihilatorEntity extends EnergyVehicleEntity implements GeoEntity,
         Vector4f worldPosition = transformPosition(transform, x, y, z);
         passenger.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
         callback.accept(passenger, worldPosition.x, worldPosition.y, worldPosition.z);
-    }
-
-    @Override
-    public @NotNull Vec3 getPassengerRidingPosition(@NotNull Entity entity) {
-        return super.getPassengerRidingPosition(entity).add(0, 0.75, 0);
     }
 
     @Override

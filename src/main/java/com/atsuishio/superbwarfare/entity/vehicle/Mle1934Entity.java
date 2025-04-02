@@ -176,7 +176,7 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
         return 2.16F;
     }
 
-    @Override
+
     public void positionRider(@NotNull Entity passenger, @NotNull MoveFunction callback) {
         if (!this.hasPassenger(passenger)) {
             return;
@@ -191,11 +191,6 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
         Vector4f worldPosition = transformPosition(transform, x, y, z);
         passenger.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
         callback.accept(passenger, worldPosition.x, worldPosition.y, worldPosition.z);
-    }
-
-    @Override
-    public @NotNull Vec3 getPassengerRidingPosition(@NotNull Entity entity) {
-        return super.getPassengerRidingPosition(entity).add(0, -0.075, 0);
     }
 
     @Override
