@@ -139,8 +139,16 @@ public class ModVillagers {
                     new ItemStack(ModItems.M_870_BLUEPRINT.get()), 10, 25, 0.05f));
             trades.get(3).add(new BasicItemListing(new ItemStack(Items.EMERALD, 32),
                     new ItemStack(ModItems.K_98_BLUEPRINT.get()), 10, 25, 0.05f));
-            trades.get(3).add(new BasicItemListing(new ItemStack(Items.EMERALD, 40),
+            trades.get(3).add(new BasicItemListing(new ItemStack(Items.EMERALD, 32),
                     new ItemStack(ModItems.MOSIN_NAGANT_BLUEPRINT.get()), 10, 25, 0.05f));
+            trades.get(3).add(new BasicItemListing(new ItemStack(Items.EMERALD, 32),
+                    new ItemStack(ModItems.RPG_BLUEPRINT.get()), 10, 25, 0.05f));
+            trades.get(3).add(new BasicItemListing(new ItemStack(Items.EMERALD, 32),
+                    new ItemStack(ModItems.HK_416_BLUEPRINT.get()), 10, 25, 0.05f));
+            trades.get(3).add(new BasicItemListing(new ItemStack(Items.EMERALD, 32),
+                    new ItemStack(ModItems.QBZ_95_BLUEPRINT.get()), 10, 25, 0.05f));
+            trades.get(3).add(new BasicItemListing(new ItemStack(Items.EMERALD, 32),
+                    new ItemStack(ModItems.AK_12_BLUEPRINT.get()), 10, 25, 0.05f));
 
             // 等级 4 交易
             trades.get(4).add(new BasicItemListing(new ItemStack(Items.EMERALD, 2),
@@ -203,10 +211,6 @@ public class ModVillagers {
             trades.get(5).add(new BasicItemListing(new ItemStack(Items.EMERALD, 64),
                     new ItemStack(ModItems.HUNTING_RIFLE_BLUEPRINT.get()), 10, 30, 0.05f));
             trades.get(5).add(new BasicItemListing(new ItemStack(Items.EMERALD, 64),
-                    new ItemStack(ModItems.RPG_BLUEPRINT.get()), 10, 30, 0.05f));
-            trades.get(5).add(new BasicItemListing(new ItemStack(Items.EMERALD, 64),
-                    new ItemStack(ModItems.HK_416_BLUEPRINT.get()), 10, 30, 0.05f));
-            trades.get(5).add(new BasicItemListing(new ItemStack(Items.EMERALD, 64),
                     new ItemStack(ModItems.RPK_BLUEPRINT.get()), 10, 30, 0.05f));
             trades.get(5).add(new BasicItemListing(new ItemStack(Items.EMERALD, 64),
                     new ItemStack(ModItems.VECTOR_BLUEPRINT.get()), 10, 30, 0.05f));
@@ -220,10 +224,6 @@ public class ModVillagers {
                     new ItemStack(ModItems.M_98B_BLUEPRINT.get()), 10, 30, 0.05f));
             trades.get(5).add(new BasicItemListing(new ItemStack(Items.EMERALD, 64),
                     new ItemStack(ModItems.DEVOTION_BLUEPRINT.get()), 10, 30, 0.05f));
-            trades.get(5).add(new BasicItemListing(new ItemStack(Items.EMERALD, 64),
-                    new ItemStack(ModItems.QBZ_95_BLUEPRINT.get()), 10, 30, 0.05f));
-            trades.get(5).add(new BasicItemListing(new ItemStack(Items.EMERALD, 64),
-                    new ItemStack(ModItems.AK_12_BLUEPRINT.get()), 10, 30, 0.05f));
 
             trades.get(5).add(new BasicItemListing(new ItemStack(Items.EMERALD, 16),
                     new ItemStack(ModItems.HE_5_INCHES.get(), 1), 8, 10, 0.05f));

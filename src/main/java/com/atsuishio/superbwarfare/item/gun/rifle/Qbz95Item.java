@@ -38,7 +38,7 @@ public class Qbz95Item extends GunItem implements GeoItem {
     public static ItemDisplayContext transformType;
 
     public Qbz95Item() {
-        super(new Properties().stacksTo(1).rarity(Rarity.EPIC));
+        super(new Properties().stacksTo(1).rarity(Rarity.RARE));
     }
 
     @Override
@@ -146,7 +146,6 @@ public class Qbz95Item extends GunItem implements GeoItem {
         final var rootTag = NBTTool.getTag(stack);
         int scopeType = GunsTool.getAttachmentType(rootTag, GunsTool.AttachmentType.SCOPE);
         int magType = GunsTool.getAttachmentType(rootTag, GunsTool.AttachmentType.MAGAZINE);
-        ;
 
         if (magType == 1) {
             CompoundTag tag = rootTag.getCompound("Attachments");

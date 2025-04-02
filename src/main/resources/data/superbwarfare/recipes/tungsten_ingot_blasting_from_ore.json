@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:blasting",
+  "category": "misc",
+  "experience": 4,
+  "cookingtime": 600,
+  "ingredient": [
+    {
+      "item": "superbwarfare:scheelite_ore"
+    },
+    {
+      "item": "superbwarfare:deepslate_scheelite_ore"
+    }
+  ],
+  "result": "superbwarfare:tungsten_ingot"
+}

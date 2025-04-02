@@ -8,13 +8,13 @@
   ],
   "key": {
     "a": {
-      "tag": "c:dusts/tungsten"
+      "tag": "forge:dusts/tungsten"
     },
     "b": {
-      "tag": "c:dusts/iron"
+      "tag": "forge:dusts/iron"
     },
     "c": {
-      "tag": "c:dusts/coal_coke"
+      "tag": "forge:dusts/coal_coke"
     }
   },
   "result": {

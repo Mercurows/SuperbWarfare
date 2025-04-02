@@ -32,112 +32,117 @@
         {
           "type": "minecraft:item",
           "name": "superbwarfare:glock_18_blueprint",
-          "weight": 62
+          "weight": 42
         },
         {
           "type": "minecraft:item",
           "name": "superbwarfare:m_79_blueprint",
-          "weight": 62
+          "weight": 42
         },
         {
           "type": "minecraft:item",
           "name": "superbwarfare:m_4_blueprint",
-          "weight": 62
+          "weight": 42
         },
         {
           "type": "minecraft:item",
           "name": "superbwarfare:sks_blueprint",
-          "weight": 62
+          "weight": 42
         },
         {
           "type": "minecraft:item",
           "name": "superbwarfare:m_870_blueprint",
-          "weight": 62
+          "weight": 42
         },
         {
           "type": "minecraft:item",
           "name": "superbwarfare:ak_47_blueprint",
-          "weight": 62
+          "weight": 42
         },
         {
           "type": "minecraft:item",
           "name": "superbwarfare:k_98_blueprint",
-          "weight": 62
+          "weight": 42
         },
         {
           "type": "minecraft:item",
           "name": "superbwarfare:mosin_nagant_blueprint",
-          "weight": 62
-        },
-        {
-          "type": "minecraft:item",
-          "name": "superbwarfare:trachelium_blueprint",
-          "weight": 12
-        },
-        {
-          "type": "minecraft:item",
-          "name": "superbwarfare:hunting_rifle_blueprint",
-          "weight": 12
-        },
-        {
-          "type": "minecraft:item",
-          "name": "superbwarfare:rpg_blueprint",
-          "weight": 12
-        },
-        {
-          "type": "minecraft:item",
-          "name": "superbwarfare:bocek_blueprint",
-          "weight": 12
+          "weight": 42
         },
         {
           "type": "minecraft:item",
           "name": "superbwarfare:hk_416_blueprint",
-          "weight": 12
-        },
-        {
-          "type": "minecraft:item",
-          "name": "superbwarfare:rpk_blueprint",
-          "weight": 12
-        },
-        {
-          "type": "minecraft:item",
-          "name": "superbwarfare:vector_blueprint",
-          "weight": 12
-        },
-        {
-          "type": "minecraft:item",
-          "name": "superbwarfare:mk_14_blueprint",
-          "weight": 12
-        },
-        {
-          "type": "minecraft:item",
-          "name": "superbwarfare:m_60_blueprint",
-          "weight": 12
-        },
-        {
-          "type": "minecraft:item",
-          "name": "superbwarfare:svd_blueprint",
-          "weight": 12
-        },
-        {
-          "type": "minecraft:item",
-          "name": "superbwarfare:m_98b_blueprint",
-          "weight": 12
+          "weight": 42
         },
         {
           "type": "minecraft:item",
           "name": "superbwarfare:ak_12_blueprint",
-          "weight": 12
-        },
-        {
-          "type": "minecraft:item",
-          "name": "superbwarfare:devotion_blueprint",
-          "weight": 12
+          "weight": 42
         },
         {
           "type": "minecraft:item",
           "name": "superbwarfare:qbz_95_blueprint",
-          "weight": 12
+          "weight": 42
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:rpg_blueprint",
+          "weight": 42
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:trachelium_blueprint",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:hunting_rifle_blueprint",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:bocek_blueprint",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:rpk_blueprint",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:vector_blueprint",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:mk_14_blueprint",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:m_60_blueprint",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:svd_blueprint",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:m_98b_blueprint",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:devotion_blueprint",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:insidious_blueprint",
+          "weight": 15
         },
         {
           "type": "minecraft:item",

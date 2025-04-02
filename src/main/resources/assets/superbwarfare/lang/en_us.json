@@ -48,6 +48,7 @@
   "item.superbwarfare.mosin_nagant": "Mosin Nagant",
   "item.superbwarfare.javelin": "FGM-148 Javelin",
   "item.superbwarfare.secondary_cataclysm": "Secondary Cataclysm",
+  "item.superbwarfare.insidious": "Insidious",
 
   "des.superbwarfare.guns.damage": "Damage: ",
   "des.superbwarfare.guns.level": "Level: ",
@@ -108,6 +109,7 @@
   "item.superbwarfare.annihilator_blueprint": "Annihilator Energy Gun Blueprint",
   "item.superbwarfare.m2hb_blueprint": "M2HB Blueprint",
   "item.superbwarfare.secondary_cataclysm_blueprint": "Secondary Cataclysm Blueprint",
+  "item.superbwarfare.insidious_blueprint": "Insidious Blueprint",
 
   "item.superbwarfare.common_material_pack": "Common Material Pack",
   "item.superbwarfare.rare_material_pack": "Rare Material Pack",

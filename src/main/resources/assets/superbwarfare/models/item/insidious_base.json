@@ -1,0 +1,6 @@
+{
+  "parent": "superbwarfare:displaysettings/insidious.item",
+  "textures": {
+    "layer0": "superbwarfare:item/insidious"
+  }
+}

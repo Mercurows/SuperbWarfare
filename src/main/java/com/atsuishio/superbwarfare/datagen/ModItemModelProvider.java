@@ -153,6 +153,7 @@ public class ModItemModelProvider extends ItemModelProvider {
         cannonBlueprintItem(ModItems.ANNIHILATOR_BLUEPRINT);
         gunBlueprintItem(ModItems.M_2_HB_BLUEPRINT);
         gunBlueprintItem(ModItems.SECONDARY_CATACLYSM_BLUEPRINT);
+        gunBlueprintItem(ModItems.INSIDIOUS_BLUEPRINT);
 
         // blocks
         evenSimplerBlockItem(ModBlocks.BARBED_WIRE);

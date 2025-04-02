@@ -4,7 +4,7 @@
     "item": "superbwarfare:rpg_blueprint"
   },
   "base": {
-    "item": "superbwarfare:epic_material_pack"
+    "item": "superbwarfare:rare_material_pack"
   },
   "addition": {
     "item": "minecraft:dispenser"

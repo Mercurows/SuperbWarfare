@@ -12,7 +12,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.Item;
@@ -43,7 +42,7 @@ public class C4Bomb extends Item implements ProjectileItem {
             C4Entity entity = new C4Entity(player, level, flag);
             entity.setPos(player.getX() + 0.25 * player.getLookAngle().x, player.getEyeY() - 0.2f + 0.25 * player.getLookAngle().y, player.getZ() + 0.25 * player.getLookAngle().z);
             entity.setDeltaMovement(0.5 * player.getLookAngle().x, 0.5 * player.getLookAngle().y, 0.5 * player.getLookAngle().z);
-            entity.setOwner(player);
+            entity.setOwnerUUID(player.getUUID());
 
             level.addFreshEntity(entity);
         }
@@ -83,9 +82,10 @@ public class C4Bomb extends Item implements ProjectileItem {
     @Override
     @ParametersAreNonnullByDefault
     public @NotNull Projectile asProjectile(Level level, Position pos, ItemStack stack, Direction direction) {
-        var c4 = new C4Entity((LivingEntity) null, level);
-        c4.setPos(pos.x(), pos.y(), pos.z());
-        return c4;
+        // TODO 重写发射器行为
+        //        var c4 = new C4Entity((LivingEntity) null, level);
+//        c4.setPos(pos.x(), pos.y(), pos.z());
+        return null;
     }
 
     @Override

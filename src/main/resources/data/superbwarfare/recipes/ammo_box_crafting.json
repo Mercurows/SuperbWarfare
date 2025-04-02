@@ -10,7 +10,7 @@
       "item": "minecraft:iron_ingot"
     },
     "b": {
-      "tag": "c:dyes/green"
+      "tag": "forge:dyes/green"
     }
   },
   "result": {

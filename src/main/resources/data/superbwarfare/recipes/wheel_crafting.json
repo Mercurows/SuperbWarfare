@@ -11,7 +11,7 @@
       "item": "minecraft:black_wool"
     },
     "b": {
-      "tag":"neoforge:ingots/iron"
+      "tag":"forge:ingots/iron"
     }
   },
   "result": {

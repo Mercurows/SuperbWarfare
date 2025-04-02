@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:blasting",
+  "category": "misc",
+  "experience": 0.7,
+  "cookingtime": 100,
+  "ingredient": [
+    {
+      "item": "superbwarfare:silver_ore"
+    },
+    {
+      "item": "superbwarfare:deepslate_silver_ore"
+    }
+  ],
+  "result": "superbwarfare:silver_ingot"
+}

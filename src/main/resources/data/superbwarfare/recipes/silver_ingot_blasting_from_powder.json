@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:blasting",
+  "cookingtime": 100,
+  "experience": 0.3,
+  "ingredient": {
+    "tag": "forge:dusts/silver"
+  },
+  "result": "superbwarfare:silver_ingot",
+  "conditions": [
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:dusts/silver"
+      }
+    }
+  ]
+}

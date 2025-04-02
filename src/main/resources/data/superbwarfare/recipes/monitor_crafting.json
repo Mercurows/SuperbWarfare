@@ -20,7 +20,7 @@
       "item": "minecraft:amethyst_shard"
     },
     "e": {
-      "tag": "c:glass_panes"
+      "tag": "forge:glass_panes"
     }
   },
   "result": {

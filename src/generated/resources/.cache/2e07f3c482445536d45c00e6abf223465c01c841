@@ -1,4 +1,4 @@
-// 1.21.1	2025-03-27T19:21:19.6262589	Tags for minecraft:item mod id superbwarfare
+// 1.21.1	2025-04-02T18:07:51.8627648	Tags for minecraft:item mod id superbwarfare
 44a232152f5941d0435a35483b37f8ed22fd10bf data/c/tags/item/dusts.json
 0fa06c2ff83bf09797e3ddff90f62d1124e645b4 data/c/tags/item/dusts/coal_coke.json
 295ddf906b7133a0558d03e9a60eea18281fe430 data/c/tags/item/dusts/iron.json
@@ -29,10 +29,10 @@ af6fd64b4a685c353f243763db268f7b2304c009 data/c/tags/item/storage_blocks/lead.js
 362d41246c4c832d114e8b8942b105f4010d4ba0 data/superbwarfare/tags/item/blueprint.json
 b2487459d95ca9a319bfbd94e60a48de60e07297 data/superbwarfare/tags/item/blueprint/cannon.json
 889e4b56462df422f57191f07229009dcf2073e3 data/superbwarfare/tags/item/blueprint/common.json
-2512dd03ae847ab6b4a9cc60d32ff3b3a5cdad82 data/superbwarfare/tags/item/blueprint/epic.json
+3c4adac76810982986b6cd9845192ae8416324f4 data/superbwarfare/tags/item/blueprint/epic.json
 8014c67b62b785b4b7e23d8e5aa70343c30b2fbd data/superbwarfare/tags/item/blueprint/legendary.json
-2a49f09e9374bf7f355aae50be470169406ff2d3 data/superbwarfare/tags/item/blueprint/rare.json
-748a5e10c7eb644efcfbce889daff4d68a0ceb2b data/superbwarfare/tags/item/gun.json
+3154110c8f6b5d1473d558b7d0d2f752396dff34 data/superbwarfare/tags/item/blueprint/rare.json
+8d846ffd414f5878a783e5a2a094e72df4354f8f data/superbwarfare/tags/item/gun.json
 409af265147e812b6f6558c51f1cb83b0f61b7d3 data/superbwarfare/tags/item/handgun.json
 0ab1b2a8f5433e0d1b03446a9d0d9428e9d64feb data/superbwarfare/tags/item/heavy_weapon.json
 3cc00928c041f710b50eb1f7a817e0345f6f96b3 data/superbwarfare/tags/item/ingots/cemented_carbide.json
@@ -40,7 +40,7 @@ a1c6460b9c956972b74d5ad5cd206e9ae3560b03 data/superbwarfare/tags/item/ingots/ste
 65ddb0a8a671cc65af8e3754fc23e7d24c3587b7 data/superbwarfare/tags/item/launcher.json
 b404c6fd99d2ca68c6738f225cb7d68ee443c10a data/superbwarfare/tags/item/machine_gun.json
 a53020091752016da6602ee1b8b7e08823614344 data/superbwarfare/tags/item/military_armor.json
-57750741ce5781bb44a44f0d085c6abc2b4651b6 data/superbwarfare/tags/item/normal_gun.json
+35840286824cc674ec120615dd5dc14980769e15 data/superbwarfare/tags/item/normal_gun.json
 15328cd564c931cc0a4fc000596240f93a7b29a1 data/superbwarfare/tags/item/revolver.json
 aaa533157491a82b8e23b2914deef67c4078cbed data/superbwarfare/tags/item/rifle.json
 a249d9d052cdc24b34e0e51ab991329f6c76e8ab data/superbwarfare/tags/item/shotgun.json
@@ -50,6 +50,6 @@ a249d9d052cdc24b34e0e51ab991329f6c76e8ab data/superbwarfare/tags/item/shotgun.js
 de0d84361d5208127bff21e915987ec561cdef13 data/superbwarfare/tags/item/storage_blocks/steel.json
 9af8a0147d1e920ef2a2b990bc9010367cf3b7df data/superbwarfare/tags/item/use_handgun_ammo.json
 0ab1b2a8f5433e0d1b03446a9d0d9428e9d64feb data/superbwarfare/tags/item/use_heavy_ammo.json
-2899774c6325135847a85b09121ce25587aa275e data/superbwarfare/tags/item/use_rifle_ammo.json
+ee130846fa0c4e4a51833c6a0b1de7daaa098a73 data/superbwarfare/tags/item/use_rifle_ammo.json
 a249d9d052cdc24b34e0e51ab991329f6c76e8ab data/superbwarfare/tags/item/use_shotgun_ammo.json
 7a12c751d024c06b3e88657afddc84fce8e13295 data/superbwarfare/tags/item/use_sniper_ammo.json

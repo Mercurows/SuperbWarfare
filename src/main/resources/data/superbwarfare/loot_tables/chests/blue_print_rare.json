@@ -189,7 +189,7 @@
         {
           "type": "minecraft:item",
           "name": "superbwarfare:rpg_blueprint",
-          "weight": 10,
+          "weight": 15,
           "functions": [
             {
               "function": "set_count",
@@ -203,7 +203,7 @@
         {
           "type": "minecraft:item",
           "name": "superbwarfare:hk_416_blueprint",
-          "weight": 10,
+          "weight": 15,
           "functions": [
             {
               "function": "set_count",
@@ -217,7 +217,7 @@
         {
           "type": "minecraft:item",
           "name": "superbwarfare:ak_12_blueprint",
-          "weight": 10,
+          "weight": 15,
           "functions": [
             {
               "function": "set_count",
@@ -329,7 +329,7 @@
         {
           "type": "minecraft:item",
           "name": "superbwarfare:qbz_95_blueprint",
-          "weight": 10,
+          "weight": 15,
           "functions": [
             {
               "function": "set_count",

@@ -11,7 +11,7 @@
       "item": "minecraft:copper_ingot"
     },
     "b": {
-      "tag": "c:plates/copper"
+      "tag": "forge:plates/copper"
     },
     "c": {
       "item": "minecraft:gunpowder"

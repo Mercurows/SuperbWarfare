@@ -10,7 +10,7 @@
       "tag": "superbwarfare:ingots/steel"
     },
     "b": {
-      "tag": "c:dyes/black"
+      "tag": "forge:dyes/black"
     },
     "c": {
       "item": "superbwarfare:steel_ingot"

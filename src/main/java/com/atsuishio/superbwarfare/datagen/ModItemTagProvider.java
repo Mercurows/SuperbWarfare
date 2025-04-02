@@ -97,7 +97,7 @@ public class ModItemTagProvider extends ItemTagsProvider {
                 ModItems.HOMEMADE_SHOTGUN.get(), ModItems.AK_47.get(), ModItems.AK_12.get(), ModItems.SVD.get(), ModItems.M_60.get(), ModItems.MK_14.get(), ModItems.VECTOR.get(),
                 ModItems.SKS.get(), ModItems.RPK.get(), ModItems.HK_416.get(), ModItems.AA_12.get(), ModItems.M_4.get(), ModItems.DEVOTION.get(), ModItems.TRACHELIUM.get(),
                 ModItems.HUNTING_RIFLE.get(), ModItems.NTW_20.get(), ModItems.M_98B.get(), ModItems.SENTINEL.get(), ModItems.M_870.get(), ModItems.MARLIN.get(), ModItems.GLOCK_17.get(),
-                ModItems.GLOCK_18.get(), ModItems.M_1911.get(), ModItems.QBZ_95.get(), ModItems.K_98.get(), ModItems.MOSIN_NAGANT.get(), ModItems.MP_443.get()
+                ModItems.GLOCK_18.get(), ModItems.M_1911.get(), ModItems.QBZ_95.get(), ModItems.K_98.get(), ModItems.MOSIN_NAGANT.get(), ModItems.MP_443.get(), ModItems.INSIDIOUS.get()
         );
 
         this.tag(ModTags.Items.USE_HANDGUN_AMMO).add(
@@ -105,7 +105,7 @@ public class ModItemTagProvider extends ItemTagsProvider {
         );
 
         this.tag(ModTags.Items.USE_RIFLE_AMMO).add(ModItems.M_4.get(), ModItems.HK_416.get(), ModItems.SKS.get(), ModItems.MINIGUN.get(), ModItems.DEVOTION.get(), ModItems.M_60.get(),
-                ModItems.MK_14.get(), ModItems.MARLIN.get(), ModItems.AK_47.get(), ModItems.AK_12.get(), ModItems.QBZ_95.get(), ModItems.RPK.get(), ModItems.TRACHELIUM.get());
+                ModItems.MK_14.get(), ModItems.MARLIN.get(), ModItems.AK_47.get(), ModItems.AK_12.get(), ModItems.QBZ_95.get(), ModItems.RPK.get(), ModItems.TRACHELIUM.get(), ModItems.INSIDIOUS.get());
 
         this.tag(ModTags.Items.USE_SHOTGUN_AMMO).add(ModItems.HOMEMADE_SHOTGUN.get(), ModItems.M_870.get(), ModItems.AA_12.get());
 
@@ -122,18 +122,23 @@ public class ModItemTagProvider extends ItemTagsProvider {
 
         this.tag(ModTags.Items.BLUEPRINT).addTags(ModTags.Items.COMMON_BLUEPRINT, ModTags.Items.RARE_BLUEPRINT, ModTags.Items.EPIC_BLUEPRINT,
                 ModTags.Items.LEGENDARY_BLUEPRINT, ModTags.Items.CANNON_BLUEPRINT);
+
         this.tag(ModTags.Items.COMMON_BLUEPRINT).add(ModItems.GLOCK_17_BLUEPRINT.get(), ModItems.MP_443_BLUEPRINT.get(), ModItems.MARLIN_BLUEPRINT.get(),
                 ModItems.TASER_BLUEPRINT.get(), ModItems.M_1911_BLUEPRINT.get());
+
         this.tag(ModTags.Items.RARE_BLUEPRINT).add(ModItems.GLOCK_18_BLUEPRINT.get(), ModItems.M_79_BLUEPRINT.get(), ModItems.M_4_BLUEPRINT.get(),
                 ModItems.SKS_BLUEPRINT.get(), ModItems.M_870_BLUEPRINT.get(), ModItems.AK_47_BLUEPRINT.get(), ModItems.K_98_BLUEPRINT.get(),
-                ModItems.MOSIN_NAGANT_BLUEPRINT.get(), ModItems.M_2_HB_BLUEPRINT.get());
-        this.tag(ModTags.Items.EPIC_BLUEPRINT).add(ModItems.TRACHELIUM_BLUEPRINT.get(), ModItems.HUNTING_RIFLE_BLUEPRINT.get(), ModItems.RPG_BLUEPRINT.get(),
-                ModItems.BOCEK_BLUEPRINT.get(), ModItems.HK_416_BLUEPRINT.get(), ModItems.RPK_BLUEPRINT.get(), ModItems.VECTOR_BLUEPRINT.get(),
-                ModItems.MK_14_BLUEPRINT.get(), ModItems.M_60_BLUEPRINT.get(), ModItems.SVD_BLUEPRINT.get(), ModItems.M_98B_BLUEPRINT.get(),
-                ModItems.AK_12_BLUEPRINT.get(), ModItems.DEVOTION_BLUEPRINT.get(), ModItems.QBZ_95_BLUEPRINT.get());
+                ModItems.MOSIN_NAGANT_BLUEPRINT.get(), ModItems.M_2_HB_BLUEPRINT.get(), ModItems.HK_416_BLUEPRINT.get(), ModItems.AK_12_BLUEPRINT.get()
+                , ModItems.QBZ_95_BLUEPRINT.get(), ModItems.RPG_BLUEPRINT.get());
+
+        this.tag(ModTags.Items.EPIC_BLUEPRINT).add(ModItems.TRACHELIUM_BLUEPRINT.get(), ModItems.HUNTING_RIFLE_BLUEPRINT.get(), ModItems.BOCEK_BLUEPRINT.get(),
+                ModItems.RPK_BLUEPRINT.get(), ModItems.VECTOR_BLUEPRINT.get(), ModItems.MK_14_BLUEPRINT.get(), ModItems.M_60_BLUEPRINT.get(), ModItems.SVD_BLUEPRINT.get(),
+                ModItems.M_98B_BLUEPRINT.get(), ModItems.DEVOTION_BLUEPRINT.get(), ModItems.INSIDIOUS_BLUEPRINT.get());
+
         this.tag(ModTags.Items.LEGENDARY_BLUEPRINT).add(ModItems.AA_12_BLUEPRINT.get(), ModItems.NTW_20_BLUEPRINT.get(), ModItems.MINIGUN_BLUEPRINT.get(),
                 ModItems.SENTINEL_BLUEPRINT.get(), ModItems.JAVELIN_BLUEPRINT.get(), ModItems.SECONDARY_CATACLYSM_BLUEPRINT.get(), ModItems.MK_42_BLUEPRINT.get(),
                 ModItems.MLE_1934_BLUEPRINT.get(), ModItems.ANNIHILATOR_BLUEPRINT.get());
+
         this.tag(ModTags.Items.CANNON_BLUEPRINT).add(ModItems.MK_42_BLUEPRINT.get(), ModItems.MLE_1934_BLUEPRINT.get(), ModItems.ANNIHILATOR_BLUEPRINT.get());
     }
 

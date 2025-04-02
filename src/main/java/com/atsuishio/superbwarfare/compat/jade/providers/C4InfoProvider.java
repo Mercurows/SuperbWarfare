@@ -24,7 +24,7 @@ public enum C4InfoProvider implements IEntityComponentProvider {
             tooltip.add(Component.translatable("des.jade_plugin_superbwarfare.c4.remote_control").withStyle(ChatFormatting.YELLOW));
         } else {
             // 定时
-            var timeLeft = ExplosionConfig.C4_EXPLOSION_COUNTDOWN.get() - c4.tickCount;
+            var timeLeft = ExplosionConfig.C4_EXPLOSION_COUNTDOWN.get() - c4.getBombTick();
             tooltip.add(Component.translatable(
                     "des.jade_plugin_superbwarfare.c4.time_left",
                     String.format("%.2f", timeLeft / 20.0)

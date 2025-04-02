@@ -38,8 +38,7 @@ import net.neoforged.neoforge.client.settings.KeyConflictContext;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.lwjgl.glfw.GLFW;
 
-import static com.atsuishio.superbwarfare.event.ClientEventHandler.cantFireTime;
-import static com.atsuishio.superbwarfare.event.ClientEventHandler.drawTime;
+import static com.atsuishio.superbwarfare.event.ClientEventHandler.*;
 
 
 @EventBusSubscriber(bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
@@ -211,6 +210,7 @@ public class ClickHandler {
 //            }
 
             if (key == ModKeyMappings.RELOAD.getKey().getValue()) {
+                ClientEventHandler.burstFireSize = 0;
                 PacketDistributor.sendToServer(new ReloadMessage(0));
             }
             if (key == ModKeyMappings.FIRE_MODE.getKey().getValue()) {
@@ -317,8 +317,17 @@ public class ClickHandler {
             ClientEventHandler.holdFire = true;
         }
 
-        if (stack.getItem() instanceof GunItem gunItem && !(player.getVehicle() != null && player.getVehicle() instanceof CannonEntity)) {
-            var tag = NBTTool.getTag(stack);
+        var tag = NBTTool.getTag(stack);
+        if (stack.getItem() instanceof GunItem gunItem && !(player.getVehicle() != null
+                && player.getVehicle() instanceof CannonEntity) && clientTimer.getProgress() == 0 && cantFireTime == 0
+                && (!(tag.getBoolean("is_normal_reloading") || tag.getBoolean("is_empty_reloading"))
+                && !GunsTool.getGunBooleanTag(tag, "Reloading")
+                && !GunsTool.getGunBooleanTag(tag, "Charging")
+                && !GunsTool.getGunBooleanTag(tag, "NeedBoltAction", false))
+                && cantFireTime == 0
+                && drawTime < 0.01
+                && !notInGame()
+        ) {
             if ((!(tag.getBoolean("is_normal_reloading") || tag.getBoolean("is_empty_reloading"))
                     && !GunsTool.getGunBooleanTag(tag, "Reloading")
                     && !GunsTool.getGunBooleanTag(tag, "Charging")
@@ -332,14 +341,18 @@ public class ClickHandler {
             if (!gunItem.useBackpackAmmo(stack) && GunsTool.getGunIntTag(tag, "Ammo", 0) <= 0 && GunsTool.getGunIntTag(tag, "ReloadTime") == 0) {
                 if (ReloadConfig.LEFT_CLICK_RELOAD.get()) {
                     PacketDistributor.sendToServer(new ReloadMessage(0));
+                    ClientEventHandler.burstFireSize = 0;
                 }
             } else {
                 PacketDistributor.sendToServer(new FireMessage(0));
-                if (!stack.is(ModItems.BOCEK.get())) {
-                    ClientEventHandler.holdFire = true;
-                }
-                if (GunsTool.getGunIntTag(tag, "FireMode") == 1 && ClientEventHandler.burstFireSize == 0) {
-                    ClientEventHandler.burstFireSize = GunsTool.getGunIntTag(tag, "BurstSize", 1);
+                if (GunsTool.getGunIntTag(tag, "FireMode") == 1) {
+                    if (ClientEventHandler.burstFireSize == 0) {
+                        ClientEventHandler.burstFireSize = GunsTool.getGunIntTag(tag, "BurstSize", 1);
+                    }
+                } else {
+                    if (!stack.is(ModItems.BOCEK.get())) {
+                        ClientEventHandler.holdFire = true;
+                    }
                 }
             }
         }

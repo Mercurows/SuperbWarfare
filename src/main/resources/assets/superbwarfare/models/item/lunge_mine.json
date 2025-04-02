@@ -1,5 +1,5 @@
 {
-  "loader": "neoforge:separate_transforms",
+	"loader": "neoforge:separate_transforms",
 	"gui_light": "front",
 	"base": {
 		"parent": "superbwarfare:item/lunge_mine_base"

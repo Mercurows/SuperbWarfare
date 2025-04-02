@@ -1,0 +1,27 @@
+{
+	"loader": "neoforge:separate_transforms",
+	"gui_light": "front",
+	"base": {
+		"parent": "superbwarfare:item/insidious_base"
+	},
+	"perspectives": {
+		"gui": {
+			"parent": "superbwarfare:item/insidious_icon"
+		},
+		"thirdperson_righthand": {
+			"parent": "superbwarfare:item/insidious_3d"
+		},
+		"thirdperson_lefthand": {
+			"parent": "superbwarfare:item/insidious_3d"
+		},
+		"ground": {
+			"parent": "superbwarfare:item/insidious_3d"
+		},
+		"fixed": {
+			"parent": "superbwarfare:item/insidious_3d"
+		},
+		"head": {
+			"parent": "superbwarfare:item/insidious_3d"
+		}
+	}
+}

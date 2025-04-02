@@ -42,7 +42,7 @@ public class AK12Item extends GunItem implements GeoItem {
     }
 
     public AK12Item() {
-        super(new Properties().stacksTo(1).rarity(Rarity.EPIC));
+        super(new Properties().stacksTo(1).rarity(Rarity.RARE));
     }
 
     @Override

@@ -4,10 +4,10 @@
     "item": "superbwarfare:ak_12_blueprint"
   },
   "base": {
-    "item": "superbwarfare:epic_material_pack"
+    "item": "superbwarfare:rare_material_pack"
   },
   "addition": {
-    "tag": "superbwarfare:ingots/cemented_carbide"
+    "tag": "superbwarfare:ingots/steel"
   },
   "result": {
     "item": "superbwarfare:ak_12"

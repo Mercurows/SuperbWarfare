@@ -64,6 +64,7 @@ public class ModItems {
     public static final DeferredHolder<Item, M4Item> M_4 = GUNS.register("m_4", M4Item::new);
     public static final DeferredHolder<Item, Hk416Item> HK_416 = GUNS.register("hk_416", Hk416Item::new);
     public static final DeferredHolder<Item, Qbz95Item> QBZ_95 = GUNS.register("qbz_95", Qbz95Item::new);
+    public static final DeferredHolder<Item, InsidiousItem> INSIDIOUS = GUNS.register("insidious", InsidiousItem::new);
     public static final DeferredHolder<Item, Mk14Item> MK_14 = GUNS.register("mk_14", Mk14Item::new);
     public static final DeferredHolder<Item, MarlinItem> MARLIN = GUNS.register("marlin", MarlinItem::new);
     public static final DeferredHolder<Item, K98Item> K_98 = GUNS.register("k_98", K98Item::new);
@@ -244,6 +245,7 @@ public class ModItems {
     public static final DeferredHolder<Item, BlueprintItem> JAVELIN_BLUEPRINT = ITEMS.register("javelin_blueprint", () -> new BlueprintItem(ModRarity.getLegendary()));
     public static final DeferredHolder<Item, BlueprintItem> M_2_HB_BLUEPRINT = ITEMS.register("m2hb_blueprint", () -> new BlueprintItem(Rarity.RARE));
     public static final DeferredHolder<Item, BlueprintItem> SECONDARY_CATACLYSM_BLUEPRINT = ITEMS.register("secondary_cataclysm_blueprint", () -> new BlueprintItem(ModRarity.getLegendary()));
+    public static final DeferredHolder<Item, BlueprintItem> INSIDIOUS_BLUEPRINT = ITEMS.register("insidious_blueprint", () -> new BlueprintItem(Rarity.EPIC));
     public static final DeferredHolder<Item, BlueprintItem> MK_42_BLUEPRINT = ITEMS.register("mk_42_blueprint", () -> new BlueprintItem(ModRarity.getLegendary()));
     public static final DeferredHolder<Item, BlueprintItem> MLE_1934_BLUEPRINT = ITEMS.register("mle_1934_blueprint", () -> new BlueprintItem(ModRarity.getLegendary()));
     public static final DeferredHolder<Item, BlueprintItem> ANNIHILATOR_BLUEPRINT = ITEMS.register("annihilator_blueprint", () -> new BlueprintItem(ModRarity.getLegendary()));

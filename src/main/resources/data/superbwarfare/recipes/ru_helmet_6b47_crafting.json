@@ -10,7 +10,7 @@
       "tag": "superbwarfare:ingots/cemented_carbide"
     },
     "b": {
-      "tag": "c:dyes/green"
+      "tag": "forge:dyes/green"
     },
     "c": {
       "item": "superbwarfare:cemented_carbide_ingot"
