@@ -41,7 +41,6 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Explosion;
@@ -214,20 +213,18 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
             this.handleAmmo();
         }
 
-        double fluidFloat;
-        fluidFloat = 0.052 * getSubmergedHeight(this);
-        this.setDeltaMovement(this.getDeltaMovement().add(0.0, fluidFloat, 0.0));
-
         if (this.onGround()) {
             float f0 = 0.54f + 0.25f * Mth.abs(90 - (float) calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90;
             this.setDeltaMovement(this.getDeltaMovement().add(this.getViewVector(1).normalize().scale(0.05 * this.getDeltaMovement().horizontalDistance())));
             this.setDeltaMovement(this.getDeltaMovement().multiply(f0, 0.85, f0));
-        } else if (this.isInWater()) {
-            float f1 = 0.61f + 0.08f * Mth.abs(90 - (float) calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90;
+        } else {
+            this.setDeltaMovement(this.getDeltaMovement().multiply(0.98, 0.95, 0.98));
+        }
+
+        if (this.isInWater()) {
+            float f1 = (float) (0.7f - (0.04f * Math.min(getSubmergedHeight(this), this.getBbHeight())) + 0.08f * Mth.abs(90 - (float) calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90);
             this.setDeltaMovement(this.getDeltaMovement().add(this.getViewVector(1).normalize().scale(0.04 * this.getDeltaMovement().horizontalDistance())));
             this.setDeltaMovement(this.getDeltaMovement().multiply(f1, 0.85, f1));
-        } else {
-            this.setDeltaMovement(this.getDeltaMovement().multiply(0.99, 0.95, 0.99));
         }
 
         if (this.level() instanceof ServerLevel serverLevel && this.isInWater() && this.getDeltaMovement().length() > 0.1) {
@@ -240,7 +237,7 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
             collideHardBlock();
         }
 
-        turretAngle(15, 10);
+        turretAngle(25, 25);
         this.terrainCompat(4f, 5f);
         inertiaRotate(1);
 
@@ -278,14 +275,6 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
         }
 
         this.entityData.set(MISSILE_COUNT, countItem(ModItems.WIRE_GUIDE_MISSILE.get()));
-    }
-
-    @Override
-    public void move(@NotNull MoverType movementType, @NotNull Vec3 movement) {
-        super.move(movementType, movement);
-        if (this.isInWater() && horizontalCollision) {
-            setDeltaMovement(this.getDeltaMovement().add(0, 0.07, 0));
-        }
     }
 
     @Override
@@ -421,11 +410,11 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
         }
 
         if (forwardInputDown) {
-            this.entityData.set(POWER, Math.min(this.entityData.get(POWER) + (this.entityData.get(POWER) < 0 ? 0.016f : 0.0024f), 0.21f));
+            this.entityData.set(POWER, Math.min(this.entityData.get(POWER) + (this.entityData.get(POWER) < 0 ? 0.004f : 0.0024f), 0.21f));
         }
 
         if (backInputDown) {
-            this.entityData.set(POWER, Math.max(this.entityData.get(POWER) - (this.entityData.get(POWER) > 0 ? 0.016f : 0.0024f), -0.16f));
+            this.entityData.set(POWER, Math.max(this.entityData.get(POWER) - (this.entityData.get(POWER) > 0 ? 0.004f : 0.0024f), -0.16f));
             if (rightInputDown) {
                 this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) + 0.1f);
             } else if (this.leftInputDown) {
@@ -607,7 +596,7 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
     }
 
     @Override
-    public void onPassengerTurned(Entity entity) {
+    public void onPassengerTurned(@NotNull Entity entity) {
         this.clampRotation(entity);
     }
 

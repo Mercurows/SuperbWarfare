@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "dbf",
+    "eee",
+    "hgh"
+  ],
+  "key": {
+    "b": {
+      "item": "superbwarfare:medium_armament_module"
+    },
+    "d": {
+      "item": "superbwarfare:large_battery_pack"
+    },
+    "e": {
+      "item": "superbwarfare:steel_block"
+    },
+    "f": {
+      "item": "minecraft:beacon"
+    },
+    "g": {
+      "item": "superbwarfare:large_motor"
+    },
+    "h": {
+      "item": "superbwarfare:track"
+    }
+  },
+  "result": {
+    "item": "superbwarfare:container",
+    "nbt": {
+      "BlockEntityTag": {
+        "EntityType": "superbwarfare:prism_tank"
+      }
+    }
+  }
+}

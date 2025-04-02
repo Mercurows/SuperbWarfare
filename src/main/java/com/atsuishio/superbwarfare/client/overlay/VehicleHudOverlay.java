@@ -3,10 +3,7 @@ package com.atsuishio.superbwarfare.client.overlay;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.config.client.DisplayConfig;
-import com.atsuishio.superbwarfare.entity.vehicle.Bmp2Entity;
-import com.atsuishio.superbwarfare.entity.vehicle.Lav150Entity;
-import com.atsuishio.superbwarfare.entity.vehicle.SpeedboatEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.Yx100Entity;
+import com.atsuishio.superbwarfare.entity.vehicle.*;
 import com.atsuishio.superbwarfare.entity.vehicle.base.*;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.HeliRocketWeapon;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.LaserWeapon;
@@ -156,6 +153,8 @@ public class VehicleHudOverlay {
                 && !(player.getVehicle() instanceof SpeedboatEntity)) {
             poseStack.pushPose();
 
+            poseStack.translate(0, 0 - 0.3 * ClientEventHandler.shakeTime + 3 * ClientEventHandler.cameraRoll, 0);
+            poseStack.rotateAround(Axis.ZP.rotationDegrees(-0.3f * ClientEventHandler.cameraRoll), w / 2f, h / 2f, 0);
             poseStack.translate(0.2 * ClientEventHandler.shakeTime + 5 * ClientEventHandler.cameraRoll, 0 - 0.3 * ClientEventHandler.shakeTime + 5 * ClientEventHandler.cameraRoll, 0);
             poseStack.rotateAround(Axis.ZP.rotationDegrees(-0.5f * ClientEventHandler.cameraRoll), w / 2f, h / 2f, 0);
             RenderSystem.disableDepthTest();
@@ -186,8 +185,12 @@ public class VehicleHudOverlay {
                         preciseBlit(guiGraphics, Mod.loc("textures/screens/land/tank_cannon_cross_ap.png"), k, l, 0, 0.0F, i, j, i, j);
                     } else if (weaponVehicle.getWeaponIndex(0) == 1) {
                         preciseBlit(guiGraphics, Mod.loc("textures/screens/land/tank_cannon_cross_he.png"), k, l, 0, 0.0F, i, j, i, j);
+                    } else if (weaponVehicle.getWeaponIndex(0) == 2) {
+                        preciseBlit(guiGraphics, Mod.loc("textures/screens/land/lav_gun_cross.png"), k, l, 0, 0.0F, i, j, i, j);
                     }
 
+                } else if (weaponVehicle instanceof PrismTankEntity) {
+                    preciseBlit(guiGraphics, Mod.loc("textures/screens/land/lav_missile_cross.png"), k, l, 0, 0.0F, i, j, i, j);
                 } else {
                     if (weaponVehicle.getWeaponIndex(0) == 0) {
                         preciseBlit(guiGraphics, Mod.loc("textures/screens/land/lav_cannon_cross.png"), k, l, 0, 0.0F, i, j, i, j);

@@ -791,7 +791,21 @@ public class ClientEventHandler {
                 player.playSound(ModSounds.M_2_FIRE_1P.get(), 1f, pitch);
                 player.playSound(ModSounds.SHELL_CASING_50CAL.get(), 0.3f, 1);
             } else {
-                player.playSound(ModSounds.YX_100_FIRE_1P.get(), 1f, 1);
+                if (yx100.getWeaponIndex(0) == 0 || yx100.getWeaponIndex(0) == 1) {
+                    player.playSound(ModSounds.YX_100_FIRE_1P.get(), 1f, 1);
+                } else if (yx100.getWeaponIndex(0) == 2) {
+                    float pitch = yx100.getEntityData().get(COAX_HEAT) <= 60 ? 1 : (float) (1 - 0.011 * Math.abs(60 - yx100.getEntityData().get(COAX_HEAT)));
+                    player.playSound(ModSounds.M_2_FIRE_1P.get(), 1f, pitch);
+                    player.playSound(ModSounds.SHELL_CASING_50CAL.get(), 0.3f, 1);
+                }
+            }
+        }
+        if (iVehicle instanceof PrismTankEntity prismTank) {
+            if (prismTank.getWeaponIndex(0) == 0) {
+                player.playSound(ModSounds.PRISM_FIRE_1P.get(), 1f, 1);
+            } else if (prismTank.getWeaponIndex(0) == 1) {
+                float pitch = prismTank.getEntityData().get(HEAT) <= 60 ? 1.1f : (float) (1.1f - 0.011 * Math.abs(60 - prismTank.getEntityData().get(HEAT)));
+                player.playSound(ModSounds.PRISM_FIRE_1P_2.get(), 1f, pitch);
             }
         }
     }

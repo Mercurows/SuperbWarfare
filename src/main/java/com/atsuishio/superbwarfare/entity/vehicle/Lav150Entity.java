@@ -37,7 +37,6 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Explosion;
@@ -215,14 +214,6 @@ public class Lav150Entity extends ContainerMobileVehicleEntity implements GeoEnt
             this.entityData.set(AMMO, countItem(ModItems.SMALL_SHELL.get()));
         } else if (getWeaponIndex(0) == 1) {
             this.entityData.set(AMMO, ammoCount);
-        }
-    }
-
-    @Override
-    public void move(@NotNull MoverType movementType, @NotNull Vec3 movement) {
-        super.move(movementType, movement);
-        if (this.isInWater() && horizontalCollision) {
-            setDeltaMovement(this.getDeltaMovement().add(0, 0.07, 0));
         }
     }
 
@@ -522,7 +513,7 @@ public class Lav150Entity extends ContainerMobileVehicleEntity implements GeoEnt
     }
 
     @Override
-    public void onPassengerTurned(Entity entity) {
+    public void onPassengerTurned(@NotNull Entity entity) {
         this.clampRotation(entity);
     }
 

@@ -78,7 +78,15 @@ public class ClientSoundHandler {
                         player.level().playLocalSound(BlockPos.containing(engineSoundPos), engineSound, mobileVehicle.getSoundSource(), 5 * (Mth.abs(mobileVehicle.getEntityData().get(POWER)) + Mth.abs(0.08f * mobileVehicle.getEntityData().get(DELTA_ROT)) - 0.004f) * distanceReduce * distanceReduce, (float) ((2 * Math.random() - 1) * 0.1f + 1), false);
                     }
                 }
-                if (e instanceof DroneEntity drone) {
+                if (e instanceof PrismTankEntity prismTank) {
+                    distanceReduce = (float) Math.max((1 - distance / 64), 0);
+                    if (player.getVehicle() == prismTank) {
+                        player.playSound(ModSounds.BMP_ENGINE_1P.get(), 1 * (Mth.abs(mobileVehicle.getEntityData().get(POWER)) + Mth.abs(0.08f * mobileVehicle.getEntityData().get(DELTA_ROT)) - 0.004f), (float) ((2 * Math.random() - 1) * 0.1f + 0.95f));
+                    } else {
+                        player.level().playLocalSound(BlockPos.containing(engineSoundPos), engineSound, mobileVehicle.getSoundSource(), 5 * (Mth.abs(mobileVehicle.getEntityData().get(POWER)) + Mth.abs(0.08f * mobileVehicle.getEntityData().get(DELTA_ROT)) - 0.004f) * distanceReduce * distanceReduce, (float) ((2 * Math.random() - 1) * 0.1f + 1), false);
+                    }
+                }
+                if (e instanceof DroneEntity) {
                     distanceReduce = (float) Math.max((1 - distance / 64), 0);
                     ItemStack stack = player.getMainHandItem();
                     final var tag = NBTTool.getTag(stack);

@@ -55,6 +55,7 @@ public class ContainerBlockItem extends BlockItem implements GeoItem {
             () -> ContainerBlockItem.createInstance(ModEntities.AH_6.get()),
             () -> ContainerBlockItem.createInstance(ModEntities.LAV_150.get(), true),
             () -> ContainerBlockItem.createInstance(ModEntities.BMP_2.get(), true),
+            () -> ContainerBlockItem.createInstance(ModEntities.PRISM_TANK.get(), true),
             () -> ContainerBlockItem.createInstance(ModEntities.YX_100.get()),
             () -> ContainerBlockItem.createInstance(ModEntities.WHEEL_CHAIR.get()),
             () -> ContainerBlockItem.createInstance(ModEntities.TOM_6.get())

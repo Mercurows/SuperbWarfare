@@ -127,6 +127,19 @@ public abstract class CameraMixin {
             return;
         }
 
+        if (player.getVehicle() instanceof PrismTankEntity prismTank && (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON || ClientEventHandler.zoomVehicle)) {
+            if (prismTank.getFirstPassenger() == player) {
+                setRotation((float) -VehicleEntity.getYRotFromVector(prismTank.getBarrelVec(partialTicks)), (float) -VehicleEntity.getXRotFromVector(prismTank.getBarrelVec(partialTicks)));
+                if (ClientEventHandler.zoomVehicle) {
+                    setPosition(prismTank.driverZoomPos(partialTicks).x, prismTank.driverZoomPos(partialTicks).y, prismTank.driverZoomPos(partialTicks).z);
+                } else {
+                    setPosition(prismTank.driverPos(partialTicks).x, prismTank.driverPos(partialTicks).y, prismTank.driverPos(partialTicks).z);
+                }
+                info.cancel();
+            }
+            return;
+        }
+
         if (player.getVehicle() instanceof CannonEntity && (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON || ClientEventHandler.zoomVehicle)) {
             setRotation(Mth.lerp(partialTicks, player.yRotO, player.getYRot()), Mth.lerp(partialTicks, player.xRotO, player.getXRot()));
             setPosition(Mth.lerp(partialTicks, player.xo, player.getX()), Mth.lerp(partialTicks, player.yo + player.getEyeHeight(), player.getEyeY()), Mth.lerp(partialTicks, player.zo, player.getZ()));

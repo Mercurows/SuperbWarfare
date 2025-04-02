@@ -427,5 +427,9 @@ public class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> C4_FINAL = REGISTRY.register("c4_final", () -> SoundEvent.createVariableRangeEvent(Mod.loc("c4_final")));
     public static final DeferredHolder<SoundEvent, SoundEvent> C4_THROW = REGISTRY.register("c4_throw", () -> SoundEvent.createVariableRangeEvent(Mod.loc("c4_throw")));
     public static final DeferredHolder<SoundEvent, SoundEvent> C4_DETONATOR_CLICK = REGISTRY.register("c4_detonator_click", () -> SoundEvent.createVariableRangeEvent(Mod.loc("c4_detonator_click")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> PRISM_FIRE_1P = REGISTRY.register("prism_fire_1p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("prism_fire_1p")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> PRISM_FIRE_3P = REGISTRY.register("prism_fire_3p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("prism_fire_3p")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> PRISM_FIRE_1P_2 = REGISTRY.register("prism_fire_1p_2", () -> SoundEvent.createVariableRangeEvent(Mod.loc("prism_fire_1p_2")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> PRISM_FIRE_3P_2 = REGISTRY.register("prism_fire_3p_2", () -> SoundEvent.createVariableRangeEvent(Mod.loc("prism_fire_3p_2")));
 }
 

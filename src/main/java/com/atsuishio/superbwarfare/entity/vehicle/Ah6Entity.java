@@ -121,7 +121,7 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
         super.defineSynchedData(builder);
         builder.define(LOADED_ROCKET, 0)
                 .define(PROPELLER_ROT, 0f)
-                .define(DECOY_COUNT, 6);
+                .define(DECOY_COUNT, 3);
     }
 
     @Override
@@ -258,14 +258,14 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
                     this.level().addFreshEntity(flareDecoyEntity);
                 }
                 this.level().playSound(null, this, ModSounds.DECOY_FIRE.get(), this.getSoundSource(), 1, 1);
-                if (this.getEntityData().get(DECOY_COUNT) == 6) {
+                if (this.getEntityData().get(DECOY_COUNT) == 3) {
                     decoyReloadCoolDown = 300;
                 }
                 this.getEntityData().set(DECOY_COUNT, this.getEntityData().get(DECOY_COUNT) - 1);
             }
             decoyInputDown = false;
         }
-        if (this.entityData.get(DECOY_COUNT) < 6 && decoyReloadCoolDown == 0 && this.level() instanceof ServerLevel) {
+        if (this.entityData.get(DECOY_COUNT) < 3 && decoyReloadCoolDown == 0 && this.level() instanceof ServerLevel) {
             this.entityData.set(DECOY_COUNT, this.entityData.get(DECOY_COUNT) + 1);
             this.level().playSound(null, this, ModSounds.DECOY_RELOAD.get(), this.getSoundSource(), 1, 1);
             decoyReloadCoolDown = 300;

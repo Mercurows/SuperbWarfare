@@ -67,14 +67,6 @@ public class TraceTool {
         double distance = entityReach * entityReach;
         Vec3 eyePos = player.getEyePosition(1.0f);
         HitResult hitResult = player.pick(entityReach, 1.0f, false);
-//        if (hitResult.getType() != HitResult.Type.MISS) {
-//            distance = hitResult.getLocation().distanceToSqr(eyePos);
-//            double blockReach = 5;
-//            if (distance > blockReach * blockReach) {
-//                Vec3 pos = hitResult.getLocation();
-//                hitResult = BlockHitResult.miss(pos, Direction.getNearest(eyePos.x, eyePos.y, eyePos.z), BlockPos.containing(pos));
-//            }
-//        }
 
         Vec3 viewVec = player.getViewVector(1.0F);
         Vec3 toVec = eyePos.add(viewVec.x * entityReach, viewVec.y * entityReach, viewVec.z * entityReach);

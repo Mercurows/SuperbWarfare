@@ -94,6 +94,16 @@ public class VehicleConfig {
     public static ModConfigSpec.IntValue YX_100_HE_CANNON_EXPLOSION_DAMAGE;
     public static ModConfigSpec.DoubleValue YX_100_HE_CANNON_EXPLOSION_RADIUS;
 
+    public static ModConfigSpec.IntValue PRISM_TANK_HP;
+    public static ModConfigSpec.IntValue PRISM_TANK_MAX_ENERGY;
+    public static ModConfigSpec.IntValue PRISM_TANK_ENERGY_COST;
+    public static ModConfigSpec.IntValue PRISM_TANK_DAMAGE_MODE_1;
+    public static ModConfigSpec.IntValue PRISM_TANK_SHOOT_COST_MODE_1;
+    public static ModConfigSpec.IntValue PRISM_TANK_AOE_DAMAGE;
+    public static ModConfigSpec.IntValue PRISM_TANK_AOE_RADIUS;
+    public static ModConfigSpec.IntValue PRISM_TANK_DAMAGE_MODE_2;
+    public static ModConfigSpec.IntValue PRISM_TANK_SHOOT_COST_MODE_2;
+
     public static void init(ModConfigSpec.Builder builder) {
         builder.push("vehicle");
 
@@ -361,6 +371,38 @@ public class VehicleConfig {
 
         builder.comment("The cannon explosion radius of Yx_100");
         YX_100_HE_CANNON_EXPLOSION_RADIUS = builder.defineInRange("yx_100_he_cannon_explosion_radius", 10d, 1d, 10000000d);
+
+        builder.pop();
+
+        builder.push("prism_tank");
+
+        builder.comment("The health of PrismTank");
+        PRISM_TANK_HP = builder.defineInRange("prism_tank_hp", 400, 1, 10000000);
+
+        builder.comment("The max energy storage of PrismTank");
+        PRISM_TANK_MAX_ENERGY = builder.defineInRange("prism_tank_energy", 20000000, 0, 2147483647);
+
+        builder.comment("The energy cost of PrismTank per tick");
+        PRISM_TANK_ENERGY_COST = builder.defineInRange("prism_tank_energy_cost", 96, 0, 2147483647);
+
+        builder.comment("The Laser Damage of PrismTank Mode 1");
+        PRISM_TANK_DAMAGE_MODE_1 = builder.defineInRange("prism_tank_damage_mode_1", 350, 0, 2147483647);
+
+        builder.comment("The energy cost of PrismTank Mode 1");
+        PRISM_TANK_SHOOT_COST_MODE_1 = builder.defineInRange("prism_tank_shoot_cost_mode_1", 100000, 1, 10000000);
+
+        builder.comment("The laser AOE damage of PrismTank");
+        PRISM_TANK_AOE_DAMAGE = builder.defineInRange("prism_tank_aoe_damage", 72, 1, 10000000);
+
+        builder.comment("The laser AOE radius of PrismTank");
+        PRISM_TANK_AOE_RADIUS = builder.defineInRange("prism_tank_aoe_radius", 12, 1, 10000000);
+
+        builder.comment("The Laser Damage of PrismTank Mode 2 per tick");
+        PRISM_TANK_DAMAGE_MODE_2 = builder.defineInRange("prism_tank_damage_mode_2", 15, 1, 10000000);
+
+        builder.comment("The energy cost of PrismTank Mode 2 per tick");
+        PRISM_TANK_SHOOT_COST_MODE_2 = builder.defineInRange("prism_tank_shoot_cost_mode_2", 5000, 1, 10000000);
+
 
         builder.pop();
 

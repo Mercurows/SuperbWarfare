@@ -2947,5 +2947,77 @@
         "stream": false
       }
     ]
+  },
+  "prism_fire_1p": {
+    "sounds": [
+      {
+        "name": "superbwarfare:prism/prism_fire_1p",
+        "stream": false
+      }
+    ]
+  },
+  "prism_fire_3p": {
+    "sounds": [
+      {
+        "name": "superbwarfare:prism/prism_fire_3p",
+        "stream": false
+      }
+    ]
+  },
+  "prism_fire_1p_2": {
+    "sounds": [
+      {
+        "name": "superbwarfare:prism/prism_fire_1p_2",
+        "stream": false
+      }
+    ]
+  },
+  "prism_fire_3p_2": {
+    "sounds": [
+      {
+        "name": "superbwarfare:prism/prism_fire_3p_2",
+        "stream": false
+      }
+    ]
+  },
+  "insidious_fire_1p": {
+    "sounds": [
+      {
+        "name": "superbwarfare:insidious/insidious_fire_1p",
+        "stream": false
+      }
+    ]
+  },
+  "insidious_fire_3p": {
+    "sounds": [
+      {
+        "name": "superbwarfare:insidious/insidious_fire_3p",
+        "stream": false
+      }
+    ]
+  },
+  "insidious_far": {
+    "sounds": [
+      {
+        "name": "superbwarfare:insidious/insidious_far",
+        "stream": false
+      }
+    ]
+  },
+  "insidious_veryfar": {
+    "sounds": [
+      {
+        "name": "superbwarfare:insidious/insidious_veryfar",
+        "stream": false
+      }
+    ]
+  },
+  "insidious_reload_empty": {
+    "sounds": [
+      {
+        "name": "superbwarfare:insidious/insidious_reload",
+        "stream": false
+      }
+    ]
   }
 }

@@ -26,7 +26,7 @@ public class ModEntities {
     public static final DeferredHolder<EntityType<?>, EntityType<TargetEntity>> TARGET = register("target",
             EntityType.Builder.of(TargetEntity::new, MobCategory.CREATURE).setTrackingRange(64).setUpdateInterval(3).fireImmune().sized(0.875f, 2f));
     public static final DeferredHolder<EntityType<?>, EntityType<SenpaiEntity>> SENPAI = register("senpai",
-            EntityType.Builder.<SenpaiEntity>of(SenpaiEntity::new, MobCategory.MONSTER).setTrackingRange(64).setUpdateInterval(3)
+            EntityType.Builder.of(SenpaiEntity::new, MobCategory.MONSTER).setTrackingRange(64).setUpdateInterval(3)
                     .sized(0.6f, 2f));
 
     //    // Misc Entities
@@ -102,6 +102,8 @@ public class ModEntities {
             EntityType.Builder.<DroneEntity>of(DroneEntity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).sized(0.6f, 0.2f));
     public static final DeferredHolder<EntityType<?>, EntityType<LaserTowerEntity>> LASER_TOWER = register("laser_tower",
             EntityType.Builder.<LaserTowerEntity>of(LaserTowerEntity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).fireImmune().sized(0.9f, 1.65f));
+    public static final DeferredHolder<EntityType<?>, EntityType<PrismTankEntity>> PRISM_TANK = register("prism_tank",
+            EntityType.Builder.of(PrismTankEntity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).fireImmune().sized(5f, 2.4f));
 
     private static <T extends Entity> DeferredHolder<EntityType<?>, EntityType<T>> register(String name, EntityType.Builder<T> entityTypeBuilder) {
         return REGISTRY.register(name, () -> entityTypeBuilder.build(name));
