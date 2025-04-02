@@ -42,3 +42,6 @@ versionRange = "[4.7.0,)"
 ordering = "NONE"
 side = "BOTH"
 
+[features.superbwarfare]
+openGLVersion = "[3.2,)"
+

@@ -1,9 +1,8 @@
 plugins {
     id 'idea'
-
     id 'java-library'
     id 'maven-publish'
-    id 'net.neoforged.moddev' version '1.0.21'
+    id 'net.neoforged.moddev' version '2.0.80'
 }
 
 tasks.named('wrapper', Wrapper).configure {
@@ -48,7 +47,7 @@ neoForge {
     }
 
     // This line is optional. Access Transformers are automatically detected
-    // accessTransformers = project.files('src/main/resources/META-INF/accesstransformer.cfg')
+    accessTransformers = project.files('src/main/resources/META-INF/accesstransformer.cfg')
 
     // Default run configurations.
     // These can be tweaked, removed, or duplicated as needed.
@@ -218,7 +217,6 @@ tasks.withType(JavaCompile).configureEach {
 tasks.named('createMinecraftArtifacts') {
     dependsOn tasks.named('generateModMetadata')
 }
-
 
 // IDEA no longer automatically downloads sources/javadoc jars for dependencies, so we need to explicitly enable the behavior.
 idea {
