@@ -897,14 +897,4 @@ public class GunEventHandler {
             data.putBoolean("Charging", false);
         }
     }
-
-    // TODO missing mapping event
-//    @SubscribeEvent
-//    public static void onMissingMappings(MissingMappingsEvent event) {
-//        for (MissingMappingsEvent.Mapping<Item> mapping : event.getAllMappings(Registries.ITEM)) {
-//            if (ModUtils.MODID.equals(mapping.getKey().getNamespace()) && mapping.getKey().getPath().equals("abekiri")) {
-//                mapping.remap(ModItems.HOMEMADE_SHOTGUN.get());
-//            }
-//        }
-//    }
 }

@@ -60,7 +60,10 @@ public class BurnMobEffect extends MobEffect {
             return;
         }
 
-        living.hurt(new DamageSource(living.level().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(DamageTypes.IN_FIRE), event.getEffectSource()), 0.6f + (0.3f * instance.getAmplifier()));
+        float amount = 0.6f + (0.3f * (instance == null ? 0 : instance.getAmplifier()));
+
+        living.hurt(new DamageSource(living.level().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(DamageTypes.IN_FIRE),
+                event.getEffectSource()), amount);
         living.invulnerableTime = 0;
 
         if (event.getEffectSource() instanceof LivingEntity source) {
@@ -77,7 +80,7 @@ public class BurnMobEffect extends MobEffect {
             return;
         }
 
-        if (instance.getEffect().equals(ModMobEffects.BURN.get())) {
+        if (instance.getEffect().equals(ModMobEffects.BURN)) {
             living.getPersistentData().remove("BurnAttacker");
         }
     }
@@ -91,22 +94,23 @@ public class BurnMobEffect extends MobEffect {
             return;
         }
 
-        if (instance.getEffect().equals(ModMobEffects.BURN.get())) {
+        if (instance.getEffect().equals(ModMobEffects.BURN)) {
             living.getPersistentData().remove("BurnAttacker");
         }
     }
 
     // TODO tick event?
 //    @SubscribeEvent
-//    public static void onLivingTick(LivingEvent.LivingTickEvent event) {
-//        LivingEntity living = event.getEntity();
+//    public static void onLivingTick(EntityTickEvent event) {
+//        var entity = event.getEntity();
+//        if (!(entity instanceof LivingEntity living)) return;
 //
-//        if (living.hasEffect(ModMobEffects.BURN.get())) {
+//        if (living.hasEffect(ModMobEffects.BURN)) {
 //            living.setRemainingFireTicks(2);
 //        }
 //
 //        if (living.isInWater()) {
-//            living.removeEffect(ModMobEffects.BURN.get());
+//            living.removeEffect(ModMobEffects.BURN);
 //        }
 //    }
 }
