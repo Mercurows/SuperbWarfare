@@ -1,11 +1,14 @@
 package com.atsuishio.superbwarfare.entity.projectile;
 
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
+import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
+import com.atsuishio.superbwarfare.tools.CustomExplosion;
 import com.atsuishio.superbwarfare.tools.EntityFindUtil;
 import com.atsuishio.superbwarfare.tools.NBTTool;
+import com.atsuishio.superbwarfare.tools.ParticleTool;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
@@ -26,10 +29,13 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.*;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.neoforged.neoforge.event.EventHooks;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
@@ -43,14 +49,13 @@ import java.util.UUID;
 
 import static com.atsuishio.superbwarfare.item.C4Bomb.TAG_CONTROL;
 
-public class C4Entity extends Entity implements GeoEntity {
+public class C4Entity extends Entity implements GeoEntity, OwnableEntity {
 
     protected static final EntityDataAccessor<Optional<UUID>> OWNER_UUID = SynchedEntityData.defineId(C4Entity.class, EntityDataSerializers.OPTIONAL_UUID);
     protected static final EntityDataAccessor<String> LAST_ATTACKER_UUID = SynchedEntityData.defineId(C4Entity.class, EntityDataSerializers.STRING);
     protected static final EntityDataAccessor<String> TARGET_UUID = SynchedEntityData.defineId(C4Entity.class, EntityDataSerializers.STRING);
     public static final EntityDataAccessor<Boolean> IS_CONTROLLABLE = SynchedEntityData.defineId(C4Entity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Integer> BOMB_TICK = SynchedEntityData.defineId(C4Entity.class, EntityDataSerializers.INT);
-
 
     public static final int DEFAULT_DEFUSE_PROGRESS = 100;
 
@@ -152,17 +157,16 @@ public class C4Entity extends Entity implements GeoEntity {
     @Override
     @ParametersAreNonnullByDefault
     public @NotNull InteractionResult interact(Player player, InteractionHand hand) {
-        // TODO this.getOwner()
-//        if (this.getOwner() == player && player.isShiftKeyDown()) {
-//            if (!this.level().isClientSide()) {
-//                this.discard();
-//            }
-//
-//            if (!player.getAbilities().instabuild) {
-//                ItemHandlerHelper.giveItemToPlayer(player, this.getItemStack());
-//            }
-//            return InteractionResult.sidedSuccess(this.level().isClientSide());
-//        }
+        if (this.getOwner() == player && player.isShiftKeyDown()) {
+            if (!this.level().isClientSide()) {
+                this.discard();
+            }
+
+            if (!player.getAbilities().instabuild) {
+                ItemHandlerHelper.giveItemToPlayer(player, this.getItemStack());
+            }
+            return InteractionResult.sidedSuccess(this.level().isClientSide());
+        }
         return InteractionResult.PASS;
     }
 
@@ -349,9 +353,7 @@ public class C4Entity extends Entity implements GeoEntity {
         if (!pTarget.canBeHitByProjectile()) {
             return false;
         } else {
-            // TODO this.getOwner()
-//            Entity entity = this.getOwner();
-            Entity entity = null;
+            Entity entity = this.getOwner();
             return entity == null || !entity.isPassengerOfSameVehicle(pTarget);
         }
     }
@@ -409,14 +411,13 @@ public class C4Entity extends Entity implements GeoEntity {
             }
         }
 
-        // TODO this.getOwner() explosion
-//        CustomExplosion explosion = new CustomExplosion(level(), this,
-//                ModDamageTypes.causeProjectileBoomDamage(level().registryAccess(), this, this.getOwner()), ExplosionConfig.C4_EXPLOSION_DAMAGE.get(),
-//                pos.x, pos.y, pos.z, ExplosionConfig.C4_EXPLOSION_RADIUS.get(), ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP).setDamageMultiplier(1);
-//        explosion.explode();
-//        EventHooks.onExplosionStart(level(), explosion);
-//        ParticleTool.spawnHugeExplosionParticles(level(), position());
-//        explosion.finalizeExplosion(false);
+        CustomExplosion explosion = new CustomExplosion(level(), this,
+                ModDamageTypes.causeProjectileBoomDamage(level().registryAccess(), this, this.getOwner()), ExplosionConfig.C4_EXPLOSION_DAMAGE.get(),
+                pos.x, pos.y, pos.z, ExplosionConfig.C4_EXPLOSION_RADIUS.get(), ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP).setDamageMultiplier(1);
+        explosion.explode();
+        EventHooks.onExplosionStart(level(), explosion);
+        ParticleTool.spawnHugeExplosionParticles(level(), position());
+        explosion.finalizeExplosion(false);
 
         this.discard();
     }
