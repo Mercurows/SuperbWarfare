@@ -65,7 +65,7 @@ public class ModTabs {
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> ITEM_TAB = TABS.register("item",
             () -> CreativeModeTab.builder()
                     .title(Component.translatable("item_group.superbwarfare.item"))
-                    .icon(() -> new ItemStack(ModItems.FIRING_PARAMETERS.get()))
+                    .icon(() -> new ItemStack(ModItems.TARGET_DEPLOYER.get()))
                     .displayItems((param, output) -> ModItems.ITEMS.getEntries().forEach(registryObject -> {
                         if (registryObject.get() == ModItems.CONTAINER.get()) {
                             CONTAINER_ENTITIES.stream().map(Supplier::get).forEach(output::accept);

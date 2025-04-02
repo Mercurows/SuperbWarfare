@@ -25,6 +25,7 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.NotNull;
 
 public record ShootMessage(double spread) implements CustomPacketPayload {
+
     public static final Type<ShootMessage> TYPE = new Type<>(Mod.loc("shoot"));
 
     public static final StreamCodec<ByteBuf, ShootMessage> STREAM_CODEC = StreamCodec.composite(
@@ -67,8 +68,6 @@ public record ShootMessage(double spread) implements CustomPacketPayload {
                 }
 
                 if (stack.getItem() == ModItems.HOMEMADE_SHOTGUN.get()) {
-                    // TODO is hurt an break correct?
-//                    stack.hurtAndBreak(1, player, p -> p.broadcastBreakEvent(InteractionHand.MAIN_HAND));
                     stack.hurtAndBreak(1, (ServerLevel) player.level(), player, p -> {
                     });
                     if (player instanceof ServerPlayer serverPlayer && player.level() instanceof ServerLevel serverLevel) {
