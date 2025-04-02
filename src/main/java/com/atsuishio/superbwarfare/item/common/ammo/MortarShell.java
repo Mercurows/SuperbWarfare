@@ -1,7 +1,5 @@
 package com.atsuishio.superbwarfare.item.common.ammo;
 
-//import com.atsuishio.superbwarfare.entity.projectile.MortarShellEntity;
-
 import com.atsuishio.superbwarfare.entity.projectile.MortarShellEntity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;

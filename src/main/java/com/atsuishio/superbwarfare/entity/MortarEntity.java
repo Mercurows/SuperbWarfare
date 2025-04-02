@@ -120,7 +120,7 @@ public class MortarEntity extends VehicleEntity implements GeoEntity {
                 Level level = this.level();
                 if (level instanceof ServerLevel server) {
                     MortarShellEntity entityToSpawn = shell.createShell(player, level, stack);
-                    entityToSpawn.setPos(this.getX(), this.getEyeY(), this.getZ());
+                    entityToSpawn.setPos(this.getX(), this.getY() + this.getEyeY(), this.getZ());
                     entityToSpawn.shoot(this.getLookAngle().x, this.getLookAngle().y, this.getLookAngle().z, 11.4f, (float) 0.1);
                     level.addFreshEntity(entityToSpawn);
                     server.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, (this.getX() + 3 * this.getLookAngle().x), (this.getY() + 0.1 + 3 * this.getLookAngle().y), (this.getZ() + 3 * this.getLookAngle().z), 8, 0.4, 0.4, 0.4,
@@ -271,13 +271,6 @@ public class MortarEntity extends VehicleEntity implements GeoEntity {
     @Override
     public float getMaxHealth() {
         return 100;
-    }
-
-    public String getSyncedAnimation() {
-        return null;
-    }
-
-    public void setAnimation(String animation) {
     }
 
     @Override

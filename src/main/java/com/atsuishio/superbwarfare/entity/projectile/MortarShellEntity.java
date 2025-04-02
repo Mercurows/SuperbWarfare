@@ -24,6 +24,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.Potion;
+import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BellBlock;
@@ -36,7 +37,6 @@ import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -79,15 +79,11 @@ public class MortarShellEntity extends FastThrowableProjectile implements GeoEnt
 
     public void setEffectsFromItem(ItemStack stack) {
         if (stack.is(ModItems.POTION_MORTAR_SHELL.get())) {
-            var data = stack.get(DataComponents.POTION_CONTENTS);
-            if (data != null) {
-                data.potion().ifPresent(p -> this.potion = p.value());
-                Collection<MobEffectInstance> collection = data.customEffects();
-                if (!collection.isEmpty()) {
-                    for (MobEffectInstance mobeffectinstance : collection) {
-                        this.effects.add(new MobEffectInstance(mobeffectinstance));
-                    }
-                }
+            var potionContents = stack.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY);
+            this.potion = potionContents.potion().orElse(Potions.WATER).value();
+
+            for (MobEffectInstance mobeffectinstance : potionContents.getAllEffects()) {
+                this.effects.add(new MobEffectInstance(mobeffectinstance));
             }
         } else if (stack.is(ModItems.MORTAR_SHELL.get())) {
             this.potion = Potions.WATER.value();
@@ -166,12 +162,6 @@ public class MortarShellEntity extends FastThrowableProjectile implements GeoEnt
             }
         }
     }
-
-    // TODO AEP
-//    @Override
-//    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-//        return NetworkHooks.getEntitySpawningPacket(this);
-//    }
 
     @Override
     protected @NotNull Item getDefaultItem() {
@@ -259,8 +249,9 @@ public class MortarShellEntity extends FastThrowableProjectile implements GeoEnt
 
         AreaEffectCloud cloud = new AreaEffectCloud(level, this.getX() + 0.75 * getDeltaMovement().x, this.getY() + 0.5 * getBbHeight() + 0.75 * getDeltaMovement().y, this.getZ() + 0.75 * getDeltaMovement().z);
 
-        // TODO PotionContents
-//        cloud.setPotion(this.potion);
+        for (MobEffectInstance effect : this.effects) {
+            cloud.addEffect(effect);
+        }
         cloud.setDuration((int) this.damage);
         cloud.setRadius(this.radius);
         if (this.getOwner() instanceof LivingEntity living) {
