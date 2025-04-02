@@ -277,6 +277,10 @@ public class ClickHandler {
                     switchZoom = !switchZoom;
                 }
             }
+
+            if (key == ModKeyMappings.BREATH.getKey().getValue()) {
+                PacketDistributor.sendToServer(new BreathMessage(true));
+            }
         } else {
             if (player.hasEffect(ModMobEffects.SHOCK)) return;
 
@@ -290,6 +294,10 @@ public class ClickHandler {
 
             if (key == ModKeyMappings.SWITCH_ZOOM.getKey().getValue() && !switchZoom) {
                 handleWeaponZoomRelease();
+            }
+
+            if (event.getAction() == GLFW.GLFW_RELEASE && key == ModKeyMappings.BREATH.getKey().getValue()) {
+                PacketDistributor.sendToServer(new BreathMessage(false));
             }
         }
     }
