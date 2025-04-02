@@ -2,11 +2,16 @@ package com.atsuishio.superbwarfare.init;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.item.*;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.alchemy.Potion;
+import net.minecraft.world.item.alchemy.PotionContents;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
@@ -52,9 +57,10 @@ public class ModTabs {
                             }
                         });
 
-                        // TODO potion mortar shell
-//                        param.holders().lookup(Registries.POTION)
-//                                .ifPresent(potion -> generatePotionEffectTypes(output, potion, ModItems.POTION_MORTAR_SHELL.get()));
+                        param.holders().lookup(Registries.POTION)
+                                .ifPresent(potion -> generatePotionEffectTypes(output, potion, ModItems.POTION_MORTAR_SHELL.get(),
+                                        CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS,
+                                        param.enabledFeatures()));
                     })
                     .build());
 
@@ -97,10 +103,12 @@ public class ModTabs {
         }
     }
 
-    // TODO potion shell
-//    private static void generatePotionEffectTypes(CreativeModeTab.Output output, HolderLookup<Potion> potions, Item potionItem) {
-//        potions.listElements().filter(potion -> !potion.is(Potions.EMPTY_ID))
-//                .map(potion -> PotionUtils.setPotion(new ItemStack(potionItem), potion.value()))
-//                .forEach(output::accept);
-//    }
+    private static void generatePotionEffectTypes(
+            CreativeModeTab.Output output, HolderLookup<Potion> potions, Item item, CreativeModeTab.TabVisibility visibility, FeatureFlagSet requiredFeatures
+    ) {
+        potions.listElements()
+                .filter(potion -> potion.value().isEnabled(requiredFeatures))
+                .map(potion -> PotionContents.createItemStack(item, potion))
+                .forEach(itemStack -> output.accept(itemStack, visibility));
+    }
 }
