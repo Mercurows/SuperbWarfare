@@ -6,10 +6,13 @@ import com.atsuishio.superbwarfare.init.ModBlockEntities;
 import com.atsuishio.superbwarfare.init.ModBlocks;
 import com.atsuishio.superbwarfare.init.ModItems;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.storage.loot.LootTable;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
@@ -68,13 +71,13 @@ public class SmallContainerBlockItem extends BlockItem implements GeoItem {
     }
 
     public static ItemStack createInstance(ResourceLocation lootTable) {
-        return createInstance(lootTable, 0L);
+        return createInstance(ResourceKey.create(Registries.LOOT_TABLE, lootTable), 0L);
     }
 
-    public static ItemStack createInstance(ResourceLocation lootTable, long lootTableSeed) {
+    public static ItemStack createInstance(ResourceKey<LootTable> lootTable, long lootTableSeed) {
         ItemStack stack = new ItemStack(ModBlocks.SMALL_CONTAINER.get());
         CompoundTag tag = new CompoundTag();
-        tag.putString("LootTable", lootTable.toString());
+        tag.putString("LootTable", lootTable.location().toString());
         if (lootTableSeed != 0L) {
             tag.putLong("LootTableSeed", lootTableSeed);
         }

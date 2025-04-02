@@ -40,7 +40,6 @@ import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 
-@SuppressWarnings("deprecation")
 public class SmallContainerBlock extends BaseEntityBlock {
 
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
@@ -148,6 +147,5 @@ public class SmallContainerBlock extends BaseEntityBlock {
         level.getBlockEntity(pos, ModBlockEntities.SMALL_CONTAINER.get()).ifPresent((blockEntity) -> blockEntity.saveToItem(stack, level.registryAccess()));
         return stack;
     }
-
 }
 

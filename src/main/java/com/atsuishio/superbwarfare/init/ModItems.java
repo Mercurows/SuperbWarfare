@@ -125,8 +125,6 @@ public class ModItems {
      */
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(Registries.ITEM, Mod.MODID);
 
-    public static final DeferredHolder<Item, ContainerBlockItem> CONTAINER = ITEMS.register("container", ContainerBlockItem::new);
-    public static final DeferredHolder<Item, SmallContainerBlockItem> SMALL_CONTAINER = ITEMS.register("small_container", SmallContainerBlockItem::new);
     public static final DeferredHolder<Item, DeferredSpawnEggItem> SENPAI_SPAWN_EGG = ITEMS.register("senpai_spawn_egg", () -> new DeferredSpawnEggItem(ModEntities.SENPAI::value, -11584987, -14014413, new Item.Properties()));
     public static final DeferredHolder<Item, Item> ANCIENT_CPU = ITEMS.register("ancient_cpu", () -> new Item(new Item.Properties().rarity(Rarity.RARE)));
     public static final DeferredHolder<Item, Item> PROPELLER = ITEMS.register("propeller", () -> new Item(new Item.Properties()));
@@ -278,6 +276,8 @@ public class ModItems {
     public static final DeferredHolder<Item, BlockItem> SILVER_BLOCK = block(ModBlocks.SILVER_BLOCK);
     public static final DeferredHolder<Item, BlockItem> CEMENTED_CARBIDE_BLOCK = block(ModBlocks.CEMENTED_CARBIDE_BLOCK);
     public static final DeferredHolder<Item, BlockItem> FUMO_25 = block(ModBlocks.FUMO_25);
+    public static final DeferredHolder<Item, ContainerBlockItem> CONTAINER = BLOCKS.register("container", ContainerBlockItem::new);
+    public static final DeferredHolder<Item, SmallContainerBlockItem> SMALL_CONTAINER = BLOCKS.register("small_container", SmallContainerBlockItem::new);
 
     /**
      * Perk Items

@@ -1,9 +1,7 @@
 package com.atsuishio.superbwarfare.init;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.item.ArmorPlate;
-import com.atsuishio.superbwarfare.item.BatteryItem;
-import com.atsuishio.superbwarfare.item.C4Bomb;
+import com.atsuishio.superbwarfare.item.*;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
@@ -16,8 +14,6 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.function.Supplier;
-
-import static com.atsuishio.superbwarfare.item.ContainerBlockItem.CONTAINER_ENTITIES;
 
 @EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD)
 @SuppressWarnings("unused")
@@ -67,16 +63,12 @@ public class ModTabs {
                     .title(Component.translatable("item_group.superbwarfare.item"))
                     .icon(() -> new ItemStack(ModItems.TARGET_DEPLOYER.get()))
                     .displayItems((param, output) -> ModItems.ITEMS.getEntries().forEach(registryObject -> {
-                        if (registryObject.get() == ModItems.CONTAINER.get()) {
-                            CONTAINER_ENTITIES.stream().map(Supplier::get).forEach(output::accept);
-                        } else {
-                            output.accept(registryObject.get());
-                            if (registryObject.get() == ModItems.ARMOR_PLATE.get()) {
-                                output.accept(ArmorPlate.getInfiniteInstance());
-                            }
-                            if (registryObject.get() instanceof BatteryItem batteryItem) {
-                                output.accept(batteryItem.makeFullEnergyStack());
-                            }
+                        output.accept(registryObject.get());
+                        if (registryObject.get() == ModItems.ARMOR_PLATE.get()) {
+                            output.accept(ArmorPlate.getInfiniteInstance());
+                        }
+                        if (registryObject.get() instanceof BatteryItem batteryItem) {
+                            output.accept(batteryItem.makeFullEnergyStack());
                         }
                     }))
                     .build());
@@ -86,7 +78,16 @@ public class ModTabs {
                     .title(Component.translatable("item_group.superbwarfare.block"))
                     .icon(() -> new ItemStack(ModItems.SANDBAG.get()))
                     .withTabsBefore(ITEM_TAB.getKey())
-                    .displayItems((param, output) -> ModItems.BLOCKS.getEntries().forEach(registryObject -> output.accept(registryObject.get())))
+                    .displayItems((param, output) -> ModItems.BLOCKS.getEntries().forEach(registryObject -> {
+                        if (registryObject.get() == ModItems.CONTAINER.get()) {
+                            ContainerBlockItem.CONTAINER_ENTITIES.stream().map(Supplier::get).forEach(output::accept);
+                        } else if (registryObject.get() == ModItems.SMALL_CONTAINER.get()) {
+                            output.accept(registryObject.get());
+                            SmallContainerBlockItem.SMALL_CONTAINER_LOOT_TABLES.stream().map(Supplier::get).forEach(output::accept);
+                        } else {
+                            output.accept(registryObject.get());
+                        }
+                    }))
                     .build());
 
     @SubscribeEvent

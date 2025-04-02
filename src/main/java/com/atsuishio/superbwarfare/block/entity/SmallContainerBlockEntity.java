@@ -3,11 +3,14 @@ package com.atsuishio.superbwarfare.block.entity;
 import com.atsuishio.superbwarfare.block.SmallContainerBlock;
 import com.atsuishio.superbwarfare.init.ModBlockEntities;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
+import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -22,6 +25,8 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
@@ -38,7 +43,7 @@ import java.util.List;
 public class SmallContainerBlockEntity extends BlockEntity implements GeoBlockEntity {
 
     @Nullable
-    public ResourceLocation lootTable;
+    public ResourceKey<LootTable> lootTable;
     public long lootTableSeed;
     public int tick = 0;
     @Nullable
@@ -99,7 +104,7 @@ public class SmallContainerBlockEntity extends BlockEntity implements GeoBlockEn
         super.loadAdditional(tag, registries);
 
         if (tag.contains("LootTable", 8)) {
-            this.lootTable = ResourceLocation.bySeparator(tag.getString("LootTable"), ':');
+            this.lootTable = ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.parse(tag.getString("LootTable")));
             this.lootTableSeed = tag.getLong("LootTableSeed");
         }
         this.tick = tag.getInt("Tick");
@@ -111,7 +116,7 @@ public class SmallContainerBlockEntity extends BlockEntity implements GeoBlockEn
         super.saveAdditional(tag, registries);
 
         if (this.lootTable != null) {
-            tag.putString("LootTable", this.lootTable.toString());
+            tag.putString("LootTable", this.lootTable.location().toString());
             if (this.lootTableSeed != 0L) {
                 tag.putLong("LootTableSeed", this.lootTableSeed);
             }
@@ -142,18 +147,16 @@ public class SmallContainerBlockEntity extends BlockEntity implements GeoBlockEn
         BlockItem.setBlockEntityData(stack, this.getType(), tag);
     }
 
-    public void setLootTable(ResourceLocation pLootTable, long pLootTableSeed) {
+    public void setLootTable(ResourceKey<LootTable> pLootTable, long pLootTableSeed) {
         this.lootTable = pLootTable;
         this.lootTableSeed = pLootTableSeed;
     }
 
     public List<ItemStack> unpackLootTable(@Nullable Player pPlayer) {
         if (this.lootTable != null && this.level != null && this.level.getServer() != null) {
-
-            // TODO loot table resource key?
-//            LootTable loottable = this.level.getServer().reloadableRegistries().getLootTable(this.lootTable);
+            LootTable loottable = this.level.getServer().reloadableRegistries().getLootTable(this.lootTable);
             if (pPlayer instanceof ServerPlayer) {
-//                CriteriaTriggers.GENERATE_LOOT.trigger((ServerPlayer) pPlayer, this.lootTable);
+                CriteriaTriggers.GENERATE_LOOT.trigger((ServerPlayer) pPlayer, this.lootTable);
             }
 
             this.lootTable = null;
@@ -163,7 +166,7 @@ public class SmallContainerBlockEntity extends BlockEntity implements GeoBlockEn
                 builder.withLuck(pPlayer.getLuck()).withParameter(LootContextParams.THIS_ENTITY, pPlayer);
             }
 
-//            return loottable.getRandomItems(builder.create(LootContextParamSets.CHEST), this.lootTableSeed).stream().toList();
+            return loottable.getRandomItems(builder.create(LootContextParamSets.CHEST), this.lootTableSeed).stream().toList();
         }
         return Collections.emptyList();
     }
