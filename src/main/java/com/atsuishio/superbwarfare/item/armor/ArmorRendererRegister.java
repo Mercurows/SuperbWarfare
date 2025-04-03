@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.item.armor;
 
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.item.CustomRendererArmor;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -30,8 +31,8 @@ public class ArmorRendererRegister {
                     if (this.renderer == null)
                         this.renderer = armor.getRenderer();
 
-                    // TODO other params?
-                    this.renderer.prepForRender(livingEntity, itemStack, equipmentSlot, original);
+                    var mc = Minecraft.getInstance();
+                    this.renderer.prepForRender(livingEntity, itemStack, equipmentSlot, original, mc.levelRenderer.renderBuffers.bufferSource(), mc.getTimer().getGameTimeDeltaPartialTick(true), 0, 0, 0, 0);
                     return this.renderer;
                 }
 

@@ -158,7 +158,14 @@ public class ContainerBlockItem extends BlockItem implements GeoItem {
         var data = stack.get(DataComponents.CUSTOM_DATA);
         var tag = data != null ? data.copyTag() : new CompoundTag();
 
-        tag.put("Entity", entity.serializeNBT(entity.level().registryAccess()));
+        var entityTag = new CompoundTag();
+        var encodedId = entity.getEncodeId();
+        if (encodedId != null) {
+            entityTag.putString("id", encodedId);
+        }
+        entity.saveWithoutId(entityTag);
+        tag.put("Entity", entityTag);
+
         tag.putString("EntityType", EntityType.getKey(entity.getType()).toString());
         BlockItem.setBlockEntityData(stack, ModBlockEntities.CONTAINER.get(), tag);
         tag.putBoolean("CanPlacedAboveWater", canPlacedAboveWater);
