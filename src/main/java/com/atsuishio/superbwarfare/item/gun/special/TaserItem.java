@@ -224,6 +224,11 @@ public class TaserItem extends GunItem implements GeoItem, SpecialFireWeapon, En
     }
 
     @Override
+    public String getAmmoDisplayName(ItemStack stack) {
+        return "Electrode Rod";
+    }
+
+    @Override
     public void fireOnPress(Player player, final CompoundTag tag) {
         ItemStack stack = player.getMainHandItem();
         if (GunsTool.getGunBooleanTag(tag, "Reloading")) return;

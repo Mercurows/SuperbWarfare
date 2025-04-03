@@ -413,6 +413,28 @@ public abstract class GunItem extends Item implements CustomRendererItem {
         return 0;
     }
 
+    /**
+     * 右下角弹药显示名称
+     */
+    public String getAmmoDisplayName(ItemStack stack) {
+        if (stack.is(ModTags.Items.USE_RIFLE_AMMO)) {
+            return "Rifle Ammo";
+        }
+        if (stack.is(ModTags.Items.USE_HANDGUN_AMMO)) {
+            return "Handgun Ammo";
+        }
+        if (stack.is(ModTags.Items.USE_SHOTGUN_AMMO)) {
+            return "Shotgun Ammo";
+        }
+        if (stack.is(ModTags.Items.USE_SNIPER_AMMO)) {
+            return "Sniper Ammo";
+        }
+        if (stack.is(ModTags.Items.USE_HEAVY_AMMO)) {
+            return "Heavy Ammo";
+        }
+        return "";
+    }
+
     public enum FireMode {
         SEMI(1),
         BURST(2),

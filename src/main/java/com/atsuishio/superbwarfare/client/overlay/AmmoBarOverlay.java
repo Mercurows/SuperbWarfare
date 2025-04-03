@@ -202,7 +202,7 @@ public class AmmoBarOverlay {
             );
 
             // 渲染弹药类型
-            String ammoName = getGunAmmoTypeString(stack);
+            String ammoName = gunItem.getAmmoDisplayName(stack);
             event.getGuiGraphics().drawString(
                     Minecraft.getInstance().font,
                     ammoName,
@@ -448,43 +448,5 @@ public class AmmoBarOverlay {
         }
 
         return "∞";
-    }
-
-    // TODO i18n
-    private static String getGunAmmoTypeString(ItemStack stack) {
-        if (stack.getItem() == ModItems.BOCEK.get()) {
-            return "Arrow";
-        }
-        if (stack.getItem() == ModItems.M_79.get() || stack.getItem() == ModItems.SECONDARY_CATACLYSM.get()) {
-            return "40mm Grenade";
-        }
-        if (stack.getItem() == ModItems.RPG.get()) {
-            return "Yassin105 TBG";
-        }
-        if (stack.getItem() == ModItems.JAVELIN.get()) {
-            return "Javelin Missile";
-        }
-        if (stack.getItem() == ModItems.TASER.get()) {
-            return "Electrode Rod";
-        }
-        if (stack.getItem() == ModItems.MINIGUN.get()) {
-            return "Rifle Ammo";
-        }
-        if (stack.is(ModTags.Items.USE_RIFLE_AMMO)) {
-            return "Rifle Ammo";
-        }
-        if (stack.is(ModTags.Items.USE_HANDGUN_AMMO)) {
-            return "Handgun Ammo";
-        }
-        if (stack.is(ModTags.Items.USE_SHOTGUN_AMMO)) {
-            return "Shotgun Ammo";
-        }
-        if (stack.is(ModTags.Items.USE_SNIPER_AMMO)) {
-            return "Sniper Ammo";
-        }
-        if (stack.is(ModTags.Items.USE_HEAVY_AMMO)) {
-            return "Heavy Ammo";
-        }
-        return "";
     }
 }

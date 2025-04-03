@@ -231,6 +231,11 @@ public class JavelinItem extends GunItem implements GeoItem, SpecialFireWeapon {
         return true;
     }
 
+    @Override
+    public String getAmmoDisplayName(ItemStack stack) {
+        return "Javelin Missile";
+    }
+
     private void fire(Player player) {
         Level level = player.level();
         ItemStack stack = player.getMainHandItem();
