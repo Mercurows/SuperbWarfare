@@ -154,6 +154,15 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
                 .multiply(0.16f, ModTags.DamageTypes.PROJECTILE)
                 .multiply(10, ModDamageTypes.VEHICLE_STRIKE)
                 .custom((source, damage) -> {
+                    if (source.getDirectEntity() instanceof CannonShellEntity) {
+                        return 0.9f * damage;
+                    }
+                    if (source.getDirectEntity() instanceof SmallCannonShellEntity) {
+                        return 1.3f * damage;
+                    }
+                    if (source.getDirectEntity() instanceof GunGrenadeEntity) {
+                        return 2.2f * damage;
+                    }
                     if (source.getDirectEntity() instanceof MelonBombEntity) {
                         return 2f * damage;
                     }

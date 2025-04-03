@@ -8,7 +8,6 @@ import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
 import com.atsuishio.superbwarfare.tools.CustomExplosion;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
-import com.atsuishio.superbwarfare.tools.ProjectileTool;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
@@ -85,10 +84,8 @@ public class SmallCannonShellEntity extends FastThrowableProjectile implements G
             entity.invulnerableTime = 0;
         }
 
-        if (this.tickCount > 0) {
-            if (this.level() instanceof ServerLevel) {
-                causeExplode(entity);
-            }
+        if (this.tickCount > 0 && this.level() instanceof ServerLevel) {
+            causeExplode(result.getLocation());
         }
         this.discard();
     }
@@ -102,30 +99,27 @@ public class SmallCannonShellEntity extends FastThrowableProjectile implements G
             bell.attemptToRing(this.level(), resultPos, blockHitResult.getDirection());
         }
         if (this.level() instanceof ServerLevel) {
-            causeExplodeBlock(blockHitResult);
+            causeExplode(blockHitResult.getLocation());
         }
         this.discard();
     }
 
-    private void causeExplode(Entity entity) {
+    private void causeExplode(Vec3 vec3) {
         CustomExplosion explosion = new CustomExplosion(this.level(), this,
                 ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(),
                         this,
                         this.getOwner()),
                 explosionDamage,
-                entity.getX(),
-                entity.getY() + 0.6 * entity.getBbHeight(),
-                entity.getZ(),
+                vec3.x,
+                vec3.y,
+                vec3.z,
                 explosionRadius,
                 ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP).
                 setDamageMultiplier(1.25f);
         explosion.explode();
         EventHooks.onExplosionStart(this.level(), explosion);
         explosion.finalizeExplosion(false);
-        ParticleTool.spawnSmallExplosionParticles(this.level(),
-                new Vec3(entity.getX(),
-                        entity.getEyeY(),
-                        entity.getZ()));
+        ParticleTool.spawnSmallExplosionParticles(this.level(), vec3);
     }
 
     private void causeExplodeBlock(HitResult result) {
@@ -161,9 +155,7 @@ public class SmallCannonShellEntity extends FastThrowableProjectile implements G
 
         if (this.tickCount > 200 || this.isInWater()) {
             if (this.level() instanceof ServerLevel && !onGround()) {
-                ProjectileTool.causeCustomExplode(this,
-                        ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(), this, this.getOwner()),
-                        this, this.explosionDamage, this.explosionRadius, 1.25f);
+                causeExplode(position());
             }
             this.discard();
         }

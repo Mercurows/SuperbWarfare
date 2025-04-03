@@ -337,23 +337,7 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
     }
 
     private PlayState movementPredicate(AnimationState<CannonShellEntity> event) {
-        if (this.animationProcedure.equals("empty")) {
-            return event.setAndContinue(RawAnimation.begin().thenLoop("animation.cannon_shell.idle"));
-        }
-        return PlayState.STOP;
-    }
-
-    private PlayState procedurePredicate(AnimationState<CannonShellEntity> event) {
-        if (!animationProcedure.equals("empty") && event.getController().getAnimationState() == AnimationController.State.STOPPED) {
-            event.getController().setAnimation(RawAnimation.begin().thenPlay(this.animationProcedure));
-            if (event.getController().getAnimationState() == AnimationController.State.STOPPED) {
-                this.animationProcedure = "empty";
-                event.getController().forceAnimationReset();
-            }
-        } else if (animationProcedure.equals("empty")) {
-            return PlayState.STOP;
-        }
-        return PlayState.CONTINUE;
+        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.cannon_shell.idle"));
     }
 
     @Override
@@ -364,7 +348,6 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar data) {
         data.add(new AnimationController<>(this, "movement", 0, this::movementPredicate));
-        data.add(new AnimationController<>(this, "procedure", 0, this::procedurePredicate));
     }
 
     @Override

@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.client.gui.RangeHelper;
 import com.atsuishio.superbwarfare.component.ModDataComponents;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
+import com.atsuishio.superbwarfare.entity.projectile.GunGrenadeEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.CannonEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
@@ -213,6 +214,12 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
                 .multiply(0.85f, ModTags.DamageTypes.PROJECTILE_ABSOLUTE)
                 .multiply(10f, ModDamageTypes.VEHICLE_STRIKE)
                 .custom((source, damage) -> getSourceAngle(source, 1f) * damage)
+                .custom((source, damage) -> {
+                    if (source.getDirectEntity() instanceof GunGrenadeEntity) {
+                        return 1.5f * damage;
+                    }
+                    return damage;
+                })
                 .reduce(8);
     }
 

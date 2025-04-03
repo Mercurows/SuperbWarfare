@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.entity.vehicle;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
+import com.atsuishio.superbwarfare.entity.projectile.*;
 import com.atsuishio.superbwarfare.entity.vehicle.base.*;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.ProjectileWeapon;
@@ -105,6 +106,30 @@ public class SpeedboatEntity extends ContainerMobileVehicleEntity implements Geo
                 .multiply(0.8f, ModDamageTypes.CANNON_FIRE)
                 .multiply(0.16f, ModTags.DamageTypes.PROJECTILE)
                 .multiply(2, ModDamageTypes.VEHICLE_STRIKE)
+                .custom((source, damage) -> {
+                    if (source.getDirectEntity() instanceof CannonShellEntity) {
+                        return 0.9f * damage;
+                    }
+                    if (source.getDirectEntity() instanceof SmallCannonShellEntity) {
+                        return 1.3f * damage;
+                    }
+                    if (source.getDirectEntity() instanceof GunGrenadeEntity) {
+                        return 2.2f * damage;
+                    }
+                    if (source.getDirectEntity() instanceof MelonBombEntity) {
+                        return 2f * damage;
+                    }
+                    if (source.getDirectEntity() instanceof RgoGrenadeEntity) {
+                        return 6f * damage;
+                    }
+                    if (source.getDirectEntity() instanceof HandGrenadeEntity) {
+                        return 5f * damage;
+                    }
+                    if (source.getDirectEntity() instanceof MortarShellEntity) {
+                        return 4f * damage;
+                    }
+                    return damage;
+                })
                 .reduce(2);
     }
 

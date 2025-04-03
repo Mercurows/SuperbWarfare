@@ -353,13 +353,19 @@ public class ClickHandler {
                 }
             } else {
                 PacketDistributor.sendToServer(new FireMessage(0));
-                if (GunsTool.getGunIntTag(tag, "FireMode") == 1) {
-                    if (ClientEventHandler.burstFireSize == 0) {
-                        ClientEventHandler.burstFireSize = GunsTool.getGunIntTag(tag, "BurstSize");
-                    }
-                } else {
-                    if (!stack.is(ModItems.BOCEK.get())) {
-                        ClientEventHandler.holdFire = true;
+                if ((!(tag.getBoolean("is_normal_reloading") || tag.getBoolean("is_empty_reloading"))
+                        && !GunsTool.getGunBooleanTag(tag, "Reloading")
+                        && !GunsTool.getGunBooleanTag(tag, "Charging")
+                        && !GunsTool.getGunBooleanTag(tag, "NeedBoltAction"))
+                        && drawTime < 0.01) {
+                    if (GunsTool.getGunIntTag(tag, "FireMode") == 1) {
+                        if (ClientEventHandler.burstFireSize == 0) {
+                            ClientEventHandler.burstFireSize = GunsTool.getGunIntTag(tag, "BurstSize");
+                        }
+                    } else {
+                        if (!stack.is(ModItems.BOCEK.get())) {
+                            ClientEventHandler.holdFire = true;
+                        }
                     }
                 }
             }
