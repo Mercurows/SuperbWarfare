@@ -43,7 +43,6 @@ import java.util.Set;
 public class CannonShellEntity extends FastThrowableProjectile implements GeoEntity {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
-    public String animationProcedure = "empty";
     private float damage = 0;
     private float radius = 0;
     private float explosionDamage = 0;

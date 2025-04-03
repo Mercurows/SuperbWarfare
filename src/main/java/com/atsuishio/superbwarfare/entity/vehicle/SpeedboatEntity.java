@@ -174,7 +174,7 @@ public class SpeedboatEntity extends ContainerMobileVehicleEntity implements Geo
     }
 
     private void handleAmmo() {
-        if (!(this.getFirstPassenger() instanceof Player player)) return;
+        if (!(this.getFirstPassenger() instanceof Player)) return;
 
         int ammoCount = this.getItemStacks().stream().filter(stack -> {
             if (stack.is(ModItems.AMMO_BOX.get())) {

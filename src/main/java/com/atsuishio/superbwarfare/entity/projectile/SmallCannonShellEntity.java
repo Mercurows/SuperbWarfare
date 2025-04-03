@@ -23,7 +23,6 @@ import net.minecraft.world.level.block.BellBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
-import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -120,24 +119,6 @@ public class SmallCannonShellEntity extends FastThrowableProjectile implements G
         EventHooks.onExplosionStart(this.level(), explosion);
         explosion.finalizeExplosion(false);
         ParticleTool.spawnSmallExplosionParticles(this.level(), vec3);
-    }
-
-    private void causeExplodeBlock(HitResult result) {
-        CustomExplosion explosion = new CustomExplosion(this.level(), this,
-                ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(),
-                        this,
-                        this.getOwner()),
-                explosionDamage,
-                result.getLocation().x,
-                result.getLocation().y,
-                result.getLocation().z,
-                explosionRadius,
-                ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP).
-                setDamageMultiplier(1.25f);
-        explosion.explode();
-        EventHooks.onExplosionStart(this.level(), explosion);
-        explosion.finalizeExplosion(false);
-        ParticleTool.spawnSmallExplosionParticles(this.level(), result.getLocation());
     }
 
     @Override
