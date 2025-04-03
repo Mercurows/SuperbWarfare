@@ -58,7 +58,7 @@ public class PotionMortarShellRecipe extends CustomRecipe {
             return ItemStack.EMPTY;
         } else {
             ItemStack res = new ItemStack(ModItems.POTION_MORTAR_SHELL.get(), 4);
-            res.set(DataComponents.POTION_CONTENTS, res.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY));
+            res.set(DataComponents.POTION_CONTENTS, stack.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY));
 
             return res;
         }
