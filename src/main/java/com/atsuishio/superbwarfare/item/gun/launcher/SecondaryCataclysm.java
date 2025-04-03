@@ -27,10 +27,14 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlotGroup;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -42,6 +46,7 @@ import software.bernie.geckolib.renderer.GeoItemRenderer;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.ArrayList;
 import java.util.Optional;
 
 public class SecondaryCataclysm extends GunItem implements GeoItem, SpecialFireWeapon, EnergyStorageItem {
@@ -226,18 +231,20 @@ public class SecondaryCataclysm extends GunItem implements GeoItem, SpecialFireW
         return Optional.of(new SecondaryCataclysmImageComponent(pStack));
     }
 
-    // TODO attribute
-//    @Override
-//    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlot slot, ItemStack stack) {
-//        Multimap<Attribute, AttributeModifier> map = super.getAttributeModifiers(slot, stack);
-//        UUID uuid = new UUID(slot.toString().hashCode(), 0);
-//        if (slot == EquipmentSlot.MAINHAND) {
-//            map = HashMultimap.create(map);
-//            map.put(Attributes.ATTACK_DAMAGE,
-//                    new AttributeModifier(uuid, ModUtils.ATTRIBUTE_MODIFIER, 19, AttributeModifier.Operation.ADDITION));
-//        }
-//        return map;
-//    }
+    private static final ResourceLocation DAMAGE_ID = Mod.loc("secondary_cataclysm_attack_damage");
+
+    @Override
+    public @NotNull ItemAttributeModifiers getDefaultAttributeModifiers(@NotNull ItemStack stack) {
+        var list = new ArrayList<>(super.getDefaultAttributeModifiers(stack).modifiers());
+
+        list.add(new ItemAttributeModifiers.Entry(
+                Attributes.ATTACK_DAMAGE,
+                new AttributeModifier(DAMAGE_ID, 19, AttributeModifier.Operation.ADD_VALUE),
+                EquipmentSlotGroup.MAINHAND
+        ));
+
+        return new ItemAttributeModifiers(list, true);
+    }
 
     @Override
     public boolean isIterativeReload(ItemStack stack) {

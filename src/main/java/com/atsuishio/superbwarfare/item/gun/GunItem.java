@@ -22,11 +22,15 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -37,6 +41,7 @@ import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsE
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Set;
 
@@ -121,37 +126,24 @@ public abstract class GunItem extends Item implements CustomRendererItem {
         return false;
     }
 
-    // TODO attribute modifier
-//    @Override
-//    public @NotNull ItemAttributeModifiers getDefaultAttributeModifiers(@NotNull ItemStack stack) {
-//        ItemAttributeModifiers map = super.getDefaultAttributeModifiers(stack);
-//        map.builder().add(
-//                Attribute.BASE,
-//                new AttributeModifier(uuid, ModUtils.ATTRIBUTE_MODIFIER,
-//                        -0.01f - 0.005f * (GunsTool.getGunDoubleTag(tag, "Weight") + GunsTool.getGunDoubleTag(tag, "CustomWeight")),
-//                        AttributeModifier.Operation.ADD_MULTIPLIED_BASE)
-//        )
-//
-//        map.put(Attributes.MOVEMENT_SPEED,
-//                new AttributeModifier(uuid, ModUtils.ATTRIBUTE_MODIFIER,
-//                        -0.01f - 0.005f * (GunsTool.getGunDoubleTag(tag, "Weight") + GunsTool.getGunDoubleTag(tag, "CustomWeight")),
-//                        AttributeModifier.Operation.ADD_MULTIPLIED_BASE));
-//        return map;
-//    }
+    private static final ResourceLocation SPEED_ID = Mod.loc("gun_movement_speed");
 
-//    @Override
-//    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlot slot, ItemStack stack) {
-//        Multimap<Attribute, AttributeModifier> map = super.getAttributeModifiers(slot, stack);
-//        UUID uuid = new UUID(slot.toString().hashCode(), 0);
-//        if (slot == EquipmentSlot.MAINHAND) {
-//            map = HashMultimap.create(map);
-//            map.put(Attributes.MOVEMENT_SPEED,
-//                    new AttributeModifier(uuid, ModUtils.ATTRIBUTE_MODIFIER,
-//                            -0.01f - 0.005f * (GunsTool.getGunDoubleTag(tag, "Weight") + GunsTool.getGunDoubleTag(tag, "CustomWeight")),
-//                            AttributeModifier.Operation.ADD_MULTIPLIED_BASE));
-//        }
-//        return map;
-//    }
+    @Override
+    public @NotNull ItemAttributeModifiers getDefaultAttributeModifiers(@NotNull ItemStack stack) {
+        var list = new ArrayList<>(super.getDefaultAttributeModifiers(stack).modifiers());
+        var tag = NBTTool.getTag(stack);
+
+        list.add(new ItemAttributeModifiers.Entry(
+                Attributes.MOVEMENT_SPEED,
+                new AttributeModifier(SPEED_ID,
+                        -0.01f - 0.005f * (GunsTool.getGunDoubleTag(tag, "Weight") + GunsTool.getGunDoubleTag(tag, "CustomWeight")),
+                        AttributeModifier.Operation.ADD_MULTIPLIED_BASE
+                ),
+                EquipmentSlotGroup.MAINHAND
+        ));
+
+        return new ItemAttributeModifiers(list, true);
+    }
 
     @Override
     public @NotNull Optional<TooltipComponent> getTooltipImage(@NotNull ItemStack pStack) {
