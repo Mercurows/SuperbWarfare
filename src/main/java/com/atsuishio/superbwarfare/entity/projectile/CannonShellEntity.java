@@ -128,12 +128,6 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
         }
     }
 
-    // TODO AEP
-//    @Override
-//    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-//        return NetworkHooks.getEntitySpawningPacket(this);
-//    }
-
     @Override
     protected @NotNull Item getDefaultItem() {
         return ModItems.HE_5_INCHES.get();

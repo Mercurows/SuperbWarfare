@@ -25,12 +25,6 @@ public class FlareDecoyEntity extends Entity {
         super(ModEntities.FLARE_DECOY.get(), level);
     }
 
-    // TODO AEP
-//    @Override
-//    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-//        return NetworkHooks.getEntitySpawningPacket(this);
-//    }
-
     @Override
     protected void readAdditionalSaveData(@NotNull CompoundTag compoundTag) {
     }

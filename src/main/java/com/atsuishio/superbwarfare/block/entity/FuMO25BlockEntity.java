@@ -65,7 +65,6 @@ public class FuMO25BlockEntity extends BlockEntity implements MenuProvider, GeoB
     public int tick = 0;
 
     protected final ContainerEnergyData dataAccess = new ContainerEnergyData() {
-        // TODO energy
         @Override
         public int get(int pIndex) {
             return switch (pIndex) {

@@ -71,12 +71,6 @@ public class TaserItem extends GunItem implements GeoItem, SpecialFireWeapon, En
         return Math.round((float) (cap != null ? cap.getEnergyStored() : 0) * 13.0F / MAX_ENERGY);
     }
 
-    // TODO register cap
-//    @Override
-//    public ICapabilityProvider initCapabilities(ItemStack stack, CompoundTag tag) {
-//        return new ItemEnergyProvider(stack, energyCapacity.get());
-//    }
-
     @Override
     public int getBarColor(@NotNull ItemStack pStack) {
         return 0xFFFF00;

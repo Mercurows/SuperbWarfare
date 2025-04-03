@@ -52,12 +52,6 @@ public class RgoGrenadeEntity extends FastThrowableProjectile implements GeoEnti
         this.fuse = fuse;
     }
 
-    // TODO AEP
-//    @Override
-//    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-//        return NetworkHooks.getEntitySpawningPacket(this);
-//    }
-
     @Override
     protected @NotNull Item getDefaultItem() {
         return ModItems.RGO_GRENADE.get();

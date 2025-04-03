@@ -74,12 +74,6 @@ public class GunGrenadeEntity extends FastThrowableProjectile implements GeoEnti
         this.charged = charged;
     }
 
-    // TODO AEP
-//    @Override
-//    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-//        return NetworkHooks.getEntitySpawningPacket(this);
-//    }
-
     @Override
     protected @NotNull Item getDefaultItem() {
         return ModItems.GRENADE_40MM.get();

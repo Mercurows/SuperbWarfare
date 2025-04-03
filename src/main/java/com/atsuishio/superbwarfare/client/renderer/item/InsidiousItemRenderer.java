@@ -26,7 +26,7 @@ public class InsidiousItemRenderer extends GeoItemRenderer<InsidiousItem> {
 
     public InsidiousItemRenderer() {
         super(new InsidiousItemModel());
-        // TODO render layer
+        // TODO layer
 //        this.addRenderLayer(new InsidiousLayer(this));
     }
 

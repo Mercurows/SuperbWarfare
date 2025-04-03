@@ -56,12 +56,6 @@ public class WgMissileEntity extends FastThrowableProjectile implements GeoEntit
         this.explosionRadius = explosionRadius;
     }
 
-    // TODO AEP
-//    @Override
-//    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-//        return NetworkHooks.getEntitySpawningPacket(this);
-//    }
-
     @Override
     protected @NotNull Item getDefaultItem() {
         return ModItems.WIRE_GUIDE_MISSILE.get();

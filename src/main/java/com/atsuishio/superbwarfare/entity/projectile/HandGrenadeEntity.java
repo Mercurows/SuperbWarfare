@@ -51,12 +51,6 @@ public class HandGrenadeEntity extends FastThrowableProjectile implements GeoEnt
         this.fuse = fuse;
     }
 
-    // TODO AEP
-//    @Override
-//    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-//        return NetworkHooks.getEntitySpawningPacket(this);
-//    }
-
     @Override
     protected @NotNull Item getDefaultItem() {
         return ModItems.HAND_GRENADE.get();

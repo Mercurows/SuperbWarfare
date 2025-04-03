@@ -22,12 +22,6 @@ public class MelonBombEntity extends FastThrowableProjectile {
         super(ModEntities.MELON_BOMB.get(), entity, level);
     }
 
-    // TODO AEP
-//    @Override
-//    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-//        return NetworkHooks.getEntitySpawningPacket(this);
-//    }
-
     @Override
     protected @NotNull Item getDefaultItem() {
         return Items.MELON;

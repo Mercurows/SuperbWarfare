@@ -56,13 +56,6 @@ public class TaserBulletEntity extends AbstractArrow implements GeoEntity {
         super(type, world);
         this.noCulling = true;
     }
-
-    // TODO AEP
-//    @Override
-//    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-//        return NetworkHooks.getEntitySpawningPacket(this);
-//    }
-
     @Override
     public void playerTouch(@NotNull Player pEntity) {
     }

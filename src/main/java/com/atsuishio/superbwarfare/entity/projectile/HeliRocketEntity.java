@@ -51,12 +51,6 @@ public class HeliRocketEntity extends FastThrowableProjectile implements GeoEnti
         this.explosionRadius = explosionRadius;
     }
 
-    // TODO AEP
-//    @Override
-//    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-//        return NetworkHooks.getEntitySpawningPacket(this);
-//    }
-
     @Override
     protected @NotNull Item getDefaultItem() {
         return ModItems.ROCKET.get();

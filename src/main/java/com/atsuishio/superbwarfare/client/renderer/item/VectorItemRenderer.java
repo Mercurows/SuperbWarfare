@@ -38,7 +38,6 @@ public class VectorItemRenderer extends GeoItemRenderer<VectorItem> {
         super(new VectorItemModel());
         // TODO layer
 
-//        // TODO layer
 // this.addRenderLayer(new VectorLayer(this));
         
         this.renderArms = false;

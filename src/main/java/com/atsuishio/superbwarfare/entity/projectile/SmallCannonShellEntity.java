@@ -51,12 +51,6 @@ public class SmallCannonShellEntity extends FastThrowableProjectile implements G
         this.explosionRadius = explosionRadius;
     }
 
-    // TODO AEP
-//    @Override
-//    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-//        return NetworkHooks.getEntitySpawningPacket(this);
-//    }
-
     @Override
     protected @NotNull Item getDefaultItem() {
         return ModItems.SMALL_SHELL.get();

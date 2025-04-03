@@ -78,12 +78,6 @@ public class JavelinMissileEntity extends FastThrowableProjectile implements Geo
         this.monsterMultiplier = monsterMultiplier;
     }
 
-    // TODO AEP
-//    @Override
-//    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-//        return NetworkHooks.getEntitySpawningPacket(this);
-//    }
-
     @Override
     protected @NotNull Item getDefaultItem() {
         return ModItems.JAVELIN_MISSILE.get();
