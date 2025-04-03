@@ -25,7 +25,7 @@ public class ProjectileEntityRenderer extends GeoEntityRenderer<ProjectileEntity
 
     @Override
     public RenderType getRenderType(ProjectileEntity animatable, ResourceLocation texture, MultiBufferSource bufferSource, float partialTick) {
-        return RenderType.entityTranslucent(getTextureLocation(animatable));
+        return RenderType.energySwirl(getTextureLocation(animatable), 1, 1);
     }
 
     @Override
