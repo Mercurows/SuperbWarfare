@@ -1,0 +1,33 @@
+{
+  "parent": "superbwarfare:main/rare_blueprint",
+  "criteria": {
+    "0": {
+      "conditions": {
+        "items": [
+          {
+            "items": "#superbwarfare:blueprint/epic"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "superbwarfare.advancement.main.epic_blueprint.des"
+    },
+    "icon": {
+      "count": 1,
+      "id": "superbwarfare:trachelium_blueprint"
+    },
+    "title": {
+      "translate": "superbwarfare.advancement.main.epic_blueprint"
+    }
+  },
+  "requirements": [
+    [
+      "0"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

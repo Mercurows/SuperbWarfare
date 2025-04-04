@@ -1,0 +1,34 @@
+{
+  "parent": "superbwarfare:main/root",
+  "criteria": {
+    "0": {
+      "conditions": {
+        "items": [
+          {
+            "items": "superbwarfare:claymore_mine"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "superbwarfare.advancement.main.best_friend.des"
+    },
+    "hidden": true,
+    "icon": {
+      "count": 1,
+      "id": "superbwarfare:claymore_mine"
+    },
+    "title": {
+      "translate": "superbwarfare.advancement.main.best_friend"
+    }
+  },
+  "requirements": [
+    [
+      "0"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

@@ -1,0 +1,33 @@
+{
+  "parent": "superbwarfare:main/root",
+  "criteria": {
+    "0": {
+      "conditions": {
+        "items": [
+          {
+            "items": "superbwarfare:lunge_mine"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "superbwarfare.advancement.main.banzai.des"
+    },
+    "icon": {
+      "count": 1,
+      "id": "superbwarfare:lunge_mine"
+    },
+    "title": {
+      "translate": "superbwarfare.advancement.main.banzai"
+    }
+  },
+  "requirements": [
+    [
+      "0"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

@@ -1,0 +1,34 @@
+{
+  "parent": "superbwarfare:main/root",
+  "criteria": {
+    "0": {
+      "conditions": {
+        "items": [
+          {
+            "items": "superbwarfare:ancient_cpu"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "superbwarfare.advancement.main.ancient_technology.des"
+    },
+    "frame": "goal",
+    "icon": {
+      "count": 1,
+      "id": "superbwarfare:ancient_cpu"
+    },
+    "title": {
+      "translate": "superbwarfare.advancement.main.ancient_technology"
+    }
+  },
+  "requirements": [
+    [
+      "0"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

@@ -1,0 +1,33 @@
+{
+  "parent": "superbwarfare:main/root",
+  "criteria": {
+    "0": {
+      "conditions": {
+        "items": [
+          {
+            "items": "superbwarfare:crowbar"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "superbwarfare.advancement.main.physics_excalibur.des"
+    },
+    "icon": {
+      "count": 1,
+      "id": "superbwarfare:crowbar"
+    },
+    "title": {
+      "translate": "superbwarfare.advancement.main.physics_excalibur"
+    }
+  },
+  "requirements": [
+    [
+      "0"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

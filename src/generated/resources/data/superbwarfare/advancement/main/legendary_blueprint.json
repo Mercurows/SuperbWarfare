@@ -1,0 +1,33 @@
+{
+  "parent": "superbwarfare:main/epic_blueprint",
+  "criteria": {
+    "0": {
+      "conditions": {
+        "items": [
+          {
+            "items": "#superbwarfare:blueprint/legendary"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "superbwarfare.advancement.main.legendary_blueprint.des"
+    },
+    "icon": {
+      "count": 1,
+      "id": "superbwarfare:trachelium_blueprint"
+    },
+    "title": {
+      "translate": "superbwarfare.advancement.main.legendary_blueprint"
+    }
+  },
+  "requirements": [
+    [
+      "0"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

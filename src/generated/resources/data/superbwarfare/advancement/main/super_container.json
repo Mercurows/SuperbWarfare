@@ -1,0 +1,33 @@
+{
+  "parent": "superbwarfare:main/clean_energy",
+  "criteria": {
+    "0": {
+      "conditions": {
+        "items": [
+          {
+            "items": "superbwarfare:container"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "superbwarfare.advancement.main.super_container.des"
+    },
+    "icon": {
+      "count": 1,
+      "id": "superbwarfare:container"
+    },
+    "title": {
+      "translate": "superbwarfare.advancement.main.super_container"
+    }
+  },
+  "requirements": [
+    [
+      "0"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

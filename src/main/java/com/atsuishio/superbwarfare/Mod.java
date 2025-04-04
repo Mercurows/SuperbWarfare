@@ -55,6 +55,7 @@ public class Mod {
         ModRecipes.RECIPE_SERIALIZERS.register(bus);
         ModArmorMaterials.MATERIALS.register(bus);
         ModAttributes.ATTRIBUTES.register(bus);
+        ModCriteriaTriggers.REGISTRY.register(bus);
 
 //        bus.addListener(this::onCommonSetup);
         bus.addListener(this::onClientSetup);

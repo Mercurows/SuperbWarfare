@@ -1,0 +1,33 @@
+{
+  "parent": "superbwarfare:main/root",
+  "criteria": {
+    "0": {
+      "conditions": {
+        "items": [
+          {
+            "items": "superbwarfare:hammer"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "superbwarfare.advancement.main.hammer.des"
+    },
+    "icon": {
+      "count": 1,
+      "id": "superbwarfare:hammer"
+    },
+    "title": {
+      "translate": "superbwarfare.advancement.main.hammer"
+    }
+  },
+  "requirements": [
+    [
+      "0"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

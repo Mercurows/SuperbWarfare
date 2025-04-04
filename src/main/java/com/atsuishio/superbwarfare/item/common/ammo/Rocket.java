@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.PoseTool;
 import com.atsuishio.superbwarfare.client.renderer.item.RocketItemRenderer;
 import com.atsuishio.superbwarfare.entity.projectile.RpgRocketEntity;
+import com.atsuishio.superbwarfare.init.ModCriteriaTriggers;
 import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
@@ -112,8 +113,7 @@ public class Rocket extends Item implements GeoItem, ProjectileItem {
             }
 
             if (source instanceof ServerPlayer player) {
-                // TODO criteria
-//                CriteriaRegister.RPG_MELEE_EXPLOSION.trigger(player);
+                ModCriteriaTriggers.RPG_MELEE_EXPLOSION.get().trigger(player);
                 if (!player.isCreative()) {
                     stack.shrink(1);
                 }

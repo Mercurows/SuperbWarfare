@@ -1,0 +1,28 @@
+{
+  "parent": "superbwarfare:main/root",
+  "criteria": {
+    "0": {
+      "trigger": "superbwarfare:rpg_melee_explosion"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "superbwarfare.advancement.main.boomstick_melee.des"
+    },
+    "frame": "challenge",
+    "hidden": true,
+    "icon": {
+      "count": 1,
+      "id": "superbwarfare:rocket"
+    },
+    "title": {
+      "translate": "superbwarfare.advancement.main.boomstick_melee"
+    }
+  },
+  "requirements": [
+    [
+      "0"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

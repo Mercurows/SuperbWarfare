@@ -1,0 +1,33 @@
+{
+  "parent": "superbwarfare:main/blueprint",
+  "criteria": {
+    "0": {
+      "conditions": {
+        "items": [
+          {
+            "items": "#superbwarfare:blueprint/cannon"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "superbwarfare.advancement.main.cannon_blueprint.des"
+    },
+    "icon": {
+      "count": 1,
+      "id": "superbwarfare:mk_42_blueprint"
+    },
+    "title": {
+      "translate": "superbwarfare.advancement.main.cannon_blueprint"
+    }
+  },
+  "requirements": [
+    [
+      "0"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

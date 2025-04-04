@@ -1,0 +1,33 @@
+{
+  "parent": "superbwarfare:main/physics_excalibur",
+  "criteria": {
+    "0": {
+      "conditions": {
+        "items": [
+          {
+            "items": "superbwarfare:charging_station"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "superbwarfare.advancement.main.clean_energy.des"
+    },
+    "icon": {
+      "count": 1,
+      "id": "superbwarfare:charging_station"
+    },
+    "title": {
+      "translate": "superbwarfare.advancement.main.clean_energy"
+    }
+  },
+  "requirements": [
+    [
+      "0"
+    ]
+  ],
+  "sends_telemetry_event": true
+}
