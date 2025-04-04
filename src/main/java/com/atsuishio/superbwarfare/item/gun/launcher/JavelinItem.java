@@ -293,8 +293,9 @@ public class JavelinItem extends GunItem implements GeoItem, SpecialFireWeapon {
     }
 
     @Override
-    public void fireOnRelease(Player player, final CompoundTag tag) {
+    public void fireOnRelease(Player player, final GunData data) {
         fire(player);
+        var tag = data.getTag();
         tag.putBoolean("Seeking", false);
         tag.putInt("SeekTime", 0);
         tag.putString("TargetEntity", "none");
@@ -305,10 +306,8 @@ public class JavelinItem extends GunItem implements GeoItem, SpecialFireWeapon {
     }
 
     @Override
-    public void fireOnPress(Player player, CompoundTag tag) {
-        var stack = player.getMainHandItem();
-        var data = GunData.from(stack);
-        tag = data.getTag();
+    public void fireOnPress(Player player, final GunData data) {
+        var tag = data.getTag();
 
         var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
         if (cap != null && !cap.zoom || data.getAmmo() <= 0) return;

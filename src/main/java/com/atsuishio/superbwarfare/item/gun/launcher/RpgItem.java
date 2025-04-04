@@ -23,7 +23,6 @@ import com.atsuishio.superbwarfare.tools.SoundTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -181,11 +180,10 @@ public class RpgItem extends GunItem implements GeoItem, SpecialFireWeapon {
     }
 
     @Override
-    public void fireOnPress(Player player, CompoundTag tag) {
+    public void fireOnPress(Player player, final GunData data) {
         Level level = player.level();
         ItemStack stack = player.getMainHandItem();
-        var data = GunData.from(stack);
-        tag = data.getTag();
+        var tag = data.getTag();
 
         if (data.isReloading()
                 || player.getCooldowns().isOnCooldown(stack.getItem())
@@ -249,6 +247,5 @@ public class RpgItem extends GunItem implements GeoItem, SpecialFireWeapon {
 
         player.getCooldowns().addCooldown(stack.getItem(), 10);
         data.setAmmo(data.getAmmo() - 1);
-        data.save();
     }
 }

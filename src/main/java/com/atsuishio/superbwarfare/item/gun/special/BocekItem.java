@@ -9,6 +9,7 @@ import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.item.gun.GunData;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.SpecialFireWeapon;
 import com.atsuishio.superbwarfare.network.message.receive.ShootClientMessage;
@@ -21,7 +22,6 @@ import com.atsuishio.superbwarfare.tools.NBTTool;
 import com.atsuishio.superbwarfare.tools.SoundTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
@@ -169,10 +169,11 @@ public class BocekItem extends GunItem implements GeoItem, SpecialFireWeapon {
     }
 
     @Override
-    public void fireOnRelease(Player player, final CompoundTag tag) {
+    public void fireOnRelease(Player player, final GunData data) {
         if (player.level().isClientSide()) return;
 
-        ItemStack stack = player.getMainHandItem();
+        var tag = data.getTag();
+        var stack = data.getStack();
         var perk = PerkHelper.getPerkByType(tag, Perk.Type.AMMO);
 
         if (player instanceof ServerPlayer serverPlayer) {
@@ -209,7 +210,6 @@ public class BocekItem extends GunItem implements GeoItem, SpecialFireWeapon {
             player.getCooldowns().addCooldown(stack.getItem(), 7);
             GunsTool.setGunIntTag(tag, "ArrowEmpty", 7);
             GunsTool.setGunDoubleTag(tag, "Power", 0);
-            NBTTool.saveTag(stack, tag);
 
             if (!InventoryTool.hasCreativeAmmoBox(player) && !player.isCreative()) {
                 player.getInventory().clearOrCountMatchingItems(p -> Items.ARROW == p.getItem(), 1, player.inventoryMenu.getCraftSlots());
@@ -218,7 +218,7 @@ public class BocekItem extends GunItem implements GeoItem, SpecialFireWeapon {
     }
 
     @Override
-    public void fireOnPress(Player player, final CompoundTag tag) {
+    public void fireOnPress(Player player, final GunData data) {
         var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
         if (cap != null) {
             cap.bowPullHold = true;

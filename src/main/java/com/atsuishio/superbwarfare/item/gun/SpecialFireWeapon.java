@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.item.gun;
 
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 
 
@@ -16,7 +15,7 @@ public interface SpecialFireWeapon {
      * @param player 玩家
      */
 
-    default void fireOnPress(Player player, final CompoundTag tag) {
+    default void fireOnPress(Player player, final GunData data) {
     }
 
     /**
@@ -24,7 +23,7 @@ public interface SpecialFireWeapon {
      *
      * @param player 玩家
      */
-    default void fireOnRelease(Player player, final CompoundTag tag) {
+    default void fireOnRelease(Player player, final GunData data) {
     }
 
 }

@@ -21,7 +21,6 @@ import com.atsuishio.superbwarfare.tools.SoundTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -270,12 +269,12 @@ public class SecondaryCataclysm extends GunItem implements GeoItem, SpecialFireW
     }
 
     @Override
-    public void fireOnPress(Player player, final CompoundTag tag) {
-        ItemStack stack = player.getMainHandItem();
-        var data = GunData.from(stack);
+    public void fireOnPress(Player player, final GunData data) {
         if (data.isReloading()) return;
+        ItemStack stack = data.getStack();
         if (player.getCooldowns().isOnCooldown(stack.getItem()) || data.getAmmo() <= 0) return;
 
+        var tag = data.getTag();
         var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
         boolean zooming = cap != null && cap.zoom;
         double spread = data.spread();
@@ -343,7 +342,6 @@ public class SecondaryCataclysm extends GunItem implements GeoItem, SpecialFireW
         }
 
         data.setAmmo(data.getAmmo() - 1);
-        data.save();
         player.getCooldowns().addCooldown(stack.getItem(), 6);
     }
 

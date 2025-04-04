@@ -22,7 +22,6 @@ import com.atsuishio.superbwarfare.tools.NBTTool;
 import com.atsuishio.superbwarfare.tools.SoundTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
@@ -224,10 +223,10 @@ public class TaserItem extends GunItem implements GeoItem, SpecialFireWeapon, En
     }
 
     @Override
-    public void fireOnPress(Player player, final CompoundTag tag) {
-        ItemStack stack = player.getMainHandItem();
-        var data = GunData.from(stack);
+    public void fireOnPress(Player player, final GunData data) {
         if (data.isReloading()) return;
+        ItemStack stack = data.getStack();
+        var tag = data.getTag();
 
         int perkLevel = PerkHelper.getItemPerkLevel(ModPerks.VOLT_OVERLOAD.get(), tag);
         var energyStorage = stack.getCapability(Capabilities.EnergyStorage.ITEM);
@@ -266,7 +265,6 @@ public class TaserItem extends GunItem implements GeoItem, SpecialFireWeapon, En
 
         data.setAmmo(data.getAmmo() - 1);
         data.getTag().putBoolean("shoot", true);
-        data.save();
         energyStorage.extractEnergy(400 + 100 * perkLevel, false);
     }
 

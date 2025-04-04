@@ -46,15 +46,15 @@ public record FireMessage(int msgType) implements CustomPacketPayload {
         if (player.isSpectator()) return;
         ItemStack stack = player.getMainHandItem();
         if (!stack.is(ModTags.Items.GUN)) return;
-        final var tag = NBTTool.getTag(stack);
+        var data = GunData.from(stack);
+        final var tag = data.getTag();
 
-        handleGunBolt(player, stack, tag);
+        handleGunBolt(player, stack);
 
         var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
         if (type == 0) {
-            var data = GunData.from(stack);
             if (tag.getDouble("prepare") == 0 && data.isReloading() && data.getAmmo() > 0) {
-                NBTTool.saveTag(stack, tag);
+                tag.putDouble("force_stop", 1);
             }
 
             if (cap != null) {
@@ -66,7 +66,7 @@ public record FireMessage(int msgType) implements CustomPacketPayload {
                 if (cap != null) cap.syncPlayerVariables(player);
                 return;
             }
-            specialFireWeapon.fireOnPress(player, tag);
+            specialFireWeapon.fireOnPress(player, data);
 
             if (cap != null) {
                 cap.holdFire = true;
@@ -81,17 +81,16 @@ public record FireMessage(int msgType) implements CustomPacketPayload {
 
             // 松开开火
             if (stack.getItem() instanceof SpecialFireWeapon specialFireWeapon) {
-                specialFireWeapon.fireOnRelease(player, tag);
+                specialFireWeapon.fireOnRelease(player, data);
             }
         }
-
-        NBTTool.saveTag(stack, tag);
+        data.save();
     }
 
-    private static void handleGunBolt(Player player, ItemStack stack, CompoundTag tag) {
+    private static void handleGunBolt(Player player, ItemStack stack) {
         if (!stack.is(ModTags.Items.GUN)) return;
         var data = GunData.from(stack);
-        tag = data.getTag();
+        CompoundTag tag = data.getTag();
 
         if (data.boltActionTime() > 0
                 && data.getAmmo() > (stack.is(ModTags.Items.REVOLVER) ? -1 : 0)
