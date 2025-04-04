@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity;
 import com.atsuishio.superbwarfare.event.GunEventHandler;
 import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.item.gun.GunData;
 import com.atsuishio.superbwarfare.item.gun.SpecialFireWeapon;
 import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
@@ -51,8 +52,8 @@ public record FireMessage(int msgType) implements CustomPacketPayload {
 
         var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
         if (type == 0) {
-            if (tag.getDouble("prepare") == 0 && GunsTool.getGunBooleanTag(tag, "Reloading") && GunsTool.getGunIntTag(tag, "Ammo") > 0) {
-                tag.putDouble("force_stop", 1);
+            var data = GunData.from(stack);
+            if (tag.getDouble("prepare") == 0 && data.isReloading() && data.getAmmo() > 0) {
                 NBTTool.saveTag(stack, tag);
             }
 
@@ -87,18 +88,20 @@ public record FireMessage(int msgType) implements CustomPacketPayload {
         NBTTool.saveTag(stack, tag);
     }
 
-    private static void handleGunBolt(Player player, ItemStack stack, final CompoundTag tag) {
+    private static void handleGunBolt(Player player, ItemStack stack, CompoundTag tag) {
         if (!stack.is(ModTags.Items.GUN)) return;
+        var data = GunData.from(stack);
+        tag = data.getTag();
 
-        if (GunsTool.getGunIntTag(tag, "BoltActionTime") > 0
-                && GunsTool.getGunIntTag(tag, "Ammo") > (stack.is(ModTags.Items.REVOLVER) ? -1 : 0)
+        if (data.boltActionTime() > 0
+                && data.getAmmo() > (stack.is(ModTags.Items.REVOLVER) ? -1 : 0)
                 && GunsTool.getGunIntTag(tag, "BoltActionTick") == 0
-                && !(tag.getBoolean("is_normal_reloading")
-                || tag.getBoolean("is_empty_reloading"))
-                && !GunsTool.getGunBooleanTag(tag, "Reloading")
+                && !(data.normalReloading()
+                || data.emptyReloading())
+                && !data.isReloading()
                 && !GunsTool.getGunBooleanTag(tag, "Charging")) {
             if (!player.getCooldowns().isOnCooldown(stack.getItem()) && GunsTool.getGunBooleanTag(tag, "NeedBoltAction")) {
-                GunsTool.setGunIntTag(tag, "BoltActionTick", GunsTool.getGunIntTag(tag, "BoltActionTime") + 1);
+                GunsTool.setGunIntTag(tag, "BoltActionTick", data.boltActionTime() + 1);
                 GunEventHandler.playGunBoltSounds(player);
             }
         }
@@ -124,11 +127,12 @@ public record FireMessage(int msgType) implements CustomPacketPayload {
     public static void spawnBullet(Player player, final CompoundTag tag) {
         ItemStack stack = player.getMainHandItem();
         if (player.level().isClientSide()) return;
+        var data = GunData.from(stack);
 
         var perk = PerkHelper.getPerkByType(tag, Perk.Type.AMMO);
-        float headshot = (float) GunsTool.getGunDoubleTag(tag, "Headshot");
+        float headshot = (float) data.headshot();
         float velocity = 2 * (float) GunsTool.getGunDoubleTag(tag, "Power", 6) * (float) perkSpeed(tag);
-        float bypassArmorRate = (float) GunsTool.getGunDoubleTag(tag, "BypassesArmor");
+        float bypassArmorRate = (float) data.bypassArmor();
         double damage;
 
         var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
@@ -137,12 +141,12 @@ public record FireMessage(int msgType) implements CustomPacketPayload {
         float spread;
         if (zoom) {
             spread = 0.01f;
-            damage = 0.08333333 * GunsTool.getGunDoubleTag(tag, "Damage") *
+            damage = 0.08333333 * data.damage() *
                     GunsTool.getGunDoubleTag(tag, "Power", 6) * perkDamage(stack);
         } else {
             spread = perk instanceof AmmoPerk ammoPerk && ammoPerk.slug ? 0.5f : 2.5f;
             damage = (perk instanceof AmmoPerk ammoPerk && ammoPerk.slug ? 0.08333333 : 0.008333333) *
-                    GunsTool.getGunDoubleTag(tag, "Damage") *
+                    data.damage() *
                     GunsTool.getGunDoubleTag(tag, "Power", 6) * perkDamage(stack);
         }
 

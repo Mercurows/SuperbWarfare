@@ -8,6 +8,7 @@ import com.atsuishio.superbwarfare.init.ModRarity;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.EnergyStorageItem;
+import com.atsuishio.superbwarfare.item.gun.GunData;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
@@ -76,17 +77,18 @@ public class SentinelItem extends GunItem implements GeoItem, EnergyStorageItem 
         if (player == null) return PlayState.STOP;
         ItemStack stack = player.getMainHandItem();
         if (!stack.is(ModTags.Items.GUN)) return PlayState.STOP;
-        final var tag = NBTTool.getTag(stack);
+        var data = GunData.from(stack);
+        final var tag = data.getTag();
 
         if (GunsTool.getGunIntTag(tag, "BoltActionTick") > 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.sentinel.shift"));
         }
 
-        if (tag.getBoolean("is_empty_reloading")) {
+        if (data.emptyReloading()) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.sentinel.reload_empty"));
         }
 
-        if (tag.getBoolean("is_normal_reloading")) {
+        if (data.normalReloading()) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.sentinel.reload_normal"));
         }
 
@@ -102,11 +104,12 @@ public class SentinelItem extends GunItem implements GeoItem, EnergyStorageItem 
         if (player == null) return PlayState.STOP;
         ItemStack stack = player.getMainHandItem();
         if (!stack.is(ModTags.Items.GUN)) return PlayState.STOP;
-        final var tag = NBTTool.getTag(stack);
+        var data = GunData.from(stack);
+        final var tag = data.getTag();
 
         if (player.isSprinting() && player.onGround()
                 && player.getPersistentData().getDouble("noRun") == 0
-                && !(tag.getBoolean("is_normal_reloading") || tag.getBoolean("is_empty_reloading"))
+                && !(data.normalReloading() || data.emptyReloading())
                 && !GunsTool.getGunBooleanTag(tag, "Charging") && ClientEventHandler.drawTime < 0.01) {
             if (player.hasEffect(MobEffects.MOVEMENT_SPEED) && GunsTool.getGunIntTag(tag, "BoltActionTick") == 0) {
                 return event.setAndContinue(RawAnimation.begin().thenLoop("animation.sentinel.run_fast"));
@@ -141,7 +144,7 @@ public class SentinelItem extends GunItem implements GeoItem, EnergyStorageItem 
         if (cap != null && cap.getEnergyStored() > 0) {
             cap.extractEnergy(1, false);
             GunsTool.setGunDoubleTag(tag, "ChargedDamage", 0.2857142857142857
-                    * GunsTool.getGunDoubleTag(tag, "Damage"));
+                    * GunData.from(stack).damage());
         } else {
             GunsTool.setGunDoubleTag(tag, "ChargedDamage", 0);
         }

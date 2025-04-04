@@ -14,6 +14,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.ContainerMobileVehicleEnt
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.event.events.PreKillEvent;
 import com.atsuishio.superbwarfare.init.*;
+import com.atsuishio.superbwarfare.item.gun.GunData;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
 import com.atsuishio.superbwarfare.network.message.receive.DrawClientMessage;
@@ -167,6 +168,7 @@ public class LivingEventHandler {
             double armorValue;
             armorValue = tag.getDouble("ArmorPlate");
             tag.putDouble("ArmorPlate", Math.max(tag.getDouble("ArmorPlate") - damage, 0));
+            NBTTool.saveTag(stack, tag);
             damage = Math.max(damage - armorValue, 0);
         }
 
@@ -208,22 +210,22 @@ public class LivingEventHandler {
         if (!stack.is(ModTags.Items.GUN)) return;
         if (event.getEntity() instanceof TargetEntity) return;
 
+        var data = GunData.from(stack).reload();
         double amount = Math.min(0.125 * event.getAmount(), event.getEntity().getMaxHealth());
         final var tag = NBTTool.getTag(stack);
 
         // 先处理发射器类武器或高爆弹的爆炸伤害
         if (source.is(ModDamageTypes.PROJECTILE_BOOM)) {
             if (stack.is(ModTags.Items.LAUNCHER) || PerkHelper.getItemPerkLevel(ModPerks.HE_BULLET.get(), tag) > 0) {
-                GunsTool.setGunDoubleTag(tag, "Exp", GunsTool.getGunDoubleTag(tag, "Exp") + amount);
+                data.setExp(data.getExp() + amount);
             }
         }
 
         // 再判断是不是枪械能造成的伤害
         if (!DamageTypeTool.isGunDamage(source)) return;
 
-        GunsTool.setGunDoubleTag(tag, "Exp", GunsTool.getGunDoubleTag(tag, "Exp") + amount);
-
-        NBTTool.saveTag(stack, tag);
+        data.setExp(data.getExp() + amount);
+        data.save();
     }
 
     private static void giveKillExpToWeapon(LivingDeathEvent event) {
@@ -234,35 +236,36 @@ public class LivingEventHandler {
         if (!stack.is(ModTags.Items.GUN)) return;
         if (event.getEntity() instanceof TargetEntity) return;
 
+        var data = GunData.from(stack).reload();
         double amount = 20 + 2 * event.getEntity().getMaxHealth();
         final var tag = NBTTool.getTag(stack);
 
         // 先处理发射器类武器或高爆弹的爆炸伤害
         if (source.is(ModDamageTypes.PROJECTILE_BOOM)) {
             if (stack.is(ModTags.Items.LAUNCHER) || PerkHelper.getItemPerkLevel(ModPerks.HE_BULLET.get(), tag) > 0) {
-                GunsTool.setGunDoubleTag(tag, "Exp", GunsTool.getGunDoubleTag(tag, "Exp") + amount);
+                data.setExp(data.getExp() + amount);
             }
         }
 
         // 再判断是不是枪械能造成的伤害
         if (DamageTypeTool.isGunDamage(source)) {
-            GunsTool.setGunDoubleTag(tag, "Exp", GunsTool.getGunDoubleTag(tag, "Exp") + amount);
+            data.setExp(data.getExp() + amount);
         }
 
         // 提升武器等级
-        int level = GunsTool.getGunIntTag(tag, "Level");
-        double exp = GunsTool.getGunDoubleTag(tag, "Exp");
+        int level = data.getLevel();
+        double exp = data.getExp();
         double upgradeExpNeeded = 20 * Math.pow(level, 2) + 160 * level + 20;
 
         while (exp >= upgradeExpNeeded) {
             exp -= upgradeExpNeeded;
-            level = GunsTool.getGunIntTag(tag, "Level") + 1;
+            level = data.getLevel() + 1;
             upgradeExpNeeded = 20 * Math.pow(level, 2) + 160 * level + 20;
-            GunsTool.setGunDoubleTag(tag, "Exp", exp);
-            GunsTool.setGunIntTag(tag, "Level", level);
-            GunsTool.setGunDoubleTag(tag, "UpgradePoint", GunsTool.getGunDoubleTag(tag, "UpgradePoint") + 0.5);
+            data.setExp(exp);
+            data.setLevel(level);
+            data.setUpgradePoint(data.getUpgradePoint() + 0.5);
         }
-        NBTTool.saveTag(stack, tag);
+        data.save();
     }
 
     private static void handleGunLevels(LivingIncomingDamageEvent event) {
@@ -273,20 +276,20 @@ public class LivingEventHandler {
         if (!stack.is(ModTags.Items.GUN)) return;
         if (event.getEntity() instanceof TargetEntity) return;
 
-        final var tag = NBTTool.getTag(stack);
-        int level = GunsTool.getGunIntTag(tag, "Level");
-        double exp = GunsTool.getGunDoubleTag(tag, "Exp");
+        var data = GunData.from(stack).reload();
+        int level = data.getLevel();
+        double exp = data.getExp();
         double upgradeExpNeeded = 20 * Math.pow(level, 2) + 160 * level + 20;
 
         while (exp >= upgradeExpNeeded) {
             exp -= upgradeExpNeeded;
-            level = GunsTool.getGunIntTag(tag, "Level") + 1;
+            level = data.getLevel() + 1;
             upgradeExpNeeded = 20 * Math.pow(level, 2) + 160 * level + 20;
-            GunsTool.setGunDoubleTag(tag, "Exp", exp);
-            GunsTool.setGunIntTag(tag, "Level", level);
-            GunsTool.setGunDoubleTag(tag, "UpgradePoint", GunsTool.getGunDoubleTag(tag, "UpgradePoint") + 0.5);
+            data.setExp(exp);
+            data.setLevel(level);
+            data.setUpgradePoint(data.getUpgradePoint() + 0.5);
         }
-        NBTTool.saveTag(stack, tag);
+        data.save();
     }
 
     private static void killIndication(LivingDeathEvent event) {
@@ -353,23 +356,22 @@ public class LivingEventHandler {
                 if (oldStack.getItem() instanceof GunItem oldGun) {
                     stopGunReloadSound(serverPlayer, oldGun);
 
-                    CompoundTag data = oldTag.getCompound("GunData");
+                    var oldData = GunData.from(oldStack).reload();
+                    CompoundTag data = oldData.getData();
 
-                    if (GunsTool.getGunDoubleTag(oldTag, "BoltActionTime") > 0) {
+                    if (oldData.boltActionTime() > 0) {
                         data.putInt("BoltActionTick", 0);
                     }
 
                     data.putInt("ReloadTime", 0);
                     oldTag.put("GunData", data);
 
-                    oldTag.putBoolean("is_normal_reloading", false);
-                    oldTag.putBoolean("is_empty_reloading", false);
+                    oldData.setReloadState(GunData.ReloadState.NOT_RELOADING);
 
-                    if (GunsTool.getGunIntTag(oldTag, "IterativeTime") != 0) {
+                    if (oldData.iterativeTime() != 0) {
                         oldTag.putBoolean("force_stop", false);
                         oldTag.putBoolean("stop", false);
                         oldTag.putInt("reload_stage", 0);
-                        data.putBoolean("Reloading", false);
                         oldTag.putDouble("prepare", 0);
                         oldTag.putDouble("prepare_load", 0);
                         oldTag.putDouble("iterative", 0);
@@ -389,23 +391,24 @@ public class LivingEventHandler {
                 }
 
                 if (newStack.getItem() instanceof GunItem) {
+                    var newData = GunData.from(newStack);
+
                     player.getPersistentData().putDouble("noRun", 40);
                     newTag.putBoolean("draw", true);
-                    if (GunsTool.getGunIntTag(newTag, "BoltActionTime") > 0) {
+                    if (newData.boltActionTime() > 0) {
                         GunsTool.setGunIntTag(newTag, "BoltActionTick", 0);
                     }
-                    newTag.putBoolean("is_normal_reloading", false);
-                    newTag.putBoolean("is_empty_reloading", false);
+
+                    newData.setReloadState(GunData.ReloadState.NOT_RELOADING);
 
                     CompoundTag data = newTag.getCompound("GunData");
                     data.putInt("ReloadTime", 0);
                     newTag.put("GunData", data);
 
-                    if (GunsTool.getGunIntTag(newTag, "IterativeTime") != 0) {
+                    if (newData.iterativeTime() != 0) {
                         newTag.putBoolean("force_stop", false);
                         newTag.putBoolean("stop", false);
                         newTag.putInt("reload_stage", 0);
-                        GunsTool.setGunBooleanTag(newTag, "Reloading", false);
                         newTag.putDouble("prepare", 0);
                         newTag.putDouble("prepare_load", 0);
                         newTag.putDouble("iterative", 0);
@@ -653,8 +656,9 @@ public class LivingEventHandler {
         var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
         if (cap == null) return;
 
-        int mag = GunsTool.getGunIntTag(tag, "Magazine") + GunsTool.getGunIntTag(tag, "CustomMagazine");
-        int ammo = GunsTool.getGunIntTag(tag, "Ammo");
+        var data = GunData.from(stack);
+        int mag = data.magazine();
+        int ammo = data.getAmmo();
         int ammoReload = (int) Math.min(mag, mag * rate);
         int ammoNeed = Math.min(mag - ammo, ammoReload);
 
@@ -667,7 +671,7 @@ public class LivingEventHandler {
             } else {
                 cap.rifleAmmo -= ammoFinal;
             }
-            GunsTool.setGunIntTag(tag, "Ammo", Math.min(mag, ammo + ammoFinal));
+            data.setAmmo(Math.min(mag, ammo + ammoFinal));
         } else if (stack.is(ModTags.Items.USE_HANDGUN_AMMO)) {
             int ammoFinal = Math.min(cap.handgunAmmo, ammoNeed);
             if (flag) {
@@ -675,9 +679,9 @@ public class LivingEventHandler {
             } else {
                 cap.handgunAmmo -= ammoFinal;
             }
-            GunsTool.setGunIntTag(tag, "Ammo", Math.min(mag, ammo + ammoFinal));
+            data.setAmmo(Math.min(mag, ammo + ammoFinal));
         }
-        NBTTool.saveTag(stack, tag);
+        data.save();
         cap.syncPlayerVariables(player);
     }
 

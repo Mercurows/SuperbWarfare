@@ -1,5 +1,5 @@
 {
-  "CustomZoom": 4.75,
+  "DefaultZoom": 4.75,
   "MinZoom": 4,
   "MaxZoom": 8,
   "Spread": 6,

@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.client;
 
+import com.atsuishio.superbwarfare.item.gun.GunData;
 import com.atsuishio.superbwarfare.tools.GunsTool;
 import com.atsuishio.superbwarfare.tools.NBTTool;
 import net.minecraft.client.model.HumanoidModel;
@@ -14,10 +15,12 @@ public class PoseTool {
 
     public static HumanoidModel.ArmPose pose(LivingEntity entityLiving, InteractionHand hand, ItemStack stack) {
         var tag = NBTTool.getTag(stack);
-        if (tag.getBoolean("is_empty_reloading")
-                || tag.getBoolean("is_normal_reloading")
-                || GunsTool.getGunBooleanTag(tag, "Reloading")
-                || GunsTool.getGunBooleanTag(tag, "Charging")) {
+        var data = GunData.from(stack);
+        if (data.emptyReloading()
+                || data.getReloadState() == GunData.ReloadState.NORMAL_RELOADING
+                || data.isReloading()
+                || GunsTool.getGunBooleanTag(tag, "Charging")
+        ) {
             return HumanoidModel.ArmPose.CROSSBOW_CHARGE;
         } else if (entityLiving.isSprinting() && entityLiving.onGround() && entityLiving.getPersistentData().getDouble("noRun") == 0) {
             return HumanoidModel.ArmPose.CROSSBOW_CHARGE;

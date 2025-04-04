@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.tools;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.capability.ModCapabilities;
 import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.item.gun.GunData;
 import com.atsuishio.superbwarfare.network.message.receive.GunsDataMessage;
 import com.google.gson.stream.JsonReader;
 import net.minecraft.nbt.CompoundTag;
@@ -58,22 +59,23 @@ public class GunsTool {
         if (gunsData != null && gunsData.get(location) != null) {
             CompoundTag data = tag.getCompound("GunData");
 
-            gunsData.get(location).forEach(data::putDouble);
+            // gunsData.get(location).forEach(data::putDouble);
+
             data.putBoolean("Init", true);
             tag.put("GunData", data);
         }
     }
 
-    public static void initCreativeGun(final CompoundTag tag, String location) {
-        var fillAmmo = !tag.getCompound("GunData").getBoolean("Init");
+    public static void initCreativeGun(ItemStack stack, String location) {
+        var data = GunData.from(stack);
+        var fillAmmo = !data.getData().getBoolean("Init");
 
-        initGun(tag, location);
+        initGun(data.getTag(), location);
+        data.save();
 
         if (fillAmmo) {
-            var data = tag.getCompound("GunData");
-            data.putInt("Ammo", GunsTool.getGunIntTag(tag, "Magazine")
-                    + GunsTool.getGunIntTag(tag, "CustomMagazine")
-            );
+            data.setAmmo(data.magazine());
+            data.save();
         }
     }
 
@@ -120,19 +122,19 @@ public class GunsTool {
         });
     }
 
-    public static void reload(Player player, ItemStack stack, final CompoundTag tag, AmmoType type) {
-        reload(player, stack, tag, type, false);
+    public static void reload(Player player, ItemStack stack, GunData gunData, AmmoType type) {
+        reload(player, stack, gunData, type, false);
     }
 
-    public static void reload(Player player, ItemStack stack, final CompoundTag tag, AmmoType type, boolean extraOne) {
-        final var data = tag.getCompound("GunData");
+    public static void reload(Player player, ItemStack stack, GunData gunData, AmmoType type, boolean extraOne) {
+        var data = gunData.getData();
 
-        int mag = data.getInt("Magazine") + data.getInt("CustomMagazine");
-        int ammo = data.getInt("Ammo");
+        int mag = gunData.magazine();
+        int ammo = gunData.getAmmo();
         int ammoToAdd = mag - ammo + (extraOne ? 1 : 0);
 
         // 空仓换弹的栓动武器应该在换弹后取消待上膛标记
-        if (ammo == 0 && data.getInt("BoltActionTime") > 0 && !stack.is(ModTags.Items.REVOLVER)) {
+        if (ammo == 0 && gunData.boltActionTime() > 0 && !stack.is(ModTags.Items.REVOLVER)) {
             data.putBoolean("NeedBoltAction", false);
         }
 
@@ -148,9 +150,9 @@ public class GunsTool {
 
         int needToAdd = ammo + Math.min(ammoToAdd, playerAmmo);
 
-        data.putInt("Ammo", needToAdd);
-        tag.putBoolean("is_normal_reloading", false);
-        tag.putBoolean("is_empty_reloading", false);
+        gunData.setAmmo(needToAdd);
+        gunData.setReloadState(GunData.ReloadState.NOT_RELOADING);
+        gunData.save();
     }
 
     /* PerkData */

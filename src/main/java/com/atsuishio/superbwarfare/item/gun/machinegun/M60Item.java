@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.item.gun.GunData;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
@@ -67,11 +68,11 @@ public class M60Item extends GunItem implements GeoItem {
         ItemStack stack = player.getMainHandItem();
         if (!stack.is(ModTags.Items.GUN)) return PlayState.STOP;
 
-        if (NBTTool.getTag(stack).getBoolean("is_empty_reloading")) {
+        if (GunData.from(stack).emptyReloading()) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m60.reload"));
         }
 
-        if (NBTTool.getTag(stack).getBoolean("is_normal_reloading")) {
+        if (GunData.from(stack).normalReloading()) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m60.reload2"));
         }
 

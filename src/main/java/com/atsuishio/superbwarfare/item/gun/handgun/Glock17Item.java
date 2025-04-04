@@ -5,10 +5,10 @@ import com.atsuishio.superbwarfare.client.renderer.item.Glock17ItemRenderer;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.item.gun.GunData;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
-import com.atsuishio.superbwarfare.tools.NBTTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.ResourceLocation;
@@ -49,11 +49,11 @@ public class Glock17Item extends GunItem implements GeoItem {
         ItemStack stack = player.getMainHandItem();
         if (!stack.is(ModTags.Items.GUN)) return PlayState.STOP;
 
-        if (NBTTool.getTag(stack).getBoolean("is_empty_reloading")) {
+        if (GunData.from(stack).emptyReloading()) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.glock.reload_empty"));
         }
 
-        if (NBTTool.getTag(stack).getBoolean("is_normal_reloading")) {
+        if (GunData.from(stack).normalReloading()) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.glock.reload_normal"));
         }
 
@@ -69,7 +69,7 @@ public class Glock17Item extends GunItem implements GeoItem {
 
         if (player.isSprinting() && player.onGround()
                 && player.getPersistentData().getDouble("noRun") == 0
-                && !(NBTTool.getTag(stack).getBoolean("is_normal_reloading") || NBTTool.getTag(stack).getBoolean("is_empty_reloading")) && ClientEventHandler.drawTime < 0.01) {
+                && !(GunData.from(stack).normalReloading() || GunData.from(stack).emptyReloading()) && ClientEventHandler.drawTime < 0.01) {
             if (player.hasEffect(MobEffects.MOVEMENT_SPEED)) {
                 return event.setAndContinue(RawAnimation.begin().thenLoop("animation.glock.run_fast"));
             } else {

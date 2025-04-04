@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.client.renderer.item.AK12ItemRenderer;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.item.gun.GunData;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
@@ -16,18 +17,15 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
-import net.minecraft.world.level.Level;
 import software.bernie.geckolib.animatable.GeoItem;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.*;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Set;
 
 public class AK12Item extends GunItem implements GeoItem {
@@ -58,12 +56,13 @@ public class AK12Item extends GunItem implements GeoItem {
         if (player == null) return PlayState.STOP;
         ItemStack stack = player.getMainHandItem();
         if (!stack.is(ModTags.Items.GUN)) return PlayState.STOP;
-        final var tag = NBTTool.getTag(stack);
+        var data = GunData.from(stack);
+        final var tag = data.getTag();
 
         boolean drum = GunsTool.getAttachmentType(tag, GunsTool.AttachmentType.MAGAZINE) == 2;
         boolean grip = GunsTool.getAttachmentType(tag, GunsTool.AttachmentType.GRIP) == 1 || GunsTool.getAttachmentType(tag, GunsTool.AttachmentType.GRIP) == 2;
 
-        if (NBTTool.getTag(stack).getBoolean("is_empty_reloading")) {
+        if (GunData.from(stack).emptyReloading()) {
             if (grip) {
                 return event.setAndContinue(RawAnimation.begin().thenPlay("animation.ak12.reload_empty_grip"));
             } else {
@@ -71,7 +70,7 @@ public class AK12Item extends GunItem implements GeoItem {
             }
         }
 
-        if (NBTTool.getTag(stack).getBoolean("is_normal_reloading")) {
+        if (GunData.from(stack).normalReloading()) {
             if (drum) {
                 if (grip) {
                     return event.setAndContinue(RawAnimation.begin().thenPlay("animation.ak12.reload_normal_drum_grip"));
@@ -134,33 +133,28 @@ public class AK12Item extends GunItem implements GeoItem {
     }
 
     @Override
-    @ParametersAreNonnullByDefault
-    public void inventoryTick(ItemStack stack, Level world, Entity entity, int slot, boolean selected) {
-        super.inventoryTick(stack, world, entity, slot, selected);
-        final var tag = NBTTool.getTag(stack);
+    public boolean canAdjustZoom(ItemStack stack) {
+        return GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.SCOPE) == 3;
+    }
 
-        int scopeType = GunsTool.getAttachmentType(tag, GunsTool.AttachmentType.SCOPE);
-        int barrelType = GunsTool.getAttachmentType(tag, GunsTool.AttachmentType.BARREL);
-        int magType = GunsTool.getAttachmentType(tag, GunsTool.AttachmentType.MAGAZINE);
-        int stockType = GunsTool.getAttachmentType(tag, GunsTool.AttachmentType.STOCK);
+    @Override
+    public double getCustomZoom(ItemStack stack) {
+        int scopeType = GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.SCOPE);
+        return switch (scopeType) {
+            case 0, 1 -> 0;
+            case 2 -> 2.15;
+            default -> GunsTool.getGunDoubleTag(NBTTool.getTag(stack), "CustomZoom");
+        };
+    }
 
-        int customMag = switch (magType) {
+    @Override
+    public int getCustomMagazine(ItemStack stack) {
+        int magType = GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.MAGAZINE);
+        return switch (magType) {
             case 1 -> 15;
             case 2 -> 45;
             default -> 0;
         };
-
-        double customZoom = switch (scopeType) {
-            case 0, 1 -> 0;
-            case 2 -> 2.15;
-            default -> GunsTool.getGunDoubleTag(tag, "CustomZoom");
-        };
-
-        tag.putBoolean("CanAdjustZoomFov", scopeType == 3);
-        GunsTool.setGunDoubleTag(tag, "CustomZoom", customZoom);
-        GunsTool.setGunIntTag(tag, "CustomMagazine", customMag);
-
-        NBTTool.saveTag(stack, tag);
     }
 
     @Override

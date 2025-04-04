@@ -1,12 +1,12 @@
 package com.atsuishio.superbwarfare.item.gun.handgun;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.capability.ModCapabilities;
 import com.atsuishio.superbwarfare.client.TooltipTool;
 import com.atsuishio.superbwarfare.client.renderer.item.TracheliumItemRenderer;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.item.gun.GunData;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
@@ -18,7 +18,6 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
@@ -36,8 +35,6 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 import java.util.Set;
-
-import static com.atsuishio.superbwarfare.tools.NBTTool.saveTag;
 
 public class Trachelium extends GunItem implements GeoItem {
 
@@ -108,7 +105,8 @@ public class Trachelium extends GunItem implements GeoItem {
         if (player == null) return PlayState.STOP;
         ItemStack stack = player.getMainHandItem();
         if (!stack.is(ModTags.Items.GUN)) return PlayState.STOP;
-        final var tag = NBTTool.getTag(stack);
+        var data = GunData.from(stack);
+        final var tag = data.getTag();
 
         boolean stock = GunsTool.getAttachmentType(tag, GunsTool.AttachmentType.STOCK) == 2;
         boolean grip = GunsTool.getAttachmentType(tag, GunsTool.AttachmentType.GRIP) > 0 || GunsTool.getAttachmentType(tag, GunsTool.AttachmentType.SCOPE) > 0;
@@ -129,7 +127,7 @@ public class Trachelium extends GunItem implements GeoItem {
             }
         }
 
-        if (NBTTool.getTag(stack).getBoolean("is_empty_reloading")) {
+        if (GunData.from(stack).emptyReloading()) {
             if (stock) {
                 if (grip) {
                     return event.setAndContinue(RawAnimation.begin().thenPlay("animation.trachelium.reload_stock_grip"));
@@ -253,33 +251,64 @@ public class Trachelium extends GunItem implements GeoItem {
         if (scopeType == 3) {
             tags.putInt("Scope", 0);
         }
+    }
 
-        if (scopeType > 0 || gripType > 0) {
-            GunsTool.setGunDoubleTag(tag, "CustomVelocity", 15);
-            GunsTool.setGunDoubleTag(tag, "BypassesArmor", 0.4);
-            GunsTool.setGunDoubleTag(tag, "Damage", 21);
-            GunsTool.setGunDoubleTag(tag, "Headshot", 2.5);
-        } else {
-            GunsTool.setGunDoubleTag(tag, "CustomVelocity", 0);
-            GunsTool.setGunDoubleTag(tag, "BypassesArmor", 0.3);
-            GunsTool.setGunDoubleTag(tag, "Damage", 19);
-            GunsTool.setGunDoubleTag(tag, "Headshot", 2);
+    @Override
+    public int getCustomBoltActionTime(ItemStack stack) {
+        return GunData.from(stack).getTag().getBoolean("DA") ? 12 : 0;
+    }
+
+    @Override
+    public boolean canSwitchScope(ItemStack stack) {
+        return GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.SCOPE) == 2;
+    }
+
+    private boolean useSpecialAttributes(ItemStack stack) {
+        int scopeType = GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.SCOPE);
+        int gripType = GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.GRIP);
+        return scopeType > 0 || gripType > 0;
+    }
+
+    @Override
+    public double getCustomDamage(ItemStack stack) {
+        if (useSpecialAttributes(stack)) {
+            return 2;
         }
+        return super.getCustomDamage(stack);
+    }
 
-        double customZoom = switch (scopeType) {
+    @Override
+    public double getCustomZoom(ItemStack stack) {
+        int scopeType = GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.SCOPE);
+        return switch (scopeType) {
             case 0, 1 -> 0;
             case 2 -> NBTTool.getTag(stack).getBoolean("ScopeAlt") ? 0 : 2.75;
             default -> 1;
         };
-
-        GunsTool.setGunBooleanTag(tag, "CanSwitchScope", scopeType == 2);
-        GunsTool.setGunDoubleTag(tag, "CustomZoom", customZoom);
-        saveTag(stack, tag);
     }
 
     @Override
-    public ResourceLocation getGunIcon() {
-        return Mod.loc("textures/gun_icon/trachelium_icon.png");
+    public double getCustomVelocity(ItemStack stack) {
+        if (useSpecialAttributes(stack)) {
+            return 15;
+        }
+        return super.getCustomVelocity(stack);
+    }
+
+    @Override
+    public double getCustomHeadshot(ItemStack stack) {
+        if (useSpecialAttributes(stack)) {
+            return 0.5;
+        }
+        return super.getCustomHeadshot(stack);
+    }
+
+    @Override
+    public double getCustomBypassArmor(ItemStack stack) {
+        if (useSpecialAttributes(stack)) {
+            return 0.1;
+        }
+        return super.getCustomBypassArmor(stack);
     }
 
     @Override

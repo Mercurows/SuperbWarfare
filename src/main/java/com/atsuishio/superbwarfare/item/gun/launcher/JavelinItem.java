@@ -9,6 +9,7 @@ import com.atsuishio.superbwarfare.entity.projectile.JavelinMissileEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.*;
+import com.atsuishio.superbwarfare.item.gun.GunData;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.SpecialFireWeapon;
 import com.atsuishio.superbwarfare.network.message.receive.ShootClientMessage;
@@ -76,7 +77,7 @@ public class JavelinItem extends GunItem implements GeoItem, SpecialFireWeapon {
         ItemStack stack = player.getMainHandItem();
         if (!stack.is(ModTags.Items.GUN)) return PlayState.STOP;
 
-        if (NBTTool.getTag(stack).getBoolean("is_empty_reloading")) {
+        if (GunData.from(stack).emptyReloading()) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.javelin.reload"));
         }
 
@@ -239,7 +240,8 @@ public class JavelinItem extends GunItem implements GeoItem, SpecialFireWeapon {
     private void fire(Player player) {
         Level level = player.level();
         ItemStack stack = player.getMainHandItem();
-        CompoundTag tag = NBTTool.getTag(stack);
+        var data = GunData.from(stack);
+        CompoundTag tag = data.getTag();
 
         if (tag.getInt("SeekTime") < 20) return;
 
@@ -252,11 +254,12 @@ public class JavelinItem extends GunItem implements GeoItem, SpecialFireWeapon {
 
         if (player.level() instanceof ServerLevel serverLevel) {
             JavelinMissileEntity missileEntity = new JavelinMissileEntity(player, level,
-                    (float) GunsTool.getGunDoubleTag(tag, "Damage"),
-                    (float) GunsTool.getGunDoubleTag(tag, "ExplosionDamage"),
-                    (float) GunsTool.getGunDoubleTag(tag, "ExplosionRadius"),
+                    (float) data.damage(),
+                    (float) data.explosionDamage(),
+                    (float) data.explosionRadius(),
                     tag.getInt("GuideType"),
-                    new Vec3(tag.getDouble("TargetPosX"), tag.getDouble("TargetPosY"), tag.getDouble("TargetPosZ")));
+                    new Vec3(tag.getDouble("TargetPosX"), tag.getDouble("TargetPosY"), tag.getDouble("TargetPosZ"))
+            );
 
             var dmgPerk = PerkHelper.getPerkByType(tag, Perk.Type.DAMAGE);
             if (dmgPerk == ModPerks.MONSTER_HUNTER.get()) {
@@ -285,8 +288,8 @@ public class JavelinItem extends GunItem implements GeoItem, SpecialFireWeapon {
         }
 
         player.getCooldowns().addCooldown(stack.getItem(), 10);
-        GunsTool.setGunIntTag(tag, "Ammo", GunsTool.getGunIntTag(tag, "Ammo") - 1);
-        NBTTool.saveTag(stack, tag);
+        data.setAmmo(data.getAmmo() - 1);
+        data.save();
     }
 
     @Override
@@ -302,9 +305,13 @@ public class JavelinItem extends GunItem implements GeoItem, SpecialFireWeapon {
     }
 
     @Override
-    public void fireOnPress(Player player, final CompoundTag tag) {
+    public void fireOnPress(Player player, CompoundTag tag) {
+        var stack = player.getMainHandItem();
+        var data = GunData.from(stack);
+        tag = data.getTag();
+
         var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
-        if (cap != null && !cap.zoom || GunsTool.getGunIntTag(tag, "Ammo") <= 0) return;
+        if (cap != null && !cap.zoom || data.getAmmo() <= 0) return;
 
         Entity seekingEntity = SeekTool.seekEntity(player, player.level(), 512, 8);
 

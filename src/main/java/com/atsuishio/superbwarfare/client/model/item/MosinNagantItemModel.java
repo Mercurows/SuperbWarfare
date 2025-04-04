@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.item.gun.GunData;
 import com.atsuishio.superbwarfare.item.gun.sniper.MosinNagantItem;
 import com.atsuishio.superbwarfare.tools.GunsTool;
 import com.atsuishio.superbwarfare.tools.NBTTool;
@@ -86,7 +87,8 @@ public class MosinNagantItemModel extends GeoModel<MosinNagantItem> {
             qiangshen.setScaleZ(1);
         }
 
-        final var tag = NBTTool.getTag(stack);
+        var data = GunData.from(stack);
+        final var tag = data.getTag();
         tag.putBoolean("HoloHidden", !(gun.getPosX() > 1.4));
         NBTTool.saveTag(stack, tag);
 
@@ -124,7 +126,7 @@ public class MosinNagantItemModel extends GeoModel<MosinNagantItem> {
         float numR = (float) (1 - 0.97 * zt);
         float numP = (float) (1 - 0.81 * zt);
 
-        if (GunsTool.getGunBooleanTag(tag, "Reloading") || GunsTool.getGunIntTag(tag, "BoltActionTick") > 0) {
+        if (data.isReloading() || GunsTool.getGunIntTag(tag, "BoltActionTick") > 0) {
             main.setRotX(numR * main.getRotX());
             main.setRotY(numR * main.getRotY());
             main.setRotZ(numR * main.getRotZ());

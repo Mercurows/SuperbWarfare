@@ -4,9 +4,9 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.capability.ModCapabilities;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.item.gun.GunData;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.tools.GunsTool;
-import com.atsuishio.superbwarfare.tools.NBTTool;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -38,19 +38,20 @@ public record ReloadMessage(int msgType) implements CustomPacketPayload {
         }
 
         ItemStack stack = player.getMainHandItem();
-        var tag = NBTTool.getTag(stack);
-        var data = tag.getCompound("GunData");
+        if (!(stack.getItem() instanceof GunItem gunItem)) return;
+
+        var data = GunData.from(stack);
+        var tag = data.getTag();
 
         if (!player.isSpectator()
-                && stack.getItem() instanceof GunItem gunItem
                 && !GunsTool.getGunBooleanTag(tag, "Charging")
                 && GunsTool.getGunIntTag(tag, "ReloadTime") == 0
                 && GunsTool.getGunIntTag(tag, "BoltActionTick") == 0
-                && !GunsTool.getGunBooleanTag(tag, "Reloading")
+                && !data.isReloading()
         ) {
             boolean canSingleReload = gunItem.isIterativeReload(stack);
             boolean canReload = gunItem.isMagazineReload(stack) && !gunItem.isClipReload(stack);
-            boolean clipLoad = GunsTool.getGunIntTag(tag, "Ammo") == 0 && gunItem.isClipReload(stack);
+            boolean clipLoad = data.getAmmo() == 0 && gunItem.isClipReload(stack);
 
             // 检查备弹
             boolean hasCreativeAmmoBox = player.getInventory().hasAnyMatching(item -> item.is(ModItems.CREATIVE_AMMO_BOX.get()));
@@ -74,33 +75,28 @@ public record ReloadMessage(int msgType) implements CustomPacketPayload {
             }
 
             if (canReload || clipLoad) {
-                int magazine = GunsTool.getGunIntTag(tag, "Magazine");
-                int ammo = GunsTool.getGunIntTag(tag, "Ammo");
-                int customMagazine = GunsTool.getGunIntTag(tag, "CustomMagazine");
+                int magazine = data.magazine();
 
                 if (gunItem.isOpenBolt(stack)) {
                     if (gunItem.hasBulletInBarrel(stack)) {
-                        if (ammo < magazine + customMagazine + 1) {
-                            data.putBoolean("StartReload", true);
+                        if (data.getAmmo() < magazine + 1) {
+                            GunsTool.setGunBooleanTag(tag, "StartReload", true);
                         }
-                    } else if (ammo < magazine + customMagazine) {
-                        data.putBoolean("StartReload", true);
+                    } else {
+                        if (data.getAmmo() < magazine) {
+                            GunsTool.setGunBooleanTag(tag, "StartReload", true);
+                        }
                     }
-                } else if (ammo < magazine + customMagazine) {
-                    data.putBoolean("StartReload", true);
+                } else if (data.getAmmo() < magazine) {
+                    GunsTool.setGunBooleanTag(tag, "StartReload", true);
                 }
-                NBTTool.saveTag(stack, tag);
                 return;
             }
 
-            if (canSingleReload
-                    && GunsTool.getGunIntTag(tag, "Ammo")
-                    < GunsTool.getGunIntTag(tag, "Magazine")
-                    + GunsTool.getGunIntTag(tag, "CustomMagazine")) {
-
+            if (canSingleReload && data.getAmmo() < data.magazine()) {
                 tag.putBoolean("start_single_reload", true);
             }
-            NBTTool.saveTag(stack, tag);
+            data.save();
         }
     }
 

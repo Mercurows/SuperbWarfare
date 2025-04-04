@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.client.renderer.item.SvdItemRenderer;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.item.gun.GunData;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
@@ -16,18 +17,15 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
-import net.minecraft.world.level.Level;
 import software.bernie.geckolib.animatable.GeoItem;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.*;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Set;
 
 public class SvdItem extends GunItem implements GeoItem {
@@ -54,11 +52,11 @@ public class SvdItem extends GunItem implements GeoItem {
         ItemStack stack = player.getMainHandItem();
         if (!stack.is(ModTags.Items.GUN)) return PlayState.STOP;
 
-        if (NBTTool.getTag(stack).getBoolean("is_empty_reloading")) {
+        if (GunData.from(stack).emptyReloading()) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.svd.reload_empty"));
         }
 
-        if (NBTTool.getTag(stack).getBoolean("is_normal_reloading")) {
+        if (GunData.from(stack).normalReloading()) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.svd.reload_normal"));
         }
 
@@ -107,30 +105,28 @@ public class SvdItem extends GunItem implements GeoItem {
     }
 
     @Override
-    @ParametersAreNonnullByDefault
-    public void inventoryTick(ItemStack stack, Level world, Entity entity, int slot, boolean selected) {
-        super.inventoryTick(stack, world, entity, slot, selected);
-
-        final var tag = NBTTool.getTag(stack);
-        int scopeType = GunsTool.getAttachmentType(tag, GunsTool.AttachmentType.SCOPE);
-        int magType = GunsTool.getAttachmentType(tag, GunsTool.AttachmentType.MAGAZINE);
-
-        int customMag = switch (magType) {
+    public int getCustomMagazine(ItemStack stack) {
+        int magType = GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.MAGAZINE);
+        return switch (magType) {
             case 1 -> 10;
             case 2 -> 20;
             default -> 0;
         };
+    }
 
-        double customZoom = switch (scopeType) {
+    @Override
+    public double getCustomZoom(ItemStack stack) {
+        int scopeType = GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.SCOPE);
+        return switch (scopeType) {
             case 0, 1 -> 0;
             case 2 -> 3.75;
-            default -> GunsTool.getGunDoubleTag(tag, "CustomZoom");
+            default -> GunsTool.getGunDoubleTag(NBTTool.getTag(stack), "CustomZoom");
         };
+    }
 
-        tag.putBoolean("CanAdjustZoomFov", scopeType == 3);
-        GunsTool.setGunDoubleTag(tag, "CustomZoom", customZoom);
-        GunsTool.setGunIntTag(tag, "CustomMagazine", customMag);
-        NBTTool.saveTag(stack, tag);
+    @Override
+    public boolean canAdjustZoom(ItemStack stack) {
+        return GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.SCOPE) == 3;
     }
 
     @Override

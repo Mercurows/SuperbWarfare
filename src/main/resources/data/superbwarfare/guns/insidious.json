@@ -8,7 +8,7 @@
   "Magazine": 48,
   "Weight": 6,
   "FireMode": 1,
-  "BurstSize": 4,
+  "BurstAmount": 4,
   "EmptyReloadTime": 56,
   "BypassesArmor": 0.4,
   "SoundRadius": 12,

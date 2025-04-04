@@ -7,10 +7,14 @@ import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.item.gun.GunData;
 import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
-import com.atsuishio.superbwarfare.tools.*;
+import com.atsuishio.superbwarfare.tools.GunsTool;
+import com.atsuishio.superbwarfare.tools.InventoryTool;
+import com.atsuishio.superbwarfare.tools.ParticleTool;
+import com.atsuishio.superbwarfare.tools.SoundTool;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -40,14 +44,15 @@ public record ShootMessage(double spread) implements CustomPacketPayload {
 
     public static void pressAction(Player player, double spared) {
         ItemStack stack = player.getMainHandItem();
-        final var tag = NBTTool.getTag(stack);
+        var data = GunData.from(stack);
+        var tag = data.getTag();
 
         if (stack.is(ModTags.Items.NORMAL_GUN)) {
-            int projectileAmount = GunsTool.getGunIntTag(tag, "ProjectileAmount", 1);
+            int projectileAmount = data.projectileAmount();
 
-            if (GunsTool.getGunIntTag(tag, "Ammo") > 0) {
+            if (data.getAmmo() > 0) {
                 // 空仓挂机
-                if (GunsTool.getGunIntTag(tag, "Ammo") == 1) {
+                if (data.getAmmo() == 1) {
                     GunsTool.setGunBooleanTag(tag, "HoldOpen", true);
                 }
 
@@ -56,14 +61,14 @@ public record ShootMessage(double spread) implements CustomPacketPayload {
                 }
 
                 // 判断是否为栓动武器（BoltActionTime > 0），并在开火后给一个需要上膛的状态
-                if (GunsTool.getGunIntTag(tag, "BoltActionTime") > 0 && GunsTool.getGunIntTag(tag, "Ammo") > (stack.is(ModTags.Items.REVOLVER) ? 0 : 1)) {
+                if (data.boltActionTime() > 0 && data.getAmmo() > (stack.is(ModTags.Items.REVOLVER) ? 0 : 1)) {
                     GunsTool.setGunBooleanTag(tag, "NeedBoltAction", true);
                 }
 
-                GunsTool.setGunIntTag(tag, "Ammo", GunsTool.getGunIntTag(tag, "Ammo") - 1);
+                data.setAmmo(data.getAmmo() - 1);
                 tag.putDouble("empty", 1);
 
-                if (stack.getItem() == ModItems.M_60.get() && GunsTool.getGunIntTag(tag, "Ammo") <= 5) {
+                if (stack.getItem() == ModItems.M_60.get() && data.getAmmo() <= 5) {
                     GunsTool.setGunBooleanTag(tag, "HideBulletChain", true);
                 }
 
@@ -90,7 +95,6 @@ public record ShootMessage(double spread) implements CustomPacketPayload {
                 }
 
                 GunEventHandler.playGunSounds(player);
-                NBTTool.saveTag(stack, tag);
             }
         } else if (stack.is(ModItems.MINIGUN.get())) {
             var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
@@ -110,7 +114,7 @@ public record ShootMessage(double spread) implements CustomPacketPayload {
                 float pitch = tag.getDouble("heat") <= 40 ? 1 : (float) (1 - 0.025 * Math.abs(40 - tag.getDouble("heat")));
 
                 if (!player.level().isClientSide() && player instanceof ServerPlayer) {
-                    float soundRadius = (float) GunsTool.getGunDoubleTag(tag, "SoundRadius");
+                    float soundRadius = (float) data.soundRadius();
 
                     player.playSound(ModSounds.MINIGUN_FIRE_3P.get(), soundRadius * 0.2f, pitch);
                     player.playSound(ModSounds.MINIGUN_FAR.get(), soundRadius * 0.5f, pitch);
@@ -126,10 +130,9 @@ public record ShootMessage(double spread) implements CustomPacketPayload {
                     cap.rifleAmmo = cap.rifleAmmo - 1;
                     cap.syncPlayerVariables(player);
                 }
-
-                NBTTool.saveTag(stack, tag);
             }
         }
+        data.save();
     }
 
     @Override

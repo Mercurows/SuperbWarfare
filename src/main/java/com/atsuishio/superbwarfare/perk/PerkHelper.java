@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.perk;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.item.PerkItem;
+import com.atsuishio.superbwarfare.item.gun.GunData;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -64,6 +65,10 @@ public class PerkHelper {
         };
     }
 
+    public static int getItemPerkLevel(Perk perk, GunData data) {
+        return getItemPerkLevel(perk, data.getTag());
+    }
+
     public static int getItemPerkLevel(Perk perk, final CompoundTag tag) {
         var tagPerk = tag.getCompound(TAG_PERK);
         if (!tagPerk.contains(perk.type.getName())) {
@@ -81,6 +86,10 @@ public class PerkHelper {
         }
 
         return getPerkLevel(getPerkTag(tag, perk.type));
+    }
+
+    public static CompoundTag getPerkTag(GunData data, Perk.Type type) {
+        return getPerkTag(data.getTag(), type);
     }
 
     public static CompoundTag getPerkTag(final CompoundTag tag, Perk.Type type) {
@@ -102,6 +111,11 @@ public class PerkHelper {
     public static void setPerk(final CompoundTag tag, Perk perk) {
         setPerk(tag, perk, 1);
     }
+
+    public static Perk getPerkByType(GunData data, Perk.Type type) {
+        return getPerkByType(data.getTag(), type);
+    }
+
 
     @Nullable
     public static Perk getPerkByType(final CompoundTag tag, Perk.Type type) {

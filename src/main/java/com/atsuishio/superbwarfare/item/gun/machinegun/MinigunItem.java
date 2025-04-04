@@ -7,6 +7,7 @@ import com.atsuishio.superbwarfare.init.ModParticleTypes;
 import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.init.ModRarity;
 import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.item.gun.GunData;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.tools.NBTTool;
@@ -34,6 +35,10 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 public class MinigunItem extends GunItem implements GeoItem {
+    @Override
+    public int getCustomRPM(ItemStack stack) {
+        return GunData.from(stack).getData().getInt("CustomRPM");
+    }
 
     private static final String TAG_HEAT = "heat";
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);

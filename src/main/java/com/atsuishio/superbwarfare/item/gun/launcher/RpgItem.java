@@ -10,6 +10,7 @@ import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.item.gun.GunData;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.SpecialFireWeapon;
 import com.atsuishio.superbwarfare.network.message.receive.ShootClientMessage;
@@ -76,9 +77,9 @@ public class RpgItem extends GunItem implements GeoItem, SpecialFireWeapon {
         if (player == null) return PlayState.STOP;
         ItemStack stack = player.getMainHandItem();
         if (!stack.is(ModTags.Items.GUN)) return PlayState.STOP;
+        var data = GunData.from(stack);
 
-        final var tag = NBTTool.getTag(stack);
-        if (tag.getBoolean("is_empty_reloading")) {
+        if (data.emptyReloading()) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.rpg.reload"));
         }
 
@@ -180,24 +181,27 @@ public class RpgItem extends GunItem implements GeoItem, SpecialFireWeapon {
     }
 
     @Override
-    public void fireOnPress(Player player, final CompoundTag tag) {
+    public void fireOnPress(Player player, CompoundTag tag) {
         Level level = player.level();
         ItemStack stack = player.getMainHandItem();
+        var data = GunData.from(stack);
+        tag = data.getTag();
 
-        if (GunsTool.getGunBooleanTag(tag, "Reloading")
+        if (data.isReloading()
                 || player.getCooldowns().isOnCooldown(stack.getItem())
-                || GunsTool.getGunIntTag(tag, "Ammo") <= 0
+                || data.getAmmo() <= 0
         ) return;
 
         var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
         boolean zoom = cap != null && cap.zoom;
-        double spread = GunsTool.getGunDoubleTag(tag, "Spread");
+        double spread = data.spread();
 
         if (player.level() instanceof ServerLevel serverLevel) {
             RpgRocketEntity rocket = new RpgRocketEntity(player, level,
-                    (float) GunsTool.getGunDoubleTag(tag, "Damage"),
-                    (float) GunsTool.getGunDoubleTag(tag, "ExplosionDamage"),
-                    (float) GunsTool.getGunDoubleTag(tag, "ExplosionRadius"));
+                    (float) data.damage(),
+                    (float) data.explosionDamage(),
+                    (float) data.explosionRadius()
+            );
 
             var dmgPerk = PerkHelper.getPerkByType(tag, Perk.Type.DAMAGE);
             if (dmgPerk == ModPerks.MONSTER_HUNTER.get()) {
@@ -205,7 +209,7 @@ public class RpgItem extends GunItem implements GeoItem, SpecialFireWeapon {
                 rocket.setMonsterMultiplier(0.1f + 0.1f * perkLevel);
             }
 
-            float velocity = (float) GunsTool.getGunDoubleTag(tag, "Velocity");
+            float velocity = (float) data.velocity();
 
             if (PerkHelper.getPerkByType(tag, Perk.Type.AMMO) == ModPerks.MICRO_MISSILE.get()) {
                 rocket.setNoGravity(true);
@@ -213,7 +217,7 @@ public class RpgItem extends GunItem implements GeoItem, SpecialFireWeapon {
                 int perkLevel = PerkHelper.getItemPerkLevel(ModPerks.MICRO_MISSILE.get(), tag);
                 if (perkLevel > 0) {
                     rocket.setExplosionRadius(0.5f);
-                    rocket.setDamage((float) GunsTool.getGunDoubleTag(tag, "Damage") * (1.1f + perkLevel * 0.1f));
+                    rocket.setDamage((float) data.damage() * (1.1f + perkLevel * 0.1f));
                     velocity *= 1.2f;
                 }
             }
@@ -238,12 +242,13 @@ public class RpgItem extends GunItem implements GeoItem, SpecialFireWeapon {
             PacketDistributor.sendToPlayer(serverPlayer, new ShootClientMessage(10));
         }
 
-        if (GunsTool.getGunIntTag(tag, "Ammo") == 1) {
+        if (data.getAmmo() == 1) {
             tag.putBoolean("empty", true);
             GunsTool.setGunBooleanTag(tag, "CloseHammer", true);
         }
 
         player.getCooldowns().addCooldown(stack.getItem(), 10);
-        GunsTool.setGunIntTag(tag, "Ammo", GunsTool.getGunIntTag(tag, "Ammo") - 1);
+        data.setAmmo(data.getAmmo() - 1);
+        data.save();
     }
 }

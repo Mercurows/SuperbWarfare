@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.client.AnimationHelper;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.item.gun.GunData;
 import com.atsuishio.superbwarfare.item.gun.rifle.Qbz95Item;
 import com.atsuishio.superbwarfare.tools.GunsTool;
 import com.atsuishio.superbwarfare.tools.NBTTool;
@@ -203,7 +204,7 @@ public class Qbz95ItemModel extends GeoModel<Qbz95Item> {
         lHandRotZ = Mth.lerp(1.5f * times, lHandRotZ, isZooming ? 2.9228f : leftHand.getRotZ());
 
 
-        if (NBTTool.getTag(stack).getBoolean("is_empty_reloading")) {
+        if (GunData.from(stack).emptyReloading()) {
             leftHand.setPosX(lHandPosX);
             leftHand.setPosY(lHandPosY);
             leftHand.setPosZ(lHandPosZ);

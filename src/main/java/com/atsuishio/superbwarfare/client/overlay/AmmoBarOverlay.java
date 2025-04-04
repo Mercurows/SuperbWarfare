@@ -9,6 +9,7 @@ import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModKeyMappings;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.common.ammo.AmmoSupplierItem;
+import com.atsuishio.superbwarfare.item.gun.GunData;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.tools.AmmoType;
 import com.atsuishio.superbwarfare.tools.GunsTool;
@@ -21,7 +22,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FastColor;
@@ -64,6 +64,7 @@ public class AmmoBarOverlay {
         final var tag = NBTTool.getTag(stack);
         if (stack.getItem() instanceof GunItem gunItem && !(player.getVehicle() instanceof ArmedVehicleEntity vehicle && vehicle.banHand(player))) {
             PoseStack poseStack = event.getGuiGraphics().pose();
+            var data = GunData.from(stack);
 
             // 渲染图标
             event.getGuiGraphics().blit(gunItem.getGunIcon(),
@@ -89,7 +90,7 @@ public class AmmoBarOverlay {
             }
 
             // 渲染开火模式
-            ResourceLocation fireMode = getFireMode(tag);
+            ResourceLocation fireMode = getFireMode(data);
 
             if (stack.getItem() == ModItems.JAVELIN.get()) {
                 fireMode = tag.getBoolean("TopMode") ? TOP : DIR;
@@ -100,7 +101,7 @@ public class AmmoBarOverlay {
                 // 渲染加特林射速
                 event.getGuiGraphics().drawString(
                         Minecraft.getInstance().font,
-                        GunsTool.getGunIntTag(tag, "RPM") + " RPM",
+                        data.rpm() + " RPM",
                         w - 111f,
                         h - 20,
                         0xFFFFFF,
@@ -389,8 +390,8 @@ public class AmmoBarOverlay {
         poseStack.popPose();
     }
 
-    private static ResourceLocation getFireMode(CompoundTag tag) {
-        return switch (GunsTool.getGunIntTag(tag, "FireMode")) {
+    private static ResourceLocation getFireMode(GunData data) {
+        return switch (data.getFireMode()) {
             case 1 -> BURST;
             case 2 -> AUTO;
             default -> SEMI;

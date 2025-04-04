@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.client.tooltip.component.ShotgunImageComponen
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.item.gun.GunData;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
@@ -53,29 +54,30 @@ public class M870Item extends GunItem implements GeoItem {
         if (player == null) return PlayState.STOP;
         ItemStack stack = player.getMainHandItem();
         if (!stack.is(ModTags.Items.GUN)) return PlayState.STOP;
+        var data = GunData.from(stack);
         final var tag = NBTTool.getTag(stack);
 
         if (GunsTool.getGunIntTag(tag, "BoltActionTick") > 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m870.shift"));
         }
 
-        if (tag.getInt("reload_stage") == 1 && tag.getDouble("prepare_load") > 0) {
+        if (data.getReloadStage() == 1 && tag.getDouble("prepare_load") > 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m870.preparealt"));
         }
 
-        if (tag.getInt("reload_stage") == 1 && tag.getDouble("prepare") > 0) {
+        if (data.getReloadStage() == 1 && tag.getDouble("prepare") > 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m870.prepare"));
         }
 
-        if (tag.getDouble("load_index") == 0 && tag.getInt("reload_stage") == 2) {
+        if (tag.getDouble("load_index") == 0 && data.getReloadStage() == 2) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m870.iterativeload"));
         }
 
-        if (tag.getDouble("load_index") == 1 && tag.getInt("reload_stage") == 2) {
+        if (tag.getDouble("load_index") == 1 && data.getReloadStage() == 2) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m870.iterativeload2"));
         }
 
-        if (tag.getInt("reload_stage") == 3) {
+        if (data.getReloadStage() == 3) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m870.finish"));
         }
 
@@ -85,15 +87,16 @@ public class M870Item extends GunItem implements GeoItem {
     private PlayState idlePredicate(AnimationState<M870Item> event) {
         LocalPlayer player = Minecraft.getInstance().player;
         if (player == null) return PlayState.STOP;
+
         ItemStack stack = player.getMainHandItem();
         if (!stack.is(ModTags.Items.GUN)) return PlayState.STOP;
-        final var tag = NBTTool.getTag(stack);
+        var data = GunData.from(stack);
 
         if (player.isSprinting()
                 && player.onGround()
                 && player.getPersistentData().getDouble("noRun") == 0
                 && ClientEventHandler.drawTime < 0.01
-                && !GunsTool.getGunBooleanTag(tag, "Reloading")) {
+                && !data.isReloading()) {
             if (player.hasEffect(MobEffects.MOVEMENT_SPEED)) {
                 return event.setAndContinue(RawAnimation.begin().thenLoop("animation.m870.run_fast"));
             } else {

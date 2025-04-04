@@ -5,11 +5,11 @@ import com.atsuishio.superbwarfare.client.renderer.item.M98bItemRenderer;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.item.gun.GunData;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
 import com.atsuishio.superbwarfare.tools.GunsTool;
-import com.atsuishio.superbwarfare.tools.NBTTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.ResourceLocation;
@@ -49,17 +49,18 @@ public class M98bItem extends GunItem implements GeoItem {
         if (player == null) return PlayState.STOP;
         ItemStack stack = player.getMainHandItem();
         if (!stack.is(ModTags.Items.GUN)) return PlayState.STOP;
-        final var tag = NBTTool.getTag(stack);
+        var data = GunData.from(stack);
+        final var tag = data.getTag();
 
         if (GunsTool.getGunIntTag(tag, "BoltActionTick") > 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m98b.shift"));
         }
 
-        if (tag.getBoolean("is_empty_reloading")) {
+        if (data.emptyReloading()) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m98b.reload_empty"));
         }
 
-        if (tag.getBoolean("is_normal_reloading")) {
+        if (data.normalReloading()) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m98b.reload_normal"));
         }
 
@@ -71,11 +72,12 @@ public class M98bItem extends GunItem implements GeoItem {
         if (player == null) return PlayState.STOP;
         ItemStack stack = player.getMainHandItem();
         if (!stack.is(ModTags.Items.GUN)) return PlayState.STOP;
-        final var tag = NBTTool.getTag(stack);
+        var data = GunData.from(stack);
+        final var tag = data.getTag();
 
         if (player.isSprinting() && player.onGround()
                 && player.getPersistentData().getDouble("noRun") == 0
-                && !(tag.getBoolean("is_normal_reloading") || tag.getBoolean("is_empty_reloading")) && ClientEventHandler.drawTime < 0.01) {
+                && !(data.normalReloading() || data.emptyReloading()) && ClientEventHandler.drawTime < 0.01) {
             if (player.hasEffect(MobEffects.MOVEMENT_SPEED) && GunsTool.getGunIntTag(tag, "BoltActionTick") == 0) {
                 return event.setAndContinue(RawAnimation.begin().thenLoop("animation.m98b.run_fast"));
             } else {

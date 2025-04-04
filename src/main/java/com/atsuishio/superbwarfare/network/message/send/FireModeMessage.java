@@ -3,9 +3,9 @@ package com.atsuishio.superbwarfare.network.message.send;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
+import com.atsuishio.superbwarfare.item.gun.GunData;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.tools.GunsTool;
-import com.atsuishio.superbwarfare.tools.NBTTool;
 import com.atsuishio.superbwarfare.tools.SoundTool;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -34,53 +34,54 @@ public record FireModeMessage(int msgType) implements CustomPacketPayload {
     public static void changeFireMode(Player player) {
         ItemStack stack = player.getMainHandItem();
         if (stack.getItem() instanceof GunItem gunItem) {
-            final var tag = NBTTool.getTag(stack);
-            int fireMode = tag.getCompound("GunData").getInt("FireMode");
+            var data = GunData.from(stack);
+            var tag = data.getTag();
+            int fireMode = data.getFireMode();
 
             int mode = gunItem.getAvailableFireModes();
             mode &= 0b111;
 
             if (fireMode == 0) {
                 if ((mode & 2) != 0) {
-                    GunsTool.setGunIntTag(tag, "FireMode", 1);
+                    data.setFireMode(1);
                     playChangeModeSound(player);
-                    NBTTool.saveTag(stack, tag);
+                    data.save();
                     return;
                 }
                 if ((mode & 4) != 0) {
-                    GunsTool.setGunIntTag(tag, "FireMode", 2);
+                    data.setFireMode(2);
                     playChangeModeSound(player);
-                    NBTTool.saveTag(stack, tag);
+                    data.save();
                     return;
                 }
             }
 
             if (fireMode == 1) {
                 if ((mode & 4) != 0) {
-                    GunsTool.setGunIntTag(tag, "FireMode", 2);
+                    data.setFireMode(2);
                     playChangeModeSound(player);
-                    NBTTool.saveTag(stack, tag);
+                    data.save();
                     return;
                 }
                 if ((mode & 1) != 0) {
-                    GunsTool.setGunIntTag(tag, "FireMode", 0);
+                    data.setFireMode(0);
                     playChangeModeSound(player);
-                    NBTTool.saveTag(stack, tag);
+                    data.save();
                     return;
                 }
             }
 
             if (fireMode == 2) {
                 if ((mode & 1) != 0) {
-                    GunsTool.setGunIntTag(tag, "FireMode", 0);
+                    data.setFireMode(0);
                     playChangeModeSound(player);
-                    NBTTool.saveTag(stack, tag);
+                    data.save();
                     return;
                 }
                 if ((mode & 2) != 0) {
-                    GunsTool.setGunIntTag(tag, "FireMode", 1);
+                    data.setFireMode(1);
                     playChangeModeSound(player);
-                    NBTTool.saveTag(stack, tag);
+                    data.save();
                     return;
                 }
             }
@@ -103,7 +104,7 @@ public record FireModeMessage(int msgType) implements CustomPacketPayload {
 
             if (stack.getItem() == ModItems.JAVELIN.get()) {
                 tag.putBoolean("TopMode", !tag.getBoolean("TopMode"));
-                NBTTool.saveTag(stack, tag);
+                data.save();
                 if (player instanceof ServerPlayer serverPlayer) {
                     SoundTool.playLocalSound(serverPlayer, ModSounds.CANNON_ZOOM_OUT.get());
                 }
@@ -111,13 +112,13 @@ public record FireModeMessage(int msgType) implements CustomPacketPayload {
 
             if (stack.getItem() == ModItems.TRACHELIUM.get() && !GunsTool.getGunBooleanTag(tag, "NeedBoltAction")) {
                 tag.putBoolean("DA", !tag.getBoolean("DA"));
-                NBTTool.saveTag(stack, tag);
+                data.save();
                 if (!tag.getBoolean("canImmediatelyShoot")) {
                     GunsTool.setGunBooleanTag(tag, "NeedBoltAction", true);
                 }
             }
 
-            NBTTool.saveTag(stack, tag);
+            data.save();
         }
     }
 

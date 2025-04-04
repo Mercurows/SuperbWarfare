@@ -8,7 +8,7 @@
   "Magazine": 13,
   "Weight": 3,
   "FireMode": 2,
-  "BurstSize": 3,
+  "BurstAmount": 3,
   "NormalReloadTime": 46,
   "EmptyReloadTime": 64,
   "BypassesArmor": 0.15,

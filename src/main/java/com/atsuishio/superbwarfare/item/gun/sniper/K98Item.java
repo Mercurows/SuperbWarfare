@@ -5,11 +5,11 @@ import com.atsuishio.superbwarfare.client.renderer.item.K98ItemRenderer;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.item.gun.GunData;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
 import com.atsuishio.superbwarfare.tools.GunsTool;
-import com.atsuishio.superbwarfare.tools.NBTTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.ResourceLocation;
@@ -47,31 +47,33 @@ public class K98Item extends GunItem implements GeoItem {
     private PlayState fireAnimPredicate(AnimationState<K98Item> event) {
         LocalPlayer player = Minecraft.getInstance().player;
         if (player == null) return PlayState.STOP;
+
         ItemStack stack = player.getMainHandItem();
         if (!stack.is(ModTags.Items.GUN)) return PlayState.STOP;
-        final var tag = NBTTool.getTag(stack);
+        var data = GunData.from(stack);
+        final var tag = data.getTag();
 
         if (GunsTool.getGunIntTag(tag, "BoltActionTick") > 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.k98.shift"));
         }
 
-        if (tag.getBoolean("is_empty_reloading")) {
+        if (data.getReloadState() == GunData.ReloadState.EMPTY_RELOADING) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.k98.reload_empty"));
         }
 
-        if (tag.getInt("reload_stage") == 1 && tag.getDouble("prepare") > 0) {
+        if (data.getReloadStage() == 1 && tag.getDouble("prepare") > 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.k98.prepare"));
         }
 
-        if (tag.getDouble("load_index") == 0 && tag.getInt("reload_stage") == 2) {
+        if (tag.getDouble("load_index") == 0 && data.getReloadStage() == 2) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.k98.iterativeload"));
         }
 
-        if (tag.getDouble("load_index") == 1 && tag.getInt("reload_stage") == 2) {
+        if (tag.getDouble("load_index") == 1 && data.getReloadStage() == 2) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.k98.iterativeload2"));
         }
 
-        if (tag.getInt("reload_stage") == 3) {
+        if (data.getReloadStage() == 3) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.k98.finish"));
         }
 
@@ -81,18 +83,21 @@ public class K98Item extends GunItem implements GeoItem {
     private PlayState idlePredicate(AnimationState<K98Item> event) {
         LocalPlayer player = Minecraft.getInstance().player;
         if (player == null) return PlayState.STOP;
+
         ItemStack stack = player.getMainHandItem();
         if (!stack.is(ModTags.Items.GUN)) return PlayState.STOP;
-        final var tag = NBTTool.getTag(stack);
+        var data = GunData.from(stack);
+        final var tag = data.getTag();
 
         if (player.isSprinting() && player.onGround()
                 && player.getPersistentData().getDouble("noRun") == 0
-                && !(tag.getBoolean("is_empty_reloading"))
-                && tag.getInt("reload_stage") != 1
-                && tag.getInt("reload_stage") != 2
-                && tag.getInt("reload_stage") != 3
+                && !(data.getReloadState() == GunData.ReloadState.EMPTY_RELOADING)
+                && data.getReloadStage() != 1
+                && data.getReloadStage() != 2
+                && data.getReloadStage() != 3
                 && ClientEventHandler.drawTime < 0.01
-                && !GunsTool.getGunBooleanTag(tag, "Reloading")) {
+                && !data.isReloading()
+        ) {
             if (player.hasEffect(MobEffects.MOVEMENT_SPEED) && GunsTool.getGunIntTag(tag, "BoltActionTick") == 0) {
                 return event.setAndContinue(RawAnimation.begin().thenLoop("animation.k98.run_fast"));
             } else {

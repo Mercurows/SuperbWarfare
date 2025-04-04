@@ -9,6 +9,7 @@ import com.atsuishio.superbwarfare.init.ModItems;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
@@ -185,5 +186,16 @@ public class ContainerBlockItem extends BlockItem implements GeoItem {
         stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
 
         return stack;
+    }
+
+    @Override
+    public @NotNull Component getHighlightTip(@NotNull ItemStack item, @NotNull Component displayName) {
+//        var tag = item.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+//        String entityTranslationKey = getEntityTranslationKey(tag.getString("EntityType"));
+//
+//        super.getHighlightTip(item, displayName).
+//
+//        tooltipComponents.add(Component.translatable(entityTranslationKey == null ? "des.superbwarfare.container.empty" : s).withStyle(ChatFormatting.GRAY));
+        return Component.literal("tesjlktkjesjlktlejk");
     }
 }

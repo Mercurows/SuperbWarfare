@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.init.ModBlocks;
 import com.atsuishio.superbwarfare.init.ModMenuTypes;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.PerkItem;
+import com.atsuishio.superbwarfare.item.gun.GunData;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
@@ -207,16 +208,17 @@ public class ReforgingTableMenu extends AbstractContainerMenu {
         if (!(stack.getItem() instanceof GunItem)) {
             return;
         }
+        var data = GunData.from(stack);
+        var tag = data.getTag();
 
-        final var tag = NBTTool.getTag(stack);
-        double oldPoint = GunsTool.getGunDoubleTag(tag, "UpgradePoint");
+        double oldPoint = data.getUpgradePoint();
         int point = (int) oldPoint;
         int newPoint = this.upgradePoint.get();
         int delta = newPoint - point;
 
         if (delta != 0) {
             GunsTool.setGunDoubleTag(tag, "UpgradePoint", oldPoint + delta);
-            NBTTool.saveTag(stack, tag);
+            data.save();
         }
     }
 
@@ -293,19 +295,20 @@ public class ReforgingTableMenu extends AbstractContainerMenu {
 
             final var tag = NBTTool.getTag(gun);
             int level = PerkHelper.getItemPerkLevel(perkItem.getPerk(), tag);
+            var data = GunData.from(gun);
 
             if (level <= 0) {
-                this.upgradePoint.set((int) GunsTool.getGunDoubleTag(tag, "UpgradePoint"));
+                this.upgradePoint.set((int) data.getUpgradePoint());
                 return;
             }
 
             ItemStack output = gun.copy();
             final var outputTag = NBTTool.getTag(output);
             PerkHelper.removePerkByType(outputTag, perkItem.getPerk().type);
-            GunsTool.setGunDoubleTag(outputTag, "UpgradePoint", Math.min(MAX_UPGRADE_POINT, level - 1 + GunsTool.getGunDoubleTag(outputTag, "UpgradePoint")));
-            this.upgradePoint.set((int) GunsTool.getGunDoubleTag(outputTag, "UpgradePoint"));
+            data.setUpgradePoint(Math.min(MAX_UPGRADE_POINT, level - 1 + data.getUpgradePoint()));
+            this.upgradePoint.set((int) data.getUpgradePoint());
 
-            NBTTool.saveTag(output, outputTag);
+            data.save();
             this.container.setItem(INPUT_SLOT, output);
             this.container.setChanged();
         }
@@ -334,11 +337,11 @@ public class ReforgingTableMenu extends AbstractContainerMenu {
      * @param stack 输入的枪械
      */
     private void onPlaceGun(ItemStack stack) {
-        if (!(stack.getItem() instanceof GunItem)) {
-            return;
-        }
-        final var tag = NBTTool.getTag(stack);
-        int point = (int) GunsTool.getGunDoubleTag(tag, "UpgradePoint");
+        if (!(stack.getItem() instanceof GunItem)) return;
+        var data = GunData.from(stack);
+        var tag = data.getTag();
+
+        int point = (int) data.getUpgradePoint();
         this.upgradePoint.set(Mth.clamp(point, 0, MAX_UPGRADE_POINT));
 
         var ammoPerk = PerkHelper.getPerkByType(tag, Perk.Type.AMMO);

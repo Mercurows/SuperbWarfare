@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.client.renderer.item.Qbz95ItemRenderer;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.item.gun.GunData;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
@@ -54,12 +55,13 @@ public class Qbz95Item extends GunItem implements GeoItem {
         if (player == null) return PlayState.STOP;
         ItemStack stack = player.getMainHandItem();
         if (!stack.is(ModTags.Items.GUN)) return PlayState.STOP;
-        final var tag = NBTTool.getTag(stack);
+        var data = GunData.from(stack);
+        final var tag = data.getTag();
 
         boolean drum = GunsTool.getAttachmentType(tag, GunsTool.AttachmentType.MAGAZINE) == 2;
         boolean grip = GunsTool.getAttachmentType(tag, GunsTool.AttachmentType.GRIP) == 1 || GunsTool.getAttachmentType(tag, GunsTool.AttachmentType.GRIP) == 2;
 
-        if (tag.getBoolean("is_empty_reloading")) {
+        if (data.emptyReloading()) {
             if (drum) {
                 if (grip) {
                     return event.setAndContinue(RawAnimation.begin().thenPlay("animation.qbz95.reload_empty_drum_grip"));
@@ -75,7 +77,7 @@ public class Qbz95Item extends GunItem implements GeoItem {
             }
         }
 
-        if (tag.getBoolean("is_normal_reloading")) {
+        if (data.normalReloading()) {
             if (drum) {
                 if (grip) {
                     return event.setAndContinue(RawAnimation.begin().thenPlay("animation.qbz95.reload_normal_drum_grip"));
@@ -142,27 +144,32 @@ public class Qbz95Item extends GunItem implements GeoItem {
     public void inventoryTick(ItemStack stack, Level world, Entity entity, int slot, boolean selected) {
         super.inventoryTick(stack, world, entity, slot, selected);
 
-        final var rootTag = NBTTool.getTag(stack);
-        int scopeType = GunsTool.getAttachmentType(rootTag, GunsTool.AttachmentType.SCOPE);
-        int magType = GunsTool.getAttachmentType(rootTag, GunsTool.AttachmentType.MAGAZINE);
-
+        int magType = GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.MAGAZINE);
         if (magType == 1) {
-            CompoundTag tag = rootTag.getCompound("Attachments");
+            CompoundTag tag = NBTTool.getTag(stack).getCompound("Attachments");
             tag.putInt("Magazine", 2);
         }
+    }
 
-        int customMag = magType == 2 ? 30 : 0;
+    @Override
+    public int getCustomMagazine(ItemStack stack) {
+        int magType = GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.MAGAZINE);
+        return magType == 2 ? 30 : 0;
+    }
 
-        double customZoom = switch (scopeType) {
+    @Override
+    public double getCustomZoom(ItemStack stack) {
+        int scopeType = GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.SCOPE);
+        return switch (scopeType) {
             case 0, 1 -> 0;
             case 2 -> 2.15;
-            default -> GunsTool.getGunDoubleTag(rootTag, "CustomZoom");
+            default -> GunsTool.getGunDoubleTag(NBTTool.getTag(stack), "CustomZoom");
         };
+    }
 
-        rootTag.putBoolean("CanAdjustZoomFov", scopeType == 3);
-        GunsTool.setGunDoubleTag(rootTag, "CustomZoom", customZoom);
-        GunsTool.setGunIntTag(rootTag, "CustomMagazine", customMag);
-        NBTTool.saveTag(stack, rootTag);
+    @Override
+    public boolean canAdjustZoom(ItemStack stack) {
+        return GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.SCOPE) == 3;
     }
 
     @Override

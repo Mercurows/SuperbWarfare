@@ -9,6 +9,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.*;
+import com.atsuishio.superbwarfare.item.gun.GunData;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.network.message.send.*;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
@@ -164,9 +165,10 @@ public class ClickHandler {
         var tag = NBTTool.getTag(stack);
 
         if (stack.is(ModTags.Items.GUN) && ClientEventHandler.zoom) {
-            if (GunsTool.getGunBooleanTag(tag, "CanSwitchScope")) {
+            var data = GunData.from(stack);
+            if (data.canSwitchScope()) {
                 PacketDistributor.sendToServer(new SwitchScopeMessage(scroll));
-            } else if (tag.getBoolean("CanAdjustZoomFov") || stack.is(ModItems.MINIGUN.get())) {
+            } else if (data.canAdjustZoom() || stack.is(ModItems.MINIGUN.get())) {
                 PacketDistributor.sendToServer(new AdjustZoomFovMessage(scroll));
             }
             event.setCanceled(true);
@@ -210,7 +212,7 @@ public class ClickHandler {
 //            }
 
             if (key == ModKeyMappings.RELOAD.getKey().getValue()) {
-                ClientEventHandler.burstFireSize = 0;
+                ClientEventHandler.burstFireAmount = 0;
                 PacketDistributor.sendToServer(new ReloadMessage(0));
             }
             if (key == ModKeyMappings.FIRE_MODE.getKey().getValue()) {
@@ -222,7 +224,7 @@ public class ClickHandler {
             if (key == ModKeyMappings.DISMOUNT.getKey().getValue()) {
                 handleDismountPress(player);
             }
-            if (key == ModKeyMappings.EDIT_MODE.getKey().getValue() && ClientEventHandler.burstFireSize == 0) {
+            if (key == ModKeyMappings.EDIT_MODE.getKey().getValue() && ClientEventHandler.burstFireAmount == 0) {
                 ClientEventHandler.holdFire = false;
                 PacketDistributor.sendToServer(new EditModeMessage(0));
             }
@@ -325,42 +327,31 @@ public class ClickHandler {
             ClientEventHandler.holdFire = true;
         }
 
-        var tag = NBTTool.getTag(stack);
         if (stack.getItem() instanceof GunItem gunItem && !(player.getVehicle() != null
-                && player.getVehicle() instanceof CannonEntity) && clientTimer.getProgress() == 0 && cantFireTime == 0
-                && (!(tag.getBoolean("is_normal_reloading") || tag.getBoolean("is_empty_reloading"))
-                && !GunsTool.getGunBooleanTag(tag, "Reloading")
-                && !GunsTool.getGunBooleanTag(tag, "Charging")
-                && !GunsTool.getGunBooleanTag(tag, "NeedBoltAction"))
+                && player.getVehicle() instanceof CannonEntity)
+                && clientTimer.getProgress() == 0
                 && cantFireTime == 0
-                && drawTime < 0.01
                 && !notInGame()
         ) {
-            if ((!(tag.getBoolean("is_normal_reloading") || tag.getBoolean("is_empty_reloading"))
-                    && !GunsTool.getGunBooleanTag(tag, "Reloading")
-                    && !GunsTool.getGunBooleanTag(tag, "Charging")
-                    && !GunsTool.getGunBooleanTag(tag, "NeedBoltAction"))
-                    && cantFireTime == 0
-                    && drawTime < 0.01
-                    && !notInGame()) {
-                player.playSound(ModSounds.TRIGGER_CLICK.get(), 1, 1);
-            }
+            var data = GunData.from(stack);
+            var tag = data.getTag();
+            player.playSound(ModSounds.TRIGGER_CLICK.get(), 1, 1);
 
-            if (!gunItem.useBackpackAmmo(stack) && GunsTool.getGunIntTag(tag, "Ammo") <= 0 && GunsTool.getGunIntTag(tag, "ReloadTime") == 0) {
+            if (!gunItem.useBackpackAmmo(stack) && data.getAmmo() <= 0 && GunsTool.getGunIntTag(tag, "ReloadTime") == 0) {
                 if (ReloadConfig.LEFT_CLICK_RELOAD.get()) {
                     PacketDistributor.sendToServer(new ReloadMessage(0));
-                    ClientEventHandler.burstFireSize = 0;
+                    ClientEventHandler.burstFireAmount = 0;
                 }
             } else {
                 PacketDistributor.sendToServer(new FireMessage(0));
-                if ((!(tag.getBoolean("is_normal_reloading") || tag.getBoolean("is_empty_reloading"))
-                        && !GunsTool.getGunBooleanTag(tag, "Reloading")
+                if ((!(data.normalReloading() || data.emptyReloading())
+                        && !data.isReloading()
                         && !GunsTool.getGunBooleanTag(tag, "Charging")
                         && !GunsTool.getGunBooleanTag(tag, "NeedBoltAction"))
                         && drawTime < 0.01) {
-                    if (GunsTool.getGunIntTag(tag, "FireMode") == 1) {
-                        if (ClientEventHandler.burstFireSize == 0) {
-                            ClientEventHandler.burstFireSize = GunsTool.getGunIntTag(tag, "BurstSize");
+                    if (data.getFireMode() == 1) {
+                        if (ClientEventHandler.burstFireAmount == 0) {
+                            ClientEventHandler.burstFireAmount = data.burstAmount();
                         }
                     } else {
                         if (!stack.is(ModItems.BOCEK.get())) {
