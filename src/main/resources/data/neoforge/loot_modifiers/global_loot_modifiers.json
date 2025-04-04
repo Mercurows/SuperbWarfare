@@ -1,0 +1,9 @@
+{
+  "entries": [
+    "superbwarfare:common_chest",
+    "superbwarfare:rare_chest",
+    "superbwarfare:epic_chest",
+    "superbwarfare:ancient_cpu_chest"
+  ],
+  "replace": false
+}

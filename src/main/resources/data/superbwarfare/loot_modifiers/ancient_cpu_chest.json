@@ -1,10 +1,10 @@
 {
-  "type": "superbwarfare:superbwarfare_loot_modifier",
+  "type": "neoforge:add_table",
   "conditions": [
     {
       "condition": "neoforge:loot_table_id",
       "loot_table_id": "minecraft:chests/ancient_city"
     }
   ],
-  "lootTable": "superbwarfare:chests/ancient_cpu"
+  "table": "superbwarfare:chests/ancient_cpu"
 }

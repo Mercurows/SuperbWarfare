@@ -1,10 +1,27 @@
 {
-  "type": "superbwarfare:superbwarfare_loot_modifier",
+  "type": "neoforge:add_table",
   "conditions": [
     {
-      "condition": "neoforge:loot_table_id",
-      "loot_table_id": "minecraft:chests/pillager_outpost"
+      "condition": "minecraft:any_of",
+      "terms": [
+        {
+          "condition": "neoforge:loot_table_id",
+          "loot_table_id": "minecraft:chests/pillager_outpost"
+        },
+        {
+          "condition": "neoforge:loot_table_id",
+          "loot_table_id": "minecraft:chests/stronghold_library"
+        },
+        {
+          "condition": "neoforge:loot_table_id",
+          "loot_table_id": "minecraft:chests/woodland_mansion"
+        },
+        {
+          "condition": "neoforge:loot_table_id",
+          "loot_table_id": "minecraft:chests/end_city_treasure"
+        }
+      ]
     }
   ],
-  "lootTable": "superbwarfare:chests/blue_print_epic"
+  "table": "superbwarfare:chests/blue_print_epic"
 }
