@@ -60,10 +60,12 @@ public class GunData {
     }
 
     public static GunData from(ItemStack stack) {
-        if (!dataCache.containsKey(stack)) {
-            dataCache.put(stack, new GunData(stack));
+        var value = dataCache.get(stack);
+        if (value == null) {
+            value = new GunData(stack);
+            dataCache.put(stack, value);
         }
-        return dataCache.get(stack);
+        return value;
     }
 
     public GunItem item() {
