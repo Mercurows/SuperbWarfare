@@ -90,13 +90,13 @@ public record FireModeMessage(int msgType) implements CustomPacketPayload {
                     && !player.isSpectator()
                     && !(player.getCooldowns().isOnCooldown(stack.getItem()))
                     && GunsTool.getGunIntTag(tag, "ReloadTime") == 0
-                    && !GunsTool.getGunBooleanTag(tag, "Charging")) {
-
+                    && !data.charging()
+            ) {
                 for (var cell : player.getInventory().items) {
                     if (cell.is(ModItems.CELL.get())) {
                         var cap = cell.getCapability(Capabilities.EnergyStorage.ITEM);
                         if (cap != null && cap.getEnergyStored() > 0) {
-                            GunsTool.setGunBooleanTag(tag, "StartCharge", true);
+                            data.charge.markStart();
                         }
                     }
                 }

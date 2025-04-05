@@ -315,7 +315,11 @@ public class GunData {
     }
 
     public void setReloadState(ReloadState state) {
-        data.putInt("ReloadState", state.ordinal());
+        if (state == ReloadState.NOT_RELOADING) {
+            data.remove("ReloadState");
+        } else {
+            data.putInt("ReloadState", state.ordinal());
+        }
     }
 
     public int getReloadStage() {
@@ -323,7 +327,51 @@ public class GunData {
     }
 
     public void setReloadStage(int stage) {
-        data.putInt("ReloadStage", stage);
+        if (stage == 0) {
+            data.remove("ReloadStage");
+        } else {
+            data.putInt("ReloadStage", stage);
+        }
+    }
+
+    public final Charge charge = new Charge();
+
+    public class Charge {
+        public void markStart() {
+            data.putBoolean("StartCharge", true);
+        }
+
+        public boolean shouldStartCharge() {
+            return data.getBoolean("StartCharge");
+        }
+
+        public void markStarted() {
+            data.remove("StartCharge");
+        }
+
+        public int time() {
+            return data.getInt("ChargeTime");
+        }
+
+        public void reduce() {
+            setTime(time() - 1);
+        }
+
+        public void setTime(int chargeTime) {
+            if (chargeTime <= 0) {
+                data.remove("ChargeTime");
+            } else {
+                data.putInt("ChargeTime", chargeTime);
+            }
+        }
+
+        public void reset() {
+            setTime(0);
+        }
+    }
+
+    public boolean charging() {
+        return charge.time() > 0;
     }
 
     public void save() {

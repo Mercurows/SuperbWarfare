@@ -370,18 +370,17 @@ public class LivingEventHandler {
                     oldData.setReloadState(GunData.ReloadState.NOT_RELOADING);
 
                     if (oldData.iterativeTime() != 0) {
-                        oldTag.putBoolean("force_stop", false);
-                        oldTag.putBoolean("stop", false);
+                        oldTag.remove("ForceStop");
+                        oldTag.remove("Stopped");
                         oldData.setReloadStage(0);
-                        oldTag.putDouble("prepare", 0);
-                        oldTag.putDouble("prepare_load", 0);
-                        oldTag.putDouble("iterative", 0);
-                        oldTag.putDouble("finish", 0);
+                        oldTag.remove("PrepareTime");
+                        oldTag.remove("PrepareLoadTime");
+                        oldTag.remove("IterativeLoadTime");
+                        oldTag.remove("FinishTime");
                     }
 
                     if (oldStack.is(ModItems.SENTINEL.get())) {
-                        data.putBoolean("Charging", false);
-                        data.putInt("ChargeTime", 0);
+                        oldData.charge.reset();
                     }
 
                     var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
@@ -406,22 +405,21 @@ public class LivingEventHandler {
                     newData.setReloadState(GunData.ReloadState.NOT_RELOADING);
 
                     var data = newTag.getCompound("GunData");
-                    data.putInt("ReloadTime", 0);
+                    data.remove("ReloadTime");
                     newTag.put("GunData", data);
 
                     if (newData.iterativeTime() != 0) {
-                        newTag.putBoolean("force_stop", false);
-                        newTag.putBoolean("stop", false);
+                        newTag.remove("ForceStop");
+                        newTag.remove("Stopped");
                         newData.setReloadStage(0);
-                        newTag.putDouble("prepare", 0);
-                        newTag.putDouble("prepare_load", 0);
-                        newTag.putDouble("iterative", 0);
-                        newTag.putDouble("finish", 0);
+                        newTag.remove("PrepareTime");
+                        newTag.remove("PrepareLoadTime");
+                        newTag.remove("IterativeLoadTime");
+                        newTag.remove("FinishTime");
                     }
 
                     if (newStack.is(ModItems.SENTINEL.get())) {
-                        GunsTool.setGunBooleanTag(newTag, "Charging", false);
-                        GunsTool.setGunIntTag(newTag, "ChargeTime", 0);
+                        newData.charge.reset();
                     }
 
                     int level = PerkHelper.getItemPerkLevel(ModPerks.KILLING_TALLY.get(), newTag);

@@ -88,7 +88,7 @@ public class SentinelItem extends GunItem implements GeoItem, EnergyStorageItem 
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.sentinel.reload_normal"));
         }
 
-        if (GunsTool.getGunBooleanTag(tag, "Charging")) {
+        if (data.charging()) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.sentinel.charge"));
         }
 
@@ -105,8 +105,10 @@ public class SentinelItem extends GunItem implements GeoItem, EnergyStorageItem 
 
         if (player.isSprinting() && player.onGround()
                 && player.getPersistentData().getDouble("noRun") == 0
-                && !(data.normalReloading() || data.emptyReloading())
-                && !GunsTool.getGunBooleanTag(tag, "Charging") && ClientEventHandler.drawTime < 0.01) {
+                && !data.reloading()
+                && !data.charging()
+                && ClientEventHandler.drawTime < 0.01
+        ) {
             if (player.hasEffect(MobEffects.MOVEMENT_SPEED) && GunsTool.getGunIntTag(tag, "BoltActionTick") == 0) {
                 return event.setAndContinue(RawAnimation.begin().thenLoop("animation.sentinel.run_fast"));
             } else {

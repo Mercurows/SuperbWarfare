@@ -73,7 +73,7 @@ public class GunEventHandler {
             }
 
             if (stack.getItem() == ModItems.MARLIN.get() && GunsTool.getGunIntTag(tag, "BoltActionTick") == 9) {
-                tag.putBoolean("empty", false);
+                tag.remove("IsEmpty");
             }
 
             if (GunsTool.getGunIntTag(tag, "BoltActionTick") == 1) {
@@ -334,7 +334,7 @@ public class GunEventHandler {
                 gunData.setReloadState(GunData.ReloadState.EMPTY_RELOADING);
                 playGunEmptyReloadSounds(player);
             }
-            data.putBoolean("StartReload", false);
+            data.remove("StartReload");
         }
 
         if (data.getInt("ReloadTime") > 0) {
@@ -343,27 +343,27 @@ public class GunEventHandler {
 
         if (stack.getItem() == ModItems.RPG.get()) {
             if (data.getInt("ReloadTime") == 84) {
-                tag.putBoolean("empty", false);
+                tag.remove("IsEmpty");
             }
             if (data.getInt("ReloadTime") == 9) {
-                data.putBoolean("CloseHammer", false);
+                data.remove("CloseHammer");
             }
         }
 
         if (stack.getItem() == ModItems.MK_14.get() && data.getInt("ReloadTime") == 18) {
-            data.putBoolean("HoldOpen", false);
+            data.remove("HoldOpen");
         }
 
         if (stack.getItem() == ModItems.SVD.get() && data.getInt("ReloadTime") == 17) {
-            data.putBoolean("HoldOpen", false);
+            data.remove("HoldOpen");
         }
 
         if (stack.getItem() == ModItems.SKS.get() && data.getInt("ReloadTime") == 14) {
-            data.putBoolean("HoldOpen", false);
+            data.remove("HoldOpen");
         }
 
         if (stack.getItem() == ModItems.M_60.get() && data.getInt("ReloadTime") == 55) {
-            data.putBoolean("HideBulletChain", false);
+            data.remove("HideBulletChain");
         }
 
         if (stack.getItem() == ModItems.GLOCK_17.get()
@@ -372,12 +372,12 @@ public class GunEventHandler {
                 || stack.getItem() == ModItems.MP_443.get()
         ) {
             if (data.getInt("ReloadTime") == 9) {
-                data.putBoolean("HoldOpen", false);
+                data.remove("HoldOpen");
             }
         }
 
         if (stack.getItem() == ModItems.QBZ_95.get() && data.getInt("ReloadTime") == 14) {
-            data.putBoolean("HoldOpen", false);
+            data.remove("HoldOpen");
         }
 
         if (data.getInt("ReloadTime") == 1) {
@@ -390,7 +390,7 @@ public class GunEventHandler {
             } else {
                 playGunEmptyReload(player, gunData);
             }
-            data.putBoolean("StartReload", false);
+            data.remove("StartReload");
         }
     }
 
@@ -496,90 +496,90 @@ public class GunEventHandler {
         var tag = gunData.tag();
 
         // 换弹流程计时器
-        if (tag.getDouble("prepare") > 0) {
-            tag.putDouble("prepare", tag.getDouble("prepare") - 1);
+        if (tag.getDouble("PrepareTime") > 0) {
+            tag.putDouble("PrepareTime", tag.getDouble("PrepareTime") - 1);
         }
-        if (tag.getDouble("prepare_load") > 0) {
-            tag.putDouble("prepare_load", tag.getDouble("prepare_load") - 1);
+        if (tag.getDouble("PrepareLoadTime") > 0) {
+            tag.putDouble("PrepareLoadTime", tag.getDouble("PrepareLoadTime") - 1);
         }
-        if (tag.getDouble("iterative") > 0) {
-            tag.putDouble("iterative", tag.getDouble("iterative") - 1);
+        if (tag.getDouble("IterativeLoadTime") > 0) {
+            tag.putDouble("IterativeLoadTime", tag.getDouble("IterativeLoadTime") - 1);
         }
-        if (tag.getDouble("finish") > 0) {
-            tag.putDouble("finish", tag.getDouble("finish") - 1);
+        if (tag.getDouble("FinishTime") > 0) {
+            tag.putDouble("FinishTime", tag.getDouble("FinishTime") - 1);
         }
 
-//        player.displayClientMessage(Component.literal("prepare: " +  new DecimalFormat("##.#").format(tag.getDouble("prepare"))
-//                        + " prepare_load: " +  new DecimalFormat("##.#").format(tag.getDouble("prepare_load"))
-//                        + " iterative: " +  new DecimalFormat("##.#").format(tag.getDouble("iterative"))
-//                        + " finish: " +  new DecimalFormat("##.#").format(tag.getDouble("finish"))
+//        player.displayClientMessage(Component.literal("prepare: " +  new DecimalFormat("##.#").format(tag.getDouble("PrepareTime"))
+//                        + " prepare_load: " +  new DecimalFormat("##.#").format(tag.getDouble("PrepareLoadTime"))
+//                        + " iterative: " +  new DecimalFormat("##.#").format(tag.getDouble("IterativeLoadTime"))
+//                        + " finish: " +  new DecimalFormat("##.#").format(tag.getDouble("FinishTime"))
 //                        + " reload_stage: " +  new DecimalFormat("##.#").format(tag.getDouble("reload_stage"))
 //        ), true);
 
         // 一阶段
-        if (tag.getBoolean("start_single_reload")) {
+        if (tag.getBoolean("StartSingleReload")) {
             NeoForge.EVENT_BUS.post(new ReloadEvent.Pre(player, stack));
 
             if ((gunData.prepareLoadTime() != 0 && gunData.ammo() == 0) || stack.is(ModItems.SECONDARY_CATACLYSM.get())) {
                 // 此处判断空仓换弹的时候，是否在准备阶段就需要装填一发，如M870
                 playGunPrepareLoadReloadSounds(player);
                 int prepareLoadTime = gunData.prepareLoadTime();
-                tag.putInt("prepare_load", prepareLoadTime + 1);
+                tag.putInt("PrepareLoadTime", prepareLoadTime + 1);
                 player.getCooldowns().addCooldown(stack.getItem(), prepareLoadTime);
             } else if (gunData.prepareEmptyTime() != 0 && gunData.ammo() == 0) {
                 // 此处判断空仓换弹，如莫辛纳甘
                 playGunEmptyPrepareSounds(player);
                 int prepareEmptyTime = gunData.prepareEmptyTime();
-                tag.putInt("prepare", prepareEmptyTime + 1);
+                tag.putInt("PrepareTime", prepareEmptyTime + 1);
                 player.getCooldowns().addCooldown(stack.getItem(), prepareEmptyTime);
             } else {
                 playGunPrepareReloadSounds(player);
                 int prepareTime = gunData.prepareTime();
-                tag.putInt("prepare", prepareTime + 1);
+                tag.putInt("PrepareTime", prepareTime + 1);
                 player.getCooldowns().addCooldown(stack.getItem(), prepareTime);
             }
 
-            tag.putBoolean("force_stop", false);
-            tag.putBoolean("stop", false);
+            tag.remove("ForceStop");
+            tag.remove("Stopped");
             gunData.setReloadStage(1);
             gunData.setReloadState(GunData.ReloadState.NORMAL_RELOADING);
-            tag.putBoolean("start_single_reload", false);
+            tag.remove("StartSingleReload");
         }
 
-        if (stack.getItem() == ModItems.M_870.get() && tag.getInt("prepare_load") == 10) {
+        if (stack.getItem() == ModItems.M_870.get() && tag.getInt("PrepareLoadTime") == 10) {
             singleLoad(player, gunData);
         }
 
-        if (stack.getItem() == ModItems.SECONDARY_CATACLYSM.get() && tag.getInt("prepare_load") == 3) {
+        if (stack.getItem() == ModItems.SECONDARY_CATACLYSM.get() && tag.getInt("PrepareLoadTime") == 3) {
             singleLoad(player, gunData);
         }
 
         // 一阶段结束，检查备弹，如果有则二阶段启动，无则直接跳到三阶段
-        if ((tag.getDouble("prepare") == 1 || tag.getDouble("prepare_load") == 1)) {
+        if ((tag.getDouble("PrepareTime") == 1 || tag.getDouble("PrepareLoadTime") == 1)) {
             if (!InventoryTool.hasCreativeAmmoBox(player)) {
                 var capability = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
                 if (capability == null) capability = new PlayerVariable();
 
                 if (stack.is(ModTags.Items.USE_SHOTGUN_AMMO) && capability.shotgunAmmo == 0) {
-                    tag.putBoolean("force_stage3_start", true);
+                    tag.putBoolean("ForceStartStage3", true);
                 } else if (stack.is(ModTags.Items.USE_SNIPER_AMMO) && capability.sniperAmmo == 0) {
-                    tag.putBoolean("force_stage3_start", true);
+                    tag.putBoolean("ForceStartStage3", true);
                 } else if ((stack.is(ModTags.Items.USE_HANDGUN_AMMO) || stack.is(ModTags.Items.SMG)) && capability.handgunAmmo == 0) {
-                    tag.putBoolean("force_stage3_start", true);
+                    tag.putBoolean("ForceStartStage3", true);
                 } else if (stack.is(ModTags.Items.USE_RIFLE_AMMO) && capability.rifleAmmo == 0) {
-                    tag.putBoolean("force_stage3_start", true);
+                    tag.putBoolean("ForceStartStage3", true);
                 } else if (stack.is(ModTags.Items.USE_HEAVY_AMMO) && capability.heavyAmmo == 0) {
-                    tag.putBoolean("force_stage3_start", true);
+                    tag.putBoolean("ForceStartStage3", true);
                 } else if (stack.is(ModTags.Items.LAUNCHER) && GunsTool.getGunIntTag(tag, "MaxAmmo") == 0) {
-                    tag.putBoolean("force_stage3_start", true);
+                    tag.putBoolean("ForceStartStage3", true);
                 } else if (stack.is(ModItems.SECONDARY_CATACLYSM.get()) && gunData.ammo() >= gunData.magazine()) {
-                    tag.putBoolean("force_stage3_start", true);
+                    tag.putBoolean("ForceStartStage3", true);
                 } else {
                     gunData.setReloadStage(2);
                 }
             } else {
                 if (stack.is(ModItems.SECONDARY_CATACLYSM.get()) && gunData.ammo() >= gunData.magazine()) {
-                    tag.putBoolean("force_stage3_start", true);
+                    tag.putBoolean("ForceStartStage3", true);
                 } else {
                     gunData.setReloadStage(2);
                 }
@@ -588,51 +588,51 @@ public class GunEventHandler {
         }
 
         // 强制停止换弹，进入三阶段
-        if (tag.getBoolean("force_stop") && gunData.getReloadStage() == 2 && tag.getInt("iterative") > 0) {
-            tag.putBoolean("stop", true);
+        if (tag.getBoolean("ForceStop") && gunData.getReloadStage() == 2 && tag.getInt("IterativeLoadTime") > 0) {
+            tag.putBoolean("Stopped", true);
         }
 
         // 二阶段
-        if ((tag.getDouble("prepare") == 0 || tag.getDouble("prepare_load") == 0)
+        if ((tag.getDouble("PrepareTime") == 0 || tag.getDouble("PrepareLoadTime") == 0)
                 && gunData.getReloadStage() == 2
-                && tag.getInt("iterative") == 0
-                && !tag.getBoolean("stop")
+                && tag.getInt("IterativeLoadTime") == 0
+                && !tag.getBoolean("Stopped")
                 && gunData.ammo() < gunData.magazine()
         ) {
 
             playGunLoopReloadSounds(player);
             int iterativeTime = gunData.iterativeTime();
-            tag.putDouble("iterative", iterativeTime);
+            tag.putDouble("IterativeLoadTime", iterativeTime);
             player.getCooldowns().addCooldown(stack.getItem(), iterativeTime);
             // 动画播放nbt
-            if (tag.getDouble("load_index") == 1) {
-                tag.putDouble("load_index", 0);
+            if (tag.getDouble("LoadIndex") == 1) {
+                tag.putDouble("LoadIndex", 0);
             } else {
-                tag.putDouble("load_index", 1);
+                tag.putDouble("LoadIndex", 1);
             }
         }
 
         // 装填
         if ((stack.getItem() == ModItems.M_870.get()
                 || stack.getItem() == ModItems.MARLIN.get())
-                && tag.getInt("iterative") == 3
+                && tag.getInt("IterativeLoadTime") == 3
         ) {
             singleLoad(player, gunData);
         }
 
-        if (stack.getItem() == ModItems.SECONDARY_CATACLYSM.get() && tag.getInt("iterative") == 16) {
+        if (stack.getItem() == ModItems.SECONDARY_CATACLYSM.get() && tag.getInt("IterativeLoadTime") == 16) {
             singleLoad(player, gunData);
         }
 
         if ((stack.getItem() == ModItems.K_98.get()
                 || stack.getItem() == ModItems.MOSIN_NAGANT.get())
-                && tag.getInt("iterative") == 1
+                && tag.getInt("IterativeLoadTime") == 1
         ) {
             singleLoad(player, gunData);
         }
 
         // 二阶段结束
-        if (tag.getInt("iterative") == 1) {
+        if (tag.getInt("IterativeLoadTime") == 1) {
             // 装满结束
             if (gunData.ammo() >= gunData.magazine()) {
                 gunData.setReloadStage(3);
@@ -657,35 +657,35 @@ public class GunEventHandler {
             }
 
             // 强制结束
-            if (tag.getBoolean("stop")) {
+            if (tag.getBoolean("Stopped")) {
                 gunData.setReloadStage(3);
-                tag.putBoolean("force_stop", false);
-                tag.putBoolean("stop", false);
+                tag.remove("ForceStop");
+                tag.remove("Stopped");
             }
         }
 
         // 三阶段
-        if ((tag.getInt("iterative") == 1 && gunData.getReloadStage() == 3) || tag.getBoolean("force_stage3_start")) {
+        if ((tag.getInt("IterativeLoadTime") == 1 && gunData.getReloadStage() == 3) || tag.getBoolean("ForceStartStage3")) {
             gunData.setReloadStage(3);
-            tag.putBoolean("force_stage3_start", false);
+            tag.remove("ForceStartStage3");
             int finishTime = gunData.finishTime();
-            tag.putInt("finish", finishTime + 2);
+            tag.putInt("FinishTime", finishTime + 2);
             player.getCooldowns().addCooldown(stack.getItem(), finishTime + 2);
             playGunEndReloadSounds(player);
         }
 
-        if (stack.getItem() == ModItems.MARLIN.get() && tag.getInt("finish") == 10) {
-            tag.putBoolean("empty", false);
+        if (stack.getItem() == ModItems.MARLIN.get() && tag.getInt("FinishTime") == 10) {
+            tag.remove("IsEmpty");
         }
 
         // 三阶段结束
-        if (tag.getInt("finish") == 1) {
+        if (tag.getInt("FinishTime") == 1) {
             gunData.setReloadStage(0);
             if (gunData.boltActionTime() > 0) {
                 GunsTool.setGunBooleanTag(tag, "NeedBoltAction", false);
             }
             gunData.setReloadState(GunData.ReloadState.NOT_RELOADING);
-            tag.putBoolean("start_single_reload", false);
+            tag.remove("StartSingleReload");
 
             NeoForge.EVENT_BUS.post(new ReloadEvent.Post(player, stack));
         }
@@ -831,32 +831,29 @@ public class GunEventHandler {
     /**
      * 哨兵充能
      */
-    private static void handleSentinelCharge(Player player, GunData gunData) {
+    private static void handleSentinelCharge(Player player, GunData data) {
         if (!(player.getMainHandItem().getItem() instanceof GunItem)) return;
-        var tag = gunData.tag();
-        final var data = gunData.data();
 
-        // 启动换弹
-        if (GunsTool.getGunBooleanTag(tag, "StartCharge")) {
-            data.putInt("ChargeTime", 127);
-            data.putBoolean("Charging", true);
+        // 启动充能
+        if (data.charge.shouldStartCharge()) {
+            data.charge.setTime(127);
 
             SoundEvent sound1p = BuiltInRegistries.SOUND_EVENT.get(Mod.loc("sentinel_charge"));
             if (sound1p != null && player instanceof ServerPlayer serverPlayer) {
                 SoundTool.playLocalSound(serverPlayer, sound1p, 2f, 1f);
             }
 
-            data.putBoolean("StartCharge", true);
+            data.charge.markStarted();
         }
 
-        if (GunsTool.getGunIntTag(tag, "ChargeTime") > 0) {
-            data.putInt("ChargeTime", data.getInt("ChargeTime") - 1);
+        if (data.charge.time() > 0) {
+            data.charge.reduce();
         }
 
-        if (GunsTool.getGunIntTag(tag, "ChargeTime") == 17) {
+        if (data.charge.time() == 17) {
             for (var cell : player.getInventory().items) {
                 if (cell.is(ModItems.CELL.get())) {
-                    var stackStorage = cell.getCapability(Capabilities.EnergyStorage.ITEM);
+                    var stackStorage = data.stack().getCapability(Capabilities.EnergyStorage.ITEM);
                     if (stackStorage == null) continue;
 
                     int stackMaxEnergy = stackStorage.getMaxEnergyStored();
@@ -874,10 +871,6 @@ public class GunEventHandler {
                     cellStorage.extractEnergy(stackEnergyNeed, false);
                 }
             }
-        }
-
-        if (GunsTool.getGunIntTag(tag, "ChargeTime") == 1) {
-            data.putBoolean("Charging", false);
         }
     }
 }

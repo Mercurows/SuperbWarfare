@@ -44,10 +44,10 @@ public record ReloadMessage(int msgType) implements CustomPacketPayload {
         var tag = data.tag();
 
         if (!player.isSpectator()
-                && !GunsTool.getGunBooleanTag(tag, "Charging")
+                && !data.charging()
+                && !data.reloading()
                 && GunsTool.getGunIntTag(tag, "ReloadTime") == 0
                 && GunsTool.getGunIntTag(tag, "BoltActionTick") == 0
-                && !data.reloading()
         ) {
             boolean canSingleReload = gunItem.isIterativeReload(stack);
             boolean canReload = gunItem.isMagazineReload(stack) && !gunItem.isClipReload(stack);
@@ -94,7 +94,7 @@ public record ReloadMessage(int msgType) implements CustomPacketPayload {
             }
 
             if (canSingleReload && data.ammo() < data.magazine()) {
-                tag.putBoolean("start_single_reload", true);
+                tag.putBoolean("StartSingleReload", true);
             }
             data.save();
         }

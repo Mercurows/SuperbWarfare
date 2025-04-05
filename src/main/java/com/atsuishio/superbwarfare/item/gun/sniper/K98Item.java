@@ -61,15 +61,15 @@ public class K98Item extends GunItem implements GeoItem {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.k98.reload_empty"));
         }
 
-        if (data.getReloadStage() == 1 && tag.getDouble("prepare") > 0) {
+        if (data.getReloadStage() == 1 && tag.getDouble("PrepareTime") > 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.k98.prepare"));
         }
 
-        if (tag.getDouble("load_index") == 0 && data.getReloadStage() == 2) {
+        if (tag.getDouble("LoadIndex") == 0 && data.getReloadStage() == 2) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.k98.iterativeload"));
         }
 
-        if (tag.getDouble("load_index") == 1 && data.getReloadStage() == 2) {
+        if (tag.getDouble("LoadIndex") == 1 && data.getReloadStage() == 2) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.k98.iterativeload2"));
         }
 

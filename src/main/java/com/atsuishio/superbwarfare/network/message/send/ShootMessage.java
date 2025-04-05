@@ -66,7 +66,7 @@ public record ShootMessage(double spread) implements CustomPacketPayload {
                 }
 
                 data.setAmmo(data.ammo() - 1);
-                tag.putDouble("empty", 1);
+                tag.putBoolean("IsEmpty", true);
 
                 if (stack.getItem() == ModItems.M_60.get() && data.ammo() <= 5) {
                     GunsTool.setGunBooleanTag(tag, "HideBulletChain", true);

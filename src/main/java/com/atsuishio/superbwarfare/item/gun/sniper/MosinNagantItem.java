@@ -65,11 +65,11 @@ public class MosinNagantItem extends GunItem implements GeoItem {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.mosin.prepare"));
         }
 
-        if (NBTTool.getTag(stack).getDouble("load_index") == 0 && data.getReloadStage() == 2) {
+        if (NBTTool.getTag(stack).getDouble("LoadIndex") == 0 && data.getReloadStage() == 2) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.mosin.iterativeload"));
         }
 
-        if (NBTTool.getTag(stack).getDouble("load_index") == 1 && data.getReloadStage() == 2) {
+        if (NBTTool.getTag(stack).getDouble("LoadIndex") == 1 && data.getReloadStage() == 2) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.mosin.iterativeload2"));
         }
 

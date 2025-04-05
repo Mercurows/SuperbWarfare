@@ -52,8 +52,8 @@ public record FireMessage(int msgType) implements CustomPacketPayload {
 
         var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
         if (type == 0) {
-            if (tag.getDouble("prepare") == 0 && data.reloading() && data.ammo() > 0) {
-                tag.putDouble("force_stop", 1);
+            if (tag.getDouble("PrepareTime") == 0 && data.reloading() && data.ammo() > 0) {
+                tag.putBoolean("ForceStop", true);
             }
 
             if (cap != null) {
@@ -97,7 +97,8 @@ public record FireMessage(int msgType) implements CustomPacketPayload {
                 && !(data.normalReloading()
                 || data.emptyReloading())
                 && !data.reloading()
-                && !GunsTool.getGunBooleanTag(tag, "Charging")) {
+                && !data.charging()
+        ) {
             if (!player.getCooldowns().isOnCooldown(stack.getItem()) && GunsTool.getGunBooleanTag(tag, "NeedBoltAction")) {
                 GunsTool.setGunIntTag(tag, "BoltActionTick", data.boltActionTime() + 1);
                 GunEventHandler.playGunBoltSounds(player);

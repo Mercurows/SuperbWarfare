@@ -138,7 +138,7 @@ public class RpgItem extends GunItem implements GeoItem, SpecialFireWeapon {
             tag.putBoolean("draw", false);
 
             if (data.ammo() == 0) {
-                tag.putDouble("empty", 1);
+                tag.putBoolean("IsEmpty", true);
             }
         }
 
@@ -241,7 +241,7 @@ public class RpgItem extends GunItem implements GeoItem, SpecialFireWeapon {
         }
 
         if (data.ammo() == 1) {
-            tag.putBoolean("empty", true);
+            tag.putBoolean("IsEmpty", true);
             GunsTool.setGunBooleanTag(tag, "CloseHammer", true);
         }
 

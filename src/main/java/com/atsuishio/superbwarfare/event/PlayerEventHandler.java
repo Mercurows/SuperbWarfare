@@ -207,7 +207,7 @@ public class PlayerEventHandler {
         var tag = data.tag();
 
         if ((stack.is(ModItems.RPG.get()) || stack.is(ModItems.BOCEK.get())) && data.ammo() == 1) {
-            tag.putDouble("empty", 0);
+            tag.remove("IsEmpty");
             data.save();
         }
     }

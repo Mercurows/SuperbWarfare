@@ -344,11 +344,9 @@ public class ClickHandler {
                 }
             } else {
                 PacketDistributor.sendToServer(new FireMessage(0));
-                if ((!(data.normalReloading() || data.emptyReloading())
-                        && !data.reloading()
-                        && !GunsTool.getGunBooleanTag(tag, "Charging")
-                        && !GunsTool.getGunBooleanTag(tag, "NeedBoltAction"))
-                        && drawTime < 0.01) {
+                if ((!data.reloading() && !data.charging()
+                        && !GunsTool.getGunBooleanTag(tag, "NeedBoltAction")
+                ) && drawTime < 0.01) {
                     if (data.fireMode() == 1) {
                         if (ClientEventHandler.burstFireAmount == 0) {
                             ClientEventHandler.burstFireAmount = data.burstAmount();

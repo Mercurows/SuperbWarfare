@@ -46,7 +46,7 @@ public class K98ItemModel extends GeoModel<K98Item> {
 
         var data = GunData.from(stack);
         final var tag = data.tag();
-        if (tag.getDouble("prepare") > 11 && data.ammo() == 1) {
+        if (tag.getDouble("PrepareTime") > 11 && data.ammo() == 1) {
             clip.setScaleX(0);
             clip.setScaleY(0);
             clip.setScaleZ(0);

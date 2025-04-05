@@ -265,6 +265,7 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
                     this.entityData.set(CONTROLLER, player.getStringUUID());
 
                     Monitor.link(tag, this.getStringUUID());
+                    NBTTool.saveTag(stack, tag);
                     player.displayClientMessage(Component.translatable("tips.superbwarfare.monitor.linked").withStyle(ChatFormatting.GREEN), true);
 
                     if (player instanceof ServerPlayer serverPlayer) {

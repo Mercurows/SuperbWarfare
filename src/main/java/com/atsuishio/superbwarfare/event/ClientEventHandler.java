@@ -313,8 +313,9 @@ public class ClientEventHandler {
                     && cap != null && !cap.edit
                     && !(data.normalReloading() || data.emptyReloading())
                     && !data.reloading()
+                    && !data.charging()
                     && !player.getCooldowns().isOnCooldown(stack.getItem())
-                    && !GunsTool.getGunBooleanTag(tag, "Charging")) {
+            ) {
                 gunMelee = 36;
                 cantFireTime = 40;
                 player.playSound(SoundEvents.PLAYER_ATTACK_SWEEP, 1f, 1);
@@ -474,7 +475,7 @@ public class ClientEventHandler {
                 && !notInGame()
                 && (!(data.normalReloading() || data.emptyReloading())
                 && !data.reloading()
-                && !GunsTool.getGunBooleanTag(tag, "Charging")
+                && !data.charging()
                 && data.ammo() > 0
                 && !player.getCooldowns().isOnCooldown(stack.getItem())
                 && !GunsTool.getGunBooleanTag(tag, "NeedBoltAction")
