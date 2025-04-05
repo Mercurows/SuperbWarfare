@@ -104,7 +104,7 @@ public class Glock17ItemModel extends GeoModel<Glock17Item> {
         float numP = (float) (1 - 0.68 * zt);
 
         var data = GunData.from(stack);
-        var tag = data.getTag();
+        var tag = data.tag();
 
         if (GunsTool.getGunIntTag(tag, "ReloadTime") > 0) {
             main.setRotX(numR * main.getRotX());

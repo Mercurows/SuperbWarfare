@@ -69,7 +69,7 @@ public class InsidiousItemModel extends GeoModel<InsidiousItem> {
         gun.setScaleZ(1f - (0.82f * (float) zp));
 
         var data = GunData.from(stack);
-        var tag = data.getTag();
+        var tag = data.tag();
         tag.putBoolean("HoloHidden", !(gun.getPosX() > 3));
         data.save();
 

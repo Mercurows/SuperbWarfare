@@ -66,7 +66,7 @@ public class PerkHelper {
     }
 
     public static int getItemPerkLevel(Perk perk, GunData data) {
-        return getItemPerkLevel(perk, data.getTag());
+        return getItemPerkLevel(perk, data.tag());
     }
 
     public static int getItemPerkLevel(Perk perk, final CompoundTag tag) {
@@ -89,7 +89,7 @@ public class PerkHelper {
     }
 
     public static CompoundTag getPerkTag(GunData data, Perk.Type type) {
-        return getPerkTag(data.getTag(), type);
+        return getPerkTag(data.tag(), type);
     }
 
     public static CompoundTag getPerkTag(final CompoundTag tag, Perk.Type type) {
@@ -113,7 +113,7 @@ public class PerkHelper {
     }
 
     public static Perk getPerkByType(GunData data, Perk.Type type) {
-        return getPerkByType(data.getTag(), type);
+        return getPerkByType(data.tag(), type);
     }
 
 

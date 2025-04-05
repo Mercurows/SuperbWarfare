@@ -6,8 +6,8 @@ import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModItems;
+import com.atsuishio.superbwarfare.item.gun.GunData;
 import com.atsuishio.superbwarfare.tools.EntityFindUtil;
-import com.atsuishio.superbwarfare.tools.GunsTool;
 import com.atsuishio.superbwarfare.tools.NBTTool;
 import com.atsuishio.superbwarfare.tools.SeekTool;
 import com.mojang.blaze3d.platform.GlStateManager;
@@ -55,9 +55,11 @@ public class JavelinHudOverlay {
 
             if (player.getVehicle() instanceof ArmedVehicleEntity iArmedVehicle && iArmedVehicle.banHand(player))
                 return;
-            var tag = NBTTool.getTag(stack);
 
-            if ((stack.getItem() == ModItems.JAVELIN.get() && !tag.getBoolean("HoloHidden")) && Minecraft.getInstance().options.getCameraType().isFirstPerson() && ClientEventHandler.zoom) {
+            if ((stack.getItem() == ModItems.JAVELIN.get() && !NBTTool.getTag(stack).getBoolean("HoloHidden")) && Minecraft.getInstance().options.getCameraType().isFirstPerson() && ClientEventHandler.zoom) {
+                var data = GunData.from(stack);
+                var tag = data.tag();
+
                 RenderSystem.disableDepthTest();
                 RenderSystem.depthMask(false);
                 RenderSystem.enableBlend();
@@ -78,7 +80,7 @@ public class JavelinHudOverlay {
                 float j1 = l + j;
                 preciseBlit(event.getGuiGraphics(), Mod.loc("textures/screens/javelin/javelin_hud.png"), k, l, 0, 0.0F, i, j, i, j);
                 preciseBlit(event.getGuiGraphics(), Mod.loc(tag.getBoolean("TopMode") ? "textures/screens/javelin/top.png" : "textures/screens/javelin/dir.png"), k, l, 0, 0.0F, i, j, i, j);
-                preciseBlit(event.getGuiGraphics(), Mod.loc(GunsTool.getGunIntTag(tag, "Ammo") > 0 ? "textures/screens/javelin/missile_green.png" : "textures/screens/javelin/missile_red.png"), k, l, 0, 0.0F, i, j, i, j);
+                preciseBlit(event.getGuiGraphics(), Mod.loc(data.ammo() > 0 ? "textures/screens/javelin/missile_green.png" : "textures/screens/javelin/missile_red.png"), k, l, 0, 0.0F, i, j, i, j);
                 if (tag.getInt("SeekTime") > 1 && tag.getInt("SeekTime") < 20) {
                     preciseBlit(event.getGuiGraphics(), Mod.loc("textures/screens/javelin/seek.png"), k, l, 0, 0.0F, i, j, i, j);
                 }

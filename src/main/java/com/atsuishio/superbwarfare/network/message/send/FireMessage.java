@@ -47,13 +47,13 @@ public record FireMessage(int msgType) implements CustomPacketPayload {
         ItemStack stack = player.getMainHandItem();
         if (!stack.is(ModTags.Items.GUN)) return;
         var data = GunData.from(stack);
-        final var tag = data.getTag();
+        final var tag = data.tag();
 
         handleGunBolt(player, stack);
 
         var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
         if (type == 0) {
-            if (tag.getDouble("prepare") == 0 && data.isReloading() && data.getAmmo() > 0) {
+            if (tag.getDouble("prepare") == 0 && data.reloading() && data.ammo() > 0) {
                 tag.putDouble("force_stop", 1);
             }
 
@@ -90,14 +90,14 @@ public record FireMessage(int msgType) implements CustomPacketPayload {
     private static void handleGunBolt(Player player, ItemStack stack) {
         if (!stack.is(ModTags.Items.GUN)) return;
         var data = GunData.from(stack);
-        CompoundTag tag = data.getTag();
+        CompoundTag tag = data.tag();
 
         if (data.boltActionTime() > 0
-                && data.getAmmo() > (stack.is(ModTags.Items.REVOLVER) ? -1 : 0)
+                && data.ammo() > (stack.is(ModTags.Items.REVOLVER) ? -1 : 0)
                 && GunsTool.getGunIntTag(tag, "BoltActionTick") == 0
                 && !(data.normalReloading()
                 || data.emptyReloading())
-                && !data.isReloading()
+                && !data.reloading()
                 && !GunsTool.getGunBooleanTag(tag, "Charging")) {
             if (!player.getCooldowns().isOnCooldown(stack.getItem()) && GunsTool.getGunBooleanTag(tag, "NeedBoltAction")) {
                 GunsTool.setGunIntTag(tag, "BoltActionTick", data.boltActionTime() + 1);

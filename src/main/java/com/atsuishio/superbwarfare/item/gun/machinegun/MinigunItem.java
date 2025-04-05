@@ -37,7 +37,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 public class MinigunItem extends GunItem implements GeoItem {
     @Override
     public int getCustomRPM(ItemStack stack) {
-        return GunData.from(stack).getData().getInt("CustomRPM");
+        return GunData.from(stack).data().getInt("CustomRPM");
     }
 
     private static final String TAG_HEAT = "heat";
@@ -129,7 +129,7 @@ public class MinigunItem extends GunItem implements GeoItem {
         }
 
         var data = GunData.from(stack);
-        var tag = data.getTag();
+        var tag = data.tag();
         if (entity instanceof ServerPlayer serverPlayer && entity.level() instanceof ServerLevel serverLevel && tag.getDouble("heat") > 4 && entity.isInWaterOrRain()) {
             if (entity.isInWater()) {
                 ParticleTool.sendParticle(serverLevel, ParticleTypes.BUBBLE_COLUMN_UP,

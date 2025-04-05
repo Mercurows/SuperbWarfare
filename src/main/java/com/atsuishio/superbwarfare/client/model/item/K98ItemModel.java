@@ -7,7 +7,6 @@ import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.GunData;
 import com.atsuishio.superbwarfare.item.gun.sniper.K98Item;
 import com.atsuishio.superbwarfare.tools.GunsTool;
-import com.atsuishio.superbwarfare.tools.NBTTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -46,8 +45,8 @@ public class K98ItemModel extends GeoModel<K98Item> {
         if (!stack.is(ModTags.Items.GUN)) return;
 
         var data = GunData.from(stack);
-        final var tag = data.getTag();
-        if (NBTTool.getTag(stack).getDouble("prepare") > 11 && GunsTool.getGunIntTag(tag, "Ammo") == 1) {
+        final var tag = data.tag();
+        if (tag.getDouble("prepare") > 11 && data.ammo() == 1) {
             clip.setScaleX(0);
             clip.setScaleY(0);
             clip.setScaleZ(0);
@@ -110,7 +109,7 @@ public class K98ItemModel extends GeoModel<K98Item> {
         float numR = (float) (1 - 0.52 * zt);
         float numP = (float) (1 - 0.58 * zt);
 
-        if (GunsTool.getGunIntTag(tag, "ReloadTime") > 0 || data.isReloading()) {
+        if (GunsTool.getGunIntTag(tag, "ReloadTime") > 0 || data.reloading()) {
             main.setRotX(numR * main.getRotX());
             main.setRotY(numR * main.getRotY());
             main.setRotZ(numR * main.getRotZ());

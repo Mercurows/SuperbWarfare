@@ -106,7 +106,7 @@ public class BocekItemModel extends GeoModel<BocekItem> {
         shen.setRotZ(60 * Mth.DEG_TO_RAD * (float) zp + (float) (0.05f * zpz) - 0.2f);
 
         var data = GunData.from(stack);
-        var tag = data.getTag();
+        var tag = data.tag();
         tag.putBoolean("HoloHidden", !((shen_pos.getPosX() < -0.6 && gun.getPosZ() < -2)));
         data.save();
 

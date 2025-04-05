@@ -18,7 +18,7 @@ public class PoseTool {
         var data = GunData.from(stack);
         if (data.emptyReloading()
                 || data.getReloadState() == GunData.ReloadState.NORMAL_RELOADING
-                || data.isReloading()
+                || data.reloading()
                 || GunsTool.getGunBooleanTag(tag, "Charging")
         ) {
             return HumanoidModel.ArmPose.CROSSBOW_CHARGE;

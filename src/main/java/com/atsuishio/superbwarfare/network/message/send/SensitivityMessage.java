@@ -28,7 +28,7 @@ public record SensitivityMessage(boolean isAdd) implements CustomPacketPayload {
         if (!stack.is(ModTags.Items.GUN)) return;
 
         var data = GunData.from(stack);
-        final var tag = data.getTag();
+        final var tag = data.tag();
         if (message.isAdd) {
             tag.putInt("sensitivity", Math.min(10, tag.getInt("sensitivity") + 1));
         } else {

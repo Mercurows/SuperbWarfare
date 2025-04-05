@@ -50,7 +50,7 @@ public class ReloadEventHandler {
 
     private static void handleHealClipPre(ItemStack stack) {
         var data = GunData.from(stack);
-        final var tag = data.getTag();
+        final var tag = data.tag();
         int time = GunsTool.getPerkIntTag(tag, "HealClipTime");
         if (time > 0) {
             GunsTool.setPerkIntTag(tag, "HealClipTime", 0);
@@ -63,7 +63,7 @@ public class ReloadEventHandler {
 
     private static void handleHealClipPost(Player player, ItemStack stack) {
         var data = GunData.from(stack);
-        final var tag = data.getTag();
+        final var tag = data.tag();
         if (!GunsTool.getPerkBooleanTag(tag, "HealClip")) return;
 
         int healClipLevel = PerkHelper.getItemPerkLevel(ModPerks.HEAL_CLIP.get(), tag);
@@ -80,7 +80,7 @@ public class ReloadEventHandler {
 
     private static void handleKillClipPre(ItemStack stack) {
         var data = GunData.from(stack);
-        final var tag = data.getTag();
+        final var tag = data.tag();
         int time = GunsTool.getPerkIntTag(tag, "KillClipReloadTime");
         if (time > 0) {
             GunsTool.setPerkIntTag(tag, "KillClipReloadTime", 0);
@@ -93,7 +93,7 @@ public class ReloadEventHandler {
 
     private static void handleKillClipPost(ItemStack stack) {
         var data = GunData.from(stack);
-        final var tag = data.getTag();
+        final var tag = data.tag();
         if (!GunsTool.getPerkBooleanTag(tag, "KillClip")) return;
 
         int level = PerkHelper.getItemPerkLevel(ModPerks.KILL_CLIP.get(), tag);
@@ -103,7 +103,7 @@ public class ReloadEventHandler {
 
     private static void handleKillingTallyPre(ItemStack stack) {
         var data = GunData.from(stack);
-        final var tag = data.getTag();
+        final var tag = data.tag();
         int level = PerkHelper.getItemPerkLevel(ModPerks.KILLING_TALLY.get(), tag);
         if (level == 0) return;
 
@@ -113,7 +113,7 @@ public class ReloadEventHandler {
 
     private static void handleDesperadoPre(ItemStack stack) {
         var data = GunData.from(stack);
-        final var tag = data.getTag();
+        final var tag = data.tag();
         int time = GunsTool.getPerkIntTag(tag, "DesperadoTime");
         if (time > 0) {
             GunsTool.setPerkIntTag(tag, "DesperadoTime", 0);
@@ -126,7 +126,7 @@ public class ReloadEventHandler {
 
     private static void handleDesperadoPost(ItemStack stack) {
         var data = GunData.from(stack);
-        final var tag = data.getTag();
+        final var tag = data.tag();
         if (!GunsTool.getPerkBooleanTag(tag, "Desperado")) return;
 
         int level = PerkHelper.getItemPerkLevel(ModPerks.DESPERADO.get(), tag);

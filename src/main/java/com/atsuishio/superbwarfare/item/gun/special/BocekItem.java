@@ -118,7 +118,7 @@ public class BocekItem extends GunItem implements GeoItem, SpecialFireWeapon {
     public void inventoryTick(ItemStack stack, Level world, Entity entity, int slot, boolean selected) {
         super.inventoryTick(stack, world, entity, slot, selected);
         var data = GunData.from(stack);
-        final var tag = data.getTag();
+        final var tag = data.tag();
         if (entity instanceof Player player) {
             GunsTool.setGunIntTag(tag, "MaxAmmo", getAmmoCount(player));
             data.save();
@@ -172,8 +172,8 @@ public class BocekItem extends GunItem implements GeoItem, SpecialFireWeapon {
     public void fireOnRelease(Player player, final GunData data) {
         if (player.level().isClientSide()) return;
 
-        var tag = data.getTag();
-        var stack = data.getStack();
+        var tag = data.tag();
+        var stack = data.stack();
         var perk = PerkHelper.getPerkByType(tag, Perk.Type.AMMO);
 
         if (player instanceof ServerPlayer serverPlayer) {

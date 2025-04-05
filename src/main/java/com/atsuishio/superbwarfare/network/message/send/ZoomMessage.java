@@ -64,7 +64,7 @@ public record ZoomMessage(int msgType) implements CustomPacketPayload {
             if (player.getMainHandItem().getItem() == ModItems.JAVELIN.get()) {
                 var handItem = player.getMainHandItem();
                 var data = GunData.from(handItem);
-                var tag = data.getTag();
+                var tag = data.tag();
 
                 tag.putBoolean("Seeking", false);
                 tag.putInt("SeekTime", 0);

@@ -77,7 +77,7 @@ public class SentinelItem extends GunItem implements GeoItem, EnergyStorageItem 
         ItemStack stack = player.getMainHandItem();
         if (!stack.is(ModTags.Items.GUN)) return PlayState.STOP;
         var data = GunData.from(stack);
-        final var tag = data.getTag();
+        final var tag = data.tag();
 
         if (GunsTool.getGunIntTag(tag, "BoltActionTick") > 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.sentinel.shift"));
@@ -104,7 +104,7 @@ public class SentinelItem extends GunItem implements GeoItem, EnergyStorageItem 
         ItemStack stack = player.getMainHandItem();
         if (!stack.is(ModTags.Items.GUN)) return PlayState.STOP;
         var data = GunData.from(stack);
-        final var tag = data.getTag();
+        final var tag = data.tag();
 
         if (player.isSprinting() && player.onGround()
                 && player.getPersistentData().getDouble("noRun") == 0
@@ -138,7 +138,7 @@ public class SentinelItem extends GunItem implements GeoItem, EnergyStorageItem 
     public void inventoryTick(ItemStack stack, Level world, Entity entity, int slot, boolean selected) {
         super.inventoryTick(stack, world, entity, slot, selected);
         var data = GunData.from(stack);
-        final var tag = data.getTag();
+        final var tag = data.tag();
 
         var cap = stack.getCapability(Capabilities.EnergyStorage.ITEM);
         if (cap != null && cap.getEnergyStored() > 0) {

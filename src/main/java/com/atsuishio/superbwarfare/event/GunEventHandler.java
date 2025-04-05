@@ -65,8 +65,8 @@ public class GunEventHandler {
         ItemStack stack = player.getMainHandItem();
 
         if (stack.is(ModTags.Items.NORMAL_GUN)) {
-            var tag = gunData.getTag();
-            var data = gunData.getData();
+            var tag = gunData.tag();
+            var data = gunData.data();
 
             if (GunsTool.getGunIntTag(tag, "BoltActionTick") > 0) {
                 data.putInt("BoltActionTick", GunsTool.getGunIntTag(tag, "BoltActionTick") - 1);
@@ -92,7 +92,7 @@ public class GunEventHandler {
         ItemStack stack = player.getMainHandItem();
         if (!stack.is(ModTags.Items.GUN)) return;
         var data = GunData.from(stack);
-        var tag = data.getTag();
+        var tag = data.tag();
 
         if (!player.level().isClientSide) {
             String origin = stack.getItem().getDescriptionId();
@@ -321,15 +321,15 @@ public class GunEventHandler {
         ItemStack stack = player.getMainHandItem();
         if (!(stack.getItem() instanceof GunItem gunItem)) return;
 
-        var tag = gunData.getTag();
-        var data = gunData.getData();
+        var tag = gunData.tag();
+        var data = gunData.data();
 
         // 启动换弹
         if (GunsTool.getGunBooleanTag(tag, "StartReload")) {
 
             NeoForge.EVENT_BUS.post(new ReloadEvent.Pre(player, stack));
             if (gunItem.isOpenBolt(stack)) {
-                if (gunData.getAmmo() == 0) {
+                if (gunData.ammo() == 0) {
                     data.putInt("ReloadTime", gunData.emptyReloadTime() + 1);
                     gunData.setReloadState(GunData.ReloadState.EMPTY_RELOADING);
                     playGunEmptyReloadSounds(player);
@@ -391,7 +391,7 @@ public class GunEventHandler {
 
         if (data.getInt("ReloadTime") == 1) {
             if (gunItem.isOpenBolt(stack)) {
-                if (gunData.getAmmo() == 0) {
+                if (gunData.ammo() == 0) {
                     playGunEmptyReload(player, gunData);
                 } else {
                     playGunNormalReload(player, gunData);
@@ -404,8 +404,8 @@ public class GunEventHandler {
     }
 
     public static void playGunNormalReload(Player player, GunData gunData) {
-        var stack = gunData.getStack();
-        var gunItem = gunData.getItem();
+        var stack = gunData.stack();
+        var gunItem = gunData.item();
 
         if (player.getInventory().hasAnyMatching(item -> item.is(ModItems.CREATIVE_AMMO_BOX.get()))) {
             gunData.setAmmo(gunData.magazine() + (gunItem.hasBulletInBarrel(stack) ? 1 : 0));
@@ -427,7 +427,7 @@ public class GunEventHandler {
     }
 
     public static void playGunEmptyReload(Player player, GunData gunData) {
-        ItemStack stack = gunData.getStack();
+        ItemStack stack = gunData.stack();
 
         if (player.getInventory().hasAnyMatching(item -> item.is(ModItems.CREATIVE_AMMO_BOX.get()))) {
             gunData.setAmmo(gunData.magazine());
@@ -502,7 +502,7 @@ public class GunEventHandler {
     private static void handleGunSingleReload(Player player, GunData gunData) {
         ItemStack stack = player.getMainHandItem();
         if (!(stack.getItem() instanceof GunItem)) return;
-        var tag = gunData.getTag();
+        var tag = gunData.tag();
 
         // 换弹流程计时器
         if (tag.getDouble("prepare") > 0) {
@@ -529,13 +529,13 @@ public class GunEventHandler {
         if (tag.getBoolean("start_single_reload")) {
             NeoForge.EVENT_BUS.post(new ReloadEvent.Pre(player, stack));
 
-            if ((gunData.prepareLoadTime() != 0 && gunData.getAmmo() == 0) || stack.is(ModItems.SECONDARY_CATACLYSM.get())) {
+            if ((gunData.prepareLoadTime() != 0 && gunData.ammo() == 0) || stack.is(ModItems.SECONDARY_CATACLYSM.get())) {
                 // 此处判断空仓换弹的时候，是否在准备阶段就需要装填一发，如M870
                 playGunPrepareLoadReloadSounds(player);
                 int prepareLoadTime = gunData.prepareLoadTime();
                 tag.putInt("prepare_load", prepareLoadTime + 1);
                 player.getCooldowns().addCooldown(stack.getItem(), prepareLoadTime);
-            } else if (gunData.prepareEmptyTime() != 0 && gunData.getAmmo() == 0) {
+            } else if (gunData.prepareEmptyTime() != 0 && gunData.ammo() == 0) {
                 // 此处判断空仓换弹，如莫辛纳甘
                 playGunEmptyPrepareSounds(player);
                 int prepareEmptyTime = gunData.prepareEmptyTime();
@@ -581,13 +581,13 @@ public class GunEventHandler {
                     tag.putBoolean("force_stage3_start", true);
                 } else if (stack.is(ModTags.Items.LAUNCHER) && GunsTool.getGunIntTag(tag, "MaxAmmo") == 0) {
                     tag.putBoolean("force_stage3_start", true);
-                } else if (stack.is(ModItems.SECONDARY_CATACLYSM.get()) && gunData.getAmmo() >= gunData.magazine()) {
+                } else if (stack.is(ModItems.SECONDARY_CATACLYSM.get()) && gunData.ammo() >= gunData.magazine()) {
                     tag.putBoolean("force_stage3_start", true);
                 } else {
                     gunData.setReloadStage(2);
                 }
             } else {
-                if (stack.is(ModItems.SECONDARY_CATACLYSM.get()) && gunData.getAmmo() >= gunData.magazine()) {
+                if (stack.is(ModItems.SECONDARY_CATACLYSM.get()) && gunData.ammo() >= gunData.magazine()) {
                     tag.putBoolean("force_stage3_start", true);
                 } else {
                     gunData.setReloadStage(2);
@@ -606,7 +606,7 @@ public class GunEventHandler {
                 && gunData.getReloadStage() == 2
                 && tag.getInt("iterative") == 0
                 && !tag.getBoolean("stop")
-                && gunData.getAmmo() < gunData.magazine()
+                && gunData.ammo() < gunData.magazine()
         ) {
 
             playGunLoopReloadSounds(player);
@@ -643,7 +643,7 @@ public class GunEventHandler {
         // 二阶段结束
         if (tag.getInt("iterative") == 1) {
             // 装满结束
-            if (gunData.getAmmo() >= gunData.magazine()) {
+            if (gunData.ammo() >= gunData.magazine()) {
                 gunData.setReloadStage(3);
             }
 
@@ -701,7 +701,7 @@ public class GunEventHandler {
     }
 
     public static void singleLoad(Player player, GunData data) {
-        data.setAmmo(data.getAmmo() + 1);
+        data.setAmmo(data.ammo() + 1);
 
         if (!InventoryTool.hasCreativeAmmoBox(player)) {
             var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
@@ -842,8 +842,8 @@ public class GunEventHandler {
      */
     private static void handleSentinelCharge(Player player, GunData gunData) {
         if (!(player.getMainHandItem().getItem() instanceof GunItem)) return;
-        var tag = gunData.getTag();
-        final var data = gunData.getData();
+        var tag = gunData.tag();
+        final var data = gunData.data();
 
         // 启动换弹
         if (GunsTool.getGunBooleanTag(tag, "StartCharge")) {

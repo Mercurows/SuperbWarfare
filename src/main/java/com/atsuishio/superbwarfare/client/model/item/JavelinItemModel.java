@@ -69,7 +69,7 @@ public class JavelinItemModel extends GeoModel<JavelinItem> {
         javelin.setHidden(gun.getPosZ() > 15.85);
 
         var data = GunData.from(stack);
-        var tag = data.getTag();
+        var tag = data.tag();
         tag.putBoolean("HoloHidden", !(gun.getPosZ() > 15.85));
         data.save();
 

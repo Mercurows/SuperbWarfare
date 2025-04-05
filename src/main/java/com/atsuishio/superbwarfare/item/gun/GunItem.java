@@ -66,29 +66,19 @@ public abstract class GunItem extends Item implements CustomRendererItem {
         ) return;
 
         var data = GunData.from(stack);
-        var tag = data.getTag();
+        var tag = data.tag();
 
-        if (tag.getString("id").isEmpty()) {
-            var id = stack.getDescriptionId();
-            tag.putString("id", id.substring(id.lastIndexOf(".") + 1));
-        }
-
-        if (!tag.getBoolean("init")) {
-            var name = this.getDescriptionId().substring(this.getDescriptionId().lastIndexOf('.') + 1);
-
+        if (!data.initialized()) {
+            data.initialize();
             if (level.getServer() != null && entity instanceof Player player && player.isCreative()) {
-                GunsTool.initCreativeGun(stack, name);
-            } else {
-                GunsTool.initGun(tag, name);
+                data.setAmmo(data.magazine());
             }
-            GunsTool.generateAndSetUUID(tag);
-            tag.putBoolean("init", true);
         }
         tag.putBoolean("draw", false);
         handleGunPerks(data);
 
         var hasBulletInBarrel = gunItem.hasBulletInBarrel(stack);
-        var ammoCount = data.getAmmo();
+        var ammoCount = data.ammo();
         var magazine = data.magazine();
 
         if ((hasBulletInBarrel && ammoCount > magazine + 1) || (!hasBulletInBarrel && ammoCount > magazine)) {
@@ -109,7 +99,7 @@ public abstract class GunItem extends Item implements CustomRendererItem {
                 }
                 capability.syncPlayerVariables(entity);
             }
-            GunsTool.setGunIntTag(tag, "Ammo", magazine + (hasBulletInBarrel ? 1 : 0));
+            data.setAmmo(magazine + (hasBulletInBarrel ? 1 : 0));
         }
         data.save();
     }
@@ -174,7 +164,7 @@ public abstract class GunItem extends Item implements CustomRendererItem {
 
 
     private void handleGunPerks(GunData data) {
-        var tag = data.getTag();
+        var tag = data.tag();
 
         reducePerkTagCoolDown(tag, "HealClipTime", "KillClipReloadTime", "KillClipTime", "FourthTimesCharmTick", "HeadSeeker",
                 "DesperadoTime", "DesperadoTimePost");
@@ -186,7 +176,7 @@ public abstract class GunItem extends Item implements CustomRendererItem {
                 GunsTool.setPerkIntTag(tag, "FourthTimesCharmCount", 0);
 
                 int mag = data.magazine();
-                GunsTool.setGunIntTag(tag, "Ammo", Math.min(mag, GunsTool.getGunIntTag(tag, "Ammo") + 2));
+                data.setAmmo(Math.min(mag, data.ammo() + 2));
             }
         }
     }
@@ -407,7 +397,7 @@ public abstract class GunItem extends Item implements CustomRendererItem {
      * 获取额外总重量加成
      */
     public double getCustomWeight(ItemStack stack) {
-        CompoundTag tag = GunData.from(stack).getTag().getCompound("Attachments");
+        CompoundTag tag = GunData.from(stack).tag().getCompound("Attachments");
 
         double scopeWeight = switch (tag.getInt("Scope")) {
             case 1 -> 0.5;
@@ -454,7 +444,7 @@ public abstract class GunItem extends Item implements CustomRendererItem {
      * 获取额外音效半径加成
      */
     public double getCustomSoundRadius(ItemStack stack) {
-        return GunData.from(stack).getTag().getCompound("Attachments").getInt("Barrel") == 2 ? 0.6 : 1;
+        return GunData.from(stack).tag().getCompound("Attachments").getInt("Barrel") == 2 ? 0.6 : 1;
     }
 
     public int getCustomBoltActionTime(ItemStack stack) {

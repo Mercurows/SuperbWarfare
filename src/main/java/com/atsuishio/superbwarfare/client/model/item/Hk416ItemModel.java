@@ -109,7 +109,7 @@ public class Hk416ItemModel extends GeoModel<Hk416Item> {
         scope3.setScaleZ(1f - (0.5f * (float) zp));
 
         var data = GunData.from(stack);
-        var tag = data.getTag();
+        var tag = data.tag();
         tag.putBoolean("HoloHidden", !(gun.getPosX() > 3.1));
         data.save();
 
@@ -155,7 +155,7 @@ public class Hk416ItemModel extends GeoModel<Hk416Item> {
         l.setRotX(rotXBipod * Mth.DEG_TO_RAD);
         r.setRotX(rotXBipod * Mth.DEG_TO_RAD);
 
-        int mode = GunsTool.getGunIntTag(tag, "FireMode");
+        int mode = data.fireMode();
 
         kuaimanji.setRotX(mode == 2 ? 90 * Mth.DEG_TO_RAD : 0);
 

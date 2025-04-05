@@ -34,7 +34,7 @@ public record AdjustZoomFovMessage(double scroll) implements CustomPacketPayload
         ItemStack stack = player.getMainHandItem();
         if (!stack.is(ModTags.Items.GUN)) return;
         var data = GunData.from(stack);
-        var tag = data.getTag();
+        var tag = data.tag();
 
         if (stack.is(ModItems.MINIGUN.get())) {
             double minRpm = 300 - 1200;

@@ -56,8 +56,8 @@ public class VectorItemModel extends GeoModel<VectorItem> {
         if (!stack.is(ModTags.Items.GUN)) return;
 
         var data = GunData.from(stack);
-        var tag = data.getTag();
-        int mode = GunsTool.getGunIntTag(tag, "FireMode");
+        var tag = data.tag();
+        int mode = data.fireMode();
         if (mode == 0) {
             kmj.setRotX(-120 * Mth.DEG_TO_RAD);
         }

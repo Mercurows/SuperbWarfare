@@ -75,7 +75,7 @@ public class DevotionItemModel extends GeoModel<DevotionItem> {
         GeoBone holo = getAnimationProcessor().getBone("holo");
 
         var data = GunData.from(stack);
-        var tag = data.getTag();
+        var tag = data.tag();
         tag.putBoolean("HoloHidden", !(gun.getPosX() > 1.8));
         data.save();
 

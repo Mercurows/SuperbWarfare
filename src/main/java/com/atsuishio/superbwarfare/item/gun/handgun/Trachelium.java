@@ -106,7 +106,7 @@ public class Trachelium extends GunItem implements GeoItem {
         ItemStack stack = player.getMainHandItem();
         if (!stack.is(ModTags.Items.GUN)) return PlayState.STOP;
         var data = GunData.from(stack);
-        final var tag = data.getTag();
+        final var tag = data.tag();
 
         boolean stock = GunsTool.getAttachmentType(tag, GunsTool.AttachmentType.STOCK) == 2;
         boolean grip = GunsTool.getAttachmentType(tag, GunsTool.AttachmentType.GRIP) > 0 || GunsTool.getAttachmentType(tag, GunsTool.AttachmentType.SCOPE) > 0;
@@ -237,10 +237,8 @@ public class Trachelium extends GunItem implements GeoItem {
     public void inventoryTick(ItemStack stack, Level world, Entity entity, int slot, boolean selected) {
         super.inventoryTick(stack, world, entity, slot, selected);
         final var tag = NBTTool.getTag(stack);
-        GunsTool.setGunIntTag(tag, "BoltActionTime", tag.getBoolean("DA") ? 12 : 0);
 
         int scopeType = GunsTool.getAttachmentType(tag, GunsTool.AttachmentType.SCOPE);
-        int gripType = GunsTool.getAttachmentType(tag, GunsTool.AttachmentType.GRIP);
         int stockType = GunsTool.getAttachmentType(tag, GunsTool.AttachmentType.STOCK);
         CompoundTag tags = tag.getCompound("Attachments");
 
@@ -255,7 +253,7 @@ public class Trachelium extends GunItem implements GeoItem {
 
     @Override
     public int getCustomBoltActionTime(ItemStack stack) {
-        return GunData.from(stack).getTag().getBoolean("DA") ? 12 : 0;
+        return GunData.from(stack).tag().getBoolean("DA") ? 12 : 0;
     }
 
     @Override

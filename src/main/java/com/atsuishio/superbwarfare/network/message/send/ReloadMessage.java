@@ -41,17 +41,17 @@ public record ReloadMessage(int msgType) implements CustomPacketPayload {
         if (!(stack.getItem() instanceof GunItem gunItem)) return;
 
         var data = GunData.from(stack);
-        var tag = data.getTag();
+        var tag = data.tag();
 
         if (!player.isSpectator()
                 && !GunsTool.getGunBooleanTag(tag, "Charging")
                 && GunsTool.getGunIntTag(tag, "ReloadTime") == 0
                 && GunsTool.getGunIntTag(tag, "BoltActionTick") == 0
-                && !data.isReloading()
+                && !data.reloading()
         ) {
             boolean canSingleReload = gunItem.isIterativeReload(stack);
             boolean canReload = gunItem.isMagazineReload(stack) && !gunItem.isClipReload(stack);
-            boolean clipLoad = data.getAmmo() == 0 && gunItem.isClipReload(stack);
+            boolean clipLoad = data.ammo() == 0 && gunItem.isClipReload(stack);
 
             // 检查备弹
             boolean hasCreativeAmmoBox = player.getInventory().hasAnyMatching(item -> item.is(ModItems.CREATIVE_AMMO_BOX.get()));
@@ -79,21 +79,21 @@ public record ReloadMessage(int msgType) implements CustomPacketPayload {
 
                 if (gunItem.isOpenBolt(stack)) {
                     if (gunItem.hasBulletInBarrel(stack)) {
-                        if (data.getAmmo() < magazine + 1) {
+                        if (data.ammo() < magazine + 1) {
                             GunsTool.setGunBooleanTag(tag, "StartReload", true);
                         }
                     } else {
-                        if (data.getAmmo() < magazine) {
+                        if (data.ammo() < magazine) {
                             GunsTool.setGunBooleanTag(tag, "StartReload", true);
                         }
                     }
-                } else if (data.getAmmo() < magazine) {
+                } else if (data.ammo() < magazine) {
                     GunsTool.setGunBooleanTag(tag, "StartReload", true);
                 }
                 return;
             }
 
-            if (canSingleReload && data.getAmmo() < data.magazine()) {
+            if (canSingleReload && data.ammo() < data.magazine()) {
                 tag.putBoolean("start_single_reload", true);
             }
             data.save();

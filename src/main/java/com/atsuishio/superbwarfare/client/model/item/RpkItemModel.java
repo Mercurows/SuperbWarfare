@@ -76,7 +76,7 @@ public class RpkItemModel extends GeoModel<RpkItem> {
 
 
         var data = GunData.from(stack);
-        var tag = data.getTag();
+        var tag = data.tag();
         tag.putBoolean("HoloHidden", !(gun.getPosX() > 1.65));
         data.save();
 

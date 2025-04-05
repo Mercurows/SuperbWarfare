@@ -217,14 +217,14 @@ public class LivingEventHandler {
         // 先处理发射器类武器或高爆弹的爆炸伤害
         if (source.is(ModDamageTypes.PROJECTILE_BOOM)) {
             if (stack.is(ModTags.Items.LAUNCHER) || PerkHelper.getItemPerkLevel(ModPerks.HE_BULLET.get(), tag) > 0) {
-                data.setExp(data.getExp() + amount);
+                data.setExp(data.exp() + amount);
             }
         }
 
         // 再判断是不是枪械能造成的伤害
         if (!DamageTypeTool.isGunDamage(source)) return;
 
-        data.setExp(data.getExp() + amount);
+        data.setExp(data.exp() + amount);
         data.save();
     }
 
@@ -243,27 +243,27 @@ public class LivingEventHandler {
         // 先处理发射器类武器或高爆弹的爆炸伤害
         if (source.is(ModDamageTypes.PROJECTILE_BOOM)) {
             if (stack.is(ModTags.Items.LAUNCHER) || PerkHelper.getItemPerkLevel(ModPerks.HE_BULLET.get(), tag) > 0) {
-                data.setExp(data.getExp() + amount);
+                data.setExp(data.exp() + amount);
             }
         }
 
         // 再判断是不是枪械能造成的伤害
         if (DamageTypeTool.isGunDamage(source)) {
-            data.setExp(data.getExp() + amount);
+            data.setExp(data.exp() + amount);
         }
 
         // 提升武器等级
-        int level = data.getLevel();
-        double exp = data.getExp();
+        int level = data.level();
+        double exp = data.exp();
         double upgradeExpNeeded = 20 * Math.pow(level, 2) + 160 * level + 20;
 
         while (exp >= upgradeExpNeeded) {
             exp -= upgradeExpNeeded;
-            level = data.getLevel() + 1;
+            level = data.level() + 1;
             upgradeExpNeeded = 20 * Math.pow(level, 2) + 160 * level + 20;
             data.setExp(exp);
             data.setLevel(level);
-            data.setUpgradePoint(data.getUpgradePoint() + 0.5);
+            data.setUpgradePoint(data.upgradePoint() + 0.5);
         }
         data.save();
     }
@@ -277,17 +277,17 @@ public class LivingEventHandler {
         if (event.getEntity() instanceof TargetEntity) return;
 
         var data = GunData.from(stack);
-        int level = data.getLevel();
-        double exp = data.getExp();
+        int level = data.level();
+        double exp = data.exp();
         double upgradeExpNeeded = 20 * Math.pow(level, 2) + 160 * level + 20;
 
         while (exp >= upgradeExpNeeded) {
             exp -= upgradeExpNeeded;
-            level = data.getLevel() + 1;
+            level = data.level() + 1;
             upgradeExpNeeded = 20 * Math.pow(level, 2) + 160 * level + 20;
             data.setExp(exp);
             data.setLevel(level);
-            data.setUpgradePoint(data.getUpgradePoint() + 0.5);
+            data.setUpgradePoint(data.upgradePoint() + 0.5);
         }
         data.save();
     }
@@ -357,8 +357,8 @@ public class LivingEventHandler {
                     stopGunReloadSound(serverPlayer, oldGun);
 
                     var oldData = GunData.from(oldStack);
-                    oldTag = oldData.getTag();
-                    var data = oldData.getData();
+                    oldTag = oldData.tag();
+                    var data = oldData.data();
 
                     if (oldData.boltActionTime() > 0) {
                         data.putInt("BoltActionTick", 0);
@@ -395,7 +395,7 @@ public class LivingEventHandler {
 
                 if (newStack.getItem() instanceof GunItem) {
                     var newData = GunData.from(newStack);
-                    newTag = newData.getTag();
+                    newTag = newData.tag();
 
                     player.getPersistentData().putDouble("noRun", 40);
                     newTag.putBoolean("draw", true);
@@ -577,7 +577,7 @@ public class LivingEventHandler {
 
     private static void handleClipPerks(ItemStack stack) {
         var data = GunData.from(stack);
-        final var tag = data.getTag();
+        final var tag = data.tag();
         int healClipLevel = PerkHelper.getItemPerkLevel(ModPerks.HEAL_CLIP.get(), tag);
         if (healClipLevel != 0) {
             GunsTool.setPerkIntTag(tag, "HealClipTime", 80 + healClipLevel * 20);
@@ -592,7 +592,7 @@ public class LivingEventHandler {
 
     private static void handleKillClipDamage(ItemStack stack, LivingIncomingDamageEvent event) {
         var data = GunData.from(stack);
-        final var tag = data.getTag();
+        final var tag = data.tag();
         if (GunsTool.getPerkIntTag(tag, "KillClipTime") > 0) {
             int level = PerkHelper.getItemPerkLevel(ModPerks.KILL_CLIP.get(), tag);
             if (level == 0) {
@@ -605,7 +605,7 @@ public class LivingEventHandler {
 
     private static void handleGutshotStraightDamage(ItemStack stack, LivingIncomingDamageEvent event) {
         var data = GunData.from(stack);
-        final var tag = data.getTag();
+        final var tag = data.tag();
         int level = PerkHelper.getItemPerkLevel(ModPerks.GUTSHOT_STRAIGHT.get(), tag);
         if (level == 0) return;
 
@@ -614,7 +614,7 @@ public class LivingEventHandler {
 
     private static void handleKillingTallyDamage(ItemStack stack, LivingIncomingDamageEvent event) {
         var data = GunData.from(stack);
-        final var tag = data.getTag();
+        final var tag = data.tag();
         int level = PerkHelper.getItemPerkLevel(ModPerks.KILLING_TALLY.get(), tag);
         if (level == 0) return;
 
@@ -628,7 +628,7 @@ public class LivingEventHandler {
 
     private static void handleKillingTallyAddCount(ItemStack stack) {
         var data = GunData.from(stack);
-        final var tag = data.getTag();
+        final var tag = data.tag();
         int level = PerkHelper.getItemPerkLevel(ModPerks.KILLING_TALLY.get(), tag);
         if (level != 0) {
             GunsTool.setPerkIntTag(tag, "KillingTally", Math.min(3, GunsTool.getPerkIntTag(tag, "KillingTally") + 1));
@@ -638,7 +638,7 @@ public class LivingEventHandler {
 
     private static void handleFourthTimesCharm(ItemStack stack) {
         var data = GunData.from(stack);
-        final var tag = data.getTag();
+        final var tag = data.tag();
         int level = PerkHelper.getItemPerkLevel(ModPerks.FOURTH_TIMES_CHARM.get(), tag);
         if (level == 0) return;
 
@@ -657,7 +657,7 @@ public class LivingEventHandler {
 
     private static void handleSubsistence(ItemStack stack, Player player) {
         var data = GunData.from(stack);
-        final var tag = data.getTag();
+        final var tag = data.tag();
         int level = PerkHelper.getItemPerkLevel(ModPerks.SUBSISTENCE.get(), tag);
         if (level == 0) return;
 
@@ -667,7 +667,7 @@ public class LivingEventHandler {
         if (cap == null) return;
 
         int mag = data.magazine();
-        int ammo = data.getAmmo();
+        int ammo = data.ammo();
         int ammoReload = (int) Math.min(mag, mag * rate);
         int ammoNeed = Math.min(mag - ammo, ammoReload);
 
@@ -697,7 +697,7 @@ public class LivingEventHandler {
 
     private static void handleFieldDoctor(ItemStack stack, LivingIncomingDamageEvent event, Player player) {
         var data = GunData.from(stack);
-        final var tag = data.getTag();
+        final var tag = data.tag();
         int level = PerkHelper.getItemPerkLevel(ModPerks.FIELD_DOCTOR.get(), tag);
         if (level == 0) return;
 
@@ -709,7 +709,7 @@ public class LivingEventHandler {
 
     private static void handleHeadSeekerTime(ItemStack stack) {
         var data = GunData.from(stack);
-        final var tag = data.getTag();
+        final var tag = data.tag();
         int level = PerkHelper.getItemPerkLevel(ModPerks.HEAD_SEEKER.get(), tag);
         if (level == 0) return;
 
@@ -719,7 +719,7 @@ public class LivingEventHandler {
 
     private static void handleHeadSeekerDamage(ItemStack stack, LivingIncomingDamageEvent event) {
         var data = GunData.from(stack);
-        final var tag = data.getTag();
+        final var tag = data.tag();
         int level = PerkHelper.getItemPerkLevel(ModPerks.HEAD_SEEKER.get(), tag);
         if (level == 0) return;
 
@@ -730,7 +730,7 @@ public class LivingEventHandler {
 
     private static void handleDesperado(ItemStack stack) {
         var data = GunData.from(stack);
-        final var tag = data.getTag();
+        final var tag = data.tag();
         int level = PerkHelper.getItemPerkLevel(ModPerks.DESPERADO.get(), tag);
         if (level == 0) return;
 

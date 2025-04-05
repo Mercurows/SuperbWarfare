@@ -99,7 +99,7 @@ public class M870ItemModel extends GeoModel<M870Item> {
         float numR = (float) (1 - 0.72 * zt);
         float numP = (float) (1 - 0.82 * zt);
 
-        if (GunData.from(stack).isReloading()) {
+        if (GunData.from(stack).reloading()) {
             main.setRotX(numR * main.getRotX());
             main.setRotY(numR * main.getRotY());
             main.setRotZ(numR * main.getRotZ());

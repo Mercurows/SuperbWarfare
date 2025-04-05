@@ -391,7 +391,7 @@ public class AmmoBarOverlay {
     }
 
     private static ResourceLocation getFireMode(GunData data) {
-        return switch (data.getFireMode()) {
+        return switch (data.fireMode()) {
             case 1 -> BURST;
             case 2 -> AUTO;
             default -> SEMI;
@@ -400,7 +400,8 @@ public class AmmoBarOverlay {
 
     private static int getGunAmmoCount(Player player) {
         ItemStack stack = player.getMainHandItem();
-        final var tag = NBTTool.getTag(stack);
+        var data = GunData.from(stack);
+        var tag = data.tag();
 
         if (stack.getItem() == ModItems.MINIGUN.get()) {
             var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
@@ -411,7 +412,7 @@ public class AmmoBarOverlay {
             return GunsTool.getGunIntTag(tag, "MaxAmmo");
         }
 
-        return GunsTool.getGunIntTag(tag, "Ammo");
+        return data.ammo();
     }
 
     private static String getPlayerAmmoCount(Player player) {

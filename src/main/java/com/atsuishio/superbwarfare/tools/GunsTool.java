@@ -55,48 +55,6 @@ public class GunsTool {
         }
     }
 
-    public static void initGun(final CompoundTag tag, String location) {
-        if (gunsData != null && gunsData.get(location) != null) {
-            CompoundTag data = tag.getCompound("GunData");
-
-            // gunsData.get(location).forEach(data::putDouble);
-
-            data.putBoolean("Init", true);
-            tag.put("GunData", data);
-        }
-    }
-
-    public static void initCreativeGun(ItemStack stack, String location) {
-        var data = GunData.from(stack);
-        var fillAmmo = !data.getData().getBoolean("Init");
-
-        initGun(data.getTag(), location);
-        data.save();
-
-        if (fillAmmo) {
-            data.setAmmo(data.magazine());
-            data.save();
-        }
-    }
-
-    public static void generateAndSetUUID(final CompoundTag tag) {
-        UUID uuid = UUID.randomUUID();
-        var data = tag.getCompound("GunData");
-        data.putUUID("UUID", uuid);
-        tag.put("GunData", data);
-    }
-
-    public static double getGunDefaultData(final CompoundTag tag, String name) {
-        var id = tag.getString("id");
-
-        if (!tag.getBoolean("init")) {
-            return GunsTool.gunsData
-                    .getOrDefault(id, new HashMap<>())
-                    .getOrDefault(name, 0.0);
-        }
-        return getGunDoubleTag(tag, name);
-    }
-
     @SubscribeEvent
     public static void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
@@ -127,10 +85,10 @@ public class GunsTool {
     }
 
     public static void reload(Player player, ItemStack stack, GunData gunData, AmmoType type, boolean extraOne) {
-        var data = gunData.getData();
+        var data = gunData.data();
 
         int mag = gunData.magazine();
-        int ammo = gunData.getAmmo();
+        int ammo = gunData.ammo();
         int ammoToAdd = mag - ammo + (extraOne ? 1 : 0);
 
         // 空仓换弹的栓动武器应该在换弹后取消待上膛标记
@@ -157,6 +115,7 @@ public class GunsTool {
     /* PerkData */
     public static void setPerkIntTag(final CompoundTag rootTag, String name, int num) {
         CompoundTag tag = rootTag.getCompound("PerkData");
+        if (!tag.contains(name) && num == 0) return;
         tag.putInt(name, num);
         rootTag.put("PerkData", tag);
     }
@@ -168,6 +127,7 @@ public class GunsTool {
 
     public static void setPerkDoubleTag(final CompoundTag rootTag, String name, double num) {
         CompoundTag tag = rootTag.getCompound("PerkData");
+        if (!tag.contains(name) && num == 0) return;
         tag.putDouble(name, num);
         rootTag.put("PerkData", tag);
     }
@@ -179,6 +139,7 @@ public class GunsTool {
 
     public static void setPerkBooleanTag(final CompoundTag rootTag, String name, boolean flag) {
         CompoundTag tag = rootTag.getCompound("PerkData");
+        if (!tag.contains(name) && !flag) return;
         tag.putBoolean(name, flag);
         rootTag.put("PerkData", tag);
     }
@@ -228,9 +189,7 @@ public class GunsTool {
     }
 
     public static int getGunIntTag(final CompoundTag tag, String name) {
-        var data = tag.getCompound("GunData");
-        if (!data.contains(name)) return (int) getGunDefaultData(tag, name);
-        return data.getInt(name);
+        return getGunIntTag(tag, name, 0);
     }
 
     public static int getGunIntTag(final CompoundTag tag, String name, int defaultValue) {
@@ -246,9 +205,7 @@ public class GunsTool {
     }
 
     public static double getGunDoubleTag(final CompoundTag tag, String name) {
-        var data = tag.getCompound("GunData");
-        if (!data.contains(name) && !tag.getBoolean("init")) return getGunDefaultData(tag, name);
-        return data.getDouble(name);
+        return getGunDoubleTag(tag, name, 0);
     }
 
     public static double getGunDoubleTag(final CompoundTag tag, String name, double defaultValue) {
@@ -265,7 +222,7 @@ public class GunsTool {
 
     public static boolean getGunBooleanTag(final CompoundTag tag, String name) {
         var data = tag.getCompound("GunData");
-        if (!data.contains(name)) return getGunDefaultData(tag, name) != 0;
+        if (!data.contains(name)) return false;
         return data.getBoolean(name);
     }
 

@@ -8,28 +8,18 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
 
 import java.util.HashMap;
+import java.util.UUID;
 import java.util.WeakHashMap;
 
 public class GunData {
     private final ItemStack stack;
     private final GunItem item;
-    private CompoundTag tag;
-    private CompoundTag data;
+    private final CompoundTag tag;
+    private final CompoundTag data;
+    private final CompoundTag perk;
     private final String id;
 
     private static final WeakHashMap<ItemStack, GunData> dataCache = new WeakHashMap<>();
-
-    private void loadTags() {
-        var customData = stack.get(DataComponents.CUSTOM_DATA);
-        this.tag = customData != null ? customData.copyTag() : new CompoundTag();
-
-        if (!tag.contains("GunData")) {
-            data = new CompoundTag();
-            tag.put("GunData", data);
-        } else {
-            data = tag.getCompound("GunData");
-        }
-    }
 
     private GunData(ItemStack stack) {
         if (!(stack.getItem() instanceof GunItem gunItem)) {
@@ -39,7 +29,34 @@ public class GunData {
         this.stack = stack;
         var id = stack.getDescriptionId();
         this.id = id.substring(id.lastIndexOf(".") + 1);
-        loadTags();
+
+        var customData = stack.get(DataComponents.CUSTOM_DATA);
+        this.tag = customData != null ? customData.copyTag() : new CompoundTag();
+
+        if (!tag.contains("GunData")) {
+            data = new CompoundTag();
+            tag.put("GunData", data);
+        } else {
+            data = tag.getCompound("GunData");
+        }
+
+        if (!tag.contains("PerkData")) {
+            perk = new CompoundTag();
+            tag.put("PerkData", perk);
+        } else {
+            perk = tag.getCompound("PerkData");
+        }
+    }
+
+    public boolean initialized() {
+        return data.hasUUID("UUID");
+    }
+
+    public void initialize() {
+        if (initialized()) return;
+
+        data.putUUID("UUID", UUID.randomUUID());
+        save();
     }
 
     public static GunData from(ItemStack stack) {
@@ -49,20 +66,24 @@ public class GunData {
         return dataCache.get(stack);
     }
 
-    public GunItem getItem() {
+    public GunItem item() {
         return item;
     }
 
-    public ItemStack getStack() {
+    public ItemStack stack() {
         return stack;
     }
 
-    public CompoundTag getTag() {
+    public CompoundTag tag() {
         return tag;
     }
 
-    public CompoundTag getData() {
+    public CompoundTag data() {
         return data;
+    }
+
+    public CompoundTag perk() {
+        return perk;
     }
 
     private double getGunData(String key) {
@@ -144,7 +165,7 @@ public class GunData {
         if (normalReload == 0) return emptyReload;
         if (emptyReload == 0) return normalReload;
 
-        return getAmmo() < magazine() ? normalReload : emptyReload;
+        return ammo() < magazine() ? normalReload : emptyReload;
     }
 
     public double soundRadius() {
@@ -171,7 +192,7 @@ public class GunData {
         return item.getCustomWeight(stack);
     }
 
-    public int getAmmo() {
+    public int ammo() {
         return data.getInt("Ammo");
     }
 
@@ -179,7 +200,7 @@ public class GunData {
         data.putInt("Ammo", ammo);
     }
 
-    public boolean isReloading() {
+    public boolean reloading() {
         return getReloadState() != ReloadState.NOT_RELOADING;
     }
 
@@ -209,7 +230,7 @@ public class GunData {
         return (int) getGunData("BurstAmount");
     }
 
-    public int getFireMode() {
+    public int fireMode() {
         if (data.contains("FireMode")) {
             return data.getInt("FireMode");
         }
@@ -220,7 +241,7 @@ public class GunData {
         data.putInt("FireMode", fireMode);
     }
 
-    public int getLevel() {
+    public int level() {
         return data.getInt("Level");
     }
 
@@ -228,7 +249,7 @@ public class GunData {
         data.putInt("Level", level);
     }
 
-    public double getExp() {
+    public double exp() {
         return data.getDouble("Exp");
     }
 
@@ -236,7 +257,7 @@ public class GunData {
         data.putDouble("Exp", exp);
     }
 
-    public double getUpgradePoint() {
+    public double upgradePoint() {
         return data.getDouble("UpgradePoint");
     }
 

@@ -111,7 +111,7 @@ public class SvdItemModel extends GeoModel<SvdItem> {
         cross3.setScaleY((float) (1f + (0.1 * zp)));
 
         var data = GunData.from(stack);
-        var tag = data.getTag();
+        var tag = data.tag();
         tag.putBoolean("HoloHidden", gun.getPosX() <= 1.4);
         data.save();
 

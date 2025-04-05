@@ -69,7 +69,7 @@ public class SksItemModel extends GeoModel<SksItem> {
         gun.setRotZ((float) (0.05f * zpz));
 
         var data = GunData.from(stack);
-        var tag = data.getTag();
+        var tag = data.tag();
         tag.putBoolean("HoloHidden", gun.getPosX() <= 1.2);
         data.save();
         GeoBone shen = getAnimationProcessor().getBone("shen");

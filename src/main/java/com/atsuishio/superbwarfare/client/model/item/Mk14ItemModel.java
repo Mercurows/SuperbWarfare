@@ -140,7 +140,7 @@ public class Mk14ItemModel extends GeoModel<Mk14Item> {
         action.setPosZ(2.5f * (float) fp);
 
         var data = GunData.from(stack);
-        var tag = data.getTag();
+        var tag = data.tag();
         tag.putBoolean("HoloHidden", !(gun.getPosX() > 2.5));
         data.save();
 

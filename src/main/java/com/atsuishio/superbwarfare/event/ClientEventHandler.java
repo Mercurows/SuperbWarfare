@@ -312,7 +312,7 @@ public class ClientEventHandler {
                     && !notInGame()
                     && cap != null && !cap.edit
                     && !(data.normalReloading() || data.emptyReloading())
-                    && !data.isReloading()
+                    && !data.reloading()
                     && !player.getCooldowns().isOnCooldown(stack.getItem())
                     && !GunsTool.getGunBooleanTag(tag, "Charging")) {
                 gunMelee = 36;
@@ -392,10 +392,10 @@ public class ClientEventHandler {
             return;
         }
         var data = GunData.from(stack);
-        final var tag = data.getTag();
+        final var tag = data.tag();
 
         var perk = PerkHelper.getPerkByType(tag, Perk.Type.AMMO);
-        int mode = data.getFireMode();
+        int mode = data.fireMode();
 
         // 精准度
         float times = (float) Math.min(Minecraft.getInstance().getTimer().getRealtimeDeltaTicks(), 0.8);
@@ -473,9 +473,9 @@ public class ClientEventHandler {
                 && cap != null && !cap.edit
                 && !notInGame()
                 && (!(data.normalReloading() || data.emptyReloading())
-                && !data.isReloading()
+                && !data.reloading()
                 && !GunsTool.getGunBooleanTag(tag, "Charging")
-                && data.getAmmo() > 0
+                && data.ammo() > 0
                 && !player.getCooldowns().isOnCooldown(stack.getItem())
                 && !GunsTool.getGunBooleanTag(tag, "NeedBoltAction")
                 && revolverPre(tag))
@@ -552,14 +552,14 @@ public class ClientEventHandler {
         ItemStack stack = player.getMainHandItem();
         var data = GunData.from(stack);
         if (stack.is(ModTags.Items.NORMAL_GUN)) {
-            if (data.getAmmo() > 0) {
-                int mode = data.getFireMode();
+            if (data.ammo() > 0) {
+                int mode = data.fireMode();
                 if (mode != 2) {
                     holdFire = false;
                 }
 
                 if (mode == 1) {
-                    if (data.getAmmo() == 1) {
+                    if (data.ammo() == 1) {
                         burstFireAmount = 1;
                     }
                     if (burstFireAmount == 1) {
@@ -585,7 +585,7 @@ public class ClientEventHandler {
                 }
 
                 // 判断是否为栓动武器（BoltActionTime > 0），并在开火后给一个需要上膛的状态
-                if (data.boltActionTime() > 0 && data.getAmmo() > (stack.is(ModTags.Items.REVOLVER) ? 0 : 1)) {
+                if (data.boltActionTime() > 0 && data.ammo() > (stack.is(ModTags.Items.REVOLVER) ? 0 : 1)) {
                     GunsTool.setGunBooleanTag(tag, "NeedBoltAction", true);
                 }
 
@@ -1066,7 +1066,7 @@ public class ClientEventHandler {
         if (!(entity instanceof Player player)) return;
         var stack = player.getMainHandItem();
         var data = GunData.from(stack);
-        final var tag = data.getTag();
+        final var tag = data.tag();
         float times = 5 * Minecraft.getInstance().getTimer().getRealtimeDeltaTicks();
 
         double weight = data.weight();

@@ -134,7 +134,7 @@ public class JavelinItem extends GunItem implements GeoItem, SpecialFireWeapon {
     public void inventoryTick(ItemStack stack, Level world, Entity entity, int slot, boolean selected) {
         super.inventoryTick(stack, world, entity, slot, selected);
         var data = GunData.from(stack);
-        final var tag = data.getTag();
+        final var tag = data.tag();
 
         if (entity instanceof Player player && selected) {
             GunsTool.setGunIntTag(tag, "MaxAmmo", getAmmoCount(player));
@@ -242,7 +242,7 @@ public class JavelinItem extends GunItem implements GeoItem, SpecialFireWeapon {
         Level level = player.level();
         ItemStack stack = player.getMainHandItem();
         var data = GunData.from(stack);
-        CompoundTag tag = data.getTag();
+        CompoundTag tag = data.tag();
 
         if (tag.getInt("SeekTime") < 20) return;
 
@@ -289,14 +289,14 @@ public class JavelinItem extends GunItem implements GeoItem, SpecialFireWeapon {
         }
 
         player.getCooldowns().addCooldown(stack.getItem(), 10);
-        data.setAmmo(data.getAmmo() - 1);
+        data.setAmmo(data.ammo() - 1);
         data.save();
     }
 
     @Override
     public void fireOnRelease(Player player, final GunData data) {
         fire(player);
-        var tag = data.getTag();
+        var tag = data.tag();
         tag.putBoolean("Seeking", false);
         tag.putInt("SeekTime", 0);
         tag.putString("TargetEntity", "none");
@@ -308,10 +308,10 @@ public class JavelinItem extends GunItem implements GeoItem, SpecialFireWeapon {
 
     @Override
     public void fireOnPress(Player player, final GunData data) {
-        var tag = data.getTag();
+        var tag = data.tag();
 
         var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
-        if (cap != null && !cap.zoom || data.getAmmo() <= 0) return;
+        if (cap != null && !cap.zoom || data.ammo() <= 0) return;
 
         Entity seekingEntity = SeekTool.seekEntity(player, player.level(), 512, 8);
 

@@ -115,7 +115,7 @@ public class AK47ItemModel extends GeoModel<AK47Item> {
         scope3.setScaleZ(1f - (0.7f * (float) zp));
 
         var data = GunData.from(stack);
-        var tag = data.getTag();
+        var tag = data.tag();
         tag.putBoolean("HoloHidden", !(gun.getPosX() > 1.8));
         data.save();
 

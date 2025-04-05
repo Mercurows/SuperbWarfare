@@ -88,7 +88,7 @@ public class SecondaryCataclysm extends GunItem implements GeoItem, SpecialFireW
         ItemStack stack = player.getMainHandItem();
         if (!stack.is(ModTags.Items.GUN)) return PlayState.STOP;
         var data = GunData.from(stack);
-        final var tag = data.getTag();
+        final var tag = data.tag();
 
         if (data.getReloadStage() == 1 && tag.getDouble("prepare_load") > 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.sc.prepare"));
@@ -128,7 +128,7 @@ public class SecondaryCataclysm extends GunItem implements GeoItem, SpecialFireW
                 && data.getReloadStage() != 3
                 && ClientEventHandler.drawTime < 0.01
                 && ClientEventHandler.gunMelee == 0
-                && !data.isReloading()
+                && !data.reloading()
         ) {
             if (player.hasEffect(MobEffects.MOVEMENT_SPEED)) {
                 return event.setAndContinue(RawAnimation.begin().thenLoop("animation.sc.run_fast"));
@@ -181,7 +181,7 @@ public class SecondaryCataclysm extends GunItem implements GeoItem, SpecialFireW
 
         if (entity instanceof Player player) {
             var data = GunData.from(stack);
-            final var tag = data.getTag();
+            final var tag = data.tag();
             GunsTool.setGunIntTag(tag, "MaxAmmo", getAmmoCount(player));
             data.save();
         }
@@ -270,11 +270,11 @@ public class SecondaryCataclysm extends GunItem implements GeoItem, SpecialFireW
 
     @Override
     public void fireOnPress(Player player, final GunData data) {
-        if (data.isReloading()) return;
-        ItemStack stack = data.getStack();
-        if (player.getCooldowns().isOnCooldown(stack.getItem()) || data.getAmmo() <= 0) return;
+        if (data.reloading()) return;
+        ItemStack stack = data.stack();
+        if (player.getCooldowns().isOnCooldown(stack.getItem()) || data.ammo() <= 0) return;
 
-        var tag = data.getTag();
+        var tag = data.tag();
         var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
         boolean zooming = cap != null && cap.zoom;
         double spread = data.spread();
@@ -301,7 +301,7 @@ public class SecondaryCataclysm extends GunItem implements GeoItem, SpecialFireW
             gunGrenadeEntity.charged(isChargedFire);
 
             float velocity = (float) data.velocity();
-            int perkLevel = PerkHelper.getItemPerkLevel(ModPerks.MICRO_MISSILE.get(), data.getTag());
+            int perkLevel = PerkHelper.getItemPerkLevel(ModPerks.MICRO_MISSILE.get(), data.tag());
             if (perkLevel > 0) {
                 gunGrenadeEntity.setExplosionRadius((float) data.explosionRadius() * 0.5f);
                 gunGrenadeEntity.setDamage((float) data.damage() * (1.1f + perkLevel * 0.1f));
@@ -341,7 +341,7 @@ public class SecondaryCataclysm extends GunItem implements GeoItem, SpecialFireW
             PacketDistributor.sendToPlayer(serverPlayer, new ShootClientMessage(10));
         }
 
-        data.setAmmo(data.getAmmo() - 1);
+        data.setAmmo(data.ammo() - 1);
         player.getCooldowns().addCooldown(stack.getItem(), 6);
     }
 

@@ -133,11 +133,11 @@ public class RpgItem extends GunItem implements GeoItem, SpecialFireWeapon {
     @ParametersAreNonnullByDefault
     public void inventoryTick(ItemStack stack, Level world, Entity entity, int slot, boolean selected) {
         var data = GunData.from(stack);
-        final var tag = data.getTag();
+        final var tag = data.tag();
         if (tag.getBoolean("draw")) {
             tag.putBoolean("draw", false);
 
-            if (GunsTool.getGunIntTag(tag, "Ammo") == 0) {
+            if (data.ammo() == 0) {
                 tag.putDouble("empty", 1);
             }
         }
@@ -183,11 +183,11 @@ public class RpgItem extends GunItem implements GeoItem, SpecialFireWeapon {
     public void fireOnPress(Player player, final GunData data) {
         Level level = player.level();
         ItemStack stack = player.getMainHandItem();
-        var tag = data.getTag();
+        var tag = data.tag();
 
-        if (data.isReloading()
+        if (data.reloading()
                 || player.getCooldowns().isOnCooldown(stack.getItem())
-                || data.getAmmo() <= 0
+                || data.ammo() <= 0
         ) return;
 
         var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
@@ -240,12 +240,12 @@ public class RpgItem extends GunItem implements GeoItem, SpecialFireWeapon {
             PacketDistributor.sendToPlayer(serverPlayer, new ShootClientMessage(10));
         }
 
-        if (data.getAmmo() == 1) {
+        if (data.ammo() == 1) {
             tag.putBoolean("empty", true);
             GunsTool.setGunBooleanTag(tag, "CloseHammer", true);
         }
 
         player.getCooldowns().addCooldown(stack.getItem(), 10);
-        data.setAmmo(data.getAmmo() - 1);
+        data.setAmmo(data.ammo() - 1);
     }
 }

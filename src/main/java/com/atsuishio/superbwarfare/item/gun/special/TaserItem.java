@@ -147,7 +147,7 @@ public class TaserItem extends GunItem implements GeoItem, SpecialFireWeapon, En
     public void inventoryTick(ItemStack stack, Level world, Entity entity, int slot, boolean selected) {
         super.inventoryTick(stack, world, entity, slot, selected);
         var data = GunData.from(stack);
-        final var tag = data.getTag();
+        final var tag = data.tag();
 
         if (entity instanceof Player player) {
             GunsTool.setGunIntTag(tag, "MaxAmmo", getAmmoCount(player));
@@ -224,16 +224,16 @@ public class TaserItem extends GunItem implements GeoItem, SpecialFireWeapon, En
 
     @Override
     public void fireOnPress(Player player, final GunData data) {
-        if (data.isReloading()) return;
-        ItemStack stack = data.getStack();
-        var tag = data.getTag();
+        if (data.reloading()) return;
+        ItemStack stack = data.stack();
+        var tag = data.tag();
 
         int perkLevel = PerkHelper.getItemPerkLevel(ModPerks.VOLT_OVERLOAD.get(), tag);
         var energyStorage = stack.getCapability(Capabilities.EnergyStorage.ITEM);
         var hasEnoughEnergy = energyStorage != null && energyStorage.getEnergyStored() >= 400 + 100 * perkLevel;
 
         if (player.getCooldowns().isOnCooldown(stack.getItem())
-                || data.getAmmo() <= 0
+                || data.ammo() <= 0
                 || !hasEnoughEnergy
         ) return;
 
@@ -263,8 +263,8 @@ public class TaserItem extends GunItem implements GeoItem, SpecialFireWeapon, En
             PacketDistributor.sendToPlayer(serverPlayer, new ShootClientMessage(10));
         }
 
-        data.setAmmo(data.getAmmo() - 1);
-        data.getTag().putBoolean("shoot", true);
+        data.setAmmo(data.ammo() - 1);
+        data.tag().putBoolean("shoot", true);
         energyStorage.extractEnergy(400 + 100 * perkLevel, false);
     }
 

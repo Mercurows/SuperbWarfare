@@ -50,7 +50,7 @@ public class MarlinItem extends GunItem implements GeoItem {
         ItemStack stack = player.getMainHandItem();
         if (!stack.is(ModTags.Items.GUN)) return PlayState.STOP;
         var data = GunData.from(stack);
-        final var tag = data.getTag();
+        final var tag = data.tag();
 
         if (GunsTool.getGunIntTag(tag, "BoltActionTick") > 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.marlin.shift"));
@@ -87,7 +87,7 @@ public class MarlinItem extends GunItem implements GeoItem {
                     && player.onGround()
                     && player.getPersistentData().getDouble("noRun") == 0
                     && ClientEventHandler.drawTime < 0.01
-                    && !data.isReloading()) {
+                    && !data.reloading()) {
                 if (player.hasEffect(MobEffects.MOVEMENT_SPEED)) {
                     return event.setAndContinue(RawAnimation.begin().thenLoop("animation.marlin.run_fast"));
                 } else {

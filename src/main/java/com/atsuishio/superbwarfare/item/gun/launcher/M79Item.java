@@ -129,7 +129,7 @@ public class M79Item extends GunItem implements GeoItem, SpecialFireWeapon {
         super.inventoryTick(stack, world, entity, slot, selected);
         if (entity instanceof Player player) {
             var data = GunData.from(stack);
-            final var tag = data.getTag();
+            final var tag = data.tag();
             GunsTool.setGunIntTag(tag, "MaxAmmo", getAmmoCount(player));
             data.save();
         }
@@ -171,11 +171,11 @@ public class M79Item extends GunItem implements GeoItem, SpecialFireWeapon {
 
     @Override
     public void fireOnPress(Player player, final GunData data) {
-        if (data.isReloading()) return;
-        ItemStack stack = data.getStack();
-        if (player.getCooldowns().isOnCooldown(stack.getItem()) || data.getAmmo() <= 0) return;
+        if (data.reloading()) return;
+        ItemStack stack = data.stack();
+        if (player.getCooldowns().isOnCooldown(stack.getItem()) || data.ammo() <= 0) return;
 
-        var tag = data.getTag();
+        var tag = data.tag();
         var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
         boolean zooming = cap != null && cap.zoom;
         double spread = data.spread();
@@ -196,7 +196,7 @@ public class M79Item extends GunItem implements GeoItem, SpecialFireWeapon {
             gunGrenadeEntity.setNoGravity(PerkHelper.getPerkByType(tag, Perk.Type.AMMO) == ModPerks.MICRO_MISSILE.get());
 
             float velocity = (float) data.velocity();
-            int perkLevel = PerkHelper.getItemPerkLevel(ModPerks.MICRO_MISSILE.get(), data.getTag());
+            int perkLevel = PerkHelper.getItemPerkLevel(ModPerks.MICRO_MISSILE.get(), data.tag());
             if (perkLevel > 0) {
                 gunGrenadeEntity.setExplosionRadius((float) data.explosionRadius() * 0.5f);
                 gunGrenadeEntity.setDamage((float) data.explosionDamage() * (1.1f + perkLevel * 0.1f));
@@ -224,6 +224,6 @@ public class M79Item extends GunItem implements GeoItem, SpecialFireWeapon {
         }
 
         player.getCooldowns().addCooldown(stack.getItem(), 2);
-        data.setAmmo(data.getAmmo() - 1);
+        data.setAmmo(data.ammo() - 1);
     }
 }

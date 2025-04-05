@@ -51,17 +51,17 @@ public class MosinNagantItem extends GunItem implements GeoItem {
         ItemStack stack = player.getMainHandItem();
         if (!stack.is(ModTags.Items.GUN)) return PlayState.STOP;
         var data = GunData.from(stack);
-        final var tag = data.getTag();
+        final var tag = data.tag();
 
         if (GunsTool.getGunIntTag(tag, "BoltActionTick") > 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.mosin.shift"));
         }
 
-        if (data.getReloadStage() == 1 && GunsTool.getGunIntTag(tag, "Ammo") == 0) {
+        if (data.getReloadStage() == 1 && data.ammo() == 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.mosin.prepare_empty"));
         }
 
-        if (data.getReloadStage() == 1 && GunsTool.getGunIntTag(tag, "Ammo") > 0) {
+        if (data.getReloadStage() == 1 && data.ammo() > 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.mosin.prepare"));
         }
 
@@ -86,7 +86,7 @@ public class MosinNagantItem extends GunItem implements GeoItem {
         ItemStack stack = player.getMainHandItem();
         if (!stack.is(ModTags.Items.GUN)) return PlayState.STOP;
         var data = GunData.from(stack);
-        final var tag = data.getTag();
+        final var tag = data.tag();
 
         if (player.isSprinting() && player.onGround()
                 && player.getPersistentData().getDouble("noRun") == 0
@@ -95,7 +95,7 @@ public class MosinNagantItem extends GunItem implements GeoItem {
                 && data.getReloadStage() != 2
                 && data.getReloadStage() != 3
                 && ClientEventHandler.drawTime < 0.01
-                && !data.isReloading()
+                && !data.reloading()
         ) {
             if (player.hasEffect(MobEffects.MOVEMENT_SPEED) && GunsTool.getGunIntTag(tag, "BoltActionTick") == 0) {
                 return event.setAndContinue(RawAnimation.begin().thenLoop("animation.mosin.run_fast"));

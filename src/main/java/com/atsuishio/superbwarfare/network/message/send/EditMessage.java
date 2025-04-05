@@ -35,7 +35,7 @@ public record EditMessage(int msgType) implements CustomPacketPayload {
         if (!stack.is(ModTags.Items.GUN)) return;
 
         var data = GunData.from(stack);
-        var rootTag = data.getTag();
+        var rootTag = data.tag();
         CompoundTag tag = rootTag.getCompound("Attachments");
         switch (type) {
             case 0 -> {

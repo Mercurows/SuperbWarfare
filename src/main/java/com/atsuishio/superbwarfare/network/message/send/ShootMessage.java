@@ -45,14 +45,14 @@ public record ShootMessage(double spread) implements CustomPacketPayload {
     public static void pressAction(Player player, double spared) {
         ItemStack stack = player.getMainHandItem();
         var data = GunData.from(stack);
-        var tag = data.getTag();
+        var tag = data.tag();
 
         if (stack.is(ModTags.Items.NORMAL_GUN)) {
             int projectileAmount = data.projectileAmount();
 
-            if (data.getAmmo() > 0) {
+            if (data.ammo() > 0) {
                 // 空仓挂机
-                if (data.getAmmo() == 1) {
+                if (data.ammo() == 1) {
                     GunsTool.setGunBooleanTag(tag, "HoldOpen", true);
                 }
 
@@ -61,14 +61,14 @@ public record ShootMessage(double spread) implements CustomPacketPayload {
                 }
 
                 // 判断是否为栓动武器（BoltActionTime > 0），并在开火后给一个需要上膛的状态
-                if (data.boltActionTime() > 0 && data.getAmmo() > (stack.is(ModTags.Items.REVOLVER) ? 0 : 1)) {
+                if (data.boltActionTime() > 0 && data.ammo() > (stack.is(ModTags.Items.REVOLVER) ? 0 : 1)) {
                     GunsTool.setGunBooleanTag(tag, "NeedBoltAction", true);
                 }
 
-                data.setAmmo(data.getAmmo() - 1);
+                data.setAmmo(data.ammo() - 1);
                 tag.putDouble("empty", 1);
 
-                if (stack.getItem() == ModItems.M_60.get() && data.getAmmo() <= 5) {
+                if (stack.getItem() == ModItems.M_60.get() && data.ammo() <= 5) {
                     GunsTool.setGunBooleanTag(tag, "HideBulletChain", true);
                 }
 

@@ -8,7 +8,6 @@ import com.atsuishio.superbwarfare.item.gun.GunData;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
-import com.atsuishio.superbwarfare.tools.GunsTool;
 import com.atsuishio.superbwarfare.tools.NBTTool;
 import net.minecraft.util.Mth;
 import net.minecraft.world.Container;
@@ -209,15 +208,14 @@ public class ReforgingTableMenu extends AbstractContainerMenu {
             return;
         }
         var data = GunData.from(stack);
-        var tag = data.getTag();
 
-        double oldPoint = data.getUpgradePoint();
+        double oldPoint = data.upgradePoint();
         int point = (int) oldPoint;
         int newPoint = this.upgradePoint.get();
         int delta = newPoint - point;
 
         if (delta != 0) {
-            GunsTool.setGunDoubleTag(tag, "UpgradePoint", oldPoint + delta);
+            data.setUpgradePoint(oldPoint + delta);
             data.save();
         }
     }
@@ -240,7 +238,7 @@ public class ReforgingTableMenu extends AbstractContainerMenu {
 
         ItemStack result = gun.copy();
         var data = GunData.from(result);
-        final var tag = data.getTag();
+        final var tag = data.tag();
 
         if (!ammo.isEmpty() && ammo.getItem() instanceof PerkItem<?> perkItem) {
             if (gunItem.canApplyPerk(perkItem.getPerk())) {
@@ -299,15 +297,15 @@ public class ReforgingTableMenu extends AbstractContainerMenu {
             var data = GunData.from(gun);
 
             if (level <= 0) {
-                this.upgradePoint.set((int) data.getUpgradePoint());
+                this.upgradePoint.set((int) data.upgradePoint());
                 return;
             }
 
             ItemStack output = gun.copy();
             final var outputTag = NBTTool.getTag(output);
             PerkHelper.removePerkByType(outputTag, perkItem.getPerk().type);
-            data.setUpgradePoint(Math.min(MAX_UPGRADE_POINT, level - 1 + data.getUpgradePoint()));
-            this.upgradePoint.set((int) data.getUpgradePoint());
+            data.setUpgradePoint(Math.min(MAX_UPGRADE_POINT, level - 1 + data.upgradePoint()));
+            this.upgradePoint.set((int) data.upgradePoint());
 
             data.save();
             this.container.setItem(INPUT_SLOT, output);
@@ -340,9 +338,9 @@ public class ReforgingTableMenu extends AbstractContainerMenu {
     private void onPlaceGun(ItemStack stack) {
         if (!(stack.getItem() instanceof GunItem)) return;
         var data = GunData.from(stack);
-        var tag = data.getTag();
+        var tag = data.tag();
 
-        int point = (int) data.getUpgradePoint();
+        int point = (int) data.upgradePoint();
         this.upgradePoint.set(Mth.clamp(point, 0, MAX_UPGRADE_POINT));
 
         var ammoPerk = PerkHelper.getPerkByType(tag, Perk.Type.AMMO);

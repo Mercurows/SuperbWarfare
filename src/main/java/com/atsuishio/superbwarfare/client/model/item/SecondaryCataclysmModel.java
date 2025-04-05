@@ -101,7 +101,7 @@ public class SecondaryCataclysmModel extends GeoModel<SecondaryCataclysm> {
         float numP = (float) (1 - 0.68 * zt);
 
         var data = GunData.from(stack);
-        var tag = data.getTag();
+        var tag = data.tag();
         if (GunsTool.getGunIntTag(tag, "ReloadTime") > 0) {
             main.setRotX(numR * main.getRotX());
             main.setRotY(numR * main.getRotY());

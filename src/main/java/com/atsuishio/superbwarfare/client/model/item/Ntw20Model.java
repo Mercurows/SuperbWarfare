@@ -138,7 +138,7 @@ public class Ntw20Model extends GeoModel<Ntw20Item> {
         CrossHairOverlay.gunRot = shen.getRotZ();
 
         var data = GunData.from(stack);
-        var tag = data.getTag();
+        var tag = data.tag();
         tag.putBoolean("HoloHidden", !(gun.getPosX() > 4.3));
         data.save();
 

@@ -334,10 +334,10 @@ public class ClickHandler {
                 && !notInGame()
         ) {
             var data = GunData.from(stack);
-            var tag = data.getTag();
+            var tag = data.tag();
             player.playSound(ModSounds.TRIGGER_CLICK.get(), 1, 1);
 
-            if (!gunItem.useBackpackAmmo(stack) && data.getAmmo() <= 0 && GunsTool.getGunIntTag(tag, "ReloadTime") == 0) {
+            if (!gunItem.useBackpackAmmo(stack) && data.ammo() <= 0 && GunsTool.getGunIntTag(tag, "ReloadTime") == 0) {
                 if (ReloadConfig.LEFT_CLICK_RELOAD.get()) {
                     PacketDistributor.sendToServer(new ReloadMessage(0));
                     ClientEventHandler.burstFireAmount = 0;
@@ -345,11 +345,11 @@ public class ClickHandler {
             } else {
                 PacketDistributor.sendToServer(new FireMessage(0));
                 if ((!(data.normalReloading() || data.emptyReloading())
-                        && !data.isReloading()
+                        && !data.reloading()
                         && !GunsTool.getGunBooleanTag(tag, "Charging")
                         && !GunsTool.getGunBooleanTag(tag, "NeedBoltAction"))
                         && drawTime < 0.01) {
-                    if (data.getFireMode() == 1) {
+                    if (data.fireMode() == 1) {
                         if (ClientEventHandler.burstFireAmount == 0) {
                             ClientEventHandler.burstFireAmount = data.burstAmount();
                         }
