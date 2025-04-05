@@ -6,8 +6,8 @@ import com.atsuishio.superbwarfare.client.renderer.item.Qbz95ItemRenderer;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
-import com.atsuishio.superbwarfare.item.gun.GunData;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
+import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
 import com.atsuishio.superbwarfare.tools.GunsTool;
@@ -61,7 +61,7 @@ public class Qbz95Item extends GunItem implements GeoItem {
         boolean drum = GunsTool.getAttachmentType(tag, GunsTool.AttachmentType.MAGAZINE) == 2;
         boolean grip = GunsTool.getAttachmentType(tag, GunsTool.AttachmentType.GRIP) == 1 || GunsTool.getAttachmentType(tag, GunsTool.AttachmentType.GRIP) == 2;
 
-        if (data.emptyReloading()) {
+        if (data.reload.empty()) {
             if (drum) {
                 if (grip) {
                     return event.setAndContinue(RawAnimation.begin().thenPlay("animation.qbz95.reload_empty_drum_grip"));
@@ -77,7 +77,7 @@ public class Qbz95Item extends GunItem implements GeoItem {
             }
         }
 
-        if (data.normalReloading()) {
+        if (data.reload.normal()) {
             if (drum) {
                 if (grip) {
                     return event.setAndContinue(RawAnimation.begin().thenPlay("animation.qbz95.reload_normal_drum_grip"));

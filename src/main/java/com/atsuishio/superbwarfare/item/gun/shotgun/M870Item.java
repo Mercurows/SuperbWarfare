@@ -6,11 +6,10 @@ import com.atsuishio.superbwarfare.client.tooltip.component.ShotgunImageComponen
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
-import com.atsuishio.superbwarfare.item.gun.GunData;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
+import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
-import com.atsuishio.superbwarfare.tools.GunsTool;
 import com.atsuishio.superbwarfare.tools.NBTTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -57,27 +56,27 @@ public class M870Item extends GunItem implements GeoItem {
         var data = GunData.from(stack);
         final var tag = NBTTool.getTag(stack);
 
-        if (GunsTool.getGunIntTag(tag, "BoltActionTick") > 0) {
+        if (data.bolt.actionTime() > 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m870.shift"));
         }
 
-        if (data.getReloadStage() == 1 && tag.getDouble("PrepareLoadTime") > 0) {
+        if (data.reload.stage() == 1 && tag.getDouble("PrepareLoadTime") > 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m870.preparealt"));
         }
 
-        if (data.getReloadStage() == 1 && tag.getDouble("PrepareTime") > 0) {
+        if (data.reload.stage() == 1 && tag.getDouble("PrepareTime") > 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m870.prepare"));
         }
 
-        if (tag.getDouble("LoadIndex") == 0 && data.getReloadStage() == 2) {
+        if (tag.getDouble("LoadIndex") == 0 && data.reload.stage() == 2) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m870.iterativeload"));
         }
 
-        if (tag.getDouble("LoadIndex") == 1 && data.getReloadStage() == 2) {
+        if (tag.getDouble("LoadIndex") == 1 && data.reload.stage() == 2) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m870.iterativeload2"));
         }
 
-        if (data.getReloadStage() == 3) {
+        if (data.reload.stage() == 3) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m870.finish"));
         }
 

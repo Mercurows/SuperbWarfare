@@ -6,7 +6,7 @@ import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModItems;
-import com.atsuishio.superbwarfare.item.gun.GunData;
+import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.tools.EntityFindUtil;
 import com.atsuishio.superbwarfare.tools.NBTTool;
 import com.atsuishio.superbwarfare.tools.SeekTool;

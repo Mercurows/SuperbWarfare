@@ -8,8 +8,8 @@ import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.init.ModRarity;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
-import com.atsuishio.superbwarfare.item.gun.GunData;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
+import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
 import net.minecraft.client.Minecraft;
@@ -57,11 +57,11 @@ public class Aa12Item extends GunItem implements GeoItem {
 
         if (this.animationProcedure.equals("empty")) {
 
-            if (GunData.from(stack).emptyReloading()) {
+            if (GunData.from(stack).reload.empty()) {
                 return event.setAndContinue(RawAnimation.begin().thenPlay("animation.aa12.reload_empty"));
             }
 
-            if (GunData.from(stack).normalReloading()) {
+            if (GunData.from(stack).reload.normal()) {
                 return event.setAndContinue(RawAnimation.begin().thenPlay("animation.aa12.reload_normal"));
             }
 

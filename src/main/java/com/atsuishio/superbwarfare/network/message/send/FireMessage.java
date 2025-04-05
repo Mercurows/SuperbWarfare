@@ -6,8 +6,8 @@ import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity;
 import com.atsuishio.superbwarfare.event.GunEventHandler;
 import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.init.ModTags;
-import com.atsuishio.superbwarfare.item.gun.GunData;
 import com.atsuishio.superbwarfare.item.gun.SpecialFireWeapon;
+import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
@@ -89,18 +89,17 @@ public record FireMessage(int msgType) implements CustomPacketPayload {
     private static void handleGunBolt(Player player, ItemStack stack) {
         if (!stack.is(ModTags.Items.GUN)) return;
         var data = GunData.from(stack);
-        CompoundTag tag = data.tag();
 
-        if (data.boltActionTime() > 0
+        if (data.bolt.defaultActionTime() > 0
                 && data.ammo() > (stack.is(ModTags.Items.REVOLVER) ? -1 : 0)
-                && GunsTool.getGunIntTag(tag, "BoltActionTick") == 0
-                && !(data.normalReloading()
-                || data.emptyReloading())
+                && data.bolt.actionTime() == 0
+                && !(data.reload.normal()
+                || data.reload.empty())
                 && !data.reloading()
                 && !data.charging()
         ) {
-            if (!player.getCooldowns().isOnCooldown(stack.getItem()) && GunsTool.getGunBooleanTag(tag, "NeedBoltAction")) {
-                GunsTool.setGunIntTag(tag, "BoltActionTick", data.boltActionTime() + 1);
+            if (!player.getCooldowns().isOnCooldown(stack.getItem()) && data.bolt.needed()) {
+                data.bolt.setActionTime(data.bolt.defaultActionTime() + 1);
                 GunEventHandler.playGunBoltSounds(player);
             }
         }

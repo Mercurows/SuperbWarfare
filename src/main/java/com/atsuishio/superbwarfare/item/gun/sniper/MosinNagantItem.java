@@ -5,11 +5,10 @@ import com.atsuishio.superbwarfare.client.renderer.item.MosinNagantItemRenderer;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
-import com.atsuishio.superbwarfare.item.gun.GunData;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
+import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
-import com.atsuishio.superbwarfare.tools.GunsTool;
 import com.atsuishio.superbwarfare.tools.NBTTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -53,27 +52,27 @@ public class MosinNagantItem extends GunItem implements GeoItem {
         var data = GunData.from(stack);
         final var tag = data.tag();
 
-        if (GunsTool.getGunIntTag(tag, "BoltActionTick") > 0) {
+        if (data.bolt.actionTime() > 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.mosin.shift"));
         }
 
-        if (data.getReloadStage() == 1 && data.ammo() == 0) {
+        if (data.reload.stage() == 1 && data.ammo() == 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.mosin.prepare_empty"));
         }
 
-        if (data.getReloadStage() == 1 && data.ammo() > 0) {
+        if (data.reload.stage() == 1 && data.ammo() > 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.mosin.prepare"));
         }
 
-        if (NBTTool.getTag(stack).getDouble("LoadIndex") == 0 && data.getReloadStage() == 2) {
+        if (NBTTool.getTag(stack).getDouble("LoadIndex") == 0 && data.reload.stage() == 2) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.mosin.iterativeload"));
         }
 
-        if (NBTTool.getTag(stack).getDouble("LoadIndex") == 1 && data.getReloadStage() == 2) {
+        if (NBTTool.getTag(stack).getDouble("LoadIndex") == 1 && data.reload.stage() == 2) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.mosin.iterativeload2"));
         }
 
-        if (data.getReloadStage() == 3) {
+        if (data.reload.stage() == 3) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.mosin.finish"));
         }
 
@@ -90,14 +89,14 @@ public class MosinNagantItem extends GunItem implements GeoItem {
 
         if (player.isSprinting() && player.onGround()
                 && player.getPersistentData().getDouble("noRun") == 0
-                && !(GunData.from(stack).emptyReloading())
-                && data.getReloadStage() != 1
-                && data.getReloadStage() != 2
-                && data.getReloadStage() != 3
+                && !(GunData.from(stack).reload.empty())
+                && data.reload.stage() != 1
+                && data.reload.stage() != 2
+                && data.reload.stage() != 3
                 && ClientEventHandler.drawTime < 0.01
                 && !data.reloading()
         ) {
-            if (player.hasEffect(MobEffects.MOVEMENT_SPEED) && GunsTool.getGunIntTag(tag, "BoltActionTick") == 0) {
+            if (player.hasEffect(MobEffects.MOVEMENT_SPEED) && data.bolt.actionTime() == 0) {
                 return event.setAndContinue(RawAnimation.begin().thenLoop("animation.mosin.run_fast"));
             } else {
                 return event.setAndContinue(RawAnimation.begin().thenLoop("animation.mosin.run"));

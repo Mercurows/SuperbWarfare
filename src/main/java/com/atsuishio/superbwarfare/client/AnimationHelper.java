@@ -1,8 +1,7 @@
 package com.atsuishio.superbwarfare.client;
 
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
-import com.atsuishio.superbwarfare.tools.GunsTool;
-import com.atsuishio.superbwarfare.tools.NBTTool;
+import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
@@ -83,7 +82,8 @@ public class AnimationHelper {
     }
 
     public static void handleReloadShakeAnimation(ItemStack stack, GeoBone main, GeoBone camera, float roll, float pitch) {
-        if (GunsTool.getGunIntTag(NBTTool.getTag(stack), "ReloadTime") > 0) {
+        var data = GunData.from(stack);
+        if (data.reload.time() > 0) {
             main.setRotX(roll * main.getRotX());
             main.setRotY(roll * main.getRotY());
             main.setRotZ(roll * main.getRotZ());

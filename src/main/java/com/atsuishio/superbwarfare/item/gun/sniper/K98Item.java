@@ -5,11 +5,10 @@ import com.atsuishio.superbwarfare.client.renderer.item.K98ItemRenderer;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
-import com.atsuishio.superbwarfare.item.gun.GunData;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
+import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
-import com.atsuishio.superbwarfare.tools.GunsTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.ResourceLocation;
@@ -53,27 +52,27 @@ public class K98Item extends GunItem implements GeoItem {
         var data = GunData.from(stack);
         final var tag = data.tag();
 
-        if (GunsTool.getGunIntTag(tag, "BoltActionTick") > 0) {
+        if (data.bolt.actionTime() > 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.k98.shift"));
         }
 
-        if (data.getReloadState() == GunData.ReloadState.EMPTY_RELOADING) {
+        if (data.reload.empty()) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.k98.reload_empty"));
         }
 
-        if (data.getReloadStage() == 1 && tag.getDouble("PrepareTime") > 0) {
+        if (data.reload.stage() == 1 && tag.getDouble("PrepareTime") > 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.k98.prepare"));
         }
 
-        if (tag.getDouble("LoadIndex") == 0 && data.getReloadStage() == 2) {
+        if (tag.getDouble("LoadIndex") == 0 && data.reload.stage() == 2) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.k98.iterativeload"));
         }
 
-        if (tag.getDouble("LoadIndex") == 1 && data.getReloadStage() == 2) {
+        if (tag.getDouble("LoadIndex") == 1 && data.reload.stage() == 2) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.k98.iterativeload2"));
         }
 
-        if (data.getReloadStage() == 3) {
+        if (data.reload.stage() == 3) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.k98.finish"));
         }
 
@@ -91,14 +90,14 @@ public class K98Item extends GunItem implements GeoItem {
 
         if (player.isSprinting() && player.onGround()
                 && player.getPersistentData().getDouble("noRun") == 0
-                && !(data.getReloadState() == GunData.ReloadState.EMPTY_RELOADING)
-                && data.getReloadStage() != 1
-                && data.getReloadStage() != 2
-                && data.getReloadStage() != 3
+                && !data.reload.empty()
+                && data.reload.stage() != 1
+                && data.reload.stage() != 2
+                && data.reload.stage() != 3
                 && ClientEventHandler.drawTime < 0.01
                 && !data.reloading()
         ) {
-            if (player.hasEffect(MobEffects.MOVEMENT_SPEED) && GunsTool.getGunIntTag(tag, "BoltActionTick") == 0) {
+            if (player.hasEffect(MobEffects.MOVEMENT_SPEED) && data.bolt.actionTime() == 0) {
                 return event.setAndContinue(RawAnimation.begin().thenLoop("animation.k98.run_fast"));
             } else {
                 return event.setAndContinue(RawAnimation.begin().thenLoop("animation.k98.run"));

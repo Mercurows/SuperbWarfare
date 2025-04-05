@@ -3,7 +3,7 @@ package com.atsuishio.superbwarfare.event;
 import com.atsuishio.superbwarfare.event.events.ReloadEvent;
 import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.init.ModTags;
-import com.atsuishio.superbwarfare.item.gun.GunData;
+import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
 import com.atsuishio.superbwarfare.tools.GunsTool;
 import net.minecraft.world.entity.player.Player;

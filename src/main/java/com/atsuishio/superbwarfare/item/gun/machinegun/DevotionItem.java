@@ -6,8 +6,8 @@ import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
-import com.atsuishio.superbwarfare.item.gun.GunData;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
+import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
 import net.minecraft.client.Minecraft;
@@ -50,11 +50,11 @@ public class DevotionItem extends GunItem implements GeoItem {
         ItemStack stack = player.getMainHandItem();
         if (!stack.is(ModTags.Items.GUN)) return PlayState.STOP;
 
-        if (GunData.from(stack).emptyReloading()) {
+        if (GunData.from(stack).reload.empty()) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.devotion.reload_empty"));
         }
 
-        if (GunData.from(stack).normalReloading()) {
+        if (GunData.from(stack).reload.normal()) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.devotion.reload_normal"));
         }
 

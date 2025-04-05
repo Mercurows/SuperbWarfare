@@ -5,7 +5,7 @@ import com.atsuishio.superbwarfare.client.ItemModelHelper;
 import com.atsuishio.superbwarfare.client.model.item.RpkItemModel;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModTags;
-import com.atsuishio.superbwarfare.item.gun.GunData;
+import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.item.gun.machinegun.RpkItem;
 import com.atsuishio.superbwarfare.tools.GunsTool;
 import com.mojang.blaze3d.vertex.PoseStack;

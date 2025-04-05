@@ -10,8 +10,8 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.init.*;
-import com.atsuishio.superbwarfare.item.gun.GunData;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
+import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.network.message.send.*;
 import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
@@ -311,7 +311,7 @@ public class ClientEventHandler {
                     && !holdFireVehicle
                     && !notInGame()
                     && cap != null && !cap.edit
-                    && !(data.normalReloading() || data.emptyReloading())
+                    && !(data.reload.normal() || data.reload.empty())
                     && !data.reloading()
                     && !data.charging()
                     && !player.getCooldowns().isOnCooldown(stack.getItem())
@@ -456,7 +456,7 @@ public class ClientEventHandler {
 
         //左轮类
         if (clientTimer.getProgress() == 0 && stack.is(ModTags.Items.REVOLVER) && ((holdFire && !tag.getBoolean("DA"))
-                || (GunsTool.getGunIntTag(tag, "BoltActionTick") < 7 && GunsTool.getGunIntTag(tag, "BoltActionTick") > 2) || tag.getBoolean("canImmediatelyShoot"))) {
+                || (data.bolt.actionTime() < 7 && data.bolt.actionTime() > 2) || tag.getBoolean("canImmediatelyShoot"))) {
             revolverPreTime = Mth.clamp(revolverPreTime + 0.3 * times, 0, 1);
             revolverWheelPreTime = Mth.clamp(revolverWheelPreTime + 0.32 * times, 0, revolverPreTime > 0.7 ? 1 : 0.55);
         } else if (!tag.getBoolean("DA") && !tag.getBoolean("canImmediatelyShoot")) {
@@ -473,12 +473,12 @@ public class ClientEventHandler {
                 && drawTime < 0.01
                 && cap != null && !cap.edit
                 && !notInGame()
-                && (!(data.normalReloading() || data.emptyReloading())
+                && (!(data.reload.normal() || data.reload.empty())
                 && !data.reloading()
                 && !data.charging()
                 && data.ammo() > 0
                 && !player.getCooldowns().isOnCooldown(stack.getItem())
-                && !GunsTool.getGunBooleanTag(tag, "NeedBoltAction")
+                && !data.bolt.needed()
                 && revolverPre(tag))
                 || (stack.is(ModItems.MINIGUN.get())
                 && !player.isSprinting()
@@ -521,7 +521,7 @@ public class ClientEventHandler {
             clientTimer.stop();
         }
 
-        if (stack.getItem() == ModItems.DEVOTION.get() && (data.normalReloading() || data.emptyReloading())) {
+        if (stack.getItem() == ModItems.DEVOTION.get() && (data.reload.normal() || data.reload.empty())) {
             customRpm = 0;
         }
 
@@ -586,8 +586,8 @@ public class ClientEventHandler {
                 }
 
                 // 判断是否为栓动武器（BoltActionTime > 0），并在开火后给一个需要上膛的状态
-                if (data.boltActionTime() > 0 && data.ammo() > (stack.is(ModTags.Items.REVOLVER) ? 0 : 1)) {
-                    GunsTool.setGunBooleanTag(tag, "NeedBoltAction", true);
+                if (data.bolt.defaultActionTime() > 0 && data.ammo() > (stack.is(ModTags.Items.REVOLVER) ? 0 : 1)) {
+                    data.bolt.markNeeded();
                 }
 
                 revolverPreTime = 0;

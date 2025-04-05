@@ -5,7 +5,7 @@ import com.atsuishio.superbwarfare.client.AnimationHelper;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModTags;
-import com.atsuishio.superbwarfare.item.gun.GunData;
+import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.item.gun.handgun.Trachelium;
 import com.atsuishio.superbwarfare.tools.GunsTool;
 import com.atsuishio.superbwarfare.tools.NBTTool;
@@ -165,7 +165,7 @@ public class TracheliumItemModel extends GeoModel<Trachelium> {
         ammo.setRotZ(60 * Mth.DEG_TO_RAD * (float) ClientEventHandler.revolverWheelPreTime);
         ammohole.setRotZ(-60 * Mth.DEG_TO_RAD * (float) ClientEventHandler.revolverWheelPreTime);
 
-        if (GunData.from(stack).emptyReloading()) {
+        if (GunData.from(stack).reload.empty()) {
             lun.setRotZ(0);
             ammo.setRotZ(0);
             ammohole.setRotZ(0);

@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.item.gun;
 
+import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import net.minecraft.world.entity.player.Player;
 
 

@@ -9,11 +9,10 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.*;
-import com.atsuishio.superbwarfare.item.gun.GunData;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
+import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.network.message.send.*;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
-import com.atsuishio.superbwarfare.tools.GunsTool;
 import com.atsuishio.superbwarfare.tools.NBTTool;
 import com.atsuishio.superbwarfare.tools.SeekTool;
 import com.atsuishio.superbwarfare.tools.TraceTool;
@@ -337,16 +336,14 @@ public class ClickHandler {
             var tag = data.tag();
             player.playSound(ModSounds.TRIGGER_CLICK.get(), 1, 1);
 
-            if (!gunItem.useBackpackAmmo(stack) && data.ammo() <= 0 && GunsTool.getGunIntTag(tag, "ReloadTime") == 0) {
+            if (!gunItem.useBackpackAmmo(stack) && data.ammo() <= 0 && data.reload.time() == 0) {
                 if (ReloadConfig.LEFT_CLICK_RELOAD.get()) {
                     PacketDistributor.sendToServer(new ReloadMessage(0));
                     ClientEventHandler.burstFireAmount = 0;
                 }
             } else {
                 PacketDistributor.sendToServer(new FireMessage(0));
-                if ((!data.reloading() && !data.charging()
-                        && !GunsTool.getGunBooleanTag(tag, "NeedBoltAction")
-                ) && drawTime < 0.01) {
+                if ((!data.reloading() && !data.charging() && !data.bolt.needed()) && drawTime < 0.01) {
                     if (data.fireMode() == 1) {
                         if (ClientEventHandler.burstFireAmount == 0) {
                             ClientEventHandler.burstFireAmount = data.burstAmount();

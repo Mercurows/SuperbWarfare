@@ -3,9 +3,8 @@ package com.atsuishio.superbwarfare.network.message.send;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
-import com.atsuishio.superbwarfare.item.gun.GunData;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
-import com.atsuishio.superbwarfare.tools.GunsTool;
+import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.tools.SoundTool;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -89,7 +88,7 @@ public record FireModeMessage(int msgType) implements CustomPacketPayload {
             if (stack.getItem() == ModItems.SENTINEL.get()
                     && !player.isSpectator()
                     && !(player.getCooldowns().isOnCooldown(stack.getItem()))
-                    && GunsTool.getGunIntTag(tag, "ReloadTime") == 0
+                    && data.reload.time() == 0
                     && !data.charging()
             ) {
                 for (var cell : player.getInventory().items) {
@@ -110,11 +109,10 @@ public record FireModeMessage(int msgType) implements CustomPacketPayload {
                 }
             }
 
-            if (stack.getItem() == ModItems.TRACHELIUM.get() && !GunsTool.getGunBooleanTag(tag, "NeedBoltAction")) {
+            if (stack.getItem() == ModItems.TRACHELIUM.get() && !data.bolt.needed()) {
                 tag.putBoolean("DA", !tag.getBoolean("DA"));
-                data.save();
                 if (!tag.getBoolean("canImmediatelyShoot")) {
-                    GunsTool.setGunBooleanTag(tag, "NeedBoltAction", true);
+                    data.bolt.markNeeded();
                 }
             }
 

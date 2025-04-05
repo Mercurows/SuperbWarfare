@@ -5,8 +5,8 @@ import com.atsuishio.superbwarfare.client.renderer.item.HuntingRifleItemRenderer
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
-import com.atsuishio.superbwarfare.item.gun.GunData;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
+import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
 import net.minecraft.client.Minecraft;
@@ -54,7 +54,7 @@ public class HuntingRifleItem extends GunItem implements GeoItem {
         ItemStack stack = player.getMainHandItem();
         if (!stack.is(ModTags.Items.GUN)) return PlayState.STOP;
 
-        if (GunData.from(stack).emptyReloading()) {
+        if (GunData.from(stack).reload.empty()) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.hunting_rifle.reload"));
         }
 

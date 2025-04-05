@@ -4,7 +4,7 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModTags;
-import com.atsuishio.superbwarfare.item.gun.GunData;
+import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.item.gun.heavy.Ntw20Item;
 import com.atsuishio.superbwarfare.tools.GunsTool;
 import net.minecraft.client.Minecraft;
@@ -164,7 +164,7 @@ public class Ntw20Model extends GeoModel<Ntw20Item> {
         float numR = (float) (1 - 0.92 * zt);
         float numP = (float) (1 - 0.88 * zt);
 
-        if (GunsTool.getGunIntTag(tag, "ReloadTime") > 0 || GunsTool.getGunIntTag(tag, "BoltActionTick") > 0) {
+        if (data.reload.time() > 0 || data.bolt.actionTime() > 0) {
             main.setRotX(numR * main.getRotX());
             main.setRotY(numR * main.getRotY());
             main.setRotZ(numR * main.getRotZ());

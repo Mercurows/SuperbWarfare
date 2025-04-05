@@ -1,5 +1,6 @@
-package com.atsuishio.superbwarfare.item.gun;
+package com.atsuishio.superbwarfare.item.gun.data;
 
+import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
@@ -49,6 +50,10 @@ public class GunData {
         } else {
             perk = tag.getCompound("PerkData");
         }
+
+        reload = new Reload(this);
+        charge = new Charge(this);
+        bolt = new Bolt(this);
     }
 
     public boolean initialized() {
@@ -91,7 +96,7 @@ public class GunData {
         return perk;
     }
 
-    private double getGunData(String key) {
+    double getGunData(String key) {
         return getGunData(key, 0);
     }
 
@@ -103,7 +108,7 @@ public class GunData {
         return getGunData("Damage");
     }
 
-    public double perkDamage() {
+    public double perkDamageRate() {
         var perk = PerkHelper.getPerkByType(tag, Perk.Type.AMMO);
         if (perk instanceof AmmoPerk ammoPerk) {
             return ammoPerk.damageRate;
@@ -112,7 +117,7 @@ public class GunData {
     }
 
     public double damage() {
-        return (rawDamage() + item.getCustomDamage(stack)) + perkDamage();
+        return (rawDamage() + item.getCustomDamage(stack)) * perkDamageRate();
     }
 
     public double explosionDamage() {
@@ -167,22 +172,8 @@ public class GunData {
         return (int) getGunData("PrepareEmptyTime");
     }
 
-    public int boltActionTime() {
-        return (int) getGunData("BoltActionTime") + item.getCustomBoltActionTime(stack);
-    }
-
     public int finishTime() {
         return (int) getGunData("FinishTime");
-    }
-
-    public int reloadTime() {
-        var normalReload = normalReloadTime();
-        var emptyReload = emptyReloadTime();
-
-        if (normalReload == 0) return emptyReload;
-        if (emptyReload == 0) return normalReload;
-
-        return ammo() < magazine() ? normalReload : emptyReload;
     }
 
     public double soundRadius() {
@@ -217,9 +208,6 @@ public class GunData {
         data.putInt("Ammo", ammo);
     }
 
-    public boolean reloading() {
-        return getReloadState() != ReloadState.NOT_RELOADING;
-    }
 
     public double defaultZoom() {
         return getGunData("DefaultZoom", 1.25);
@@ -292,87 +280,20 @@ public class GunData {
         return item.canSwitchScope(stack);
     }
 
-    public enum ReloadState {
-        NOT_RELOADING,
-        NORMAL_RELOADING,
-        EMPTY_RELOADING,
+
+    public final Reload reload;
+
+    public boolean reloading() {
+        return reload.state() != ReloadState.NOT_RELOADING;
     }
 
-    public ReloadState getReloadState() {
-        return switch (data.getInt("ReloadState")) {
-            case 1 -> ReloadState.NORMAL_RELOADING;
-            case 2 -> ReloadState.EMPTY_RELOADING;
-            default -> ReloadState.NOT_RELOADING;
-        };
-    }
-
-    public boolean normalReloading() {
-        return getReloadState() == ReloadState.NORMAL_RELOADING;
-    }
-
-    public boolean emptyReloading() {
-        return getReloadState() == ReloadState.EMPTY_RELOADING;
-    }
-
-    public void setReloadState(ReloadState state) {
-        if (state == ReloadState.NOT_RELOADING) {
-            data.remove("ReloadState");
-        } else {
-            data.putInt("ReloadState", state.ordinal());
-        }
-    }
-
-    public int getReloadStage() {
-        return data.getInt("ReloadStage");
-    }
-
-    public void setReloadStage(int stage) {
-        if (stage == 0) {
-            data.remove("ReloadStage");
-        } else {
-            data.putInt("ReloadStage", stage);
-        }
-    }
-
-    public final Charge charge = new Charge();
-
-    public class Charge {
-        public void markStart() {
-            data.putBoolean("StartCharge", true);
-        }
-
-        public boolean shouldStartCharge() {
-            return data.getBoolean("StartCharge");
-        }
-
-        public void markStarted() {
-            data.remove("StartCharge");
-        }
-
-        public int time() {
-            return data.getInt("ChargeTime");
-        }
-
-        public void reduce() {
-            setTime(time() - 1);
-        }
-
-        public void setTime(int chargeTime) {
-            if (chargeTime <= 0) {
-                data.remove("ChargeTime");
-            } else {
-                data.putInt("ChargeTime", chargeTime);
-            }
-        }
-
-        public void reset() {
-            setTime(0);
-        }
-    }
+    public final Charge charge;
 
     public boolean charging() {
         return charge.time() > 0;
     }
+
+    public final Bolt bolt;
 
     public void save() {
         stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));

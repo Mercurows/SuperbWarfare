@@ -4,9 +4,8 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModTags;
-import com.atsuishio.superbwarfare.item.gun.GunData;
+import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.item.gun.launcher.SecondaryCataclysm;
-import com.atsuishio.superbwarfare.tools.GunsTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -102,7 +101,7 @@ public class SecondaryCataclysmModel extends GeoModel<SecondaryCataclysm> {
 
         var data = GunData.from(stack);
         var tag = data.tag();
-        if (GunsTool.getGunIntTag(tag, "ReloadTime") > 0) {
+        if (data.reload.time() > 0) {
             main.setRotX(numR * main.getRotX());
             main.setRotY(numR * main.getRotY());
             main.setRotZ(numR * main.getRotZ());

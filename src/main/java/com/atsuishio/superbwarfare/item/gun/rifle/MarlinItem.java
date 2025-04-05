@@ -5,11 +5,10 @@ import com.atsuishio.superbwarfare.client.renderer.item.MarlinItemRenderer;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
-import com.atsuishio.superbwarfare.item.gun.GunData;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
+import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
-import com.atsuishio.superbwarfare.tools.GunsTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.ResourceLocation;
@@ -52,23 +51,23 @@ public class MarlinItem extends GunItem implements GeoItem {
         var data = GunData.from(stack);
         final var tag = data.tag();
 
-        if (GunsTool.getGunIntTag(tag, "BoltActionTick") > 0) {
+        if (data.bolt.actionTime() > 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.marlin.shift"));
         }
 
-        if (data.getReloadStage() == 1 && tag.getDouble("PrepareTime") > 0) {
+        if (data.reload.stage() == 1 && tag.getDouble("PrepareTime") > 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.marlin.prepare"));
         }
 
-        if (tag.getDouble("LoadIndex") == 0 && data.getReloadStage() == 2) {
+        if (tag.getDouble("LoadIndex") == 0 && data.reload.stage() == 2) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.marlin.iterativeload"));
         }
 
-        if (tag.getDouble("LoadIndex") == 1 && data.getReloadStage() == 2) {
+        if (tag.getDouble("LoadIndex") == 1 && data.reload.stage() == 2) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.marlin.iterativeload2"));
         }
 
-        if (data.getReloadStage() == 3) {
+        if (data.reload.stage() == 3) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.marlin.finish"));
         }
 

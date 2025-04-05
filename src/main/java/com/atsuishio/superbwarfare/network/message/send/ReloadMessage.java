@@ -4,8 +4,8 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.capability.ModCapabilities;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModTags;
-import com.atsuishio.superbwarfare.item.gun.GunData;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
+import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.tools.GunsTool;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -46,8 +46,8 @@ public record ReloadMessage(int msgType) implements CustomPacketPayload {
         if (!player.isSpectator()
                 && !data.charging()
                 && !data.reloading()
-                && GunsTool.getGunIntTag(tag, "ReloadTime") == 0
-                && GunsTool.getGunIntTag(tag, "BoltActionTick") == 0
+                && data.reload.time() == 0
+                && data.bolt.actionTime() == 0
         ) {
             boolean canSingleReload = gunItem.isIterativeReload(stack);
             boolean canReload = gunItem.isMagazineReload(stack) && !gunItem.isClipReload(stack);
@@ -76,19 +76,11 @@ public record ReloadMessage(int msgType) implements CustomPacketPayload {
 
             if (canReload || clipLoad) {
                 int magazine = data.magazine();
+                var extra = (gunItem.isOpenBolt(stack) && gunItem.hasBulletInBarrel(stack)) ? 1 : 0;
+                var maxAmmo = magazine + extra;
 
-                if (gunItem.isOpenBolt(stack)) {
-                    if (gunItem.hasBulletInBarrel(stack)) {
-                        if (data.ammo() < magazine + 1) {
-                            GunsTool.setGunBooleanTag(tag, "StartReload", true);
-                        }
-                    } else {
-                        if (data.ammo() < magazine) {
-                            GunsTool.setGunBooleanTag(tag, "StartReload", true);
-                        }
-                    }
-                } else if (data.ammo() < magazine) {
-                    GunsTool.setGunBooleanTag(tag, "StartReload", true);
+                if (data.ammo() < maxAmmo) {
+                    data.reload.markStart();
                 }
                 return;
             }

@@ -3,7 +3,8 @@ package com.atsuishio.superbwarfare.tools;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.capability.ModCapabilities;
 import com.atsuishio.superbwarfare.init.ModTags;
-import com.atsuishio.superbwarfare.item.gun.GunData;
+import com.atsuishio.superbwarfare.item.gun.data.GunData;
+import com.atsuishio.superbwarfare.item.gun.data.ReloadState;
 import com.atsuishio.superbwarfare.network.message.receive.GunsDataMessage;
 import com.google.gson.stream.JsonReader;
 import net.minecraft.nbt.CompoundTag;
@@ -92,8 +93,8 @@ public class GunsTool {
         int ammoToAdd = mag - ammo + (extraOne ? 1 : 0);
 
         // 空仓换弹的栓动武器应该在换弹后取消待上膛标记
-        if (ammo == 0 && gunData.boltActionTime() > 0 && !stack.is(ModTags.Items.REVOLVER)) {
-            data.putBoolean("NeedBoltAction", false);
+        if (ammo == 0 && gunData.bolt.defaultActionTime() > 0 && !stack.is(ModTags.Items.REVOLVER)) {
+            gunData.bolt.markNeedless();
         }
 
         var capability = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
@@ -109,7 +110,7 @@ public class GunsTool {
         int needToAdd = ammo + Math.min(ammoToAdd, playerAmmo);
 
         gunData.setAmmo(needToAdd);
-        gunData.setReloadState(GunData.ReloadState.NOT_RELOADING);
+        gunData.reload.setState(ReloadState.NOT_RELOADING);
     }
 
     /* PerkData */

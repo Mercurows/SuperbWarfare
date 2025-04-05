@@ -5,7 +5,7 @@ import com.atsuishio.superbwarfare.client.AnimationHelper;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModTags;
-import com.atsuishio.superbwarfare.item.gun.GunData;
+import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.item.gun.handgun.Mp443Item;
 import com.atsuishio.superbwarfare.tools.GunsTool;
 import net.minecraft.client.Minecraft;
@@ -104,7 +104,7 @@ public class Mp443ItemModel extends GeoModel<Mp443Item> {
 
         var data = GunData.from(stack);
         var tag = data.tag();
-        if (GunsTool.getGunIntTag(tag, "ReloadTime") > 0) {
+        if (data.reload.time() > 0) {
             main.setRotX(numR * main.getRotX());
             main.setRotY(numR * main.getRotY());
             main.setRotZ(numR * main.getRotZ());

@@ -7,7 +7,7 @@ import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
-import com.atsuishio.superbwarfare.item.gun.GunData;
+import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
@@ -61,8 +61,8 @@ public record ShootMessage(double spread) implements CustomPacketPayload {
                 }
 
                 // 判断是否为栓动武器（BoltActionTime > 0），并在开火后给一个需要上膛的状态
-                if (data.boltActionTime() > 0 && data.ammo() > (stack.is(ModTags.Items.REVOLVER) ? 0 : 1)) {
-                    GunsTool.setGunBooleanTag(tag, "NeedBoltAction", true);
+                if (data.bolt.defaultActionTime() > 0 && data.ammo() > (stack.is(ModTags.Items.REVOLVER) ? 0 : 1)) {
+                    data.bolt.markNeeded();
                 }
 
                 data.setAmmo(data.ammo() - 1);

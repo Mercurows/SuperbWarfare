@@ -7,8 +7,8 @@ import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModRarity;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
-import com.atsuishio.superbwarfare.item.gun.GunData;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
+import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
 import com.atsuishio.superbwarfare.tools.GunsTool;
@@ -59,15 +59,15 @@ public class Ntw20Item extends GunItem implements GeoItem {
         var data = GunData.from(stack);
         final var tag = data.tag();
 
-        if (GunsTool.getGunIntTag(tag, "BoltActionTick") > 0) {
+        if (data.bolt.actionTime() > 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.ntw_20.shift"));
         }
 
-        if (data.emptyReloading()) {
+        if (data.reload.empty()) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.ntw_20.reload_empty"));
         }
 
-        if (data.normalReloading()) {
+        if (data.reload.normal()) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.ntw_20.reload_normal"));
         }
 
@@ -84,9 +84,9 @@ public class Ntw20Item extends GunItem implements GeoItem {
 
         if (player.isSprinting() && player.onGround()
                 && player.getPersistentData().getDouble("noRun") == 0
-                && !(data.normalReloading() || data.emptyReloading())
+                && !(data.reload.normal() || data.reload.empty())
                 && ClientEventHandler.drawTime < 0.01) {
-            if (player.hasEffect(MobEffects.MOVEMENT_SPEED) && GunsTool.getGunIntTag(tag, "BoltActionTick") == 0) {
+            if (player.hasEffect(MobEffects.MOVEMENT_SPEED) && data.bolt.actionTime() == 0) {
                 return event.setAndContinue(RawAnimation.begin().thenLoop("animation.ntw_20.run_fast"));
             } else {
                 return event.setAndContinue(RawAnimation.begin().thenLoop("animation.ntw_20.run"));

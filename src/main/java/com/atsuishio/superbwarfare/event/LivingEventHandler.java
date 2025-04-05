@@ -14,8 +14,9 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.ContainerMobileVehicleEnt
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.event.events.PreKillEvent;
 import com.atsuishio.superbwarfare.init.*;
-import com.atsuishio.superbwarfare.item.gun.GunData;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
+import com.atsuishio.superbwarfare.item.gun.data.GunData;
+import com.atsuishio.superbwarfare.item.gun.data.ReloadState;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
 import com.atsuishio.superbwarfare.network.message.receive.DrawClientMessage;
 import com.atsuishio.superbwarfare.network.message.receive.PlayerGunKillMessage;
@@ -360,19 +361,19 @@ public class LivingEventHandler {
                     oldTag = oldData.tag();
                     var data = oldData.data();
 
-                    if (oldData.boltActionTime() > 0) {
-                        data.putInt("BoltActionTick", 0);
+                    if (oldData.bolt.defaultActionTime() > 0) {
+                        oldData.bolt.setActionTime(0);
                     }
 
-                    data.putInt("ReloadTime", 0);
+                    oldData.reload.setTime(0);
                     oldTag.put("GunData", data);
 
-                    oldData.setReloadState(GunData.ReloadState.NOT_RELOADING);
+                    oldData.reload.setState(ReloadState.NOT_RELOADING);
 
                     if (oldData.iterativeTime() != 0) {
                         oldTag.remove("ForceStop");
                         oldTag.remove("Stopped");
-                        oldData.setReloadStage(0);
+                        oldData.reload.setStage(0);
                         oldTag.remove("PrepareTime");
                         oldTag.remove("PrepareLoadTime");
                         oldTag.remove("IterativeLoadTime");
@@ -398,20 +399,20 @@ public class LivingEventHandler {
 
                     player.getPersistentData().putDouble("noRun", 40);
                     newTag.putBoolean("draw", true);
-                    if (newData.boltActionTime() > 0) {
-                        GunsTool.setGunIntTag(newTag, "BoltActionTick", 0);
+                    if (newData.bolt.defaultActionTime() > 0) {
+                        newData.bolt.setActionTime(0);
                     }
 
-                    newData.setReloadState(GunData.ReloadState.NOT_RELOADING);
+                    newData.reload.setState(ReloadState.NOT_RELOADING);
 
-                    var data = newTag.getCompound("GunData");
-                    data.remove("ReloadTime");
+                    var data = newData.data();
+                    newData.reload.setTime(0);
                     newTag.put("GunData", data);
 
                     if (newData.iterativeTime() != 0) {
                         newTag.remove("ForceStop");
                         newTag.remove("Stopped");
-                        newData.setReloadStage(0);
+                        newData.reload.setStage(0);
                         newTag.remove("PrepareTime");
                         newTag.remove("PrepareLoadTime");
                         newTag.remove("IterativeLoadTime");

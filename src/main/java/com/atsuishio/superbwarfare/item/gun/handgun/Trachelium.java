@@ -6,8 +6,8 @@ import com.atsuishio.superbwarfare.client.renderer.item.TracheliumItemRenderer;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
-import com.atsuishio.superbwarfare.item.gun.GunData;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
+import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
 import com.atsuishio.superbwarfare.tools.GunsTool;
@@ -111,7 +111,7 @@ public class Trachelium extends GunItem implements GeoItem {
         boolean stock = GunsTool.getAttachmentType(tag, GunsTool.AttachmentType.STOCK) == 2;
         boolean grip = GunsTool.getAttachmentType(tag, GunsTool.AttachmentType.GRIP) > 0 || GunsTool.getAttachmentType(tag, GunsTool.AttachmentType.SCOPE) > 0;
 
-        if (GunsTool.getGunIntTag(tag, "BoltActionTick") > 0) {
+        if (data.bolt.actionTime() > 0) {
             if (stock) {
                 if (grip) {
                     return event.setAndContinue(RawAnimation.begin().thenPlay("animation.trachelium.action_stock_grip"));
@@ -127,7 +127,7 @@ public class Trachelium extends GunItem implements GeoItem {
             }
         }
 
-        if (GunData.from(stack).emptyReloading()) {
+        if (GunData.from(stack).reload.empty()) {
             if (stock) {
                 if (grip) {
                     return event.setAndContinue(RawAnimation.begin().thenPlay("animation.trachelium.reload_stock_grip"));

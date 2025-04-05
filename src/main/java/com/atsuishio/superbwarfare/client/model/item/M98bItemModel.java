@@ -4,9 +4,8 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModTags;
-import com.atsuishio.superbwarfare.item.gun.GunData;
+import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.item.gun.sniper.M98bItem;
-import com.atsuishio.superbwarfare.tools.GunsTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -108,7 +107,7 @@ public class M98bItemModel extends GeoModel<M98bItem> {
         float numR = (float) (1 - 0.88 * zt);
         float numP = (float) (1 - 0.68 * zt);
 
-        if (GunsTool.getGunIntTag(tag, "ReloadTime") > 0) {
+        if (data.reload.time() > 0) {
             main.setRotX(numR * main.getRotX());
             main.setRotY(numR * main.getRotY());
             main.setRotZ(numR * main.getRotZ());

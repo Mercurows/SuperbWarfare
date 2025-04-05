@@ -5,7 +5,7 @@ import com.atsuishio.superbwarfare.client.AnimationHelper;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModTags;
-import com.atsuishio.superbwarfare.item.gun.GunData;
+import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.item.gun.machinegun.M60Item;
 import com.atsuishio.superbwarfare.tools.GunsTool;
 import net.minecraft.client.Minecraft;
@@ -154,7 +154,7 @@ public class M60ItemModel extends GeoModel<M60Item> {
         AnimationHelper.handleShellsAnimation(getAnimationProcessor(), 1f, 0.45f);
         GeoBone shell = getAnimationProcessor().getBone("shell");
 
-        if (GunsTool.getGunIntTag(tag, "ReloadTime") > 0) {
+        if (data.reload.time() > 0) {
             main.setRotX(numR * main.getRotX());
             main.setRotY(numR * main.getRotY());
             main.setRotZ(numR * main.getRotZ());

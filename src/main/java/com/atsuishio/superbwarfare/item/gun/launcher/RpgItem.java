@@ -10,9 +10,9 @@ import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
-import com.atsuishio.superbwarfare.item.gun.GunData;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.SpecialFireWeapon;
+import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.network.message.receive.ShootClientMessage;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
@@ -77,7 +77,7 @@ public class RpgItem extends GunItem implements GeoItem, SpecialFireWeapon {
         if (!stack.is(ModTags.Items.GUN)) return PlayState.STOP;
         var data = GunData.from(stack);
 
-        if (data.emptyReloading()) {
+        if (data.reload.empty()) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.rpg.reload"));
         }
 
