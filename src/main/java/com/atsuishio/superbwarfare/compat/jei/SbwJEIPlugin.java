@@ -1,0 +1,93 @@
+package com.atsuishio.superbwarfare.compat.jei;
+
+import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.init.ModItems;
+import com.atsuishio.superbwarfare.tools.NBTTool;
+import mezz.jei.api.IModPlugin;
+import mezz.jei.api.JeiPlugin;
+import mezz.jei.api.constants.RecipeTypes;
+import mezz.jei.api.ingredients.subtypes.ISubtypeInterpreter;
+import mezz.jei.api.ingredients.subtypes.UidContext;
+import mezz.jei.api.registration.IRecipeRegistration;
+import mezz.jei.api.registration.ISubtypeRegistration;
+import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.alchemy.PotionContents;
+import org.jetbrains.annotations.NotNull;
+
+import javax.annotation.ParametersAreNonnullByDefault;
+
+@JeiPlugin
+public class SbwJEIPlugin implements IModPlugin {
+
+    @Override
+    public @NotNull ResourceLocation getPluginUid() {
+        return Mod.loc("jei_plugin");
+    }
+
+    // TODO 正确注册subtypes
+    @Override
+    public void registerRecipes(@NotNull IRecipeRegistration registration) {
+        registration.addItemStackInfo(new ItemStack(ModItems.ANCIENT_CPU.get()), Component.translatable("jei.superbwarfare.ancient_cpu"));
+        registration.addItemStackInfo(new ItemStack(ModItems.CHARGING_STATION.get()), Component.translatable("jei.superbwarfare.charging_station"));
+
+        var specialCraftingRecipes = PotionMortarShellRecipeMaker.createRecipes();
+        registration.addRecipes(RecipeTypes.CRAFTING, specialCraftingRecipes);
+    }
+
+    @Override
+    public void registerItemSubtypes(ISubtypeRegistration registration) {
+        registration.registerSubtypeInterpreter(ModItems.CONTAINER.get(), new ISubtypeInterpreter<>() {
+            @Override
+            @ParametersAreNonnullByDefault
+            public @NotNull Object getSubtypeData(ItemStack ingredient, UidContext context) {
+                var data = ingredient.get(DataComponents.BLOCK_ENTITY_DATA);
+                var tag = data != null ? data.copyTag() : new CompoundTag();
+                if (tag.contains("EntityType")) {
+                    return tag.getString("EntityType");
+                }
+                return "";
+            }
+
+            @Override
+            @ParametersAreNonnullByDefault
+            public @NotNull String getLegacyStringSubtypeInfo(ItemStack ingredient, UidContext context) {
+                return (String) getSubtypeData(ingredient, context);
+            }
+        });
+
+
+        registration.registerSubtypeInterpreter(ModItems.POTION_MORTAR_SHELL.get(), new ISubtypeInterpreter<>() {
+            @Override
+            @ParametersAreNonnullByDefault
+            public @NotNull Object getSubtypeData(ItemStack ingredient, UidContext context) {
+                var potion = ingredient.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY);
+                return potion.potion().map(Holder::getRegisteredName);
+            }
+
+            @Override
+            @ParametersAreNonnullByDefault
+            public @NotNull String getLegacyStringSubtypeInfo(ItemStack ingredient, UidContext context) {
+                return (String) getSubtypeData(ingredient, context);
+            }
+        });
+
+        registration.registerSubtypeInterpreter(ModItems.C4_BOMB.get(), new ISubtypeInterpreter<>() {
+            @Override
+            @ParametersAreNonnullByDefault
+            public @NotNull Object getSubtypeData(ItemStack ingredient, UidContext context) {
+                return NBTTool.getTag(ingredient).getBoolean("Control");
+            }
+
+            @Override
+            @ParametersAreNonnullByDefault
+            public @NotNull String getLegacyStringSubtypeInfo(ItemStack ingredient, UidContext context) {
+                return (String) getSubtypeData(ingredient, context);
+            }
+        });
+    }
+}

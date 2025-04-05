@@ -13,7 +13,9 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
+import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 
 @EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
@@ -24,13 +26,14 @@ public class PotionMortarShell extends MortarShell {
     }
 
     @Override
-    public ItemStack getDefaultInstance() {
+    public @NotNull ItemStack getDefaultInstance() {
         ItemStack itemstack = super.getDefaultInstance();
         itemstack.set(DataComponents.POTION_CONTENTS, new PotionContents(Potions.POISON));
         return itemstack;
     }
 
     @Override
+    @ParametersAreNonnullByDefault
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
         PotionContents potioncontents = stack.get(DataComponents.POTION_CONTENTS);
         if (potioncontents != null) {
