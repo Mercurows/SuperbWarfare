@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.item.gun.machinegun;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.capability.ModCapabilities;
 import com.atsuishio.superbwarfare.client.renderer.item.RpkItemRenderer;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModPerks;
@@ -10,20 +11,26 @@ import com.atsuishio.superbwarfare.item.gun.GunData;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
+import com.atsuishio.superbwarfare.tools.GunsTool;
+import com.atsuishio.superbwarfare.tools.NBTTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
+import net.minecraft.world.level.Level;
 import software.bernie.geckolib.animatable.GeoItem;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.*;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Set;
 
 public class RpkItem extends GunItem implements GeoItem {
@@ -49,21 +56,72 @@ public class RpkItem extends GunItem implements GeoItem {
         if (player == null) return PlayState.STOP;
         ItemStack stack = player.getMainHandItem();
         if (!stack.is(ModTags.Items.GUN)) return PlayState.STOP;
+        var data = GunData.from(stack);
+        var tag = data.tag();
+
+        boolean drum = GunsTool.getAttachmentType(tag, GunsTool.AttachmentType.MAGAZINE) == 2;
+        boolean grip = GunsTool.getAttachmentType(tag, GunsTool.AttachmentType.GRIP) == 1 || GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.GRIP) == 2;
 
         if (GunData.from(stack).emptyReloading()) {
-            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.ak47.reload_empty"));
+            if (drum) {
+                if (grip) {
+                    return event.setAndContinue(RawAnimation.begin().thenPlay("animation.ak47.reload_empty_drum_grip"));
+                } else {
+                    return event.setAndContinue(RawAnimation.begin().thenPlay("animation.ak47.reload_empty_drum"));
+                }
+            } else {
+                if (grip) {
+                    return event.setAndContinue(RawAnimation.begin().thenPlay("animation.ak47.reload_empty_grip"));
+                } else {
+                    return event.setAndContinue(RawAnimation.begin().thenPlay("animation.ak47.reload_empty"));
+                }
+            }
         }
 
         if (GunData.from(stack).normalReloading()) {
-            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.ak47.reload_normal"));
+            if (drum) {
+                if (grip) {
+                    return event.setAndContinue(RawAnimation.begin().thenPlay("animation.ak47.reload_normal_drum_grip"));
+                } else {
+                    return event.setAndContinue(RawAnimation.begin().thenPlay("animation.ak47.reload_normal_drum"));
+                }
+            } else {
+                if (grip) {
+                    return event.setAndContinue(RawAnimation.begin().thenPlay("animation.ak47.reload_normal_grip"));
+                } else {
+                    return event.setAndContinue(RawAnimation.begin().thenPlay("animation.ak47.reload_normal"));
+                }
+            }
         }
 
         if (player.isSprinting() && player.onGround() && player.getPersistentData().getDouble("noRun") == 0 && ClientEventHandler.drawTime < 0.01) {
             if (player.hasEffect(MobEffects.MOVEMENT_SPEED)) {
                 return event.setAndContinue(RawAnimation.begin().thenLoop("animation.ak47.run_fast"));
             } else {
-                return event.setAndContinue(RawAnimation.begin().thenLoop("animation.ak47.run"));
+                if (grip) {
+                    return event.setAndContinue(RawAnimation.begin().thenPlay("animation.ak47.run_grip"));
+                } else {
+                    return event.setAndContinue(RawAnimation.begin().thenLoop("animation.ak47.run"));
+                }
             }
+        }
+
+        if (grip) {
+            return event.setAndContinue(RawAnimation.begin().thenLoop("animation.ak47.idle_grip"));
+        } else {
+            return event.setAndContinue(RawAnimation.begin().thenLoop("animation.ak47.idle"));
+        }
+    }
+
+    private PlayState editPredicate(AnimationState<RpkItem> event) {
+        LocalPlayer player = Minecraft.getInstance().player;
+        if (player == null) return PlayState.STOP;
+        ItemStack stack = player.getMainHandItem();
+        if (!stack.is(ModTags.Items.GUN)) return PlayState.STOP;
+
+        var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
+        if (cap != null && cap.edit) {
+            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.ak47.edit"));
         }
 
         return event.setAndContinue(RawAnimation.begin().thenLoop("animation.ak47.idle"));
@@ -71,8 +129,35 @@ public class RpkItem extends GunItem implements GeoItem {
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar data) {
-        var idleController = new AnimationController<>(this, "idleController", 4, this::idlePredicate);
+        var idleController = new AnimationController<>(this, "idleController", 3, this::idlePredicate);
         data.add(idleController);
+        var editController = new AnimationController<>(this, "editController", 1, this::editPredicate);
+        data.add(editController);
+    }
+
+    @Override
+    public int getCustomMagazine(ItemStack stack) {
+        int magType = GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.MAGAZINE);
+        return switch (magType) {
+            case 1 -> 20;
+            case 2 -> 60;
+            default -> 0;
+        };
+    }
+
+    @Override
+    public double getCustomZoom(ItemStack stack) {
+        int scopeType = GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.SCOPE);
+        return switch (scopeType) {
+            case 2 -> NBTTool.getTag(stack).getBoolean("ScopeAlt") ? 0 : 2.75;
+            case 3 -> GunsTool.getGunDoubleTag(NBTTool.getTag(stack), "CustomZoom");
+            default -> 0;
+        };
+    }
+
+    @Override
+    public boolean canAdjustZoom(ItemStack stack) {
+        return GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.SCOPE) == 3;
     }
 
     @Override
@@ -101,6 +186,25 @@ public class RpkItem extends GunItem implements GeoItem {
     }
 
     @Override
+    @ParametersAreNonnullByDefault
+    public void inventoryTick(ItemStack stack, Level level, Entity entity, int slot, boolean selected) {
+        super.inventoryTick(stack, level, entity, slot, selected);
+        int gripType = GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.GRIP);
+
+        if (gripType == 3) {
+            var data = GunData.from(stack);
+            CompoundTag tag = data.tag().getCompound("Attachments");
+            tag.putInt("Grip", 0);
+            data.save();
+        }
+    }
+
+    @Override
+    public boolean canSwitchScope(ItemStack stack) {
+        return GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.SCOPE) == 2;
+    }
+
+    @Override
     public boolean isMagazineReload(ItemStack stack) {
         return true;
     }
@@ -121,7 +225,42 @@ public class RpkItem extends GunItem implements GeoItem {
     }
 
     @Override
+    public boolean isCustomizable(ItemStack stack) {
+        return true;
+    }
+
+    @Override
+    public boolean hasCustomBarrel(ItemStack stack) {
+        return true;
+    }
+
+    @Override
+    public boolean hasCustomGrip(ItemStack stack) {
+        return true;
+    }
+
+    @Override
+    public boolean hasCustomMagazine(ItemStack stack) {
+        return true;
+    }
+
+    @Override
+    public boolean hasCustomScope(ItemStack stack) {
+        return true;
+    }
+
+    @Override
+    public boolean hasCustomStock(ItemStack stack) {
+        return true;
+    }
+
+    @Override
     public boolean canEjectShell(ItemStack stack) {
+        return true;
+    }
+
+    @Override
+    public boolean hasBipod(ItemStack stack) {
         return true;
     }
 

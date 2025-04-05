@@ -25,13 +25,13 @@ public class ClientShotgunImageTooltip extends ClientGunImageTooltip {
         }
 
         if (slug) {
-            double damage = data.damage() * data.projectileAmount() * TooltipTool.perkDamage(stack);
+            double damage = data.damage() * data.projectileAmount();
             return Component.translatable("des.superbwarfare.guns.damage").withStyle(ChatFormatting.GRAY)
                     .append(Component.literal("").withStyle(ChatFormatting.RESET))
                     .append(Component.literal(FormatTool.format1D(damage) + (TooltipTool.heBullet(stack) ? " + " +
                             FormatTool.format1D(0.8 * damage * (1 + 0.1 * TooltipTool.heBulletLevel(stack))) : "")).withStyle(ChatFormatting.GREEN));
         } else {
-            double damage = data.damage() * TooltipTool.perkDamage(stack);
+            double damage = data.damage();
             return Component.translatable("des.superbwarfare.guns.damage").withStyle(ChatFormatting.GRAY)
                     .append(Component.literal("").withStyle(ChatFormatting.RESET))
                     .append(Component.literal(FormatTool.format1D(damage) + " * " + FormatTool.format0D(data.projectileAmount())).withStyle(ChatFormatting.GREEN));

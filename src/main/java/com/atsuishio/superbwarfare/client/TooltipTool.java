@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.client;
 
 import com.atsuishio.superbwarfare.init.ModPerks;
-import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
 import com.atsuishio.superbwarfare.tools.NBTTool;
@@ -22,14 +21,6 @@ public class TooltipTool {
 
     public static void addDevelopingText(List<Component> tooltip) {
         tooltip.add(Component.translatable("des.superbwarfare.developing").withStyle(ChatFormatting.LIGHT_PURPLE).withStyle(ChatFormatting.BOLD));
-    }
-
-    public static double perkDamage(ItemStack stack) {
-        var perk = PerkHelper.getPerkByType(NBTTool.getTag(stack), Perk.Type.AMMO);
-        if (perk instanceof AmmoPerk ammoPerk) {
-            return ammoPerk.damageRate;
-        }
-        return 1;
     }
 
     public static boolean heBullet(ItemStack stack) {

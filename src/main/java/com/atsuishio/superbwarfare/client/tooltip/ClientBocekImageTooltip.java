@@ -24,7 +24,7 @@ public class ClientBocekImageTooltip extends ClientGunImageTooltip {
             slug = true;
         }
 
-        double total = data.damage() * TooltipTool.perkDamage(stack);
+        double total = data.damage();
 
         if (slug) {
             return Component.translatable("des.superbwarfare.guns.damage").withStyle(ChatFormatting.GRAY)

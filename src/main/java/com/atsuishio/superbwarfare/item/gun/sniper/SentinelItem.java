@@ -18,11 +18,9 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoItem;
@@ -31,7 +29,6 @@ import software.bernie.geckolib.animation.*;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Optional;
 import java.util.Set;
 
@@ -134,21 +131,13 @@ public class SentinelItem extends GunItem implements GeoItem, EnergyStorageItem 
     }
 
     @Override
-    @ParametersAreNonnullByDefault
-    public void inventoryTick(ItemStack stack, Level world, Entity entity, int slot, boolean selected) {
-        super.inventoryTick(stack, world, entity, slot, selected);
+    public double getCustomDamage(ItemStack stack) {
         var data = GunData.from(stack);
-        final var tag = data.tag();
-
         var cap = stack.getCapability(Capabilities.EnergyStorage.ITEM);
         if (cap != null && cap.getEnergyStored() > 0) {
-            cap.extractEnergy(1, false);
-            GunsTool.setGunDoubleTag(tag, "ChargedDamage", 0.2857142857142857
-                    * GunData.from(stack).damage());
-        } else {
-            GunsTool.setGunDoubleTag(tag, "ChargedDamage", 0);
+            return 0.2857142857142857 * data.rawDamage();
         }
-        data.save();
+        return 0;
     }
 
     @Override

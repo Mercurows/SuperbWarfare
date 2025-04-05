@@ -118,9 +118,9 @@ public class SvdItem extends GunItem implements GeoItem {
     public double getCustomZoom(ItemStack stack) {
         int scopeType = GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.SCOPE);
         return switch (scopeType) {
-            case 0, 1 -> 0;
-            case 2 -> 3.75;
-            default -> GunsTool.getGunDoubleTag(NBTTool.getTag(stack), "CustomZoom");
+            case 2 -> 2.75;
+            case 3 -> GunsTool.getGunDoubleTag(NBTTool.getTag(stack), "CustomZoom");
+            default -> 0;
         };
     }
 

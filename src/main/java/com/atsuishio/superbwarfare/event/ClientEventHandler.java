@@ -1399,12 +1399,12 @@ public class ClientEventHandler {
                 p = zoomPos;
             }
 
-            customZoom = Mth.lerp(0.6 * times, customZoom, GunsTool.getGunDoubleTag(tag, "CustomZoom"));
+            var data = GunData.from(stack);
 
-            double zoomFov = 1.25 + customZoom;
+            customZoom = Mth.lerp(0.6 * times, customZoom, data.zoom());
 
             if (mc.options.getCameraType().isFirstPerson()) {
-                event.setFOV(event.getFOV() / (1.0 + p * (zoomFov - 1)) * (1 - 0.4 * breathTime));
+                event.setFOV(event.getFOV() / (1.0 + p * (customZoom - 1)) * (1 - 0.4 * breathTime));
             } else if (mc.options.getCameraType() == CameraType.THIRD_PERSON_BACK)
                 event.setFOV(event.getFOV() / (1.0 + p * 0.01) * (1 - 0.4 * breathTime));
             fov = event.getFOV();
@@ -1422,7 +1422,7 @@ public class ClientEventHandler {
 
                     if (intelligentChipLevel > 0) {
                         if (ClientEventHandler.entity == null || !entity.isAlive()) {
-                            ClientEventHandler.entity = SeekTool.seekLivingEntity(player, player.level(), 32 + 8 * (intelligentChipLevel - 1), 16 / zoomFov);
+                            ClientEventHandler.entity = SeekTool.seekLivingEntity(player, player.level(), 32 + 8 * (intelligentChipLevel - 1), 16 / customZoom);
                         }
                         if (entity != null && entity.isAlive()) {
                             Vec3 toVec = getVec3(event, player);

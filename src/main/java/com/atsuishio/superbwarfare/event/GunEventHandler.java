@@ -184,8 +184,7 @@ public class GunEventHandler {
 
         if (!player.level().isClientSide()) {
             float headshot = (float) data.headshot();
-            float damage = (float) (data.damage() +
-                    GunsTool.getGunDoubleTag(tag, "ChargedDamage")) * (float) perkDamage(tag);
+            float damage = (float) data.damage();
             float velocity = (float) ((data.velocity() + GunsTool.getGunDoubleTag(tag, "CustomVelocity")) * perkSpeed(tag));
             int projectileAmount = data.projectileAmount();
             float bypassArmorRate = (float) data.bypassArmor();
@@ -262,14 +261,6 @@ public class GunEventHandler {
             projectile.shoot(player, player.getLookAngle().x, player.getLookAngle().y + 0.001f, player.getLookAngle().z, stack.is(ModTags.Items.SHOTGUN) && perk == ModPerks.INCENDIARY_BULLET.get() ? 4.5f : velocity, (float) spared);
             player.level().addFreshEntity(projectile);
         }
-    }
-
-    public static double perkDamage(final CompoundTag tag) {
-        var perk = PerkHelper.getPerkByType(tag, Perk.Type.AMMO);
-        if (perk instanceof AmmoPerk ammoPerk) {
-            return ammoPerk.damageRate;
-        }
-        return 1;
     }
 
     public static double perkSpeed(final CompoundTag tag) {

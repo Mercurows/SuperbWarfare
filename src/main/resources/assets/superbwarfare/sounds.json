@@ -682,7 +682,7 @@
   "rpk_reload_normal": {
     "sounds": [
       {
-        "name": "superbwarfare:rpk/rpk_reload_normal",
+        "name": "superbwarfare:ak_47/ak_47_reload_normal",
         "stream": false
       }
     ]
@@ -690,7 +690,7 @@
   "rpk_reload_empty": {
     "sounds": [
       {
-        "name": "superbwarfare:rpk/rpk_reload_empty",
+        "name": "superbwarfare:ak_47/ak_47_reload_empty",
         "stream": false
       }
     ]

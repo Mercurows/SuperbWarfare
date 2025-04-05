@@ -1,5 +1,8 @@
 package com.atsuishio.superbwarfare.item.gun;
 
+import com.atsuishio.superbwarfare.perk.AmmoPerk;
+import com.atsuishio.superbwarfare.perk.Perk;
+import com.atsuishio.superbwarfare.perk.PerkHelper;
 import com.atsuishio.superbwarfare.tools.GunsTool;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
@@ -96,8 +99,20 @@ public class GunData {
         return GunsTool.gunsData.getOrDefault(id, new HashMap<>()).getOrDefault(key, defaultValue);
     }
 
+    public double rawDamage() {
+        return getGunData("Damage");
+    }
+
+    public double perkDamage() {
+        var perk = PerkHelper.getPerkByType(tag, Perk.Type.AMMO);
+        if (perk instanceof AmmoPerk ammoPerk) {
+            return ammoPerk.damageRate;
+        }
+        return 1;
+    }
+
     public double damage() {
-        return getGunData("Damage") + item.getCustomDamage(stack);
+        return (rawDamage() + item.getCustomDamage(stack)) + perkDamage();
     }
 
     public double explosionDamage() {
@@ -207,15 +222,17 @@ public class GunData {
     }
 
     public double defaultZoom() {
-        return getGunData("DefaultZoom", 1);
+        return getGunData("DefaultZoom", 1.25);
     }
 
     public double minZoom() {
-        return getGunData("MinZoom", 1);
+        int scopeType = GunsTool.getAttachmentType(tag, GunsTool.AttachmentType.SCOPE);
+        return scopeType == 3 ? getGunData("MinZoom", 1.25) : 1.25;
     }
 
     public double maxZoom() {
-        return getGunData("MaxZoom", 1);
+        int scopeType = GunsTool.getAttachmentType(tag, GunsTool.AttachmentType.SCOPE);
+        return scopeType == 3 ? getGunData("MaxZoom", 1) : 114514;
     }
 
     public double zoom() {

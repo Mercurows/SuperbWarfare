@@ -12,7 +12,6 @@ import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
 import com.atsuishio.superbwarfare.tools.GunsTool;
-import com.atsuishio.superbwarfare.tools.NBTTool;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.Holder;
 import net.minecraft.nbt.CompoundTag;
@@ -106,15 +105,6 @@ public record FireMessage(int msgType) implements CustomPacketPayload {
         }
     }
 
-    public static double perkDamage(ItemStack stack) {
-        final var tag = NBTTool.getTag(stack);
-        var perk = PerkHelper.getPerkByType(tag, Perk.Type.AMMO);
-        if (perk instanceof AmmoPerk ammoPerk) {
-            return ammoPerk.damageRate;
-        }
-        return 1;
-    }
-
     public static double perkSpeed(final CompoundTag tag) {
         var perk = PerkHelper.getPerkByType(tag, Perk.Type.AMMO);
         if (perk instanceof AmmoPerk ammoPerk) {
@@ -141,12 +131,12 @@ public record FireMessage(int msgType) implements CustomPacketPayload {
         if (zoom) {
             spread = 0.01f;
             damage = 0.08333333 * data.damage() *
-                    GunsTool.getGunDoubleTag(tag, "Power", 6) * perkDamage(stack);
+                    GunsTool.getGunDoubleTag(tag, "Power", 6);
         } else {
             spread = perk instanceof AmmoPerk ammoPerk && ammoPerk.slug ? 0.5f : 2.5f;
             damage = (perk instanceof AmmoPerk ammoPerk && ammoPerk.slug ? 0.08333333 : 0.008333333) *
                     data.damage() *
-                    GunsTool.getGunDoubleTag(tag, "Power", 6) * perkDamage(stack);
+                    GunsTool.getGunDoubleTag(tag, "Power", 6);
         }
 
         ProjectileEntity projectile = new ProjectileEntity(player.level())

@@ -1,11 +1,13 @@
 package com.atsuishio.superbwarfare.client.renderer.item;
 
 import com.atsuishio.superbwarfare.client.AnimationHelper;
+import com.atsuishio.superbwarfare.client.ItemModelHelper;
 import com.atsuishio.superbwarfare.client.model.item.RpkItemModel;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.item.gun.GunData;
 import com.atsuishio.superbwarfare.item.gun.machinegun.RpkItem;
-import com.atsuishio.superbwarfare.tools.NBTTool;
+import com.atsuishio.superbwarfare.tools.GunsTool;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
@@ -78,24 +80,69 @@ public class RpkItemRenderer extends GeoItemRenderer<RpkItem> {
         if (player == null) return;
         ItemStack itemStack = player.getMainHandItem();
         if (!itemStack.is(ModTags.Items.GUN)) return;
+        var tag = GunData.from(itemStack).tag();
 
         if (name.equals("holo")) {
-            bone.setHidden(NBTTool.getTag(itemStack).getBoolean("HoloHidden") || !ClientEventHandler.zoom);
+            bone.setHidden(tag.getBoolean("HoloHidden") || !ClientEventHandler.zoom);
+        }
+        if (name.equals("Cross1")) {
+            bone.setHidden(tag.getBoolean("HoloHidden")
+                    || !ClientEventHandler.zoom
+                    || GunsTool.getAttachmentType(itemStack, GunsTool.AttachmentType.SCOPE) != 1);
+        }
+
+        if (name.equals("Cross2")) {
+            bone.setHidden(tag.getBoolean("HoloHidden")
+                    || !ClientEventHandler.zoom
+                    || GunsTool.getAttachmentType(itemStack, GunsTool.AttachmentType.SCOPE) != 2
+                    || tag.getBoolean("ScopeAlt"));
+        }
+
+        if (name.equals("CrossAlt")) {
+            bone.setHidden(tag.getBoolean("HoloHidden")
+                    || !ClientEventHandler.zoom
+                    || GunsTool.getAttachmentType(itemStack, GunsTool.AttachmentType.SCOPE) != 2
+                    || !(tag.getBoolean("ScopeAlt")));
+        }
+
+        if (name.equals("Cross3")) {
+            bone.setHidden(tag.getBoolean("HoloHidden")
+                    || !ClientEventHandler.zoom
+                    || GunsTool.getAttachmentType(itemStack, GunsTool.AttachmentType.SCOPE) != 3);
+        }
+
+        if (name.equals("humu1")) {
+            bone.setHidden(GunsTool.getAttachmentType(itemStack, GunsTool.AttachmentType.GRIP) != 0);
+        }
+
+        if (name.equals("humu2")) {
+            bone.setHidden(GunsTool.getAttachmentType(itemStack, GunsTool.AttachmentType.GRIP) == 0);
+        }
+
+        if (GunsTool.getAttachmentType(itemStack, GunsTool.AttachmentType.SCOPE) == 2 && !tag.getBoolean("ScopeAlt")
+                && (name.equals("glass") || name.equals("Barrel") || name.equals("humu") || name.equals("qiangguan"))) {
+            bone.setHidden(!tag.getBoolean("HoloHidden") && ClientEventHandler.zoom);
+        }
+
+        if (GunsTool.getAttachmentType(itemStack, GunsTool.AttachmentType.SCOPE) == 3
+                && (name.equals("jing") || name.equals("Barrel") || name.equals("humu") || name.equals("qiangguan") || name.equals("houzhunxing"))) {
+            bone.setHidden(!tag.getBoolean("HoloHidden") && ClientEventHandler.zoom);
         }
 
         if (name.equals("flare")) {
-            if (ClientEventHandler.firePosTimer == 0 || ClientEventHandler.firePosTimer > 0.5) {
+            if (ClientEventHandler.firePosTimer == 0 || ClientEventHandler.firePosTimer > 0.5 || GunsTool.getAttachmentType(itemStack, GunsTool.AttachmentType.BARREL) == 2) {
                 bone.setHidden(true);
             } else {
                 bone.setHidden(false);
-                bone.setScaleX((float) (0.75 + 0.5 * (Math.random() - 0.5)));
-                bone.setScaleY((float) (0.75 + 0.5 * (Math.random() - 0.5)));
+                bone.setScaleX((float) (0.55 + 0.5 * (Math.random() - 0.5)));
+                bone.setScaleY((float) (0.55 + 0.5 * (Math.random() - 0.5)));
                 bone.setRotZ((float) (0.5 * (Math.random() - 0.5)));
             }
         }
+        ItemModelHelper.handleGunAttachments(bone, itemStack, name);
 
         if (renderingArms) {
-            AnimationHelper.renderArms(mc, player, this.transformType, stack, name, bone, SCALE_RECIPROCAL, this.currentBuffer, type, packedLightIn, true, true);
+            AnimationHelper.renderArms(mc, player, this.transformType, stack, name, bone, SCALE_RECIPROCAL, this.currentBuffer, type, packedLightIn, false, false);
         }
         super.renderRecursively(stack, animatable, bone, type, buffer, bufferIn, isReRender, partialTick, packedLightIn, packedOverlayIn, color);
     }

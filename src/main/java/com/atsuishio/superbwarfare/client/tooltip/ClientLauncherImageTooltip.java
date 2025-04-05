@@ -16,7 +16,7 @@ public class ClientLauncherImageTooltip extends ClientGunImageTooltip {
 
     @Override
     protected Component getDamageComponent() {
-        double damage = data.damage() * TooltipTool.perkDamage(stack);
+        double damage = data.damage();
         int perkLevel = PerkHelper.getItemPerkLevel(ModPerks.MICRO_MISSILE.get(), data);
         if (perkLevel > 0) damage *= 1.1f + perkLevel * 0.1f;
 

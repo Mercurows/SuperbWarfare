@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.client.tooltip;
 
-import com.atsuishio.superbwarfare.client.TooltipTool;
 import com.atsuishio.superbwarfare.client.tooltip.component.GunImageComponent;
 import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
@@ -16,7 +15,7 @@ public class ClientSecondaryCataclysmImageTooltip extends ClientEnergyImageToolt
 
     @Override
     protected Component getDamageComponent() {
-        double damage = data.damage() * TooltipTool.perkDamage(stack);
+        double damage = data.damage();
         int perkLevel = PerkHelper.getItemPerkLevel(ModPerks.MICRO_MISSILE.get(), data);
         if (perkLevel > 0) damage *= 1.1f + perkLevel * 0.1f;
 

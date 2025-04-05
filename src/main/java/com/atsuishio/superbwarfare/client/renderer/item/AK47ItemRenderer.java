@@ -128,19 +128,6 @@ public class AK47ItemRenderer extends GeoItemRenderer<AK47Item> {
                     bone.setRotZ((float) (0.5 * (Math.random() - 0.5)));
                 }
             }
-
-            if (name.equals("Mag0")) {
-                bone.setHidden(GunsTool.getAttachmentType(itemStack, GunsTool.AttachmentType.MAGAZINE) != 0);
-            }
-
-            if (name.equals("Mag1")) {
-                bone.setHidden(GunsTool.getAttachmentType(itemStack, GunsTool.AttachmentType.MAGAZINE) != 1);
-            }
-
-            if (name.equals("Mag2")) {
-                bone.setHidden(GunsTool.getAttachmentType(itemStack, GunsTool.AttachmentType.MAGAZINE) != 2);
-            }
-
             ItemModelHelper.handleGunAttachments(bone, itemStack, name);
         }
 
