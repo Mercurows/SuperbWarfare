@@ -210,7 +210,7 @@ public class LivingEventHandler {
         if (!stack.is(ModTags.Items.GUN)) return;
         if (event.getEntity() instanceof TargetEntity) return;
 
-        var data = GunData.from(stack).reload();
+        var data = GunData.from(stack);
         double amount = Math.min(0.125 * event.getAmount(), event.getEntity().getMaxHealth());
         final var tag = NBTTool.getTag(stack);
 
@@ -236,7 +236,7 @@ public class LivingEventHandler {
         if (!stack.is(ModTags.Items.GUN)) return;
         if (event.getEntity() instanceof TargetEntity) return;
 
-        var data = GunData.from(stack).reload();
+        var data = GunData.from(stack);
         double amount = 20 + 2 * event.getEntity().getMaxHealth();
         final var tag = NBTTool.getTag(stack);
 
@@ -276,7 +276,7 @@ public class LivingEventHandler {
         if (!stack.is(ModTags.Items.GUN)) return;
         if (event.getEntity() instanceof TargetEntity) return;
 
-        var data = GunData.from(stack).reload();
+        var data = GunData.from(stack);
         int level = data.getLevel();
         double exp = data.getExp();
         double upgradeExpNeeded = 20 * Math.pow(level, 2) + 160 * level + 20;
@@ -356,8 +356,9 @@ public class LivingEventHandler {
                 if (oldStack.getItem() instanceof GunItem oldGun) {
                     stopGunReloadSound(serverPlayer, oldGun);
 
-                    var oldData = GunData.from(oldStack).reload();
-                    CompoundTag data = oldData.getData();
+                    var oldData = GunData.from(oldStack);
+                    oldTag = oldData.getTag();
+                    var data = oldData.getData();
 
                     if (oldData.boltActionTime() > 0) {
                         data.putInt("BoltActionTick", 0);
@@ -371,7 +372,7 @@ public class LivingEventHandler {
                     if (oldData.iterativeTime() != 0) {
                         oldTag.putBoolean("force_stop", false);
                         oldTag.putBoolean("stop", false);
-                        oldTag.putInt("reload_stage", 0);
+                        oldData.setReloadStage(0);
                         oldTag.putDouble("prepare", 0);
                         oldTag.putDouble("prepare_load", 0);
                         oldTag.putDouble("iterative", 0);
@@ -388,10 +389,13 @@ public class LivingEventHandler {
                         cap.edit = false;
                         cap.syncPlayerVariables(player);
                     }
+
+                    oldData.save();
                 }
 
                 if (newStack.getItem() instanceof GunItem) {
                     var newData = GunData.from(newStack);
+                    newTag = newData.getTag();
 
                     player.getPersistentData().putDouble("noRun", 40);
                     newTag.putBoolean("draw", true);
@@ -401,14 +405,14 @@ public class LivingEventHandler {
 
                     newData.setReloadState(GunData.ReloadState.NOT_RELOADING);
 
-                    CompoundTag data = newTag.getCompound("GunData");
+                    var data = newTag.getCompound("GunData");
                     data.putInt("ReloadTime", 0);
                     newTag.put("GunData", data);
 
                     if (newData.iterativeTime() != 0) {
                         newTag.putBoolean("force_stop", false);
                         newTag.putBoolean("stop", false);
-                        newTag.putInt("reload_stage", 0);
+                        newData.setReloadStage(0);
                         newTag.putDouble("prepare", 0);
                         newTag.putDouble("prepare_load", 0);
                         newTag.putDouble("iterative", 0);
@@ -419,7 +423,6 @@ public class LivingEventHandler {
                         GunsTool.setGunBooleanTag(newTag, "Charging", false);
                         GunsTool.setGunIntTag(newTag, "ChargeTime", 0);
                     }
-                    NBTTool.saveTag(newStack, newTag);
 
                     int level = PerkHelper.getItemPerkLevel(ModPerks.KILLING_TALLY.get(), newTag);
                     if (level != 0) {
@@ -435,9 +438,9 @@ public class LivingEventHandler {
                         cap.tacticalSprint = false;
                         cap.syncPlayerVariables(player);
                     }
+
+                    newData.save();
                 }
-                NBTTool.saveTag(oldStack, oldTag);
-                NBTTool.saveTag(newStack, newTag);
             }
         }
     }
@@ -573,7 +576,8 @@ public class LivingEventHandler {
     }
 
     private static void handleClipPerks(ItemStack stack) {
-        final var tag = NBTTool.getTag(stack);
+        var data = GunData.from(stack);
+        final var tag = data.getTag();
         int healClipLevel = PerkHelper.getItemPerkLevel(ModPerks.HEAL_CLIP.get(), tag);
         if (healClipLevel != 0) {
             GunsTool.setPerkIntTag(tag, "HealClipTime", 80 + healClipLevel * 20);
@@ -583,11 +587,12 @@ public class LivingEventHandler {
         if (killClipLevel != 0) {
             GunsTool.setPerkIntTag(tag, "KillClipReloadTime", 80);
         }
-        NBTTool.saveTag(stack, tag);
+        data.save();
     }
 
     private static void handleKillClipDamage(ItemStack stack, LivingIncomingDamageEvent event) {
-        final var tag = NBTTool.getTag(stack);
+        var data = GunData.from(stack);
+        final var tag = data.getTag();
         if (GunsTool.getPerkIntTag(tag, "KillClipTime") > 0) {
             int level = PerkHelper.getItemPerkLevel(ModPerks.KILL_CLIP.get(), tag);
             if (level == 0) {
@@ -599,7 +604,8 @@ public class LivingEventHandler {
     }
 
     private static void handleGutshotStraightDamage(ItemStack stack, LivingIncomingDamageEvent event) {
-        final var tag = NBTTool.getTag(stack);
+        var data = GunData.from(stack);
+        final var tag = data.getTag();
         int level = PerkHelper.getItemPerkLevel(ModPerks.GUTSHOT_STRAIGHT.get(), tag);
         if (level == 0) return;
 
@@ -607,7 +613,8 @@ public class LivingEventHandler {
     }
 
     private static void handleKillingTallyDamage(ItemStack stack, LivingIncomingDamageEvent event) {
-        final var tag = NBTTool.getTag(stack);
+        var data = GunData.from(stack);
+        final var tag = data.getTag();
         int level = PerkHelper.getItemPerkLevel(ModPerks.KILLING_TALLY.get(), tag);
         if (level == 0) return;
 
@@ -620,16 +627,18 @@ public class LivingEventHandler {
     }
 
     private static void handleKillingTallyAddCount(ItemStack stack) {
-        final var tag = NBTTool.getTag(stack);
+        var data = GunData.from(stack);
+        final var tag = data.getTag();
         int level = PerkHelper.getItemPerkLevel(ModPerks.KILLING_TALLY.get(), tag);
         if (level != 0) {
             GunsTool.setPerkIntTag(tag, "KillingTally", Math.min(3, GunsTool.getPerkIntTag(tag, "KillingTally") + 1));
-            NBTTool.saveTag(stack, tag);
+            data.save();
         }
     }
 
     private static void handleFourthTimesCharm(ItemStack stack) {
-        final var tag = NBTTool.getTag(stack);
+        var data = GunData.from(stack);
+        final var tag = data.getTag();
         int level = PerkHelper.getItemPerkLevel(ModPerks.FOURTH_TIMES_CHARM.get(), tag);
         if (level == 0) return;
 
@@ -643,11 +652,12 @@ public class LivingEventHandler {
                 GunsTool.setPerkIntTag(tag, "FourthTimesCharmCount", Math.min(4, count + 1));
             }
         }
-        NBTTool.saveTag(stack, tag);
+        data.save();
     }
 
     private static void handleSubsistence(ItemStack stack, Player player) {
-        final var tag = NBTTool.getTag(stack);
+        var data = GunData.from(stack);
+        final var tag = data.getTag();
         int level = PerkHelper.getItemPerkLevel(ModPerks.SUBSISTENCE.get(), tag);
         if (level == 0) return;
 
@@ -656,7 +666,6 @@ public class LivingEventHandler {
         var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
         if (cap == null) return;
 
-        var data = GunData.from(stack);
         int mag = data.magazine();
         int ammo = data.getAmmo();
         int ammoReload = (int) Math.min(mag, mag * rate);
@@ -687,7 +696,8 @@ public class LivingEventHandler {
 
 
     private static void handleFieldDoctor(ItemStack stack, LivingIncomingDamageEvent event, Player player) {
-        final var tag = NBTTool.getTag(stack);
+        var data = GunData.from(stack);
+        final var tag = data.getTag();
         int level = PerkHelper.getItemPerkLevel(ModPerks.FIELD_DOCTOR.get(), tag);
         if (level == 0) return;
 
@@ -698,16 +708,18 @@ public class LivingEventHandler {
     }
 
     private static void handleHeadSeekerTime(ItemStack stack) {
-        final var tag = NBTTool.getTag(stack);
+        var data = GunData.from(stack);
+        final var tag = data.getTag();
         int level = PerkHelper.getItemPerkLevel(ModPerks.HEAD_SEEKER.get(), tag);
         if (level == 0) return;
 
         GunsTool.setPerkIntTag(tag, "HeadSeeker", 11 + level * 2);
-        NBTTool.saveTag(stack, tag);
+        data.save();
     }
 
     private static void handleHeadSeekerDamage(ItemStack stack, LivingIncomingDamageEvent event) {
-        final var tag = NBTTool.getTag(stack);
+        var data = GunData.from(stack);
+        final var tag = data.getTag();
         int level = PerkHelper.getItemPerkLevel(ModPerks.HEAD_SEEKER.get(), tag);
         if (level == 0) return;
 
@@ -717,12 +729,13 @@ public class LivingEventHandler {
     }
 
     private static void handleDesperado(ItemStack stack) {
-        final var tag = NBTTool.getTag(stack);
+        var data = GunData.from(stack);
+        final var tag = data.getTag();
         int level = PerkHelper.getItemPerkLevel(ModPerks.DESPERADO.get(), tag);
         if (level == 0) return;
 
         GunsTool.setPerkIntTag(tag, "DesperadoTime", 90 + level * 10);
-        NBTTool.saveTag(stack, tag);
+        data.save();
     }
 
     /**

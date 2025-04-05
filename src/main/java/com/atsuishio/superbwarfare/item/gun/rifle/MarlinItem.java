@@ -56,19 +56,19 @@ public class MarlinItem extends GunItem implements GeoItem {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.marlin.shift"));
         }
 
-        if (tag.getInt("reload_stage") == 1 && tag.getDouble("prepare") > 0) {
+        if (data.getReloadStage() == 1 && tag.getDouble("prepare") > 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.marlin.prepare"));
         }
 
-        if (tag.getDouble("load_index") == 0 && tag.getInt("reload_stage") == 2) {
+        if (tag.getDouble("load_index") == 0 && data.getReloadStage() == 2) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.marlin.iterativeload"));
         }
 
-        if (tag.getDouble("load_index") == 1 && tag.getInt("reload_stage") == 2) {
+        if (tag.getDouble("load_index") == 1 && data.getReloadStage() == 2) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.marlin.iterativeload2"));
         }
 
-        if (tag.getInt("reload_stage") == 3) {
+        if (data.getReloadStage() == 3) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.marlin.finish"));
         }
 

@@ -4,9 +4,9 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.item.gun.GunData;
 import com.atsuishio.superbwarfare.item.gun.heavy.Ntw20Item;
 import com.atsuishio.superbwarfare.tools.GunsTool;
-import com.atsuishio.superbwarfare.tools.NBTTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -137,9 +137,10 @@ public class Ntw20Model extends GeoModel<Ntw20Item> {
 
         CrossHairOverlay.gunRot = shen.getRotZ();
 
-        final var tag = NBTTool.getTag(stack);
+        var data = GunData.from(stack);
+        var tag = data.getTag();
         tag.putBoolean("HoloHidden", !(gun.getPosX() > 4.3));
-        NBTTool.saveTag(stack, tag);
+        data.save();
 
         action.setPosZ(3f * (float) ClientEventHandler.actionMove);
         lh.setPosZ(-3f * (float) ClientEventHandler.actionMove);

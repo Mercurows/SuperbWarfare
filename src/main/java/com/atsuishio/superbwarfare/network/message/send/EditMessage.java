@@ -3,7 +3,7 @@ package com.atsuishio.superbwarfare.network.message.send;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
-import com.atsuishio.superbwarfare.tools.NBTTool;
+import com.atsuishio.superbwarfare.item.gun.GunData;
 import com.atsuishio.superbwarfare.tools.SoundTool;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.CompoundTag;
@@ -34,7 +34,8 @@ public record EditMessage(int msgType) implements CustomPacketPayload {
         ItemStack stack = player.getMainHandItem();
         if (!stack.is(ModTags.Items.GUN)) return;
 
-        var rootTag = NBTTool.getTag(stack);
+        var data = GunData.from(stack);
+        var rootTag = data.getTag();
         CompoundTag tag = rootTag.getCompound("Attachments");
         switch (type) {
             case 0 -> {
@@ -69,7 +70,7 @@ public record EditMessage(int msgType) implements CustomPacketPayload {
             }
         }
         rootTag.put("Attachments", tag);
-        NBTTool.saveTag(stack, rootTag);
+        data.save();
         SoundTool.playLocalSound(player, ModSounds.EDIT.get(), 1f, 1f);
     }
 

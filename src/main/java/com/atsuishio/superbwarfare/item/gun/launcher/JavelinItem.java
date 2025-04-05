@@ -133,7 +133,8 @@ public class JavelinItem extends GunItem implements GeoItem, SpecialFireWeapon {
     @ParametersAreNonnullByDefault
     public void inventoryTick(ItemStack stack, Level world, Entity entity, int slot, boolean selected) {
         super.inventoryTick(stack, world, entity, slot, selected);
-        var tag = NBTTool.getTag(stack);
+        var data = GunData.from(stack);
+        final var tag = data.getTag();
 
         if (entity instanceof Player player && selected) {
             GunsTool.setGunIntTag(tag, "MaxAmmo", getAmmoCount(player));
@@ -200,7 +201,7 @@ public class JavelinItem extends GunItem implements GeoItem, SpecialFireWeapon {
         } else {
             tag.putInt("SeekTime", 0);
         }
-        NBTTool.saveTag(stack, tag);
+        data.save();
     }
 
     protected static boolean check(ItemStack stack) {

@@ -5,9 +5,9 @@ import com.atsuishio.superbwarfare.client.AnimationHelper;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.item.gun.GunData;
 import com.atsuishio.superbwarfare.item.gun.smg.VectorItem;
 import com.atsuishio.superbwarfare.tools.GunsTool;
-import com.atsuishio.superbwarfare.tools.NBTTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -55,7 +55,8 @@ public class VectorItemModel extends GeoModel<VectorItem> {
         ItemStack stack = player.getMainHandItem();
         if (!stack.is(ModTags.Items.GUN)) return;
 
-        final var tag = NBTTool.getTag(stack);
+        var data = GunData.from(stack);
+        var tag = data.getTag();
         int mode = GunsTool.getGunIntTag(tag, "FireMode");
         if (mode == 0) {
             kmj.setRotX(-120 * Mth.DEG_TO_RAD);
@@ -100,7 +101,7 @@ public class VectorItemModel extends GeoModel<VectorItem> {
         scope.setScaleZ(1f - (0.2f * (float) zp));
 
         tag.putBoolean("HoloHidden", gun.getPosX() <= 2);
-        NBTTool.saveTag(stack, tag);
+        data.save();
 
         GeoBone shen;
         if (zt < 0.5) {

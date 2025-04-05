@@ -17,7 +17,6 @@ import com.atsuishio.superbwarfare.network.message.receive.ShootClientMessage;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
 import com.atsuishio.superbwarfare.tools.GunsTool;
-import com.atsuishio.superbwarfare.tools.NBTTool;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
 import com.atsuishio.superbwarfare.tools.SoundTool;
 import net.minecraft.client.Minecraft;
@@ -129,9 +128,10 @@ public class M79Item extends GunItem implements GeoItem, SpecialFireWeapon {
     public void inventoryTick(ItemStack stack, Level world, Entity entity, int slot, boolean selected) {
         super.inventoryTick(stack, world, entity, slot, selected);
         if (entity instanceof Player player) {
-            final var tag = NBTTool.getTag(stack);
+            var data = GunData.from(stack);
+            final var tag = data.getTag();
             GunsTool.setGunIntTag(tag, "MaxAmmo", getAmmoCount(player));
-            NBTTool.saveTag(stack, tag);
+            data.save();
         }
     }
 

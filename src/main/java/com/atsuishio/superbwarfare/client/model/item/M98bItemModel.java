@@ -4,9 +4,9 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.item.gun.GunData;
 import com.atsuishio.superbwarfare.item.gun.sniper.M98bItem;
 import com.atsuishio.superbwarfare.tools.GunsTool;
-import com.atsuishio.superbwarfare.tools.NBTTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -88,9 +88,10 @@ public class M98bItemModel extends GeoModel<M98bItem> {
         gun.setPosZ(4.2f * (float) zp + (float) (0.3f * zpz));
         gun.setRotZ((float) (0.02f * zpz));
 
-        final var tag = NBTTool.getTag(stack);
+        var data = GunData.from(stack);
+        var tag = data.getTag();
         tag.putBoolean("HoloHidden", !(gun.getPosX() > 1.8));
-        NBTTool.saveTag(stack, tag);
+        data.save();
 
         GeoBone root = getAnimationProcessor().getBone("root");
         GeoBone zhunxing = getAnimationProcessor().getBone("shi");

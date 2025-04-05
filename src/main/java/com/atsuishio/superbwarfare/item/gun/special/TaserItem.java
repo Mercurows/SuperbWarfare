@@ -18,7 +18,6 @@ import com.atsuishio.superbwarfare.network.message.receive.ShootClientMessage;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
 import com.atsuishio.superbwarfare.tools.GunsTool;
-import com.atsuishio.superbwarfare.tools.NBTTool;
 import com.atsuishio.superbwarfare.tools.SoundTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -147,11 +146,12 @@ public class TaserItem extends GunItem implements GeoItem, SpecialFireWeapon, En
     @ParametersAreNonnullByDefault
     public void inventoryTick(ItemStack stack, Level world, Entity entity, int slot, boolean selected) {
         super.inventoryTick(stack, world, entity, slot, selected);
-        final var tag = NBTTool.getTag(stack);
+        var data = GunData.from(stack);
+        final var tag = data.getTag();
 
         if (entity instanceof Player player) {
             GunsTool.setGunIntTag(tag, "MaxAmmo", getAmmoCount(player));
-            NBTTool.saveTag(stack, tag);
+            data.save();
         }
 
         int perkLevel = PerkHelper.getItemPerkLevel(ModPerks.REGENERATION.get(), tag);

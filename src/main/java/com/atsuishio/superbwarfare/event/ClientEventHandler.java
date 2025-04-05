@@ -378,9 +378,7 @@ public class ClientEventHandler {
     public static void handleWeaponFire(RenderFrameEvent.Pre event) {
         ClientLevel level = Minecraft.getInstance().level;
         Player player = Minecraft.getInstance().player;
-
-        if (player == null) return;
-        if (level == null) return;
+        if (player == null || level == null) return;
 
         if (notInGame()) {
             holdFire = false;
@@ -525,6 +523,8 @@ public class ClientEventHandler {
         if (stack.getItem() == ModItems.DEVOTION.get() && (data.normalReloading() || data.emptyReloading())) {
             customRpm = 0;
         }
+
+        data.save();
     }
 
     public static void beamShoot(Player player, ItemStack stack) {
@@ -593,7 +593,7 @@ public class ClientEventHandler {
                 revolverWheelPreTime = 0;
 
                 playGunClientSounds(player, tag);
-                handleClientShoot(tag);
+                handleClientShoot();
             }
         } else if (stack.is(ModItems.MINIGUN.get())) {
             var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
@@ -613,7 +613,7 @@ public class ClientEventHandler {
                 Mod.queueClientWork((int) (1 + 1.5 * shooterHeight), () -> player.playSound(ModSounds.SHELL_CASING_NORMAL.get(), (float) Math.max(1.5 - 0.2 * shooterHeight, 0), 1));
             }
 
-            handleClientShoot(tag);
+            handleClientShoot();
         }
     }
 
@@ -622,7 +622,7 @@ public class ClientEventHandler {
         actionMove = Mth.lerp(0.125 * times, actionMove, 0);
     }
 
-    public static void handleClientShoot(final CompoundTag tag) {
+    public static void handleClientShoot() {
         Player player = Minecraft.getInstance().player;
         if (player == null) return;
         ItemStack stack = player.getMainHandItem();

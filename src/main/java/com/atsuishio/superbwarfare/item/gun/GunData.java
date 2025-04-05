@@ -19,7 +19,7 @@ public class GunData {
 
     private static final WeakHashMap<ItemStack, GunData> dataCache = new WeakHashMap<>();
 
-    public GunData reload() {
+    private void loadTags() {
         var customData = stack.get(DataComponents.CUSTOM_DATA);
         this.tag = customData != null ? customData.copyTag() : new CompoundTag();
 
@@ -29,7 +29,6 @@ public class GunData {
         } else {
             data = tag.getCompound("GunData");
         }
-        return this;
     }
 
     private GunData(ItemStack stack) {
@@ -40,7 +39,7 @@ public class GunData {
         this.stack = stack;
         var id = stack.getDescriptionId();
         this.id = id.substring(id.lastIndexOf(".") + 1);
-        reload();
+        loadTags();
     }
 
     public static GunData from(ItemStack stack) {
@@ -289,6 +288,5 @@ public class GunData {
 
     public void save() {
         stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
-        reload();
     }
 }

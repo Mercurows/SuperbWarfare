@@ -7,7 +7,6 @@ import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.GunData;
 import com.atsuishio.superbwarfare.item.gun.sniper.MosinNagantItem;
 import com.atsuishio.superbwarfare.tools.GunsTool;
-import com.atsuishio.superbwarfare.tools.NBTTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -90,7 +89,7 @@ public class MosinNagantItemModel extends GeoModel<MosinNagantItem> {
         var data = GunData.from(stack);
         final var tag = data.getTag();
         tag.putBoolean("HoloHidden", !(gun.getPosX() > 1.4));
-        NBTTool.saveTag(stack, tag);
+        data.save();
 
         shen.setPosX((float) (0.95f * ClientEventHandler.recoilHorizon * fpz * fp));
         shen.setPosY((float) (0.4f * fp + 0.44f * fr));

@@ -15,7 +15,6 @@ import com.atsuishio.superbwarfare.network.message.receive.ShootClientMessage;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
 import com.atsuishio.superbwarfare.tools.GunsTool;
-import com.atsuishio.superbwarfare.tools.NBTTool;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
 import com.atsuishio.superbwarfare.tools.SoundTool;
 import net.minecraft.client.Minecraft;
@@ -91,15 +90,15 @@ public class SecondaryCataclysm extends GunItem implements GeoItem, SpecialFireW
         var data = GunData.from(stack);
         final var tag = data.getTag();
 
-        if (tag.getInt("reload_stage") == 1 && tag.getDouble("prepare_load") > 0) {
+        if (data.getReloadStage() == 1 && tag.getDouble("prepare_load") > 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.sc.prepare"));
         }
 
-        if (tag.getDouble("load_index") == 0 && tag.getInt("reload_stage") == 2) {
+        if (tag.getDouble("load_index") == 0 && data.getReloadStage() == 2) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.sc.iterativeload"));
         }
 
-        if (tag.getDouble("load_index") == 1 && tag.getInt("reload_stage") == 2) {
+        if (tag.getDouble("load_index") == 1 && data.getReloadStage() == 2) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.sc.iterativeload2"));
         }
 
@@ -107,7 +106,7 @@ public class SecondaryCataclysm extends GunItem implements GeoItem, SpecialFireW
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.sc.hit"));
         }
 
-        if (tag.getInt("reload_stage") == 3) {
+        if (data.getReloadStage() == 3) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.sc.finish"));
         }
 
@@ -124,9 +123,9 @@ public class SecondaryCataclysm extends GunItem implements GeoItem, SpecialFireW
         if (player.isSprinting() && player.onGround()
                 && player.getPersistentData().getDouble("noRun") == 0
                 && !data.emptyReloading()
-                && data.getTag().getInt("reload_stage") != 1
-                && data.getTag().getInt("reload_stage") != 2
-                && data.getTag().getInt("reload_stage") != 3
+                && data.getReloadStage() != 1
+                && data.getReloadStage() != 2
+                && data.getReloadStage() != 3
                 && ClientEventHandler.drawTime < 0.01
                 && ClientEventHandler.gunMelee == 0
                 && !data.isReloading()
@@ -181,9 +180,10 @@ public class SecondaryCataclysm extends GunItem implements GeoItem, SpecialFireW
         super.inventoryTick(stack, world, entity, slot, selected);
 
         if (entity instanceof Player player) {
-            final var tag = NBTTool.getTag(stack);
+            var data = GunData.from(stack);
+            final var tag = data.getTag();
             GunsTool.setGunIntTag(tag, "MaxAmmo", getAmmoCount(player));
-            NBTTool.saveTag(stack, tag);
+            data.save();
         }
 
         if (entity instanceof Player player) {

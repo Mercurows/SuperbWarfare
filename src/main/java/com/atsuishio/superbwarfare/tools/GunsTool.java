@@ -152,7 +152,6 @@ public class GunsTool {
 
         gunData.setAmmo(needToAdd);
         gunData.setReloadState(GunData.ReloadState.NOT_RELOADING);
-        gunData.save();
     }
 
     /* PerkData */

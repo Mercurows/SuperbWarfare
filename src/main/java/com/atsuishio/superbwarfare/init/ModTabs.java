@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.init;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.item.*;
-import com.atsuishio.superbwarfare.tools.NBTTool;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -35,11 +34,6 @@ public class ModTabs {
                     .displayItems((param, output) -> ModItems.GUNS.getEntries().forEach(registryObject -> {
                         // 普通枪械
                         var stack = new ItemStack(registryObject.get());
-                        var id = stack.getDescriptionId();
-                        var tag = NBTTool.getTag(stack);
-                        tag.putString("id", id.substring(id.lastIndexOf(".") + 1));
-                        NBTTool.saveTag(stack, tag);
-
                         output.accept(stack);
 
                         // 充电后枪械

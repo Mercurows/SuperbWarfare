@@ -5,8 +5,8 @@ import com.atsuishio.superbwarfare.client.AnimationHelper;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.item.gun.GunData;
 import com.atsuishio.superbwarfare.item.gun.machinegun.DevotionItem;
-import com.atsuishio.superbwarfare.tools.NBTTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -74,9 +74,10 @@ public class DevotionItemModel extends GeoModel<DevotionItem> {
         GeoBone shen = getAnimationProcessor().getBone("shen");
         GeoBone holo = getAnimationProcessor().getBone("holo");
 
-        final var tag = NBTTool.getTag(stack);
+        var data = GunData.from(stack);
+        var tag = data.getTag();
         tag.putBoolean("HoloHidden", !(gun.getPosX() > 1.8));
-        NBTTool.saveTag(stack, tag);
+        data.save();
 
         shen.setPosX((float) (0.95f * ClientEventHandler.recoilHorizon * fpz * fp));
         shen.setPosY((float) (0.15f * fp + 0.18f * fr));

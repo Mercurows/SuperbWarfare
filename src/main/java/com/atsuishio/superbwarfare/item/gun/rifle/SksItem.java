@@ -10,7 +10,6 @@ import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
 import com.atsuishio.superbwarfare.tools.GunsTool;
-import com.atsuishio.superbwarfare.tools.NBTTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.ResourceLocation;
@@ -92,14 +91,15 @@ public class SksItem extends GunItem implements GeoItem {
     @Override
     @ParametersAreNonnullByDefault
     public void inventoryTick(ItemStack stack, Level level, Entity entity, int slot, boolean selected) {
-        if (NBTTool.getTag(stack).getBoolean("draw")) {
-            final var tag = NBTTool.getTag(stack);
+        var data = GunData.from(stack);
+        final var tag = data.getTag();
+        if (tag.getBoolean("draw")) {
             tag.putBoolean("draw", false);
 
             if (GunsTool.getGunIntTag(tag, "Ammo") == 0) {
                 GunsTool.setGunBooleanTag(tag, "HoldOpen", true);
             }
-            NBTTool.saveTag(stack, tag);
+            data.save();
         }
         super.inventoryTick(stack, level, entity, slot, selected);
     }

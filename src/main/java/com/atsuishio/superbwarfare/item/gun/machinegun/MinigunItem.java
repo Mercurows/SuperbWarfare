@@ -128,7 +128,8 @@ public class MinigunItem extends GunItem implements GeoItem {
             cooldown = -0.1;
         }
 
-        var tag = NBTTool.getTag(stack);
+        var data = GunData.from(stack);
+        var tag = data.getTag();
         if (entity instanceof ServerPlayer serverPlayer && entity.level() instanceof ServerLevel serverLevel && tag.getDouble("heat") > 4 && entity.isInWaterOrRain()) {
             if (entity.isInWater()) {
                 ParticleTool.sendParticle(serverLevel, ParticleTypes.BUBBLE_COLUMN_UP,
@@ -149,7 +150,7 @@ public class MinigunItem extends GunItem implements GeoItem {
             tag.putDouble("overheat", (tag.getDouble("overheat") - 1));
         }
 
-        NBTTool.saveTag(stack, tag);
+        data.save();
     }
 
     @Override

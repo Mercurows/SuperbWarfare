@@ -3,9 +3,9 @@ package com.atsuishio.superbwarfare.event;
 import com.atsuishio.superbwarfare.event.events.ReloadEvent;
 import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.item.gun.GunData;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
 import com.atsuishio.superbwarfare.tools.GunsTool;
-import com.atsuishio.superbwarfare.tools.NBTTool;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -49,7 +49,8 @@ public class ReloadEventHandler {
     }
 
     private static void handleHealClipPre(ItemStack stack) {
-        final var tag = NBTTool.getTag(stack);
+        var data = GunData.from(stack);
+        final var tag = data.getTag();
         int time = GunsTool.getPerkIntTag(tag, "HealClipTime");
         if (time > 0) {
             GunsTool.setPerkIntTag(tag, "HealClipTime", 0);
@@ -57,11 +58,12 @@ public class ReloadEventHandler {
         } else {
             GunsTool.setPerkBooleanTag(tag, "HealClip", false);
         }
-        NBTTool.saveTag(stack, tag);
+        data.save();
     }
 
     private static void handleHealClipPost(Player player, ItemStack stack) {
-        final var tag = NBTTool.getTag(stack);
+        var data = GunData.from(stack);
+        final var tag = data.getTag();
         if (!GunsTool.getPerkBooleanTag(tag, "HealClip")) return;
 
         int healClipLevel = PerkHelper.getItemPerkLevel(ModPerks.HEAL_CLIP.get(), tag);
@@ -77,7 +79,8 @@ public class ReloadEventHandler {
     }
 
     private static void handleKillClipPre(ItemStack stack) {
-        final var tag = NBTTool.getTag(stack);
+        var data = GunData.from(stack);
+        final var tag = data.getTag();
         int time = GunsTool.getPerkIntTag(tag, "KillClipReloadTime");
         if (time > 0) {
             GunsTool.setPerkIntTag(tag, "KillClipReloadTime", 0);
@@ -85,29 +88,32 @@ public class ReloadEventHandler {
         } else {
             GunsTool.setPerkBooleanTag(tag, "KillClip", false);
         }
-        NBTTool.saveTag(stack, tag);
+        data.save();
     }
 
     private static void handleKillClipPost(ItemStack stack) {
-        final var tag = NBTTool.getTag(stack);
+        var data = GunData.from(stack);
+        final var tag = data.getTag();
         if (!GunsTool.getPerkBooleanTag(tag, "KillClip")) return;
 
         int level = PerkHelper.getItemPerkLevel(ModPerks.KILL_CLIP.get(), tag);
         GunsTool.setPerkIntTag(tag, "KillClipTime", 90 + 10 * level);
-        NBTTool.saveTag(stack, tag);
+        data.save();
     }
 
     private static void handleKillingTallyPre(ItemStack stack) {
-        final var tag = NBTTool.getTag(stack);
+        var data = GunData.from(stack);
+        final var tag = data.getTag();
         int level = PerkHelper.getItemPerkLevel(ModPerks.KILLING_TALLY.get(), tag);
         if (level == 0) return;
 
         GunsTool.setPerkIntTag(tag, "KillingTally", 0);
-        NBTTool.saveTag(stack, tag);
+        data.save();
     }
 
     private static void handleDesperadoPre(ItemStack stack) {
-        final var tag = NBTTool.getTag(stack);
+        var data = GunData.from(stack);
+        final var tag = data.getTag();
         int time = GunsTool.getPerkIntTag(tag, "DesperadoTime");
         if (time > 0) {
             GunsTool.setPerkIntTag(tag, "DesperadoTime", 0);
@@ -115,15 +121,16 @@ public class ReloadEventHandler {
         } else {
             GunsTool.setPerkBooleanTag(tag, "Desperado", false);
         }
-        NBTTool.saveTag(stack, tag);
+        data.save();
     }
 
     private static void handleDesperadoPost(ItemStack stack) {
-        final var tag = NBTTool.getTag(stack);
+        var data = GunData.from(stack);
+        final var tag = data.getTag();
         if (!GunsTool.getPerkBooleanTag(tag, "Desperado")) return;
 
         int level = PerkHelper.getItemPerkLevel(ModPerks.DESPERADO.get(), tag);
         GunsTool.setPerkIntTag(tag, "DesperadoTimePost", 110 + level * 10);
-        NBTTool.saveTag(stack, tag);
+        data.save();
     }
 }

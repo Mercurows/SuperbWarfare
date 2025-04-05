@@ -13,7 +13,6 @@ import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
 import com.atsuishio.superbwarfare.tools.GunsTool;
-import com.atsuishio.superbwarfare.tools.NBTTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.ResourceLocation;
@@ -138,7 +137,8 @@ public class SentinelItem extends GunItem implements GeoItem, EnergyStorageItem 
     @ParametersAreNonnullByDefault
     public void inventoryTick(ItemStack stack, Level world, Entity entity, int slot, boolean selected) {
         super.inventoryTick(stack, world, entity, slot, selected);
-        final var tag = NBTTool.getTag(stack);
+        var data = GunData.from(stack);
+        final var tag = data.getTag();
 
         var cap = stack.getCapability(Capabilities.EnergyStorage.ITEM);
         if (cap != null && cap.getEnergyStored() > 0) {
@@ -148,7 +148,7 @@ public class SentinelItem extends GunItem implements GeoItem, EnergyStorageItem 
         } else {
             GunsTool.setGunDoubleTag(tag, "ChargedDamage", 0);
         }
-        NBTTool.saveTag(stack, tag);
+        data.save();
     }
 
     @Override

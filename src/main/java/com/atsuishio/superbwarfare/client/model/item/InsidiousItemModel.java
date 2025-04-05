@@ -5,8 +5,8 @@ import com.atsuishio.superbwarfare.client.AnimationHelper;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.item.gun.GunData;
 import com.atsuishio.superbwarfare.item.gun.rifle.InsidiousItem;
-import com.atsuishio.superbwarfare.tools.NBTTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -68,9 +68,10 @@ public class InsidiousItemModel extends GeoModel<InsidiousItem> {
         gun.setPosZ(6.2f * (float) zp + (float) (0.5f * zpz));
         gun.setScaleZ(1f - (0.82f * (float) zp));
 
-        var tag = NBTTool.getTag(stack);
+        var data = GunData.from(stack);
+        var tag = data.getTag();
         tag.putBoolean("HoloHidden", !(gun.getPosX() > 3));
-        NBTTool.saveTag(stack, tag);
+        data.save();
 
         GeoBone shen = getAnimationProcessor().getBone("fireRootNormal");
 

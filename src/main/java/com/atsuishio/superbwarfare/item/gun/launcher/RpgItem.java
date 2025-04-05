@@ -17,7 +17,6 @@ import com.atsuishio.superbwarfare.network.message.receive.ShootClientMessage;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
 import com.atsuishio.superbwarfare.tools.GunsTool;
-import com.atsuishio.superbwarfare.tools.NBTTool;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
 import com.atsuishio.superbwarfare.tools.SoundTool;
 import net.minecraft.client.Minecraft;
@@ -133,7 +132,8 @@ public class RpgItem extends GunItem implements GeoItem, SpecialFireWeapon {
     @Override
     @ParametersAreNonnullByDefault
     public void inventoryTick(ItemStack stack, Level world, Entity entity, int slot, boolean selected) {
-        final var tag = NBTTool.getTag(stack);
+        var data = GunData.from(stack);
+        final var tag = data.getTag();
         if (tag.getBoolean("draw")) {
             tag.putBoolean("draw", false);
 
@@ -145,7 +145,7 @@ public class RpgItem extends GunItem implements GeoItem, SpecialFireWeapon {
         if (entity instanceof Player player) {
             GunsTool.setGunIntTag(tag, "MaxAmmo", getAmmoCount(player));
         }
-        NBTTool.saveTag(stack, tag);
+        data.save();
 
         super.inventoryTick(stack, world, entity, slot, selected);
     }

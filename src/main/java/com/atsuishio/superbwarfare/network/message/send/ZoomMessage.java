@@ -6,7 +6,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
-import com.atsuishio.superbwarfare.tools.NBTTool;
+import com.atsuishio.superbwarfare.item.gun.GunData;
 import com.atsuishio.superbwarfare.tools.SoundTool;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -63,11 +63,14 @@ public record ZoomMessage(int msgType) implements CustomPacketPayload {
 
             if (player.getMainHandItem().getItem() == ModItems.JAVELIN.get()) {
                 var handItem = player.getMainHandItem();
-                var tag = NBTTool.getTag(handItem);
+                var data = GunData.from(handItem);
+                var tag = data.getTag();
+
                 tag.putBoolean("Seeking", false);
                 tag.putInt("SeekTime", 0);
                 tag.putString("TargetEntity", "none");
-                NBTTool.saveTag(handItem, tag);
+
+                data.save();
 
                 var clientboundstopsoundpacket = new ClientboundStopSoundPacket(Mod.loc("javelin_lock"), SoundSource.PLAYERS);
                 player.connection.send(clientboundstopsoundpacket);

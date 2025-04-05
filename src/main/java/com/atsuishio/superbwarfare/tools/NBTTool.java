@@ -13,6 +13,10 @@ public final class NBTTool {
 
         return new CompoundTag();
     }
+
+    /**
+     * 警告：请勿使用该方法保存任何枪械NBT数据！请统一使用GunData.save()保存枪械数据
+     */
     public static void saveTag(ItemStack stack, CompoundTag tag) {
         var data = stack.get(DataComponents.CUSTOM_DATA);
         var oldTag = data != null ? data.copyTag() : new CompoundTag();

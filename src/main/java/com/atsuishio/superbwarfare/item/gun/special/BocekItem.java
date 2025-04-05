@@ -18,7 +18,6 @@ import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
 import com.atsuishio.superbwarfare.tools.GunsTool;
 import com.atsuishio.superbwarfare.tools.InventoryTool;
-import com.atsuishio.superbwarfare.tools.NBTTool;
 import com.atsuishio.superbwarfare.tools.SoundTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -118,15 +117,16 @@ public class BocekItem extends GunItem implements GeoItem, SpecialFireWeapon {
     @ParametersAreNonnullByDefault
     public void inventoryTick(ItemStack stack, Level world, Entity entity, int slot, boolean selected) {
         super.inventoryTick(stack, world, entity, slot, selected);
-        final var tag = NBTTool.getTag(stack);
+        var data = GunData.from(stack);
+        final var tag = data.getTag();
         if (entity instanceof Player player) {
             GunsTool.setGunIntTag(tag, "MaxAmmo", getAmmoCount(player));
-            NBTTool.saveTag(stack, tag);
+            data.save();
         }
 
         if (GunsTool.getGunIntTag(tag, "ArrowEmpty") > 0) {
             GunsTool.setGunIntTag(tag, "ArrowEmpty", GunsTool.getGunIntTag(tag, "ArrowEmpty") - 1);
-            NBTTool.saveTag(stack, tag);
+            data.save();
         }
     }
 

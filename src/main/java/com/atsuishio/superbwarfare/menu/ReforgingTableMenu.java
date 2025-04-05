@@ -239,7 +239,8 @@ public class ReforgingTableMenu extends AbstractContainerMenu {
         }
 
         ItemStack result = gun.copy();
-        final var tag = NBTTool.getTag(result);
+        var data = GunData.from(result);
+        final var tag = data.getTag();
 
         if (!ammo.isEmpty() && ammo.getItem() instanceof PerkItem<?> perkItem) {
             if (gunItem.canApplyPerk(perkItem.getPerk())) {
@@ -262,7 +263,7 @@ public class ReforgingTableMenu extends AbstractContainerMenu {
             }
         }
 
-        NBTTool.saveTag(result, tag);
+        data.save();
         handleUpgradePoint(result);
 
         this.ammoPerkLevel.set(0);

@@ -2,7 +2,7 @@ package com.atsuishio.superbwarfare.network.message.send;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.init.ModTags;
-import com.atsuishio.superbwarfare.tools.NBTTool;
+import com.atsuishio.superbwarfare.item.gun.GunData;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -27,13 +27,14 @@ public record SensitivityMessage(boolean isAdd) implements CustomPacketPayload {
         ItemStack stack = player.getMainHandItem();
         if (!stack.is(ModTags.Items.GUN)) return;
 
-        var tag = NBTTool.getTag(stack);
+        var data = GunData.from(stack);
+        final var tag = data.getTag();
         if (message.isAdd) {
             tag.putInt("sensitivity", Math.min(10, tag.getInt("sensitivity") + 1));
         } else {
             tag.putInt("sensitivity", Math.max(-10, tag.getInt("sensitivity") - 1));
         }
-        NBTTool.saveTag(stack, tag);
+        data.save();
         player.displayClientMessage(Component.translatable("tips.superbwarfare.sensitivity", tag.getInt("sensitivity")), true);
 
     }

@@ -37,10 +37,12 @@ public class PlayerEventHandler {
         }
         for (ItemStack pStack : player.getInventory().items) {
             if (pStack.is(ModTags.Items.GUN)) {
-                tag = NBTTool.getTag(pStack);
+                var data = GunData.from(stack);
+                tag = data.getTag();
+
                 tag.putBoolean("draw", true);
-                tag.putBoolean("init", false);
-                NBTTool.saveTag(pStack, tag);
+
+                data.save();
             }
         }
     }
@@ -60,11 +62,14 @@ public class PlayerEventHandler {
         handleRespawnReload(player);
         handleRespawnAutoArmor(player);
 
-        for (ItemStack pStack : player.getInventory().items) {
-            if (pStack.is(ModTags.Items.GUN)) {
-                var tag = NBTTool.getTag(pStack);
+        for (ItemStack stack : player.getInventory().items) {
+            if (stack.is(ModTags.Items.GUN)) {
+                var data = GunData.from(stack);
+                final var tag = data.getTag();
+
                 tag.putBoolean("draw", true);
-                NBTTool.saveTag(pStack, tag);
+
+                data.save();
             }
         }
     }
@@ -212,7 +217,9 @@ public class PlayerEventHandler {
         var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
         if (cap == null) return;
 
-        final var tag = NBTTool.getTag(stack);
+        var data = GunData.from(stack);
+        final var tag = data.getTag();
+
         if (cap.bowPullHold) {
             if (stack.getItem() == ModItems.BOCEK.get()
                     && GunsTool.getGunIntTag(tag, "MaxAmmo") > 0
@@ -246,7 +253,7 @@ public class PlayerEventHandler {
             player.setSprinting(false);
         }
 
-        NBTTool.saveTag(stack, tag);
+        data.save();
     }
 
     private static void handleSimulationDistance(Player player) {
@@ -265,7 +272,7 @@ public class PlayerEventHandler {
 
         for (ItemStack stack : player.getInventory().items) {
             if (stack.is(ModTags.Items.GUN)) {
-                var data = GunData.from(stack).reload();
+                var data = GunData.from(stack);
                 var tag = data.getTag();
 
                 if (!InventoryTool.hasCreativeAmmoBox(player)) {
@@ -356,7 +363,7 @@ public class PlayerEventHandler {
         if (left.is(ModTags.Items.GUN) && right.getItem() == ModItems.SHORTCUT_PACK.get()) {
             ItemStack output = left.copy();
 
-            var data = GunData.from(output).reload();
+            var data = GunData.from(output);
             data.setUpgradePoint(data.getUpgradePoint() + 1);
             data.save();
 

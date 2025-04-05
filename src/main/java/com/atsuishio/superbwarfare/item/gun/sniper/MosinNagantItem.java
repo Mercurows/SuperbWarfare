@@ -57,23 +57,23 @@ public class MosinNagantItem extends GunItem implements GeoItem {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.mosin.shift"));
         }
 
-        if (NBTTool.getTag(stack).getInt("reload_stage") == 1 && GunsTool.getGunIntTag(tag, "Ammo") == 0) {
+        if (data.getReloadStage() == 1 && GunsTool.getGunIntTag(tag, "Ammo") == 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.mosin.prepare_empty"));
         }
 
-        if (NBTTool.getTag(stack).getInt("reload_stage") == 1 && GunsTool.getGunIntTag(tag, "Ammo") > 0) {
+        if (data.getReloadStage() == 1 && GunsTool.getGunIntTag(tag, "Ammo") > 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.mosin.prepare"));
         }
 
-        if (NBTTool.getTag(stack).getDouble("load_index") == 0 && NBTTool.getTag(stack).getInt("reload_stage") == 2) {
+        if (NBTTool.getTag(stack).getDouble("load_index") == 0 && data.getReloadStage() == 2) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.mosin.iterativeload"));
         }
 
-        if (NBTTool.getTag(stack).getDouble("load_index") == 1 && NBTTool.getTag(stack).getInt("reload_stage") == 2) {
+        if (NBTTool.getTag(stack).getDouble("load_index") == 1 && data.getReloadStage() == 2) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.mosin.iterativeload2"));
         }
 
-        if (NBTTool.getTag(stack).getInt("reload_stage") == 3) {
+        if (data.getReloadStage() == 3) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.mosin.finish"));
         }
 
@@ -91,9 +91,9 @@ public class MosinNagantItem extends GunItem implements GeoItem {
         if (player.isSprinting() && player.onGround()
                 && player.getPersistentData().getDouble("noRun") == 0
                 && !(GunData.from(stack).emptyReloading())
-                && NBTTool.getTag(stack).getInt("reload_stage") != 1
-                && NBTTool.getTag(stack).getInt("reload_stage") != 2
-                && NBTTool.getTag(stack).getInt("reload_stage") != 3
+                && data.getReloadStage() != 1
+                && data.getReloadStage() != 2
+                && data.getReloadStage() != 3
                 && ClientEventHandler.drawTime < 0.01
                 && !data.isReloading()
         ) {

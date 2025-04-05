@@ -81,17 +81,11 @@ public abstract class GunItem extends Item implements CustomRendererItem {
             } else {
                 GunsTool.initGun(tag, name);
             }
-            data.reload();
-            tag = data.getTag();
-
             GunsTool.generateAndSetUUID(tag);
             tag.putBoolean("init", true);
         }
         tag.putBoolean("draw", false);
-
-        data.save();
         handleGunPerks(data);
-        data.reload();
 
         var hasBulletInBarrel = gunItem.hasBulletInBarrel(stack);
         var ammoCount = data.getAmmo();
@@ -193,7 +187,6 @@ public abstract class GunItem extends Item implements CustomRendererItem {
 
                 int mag = data.magazine();
                 GunsTool.setGunIntTag(tag, "Ammo", Math.min(mag, GunsTool.getGunIntTag(tag, "Ammo") + 2));
-                data.save();
             }
         }
     }

@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.client.AnimationHelper;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.item.gun.GunData;
 import com.atsuishio.superbwarfare.item.gun.rifle.M4Item;
 import com.atsuishio.superbwarfare.tools.GunsTool;
 import com.atsuishio.superbwarfare.tools.NBTTool;
@@ -129,9 +130,10 @@ public class M4ItemModel extends GeoModel<M4Item> {
         button6.setScaleX(1f - (0.5f * (float) zp));
         button7.setScaleX(1f - (0.5f * (float) zp));
 
-        final var tag = NBTTool.getTag(stack);
+        var data = GunData.from(stack);
+        var tag = data.getTag();
         tag.putBoolean("HoloHidden", !(gun.getPosX() > 2.385));
-        NBTTool.saveTag(stack, tag);
+        data.save();
 
         if (type == 3 && zt > 0.5) {
             lh.setPosY((float) (-zt * 4));

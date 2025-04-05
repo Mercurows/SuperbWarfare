@@ -37,10 +37,10 @@ public record AdjustZoomFovMessage(double scroll) implements CustomPacketPayload
         var tag = data.getTag();
 
         if (stack.is(ModItems.MINIGUN.get())) {
-            double minRpm = 300;
-            double maxRpm = 2400;
+            double minRpm = 300 - 1200;
+            double maxRpm = 2400 - 1200;
 
-            GunsTool.setGunIntTag(tag, "CustomRPM", (int) Mth.clamp(GunsTool.getGunIntTag(tag, "CustomRPM") - 1200 + 50 * message.scroll, minRpm, maxRpm));
+            GunsTool.setGunIntTag(tag, "CustomRPM", (int) Mth.clamp(GunsTool.getGunIntTag(tag, "CustomRPM") + 50 * message.scroll, minRpm, maxRpm));
             if (GunsTool.getGunIntTag(tag, "CustomRPM") == 1150 - 1200) {
                 GunsTool.setGunIntTag(tag, "CustomRPM", 1145 - 1200);
             }
