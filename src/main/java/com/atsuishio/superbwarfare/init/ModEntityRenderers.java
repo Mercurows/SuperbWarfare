@@ -46,5 +46,6 @@ public class ModEntityRenderers {
         event.registerEntityRenderer(ModEntities.YX_100.get(), Yx100Renderer::new);
         event.registerEntityRenderer(ModEntities.WATER_MASK.get(), WaterMaskEntityRenderer::new);
         event.registerEntityRenderer(ModEntities.PRISM_TANK.get(), PrismTankRenderer::new);
+        event.registerEntityRenderer(ModEntities.SWARM_DRONE.get(), SwarmDroneRenderer::new);
     }
 }

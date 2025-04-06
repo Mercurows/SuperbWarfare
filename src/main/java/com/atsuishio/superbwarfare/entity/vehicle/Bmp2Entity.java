@@ -497,6 +497,13 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
     }
 
     @Override
+    public Vec3 getNewEyePos(float pPartialTicks) {
+        Matrix4f transform = getTurretTransform(pPartialTicks);
+        Vector4f worldPosition = transformPosition(transform, 0, 1.65f, 0.75f);
+        return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
+    }
+
+    @Override
     public Vec3 getBarrelVector(float pPartialTicks) {
         Matrix4f transform = getBarrelTransform(pPartialTicks);
         Vector4f rootPosition = transformPosition(transform, 0, 0, 0);

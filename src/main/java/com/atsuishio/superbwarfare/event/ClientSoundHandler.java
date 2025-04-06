@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.event;
 
+import com.atsuishio.superbwarfare.entity.projectile.SwarmDroneEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.*;
 import com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity;
 import com.atsuishio.superbwarfare.init.ModItems;
@@ -95,6 +96,27 @@ public class ClientSoundHandler {
                     } else {
                         player.level().playLocalSound(BlockPos.containing(engineSoundPos), engineSound, mobileVehicle.getSoundSource(), e.onGround() ? 0 : distanceReduce * distanceReduce, (float) ((2 * Math.random() - 1) * 0.002f + 1.05), false);
                     }
+                }
+            }
+        }
+
+        List<Entity> swarmDrone = SeekTool.getEntityWithinRange(player, player.level(), 64);
+
+        for (var e : swarmDrone) {
+            if (e instanceof SwarmDroneEntity swarmDroneEntity) {
+
+                Vec3 listener = player.getEyePosition();
+                Vec3 engineRealPos = e.getEyePosition();
+                Vec3 toVec = listener.vectorTo(engineRealPos).normalize();
+                double distance = listener.distanceTo(engineRealPos);
+
+                var engineSoundPos = new Vec3(listener.x + toVec.x, listener.y + toVec.y, listener.z + toVec.z);
+                SoundEvent engineSound = ModSounds.DRONE_SOUND.get();
+                float distanceReduce;
+
+                distanceReduce = (float) Math.max((1 - distance / 64), 0);
+                if (swarmDroneEntity.tickCount > 10) {
+                    player.level().playLocalSound(BlockPos.containing(engineSoundPos), engineSound, swarmDroneEntity.getSoundSource(), distanceReduce * distanceReduce, (float) ((2 * Math.random() - 1) * 0.002f + 1.15), false);
                 }
             }
         }

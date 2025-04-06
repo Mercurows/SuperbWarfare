@@ -81,6 +81,7 @@ public class ModItemModelProvider extends ItemModelProvider {
         simpleItem(ModItems.ROCKET_70);
         simpleItem(ModItems.WIRE_GUIDE_MISSILE);
         simpleItem(ModItems.SMALL_SHELL);
+        simpleItem(ModItems.SWARM_DRONE);
         simpleItem(ModItems.SMALL_BATTERY_PACK);
         simpleItem(ModItems.MEDIUM_BATTERY_PACK);
         simpleItem(ModItems.LARGE_BATTERY_PACK);

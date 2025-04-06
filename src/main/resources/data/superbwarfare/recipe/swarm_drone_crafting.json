@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " a ",
+    "bcb",
+    "ded"
+  ],
+  "key": {
+    "a": {
+      "item": "superbwarfare:seeker"
+    },
+    "b": {
+      "item": "superbwarfare:propeller"
+    },
+    "c": {
+      "item": "superbwarfare:motor"
+    },
+    "d": {
+      "item": "superbwarfare:high_energy_explosives"
+    },
+    "e": {
+      "item": "superbwarfare:cell"
+    }
+  },
+  "result": {
+    "id": "superbwarfare:swarm_drone",
+    "count": 4
+  }
+}

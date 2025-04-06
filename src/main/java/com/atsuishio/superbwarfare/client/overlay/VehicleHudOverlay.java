@@ -48,6 +48,7 @@ import static com.atsuishio.superbwarfare.client.RenderHelper.preciseBlit;
 import static com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay.*;
 import static com.atsuishio.superbwarfare.entity.vehicle.Bmp2Entity.LOADED_MISSILE;
 import static com.atsuishio.superbwarfare.entity.vehicle.Bmp2Entity.MISSILE_COUNT;
+import static com.atsuishio.superbwarfare.entity.vehicle.Yx100Entity.LOADED_DRONE;
 import static com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity.*;
 
 @EventBusSubscriber(value = Dist.CLIENT)
@@ -187,6 +188,8 @@ public class VehicleHudOverlay {
                         preciseBlit(guiGraphics, Mod.loc("textures/screens/land/tank_cannon_cross_he.png"), k, l, 0, 0.0F, i, j, i, j);
                     } else if (weaponVehicle.getWeaponIndex(0) == 2) {
                         preciseBlit(guiGraphics, Mod.loc("textures/screens/land/lav_gun_cross.png"), k, l, 0, 0.0F, i, j, i, j);
+                    } else if (weaponVehicle.getWeaponIndex(0) == 3) {
+                        preciseBlit(guiGraphics, Mod.loc("textures/screens/land/lav_missile_cross.png"), k, l, 0, 0.0F, i, j, i, j);
                     }
 
                 } else if (weaponVehicle instanceof PrismTankEntity) {
@@ -288,6 +291,8 @@ public class VehicleHudOverlay {
                     } else if (weaponVehicle.getWeaponIndex(0) == 2) {
                         double heat = 1 - yx100.getEntityData().get(COAX_HEAT) / 100.0F;
                         guiGraphics.drawString(mc.font, Component.literal(" 12.7MM HMG " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : yx100.getAmmoCount(player))), w / 2 - 33, h - 65, Mth.hsvToRgb((float) heat / 3.745318352059925F, 1.0F, 1.0F), false);
+                    } else {
+                        guiGraphics.drawString(mc.font, Component.literal("    SWARM  " + yx100.getEntityData().get(LOADED_DRONE) + " " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : yx100.getEntityData().get(AMMO))), w / 2 - 33, h - 65, 0x66FF00, false);
                     }
                 }
 
@@ -343,7 +348,9 @@ public class VehicleHudOverlay {
                             guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("HE SHELL " + yx100.getAmmoCount(player) + " " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : yx100.getEntityData().get(AMMO))), 30, -9, -1, false);
                         } else if (weaponVehicle.getWeaponIndex(0) == 2) {
                             double heat2 = yx100.getEntityData().get(COAX_HEAT) / 100.0F;
-                            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("7.62MM ПКТ " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : yx100.getAmmoCount(player))), 30, -9, Mth.hsvToRgb(0F, (float) heat2, 1.0F), false);
+                            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("12.7MM HMG " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : yx100.getAmmoCount(player))), 30, -9, Mth.hsvToRgb(0F, (float) heat2, 1.0F), false);
+                        } else {
+                            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("SWARM " + yx100.getEntityData().get(LOADED_DRONE) + " " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : yx100.getEntityData().get(AMMO))), 30, -9, -1, false);
                         }
                     }
 

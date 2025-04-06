@@ -164,6 +164,7 @@
   "item.superbwarfare.rocket_70": "70mm Rocket",
   "item.superbwarfare.small_shell": "Small Caliber Shells",
   "item.superbwarfare.wire_guide_missile": "Wire Guide Missile",
+  "item.superbwarfare.swarm_drone": "Swarm Drone",
 
   "item.superbwarfare.firing_parameters": "Firing Parameters",
   "item.superbwarfare.ancient_cpu": "Ancient CPU",
@@ -441,6 +442,7 @@
   "entity.superbwarfare.wg_missile": "Wire Guide Missile",
   "entity.superbwarfare.laser_tower": "Laser Defense Tower",
   "entity.superbwarfare.prism_tank": "Prism Tank",
+  "entity.superbwarfare.swarm_drone": "Swarm Drone",
 
   "key.categories.superbwarfare": "Superb Warfare",
   "key.superbwarfare.hold_zoom": "Zoom (Hold)",

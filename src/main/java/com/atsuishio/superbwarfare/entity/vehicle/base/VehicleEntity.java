@@ -848,6 +848,10 @@ public abstract class VehicleEntity extends Entity {
     public void push(double pX, double pY, double pZ) {
     }
 
+    public Vec3 getNewEyePos(float pPartialTicks) {
+        return getEyePosition();
+    }
+
     public Vec3 getBarrelVector(float pPartialTicks) {
         return this.calculateViewVector(this.getBarrelXRot(pPartialTicks), this.getBarrelYRot(pPartialTicks));
     }

@@ -164,6 +164,7 @@
   "item.superbwarfare.rocket_70": "70mm火箭弹",
   "item.superbwarfare.small_shell": "小口径炮弹",
   "item.superbwarfare.wire_guide_missile": "线控导弹",
+  "item.superbwarfare.swarm_drone": "蜂群无人机",
 
   "item.superbwarfare.firing_parameters": "射击诸元",
   "item.superbwarfare.ancient_cpu": "古代处理器",
@@ -439,6 +440,7 @@
   "entity.superbwarfare.wg_missile": "线控导弹",
   "entity.superbwarfare.laser_tower": "激光防御塔",
   "entity.superbwarfare.prism_tank": "光棱坦克",
+  "entity.superbwarfare.swarm_drone": "蜂群无人机",
 
   "key.categories.superbwarfare": "卓越前线",
   "key.superbwarfare.hold_zoom": "瞄准(按住)",
