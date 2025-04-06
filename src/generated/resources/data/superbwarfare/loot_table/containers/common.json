@@ -1,0 +1,140 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:epic_material_pack",
+          "weight": 2
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:cemented_carbide_block",
+          "weight": 2
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": 4.0,
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "minecraft:experience_bottle",
+          "weight": 2
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": 2.0,
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "superbwarfare:rare_material_pack",
+          "weight": 4
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": 3.0,
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "superbwarfare:common_material_pack",
+          "weight": 6
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:steel_block",
+          "weight": 14
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:gold_block",
+          "weight": 20
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": 64.0,
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "superbwarfare:handgun_ammo",
+          "weight": 6
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": 64.0,
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "superbwarfare:rifle_ammo",
+          "weight": 6
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": 32.0,
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "superbwarfare:shotgun_ammo",
+          "weight": 6
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": 32.0,
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "superbwarfare:sniper_ammo",
+          "weight": 6
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": 16.0,
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "superbwarfare:heavy_ammo",
+          "weight": 6
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": 9.0,
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "minecraft:coal_block",
+          "weight": 30
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "superbwarfare:containers/common"
+}

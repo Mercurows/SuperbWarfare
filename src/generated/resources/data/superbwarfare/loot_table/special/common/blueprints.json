@@ -1,0 +1,121 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:glock_17_blueprint",
+          "weight": 4
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:mp_443_blueprint",
+          "weight": 4
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:m_1911_blueprint",
+          "weight": 4
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:marlin_blueprint",
+          "weight": 4
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:taser_blueprint",
+          "weight": 4
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:glock_18_blueprint",
+          "weight": 2
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:ak_47_blueprint",
+          "weight": 2
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:qbz_95_blueprint",
+          "weight": 2
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:sks_blueprint",
+          "weight": 2
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:mosin_nagant_blueprint",
+          "weight": 2
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:m_870_blueprint",
+          "weight": 2
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:m_79_blueprint",
+          "weight": 2
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:bocek_blueprint",
+          "weight": 2
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:trachelium_blueprint",
+          "weight": 2
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:vector_blueprint",
+          "weight": 2
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:devotion_blueprint",
+          "weight": 2
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:m_98b_blueprint",
+          "weight": 2
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:aa_12_blueprint"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:ntw_20_blueprint"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:minigun_blueprint"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:javelin_blueprint"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:mk_42_blueprint"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:mle_1934_blueprint"
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "superbwarfare:special/common/blueprints"
+}
