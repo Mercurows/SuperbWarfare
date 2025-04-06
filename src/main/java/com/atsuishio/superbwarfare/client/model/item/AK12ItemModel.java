@@ -5,9 +5,9 @@ import com.atsuishio.superbwarfare.client.AnimationHelper;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.item.gun.data.AttachmentType;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.item.gun.rifle.AK12Item;
-import com.atsuishio.superbwarfare.tools.GunsTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -75,7 +75,7 @@ public class AK12ItemModel extends GeoModel<AK12Item> {
 
         var data = GunData.from(stack);
         var tag = data.tag();
-        int type = GunsTool.getAttachmentType(tag, GunsTool.AttachmentType.SCOPE);
+        int type = data.attachment.get(AttachmentType.SCOPE);
 
         float posY = switch (type) {
             case 0 -> 0.781f;

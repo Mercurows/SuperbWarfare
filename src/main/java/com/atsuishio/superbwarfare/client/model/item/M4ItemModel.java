@@ -5,9 +5,9 @@ import com.atsuishio.superbwarfare.client.AnimationHelper;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.item.gun.data.AttachmentType;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.item.gun.rifle.M4Item;
-import com.atsuishio.superbwarfare.tools.GunsTool;
 import com.atsuishio.superbwarfare.tools.NBTTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
@@ -85,7 +85,7 @@ public class M4ItemModel extends GeoModel<M4Item> {
         double fp = ClientEventHandler.firePos;
         double fr = ClientEventHandler.fireRot;
 
-        int type = GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.SCOPE);
+        int type = GunData.from(stack).attachment.get(AttachmentType.SCOPE);
 
         posYAlt = Mth.lerp(times, posYAlt, NBTTool.getTag(stack).getBoolean("ScopeAlt") ? -0.6875f : 0.5625f);
         scaleZAlt = Mth.lerp(times, scaleZAlt, NBTTool.getTag(stack).getBoolean("ScopeAlt") ? 0.4f : 0.88f);
@@ -176,7 +176,7 @@ public class M4ItemModel extends GeoModel<M4Item> {
         CrossHairOverlay.gunRot = shen.getRotZ();
 
         GeoBone flare = getAnimationProcessor().getBone("flare");
-        int BarrelType = GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.BARREL);
+        int BarrelType = GunData.from(stack).attachment.get(AttachmentType.BARREL);
 
         if (BarrelType == 1) {
             flare.setPosZ(-2);

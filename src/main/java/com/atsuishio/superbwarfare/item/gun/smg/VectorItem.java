@@ -7,14 +7,13 @@ import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
+import com.atsuishio.superbwarfare.item.gun.data.AttachmentType;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
-import com.atsuishio.superbwarfare.tools.GunsTool;
 import com.atsuishio.superbwarfare.tools.NBTTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.effect.MobEffects;
@@ -52,9 +51,8 @@ public class VectorItem extends GunItem implements GeoItem {
         ItemStack stack = player.getMainHandItem();
         if (!stack.is(ModTags.Items.GUN)) return PlayState.STOP;
         var data = GunData.from(stack);
-        final var tag = data.tag();
 
-        boolean drum = GunsTool.getAttachmentType(tag, GunsTool.AttachmentType.MAGAZINE) == 2;
+        boolean drum = data.attachment.get(AttachmentType.MAGAZINE) == 2;
 
         if (data.reload.empty()) {
             if (drum) {
@@ -115,28 +113,30 @@ public class VectorItem extends GunItem implements GeoItem {
         return new VectorItemRenderer();
     }
 
+    // TODO 移除inventoryTick
     @Override
     @ParametersAreNonnullByDefault
     public void inventoryTick(ItemStack stack, Level world, Entity entity, int slot, boolean selected) {
         super.inventoryTick(stack, world, entity, slot, selected);
 
-        int scopeType = GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.SCOPE);
+        var data = GunData.from(stack);
+        int scopeType = data.attachment.get(AttachmentType.SCOPE);
 
         if (scopeType == 3) {
-            CompoundTag tag = NBTTool.getTag(stack).getCompound("Attachments");
-            tag.putInt("Scope", 0);
+            data.attachment.set(AttachmentType.SCOPE, 0);
+            data.save();
         }
     }
 
     @Override
     public double getCustomZoom(ItemStack stack) {
-        int scopeType = GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.SCOPE);
+        int scopeType = GunData.from(stack).attachment.get(AttachmentType.SCOPE);
         return scopeType == 2 ? (NBTTool.getTag(stack).getBoolean("ScopeAlt") ? 0 : 2.75) : 0;
     }
 
     @Override
     public int getCustomMagazine(ItemStack stack) {
-        int magType = GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.MAGAZINE);
+        int magType = GunData.from(stack).attachment.get(AttachmentType.MAGAZINE);
         return switch (magType) {
             case 1 -> 20;
             case 2 -> 57;

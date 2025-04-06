@@ -10,6 +10,7 @@ import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
+import com.atsuishio.superbwarfare.item.gun.data.AttachmentType;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.item.gun.data.ReloadState;
 import com.atsuishio.superbwarfare.perk.AmmoPerk;
@@ -128,7 +129,7 @@ public class GunEventHandler {
             }
 
             float soundRadius = (float) data.soundRadius();
-            int barrelType = GunsTool.getAttachmentType(tag, GunsTool.AttachmentType.BARREL);
+            int barrelType = data.attachment.get(AttachmentType.BARREL);
 
             SoundEvent sound3p = BuiltInRegistries.SOUND_EVENT.get(Mod.loc(name + (barrelType == 2 ? "_fire_3p_s" : "_fire_3p")));
             if (sound3p != null) {

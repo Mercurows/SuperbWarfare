@@ -85,16 +85,14 @@ public class GunsTool {
         reload(player, stack, gunData, type, false);
     }
 
-    public static void reload(Player player, ItemStack stack, GunData gunData, AmmoType type, boolean extraOne) {
-        var data = gunData.data();
-
-        int mag = gunData.magazine();
-        int ammo = gunData.ammo();
+    public static void reload(Player player, ItemStack stack, GunData data, AmmoType type, boolean extraOne) {
+        int mag = data.magazine();
+        int ammo = data.ammo();
         int ammoToAdd = mag - ammo + (extraOne ? 1 : 0);
 
         // 空仓换弹的栓动武器应该在换弹后取消待上膛标记
-        if (ammo == 0 && gunData.bolt.defaultActionTime() > 0 && !stack.is(ModTags.Items.REVOLVER)) {
-            gunData.bolt.markNeedless();
+        if (ammo == 0 && data.bolt.defaultActionTime() > 0 && !stack.is(ModTags.Items.REVOLVER)) {
+            data.bolt.markNeedless();
         }
 
         var capability = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
@@ -109,8 +107,8 @@ public class GunsTool {
 
         int needToAdd = ammo + Math.min(ammoToAdd, playerAmmo);
 
-        gunData.setAmmo(needToAdd);
-        gunData.reload.setState(ReloadState.NOT_RELOADING);
+        data.setAmmo(needToAdd);
+        data.reload.setState(ReloadState.NOT_RELOADING);
     }
 
     /* PerkData */
@@ -150,33 +148,6 @@ public class GunsTool {
         return tag.getBoolean(name);
     }
 
-    /* Attachments */
-    public static int getAttachmentType(final CompoundTag rootTag, AttachmentType type) {
-        CompoundTag tag = rootTag.getCompound("Attachments");
-        return tag.getInt(type.getName());
-    }
-
-    public static int getAttachmentType(ItemStack stack, AttachmentType type) {
-        return getAttachmentType(NBTTool.getTag(stack), type);
-    }
-
-    public enum AttachmentType {
-        SCOPE("Scope"),
-        MAGAZINE("Magazine"),
-        BARREL("Barrel"),
-        STOCK("Stock"),
-        GRIP("Grip");
-
-        private final String name;
-
-        AttachmentType(String name) {
-            this.name = name;
-        }
-
-        public String getName() {
-            return name;
-        }
-    }
 
     /* GunData */
     public static CompoundTag getGunData(final CompoundTag tag) {

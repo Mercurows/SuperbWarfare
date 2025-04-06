@@ -21,6 +21,7 @@ public class GunData {
     private final CompoundTag tag;
     private final CompoundTag data;
     private final CompoundTag perk;
+    private final CompoundTag attachmentTag;
     private final String id;
 
     private static final WeakHashMap<ItemStack, GunData> dataCache = new WeakHashMap<>();
@@ -37,23 +38,25 @@ public class GunData {
         var customData = stack.get(DataComponents.CUSTOM_DATA);
         this.tag = customData != null ? customData.copyTag() : new CompoundTag();
 
-        if (!tag.contains("GunData")) {
-            data = new CompoundTag();
-            tag.put("GunData", data);
-        } else {
-            data = tag.getCompound("GunData");
-        }
-
-        if (!tag.contains("PerkData")) {
-            perk = new CompoundTag();
-            tag.put("PerkData", perk);
-        } else {
-            perk = tag.getCompound("PerkData");
-        }
+        data = getOrPut("GunData");
+        perk = getOrPut("PerkData");
+        attachmentTag = getOrPut("Attachments");
 
         reload = new Reload(this);
         charge = new Charge(this);
         bolt = new Bolt(this);
+        attachment = new Attachment(this);
+    }
+
+    private CompoundTag getOrPut(String name) {
+        CompoundTag tag;
+        if (!this.tag.contains(name)) {
+            tag = new CompoundTag();
+            this.tag.put(name, tag);
+        } else {
+            tag = this.tag.getCompound(name);
+        }
+        return tag;
     }
 
     public boolean initialized() {
@@ -94,6 +97,10 @@ public class GunData {
 
     public CompoundTag perk() {
         return perk;
+    }
+
+    public CompoundTag attachment() {
+        return attachmentTag;
     }
 
     double getGunData(String key) {
@@ -214,12 +221,12 @@ public class GunData {
     }
 
     public double minZoom() {
-        int scopeType = GunsTool.getAttachmentType(tag, GunsTool.AttachmentType.SCOPE);
+        int scopeType = this.attachment.get(AttachmentType.SCOPE);
         return scopeType == 3 ? getGunData("MinZoom", 1.25) : 1.25;
     }
 
     public double maxZoom() {
-        int scopeType = GunsTool.getAttachmentType(tag, GunsTool.AttachmentType.SCOPE);
+        int scopeType = this.attachment.get(AttachmentType.SCOPE);
         return scopeType == 3 ? getGunData("MaxZoom", 1) : 114514;
     }
 
@@ -294,6 +301,7 @@ public class GunData {
     }
 
     public final Bolt bolt;
+    public final Attachment attachment;
 
     public void save() {
         stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));

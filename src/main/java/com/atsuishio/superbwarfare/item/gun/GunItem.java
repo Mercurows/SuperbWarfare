@@ -8,6 +8,7 @@ import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.CustomRendererItem;
+import com.atsuishio.superbwarfare.item.gun.data.AttachmentType;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
@@ -398,34 +399,34 @@ public abstract class GunItem extends Item implements CustomRendererItem {
      * 获取额外总重量加成
      */
     public double getCustomWeight(ItemStack stack) {
-        CompoundTag tag = GunData.from(stack).tag().getCompound("Attachments");
+        var attachment = GunData.from(stack).attachment;
 
-        double scopeWeight = switch (tag.getInt("Scope")) {
+        double scopeWeight = switch (attachment.get(AttachmentType.SCOPE)) {
             case 1 -> 0.5;
             case 2 -> 1;
             case 3 -> 1.5;
             default -> 0;
         };
 
-        double barrelWeight = switch (tag.getInt("Barrel")) {
+        double barrelWeight = switch (attachment.get(AttachmentType.BARREL)) {
             case 1 -> 0.5;
             case 2 -> 1;
             default -> 0;
         };
 
-        double magazineWeight = switch (tag.getInt("Magazine")) {
+        double magazineWeight = switch (attachment.get(AttachmentType.MAGAZINE)) {
             case 1 -> 1;
             case 2 -> 2;
             default -> 0;
         };
 
-        double stockWeight = switch (tag.getInt("Stock")) {
+        double stockWeight = switch (attachment.get(AttachmentType.STOCK)) {
             case 1 -> -2;
             case 2 -> 1.5;
             default -> 0;
         };
 
-        double gripWeight = switch (tag.getInt("Grip")) {
+        double gripWeight = switch (attachment.get(AttachmentType.GRIP)) {
             case 1, 2 -> 0.25;
             case 3 -> 1;
             default -> 0;
@@ -445,7 +446,7 @@ public abstract class GunItem extends Item implements CustomRendererItem {
      * 获取额外音效半径加成
      */
     public double getCustomSoundRadius(ItemStack stack) {
-        return GunData.from(stack).tag().getCompound("Attachments").getInt("Barrel") == 2 ? 0.6 : 1;
+        return GunData.from(stack).attachment.get(AttachmentType.BARREL) == 2 ? 0.6 : 1;
     }
 
     public int getCustomBoltActionTime(ItemStack stack) {

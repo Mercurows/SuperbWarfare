@@ -8,6 +8,7 @@ import com.atsuishio.superbwarfare.init.ModRarity;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
+import com.atsuishio.superbwarfare.item.gun.data.AttachmentType;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
@@ -57,7 +58,6 @@ public class Ntw20Item extends GunItem implements GeoItem {
         ItemStack stack = player.getMainHandItem();
         if (!stack.is(ModTags.Items.GUN)) return PlayState.STOP;
         var data = GunData.from(stack);
-        final var tag = data.tag();
 
         if (data.bolt.actionTime() > 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.ntw_20.shift"));
@@ -80,7 +80,6 @@ public class Ntw20Item extends GunItem implements GeoItem {
         ItemStack stack = player.getMainHandItem();
         if (!stack.is(ModTags.Items.GUN)) return PlayState.STOP;
         var data = GunData.from(stack);
-        final var tag = data.tag();
 
         if (player.isSprinting() && player.onGround()
                 && player.getPersistentData().getDouble("noRun") == 0
@@ -127,12 +126,12 @@ public class Ntw20Item extends GunItem implements GeoItem {
 
     @Override
     public boolean canAdjustZoom(ItemStack stack) {
-        return GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.SCOPE) == 3;
+        return GunData.from(stack).attachment.get(AttachmentType.SCOPE) == 3;
     }
 
     @Override
     public double getCustomZoom(ItemStack stack) {
-        int scopeType = GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.SCOPE);
+        int scopeType = GunData.from(stack).attachment.get(AttachmentType.SCOPE);
         return switch (scopeType) {
             case 2 -> 2.25;
             case 3 -> GunsTool.getGunDoubleTag(NBTTool.getTag(stack), "CustomZoom");
@@ -142,7 +141,7 @@ public class Ntw20Item extends GunItem implements GeoItem {
 
     @Override
     public int getCustomMagazine(ItemStack stack) {
-        return switch (GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.MAGAZINE)) {
+        return switch (GunData.from(stack).attachment.get(AttachmentType.MAGAZINE)) {
             case 1 -> 3;
             case 2 -> 6;
             default -> 0;

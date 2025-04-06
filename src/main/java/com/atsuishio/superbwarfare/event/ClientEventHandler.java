@@ -11,6 +11,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
+import com.atsuishio.superbwarfare.item.gun.data.AttachmentType;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.network.message.send.*;
 import com.atsuishio.superbwarfare.perk.AmmoPerk;
@@ -235,7 +236,7 @@ public class ClientEventHandler {
         isProne(player);
         beamShoot(player, stack);
         handleLungeAttack(player, stack);
-        handleGunMelee(player, stack, tag);
+        handleGunMelee(player, stack);
 
         var options = Minecraft.getInstance().options;
         short keys = 0;
@@ -301,7 +302,7 @@ public class ClientEventHandler {
                 && !level.getBlockState(BlockPos.containing(player.getX() + 0.7 * player.getLookAngle().x, player.getY() + 1.5, player.getZ() + 0.7 * player.getLookAngle().z)).canOcclude();
     }
 
-    public static void handleGunMelee(Player player, ItemStack stack, final CompoundTag tag) {
+    public static void handleGunMelee(Player player, ItemStack stack) {
         if (stack.getItem() instanceof GunItem gunItem) {
             var data = GunData.from(stack);
             var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
@@ -686,7 +687,8 @@ public class ClientEventHandler {
             player.playSound(ModSounds.HENG.get(), 1f, 1f);
         }
 
-        int barrelType = GunsTool.getAttachmentType(tag, GunsTool.AttachmentType.BARREL);
+        var data = GunData.from(stack);
+        int barrelType = data.attachment.get(AttachmentType.BARREL);
 
         SoundEvent sound1p = BuiltInRegistries.SOUND_EVENT.get(Mod.loc(name + (barrelType == 2 ? "_fire_1p_s" : "_fire_1p")));
 
@@ -822,7 +824,7 @@ public class ClientEventHandler {
         if (player == null) return;
         ItemStack stack = player.getMainHandItem();
         if (!(stack.getItem() instanceof GunItem gunItem)) return;
-        final var tag = NBTTool.getTag(stack);
+        var data = GunData.from(stack);
 
         if (player.getVehicle() instanceof ArmedVehicleEntity iArmedVehicle && iArmedVehicle.isDriver(player) && iArmedVehicle.hidePassenger(player))
             return;
@@ -833,12 +835,12 @@ public class ClientEventHandler {
         if (player.isCrouching() && player.getBbHeight() >= 1 && !isProne(player)) {
             pose = 0.85f;
         } else if (isProne(player)) {
-            pose = (GunsTool.getAttachmentType(tag, GunsTool.AttachmentType.GRIP) == 3 || gunItem.hasBipod(stack)) ? 0 : 0.25f;
+            pose = (data.attachment.get(AttachmentType.GRIP) == 3 || gunItem.hasBipod(stack)) ? 0 : 0.25f;
         } else {
             pose = 1;
         }
 
-        int stockType = GunsTool.getAttachmentType(tag, GunsTool.AttachmentType.STOCK);
+        int stockType = data.attachment.get(AttachmentType.STOCK);
 
         double sway = switch (stockType) {
             case 1 -> 1;
@@ -846,7 +848,6 @@ public class ClientEventHandler {
             default -> 0.8;
         };
 
-        var data = GunData.from(stack);
         double customWeight = data.customWeight();
 
         var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE, null);
@@ -884,7 +885,6 @@ public class ClientEventHandler {
             }
         }
 
-        float times = Minecraft.getInstance().getTimer().getRealtimeDeltaTicks();
         LocalPlayer player = Minecraft.getInstance().player;
 
         float yaw = event.getYaw();
@@ -918,15 +918,15 @@ public class ClientEventHandler {
         }
 
         if (level != null && stack.is(ModTags.Items.GUN)) {
-            handleWeaponSway(living, tag);
+            handleWeaponSway(living);
             handleWeaponMove(living);
             handleWeaponZoom(living);
             handlePlayerBreath(living);
-            handleWeaponFire(event, living, tag);
+            handleWeaponFire(event, living);
             handleWeaponShell();
-            handleGunRecoil(tag);
+            handleGunRecoil();
             handleBowPullAnimation(living);
-            handleWeaponDraw(living, tag);
+            handleWeaponDraw(living);
             handlePlayerCamera(event);
         }
 
@@ -979,16 +979,18 @@ public class ClientEventHandler {
         }
     }
 
-    private static void handleWeaponSway(LivingEntity entity, final CompoundTag tag) {
+    private static void handleWeaponSway(LivingEntity entity) {
         ItemStack stack = entity.getMainHandItem();
+
         if (stack.getItem() instanceof GunItem gunItem && entity instanceof Player player) {
+            var data = GunData.from(stack);
             float times = 2 * (float) Math.min(Minecraft.getInstance().getTimer().getRealtimeDeltaTicks(), 0.8);
             double pose;
 
             if (player.isShiftKeyDown() && player.getBbHeight() >= 1 && isProne(player)) {
                 pose = 0.85;
             } else if (isProne(player)) {
-                pose = (GunsTool.getAttachmentType(tag, GunsTool.AttachmentType.GRIP) == 3 || gunItem.hasBipod(stack)) ? 0 : 0.25f;
+                pose = (data.attachment.get(AttachmentType.GRIP) == 3 || gunItem.hasBipod(stack)) ? 0 : 0.25f;
             } else {
                 pose = 1;
             }
@@ -1067,7 +1069,6 @@ public class ClientEventHandler {
         if (!(entity instanceof Player player)) return;
         var stack = player.getMainHandItem();
         var data = GunData.from(stack);
-        final var tag = data.tag();
         float times = 5 * Minecraft.getInstance().getTimer().getRealtimeDeltaTicks();
 
         double weight = data.weight();
@@ -1093,7 +1094,7 @@ public class ClientEventHandler {
         zoomPosZ = AnimationCurves.PARABOLA.apply(zoomTime);
     }
 
-    private static void handleWeaponFire(ViewportEvent.ComputeCameraAngles event, LivingEntity entity, final CompoundTag tag) {
+    private static void handleWeaponFire(ViewportEvent.ComputeCameraAngles event, LivingEntity entity) {
         float times = 2f * Math.min(Minecraft.getInstance().getTimer().getRealtimeDeltaTicks(), 0.48f);
         float yaw = event.getYaw();
         float pitch = event.getPitch();
@@ -1186,15 +1187,16 @@ public class ClientEventHandler {
         }
     }
 
-    private static void handleGunRecoil(final CompoundTag tag) {
+    private static void handleGunRecoil() {
         Player player = Minecraft.getInstance().player;
         if (player == null) return;
         ItemStack stack = player.getMainHandItem();
         if (!(stack.getItem() instanceof GunItem gunItem)) return;
+        var data = GunData.from(stack);
 
         float times = (float) Math.min(Minecraft.getInstance().getTimer().getRealtimeDeltaTicks(), 1.6);
-        int barrelType = GunsTool.getAttachmentType(tag, GunsTool.AttachmentType.BARREL);
-        int gripType = GunsTool.getAttachmentType(tag, GunsTool.AttachmentType.GRIP);
+        int barrelType = data.attachment.get(AttachmentType.BARREL);
+        int gripType = data.attachment.get(AttachmentType.GRIP);
 
         double recoil = switch (barrelType) {
             case 1 -> 1.5;
@@ -1220,7 +1222,6 @@ public class ClientEventHandler {
             gripRecoilY = 1.25;
         }
 
-        var data = GunData.from(stack);
         double customWeight = data.customWeight();
 
         double rpm = 1;
@@ -1239,7 +1240,7 @@ public class ClientEventHandler {
         if (player.isShiftKeyDown() && player.getBbHeight() >= 1 && !isProne(player)) {
             pose = 0.7f;
         } else if (isProne(player)) {
-            if (GunsTool.getAttachmentType(tag, GunsTool.AttachmentType.GRIP) == 3 || gunItem.hasBipod(stack)) {
+            if (data.attachment.get(AttachmentType.GRIP) == 3 || gunItem.hasBipod(stack)) {
                 pose = 0.1f;
             } else {
                 pose = 0.5f;
@@ -1526,7 +1527,7 @@ public class ClientEventHandler {
         burstFireAmount = 0;
     }
 
-    private static void handleWeaponDraw(LivingEntity entity, final CompoundTag tag) {
+    private static void handleWeaponDraw(LivingEntity entity) {
         float times = Minecraft.getInstance().getTimer().getRealtimeDeltaTicks();
         ItemStack stack = entity.getMainHandItem();
         var data = GunData.from(stack);

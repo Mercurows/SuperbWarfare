@@ -5,9 +5,9 @@ import com.atsuishio.superbwarfare.client.ItemModelHelper;
 import com.atsuishio.superbwarfare.client.model.item.RpkItemModel;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.item.gun.data.AttachmentType;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.item.gun.machinegun.RpkItem;
-import com.atsuishio.superbwarfare.tools.GunsTool;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
@@ -88,49 +88,49 @@ public class RpkItemRenderer extends GeoItemRenderer<RpkItem> {
         if (name.equals("Cross1")) {
             bone.setHidden(tag.getBoolean("HoloHidden")
                     || !ClientEventHandler.zoom
-                    || GunsTool.getAttachmentType(itemStack, GunsTool.AttachmentType.SCOPE) != 1);
+                    || GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) != 1);
         }
 
         if (name.equals("Cross2")) {
             bone.setHidden(tag.getBoolean("HoloHidden")
                     || !ClientEventHandler.zoom
-                    || GunsTool.getAttachmentType(itemStack, GunsTool.AttachmentType.SCOPE) != 2
+                    || GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) != 2
                     || tag.getBoolean("ScopeAlt"));
         }
 
         if (name.equals("CrossAlt")) {
             bone.setHidden(tag.getBoolean("HoloHidden")
                     || !ClientEventHandler.zoom
-                    || GunsTool.getAttachmentType(itemStack, GunsTool.AttachmentType.SCOPE) != 2
+                    || GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) != 2
                     || !(tag.getBoolean("ScopeAlt")));
         }
 
         if (name.equals("Cross3")) {
             bone.setHidden(tag.getBoolean("HoloHidden")
                     || !ClientEventHandler.zoom
-                    || GunsTool.getAttachmentType(itemStack, GunsTool.AttachmentType.SCOPE) != 3);
+                    || GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) != 3);
         }
 
         if (name.equals("humu1")) {
-            bone.setHidden(GunsTool.getAttachmentType(itemStack, GunsTool.AttachmentType.GRIP) != 0);
+            bone.setHidden(GunData.from(itemStack).attachment.get(AttachmentType.GRIP) != 0);
         }
 
         if (name.equals("humu2")) {
-            bone.setHidden(GunsTool.getAttachmentType(itemStack, GunsTool.AttachmentType.GRIP) == 0);
+            bone.setHidden(GunData.from(itemStack).attachment.get(AttachmentType.GRIP) == 0);
         }
 
-        if (GunsTool.getAttachmentType(itemStack, GunsTool.AttachmentType.SCOPE) == 2 && !tag.getBoolean("ScopeAlt")
+        if (GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 2 && !tag.getBoolean("ScopeAlt")
                 && (name.equals("glass") || name.equals("Barrel") || name.equals("humu") || name.equals("qiangguan"))) {
             bone.setHidden(!tag.getBoolean("HoloHidden") && ClientEventHandler.zoom);
         }
 
-        if (GunsTool.getAttachmentType(itemStack, GunsTool.AttachmentType.SCOPE) == 3
+        if (GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 3
                 && (name.equals("jing") || name.equals("Barrel") || name.equals("humu") || name.equals("qiangguan") || name.equals("houzhunxing"))) {
             bone.setHidden(!tag.getBoolean("HoloHidden") && ClientEventHandler.zoom);
         }
 
         if (name.equals("flare")) {
-            if (ClientEventHandler.firePosTimer == 0 || ClientEventHandler.firePosTimer > 0.5 || GunsTool.getAttachmentType(itemStack, GunsTool.AttachmentType.BARREL) == 2) {
+            if (ClientEventHandler.firePosTimer == 0 || ClientEventHandler.firePosTimer > 0.5 || GunData.from(itemStack).attachment.get(AttachmentType.BARREL) == 2) {
                 bone.setHidden(true);
             } else {
                 bone.setHidden(false);

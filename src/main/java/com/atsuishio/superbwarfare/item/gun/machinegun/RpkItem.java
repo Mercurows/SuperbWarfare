@@ -8,6 +8,7 @@ import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
+import com.atsuishio.superbwarfare.item.gun.data.AttachmentType;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
@@ -15,7 +16,6 @@ import com.atsuishio.superbwarfare.tools.GunsTool;
 import com.atsuishio.superbwarfare.tools.NBTTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.effect.MobEffects;
@@ -57,10 +57,9 @@ public class RpkItem extends GunItem implements GeoItem {
         ItemStack stack = player.getMainHandItem();
         if (!stack.is(ModTags.Items.GUN)) return PlayState.STOP;
         var data = GunData.from(stack);
-        var tag = data.tag();
 
-        boolean drum = GunsTool.getAttachmentType(tag, GunsTool.AttachmentType.MAGAZINE) == 2;
-        boolean grip = GunsTool.getAttachmentType(tag, GunsTool.AttachmentType.GRIP) == 1 || GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.GRIP) == 2;
+        boolean drum = data.attachment.get(AttachmentType.MAGAZINE) == 2;
+        boolean grip = data.attachment.get(AttachmentType.GRIP) == 1 || GunData.from(stack).attachment.get(AttachmentType.GRIP) == 2;
 
         if (GunData.from(stack).reload.empty()) {
             if (drum) {
@@ -137,7 +136,7 @@ public class RpkItem extends GunItem implements GeoItem {
 
     @Override
     public int getCustomMagazine(ItemStack stack) {
-        int magType = GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.MAGAZINE);
+        int magType = GunData.from(stack).attachment.get(AttachmentType.MAGAZINE);
         return switch (magType) {
             case 1 -> 20;
             case 2 -> 60;
@@ -147,7 +146,7 @@ public class RpkItem extends GunItem implements GeoItem {
 
     @Override
     public double getCustomZoom(ItemStack stack) {
-        int scopeType = GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.SCOPE);
+        int scopeType = GunData.from(stack).attachment.get(AttachmentType.SCOPE);
         return switch (scopeType) {
             case 2 -> NBTTool.getTag(stack).getBoolean("ScopeAlt") ? 0 : 2.75;
             case 3 -> GunsTool.getGunDoubleTag(NBTTool.getTag(stack), "CustomZoom");
@@ -157,7 +156,7 @@ public class RpkItem extends GunItem implements GeoItem {
 
     @Override
     public boolean canAdjustZoom(ItemStack stack) {
-        return GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.SCOPE) == 3;
+        return GunData.from(stack).attachment.get(AttachmentType.SCOPE) == 3;
     }
 
     @Override
@@ -189,19 +188,19 @@ public class RpkItem extends GunItem implements GeoItem {
     @ParametersAreNonnullByDefault
     public void inventoryTick(ItemStack stack, Level level, Entity entity, int slot, boolean selected) {
         super.inventoryTick(stack, level, entity, slot, selected);
-        int gripType = GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.GRIP);
+
+        var data = GunData.from(stack);
+        int gripType = data.attachment.get(AttachmentType.GRIP);
 
         if (gripType == 3) {
-            var data = GunData.from(stack);
-            CompoundTag tag = data.tag().getCompound("Attachments");
-            tag.putInt("Grip", 0);
+            data.attachment.set(AttachmentType.GRIP, 0);
             data.save();
         }
     }
 
     @Override
     public boolean canSwitchScope(ItemStack stack) {
-        return GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.SCOPE) == 2;
+        return GunData.from(stack).attachment.get(AttachmentType.SCOPE) == 2;
     }
 
     @Override

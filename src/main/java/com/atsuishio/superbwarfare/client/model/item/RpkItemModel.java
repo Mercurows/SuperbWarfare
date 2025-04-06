@@ -5,9 +5,9 @@ import com.atsuishio.superbwarfare.client.AnimationHelper;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.item.gun.data.AttachmentType;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.item.gun.machinegun.RpkItem;
-import com.atsuishio.superbwarfare.tools.GunsTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -76,7 +76,7 @@ public class RpkItemModel extends GeoModel<RpkItem> {
 
         var data = GunData.from(stack);
         var tag = data.tag();
-        int type = GunsTool.getAttachmentType(stack, GunsTool.AttachmentType.SCOPE);
+        int type = GunData.from(stack).attachment.get(AttachmentType.SCOPE);
         scopeY = Mth.lerp(times, scopeY, tag.getBoolean("ScopeAlt") ? -0.7f : 0.2f);
         scaleZAlt = Mth.lerp(times, scaleZAlt, tag.getBoolean("ScopeAlt") ? 0.45f : 0.74f);
         posZAlt = Mth.lerp(times, posZAlt, tag.getBoolean("ScopeAlt") ? 3.3f : 4.25f);
