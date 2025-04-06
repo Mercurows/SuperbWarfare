@@ -29,7 +29,6 @@ public class AmmoBox extends Item {
         super(new Properties().stacksTo(1));
     }
 
-    // TODO 修复弹药存储问题
     @Override
     public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, Player player, @NotNull InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);

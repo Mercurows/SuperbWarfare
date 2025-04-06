@@ -47,6 +47,7 @@ import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.block.entity.HopperBlockEntity;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.util.TriState;
 import net.neoforged.neoforge.event.entity.living.*;
 import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent;
@@ -308,10 +309,9 @@ public class LivingEventHandler {
         }
 
         if (!sourceEntity.level().isClientSide() && sourceEntity instanceof ServerPlayer player) {
-            // TODO 判断 pre kill event 结果
-//            if (NeoForge.EVENT_BUS.post(new PreKillEvent.Indicator(player, source, event.getEntity()))) {
-//                return;
-//            }
+            if (NeoForge.EVENT_BUS.post(new PreKillEvent.Indicator(player, source, event.getEntity())).isCanceled()) {
+                return;
+            }
 
             SoundTool.playLocalSound(player, ModSounds.TARGET_DOWN.get(), 3f, 1f);
             PacketDistributor.sendToPlayer(player, new ClientIndicatorMessage(2, 8));
@@ -469,10 +469,9 @@ public class LivingEventHandler {
             attacker = player;
         }
 
-        // TODO pre kill event
-//        if (NeoForge.EVENT_BUS.post(new PreKillEvent.SendKillMessage(attacker, source, entity))) {
-//            return;
-//        }
+        if (NeoForge.EVENT_BUS.post(new PreKillEvent.SendKillMessage(attacker, source, entity)).isCanceled()) {
+            return;
+        }
 
         if (attacker != null && MiscConfig.SEND_KILL_FEEDBACK.get()) {
             if (DamageTypeTool.isHeadshotDamage(source)) {
