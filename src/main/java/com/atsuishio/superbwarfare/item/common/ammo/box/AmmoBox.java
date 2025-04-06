@@ -37,32 +37,30 @@ public class AmmoBox extends Item {
         if (hand == InteractionHand.OFF_HAND) return InteractionResultHolder.fail(stack);
 
         player.getCooldowns().addCooldown(this, 10);
+
         var info = stack.get(ModDataComponents.AMMO_BOX_INFO);
         if (info == null) info = new AmmoBoxInfo("All", false);
-        String type = info.type();
+        String selectedType = info.type();
 
         var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE, null);
-        if (cap != null) {
-            var types = type.equals("All") ? AmmoType.values() : new AmmoType[]{AmmoType.getType(type)};
+        if (cap != null && !level.isClientSide()) {
+            var types = selectedType.equals("All") ? AmmoType.values() : new AmmoType[]{AmmoType.getType(selectedType)};
 
-            for (var ammoType : types) {
-                if (ammoType == null) continue;
+            for (var type : types) {
+                if (type == null) continue;
 
                 if (player.isCrouching()) {
                     // 存入弹药
-                    ammoType.add(stack, ammoType.get(cap));
-                    ammoType.set(cap, 0);
+                    type.add(stack, type.get(cap));
+                    type.set(cap, 0);
                 } else {
                     // 取出弹药
-                    ammoType.add(cap, ammoType.get(stack));
-                    ammoType.set(stack, 0);
+                    type.add(cap, type.get(stack));
+                    type.set(stack, 0);
                 }
             }
             cap.syncPlayerVariables(player);
-
-            if (!level.isClientSide()) {
-                level.playSound(null, player.blockPosition(), SoundEvents.ARROW_HIT_PLAYER, SoundSource.PLAYERS, 1, 1);
-            }
+            level.playSound(null, player.blockPosition(), SoundEvents.ARROW_HIT_PLAYER, SoundSource.PLAYERS, 1, 1);
 
             // 取出弹药时，若弹药盒为掉落物版本，则移除弹药盒物品
             if (!player.isCrouching() && info.isDrop()) {
@@ -122,7 +120,7 @@ public class AmmoBox extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @NotNull TooltipContext context, List<Component> tooltipComponents, @NotNull TooltipFlag tooltipFlag) {
+    public void appendHoverText(ItemStack stack, @NotNull TooltipContext context, @NotNull List<Component> tooltipComponents, @NotNull TooltipFlag tooltipFlag) {
         var info = stack.get(ModDataComponents.AMMO_BOX_INFO);
         if (info == null) info = new AmmoBoxInfo("All", false);
         var type = AmmoType.getType(info.type());

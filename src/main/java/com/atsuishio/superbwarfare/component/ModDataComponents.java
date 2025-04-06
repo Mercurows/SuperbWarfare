@@ -42,7 +42,7 @@ public class ModDataComponents {
     );
 
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<AmmoBoxInfo>> AMMO_BOX_INFO = register(
-            "ammo_box_type",
+            "ammo_box_info",
             builder -> builder.persistent(AmmoBoxInfo.CODEC)
     );
 

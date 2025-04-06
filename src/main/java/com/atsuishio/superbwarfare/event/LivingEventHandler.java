@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.event;
 
 import com.atsuishio.superbwarfare.capability.ModCapabilities;
 import com.atsuishio.superbwarfare.capability.player.PlayerVariable;
+import com.atsuishio.superbwarfare.component.ModDataComponents;
 import com.atsuishio.superbwarfare.config.common.GameplayConfig;
 import com.atsuishio.superbwarfare.config.server.MiscConfig;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
@@ -14,6 +15,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.ContainerMobileVehicleEnt
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.event.events.PreKillEvent;
 import com.atsuishio.superbwarfare.init.*;
+import com.atsuishio.superbwarfare.item.common.ammo.box.AmmoBoxInfo;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.item.gun.data.ReloadState;
@@ -24,7 +26,6 @@ import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
 import com.atsuishio.superbwarfare.tools.*;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundStopSoundPacket;
 import net.minecraft.resources.ResourceKey;
@@ -51,6 +52,7 @@ import net.neoforged.neoforge.event.entity.living.*;
 import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 @EventBusSubscriber
@@ -91,7 +93,6 @@ public class LivingEventHandler {
         killIndication(event);
         handleGunPerksWhenDeath(event);
         handlePlayerKillEntity(event);
-        handlePlayerDeathDropAmmo(event.getEntity());
         giveKillExpToWeapon(event);
 
         if (event.getEntity() instanceof Player player) {
@@ -737,37 +738,6 @@ public class LivingEventHandler {
         data.save();
     }
 
-    /**
-     * 开启死亡掉落时掉落一个弹药盒
-     */
-    private static void handlePlayerDeathDropAmmo(LivingEntity entity) {
-        if (!entity.level().getLevelData().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY) && entity instanceof Player player) {
-            var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
-            if (cap == null) cap = new PlayerVariable();
-
-            boolean drop = cap.rifleAmmo + cap.handgunAmmo + cap.shotgunAmmo + cap.sniperAmmo + cap.heavyAmmo > 0;
-
-            if (drop) {
-                ItemStack stack = new ItemStack(ModItems.AMMO_BOX.get());
-                CompoundTag tag = NBTTool.getTag(stack);
-
-                for (var type : AmmoType.values()) {
-                    type.set(tag, type.get(cap));
-                    type.set(cap, 0);
-                }
-                tag.putBoolean("IsDrop", true);
-                NBTTool.saveTag(stack, tag);
-                cap.syncPlayerVariables(player);
-
-                if (player.level() instanceof ServerLevel level) {
-                    ItemEntity itemEntity = new ItemEntity(level, player.getX(), player.getY() + 1, player.getZ(), stack);
-                    itemEntity.setPickUpDelay(10);
-                    level.addFreshEntity(itemEntity);
-                }
-            }
-        }
-    }
-
     @SubscribeEvent
     public static void onPickup(ItemEntityPickupEvent.Pre event) {
         if (!VehicleConfig.VEHICLE_ITEM_PICKUP.get()) return;
@@ -782,26 +752,58 @@ public class LivingEventHandler {
 
     @SubscribeEvent
     public static void onLivingDrops(LivingDropsEvent event) {
+        // 死亡掉落弹药盒
+        if (event.getEntity() instanceof Player player && !player.level().getLevelData().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY)) {
+            var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
+            if (cap == null) cap = new PlayerVariable();
+
+            boolean drop = cap.rifleAmmo + cap.handgunAmmo + cap.shotgunAmmo + cap.sniperAmmo + cap.heavyAmmo > 0;
+
+            if (drop) {
+                var stack = new ItemStack(ModItems.AMMO_BOX.get());
+
+                for (var type : AmmoType.values()) {
+                    type.set(stack, type.get(cap));
+                    type.set(cap, 0);
+                }
+
+                var info = new AmmoBoxInfo("All", true);
+                stack.set(ModDataComponents.AMMO_BOX_INFO, info);
+
+                cap.syncPlayerVariables(player);
+
+                event.getDrops().add(new ItemEntity(player.level(), player.getX(), player.getY() + 1, player.getZ(), stack));
+            }
+        }
+
         DamageSource source = event.getSource();
         Entity sourceEntity = source.getEntity();
         if (!(sourceEntity instanceof Player player)) return;
-        ItemStack stack = player.getMainHandItem();
+        ItemStack mainHandItem = player.getMainHandItem();
 
+        // 创生物收集掉落物
         if (player.getVehicle() instanceof ContainerMobileVehicleEntity containerMobileVehicleEntity && source.is(ModDamageTypes.VEHICLE_STRIKE)) {
             var drops = event.getDrops();
+            var removed = new ArrayList<ItemEntity>();
+
             drops.forEach(itemEntity -> {
-                ItemStack item = itemEntity.getItem();
-                if (!HopperBlockEntity.addItem(containerMobileVehicleEntity, itemEntity)) {
-                    player.drop(item, false);
+                ItemStack stack = itemEntity.getItem();
+
+                InventoryTool.insertItem(containerMobileVehicleEntity.getItemStacks(), stack);
+
+                if (stack.getCount() <= 0) {
+                    player.drop(stack, false);
+                    removed.add(itemEntity);
                 }
             });
-            event.setCanceled(true);
+
+            drops.removeAll(removed);
             return;
         }
 
-
-        final var tag = NBTTool.getTag(stack);
-        if (stack.is(ModTags.Items.GUN) && PerkHelper.getItemPerkLevel(ModPerks.POWERFUL_ATTRACTION.get(), tag) > 0 && (DamageTypeTool.isGunDamage(source) || DamageTypeTool.isExplosionDamage(source))) {
+        // 磁吸Perk
+        final var mainHandTag = NBTTool.getTag(mainHandItem);
+        if (mainHandItem.is(ModTags.Items.GUN) && PerkHelper.getItemPerkLevel(ModPerks.POWERFUL_ATTRACTION.get(), mainHandTag) > 0 && (DamageTypeTool.isGunDamage(source) || DamageTypeTool.isExplosionDamage(source))) {
             var drops = event.getDrops();
             drops.forEach(itemEntity -> {
                 ItemStack item = itemEntity.getItem();

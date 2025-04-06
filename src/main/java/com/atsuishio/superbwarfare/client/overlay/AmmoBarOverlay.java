@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.client.overlay;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.capability.ModCapabilities;
 import com.atsuishio.superbwarfare.capability.player.PlayerVariable;
+import com.atsuishio.superbwarfare.component.ModDataComponents;
 import com.atsuishio.superbwarfare.config.client.DisplayConfig;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
 import com.atsuishio.superbwarfare.init.ModItems;
@@ -290,8 +291,9 @@ public class AmmoBarOverlay {
             boolean boxAmmoSelected = false;
 
             if (isAmmoBox) {
-                var tag = NBTTool.getTag(stack);
-                var ammoBoxType = tag.getString("Type");
+                var data = stack.get(ModDataComponents.AMMO_BOX_INFO);
+                var ammoBoxType = data == null ? "All" : data.type();
+
                 boxAmmoCount = type.get(stack);
                 if (ammoBoxType.equals("All") || ammoBoxType.equals(type.name)) {
                     boxAnimator.forward(currentTime);

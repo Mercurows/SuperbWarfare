@@ -119,4 +119,26 @@ public class InventoryTool {
 
         return count;
     }
+
+    public static int insertItem(NonNullList<ItemStack> itemList, ItemStack stack) {
+        var maxStackSize = stack.getItem().getMaxStackSize(stack);
+        var originalCount = stack.getCount();
+
+        for (int i = 0; i < itemList.size(); i++) {
+            var currentStack = itemList.get(i);
+
+            if (ItemStack.isSameItemSameComponents(stack, currentStack) && currentStack.getCount() < maxStackSize) {
+                var countToAdd = Math.min(maxStackSize - currentStack.getCount(), stack.getCount());
+                currentStack.grow(countToAdd);
+                stack.setCount(stack.getCount() - countToAdd);
+            } else if (currentStack.isEmpty()) {
+                itemList.set(i, stack);
+                return stack.getCount();
+            }
+
+            if (stack.getCount() <= 0) break;
+        }
+
+        return originalCount - stack.getCount();
+    }
 }
