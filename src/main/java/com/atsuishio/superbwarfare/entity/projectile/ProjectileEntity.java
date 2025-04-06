@@ -65,7 +65,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-@SuppressWarnings({"unused", "UnusedReturnValue", "SuspiciousNameCombination"})
+@SuppressWarnings({"unused", "UnusedReturnValue"})
 public class ProjectileEntity extends Projectile implements IEntityWithComplexSpawn, GeoEntity, CustomSyncMotionEntity {
 
     public static final EntityDataAccessor<Float> COLOR_R = SynchedEntityData.defineId(ProjectileEntity.class, EntityDataSerializers.FLOAT);
@@ -742,13 +742,16 @@ public class ProjectileEntity extends Projectile implements IEntityWithComplexSp
 
         float headShotModifier = isHeadshot ? this.headShot : 1;
         if (normalDamage > 0) {
-            entity.hurt(ModDamageTypes.causeGunFireHeadshotDamage(this.level().registryAccess(), this, this.shooter), normalDamage * headShotModifier);
+            entity.hurt(isHeadshot ? ModDamageTypes.causeGunFireHeadshotDamage(this.level().registryAccess(), this, this.shooter)
+                    : ModDamageTypes.causeGunFireDamage(this.level().registryAccess(), this, this.shooter), normalDamage * headShotModifier);
             entity.invulnerableTime = 0;
         }
         if (absoluteDamage > 0) {
-            entity.hurt(ModDamageTypes.causeGunFireHeadshotAbsoluteDamage(this.level().registryAccess(), this, this.shooter), absoluteDamage * headShotModifier);
+            entity.hurt(isHeadshot ? ModDamageTypes.causeGunFireHeadshotAbsoluteDamage(this.level().registryAccess(), this, this.shooter)
+                    : ModDamageTypes.causeGunFireAbsoluteDamage(this.level().registryAccess(), this, this.shooter), absoluteDamage * headShotModifier);
             entity.invulnerableTime = 0;
 
+            // 大于1的穿甲对载具造成额外伤害
             if (entity instanceof VehicleEntity vehicle && this.bypassArmorRate > 1) {
                 vehicle.hurt(ModDamageTypes.causeGunFireAbsoluteDamage(this.level().registryAccess(), this, this.shooter), absoluteDamage * (this.bypassArmorRate - 1) * 0.5f);
             }
