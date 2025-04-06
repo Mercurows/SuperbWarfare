@@ -8,6 +8,7 @@ public class VehicleConfig {
 
     public static ModConfigSpec.BooleanValue COLLISION_DESTROY_BLOCKS;
     public static ModConfigSpec.BooleanValue COLLISION_DESTROY_HARD_BLOCKS;
+    public static ModConfigSpec.BooleanValue COLLISION_DESTROY_BLOCKS_BEASTLY;
     public static ModConfigSpec.BooleanValue VEHICLE_ITEM_PICKUP;
 
     public static ModConfigSpec.ConfigValue<List<? extends String>> COLLISION_ENTITY_WHITELIST;
@@ -112,6 +113,9 @@ public class VehicleConfig {
 
         builder.comment("Allows vehicles to destroy hard blocks via collision");
         COLLISION_DESTROY_HARD_BLOCKS = builder.define("collision_destroy_hard_blocks", false);
+
+        builder.comment("Allows vehicles to destroy blocks via collision like a beast");
+        COLLISION_DESTROY_BLOCKS_BEASTLY = builder.define("collision_destroy_blocks_beastly", false);
 
         builder.comment("Allow vehicles to pick up items");
         VEHICLE_ITEM_PICKUP = builder.define("vehicle_item_pickup", true);

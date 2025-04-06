@@ -349,35 +349,45 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
     }
 
     public void collideBlock() {
-        if (level() instanceof ServerLevel) {
-            if (!VehicleConfig.COLLISION_DESTROY_BLOCKS.get()) return;
-
-            AABB aabb = getBoundingBox().move(this.getDeltaMovement().scale(0.5)).inflate(0.1, -0.05, 0.1);
-            BlockPos.betweenClosedStream(aabb).forEach((pos) -> {
-                BlockState blockstate = this.level().getBlockState(pos);
-                if (blockstate.is(ModTags.Blocks.SOFT_COLLISION)) {
-                    this.level().destroyBlock(pos, true);
-                }
-            });
-        }
+        if (!VehicleConfig.COLLISION_DESTROY_BLOCKS.get()) return;
+        AABB aabb = getBoundingBox().inflate(0.1, -0.05, 0.1);
+        BlockPos.betweenClosedStream(aabb).forEach((pos) -> {
+            BlockState blockstate = this.level().getBlockState(pos);
+            if (blockstate.is(ModTags.Blocks.SOFT_COLLISION)) {
+                this.level().destroyBlock(pos, true);
+            }
+        });
     }
 
     public void collideHardBlock() {
-        if (level() instanceof ServerLevel) {
-            if (!VehicleConfig.COLLISION_DESTROY_HARD_BLOCKS.get()) return;
+        if (!VehicleConfig.COLLISION_DESTROY_HARD_BLOCKS.get()) return;
+        AABB aabb = getBoundingBox().inflate(0.25, -0.05, 0.25);
+        BlockPos.betweenClosedStream(aabb).forEach((pos) -> {
+            BlockState blockstate = this.level().getBlockState(pos);
+            if (blockstate.is(ModTags.Blocks.HARD_COLLISION)) {
+                this.level().destroyBlock(pos, true);
+                this.setDeltaMovement(this.getDeltaMovement().scale(0.95));
+            }
+        });
+    }
 
-            AABB aabb = getBoundingBox().move(this.getDeltaMovement().scale(0.5)).inflate(0.1, -0.05, 0.1);
-            BlockPos.betweenClosedStream(aabb).forEach((pos) -> {
-                BlockState blockstate = this.level().getBlockState(pos);
-                if (blockstate.is(ModTags.Blocks.HARD_COLLISION)) {
-                    this.level().destroyBlock(pos, true);
-                    this.setDeltaMovement(this.getDeltaMovement().scale(0.95));
-                }
-            });
-        }
+    public void collideBlockBeastly() {
+        if (!VehicleConfig.COLLISION_DESTROY_BLOCKS_BEASTLY.get()) return;
+        AABB aabb = getBoundingBox().inflate(0.25, -0.05, 0.25);
+        BlockPos.betweenClosedStream(aabb).forEach((pos) -> {
+            BlockState blockstate = this.level().getBlockState(pos);
+            float hardness = blockstate.getBlock().defaultDestroyTime();
+            if (hardness > 0 && hardness <= 4) {
+                this.level().destroyBlock(pos, true);
+            }
+        });
     }
 
     public boolean canCollideHardBlock() {
+        return false;
+    }
+
+    public boolean canCollideBlockBeastly() {
         return false;
     }
 
@@ -386,6 +396,10 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
         if (!this.level().isClientSide()) {
             MobileVehicleEntity.IGNORE_ENTITY_GROUND_CHECK_STEPPING = true;
         }
+        if (level() instanceof ServerLevel && canCollideBlockBeastly()) {
+            collideBlockBeastly();
+        }
+
         super.move(movementType, movement);
         if (level() instanceof ServerLevel) {
             if (this.horizontalCollision) {

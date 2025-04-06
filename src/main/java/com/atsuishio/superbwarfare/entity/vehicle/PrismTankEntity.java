@@ -225,6 +225,11 @@ public class PrismTankEntity extends ContainerMobileVehicleEntity implements Geo
     }
 
     @Override
+    public boolean canCollideHardBlock() {
+        return getDeltaMovement().horizontalDistance() > 0.07 || Mth.abs(this.entityData.get(POWER)) > 0.12;
+    }
+
+    @Override
     public void move(@NotNull MoverType movementType, @NotNull Vec3 movement) {
         super.move(movementType, movement);
         if (this.isInWater() && horizontalCollision) {

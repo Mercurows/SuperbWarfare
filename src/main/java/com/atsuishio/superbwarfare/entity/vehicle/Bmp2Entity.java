@@ -236,7 +236,7 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
 
     @Override
     public boolean canCollideHardBlock() {
-        return getDeltaMovement().horizontalDistance() > 0.07 || this.entityData.get(POWER) > 0.12;
+        return getDeltaMovement().horizontalDistance() > 0.07 || Mth.abs(this.entityData.get(POWER)) > 0.12;
     }
 
 

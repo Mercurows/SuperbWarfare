@@ -292,6 +292,15 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
         this.refreshDimensions();
     }
 
+    @Override
+    public boolean canCollideHardBlock() {
+        return getDeltaMovement().horizontalDistance() > 0.05 || Mth.abs(this.entityData.get(POWER)) > 0.1;
+    }
+
+    @Override
+    public boolean canCollideBlockBeastly() {
+        return getDeltaMovement().horizontalDistance() > 0.3;
+    }
 
     private void handleAmmo() {
         if (getWeaponIndex(0) == 0 || getWeaponIndex(0) == 1) {

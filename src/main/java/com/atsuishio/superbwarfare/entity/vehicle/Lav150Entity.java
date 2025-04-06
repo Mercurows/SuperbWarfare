@@ -191,7 +191,7 @@ public class Lav150Entity extends ContainerMobileVehicleEntity implements GeoEnt
 
     @Override
     public boolean canCollideHardBlock() {
-        return getDeltaMovement().horizontalDistance() > 0.09 || this.entityData.get(POWER) > 0.15;
+        return getDeltaMovement().horizontalDistance() > 0.09 || Mth.abs(this.entityData.get(POWER)) > 0.15;
     }
 
     private void handleAmmo() {

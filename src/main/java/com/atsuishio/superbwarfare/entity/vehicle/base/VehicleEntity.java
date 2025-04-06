@@ -373,7 +373,8 @@ public abstract class VehicleEntity extends Entity {
 
     @Override
     public boolean hurt(@NotNull DamageSource source, float amount) {
-        if (source.is(DamageTypes.CACTUS)) return false;
+        if (source.is(DamageTypes.CACTUS) || source.is(DamageTypes.SWEET_BERRY_BUSH) || source.is(DamageTypes.IN_WALL))
+            return false;
         // 计算减伤后的伤害
         float computedAmount = damageModifier.compute(source, amount);
         this.crash = source.is(ModDamageTypes.VEHICLE_STRIKE);
