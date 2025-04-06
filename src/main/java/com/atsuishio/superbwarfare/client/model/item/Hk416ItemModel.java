@@ -109,9 +109,6 @@ public class Hk416ItemModel extends GeoModel<Hk416Item> {
         scope3.setScaleZ(1f - (0.5f * (float) zp));
 
         var data = GunData.from(stack);
-        var tag = data.tag();
-        tag.putBoolean("HoloHidden", !(gun.getPosX() > 3.1));
-        data.save();
 
         GeoBone shen;
         if (zt < 0.5) {

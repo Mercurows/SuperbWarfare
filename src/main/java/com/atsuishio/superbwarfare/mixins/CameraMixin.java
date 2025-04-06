@@ -114,7 +114,7 @@ public abstract class CameraMixin {
             if (yx100.getFirstPassenger() == player) {
                 setRotation((float) -VehicleEntity.getYRotFromVector(yx100.getBarrelVec(partialTicks)), (float) -VehicleEntity.getXRotFromVector(yx100.getBarrelVec(partialTicks)));
                 if (ClientEventHandler.zoomVehicle) {
-                    setPosition(yx100.driverZoomPos(partialTicks).x, Mth.lerp(partialTicks, player.yo + player.getEyeHeight(), player.getEyeY()), yx100.driverZoomPos(partialTicks).z);
+                    setPosition(yx100.driverZoomPos(partialTicks).x, yx100.driverZoomPos(partialTicks).y, yx100.driverZoomPos(partialTicks).z);
                 } else {
                     setPosition(Mth.lerp(partialTicks, player.xo, player.getX()), Mth.lerp(partialTicks, player.yo + player.getEyeHeight(), player.getEyeY()), Mth.lerp(partialTicks, player.zo, player.getZ()));
                 }

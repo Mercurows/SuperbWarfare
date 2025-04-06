@@ -47,9 +47,6 @@ public class Ntw20Model extends GeoModel<Ntw20Item> {
         GeoBone scope = getAnimationProcessor().getBone("Scope1");
         GeoBone scope2 = getAnimationProcessor().getBone("Scope2");
         GeoBone scope3 = getAnimationProcessor().getBone("Scope3");
-        GeoBone cross1 = getAnimationProcessor().getBone("Cross1");
-        GeoBone cross2 = getAnimationProcessor().getBone("Cross2");
-        GeoBone cross3 = getAnimationProcessor().getBone("Cross3");
 
         Player player = Minecraft.getInstance().player;
         if (player == null) return;
@@ -138,10 +135,6 @@ public class Ntw20Model extends GeoModel<Ntw20Item> {
         CrossHairOverlay.gunRot = shen.getRotZ();
 
         var data = GunData.from(stack);
-        var tag = data.tag();
-        tag.putBoolean("HoloHidden", !(gun.getPosX() > 4.3));
-        data.save();
-
         action.setPosZ(3f * (float) ClientEventHandler.actionMove);
         lh.setPosZ(-3f * (float) ClientEventHandler.actionMove);
 

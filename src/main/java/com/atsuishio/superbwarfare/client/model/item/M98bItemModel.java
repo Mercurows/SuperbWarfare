@@ -88,9 +88,6 @@ public class M98bItemModel extends GeoModel<M98bItem> {
         gun.setRotZ((float) (0.02f * zpz));
 
         var data = GunData.from(stack);
-        var tag = data.tag();
-        tag.putBoolean("HoloHidden", !(gun.getPosX() > 1.8));
-        data.save();
 
         GeoBone root = getAnimationProcessor().getBone("root");
         GeoBone zhunxing = getAnimationProcessor().getBone("shi");

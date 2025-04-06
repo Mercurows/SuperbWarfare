@@ -91,11 +91,11 @@ public class M98bItemRenderer extends GeoItemRenderer<M98bItem> {
         }
 
         if (name.equals("scope2")) {
-            bone.setHidden(NBTTool.getTag(itemStack).getBoolean("HoloHidden") || !ClientEventHandler.zoom);
+            bone.setHidden(ClientEventHandler.zoomPos < 0.7 || !ClientEventHandler.zoom);
         }
 
         if (name.equals("qiang")) {
-            bone.setHidden(!NBTTool.getTag(itemStack).getBoolean("HoloHidden"));
+            bone.setHidden(ClientEventHandler.zoomPos > 0.7);
         }
 
         if (renderingArms) {

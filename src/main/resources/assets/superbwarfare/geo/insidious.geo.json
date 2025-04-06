@@ -1296,56 +1296,28 @@
 				{
 					"name": "gun",
 					"parent": "0",
-					"pivot": [0, -5.5, -0.5]
-				},
-				{
-					"name": "aug_default",
-					"parent": "gun",
-					"pivot": [0, 0.9, -0.5]
-				},
-				{
-					"name": "deco",
-					"parent": "aug_default",
-					"pivot": [-0.275, -1.21009, -0.85217]
-				},
-				{
-					"name": "group6",
-					"parent": "deco",
-					"pivot": [0.45, -1.21009, 3.69783]
-				},
-				{
-					"name": "safety",
-					"parent": "deco",
-					"pivot": [0.41875, -1.21009, 0.24783]
-				},
-				{
-					"name": "safety_illuminated",
-					"parent": "safety",
-					"pivot": [0.75, 0.41491, 1.86034]
-				},
-				{
-					"name": "trigger",
-					"parent": "deco",
-					"pivot": [-0.275, -1.21009, -0.65217]
-				},
-				{
-					"name": "octagon2",
-					"parent": "deco",
-					"pivot": [0.5096, 0.9, -0.5]
-				},
-				{
-					"name": "boltcover",
-					"parent": "deco",
-					"pivot": [-1.67471, -0.2104, 5.35]
-				},
-				{
-					"name": "mag_release",
-					"parent": "deco",
-					"pivot": [0.35, -1.56936, 7.10269]
+					"pivot": [0, -5.5, -0.5],
+					"cubes": [
+						{
+							"origin": [-1.2004, 1.40678, 4.40678],
+							"size": [2.4008, 0.89362, 0.39362],
+							"inflate": -0.002,
+							"pivot": [0, 1.7, 5.5],
+							"rotation": [30, 0, 0],
+							"uv": {
+								"north": {"uv": [45, 37], "uv_size": [3, 1]},
+								"east": {"uv": [65, 21], "uv_size": [0.5, 1]},
+								"south": {"uv": [45, 38], "uv_size": [3, 1]},
+								"west": {"uv": [22, 65], "uv_size": [0.5, 1]},
+								"up": {"uv": [40, 54], "uv_size": [3, 0.5]},
+								"down": {"uv": [54, 41.5], "uv_size": [3, -0.5]}
+							}
+						}
+					]
 				},
 				{
 					"name": "stock",
-					"parent": "aug_default",
+					"parent": "gun",
 					"pivot": [0, -5.5, -0.5]
 				},
 				{
@@ -1628,117 +1600,6 @@
 					]
 				},
 				{
-					"name": "receiver",
-					"parent": "aug_default",
-					"pivot": [0, 0.9, -0.5]
-				},
-				{
-					"name": "group8",
-					"parent": "receiver",
-					"pivot": [-0.65, 1.2, 2.17712]
-				},
-				{
-					"name": "octagon",
-					"parent": "receiver",
-					"pivot": [0, 1.6, -9.95]
-				},
-				{
-					"name": "gastube",
-					"parent": "receiver",
-					"pivot": [0, 0.9, -0.5]
-				},
-				{
-					"name": "group3",
-					"parent": "gastube",
-					"pivot": [-0.6, 1.2, -8.33188]
-				},
-				{
-					"name": "cover2",
-					"parent": "gastube",
-					"pivot": [0, 0.9, -0.5]
-				},
-				{
-					"name": "cover",
-					"parent": "cover2",
-					"pivot": [0, 0.9, -0.5]
-				},
-				{
-					"name": "group2",
-					"parent": "receiver",
-					"pivot": [0, 1.6, -2.401]
-				},
-				{
-					"name": "side_rail",
-					"parent": "aug_default",
-					"pivot": [0.45, -3.8, -6.9]
-				},
-				{
-					"name": "foregrip",
-					"parent": "aug_default",
-					"pivot": [0.06945, 0.40393, -3.87787]
-				},
-				{
-					"name": "grip",
-					"parent": "foregrip",
-					"pivot": [0, 0.9, -0.5]
-				},
-				{
-					"name": "pins",
-					"parent": "aug_default",
-					"pivot": [0.0096, 0.9, -0.5]
-				},
-				{
-					"name": "aug_charge",
-					"parent": "gun",
-					"pivot": [0.53109, 1.12994, -3.5]
-				},
-				{
-					"name": "aug_bolt",
-					"parent": "gun",
-					"pivot": [1.67471, -0.6104, 5.55]
-				},
-				{
-					"name": "group15",
-					"parent": "aug_bolt",
-					"pivot": [-0.02802, 7.52082, 2.66108]
-				},
-				{
-					"name": "positioning2",
-					"parent": "gun",
-					"pivot": [0, -5.5, -0.5]
-				},
-				{
-					"name": "laser_pos",
-					"parent": "positioning2",
-					"pivot": [-0.82505, 1.56465, -0.82],
-					"rotation": [0, 0, -45]
-				},
-				{
-					"name": "muzzle_pos",
-					"parent": "positioning2",
-					"pivot": [0, 1.6, -11.75]
-				},
-				{
-					"name": "muzzle_flash",
-					"parent": "positioning2",
-					"pivot": [0, 1.6, -14.1]
-				},
-				{
-					"name": "scope_pos",
-					"parent": "positioning2",
-					"pivot": [0, 2.9, 0.9]
-				},
-				{
-					"name": "shell",
-					"parent": "positioning2",
-					"pivot": [-0.12, 1.71, 7.7]
-				},
-				{
-					"name": "constraint",
-					"parent": "gun",
-					"pivot": [0, 3.32, -14.1]
-				},
-				{
 					"name": "QQQQQ",
 					"parent": "gun",
 					"pivot": [0, 2.5, 0.9]
@@ -1756,21 +1617,6 @@
 								"east": {"uv": [30, 38], "uv_size": [2, 2]},
 								"west": {"uv": [43, 29], "uv_size": [2, 2]},
 								"down": {"uv": [40, 33], "uv_size": [3, -2]}
-							}
-						},
-						{
-							"origin": [-1.2004, 1.40678, 4.40678],
-							"size": [2.4008, 0.89362, 0.39362],
-							"inflate": -0.002,
-							"pivot": [0, 1.7, 5.5],
-							"rotation": [30, 0, 0],
-							"uv": {
-								"north": {"uv": [45, 37], "uv_size": [3, 1]},
-								"east": {"uv": [65, 21], "uv_size": [0.5, 1]},
-								"south": {"uv": [45, 38], "uv_size": [3, 1]},
-								"west": {"uv": [22, 65], "uv_size": [0.5, 1]},
-								"up": {"uv": [40, 54], "uv_size": [3, 0.5]},
-								"down": {"uv": [54, 41.5], "uv_size": [3, -0.5]}
 							}
 						},
 						{

@@ -84,7 +84,7 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
                                 .hitDamage(VehicleConfig.MLE1934_HE_DAMAGE.get())
                                 .explosionDamage(VehicleConfig.MLE1934_HE_EXPLOSION_DAMAGE.get())
                                 .explosionRadius(VehicleConfig.MLE1934_HE_EXPLOSION_RADIUS.get().floatValue())
-                                .durability(1)
+                                .durability(0)
                                 .fireProbability(0.24F)
                                 .fireTime(5)
                                 .sound(ModSounds.CANNON_RELOAD.get())

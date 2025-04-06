@@ -72,12 +72,6 @@ public class DevotionItemModel extends GeoModel<DevotionItem> {
         gun.setScaleZ(1f - (0.7f * (float) zp));
 
         GeoBone shen = getAnimationProcessor().getBone("shen");
-        GeoBone holo = getAnimationProcessor().getBone("holo");
-
-        var data = GunData.from(stack);
-        var tag = data.tag();
-        tag.putBoolean("HoloHidden", !(gun.getPosX() > 1.8));
-        data.save();
 
         shen.setPosX((float) (0.95f * ClientEventHandler.recoilHorizon * fpz * fp));
         shen.setPosY((float) (0.15f * fp + 0.18f * fr));

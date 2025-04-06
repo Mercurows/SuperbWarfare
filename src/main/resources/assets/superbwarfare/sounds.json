@@ -663,6 +663,22 @@
       }
     ]
   },
+  "rpk_fire_1p_s": {
+    "sounds": [
+      {
+        "name": "superbwarfare:rpk/rpk_fire_1p_s",
+        "stream": false
+      }
+    ]
+  },
+  "rpk_fire_3p_s": {
+    "sounds": [
+      {
+        "name": "superbwarfare:rpk/rpk_fire_3p_s",
+        "stream": false
+      }
+    ]
+  },
   "rpk_far": {
     "sounds": [
       {

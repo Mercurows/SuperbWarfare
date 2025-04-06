@@ -94,7 +94,7 @@ public class SentinelItemRenderer extends GeoItemRenderer<SentinelItem> {
         }
 
         if (name.equals("holo")) {
-            bone.setHidden(NBTTool.getTag(itemStack).getBoolean("HoloHidden") || !ClientEventHandler.zoom);
+            bone.setHidden(ClientEventHandler.zoomPos < 0.7 || !ClientEventHandler.zoom);
         }
 
         var cap = itemStack.getCapability(Capabilities.EnergyStorage.ITEM);

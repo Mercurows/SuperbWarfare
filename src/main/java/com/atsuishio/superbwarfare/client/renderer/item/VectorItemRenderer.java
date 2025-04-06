@@ -85,18 +85,14 @@ public class VectorItemRenderer extends GeoItemRenderer<VectorItem> {
         ItemStack itemStack = player.getMainHandItem();
         if (!itemStack.is(ModTags.Items.GUN)) return;
 
-        var tag = NBTTool.getTag(itemStack);
+        var data = GunData.from(itemStack);
 
         if (name.equals("Cross1")) {
-            bone.setHidden(tag.getBoolean("HoloHidden")
-                    || !ClientEventHandler.zoom
-                    || GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) != 1);
+            bone.setHidden(ClientEventHandler.zoomPos < 0.7 || data.attachment.get(AttachmentType.SCOPE) != 1);
         }
 
         if (name.equals("Cross2")) {
-            bone.setHidden(tag.getBoolean("HoloHidden")
-                    || !ClientEventHandler.zoom
-                    || GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) != 2);
+            bone.setHidden(ClientEventHandler.zoomPos < 0.7 || data.attachment.get(AttachmentType.SCOPE) != 2);
         }
 
         if (name.equals("tuoxin")) {
@@ -142,13 +138,13 @@ public class VectorItemRenderer extends GeoItemRenderer<VectorItem> {
 //        if (!itemStack.is(ModTags.Items.GUN)) return;
 //
 //        if (name.equals("Cross1")) {
-//            bone.setHidden(NBTTool.getTag(itemStack).getBoolean("HoloHidden")
+//            bone.setHidden(ClientEventHandler.zoomPos < 0.7
 //                    || !ClientEventHandler.zoom
 //                    || GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) != 1);
 //        }
 //
 //        if (name.equals("Cross2")) {
-//            bone.setHidden(NBTTool.getTag(itemStack).getBoolean("HoloHidden")
+//            bone.setHidden(ClientEventHandler.zoomPos < 0.7
 //                    || !ClientEventHandler.zoom
 //                    || GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) != 2);
 //        }

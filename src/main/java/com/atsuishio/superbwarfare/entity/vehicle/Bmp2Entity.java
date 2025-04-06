@@ -226,11 +226,6 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
             sendParticle(serverLevel, ParticleTypes.BUBBLE_COLUMN_UP, this.getX() + 0.5 * this.getDeltaMovement().x, this.getY() + getSubmergedHeight(this) - 0.2, this.getZ() + 0.5 * this.getDeltaMovement().z, (int) (2 + 10 * this.getDeltaMovement().length()), 0.65, 0, 0.65, 0, true);
         }
 
-        collideBlock();
-        if (this.getDeltaMovement().length() > 0.1) {
-            collideHardBlock();
-        }
-
         turretAngle(25, 25);
         this.terrainCompat(4f, 5f);
         inertiaRotate(1);
@@ -238,6 +233,12 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
         lowHealthWarning();
         this.refreshDimensions();
     }
+
+    @Override
+    public boolean canCollideHardBlock() {
+        return getDeltaMovement().horizontalDistance() > 0.07 || this.entityData.get(POWER) > 0.12;
+    }
+
 
     private void handleAmmo() {
         if (!(this.getFirstPassenger() instanceof Player player)) return;

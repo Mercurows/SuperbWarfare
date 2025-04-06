@@ -76,9 +76,6 @@ public class SentinelItemModel extends GeoModel<SentinelItem> {
         holo.setPosY(0.09f);
 
         var data = GunData.from(stack);
-        var tag = data.tag();
-        tag.putBoolean("HoloHidden", !(gun.getPosX() > 2.4));
-        data.save();
 
         shen.setPosX((float) (0.95f * ClientEventHandler.recoilHorizon * fpz * fp));
         shen.setPosY((float) (0.4f * fp + 0.44f * fr));

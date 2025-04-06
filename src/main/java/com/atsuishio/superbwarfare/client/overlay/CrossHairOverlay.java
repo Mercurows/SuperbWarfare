@@ -107,7 +107,7 @@ public class CrossHairOverlay {
         }
 
         if (stack.is(ModItems.BOCEK.get())) {
-            if (NBTTool.getTag(stack).getBoolean("HoloHidden")) {
+            if (ClientEventHandler.zoomPos < 0.7) {
                 preciseBlit(guiGraphics, Mod.loc("textures/screens/point.png"), w / 2f - 7.5f + moveX, h / 2f - 7.5f + moveY, 0, 0, 16, 16, 16, 16);
                 if (!player.isSprinting() || player.getPersistentData().getDouble("noRun") > 0 || ClientEventHandler.pullPos > 0) {
                     if (ClientEventHandler.zoomTime < 0.1) {

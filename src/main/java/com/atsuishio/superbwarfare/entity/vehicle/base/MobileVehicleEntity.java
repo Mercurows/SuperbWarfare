@@ -377,6 +377,10 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
         }
     }
 
+    public boolean canCollideHardBlock() {
+        return false;
+    }
+
     @Override
     public void move(@NotNull MoverType movementType, @NotNull Vec3 movement) {
         if (!this.level().isClientSide()) {
@@ -384,6 +388,13 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
         }
         super.move(movementType, movement);
         if (level() instanceof ServerLevel) {
+            if (this.horizontalCollision) {
+                collideBlock();
+                if (canCollideHardBlock()) {
+                    collideHardBlock();
+                }
+            }
+
             if (lastTickSpeed < 0.3 || collisionCoolDown > 0 || this instanceof DroneEntity) return;
             Entity driver = EntityFindUtil.findEntity(this.level(), this.entityData.get(LAST_DRIVER_UUID));
 

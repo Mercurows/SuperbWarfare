@@ -68,11 +68,6 @@ public class InsidiousItemModel extends GeoModel<InsidiousItem> {
         gun.setPosZ(6.2f * (float) zp + (float) (0.5f * zpz));
         gun.setScaleZ(1f - (0.82f * (float) zp));
 
-        var data = GunData.from(stack);
-        var tag = data.tag();
-        tag.putBoolean("HoloHidden", !(gun.getPosX() > 3));
-        data.save();
-
         GeoBone shen = getAnimationProcessor().getBone("fireRootNormal");
 
         fireRotY = (float) Mth.lerp(0.3f * times, fireRotY, 0.2f * ClientEventHandler.recoilHorizon * fpz);

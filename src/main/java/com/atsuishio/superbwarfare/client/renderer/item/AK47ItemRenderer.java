@@ -81,23 +81,18 @@ public class AK47ItemRenderer extends GeoItemRenderer<AK47Item> {
         if (player != null) {
             ItemStack itemStack = player.getMainHandItem();
             if (!itemStack.is(ModTags.Items.GUN)) return;
+            var data = GunData.from(itemStack);
 
             if (name.equals("Cross1")) {
-                bone.setHidden(NBTTool.getTag(itemStack).getBoolean("HoloHidden")
-                        || !ClientEventHandler.zoom
-                        || GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) != 1);
+                bone.setHidden(ClientEventHandler.zoomPos < 0.7 && data.attachment.get(AttachmentType.SCOPE) != 1);
             }
 
             if (name.equals("Cross2")) {
-                bone.setHidden(NBTTool.getTag(itemStack).getBoolean("HoloHidden")
-                        || !ClientEventHandler.zoom
-                        || GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) != 2);
+                bone.setHidden(ClientEventHandler.zoomPos < 0.7 && data.attachment.get(AttachmentType.SCOPE) != 2);
             }
 
             if (name.equals("Cross3")) {
-                bone.setHidden(NBTTool.getTag(itemStack).getBoolean("HoloHidden")
-                        || !ClientEventHandler.zoom
-                        || GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) != 3);
+                bone.setHidden(ClientEventHandler.zoomPos < 0.7 && data.attachment.get(AttachmentType.SCOPE) != 3);
             }
 
             if (name.equals("humu1")) {
@@ -109,14 +104,14 @@ public class AK47ItemRenderer extends GeoItemRenderer<AK47Item> {
             }
 
             if (GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 2
-                    && (name.equals("Hidden") || name.equals("gun") || name.equals("Lefthand")) && ClientEventHandler.zoom && !NBTTool.getTag(itemStack).getBoolean("HoloHidden")) {
+                    && (name.equals("Hidden") || name.equals("gun") || name.equals("Lefthand")) && ClientEventHandler.zoom && ClientEventHandler.zoomPos > 0.7) {
                 bone.setHidden(true);
                 renderingArms = false;
             }
 
             if (GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 3
                     && (name.equals("jing") || name.equals("Barrel") || name.equals("humu") || name.equals("qiangguan") || name.equals("houzhunxing"))) {
-                bone.setHidden(!NBTTool.getTag(itemStack).getBoolean("HoloHidden") && ClientEventHandler.zoom);
+                bone.setHidden(ClientEventHandler.zoomPos > 0.7 && ClientEventHandler.zoom);
             }
 
             if (name.equals("flare")) {

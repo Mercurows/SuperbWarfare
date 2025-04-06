@@ -81,11 +81,10 @@ public class Qbz95ItemRenderer extends GeoItemRenderer<Qbz95Item> {
         if (player == null) return;
         ItemStack itemStack = player.getMainHandItem();
         if (!itemStack.is(ModTags.Items.GUN)) return;
+        var data = GunData.from(itemStack);
 
         if (name.equals("Cross1")) {
-            bone.setHidden(NBTTool.getTag(itemStack).getBoolean("HoloHidden")
-                    || !ClientEventHandler.zoom
-                    || GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) != 1);
+            bone.setHidden(ClientEventHandler.zoomPos < 0.7 || data.attachment.get(AttachmentType.SCOPE) != 1);
         }
 
         if (name.equals("tiba")) {
@@ -101,25 +100,21 @@ public class Qbz95ItemRenderer extends GeoItemRenderer<Qbz95Item> {
         }
 
         if (name.equals("Cross2")) {
-            bone.setHidden(NBTTool.getTag(itemStack).getBoolean("HoloHidden")
-                    || !ClientEventHandler.zoom
-                    || GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) != 2);
+            bone.setHidden(ClientEventHandler.zoomPos < 0.7 || data.attachment.get(AttachmentType.SCOPE) != 2);
         }
 
         if (name.equals("Cross3")) {
-            bone.setHidden(NBTTool.getTag(itemStack).getBoolean("HoloHidden")
-                    || !ClientEventHandler.zoom
-                    || GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) != 3);
+            bone.setHidden(ClientEventHandler.zoomPos < 0.7 || data.attachment.get(AttachmentType.SCOPE) != 3);
         }
 
         if (GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 2
                 && (name.equals("hidden"))) {
-            bone.setHidden(!NBTTool.getTag(itemStack).getBoolean("HoloHidden") && ClientEventHandler.zoom);
+            bone.setHidden(ClientEventHandler.zoomPos > 0.7 && ClientEventHandler.zoom);
         }
 
         if (GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 3
                 && (name.equals("hidden2") || name.equals("jimiao2"))) {
-            bone.setHidden(!NBTTool.getTag(itemStack).getBoolean("HoloHidden") && ClientEventHandler.zoom);
+            bone.setHidden(ClientEventHandler.zoomPos > 0.7 && ClientEventHandler.zoom);
         }
 
         if (name.equals("flare")) {

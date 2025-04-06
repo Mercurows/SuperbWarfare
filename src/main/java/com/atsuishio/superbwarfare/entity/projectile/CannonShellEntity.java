@@ -157,7 +157,7 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
             }
 
             ParticleTool.cannonHitParticles(this.level(), this.position(), this);
-            causeExplode(entity);
+            causeExplode(entityHitResult.getLocation());
             if (entity instanceof VehicleEntity) {
                 this.discard();
             }
@@ -168,49 +168,55 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
     @Override
     public void onHitBlock(@NotNull BlockHitResult blockHitResult) {
         if (this.level() instanceof ServerLevel) {
-            int x = blockHitResult.getBlockPos().getX();
-            int y = blockHitResult.getBlockPos().getY();
-            int z = blockHitResult.getBlockPos().getZ();
+            double x = blockHitResult.getLocation().x;
+            double y = blockHitResult.getLocation().y;
+            double z = blockHitResult.getLocation().z;
 
-            BlockState blockState = this.level().getBlockState(BlockPos.containing(x, y, z));
-            if (blockState.is(Blocks.BEDROCK) || blockState.is(Blocks.BARRIER)) {
-                this.discard();
-                causeExplodeBlock(blockHitResult);
-                return;
-            }
+            if (ExplosionConfig.EXPLOSION_DESTROY.get()) {
+                float hardness = this.level().getBlockState(BlockPos.containing(x, y, z)).getBlock().defaultDestroyTime();
+                BlockState blockState = this.level().getBlockState(BlockPos.containing(x, y, z));
 
-            float hardness = this.level().getBlockState(BlockPos.containing(x, y, z)).getBlock().defaultDestroyTime();
-            this.durability -= (int) hardness;
+                if (hardness == -1) {
+                    this.discard();
+                    causeExplode(blockHitResult.getLocation());
+                    return;
+                }
 
-            if (ExplosionConfig.EXPLOSION_DESTROY.get() && hardness != -1 && hardness <= 50) {
-                BlockPos blockPos = BlockPos.containing(x, y, z);
-                Block.dropResources(this.level().getBlockState(blockPos), this.level(), BlockPos.containing(x, y, z), null);
-                this.level().destroyBlock(blockPos, true);
-            }
+                this.durability -= (int) hardness;
 
-            if (blockState.is(ModBlocks.SANDBAG.get()) || blockState.is(Blocks.NETHERITE_BLOCK)) {
-                this.durability -= 10;
-            }
+                if (hardness <= 50) {
+                    BlockPos blockPos = BlockPos.containing(x, y, z);
+                    Block.dropResources(this.level().getBlockState(blockPos), this.level(), BlockPos.containing(x, y, z), null);
+                    this.level().destroyBlock(blockPos, true);
+                }
 
-            if (blockState.is(Blocks.IRON_BLOCK) || blockState.is(Blocks.COPPER_BLOCK)) {
-                this.durability -= 5;
-            }
+                if (blockState.is(ModBlocks.SANDBAG.get()) || blockState.is(Blocks.NETHERITE_BLOCK)) {
+                    this.durability -= 10;
+                }
 
-            if (blockState.is(Blocks.GOLD_BLOCK)) {
-                this.durability -= 3;
-            }
+                if (blockState.is(Blocks.IRON_BLOCK) || blockState.is(Blocks.COPPER_BLOCK)) {
+                    this.durability -= 5;
+                }
 
-            if (this.durability <= 0) {
-                causeExplodeBlock(blockHitResult);
-            } else {
-                if (ExplosionConfig.EXPLOSION_DESTROY.get()) {
+                if (blockState.is(Blocks.GOLD_BLOCK)) {
+                    this.durability -= 3;
+                }
+
+                if (this.durability <= 0) {
+                    causeExplode(blockHitResult.getLocation());
+                } else {
                     if (this.firstHit) {
                         ParticleTool.cannonHitParticles(this.level(), this.position(), this);
-                        causeExplodeBlock(blockHitResult);
+                        causeExplode(blockHitResult.getLocation());
                         this.firstHit = false;
                     }
+                    apExplode(blockHitResult);
                 }
-                apExplode(blockHitResult);
+            } else {
+                if (this.durability > 0) {
+                    apExplode(blockHitResult);
+                }
+                causeExplode(blockHitResult.getLocation());
             }
         }
     }
@@ -242,7 +248,7 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
         }
     }
 
-    private void causeExplode(Entity entity) {
+    private void causeExplode(Vec3 vec) {
         if (Math.random() > fireProbability) {
             fireTime = 0;
         }
@@ -252,9 +258,9 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
                         this,
                         this.getOwner()),
                 explosionDamage,
-                entity.getX(),
-                entity.getY() + 0.5 * entity.getBbHeight(),
-                entity.getZ(),
+                vec.x(),
+                vec.y(),
+                vec.z(),
                 radius,
                 ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP).
                 setDamageMultiplier(1).setFireTime(fireTime);
@@ -263,40 +269,9 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
         explosion.finalizeExplosion(false);
 
         if (radius > 7) {
-            ParticleTool.spawnHugeExplosionParticles(this.level(), new Vec3(entity.getX(),
-                    entity.getY() + 0.5 * entity.getBbHeight(),
-                    entity.getZ()));
+            ParticleTool.spawnHugeExplosionParticles(this.level(), vec);
         } else {
-            ParticleTool.spawnMediumExplosionParticles(this.level(), new Vec3(entity.getX(),
-                    entity.getY() + 0.5 * entity.getBbHeight(),
-                    entity.getZ()));
-        }
-    }
-
-    private void causeExplodeBlock(HitResult result) {
-        if (Math.random() > fireProbability) {
-            fireTime = 0;
-        }
-
-        CustomExplosion explosion = new CustomExplosion(this.level(), this,
-                ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(),
-                        this,
-                        this.getOwner()),
-                explosionDamage,
-                this.getX(),
-                this.getY() + 0.5 * this.getBbHeight(),
-                this.getZ(),
-                radius,
-                ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP).
-                setDamageMultiplier(1).setFireTime(fireTime);
-        explosion.explode();
-        EventHooks.onExplosionStart(this.level(), explosion);
-        explosion.finalizeExplosion(false);
-
-        if (radius > 7) {
-            ParticleTool.spawnHugeExplosionParticles(this.level(), result.getLocation());
-        } else {
-            ParticleTool.spawnMediumExplosionParticles(this.level(), result.getLocation());
+            ParticleTool.spawnMediumExplosionParticles(this.level(), vec);
         }
         this.discard();
     }

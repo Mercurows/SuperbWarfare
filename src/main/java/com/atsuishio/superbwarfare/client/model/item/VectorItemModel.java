@@ -100,9 +100,6 @@ public class VectorItemModel extends GeoModel<VectorItem> {
         gun.setScaleZ(1f - (0.5f * (float) zp));
         scope.setScaleZ(1f - (0.2f * (float) zp));
 
-        tag.putBoolean("HoloHidden", gun.getPosX() <= 2);
-        data.save();
-
         GeoBone shen;
         if (zt < 0.5) {
             shen = getAnimationProcessor().getBone("fireRootNormal");

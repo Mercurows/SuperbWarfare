@@ -181,17 +181,17 @@ public class Lav150Entity extends ContainerMobileVehicleEntity implements GeoEnt
             sendParticle(serverLevel, ParticleTypes.BUBBLE_COLUMN_UP, this.getX() + 0.5 * this.getDeltaMovement().x, this.getY() + getSubmergedHeight(this) - 0.2, this.getZ() + 0.5 * this.getDeltaMovement().z, (int) (2 + 10 * this.getDeltaMovement().length()), 0.65, 0, 0.65, 0, true);
         }
 
-        collideBlock();
-        if (this.getDeltaMovement().length() > 0.125) {
-            collideHardBlock();
-        }
-
         turretAngle(15, 12.5f);
         lowHealthWarning();
         this.terrainCompat(2.7f, 3.61f);
         inertiaRotate(1.25f);
 
         this.refreshDimensions();
+    }
+
+    @Override
+    public boolean canCollideHardBlock() {
+        return getDeltaMovement().horizontalDistance() > 0.09 || this.entityData.get(POWER) > 0.15;
     }
 
     private void handleAmmo() {

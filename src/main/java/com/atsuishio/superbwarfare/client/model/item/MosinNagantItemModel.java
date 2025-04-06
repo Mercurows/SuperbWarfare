@@ -86,9 +86,6 @@ public class MosinNagantItemModel extends GeoModel<MosinNagantItem> {
         }
 
         var data = GunData.from(stack);
-        final var tag = data.tag();
-        tag.putBoolean("HoloHidden", !(gun.getPosX() > 1.4));
-        data.save();
 
         shen.setPosX((float) (0.95f * ClientEventHandler.recoilHorizon * fpz * fp));
         shen.setPosY((float) (0.4f * fp + 0.44f * fr));

@@ -164,13 +164,14 @@ public class SpeedboatEntity extends ContainerMobileVehicleEntity implements Geo
 
         turretAngle(40, 40);
         lowHealthWarning();
-        collideBlock();
-        if (this.getDeltaMovement().length() > 0.15) {
-            collideHardBlock();
-        }
         inertiaRotate(2);
 
         this.refreshDimensions();
+    }
+
+    @Override
+    public boolean canCollideHardBlock() {
+        return getDeltaMovement().horizontalDistance() > 0.15;
     }
 
     private void handleAmmo() {

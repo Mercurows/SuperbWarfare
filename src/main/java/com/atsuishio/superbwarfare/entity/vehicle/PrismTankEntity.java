@@ -216,11 +216,6 @@ public class PrismTankEntity extends ContainerMobileVehicleEntity implements Geo
             sendParticle(serverLevel, ParticleTypes.BUBBLE_COLUMN_UP, this.getX() + 0.5 * this.getDeltaMovement().x, this.getY() + getSubmergedHeight(this) - 0.2, this.getZ() + 0.5 * this.getDeltaMovement().z, (int) (2 + 10 * this.getDeltaMovement().length()), 0.65, 0, 0.65, 0, true);
         }
 
-        collideBlock();
-        if (this.getDeltaMovement().length() > 0.1) {
-            collideHardBlock();
-        }
-
         turretAngle(15, 10);
         this.terrainCompat(4.6375f, 5.171875f);
         inertiaRotate(1);

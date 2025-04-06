@@ -80,7 +80,7 @@ public class SksItemRenderer extends GeoItemRenderer<SksItem> {
         if (!itemStack.is(ModTags.Items.GUN)) return;
 
         if (name.equals("holo")) {
-            bone.setHidden(NBTTool.getTag(itemStack).getBoolean("HoloHidden") || !ClientEventHandler.zoom);
+            bone.setHidden(ClientEventHandler.zoomPos < 0.7 || !ClientEventHandler.zoom);
         }
 
         if (name.equals("flare")) {

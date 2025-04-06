@@ -148,7 +148,7 @@ public class RpkItem extends GunItem implements GeoItem {
     public double getCustomZoom(ItemStack stack) {
         int scopeType = GunData.from(stack).attachment.get(AttachmentType.SCOPE);
         return switch (scopeType) {
-            case 2 -> NBTTool.getTag(stack).getBoolean("ScopeAlt") ? 0 : 2.75;
+            case 2 -> 1.15;
             case 3 -> GunsTool.getGunDoubleTag(NBTTool.getTag(stack), "CustomZoom");
             default -> 0;
         };

@@ -66,12 +66,7 @@ public class JavelinItemModel extends GeoModel<JavelinItem> {
         gun.setScaleZ(1f - (0.8f * (float) zp));
         gun.setRotZ(-4.75f * Mth.DEG_TO_RAD * (float) zp + (float) (0.02f * zpz));
 
-        javelin.setHidden(gun.getPosZ() > 15.85);
-
-        var data = GunData.from(stack);
-        var tag = data.tag();
-        tag.putBoolean("HoloHidden", !(gun.getPosZ() > 15.85));
-        data.save();
+        javelin.setHidden(zp > 0.8);
 
         shen.setPosX((float) (0.75f * ClientEventHandler.recoilHorizon * fpz * fp));
         shen.setPosY((float) (-0.03f * fp - 0.06f * fr));

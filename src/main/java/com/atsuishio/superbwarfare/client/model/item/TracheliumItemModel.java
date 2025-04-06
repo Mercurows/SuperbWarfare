@@ -153,11 +153,6 @@ public class TracheliumItemModel extends GeoModel<Trachelium> {
 
         CrossHairOverlay.gunRot = shen.getRotZ();
 
-        var data = GunData.from(stack);
-        var tag = data.tag();
-        tag.putBoolean("HoloHidden", (gun.getPosX() <= 3 || Mth.abs(shen.getRotX()) > (scopeType == 2 ? 3 : 1) * Mth.DEG_TO_RAD || Mth.abs(main.getRotX()) > (scopeType == 2 ? 5.7 : 1) * Mth.DEG_TO_RAD || Mth.abs(main.getRotY()) > 3 * Mth.DEG_TO_RAD));
-        data.save();
-
         hammer.setRotX(50 * Mth.DEG_TO_RAD * (float) ClientEventHandler.revolverPreTime);
         lun.setRotZ(-60 * Mth.DEG_TO_RAD * (float) ClientEventHandler.revolverWheelPreTime);
         GeoBone ammo = getAnimationProcessor().getBone("ammo");

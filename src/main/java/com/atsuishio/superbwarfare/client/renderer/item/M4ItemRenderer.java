@@ -81,40 +81,35 @@ public class M4ItemRenderer extends GeoItemRenderer<M4Item> {
         if (player == null) return;
         ItemStack itemStack = player.getMainHandItem();
         if (!itemStack.is(ModTags.Items.GUN)) return;
+        var data = GunData.from(itemStack);
 
         if (name.equals("Cross1")) {
-            bone.setHidden(NBTTool.getTag(itemStack).getBoolean("HoloHidden")
-                    || !ClientEventHandler.zoom
-                    || GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) != 1);
+            bone.setHidden(ClientEventHandler.zoomPos < 0.7 || data.attachment.get(AttachmentType.SCOPE) != 1);
         }
 
         if (name.equals("Cross2")) {
-            bone.setHidden(NBTTool.getTag(itemStack).getBoolean("HoloHidden")
-                    || !ClientEventHandler.zoom
+            bone.setHidden(ClientEventHandler.zoomPos < 0.7
                     || GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) != 2
                     || NBTTool.getTag(itemStack).getBoolean("ScopeAlt"));
         }
 
         if (name.equals("CrossAlt")) {
-            bone.setHidden(NBTTool.getTag(itemStack).getBoolean("HoloHidden")
-                    || !ClientEventHandler.zoom
+            bone.setHidden(ClientEventHandler.zoomPos < 0.7
                     || GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) != 2
                     || !(NBTTool.getTag(itemStack).getBoolean("ScopeAlt")));
         }
 
         if (name.equals("Cross3")) {
-            bone.setHidden(NBTTool.getTag(itemStack).getBoolean("HoloHidden")
-                    || !ClientEventHandler.zoom
-                    || GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) != 3);
+            bone.setHidden(ClientEventHandler.zoomPos < 0.7 || data.attachment.get(AttachmentType.SCOPE) != 3);
         }
 
         if (GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 2 && !NBTTool.getTag(itemStack).getBoolean("ScopeAlt") && (name.equals("hidden"))) {
-            bone.setHidden(!NBTTool.getTag(itemStack).getBoolean("HoloHidden") && ClientEventHandler.zoom);
+            bone.setHidden(ClientEventHandler.zoomPos > 0.7 && ClientEventHandler.zoom);
         }
 
         if (GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 3
                 && (name.equals("hidden2") || name.equals("yugu") || name.equals("qiangguan") || name.equals("Barrel"))) {
-            bone.setHidden(!NBTTool.getTag(itemStack).getBoolean("HoloHidden") && ClientEventHandler.zoom);
+            bone.setHidden(ClientEventHandler.zoomPos > 0.7 && ClientEventHandler.zoom);
         }
 
         if (name.equals("flare")) {

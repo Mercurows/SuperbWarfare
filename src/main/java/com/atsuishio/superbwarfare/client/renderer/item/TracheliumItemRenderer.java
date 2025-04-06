@@ -83,6 +83,7 @@ public class TracheliumItemRenderer extends GeoItemRenderer<Trachelium> {
         if (player == null) return;
         ItemStack itemStack = player.getMainHandItem();
         if (!itemStack.is(ModTags.Items.GUN)) return;
+        var data = GunData.from(itemStack);
 
         if (name.equals("humu")) {
             bone.setHidden(GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 0 && GunData.from(itemStack).attachment.get(AttachmentType.GRIP) == 0);
@@ -101,27 +102,24 @@ public class TracheliumItemRenderer extends GeoItemRenderer<Trachelium> {
         }
 
         if (name.equals("Cross1")) {
-            bone.setHidden(NBTTool.getTag(itemStack).getBoolean("HoloHidden")
-                    || !ClientEventHandler.zoom
-                    || GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) != 1);
+            bone.setHidden(ClientEventHandler.zoomPos < 0.7 || data.attachment.get(AttachmentType.SCOPE) != 1);
         }
 
         if (name.equals("Cross2")) {
-            bone.setHidden(NBTTool.getTag(itemStack).getBoolean("HoloHidden")
-                    || !ClientEventHandler.zoom
+            bone.setHidden(ClientEventHandler.zoomPos < 0.7
                     || GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) != 2
                     || NBTTool.getTag(itemStack).getBoolean("ScopeAlt"));
         }
 
         if (name.equals("CrossAlt")) {
-            bone.setHidden(NBTTool.getTag(itemStack).getBoolean("HoloHidden")
+            bone.setHidden(ClientEventHandler.zoomPos < 0.7
                     || !ClientEventHandler.zoom
                     || GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) != 2
                     || !(NBTTool.getTag(itemStack).getBoolean("ScopeAlt")));
         }
 
         if (GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 2 && !NBTTool.getTag(itemStack).getBoolean("ScopeAlt") && (name.equals("hidden"))) {
-            bone.setHidden(!NBTTool.getTag(itemStack).getBoolean("HoloHidden") && ClientEventHandler.zoom);
+            bone.setHidden(ClientEventHandler.zoomPos > 0.7 && ClientEventHandler.zoom);
         }
 
         ItemModelHelper.handleGunAttachments(bone, itemStack, name);

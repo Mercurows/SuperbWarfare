@@ -130,11 +130,6 @@ public class M4ItemModel extends GeoModel<M4Item> {
         button6.setScaleX(1f - (0.5f * (float) zp));
         button7.setScaleX(1f - (0.5f * (float) zp));
 
-        var data = GunData.from(stack);
-        var tag = data.tag();
-        tag.putBoolean("HoloHidden", !(gun.getPosX() > 2.385));
-        data.save();
-
         if (type == 3 && zt > 0.5) {
             lh.setPosY((float) (-zt * 4));
         }

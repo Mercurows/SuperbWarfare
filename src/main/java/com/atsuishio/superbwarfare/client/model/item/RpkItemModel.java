@@ -19,10 +19,6 @@ import software.bernie.geckolib.model.GeoModel;
 
 public class RpkItemModel extends GeoModel<RpkItem> {
 
-    public static float scopeY = 0.2f;
-    public static float scaleZAlt = 0.74f;
-    public static float posZAlt = 4.25f;
-
     public static float fireRotY = 0f;
     public static float fireRotZ = 0f;
 
@@ -47,8 +43,9 @@ public class RpkItemModel extends GeoModel<RpkItem> {
         GeoBone scope = getAnimationProcessor().getBone("Scope1");
         GeoBone button = getAnimationProcessor().getBone("button");
         GeoBone scope2 = getAnimationProcessor().getBone("Scope2");
-//        GeoBone scope3 = getAnimationProcessor().getBone("Scope3");
-//        GeoBone cross3 = getAnimationProcessor().getBone("Cross3");
+        GeoBone base = getAnimationProcessor().getBone("base");
+        GeoBone bone171 = getAnimationProcessor().getBone("bone171");
+        GeoBone scope3 = getAnimationProcessor().getBone("Scope3");
         GeoBone shuan = getAnimationProcessor().getBone("shuan");
 
         Player player = Minecraft.getInstance().player;
@@ -77,10 +74,6 @@ public class RpkItemModel extends GeoModel<RpkItem> {
         var data = GunData.from(stack);
         var tag = data.tag();
         int type = GunData.from(stack).attachment.get(AttachmentType.SCOPE);
-        scopeY = Mth.lerp(times, scopeY, tag.getBoolean("ScopeAlt") ? -0.7f : 0.2f);
-        scaleZAlt = Mth.lerp(times, scaleZAlt, tag.getBoolean("ScopeAlt") ? 0.45f : 0.74f);
-        posZAlt = Mth.lerp(times, posZAlt, tag.getBoolean("ScopeAlt") ? 3.3f : 4.25f);
-
 
         float posYAlt = switch (type) {
             case 2, 3 -> 0.5f;
@@ -89,21 +82,21 @@ public class RpkItemModel extends GeoModel<RpkItem> {
         float posY = switch (type) {
             case 0 -> 1.071f;
             case 1 -> -0.101f;
-            case 2 -> scopeY + posYAlt;
+            case 2 -> 0.11f + posYAlt;
             case 3 -> 0.099f + posYAlt;
             default -> 0f;
         };
         float scaleZ = switch (type) {
             case 0, 1 -> 0.7f;
-            case 2 -> scaleZAlt;
+            case 2 -> 0.74f;
             case 3 -> 0.78f;
             default -> 0f;
         };
         float posZ = switch (type) {
             case 0 -> 3.3f;
             case 1 -> 4.2f;
-            case 2 -> posZAlt;
-            case 3 -> 3.9f;
+            case 2 -> 4.4f;
+            case 3 -> 4.25f;
             default -> 0f;
         };
 
@@ -116,10 +109,9 @@ public class RpkItemModel extends GeoModel<RpkItem> {
         button.setScaleY(1f - (0.3f * (float) zp));
         button.setScaleZ(1f - (0.3f * (float) zp));
         scope2.setScaleZ(1f - (0.7f * (float) zp));
-//        scope3.setScaleZ(1f - (0.7f * (float) zp));
-
-        tag.putBoolean("HoloHidden", !(gun.getPosX() > 1.8));
-        data.save();
+        base.setScaleZ(1f - (0.4f * (float) zp));
+        bone171.setScaleY(1f - (0.55f * (float) zp));
+        scope3.setScaleZ(1f - (0.7f * (float) zp));
 
         GeoBone shen;
         if (zt < 0.5) {
@@ -170,6 +162,6 @@ public class RpkItemModel extends GeoModel<RpkItem> {
 
         AnimationHelper.handleReloadShakeAnimation(stack, main, camera, numR, numP);
         ClientEventHandler.shake(Mth.RAD_TO_DEG * camera.getRotX(), Mth.RAD_TO_DEG * camera.getRotY(), Mth.RAD_TO_DEG * camera.getRotZ());
-//        AnimationHelper.handleShellsAnimation(getAnimationProcessor(), 1f, 0.35f);
+        AnimationHelper.handleShellsAnimation(getAnimationProcessor(), 1f, 0.35f);
     }
 }

@@ -8,7 +8,6 @@ import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.data.AttachmentType;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.item.gun.rifle.Mk14Item;
-import com.atsuishio.superbwarfare.tools.GunsTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -141,9 +140,6 @@ public class Mk14ItemModel extends GeoModel<Mk14Item> {
         action.setPosZ(2.5f * (float) fp);
 
         var data = GunData.from(stack);
-        var tag = data.tag();
-        tag.putBoolean("HoloHidden", !(gun.getPosX() > 2.5));
-        data.save();
 
         GeoBone root = getAnimationProcessor().getBone("root");
         root.setPosX((float) (movePosX + 20 * ClientEventHandler.drawTime + 9.3f * mph));
@@ -170,7 +166,7 @@ public class Mk14ItemModel extends GeoModel<Mk14Item> {
 
         GeoBone shell = getAnimationProcessor().getBone("shell");
 
-        if (GunsTool.getGunBooleanTag(tag, "HoldOpen")) {
+        if (data.data().getBoolean("HoldOpen")) {
             action.setPosZ(2.5f);
             shell.setScaleX(0);
             shell.setScaleY(0);

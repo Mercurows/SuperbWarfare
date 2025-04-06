@@ -90,7 +90,7 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
                                 .explosionDamage(VehicleConfig.YX_100_AP_CANNON_EXPLOSION_DAMAGE.get())
                                 .fireProbability(0)
                                 .fireTime(0)
-                                .durability(60)
+                                .durability(100)
                                 .velocity(40)
                                 .sound(ModSounds.INTO_MISSILE.get())
                                 .ammo(ModItems.AP_5_INCHES.get())
@@ -102,7 +102,7 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
                                 .explosionDamage(VehicleConfig.YX_100_HE_CANNON_EXPLOSION_DAMAGE.get())
                                 .fireProbability(0.18F)
                                 .fireTime(2)
-                                .durability(1)
+                                .durability(0)
                                 .velocity(25)
                                 .sound(ModSounds.INTO_CANNON.get())
                                 .ammo(ModItems.HE_5_INCHES.get())
@@ -634,7 +634,7 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
 
     public Vec3 driverZoomPos(float ticks) {
         Matrix4f transform = getTurretTransform(ticks);
-        Vector4f worldPosition = transformPosition(transform, 0, 0, 0.6076875f);
+        Vector4f worldPosition = transformPosition(transform, 0, 1.2f, 0.6076875f);
         return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
     }
 

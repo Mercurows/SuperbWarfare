@@ -81,37 +81,32 @@ public class Mk14ItemRenderer extends GeoItemRenderer<Mk14Item> {
         if (player == null) return;
         ItemStack itemStack = player.getMainHandItem();
         if (!itemStack.is(ModTags.Items.GUN)) return;
+        var data = GunData.from(itemStack);
 
         if (name.equals("qiaojia")) {
             bone.setHidden(GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 0);
         }
 
         if (name.equals("Cross1")) {
-            bone.setHidden(NBTTool.getTag(itemStack).getBoolean("HoloHidden")
-                    || !ClientEventHandler.zoom
-                    || GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) != 1);
+            bone.setHidden(ClientEventHandler.zoomPos < 0.7 || data.attachment.get(AttachmentType.SCOPE) != 1);
         }
 
         if (name.equals("Cross2")) {
-            bone.setHidden(NBTTool.getTag(itemStack).getBoolean("HoloHidden")
-                    || !ClientEventHandler.zoom
-                    || GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) != 2);
+            bone.setHidden(ClientEventHandler.zoomPos < 0.7 || data.attachment.get(AttachmentType.SCOPE) != 2);
         }
 
         if (name.equals("Cross3")) {
-            bone.setHidden(NBTTool.getTag(itemStack).getBoolean("HoloHidden")
-                    || !ClientEventHandler.zoom
-                    || GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) != 3);
+            bone.setHidden(ClientEventHandler.zoomPos < 0.7 || data.attachment.get(AttachmentType.SCOPE) != 3);
         }
 
         if (GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 2
                 && (name.equals("hidden"))) {
-            bone.setHidden(!NBTTool.getTag(itemStack).getBoolean("HoloHidden") && ClientEventHandler.zoom);
+            bone.setHidden(ClientEventHandler.zoomPos > 0.7 && ClientEventHandler.zoom);
         }
 
         if (GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 3
                 && (name.equals("jing") || name.equals("yugu") || name.equals("qiangguan") || name.equals("Barrel"))) {
-            bone.setHidden(!NBTTool.getTag(itemStack).getBoolean("HoloHidden") && ClientEventHandler.zoom);
+            bone.setHidden(ClientEventHandler.zoomPos > 0.7 && ClientEventHandler.zoom);
         }
 
         if (name.equals("flare")) {

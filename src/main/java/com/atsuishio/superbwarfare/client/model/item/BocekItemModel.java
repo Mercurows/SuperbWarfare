@@ -105,11 +105,6 @@ public class BocekItemModel extends GeoModel<BocekItem> {
         r.setScaleZ(1f - (0.31f * (float) zp));
         shen.setRotZ(60 * Mth.DEG_TO_RAD * (float) zp + (float) (0.05f * zpz) - 0.2f);
 
-        var data = GunData.from(stack);
-        var tag = data.tag();
-        tag.putBoolean("HoloHidden", !((shen_pos.getPosX() < -0.6 && gun.getPosZ() < -2)));
-        data.save();
-
         fire.setPosX((float) (0.75f * ClientEventHandler.recoilHorizon * fpz * fp));
         fire.setPosY((float) (-0.03f * fp - 0.06f * fr));
         fire.setPosZ((float) (0.625 * fp + 0.34f * fr + 0.95 * fpz));

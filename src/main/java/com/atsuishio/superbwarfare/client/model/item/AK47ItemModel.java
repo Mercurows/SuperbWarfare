@@ -114,11 +114,6 @@ public class AK47ItemModel extends GeoModel<AK47Item> {
         scope2.setScaleZ(1f - (0.3f * (float) zp));
         scope3.setScaleZ(1f - (0.7f * (float) zp));
 
-        var data = GunData.from(stack);
-        var tag = data.tag();
-        tag.putBoolean("HoloHidden", !(gun.getPosX() > 1.8));
-        data.save();
-
         GeoBone shen;
         if (zt < 0.5) {
             shen = getAnimationProcessor().getBone("fireRootNormal");

@@ -82,7 +82,7 @@ public class BocekItemRenderer extends GeoItemRenderer<BocekItem> {
 
         final var tag = NBTTool.getTag(itemStack);
         if (name.equals("holo")) {
-            bone.setHidden(tag.getBoolean("HoloHidden") || !ClientEventHandler.zoom);
+            bone.setHidden(ClientEventHandler.zoomPos < 0.7 || ClientEventHandler.pullPos < 0.7 || !ClientEventHandler.zoom);
         }
 
         if (name.equals("arrow")) {
