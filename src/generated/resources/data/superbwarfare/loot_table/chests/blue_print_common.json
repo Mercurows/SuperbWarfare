@@ -1,0 +1,284 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:taser_blueprint",
+          "weight": 50
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:glock_17_blueprint",
+          "weight": 50
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:mp_443_blueprint",
+          "weight": 50
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:m_1911_blueprint",
+          "weight": 50
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:marlin_blueprint",
+          "weight": 50
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:glock_18_blueprint",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:m_79_blueprint",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:m_4_blueprint",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:sks_blueprint",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:k_98_blueprint",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:mosin_nagant_blueprint",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:ak_47_blueprint",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:m_870_blueprint",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:hk_416_blueprint",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:ak_12_blueprint",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:qbz_95_blueprint",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:rpg_blueprint",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:m2hb_blueprint",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:trachelium_blueprint"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:hunting_rifle_blueprint"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:bocek_blueprint"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:rpk_blueprint"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:vector_blueprint"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:mk_14_blueprint"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:m_60_blueprint"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:svd_blueprint"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:m_98b_blueprint"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:devotion_blueprint"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:insidious_blueprint"
+        }
+      ],
+      "rolls": 1.0
+    },
+    {
+      "bonus_rolls": 0.0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "type": "minecraft:uniform",
+                "max": 2.0,
+                "min": 1.0
+              },
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "superbwarfare:handgun_ammo_box",
+          "weight": 12
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "type": "minecraft:uniform",
+                "max": 2.0,
+                "min": 1.0
+              },
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "superbwarfare:rifle_ammo_box",
+          "weight": 20
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "type": "minecraft:uniform",
+                "max": 2.0,
+                "min": 1.0
+              },
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "superbwarfare:sniper_ammo_box",
+          "weight": 10
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "type": "minecraft:uniform",
+                "max": 2.0,
+                "min": 1.0
+              },
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "superbwarfare:shotgun_ammo_box",
+          "weight": 17
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "type": "minecraft:uniform",
+                "max": 3.0,
+                "min": 1.0
+              },
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "superbwarfare:grenade_40mm",
+          "weight": 6
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "type": "minecraft:uniform",
+                "max": 2.0,
+                "min": 1.0
+              },
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "superbwarfare:rocket",
+          "weight": 4
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "type": "minecraft:uniform",
+                "max": 4.0,
+                "min": 1.0
+              },
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "superbwarfare:mortar_shell",
+          "weight": 6
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "type": "minecraft:uniform",
+                "max": 3.0,
+                "min": 1.0
+              },
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "superbwarfare:claymore_mine",
+          "weight": 3
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:c4_bomb"
+        }
+      ],
+      "rolls": 2.0
+    }
+  ],
+  "random_sequence": "superbwarfare:chests/blue_print_common"
+}
