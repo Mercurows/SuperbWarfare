@@ -140,7 +140,8 @@ public record FireMessage(int msgType) implements CustomPacketPayload {
         ProjectileEntity projectile = new ProjectileEntity(player.level())
                 .shooter(player)
                 .headShot(headshot)
-                .zoom(zoom);
+                .zoom(zoom)
+                .setGunItemId(stack);
 
         if (perk instanceof AmmoPerk ammoPerk) {
             int level = data.perk.getLevel(perk);

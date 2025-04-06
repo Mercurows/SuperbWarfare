@@ -335,7 +335,7 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
             Vector4f worldPosition = transformPosition(transform, x, y, z);
 
             if (this.entityData.get(AMMO) > 0 || hasCreativeAmmo) {
-                var projectileRight = ((ProjectileWeapon) getWeapon(0)).create(player);
+                var projectileRight = ((ProjectileWeapon) getWeapon(0)).create(player).setGunItemId(this.getType().getDescriptionId());
 
                 projectileRight.bypassArmorRate(0.2f);
                 projectileRight.setPos(worldPosition.x - 1.1 * this.getDeltaMovement().x, worldPosition.y, worldPosition.z - 1.1 * this.getDeltaMovement().z);

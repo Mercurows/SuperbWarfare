@@ -99,6 +99,7 @@ public class ProjectileEntity extends Projectile implements IEntityWithComplexSp
     private float knockback = 0.05f;
     private boolean forceKnockback = false;
     private final ArrayList<MobEffectInstance> mobEffects = new ArrayList<>();
+    private String gunItemId;
 
     public ProjectileEntity(EntityType<? extends ProjectileEntity> entityType, Level level) {
         super(entityType, level);
@@ -322,6 +323,10 @@ public class ProjectileEntity extends Projectile implements IEntityWithComplexSp
 
         this.beast = tag.getBoolean("Beast");
         this.forceKnockback = tag.getBoolean("ForceKnockback");
+
+        if (tag.contains("GunId")) {
+            this.gunItemId = tag.getString("GunId");
+        }
     }
 
     @Override
@@ -336,6 +341,10 @@ public class ProjectileEntity extends Projectile implements IEntityWithComplexSp
 
         tag.putBoolean("Beast", this.beast);
         tag.putBoolean("ForceKnockback", this.forceKnockback);
+
+        if (this.gunItemId != null) {
+            tag.putString("GunId", this.gunItemId);
+        }
     }
 
     @Override
@@ -807,6 +816,11 @@ public class ProjectileEntity extends Projectile implements IEntityWithComplexSp
         return this.zoom;
     }
 
+    @Nullable
+    public String getGunItemId() {
+        return this.gunItemId;
+    }
+
     /**
      * Builders
      */
@@ -889,6 +903,16 @@ public class ProjectileEntity extends Projectile implements IEntityWithComplexSp
 
     public ProjectileEntity forceKnockback() {
         this.forceKnockback = true;
+        return this;
+    }
+
+    public ProjectileEntity setGunItemId(ItemStack stack) {
+        this.gunItemId = stack.getDescriptionId();
+        return this;
+    }
+
+    public ProjectileEntity setGunItemId(String id) {
+        this.gunItemId = id;
         return this;
     }
 }

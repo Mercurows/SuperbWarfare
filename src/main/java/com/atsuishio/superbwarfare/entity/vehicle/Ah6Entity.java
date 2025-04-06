@@ -567,7 +567,7 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
             worldPositionLeft = transformPosition(transform, x, y, z);
 
             if (this.entityData.get(AMMO) > 0 || hasCreativeAmmo) {
-                ProjectileEntity projectileRight = ((ProjectileWeapon) getWeapon(0)).create(player);
+                ProjectileEntity projectileRight = ((ProjectileWeapon) getWeapon(0)).create(player).setGunItemId(this.getType().getDescriptionId());
 
                 projectileRight.setPos(worldPositionRight.x, worldPositionRight.y, worldPositionRight.z);
                 projectileRight.shoot(player, this.getLookAngle().x, this.getLookAngle().y + 0.018, this.getLookAngle().z, 20,
@@ -580,7 +580,7 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
             }
 
             if (this.entityData.get(AMMO) > 0 || hasCreativeAmmo) {
-                ProjectileEntity projectileLeft = ((ProjectileWeapon) getWeapon(0)).create(player);
+                ProjectileEntity projectileLeft = ((ProjectileWeapon) getWeapon(0)).create(player).setGunItemId(this.getType().getDescriptionId());
 
                 projectileLeft.setPos(worldPositionLeft.x, worldPositionLeft.y, worldPositionLeft.z);
                 projectileLeft.shoot(player, this.getLookAngle().x, this.getLookAngle().y + 0.018, this.getLookAngle().z, 20,

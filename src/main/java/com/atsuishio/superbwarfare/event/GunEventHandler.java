@@ -202,7 +202,8 @@ public class GunEventHandler {
                     .damage(perk instanceof AmmoPerk ammoPerk && ammoPerk.slug ? projectileAmount * damage : damage)
                     .damage(damage)
                     .headShot(headshot)
-                    .zoom(zoom);
+                    .zoom(zoom)
+                    .setGunItemId(stack);
 
             if (perk instanceof AmmoPerk ammoPerk) {
                 int level = data.perk.getLevel(perk);

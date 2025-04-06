@@ -204,7 +204,7 @@ public class SpeedboatEntity extends ContainerMobileVehicleEntity implements Geo
 
         Vector4f worldPosition = transformPosition(transform, x, y, z);
 
-        var projectile = ((ProjectileWeapon) getWeapon(0)).create(player);
+        var projectile = ((ProjectileWeapon) getWeapon(0)).create(player).setGunItemId(this.getType().getDescriptionId());
 
         projectile.bypassArmorRate(0.4f);
         projectile.setPos(worldPosition.x + 0.5 * this.getDeltaMovement().x, worldPosition.y, worldPosition.z + 0.5 * this.getDeltaMovement().z);
