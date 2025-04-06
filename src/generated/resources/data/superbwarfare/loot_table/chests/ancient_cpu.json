@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "bonus_rolls": 1.0,
+      "conditions": [
+        {
+          "chance": 0.4,
+          "condition": "minecraft:random_chance"
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:ancient_cpu",
+          "quality": 1
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "superbwarfare:chests/ancient_cpu"
+}

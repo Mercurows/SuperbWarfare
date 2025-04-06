@@ -498,7 +498,7 @@
   "tips.superbwarfare.shoot.rings": "环",
   "tips.superbwarfare.annihilator.energy_not_enough": "能量不足",
   "tips.superbwarfare.target.down": "击倒目标 %1$s",
-  "tips.superbwarfare.target.damage": "伤害：%1$s 距离：%2$sm",
+  "tips.superbwarfare.target.damage": "伤害：%1$s 距离：%2$s",
   "tips.superbwarfare.mortar.range": "射程：",
   "tips.superbwarfare.mortar.yaw": "水平朝向：",
   "tips.superbwarfare.mortar.pitch": "俯仰角度：",

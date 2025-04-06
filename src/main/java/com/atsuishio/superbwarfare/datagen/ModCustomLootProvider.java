@@ -6,24 +6,39 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.loot.LootTableSubProvider;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
+import net.minecraft.world.level.storage.loot.predicates.LootItemRandomChanceCondition;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.BiConsumer;
 
-public class ModContainerLootProvider implements LootTableSubProvider {
+public class ModCustomLootProvider implements LootTableSubProvider {
 
-    public ModContainerLootProvider(HolderLookup.Provider provider) {
+    public static ResourceLocation containers(String name) {
+        return Mod.loc("containers/" + name);
+    }
+
+    public static ResourceLocation chests(String name) {
+        return Mod.loc("chests/" + name);
+    }
+
+    public ModCustomLootProvider(HolderLookup.Provider provider) {
         super();
     }
 
     @Override
     public void generate(@NotNull BiConsumer<ResourceKey<LootTable>, LootTable.Builder> output) {
-        output.accept(ResourceKey.create(Registries.LOOT_TABLE, Mod.loc("containers/blueprints")),
+        output.accept(ResourceKey.create(Registries.LOOT_TABLE, chests("ancient_cpu")),
+                LootTable.lootTable().withPool(singleItem(ModItems.ANCIENT_CPU.get(), 1, 1, 1, 1)
+                        .when(() -> LootItemRandomChanceCondition.randomChance(0.4f).build()))
+        );
+
+        output.accept(ResourceKey.create(Registries.LOOT_TABLE, containers("blueprints")),
                 LootTable.lootTable().withPool(multiItems(1, 0,
                         new PoolTriple(ModItems.GLOCK_17_BLUEPRINT.get(), 60, 0),
                         new PoolTriple(ModItems.MP_443_BLUEPRINT.get(), 60, 0),

@@ -500,7 +500,7 @@
   "tips.superbwarfare.shoot.rings": "Rings",
   "tips.superbwarfare.annihilator.energy_not_enough": "Energy is Not Enough",
   "tips.superbwarfare.target.down": "Target Down %1$s",
-  "tips.superbwarfare.target.damage": "Damage: %1$s Distance: %2$sm",
+  "tips.superbwarfare.target.damage": "Damage: %1$s Distance: %2$s",
   "tips.superbwarfare.mortar.range": "Range: ",
   "tips.superbwarfare.mortar.yaw": "Yaw: ",
   "tips.superbwarfare.mortar.pitch": "Pitch: ",
