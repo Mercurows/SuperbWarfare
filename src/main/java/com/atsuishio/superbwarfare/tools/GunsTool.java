@@ -23,7 +23,6 @@ import javax.annotation.Nullable;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @EventBusSubscriber(modid = Mod.MODID)
 public class GunsTool {
@@ -70,15 +69,9 @@ public class GunsTool {
 
     @SubscribeEvent
     public static void datapackSync(OnDatapackSyncEvent event) {
-        AtomicInteger count = new AtomicInteger();
-        event.getRelevantPlayers().forEach(player -> {
-            if (count.get() == 0 && player.getServer() != null) {
-                initJsonData(player.getServer().getResourceManager());
-            }
-            count.getAndIncrement();
+        initJsonData(event.getPlayerList().getServer().getResourceManager());
 
-            PacketDistributor.sendToPlayer(player, new GunsDataMessage(GunsTool.gunsData));
-        });
+        event.getRelevantPlayers().forEach(player -> PacketDistributor.sendToPlayer(player, new GunsDataMessage(GunsTool.gunsData)));
     }
 
     public static void reload(Player player, ItemStack stack, GunData gunData, AmmoType type) {
