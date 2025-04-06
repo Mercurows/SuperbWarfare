@@ -291,17 +291,17 @@ public class SecondaryCataclysm extends GunItem implements GeoItem, SpecialFireW
                     (float) data.explosionRadius()
             );
 
-            var dmgPerk = PerkHelper.getPerkByType(tag, Perk.Type.DAMAGE);
+            var dmgPerk = data.perk.get(Perk.Type.DAMAGE);
             if (dmgPerk == ModPerks.MONSTER_HUNTER.get()) {
-                int perkLevel = PerkHelper.getItemPerkLevel(dmgPerk, tag);
+                int perkLevel = data.perk.getLevel(dmgPerk);
                 gunGrenadeEntity.setMonsterMultiplier(0.1f + 0.1f * perkLevel);
             }
 
-            gunGrenadeEntity.setNoGravity(PerkHelper.getPerkByType(tag, Perk.Type.AMMO) == ModPerks.MICRO_MISSILE.get());
+            gunGrenadeEntity.setNoGravity(data.perk.get(Perk.Type.AMMO) == ModPerks.MICRO_MISSILE.get());
             gunGrenadeEntity.charged(isChargedFire);
 
             float velocity = (float) data.velocity();
-            int perkLevel = PerkHelper.getItemPerkLevel(ModPerks.MICRO_MISSILE.get(), data.tag());
+            int perkLevel = data.perk.getLevel(ModPerks.MICRO_MISSILE);
             if (perkLevel > 0) {
                 gunGrenadeEntity.setExplosionRadius((float) data.explosionRadius() * 0.5f);
                 gunGrenadeEntity.setDamage((float) data.damage() * (1.1f + perkLevel * 0.1f));

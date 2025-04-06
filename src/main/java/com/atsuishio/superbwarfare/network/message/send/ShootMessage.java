@@ -10,7 +10,6 @@ import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
-import com.atsuishio.superbwarfare.perk.PerkHelper;
 import com.atsuishio.superbwarfare.tools.GunsTool;
 import com.atsuishio.superbwarfare.tools.InventoryTool;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
@@ -88,7 +87,7 @@ public record ShootMessage(double spread) implements CustomPacketPayload {
                     }
                 }
 
-                var perk = PerkHelper.getPerkByType(tag, Perk.Type.AMMO);
+                var perk = data.perk.get(Perk.Type.AMMO);
 
                 for (int index0 = 0; index0 < (perk instanceof AmmoPerk ammoPerk && ammoPerk.slug ? 1 : projectileAmount); index0++) {
                     GunEventHandler.gunShoot(player, tag, spared);
@@ -110,7 +109,7 @@ public record ShootMessage(double spread) implements CustomPacketPayload {
                     }
                 }
 
-                var perk = PerkHelper.getPerkByType(tag, Perk.Type.AMMO);
+                var perk = data.perk.get(Perk.Type.AMMO);
                 float pitch = tag.getDouble("heat") <= 40 ? 1 : (float) (1 - 0.025 * Math.abs(40 - tag.getDouble("heat")));
 
                 if (!player.level().isClientSide() && player instanceof ServerPlayer) {

@@ -3,7 +3,6 @@ package com.atsuishio.superbwarfare.item.gun.data;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
-import com.atsuishio.superbwarfare.perk.PerkHelper;
 import com.atsuishio.superbwarfare.tools.GunsTool;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
@@ -20,7 +19,7 @@ public class GunData {
     private final GunItem item;
     private final CompoundTag tag;
     private final CompoundTag data;
-    private final CompoundTag perk;
+    private final CompoundTag perkTag;
     private final CompoundTag attachmentTag;
     private final String id;
 
@@ -39,13 +38,14 @@ public class GunData {
         this.tag = customData != null ? customData.copyTag() : new CompoundTag();
 
         data = getOrPut("GunData");
-        perk = getOrPut("PerkData");
+        perkTag = getOrPut("Perks");
         attachmentTag = getOrPut("Attachments");
 
         reload = new Reload(this);
         charge = new Charge(this);
         bolt = new Bolt(this);
         attachment = new Attachment(this);
+        perk = new Perks(this);
     }
 
     private CompoundTag getOrPut(String name) {
@@ -96,7 +96,7 @@ public class GunData {
     }
 
     public CompoundTag perk() {
-        return perk;
+        return perkTag;
     }
 
     public CompoundTag attachment() {
@@ -116,7 +116,7 @@ public class GunData {
     }
 
     public double perkDamageRate() {
-        var perk = PerkHelper.getPerkByType(tag, Perk.Type.AMMO);
+        var perk = this.perk.get(Perk.Type.AMMO);
         if (perk instanceof AmmoPerk ammoPerk) {
             return ammoPerk.damageRate;
         }
@@ -302,6 +302,7 @@ public class GunData {
 
     public final Bolt bolt;
     public final Attachment attachment;
+    public final Perks perk;
 
     public void save() {
         stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));

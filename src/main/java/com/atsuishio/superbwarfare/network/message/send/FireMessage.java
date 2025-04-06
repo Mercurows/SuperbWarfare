@@ -10,7 +10,6 @@ import com.atsuishio.superbwarfare.item.gun.SpecialFireWeapon;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
-import com.atsuishio.superbwarfare.perk.PerkHelper;
 import com.atsuishio.superbwarfare.tools.GunsTool;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.Holder;
@@ -105,8 +104,7 @@ public record FireMessage(int msgType) implements CustomPacketPayload {
         }
     }
 
-    public static double perkSpeed(final CompoundTag tag) {
-        var perk = PerkHelper.getPerkByType(tag, Perk.Type.AMMO);
+    public static double perkSpeed(Perk perk) {
         if (perk instanceof AmmoPerk ammoPerk) {
             return ammoPerk.speedRate;
         }
@@ -118,9 +116,9 @@ public record FireMessage(int msgType) implements CustomPacketPayload {
         if (player.level().isClientSide()) return;
         var data = GunData.from(stack);
 
-        var perk = PerkHelper.getPerkByType(tag, Perk.Type.AMMO);
+        var perk = data.perk.get(Perk.Type.AMMO);
         float headshot = (float) data.headshot();
-        float velocity = 2 * (float) GunsTool.getGunDoubleTag(tag, "Power", 6) * (float) perkSpeed(tag);
+        float velocity = 2 * (float) GunsTool.getGunDoubleTag(tag, "Power", 6) * (float) perkSpeed(perk);
         float bypassArmorRate = (float) data.bypassArmor();
         double damage;
 
@@ -145,7 +143,7 @@ public record FireMessage(int msgType) implements CustomPacketPayload {
                 .zoom(zoom);
 
         if (perk instanceof AmmoPerk ammoPerk) {
-            int level = PerkHelper.getItemPerkLevel(perk, tag);
+            int level = data.perk.getLevel(perk);
 
             bypassArmorRate += ammoPerk.bypassArmorRate + (perk == ModPerks.AP_BULLET.get() ? 0.05f * (level - 1) : 0);
             projectile.setRGB(ammoPerk.rgb);
@@ -177,24 +175,24 @@ public record FireMessage(int msgType) implements CustomPacketPayload {
         projectile.bypassArmorRate(bypassArmorRate);
 
         if (perk == ModPerks.SILVER_BULLET.get()) {
-            int level = PerkHelper.getItemPerkLevel(perk, tag);
+            int level = data.perk.getLevel(perk);
             projectile.undeadMultiple(1.0f + 0.5f * level);
         } else if (perk == ModPerks.BEAST_BULLET.get()) {
             projectile.beast();
         } else if (perk == ModPerks.JHP_BULLET.get()) {
-            int level = PerkHelper.getItemPerkLevel(perk, tag);
+            int level = data.perk.getLevel(perk);
             projectile.jhpBullet(level);
         } else if (perk == ModPerks.HE_BULLET.get()) {
-            int level = PerkHelper.getItemPerkLevel(perk, tag);
+            int level = data.perk.getLevel(perk);
             projectile.heBullet(level);
         } else if (perk == ModPerks.INCENDIARY_BULLET.get()) {
-            int level = PerkHelper.getItemPerkLevel(perk, tag);
+            int level = data.perk.getLevel(perk);
             projectile.fireBullet(level, !zoom);
         }
 
-        var dmgPerk = PerkHelper.getPerkByType(tag, Perk.Type.DAMAGE);
+        var dmgPerk = data.perk.get(Perk.Type.DAMAGE);
         if (dmgPerk == ModPerks.MONSTER_HUNTER.get()) {
-            int perkLevel = PerkHelper.getItemPerkLevel(dmgPerk, tag);
+            int perkLevel = data.perk.getLevel(dmgPerk);
             projectile.monsterMultiple(0.1f + 0.1f * perkLevel);
         }
 

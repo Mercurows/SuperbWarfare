@@ -15,7 +15,6 @@ import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.item.gun.data.ReloadState;
 import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
-import com.atsuishio.superbwarfare.perk.PerkHelper;
 import com.atsuishio.superbwarfare.tools.AmmoType;
 import com.atsuishio.superbwarfare.tools.GunsTool;
 import com.atsuishio.superbwarfare.tools.InventoryTool;
@@ -123,7 +122,7 @@ public class GunEventHandler {
                 }
             }
 
-            var perk = PerkHelper.getPerkByType(tag, Perk.Type.AMMO);
+            var perk = data.perk.get(Perk.Type.AMMO);
             if (perk == ModPerks.BEAST_BULLET.get()) {
                 player.playSound(ModSounds.HENG.get(), 4f, 1f);
             }
@@ -186,12 +185,13 @@ public class GunEventHandler {
         if (!player.level().isClientSide()) {
             float headshot = (float) data.headshot();
             float damage = (float) data.damage();
-            float velocity = (float) ((data.velocity() + GunsTool.getGunDoubleTag(tag, "CustomVelocity")) * perkSpeed(tag));
+            float velocity = (float) ((data.velocity() + GunsTool.getGunDoubleTag(tag, "CustomVelocity")) * perkSpeed(data));
             int projectileAmount = data.projectileAmount();
             float bypassArmorRate = (float) data.bypassArmor();
             var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
             boolean zoom = cap != null && cap.zoom;
-            var perk = PerkHelper.getPerkByType(tag, Perk.Type.AMMO);
+            var perkInstance = data.perk.getInstance(Perk.Type.AMMO);
+            var perk = perkInstance != null ? perkInstance.perk() : null;
 
             if (perk != null && perk.descriptionId.equals("butterfly_bullet")) {
                 if (handleButterflyBullet(perk, stack, player)) return;
@@ -205,7 +205,7 @@ public class GunEventHandler {
                     .zoom(zoom);
 
             if (perk instanceof AmmoPerk ammoPerk) {
-                int level = PerkHelper.getItemPerkLevel(perk, tag);
+                int level = data.perk.getLevel(perk);
 
                 bypassArmorRate += ammoPerk.bypassArmorRate + (perk == ModPerks.AP_BULLET.get() ? 0.05f * (level - 1) : 0);
                 projectile.setRGB(ammoPerk.rgb);
@@ -237,24 +237,24 @@ public class GunEventHandler {
             projectile.bypassArmorRate(bypassArmorRate);
 
             if (perk == ModPerks.SILVER_BULLET.get()) {
-                int level = PerkHelper.getItemPerkLevel(perk, tag);
+                int level = data.perk.getLevel(perk);
                 projectile.undeadMultiple(1.0f + 0.5f * level);
             } else if (perk == ModPerks.BEAST_BULLET.get()) {
                 projectile.beast();
             } else if (perk == ModPerks.JHP_BULLET.get()) {
-                int level = PerkHelper.getItemPerkLevel(perk, tag);
+                int level = data.perk.getLevel(perk);
                 projectile.jhpBullet(level);
             } else if (perk == ModPerks.HE_BULLET.get()) {
-                int level = PerkHelper.getItemPerkLevel(perk, tag);
+                int level = data.perk.getLevel(perk);
                 projectile.heBullet(level);
             } else if (perk == ModPerks.INCENDIARY_BULLET.get()) {
-                int level = PerkHelper.getItemPerkLevel(perk, tag);
+                int level = data.perk.getLevel(perk);
                 projectile.fireBullet(level, stack.is(ModTags.Items.SHOTGUN));
             }
 
-            var dmgPerk = PerkHelper.getPerkByType(tag, Perk.Type.DAMAGE);
+            var dmgPerk = data.perk.get(Perk.Type.DAMAGE);
             if (dmgPerk == ModPerks.MONSTER_HUNTER.get()) {
-                int level = PerkHelper.getItemPerkLevel(dmgPerk, tag);
+                int level = data.perk.getLevel(dmgPerk);
                 projectile.monsterMultiple(0.1f + 0.1f * level);
             }
 
@@ -264,8 +264,8 @@ public class GunEventHandler {
         }
     }
 
-    public static double perkSpeed(final CompoundTag tag) {
-        var perk = PerkHelper.getPerkByType(tag, Perk.Type.AMMO);
+    public static double perkSpeed(GunData data) {
+        var perk = data.perk.get(Perk.Type.AMMO);
         if (perk instanceof AmmoPerk ammoPerk) {
             return ammoPerk.speedRate;
         }
@@ -275,7 +275,7 @@ public class GunEventHandler {
     // TODO 这还有联动的必要吗（
     private static boolean handleButterflyBullet(Perk perk, ItemStack heldItem, Player player) {
         return true;
-//        int perkLevel = PerkHelper.getItemPerkLevel(perk, tag);
+//        int perkLevel = data.perk.getLevel(perk);
 //
 //        var entityType = CompatHolder.VRC_RAIN_SHOWER_BUTTERFLY;
 //        if (entityType != null) {

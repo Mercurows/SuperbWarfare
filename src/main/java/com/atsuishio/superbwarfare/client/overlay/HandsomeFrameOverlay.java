@@ -7,8 +7,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
-import com.atsuishio.superbwarfare.perk.PerkHelper;
-import com.atsuishio.superbwarfare.tools.NBTTool;
+import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.tools.SeekTool;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -50,9 +49,8 @@ public class HandsomeFrameOverlay {
                 return;
 
             if (stack.getItem() instanceof GunItem && Minecraft.getInstance().options.getCameraType().isFirstPerson()) {
-
-                final var tag = NBTTool.getTag(stack);
-                int level = PerkHelper.getItemPerkLevel(ModPerks.INTELLIGENT_CHIP.get(), tag);
+                var data = GunData.from(stack);
+                int level = data.perk.getLevel(ModPerks.INTELLIGENT_CHIP);
                 if (level == 0) return;
 
                 RenderSystem.disableDepthTest();

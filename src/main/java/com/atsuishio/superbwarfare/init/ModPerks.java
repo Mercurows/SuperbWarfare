@@ -75,7 +75,7 @@ public class ModPerks {
     public static final DeferredHolder<Perk, Perk> DESPERADO = DAMAGE_PERKS.register("desperado", () -> new Perk("desperado", Perk.Type.DAMAGE));
     public static final DeferredHolder<Perk, Perk> VORPAL_WEAPON = DAMAGE_PERKS.register("vorpal_weapon", () -> new Perk("vorpal_weapon", Perk.Type.DAMAGE));
 
-    public static void registerCompatPerks() {
+//    public static void registerCompatPerks() {
 //        if (ModList.get().isLoaded(CompatHolder.DMV)) {
 //            AMMO_PERKS.register("blade_bullet", () -> new AmmoPerk(new AmmoPerk.Builder("blade_bullet", Perk.Type.AMMO)
 //                    .bypassArmorRate(-0.2f).damageRate(0.7f).speedRate(0.8f).rgb(0xB4, 0x4B, 0x88).mobEffect(() -> CompatHolder.DMV_BLEEDING)));
@@ -88,10 +88,10 @@ public class ModPerks {
 //            AMMO_PERKS.register("butterfly_bullet", () -> new AmmoPerk(new AmmoPerk.Builder("butterfly_bullet", Perk.Type.AMMO)
 //                    .bypassArmorRate(0.0f)));
 //        }
-    }
+//    }
 
     public static void register(IEventBus bus) {
-        registerCompatPerks();
+//        registerCompatPerks();
         AMMO_PERKS.register(bus);
         FUNC_PERKS.register(bus);
         DAMAGE_PERKS.register(bus);

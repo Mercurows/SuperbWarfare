@@ -1,9 +1,7 @@
 package com.atsuishio.superbwarfare.client.tooltip;
 
-import com.atsuishio.superbwarfare.client.TooltipTool;
 import com.atsuishio.superbwarfare.client.tooltip.component.GunImageComponent;
 import com.atsuishio.superbwarfare.init.ModPerks;
-import com.atsuishio.superbwarfare.perk.PerkHelper;
 import com.atsuishio.superbwarfare.tools.FormatTool;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -17,7 +15,8 @@ public class ClientLauncherImageTooltip extends ClientGunImageTooltip {
     @Override
     protected Component getDamageComponent() {
         double damage = data.damage();
-        int perkLevel = PerkHelper.getItemPerkLevel(ModPerks.MICRO_MISSILE.get(), data);
+        var perkInstance = data.perk.getInstance(ModPerks.MICRO_MISSILE.get());
+        int perkLevel = perkInstance == null ? 0 : perkInstance.level();
         if (perkLevel > 0) damage *= 1.1f + perkLevel * 0.1f;
 
         double explosionDamage = data.explosionDamage();

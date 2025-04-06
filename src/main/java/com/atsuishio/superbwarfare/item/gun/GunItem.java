@@ -11,14 +11,11 @@ import com.atsuishio.superbwarfare.item.CustomRendererItem;
 import com.atsuishio.superbwarfare.item.gun.data.AttachmentType;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.perk.Perk;
-import com.atsuishio.superbwarfare.perk.PerkHelper;
 import com.atsuishio.superbwarfare.tools.AmmoType;
-import com.atsuishio.superbwarfare.tools.GunsTool;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.InteractionHand;
@@ -166,41 +163,40 @@ public abstract class GunItem extends Item implements CustomRendererItem {
 
 
     private void handleGunPerks(GunData data) {
-        var tag = data.tag();
+        var perk = data.perk;
 
-        reducePerkTagCoolDown(tag, "HealClipTime", "KillClipReloadTime", "KillClipTime", "FourthTimesCharmTick", "HeadSeeker",
-                "DesperadoTime", "DesperadoTimePost");
+        perk.reduceCooldown(ModPerks.HEAL_CLIP, "HealClipTime");
 
-        if (PerkHelper.getItemPerkLevel(ModPerks.FOURTH_TIMES_CHARM.get(), tag) > 0) {
-            int count = GunsTool.getPerkIntTag(tag, "FourthTimesCharmCount");
+        perk.reduceCooldown(ModPerks.KILL_CLIP, "KillClipReloadTime");
+        perk.reduceCooldown(ModPerks.KILL_CLIP, "KillClipTime");
+
+        perk.reduceCooldown(ModPerks.FOURTH_TIMES_CHARM, "FourthTimesCharmTick");
+
+        perk.reduceCooldown(ModPerks.HEAD_SEEKER, "HeadSeeker");
+
+        perk.reduceCooldown(ModPerks.DESPERADO, "DesperadoTime");
+        perk.reduceCooldown(ModPerks.DESPERADO, "DesperadoTimePost");
+
+        if (perk.getLevel(ModPerks.FOURTH_TIMES_CHARM) > 0) {
+            var tag = data.perk.getTag(ModPerks.FOURTH_TIMES_CHARM);
+            int count = perk.getTag(ModPerks.FOURTH_TIMES_CHARM).getInt("FourthTimesCharmCount");
+
             if (count >= 4) {
-                GunsTool.setPerkIntTag(tag, "FourthTimesCharmTick", 0);
-                GunsTool.setPerkIntTag(tag, "FourthTimesCharmCount", 0);
+                tag.remove("FourthTimesCharmTick");
+                tag.remove("FourthTimesCharmCount");
 
                 int mag = data.magazine();
                 data.setAmmo(Math.min(mag, data.ammo() + 2));
             }
         }
+
+        data.save();
     }
 
     public boolean canApplyPerk(Perk perk) {
         return true;
     }
 
-    private void reducePerkTagCoolDown(final CompoundTag tag, String... tags) {
-        var compound = tag.getCompound("PerkData");
-
-        for (String t : tags) {
-            if (!compound.contains(t)) {
-                continue;
-            }
-
-            if (compound.getInt(t) > 0) {
-                compound.putInt(t, Math.max(0, compound.getInt(t) - 1));
-            }
-        }
-        tag.put("PerkData", compound);
-    }
 
     /**
      * 是否使用弹匣换弹

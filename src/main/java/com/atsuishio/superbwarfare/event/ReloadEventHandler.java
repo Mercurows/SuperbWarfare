@@ -4,7 +4,6 @@ import com.atsuishio.superbwarfare.event.events.ReloadEvent;
 import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
-import com.atsuishio.superbwarfare.perk.PerkHelper;
 import com.atsuishio.superbwarfare.tools.GunsTool;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -66,7 +65,7 @@ public class ReloadEventHandler {
         final var tag = data.tag();
         if (!GunsTool.getPerkBooleanTag(tag, "HealClip")) return;
 
-        int healClipLevel = PerkHelper.getItemPerkLevel(ModPerks.HEAL_CLIP.get(), tag);
+        int healClipLevel = data.perk.getLevel(ModPerks.HEAL_CLIP);
         if (healClipLevel == 0) {
             healClipLevel = 1;
         }
@@ -96,7 +95,7 @@ public class ReloadEventHandler {
         final var tag = data.tag();
         if (!GunsTool.getPerkBooleanTag(tag, "KillClip")) return;
 
-        int level = PerkHelper.getItemPerkLevel(ModPerks.KILL_CLIP.get(), tag);
+        int level = data.perk.getLevel(ModPerks.KILL_CLIP);
         GunsTool.setPerkIntTag(tag, "KillClipTime", 90 + 10 * level);
         data.save();
     }
@@ -104,7 +103,7 @@ public class ReloadEventHandler {
     private static void handleKillingTallyPre(ItemStack stack) {
         var data = GunData.from(stack);
         final var tag = data.tag();
-        int level = PerkHelper.getItemPerkLevel(ModPerks.KILLING_TALLY.get(), tag);
+        int level = data.perk.getLevel(ModPerks.KILLING_TALLY);
         if (level == 0) return;
 
         GunsTool.setPerkIntTag(tag, "KillingTally", 0);
@@ -129,7 +128,7 @@ public class ReloadEventHandler {
         final var tag = data.tag();
         if (!GunsTool.getPerkBooleanTag(tag, "Desperado")) return;
 
-        int level = PerkHelper.getItemPerkLevel(ModPerks.DESPERADO.get(), tag);
+        int level = data.perk.getLevel(ModPerks.DESPERADO);
         GunsTool.setPerkIntTag(tag, "DesperadoTimePost", 110 + level * 10);
         data.save();
     }

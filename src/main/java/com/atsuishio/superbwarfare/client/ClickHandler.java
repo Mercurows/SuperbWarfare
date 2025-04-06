@@ -12,7 +12,6 @@ import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.network.message.send.*;
-import com.atsuishio.superbwarfare.perk.PerkHelper;
 import com.atsuishio.superbwarfare.tools.NBTTool;
 import com.atsuishio.superbwarfare.tools.SeekTool;
 import com.atsuishio.superbwarfare.tools.TraceTool;
@@ -20,7 +19,6 @@ import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
@@ -124,14 +122,15 @@ public class ClickHandler {
                 handleWeaponFirePress(player, stack);
             }
 
+            var data = GunData.from(stack);
             if (button == ModKeyMappings.HOLD_ZOOM.getKey().getValue()) {
-                handleWeaponZoomPress(player, tag);
+                handleWeaponZoomPress(player, data);
                 switchZoom = false;
                 return;
             }
 
             if (button == ModKeyMappings.SWITCH_ZOOM.getKey().getValue()) {
-                handleWeaponZoomPress(player, tag);
+                handleWeaponZoomPress(player, data);
                 switchZoom = !switchZoom;
             }
         }
@@ -267,14 +266,15 @@ public class ClickHandler {
                     handleWeaponFirePress(player, stack);
                 }
 
+                var data = GunData.from(stack);
                 if (key == ModKeyMappings.HOLD_ZOOM.getKey().getValue()) {
-                    handleWeaponZoomPress(player, tag);
+                    handleWeaponZoomPress(player, data);
                     switchZoom = false;
                     return;
                 }
 
                 if (key == ModKeyMappings.SWITCH_ZOOM.getKey().getValue()) {
-                    handleWeaponZoomPress(player, tag);
+                    handleWeaponZoomPress(player, data);
                     switchZoom = !switchZoom;
                 }
             }
@@ -365,7 +365,7 @@ public class ClickHandler {
         ClientEventHandler.customRpm = 0;
     }
 
-    public static void handleWeaponZoomPress(Player player, final CompoundTag tag) {
+    public static void handleWeaponZoomPress(Player player, GunData data) {
         PacketDistributor.sendToServer(new ZoomMessage(0));
 
         if (player.getVehicle() instanceof VehicleEntity pVehicle && player.getVehicle() instanceof WeaponVehicleEntity iVehicle && iVehicle.hasWeapon(pVehicle.getSeatIndex(player))) {
@@ -374,7 +374,7 @@ public class ClickHandler {
         }
 
         ClientEventHandler.zoom = true;
-        int level = PerkHelper.getItemPerkLevel(ModPerks.INTELLIGENT_CHIP.get(), tag);
+        int level = data.perk.getLevel(ModPerks.INTELLIGENT_CHIP);
         if (level > 0) {
             if (ClientEventHandler.entity == null) {
                 ClientEventHandler.entity = SeekTool.seekLivingEntity(player, player.level(), 32 + 8 * (level - 1), 20);

@@ -201,18 +201,18 @@ public class RpgItem extends GunItem implements GeoItem, SpecialFireWeapon {
                     (float) data.explosionRadius()
             );
 
-            var dmgPerk = PerkHelper.getPerkByType(tag, Perk.Type.DAMAGE);
+            var dmgPerk = data.perk.get(Perk.Type.DAMAGE);
             if (dmgPerk == ModPerks.MONSTER_HUNTER.get()) {
-                int perkLevel = PerkHelper.getItemPerkLevel(dmgPerk, tag);
+                int perkLevel = data.perk.getLevel(dmgPerk);
                 rocket.setMonsterMultiplier(0.1f + 0.1f * perkLevel);
             }
 
             float velocity = (float) data.velocity();
 
-            if (PerkHelper.getPerkByType(tag, Perk.Type.AMMO) == ModPerks.MICRO_MISSILE.get()) {
+            if (data.perk.get(Perk.Type.AMMO) == ModPerks.MICRO_MISSILE.get()) {
                 rocket.setNoGravity(true);
 
-                int perkLevel = PerkHelper.getItemPerkLevel(ModPerks.MICRO_MISSILE.get(), tag);
+                int perkLevel = data.perk.getLevel(ModPerks.MICRO_MISSILE);
                 if (perkLevel > 0) {
                     rocket.setExplosionRadius(0.5f);
                     rocket.setDamage((float) data.damage() * (1.1f + perkLevel * 0.1f));

@@ -16,7 +16,6 @@ import com.atsuishio.superbwarfare.item.gun.SpecialFireWeapon;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.network.message.receive.ShootClientMessage;
 import com.atsuishio.superbwarfare.perk.Perk;
-import com.atsuishio.superbwarfare.perk.PerkHelper;
 import com.atsuishio.superbwarfare.tools.GunsTool;
 import com.atsuishio.superbwarfare.tools.SoundTool;
 import net.minecraft.client.Minecraft;
@@ -154,7 +153,7 @@ public class TaserItem extends GunItem implements GeoItem, SpecialFireWeapon, En
             data.save();
         }
 
-        int perkLevel = PerkHelper.getItemPerkLevel(ModPerks.REGENERATION.get(), tag);
+        int perkLevel = data.perk.getLevel(ModPerks.REGENERATION);
 
         var stackStorage = stack.getCapability(Capabilities.EnergyStorage.ITEM);
         if (stackStorage != null) {
@@ -228,7 +227,7 @@ public class TaserItem extends GunItem implements GeoItem, SpecialFireWeapon, En
         ItemStack stack = data.stack();
         var tag = data.tag();
 
-        int perkLevel = PerkHelper.getItemPerkLevel(ModPerks.VOLT_OVERLOAD.get(), tag);
+        int perkLevel = data.perk.getLevel(ModPerks.VOLT_OVERLOAD);
         var energyStorage = stack.getCapability(Capabilities.EnergyStorage.ITEM);
         var hasEnoughEnergy = energyStorage != null && energyStorage.getEnergyStored() >= 400 + 100 * perkLevel;
 
@@ -244,8 +243,8 @@ public class TaserItem extends GunItem implements GeoItem, SpecialFireWeapon, En
             boolean zoom = cap != null && cap.zoom;
             double spread = data.spread();
 
-            int volt = PerkHelper.getItemPerkLevel(ModPerks.VOLT_OVERLOAD.get(), tag);
-            int wireLength = PerkHelper.getItemPerkLevel(ModPerks.LONGER_WIRE.get(), tag);
+            int volt = data.perk.getLevel(ModPerks.VOLT_OVERLOAD);
+            int wireLength = data.perk.getLevel(ModPerks.LONGER_WIRE);
 
             SoundTool.playLocalSound(serverPlayer, ModSounds.TASER_FIRE_1P.get(), 1, 1);
             serverPlayer.level().playSound(null, serverPlayer.getOnPos(), ModSounds.TASER_FIRE_3P.get(), SoundSource.PLAYERS, 1, 1);

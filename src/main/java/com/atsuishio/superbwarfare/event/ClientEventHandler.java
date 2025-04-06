@@ -16,7 +16,6 @@ import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.network.message.send.*;
 import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
-import com.atsuishio.superbwarfare.perk.PerkHelper;
 import com.atsuishio.superbwarfare.tools.*;
 import com.atsuishio.superbwarfare.tools.animation.AnimationCurves;
 import net.minecraft.client.CameraType;
@@ -396,7 +395,7 @@ public class ClientEventHandler {
         var data = GunData.from(stack);
         final var tag = data.tag();
 
-        var perk = PerkHelper.getPerkByType(tag, Perk.Type.AMMO);
+        var perk = data.perk.get(Perk.Type.AMMO);
         int mode = data.fireMode();
 
         // 精准度
@@ -446,7 +445,7 @@ public class ClientEventHandler {
         }
 
         if (GunsTool.getPerkIntTag(tag, "DesperadoTimePost") > 0) {
-            int perkLevel = PerkHelper.getItemPerkLevel(ModPerks.DESPERADO.get(), tag);
+            int perkLevel = data.perk.getLevel(ModPerks.DESPERADO);
             rpm *= (int) (1.285 + 0.015 * perkLevel);
         }
 
@@ -574,7 +573,7 @@ public class ClientEventHandler {
                 }
 
                 if (stack.is(ModItems.DEVOTION.get())) {
-                    int perkLevel = PerkHelper.getItemPerkLevel(ModPerks.TURBO_CHARGER.get(), tag);
+                    int perkLevel = data.perk.getLevel(ModPerks.TURBO_CHARGER);
                     customRpm = Math.min(customRpm + 15 + ((perkLevel > 0 ? 5 : 0) + 3 * perkLevel), 500);
                 }
 
@@ -600,7 +599,7 @@ public class ClientEventHandler {
         } else if (stack.is(ModItems.MINIGUN.get())) {
             var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
             if (cap != null && cap.rifleAmmo > 0 || InventoryTool.hasCreativeAmmoBox(player)) {
-                var perk = PerkHelper.getPerkByType(tag, Perk.Type.AMMO);
+                var perk = data.perk.get(Perk.Type.AMMO);
                 float pitch = tag.getDouble("heat") <= 40 ? 1 : (float) (1 - 0.025 * Math.abs(40 - tag.getDouble("heat")));
 
                 player.playSound(ModSounds.MINIGUN_FIRE_1P.get(), 1f, pitch);
@@ -680,14 +679,13 @@ public class ClientEventHandler {
                 return;
             }
         }
-
-        var perk = PerkHelper.getPerkByType(tag, Perk.Type.AMMO);
+        var data = GunData.from(stack);
+        var perk = data.perk.get(Perk.Type.AMMO);
 
         if (perk == ModPerks.BEAST_BULLET.get()) {
             player.playSound(ModSounds.HENG.get(), 1f, 1f);
         }
 
-        var data = GunData.from(stack);
         int barrelType = data.attachment.get(AttachmentType.BARREL);
 
         SoundEvent sound1p = BuiltInRegistries.SOUND_EVENT.get(Mod.loc(name + (barrelType == 2 ? "_fire_1p_s" : "_fire_1p")));
@@ -1420,7 +1418,7 @@ public class ClientEventHandler {
                     && cap != null
                     && !cap.edit) {
                 if (!player.isShiftKeyDown()) {
-                    int intelligentChipLevel = PerkHelper.getItemPerkLevel(ModPerks.INTELLIGENT_CHIP.get(), tag);
+                    int intelligentChipLevel = data.perk.getLevel(ModPerks.INTELLIGENT_CHIP);
 
                     if (intelligentChipLevel > 0) {
                         if (ClientEventHandler.entity == null || !entity.isAlive()) {

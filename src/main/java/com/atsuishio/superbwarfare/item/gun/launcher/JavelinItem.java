@@ -262,9 +262,9 @@ public class JavelinItem extends GunItem implements GeoItem, SpecialFireWeapon {
                     new Vec3(tag.getDouble("TargetPosX"), tag.getDouble("TargetPosY"), tag.getDouble("TargetPosZ"))
             );
 
-            var dmgPerk = PerkHelper.getPerkByType(tag, Perk.Type.DAMAGE);
+            var dmgPerk = data.perk.get(Perk.Type.DAMAGE);
             if (dmgPerk == ModPerks.MONSTER_HUNTER.get()) {
-                int perkLevel = PerkHelper.getItemPerkLevel(dmgPerk, tag);
+                int perkLevel = data.perk.getLevel(dmgPerk);
                 missileEntity.setMonsterMultiplier(0.1f + 0.1f * perkLevel);
             }
 

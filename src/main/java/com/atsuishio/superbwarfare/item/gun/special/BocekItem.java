@@ -15,7 +15,6 @@ import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.network.message.receive.ShootClientMessage;
 import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
-import com.atsuishio.superbwarfare.perk.PerkHelper;
 import com.atsuishio.superbwarfare.tools.GunsTool;
 import com.atsuishio.superbwarfare.tools.InventoryTool;
 import com.atsuishio.superbwarfare.tools.SoundTool;
@@ -174,7 +173,7 @@ public class BocekItem extends GunItem implements GeoItem, SpecialFireWeapon {
 
         var tag = data.tag();
         var stack = data.stack();
-        var perk = PerkHelper.getPerkByType(tag, Perk.Type.AMMO);
+        var perk = data.perk.get(Perk.Type.AMMO);
 
         if (player instanceof ServerPlayer serverPlayer) {
             SoundTool.stopSound(serverPlayer, ModSounds.BOCEK_PULL_1P.getId(), SoundSource.PLAYERS);

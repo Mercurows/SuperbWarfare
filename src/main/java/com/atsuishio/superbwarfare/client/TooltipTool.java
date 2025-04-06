@@ -1,9 +1,8 @@
 package com.atsuishio.superbwarfare.client;
 
 import com.atsuishio.superbwarfare.init.ModPerks;
+import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.perk.Perk;
-import com.atsuishio.superbwarfare.perk.PerkHelper;
-import com.atsuishio.superbwarfare.tools.NBTTool;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -24,14 +23,14 @@ public class TooltipTool {
     }
 
     public static boolean heBullet(ItemStack stack) {
-        var perk = PerkHelper.getPerkByType(NBTTool.getTag(stack), Perk.Type.AMMO);
-        return perk == ModPerks.HE_BULLET.get();
+        var perkInstance = GunData.from(stack).perk.getInstance(Perk.Type.AMMO);
+        return perkInstance != null && perkInstance.perk() == ModPerks.HE_BULLET.get();
     }
 
     public static int heBulletLevel(ItemStack stack) {
-        var perk = PerkHelper.getPerkByType(NBTTool.getTag(stack), Perk.Type.AMMO);
-        if (perk == ModPerks.HE_BULLET.get()) {
-            return PerkHelper.getItemPerkLevel(perk, NBTTool.getTag(stack));
+        var perkInstance = GunData.from(stack).perk.getInstance(Perk.Type.AMMO);
+        if (perkInstance != null && perkInstance.perk() == ModPerks.HE_BULLET.get()) {
+            return perkInstance.level();
         }
         return 0;
     }
