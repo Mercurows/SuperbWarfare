@@ -129,7 +129,8 @@ public abstract class ContainerMobileVehicleEntity extends MobileVehicleEntity i
      * @param item 物品类型
      * @return 物品数量
      */
-    public int countItem(@NotNull Item item) {
+    public int countItem(@Nullable Item item) {
+        if (item == null) return 0;
         return InventoryTool.countItem(this.getItemStacks(), item);
     }
 
