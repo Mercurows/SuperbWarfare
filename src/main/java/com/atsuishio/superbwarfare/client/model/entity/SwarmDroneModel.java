@@ -19,6 +19,6 @@ public class SwarmDroneModel extends GeoModel<SwarmDroneEntity> {
 
     @Override
     public ResourceLocation getTextureResource(SwarmDroneEntity entity) {
-        return Mod.loc("textures/entity/swamDrone.png");
+        return Mod.loc("textures/entity/swarm_drone.png");
     }
 }

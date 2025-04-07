@@ -87,7 +87,6 @@ public class ClickHandler {
         if (player.isSpectator()) return;
 
         ItemStack stack = player.getMainHandItem();
-        final var tag = NBTTool.getTag(stack);
 
         int button = event.getButton();
 
@@ -122,15 +121,14 @@ public class ClickHandler {
                 handleWeaponFirePress(player, stack);
             }
 
-            var data = GunData.from(stack);
             if (button == ModKeyMappings.HOLD_ZOOM.getKey().getValue()) {
-                handleWeaponZoomPress(player, data);
+                handleWeaponZoomPress(player, stack);
                 switchZoom = false;
                 return;
             }
 
             if (button == ModKeyMappings.SWITCH_ZOOM.getKey().getValue()) {
-                handleWeaponZoomPress(player, data);
+                handleWeaponZoomPress(player, stack);
                 switchZoom = !switchZoom;
             }
         }
@@ -194,7 +192,6 @@ public class ClickHandler {
         if (player.isSpectator()) return;
 
         ItemStack stack = player.getMainHandItem();
-        final var tag = NBTTool.getTag(stack);
 
         int key = event.getKey();
         if (event.getAction() == GLFW.GLFW_PRESS) {
@@ -258,7 +255,7 @@ public class ClickHandler {
                 PacketDistributor.sendToServer(new SensitivityMessage(false));
             }
 
-            if (stack.is(ModTags.Items.GUN)
+            if (stack.getItem() instanceof GunItem
                     || stack.is(ModItems.MONITOR.get())
                     || (player.getVehicle() instanceof ArmedVehicleEntity iVehicle && iVehicle.isDriver(player))
                     || (stack.is(Items.SPYGLASS) && player.isScoping() && player.getOffhandItem().is(ModItems.FIRING_PARAMETERS.get()))) {
@@ -266,15 +263,14 @@ public class ClickHandler {
                     handleWeaponFirePress(player, stack);
                 }
 
-                var data = GunData.from(stack);
                 if (key == ModKeyMappings.HOLD_ZOOM.getKey().getValue()) {
-                    handleWeaponZoomPress(player, data);
+                    handleWeaponZoomPress(player, stack);
                     switchZoom = false;
                     return;
                 }
 
                 if (key == ModKeyMappings.SWITCH_ZOOM.getKey().getValue()) {
-                    handleWeaponZoomPress(player, data);
+                    handleWeaponZoomPress(player, stack);
                     switchZoom = !switchZoom;
                 }
             }
@@ -333,7 +329,6 @@ public class ClickHandler {
                 && !notInGame()
         ) {
             var data = GunData.from(stack);
-            var tag = data.tag();
             player.playSound(ModSounds.TRIGGER_CLICK.get(), 1, 1);
 
             if (!gunItem.useBackpackAmmo(stack) && data.ammo() <= 0 && data.reload.time() == 0) {
@@ -365,13 +360,16 @@ public class ClickHandler {
         ClientEventHandler.customRpm = 0;
     }
 
-    public static void handleWeaponZoomPress(Player player, GunData data) {
+    public static void handleWeaponZoomPress(Player player, ItemStack stack) {
         PacketDistributor.sendToServer(new ZoomMessage(0));
 
         if (player.getVehicle() instanceof VehicleEntity pVehicle && player.getVehicle() instanceof WeaponVehicleEntity iVehicle && iVehicle.hasWeapon(pVehicle.getSeatIndex(player))) {
             ClientEventHandler.zoomVehicle = true;
             return;
         }
+
+        if (!(stack.getItem() instanceof GunItem)) return;
+        var data = GunData.from(stack);
 
         ClientEventHandler.zoom = true;
         int level = data.perk.getLevel(ModPerks.INTELLIGENT_CHIP);
