@@ -4,18 +4,20 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.client.DisplayConfig;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.tools.NBTTool;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.RenderGuiEvent;
 
-@EventBusSubscriber(value = Dist.CLIENT)
-public class ArmorPlateOverlay {
+import javax.annotation.ParametersAreNonnullByDefault;
+
+
+public class ArmorPlateOverlay implements LayeredDraw.Layer {
+    public static final ResourceLocation ID = Mod.loc("armor_plate");
 
     private static final ResourceLocation ICON = Mod.loc("textures/screens/armor_plate_icon.png");
     private static final ResourceLocation LEVEL1 = Mod.loc("textures/screens/armor_plate_level1.png");
@@ -25,12 +27,12 @@ public class ArmorPlateOverlay {
     private static final ResourceLocation LEVEL2_FRAME = Mod.loc("textures/screens/armor_plate_level2_frame.png");
     private static final ResourceLocation LEVEL3_FRAME = Mod.loc("textures/screens/armor_plate_level3_frame.png");
 
-    @SubscribeEvent
-    public static void onRenderGui(RenderGuiEvent.Pre event) {
+    @Override
+    @ParametersAreNonnullByDefault
+    public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
         if (!DisplayConfig.ARMOR_PLATE_HUD.get()) return;
 
-        var gui = event.getGuiGraphics();
-        int h = gui.guiHeight();
+        int h = guiGraphics.guiHeight();
 
         Player player = Minecraft.getInstance().player;
         if (player == null) return;
@@ -63,16 +65,16 @@ public class ArmorPlateOverlay {
 
         int length = armorLevel * 30;
 
-        gui.pose().pushPose();
+        guiGraphics.pose().pushPose();
         // 渲染图标
-        gui.blit(ICON, 10, h - 13, 0, 0, 8, 8, 8, 8);
+        guiGraphics.blit(ICON, 10, h - 13, 0, 0, 8, 8, 8, 8);
 
         // 渲染框架
-        gui.blit(frame, 20, h - 12, 0, 0, length, 6, length, 6);
+        guiGraphics.blit(frame, 20, h - 12, 0, 0, length, 6, length, 6);
 
         // 渲染盔甲值
-        gui.blit(texture, 20, h - 12, 0, 0, (int) amount, 6, length, 6);
+        guiGraphics.blit(texture, 20, h - 12, 0, 0, (int) amount, 6, length, 6);
 
-        gui.pose().popPose();
+        guiGraphics.pose().popPose();
     }
 }

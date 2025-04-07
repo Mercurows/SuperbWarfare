@@ -53,7 +53,6 @@ public class ArmorPlate extends Item {
             armorLevel = 3;
         }
 
-        // TODO 解决数据双端同步问题
         if (NBTTool.getTag(armor).getDouble("ArmorPlate") < armorLevel * 15) {
             playerIn.startUsingItem(handIn);
         }
@@ -79,7 +78,9 @@ public class ArmorPlate extends Item {
                 armorLevel = 3;
             }
 
-            NBTTool.getTag(armor).putDouble("ArmorPlate", Mth.clamp(NBTTool.getTag(armor).getDouble("ArmorPlate") + 15, 0, armorLevel * 15));
+            var tag = NBTTool.getTag(armor);
+            tag.putDouble("ArmorPlate", Mth.clamp(tag.getDouble("ArmorPlate") + 15, 0, armorLevel * 15));
+            NBTTool.saveTag(armor, tag);
 
             if (pLivingEntity instanceof ServerPlayer serverPlayer) {
                 serverPlayer.level().playSound((Entity) null, serverPlayer.getOnPos(), SoundEvents.ARMOR_EQUIP_IRON.value(), SoundSource.PLAYERS, 0.5f, 1);

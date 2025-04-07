@@ -1,5 +1,8 @@
 package com.atsuishio.superbwarfare.client;
 
+import com.atsuishio.superbwarfare.client.overlay.AmmoBarOverlay;
+import com.atsuishio.superbwarfare.client.overlay.AmmoCountOverlay;
+import com.atsuishio.superbwarfare.client.overlay.ArmorPlateOverlay;
 import com.atsuishio.superbwarfare.client.renderer.block.*;
 import com.atsuishio.superbwarfare.client.tooltip.*;
 import com.atsuishio.superbwarfare.client.tooltip.component.*;
@@ -9,6 +12,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterClientTooltipComponentFactoriesEvent;
+import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 
 @EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class ClientRenderHandler {
@@ -33,5 +37,12 @@ public class ClientRenderHandler {
         event.registerBlockEntityRenderer(ModBlockEntities.CHARGING_STATION.get(), context -> new ChargingStationBlockEntityRenderer());
         event.registerBlockEntityRenderer(ModBlockEntities.CREATIVE_CHARGING_STATION.get(), context -> new CreativeChargingStationBlockEntityRenderer());
         event.registerBlockEntityRenderer(ModBlockEntities.SMALL_CONTAINER.get(), context -> new SmallContainerBlockEntityRenderer());
+    }
+
+    @SubscribeEvent
+    public static void registerOverlays(RegisterGuiLayersEvent event) {
+        event.registerBelowAll(ArmorPlateOverlay.ID, new ArmorPlateOverlay());
+        event.registerBelowAll(AmmoBarOverlay.ID, new AmmoBarOverlay());
+        event.registerBelowAll(AmmoCountOverlay.ID, new AmmoCountOverlay());
     }
 }
