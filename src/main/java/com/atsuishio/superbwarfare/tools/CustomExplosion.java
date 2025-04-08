@@ -4,8 +4,11 @@ import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage;
 import com.google.common.collect.Sets;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
+import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
@@ -47,12 +50,8 @@ public class CustomExplosion extends Explosion {
     public CustomExplosion(Level pLevel, @Nullable Entity pSource, @Nullable DamageSource source,
                            @Nullable ExplosionDamageCalculator pDamageCalculator,
                            float damage, double pToBlowX, double pToBlowY, double pToBlowZ, float pRadius,
-                           BlockInteraction pBlockInteraction) {
-
-        // TODO what are these options?
-        super(pLevel, pSource, source, null, pToBlowX, pToBlowY, pToBlowZ, pRadius, false, pBlockInteraction, ParticleTypes.EXPLOSION, ParticleTypes.EXPLOSION_EMITTER, SoundEvents.GENERIC_EXPLODE);
-        //        super(pLevel, pSource, source, null, pToBlowX, pToBlowY, pToBlowZ, pRadius, false, pBlockInteraction
-//                , ?,?,? );
+                           BlockInteraction pBlockInteraction, ParticleOptions smallParticle, ParticleOptions bigParticle, Holder<SoundEvent> sound) {
+        super(pLevel, pSource, source, null, pToBlowX, pToBlowY, pToBlowZ, pRadius, false, pBlockInteraction, smallParticle, bigParticle, sound);
 
         this.level = pLevel;
         this.source = pSource;
@@ -63,6 +62,13 @@ public class CustomExplosion extends Explosion {
         this.y = pToBlowY;
         this.z = pToBlowZ;
         this.damage = damage;
+    }
+
+    public CustomExplosion(Level pLevel, @Nullable Entity pSource, @Nullable DamageSource source,
+                           @Nullable ExplosionDamageCalculator pDamageCalculator,
+                           float damage, double pToBlowX, double pToBlowY, double pToBlowZ, float pRadius,
+                           BlockInteraction pBlockInteraction) {
+        this(pLevel, pSource, source, pDamageCalculator, damage, pToBlowX, pToBlowY, pToBlowZ, pRadius, pBlockInteraction, ParticleTypes.EXPLOSION, ParticleTypes.EXPLOSION_EMITTER, SoundEvents.GENERIC_EXPLODE);
     }
 
     public CustomExplosion(Level pLevel, @Nullable Entity pSource, float damage, double pToBlowX, double pToBlowY, double pToBlowZ, float pRadius, BlockInteraction pBlockInteraction) {
