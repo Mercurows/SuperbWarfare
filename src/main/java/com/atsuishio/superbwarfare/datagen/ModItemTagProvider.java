@@ -114,7 +114,9 @@ public class ModItemTagProvider extends ItemTagsProvider {
 
         this.tag(ModTags.Items.USE_HEAVY_AMMO).add(ModItems.NTW_20.get());
 
-        this.tag(ModTags.Items.LAUNCHER).add(ModItems.M_79.get(), ModItems.RPG.get(), ModItems.JAVELIN.get(), ModItems.SECONDARY_CATACLYSM.get());
+        this.tag(ModTags.Items.LAUNCHER).add(ModItems.RPG.get(), ModItems.JAVELIN.get())
+                .addTag(ModTags.Items.LAUNCHER_GRENADE);
+        this.tag(ModTags.Items.LAUNCHER_GRENADE).add(ModItems.M_79.get(), ModItems.SECONDARY_CATACLYSM.get());
 
         this.tag(ModTags.Items.REVOLVER).add(ModItems.TRACHELIUM.get());
 

@@ -30,6 +30,8 @@ public class ModTags {
         public static final TagKey<Item> HEAVY_WEAPON = tag("heavy_weapon");
 
         public static final TagKey<Item> LAUNCHER = tag("launcher");
+        public static final TagKey<Item> LAUNCHER_GRENADE = tag("launcher/grenade");
+
         public static final TagKey<Item> REVOLVER = tag("revolver");
 
         public static final TagKey<Item> NORMAL_GUN = tag("normal_gun");
