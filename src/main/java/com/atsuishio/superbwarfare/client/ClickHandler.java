@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.client;
 
-import com.atsuishio.superbwarfare.init.ModCapabilities;
 import com.atsuishio.superbwarfare.config.client.ReloadConfig;
 import com.atsuishio.superbwarfare.entity.MortarEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
@@ -224,8 +223,7 @@ public class ClickHandler {
                 PacketDistributor.sendToServer(new EditModeMessage(0));
             }
 
-            var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
-            if (cap != null && cap.edit) {
+            if (player.getData(ModAttachments.PLAYER_VARIABLE).edit) {
                 if (!(stack.getItem() instanceof GunItem gunItem)) return;
                 if (ModKeyMappings.EDIT_GRIP.getKeyModifier().isActive(KeyConflictContext.IN_GAME)) {
                     if (key == ModKeyMappings.EDIT_GRIP.getKey().getValue() && gunItem.hasCustomGrip(stack)) {
@@ -402,8 +400,7 @@ public class ClickHandler {
             return;
         }
 
-        var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
-        if (cap != null && cap.playerDoubleJump) {
+        if (player.getData(ModAttachments.PLAYER_VARIABLE).playerDoubleJump) {
             player.setDeltaMovement(new Vec3(player.getLookAngle().x, 0.8, player.getLookAngle().z));
             level.playLocalSound(x, y, z, ModSounds.DOUBLE_JUMP.get(), SoundSource.BLOCKS, 1, 1, false);
 

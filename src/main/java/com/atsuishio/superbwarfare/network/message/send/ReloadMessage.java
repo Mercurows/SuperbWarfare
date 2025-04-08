@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.network.message.send;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.init.ModCapabilities;
+import com.atsuishio.superbwarfare.init.ModAttachments;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
@@ -31,11 +31,10 @@ public record ReloadMessage(int msgType) implements CustomPacketPayload {
 
     public static void pressAction(Player player, int type) {
         if (type != 0) return;
-        var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
-        if (cap != null) {
-            cap.edit = false;
-            cap.syncPlayerVariables(player);
-        }
+        var cap = player.getData(ModAttachments.PLAYER_VARIABLE).watch();
+        cap.edit = false;
+        player.setData(ModAttachments.PLAYER_VARIABLE, cap);
+        cap.sync(player);
 
         ItemStack stack = player.getMainHandItem();
         if (!(stack.getItem() instanceof GunItem gunItem)) return;
@@ -56,7 +55,7 @@ public record ReloadMessage(int msgType) implements CustomPacketPayload {
             // 检查备弹
             boolean hasCreativeAmmoBox = player.getInventory().hasAnyMatching(item -> item.is(ModItems.CREATIVE_AMMO_BOX.get()));
 
-            if (!hasCreativeAmmoBox && cap != null) {
+            if (!hasCreativeAmmoBox) {
                 if (stack.is(ModTags.Items.USE_SHOTGUN_AMMO) && cap.shotgunAmmo == 0) {
                     return;
                 } else if (stack.is(ModTags.Items.USE_SNIPER_AMMO) && cap.sniperAmmo == 0) {

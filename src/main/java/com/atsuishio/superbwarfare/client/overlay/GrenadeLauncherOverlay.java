@@ -1,10 +1,10 @@
 package com.atsuishio.superbwarfare.client.overlay;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.init.ModCapabilities;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.CannonEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
+import com.atsuishio.superbwarfare.init.ModAttachments;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -28,8 +28,8 @@ public class GrenadeLauncherOverlay {
         Player player = Minecraft.getInstance().player;
         if (player == null) return;
 
-        var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
-        if (cap == null || cap.edit) return;
+        var cap = player.getData(ModAttachments.PLAYER_VARIABLE);
+        if (cap.edit) return;
 
         if (player.getVehicle() instanceof ArmedVehicleEntity iArmedVehicle && iArmedVehicle.banHand(player))
             return;

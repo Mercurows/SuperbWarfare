@@ -56,6 +56,7 @@ public class Mod {
         ModArmorMaterials.MATERIALS.register(bus);
         ModAttributes.ATTRIBUTES.register(bus);
         ModCriteriaTriggers.REGISTRY.register(bus);
+        ModAttachments.ATTACHMENT_TYPES.register(bus);
 
 //        bus.addListener(this::onCommonSetup);
         bus.addListener(this::onClientSetup);

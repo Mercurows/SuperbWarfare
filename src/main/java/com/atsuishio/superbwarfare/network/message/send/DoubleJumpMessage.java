@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.network.message.send;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.init.ModCapabilities;
+import com.atsuishio.superbwarfare.init.ModAttachments;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.BlockPos;
@@ -33,11 +33,11 @@ public record DoubleJumpMessage(boolean canDoubleJump) implements CustomPacketPa
 
         level.playSound(null, BlockPos.containing(x, y, z), ModSounds.DOUBLE_JUMP.get(), SoundSource.BLOCKS, 1, 1);
 
-        var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
-        if (cap == null) return;
+        var cap = player.getData(ModAttachments.PLAYER_VARIABLE).watch();
 
         cap.playerDoubleJump = message.canDoubleJump;
-        cap.syncPlayerVariables(player);
+        player.setData(ModAttachments.PLAYER_VARIABLE, cap);
+        cap.sync(player);
     }
 
     @Override

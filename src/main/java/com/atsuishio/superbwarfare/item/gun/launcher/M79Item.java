@@ -1,15 +1,11 @@
 package com.atsuishio.superbwarfare.item.gun.launcher;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.init.ModCapabilities;
 import com.atsuishio.superbwarfare.client.renderer.item.M79ItemRenderer;
 import com.atsuishio.superbwarfare.client.tooltip.component.LauncherImageComponent;
 import com.atsuishio.superbwarfare.entity.projectile.GunGrenadeEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
-import com.atsuishio.superbwarfare.init.ModItems;
-import com.atsuishio.superbwarfare.init.ModPerks;
-import com.atsuishio.superbwarfare.init.ModSounds;
-import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.SpecialFireWeapon;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
@@ -175,9 +171,7 @@ public class M79Item extends GunItem implements GeoItem, SpecialFireWeapon {
         ItemStack stack = data.stack();
         if (player.getCooldowns().isOnCooldown(stack.getItem()) || data.ammo() <= 0) return;
 
-        var tag = data.tag();
-        var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
-        boolean zooming = cap != null && cap.zoom;
+        boolean zooming = player.getData(ModAttachments.PLAYER_VARIABLE).zoom;
         double spread = data.spread();
 
         if (player.level() instanceof ServerLevel serverLevel) {

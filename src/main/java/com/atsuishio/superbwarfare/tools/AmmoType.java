@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.tools;
 
-import com.atsuishio.superbwarfare.init.ModCapabilities;
 import com.atsuishio.superbwarfare.capability.player.PlayerVariable;
+import com.atsuishio.superbwarfare.init.ModAttachments;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
@@ -90,18 +90,17 @@ public enum AmmoType {
 
     // Entity
     public int get(Entity entity) {
-        var cap = entity.getCapability(ModCapabilities.PLAYER_VARIABLE);
-        if (cap == null) return 0;
+        var cap = entity.getData(ModAttachments.PLAYER_VARIABLE);
 
         return get(cap);
     }
 
     public void set(Entity entity, int count) {
-        var cap = entity.getCapability(ModCapabilities.PLAYER_VARIABLE);
-        if (cap == null) return;
+        var cap = entity.getData(ModAttachments.PLAYER_VARIABLE).watch();
 
         set(cap, count);
-        cap.syncPlayerVariables(entity);
+        entity.setData(ModAttachments.PLAYER_VARIABLE, cap);
+        cap.sync(entity);
     }
 
     public void add(Entity entity, int count) {

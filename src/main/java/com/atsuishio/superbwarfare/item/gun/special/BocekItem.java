@@ -1,14 +1,10 @@
 package com.atsuishio.superbwarfare.item.gun.special;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.init.ModCapabilities;
 import com.atsuishio.superbwarfare.client.renderer.item.BocekItemRenderer;
 import com.atsuishio.superbwarfare.client.tooltip.component.BocekImageComponent;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
-import com.atsuishio.superbwarfare.init.ModItems;
-import com.atsuishio.superbwarfare.init.ModPerks;
-import com.atsuishio.superbwarfare.init.ModSounds;
-import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.SpecialFireWeapon;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
@@ -183,8 +179,7 @@ public class BocekItem extends GunItem implements GeoItem, SpecialFireWeapon {
         }
 
         if (GunsTool.getGunDoubleTag(tag, "Power") >= 6) {
-            var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
-            if (cap != null && cap.zoom) {
+            if (player.getData(ModAttachments.PLAYER_VARIABLE).zoom) {
                 spawnBullet(player, tag);
 
                 SoundTool.playLocalSound(player, ModSounds.BOCEK_ZOOM_FIRE_1P.get(), 10, 1);
@@ -218,10 +213,9 @@ public class BocekItem extends GunItem implements GeoItem, SpecialFireWeapon {
 
     @Override
     public void fireOnPress(Player player, final GunData data) {
-        var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
-        if (cap != null) {
-            cap.bowPullHold = true;
-            cap.syncPlayerVariables(player);
-        }
+        var cap = player.getData(ModAttachments.PLAYER_VARIABLE).watch();
+        cap.bowPullHold = true;
+        player.setData(ModAttachments.PLAYER_VARIABLE, cap);
+        cap.sync(player);
     }
 }

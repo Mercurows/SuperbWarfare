@@ -1,7 +1,5 @@
 package com.atsuishio.superbwarfare.event;
 
-import com.atsuishio.superbwarfare.init.ModCapabilities;
-import com.atsuishio.superbwarfare.capability.player.PlayerVariable;
 import com.atsuishio.superbwarfare.component.ModDataComponents;
 import com.atsuishio.superbwarfare.config.common.GameplayConfig;
 import com.atsuishio.superbwarfare.config.server.MiscConfig;
@@ -216,7 +214,6 @@ public class LivingEventHandler {
 
         var data = GunData.from(stack);
         double amount = Math.min(0.125 * event.getAmount(), event.getEntity().getMaxHealth());
-        final var tag = NBTTool.getTag(stack);
 
         // 先处理发射器类武器或高爆弹的爆炸伤害
         if (source.is(ModDamageTypes.PROJECTILE_BOOM)) {
@@ -385,11 +382,10 @@ public class LivingEventHandler {
                         oldData.charge.reset();
                     }
 
-                    var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
-                    if (cap != null) {
-                        cap.edit = false;
-                        cap.syncPlayerVariables(player);
-                    }
+                    var cap = player.getData(ModAttachments.PLAYER_VARIABLE).watch();
+                    cap.edit = false;
+                    player.setData(ModAttachments.PLAYER_VARIABLE, cap);
+                    cap.sync(player);
 
                     oldData.save();
                 }
@@ -433,11 +429,10 @@ public class LivingEventHandler {
                         PacketDistributor.sendToPlayer(serverPlayer, new DrawClientMessage(true));
                     }
 
-                    var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
-                    if (cap != null) {
-                        cap.tacticalSprint = false;
-                        cap.syncPlayerVariables(player);
-                    }
+                    var cap = player.getData(ModAttachments.PLAYER_VARIABLE).watch();
+                    cap.tacticalSprint = false;
+                    player.setData(ModAttachments.PLAYER_VARIABLE, cap);
+                    cap.sync(player);
 
                     newData.save();
                 }
@@ -608,7 +603,6 @@ public class LivingEventHandler {
 
     private static void handleKillingTallyDamage(ItemStack stack, LivingIncomingDamageEvent event) {
         var data = GunData.from(stack);
-        final var tag = data.tag();
         int level = data.perk.getLevel(ModPerks.KILLING_TALLY);
         if (level == 0) return;
 
@@ -657,8 +651,7 @@ public class LivingEventHandler {
 
         float rate = level * 0.1f + (stack.is(ModTags.Items.SMG) || stack.is(ModTags.Items.RIFLE) ? 0.07f : 0f);
 
-        var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
-        if (cap == null) return;
+        var cap = player.getData(ModAttachments.PLAYER_VARIABLE).watch();
 
         int mag = data.magazine();
         int ammo = data.ammo();
@@ -685,7 +678,8 @@ public class LivingEventHandler {
             data.setAmmo(Math.min(mag, ammo + ammoFinal));
         }
         data.save();
-        cap.syncPlayerVariables(player);
+        player.setData(ModAttachments.PLAYER_VARIABLE, cap);
+        cap.sync(player);
     }
 
 
@@ -746,8 +740,7 @@ public class LivingEventHandler {
     public static void onLivingDrops(LivingDropsEvent event) {
         // 死亡掉落弹药盒
         if (event.getEntity() instanceof Player player && !player.level().getLevelData().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY)) {
-            var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
-            if (cap == null) cap = new PlayerVariable();
+            var cap = player.getData(ModAttachments.PLAYER_VARIABLE).watch();
 
             boolean drop = cap.rifleAmmo + cap.handgunAmmo + cap.shotgunAmmo + cap.sniperAmmo + cap.heavyAmmo > 0;
 
@@ -762,7 +755,8 @@ public class LivingEventHandler {
                 var info = new AmmoBoxInfo("All", true);
                 stack.set(ModDataComponents.AMMO_BOX_INFO, info);
 
-                cap.syncPlayerVariables(player);
+                player.setData(ModAttachments.PLAYER_VARIABLE, cap);
+                cap.sync(player);
 
                 event.getDrops().add(new ItemEntity(player.level(), player.getX(), player.getY() + 1, player.getZ(), stack));
             }

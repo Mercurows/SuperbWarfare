@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.item.gun.launcher;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.init.ModCapabilities;
 import com.atsuishio.superbwarfare.client.renderer.item.JavelinItemRenderer;
 import com.atsuishio.superbwarfare.client.tooltip.component.LauncherImageComponent;
 import com.atsuishio.superbwarfare.entity.projectile.FlareDecoyEntity;
@@ -310,8 +309,7 @@ public class JavelinItem extends GunItem implements GeoItem, SpecialFireWeapon {
     public void fireOnPress(Player player, final GunData data) {
         var tag = data.tag();
 
-        var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
-        if (cap != null && !cap.zoom || data.ammo() <= 0) return;
+        if (!player.getData(ModAttachments.PLAYER_VARIABLE).zoom || data.ammo() <= 0) return;
 
         Entity seekingEntity = SeekTool.seekEntity(player, player.level(), 512, 8);
 

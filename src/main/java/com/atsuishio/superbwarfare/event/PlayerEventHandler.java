@@ -1,8 +1,8 @@
 package com.atsuishio.superbwarfare.event;
 
-import com.atsuishio.superbwarfare.init.ModCapabilities;
 import com.atsuishio.superbwarfare.config.common.GameplayConfig;
 import com.atsuishio.superbwarfare.config.server.MiscConfig;
+import com.atsuishio.superbwarfare.init.ModAttachments;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
@@ -52,13 +52,12 @@ public class PlayerEventHandler {
     public static void onPlayerRespawned(PlayerEvent.PlayerRespawnEvent event) {
         Player player = event.getEntity();
 
-        var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
-        if (cap != null) {
-            cap.zoom = false;
-            cap.tacticalSprintExhaustion = false;
-            cap.tacticalSprintTime = 600;
-            cap.syncPlayerVariables(player);
-        }
+        var cap = player.getData(ModAttachments.PLAYER_VARIABLE).watch();
+        cap.zoom = false;
+        cap.tacticalSprintExhaustion = false;
+        cap.tacticalSprintTime = 600;
+        player.setData(ModAttachments.PLAYER_VARIABLE, cap);
+        cap.sync(player);
 
         handleRespawnReload(player);
         handleRespawnAutoArmor(player);
@@ -79,6 +78,7 @@ public class PlayerEventHandler {
     public static void onPlayerTick(PlayerTickEvent.Post event) {
         Player player = event.getEntity();
         ItemStack stack = player.getMainHandItem();
+        var variable = player.getData(ModAttachments.PLAYER_VARIABLE).watch();
 
         if (stack.is(ModTags.Items.GUN)) {
             handlePlayerSprint(player);
@@ -90,11 +90,12 @@ public class PlayerEventHandler {
         handleSimulationDistance(player);
         handleTacticalSprint(player);
         handleBreath(player);
+
+        variable.sync(player);
     }
 
     private static void handleBreath(Player player) {
-        var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
-        if (cap == null) return;
+        var cap = player.getData(ModAttachments.PLAYER_VARIABLE).watch();
 
         if (cap.breath) {
             cap.breathTime = Mth.clamp(cap.breathTime - 1, 0, 100);
@@ -111,12 +112,11 @@ public class PlayerEventHandler {
             cap.breathExhaustion = false;
         }
 
-        cap.syncPlayerVariables(player);
+        player.setData(ModAttachments.PLAYER_VARIABLE, cap);
     }
 
     private static void handleTacticalSprint(Player player) {
-        var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
-        if (cap == null) return;
+        var cap = player.getData(ModAttachments.PLAYER_VARIABLE).watch();
 
         ItemStack stack = player.getMainHandItem();
         int sprintCost;
@@ -161,15 +161,14 @@ public class PlayerEventHandler {
             player.getPersistentData().putBoolean("canTacticalSprint", true);
         }
 
-        cap.syncPlayerVariables(player);
+        player.setData(ModAttachments.PLAYER_VARIABLE, cap);
     }
 
     /**
      * 判断玩家是否在奔跑
      */
     private static void handlePlayerSprint(Player player) {
-        var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
-        if (cap == null) return;
+        var cap = player.getData(ModAttachments.PLAYER_VARIABLE);
 
         if (cap.holdFire) {
             player.getPersistentData().putDouble("noRun", 10);
@@ -191,12 +190,11 @@ public class PlayerEventHandler {
     }
 
     private static void handleGround(Player player) {
-        var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
-        if (cap == null) return;
+        var cap = player.getData(ModAttachments.PLAYER_VARIABLE);
 
         if (player.onGround()) {
             cap.playerDoubleJump = false;
-            cap.syncPlayerVariables(player);
+            player.setData(ModAttachments.PLAYER_VARIABLE, cap);
         }
     }
 
@@ -208,15 +206,13 @@ public class PlayerEventHandler {
 
         if ((stack.is(ModItems.RPG.get()) || stack.is(ModItems.BOCEK.get())) && data.ammo() == 1) {
             tag.remove("IsEmpty");
-            data.save();
         }
     }
 
     private static void handleBocekPulling(Player player) {
         ItemStack stack = player.getMainHandItem();
 
-        var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
-        if (cap == null) return;
+        var cap = player.getData(ModAttachments.PLAYER_VARIABLE).watch();
 
         var data = GunData.from(stack);
         final var tag = data.tag();
@@ -231,7 +227,7 @@ public class PlayerEventHandler {
 
                 cap.bowPull = true;
                 cap.tacticalSprint = false;
-                cap.syncPlayerVariables(player);
+                player.setData(ModAttachments.PLAYER_VARIABLE, cap);
                 player.setSprinting(false);
             }
             if (GunsTool.getGunDoubleTag(tag, "Power") == 1) {
@@ -245,15 +241,16 @@ public class PlayerEventHandler {
                 GunsTool.setGunDoubleTag(tag, "Power", 0);
             }
             cap.bowPull = false;
-            cap.syncPlayerVariables(player);
+            player.setData(ModAttachments.PLAYER_VARIABLE, cap);
         }
 
         if (GunsTool.getGunDoubleTag(tag, "Power") > 0) {
             cap.tacticalSprint = false;
-            cap.syncPlayerVariables(player);
+            player.setData(ModAttachments.PLAYER_VARIABLE, cap);
             player.setSprinting(false);
         }
 
+        cap.sync(player);
         data.save();
     }
 
@@ -277,8 +274,7 @@ public class PlayerEventHandler {
                 var tag = data.tag();
 
                 if (!InventoryTool.hasCreativeAmmoBox(player)) {
-                    var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
-                    if (cap == null) return;
+                    var cap = player.getData(ModAttachments.PLAYER_VARIABLE);
 
                     if (stack.is(ModTags.Items.USE_SHOTGUN_AMMO) && cap.shotgunAmmo > 0) {
                         GunsTool.reload(player, stack, data, AmmoType.SHOTGUN);

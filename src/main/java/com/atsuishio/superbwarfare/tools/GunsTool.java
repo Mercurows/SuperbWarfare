@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.tools;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.init.ModCapabilities;
+import com.atsuishio.superbwarfare.init.ModAttachments;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.item.gun.data.ReloadState;
@@ -88,15 +88,14 @@ public class GunsTool {
             data.bolt.markNeedless();
         }
 
-        var capability = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
+        var capability = player.getData(ModAttachments.PLAYER_VARIABLE).watch();
         var playerAmmo = 0;
 
-        if (capability != null) {
-            playerAmmo = type.get(capability);
-            var newAmmoCount = Math.max(0, playerAmmo - ammoToAdd);
-            type.set(capability, newAmmoCount);
-            capability.syncPlayerVariables(player);
-        }
+        playerAmmo = type.get(capability);
+        var newAmmoCount = Math.max(0, playerAmmo - ammoToAdd);
+        type.set(capability, newAmmoCount);
+        player.setData(ModAttachments.PLAYER_VARIABLE, capability);
+        capability.sync(player);
 
         int needToAdd = ammo + Math.min(ammoToAdd, playerAmmo);
 
@@ -115,18 +114,6 @@ public class GunsTool {
     public static int getPerkIntTag(final CompoundTag rootTag, String name) {
         CompoundTag tag = rootTag.getCompound("PerkData");
         return tag.getInt(name);
-    }
-
-    public static void setPerkDoubleTag(final CompoundTag rootTag, String name, double num) {
-        CompoundTag tag = rootTag.getCompound("PerkData");
-        if (!tag.contains(name) && num == 0) return;
-        tag.putDouble(name, num);
-        rootTag.put("PerkData", tag);
-    }
-
-    public static double getPerkDoubleTag(final CompoundTag rootTag, String name) {
-        CompoundTag tag = rootTag.getCompound("PerkData");
-        return tag.getDouble(name);
     }
 
     public static void setPerkBooleanTag(final CompoundTag rootTag, String name, boolean flag) {

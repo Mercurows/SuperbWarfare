@@ -1,10 +1,9 @@
 package com.atsuishio.superbwarfare.client.overlay;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.init.ModCapabilities;
-import com.atsuishio.superbwarfare.capability.player.PlayerVariable;
 import com.atsuishio.superbwarfare.config.client.DisplayConfig;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
+import com.atsuishio.superbwarfare.init.ModAttachments;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModKeyMappings;
 import com.atsuishio.superbwarfare.init.ModTags;
@@ -47,8 +46,7 @@ public class AmmoBarOverlay implements LayeredDraw.Layer {
         ItemStack stack = player.getMainHandItem();
 
         if (stack.getItem() == ModItems.MINIGUN.get()) {
-            var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
-            return cap != null ? cap.rifleAmmo : 0;
+            return player.getData(ModAttachments.PLAYER_VARIABLE).rifleAmmo;
         }
 
         if (stack.getItem() == ModItems.BOCEK.get()) {
@@ -65,8 +63,7 @@ public class AmmoBarOverlay implements LayeredDraw.Layer {
             return "";
         }
 
-        var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
-        if (cap == null) cap = new PlayerVariable();
+        var cap = player.getData(ModAttachments.PLAYER_VARIABLE);
         if (!hasCreativeAmmo()) {
             var data = GunData.from(stack);
             if (stack.is(ModTags.Items.LAUNCHER) || stack.getItem() == ModItems.TASER.get()) {

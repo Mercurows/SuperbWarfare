@@ -1,10 +1,10 @@
 package com.atsuishio.superbwarfare.client.overlay;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.init.ModCapabilities;
 import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
+import com.atsuishio.superbwarfare.init.ModAttachments;
 import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
@@ -43,8 +43,7 @@ public class HandsomeFrameOverlay {
 
         if (player != null) {
             ItemStack stack = player.getMainHandItem();
-            var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
-            if (cap == null || cap.edit) return;
+            if (player.getData(ModAttachments.PLAYER_VARIABLE).edit) return;
             if (player.getVehicle() instanceof ArmedVehicleEntity iArmedVehicle && iArmedVehicle.banHand(player))
                 return;
 

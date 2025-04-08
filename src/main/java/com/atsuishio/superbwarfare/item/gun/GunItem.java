@@ -1,9 +1,9 @@
 package com.atsuishio.superbwarfare.item.gun;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.init.ModCapabilities;
 import com.atsuishio.superbwarfare.client.PoseTool;
 import com.atsuishio.superbwarfare.client.tooltip.component.GunImageComponent;
+import com.atsuishio.superbwarfare.init.ModAttachments;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.init.ModTags;
@@ -83,21 +83,20 @@ public abstract class GunItem extends Item implements CustomRendererItem {
         if ((hasBulletInBarrel && ammoCount > magazine + 1) || (!hasBulletInBarrel && ammoCount > magazine)) {
             int count = ammoCount - magazine - (hasBulletInBarrel ? 1 : 0);
 
-            var capability = entity.getCapability(ModCapabilities.PLAYER_VARIABLE);
-            if (capability != null) {
-                if (stack.is(ModTags.Items.USE_SHOTGUN_AMMO)) {
-                    AmmoType.SHOTGUN.add(capability, count);
-                } else if (stack.is(ModTags.Items.USE_SNIPER_AMMO)) {
-                    AmmoType.SNIPER.add(capability, count);
-                } else if (stack.is(ModTags.Items.USE_HANDGUN_AMMO)) {
-                    AmmoType.HANDGUN.add(capability, count);
-                } else if (stack.is(ModTags.Items.USE_RIFLE_AMMO)) {
-                    AmmoType.RIFLE.add(capability, count);
-                } else if (stack.is(ModTags.Items.USE_HEAVY_AMMO)) {
-                    AmmoType.HEAVY.add(capability, count);
-                }
-                capability.syncPlayerVariables(entity);
+            var capability = entity.getData(ModAttachments.PLAYER_VARIABLE).watch();
+            if (stack.is(ModTags.Items.USE_SHOTGUN_AMMO)) {
+                AmmoType.SHOTGUN.add(capability, count);
+            } else if (stack.is(ModTags.Items.USE_SNIPER_AMMO)) {
+                AmmoType.SNIPER.add(capability, count);
+            } else if (stack.is(ModTags.Items.USE_HANDGUN_AMMO)) {
+                AmmoType.HANDGUN.add(capability, count);
+            } else if (stack.is(ModTags.Items.USE_RIFLE_AMMO)) {
+                AmmoType.RIFLE.add(capability, count);
+            } else if (stack.is(ModTags.Items.USE_HEAVY_AMMO)) {
+                AmmoType.HEAVY.add(capability, count);
             }
+            entity.setData(ModAttachments.PLAYER_VARIABLE, capability);
+            capability.sync(entity);
             data.setAmmo(magazine + (hasBulletInBarrel ? 1 : 0));
         }
         data.save();

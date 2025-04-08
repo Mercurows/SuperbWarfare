@@ -1,21 +1,27 @@
 package com.atsuishio.superbwarfare.capability.player;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.init.ModCapabilities;
+import com.atsuishio.superbwarfare.init.ModAttachments;
 import com.atsuishio.superbwarfare.network.message.receive.PlayerVariablesSyncMessage;
 import com.atsuishio.superbwarfare.tools.AmmoType;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.common.util.INBTSerializable;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
+import org.jetbrains.annotations.NotNull;
 
-// TODO 在退出世界时正确持久化弹药数量
+import javax.annotation.ParametersAreNonnullByDefault;
+
+
 @EventBusSubscriber(modid = Mod.MODID)
-public class PlayerVariable {
+public class PlayerVariable implements INBTSerializable<CompoundTag> {
+    private PlayerVariable old = null;
+
     public boolean zoom = false;
     public boolean holdFire = false;
     public int rifleAmmo = 0;
@@ -34,10 +40,27 @@ public class PlayerVariable {
     public boolean breathExhaustion = false;
     public boolean edit = false;
 
-    public void syncPlayerVariables(Entity entity) {
+    public void sync(Entity entity) {
+        if (!entity.hasData(ModAttachments.PLAYER_VARIABLE)) return;
+
+        var newVariable = entity.getData(ModAttachments.PLAYER_VARIABLE);
+        if (old != null && old.equals(newVariable)) return;
+
         if (entity instanceof ServerPlayer) {
-            PacketDistributor.sendToAllPlayers(new PlayerVariablesSyncMessage(entity.getId(), this.writeToNBT()));
+            PacketDistributor.sendToAllPlayers(new PlayerVariablesSyncMessage(entity.getId(), newVariable.writeToNBT()));
         }
+    }
+
+    @SubscribeEvent
+    public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
+        if (!(event.getEntity() instanceof ServerPlayer player)) return;
+
+        PacketDistributor.sendToPlayer(player, new PlayerVariablesSyncMessage(player.getId(), player.getData(ModAttachments.PLAYER_VARIABLE).writeToNBT()));
+    }
+
+    public PlayerVariable watch() {
+        this.old = this.copy();
+        return this;
     }
 
     public CompoundTag writeToNBT() {
@@ -63,86 +86,92 @@ public class PlayerVariable {
         return nbt;
     }
 
-    public PlayerVariable readFromNBT(Tag tag) {
-        CompoundTag nbt = (CompoundTag) tag;
-
-        zoom = nbt.getBoolean("Zoom");
-        holdFire = nbt.getBoolean("HoldFire");
+    public PlayerVariable readFromNBT(CompoundTag tag) {
+        zoom = tag.getBoolean("Zoom");
+        holdFire = tag.getBoolean("HoldFire");
 
         for (var type : AmmoType.values()) {
-            type.set(this, type.get(nbt));
+            type.set(this, type.get(tag));
         }
 
-        bowPullHold = nbt.getBoolean("BowPullHold");
-        bowPull = nbt.getBoolean("BowPull");
-        playerDoubleJump = nbt.getBoolean("DoubleJump");
-        tacticalSprint = nbt.getBoolean("TacticalSprint");
-        tacticalSprintTime = nbt.getInt("TacticalSprintTime");
-        tacticalSprintExhaustion = nbt.getBoolean("TacticalSprintExhaustion");
-        breath = nbt.getBoolean("Breath");
-        breathTime = nbt.getInt("BreathTime");
-        breathExhaustion = nbt.getBoolean("BreathExhaustion");
-        edit = nbt.getBoolean("EditMode");
+        bowPullHold = tag.getBoolean("BowPullHold");
+        bowPull = tag.getBoolean("BowPull");
+        playerDoubleJump = tag.getBoolean("DoubleJump");
+        tacticalSprint = tag.getBoolean("TacticalSprint");
+        tacticalSprintTime = tag.getInt("TacticalSprintTime");
+        tacticalSprintExhaustion = tag.getBoolean("TacticalSprintExhaustion");
+        breath = tag.getBoolean("Breath");
+        breathTime = tag.getInt("BreathTime");
+        breathExhaustion = tag.getBoolean("BreathExhaustion");
+        edit = tag.getBoolean("EditMode");
 
         return this;
     }
 
-    @SubscribeEvent
-    public static void onPlayerLoggedInSyncPlayerVariables(PlayerEvent.PlayerLoggedInEvent event) {
-        if (event.getEntity().level().isClientSide()) return;
+    public PlayerVariable copy() {
+        var clone = new PlayerVariable();
 
-        var player = event.getEntity();
-        var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE, null);
-        if (cap != null) cap.syncPlayerVariables(player);
+        clone.zoom = this.zoom;
+        clone.holdFire = this.holdFire;
+        clone.rifleAmmo = this.rifleAmmo;
+        clone.handgunAmmo = this.handgunAmmo;
+        clone.shotgunAmmo = this.shotgunAmmo;
+        clone.sniperAmmo = this.sniperAmmo;
+        clone.heavyAmmo = this.heavyAmmo;
+        clone.bowPullHold = this.bowPullHold;
+        clone.bowPull = this.bowPull;
+        clone.playerDoubleJump = this.playerDoubleJump;
+        clone.tacticalSprint = this.tacticalSprint;
+        clone.tacticalSprintTime = this.tacticalSprintTime;
+        clone.tacticalSprintExhaustion = this.tacticalSprintExhaustion;
+        clone.breath = this.breath;
+        clone.breathTime = this.breathTime;
+        clone.breathExhaustion = this.breathExhaustion;
+        clone.edit = this.edit;
+
+        return clone;
     }
 
-    @SubscribeEvent
-    public static void onPlayerRespawnedSyncPlayerVariables(PlayerEvent.PlayerRespawnEvent event) {
-        if (event.getEntity().level().isClientSide()) return;
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof PlayerVariable other)) return false;
 
-        var player = event.getEntity();
-        var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE, null);
-        if (cap != null) cap.syncPlayerVariables(player);
-    }
-
-    @SubscribeEvent
-    public static void onPlayerChangedDimensionSyncPlayerVariables(PlayerEvent.PlayerChangedDimensionEvent event) {
-        if (event.getEntity().level().isClientSide()) return;
-
-        var player = event.getEntity();
-        var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE, null);
-        if (cap != null) cap.syncPlayerVariables(player);
+        return zoom == other.zoom
+                && holdFire == other.holdFire
+                && rifleAmmo == other.rifleAmmo
+                && handgunAmmo == other.handgunAmmo
+                && shotgunAmmo == other.shotgunAmmo
+                && sniperAmmo == other.sniperAmmo
+                && heavyAmmo == other.heavyAmmo
+                && bowPullHold == other.bowPullHold
+                && bowPull == other.bowPull
+                && playerDoubleJump == other.playerDoubleJump
+                && tacticalSprint == other.tacticalSprint
+//                && tacticalSprintTime == other.tacticalSprintTime
+                && tacticalSprintExhaustion == other.tacticalSprintExhaustion
+                && breath == other.breath
+//                && breathTime == other.breathTime
+                && breathExhaustion == other.breathExhaustion
+                && edit == other.edit;
     }
 
     @SubscribeEvent
     public static void clonePlayer(PlayerEvent.Clone event) {
         event.getOriginal().revive();
-        var original = event.getOriginal().getCapability(ModCapabilities.PLAYER_VARIABLE, null);
-        var clone = event.getEntity().getCapability(ModCapabilities.PLAYER_VARIABLE, null);
-        if (clone == null || original == null) return;
-
-        clone.zoom = original.zoom;
-        clone.holdFire = original.holdFire;
-        clone.rifleAmmo = original.rifleAmmo;
-        clone.handgunAmmo = original.handgunAmmo;
-        clone.shotgunAmmo = original.shotgunAmmo;
-        clone.sniperAmmo = original.sniperAmmo;
-        clone.heavyAmmo = original.heavyAmmo;
-        clone.bowPullHold = original.bowPullHold;
-        clone.bowPull = original.bowPull;
-        clone.playerDoubleJump = original.playerDoubleJump;
-        clone.tacticalSprint = original.tacticalSprint;
-        clone.tacticalSprintTime = original.tacticalSprintTime;
-        clone.tacticalSprintExhaustion = original.tacticalSprintExhaustion;
-        clone.breath = original.breath;
-        clone.breathTime = original.breathTime;
-        clone.breathExhaustion = original.breathExhaustion;
-        clone.edit = original.edit;
-
+        var original = event.getOriginal().getData(ModAttachments.PLAYER_VARIABLE);
         if (event.getEntity().level().isClientSide()) return;
 
-        var player = event.getEntity();
-        var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE, null);
-        if (cap != null) cap.syncPlayerVariables(player);
+        event.getEntity().setData(ModAttachments.PLAYER_VARIABLE, original.copy());
+    }
+
+    @Override
+    public CompoundTag serializeNBT(HolderLookup.@NotNull Provider provider) {
+        return writeToNBT();
+    }
+
+    @Override
+    @ParametersAreNonnullByDefault
+    public void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
+        readFromNBT(nbt);
     }
 }

@@ -1,14 +1,9 @@
 package com.atsuishio.superbwarfare.event;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.init.ModCapabilities;
-import com.atsuishio.superbwarfare.capability.player.PlayerVariable;
 import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity;
 import com.atsuishio.superbwarfare.event.events.ReloadEvent;
-import com.atsuishio.superbwarfare.init.ModItems;
-import com.atsuishio.superbwarfare.init.ModPerks;
-import com.atsuishio.superbwarfare.init.ModSounds;
-import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.data.AttachmentType;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
@@ -188,8 +183,7 @@ public class GunEventHandler {
             float velocity = (float) ((data.velocity() + GunsTool.getGunDoubleTag(tag, "CustomVelocity")) * perkSpeed(data));
             int projectileAmount = data.projectileAmount();
             float bypassArmorRate = (float) data.bypassArmor();
-            var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
-            boolean zoom = cap != null && cap.zoom;
+            boolean zoom = player.getData(ModAttachments.PLAYER_VARIABLE).zoom;
             var perkInstance = data.perk.getInstance(Perk.Type.AMMO);
             var perk = perkInstance != null ? perkInstance.perk() : null;
 
@@ -557,8 +551,7 @@ public class GunEventHandler {
         // 一阶段结束，检查备弹，如果有则二阶段启动，无则直接跳到三阶段
         if ((tag.getDouble("PrepareTime") == 1 || tag.getDouble("PrepareLoadTime") == 1)) {
             if (!InventoryTool.hasCreativeAmmoBox(player)) {
-                var capability = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
-                if (capability == null) capability = new PlayerVariable();
+                var capability = player.getData(ModAttachments.PLAYER_VARIABLE);
 
                 if (stack.is(ModTags.Items.USE_SHOTGUN_AMMO) && capability.shotgunAmmo == 0) {
                     tag.putBoolean("ForceStartStage3", true);
@@ -640,8 +633,7 @@ public class GunEventHandler {
 
             // 备弹耗尽结束
             if (!InventoryTool.hasCreativeAmmoBox(player)) {
-                var capability = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
-                if (capability == null) capability = new PlayerVariable();
+                var capability = player.getData(ModAttachments.PLAYER_VARIABLE);
 
                 if (stack.is(ModTags.Items.USE_SHOTGUN_AMMO) && capability.shotgunAmmo == 0) {
                     gunData.reload.setStage(3);
@@ -695,8 +687,7 @@ public class GunEventHandler {
         data.setAmmo(data.ammo() + 1);
 
         if (!InventoryTool.hasCreativeAmmoBox(player)) {
-            var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
-            if (cap == null) return;
+            var cap = player.getData(ModAttachments.PLAYER_VARIABLE);
 
             ItemStack stack = player.getMainHandItem();
             if (stack.is(ModTags.Items.USE_SHOTGUN_AMMO)) {
@@ -713,7 +704,7 @@ public class GunEventHandler {
                 player.getInventory().clearOrCountMatchingItems(p -> p.getItem() == ModItems.GRENADE_40MM.get(), 1, player.inventoryMenu.getCraftSlots());
             }
 
-            cap.syncPlayerVariables(player);
+            player.setData(ModAttachments.PLAYER_VARIABLE, cap);
         }
     }
 

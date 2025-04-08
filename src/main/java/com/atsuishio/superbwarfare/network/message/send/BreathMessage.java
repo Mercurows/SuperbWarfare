@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.network.message.send;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.init.ModCapabilities;
+import com.atsuishio.superbwarfare.init.ModAttachments;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -23,20 +23,21 @@ public record BreathMessage(boolean msgType) implements CustomPacketPayload {
     public static void handler(final BreathMessage message, final IPayloadContext context) {
         ServerPlayer player = (ServerPlayer) context.player();
 
-        var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
-        if (cap == null) return;
+        var cap = player.getData(ModAttachments.PLAYER_VARIABLE).watch();
         if (message.msgType
                 && !cap.breathExhaustion
                 && cap.zoom
                 && player.getPersistentData().getDouble("NoBreath") == 0
         ) {
             cap.breath = true;
-            cap.syncPlayerVariables(player);
+            player.setData(ModAttachments.PLAYER_VARIABLE, cap);
+            cap.sync(player);
         }
 
         if (!message.msgType) {
             cap.breath = false;
-            cap.syncPlayerVariables(player);
+            player.setData(ModAttachments.PLAYER_VARIABLE, cap);
+            cap.sync(player);
         }
     }
 

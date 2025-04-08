@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.network.message.send;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.init.ModCapabilities;
+import com.atsuishio.superbwarfare.init.ModAttachments;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.tools.SoundTool;
@@ -33,14 +33,15 @@ public record EditModeMessage(int msgType) implements CustomPacketPayload {
 
         ItemStack mainHandItem = player.getMainHandItem();
         if (!(mainHandItem.getItem() instanceof GunItem gunItem)) return;
-        var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
+        var cap = player.getData(ModAttachments.PLAYER_VARIABLE).watch();
 
-        if (gunItem.isCustomizable(mainHandItem) && cap != null) {
+        if (gunItem.isCustomizable(mainHandItem)) {
             if (!cap.edit) {
                 SoundTool.playLocalSound(player, ModSounds.EDIT_MODE.get(), 1f, 1f);
             }
             cap.edit = !cap.edit;
-            cap.syncPlayerVariables(player);
+            player.setData(ModAttachments.PLAYER_VARIABLE, cap);
+            cap.sync(player);
         }
     }
 

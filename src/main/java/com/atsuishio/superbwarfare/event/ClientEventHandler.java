@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.event;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.init.ModCapabilities;
 import com.atsuishio.superbwarfare.client.ClickHandler;
 import com.atsuishio.superbwarfare.config.client.DisplayConfig;
 import com.atsuishio.superbwarfare.entity.vehicle.*;
@@ -305,17 +304,18 @@ public class ClientEventHandler {
     public static void handleGunMelee(Player player, ItemStack stack) {
         if (stack.getItem() instanceof GunItem gunItem) {
             var data = GunData.from(stack);
-            var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
-            if (gunItem.hasMeleeAttack(stack) && gunMelee == 0 && drawTime < 0.01
+            var cap = player.getData(ModAttachments.PLAYER_VARIABLE);
+            if (gunItem.hasMeleeAttack(stack)
+                    && gunMelee == 0
+                    && drawTime < 0.01
                     && ModKeyMappings.MELEE.isDown()
                     && !(player.getVehicle() instanceof ArmedVehicleEntity iArmedVehicle && iArmedVehicle.banHand(player))
                     && !holdFireVehicle
                     && !notInGame()
-                    && cap != null && !cap.edit
+                    && !cap.edit
                     && !(data.reload.normal() || data.reload.empty())
                     && !data.reloading()
-                    && !data.charging()
-                    && !player.getCooldowns().isOnCooldown(stack.getItem())
+                    && !data.charging() && !player.getCooldowns().isOnCooldown(stack.getItem())
             ) {
                 gunMelee = 36;
                 cantFireTime = 40;
@@ -464,7 +464,7 @@ public class ClientEventHandler {
             revolverPreTime = Mth.clamp(revolverPreTime - 1.2 * times, 0, 1);
         }
 
-        var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
+        var cap = player.getData(ModAttachments.PLAYER_VARIABLE);
 
         if ((holdFire || burstFireAmount > 0)
                 && !(player.getVehicle() instanceof ArmedVehicleEntity iArmedVehicle && iArmedVehicle.banHand(player))
@@ -472,7 +472,7 @@ public class ClientEventHandler {
                 && (stack.is(ModTags.Items.NORMAL_GUN)
                 && cantFireTime == 0
                 && drawTime < 0.01
-                && cap != null && !cap.edit
+                && !cap.edit
                 && !notInGame()
                 && (!(data.reload.normal() || data.reload.empty())
                 && !data.reloading()
@@ -485,7 +485,7 @@ public class ClientEventHandler {
                 && !player.isSprinting()
                 && tag.getDouble("overheat") == 0
                 && !player.getCooldowns().isOnCooldown(stack.getItem()) && miniGunRot >= 20
-                && (cap != null && cap.rifleAmmo > 0 || InventoryTool.hasCreativeAmmoBox(player))
+                && (cap.rifleAmmo > 0 || InventoryTool.hasCreativeAmmoBox(player))
         ))) {
             if (mode == 0) {
                 if (clientTimer.getProgress() == 0) {
@@ -594,12 +594,11 @@ public class ClientEventHandler {
                 revolverPreTime = 0;
                 revolverWheelPreTime = 0;
 
-                playGunClientSounds(player, tag);
+                playGunClientSounds(player);
                 handleClientShoot();
             }
         } else if (stack.is(ModItems.MINIGUN.get())) {
-            var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
-            if (cap != null && cap.rifleAmmo > 0 || InventoryTool.hasCreativeAmmoBox(player)) {
+            if (player.getData(ModAttachments.PLAYER_VARIABLE).rifleAmmo > 0 || InventoryTool.hasCreativeAmmoBox(player)) {
                 var perk = data.perk.get(Perk.Type.AMMO);
                 float pitch = tag.getDouble("heat") <= 40 ? 1 : (float) (1 - 0.025 * Math.abs(40 - tag.getDouble("heat")));
 
@@ -661,7 +660,7 @@ public class ClientEventHandler {
         shakeType = 2 * (Math.random() - 0.5);
     }
 
-    public static void playGunClientSounds(Player player, final CompoundTag tag) {
+    public static void playGunClientSounds(Player player) {
         ItemStack stack = player.getMainHandItem();
         if (!(stack.getItem() instanceof GunItem gunItem)) return;
 
@@ -849,9 +848,9 @@ public class ClientEventHandler {
 
         double customWeight = data.customWeight();
 
-        var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE, null);
+        var cap = player.getData(ModAttachments.PLAYER_VARIABLE);
 
-        if (cap != null && !cap.breath && cap.zoom) {
+        if (!cap.breath && cap.zoom) {
             float newPitch = (float) (player.getXRot() - 0.01f * Mth.sin((float) (0.03 * player.tickCount)) * pose * Mth.nextDouble(RandomSource.create(), 0.1, 1) * times * sway * (1 - 0.03 * customWeight));
             player.setXRot(newPitch);
             player.xRotO = player.getXRot();
@@ -1017,8 +1016,7 @@ public class ClientEventHandler {
                 onGround = 0.001;
             }
 
-            var cap = entity.getCapability(ModCapabilities.PLAYER_VARIABLE);
-            if (cap != null && !cap.edit) {
+            if (!entity.getData(ModAttachments.PLAYER_VARIABLE).edit) {
                 if (Minecraft.getInstance().options.keyUp.isDown() && firePosTimer == 0) {
                     moveRotZ = Mth.lerp(0.2f * times, moveRotZ, 0.14) * (1 - zoomTime);
                 } else {
@@ -1073,12 +1071,12 @@ public class ClientEventHandler {
         double weight = data.weight();
         double speed = 1.5 - (0.07 * weight);
 
-        var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
+        var cap = player.getData(ModAttachments.PLAYER_VARIABLE);
         if (zoom
                 && !(player.getVehicle() instanceof ArmedVehicleEntity iArmedVehicle && iArmedVehicle.banHand(player))
                 && !notInGame()
                 && drawTime < 0.01
-                && cap != null && !cap.edit) {
+                && !cap.edit) {
             if (Minecraft.getInstance().player != null) {
                 Minecraft.getInstance().player.getPersistentData().putDouble("noRun", 5);
             }
@@ -1281,8 +1279,7 @@ public class ClientEventHandler {
 
     private static void handlePlayerBreath(LivingEntity entity) {
         float times = (float) Math.min(Minecraft.getInstance().getTimer().getRealtimeDeltaTicks(), 0.8);
-        var cap = entity.getCapability(ModCapabilities.PLAYER_VARIABLE);
-        boolean breath = cap != null && cap.breath;
+        boolean breath = entity.getData(ModAttachments.PLAYER_VARIABLE).breath;
 
         breathTime = Mth.lerp(0.2f * times, breathTime, breath ? 1 : 0);
     }
@@ -1353,8 +1350,7 @@ public class ClientEventHandler {
     private static void handleBowPullAnimation(LivingEntity entity) {
         float times = 4 * (float) Math.min(Minecraft.getInstance().getTimer().getRealtimeDeltaTicks(), 0.8);
 
-        var cap = entity.getCapability(ModCapabilities.PLAYER_VARIABLE);
-        if (cap != null && cap.bowPull) {
+        if (entity.getData(ModAttachments.PLAYER_VARIABLE).bowPull) {
             pullTimer = Math.min(pullTimer + 0.024 * times, 1.4);
             bowTimer = Math.min(bowTimer + 0.018 * times, 1);
             handTimer = Math.min(handTimer + 0.018 * times, 1);
@@ -1410,14 +1406,11 @@ public class ClientEventHandler {
                 event.setFOV(event.getFOV() / (1.0 + p * 0.01) * (1 - 0.4 * breathTime));
             fov = event.getFOV();
 
-            var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
-
             // 智慧芯片
             if (zoom
                     && !notInGame()
                     && drawTime < 0.01
-                    && cap != null
-                    && !cap.edit) {
+                    && !player.getData(ModAttachments.PLAYER_VARIABLE).edit) {
                 if (!player.isShiftKeyDown()) {
                     int intelligentChipLevel = data.perk.getLevel(ModPerks.INTELLIGENT_CHIP);
 
@@ -1549,8 +1542,7 @@ public class ClientEventHandler {
     public static void aimAtVillager(Player player) {
         if (aimVillagerCountdown > 0) return;
 
-        var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
-        if (cap != null && cap.zoom) {
+        if (player.getData(ModAttachments.PLAYER_VARIABLE).zoom) {
             Entity entity = TraceTool.findLookingEntity(player, 10);
             if (entity instanceof AbstractVillager villager) {
                 List<Entity> entities = SeekTool.seekLivingEntities(villager, villager.level(), 16, 120);

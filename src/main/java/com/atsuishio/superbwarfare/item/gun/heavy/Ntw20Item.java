@@ -1,9 +1,9 @@
 package com.atsuishio.superbwarfare.item.gun.heavy;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.init.ModCapabilities;
 import com.atsuishio.superbwarfare.client.renderer.item.Ntw20Renderer;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
+import com.atsuishio.superbwarfare.init.ModAttachments;
 import com.atsuishio.superbwarfare.init.ModRarity;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
@@ -101,8 +101,7 @@ public class Ntw20Item extends GunItem implements GeoItem {
         ItemStack stack = player.getMainHandItem();
         if (!stack.is(ModTags.Items.GUN)) return PlayState.STOP;
 
-        var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
-        if (cap != null && cap.edit) {
+        if (player.getData(ModAttachments.PLAYER_VARIABLE).edit) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.ntw_20.edit"));
         }
 

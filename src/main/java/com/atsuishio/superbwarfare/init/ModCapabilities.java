@@ -7,8 +7,6 @@ import com.atsuishio.superbwarfare.block.entity.FuMO25BlockEntity;
 import com.atsuishio.superbwarfare.capability.energy.ItemEnergyStorage;
 import com.atsuishio.superbwarfare.capability.laser.LaserCapability;
 import com.atsuishio.superbwarfare.capability.laser.LaserCapabilityProvider;
-import com.atsuishio.superbwarfare.capability.player.PlayerVariable;
-import com.atsuishio.superbwarfare.capability.player.PlayerVariablesProvider;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ContainerMobileVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.EnergyVehicleEntity;
 import com.atsuishio.superbwarfare.item.CreativeChargingStationBlockItem;
@@ -32,13 +30,11 @@ import java.util.ArrayList;
 public class ModCapabilities {
 
     public static final EntityCapability<LaserCapability, Void> LASER_CAPABILITY = EntityCapability.createVoid(Mod.loc("laser_capability"), LaserCapability.class);
-    public static final EntityCapability<PlayerVariable, Void> PLAYER_VARIABLE = EntityCapability.createVoid(Mod.loc("player_variable"), PlayerVariable.class);
 
     @SubscribeEvent
     public static void registerCapabilities(RegisterCapabilitiesEvent event) {
-        // 玩家变量和激光
+        // 激光
         event.registerEntity(ModCapabilities.LASER_CAPABILITY, EntityType.PLAYER, new LaserCapabilityProvider());
-        event.registerEntity(ModCapabilities.PLAYER_VARIABLE, EntityType.PLAYER, new PlayerVariablesProvider());
 
         // 充电站
         event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, ModBlockEntities.CHARGING_STATION.value(), ChargingStationBlockEntity::getEnergyStorage);

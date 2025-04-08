@@ -1,9 +1,9 @@
 package com.atsuishio.superbwarfare.network.message.send;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.init.ModCapabilities;
 import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity;
 import com.atsuishio.superbwarfare.event.GunEventHandler;
+import com.atsuishio.superbwarfare.init.ModAttachments;
 import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.SpecialFireWeapon;
@@ -49,39 +49,36 @@ public record FireMessage(int msgType) implements CustomPacketPayload {
 
         handleGunBolt(player, stack);
 
-        var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
+        var cap = player.getData(ModAttachments.PLAYER_VARIABLE).watch();
+
         if (type == 0) {
             if (tag.getDouble("PrepareTime") == 0 && data.reloading() && data.ammo() > 0) {
                 tag.putBoolean("ForceStop", true);
             }
 
-            if (cap != null) {
-                cap.edit = false;
-            }
+            cap.edit = false;
 
             // 按下开火
             if (!(stack.getItem() instanceof SpecialFireWeapon specialFireWeapon)) {
-                if (cap != null) cap.syncPlayerVariables(player);
+                player.setData(ModAttachments.PLAYER_VARIABLE, cap);
+                cap.sync(player);
                 return;
             }
             specialFireWeapon.fireOnPress(player, data);
 
-            if (cap != null) {
-                cap.holdFire = true;
-                cap.syncPlayerVariables(player);
-            }
+            cap.holdFire = true;
+            player.setData(ModAttachments.PLAYER_VARIABLE, cap);
         } else if (type == 1) {
-            if (cap != null) {
-                cap.bowPullHold = false;
-                cap.holdFire = false;
-                cap.syncPlayerVariables(player);
-            }
+            cap.bowPullHold = false;
+            cap.holdFire = false;
+            player.setData(ModAttachments.PLAYER_VARIABLE, cap);
 
             // 松开开火
             if (stack.getItem() instanceof SpecialFireWeapon specialFireWeapon) {
                 specialFireWeapon.fireOnRelease(player, data);
             }
         }
+        cap.sync(player);
         data.save();
     }
 
@@ -122,8 +119,7 @@ public record FireMessage(int msgType) implements CustomPacketPayload {
         float bypassArmorRate = (float) data.bypassArmor();
         double damage;
 
-        var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
-        boolean zoom = cap != null && cap.zoom;
+        boolean zoom = player.getData(ModAttachments.PLAYER_VARIABLE).zoom;
 
         float spread;
         if (zoom) {

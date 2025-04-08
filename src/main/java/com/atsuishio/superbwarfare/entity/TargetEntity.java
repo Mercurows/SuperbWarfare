@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.entity;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.init.ModCapabilities;
+import com.atsuishio.superbwarfare.init.ModAttachments;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.tools.FormatTool;
@@ -145,9 +145,7 @@ public class TargetEntity extends LivingEntity implements GeoEntity {
                 player.addItem(new ItemStack(ModItems.TARGET_DEPLOYER.get()));
             }
         } else {
-            var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE, null);
-
-            if (cap != null && !cap.zoom) {
+            if (!player.getData(ModAttachments.PLAYER_VARIABLE).zoom) {
                 this.lookAt(EntityAnchorArgument.Anchor.EYES, new Vec3((player.getX()), this.getY(), (player.getZ())));
                 this.setXRot(0);
                 this.xRotO = this.getXRot();

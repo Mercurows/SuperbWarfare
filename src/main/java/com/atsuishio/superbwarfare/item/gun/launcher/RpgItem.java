@@ -1,15 +1,11 @@
 package com.atsuishio.superbwarfare.item.gun.launcher;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.init.ModCapabilities;
 import com.atsuishio.superbwarfare.client.renderer.item.RpgItemRenderer;
 import com.atsuishio.superbwarfare.client.tooltip.component.LauncherImageComponent;
 import com.atsuishio.superbwarfare.entity.projectile.RpgRocketEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
-import com.atsuishio.superbwarfare.init.ModItems;
-import com.atsuishio.superbwarfare.init.ModPerks;
-import com.atsuishio.superbwarfare.init.ModSounds;
-import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.SpecialFireWeapon;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
@@ -190,8 +186,7 @@ public class RpgItem extends GunItem implements GeoItem, SpecialFireWeapon {
                 || data.ammo() <= 0
         ) return;
 
-        var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
-        boolean zoom = cap != null && cap.zoom;
+        boolean zoom = player.getData(ModAttachments.PLAYER_VARIABLE).zoom;
         double spread = data.spread();
 
         if (player.level() instanceof ServerLevel serverLevel) {

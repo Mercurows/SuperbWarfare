@@ -1,12 +1,8 @@
 package com.atsuishio.superbwarfare.network.message.send;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.init.ModCapabilities;
 import com.atsuishio.superbwarfare.event.GunEventHandler;
-import com.atsuishio.superbwarfare.init.ModItems;
-import com.atsuishio.superbwarfare.init.ModPerks;
-import com.atsuishio.superbwarfare.init.ModSounds;
-import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
@@ -96,8 +92,7 @@ public record ShootMessage(double spread) implements CustomPacketPayload {
                 GunEventHandler.playGunSounds(player);
             }
         } else if (stack.is(ModItems.MINIGUN.get())) {
-            var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE);
-            if (cap == null) return;
+            var cap = player.getData(ModAttachments.PLAYER_VARIABLE).watch();
 
             if (cap.rifleAmmo > 0 || InventoryTool.hasCreativeAmmoBox(player)) {
                 tag.putDouble("heat", (tag.getDouble("heat") + 0.1));
@@ -127,7 +122,8 @@ public record ShootMessage(double spread) implements CustomPacketPayload {
                 GunEventHandler.gunShoot(player, tag, spared);
                 if (!InventoryTool.hasCreativeAmmoBox(player)) {
                     cap.rifleAmmo = cap.rifleAmmo - 1;
-                    cap.syncPlayerVariables(player);
+                    player.setData(ModAttachments.PLAYER_VARIABLE, cap);
+                    cap.sync(player);
                 }
             }
         }
