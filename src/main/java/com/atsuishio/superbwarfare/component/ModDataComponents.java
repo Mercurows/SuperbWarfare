@@ -38,7 +38,10 @@ public class ModDataComponents {
 
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<List<Pair<Integer, Double>>>> TRANSCRIPT_SCORE = register(
             "transcript_score",
-            builder -> builder.persistent(Codec.pair(Codec.INT, Codec.DOUBLE).listOf())
+            builder -> builder.persistent(Codec.pair(
+                    Codec.INT.fieldOf("score").codec(),
+                    Codec.DOUBLE.fieldOf("distance").codec()
+            ).listOf())
     );
 
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<AmmoBoxInfo>> AMMO_BOX_INFO = register(
