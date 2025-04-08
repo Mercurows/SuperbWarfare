@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.capability.player;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.capability.ModCapabilities;
+import com.atsuishio.superbwarfare.init.ModCapabilities;
 import com.atsuishio.superbwarfare.network.message.receive.PlayerVariablesSyncMessage;
 import com.atsuishio.superbwarfare.tools.AmmoType;
 import net.minecraft.nbt.CompoundTag;

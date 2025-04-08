@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.client.overlay;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.capability.ModCapabilities;
+import com.atsuishio.superbwarfare.init.ModCapabilities;
 import com.atsuishio.superbwarfare.config.client.DisplayConfig;
 import com.atsuishio.superbwarfare.entity.vehicle.Ah6Entity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
@@ -11,7 +11,6 @@ import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
-import com.atsuishio.superbwarfare.tools.NBTTool;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;

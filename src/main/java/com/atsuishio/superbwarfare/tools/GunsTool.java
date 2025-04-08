@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.tools;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.capability.ModCapabilities;
+import com.atsuishio.superbwarfare.init.ModCapabilities;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.item.gun.data.ReloadState;

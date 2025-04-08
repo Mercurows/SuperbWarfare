@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.item.gun;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.capability.ModCapabilities;
+import com.atsuishio.superbwarfare.init.ModCapabilities;
 import com.atsuishio.superbwarfare.client.PoseTool;
 import com.atsuishio.superbwarfare.client.tooltip.component.GunImageComponent;
 import com.atsuishio.superbwarfare.init.ModItems;

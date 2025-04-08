@@ -1,4 +1,4 @@
-package com.atsuishio.superbwarfare.capability;
+package com.atsuishio.superbwarfare.init;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.block.entity.ChargingStationBlockEntity;
@@ -11,9 +11,6 @@ import com.atsuishio.superbwarfare.capability.player.PlayerVariable;
 import com.atsuishio.superbwarfare.capability.player.PlayerVariablesProvider;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ContainerMobileVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.EnergyVehicleEntity;
-import com.atsuishio.superbwarfare.init.ModBlockEntities;
-import com.atsuishio.superbwarfare.init.ModEntities;
-import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.item.CreativeChargingStationBlockItem;
 import com.atsuishio.superbwarfare.item.EnergyStorageItem;
 import net.minecraft.core.Direction;
@@ -78,8 +75,8 @@ public class ModCapabilities {
             if (item.get() instanceof EnergyStorageItem) {
                 event.registerItem(
                         Capabilities.EnergyStorage.ITEM,
-                        (stack, ctx) -> new ItemEnergyStorage(stack, ((EnergyStorageItem) stack.getItem()).getMaxEnergy())
-                        , item.get()
+                        (stack, ctx) -> new ItemEnergyStorage(stack, ((EnergyStorageItem) stack.getItem()).getMaxEnergy()),
+                        item.get()
                 );
             }
         }

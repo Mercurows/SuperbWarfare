@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.event;
 
-import com.atsuishio.superbwarfare.capability.ModCapabilities;
+import com.atsuishio.superbwarfare.init.ModCapabilities;
 import com.atsuishio.superbwarfare.config.common.GameplayConfig;
 import com.atsuishio.superbwarfare.config.server.MiscConfig;
 import com.atsuishio.superbwarfare.init.ModItems;

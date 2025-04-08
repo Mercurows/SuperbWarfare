@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.event;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.capability.ModCapabilities;
+import com.atsuishio.superbwarfare.init.ModCapabilities;
 import com.atsuishio.superbwarfare.capability.player.PlayerVariable;
 import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity;
 import com.atsuishio.superbwarfare.event.events.ReloadEvent;

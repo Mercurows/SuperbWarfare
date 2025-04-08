@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.block;
 
-import com.atsuishio.superbwarfare.capability.ModCapabilities;
+import com.atsuishio.superbwarfare.init.ModCapabilities;
 import com.atsuishio.superbwarfare.entity.TargetEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.CannonEntity;
 import com.atsuishio.superbwarfare.init.ModSounds;

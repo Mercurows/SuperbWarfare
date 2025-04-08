@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.client;
 
-import com.atsuishio.superbwarfare.capability.ModCapabilities;
+import com.atsuishio.superbwarfare.init.ModCapabilities;
 import com.atsuishio.superbwarfare.config.client.ReloadConfig;
 import com.atsuishio.superbwarfare.entity.MortarEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;

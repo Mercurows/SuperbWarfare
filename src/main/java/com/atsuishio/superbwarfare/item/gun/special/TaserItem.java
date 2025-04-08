@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.item.gun.special;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.capability.ModCapabilities;
+import com.atsuishio.superbwarfare.init.ModCapabilities;
 import com.atsuishio.superbwarfare.client.renderer.item.TaserItemRenderer;
 import com.atsuishio.superbwarfare.client.tooltip.component.EnergyImageComponent;
 import com.atsuishio.superbwarfare.entity.projectile.TaserBulletEntity;

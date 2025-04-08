@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.item.common.ammo.box;
 
-import com.atsuishio.superbwarfare.capability.ModCapabilities;
+import com.atsuishio.superbwarfare.init.ModCapabilities;
 import com.atsuishio.superbwarfare.component.ModDataComponents;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.tools.AmmoType;

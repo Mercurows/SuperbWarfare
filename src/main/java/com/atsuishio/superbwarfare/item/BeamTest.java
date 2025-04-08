@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.item;
 
-import com.atsuishio.superbwarfare.capability.ModCapabilities;
+import com.atsuishio.superbwarfare.init.ModCapabilities;
 import com.atsuishio.superbwarfare.capability.laser.LaserHandler;
 import com.atsuishio.superbwarfare.client.TooltipTool;
 import com.atsuishio.superbwarfare.entity.projectile.LaserEntity;

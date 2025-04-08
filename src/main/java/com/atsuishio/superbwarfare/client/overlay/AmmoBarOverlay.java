@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.client.overlay;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.capability.ModCapabilities;
+import com.atsuishio.superbwarfare.init.ModCapabilities;
 import com.atsuishio.superbwarfare.capability.player.PlayerVariable;
 import com.atsuishio.superbwarfare.config.client.DisplayConfig;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;

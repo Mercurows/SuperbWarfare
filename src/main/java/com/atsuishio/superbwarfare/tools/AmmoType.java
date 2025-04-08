@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.tools;
 
-import com.atsuishio.superbwarfare.capability.ModCapabilities;
+import com.atsuishio.superbwarfare.init.ModCapabilities;
 import com.atsuishio.superbwarfare.capability.player.PlayerVariable;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.nbt.CompoundTag;
