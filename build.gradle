@@ -14,7 +14,7 @@ tasks.named('wrapper', Wrapper).configure {
     distributionType = Wrapper.DistributionType.BIN
 }
 
-version = '0.6.5'
+version = "${minecraft_version}-${mod_version}-SNAPSHOT"
 group = 'com.atsuishio.superbwarfare'
 
 repositories {
