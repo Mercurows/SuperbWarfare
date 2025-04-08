@@ -87,7 +87,6 @@ public class GunEventHandler {
         ItemStack stack = player.getMainHandItem();
         if (!stack.is(ModTags.Items.GUN)) return;
         var data = GunData.from(stack);
-        var tag = data.tag();
 
         if (!player.level().isClientSide) {
             String origin = stack.getItem().getDescriptionId();
@@ -187,10 +186,6 @@ public class GunEventHandler {
             var perkInstance = data.perk.getInstance(Perk.Type.AMMO);
             var perk = perkInstance != null ? perkInstance.perk() : null;
 
-            if (perk != null && perk.descriptionId.equals("butterfly_bullet")) {
-                if (handleButterflyBullet(perk, stack, player)) return;
-            }
-
             ProjectileEntity projectile = new ProjectileEntity(player.level())
                     .shooter(player)
                     .damage(perk instanceof AmmoPerk ammoPerk && ammoPerk.slug ? projectileAmount * damage : damage)
@@ -265,40 +260,6 @@ public class GunEventHandler {
             return ammoPerk.speedRate;
         }
         return 1;
-    }
-
-    // TODO 这还有联动的必要吗（
-    private static boolean handleButterflyBullet(Perk perk, ItemStack heldItem, Player player) {
-        return true;
-//        int perkLevel = data.perk.getLevel(perk);
-//
-//        var entityType = CompatHolder.VRC_RAIN_SHOWER_BUTTERFLY;
-//        if (entityType != null) {
-//            Projectile projectile = entityType.create(player.level());
-//
-//            float inaccuracy = Math.max(0.0f, 1.1f - perkLevel * .1f);
-//            projectile.setOwner(player);
-//            projectile.setPos(player.getX() - 0.1 * player.getLookAngle().x,
-//                    player.getEyeY() - 0.1 - 0.1 * player.getLookAngle().y, player.getZ() + -0.1 * player.getLookAngle().z);
-//
-//            Vec3 vec3 = (new Vec3(player.getLookAngle().x, player.getLookAngle().y + 0.001f, player.getLookAngle().z)).normalize().scale(1.2).
-//                    add(player.level().random.triangle(0.0D, 0.0172275D * (double) inaccuracy),
-//                            player.level().random.triangle(0.0D, 0.0172275D * (double) inaccuracy),
-//                            player.level().random.triangle(0.0D, 0.0172275D * (double) inaccuracy)).
-//                    add(player.getDeltaMovement().x, player.onGround() ? 0.0 : 0.05 * player.getDeltaMovement().y, player.getDeltaMovement().z).
-//                    scale(5.0f);
-//            projectile.setDeltaMovement(vec3);
-//            projectile.setYRot((float) (Mth.atan2(vec3.x, vec3.z) * (double) (180F / (float) Math.PI)));
-//            projectile.setXRot((float) (Mth.atan2(vec3.y, vec3.horizontalDistance()) * (double) (180F / (float) Math.PI)));
-//            projectile.yRotO = projectile.getYRot();
-//            projectile.xRotO = projectile.getXRot();
-//
-//            projectile.setNoGravity(true);
-//            player.level().addFreshEntity(projectile);
-//            return true;
-//        }
-//
-//        return false;
     }
 
     /**

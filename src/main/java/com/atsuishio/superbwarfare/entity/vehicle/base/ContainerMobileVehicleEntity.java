@@ -32,7 +32,6 @@ public abstract class ContainerMobileVehicleEntity extends MobileVehicleEntity i
     public static final int CONTAINER_SIZE = 102;
 
     private final NonNullList<ItemStack> items = NonNullList.withSize(CONTAINER_SIZE, ItemStack.EMPTY);
-//    private Supplier<?> itemHandler = () -> new InvWrapper(this);
 
     public ContainerMobileVehicleEntity(EntityType<?> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
@@ -231,27 +230,6 @@ public abstract class ContainerMobileVehicleEntity extends MobileVehicleEntity i
             return new VehicleMenu(pContainerId, pPlayerInventory, this);
         }
     }
-
-    // TODO item handler Capability
-//    @Override
-//    public <T> @NotNull LazyOptional<T> getCapability(@NotNull Capability<T> capability, @Nullable Direction facing) {
-//        if (this.isAlive() && capability == ForgeCapabilities.ITEM_HANDLER) {
-//            return itemHandler.cast();
-//        }
-//        return super.getCapability(capability, facing);
-//    }
-//
-//    @Override
-//    public void invalidateCaps() {
-//        super.invalidateCaps();
-//        itemHandler.invalidate();
-//    }
-//
-//    @Override
-//    public void reviveCaps() {
-//        super.reviveCaps();
-//        itemHandler = LazyOptional.of(() -> new InvWrapper(this));
-//    }
 
     @Override
     public void stopOpen(@NotNull Player pPlayer) {

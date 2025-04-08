@@ -8,6 +8,7 @@ import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
+import com.atsuishio.superbwarfare.network.message.receive.SimulationDistanceMessage;
 import com.atsuishio.superbwarfare.tools.*;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -24,6 +25,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.AnvilUpdateEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 @EventBusSubscriber
 public class PlayerEventHandler {
@@ -46,6 +48,8 @@ public class PlayerEventHandler {
                 data.save();
             }
         }
+
+        handleSimulationDistance(player);
     }
 
     @SubscribeEvent
@@ -87,7 +91,6 @@ public class PlayerEventHandler {
         }
 
         handleGround(player);
-        handleSimulationDistance(player);
         handleTacticalSprint(player);
         handleBreath(player);
 
@@ -256,12 +259,8 @@ public class PlayerEventHandler {
 
     private static void handleSimulationDistance(Player player) {
         if (player.level() instanceof ServerLevel serverLevel && player instanceof ServerPlayer serverPlayer) {
-            // TODO send simulation distance to client
-//            var distanceManager = serverLevel.getChunkSource().chunkMap.getDistanceManager();
-//            var playerTicketManager = distanceManager.playerTicketManager;
-//            int maxDistance = playerTicketManager.viewDistance;
-//
-//            ModUtils.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> serverPlayer), new SimulationDistanceMessage(maxDistance));
+            var distance = serverLevel.getChunkSource().chunkMap.serverViewDistance;
+            PacketDistributor.sendToPlayer(serverPlayer, new SimulationDistanceMessage(distance));
         }
     }
 

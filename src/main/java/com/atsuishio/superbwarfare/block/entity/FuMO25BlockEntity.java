@@ -38,7 +38,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 
-// TODO 为什么打不开UI
+
 public class FuMO25BlockEntity extends BlockEntity implements MenuProvider, GeoBlockEntity {
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);

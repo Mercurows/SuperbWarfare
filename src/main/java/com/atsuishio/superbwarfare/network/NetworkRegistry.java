@@ -21,6 +21,7 @@ public class NetworkRegistry {
         registrar.playToClient(ResetCameraTypeMessage.TYPE, ResetCameraTypeMessage.STREAM_CODEC, ResetCameraTypeMessage::handler);
         registrar.playToClient(RadarMenuOpenMessage.TYPE, RadarMenuOpenMessage.STREAM_CODEC, RadarMenuOpenMessage::handler);
         registrar.playToClient(RadarMenuCloseMessage.TYPE, RadarMenuCloseMessage.STREAM_CODEC, RadarMenuCloseMessage::handler);
+        registrar.playToClient(SimulationDistanceMessage.TYPE, SimulationDistanceMessage.STREAM_CODEC, SimulationDistanceMessage::handler);
 
         registrar.playToServer(LaserShootMessage.TYPE, LaserShootMessage.STREAM_CODEC, LaserShootMessage::handler);
         registrar.playToServer(BreathMessage.TYPE, BreathMessage.STREAM_CODEC, BreathMessage::handler);
