@@ -1,10 +1,20 @@
 package com.atsuishio.superbwarfare.tools;
 
+import com.atsuishio.superbwarfare.config.server.VehicleConfig;
+import com.atsuishio.superbwarfare.entity.ClaymoreEntity;
+import com.atsuishio.superbwarfare.entity.projectile.C4Entity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.world.entity.AreaEffectCloud;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.ExperienceOrb;
+import net.minecraft.world.entity.decoration.ArmorStand;
+import net.minecraft.world.entity.decoration.HangingEntity;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.HitResult;
@@ -18,9 +28,7 @@ public class SeekTool {
 
     public static List<Entity> getVehicleWithinRange(Player player, Level level, double range) {
         return StreamSupport.stream(EntityFindUtil.getEntities(level).getAll().spliterator(), false)
-                .filter(e -> e.position().distanceTo(player.getEyePosition()) <= range
-//                        && e instanceof MobileVehicleEntity
-                )
+                .filter(e -> e.position().distanceTo(player.getEyePosition()) <= range && e instanceof MobileVehicleEntity)
                 .toList();
     }
 
@@ -33,43 +41,64 @@ public class SeekTool {
     public static Entity seekEntity(Entity entity, Level level, double seekRange, double seekAngle) {
         return StreamSupport.stream(EntityFindUtil.getEntities(level).getAll().spliterator(), false)
                 .filter(e -> {
-                    if (e.distanceTo(entity) <= seekRange && calculateAngle(e, entity) < seekAngle
+                    if (e.distanceTo(entity) <= seekRange
+                            && calculateAngle(e, entity) < seekAngle
                             && e != entity
                             && baseFilter(e)
                             && e.getVehicle() == null
                     ) {
-                        return level.clip(new ClipContext(entity.getEyePosition(), e.getEyePosition(),
-                                ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, entity)).getType() != HitResult.Type.BLOCK;
+                        return level.clip(new ClipContext(
+                                entity.getEyePosition(),
+                                e.getEyePosition(),
+                                ClipContext.Block.COLLIDER,
+                                ClipContext.Fluid.NONE, entity)
+                        ).getType() != HitResult.Type.BLOCK;
                     }
                     return false;
-                }).min(Comparator.comparingDouble(e -> calculateAngle(e, entity))).orElse(null);
+                })
+                .min(Comparator.comparingDouble(e -> calculateAngle(e, entity)))
+                .orElse(null);
     }
 
     public static Entity seekLivingEntity(Entity entity, Level level, double seekRange, double seekAngle) {
         return StreamSupport.stream(EntityFindUtil.getEntities(level).getAll().spliterator(), false)
                 .filter(e -> {
-                    if (e.distanceTo(entity) <= seekRange && calculateAngle(e, entity) < seekAngle
+                    if (e.distanceTo(entity) <= seekRange
+                            && calculateAngle(e, entity) < seekAngle
                             && e != entity
                             && baseFilter(e)
                             && e.getVehicle() == null
-                            && (!e.isAlliedTo(entity) || e.getTeam() == null || e.getTeam().getName().equals("TDM"))) {
-                        return level.clip(new ClipContext(entity.getEyePosition(), e.getEyePosition(),
-                                ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, entity)).getType() != HitResult.Type.BLOCK;
+                            && (!e.isAlliedTo(entity) || e.getTeam() == null || e.getTeam().getName().equals("TDM"))
+                    ) {
+                        return level.clip(new ClipContext(
+                                entity.getEyePosition(),
+                                e.getEyePosition(),
+                                ClipContext.Block.COLLIDER,
+                                ClipContext.Fluid.NONE, entity)
+                        ).getType() != HitResult.Type.BLOCK;
                     }
                     return false;
-                }).min(Comparator.comparingDouble(e -> calculateAngle(e, entity))).orElse(null);
+                })
+                .min(Comparator.comparingDouble(e -> calculateAngle(e, entity)))
+                .orElse(null);
     }
 
     public static List<Entity> seekLivingEntities(Entity entity, Level level, double seekRange, double seekAngle) {
         return StreamSupport.stream(EntityFindUtil.getEntities(level).getAll().spliterator(), false)
                 .filter(e -> {
-                    if (e.distanceTo(entity) <= seekRange && calculateAngle(e, entity) < seekAngle
+                    if (e.distanceTo(entity) <= seekRange
+                            && calculateAngle(e, entity) < seekAngle
                             && e != entity
                             && baseFilter(e)
                             && e.getVehicle() == null
-                            && (!e.isAlliedTo(entity) || e.getTeam() == null || e.getTeam().getName().equals("TDM"))) {
-                        return level.clip(new ClipContext(entity.getEyePosition(), e.getEyePosition(),
-                                ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, entity)).getType() != HitResult.Type.BLOCK;
+                            && (!e.isAlliedTo(entity) || e.getTeam() == null || e.getTeam().getName().equals("TDM"))
+                    ) {
+                        return level.clip(new ClipContext(
+                                entity.getEyePosition(),
+                                e.getEyePosition(),
+                                ClipContext.Block.COLLIDER,
+                                ClipContext.Fluid.NONE, entity)
+                        ).getType() != HitResult.Type.BLOCK;
                     }
                     return false;
                 }).toList();
@@ -78,31 +107,39 @@ public class SeekTool {
     public static Entity vehicleSeekEntity(VehicleEntity vehicle, Level level, double seekRange, double seekAngle) {
         return StreamSupport.stream(EntityFindUtil.getEntities(level).getAll().spliterator(), false)
                 .filter(e -> {
-                    if (e.distanceTo(vehicle) <= seekRange && calculateAngleVehicle(e, vehicle) < seekAngle
+                    if (e.distanceTo(vehicle) <= seekRange
+                            && calculateAngleVehicle(e, vehicle) < seekAngle
                             && e != vehicle
                             && baseFilter(e)
                             && e.getVehicle() == null
                             && (!e.isAlliedTo(vehicle) || e.getTeam() == null || e.getTeam().getName().equals("TDM"))) {
-                        return level.clip(new ClipContext(vehicle.getNewEyePos(1), vehicle.getNewEyePos(1),
-                                ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, vehicle)).getType() != HitResult.Type.BLOCK;
+                        return level.clip(new ClipContext(
+                                vehicle.getNewEyePos(1),
+                                vehicle.getNewEyePos(1),
+                                ClipContext.Block.COLLIDER,
+                                ClipContext.Fluid.NONE, vehicle)
+                        ).getType() != HitResult.Type.BLOCK;
                     }
                     return false;
-                }).min(Comparator.comparingDouble(e -> calculateAngleVehicle(e, vehicle))).orElse(null);
+                })
+                .min(Comparator.comparingDouble(e -> calculateAngleVehicle(e, vehicle)))
+                .orElse(null);
     }
 
     public static List<Entity> seekLivingEntitiesThroughWall(Entity entity, Level level, double seekRange, double seekAngle) {
         return StreamSupport.stream(EntityFindUtil.getEntities(level).getAll().spliterator(), false)
-                .filter(e -> e.distanceTo(entity) <= seekRange && calculateAngle(e, entity) < seekAngle
+                .filter(e -> e.distanceTo(entity) <= seekRange
+                        && calculateAngle(e, entity) < seekAngle
                         && e != entity
                         && baseFilter(e)
                         && e.getVehicle() == null
-                        && (!e.isAlliedTo(entity) || e.getTeam() == null || e.getTeam().getName().equals("TDM"))).toList();
+                        && (!e.isAlliedTo(entity) || e.getTeam() == null || e.getTeam().getName().equals("TDM"))
+                ).toList();
     }
 
     public static List<Entity> getEntitiesWithinRange(BlockPos pos, Level level, double range) {
         return StreamSupport.stream(EntityFindUtil.getEntities(level).getAll().spliterator(), false)
-                .filter(e -> e.distanceToSqr(pos.getX(), pos.getY(), pos.getZ()) <= range * range
-                        && baseFilter(e))
+                .filter(e -> e.distanceToSqr(pos.getX(), pos.getY(), pos.getZ()) <= range * range && baseFilter(e))
                 .toList();
     }
 
@@ -121,15 +158,20 @@ public class SeekTool {
 
     public static boolean baseFilter(Entity entity) {
         return entity.isAlive()
-//                && !(entity instanceof ItemEntity || entity instanceof ExperienceOrb || entity instanceof HangingEntity || entity instanceof Projectile || entity instanceof ArmorStand || entity instanceof ClaymoreEntity || entity instanceof C4Entity || entity instanceof AreaEffectCloud)
-//                && !(entity instanceof Player player && player.isSpectator())
+                && !(entity instanceof ItemEntity
+                || entity instanceof ExperienceOrb
+                || entity instanceof HangingEntity
+                || entity instanceof Projectile
+                || entity instanceof ArmorStand
+                || entity instanceof ClaymoreEntity
+                || entity instanceof C4Entity
+                || entity instanceof AreaEffectCloud)
+                && !(entity instanceof Player player && player.isSpectator())
                 || includedByConfig(entity);
     }
 
     public static boolean includedByConfig(Entity entity) {
-
         var type = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType());
-//        return VehicleConfig.COLLISION_ENTITY_WHITELIST.get().contains(type.toString());
-        return false;
+        return VehicleConfig.COLLISION_ENTITY_WHITELIST.get().contains(type.toString());
     }
 }
