@@ -105,7 +105,7 @@ public class HandsomeFrameOverlay {
                         icon = FRAME_WEAK;
                     }
 
-                    RenderHelper.preciseBlit(event.getGuiGraphics(), icon, x - 12, y - 12, 0, 0, 24, 24, 24, 24, 1f);
+                    RenderHelper.preciseBlit(event.getGuiGraphics(), icon, x - 12, y - 12, 24, 24, 0, 0, 24, 24, 24, 24);
                     poseStack.popPose();
                 }
             }

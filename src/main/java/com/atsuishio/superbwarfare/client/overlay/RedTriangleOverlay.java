@@ -49,7 +49,7 @@ public class RedTriangleOverlay {
         float x = (float) point.x;
         float y = (float) point.y;
 
-        RenderHelper.preciseBlit(event.getGuiGraphics(), TRIANGLE, x - 4, y - 4, 0, 0, 8, 8, 8, 8, -65536);
+        RenderHelper.preciseBlit(event.getGuiGraphics(), TRIANGLE, x - 4, y - 4, 8, 8, 0, 0, 8, 8, 8, 8);
 
         RenderSystem.depthMask(true);
         RenderSystem.defaultBlendFunc();

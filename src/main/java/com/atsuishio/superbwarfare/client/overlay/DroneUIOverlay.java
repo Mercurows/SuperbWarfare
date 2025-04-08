@@ -126,7 +126,7 @@ public class DroneUIOverlay {
                 if (lookAtEntity) {
                     // 实体距离
                     guiGraphics.drawString(mc.font, Component.translatable("tips.superbwarfare.drone.range")
-                                    .append(Component.literal(FormatTool.format1D(entityRange, "m ") + lookingEntity.getDisplayName().getString())),
+                                    .append(Component.literal(FormatTool.format1D(entityRange, "m ") + lookingEntity.getDisplayName())),
                             w / 2 + 12, h / 2 - 28, color, false);
                 } else {
                     // 方块距离
@@ -158,7 +158,7 @@ public class DroneUIOverlay {
                         float x = (float) point.x;
                         float y = (float) point.y;
 
-                        RenderHelper.preciseBlit(guiGraphics, FRAME, x - 12, y - 12, 0, 0, 24, 24, 24, 24, 1f);
+                        RenderHelper.preciseBlit(event.getGuiGraphics(), FRAME, x - 12, y - 12, 24, 24, 0, 0, 24, 24, 24, 24);
                         poseStack.popPose();
                     }
                 }

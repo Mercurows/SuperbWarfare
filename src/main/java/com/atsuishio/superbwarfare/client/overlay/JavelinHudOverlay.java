@@ -119,7 +119,7 @@ public class JavelinHudOverlay {
                         float x = (float) point.x;
                         float y = (float) point.y;
 
-                        RenderHelper.preciseBlit(event.getGuiGraphics(), lockOn ? FRAME_LOCK : nearest ? FRAME_TARGET : FRAME, x - 12, y - 12, 0, 0, 24, 24, 24, 24, 1f);
+                        RenderHelper.preciseBlit(event.getGuiGraphics(), lockOn ? FRAME_LOCK : nearest ? FRAME_TARGET : FRAME, x - 12, y - 12, 24, 24, 0, 0, 24, 24, 24, 24);
                         poseStack.popPose();
                     }
                 } else {
@@ -136,7 +136,7 @@ public class JavelinHudOverlay {
                     float x = (float) point.x;
                     float y = (float) point.y;
 
-                    RenderHelper.preciseBlit(event.getGuiGraphics(), lockOn ? FRAME_LOCK : FRAME_TARGET, x - 12, y - 12, 0, 0, 24, 24, 24, 24, 1f);
+                    RenderHelper.preciseBlit(event.getGuiGraphics(), lockOn ? FRAME_LOCK : FRAME_TARGET, x - 12, y - 12, 24, 24, 0, 0, 24, 24, 24, 24);
                     poseStack.popPose();
                 }
 
