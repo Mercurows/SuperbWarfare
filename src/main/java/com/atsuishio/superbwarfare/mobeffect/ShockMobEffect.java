@@ -50,7 +50,7 @@ public class ShockMobEffect extends MobEffect {
             player.level().playSound(null, player.blockPosition(), ModSounds.INDICATION.get(), SoundSource.VOICE, 1, 1);
             PacketDistributor.sendToPlayer(player, new ClientIndicatorMessage(0, 5));
         }
-        return false;
+        return true;
     }
 
     @Override
@@ -58,13 +58,12 @@ public class ShockMobEffect extends MobEffect {
         return duration % 20 == 0;
     }
 
-
     @SubscribeEvent
     public static void onEffectAdded(MobEffectEvent.Added event) {
         LivingEntity living = event.getEntity();
 
         MobEffectInstance instance = event.getEffectInstance();
-        if (instance == null || !ModMobEffects.SHOCK.get().equals(instance.getEffect())) {
+        if (instance == null || !ModMobEffects.SHOCK.get().equals(instance.getEffect().value())) {
             return;
         }
 
@@ -107,7 +106,7 @@ public class ShockMobEffect extends MobEffect {
             return;
         }
 
-        if (instance.getEffect().equals(ModMobEffects.SHOCK.get())) {
+        if (instance.getEffect().equals(ModMobEffects.SHOCK)) {
             living.getPersistentData().remove("TargetShockAttacker");
         }
     }

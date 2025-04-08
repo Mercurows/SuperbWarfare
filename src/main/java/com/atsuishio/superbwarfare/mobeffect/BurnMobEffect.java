@@ -20,7 +20,6 @@ import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 
-// TODO 解决加上效果就立刻消失的问题
 @EventBusSubscriber(bus = EventBusSubscriber.Bus.GAME)
 public class BurnMobEffect extends MobEffect {
 
@@ -44,8 +43,7 @@ public class BurnMobEffect extends MobEffect {
             player.level().playSound(null, player.blockPosition(), ModSounds.INDICATION.get(), SoundSource.VOICE, 1, 1);
             PacketDistributor.sendToPlayer(player, new ClientIndicatorMessage(0, 5));
         }
-
-        return false;
+        return true;
     }
 
     @Override
