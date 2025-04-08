@@ -28,6 +28,7 @@ import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
@@ -48,10 +49,13 @@ public class ContainerBlock extends BaseEntityBlock {
     public static final BooleanProperty OPENED = BooleanProperty.create("opened");
 
     public ContainerBlock() {
-        super(Properties.of().sound(SoundType.METAL).strength(3.0f).noOcclusion().requiresCorrectToolForDrops());
-        this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(OPENED, false));
+        this(Properties.of().sound(SoundType.METAL).strength(3.0f).noOcclusion().requiresCorrectToolForDrops());
     }
 
+    public ContainerBlock(BlockBehaviour.Properties properties) {
+        super(properties);
+        this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(OPENED, false));
+    }
 
     @Override
     @ParametersAreNonnullByDefault
@@ -188,10 +192,9 @@ public class ContainerBlock extends BaseEntityBlock {
         return state.getValue(OPENED) ? box(1, 0, 1, 15, 14, 15) : box(0, 0, 0, 16, 15, 16);
     }
 
-    // TODO codec
     @Override
-    protected @NotNull MapCodec<? extends BaseEntityBlock> codec() {
-        return null;
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return simpleCodec(ContainerBlock::new);
     }
 
     @Override

@@ -5,7 +5,7 @@
       "name": "SUPERBWARFARE_LEGENDARY",
       "constructor": "(ILjava/lang/String;Lnet/minecraft/ChatFormatting;)V",
       "parameters": {
-        "class": "com/atsuishio/superbwarfare/init/ModEnumExtends",
+        "class": "com/atsuishio/superbwarfare/init/ModEnumExtensions",
         "field": "SUPERBWARFARE_LEGENDARY"
       }
     },
@@ -14,7 +14,7 @@
       "name": "SUPERBWARFARE_LUNGE_MINE_POSE",
       "constructor": "(ZLnet/neoforged/neoforge/client/IArmPoseTransformer;)V",
       "parameters": {
-        "class": "com/atsuishio/superbwarfare/init/ModEnumExtends",
+        "class": "com/atsuishio/superbwarfare/init/ModEnumExtensions",
         "field": "SUPERBWARFARE_LUNGE_MINE_POSE"
       }
     }
