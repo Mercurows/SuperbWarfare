@@ -142,7 +142,6 @@ public class SpeedboatEntity extends ContainerMobileVehicleEntity implements Geo
         this.setDeltaMovement(this.getDeltaMovement().add(0.0, fluidFloat, 0.0));
 
         if (this.onGround()) {
-            this.terrainCompat(2f, 3f);
             this.setDeltaMovement(this.getDeltaMovement().multiply(0.2, 0.85, 0.2));
         } else if (isInWater()) {
             float f = (float) (0.75f - (0.04f * java.lang.Math.min(getSubmergedHeight(this), this.getBbHeight())) + 0.09f * Mth.abs(90 - (float) calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90);
@@ -165,6 +164,7 @@ public class SpeedboatEntity extends ContainerMobileVehicleEntity implements Geo
         turretAngle(40, 40);
         lowHealthWarning();
         inertiaRotate(2);
+        this.terrainCompat(2f, 3f);
 
         this.refreshDimensions();
     }

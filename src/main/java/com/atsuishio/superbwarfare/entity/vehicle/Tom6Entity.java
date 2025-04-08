@@ -121,10 +121,6 @@ public class Tom6Entity extends MobileVehicleEntity implements GeoEntity {
         this.setDeltaMovement(this.getDeltaMovement().add(this.getViewVector(1).scale((forward ? 0.24 : -0.24) * this.getDeltaMovement().length())));
         this.setDeltaMovement(this.getDeltaMovement().multiply(f, f, f));
 
-        if (onGround()) {
-            this.terrainCompat(1f, 1.2f);
-        }
-
         if (this.isInWater() && this.tickCount % 4 == 0) {
             this.setDeltaMovement(this.getDeltaMovement().multiply(0.6, 0.6, 0.6));
             if (lastTickSpeed > 0.4) {
@@ -132,6 +128,7 @@ public class Tom6Entity extends MobileVehicleEntity implements GeoEntity {
             }
         }
 
+        this.terrainCompat(1f, 1.2f);
         this.setDeltaMovement(this.getDeltaMovement().add(0.0, 0.01, 0.0));
         this.refreshDimensions();
     }

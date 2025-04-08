@@ -230,6 +230,8 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
 
     // 地形适应测试
     public void terrainCompat(float w, float l) {
+        if (!onGround()) return;
+
         Matrix4f transform = this.getWheelsTransform(1);
 
         // 点位

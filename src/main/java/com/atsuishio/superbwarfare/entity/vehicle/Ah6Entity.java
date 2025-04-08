@@ -196,7 +196,6 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
         }
 
         if (this.onGround()) {
-            this.terrainCompat(2.7f, 2.7f);
             this.setDeltaMovement(this.getDeltaMovement().multiply(0.8, 1, 0.8));
         } else {
             setZRot(getRoll() * (backInputDown ? 0.9f : 0.99f));
@@ -212,6 +211,7 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
 
         releaseDecoy();
         lowHealthWarning();
+        this.terrainCompat(2.7f, 2.7f);
 
         this.refreshDimensions();
     }
