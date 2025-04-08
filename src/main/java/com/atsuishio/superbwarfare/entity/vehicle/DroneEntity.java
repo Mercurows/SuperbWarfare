@@ -13,6 +13,7 @@ import com.atsuishio.superbwarfare.tools.EntityFindUtil;
 import com.atsuishio.superbwarfare.tools.NBTTool;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -37,7 +38,7 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.alchemy.Potion;
+import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
@@ -53,6 +54,7 @@ import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.UUID;
@@ -111,10 +113,6 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
         return MAX_HEALTH;
     }
 
-    public DroneEntity(EntityType<? extends DroneEntity> type, Level world, float moveX, float moveY, float moveZ) {
-        super(type, world);
-    }
-
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
@@ -125,7 +123,7 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
     }
 
     @Override
-    public boolean causeFallDamage(float l, float d, DamageSource source) {
+    public boolean causeFallDamage(float l, float d, @NotNull DamageSource source) {
         return false;
     }
 
@@ -572,6 +570,7 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
         Player controller = EntityFindUtil.findPlayer(this.level(), this.entityData.get(CONTROLLER));
 
         Entity mortarShell = new MortarShellEntity(controller, level());
+        assert controller != null;
         Entity c4 = new C4Entity(controller, level());
         Entity rpg = new RpgRocketEntity(controller, level(), ExplosionConfig.RPG_EXPLOSION_DAMAGE.get());
 
@@ -600,8 +599,7 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
             ParticleTool.spawnMediumExplosionParticles(this.level(), this.position());
 
             if (this.currentItem.getItem() instanceof MortarShell) {
-                // TODO area cloud
-//                this.createAreaCloud(PotionUtils.getPotion(this.currentItem), this.level(), ExplosionConfig.DRONE_KAMIKAZE_EXPLOSION_DAMAGE.get(), ExplosionConfig.DRONE_KAMIKAZE_EXPLOSION_RADIUS.get());
+                this.createAreaCloud(this.currentItem.get(DataComponents.POTION_CONTENTS), this.level(), ExplosionConfig.DRONE_KAMIKAZE_EXPLOSION_DAMAGE.get(), ExplosionConfig.DRONE_KAMIKAZE_EXPLOSION_RADIUS.get());
             }
         }
 
@@ -610,14 +608,15 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
         }
     }
 
-    // TODO potion
-
-    private void createAreaCloud(Potion potion, Level level, int duration, float radius) {
-        if (potion == Potions.WATER.value()) return;
+    private void createAreaCloud(PotionContents potion, Level level, int duration, float radius) {
+        if (potion == null || potion.potion().map(p -> p.value() == Potions.WATER.value()).orElse(false)) return;
 
         AreaEffectCloud cloud = new AreaEffectCloud(level, this.getX() + 0.75 * getDeltaMovement().x, this.getY() + 0.5 * getBbHeight() + 0.75 * getDeltaMovement().y, this.getZ() + 0.75 * getDeltaMovement().z);
-        // TODO cloud potion
-        //        cloud.setPotion(potion);
+
+        for (var effect : potion.potion().map(p -> p.value().getEffects()).orElse(new ArrayList<>())) {
+            cloud.addEffect(effect);
+        }
+
         cloud.setDuration(duration);
         cloud.setRadius(radius);
 
