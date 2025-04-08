@@ -9,8 +9,10 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.CameraType;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -18,23 +20,25 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.RenderGuiEvent;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Math;
 
-@EventBusSubscriber(modid = Mod.MODID, value = Dist.CLIENT)
-public class Yx100SwarmDroneHudOverlay {
+import javax.annotation.ParametersAreNonnullByDefault;
+
+@OnlyIn(Dist.CLIENT)
+public class Yx100SwarmDroneHudOverlay implements LayeredDraw.Layer {
+
+    public static final ResourceLocation ID = Mod.loc("yx100_swarm_drone_hud");
     private static final ResourceLocation FRAME = Mod.loc("textures/screens/frame/frame.png");
     private static final ResourceLocation FRAME_LOCK = Mod.loc("textures/screens/frame/frame_lock.png");
 
-    @SubscribeEvent
-    public static void eventHandler(RenderGuiEvent.Pre event) {
-        int w = event.getGuiGraphics().guiWidth();
-        int h = event.getGuiGraphics().guiHeight();
+    @Override
+    @ParametersAreNonnullByDefault
+    public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
+        int w = guiGraphics.guiWidth();
+        int h = guiGraphics.guiHeight();
         Minecraft mc = Minecraft.getInstance();
         Player player = mc.player;
-        GuiGraphics guiGraphics = event.getGuiGraphics();
         PoseStack poseStack = guiGraphics.pose();
 
         if (!shouldRenderCrossHair(player)) return;
@@ -72,8 +76,8 @@ public class Yx100SwarmDroneHudOverlay {
                 }
 
                 if (naerestEntity != null) {
-                    Vec3 playerVec = new Vec3(Mth.lerp(event.getPartialTick().getRealtimeDeltaTicks(), player.xo, player.getX()), Mth.lerp(event.getPartialTick().getRealtimeDeltaTicks(), player.yo + player.getEyeHeight(), player.getEyeY()), Mth.lerp(event.getPartialTick().getRealtimeDeltaTicks(), player.zo, player.getZ()));
-                    Vec3 pos = new Vec3(Mth.lerp(event.getPartialTick().getRealtimeDeltaTicks(), naerestEntity.xo, naerestEntity.getX()), Mth.lerp(event.getPartialTick().getRealtimeDeltaTicks(), naerestEntity.yo + naerestEntity.getEyeHeight(), naerestEntity.getEyeY()), Mth.lerp(event.getPartialTick().getRealtimeDeltaTicks(), naerestEntity.zo, naerestEntity.getZ()));
+                    Vec3 playerVec = new Vec3(Mth.lerp(deltaTracker.getRealtimeDeltaTicks(), player.xo, player.getX()), Mth.lerp(deltaTracker.getRealtimeDeltaTicks(), player.yo + player.getEyeHeight(), player.getEyeY()), Mth.lerp(deltaTracker.getRealtimeDeltaTicks(), player.zo, player.getZ()));
+                    Vec3 pos = new Vec3(Mth.lerp(deltaTracker.getRealtimeDeltaTicks(), naerestEntity.xo, naerestEntity.getX()), Mth.lerp(deltaTracker.getRealtimeDeltaTicks(), naerestEntity.yo + naerestEntity.getEyeHeight(), naerestEntity.getEyeY()), Mth.lerp(deltaTracker.getRealtimeDeltaTicks(), naerestEntity.zo, naerestEntity.getZ()));
                     Vec3 lookAngle = player.getLookAngle().normalize().scale(pos.distanceTo(playerVec) * (1 - 1.0 / zoom));
 
                     var cPos = playerVec.add(lookAngle);

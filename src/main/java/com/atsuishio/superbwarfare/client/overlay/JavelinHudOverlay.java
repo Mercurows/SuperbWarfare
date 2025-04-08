@@ -12,7 +12,10 @@ import com.atsuishio.superbwarfare.tools.SeekTool;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
@@ -22,29 +25,30 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.EventPriority;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.RenderGuiEvent;
+import net.neoforged.api.distmarker.OnlyIn;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 
 import static com.atsuishio.superbwarfare.client.RenderHelper.preciseBlit;
 
-@EventBusSubscriber(value = Dist.CLIENT)
-public class JavelinHudOverlay {
+@OnlyIn(Dist.CLIENT)
+public class JavelinHudOverlay implements LayeredDraw.Layer {
+
+    public static final ResourceLocation ID = Mod.loc("javelin_hud");
 
     private static final ResourceLocation FRAME = Mod.loc("textures/screens/frame/frame.png");
     private static final ResourceLocation FRAME_TARGET = Mod.loc("textures/screens/frame/frame_target.png");
     private static final ResourceLocation FRAME_LOCK = Mod.loc("textures/screens/frame/frame_lock.png");
     private static float scopeScale = 1;
 
-    @SubscribeEvent(priority = EventPriority.LOWEST)
-    public static void eventHandler(RenderGuiEvent.Pre event) {
-        int w = event.getGuiGraphics().guiWidth();
-        int h = event.getGuiGraphics().guiHeight();
+    @Override
+    @ParametersAreNonnullByDefault
+    public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
+        int w = guiGraphics.guiWidth();
+        int h = guiGraphics.guiHeight();
         Player player = Minecraft.getInstance().player;
-        PoseStack poseStack = event.getGuiGraphics().pose();
+        PoseStack poseStack = guiGraphics.pose();
 
         if (player != null) {
             ItemStack stack = player.getMainHandItem();
@@ -76,15 +80,15 @@ public class JavelinHudOverlay {
                 float l = ((h - j) / 2) + moveY;
                 float i1 = k + i;
                 float j1 = l + j;
-                preciseBlit(event.getGuiGraphics(), Mod.loc("textures/screens/javelin/javelin_hud.png"), k, l, 0, 0.0F, i, j, i, j);
-                preciseBlit(event.getGuiGraphics(), Mod.loc(tag.getBoolean("TopMode") ? "textures/screens/javelin/top.png" : "textures/screens/javelin/dir.png"), k, l, 0, 0.0F, i, j, i, j);
-                preciseBlit(event.getGuiGraphics(), Mod.loc(data.ammo() > 0 ? "textures/screens/javelin/missile_green.png" : "textures/screens/javelin/missile_red.png"), k, l, 0, 0.0F, i, j, i, j);
+                preciseBlit(guiGraphics, Mod.loc("textures/screens/javelin/javelin_hud.png"), k, l, 0, 0.0F, i, j, i, j);
+                preciseBlit(guiGraphics, Mod.loc(tag.getBoolean("TopMode") ? "textures/screens/javelin/top.png" : "textures/screens/javelin/dir.png"), k, l, 0, 0.0F, i, j, i, j);
+                preciseBlit(guiGraphics, Mod.loc(data.ammo() > 0 ? "textures/screens/javelin/missile_green.png" : "textures/screens/javelin/missile_red.png"), k, l, 0, 0.0F, i, j, i, j);
                 if (tag.getInt("SeekTime") > 1 && tag.getInt("SeekTime") < 20) {
-                    preciseBlit(event.getGuiGraphics(), Mod.loc("textures/screens/javelin/seek.png"), k, l, 0, 0.0F, i, j, i, j);
+                    preciseBlit(guiGraphics, Mod.loc("textures/screens/javelin/seek.png"), k, l, 0, 0.0F, i, j, i, j);
                 }
 
-                event.getGuiGraphics().fill(RenderType.guiOverlay(), 0, (int) l, (int) k + 3, (int) j1, -90, -16777216);
-                event.getGuiGraphics().fill(RenderType.guiOverlay(), (int) i1, (int) l, w, (int) j1, -90, -16777216);
+                guiGraphics.fill(RenderType.guiOverlay(), 0, (int) l, (int) k + 3, (int) j1, -90, -16777216);
+                guiGraphics.fill(RenderType.guiOverlay(), (int) i1, (int) l, w, (int) j1, -90, -16777216);
                 RenderSystem.depthMask(true);
                 RenderSystem.defaultBlendFunc();
                 RenderSystem.enableDepthTest();
@@ -101,11 +105,11 @@ public class JavelinHudOverlay {
 
                 double zoom = Minecraft.getInstance().options.fov().get() / ClientEventHandler.fov + 0.5 * fovAdjust2;
 
-                Vec3 playerVec = new Vec3(Mth.lerp(event.getPartialTick().getGameTimeDeltaPartialTick(true), player.xo, player.getX()), Mth.lerp(event.getPartialTick().getGameTimeDeltaPartialTick(true), player.yo + player.getEyeHeight(), player.getEyeY()), Mth.lerp(event.getPartialTick().getGameTimeDeltaPartialTick(true), player.zo, player.getZ()));
+                Vec3 playerVec = new Vec3(Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), player.xo, player.getX()), Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), player.yo + player.getEyeHeight(), player.getEyeY()), Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), player.zo, player.getZ()));
 
                 if (tag.getInt("GuideType") == 0) {
                     for (var e : entities) {
-                        Vec3 pos = new Vec3(Mth.lerp(event.getPartialTick().getGameTimeDeltaPartialTick(true), e.xo, e.getX()), Mth.lerp(event.getPartialTick().getGameTimeDeltaPartialTick(true), e.yo + e.getEyeHeight(), e.getEyeY()), Mth.lerp(event.getPartialTick().getGameTimeDeltaPartialTick(true), e.zo, e.getZ()));
+                        Vec3 pos = new Vec3(Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), e.xo, e.getX()), Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), e.yo + e.getEyeHeight(), e.getEyeY()), Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), e.zo, e.getZ()));
                         Vec3 lookAngle = player.getLookAngle().normalize().scale(pos.distanceTo(playerVec) * (1 - 1.0 / zoom));
 
                         var cPos = playerVec.add(lookAngle);
@@ -119,7 +123,7 @@ public class JavelinHudOverlay {
                         float x = (float) point.x;
                         float y = (float) point.y;
 
-                        RenderHelper.preciseBlit(event.getGuiGraphics(), lockOn ? FRAME_LOCK : nearest ? FRAME_TARGET : FRAME, x - 12, y - 12, 24, 24, 0, 0, 24, 24, 24, 24);
+                        RenderHelper.preciseBlit(guiGraphics, lockOn ? FRAME_LOCK : nearest ? FRAME_TARGET : FRAME, x - 12, y - 12, 24, 24, 0, 0, 24, 24, 24, 24);
                         poseStack.popPose();
                     }
                 } else {
@@ -136,7 +140,7 @@ public class JavelinHudOverlay {
                     float x = (float) point.x;
                     float y = (float) point.y;
 
-                    RenderHelper.preciseBlit(event.getGuiGraphics(), lockOn ? FRAME_LOCK : FRAME_TARGET, x - 12, y - 12, 24, 24, 0, 0, 24, 24, 24, 24);
+                    RenderHelper.preciseBlit(guiGraphics, lockOn ? FRAME_LOCK : FRAME_TARGET, x - 12, y - 12, 24, 24, 0, 0, 24, 24, 24, 24);
                     poseStack.popPose();
                 }
 

@@ -1,24 +1,32 @@
 package com.atsuishio.superbwarfare.client.overlay;
 
+import com.atsuishio.superbwarfare.Mod;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.LayeredDraw;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.RenderGuiEvent;
+import net.neoforged.api.distmarker.OnlyIn;
 
-@EventBusSubscriber(value = Dist.CLIENT)
-public class ArmRendererFixOverlay {
+import javax.annotation.ParametersAreNonnullByDefault;
 
-    @SubscribeEvent
-    public static void eventHandler(RenderGuiEvent.Pre event) {
-        int w = event.getGuiGraphics().guiWidth();
-        int h = event.getGuiGraphics().guiHeight();
+@OnlyIn(Dist.CLIENT)
+public class ArmRendererFixOverlay implements LayeredDraw.Layer {
+
+    public static final ResourceLocation ID = Mod.loc("arm_renderer_fix");
+
+    @Override
+    @ParametersAreNonnullByDefault
+    public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
+        int w = guiGraphics.guiWidth();
+        int h = guiGraphics.guiHeight();
         Player entity = Minecraft.getInstance().player;
         if (entity != null) {
             // TODO what is this?
 //            InventoryScreen.renderEntityInInventoryFollowsAngle(
-//                    event.getGuiGraphics(),
+//                    guiGraphics,
 //                    w / 2 - 114514,
 //                    h / 2 + 22,
 //                    1,

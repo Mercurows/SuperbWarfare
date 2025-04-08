@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.network.message.receive;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.client.overlay.DroneUIOverlay;
+import com.atsuishio.superbwarfare.client.overlay.DroneHudOverlay;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -19,7 +19,7 @@ public record SimulationDistanceMessage(int distance) implements CustomPacketPay
     );
 
     public static void handler(SimulationDistanceMessage message, final IPayloadContext context) {
-        DroneUIOverlay.MAX_DISTANCE = message.distance * 16;
+        DroneHudOverlay.MAX_DISTANCE = message.distance * 16;
     }
 
     @Override

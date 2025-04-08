@@ -1,8 +1,6 @@
 package com.atsuishio.superbwarfare.client;
 
-import com.atsuishio.superbwarfare.client.overlay.AmmoBarOverlay;
-import com.atsuishio.superbwarfare.client.overlay.AmmoCountOverlay;
-import com.atsuishio.superbwarfare.client.overlay.ArmorPlateOverlay;
+import com.atsuishio.superbwarfare.client.overlay.*;
 import com.atsuishio.superbwarfare.client.renderer.block.*;
 import com.atsuishio.superbwarfare.client.tooltip.*;
 import com.atsuishio.superbwarfare.client.tooltip.component.*;
@@ -41,8 +39,25 @@ public class ClientRenderHandler {
 
     @SubscribeEvent
     public static void registerOverlays(RegisterGuiLayersEvent event) {
-        event.registerBelowAll(ArmorPlateOverlay.ID, new ArmorPlateOverlay());
+        event.registerBelowAll(JavelinHudOverlay.ID, new JavelinHudOverlay());
+        event.registerBelow(JavelinHudOverlay.ID, VehicleHudOverlay.ID, new VehicleHudOverlay());
+        event.registerBelowAll(KillMessageOverlay.ID, new KillMessageOverlay());
+        event.registerBelowAll(VehicleTeamOverlay.ID, new VehicleTeamOverlay());
+        event.registerBelowAll(VehicleMgHudOverlay.ID, new VehicleMgHudOverlay());
+        event.registerBelowAll(Yx100SwarmDroneHudOverlay.ID, new Yx100SwarmDroneHudOverlay());
         event.registerBelowAll(AmmoBarOverlay.ID, new AmmoBarOverlay());
         event.registerBelowAll(AmmoCountOverlay.ID, new AmmoCountOverlay());
+        event.registerBelowAll(ArmorPlateOverlay.ID, new ArmorPlateOverlay());
+        event.registerBelowAll(ArmRendererFixOverlay.ID, new ArmRendererFixOverlay());
+        event.registerBelowAll(CannonHudOverlay.ID, new CannonHudOverlay());
+        event.registerBelowAll(CrossHairOverlay.ID, new CrossHairOverlay());
+        event.registerBelowAll(DroneHudOverlay.ID, new DroneHudOverlay());
+        event.registerBelowAll(GrenadeLauncherOverlay.ID, new GrenadeLauncherOverlay());
+        event.registerBelowAll(RedTriangleOverlay.ID, new RedTriangleOverlay());
+        event.registerBelowAll(HandsomeFrameOverlay.ID, new HandsomeFrameOverlay());
+        event.registerBelowAll(SpyglassRangeOverlay.ID, new SpyglassRangeOverlay());
+        event.registerBelowAll(HelicopterHudOverlay.ID, new HelicopterHudOverlay());
+
+        event.registerBelowAll(MortarInfoOverlay.ID, new MortarInfoOverlay());
     }
 }

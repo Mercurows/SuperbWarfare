@@ -22,8 +22,10 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.Camera;
 import net.minecraft.client.CameraType;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -36,13 +38,11 @@ import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.EventPriority;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.RenderGuiEvent;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Math;
 import top.theillusivec4.curios.api.CuriosApi;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static com.atsuishio.superbwarfare.client.RenderHelper.preciseBlit;
@@ -51,8 +51,10 @@ import static com.atsuishio.superbwarfare.entity.vehicle.Bmp2Entity.LOADED_MISSI
 import static com.atsuishio.superbwarfare.entity.vehicle.Bmp2Entity.MISSILE_COUNT;
 import static com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity.*;
 
-@EventBusSubscriber(value = Dist.CLIENT)
-public class VehicleHudOverlay {
+@OnlyIn(Dist.CLIENT)
+public class VehicleHudOverlay implements LayeredDraw.Layer {
+
+    public static final ResourceLocation ID = Mod.loc("vehicle_hud");
 
     private static float scopeScale = 1;
     private static final ResourceLocation FRAME = Mod.loc("textures/screens/land/tv_frame.png");
@@ -73,10 +75,11 @@ public class VehicleHudOverlay {
     private static final AnimationTimer weaponIndexUpdateTimer = new AnimationTimer(ANIMATION_TIME).animation(AnimationCurves.EASE_OUT_CIRC);
 
 
-    @SubscribeEvent(priority = EventPriority.HIGH)
-    public static void eventHandler(RenderGuiEvent.Pre event) {
-        int w = event.getGuiGraphics().guiWidth();
-        int h = event.getGuiGraphics().guiHeight();
+    @Override
+    @ParametersAreNonnullByDefault
+    public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
+        int w = guiGraphics.guiWidth();
+        int h = guiGraphics.guiHeight();
         Player player = Minecraft.getInstance().player;
 
         if (!shouldRenderHud(player)) {
@@ -86,7 +89,6 @@ public class VehicleHudOverlay {
 
         Entity vehicle = player.getVehicle();
 
-        GuiGraphics guiGraphics = event.getGuiGraphics();
         PoseStack poseStack = guiGraphics.pose();
 
         poseStack.pushPose();
@@ -99,7 +101,7 @@ public class VehicleHudOverlay {
         RenderSystem.setShaderColor(1, 1, 1, 1);
 
         // 渲染地面武装HUD
-        renderLandArmorHud(event, w, h);
+        renderLandArmorHud(guiGraphics, deltaTracker, w, h);
 
         int compatHeight = getArmorPlateCompatHeight(player);
 
@@ -138,10 +140,9 @@ public class VehicleHudOverlay {
         return 9;
     }
 
-    public static void renderLandArmorHud(RenderGuiEvent.Pre event, int w, int h) {
+    public static void renderLandArmorHud(GuiGraphics guiGraphics, DeltaTracker deltaTracker, int w, int h) {
         Minecraft mc = Minecraft.getInstance();
         Player player = mc.player;
-        GuiGraphics guiGraphics = event.getGuiGraphics();
         PoseStack poseStack = guiGraphics.pose();
         Camera camera = mc.gameRenderer.getMainCamera();
         Vec3 cameraPos = camera.getPosition();
@@ -165,7 +166,7 @@ public class VehicleHudOverlay {
             RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
             RenderSystem.setShaderColor(1, 1, 1, 1);
 
-            scopeScale = Mth.lerp(event.getPartialTick().getGameTimeDeltaPartialTick(true), scopeScale, 1F);
+            scopeScale = Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), scopeScale, 1F);
             float f = (float) Math.min(w, h);
             float f1 = Math.min((float) w / f, (float) h / f) * scopeScale;
             float i = Mth.floor(f * f1);
@@ -210,7 +211,7 @@ public class VehicleHudOverlay {
 
                 // 炮塔方向
                 poseStack.pushPose();
-                poseStack.rotateAround(Axis.ZP.rotationDegrees(Mth.lerp(event.getPartialTick().getGameTimeDeltaPartialTick(true), iLand.turretYRotO(), iLand.turretYRot())), w / 2f + 112, h - 56, 0);
+                poseStack.rotateAround(Axis.ZP.rotationDegrees(Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), iLand.turretYRotO(), iLand.turretYRot())), w / 2f + 112, h - 56, 0);
                 preciseBlit(guiGraphics, Mod.loc("textures/screens/land/body.png"), w / 2f + 96, h - 72, 0, 0.0F, 32, 32, 32, 32);
                 poseStack.popPose();
 
@@ -300,7 +301,7 @@ public class VehicleHudOverlay {
 
                 renderKillIndicator(guiGraphics, w, h);
             } else if (Minecraft.getInstance().options.getCameraType() == CameraType.THIRD_PERSON_BACK && !ClientEventHandler.zoomVehicle) {
-                Vec3 p = RenderHelper.worldToScreen(new Vec3(Mth.lerp(event.getPartialTick().getGameTimeDeltaPartialTick(true), player.xo, player.getX()), Mth.lerp(event.getPartialTick().getGameTimeDeltaPartialTick(true), player.yo + player.getEyeHeight(), player.getEyeY()), Mth.lerp(event.getPartialTick().getGameTimeDeltaPartialTick(true), player.zo, player.getZ())).add(iLand.getBarrelVec(event.getPartialTick().getGameTimeDeltaPartialTick(true)).scale(192)), cameraPos);
+                Vec3 p = RenderHelper.worldToScreen(new Vec3(Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), player.xo, player.getX()), Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), player.yo + player.getEyeHeight(), player.getEyeY()), Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), player.zo, player.getZ())).add(iLand.getBarrelVec(deltaTracker.getGameTimeDeltaPartialTick(true)).scale(192)), cameraPos);
                 // 第三人称准星
                 if (p != null) {
                     poseStack.pushPose();

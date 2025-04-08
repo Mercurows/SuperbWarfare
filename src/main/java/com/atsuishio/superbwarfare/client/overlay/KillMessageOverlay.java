@@ -12,26 +12,30 @@ import com.atsuishio.superbwarfare.tools.DamageTypeTool;
 import com.atsuishio.superbwarfare.tools.PlayerKillRecord;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.RenderGuiEvent;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.Nullable;
 import top.theillusivec4.curios.api.CuriosApi;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static com.atsuishio.superbwarfare.client.RenderHelper.preciseBlit;
 
-@EventBusSubscriber(value = Dist.CLIENT)
-public class KillMessageOverlay {
+@OnlyIn(Dist.CLIENT)
+public class KillMessageOverlay implements LayeredDraw.Layer {
+
+    public static final ResourceLocation ID = Mod.loc("kill_message");
 
     private static final ResourceLocation HEADSHOT = Mod.loc("textures/screens/damage_types/headshot.png");
 
@@ -50,8 +54,9 @@ public class KillMessageOverlay {
 
     private static final ResourceLocation WORLD_PEACE_STAFF = Mod.loc("textures/gun_icon/compat/world_peace_staff.png");
 
-    @SubscribeEvent
-    public static void onRenderGui(RenderGuiEvent.Pre event) {
+    @Override
+    @ParametersAreNonnullByDefault
+    public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
         if (!KillMessageConfig.SHOW_KILL_MESSAGE.get()) {
             return;
         }
@@ -88,12 +93,12 @@ public class KillMessageOverlay {
         }
 
         for (PlayerKillRecord r : KillMessageHandler.QUEUE) {
-            totalTop = renderKillMessages(r, event, totalTop);
+            totalTop = renderKillMessages(r, guiGraphics, deltaTracker, totalTop);
         }
     }
 
-    private static float renderKillMessages(PlayerKillRecord record, RenderGuiEvent.Pre event, float baseTop) {
-        int w = event.getGuiGraphics().guiWidth();
+    private static float renderKillMessages(PlayerKillRecord record, GuiGraphics guiGraphics, DeltaTracker deltaTracker, float baseTop) {
+        int w = guiGraphics.guiWidth();
         float top = baseTop;
 
         Font font = Minecraft.getInstance().font;
@@ -107,8 +112,7 @@ public class KillMessageOverlay {
 
         int targetNameWidth = font.width(targetName.get());
 
-        var gui = event.getGuiGraphics();
-        gui.pose().pushPose();
+        guiGraphics.pose().pushPose();
 
         RenderSystem.disableDepthTest();
         RenderSystem.depthMask(false);
@@ -120,15 +124,15 @@ public class KillMessageOverlay {
 
         // 入场效果
         if (record.tick < 3) {
-            gui.pose().translate((3 - record.tick - event.getPartialTick().getGameTimeDeltaPartialTick(true)) * 33, 0, 0);
+            guiGraphics.pose().translate((3 - record.tick - deltaTracker.getGameTimeDeltaPartialTick(true)) * 33, 0, 0);
         }
 
         // 4s后开始消失
         if (record.tick >= 80) {
             int animationTickCount = record.fastRemove ? 2 : 20;
-            float rate = (float) Math.pow((record.tick + event.getPartialTick().getGameTimeDeltaPartialTick(true) - 80) / animationTickCount, 5);
-            gui.pose().translate(rate * 100, 0, 0);
-            gui.setColor(1, 1, 1, 1 - rate);
+            float rate = (float) Math.pow((record.tick + deltaTracker.getGameTimeDeltaPartialTick(true) - 80) / animationTickCount, 5);
+            guiGraphics.pose().translate(rate * 100, 0, 0);
+            guiGraphics.setColor(1, 1, 1, 1 - rate);
             baseTop += 10 * (1 - rate);
         } else {
             baseTop += 10;
@@ -137,7 +141,7 @@ public class KillMessageOverlay {
         // 击杀提示是右对齐的，这里从右向左渲染
 
         // 渲染被击杀者名称
-        gui.drawString(
+        guiGraphics.drawString(
                 Minecraft.getInstance().font,
                 targetName.get(),
                 w - targetNameWidth - 10f,
@@ -152,7 +156,7 @@ public class KillMessageOverlay {
         ResourceLocation damageTypeIcon = getDamageTypeIcon(record);
 
         if (damageTypeIcon != null) {
-            preciseBlit(gui,
+            preciseBlit(guiGraphics,
                     damageTypeIcon,
                     damageTypeIconW,
                     top - 2,
@@ -176,7 +180,7 @@ public class KillMessageOverlay {
 
                 ResourceLocation resourceLocation = vehicleEntity.getVehicleIcon();
 
-                preciseBlit(gui,
+                preciseBlit(guiGraphics,
                         resourceLocation,
                         itemIconW,
                         top,
@@ -193,7 +197,7 @@ public class KillMessageOverlay {
 
                     ResourceLocation resourceLocation = gunItem.getGunIcon();
 
-                    preciseBlit(gui,
+                    preciseBlit(guiGraphics,
                             resourceLocation,
                             itemIconW,
                             top,
@@ -213,7 +217,7 @@ public class KillMessageOverlay {
 
                 ResourceLocation resourceLocation = gunItem.getGunIcon();
 
-                preciseBlit(gui,
+                preciseBlit(guiGraphics,
                         resourceLocation,
                         itemIconW,
                         top,
@@ -230,7 +234,7 @@ public class KillMessageOverlay {
             if (record.stack.getItem().getDescriptionId().equals("item.dreamaticvoyage.world_peace_staff")) {
                 renderItem = true;
 
-                preciseBlit(gui,
+                preciseBlit(guiGraphics,
                         WORLD_PEACE_STAFF,
                         itemIconW,
                         top,
@@ -259,7 +263,7 @@ public class KillMessageOverlay {
             nameW -= 18;
         }
 
-        gui.drawString(
+        guiGraphics.drawString(
                 Minecraft.getInstance().font,
                 attackerName.get(),
                 nameW,
@@ -273,8 +277,8 @@ public class KillMessageOverlay {
         RenderSystem.depthMask(true);
         RenderSystem.enableDepthTest();
 
-        gui.setColor(1, 1, 1, 1);
-        gui.pose().popPose();
+        guiGraphics.setColor(1, 1, 1, 1);
+        guiGraphics.pose().popPose();
 
         return baseTop;
     }

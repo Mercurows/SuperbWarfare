@@ -16,23 +16,30 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.CameraType;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
-import net.neoforged.neoforge.client.event.RenderGuiEvent;
+
+import javax.annotation.ParametersAreNonnullByDefault;
 
 import static com.atsuishio.superbwarfare.client.RenderHelper.preciseBlit;
 
-@EventBusSubscriber(value = Dist.CLIENT)
-public class CrossHairOverlay {
+@OnlyIn(Dist.CLIENT)
+@EventBusSubscriber(modid = Mod.MODID, value = Dist.CLIENT)
+public class CrossHairOverlay implements LayeredDraw.Layer {
+
+    public static final ResourceLocation ID = Mod.loc("cross_hair");
 
     private static final ResourceLocation REX_HORIZONTAL = Mod.loc("textures/screens/rex_horizontal.png");
     private static final ResourceLocation REX_VERTICAL = Mod.loc("textures/screens/rex_vertical.png");
@@ -44,10 +51,11 @@ public class CrossHairOverlay {
     private static float scopeScale = 1f;
     public static float gunRot;
 
-    @SubscribeEvent
-    public static void eventHandler(RenderGuiEvent.Pre event) {
-        int w = event.getGuiGraphics().guiWidth();
-        int h = event.getGuiGraphics().guiHeight();
+    @Override
+    @ParametersAreNonnullByDefault
+    public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
+        int w = guiGraphics.guiWidth();
+        int h = guiGraphics.guiHeight();
 
         Player player = Minecraft.getInstance().player;
         if (player == null) {
@@ -59,11 +67,9 @@ public class CrossHairOverlay {
         if (!player.getMainHandItem().is(ModTags.Items.GUN) || (player.getVehicle() instanceof ArmedVehicleEntity iArmedVehicle && iArmedVehicle.banHand(player)))
             return;
 
-        GuiGraphics guiGraphics = event.getGuiGraphics();
-
         ItemStack stack = player.getMainHandItem();
         double spread = ClientEventHandler.gunSpread + 1 * ClientEventHandler.firePos;
-        float deltaFrame = event.getPartialTick().getGameTimeDeltaPartialTick(true);
+        float deltaFrame = deltaTracker.getGameTimeDeltaPartialTick(true);
         float moveX = 0;
         float moveY = 0;
 

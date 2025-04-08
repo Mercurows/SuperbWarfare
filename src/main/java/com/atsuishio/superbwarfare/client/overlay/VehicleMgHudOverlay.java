@@ -15,19 +15,22 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Camera;
 import net.minecraft.client.CameraType;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.RenderGuiEvent;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Math;
+
+import javax.annotation.ParametersAreNonnullByDefault;
 
 import static com.atsuishio.superbwarfare.client.RenderHelper.preciseBlit;
 import static com.atsuishio.superbwarfare.client.overlay.VehicleHudOverlay.renderKillIndicator3P;
@@ -35,16 +38,18 @@ import static com.atsuishio.superbwarfare.entity.vehicle.Yx100Entity.MG_AMMO;
 import static com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity.AMMO;
 import static com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity.HEAT;
 
-@EventBusSubscriber(value = Dist.CLIENT)
-public class VehicleMgHudOverlay {
+@OnlyIn(Dist.CLIENT)
+public class VehicleMgHudOverlay implements LayeredDraw.Layer {
 
-    @SubscribeEvent
-    public static void eventHandler(RenderGuiEvent.Pre event) {
-        int w = event.getGuiGraphics().guiWidth();
-        int h = event.getGuiGraphics().guiHeight();
+    public static final ResourceLocation ID = Mod.loc("vehicle_mg_hud");
+
+    @Override
+    @ParametersAreNonnullByDefault
+    public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
+        int w = guiGraphics.guiWidth();
+        int h = guiGraphics.guiHeight();
         Minecraft mc = Minecraft.getInstance();
         Player player = mc.player;
-        GuiGraphics guiGraphics = event.getGuiGraphics();
         PoseStack poseStack = guiGraphics.pose();
         Camera camera = mc.gameRenderer.getMainCamera();
         Vec3 cameraPos = camera.getPosition();
@@ -74,8 +79,8 @@ public class VehicleMgHudOverlay {
                 RenderHelper.preciseBlit(guiGraphics, Mod.loc("textures/screens/cannon/cannon_crosshair_notzoom.png"), k, l, 0, 0.0F, i, j, i, j);
                 VehicleHudOverlay.renderKillIndicator(guiGraphics, w, h);
             } else if (Minecraft.getInstance().options.getCameraType() == CameraType.THIRD_PERSON_BACK && !ClientEventHandler.zoomVehicle) {
-                Vec3 p = RenderHelper.worldToScreen(new Vec3(Mth.lerp(event.getPartialTick().getGameTimeDeltaPartialTick(true), player.xo, player.getX()), Mth.lerp(event.getPartialTick().getGameTimeDeltaPartialTick(true), player.yo + player.getEyeHeight(), player.getEyeY()),
-                        Mth.lerp(event.getPartialTick().getGameTimeDeltaPartialTick(true), player.zo, player.getZ())).add(iLand.getGunVec(event.getPartialTick().getGameTimeDeltaPartialTick(true)).scale(192)), cameraPos);
+                Vec3 p = RenderHelper.worldToScreen(new Vec3(Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), player.xo, player.getX()), Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), player.yo + player.getEyeHeight(), player.getEyeY()),
+                        Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), player.zo, player.getZ())).add(iLand.getGunVec(deltaTracker.getGameTimeDeltaPartialTick(true)).scale(192)), cameraPos);
 
                 // 第三人称准星
                 if (p != null) {

@@ -12,8 +12,10 @@ import com.atsuishio.superbwarfare.tools.SeekTool;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -25,33 +27,34 @@ import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.RenderGuiEvent;
+import net.neoforged.api.distmarker.OnlyIn;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 
 import static com.atsuishio.superbwarfare.client.RenderHelper.preciseBlit;
 import static com.atsuishio.superbwarfare.entity.vehicle.DroneEntity.AMMO;
 import static com.atsuishio.superbwarfare.entity.vehicle.DroneEntity.KAMIKAZE_MODE;
 
-@EventBusSubscriber(value = Dist.CLIENT)
-public class DroneUIOverlay {
+@OnlyIn(Dist.CLIENT)
+public class DroneHudOverlay implements LayeredDraw.Layer {
+
+    public static final ResourceLocation ID = Mod.loc("drone_hud");
 
     public static int MAX_DISTANCE = 256;
     private static final ResourceLocation FRAME = Mod.loc("textures/screens/frame/frame.png");
 
-    @SubscribeEvent
-    public static void eventHandler(RenderGuiEvent.Pre event) {
-        int w = event.getGuiGraphics().guiWidth();
-        int h = event.getGuiGraphics().guiHeight();
+    @Override
+    @ParametersAreNonnullByDefault
+    public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
+        int w = guiGraphics.guiWidth();
+        int h = guiGraphics.guiHeight();
 
         Minecraft mc = Minecraft.getInstance();
         Player player = mc.player;
 
         if (player == null) return;
 
-        GuiGraphics guiGraphics = event.getGuiGraphics();
         PoseStack poseStack = guiGraphics.pose();
 
         ItemStack stack = player.getMainHandItem();
@@ -149,8 +152,8 @@ public class DroneUIOverlay {
                 double zoom = 0.975 * ClientEventHandler.droneFovLerp + 0.06 * fovAdjust2;
 
                 for (var e : entities) {
-                    Vec3 droneVec = new Vec3(Mth.lerp(event.getPartialTick().getGameTimeDeltaPartialTick(true), entity.xo, entity.getX()), Mth.lerp(event.getPartialTick().getGameTimeDeltaPartialTick(true), entity.yo + entity.getEyeHeight(), entity.getEyeY()), Mth.lerp(event.getPartialTick().getGameTimeDeltaPartialTick(true), entity.zo, entity.getZ()));
-                    Vec3 pos = new Vec3(Mth.lerp(event.getPartialTick().getGameTimeDeltaPartialTick(true), e.xo, e.getX()), Mth.lerp(event.getPartialTick().getGameTimeDeltaPartialTick(true), e.yo + e.getEyeHeight(), e.getEyeY()), Mth.lerp(event.getPartialTick().getGameTimeDeltaPartialTick(true), e.zo, e.getZ()));
+                    Vec3 droneVec = new Vec3(Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), entity.xo, entity.getX()), Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), entity.yo + entity.getEyeHeight(), entity.getEyeY()), Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), entity.zo, entity.getZ()));
+                    Vec3 pos = new Vec3(Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), e.xo, e.getX()), Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), e.yo + e.getEyeHeight(), e.getEyeY()), Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), e.zo, e.getZ()));
 
                     Vec3 lookAngle = entity.getLookAngle().normalize().scale(pos.distanceTo(droneVec) * (1 - 1.0 / zoom));
 
@@ -161,7 +164,7 @@ public class DroneUIOverlay {
                         float x = (float) point.x;
                         float y = (float) point.y;
 
-                        RenderHelper.preciseBlit(event.getGuiGraphics(), FRAME, x - 12, y - 12, 24, 24, 0, 0, 24, 24, 24, 24);
+                        RenderHelper.preciseBlit(guiGraphics, FRAME, x - 12, y - 12, 24, 24, 0, 0, 24, 24, 24, 24);
                         poseStack.popPose();
                     }
                 }

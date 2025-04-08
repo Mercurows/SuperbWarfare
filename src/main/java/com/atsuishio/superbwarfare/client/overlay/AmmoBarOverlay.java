@@ -21,10 +21,12 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
-
+@OnlyIn(Dist.CLIENT)
 public class AmmoBarOverlay implements LayeredDraw.Layer {
     public static final ResourceLocation ID = Mod.loc("ammo_bar");
 

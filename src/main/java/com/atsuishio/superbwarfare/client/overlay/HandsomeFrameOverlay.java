@@ -12,7 +12,10 @@ import com.atsuishio.superbwarfare.tools.SeekTool;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -21,25 +24,26 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.EventPriority;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.RenderGuiEvent;
+import net.neoforged.api.distmarker.OnlyIn;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 
-@EventBusSubscriber(value = Dist.CLIENT)
-public class HandsomeFrameOverlay {
+@OnlyIn(Dist.CLIENT)
+public class HandsomeFrameOverlay implements LayeredDraw.Layer {
+
+    public static final ResourceLocation ID = Mod.loc("handsome_frame");
 
     private static final ResourceLocation FRAME = Mod.loc("textures/screens/frame/frame.png");
     private static final ResourceLocation FRAME_WEAK = Mod.loc("textures/screens/frame/frame_weak.png");
     private static final ResourceLocation FRAME_TARGET = Mod.loc("textures/screens/frame/frame_target.png");
     private static final ResourceLocation FRAME_LOCK = Mod.loc("textures/screens/frame/frame_lock.png");
 
-    @SubscribeEvent(priority = EventPriority.LOWEST)
-    public static void eventHandler(RenderGuiEvent.Pre event) {
+    @Override
+    @ParametersAreNonnullByDefault
+    public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
         Player player = Minecraft.getInstance().player;
-        PoseStack poseStack = event.getGuiGraphics().pose();
+        PoseStack poseStack = guiGraphics.pose();
 
         if (player != null) {
             ItemStack stack = player.getMainHandItem();
@@ -75,8 +79,8 @@ public class HandsomeFrameOverlay {
                 }
 
                 for (var e : allEntities) {
-                    Vec3 playerVec = new Vec3(Mth.lerp(event.getPartialTick().getGameTimeDeltaPartialTick(true), player.xo, player.getX()), Mth.lerp(event.getPartialTick().getGameTimeDeltaPartialTick(true), player.yo + player.getEyeHeight(), player.getEyeY()), Mth.lerp(event.getPartialTick().getGameTimeDeltaPartialTick(true), player.zo, player.getZ()));
-                    Vec3 pos = new Vec3(Mth.lerp(event.getPartialTick().getGameTimeDeltaPartialTick(true), e.xo, e.getX()), Mth.lerp(event.getPartialTick().getGameTimeDeltaPartialTick(true), e.yo + e.getEyeHeight(), e.getEyeY()), Mth.lerp(event.getPartialTick().getGameTimeDeltaPartialTick(true), e.zo, e.getZ()));
+                    Vec3 playerVec = new Vec3(Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), player.xo, player.getX()), Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), player.yo + player.getEyeHeight(), player.getEyeY()), Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), player.zo, player.getZ()));
+                    Vec3 pos = new Vec3(Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), e.xo, e.getX()), Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), e.yo + e.getEyeHeight(), e.getEyeY()), Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), e.zo, e.getZ()));
                     Vec3 lookAngle = player.getLookAngle().normalize().scale(pos.distanceTo(playerVec) * (1 - 1.0 / zoom));
 
                     var cPos = playerVec.add(lookAngle);
@@ -105,7 +109,7 @@ public class HandsomeFrameOverlay {
                         icon = FRAME_WEAK;
                     }
 
-                    RenderHelper.preciseBlit(event.getGuiGraphics(), icon, x - 12, y - 12, 24, 24, 0, 0, 24, 24, 24, 24);
+                    RenderHelper.preciseBlit(guiGraphics, icon, x - 12, y - 12, 24, 24, 0, 0, 24, 24, 24, 24);
                     poseStack.popPose();
                 }
             }

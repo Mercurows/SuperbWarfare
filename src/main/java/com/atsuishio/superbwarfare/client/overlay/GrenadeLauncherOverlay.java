@@ -9,22 +9,28 @@ import com.atsuishio.superbwarfare.init.ModItems;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.CameraType;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.RenderGuiEvent;
+import net.neoforged.api.distmarker.OnlyIn;
 
-@EventBusSubscriber(value = Dist.CLIENT)
-public class GrenadeLauncherOverlay {
+import javax.annotation.ParametersAreNonnullByDefault;
 
-    @SubscribeEvent
-    public static void eventHandler(RenderGuiEvent.Pre event) {
-        int w = event.getGuiGraphics().guiWidth();
-        int h = event.getGuiGraphics().guiHeight();
+@OnlyIn(Dist.CLIENT)
+public class GrenadeLauncherOverlay implements LayeredDraw.Layer {
+
+    public static final ResourceLocation ID = Mod.loc("grenade_launcher");
+
+    @Override
+    @ParametersAreNonnullByDefault
+    public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
+        int w = guiGraphics.guiWidth();
+        int h = guiGraphics.guiHeight();
         Player player = Minecraft.getInstance().player;
         if (player == null) return;
 
@@ -35,7 +41,6 @@ public class GrenadeLauncherOverlay {
             return;
         if (!shouldRenderCrossHair(player)) return;
 
-        GuiGraphics guiGraphics = event.getGuiGraphics();
 
         guiGraphics.pose().pushPose();
 
