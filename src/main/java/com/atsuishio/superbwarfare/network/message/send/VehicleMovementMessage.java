@@ -32,8 +32,7 @@ public record VehicleMovementMessage(short keys) implements CustomPacketPayload 
         final var tag = NBTTool.getTag(stack);
 
         VehicleEntity vehicle = null;
-        if (entity instanceof MobileVehicleEntity mobileVehicleEntity) {
-            if (mobileVehicleEntity.getFirstPassenger() != player) return;
+        if (entity instanceof MobileVehicleEntity mobileVehicleEntity && mobileVehicleEntity.getFirstPassenger() == player) {
             vehicle = mobileVehicleEntity;
         } else if (stack.is(ModItems.MONITOR.get())
                 && tag.getBoolean("Using")

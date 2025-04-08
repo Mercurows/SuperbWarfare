@@ -120,11 +120,6 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
                                 .ammo(ModItems.HEAVY_AMMO.get())
                                 .sound(ModSounds.INTO_CANNON.get())
                                 .icon(Mod.loc("textures/screens/vehicle_weapon/gun_12_7mm.png")),
-                        // 蜂群无人机
-                        new SwarmDroneWeapon()
-                                .explosionDamage(125)
-                                .explosionRadius(6)
-                                .sound(ModSounds.INTO_MISSILE.get()),
                 },
                 new VehicleWeapon[]{
                         // 机枪
@@ -135,6 +130,13 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
                                 .bypassArmorRate(0.4f)
                                 .ammo(ModItems.HEAVY_AMMO.get())
                                 .icon(Mod.loc("textures/screens/vehicle_weapon/gun_12_7mm.png")),
+                },
+                new VehicleWeapon[]{
+                        // 蜂群无人机
+                        new SwarmDroneWeapon()
+                                .explosionDamage(125)
+                                .explosionRadius(6)
+                                .sound(ModSounds.INTO_MISSILE.get()),
                 }
         };
     }
@@ -168,6 +170,7 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
         compound.putInt("LoadedAmmoType", this.entityData.get(LOADED_AMMO_TYPE));
         compound.putInt("WeaponType", getWeaponIndex(0));
         compound.putInt("PassengerWeaponType", getWeaponIndex(1));
+        compound.putInt("ThirdPassengerWeaponType", getWeaponIndex(2));
     }
 
     @Override
@@ -179,6 +182,7 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
         this.entityData.set(LOADED_AMMO_TYPE, compound.getInt("LoadedAmmoType"));
         setWeaponIndex(0, compound.getInt("WeaponType"));
         setWeaponIndex(1, compound.getInt("PassengerWeaponType"));
+        setWeaponIndex(2, compound.getInt("ThirdPassengerWeaponType"));
     }
 
     @Override
@@ -257,9 +261,10 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
 
         if (this.level() instanceof ServerLevel) {
             boolean hasCreativeAmmo = false;
-
-            if (this.getFirstPassenger() instanceof Player player) {
-                hasCreativeAmmo = InventoryTool.hasCreativeAmmoBox(player);
+            for (int i = 0; i < getMaxPassengers(); i++) {
+                if (getNthEntity(i) instanceof Player pPlayer && InventoryTool.hasCreativeAmmoBox(pPlayer)) {
+                    hasCreativeAmmo = true;
+                }
             }
 
             if (reloadCoolDown > 0 && (
@@ -271,6 +276,15 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
 
             if (droneReloadCoolDown > 0) {
                 droneReloadCoolDown--;
+            }
+
+            if ((hasItem(ModItems.SWARM_DRONE.get()) || hasCreativeAmmo) && droneReloadCoolDown == 0 && this.getEntityData().get(LOADED_DRONE) < 14) {
+                this.entityData.set(LOADED_DRONE, this.getEntityData().get(LOADED_DRONE) + 1);
+                droneReloadCoolDown = 20;
+                if (!hasCreativeAmmo) {
+                    this.getItemStacks().stream().filter(stack -> stack.is(ModItems.SWARM_DRONE.get())).findFirst().ifPresent(stack -> stack.shrink(1));
+                }
+                this.level().playSound(null, this, ModSounds.MISSILE_RELOAD.get(), this.getSoundSource(), 1, 1);
             }
 
             this.handleAmmo();
@@ -325,9 +339,10 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
         }
 
         boolean hasCreativeAmmo = false;
-
-        if (this.getFirstPassenger() instanceof Player player) {
-            hasCreativeAmmo = InventoryTool.hasCreativeAmmoBox(player);
+        for (int i = 0; i < getMaxPassengers(); i++) {
+            if (getNthEntity(i) instanceof Player pPlayer && InventoryTool.hasCreativeAmmoBox(pPlayer)) {
+                hasCreativeAmmo = true;
+            }
         }
 
         if (hasCreativeAmmo) {
@@ -356,15 +371,6 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
                     consumeItem(ModItems.HE_5_INCHES.get(), 1);
                 }
             }
-        }
-
-        if ((hasItem(ModItems.SWARM_DRONE.get()) || hasCreativeAmmo) && droneReloadCoolDown == 0 && this.getEntityData().get(LOADED_DRONE) < 14) {
-            this.entityData.set(LOADED_DRONE, this.getEntityData().get(LOADED_DRONE) + 1);
-            droneReloadCoolDown = 20;
-            if (!hasCreativeAmmo) {
-                this.getItemStacks().stream().filter(stack -> stack.is(ModItems.SWARM_DRONE.get())).findFirst().ifPresent(stack -> stack.shrink(1));
-            }
-            this.level().playSound(null, this, ModSounds.MISSILE_RELOAD.get(), this.getSoundSource(), 1, 1);
         }
     }
 
@@ -514,89 +520,7 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
                         serverPlayer.playSound(ModSounds.M_2_VERYFAR.get(), 24, pitch);
                     }
                 }
-            } else if (getWeaponIndex(0) == 3) {
-                Matrix4f transformT = getTurretTransform(1);
-                Vector4f worldPosition = new Vector4f();
-
-                int ammo = this.getEntityData().get(LOADED_DRONE);
-
-                if (ammo == 1) {
-                    worldPosition = transformPosition(transformT, -2.315275f, 0.71894375f, -0.25390625f);
-                }
-                if (ammo == 2) {
-                    worldPosition = transformPosition(transformT, 2.315275f, 0.71894375f, -0.25390625f);
-                }
-                if (ammo == 3) {
-                    worldPosition = transformPosition(transformT, -2.49105625f, 0.71894375f, -0.4296875f);
-                }
-                if (ammo == 4) {
-                    worldPosition = transformPosition(transformT, 2.49105625f, 0.71894375f, -0.4296875f);
-                }
-                if (ammo == 5) {
-                    worldPosition = transformPosition(transformT, -2.315275f, 0.71894375f, -0.60546875f);
-                }
-                if (ammo == 6) {
-                    worldPosition = transformPosition(transformT, 2.315275f, 0.71894375f, -0.60546875f);
-                }
-                if (ammo == 7) {
-                    worldPosition = transformPosition(transformT, -2.49105625f, 0.71894375f, -0.78125f);
-                }
-                if (ammo == 8) {
-                    worldPosition = transformPosition(transformT, 2.49105625f, 0.71894375f, -0.78125f);
-                }
-                if (ammo == 9) {
-                    worldPosition = transformPosition(transformT, -2.315275f, 0.71894375f, -0.95703125f);
-                }
-                if (ammo == 10) {
-                    worldPosition = transformPosition(transformT, 2.315275f, 0.71894375f, -0.95703125f);
-                }
-                if (ammo == 11) {
-                    worldPosition = transformPosition(transformT, -2.49105625f, 0.71894375f, -1.1328125f);
-                }
-                if (ammo == 12) {
-                    worldPosition = transformPosition(transformT, 2.49105625f, 0.71894375f, -1.1328125f);
-                }
-                if (ammo == 13) {
-                    worldPosition = transformPosition(transformT, -2.315275f, 0.71894375f, -1.30859375f);
-                }
-                if (ammo == 14) {
-                    worldPosition = transformPosition(transformT, 2.315275f, 0.71894375f, -1.30859375f);
-                }
-
-                Vec3 lookVec = getBarrelVec(1).normalize();
-                Entity lookingEntity = SeekTool.vehicleSeekEntity(this, level(), 512, 4);
-
-                var swarmDroneEntity = ((SwarmDroneWeapon) getWeapon(0)).create(player);
-
-
-                Vector4f shootPosition1 = transformPosition(transformT, 0, 0, 0);
-                Vector4f shootPosition2 = transformPosition(transformT, 0, 1, 0);
-                Vec3 direct = new Vec3(shootPosition1.x, shootPosition1.y, shootPosition1.z).vectorTo(new Vec3(shootPosition2.x, shootPosition2.y, shootPosition2.z));
-
-
-                swarmDroneEntity.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
-                swarmDroneEntity.shoot(direct.x, direct.y, direct.z, 1.2f, 10);
-
-                if (lookingEntity != null) {
-                    swarmDroneEntity.setGuideType(0);
-                    swarmDroneEntity.setTargetUuid(lookingEntity.getStringUUID());
-                    swarmDroneEntity.setTargetVec(lookingEntity.getEyePosition());
-                } else {
-                    swarmDroneEntity.setGuideType(1);
-                    BlockHitResult result = level().clip(new ClipContext(getNewEyePos(1), getNewEyePos(1).add(lookVec.scale(512)),
-                            ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this));
-                    Vec3 hitPos = result.getLocation();
-                    swarmDroneEntity.setTargetVec(hitPos);
-                }
-
-                player.level().addFreshEntity(swarmDroneEntity);
-
-                this.level().playSound(null, BlockPos.containing(new Vec3(worldPosition.x, worldPosition.y, worldPosition.z)), ModSounds.DECOY_FIRE.get(), SoundSource.PLAYERS, 1, random.nextFloat() * 0.05f + 1);
-
-                this.entityData.set(LOADED_DRONE, this.getEntityData().get(LOADED_DRONE) - 1);
-                droneReloadCoolDown = 100;
             }
-
         }
 
         if (type == 1) {
@@ -608,7 +532,7 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
             var projectileEntity = projectile.create(player).setGunItemId(this.getType().getDescriptionId() + ".2");
 
             projectileEntity.setPos(worldPosition.x - 1.1 * this.getDeltaMovement().x, worldPosition.y, worldPosition.z - 1.1 * this.getDeltaMovement().z);
-            projectileEntity.shoot(getGunnerVector(1).x, getGunnerVector(1).y + 0.005f, getGunnerVector(1).z, 20, 0.3f);
+            projectileEntity.shoot(getGunnerVector(1).x, getGunnerVector(1).y + 0.01f, getGunnerVector(1).z, 20, 0.3f);
 
             this.level().addFreshEntity(projectileEntity);
 
@@ -649,6 +573,90 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
                 consumeItem(getWeapon(1).ammo, 1);
             }
         }
+
+        if (type == 2) {
+            Matrix4f transformT = getTurretTransform(1);
+            Vector4f worldPosition = new Vector4f();
+
+            int ammo = this.getEntityData().get(LOADED_DRONE);
+
+            if (ammo == 1) {
+                worldPosition = transformPosition(transformT, -2.315275f, 0.71894375f, -0.25390625f);
+            }
+            if (ammo == 2) {
+                worldPosition = transformPosition(transformT, 2.315275f, 0.71894375f, -0.25390625f);
+            }
+            if (ammo == 3) {
+                worldPosition = transformPosition(transformT, -2.49105625f, 0.71894375f, -0.4296875f);
+            }
+            if (ammo == 4) {
+                worldPosition = transformPosition(transformT, 2.49105625f, 0.71894375f, -0.4296875f);
+            }
+            if (ammo == 5) {
+                worldPosition = transformPosition(transformT, -2.315275f, 0.71894375f, -0.60546875f);
+            }
+            if (ammo == 6) {
+                worldPosition = transformPosition(transformT, 2.315275f, 0.71894375f, -0.60546875f);
+            }
+            if (ammo == 7) {
+                worldPosition = transformPosition(transformT, -2.49105625f, 0.71894375f, -0.78125f);
+            }
+            if (ammo == 8) {
+                worldPosition = transformPosition(transformT, 2.49105625f, 0.71894375f, -0.78125f);
+            }
+            if (ammo == 9) {
+                worldPosition = transformPosition(transformT, -2.315275f, 0.71894375f, -0.95703125f);
+            }
+            if (ammo == 10) {
+                worldPosition = transformPosition(transformT, 2.315275f, 0.71894375f, -0.95703125f);
+            }
+            if (ammo == 11) {
+                worldPosition = transformPosition(transformT, -2.49105625f, 0.71894375f, -1.1328125f);
+            }
+            if (ammo == 12) {
+                worldPosition = transformPosition(transformT, 2.49105625f, 0.71894375f, -1.1328125f);
+            }
+            if (ammo == 13) {
+                worldPosition = transformPosition(transformT, -2.315275f, 0.71894375f, -1.30859375f);
+            }
+            if (ammo == 14) {
+                worldPosition = transformPosition(transformT, 2.315275f, 0.71894375f, -1.30859375f);
+            }
+
+            Vec3 lookVec = player.getViewVector(1);
+            Entity lookingEntity = SeekTool.seekLivingEntity(player, level(), 384, 6);
+
+            var swarmDroneEntity = ((SwarmDroneWeapon) getWeapon(2)).create(player);
+
+
+            Vector4f shootPosition1 = transformPosition(transformT, 0, 0, 0);
+            Vector4f shootPosition2 = transformPosition(transformT, 0, 1, 0);
+            Vec3 direct = new Vec3(shootPosition1.x, shootPosition1.y, shootPosition1.z).vectorTo(new Vec3(shootPosition2.x, shootPosition2.y, shootPosition2.z));
+
+
+            swarmDroneEntity.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
+            swarmDroneEntity.shoot(direct.x, direct.y, direct.z, 1.2f, 10);
+
+            if (lookingEntity != null) {
+                swarmDroneEntity.setGuideType(0);
+                swarmDroneEntity.setTargetUuid(lookingEntity.getStringUUID());
+                swarmDroneEntity.setTargetVec(lookingEntity.getEyePosition());
+            } else {
+                swarmDroneEntity.setGuideType(1);
+                BlockHitResult result = level().clip(new ClipContext(player.getEyePosition(), player.getEyePosition().add(lookVec.scale(384)),
+                        ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this));
+                Vec3 hitPos = result.getLocation();
+                swarmDroneEntity.setTargetVec(hitPos);
+            }
+
+            player.level().addFreshEntity(swarmDroneEntity);
+
+            this.level().playSound(null, BlockPos.containing(new Vec3(worldPosition.x, worldPosition.y, worldPosition.z)), ModSounds.DECOY_FIRE.get(), SoundSource.PLAYERS, 1, random.nextFloat() * 0.05f + 1);
+
+            this.entityData.set(LOADED_DRONE, this.getEntityData().get(LOADED_DRONE) - 1);
+            droneReloadCoolDown = 100;
+        }
+
     }
 
     @Override
@@ -1028,14 +1036,17 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
                 return 15;
             } else if (getWeaponIndex(0) == 2) {
                 return 500;
-            } else if (getWeaponIndex(0) == 3) {
-                return 600;
             }
         }
 
         if (player == getNthEntity(1)) {
             return 500;
         }
+
+        if (player == getNthEntity(2)) {
+            return 600;
+        }
+
         return 15;
     }
 
@@ -1048,13 +1059,15 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
                 return this.entityData.get(LOADED_HE) > 0 && getEnergy() > VehicleConfig.YX_100_SHOOT_COST.get();
             } else if (getWeaponIndex(0) == 2) {
                 return (this.entityData.get(MG_AMMO) > 0 || InventoryTool.hasCreativeAmmoBox(player)) && !cannotFireCoax;
-            } else if (getWeaponIndex(0) == 3) {
-                return this.entityData.get(LOADED_DRONE) > 0;
             }
         }
 
         if (player == getNthEntity(1)) {
             return (this.entityData.get(MG_AMMO) > 0 || InventoryTool.hasCreativeAmmoBox(player)) && !cannotFire;
+        }
+
+        if (player == getNthEntity(2)) {
+            return this.entityData.get(LOADED_DRONE) > 0;
         }
         return false;
     }
@@ -1068,20 +1081,25 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
                 return this.entityData.get(LOADED_HE);
             } else if (getWeaponIndex(0) == 2) {
                 return this.entityData.get(MG_AMMO);
-            } else if (getWeaponIndex(0) == 3) {
-                return this.entityData.get(LOADED_DRONE);
             }
         }
 
         if (player == getNthEntity(1)) {
             return this.entityData.get(MG_AMMO);
         }
+
+        if (player == getNthEntity(2)) {
+            return this.entityData.get(LOADED_DRONE);
+        }
         return 0;
     }
 
     @Override
     public boolean banHand(Player player) {
-        return hidePassenger(player);
+        if (player == getNthEntity(0) || player == getNthEntity(1)) {
+            return true;
+        }
+        return player == getNthEntity(2) && !player.isShiftKeyDown();
     }
 
     @Override

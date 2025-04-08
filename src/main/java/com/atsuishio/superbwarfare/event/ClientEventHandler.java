@@ -242,8 +242,8 @@ public class ClientEventHandler {
 
         // 正在游戏内控制载具或无人机
         if (!notInGame() && (player.getVehicle() instanceof MobileVehicleEntity mobileVehicle
-                && mobileVehicle.getFirstPassenger() == player
-                || stack.is(ModItems.MONITOR.get())
+                && mobileVehicle.getFirstPassenger() == player)
+                || (stack.is(ModItems.MONITOR.get())
                 && tag.getBoolean("Using")
                 && tag.getBoolean("Linked"))
         ) {
@@ -796,7 +796,7 @@ public class ClientEventHandler {
                 float pitch = yx100.getEntityData().get(HEAT) <= 60 ? 1 : (float) (1 - 0.011 * Math.abs(60 - yx100.getEntityData().get(HEAT)));
                 player.playSound(ModSounds.M_2_FIRE_1P.get(), 1f, pitch);
                 player.playSound(ModSounds.SHELL_CASING_50CAL.get(), 0.3f, 1);
-            } else {
+            } else if (type == 0) {
                 if (yx100.getWeaponIndex(0) == 0 || yx100.getWeaponIndex(0) == 1) {
                     player.playSound(ModSounds.YX_100_FIRE_1P.get(), 1f, 1);
                 } else if (yx100.getWeaponIndex(0) == 2) {
@@ -1380,8 +1380,9 @@ public class ClientEventHandler {
         ItemStack stack = player.getMainHandItem();
         final var tag = NBTTool.getTag(stack);
 
-        if (player.getVehicle() instanceof WeaponVehicleEntity iVehicle && zoomVehicle) {
+        if (player.getVehicle() instanceof WeaponVehicleEntity iVehicle && zoomVehicle && iVehicle.banHand(player)) {
             event.setFOV(event.getFOV() / iVehicle.zoomFov());
+            fov = event.getFOV();
             return;
         }
 
