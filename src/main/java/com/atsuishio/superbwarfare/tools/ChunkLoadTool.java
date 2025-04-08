@@ -1,14 +1,22 @@
 package com.atsuishio.superbwarfare.tools;
 
+import com.atsuishio.superbwarfare.Mod;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.ChunkPos;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.common.world.chunk.RegisterTicketControllersEvent;
+import net.neoforged.neoforge.common.world.chunk.TicketController;
 
 import java.util.HashSet;
 import java.util.Set;
 
+@EventBusSubscriber(modid = Mod.MODID, bus = EventBusSubscriber.Bus.MOD)
 public class ChunkLoadTool {
+
+    private static final TicketController controller = new TicketController(Mod.loc("chunk_loader"));
 
     /**
      * 根据动量计算需要加载的区块并卸载不再需要加载的区块
@@ -29,17 +37,14 @@ public class ChunkLoadTool {
         var chunksToLoad = newChunks.stream().filter(chunk -> !loadedChunks.contains(chunk)).toList();
         var chunksToUnload = loadedChunks.stream().filter(chunk -> !newChunks.contains(chunk)).toList();
 
-        // TODO FORCED CHUNK
-
         chunksToLoad.forEach(chunk -> {
             var chunkPos = new ChunkPos(chunk);
-//            ForcedChunkManager.forceChunk(level, ModUtils.MODID, entity, chunkPos.x, chunkPos.z, true, false);
-//            ForcedChunkManager.forceChunk(level, ModUtils.MODID, entity, chunkPos.x, chunkPos.z, true, false);
+            controller.forceChunk(level, entity, chunkPos.x, chunkPos.z, true, false);
         });
 
         chunksToUnload.forEach(chunk -> {
             var chunkPos = new ChunkPos(chunk);
-//            ForgeChunkManager.forceChunk(level, ModUtils.MODID, entity, chunkPos.x, chunkPos.z, false, false);
+            controller.forceChunk(level, entity, chunkPos.x, chunkPos.z, false, false);
         });
 
         loadedChunks.clear();
@@ -52,7 +57,12 @@ public class ChunkLoadTool {
     public static void unloadAllChunks(ServerLevel level, Entity entity, Set<Long> loadedChunks) {
         loadedChunks.forEach(chunk -> {
             var chunkPos = new ChunkPos(chunk);
-//            ForgeChunkManager.forceChunk(level, ModUtils.MODID, entity, chunkPos.x, chunkPos.z, false, false);
+            controller.forceChunk(level, entity, chunkPos.x, chunkPos.z, false, false);
         });
+    }
+
+    @SubscribeEvent
+    public static void register(RegisterTicketControllersEvent event) {
+        event.register(controller);
     }
 }
