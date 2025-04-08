@@ -17,37 +17,39 @@ import org.jetbrains.annotations.NotNull;
 @EventBusSubscriber(bus = EventBusSubscriber.Bus.GAME)
 public class Hammer extends SwordItem {
 
+    public static final Tier TIER = new Tier() {
+        public int getUses() {
+            return 400;
+        }
+
+        public float getSpeed() {
+            return 4f;
+        }
+
+        public float getAttackDamageBonus() {
+            return 8f;
+        }
+
+        @Override
+        public @NotNull TagKey<Block> getIncorrectBlocksForDrops() {
+            return BlockTags.INCORRECT_FOR_IRON_TOOL;
+        }
+
+        public int getLevel() {
+            return 1;
+        }
+
+        public int getEnchantmentValue() {
+            return 9;
+        }
+
+        public @NotNull Ingredient getRepairIngredient() {
+            return Ingredient.of(new ItemStack(Items.IRON_INGOT));
+        }
+    };
+
     public Hammer() {
-        super(new Tier() {
-            public int getUses() {
-                return 400;
-            }
-
-            public float getSpeed() {
-                return 4f;
-            }
-
-            public float getAttackDamageBonus() {
-                return 8f;
-            }
-
-            @Override
-            public @NotNull TagKey<Block> getIncorrectBlocksForDrops() {
-                return BlockTags.INCORRECT_FOR_IRON_TOOL;
-            }
-
-            public int getLevel() {
-                return 1;
-            }
-
-            public int getEnchantmentValue() {
-                return 9;
-            }
-
-            public @NotNull Ingredient getRepairIngredient() {
-                return Ingredient.of(new ItemStack(Items.IRON_INGOT));
-            }
-        }, new Properties());
+        super(TIER, new Properties().attributes(SwordItem.createAttributes(TIER, 3, -3.2f)).stacksTo(1));
     }
 
     @Override
