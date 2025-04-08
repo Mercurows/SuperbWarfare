@@ -58,7 +58,7 @@ public class JavelinItem extends GunItem implements GeoItem, SpecialFireWeapon {
     public static ItemDisplayContext transformType;
 
     public JavelinItem() {
-        super(new Properties().stacksTo(1).rarity(ModRarity.getLegendary()));
+        super(new Properties().stacksTo(1).rarity(ModEnumExtensions.getLegendary()));
     }
 
     @Override

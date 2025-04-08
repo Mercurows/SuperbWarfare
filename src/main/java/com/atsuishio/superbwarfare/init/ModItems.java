@@ -200,15 +200,15 @@ public class ModItems {
     public static final DeferredHolder<Item, Item> CEMENTED_CARBIDE_ACTION = ITEMS.register("cemented_carbide_action", () -> new Item(new Item.Properties().rarity(Rarity.EPIC)));
     public static final DeferredHolder<Item, Item> CEMENTED_CARBIDE_TRIGGER = ITEMS.register("cemented_carbide_trigger", () -> new Item(new Item.Properties().rarity(Rarity.EPIC)));
     public static final DeferredHolder<Item, Item> CEMENTED_CARBIDE_SPRING = ITEMS.register("cemented_carbide_spring", () -> new Item(new Item.Properties().rarity(Rarity.EPIC)));
-    public static final DeferredHolder<Item, Item> NETHERITE_BARREL = ITEMS.register("netherite_barrel", () -> new Item(new Item.Properties().rarity(ModRarity.getLegendary())));
-    public static final DeferredHolder<Item, Item> NETHERITE_ACTION = ITEMS.register("netherite_action", () -> new Item(new Item.Properties().rarity(ModRarity.getLegendary())));
-    public static final DeferredHolder<Item, Item> NETHERITE_TRIGGER = ITEMS.register("netherite_trigger", () -> new Item(new Item.Properties().rarity(ModRarity.getLegendary())));
-    public static final DeferredHolder<Item, Item> NETHERITE_SPRING = ITEMS.register("netherite_spring", () -> new Item(new Item.Properties().rarity(ModRarity.getLegendary())));
+    public static final DeferredHolder<Item, Item> NETHERITE_BARREL = ITEMS.register("netherite_barrel", () -> new Item(new Item.Properties().rarity(ModEnumExtensions.getLegendary())));
+    public static final DeferredHolder<Item, Item> NETHERITE_ACTION = ITEMS.register("netherite_action", () -> new Item(new Item.Properties().rarity(ModEnumExtensions.getLegendary())));
+    public static final DeferredHolder<Item, Item> NETHERITE_TRIGGER = ITEMS.register("netherite_trigger", () -> new Item(new Item.Properties().rarity(ModEnumExtensions.getLegendary())));
+    public static final DeferredHolder<Item, Item> NETHERITE_SPRING = ITEMS.register("netherite_spring", () -> new Item(new Item.Properties().rarity(ModEnumExtensions.getLegendary())));
 
     public static final DeferredHolder<Item, MaterialPack> COMMON_MATERIAL_PACK = ITEMS.register("common_material_pack", () -> new MaterialPack(Rarity.COMMON));
     public static final DeferredHolder<Item, MaterialPack> RARE_MATERIAL_PACK = ITEMS.register("rare_material_pack", () -> new MaterialPack(Rarity.RARE));
     public static final DeferredHolder<Item, MaterialPack> EPIC_MATERIAL_PACK = ITEMS.register("epic_material_pack", () -> new MaterialPack(Rarity.EPIC));
-    public static final DeferredHolder<Item, MaterialPack> LEGENDARY_MATERIAL_PACK = ITEMS.register("legendary_material_pack", () -> new MaterialPack(ModRarity.getLegendary()));
+    public static final DeferredHolder<Item, MaterialPack> LEGENDARY_MATERIAL_PACK = ITEMS.register("legendary_material_pack", () -> new MaterialPack(ModEnumExtensions.getLegendary()));
 
     public static final DeferredHolder<Item, BlueprintItem> TRACHELIUM_BLUEPRINT = ITEMS.register("trachelium_blueprint", () -> new BlueprintItem(Rarity.EPIC));
     public static final DeferredHolder<Item, BlueprintItem> GLOCK_17_BLUEPRINT = ITEMS.register("glock_17_blueprint", () -> new BlueprintItem(Rarity.COMMON));
@@ -219,15 +219,15 @@ public class ModItems {
     public static final DeferredHolder<Item, BlueprintItem> RPG_BLUEPRINT = ITEMS.register("rpg_blueprint", () -> new BlueprintItem(Rarity.EPIC));
     public static final DeferredHolder<Item, BlueprintItem> BOCEK_BLUEPRINT = ITEMS.register("bocek_blueprint", () -> new BlueprintItem(Rarity.EPIC));
     public static final DeferredHolder<Item, BlueprintItem> M_4_BLUEPRINT = ITEMS.register("m_4_blueprint", () -> new BlueprintItem(Rarity.RARE));
-    public static final DeferredHolder<Item, BlueprintItem> AA_12_BLUEPRINT = ITEMS.register("aa_12_blueprint", () -> new BlueprintItem(ModRarity.getLegendary()));
+    public static final DeferredHolder<Item, BlueprintItem> AA_12_BLUEPRINT = ITEMS.register("aa_12_blueprint", () -> new BlueprintItem(ModEnumExtensions.getLegendary()));
     public static final DeferredHolder<Item, BlueprintItem> HK_416_BLUEPRINT = ITEMS.register("hk_416_blueprint", () -> new BlueprintItem(Rarity.EPIC));
     public static final DeferredHolder<Item, BlueprintItem> RPK_BLUEPRINT = ITEMS.register("rpk_blueprint", () -> new BlueprintItem(Rarity.EPIC));
     public static final DeferredHolder<Item, BlueprintItem> SKS_BLUEPRINT = ITEMS.register("sks_blueprint", () -> new BlueprintItem(Rarity.RARE));
-    public static final DeferredHolder<Item, BlueprintItem> NTW_20_BLUEPRINT = ITEMS.register("ntw_20_blueprint", () -> new BlueprintItem(ModRarity.getLegendary()));
+    public static final DeferredHolder<Item, BlueprintItem> NTW_20_BLUEPRINT = ITEMS.register("ntw_20_blueprint", () -> new BlueprintItem(ModEnumExtensions.getLegendary()));
     public static final DeferredHolder<Item, BlueprintItem> VECTOR_BLUEPRINT = ITEMS.register("vector_blueprint", () -> new BlueprintItem(Rarity.EPIC));
-    public static final DeferredHolder<Item, BlueprintItem> MINIGUN_BLUEPRINT = ITEMS.register("minigun_blueprint", () -> new BlueprintItem(ModRarity.getLegendary()));
+    public static final DeferredHolder<Item, BlueprintItem> MINIGUN_BLUEPRINT = ITEMS.register("minigun_blueprint", () -> new BlueprintItem(ModEnumExtensions.getLegendary()));
     public static final DeferredHolder<Item, BlueprintItem> MK_14_BLUEPRINT = ITEMS.register("mk_14_blueprint", () -> new BlueprintItem(Rarity.EPIC));
-    public static final DeferredHolder<Item, BlueprintItem> SENTINEL_BLUEPRINT = ITEMS.register("sentinel_blueprint", () -> new BlueprintItem(ModRarity.getLegendary()));
+    public static final DeferredHolder<Item, BlueprintItem> SENTINEL_BLUEPRINT = ITEMS.register("sentinel_blueprint", () -> new BlueprintItem(ModEnumExtensions.getLegendary()));
     public static final DeferredHolder<Item, BlueprintItem> M_60_BLUEPRINT = ITEMS.register("m_60_blueprint", () -> new BlueprintItem(Rarity.EPIC));
     public static final DeferredHolder<Item, BlueprintItem> SVD_BLUEPRINT = ITEMS.register("svd_blueprint", () -> new BlueprintItem(Rarity.EPIC));
     public static final DeferredHolder<Item, BlueprintItem> MARLIN_BLUEPRINT = ITEMS.register("marlin_blueprint", () -> new BlueprintItem(Rarity.COMMON));
@@ -241,17 +241,17 @@ public class ModItems {
     public static final DeferredHolder<Item, BlueprintItem> QBZ_95_BLUEPRINT = ITEMS.register("qbz_95_blueprint", () -> new BlueprintItem(Rarity.EPIC));
     public static final DeferredHolder<Item, BlueprintItem> K_98_BLUEPRINT = ITEMS.register("k_98_blueprint", () -> new BlueprintItem(Rarity.RARE));
     public static final DeferredHolder<Item, BlueprintItem> MOSIN_NAGANT_BLUEPRINT = ITEMS.register("mosin_nagant_blueprint", () -> new BlueprintItem(Rarity.RARE));
-    public static final DeferredHolder<Item, BlueprintItem> JAVELIN_BLUEPRINT = ITEMS.register("javelin_blueprint", () -> new BlueprintItem(ModRarity.getLegendary()));
+    public static final DeferredHolder<Item, BlueprintItem> JAVELIN_BLUEPRINT = ITEMS.register("javelin_blueprint", () -> new BlueprintItem(ModEnumExtensions.getLegendary()));
     public static final DeferredHolder<Item, BlueprintItem> M_2_HB_BLUEPRINT = ITEMS.register("m2hb_blueprint", () -> new BlueprintItem(Rarity.RARE));
-    public static final DeferredHolder<Item, BlueprintItem> SECONDARY_CATACLYSM_BLUEPRINT = ITEMS.register("secondary_cataclysm_blueprint", () -> new BlueprintItem(ModRarity.getLegendary()));
+    public static final DeferredHolder<Item, BlueprintItem> SECONDARY_CATACLYSM_BLUEPRINT = ITEMS.register("secondary_cataclysm_blueprint", () -> new BlueprintItem(ModEnumExtensions.getLegendary()));
     public static final DeferredHolder<Item, BlueprintItem> INSIDIOUS_BLUEPRINT = ITEMS.register("insidious_blueprint", () -> new BlueprintItem(Rarity.EPIC));
-    public static final DeferredHolder<Item, BlueprintItem> MK_42_BLUEPRINT = ITEMS.register("mk_42_blueprint", () -> new BlueprintItem(ModRarity.getLegendary()));
-    public static final DeferredHolder<Item, BlueprintItem> MLE_1934_BLUEPRINT = ITEMS.register("mle_1934_blueprint", () -> new BlueprintItem(ModRarity.getLegendary()));
-    public static final DeferredHolder<Item, BlueprintItem> ANNIHILATOR_BLUEPRINT = ITEMS.register("annihilator_blueprint", () -> new BlueprintItem(ModRarity.getLegendary()));
+    public static final DeferredHolder<Item, BlueprintItem> MK_42_BLUEPRINT = ITEMS.register("mk_42_blueprint", () -> new BlueprintItem(ModEnumExtensions.getLegendary()));
+    public static final DeferredHolder<Item, BlueprintItem> MLE_1934_BLUEPRINT = ITEMS.register("mle_1934_blueprint", () -> new BlueprintItem(ModEnumExtensions.getLegendary()));
+    public static final DeferredHolder<Item, BlueprintItem> ANNIHILATOR_BLUEPRINT = ITEMS.register("annihilator_blueprint", () -> new BlueprintItem(ModEnumExtensions.getLegendary()));
 
     public static final DeferredHolder<Item, Item> LIGHT_ARMAMENT_MODULE = ITEMS.register("light_armament_module", () -> new Item(new Item.Properties().rarity(Rarity.RARE)));
     public static final DeferredHolder<Item, Item> MEDIUM_ARMAMENT_MODULE = ITEMS.register("medium_armament_module", () -> new Item(new Item.Properties().rarity(Rarity.EPIC)));
-    public static final DeferredHolder<Item, Item> HEAVY_ARMAMENT_MODULE = ITEMS.register("heavy_armament_module", () -> new Item(new Item.Properties().rarity(ModRarity.getLegendary())));
+    public static final DeferredHolder<Item, Item> HEAVY_ARMAMENT_MODULE = ITEMS.register("heavy_armament_module", () -> new Item(new Item.Properties().rarity(ModEnumExtensions.getLegendary())));
 
     /**
      * Block

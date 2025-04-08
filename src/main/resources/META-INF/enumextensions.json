@@ -5,8 +5,17 @@
       "name": "SUPERBWARFARE_LEGENDARY",
       "constructor": "(ILjava/lang/String;Lnet/minecraft/ChatFormatting;)V",
       "parameters": {
-        "class": "com/atsuishio/superbwarfare/init/ModRarity",
+        "class": "com/atsuishio/superbwarfare/init/ModEnumExtends",
         "field": "SUPERBWARFARE_LEGENDARY"
+      }
+    },
+    {
+      "enum": "net/minecraft/client/model/HumanoidModel$ArmPose",
+      "name": "SUPERBWARFARE_LUNGE_MINE_POSE",
+      "constructor": "(ZLnet/neoforged/neoforge/client/IArmPoseTransformer;)V",
+      "parameters": {
+        "class": "com/atsuishio/superbwarfare/init/ModEnumExtends",
+        "field": "SUPERBWARFARE_LUNGE_MINE_POSE"
       }
     }
   ]

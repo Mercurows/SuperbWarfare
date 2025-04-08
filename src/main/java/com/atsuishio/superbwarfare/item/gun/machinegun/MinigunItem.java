@@ -3,9 +3,9 @@ package com.atsuishio.superbwarfare.item.gun.machinegun;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.renderer.item.MinigunItemRenderer;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
+import com.atsuishio.superbwarfare.init.ModEnumExtensions;
 import com.atsuishio.superbwarfare.init.ModParticleTypes;
 import com.atsuishio.superbwarfare.init.ModPerks;
-import com.atsuishio.superbwarfare.init.ModRarity;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
@@ -45,7 +45,7 @@ public class MinigunItem extends GunItem implements GeoItem {
     public static ItemDisplayContext transformType;
 
     public MinigunItem() {
-        super(new Properties().stacksTo(1).rarity(ModRarity.getLegendary()));
+        super(new Properties().stacksTo(1).rarity(ModEnumExtensions.getLegendary()));
     }
 
     @Override

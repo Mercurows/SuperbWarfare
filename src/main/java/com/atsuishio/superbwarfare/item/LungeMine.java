@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.item;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.renderer.item.LungeMineRenderer;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
+import com.atsuishio.superbwarfare.init.ModEnumExtensions;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import net.minecraft.client.Minecraft;
@@ -37,6 +38,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 @EventBusSubscriber(modid = Mod.MODID, bus = EventBusSubscriber.Bus.MOD)
 public class LungeMine extends Item implements GeoItem {
+
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     public static ItemDisplayContext transformType;
 
@@ -55,22 +57,12 @@ public class LungeMine extends Item implements GeoItem {
                 return renderer;
             }
 
-            // TODO ArmPose
-//            private static final HumanoidModel.ArmPose LungeMinePose = HumanoidModel.ArmPose.create("LungeMine", false, (model, entity, arm) -> {
-//                if (arm != HumanoidArm.LEFT) {
-//                    model.rightArm.xRot = 20f * Mth.DEG_TO_RAD + model.head.xRot;
-//                    model.rightArm.yRot = -12f * Mth.DEG_TO_RAD;
-//                    model.leftArm.xRot = -45f * Mth.DEG_TO_RAD + model.head.xRot;
-//                    model.leftArm.yRot = 40f * Mth.DEG_TO_RAD;
-//                }
-//            });
-
             @Override
             @ParametersAreNonnullByDefault
             public HumanoidModel.ArmPose getArmPose(LivingEntity entityLiving, InteractionHand hand, ItemStack itemStack) {
                 if (!itemStack.isEmpty()) {
                     if (entityLiving.getUsedItemHand() == hand) {
-//                        return LungeMinePose;
+                        return ModEnumExtensions.getLungeMinePose();
                     }
                 }
                 return HumanoidModel.ArmPose.EMPTY;

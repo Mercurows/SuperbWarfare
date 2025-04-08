@@ -4,7 +4,7 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.renderer.item.Ntw20Renderer;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModAttachments;
-import com.atsuishio.superbwarfare.init.ModRarity;
+import com.atsuishio.superbwarfare.init.ModEnumExtensions;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
@@ -35,7 +35,7 @@ public class Ntw20Item extends GunItem implements GeoItem {
     public static ItemDisplayContext transformType;
 
     public Ntw20Item() {
-        super(new Properties().stacksTo(1).rarity(ModRarity.getLegendary()));
+        super(new Properties().stacksTo(1).rarity(ModEnumExtensions.getLegendary()));
     }
 
     @Override

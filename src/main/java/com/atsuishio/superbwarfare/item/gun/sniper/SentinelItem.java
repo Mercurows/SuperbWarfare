@@ -4,7 +4,7 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.renderer.item.SentinelItemRenderer;
 import com.atsuishio.superbwarfare.client.tooltip.component.SentinelImageComponent;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
-import com.atsuishio.superbwarfare.init.ModRarity;
+import com.atsuishio.superbwarfare.init.ModEnumExtensions;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.EnergyStorageItem;
@@ -37,7 +37,7 @@ public class SentinelItem extends GunItem implements GeoItem, EnergyStorageItem 
     public static ItemDisplayContext transformType;
 
     public SentinelItem() {
-        super(new Properties().stacksTo(1).rarity(ModRarity.getLegendary()));
+        super(new Properties().stacksTo(1).rarity(ModEnumExtensions.getLegendary()));
     }
 
     @Override

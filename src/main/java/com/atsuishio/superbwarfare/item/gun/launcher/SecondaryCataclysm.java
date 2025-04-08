@@ -52,7 +52,7 @@ public class SecondaryCataclysm extends GunItem implements GeoItem, SpecialFireW
     public static ItemDisplayContext transformType;
 
     public SecondaryCataclysm() {
-        super(new Properties().stacksTo(1).fireResistant().rarity(ModRarity.getLegendary()));
+        super(new Properties().stacksTo(1).fireResistant().rarity(ModEnumExtensions.getLegendary()));
     }
 
     @Override
