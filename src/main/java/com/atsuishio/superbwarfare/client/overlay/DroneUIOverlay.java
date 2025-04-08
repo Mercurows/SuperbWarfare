@@ -125,8 +125,11 @@ public class DroneUIOverlay {
 
                 if (lookAtEntity) {
                     // 实体距离
+                    var displayName = lookingEntity.getDisplayName();
+                    if (displayName == null) displayName = Component.literal("");
+
                     guiGraphics.drawString(mc.font, Component.translatable("tips.superbwarfare.drone.range")
-                                    .append(Component.literal(FormatTool.format1D(entityRange, "m ") + lookingEntity.getDisplayName())),
+                                    .append(Component.literal(FormatTool.format1D(entityRange, "m ") + displayName.getString())),
                             w / 2 + 12, h / 2 - 28, color, false);
                 } else {
                     // 方块距离
