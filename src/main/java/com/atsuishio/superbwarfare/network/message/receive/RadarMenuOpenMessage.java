@@ -1,4 +1,4 @@
-package com.atsuishio.superbwarfare.network.message.send;
+package com.atsuishio.superbwarfare.network.message.receive;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.screens.FuMO25ScreenHelper;
@@ -20,7 +20,7 @@ public record RadarMenuOpenMessage(BlockPos pos) implements CustomPacketPayload 
 
     public static void handler(RadarMenuOpenMessage message, final IPayloadContext context) {
         FuMO25ScreenHelper.resetEntities();
-        FuMO25ScreenHelper.pos = null;
+        FuMO25ScreenHelper.pos = message.pos;
     }
 
     @Override

@@ -174,7 +174,7 @@ public class FuMO25Screen extends AbstractContainerScreen<FuMO25Menu> {
                         .append("/").append(FormatTool.format1D(vehicle.getMaxHealth())).append(")");
             }
 
-            guiGraphics.drawString(this.font, Component.translatable("des.superbwarfare.fumo_25.current_target", sb),
+            guiGraphics.drawString(this.font, Component.translatable("des.superbwarfare.fumo_25.current_target", sb.toString()),
                     i + 173, j + 24, 0xffffff);
         }
 

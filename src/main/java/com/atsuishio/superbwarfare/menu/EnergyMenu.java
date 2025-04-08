@@ -3,11 +3,12 @@ package com.atsuishio.superbwarfare.menu;
 import com.atsuishio.superbwarfare.network.dataslot.ContainerEnergyData;
 import com.atsuishio.superbwarfare.network.dataslot.ContainerEnergyDataSlot;
 import com.atsuishio.superbwarfare.network.message.receive.ContainerDataMessage;
-import com.atsuishio.superbwarfare.network.message.send.RadarMenuCloseMessage;
-import com.atsuishio.superbwarfare.network.message.send.RadarMenuOpenMessage;
+import com.atsuishio.superbwarfare.network.message.receive.RadarMenuCloseMessage;
+import com.atsuishio.superbwarfare.network.message.receive.RadarMenuOpenMessage;
 import com.google.common.collect.Lists;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.DataSlot;
 import net.minecraft.world.inventory.MenuType;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -24,14 +25,11 @@ public abstract class EnergyMenu extends AbstractContainerMenu {
     private final List<ContainerEnergyDataSlot> containerEnergyDataSlots = Lists.newArrayList();
     private final List<ServerPlayer> usingPlayers = new ArrayList<>();
 
-    public EnergyMenu(@Nullable MenuType<?> pMenuType, int pContainerId) {
-        super(pMenuType, pContainerId);
-    }
-
     public EnergyMenu(@Nullable MenuType<?> pMenuType, int id, ContainerEnergyData containerData) {
         super(pMenuType, id);
 
         for (int i = 0; i < containerData.getCount(); ++i) {
+            addDataSlot(DataSlot.standalone());
             this.containerEnergyDataSlots.add(ContainerEnergyDataSlot.forContainer(containerData, i));
         }
     }

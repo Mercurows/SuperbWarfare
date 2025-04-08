@@ -19,6 +19,8 @@ public class NetworkRegistry {
         registrar.playToClient(ShootClientMessage.TYPE, ShootClientMessage.STREAM_CODEC, ShootClientMessage::handler);
         registrar.playToClient(DrawClientMessage.TYPE, DrawClientMessage.STREAM_CODEC, DrawClientMessage::handler);
         registrar.playToClient(ResetCameraTypeMessage.TYPE, ResetCameraTypeMessage.STREAM_CODEC, ResetCameraTypeMessage::handler);
+        registrar.playToClient(RadarMenuOpenMessage.TYPE, RadarMenuOpenMessage.STREAM_CODEC, RadarMenuOpenMessage::handler);
+        registrar.playToClient(RadarMenuCloseMessage.TYPE, RadarMenuCloseMessage.STREAM_CODEC, RadarMenuCloseMessage::handler);
 
         registrar.playToServer(LaserShootMessage.TYPE, LaserShootMessage.STREAM_CODEC, LaserShootMessage::handler);
         registrar.playToServer(BreathMessage.TYPE, BreathMessage.STREAM_CODEC, BreathMessage::handler);
@@ -30,8 +32,6 @@ public class NetworkRegistry {
         registrar.playToServer(VehicleFireMessage.TYPE, VehicleFireMessage.STREAM_CODEC, VehicleFireMessage::handler);
         registrar.playToServer(AimVillagerMessage.TYPE, AimVillagerMessage.STREAM_CODEC, AimVillagerMessage::handler);
         registrar.playToServer(RadarChangeModeMessage.TYPE, RadarChangeModeMessage.STREAM_CODEC, RadarChangeModeMessage::handler);
-        registrar.playToServer(RadarMenuCloseMessage.TYPE, RadarMenuCloseMessage.STREAM_CODEC, RadarMenuCloseMessage::handler);
-        registrar.playToServer(RadarMenuOpenMessage.TYPE, RadarMenuOpenMessage.STREAM_CODEC, RadarMenuOpenMessage::handler);
         registrar.playToServer(RadarSetParametersMessage.TYPE, RadarSetParametersMessage.STREAM_CODEC, RadarSetParametersMessage::handler);
         registrar.playToServer(RadarSetPosMessage.TYPE, RadarSetPosMessage.STREAM_CODEC, RadarSetPosMessage::handler);
         registrar.playToServer(RadarSetTargetMessage.TYPE, RadarSetTargetMessage.STREAM_CODEC, RadarSetTargetMessage::handler);
