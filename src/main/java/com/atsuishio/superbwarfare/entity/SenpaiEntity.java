@@ -50,27 +50,13 @@ public class SenpaiEntity extends Monster implements GeoEntity {
     @Override
     protected void registerGoals() {
         super.registerGoals();
-        this.goalSelector.addGoal(1, new MeleeAttackGoal(this, 1.4, false) {
-            // TODO what is this?
-//            @Override
-//            protected double getAttackReachSqr(LivingEntity entity) {
-//                return this.mob.getBbWidth() * this.mob.getBbWidth() + entity.getBbWidth();
-//            }
-        });
+        this.goalSelector.addGoal(1, new MeleeAttackGoal(this, 1.4, false));
         this.targetSelector.addGoal(2, new HurtByTargetGoal(this).setAlertOthers());
         this.goalSelector.addGoal(3, new RandomLookAroundGoal(this));
         this.goalSelector.addGoal(4, new FloatGoal(this));
         this.goalSelector.addGoal(5, new RandomStrollGoal(this, 0.8));
         this.targetSelector.addGoal(6, new NearestAttackableTargetGoal<>(this, Player.class, false, false));
     }
-
-
-    // TODO mob type
-//    @Override
-//    public MobType getMobType() {
-//        return MobType.ILLAGER;
-//    }
-
 
     @Override
     @ParametersAreNonnullByDefault
@@ -170,13 +156,6 @@ public class SenpaiEntity extends Monster implements GeoEntity {
             this.remove(RemovalReason.KILLED);
             this.dropExperience(null);
         }
-    }
-
-    public String getSyncedAnimation() {
-        return null;
-    }
-
-    public void setAnimation(String animation) {
     }
 
     @Override
