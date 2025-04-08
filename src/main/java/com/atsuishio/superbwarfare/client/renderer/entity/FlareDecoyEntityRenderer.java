@@ -9,6 +9,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
@@ -30,28 +31,32 @@ public class FlareDecoyEntityRenderer extends EntityRenderer<FlareDecoyEntity> {
         pMatrixStack.scale(1.0F, 1.0F, 1.0F);
         pMatrixStack.mulPose(this.entityRenderDispatcher.cameraOrientation());
         pMatrixStack.mulPose(Axis.YP.rotationDegrees(180.0F));
-        PoseStack.Pose $$6 = pMatrixStack.last();
-        Matrix4f $$7 = $$6.pose();
-        Matrix3f $$8 = $$6.normal();
-        VertexConsumer $$9 = pBuffer.getBuffer(RenderType.entityCutoutNoCull(texture(pEntity)));
-        vertex($$9, $$7, $$8, pPackedLight, 0.0F, 0, 0, 1);
-        vertex($$9, $$7, $$8, pPackedLight, 1.0F, 0, 1, 1);
-        vertex($$9, $$7, $$8, pPackedLight, 1.0F, 1, 1, 0);
-        vertex($$9, $$7, $$8, pPackedLight, 0.0F, 1, 0, 0);
+        PoseStack.Pose pose = pMatrixStack.last();
+        Matrix4f matrix = pose.pose();
+        Matrix3f normal = pose.normal();
+        VertexConsumer consumer = pBuffer.getBuffer(RenderType.entityCutoutNoCull(texture(pEntity)));
+        vertex(consumer, matrix, pose, normal, pPackedLight, 0.0F, 0, 0, 1);
+        vertex(consumer, matrix, pose, normal, pPackedLight, 1.0F, 0, 1, 1);
+        vertex(consumer, matrix, pose, normal, pPackedLight, 1.0F, 1, 1, 0);
+        vertex(consumer, matrix, pose, normal, pPackedLight, 0.0F, 1, 0, 0);
         pMatrixStack.popPose();
         super.render(pEntity, pEntityYaw, pPartialTicks, pMatrixStack, pBuffer, pPackedLight);
     }
 
-    private static void vertex(VertexConsumer pConsumer, Matrix4f pPose, Matrix3f pNormal, int pLightmapUV, float pX, float pY, int pU, int pV) {
-        // TODO vertex
-        //        pConsumer.vertex(pPose, pX - 0.5F, pY - 0.25F, 0.0F).color(255, 255, 255, 255).uv((float)pU, (float)pV).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(pLightmapUV).normal(pNormal, 0.0F, 1.0F, 0.0F).endVertex();
+    private static void vertex(VertexConsumer consumer, Matrix4f matrix, PoseStack.Pose pose, Matrix3f normal, int lightmapUV, float pX, float pY, int pU, int pV) {
+        consumer.addVertex(matrix, pX - 0.5F, pY - 0.25F, 0.0F)
+                .setColor(255, 255, 255, 255)
+                .setUv((float) pU, (float) pV)
+                .setOverlay(OverlayTexture.NO_OVERLAY)
+                .setNormal(pose, 0.0F, 1.0F, 0.0F)
+                .setLight(lightmapUV);
     }
 
     private static ResourceLocation texture(Entity entity) {
         return Mod.loc("textures/particle/fire_star_" + (entity.tickCount % 8 + 1) + ".png");
     }
 
-    public ResourceLocation getTextureLocation(FlareDecoyEntity pEntity) {
+    public @NotNull ResourceLocation getTextureLocation(@NotNull FlareDecoyEntity pEntity) {
         return texture(pEntity);
     }
 }

@@ -9,6 +9,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -72,13 +73,13 @@ public abstract class AbstractLaserEntityRenderer<T extends AbstractLaserEntity>
         float maxU = minU + 16F / TEXTURE_WIDTH;
         float maxV = minV + 16F / TEXTURE_HEIGHT;
         float SIZE = this.quadRadius + (inGround ? 0.2F : 0);
-        PoseStack.Pose matrix$stack$entry = matrixStackIn.last();
-        Matrix4f matrix4f = matrix$stack$entry.pose();
-        Matrix3f matrix3f = matrix$stack$entry.normal();
-        drawVertex(matrix4f, matrix3f, builder, -SIZE, -SIZE, 0, minU, minV, packedLightIn);
-        drawVertex(matrix4f, matrix3f, builder, -SIZE, SIZE, 0, minU, maxV, packedLightIn);
-        drawVertex(matrix4f, matrix3f, builder, SIZE, SIZE, 0, maxU, maxV, packedLightIn);
-        drawVertex(matrix4f, matrix3f, builder, SIZE, -SIZE, 0, maxU, minV, packedLightIn);
+        PoseStack.Pose pose = matrixStackIn.last();
+        Matrix4f matrix4f = pose.pose();
+        Matrix3f matrix3f = pose.normal();
+        drawVertex(matrix4f, matrix3f, pose, builder, -SIZE, -SIZE, 0, minU, minV, packedLightIn);
+        drawVertex(matrix4f, matrix3f, pose, builder, -SIZE, SIZE, 0, minU, maxV, packedLightIn);
+        drawVertex(matrix4f, matrix3f, pose, builder, SIZE, SIZE, 0, maxU, maxV, packedLightIn);
+        drawVertex(matrix4f, matrix3f, pose, builder, SIZE, -SIZE, 0, maxU, minV, packedLightIn);
     }
 
     protected void renderStart(T entity, int frame, PoseStack matrixStackIn, VertexConsumer builder, float delta, int packedLightIn) {
@@ -144,22 +145,22 @@ public abstract class AbstractLaserEntityRenderer<T extends AbstractLaserEntity>
         float minV = 16 / TEXTURE_HEIGHT + 1 / TEXTURE_HEIGHT * frame;
         float maxU = minU + 20 / TEXTURE_WIDTH;
         float maxV = minV + 1 / TEXTURE_HEIGHT;
-        PoseStack.Pose matrix$stack$entry = matrixStackIn.last();
-        Matrix4f matrix4f = matrix$stack$entry.pose();
-        Matrix3f matrix3f = matrix$stack$entry.normal();
+        PoseStack.Pose pose = matrixStackIn.last();
+        Matrix4f matrix4f = pose.pose();
+        Matrix3f matrix3f = pose.normal();
         float offset = 0;
         float size = this.beamRadius;
-        drawVertex(matrix4f, matrix3f, builder, -size, offset, 0, minU, minV, packedLightIn);
-        drawVertex(matrix4f, matrix3f, builder, -size, length, 0, minU, maxV, packedLightIn);
-        drawVertex(matrix4f, matrix3f, builder, size, length, 0, maxU, maxV, packedLightIn);
-        drawVertex(matrix4f, matrix3f, builder, size, offset, 0, maxU, minV, packedLightIn);
+        drawVertex(matrix4f, matrix3f, pose, builder, -size, offset, 0, minU, minV, packedLightIn);
+        drawVertex(matrix4f, matrix3f, pose, builder, -size, length, 0, minU, maxV, packedLightIn);
+        drawVertex(matrix4f, matrix3f, pose, builder, size, length, 0, maxU, maxV, packedLightIn);
+        drawVertex(matrix4f, matrix3f, pose, builder, size, offset, 0, maxU, minV, packedLightIn);
     }
 
-    protected void drawVertex(Matrix4f matrix, Matrix3f normals, VertexConsumer vertexBuilder, float offsetX, float offsetY, float offsetZ, float textureX, float textureY, int packedLightIn) {
-        // TODO drawVertex
-//        vertexBuilder.addVertex(matrix, offsetX, offsetY, offsetZ).setColor(1F, 1F, 1F, 1F).setUv(textureX, textureY).setOverlay(OverlayTexture.NO_OVERLAY).setLight(packedLightIn)
-//                .setNormal(normals, 0.0F, 1.0F, 0.0F)
-//                .endVertex();
+    protected void drawVertex(Matrix4f matrix, Matrix3f normals, PoseStack.Pose pose, VertexConsumer vertexBuilder, float offsetX, float offsetY, float offsetZ, float textureX, float textureY, int packedLightIn) {
+        vertexBuilder.addVertex(matrix, offsetX, offsetY, offsetZ)
+                .setColor(1F, 1F, 1F, 1F).setUv(textureX, textureY)
+                .setOverlay(OverlayTexture.NO_OVERLAY).setLight(packedLightIn)
+                .setNormal(pose, 0.0F, 1.0F, 0.0F);
     }
 
 }

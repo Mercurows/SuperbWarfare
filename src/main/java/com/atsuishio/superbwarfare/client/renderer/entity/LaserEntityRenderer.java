@@ -53,13 +53,13 @@ public class LaserEntityRenderer extends AbstractLaserEntityRenderer<LaserEntity
         float maxU = minU + 16F / TEXTURE_WIDTH;
         float maxV = minV + 16F / TEXTURE_HEIGHT;
         float size = 0.25f;
-        PoseStack.Pose matrix$stack$entry = matrixStackIn.last();
-        Matrix4f matrix4f = matrix$stack$entry.pose();
-        Matrix3f matrix3f = matrix$stack$entry.normal();
-        drawVertex(matrix4f, matrix3f, builder, -size, -size, 0, minU, minV, packedLightIn);
-        drawVertex(matrix4f, matrix3f, builder, -size, size, 0, minU, maxV, packedLightIn);
-        drawVertex(matrix4f, matrix3f, builder, size, size, 0, maxU, maxV, packedLightIn);
-        drawVertex(matrix4f, matrix3f, builder, size, -size, 0, maxU, minV, packedLightIn);
+        PoseStack.Pose pose = matrixStackIn.last();
+        Matrix4f matrix4f = pose.pose();
+        Matrix3f matrix3f = pose.normal();
+        drawVertex(matrix4f, matrix3f, pose, builder, -size, -size, 0, minU, minV, packedLightIn);
+        drawVertex(matrix4f, matrix3f, pose, builder, -size, size, 0, minU, maxV, packedLightIn);
+        drawVertex(matrix4f, matrix3f, pose, builder, size, size, 0, maxU, maxV, packedLightIn);
+        drawVertex(matrix4f, matrix3f, pose, builder, size, -size, 0, maxU, minV, packedLightIn);
     }
 
     @Override
@@ -74,14 +74,14 @@ public class LaserEntityRenderer extends AbstractLaserEntityRenderer<LaserEntity
         float minV = 16 / TEXTURE_HEIGHT + 1 / TEXTURE_HEIGHT * frame;
         float maxU = minU + 20 / TEXTURE_WIDTH;
         float maxV = minV + 1 / TEXTURE_HEIGHT;
-        PoseStack.Pose matrix$stack$entry = matrixStackIn.last();
-        Matrix4f matrix4f = matrix$stack$entry.pose();
-        Matrix3f matrix3f = matrix$stack$entry.normal();
+        PoseStack.Pose pose = matrixStackIn.last();
+        Matrix4f matrix4f = pose.pose();
+        Matrix3f matrix3f = pose.normal();
         float offset = playerView ? -1 : 0;
         float size = 0.2f;
-        drawVertex(matrix4f, matrix3f, builder, -size, offset, 0, minU, minV, packedLightIn);
-        drawVertex(matrix4f, matrix3f, builder, -size, length, 0, minU, maxV, packedLightIn);
-        drawVertex(matrix4f, matrix3f, builder, size, length, 0, maxU, maxV, packedLightIn);
-        drawVertex(matrix4f, matrix3f, builder, size, offset, 0, maxU, minV, packedLightIn);
+        drawVertex(matrix4f, matrix3f, pose, builder, -size, offset, 0, minU, minV, packedLightIn);
+        drawVertex(matrix4f, matrix3f, pose, builder, -size, length, 0, minU, maxV, packedLightIn);
+        drawVertex(matrix4f, matrix3f, pose, builder, size, length, 0, maxU, maxV, packedLightIn);
+        drawVertex(matrix4f, matrix3f, pose, builder, size, offset, 0, maxU, minV, packedLightIn);
     }
 }
