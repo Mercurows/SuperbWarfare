@@ -408,15 +408,6 @@ public class ClickHandler {
         }
     }
 
-    // TODO do we need cloth config?
-//    private static void handleConfigScreen(Player player) {
-//        if (ModList.get().isLoaded(CompatHolder.CLOTH_CONFIG)) {
-//            CompatHolder.hasMod(CompatHolder.CLOTH_CONFIG, () -> Minecraft.getInstance().setScreen(ClothConfigHelper.getConfigScreen(null)));
-//        } else {
-//            player.displayClientMessage(Component.translatable("tips.superbwarfare.no_cloth_config").withStyle(ChatFormatting.RED), true);
-//        }
-//    }
-
     private static void handleDismountPress(Player player) {
         var vehicle = player.getVehicle();
         if (!(vehicle instanceof VehicleEntity)) return;

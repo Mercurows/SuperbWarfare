@@ -136,7 +136,9 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
         compound.putInt("KamikazeMode", this.entityData.get(KAMIKAZE_MODE));
 
         CompoundTag item = new CompoundTag();
-        this.currentItem.save(level().registryAccess(), item);
+        if (!item.isEmpty()) {
+            this.currentItem.save(level().registryAccess(), item);
+        }
         compound.put("Item", item);
     }
 

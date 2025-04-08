@@ -940,7 +940,8 @@ public class ClientEventHandler {
 
         if (drone != null && tag.getBoolean("Using")) {
             if (Minecraft.getInstance().gameRenderer.currentEffect() == null) {
-                Minecraft.getInstance().gameRenderer.loadEffect(Mod.loc("shaders/post/scan_pincushion.json"));
+                // TODO 无人机 shader
+//                Minecraft.getInstance().gameRenderer.loadEffect(Mod.loc("shaders/post/scan_pincushion.json"));
             }
         }
     }
