@@ -11,6 +11,7 @@ import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
+import net.minecraft.world.level.storage.loot.entries.NestedLootTable;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
 import net.minecraft.world.level.storage.loot.functions.SetItemCountFunction;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
@@ -254,31 +255,30 @@ public class ModCustomLootProvider implements LootTableSubProvider {
                 )));
         output.accept(containers("common"),
                 LootTable.lootTable().withPool(multiItems(1, 0,
-                                new ItemEntry(ModItems.EPIC_MATERIAL_PACK.get(), 2),
-                                new ItemEntry(ModItems.CEMENTED_CARBIDE_BLOCK.get(), 2),
-                                new ItemEntry(Items.EXPERIENCE_BOTTLE, 2)
-                                        .setCount(4),
-                                new ItemEntry(ModItems.RARE_MATERIAL_PACK.get(), 4)
-                                        .setCount(2),
-                                new ItemEntry(ModItems.COMMON_MATERIAL_PACK.get(), 6)
-                                        .setCount(3),
-                                new ItemEntry(ModItems.STEEL_BLOCK.get(), 14),
-                                new ItemEntry(Items.GOLD_BLOCK, 20),
-                                new ItemEntry(ModItems.HANDGUN_AMMO.get(), 6)
-                                        .setCount(64),
-                                new ItemEntry(ModItems.RIFLE_AMMO.get(), 6)
-                                        .setCount(64),
-                                new ItemEntry(ModItems.SHOTGUN_AMMO.get(), 6)
-                                        .setCount(32),
-                                new ItemEntry(ModItems.SNIPER_AMMO.get(), 6)
-                                        .setCount(32),
-                                new ItemEntry(ModItems.HEAVY_AMMO.get(), 6)
-                                        .setCount(16),
-                                new ItemEntry(Items.COAL_BLOCK, 30)
-                                        .setCount(9))
-                        // TODO LootTableReference
-//                                .add(LootTableReference.lootTableReference(special("common/flags")).setWeight(40))
-//                                .add(LootTableReference.lootTableReference(special("common/blueprints")).setWeight(50))
+                        new ItemEntry(ModItems.EPIC_MATERIAL_PACK.get(), 2),
+                        new ItemEntry(ModItems.CEMENTED_CARBIDE_BLOCK.get(), 2),
+                        new ItemEntry(Items.EXPERIENCE_BOTTLE, 2)
+                                .setCount(4),
+                        new ItemEntry(ModItems.RARE_MATERIAL_PACK.get(), 4)
+                                .setCount(2),
+                        new ItemEntry(ModItems.COMMON_MATERIAL_PACK.get(), 6)
+                                .setCount(3),
+                        new ItemEntry(ModItems.STEEL_BLOCK.get(), 14),
+                        new ItemEntry(Items.GOLD_BLOCK, 20),
+                        new ItemEntry(ModItems.HANDGUN_AMMO.get(), 6)
+                                .setCount(64),
+                        new ItemEntry(ModItems.RIFLE_AMMO.get(), 6)
+                                .setCount(64),
+                        new ItemEntry(ModItems.SHOTGUN_AMMO.get(), 6)
+                                .setCount(32),
+                        new ItemEntry(ModItems.SNIPER_AMMO.get(), 6)
+                                .setCount(32),
+                        new ItemEntry(ModItems.HEAVY_AMMO.get(), 6)
+                                .setCount(16),
+                        new ItemEntry(Items.COAL_BLOCK, 30)
+                                .setCount(9))
+                        .add(NestedLootTable.lootTableReference(special("common/flags")).setWeight(40))
+                        .add(NestedLootTable.lootTableReference(special("common/blueprints")).setWeight(50))
                 ));
 
         output.accept(special("common/flags"), LootTable.lootTable()

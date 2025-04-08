@@ -131,6 +131,16 @@
           ],
           "name": "minecraft:coal_block",
           "weight": 30
+        },
+        {
+          "type": "minecraft:loot_table",
+          "value": "superbwarfare:special/common/flags",
+          "weight": 40
+        },
+        {
+          "type": "minecraft:loot_table",
+          "value": "superbwarfare:special/common/blueprints",
+          "weight": 50
         }
       ],
       "rolls": 1.0
