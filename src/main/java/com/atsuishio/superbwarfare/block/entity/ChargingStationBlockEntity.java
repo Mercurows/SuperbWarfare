@@ -30,11 +30,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.capabilities.ICapabilityProvider;
 import net.neoforged.neoforge.energy.EnergyStorage;
 import net.neoforged.neoforge.energy.IEnergyStorage;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.wrapper.SidedInvWrapper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -377,30 +374,6 @@ public class ChargingStationBlockEntity extends BlockEntity implements WorldlyCo
         ContainerHelper.saveAllItems(compoundtag, this.items, registries);
         compoundtag.putBoolean("ShowRange", this.showRange);
         return compoundtag;
-    }
-
-    public static class ItemHandlerProvider implements ICapabilityProvider<ChargingStationBlockEntity, Direction, IItemHandler> {
-
-        private IItemHandler[] itemHandlers;
-
-        @Override
-        public @Nullable IItemHandler getCapability(@NotNull ChargingStationBlockEntity object, Direction context) {
-            if (context == null || object.isRemoved()) return null;
-
-            if (itemHandlers == null) {
-                this.itemHandlers = new IItemHandler[]{
-                        new SidedInvWrapper(object, Direction.UP),
-                        new SidedInvWrapper(object, Direction.DOWN),
-                        new SidedInvWrapper(object, Direction.NORTH),
-                };
-            }
-
-            return switch (context) {
-                case UP -> itemHandlers[0];
-                case DOWN -> itemHandlers[1];
-                default -> itemHandlers[2];
-            };
-        }
     }
 
     @Override
