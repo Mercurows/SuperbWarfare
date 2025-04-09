@@ -3,7 +3,7 @@ package com.atsuishio.superbwarfare.client.overlay;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.config.client.DisplayConfig;
-import com.atsuishio.superbwarfare.entity.vehicle.*;
+import com.atsuishio.superbwarfare.entity.vehicle.SpeedboatEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.*;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.HeliRocketWeapon;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.LaserWeapon;
@@ -47,9 +47,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static com.atsuishio.superbwarfare.client.RenderHelper.preciseBlit;
 import static com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay.*;
-import static com.atsuishio.superbwarfare.entity.vehicle.Bmp2Entity.LOADED_MISSILE;
-import static com.atsuishio.superbwarfare.entity.vehicle.Bmp2Entity.MISSILE_COUNT;
-import static com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity.*;
 
 @OnlyIn(Dist.CLIENT)
 public class VehicleHudOverlay implements LayeredDraw.Layer {
@@ -142,7 +139,7 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
 
     public static void renderLandArmorHud(GuiGraphics guiGraphics, DeltaTracker deltaTracker, int w, int h) {
         Minecraft mc = Minecraft.getInstance();
-        Player player = mc.player;
+        var player = mc.player;
         PoseStack poseStack = guiGraphics.pose();
         Camera camera = mc.gameRenderer.getMainCamera();
         Vec3 cameraPos = camera.getPosition();
@@ -150,7 +147,7 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
         assert player != null;
 
         if (player.getVehicle() instanceof LandArmorEntity iLand && iLand.isDriver(player)
-                && iLand instanceof WeaponVehicleEntity weaponVehicle
+                && iLand instanceof WeaponVehicleEntity
                 && iLand instanceof MobileVehicleEntity mobileVehicle
                 && !(player.getVehicle() instanceof SpeedboatEntity)) {
             poseStack.pushPose();
@@ -167,12 +164,7 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
             RenderSystem.setShaderColor(1, 1, 1, 1);
 
             scopeScale = Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), scopeScale, 1F);
-            float f = (float) Math.min(w, h);
-            float f1 = Math.min((float) w / f, (float) h / f) * scopeScale;
-            float i = Mth.floor(f * f1);
-            float j = Mth.floor(f * f1);
-            float k = ((w - i) / 2);
-            float l = ((h - j) / 2);
+            float scale = scopeScale;
 
             if (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON || ClientEventHandler.zoomVehicle) {
                 int addW = (w / h) * 48;
@@ -180,30 +172,6 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
                 preciseBlit(guiGraphics, FRAME, (float) -addW / 2, (float) -addH / 2, 10, 0, 0.0F, w + addW, h + addH, w + addW, h + addH);
                 preciseBlit(guiGraphics, Mod.loc("textures/screens/land/line.png"), w / 2f - 64, h - 56, 0, 0.0F, 128, 1, 128, 1);
                 preciseBlit(guiGraphics, Mod.loc("textures/screens/land/line.png"), w / 2f + 112, h - 71, 0, 0.0F, 1, 16, 1, 16);
-
-                // 不同武器种类的准星
-                if (weaponVehicle instanceof Yx100Entity) {
-                    if (weaponVehicle.getWeaponIndex(0) == 0) {
-                        preciseBlit(guiGraphics, Mod.loc("textures/screens/land/tank_cannon_cross_ap.png"), k, l, 0, 0.0F, i, j, i, j);
-                    } else if (weaponVehicle.getWeaponIndex(0) == 1) {
-                        preciseBlit(guiGraphics, Mod.loc("textures/screens/land/tank_cannon_cross_he.png"), k, l, 0, 0.0F, i, j, i, j);
-                    } else if (weaponVehicle.getWeaponIndex(0) == 2) {
-                        preciseBlit(guiGraphics, Mod.loc("textures/screens/land/lav_gun_cross.png"), k, l, 0, 0.0F, i, j, i, j);
-                    } else if (weaponVehicle.getWeaponIndex(0) == 3) {
-                        preciseBlit(guiGraphics, Mod.loc("textures/screens/land/lav_missile_cross.png"), k, l, 0, 0.0F, i, j, i, j);
-                    }
-
-                } else if (weaponVehicle instanceof PrismTankEntity) {
-                    preciseBlit(guiGraphics, Mod.loc("textures/screens/land/lav_missile_cross.png"), k, l, 0, 0.0F, i, j, i, j);
-                } else {
-                    if (weaponVehicle.getWeaponIndex(0) == 0) {
-                        preciseBlit(guiGraphics, Mod.loc("textures/screens/land/lav_cannon_cross.png"), k, l, 0, 0.0F, i, j, i, j);
-                    } else if (weaponVehicle.getWeaponIndex(0) == 1) {
-                        preciseBlit(guiGraphics, Mod.loc("textures/screens/land/lav_gun_cross.png"), k, l, 0, 0.0F, i, j, i, j);
-                    } else if (weaponVehicle.getWeaponIndex(0) == 2) {
-                        preciseBlit(guiGraphics, Mod.loc("textures/screens/land/lav_missile_cross.png"), k, l, 0, 0.0F, i, j, i, j);
-                    }
-                }
 
                 // 指南针
                 preciseBlit(guiGraphics, Mod.loc("textures/screens/compass.png"), (float) w / 2 - 128, (float) 10, 128 + ((float) 64 / 45 * player.getYRot()), 0, 256, 16, 512, 16);
@@ -245,6 +213,7 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
                     entityRange = player.distanceTo(lookingEntity);
                 }
 
+                // 测距
                 if (lookAtEntity) {
                     guiGraphics.drawString(mc.font, Component.literal(FormatTool.format1D(entityRange, "m")),
                             w / 2 - 6, h - 53, 0x66FF00, false);
@@ -257,43 +226,8 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
                     }
                 }
 
-                // 武器名称
-                // LAV-150
-                if (player.getVehicle() instanceof Lav150Entity lav) {
-                    if (weaponVehicle.getWeaponIndex(0) == 0) {
-                        double heat = 1 - lav.getEntityData().get(HEAT) / 100.0F;
-                        guiGraphics.drawString(mc.font, Component.literal("20MM CANNON " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : lav.getAmmoCount(player))), w / 2 - 33, h - 65, Mth.hsvToRgb((float) heat / 3.745318352059925F, 1.0F, 1.0F), false);
-                    } else {
-                        double heat = 1 - lav.getEntityData().get(COAX_HEAT) / 100.0F;
-                        guiGraphics.drawString(mc.font, Component.literal("7.62MM COAX " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : lav.getAmmoCount(player))), w / 2 - 33, h - 65, Mth.hsvToRgb((float) heat / 3.745318352059925F, 1.0F, 1.0F), false);
-                    }
-                }
-
-                // BMP-2
-                if (player.getVehicle() instanceof Bmp2Entity bmp2) {
-                    if (weaponVehicle.getWeaponIndex(0) == 0) {
-                        double heat = 1 - bmp2.getEntityData().get(HEAT) / 100.0F;
-                        guiGraphics.drawString(mc.font, Component.literal(" 30MM 2A42 " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : bmp2.getAmmoCount(player))), w / 2 - 33, h - 65, Mth.hsvToRgb((float) heat / 3.745318352059925F, 1.0F, 1.0F), false);
-                    } else if (weaponVehicle.getWeaponIndex(0) == 1) {
-                        double heat = 1 - bmp2.getEntityData().get(COAX_HEAT) / 100.0F;
-                        guiGraphics.drawString(mc.font, Component.literal(" 7.62MM ПКТ " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : bmp2.getAmmoCount(player))), w / 2 - 33, h - 65, Mth.hsvToRgb((float) heat / 3.745318352059925F, 1.0F, 1.0F), false);
-                    } else {
-                        guiGraphics.drawString(mc.font, Component.literal("    9M113  " + bmp2.getEntityData().get(LOADED_MISSILE) + " " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : bmp2.getEntityData().get(MISSILE_COUNT))), w / 2 - 33, h - 65, 0x66FF00, false);
-                    }
-
-                }
-
-                // YX-100
-                if (player.getVehicle() instanceof Yx100Entity yx100) {
-                    if (weaponVehicle.getWeaponIndex(0) == 0) {
-                        guiGraphics.drawString(mc.font, Component.literal("AP SHELL  " + yx100.getAmmoCount(player) + " " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : yx100.getEntityData().get(AMMO))), w / 2 - 33, h - 65, 0x66FF00, false);
-                    } else if (weaponVehicle.getWeaponIndex(0) == 1) {
-                        guiGraphics.drawString(mc.font, Component.literal("HE SHELL  " + yx100.getAmmoCount(player) + " " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : yx100.getEntityData().get(AMMO))), w / 2 - 33, h - 65, 0x66FF00, false);
-                    } else if (weaponVehicle.getWeaponIndex(0) == 2) {
-                        double heat = 1 - yx100.getEntityData().get(COAX_HEAT) / 100.0F;
-                        guiGraphics.drawString(mc.font, Component.literal(" 12.7MM HMG " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : yx100.getAmmoCount(player))), w / 2 - 33, h - 65, Mth.hsvToRgb((float) heat / 3.745318352059925F, 1.0F, 1.0F), false);
-                    }
-                }
+                // 载具自定义第一人称渲染
+                mobileVehicle.renderFirstPersonOverlay(guiGraphics, mc.font, player, w, h, scale);
 
                 // 血量
                 double heal = mobileVehicle.getHealth() / mobileVehicle.getMaxHealth();
@@ -308,7 +242,6 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
                     float x = (float) p.x;
                     float y = (float) p.y;
 
-                    poseStack.pushPose();
                     preciseBlit(guiGraphics, Mod.loc("textures/screens/drone.png"), x - 12, y - 12, 0, 0, 24, 24, 24, 24);
                     renderKillIndicator3P(guiGraphics, x - 7.5f + (float) (2 * (Math.random() - 0.5f)), y - 7.5f + (float) (2 * (Math.random() - 0.5f)));
 
@@ -317,46 +250,14 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
                     poseStack.translate(x, y, 0);
                     poseStack.scale(0.75f, 0.75f, 1);
 
-                    // LAV-150
-                    if (weaponVehicle instanceof Lav150Entity lav1501) {
-                        if (weaponVehicle.getWeaponIndex(0) == 0) {
-                            double heat = lav1501.getEntityData().get(HEAT) / 100.0F;
-                            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("20MM CANNON " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : lav1501.getAmmoCount(player))), 30, -9, Mth.hsvToRgb(0F, (float) heat, 1.0F), false);
-                        } else {
-                            double heat2 = lav1501.getEntityData().get(COAX_HEAT) / 100.0F;
-                            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("7.62MM COAX " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : lav1501.getAmmoCount(player))), 30, -9, Mth.hsvToRgb(0F, (float) heat2, 1.0F), false);
-                        }
-                    }
-                    // BMP-2
-                    if (weaponVehicle instanceof Bmp2Entity bmp201) {
-                        if (weaponVehicle.getWeaponIndex(0) == 0) {
-                            double heat = bmp201.getEntityData().get(HEAT) / 100.0F;
-                            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("30MM 2A42 " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : bmp201.getAmmoCount(player))), 30, -9, Mth.hsvToRgb(0F, (float) heat, 1.0F), false);
-                        } else if (weaponVehicle.getWeaponIndex(0) == 1) {
-                            double heat2 = bmp201.getEntityData().get(COAX_HEAT) / 100.0F;
-                            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("7.62MM ПКТ " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : bmp201.getAmmoCount(player))), 30, -9, Mth.hsvToRgb(0F, (float) heat2, 1.0F), false);
-                        } else {
-                            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("9M113 " + bmp201.getEntityData().get(LOADED_MISSILE) + " " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : bmp201.getEntityData().get(MISSILE_COUNT))), 30, -9, -1, false);
-                        }
-                    }
-                    // YX-100
-                    if (weaponVehicle instanceof Yx100Entity yx100) {
-                        if (weaponVehicle.getWeaponIndex(0) == 0) {
-                            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("AP SHELL " + yx100.getAmmoCount(player) + " " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : yx100.getEntityData().get(AMMO))), 30, -9, -1, false);
-                        } else if (weaponVehicle.getWeaponIndex(0) == 1) {
-                            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("HE SHELL " + yx100.getAmmoCount(player) + " " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : yx100.getEntityData().get(AMMO))), 30, -9, -1, false);
-                        } else if (weaponVehicle.getWeaponIndex(0) == 2) {
-                            double heat2 = yx100.getEntityData().get(COAX_HEAT) / 100.0F;
-                            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("12.7MM HMG " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : yx100.getAmmoCount(player))), 30, -9, Mth.hsvToRgb(0F, (float) heat2, 1.0F), false);
-                        }
-                    }
+                    // 载具自定义第三人称准心
+                    mobileVehicle.renderThirdPersonOverlay(guiGraphics, mc.font, player, w, h, scale);
 
-                    double heal = 1 - mobileVehicle.getHealth() / mobileVehicle.getMaxHealth();
+                    double health = 1 - mobileVehicle.getHealth() / mobileVehicle.getMaxHealth();
 
                     guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("HP " +
-                            FormatTool.format0D(100 * mobileVehicle.getHealth() / mobileVehicle.getMaxHealth())), 30, 1, Mth.hsvToRgb(0F, (float) heal, 1.0F), false);
+                            FormatTool.format0D(100 * mobileVehicle.getHealth() / mobileVehicle.getMaxHealth())), 30, 1, Mth.hsvToRgb(0F, (float) health, 1.0F), false);
 
-                    poseStack.popPose();
                     poseStack.popPose();
                     poseStack.popPose();
                 }

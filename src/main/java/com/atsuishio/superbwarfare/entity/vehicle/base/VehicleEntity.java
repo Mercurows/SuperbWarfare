@@ -15,6 +15,9 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.mojang.math.Axis;
 import it.unimi.dsi.fastutil.ints.IntList;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.particles.ParticleTypes;
@@ -59,6 +62,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 
+import static com.atsuishio.superbwarfare.client.RenderHelper.preciseBlit;
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 
 public abstract class VehicleEntity extends Entity {
@@ -938,6 +942,29 @@ public abstract class VehicleEntity extends Entity {
 
     public void setGunXRot(float pGunXRot) {
         this.gunXRot = pGunXRot;
+    }
+
+    public void renderFirstPersonOverlay(GuiGraphics guiGraphics, Font font, LocalPlayer player, int screenWidth, int screenHeight, float scale) {
+        if (!(this instanceof WeaponVehicleEntity weaponVehicle)) return;
+
+        float minWH = (float) Math.min(screenWidth, screenHeight);
+        float scaledMinWH = Mth.floor(minWH * scale);
+        float centerW = ((screenWidth - scaledMinWH) / 2);
+        float centerH = ((screenHeight - scaledMinWH) / 2);
+
+        // 默认武器准心渲染
+        var texture = Mod.loc(switch (weaponVehicle.getWeaponIndex(0)) {
+            case 0 -> "textures/screens/land/lav_cannon_cross.png";
+            case 1 -> "textures/screens/land/lav_gun_cross.png";
+            case 2 -> "textures/screens/land/lav_missile_cross.png";
+            default -> "";
+        });
+        if (texture.getPath().isEmpty()) return;
+
+        preciseBlit(guiGraphics, texture, centerW, centerH, 0, 0, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH);
+    }
+
+    public void renderThirdPersonOverlay(GuiGraphics guiGraphics, Font font, LocalPlayer player, int screenWidth, int screenHeight, float scale) {
     }
 
 }
