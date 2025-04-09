@@ -418,6 +418,7 @@ public class Lav150Entity extends ContainerMobileVehicleEntity implements GeoEnt
         return 5;
     }
 
+    @Override
     public Vec3 driverZoomPos(float ticks) {
         Matrix4f transform = getTurretTransform(ticks);
         Vector4f worldPosition = transformPosition(transform, 0.3f, 0.75f, 0.56f);

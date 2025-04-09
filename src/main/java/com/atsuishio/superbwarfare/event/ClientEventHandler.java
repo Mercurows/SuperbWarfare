@@ -876,11 +876,6 @@ public class ClientEventHandler {
                 && tag.getBoolean("Linked"))
         ) {
             handleDroneCamera(event, living, tag);
-        } else {
-            var effect = Minecraft.getInstance().gameRenderer.currentEffect();
-            if (effect != null && effect.getName().equals(Mod.MODID + ":shaders/post/scan_pincushion.json")) {
-                Minecraft.getInstance().gameRenderer.shutdownEffect();
-            }
         }
 
         LocalPlayer player = Minecraft.getInstance().player;
@@ -931,18 +926,11 @@ public class ClientEventHandler {
         handleShockCamera(event, living);
     }
 
-    public static void handleDroneCamera(ViewportEvent.ComputeCameraAngles event, LivingEntity entity, final CompoundTag tag) {
+    private static void handleDroneCamera(ViewportEvent.ComputeCameraAngles event, LivingEntity entity, final CompoundTag tag) {
         DroneEntity drone = EntityFindUtil.findDrone(entity.level(), tag.getString("LinkedDrone"));
 
         if (drone != null) {
             event.setRoll(drone.getRoll((float) event.getPartialTick()) * (1 - (drone.getPitch((float) event.getPartialTick()) / 90)));
-        }
-
-        if (drone != null && tag.getBoolean("Using")) {
-            if (Minecraft.getInstance().gameRenderer.currentEffect() == null) {
-                // TODO 无人机 shader
-//                Minecraft.getInstance().gameRenderer.loadEffect(Mod.loc("shaders/post/scan_pincushion.json"));
-            }
         }
     }
 

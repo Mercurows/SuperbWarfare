@@ -428,6 +428,7 @@ public class SpeedboatEntity extends ContainerMobileVehicleEntity implements Geo
         this.clampRotation(entity);
     }
 
+    @Override
     public Vec3 driverZoomPos(float ticks) {
         Matrix4f transform = getBarrelTransform(ticks);
 

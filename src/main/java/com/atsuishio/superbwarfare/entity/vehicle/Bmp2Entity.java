@@ -494,6 +494,7 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
         return 5;
     }
 
+    @Override
     public Vec3 driverZoomPos(float ticks) {
         Matrix4f transform = getTurretTransform(ticks);
         Vector4f worldPosition = transformPosition(transform, 0, 0, 0.75f);

@@ -60,6 +60,7 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
     public static final EntityDataAccessor<Float> PITCH = SynchedEntityData.defineId(Mk42Entity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Float> YAW = SynchedEntityData.defineId(Mk42Entity.class, EntityDataSerializers.FLOAT);
 
+    private final float shellGravity = 0.1f;
 
     public Mk42Entity(EntityType<Mk42Entity> type, Level world) {
         super(type, world);
@@ -82,6 +83,7 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
                                 .explosionDamage(VehicleConfig.MK42_AP_EXPLOSION_DAMAGE.get())
                                 .explosionRadius(VehicleConfig.MK42_AP_EXPLOSION_RADIUS.get().floatValue())
                                 .durability(60)
+                                .gravity(shellGravity)
                                 .sound(ModSounds.CANNON_RELOAD.get())
                                 .icon(Mod.loc("textures/screens/vehicle_weapon/ap_shell.png")),
                         new CannonShellWeapon()
@@ -91,6 +93,7 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
                                 .durability(0)
                                 .fireProbability(0.18F)
                                 .fireTime(2)
+                                .gravity(shellGravity)
                                 .sound(ModSounds.CANNON_RELOAD.get())
                                 .icon(Mod.loc("textures/screens/vehicle_weapon/he_shell.png")),
                 }
@@ -150,18 +153,25 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
         int targetX = pos.getX();
         int targetY = pos.getY();
         int targetZ = pos.getZ();
+        var isDepressed = parameters.isDepressed();
 
-        if (!RangeTool.canReach(15, 0.2F, this.getEyePosition(), new Vec3(targetX, targetY, targetZ), -14.9, 85, parameters.isDepressed()))
+        Matrix4f transform = getVehicleFlatTransform(1);
+        Vector4f worldPosition = transformPosition(transform, 0f, 2.16f, 0.5175f);
+        Vec3 shootPos = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
+
+        if (!RangeTool.canReach(15, shellGravity, shootPos, new Vec3(targetX, targetY, targetZ), -14.9, 85, isDepressed))
             return;
 
         this.look(new Vec3(targetX, targetY, targetZ));
-        entityData.set(PITCH, (float) -RangeTool.calculateAngle(15, 0.2F, this.getEyePosition(), new Vec3(targetX, targetY, targetZ), parameters.isDepressed()));
+        entityData.set(PITCH, (float) -RangeTool.calculateAngle(15, shellGravity, shootPos, new Vec3(targetX, targetY, targetZ), isDepressed));
     }
 
     private void look(Vec3 pTarget) {
-        Vec3 vec3 = this.getEyePosition();
-        double d0 = pTarget.x - vec3.x;
-        double d2 = pTarget.z - vec3.z;
+        Matrix4f transform = getVehicleFlatTransform(1);
+        Vector4f worldPosition = transformPosition(transform, 0f, 2.16f, 0.5175f);
+        Vec3 shootPos = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
+        double d0 = pTarget.x - shootPos.x;
+        double d2 = pTarget.z - shootPos.z;
         entityData.set(YAW, Mth.wrapDegrees((float) (Mth.atan2(d2, d0) * 57.2957763671875) - 90.0F));
     }
 
@@ -275,6 +285,13 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
     }
 
     @Override
+    public Vec3 driverZoomPos(float ticks) {
+        Matrix4f transform = getVehicleFlatTransform(1);
+        Vector4f worldPosition = transformPosition(transform, 0f, 2.16f + 1.4f, 0.5175f);
+        return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
+    }
+
+    @Override
     public void vehicleShoot(Player player, int type) {
         if (this.entityData.get(COOL_DOWN) > 0) return;
 
@@ -346,7 +363,7 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
         Entity passenger = this.getFirstPassenger();
         if (passenger != null) {
             entityData.set(YAW, passenger.getYHeadRot());
-            entityData.set(PITCH, passenger.getXRot() - 1.3f);
+            entityData.set(PITCH, passenger.getXRot() - 2f);
         }
 
         float diffY = Mth.wrapDegrees(entityData.get(YAW) - this.getYRot());
@@ -355,12 +372,12 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
         turretTurnSound(diffX, diffY, 0.95f);
 
         this.setYRot(this.getYRot() + Mth.clamp(0.5f * diffY, -1.75f, 1.75f));
-        this.setXRot(Mth.clamp(this.getXRot() + Mth.clamp(0.5f * diffX, -3f, 3f), -85, 16.3f));
+        this.setXRot(Mth.clamp(this.getXRot() + Mth.clamp(0.5f * diffX, -3f, 3f), -85, 15f));
     }
 
     protected void clampRotation(Entity entity) {
         float f = Mth.wrapDegrees(entity.getXRot());
-        float f1 = Mth.clamp(f, -85.0F, 16.3F);
+        float f1 = Mth.clamp(f, -85.0F, 17F);
         entity.xRotO += f1 - f;
         entity.setXRot(entity.getXRot() + f1 - f);
     }
@@ -416,6 +433,14 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
     @Override
     public int zoomFov() {
         return 5;
+    }
+
+    @Override
+    public Vec3 getBarrelVector(float pPartialTicks) {
+        if (getFirstPassenger() != null) {
+            return getFirstPassenger().getViewVector(pPartialTicks);
+        }
+        return super.getBarrelVector(pPartialTicks);
     }
 
     @Override

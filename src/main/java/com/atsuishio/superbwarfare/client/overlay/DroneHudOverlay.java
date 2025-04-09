@@ -43,6 +43,7 @@ public class DroneHudOverlay implements LayeredDraw.Layer {
 
     public static int MAX_DISTANCE = 256;
     private static final ResourceLocation FRAME = Mod.loc("textures/screens/frame/frame.png");
+    private static final ResourceLocation TV_FRAME = Mod.loc("textures/screens/land/tv_frame.png");
 
     @Override
     @ParametersAreNonnullByDefault
@@ -72,6 +73,9 @@ public class DroneHudOverlay implements LayeredDraw.Layer {
         if (stack.is(ModItems.MONITOR.get()) && tag.getBoolean("Using") && tag.getBoolean("Linked")) {
             guiGraphics.blit(Mod.loc("textures/screens/drone.png"), w / 2 - 16, h / 2 - 16, 0, 0, 32, 32, 32, 32);
             guiGraphics.blit(Mod.loc("textures/screens/drone_fov.png"), w / 2 + 100, h / 2 - 64, 0, 0, 64, 129, 64, 129);
+            int addW = (w / h) * 48;
+            int addH = (w / h) * 27;
+            preciseBlit(guiGraphics, TV_FRAME, (float) -addW / 2, (float) -addH / 2, 10, 0, 0.0F, w + addW, h + addH, w + addW, h + addH);
 
             preciseBlit(guiGraphics, Mod.loc("textures/screens/drone_fov_move.png"), (float) w / 2 + 100, (float) (h / 2 - 64 - ((ClientEventHandler.droneFovLerp - 1) * 23.8)), 0, 0, 64, 129, 64, 129);
             guiGraphics.drawString(mc.font, Component.literal(FormatTool.format1D(ClientEventHandler.droneFovLerp, "x")),

@@ -104,6 +104,7 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
                                 .fireTime(0)
                                 .durability(100)
                                 .velocity(40)
+                                .gravity(0.1f)
                                 .sound(ModSounds.INTO_MISSILE.get())
                                 .ammo(ModItems.AP_5_INCHES.get())
                                 .icon(Mod.loc("textures/screens/vehicle_weapon/ap_shell.png")),
@@ -116,6 +117,7 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
                                 .fireTime(2)
                                 .durability(0)
                                 .velocity(25)
+                                .gravity(0.1f)
                                 .sound(ModSounds.INTO_CANNON.get())
                                 .ammo(ModItems.HE_5_INCHES.get())
                                 .icon(Mod.loc("textures/screens/vehicle_weapon/he_shell.png")),
@@ -763,6 +765,7 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
         }
     }
 
+    @Override
     public Vec3 driverZoomPos(float ticks) {
         Matrix4f transform = getTurretTransform(ticks);
         Vector4f worldPosition = transformPosition(transform, 0, 1.2f, 0.6076875f);

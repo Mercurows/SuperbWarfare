@@ -556,6 +556,7 @@ public class PrismTankEntity extends ContainerMobileVehicleEntity implements Geo
         return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
     }
 
+    @Override
     public Vec3 driverZoomPos(float ticks) {
         Matrix4f transform = getBarrelTransform(ticks);
         Vector4f worldPosition = transformPosition(transform, 0, 0.95f, 0f);

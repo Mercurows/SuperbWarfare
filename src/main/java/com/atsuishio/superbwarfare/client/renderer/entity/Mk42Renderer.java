@@ -3,15 +3,19 @@ package com.atsuishio.superbwarfare.client.renderer.entity;
 import com.atsuishio.superbwarfare.client.layer.vehicle.Mk42Layer;
 import com.atsuishio.superbwarfare.client.model.entity.Mk42Model;
 import com.atsuishio.superbwarfare.entity.vehicle.Mk42Entity;
+import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.player.Player;
 import software.bernie.geckolib.cache.object.BakedGeoModel;
+import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
 
 public class Mk42Renderer extends GeoEntityRenderer<Mk42Entity> {
@@ -44,7 +48,14 @@ public class Mk42Renderer extends GeoEntityRenderer<Mk42Entity> {
     }
 
     @Override
-    protected float getDeathMaxRotation(Mk42Entity entityLivingBaseIn) {
-        return 0.0F;
+    public void renderRecursively(PoseStack poseStack, Mk42Entity animatable, GeoBone bone, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, int color) {
+        String name = bone.getName();
+
+        if (name.equals("bone")) {
+            Player player = Minecraft.getInstance().player;
+            bone.setHidden(ClientEventHandler.zoomVehicle && animatable.getFirstPassenger() == player);
+        }
+
+        super.renderRecursively(poseStack, animatable, bone, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, color);
     }
 }

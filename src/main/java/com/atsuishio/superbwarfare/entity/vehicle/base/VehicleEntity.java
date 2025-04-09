@@ -947,6 +947,10 @@ public abstract class VehicleEntity extends Entity {
         this.gunXRot = pGunXRot;
     }
 
+    public Vec3 driverZoomPos(float ticks) {
+        return getEyePosition();
+    }
+
     public void renderFirstPersonOverlay(GuiGraphics guiGraphics, Font font, LocalPlayer player, int screenWidth, int screenHeight, float scale) {
         if (!(this instanceof WeaponVehicleEntity weaponVehicle)) return;
 
