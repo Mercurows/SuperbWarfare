@@ -56,7 +56,7 @@ public class TaserItem extends GunItem implements GeoItem, SpecialFireWeapon, En
     @Override
     public boolean isBarVisible(ItemStack stack) {
         var cap = stack.getCapability(Capabilities.EnergyStorage.ITEM);
-        return cap != null && cap.getEnergyStored() > 0 && cap.getEnergyStored() < MAX_ENERGY;
+        return cap != null && cap.getEnergyStored() != 0;
     }
 
     @Override
