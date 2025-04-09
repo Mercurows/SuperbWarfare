@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.entity;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.client.gui.RangeHelper;
 import com.atsuishio.superbwarfare.component.ModDataComponents;
 import com.atsuishio.superbwarfare.entity.projectile.MortarShellEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
@@ -9,6 +8,7 @@ import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.common.ammo.MortarShell;
+import com.atsuishio.superbwarfare.tools.RangeTool;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.particles.ParticleTypes;
@@ -171,13 +171,13 @@ public class MortarEntity extends VehicleEntity implements GeoEntity {
         double targetZ = pos.getZ();
         var isDepressed = parameters.isDepressed();
 
-        if (!RangeHelper.canReach(11.4, 0.146, this.getEyePosition(), new Vec3(targetX, targetY, targetZ), 20, 89, isDepressed)) {
+        if (!RangeTool.canReach(11.4, 0.146, this.getEyePosition(), new Vec3(targetX, targetY, targetZ), 20, 89, isDepressed)) {
             return false;
         }
 
         this.look(new Vec3(targetX, targetY, targetZ));
 
-        entityData.set(PITCH, (float) -RangeHelper.calculateAngle(
+        entityData.set(PITCH, (float) -RangeTool.calculateAngle(
                 11.4, 0.146,
                 this.getEyePosition(),
                 new Vec3(targetX, targetY, targetZ),

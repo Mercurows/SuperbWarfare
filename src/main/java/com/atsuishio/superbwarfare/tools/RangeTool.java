@@ -1,9 +1,9 @@
-package com.atsuishio.superbwarfare.client.gui;
+package com.atsuishio.superbwarfare.tools;
 
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 
-public class RangeHelper {
+public class RangeTool {
 
     /**
      * 计算迫击炮理论水平射程

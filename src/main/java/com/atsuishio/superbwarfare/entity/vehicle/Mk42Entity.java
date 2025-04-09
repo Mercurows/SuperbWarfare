@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.entity.vehicle;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.client.gui.RangeHelper;
 import com.atsuishio.superbwarfare.component.ModDataComponents;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
@@ -18,10 +17,7 @@ import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.common.ammo.CannonShellItem;
 import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage;
-import com.atsuishio.superbwarfare.tools.CustomExplosion;
-import com.atsuishio.superbwarfare.tools.InventoryTool;
-import com.atsuishio.superbwarfare.tools.ParticleTool;
-import com.atsuishio.superbwarfare.tools.SoundTool;
+import com.atsuishio.superbwarfare.tools.*;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -155,11 +151,11 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
         int targetY = pos.getY();
         int targetZ = pos.getZ();
 
-        if (!RangeHelper.canReach(15, 0.2F, this.getEyePosition(), new Vec3(targetX, targetY, targetZ), -14.9, 85, parameters.isDepressed()))
+        if (!RangeTool.canReach(15, 0.2F, this.getEyePosition(), new Vec3(targetX, targetY, targetZ), -14.9, 85, parameters.isDepressed()))
             return;
 
         this.look(new Vec3(targetX, targetY, targetZ));
-        entityData.set(PITCH, (float) -RangeHelper.calculateAngle(15, 0.2F, this.getEyePosition(), new Vec3(targetX, targetY, targetZ), parameters.isDepressed()));
+        entityData.set(PITCH, (float) -RangeTool.calculateAngle(15, 0.2F, this.getEyePosition(), new Vec3(targetX, targetY, targetZ), parameters.isDepressed()));
     }
 
     private void look(Vec3 pTarget) {
