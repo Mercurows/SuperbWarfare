@@ -50,8 +50,8 @@ public class SwarmDroneEntity extends FastThrowableProjectile implements GeoEnti
     public static final EntityDataAccessor<Float> HEALTH = SynchedEntityData.defineId(SwarmDroneEntity.class, EntityDataSerializers.FLOAT);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
-    private float explosionDamage = 125f;
-    private float explosionRadius = 6f;
+    private float explosionDamage = 80f;
+    private float explosionRadius = 5f;
 
     private float randomFloat;
     private int guide_type = 0;
@@ -171,8 +171,7 @@ public class SwarmDroneEntity extends FastThrowableProjectile implements GeoEnti
             return;
         }
         if (this.level() instanceof ServerLevel) {
-            causeMissileExplode(ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(), this, this.getOwner()),
-                    this, this.explosionDamage, this.explosionRadius);
+            causeMissileExplode(ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(), this, this.getOwner()), this.explosionDamage, this.explosionRadius);
         }
     }
 
@@ -180,8 +179,7 @@ public class SwarmDroneEntity extends FastThrowableProjectile implements GeoEnti
     public void onHitBlock(@NotNull BlockHitResult blockHitResult) {
         super.onHitBlock(blockHitResult);
         if (this.level() instanceof ServerLevel) {
-            causeMissileExplode(ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(), this, this.getOwner()),
-                    this, this.explosionDamage, this.explosionRadius);
+            causeMissileExplode(ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(), this, this.getOwner()), this.explosionDamage, this.explosionRadius);
         }
     }
 
@@ -222,8 +220,7 @@ public class SwarmDroneEntity extends FastThrowableProjectile implements GeoEnti
 
             if (dis < 0.5) {
                 if (this.level() instanceof ServerLevel) {
-                    causeMissileExplode(ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(), this, this.getOwner()),
-                            this, this.explosionDamage, this.explosionRadius);
+                    causeMissileExplode(ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(), this, this.getOwner()), this.explosionDamage, this.explosionRadius);
                 }
                 this.discard();
             }
@@ -231,16 +228,14 @@ public class SwarmDroneEntity extends FastThrowableProjectile implements GeoEnti
 
         if (this.tickCount > 300 || this.isInWater()) {
             if (this.level() instanceof ServerLevel) {
-                causeMissileExplode(ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(), this, this.getOwner()),
-                        this, this.explosionDamage, this.explosionRadius);
+                causeMissileExplode(ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(), this, this.getOwner()), this.explosionDamage, this.explosionRadius);
             }
             this.discard();
         }
 
         if (this.entityData.get(HEALTH) <= 0) {
             if (this.level() instanceof ServerLevel) {
-                causeMissileExplode(ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(), this, this.getOwner()),
-                        this, this.explosionDamage, this.explosionRadius);
+                causeMissileExplode(ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(), this, this.getOwner()), this.explosionDamage, this.explosionRadius);
             }
             this.discard();
         }
@@ -250,7 +245,7 @@ public class SwarmDroneEntity extends FastThrowableProjectile implements GeoEnti
     protected void updateRotation() {
     }
 
-    public void causeMissileExplode(@Nullable DamageSource source, Entity target, float damage, float radius) {
+    public void causeMissileExplode(@Nullable DamageSource source, float damage, float radius) {
         if (this.getOwner() instanceof LivingEntity living) {
             if (!living.level().isClientSide() && living instanceof ServerPlayer player) {
                 living.level().playSound(null, living.blockPosition(), ModSounds.INDICATION.get(), SoundSource.VOICE, 1, 1);
@@ -260,7 +255,7 @@ public class SwarmDroneEntity extends FastThrowableProjectile implements GeoEnti
         }
 
         CustomExplosion explosion = new CustomExplosion(level(), this, source, damage,
-                target.getX(), target.getEyeY(), target.getZ(), radius, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP).setDamageMultiplier(1.25f);
+                this.getX(), this.getY(), this.getZ(), radius, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP).setDamageMultiplier(1.25f);
         explosion.explode();
         EventHooks.onExplosionStart(level(), explosion);
         explosion.finalizeExplosion(false);

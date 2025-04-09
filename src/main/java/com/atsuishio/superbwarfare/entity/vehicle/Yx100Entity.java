@@ -144,8 +144,8 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
                 new VehicleWeapon[]{
                         // 蜂群无人机
                         new SwarmDroneWeapon()
-                                .explosionDamage(125)
-                                .explosionRadius(6)
+                                .explosionDamage(VehicleConfig.YX_100_SWARM_EXPLOSION_DAMAGE.get())
+                                .explosionRadius(VehicleConfig.YX_100_SWARM_EXPLOSION_RADIUS.get().floatValue())
                                 .sound(ModSounds.INTO_MISSILE.get()),
                 }
         };

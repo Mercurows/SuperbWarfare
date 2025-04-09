@@ -94,6 +94,8 @@ public class VehicleConfig {
     public static ModConfigSpec.IntValue YX_100_HE_CANNON_DAMAGE;
     public static ModConfigSpec.IntValue YX_100_HE_CANNON_EXPLOSION_DAMAGE;
     public static ModConfigSpec.DoubleValue YX_100_HE_CANNON_EXPLOSION_RADIUS;
+    public static ModConfigSpec.IntValue YX_100_SWARM_EXPLOSION_DAMAGE;
+    public static ModConfigSpec.DoubleValue YX_100_SWARM_EXPLOSION_RADIUS;
 
     public static ModConfigSpec.IntValue PRISM_TANK_HP;
     public static ModConfigSpec.IntValue PRISM_TANK_MAX_ENERGY;
@@ -375,6 +377,12 @@ public class VehicleConfig {
 
         builder.comment("The cannon explosion radius of Yx_100");
         YX_100_HE_CANNON_EXPLOSION_RADIUS = builder.defineInRange("yx_100_he_cannon_explosion_radius", 10d, 1d, 10000000d);
+
+        builder.comment("The swarm drone explosion damage of Yx_100");
+        YX_100_SWARM_EXPLOSION_DAMAGE = builder.defineInRange("yx_100_swarm_drone_explosion_damage", 80, 1, 10000000);
+
+        builder.comment("The swarm drone explosion radius of Yx_100");
+        YX_100_SWARM_EXPLOSION_RADIUS = builder.defineInRange("yx_100_swarm_drone_explosion_radius", 5d, 1d, 10000000d);
 
         builder.pop();
 

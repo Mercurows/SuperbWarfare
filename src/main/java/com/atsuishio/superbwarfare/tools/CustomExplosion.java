@@ -189,6 +189,7 @@ public class CustomExplosion extends Explosion {
                         } else {
                             entity.hurt(this.damageSource, (float) damageFinal);
                         }
+                        entity.invulnerableTime = 1;
 
                         if (fireTime > 0) {
                             entity.setRemainingFireTicks(fireTime);
