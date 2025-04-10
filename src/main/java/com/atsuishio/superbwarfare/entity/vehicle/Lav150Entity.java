@@ -46,6 +46,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
@@ -593,6 +595,7 @@ public class Lav150Entity extends ContainerMobileVehicleEntity implements GeoEnt
         return Mod.loc("textures/vehicle_icon/lav150_icon.png");
     }
 
+    @OnlyIn(Dist.CLIENT)
     @Override
     public void renderFirstPersonOverlay(GuiGraphics guiGraphics, Font font, LocalPlayer player, int screenWidth, int screenHeight, float scale) {
         super.renderFirstPersonOverlay(guiGraphics, font, player, screenWidth, screenHeight, scale);
@@ -606,6 +609,7 @@ public class Lav150Entity extends ContainerMobileVehicleEntity implements GeoEnt
         }
     }
 
+    @OnlyIn(Dist.CLIENT)
     @Override
     public void renderThirdPersonOverlay(GuiGraphics guiGraphics, Font font, LocalPlayer player, int screenWidth, int screenHeight, float scale) {
         super.renderThirdPersonOverlay(guiGraphics, font, player, screenWidth, screenHeight, scale);
