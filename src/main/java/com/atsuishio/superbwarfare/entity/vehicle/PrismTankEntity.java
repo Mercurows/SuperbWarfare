@@ -720,7 +720,7 @@ public class PrismTankEntity extends ContainerMobileVehicleEntity implements Geo
     public int getAmmoCount(Player player) {
         var cap = this.getCapability(Capabilities.EnergyStorage.ENTITY, null);
         if (cap == null) return 0;
-        return (int) (cap.getEnergyStored() / 100f / this.getMaxEnergy());
+        return (int) (cap.getEnergyStored() * 100f / this.getMaxEnergy());
     }
 
     @Override
