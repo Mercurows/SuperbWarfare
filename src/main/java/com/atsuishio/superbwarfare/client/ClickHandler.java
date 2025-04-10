@@ -224,6 +224,10 @@ public class ClickHandler {
                 PacketDistributor.sendToServer(new EditModeMessage(0));
             }
 
+            if (key == ModKeyMappings.BREATH.getKey().getValue() && !exhaustion && zoom) {
+                breath = true;
+            }
+
             if (player.getData(ModAttachments.PLAYER_VARIABLE).edit) {
                 if (!(stack.getItem() instanceof GunItem gunItem)) return;
                 if (ModKeyMappings.EDIT_GRIP.getKeyModifier().isActive(KeyConflictContext.IN_GAME)) {
@@ -272,6 +276,12 @@ public class ClickHandler {
                     handleWeaponZoomPress(player, stack);
                     switchZoom = !switchZoom;
                 }
+
+                if (event.getAction() == GLFW.GLFW_RELEASE) {
+                    if (key == ModKeyMappings.BREATH.getKey().getValue()) {
+                        breath = false;
+                    }
+                }
             }
 
         } else {
@@ -317,7 +327,6 @@ public class ClickHandler {
         if (stack.getItem() instanceof GunItem gunItem && !(player.getVehicle() != null
                 && player.getVehicle() instanceof CannonEntity)
                 && clientTimer.getProgress() == 0
-                && cantFireTime == 0
                 && !notInGame()
         ) {
             var data = GunData.from(stack);
@@ -341,6 +350,7 @@ public class ClickHandler {
                         }
                     } else {
                         ClientEventHandler.holdFire = true;
+                        player.setSprinting(false);
                     }
                 }
             }

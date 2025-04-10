@@ -294,10 +294,6 @@ public class ClientEventHandler {
             return;
         }
 
-        if (!exhaustion && zoom) {
-            breath = ModKeyMappings.BREATH.isDown();
-        }
-
         tacticalSprint = !exhaustion && !zoom && isMoving() && player.isSprinting() && player.getVehicle() == null && player.onGround();
 
         ItemStack stack = player.getMainHandItem();
@@ -335,9 +331,7 @@ public class ClientEventHandler {
             switchTime = Math.max(switchTime - 0.15, 0);
         }
 
-        if (!zoom) {
-            breath = false;
-        } else {
+        if (zoom) {
             tacticalSprint = false;
         }
 
@@ -526,7 +520,7 @@ public class ClientEventHandler {
         double weight = data.weight();
         double speed = 1 - (0.04 * weight);
 
-        if (ClientEventHandler.cantSprint == 0 && player.isSprinting() && !zoom) {
+        if (ClientEventHandler.cantSprint == 0 && player.isSprinting() && !zoom && !holdFire) {
             cantFireTime = Mth.clamp(cantFireTime + 3 * times, 0, 24);
         } else {
             cantFireTime = Mth.clamp(cantFireTime - 6 * speed * times, 0, 40);
