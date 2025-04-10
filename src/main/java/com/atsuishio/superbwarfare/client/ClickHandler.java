@@ -334,6 +334,7 @@ public class ClickHandler {
                 player.playSound(ModSounds.TRIGGER_CLICK.get(), 1, 1);
             } else {
                 player.playSound(ModSounds.BOCEK_PULL_1P.get(), 1, 1);
+                handTimer = 0;
             }
 
             if (!gunItem.useBackpackAmmo(stack) && data.ammo() <= 0 && data.reload.time() == 0) {
@@ -342,8 +343,12 @@ public class ClickHandler {
                     ClientEventHandler.burstFireAmount = 0;
                 }
             } else {
-                PacketDistributor.sendToServer(new FireMessage(0));
-                if ((!data.reloading() && !data.charging() && !data.bolt.needed()) && drawTime < 0.01) {
+                PacketDistributor.sendToServer(new FireMessage(0, handTimer, zoom));
+                if ((!data.reloading()
+                        && !data.charging()
+                        && !data.bolt.needed())
+                        && drawTime < 0.01
+                ) {
                     if (data.fireMode() == 1) {
                         if (ClientEventHandler.burstFireAmount == 0) {
                             ClientEventHandler.burstFireAmount = data.burstAmount();
@@ -358,7 +363,7 @@ public class ClickHandler {
     }
 
     public static void handleWeaponFireRelease() {
-        PacketDistributor.sendToServer(new FireMessage(1));
+        PacketDistributor.sendToServer(new FireMessage(1, handTimer, zoom));
         ClientEventHandler.holdFire = false;
         ClientEventHandler.holdFireVehicle = false;
         ClientEventHandler.customRpm = 0;

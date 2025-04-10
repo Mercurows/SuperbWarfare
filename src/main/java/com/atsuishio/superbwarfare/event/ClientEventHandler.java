@@ -1009,7 +1009,7 @@ public class ClientEventHandler {
             handleWeaponFire(event, living);
             handleWeaponShell();
             handleGunRecoil();
-            handleBowPullAnimation(living);
+            handleBowPullAnimation(living, stack);
             handleWeaponDraw(living);
             handlePlayerCamera(event);
         }
@@ -1420,10 +1420,10 @@ public class ClientEventHandler {
         event.setRoll((float) (roll + cameraRot[2] + (DisplayConfig.CAMERA_ROTATE.get() ? 0.35 : 0) * turnRot[2]));
     }
 
-    private static void handleBowPullAnimation(LivingEntity entity) {
+    private static void handleBowPullAnimation(LivingEntity entity, ItemStack stack) {
         float times = 4 * (float) Math.min(Minecraft.getInstance().getTimer().getRealtimeDeltaTicks(), 0.8);
 
-        if (holdFire) {
+        if (holdFire && entity instanceof Player player && !player.getCooldowns().isOnCooldown(stack.getItem())) {
             pullTimer = Math.min(pullTimer + 0.024 * times, 1.4);
             bowTimer = Math.min(bowTimer + 0.018 * times, 1);
             handTimer = Math.min(handTimer + 0.018 * times, 1);

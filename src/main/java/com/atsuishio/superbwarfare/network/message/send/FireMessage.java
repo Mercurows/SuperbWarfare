@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.network.message.send;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity;
-import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.event.GunEventHandler;
 import com.atsuishio.superbwarfare.init.ModAttachments;
 import com.atsuishio.superbwarfare.init.ModPerks;
@@ -27,21 +26,25 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-public record FireMessage(int msgType) implements CustomPacketPayload {
+public record FireMessage(int msgType, double power, boolean zoom) implements CustomPacketPayload {
     public static final Type<FireMessage> TYPE = new Type<>(Mod.loc("fire"));
 
     public static final StreamCodec<ByteBuf, FireMessage> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.INT,
             FireMessage::msgType,
+            ByteBufCodecs.DOUBLE,
+            FireMessage::power,
+            ByteBufCodecs.BOOL,
+            FireMessage::zoom,
             FireMessage::new
     );
 
 
     public static void handler(FireMessage message, final IPayloadContext context) {
-        pressAction(context.player(), message.msgType);
+        pressAction(context.player(), message.msgType, message.power, message.zoom);
     }
 
-    public static void pressAction(Player player, int type) {
+    public static void pressAction(Player player, int type, double power, boolean zoom) {
         if (player.isSpectator()) return;
         ItemStack stack = player.getMainHandItem();
         if (!stack.is(ModTags.Items.GUN)) return;
@@ -59,19 +62,15 @@ public record FireMessage(int msgType) implements CustomPacketPayload {
             cap.edit = false;
 
             // 按下开火
-            if (!(stack.getItem() instanceof SpecialFireWeapon specialFireWeapon)) {
-                player.setData(ModAttachments.PLAYER_VARIABLE, cap);
-                cap.sync(player);
-                return;
-            }
-            specialFireWeapon.fireOnPress(player, data, ClientEventHandler.zoom);
+            if (!(stack.getItem() instanceof SpecialFireWeapon specialFireWeapon)) return;
+            specialFireWeapon.fireOnPress(player, data, zoom);
         } else if (type == 1) {
             // 松开开火
             if (stack.getItem() instanceof SpecialFireWeapon specialFireWeapon) {
                 if (specialFireWeapon instanceof BocekItem) {
-                    specialFireWeapon.fireOnRelease(player, data, ClientEventHandler.bowTimer, ClientEventHandler.zoom);
+                    specialFireWeapon.fireOnRelease(player, data, power, zoom);
                 } else {
-                    specialFireWeapon.fireOnRelease(player, data, 0, ClientEventHandler.zoom);
+                    specialFireWeapon.fireOnRelease(player, data, 0, zoom);
                 }
             }
         }
