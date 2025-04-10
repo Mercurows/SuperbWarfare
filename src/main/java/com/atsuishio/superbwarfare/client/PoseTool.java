@@ -20,7 +20,7 @@ public class PoseTool {
             }
         }
 
-        if (entityLiving.isSprinting() && entityLiving.onGround() && entityLiving.getPersistentData().getDouble("noRun") == 0) {
+        if (entityLiving.isSprinting() && entityLiving.onGround()) {
             return HumanoidModel.ArmPose.CROSSBOW_CHARGE;
         } else {
             return HumanoidModel.ArmPose.BOW_AND_ARROW;

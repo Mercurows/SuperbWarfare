@@ -13,7 +13,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
@@ -49,7 +48,6 @@ public class M98bItem extends GunItem implements GeoItem {
         ItemStack stack = player.getMainHandItem();
         if (!stack.is(ModTags.Items.GUN)) return PlayState.STOP;
         var data = GunData.from(stack);
-        final var tag = data.tag();
 
         if (data.bolt.actionTime() > 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m98b.shift"));
@@ -72,12 +70,11 @@ public class M98bItem extends GunItem implements GeoItem {
         ItemStack stack = player.getMainHandItem();
         if (!stack.is(ModTags.Items.GUN)) return PlayState.STOP;
         var data = GunData.from(stack);
-        final var tag = data.tag();
 
         if (player.isSprinting() && player.onGround()
-                && player.getPersistentData().getDouble("noRun") == 0
+                && ClientEventHandler.cantSprint == 0
                 && !(data.reload.normal() || data.reload.empty()) && ClientEventHandler.drawTime < 0.01) {
-            if (player.hasEffect(MobEffects.MOVEMENT_SPEED) && data.bolt.actionTime() == 0) {
+            if (ClientEventHandler.tacticalSprint && data.bolt.actionTime() == 0) {
                 return event.setAndContinue(RawAnimation.begin().thenLoop("animation.m98b.run_fast"));
             } else {
                 return event.setAndContinue(RawAnimation.begin().thenLoop("animation.m98b.run"));

@@ -17,7 +17,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
@@ -86,8 +85,8 @@ public class AK12Item extends GunItem implements GeoItem {
             }
         }
 
-        if (player.isSprinting() && player.onGround() && player.getPersistentData().getDouble("noRun") == 0 && ClientEventHandler.drawTime < 0.01) {
-            if (player.hasEffect(MobEffects.MOVEMENT_SPEED)) {
+        if (player.isSprinting() && player.onGround() && ClientEventHandler.cantSprint == 0 && ClientEventHandler.drawTime < 0.01) {
+            if (ClientEventHandler.tacticalSprint) {
                 return event.setAndContinue(RawAnimation.begin().thenLoop("animation.ak12.run_fast"));
             } else {
                 if (grip) {

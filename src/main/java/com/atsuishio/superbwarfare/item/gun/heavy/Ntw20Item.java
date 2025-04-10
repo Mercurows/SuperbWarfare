@@ -18,7 +18,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import software.bernie.geckolib.animatable.GeoItem;
@@ -82,10 +81,10 @@ public class Ntw20Item extends GunItem implements GeoItem {
         var data = GunData.from(stack);
 
         if (player.isSprinting() && player.onGround()
-                && player.getPersistentData().getDouble("noRun") == 0
+                && ClientEventHandler.cantSprint == 0
                 && !(data.reload.normal() || data.reload.empty())
                 && ClientEventHandler.drawTime < 0.01) {
-            if (player.hasEffect(MobEffects.MOVEMENT_SPEED) && data.bolt.actionTime() == 0) {
+            if (ClientEventHandler.tacticalSprint && data.bolt.actionTime() == 0) {
                 return event.setAndContinue(RawAnimation.begin().thenLoop("animation.ntw_20.run_fast"));
             } else {
                 return event.setAndContinue(RawAnimation.begin().thenLoop("animation.ntw_20.run"));

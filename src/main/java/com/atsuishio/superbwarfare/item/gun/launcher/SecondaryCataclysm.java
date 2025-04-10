@@ -22,7 +22,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -119,7 +118,7 @@ public class SecondaryCataclysm extends GunItem implements GeoItem, SpecialFireW
         var data = GunData.from(stack);
 
         if (player.isSprinting() && player.onGround()
-                && player.getPersistentData().getDouble("noRun") == 0
+                && ClientEventHandler.cantSprint == 0
                 && !data.reload.empty()
                 && data.reload.stage() != 1
                 && data.reload.stage() != 2
@@ -128,7 +127,7 @@ public class SecondaryCataclysm extends GunItem implements GeoItem, SpecialFireW
                 && ClientEventHandler.gunMelee == 0
                 && !data.reloading()
         ) {
-            if (player.hasEffect(MobEffects.MOVEMENT_SPEED)) {
+            if (ClientEventHandler.tacticalSprint) {
                 return event.setAndContinue(RawAnimation.begin().thenLoop("animation.sc.run_fast"));
             } else {
                 return event.setAndContinue(RawAnimation.begin().thenLoop("animation.sc.run"));

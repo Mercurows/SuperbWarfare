@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.event;
 
 import com.atsuishio.superbwarfare.config.common.GameplayConfig;
-import com.atsuishio.superbwarfare.config.server.MiscConfig;
 import com.atsuishio.superbwarfare.init.ModAttachments;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModTags;
@@ -16,9 +15,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.util.Mth;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -58,12 +54,6 @@ public class PlayerEventHandler {
     public static void onPlayerRespawned(PlayerEvent.PlayerRespawnEvent event) {
         Player player = event.getEntity();
 
-        var cap = player.getData(ModAttachments.PLAYER_VARIABLE).watch();
-        cap.tacticalSprintExhaustion = false;
-        cap.tacticalSprintTime = 600;
-        player.setData(ModAttachments.PLAYER_VARIABLE, cap);
-        cap.sync(player);
-
         handleRespawnReload(player);
         handleRespawnAutoArmor(player);
 
@@ -83,91 +73,12 @@ public class PlayerEventHandler {
     public static void onPlayerTick(PlayerTickEvent.Post event) {
         Player player = event.getEntity();
         ItemStack stack = player.getMainHandItem();
-        var variable = player.getData(ModAttachments.PLAYER_VARIABLE).watch();
 
         if (stack.is(ModTags.Items.GUN)) {
-            handlePlayerSprint(player);
             handleSpecialWeaponAmmo(player);
         }
 
         handleGround(player);
-        handleTacticalSprint(player);
-
-        variable.sync(player);
-    }
-
-    private static void handleTacticalSprint(Player player) {
-        var cap = player.getData(ModAttachments.PLAYER_VARIABLE).watch();
-
-        ItemStack stack = player.getMainHandItem();
-        int sprintCost;
-
-        if (stack.is(ModTags.Items.GUN)) {
-            var data = GunData.from(stack);
-            sprintCost = (int) (5 + 0.2 * data.weight());
-        } else {
-            sprintCost = 5;
-        }
-
-        if (!player.isSprinting()) {
-            cap.tacticalSprint = false;
-            player.getPersistentData().putBoolean("canTacticalSprint", true);
-        }
-
-        if (player.isSprinting()
-                && !cap.tacticalSprintExhaustion
-                && player.getPersistentData().getBoolean("canTacticalSprint")
-        ) {
-            cap.tacticalSprint = true;
-            player.getPersistentData().putBoolean("canTacticalSprint", false);
-        }
-
-        if (cap.tacticalSprint) {
-            cap.tacticalSprintTime = Mth.clamp(cap.tacticalSprintTime - sprintCost, 0, 1000);
-
-            if (MiscConfig.ALLOW_TACTICAL_SPRINT.get()) {
-                player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 2, 0, false, false));
-            }
-        } else {
-            cap.tacticalSprintTime = Mth.clamp(cap.tacticalSprintTime + 7, 0, 1000);
-        }
-
-        if (cap.tacticalSprintTime == 0) {
-            cap.tacticalSprintExhaustion = true;
-            cap.tacticalSprint = false;
-        }
-
-        if (cap.tacticalSprintTime == 1000) {
-            cap.tacticalSprintExhaustion = false;
-            player.getPersistentData().putBoolean("canTacticalSprint", true);
-        }
-
-        player.setData(ModAttachments.PLAYER_VARIABLE, cap);
-    }
-
-    /**
-     * 判断玩家是否在奔跑
-     */
-    private static void handlePlayerSprint(Player player) {
-        if (!player.level().isClientSide) return;
-
-        if (ClientEventHandler.holdFire) {
-            player.getPersistentData().putDouble("noRun", 10);
-        }
-
-        if (player.isShiftKeyDown()
-                || player.isPassenger()
-                || player.isInWater()
-                || ClientEventHandler.zoom
-        ) player.getPersistentData().putDouble("noRun", 3);
-
-        if (player.getPersistentData().getDouble("noRun") > 0) {
-            player.getPersistentData().putDouble("noRun", (player.getPersistentData().getDouble("noRun") - 1));
-        }
-
-        if (ClientEventHandler.zoom || ClientEventHandler.holdFire) {
-            player.setSprinting(false);
-        }
     }
 
     private static void handleGround(Player player) {

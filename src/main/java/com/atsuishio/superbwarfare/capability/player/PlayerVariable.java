@@ -27,9 +27,6 @@ public class PlayerVariable implements INBTSerializable<CompoundTag> {
     public int sniperAmmo = 0;
     public int heavyAmmo = 0;
     public boolean playerDoubleJump = false;
-    public boolean tacticalSprint = false;
-    public int tacticalSprintTime = 600;
-    public boolean tacticalSprintExhaustion = false;
     public boolean edit = false;
 
     public void sync(Entity entity) {
@@ -63,9 +60,6 @@ public class PlayerVariable implements INBTSerializable<CompoundTag> {
         }
 
         nbt.putBoolean("DoubleJump", playerDoubleJump);
-        nbt.putBoolean("TacticalSprint", tacticalSprint);
-        nbt.putInt("TacticalSprintTime", tacticalSprintTime);
-        nbt.putBoolean("TacticalSprintExhaustion", tacticalSprintExhaustion);
         nbt.putBoolean("EditMode", edit);
 
         return nbt;
@@ -77,9 +71,6 @@ public class PlayerVariable implements INBTSerializable<CompoundTag> {
         }
 
         playerDoubleJump = tag.getBoolean("DoubleJump");
-        tacticalSprint = tag.getBoolean("TacticalSprint");
-        tacticalSprintTime = tag.getInt("TacticalSprintTime");
-        tacticalSprintExhaustion = tag.getBoolean("TacticalSprintExhaustion");
         edit = tag.getBoolean("EditMode");
 
         return this;
@@ -94,9 +85,6 @@ public class PlayerVariable implements INBTSerializable<CompoundTag> {
         clone.sniperAmmo = this.sniperAmmo;
         clone.heavyAmmo = this.heavyAmmo;
         clone.playerDoubleJump = this.playerDoubleJump;
-        clone.tacticalSprint = this.tacticalSprint;
-        clone.tacticalSprintTime = this.tacticalSprintTime;
-        clone.tacticalSprintExhaustion = this.tacticalSprintExhaustion;
         clone.edit = this.edit;
 
         return clone;
@@ -112,8 +100,6 @@ public class PlayerVariable implements INBTSerializable<CompoundTag> {
                 && sniperAmmo == other.sniperAmmo
                 && heavyAmmo == other.heavyAmmo
                 && playerDoubleJump == other.playerDoubleJump
-                && tacticalSprint == other.tacticalSprint
-                && tacticalSprintExhaustion == other.tacticalSprintExhaustion
                 && edit == other.edit;
     }
 

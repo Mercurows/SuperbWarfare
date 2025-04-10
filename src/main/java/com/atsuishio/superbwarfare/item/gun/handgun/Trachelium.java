@@ -18,7 +18,6 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
@@ -141,16 +140,16 @@ public class Trachelium extends GunItem implements GeoItem {
             }
         }
 
-        if (player.isSprinting() && player.onGround() && player.getPersistentData().getDouble("noRun") == 0 && ClientEventHandler.drawTime < 0.01) {
+        if (player.isSprinting() && player.onGround() && ClientEventHandler.cantSprint == 0 && ClientEventHandler.drawTime < 0.01) {
             if (stock) {
                 if (grip) {
-                    if (player.hasEffect(MobEffects.MOVEMENT_SPEED)) {
+                    if (ClientEventHandler.tacticalSprint) {
                         return event.setAndContinue(RawAnimation.begin().thenLoop("animation.trachelium.run_fast_stock"));
                     } else {
                         return event.setAndContinue(RawAnimation.begin().thenLoop("animation.trachelium.run_stock_grip"));
                     }
                 } else {
-                    if (player.hasEffect(MobEffects.MOVEMENT_SPEED)) {
+                    if (ClientEventHandler.tacticalSprint) {
                         return event.setAndContinue(RawAnimation.begin().thenLoop("animation.trachelium.run_fast_stock"));
                     } else {
                         return event.setAndContinue(RawAnimation.begin().thenLoop("animation.trachelium.run_stock"));
@@ -158,13 +157,13 @@ public class Trachelium extends GunItem implements GeoItem {
                 }
             } else {
                 if (grip) {
-                    if (player.hasEffect(MobEffects.MOVEMENT_SPEED)) {
+                    if (ClientEventHandler.tacticalSprint) {
                         return event.setAndContinue(RawAnimation.begin().thenLoop("animation.trachelium.run_fast"));
                     } else {
                         return event.setAndContinue(RawAnimation.begin().thenLoop("animation.trachelium.run_grip"));
                     }
                 } else {
-                    if (player.hasEffect(MobEffects.MOVEMENT_SPEED)) {
+                    if (ClientEventHandler.tacticalSprint) {
                         return event.setAndContinue(RawAnimation.begin().thenLoop("animation.trachelium.run_fast"));
                     } else {
                         return event.setAndContinue(RawAnimation.begin().thenLoop("animation.trachelium.run"));

@@ -21,9 +21,9 @@ import net.neoforged.api.distmarker.OnlyIn;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @OnlyIn(Dist.CLIENT)
-public class BreathOverlay implements LayeredDraw.Layer {
+public class StaminaOverlay implements LayeredDraw.Layer {
 
-    public static final ResourceLocation ID = Mod.loc("breath");
+    public static final ResourceLocation ID = Mod.loc("stamina");
 
     @Override
     @ParametersAreNonnullByDefault
@@ -45,15 +45,15 @@ public class BreathOverlay implements LayeredDraw.Layer {
         RenderSystem.enableBlend();
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-        RenderSystem.setShaderColor(1, 1, 1, (float) Mth.clamp(ClientEventHandler.breathSwitchTime, 0, 1));
+        RenderSystem.setShaderColor(1, 1, 1, (float) Mth.clamp(ClientEventHandler.switchTime, 0, 1));
 
         guiGraphics.fill(RenderType.guiOverlay(), w / 2 - 64, h / 2 + 100, w / 2 + 64, h / 2 + 101, -90, -16777216);
-        guiGraphics.fill(RenderType.guiOverlay(), w / 2 - 64, h / 2 + 100, w / 2 + 64 - (int) (1.28 * ClientEventHandler.breathTime), h / 2 + 101, -90, -1);
+        guiGraphics.fill(RenderType.guiOverlay(), w / 2 - 64, h / 2 + 100, w / 2 + 64 - (int) (1.28 * ClientEventHandler.switchTime), h / 2 + 101, -90, -1);
         guiGraphics.pose().popPose();
     }
 
     private static boolean shouldRenderCrossHair(Player player) {
         if (player == null) return false;
-        return ClientEventHandler.breathSwitchTime > 0;
+        return ClientEventHandler.switchTime > 0;
     }
 }

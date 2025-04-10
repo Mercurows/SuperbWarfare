@@ -25,7 +25,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
@@ -79,8 +78,8 @@ public class M79Item extends GunItem implements GeoItem, SpecialFireWeapon {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m79.reload"));
         }
 
-        if (player.isSprinting() && player.onGround() && player.getPersistentData().getDouble("noRun") == 0 && ClientEventHandler.drawTime < 0.01) {
-            if (player.hasEffect(MobEffects.MOVEMENT_SPEED)) {
+        if (player.isSprinting() && player.onGround() && ClientEventHandler.cantSprint == 0 && ClientEventHandler.drawTime < 0.01) {
+            if (ClientEventHandler.tacticalSprint) {
                 return event.setAndContinue(RawAnimation.begin().thenLoop("animation.m79.run_fast"));
             } else {
                 return event.setAndContinue(RawAnimation.begin().thenLoop("animation.m79.run"));

@@ -13,7 +13,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
@@ -85,7 +84,7 @@ public class MosinNagantItem extends GunItem implements GeoItem {
         var data = GunData.from(stack);
 
         if (player.isSprinting() && player.onGround()
-                && player.getPersistentData().getDouble("noRun") == 0
+                && ClientEventHandler.cantSprint == 0
                 && !(GunData.from(stack).reload.empty())
                 && data.reload.stage() != 1
                 && data.reload.stage() != 2
@@ -93,7 +92,7 @@ public class MosinNagantItem extends GunItem implements GeoItem {
                 && ClientEventHandler.drawTime < 0.01
                 && !data.reloading()
         ) {
-            if (player.hasEffect(MobEffects.MOVEMENT_SPEED) && data.bolt.actionTime() == 0) {
+            if (ClientEventHandler.tacticalSprint && data.bolt.actionTime() == 0) {
                 return event.setAndContinue(RawAnimation.begin().thenLoop("animation.mosin.run_fast"));
             } else {
                 return event.setAndContinue(RawAnimation.begin().thenLoop("animation.mosin.run"));

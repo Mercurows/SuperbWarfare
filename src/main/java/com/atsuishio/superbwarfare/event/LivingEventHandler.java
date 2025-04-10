@@ -392,7 +392,6 @@ public class LivingEventHandler {
                     var newData = GunData.from(newStack);
                     newTag = newData.tag();
 
-                    player.getPersistentData().putDouble("noRun", 40);
                     newTag.putBoolean("draw", true);
                     if (newData.bolt.defaultActionTime() > 0) {
                         newData.bolt.setActionTime(0);
@@ -415,8 +414,6 @@ public class LivingEventHandler {
                         newData.charge.timer.reset();
                     }
 
-                    var cap = player.getData(ModAttachments.PLAYER_VARIABLE).watch();
-
                     int level = newData.perk.getLevel(ModPerks.KILLING_TALLY);
                     if (level != 0) {
                         GunsTool.setPerkIntTag(newTag, "KillingTally", 0);
@@ -425,10 +422,6 @@ public class LivingEventHandler {
                     if (player.level() instanceof ServerLevel) {
                         PacketDistributor.sendToPlayer(serverPlayer, new DrawClientMessage(true));
                     }
-
-                    cap.tacticalSprint = false;
-                    player.setData(ModAttachments.PLAYER_VARIABLE, cap);
-                    cap.sync(player);
 
                     newData.save();
                 }
