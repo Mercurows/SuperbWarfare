@@ -11,6 +11,7 @@ import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.SpecialFireWeapon;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
+import com.atsuishio.superbwarfare.network.message.receive.ShootClientMessage;
 import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.tools.GunsTool;
@@ -30,6 +31,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoItem;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
@@ -168,6 +170,12 @@ public class BocekItem extends GunItem implements GeoItem, SpecialFireWeapon {
     public void fireOnRelease(Player player, final GunData data, double power, boolean zoom) {
         if (player.level().isClientSide()) return;
 
+        if (player instanceof ServerPlayer serverPlayer) {
+            SoundTool.stopSound(serverPlayer, ModSounds.BOCEK_PULL_1P.getId(), SoundSource.PLAYERS);
+            SoundTool.stopSound(serverPlayer, ModSounds.BOCEK_PULL_3P.getId(), SoundSource.PLAYERS);
+            PacketDistributor.sendToPlayer(serverPlayer, new ShootClientMessage(10));
+        }
+
         var tag = data.tag();
         var stack = data.stack();
         var perk = data.perk.get(Perk.Type.AMMO);
@@ -201,14 +209,6 @@ public class BocekItem extends GunItem implements GeoItem, SpecialFireWeapon {
             if (!InventoryTool.hasCreativeAmmoBox(player) && !player.isCreative()) {
                 player.getInventory().clearOrCountMatchingItems(p -> Items.ARROW == p.getItem(), 1, player.inventoryMenu.getCraftSlots());
             }
-        }
-    }
-
-    @Override
-    public void fireOnPress(Player player, final GunData data, boolean zoom) {
-        if (player instanceof ServerPlayer serverPlayer) {
-            SoundTool.stopSound(serverPlayer, ModSounds.BOCEK_PULL_1P.getId(), SoundSource.PLAYERS);
-            SoundTool.stopSound(serverPlayer, ModSounds.BOCEK_PULL_3P.getId(), SoundSource.PLAYERS);
         }
     }
 }
