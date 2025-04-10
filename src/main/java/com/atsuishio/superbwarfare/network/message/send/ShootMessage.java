@@ -23,21 +23,23 @@ import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.NotNull;
 
-public record ShootMessage(double spread) implements CustomPacketPayload {
+public record ShootMessage(double spread, boolean zoom) implements CustomPacketPayload {
 
     public static final Type<ShootMessage> TYPE = new Type<>(Mod.loc("shoot"));
 
     public static final StreamCodec<ByteBuf, ShootMessage> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.DOUBLE,
             ShootMessage::spread,
+            ByteBufCodecs.BOOL,
+            ShootMessage::zoom,
             ShootMessage::new
     );
 
     public static void handler(final ShootMessage message, final IPayloadContext context) {
-        pressAction(context.player(), message.spread);
+        pressAction(context.player(), message.spread, message.zoom);
     }
 
-    public static void pressAction(Player player, double spared) {
+    public static void pressAction(Player player, double spared, boolean zoom) {
         ItemStack stack = player.getMainHandItem();
         var data = GunData.from(stack);
         var tag = data.tag();
@@ -86,7 +88,7 @@ public record ShootMessage(double spread) implements CustomPacketPayload {
                 var perk = data.perk.get(Perk.Type.AMMO);
 
                 for (int index0 = 0; index0 < (perk instanceof AmmoPerk ammoPerk && ammoPerk.slug ? 1 : projectileAmount); index0++) {
-                    GunEventHandler.gunShoot(player, data, spared);
+                    GunEventHandler.gunShoot(player, data, spared, zoom);
                 }
 
                 GunEventHandler.playGunSounds(player);
@@ -119,7 +121,7 @@ public record ShootMessage(double spread) implements CustomPacketPayload {
                     }
                 }
 
-                GunEventHandler.gunShoot(player, data, spared);
+                GunEventHandler.gunShoot(player, data, spared, false);
                 if (!InventoryTool.hasCreativeAmmoBox(player)) {
                     cap.rifleAmmo = cap.rifleAmmo - 1;
                     player.setData(ModAttachments.PLAYER_VARIABLE, cap);

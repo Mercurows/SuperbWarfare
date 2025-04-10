@@ -382,11 +382,6 @@ public class LivingEventHandler {
                     var cap = player.getData(ModAttachments.PLAYER_VARIABLE).watch();
                     cap.edit = false;
 
-                    if (oldStack.is(ModItems.BOCEK)) {
-                        oldData.data().putInt("Power", 0);
-                        cap.bowPullHold = false;
-                    }
-
                     player.setData(ModAttachments.PLAYER_VARIABLE, cap);
                     cap.sync(player);
 
@@ -421,10 +416,6 @@ public class LivingEventHandler {
                     }
 
                     var cap = player.getData(ModAttachments.PLAYER_VARIABLE).watch();
-                    if (newStack.is(ModItems.BOCEK)) {
-                        newData.data().putInt("Power", 0);
-                        cap.bowPullHold = false;
-                    }
 
                     int level = newData.perk.getLevel(ModPerks.KILLING_TALLY);
                     if (level != 0) {

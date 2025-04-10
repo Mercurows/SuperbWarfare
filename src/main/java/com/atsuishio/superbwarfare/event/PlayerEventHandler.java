@@ -4,12 +4,14 @@ import com.atsuishio.superbwarfare.config.common.GameplayConfig;
 import com.atsuishio.superbwarfare.config.server.MiscConfig;
 import com.atsuishio.superbwarfare.init.ModAttachments;
 import com.atsuishio.superbwarfare.init.ModItems;
-import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.network.message.receive.SimulationDistanceMessage;
-import com.atsuishio.superbwarfare.tools.*;
+import com.atsuishio.superbwarfare.tools.AmmoType;
+import com.atsuishio.superbwarfare.tools.GunsTool;
+import com.atsuishio.superbwarfare.tools.InventoryTool;
+import com.atsuishio.superbwarfare.tools.NBTTool;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -57,7 +59,6 @@ public class PlayerEventHandler {
         Player player = event.getEntity();
 
         var cap = player.getData(ModAttachments.PLAYER_VARIABLE).watch();
-        cap.zoom = false;
         cap.tacticalSprintExhaustion = false;
         cap.tacticalSprintTime = 600;
         player.setData(ModAttachments.PLAYER_VARIABLE, cap);
@@ -87,35 +88,12 @@ public class PlayerEventHandler {
         if (stack.is(ModTags.Items.GUN)) {
             handlePlayerSprint(player);
             handleSpecialWeaponAmmo(player);
-            handleBocekPulling(player);
         }
 
         handleGround(player);
         handleTacticalSprint(player);
-        handleBreath(player);
 
         variable.sync(player);
-    }
-
-    private static void handleBreath(Player player) {
-        var cap = player.getData(ModAttachments.PLAYER_VARIABLE).watch();
-
-        if (cap.breath) {
-            cap.breathTime = Mth.clamp(cap.breathTime - 1, 0, 100);
-        } else {
-            cap.breathTime = Mth.clamp(cap.breathTime + 1, 0, 100);
-        }
-
-        if (cap.breathTime == 0) {
-            cap.breathExhaustion = true;
-            cap.breath = false;
-        }
-
-        if (cap.breathTime == 100) {
-            cap.breathExhaustion = false;
-        }
-
-        player.setData(ModAttachments.PLAYER_VARIABLE, cap);
     }
 
     private static void handleTacticalSprint(Player player) {
@@ -171,23 +149,23 @@ public class PlayerEventHandler {
      * 判断玩家是否在奔跑
      */
     private static void handlePlayerSprint(Player player) {
-        var cap = player.getData(ModAttachments.PLAYER_VARIABLE);
+        if (!player.level().isClientSide) return;
 
-        if (cap.holdFire) {
+        if (ClientEventHandler.holdFire) {
             player.getPersistentData().putDouble("noRun", 10);
         }
 
         if (player.isShiftKeyDown()
                 || player.isPassenger()
                 || player.isInWater()
-                || cap.zoom
+                || ClientEventHandler.zoom
         ) player.getPersistentData().putDouble("noRun", 3);
 
         if (player.getPersistentData().getDouble("noRun") > 0) {
             player.getPersistentData().putDouble("noRun", (player.getPersistentData().getDouble("noRun") - 1));
         }
 
-        if (cap.zoom || cap.holdFire) {
+        if (ClientEventHandler.zoom || ClientEventHandler.holdFire) {
             player.setSprinting(false);
         }
     }
@@ -209,51 +187,6 @@ public class PlayerEventHandler {
         if ((stack.is(ModItems.RPG.get()) || stack.is(ModItems.BOCEK.get())) && data.ammo() == 1) {
             data.setIsEmpty(false);
         }
-    }
-
-    private static void handleBocekPulling(Player player) {
-        ItemStack stack = player.getMainHandItem();
-
-        var cap = player.getData(ModAttachments.PLAYER_VARIABLE).watch();
-
-        var data = GunData.from(stack);
-        final var tag = data.tag();
-
-        if (cap.bowPullHold) {
-            if (stack.getItem() == ModItems.BOCEK.get()
-                    && data.maxAmmo() > 0
-                    && !player.getCooldowns().isOnCooldown(stack.getItem())
-                    && GunsTool.getGunDoubleTag(tag, "Power") < 12
-            ) {
-                GunsTool.setGunDoubleTag(tag, "Power", GunsTool.getGunDoubleTag(tag, "Power") + 1);
-
-                cap.bowPull = true;
-                cap.tacticalSprint = false;
-                player.setData(ModAttachments.PLAYER_VARIABLE, cap);
-                player.setSprinting(false);
-            }
-            if (GunsTool.getGunDoubleTag(tag, "Power") == 1) {
-                if (!player.level().isClientSide() && player instanceof ServerPlayer serverPlayer) {
-                    SoundTool.playLocalSound(serverPlayer, ModSounds.BOCEK_PULL_1P.get(), 2f, 1f);
-                    player.level().playSound(null, player.blockPosition(), ModSounds.BOCEK_PULL_3P.get(), SoundSource.PLAYERS, 0.5f, 1);
-                }
-            }
-        } else {
-            if (stack.getItem() == ModItems.BOCEK.get()) {
-                GunsTool.setGunDoubleTag(tag, "Power", 0);
-            }
-            cap.bowPull = false;
-            player.setData(ModAttachments.PLAYER_VARIABLE, cap);
-        }
-
-        if (GunsTool.getGunDoubleTag(tag, "Power") > 0) {
-            cap.tacticalSprint = false;
-            player.setData(ModAttachments.PLAYER_VARIABLE, cap);
-            player.setSprinting(false);
-        }
-
-        cap.sync(player);
-        data.save();
     }
 
     private static void handleSimulationDistance(Player player) {

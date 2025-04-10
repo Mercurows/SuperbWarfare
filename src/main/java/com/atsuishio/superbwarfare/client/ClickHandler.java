@@ -275,7 +275,7 @@ public class ClickHandler {
             }
 
             if (key == ModKeyMappings.BREATH.getKey().getValue()) {
-                PacketDistributor.sendToServer(new BreathMessage(true));
+//                PacketDistributor.sendToServer(new BreathMessage(true));
             }
         } else {
             if (player.hasEffect(ModMobEffects.SHOCK)) return;
@@ -293,7 +293,7 @@ public class ClickHandler {
             }
 
             if (event.getAction() == GLFW.GLFW_RELEASE && key == ModKeyMappings.BREATH.getKey().getValue()) {
-                PacketDistributor.sendToServer(new BreathMessage(false));
+//                PacketDistributor.sendToServer(new BreathMessage(false));
             }
         }
     }
@@ -343,9 +343,7 @@ public class ClickHandler {
                             ClientEventHandler.burstFireAmount = data.burstAmount();
                         }
                     } else {
-                        if (!stack.is(ModItems.BOCEK.get())) {
-                            ClientEventHandler.holdFire = true;
-                        }
+                        ClientEventHandler.holdFire = true;
                     }
                 }
             }

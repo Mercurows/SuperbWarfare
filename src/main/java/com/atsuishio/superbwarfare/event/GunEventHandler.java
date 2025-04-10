@@ -169,7 +169,7 @@ public class GunEventHandler {
         }
     }
 
-    public static void gunShoot(Player player, GunData data, double spared) {
+    public static void gunShoot(Player player, GunData data, double spared, boolean zoom) {
         var stack = data.stack();
 
         if (!player.level().isClientSide()) {
@@ -178,7 +178,6 @@ public class GunEventHandler {
             float velocity = (float) (data.velocity() * perkSpeed(data));
             int projectileAmount = data.projectileAmount();
             float bypassArmorRate = (float) data.bypassArmor();
-            boolean zoom = player.getData(ModAttachments.PLAYER_VARIABLE).zoom;
             var perkInstance = data.perk.getInstance(Perk.Type.AMMO);
             var perk = perkInstance != null ? perkInstance.perk() : null;
 

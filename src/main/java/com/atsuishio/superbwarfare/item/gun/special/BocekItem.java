@@ -4,11 +4,13 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.renderer.item.BocekItemRenderer;
 import com.atsuishio.superbwarfare.client.tooltip.component.BocekImageComponent;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
-import com.atsuishio.superbwarfare.init.*;
+import com.atsuishio.superbwarfare.init.ModItems;
+import com.atsuishio.superbwarfare.init.ModPerks;
+import com.atsuishio.superbwarfare.init.ModSounds;
+import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.SpecialFireWeapon;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
-import com.atsuishio.superbwarfare.network.message.receive.ShootClientMessage;
 import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.tools.GunsTool;
@@ -28,7 +30,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoItem;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
@@ -164,29 +165,22 @@ public class BocekItem extends GunItem implements GeoItem, SpecialFireWeapon {
     }
 
     @Override
-    public void fireOnRelease(Player player, final GunData data) {
+    public void fireOnRelease(Player player, final GunData data, double power, boolean zoom) {
         if (player.level().isClientSide()) return;
 
         var tag = data.tag();
         var stack = data.stack();
         var perk = data.perk.get(Perk.Type.AMMO);
 
-        if (player instanceof ServerPlayer serverPlayer) {
-            SoundTool.stopSound(serverPlayer, ModSounds.BOCEK_PULL_1P.getId(), SoundSource.PLAYERS);
-            SoundTool.stopSound(serverPlayer, ModSounds.BOCEK_PULL_3P.getId(), SoundSource.PLAYERS);
-
-            PacketDistributor.sendToPlayer(serverPlayer, new ShootClientMessage(10));
-        }
-
-        if (GunsTool.getGunDoubleTag(tag, "Power") >= 6) {
-            if (player.getData(ModAttachments.PLAYER_VARIABLE).zoom) {
-                spawnBullet(player, tag);
+        if (power * 12 >= 6) {
+            if (zoom) {
+                spawnBullet(player, tag, power, true);
 
                 SoundTool.playLocalSound(player, ModSounds.BOCEK_ZOOM_FIRE_1P.get(), 10, 1);
                 player.playSound(ModSounds.BOCEK_ZOOM_FIRE_3P.get(), 2, 1);
             } else {
                 for (int i = 0; i < (perk instanceof AmmoPerk ammoPerk && ammoPerk.slug ? 1 : 10); i++) {
-                    spawnBullet(player, tag);
+                    spawnBullet(player, tag, power, false);
                 }
 
                 SoundTool.playLocalSound(player, ModSounds.BOCEK_SHATTER_CAP_FIRE_1P.get(), 10, 1);
@@ -203,7 +197,6 @@ public class BocekItem extends GunItem implements GeoItem, SpecialFireWeapon {
 
             player.getCooldowns().addCooldown(stack.getItem(), 7);
             GunsTool.setGunIntTag(tag, "ArrowEmpty", 7);
-            GunsTool.setGunDoubleTag(tag, "Power", 0);
 
             if (!InventoryTool.hasCreativeAmmoBox(player) && !player.isCreative()) {
                 player.getInventory().clearOrCountMatchingItems(p -> Items.ARROW == p.getItem(), 1, player.inventoryMenu.getCraftSlots());
@@ -212,10 +205,10 @@ public class BocekItem extends GunItem implements GeoItem, SpecialFireWeapon {
     }
 
     @Override
-    public void fireOnPress(Player player, final GunData data) {
-        var cap = player.getData(ModAttachments.PLAYER_VARIABLE).watch();
-        cap.bowPullHold = true;
-        player.setData(ModAttachments.PLAYER_VARIABLE, cap);
-        cap.sync(player);
+    public void fireOnPress(Player player, final GunData data, boolean zoom) {
+        if (player instanceof ServerPlayer serverPlayer) {
+            SoundTool.stopSound(serverPlayer, ModSounds.BOCEK_PULL_1P.getId(), SoundSource.PLAYERS);
+            SoundTool.stopSound(serverPlayer, ModSounds.BOCEK_PULL_3P.getId(), SoundSource.PLAYERS);
+        }
     }
 }

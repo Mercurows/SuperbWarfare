@@ -123,6 +123,7 @@ public class ClientEventHandler {
     public static boolean holdFire = false;
 
     public static boolean zoom = false;
+    public static boolean breath = false;
     public static boolean holdFireVehicle = false;
 
     public static boolean zoomVehicle = false;
@@ -630,7 +631,7 @@ public class ClientEventHandler {
         if (!stack.is(ModTags.Items.GUN)) return;
         var data = GunData.from(stack);
 
-        PacketDistributor.sendToServer(new ShootMessage(gunSpread));
+        PacketDistributor.sendToServer(new ShootMessage(gunSpread, zoom));
         fireRecoilTime = 10;
 
         var gunRecoilY = data.recoilY() * 10;
@@ -848,9 +849,7 @@ public class ClientEventHandler {
 
         double customWeight = data.customWeight();
 
-        var cap = player.getData(ModAttachments.PLAYER_VARIABLE);
-
-        if (!cap.breath && cap.zoom) {
+        if (!breath && zoom) {
             float newPitch = (float) (player.getXRot() - 0.01f * Mth.sin((float) (0.03 * player.tickCount)) * pose * Mth.nextDouble(RandomSource.create(), 0.1, 1) * times * sway * (1 - 0.03 * customWeight));
             player.setXRot(newPitch);
             player.xRotO = player.getXRot();
@@ -1268,7 +1267,6 @@ public class ClientEventHandler {
 
     private static void handlePlayerBreath(LivingEntity entity) {
         float times = (float) Math.min(Minecraft.getInstance().getTimer().getRealtimeDeltaTicks(), 0.8);
-        boolean breath = entity.getData(ModAttachments.PLAYER_VARIABLE).breath;
 
         breathTime = Mth.lerp(0.2f * times, breathTime, breath ? 1 : 0);
     }
@@ -1339,7 +1337,7 @@ public class ClientEventHandler {
     private static void handleBowPullAnimation(LivingEntity entity) {
         float times = 4 * (float) Math.min(Minecraft.getInstance().getTimer().getRealtimeDeltaTicks(), 0.8);
 
-        if (entity.getData(ModAttachments.PLAYER_VARIABLE).bowPull) {
+        if (holdFire) {
             pullTimer = Math.min(pullTimer + 0.024 * times, 1.4);
             bowTimer = Math.min(bowTimer + 0.018 * times, 1);
             handTimer = Math.min(handTimer + 0.018 * times, 1);
@@ -1536,7 +1534,7 @@ public class ClientEventHandler {
     public static void aimAtVillager(Player player) {
         if (aimVillagerCountdown > 0) return;
 
-        if (player.getData(ModAttachments.PLAYER_VARIABLE).zoom) {
+        if (zoom) {
             Entity entity = TraceTool.findLookingEntity(player, 10);
             if (entity instanceof AbstractVillager villager) {
                 List<Entity> entities = SeekTool.seekLivingEntities(villager, villager.level(), 16, 120);

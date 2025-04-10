@@ -5,7 +5,10 @@ import com.atsuishio.superbwarfare.client.renderer.item.TaserItemRenderer;
 import com.atsuishio.superbwarfare.client.tooltip.component.EnergyImageComponent;
 import com.atsuishio.superbwarfare.entity.projectile.TaserBulletEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
-import com.atsuishio.superbwarfare.init.*;
+import com.atsuishio.superbwarfare.init.ModItems;
+import com.atsuishio.superbwarfare.init.ModPerks;
+import com.atsuishio.superbwarfare.init.ModSounds;
+import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.EnergyStorageItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.SpecialFireWeapon;
@@ -217,7 +220,7 @@ public class TaserItem extends GunItem implements GeoItem, SpecialFireWeapon, En
     }
 
     @Override
-    public void fireOnPress(Player player, final GunData data) {
+    public void fireOnPress(Player player, final GunData data, boolean zoom) {
         if (data.reloading()) return;
         ItemStack stack = data.stack();
 
@@ -233,7 +236,6 @@ public class TaserItem extends GunItem implements GeoItem, SpecialFireWeapon, En
         player.getCooldowns().addCooldown(stack.getItem(), 5);
 
         if (player instanceof ServerPlayer serverPlayer) {
-            boolean zoom = player.getData(ModAttachments.PLAYER_VARIABLE).zoom;
             double spread = data.spread();
 
             int volt = data.perk.getLevel(ModPerks.VOLT_OVERLOAD);

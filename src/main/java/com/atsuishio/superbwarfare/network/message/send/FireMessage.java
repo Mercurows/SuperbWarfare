@@ -2,15 +2,16 @@ package com.atsuishio.superbwarfare.network.message.send;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity;
+import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.event.GunEventHandler;
 import com.atsuishio.superbwarfare.init.ModAttachments;
 import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.SpecialFireWeapon;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
+import com.atsuishio.superbwarfare.item.gun.special.BocekItem;
 import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
-import com.atsuishio.superbwarfare.tools.GunsTool;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.Holder;
 import net.minecraft.nbt.CompoundTag;
@@ -63,18 +64,15 @@ public record FireMessage(int msgType) implements CustomPacketPayload {
                 cap.sync(player);
                 return;
             }
-            specialFireWeapon.fireOnPress(player, data);
-
-            cap.holdFire = true;
-            player.setData(ModAttachments.PLAYER_VARIABLE, cap);
+            specialFireWeapon.fireOnPress(player, data, ClientEventHandler.zoom);
         } else if (type == 1) {
-            cap.bowPullHold = false;
-            cap.holdFire = false;
-            player.setData(ModAttachments.PLAYER_VARIABLE, cap);
-
             // 松开开火
             if (stack.getItem() instanceof SpecialFireWeapon specialFireWeapon) {
-                specialFireWeapon.fireOnRelease(player, data);
+                if (specialFireWeapon instanceof BocekItem) {
+                    specialFireWeapon.fireOnRelease(player, data, ClientEventHandler.bowTimer, ClientEventHandler.zoom);
+                } else {
+                    specialFireWeapon.fireOnRelease(player, data, 0, ClientEventHandler.zoom);
+                }
             }
         }
         cap.sync(player);
@@ -100,6 +98,13 @@ public record FireMessage(int msgType) implements CustomPacketPayload {
         }
     }
 
+    public static double perkDamage(Perk perk) {
+        if (perk instanceof AmmoPerk ammoPerk) {
+            return ammoPerk.damageRate;
+        }
+        return 1;
+    }
+
     public static double perkSpeed(Perk perk) {
         if (perk instanceof AmmoPerk ammoPerk) {
             return ammoPerk.speedRate;
@@ -107,29 +112,26 @@ public record FireMessage(int msgType) implements CustomPacketPayload {
         return 1;
     }
 
-    public static void spawnBullet(Player player, final CompoundTag tag) {
+    public static void spawnBullet(Player player, final CompoundTag tag, double power, boolean zoom) {
         ItemStack stack = player.getMainHandItem();
         if (player.level().isClientSide()) return;
         var data = GunData.from(stack);
 
         var perk = data.perk.get(Perk.Type.AMMO);
         float headshot = (float) data.headshot();
-        float velocity = 2 * (float) GunsTool.getGunDoubleTag(tag, "Power", 6) * (float) perkSpeed(perk);
+        float velocity = (float) (24 * power * (float) perkSpeed(perk));
         float bypassArmorRate = (float) data.bypassArmor();
         double damage;
-
-        boolean zoom = player.getData(ModAttachments.PLAYER_VARIABLE).zoom;
 
         float spread;
         if (zoom) {
             spread = 0.01f;
             damage = 0.08333333 * data.damage() *
-                    GunsTool.getGunDoubleTag(tag, "Power", 6);
+                    12 * power * perkDamage(perk);
         } else {
             spread = perk instanceof AmmoPerk ammoPerk && ammoPerk.slug ? 0.5f : 2.5f;
             damage = (perk instanceof AmmoPerk ammoPerk && ammoPerk.slug ? 0.08333333 : 0.008333333) *
-                    data.damage() *
-                    GunsTool.getGunDoubleTag(tag, "Power", 6);
+                    data.damage() * 12 * power * perkDamage(perk);
         }
 
         ProjectileEntity projectile = new ProjectileEntity(player.level())

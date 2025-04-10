@@ -266,18 +266,17 @@ public class SecondaryCataclysm extends GunItem implements GeoItem, SpecialFireW
     }
 
     @Override
-    public void fireOnPress(Player player, final GunData data) {
+    public void fireOnPress(Player player, final GunData data, boolean zoom) {
         if (data.reloading()) return;
         ItemStack stack = data.stack();
         if (player.getCooldowns().isOnCooldown(stack.getItem()) || data.ammo() <= 0) return;
 
-        boolean zooming = player.getData(ModAttachments.PLAYER_VARIABLE).zoom;
         double spread = data.spread();
 
         var stackCap = stack.getCapability(Capabilities.EnergyStorage.ITEM);
         var hasEnoughEnergy = stackCap != null && stackCap.getEnergyStored() >= 3000;
 
-        boolean isChargedFire = zooming && hasEnoughEnergy;
+        boolean isChargedFire = zoom && hasEnoughEnergy;
 
         if (player.level() instanceof ServerLevel serverLevel) {
             GunGrenadeEntity gunGrenadeEntity = new GunGrenadeEntity(player, serverLevel,
@@ -305,7 +304,7 @@ public class SecondaryCataclysm extends GunItem implements GeoItem, SpecialFireW
 
             gunGrenadeEntity.setPos(player.getX(), player.getEyeY() - 0.1, player.getZ());
             gunGrenadeEntity.shoot(player.getLookAngle().x, player.getLookAngle().y, player.getLookAngle().z, (isChargedFire ? 4 : 1) * velocity,
-                    (float) (zooming ? 0.1 : spread));
+                    (float) (zoom ? 0.1 : spread));
             serverLevel.addFreshEntity(gunGrenadeEntity);
 
             ParticleTool.sendParticle(serverLevel, ParticleTypes.CLOUD, player.getX() + 1.8 * player.getLookAngle().x,

@@ -294,7 +294,7 @@ public class JavelinItem extends GunItem implements GeoItem, SpecialFireWeapon {
     }
 
     @Override
-    public void fireOnRelease(Player player, final GunData data) {
+    public void fireOnRelease(Player player, final GunData data, double power, boolean zoom) {
         fire(player);
         var tag = data.tag();
         tag.putBoolean("Seeking", false);
@@ -307,10 +307,10 @@ public class JavelinItem extends GunItem implements GeoItem, SpecialFireWeapon {
     }
 
     @Override
-    public void fireOnPress(Player player, final GunData data) {
+    public void fireOnPress(Player player, final GunData data, boolean zoom) {
         var tag = data.tag();
 
-        if (!player.getData(ModAttachments.PLAYER_VARIABLE).zoom || data.ammo() <= 0) return;
+        if (!zoom || data.ammo() <= 0) return;
 
         Entity seekingEntity = SeekTool.seekEntity(player, player.level(), 512, 8);
 

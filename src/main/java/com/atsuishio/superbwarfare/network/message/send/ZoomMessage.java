@@ -35,7 +35,6 @@ public record ZoomMessage(int msgType) implements CustomPacketPayload {
         var cap = player.getData(ModAttachments.PLAYER_VARIABLE).watch();
 
         if (message.msgType == 0) {
-            cap.zoom = true;
             cap.edit = false;
             player.setData(ModAttachments.PLAYER_VARIABLE, cap);
             cap.sync(player);
@@ -50,11 +49,6 @@ public record ZoomMessage(int msgType) implements CustomPacketPayload {
             }
 
         } else if (message.msgType == 1) {
-            cap.zoom = false;
-            cap.breath = false;
-            player.setData(ModAttachments.PLAYER_VARIABLE, cap);
-            cap.sync(player);
-
             if (player.isPassenger()
                     && vehicle instanceof WeaponVehicleEntity weaponEntity
                     && vehicle instanceof VehicleEntity vehicleEntity

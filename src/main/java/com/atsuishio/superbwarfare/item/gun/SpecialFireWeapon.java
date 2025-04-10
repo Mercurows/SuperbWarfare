@@ -16,7 +16,7 @@ public interface SpecialFireWeapon {
      * @param player 玩家
      */
 
-    default void fireOnPress(Player player, final GunData data) {
+    default void fireOnPress(Player player, final GunData data, boolean zoom) {
     }
 
     /**
@@ -24,7 +24,7 @@ public interface SpecialFireWeapon {
      *
      * @param player 玩家
      */
-    default void fireOnRelease(Player player, final GunData data) {
+    default void fireOnRelease(Player player, final GunData data, double power, boolean zoom) {
     }
 
 }

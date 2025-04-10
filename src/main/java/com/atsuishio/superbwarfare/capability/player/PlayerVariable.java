@@ -21,23 +21,15 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @EventBusSubscriber(modid = Mod.MODID)
 public class PlayerVariable implements INBTSerializable<CompoundTag> {
     private PlayerVariable old = null;
-
-    public boolean zoom = false;
-    public boolean holdFire = false;
     public int rifleAmmo = 0;
     public int handgunAmmo = 0;
     public int shotgunAmmo = 0;
     public int sniperAmmo = 0;
     public int heavyAmmo = 0;
-    public boolean bowPullHold = false;
-    public boolean bowPull = false;
     public boolean playerDoubleJump = false;
     public boolean tacticalSprint = false;
     public int tacticalSprintTime = 600;
     public boolean tacticalSprintExhaustion = false;
-    public boolean breath = false;
-    public int breathTime = 160;
-    public boolean breathExhaustion = false;
     public boolean edit = false;
 
     public void sync(Entity entity) {
@@ -65,44 +57,29 @@ public class PlayerVariable implements INBTSerializable<CompoundTag> {
 
     public CompoundTag writeToNBT() {
         CompoundTag nbt = new CompoundTag();
-        nbt.putBoolean("Zoom", zoom);
-        nbt.putBoolean("HoldFire", holdFire);
 
         for (var type : AmmoType.values()) {
             type.set(nbt, type.get(this));
         }
 
-        nbt.putBoolean("BowPullHold", bowPullHold);
-        nbt.putBoolean("BowPull", bowPull);
         nbt.putBoolean("DoubleJump", playerDoubleJump);
         nbt.putBoolean("TacticalSprint", tacticalSprint);
         nbt.putInt("TacticalSprintTime", tacticalSprintTime);
         nbt.putBoolean("TacticalSprintExhaustion", tacticalSprintExhaustion);
-        nbt.putBoolean("Breath", breath);
-        nbt.putInt("BreathTime", breathTime);
-        nbt.putBoolean("BreathExhaustion", breathExhaustion);
         nbt.putBoolean("EditMode", edit);
 
         return nbt;
     }
 
     public PlayerVariable readFromNBT(CompoundTag tag) {
-        zoom = tag.getBoolean("Zoom");
-        holdFire = tag.getBoolean("HoldFire");
-
         for (var type : AmmoType.values()) {
             type.set(this, type.get(tag));
         }
 
-        bowPullHold = tag.getBoolean("BowPullHold");
-        bowPull = tag.getBoolean("BowPull");
         playerDoubleJump = tag.getBoolean("DoubleJump");
         tacticalSprint = tag.getBoolean("TacticalSprint");
         tacticalSprintTime = tag.getInt("TacticalSprintTime");
         tacticalSprintExhaustion = tag.getBoolean("TacticalSprintExhaustion");
-        breath = tag.getBoolean("Breath");
-        breathTime = tag.getInt("BreathTime");
-        breathExhaustion = tag.getBoolean("BreathExhaustion");
         edit = tag.getBoolean("EditMode");
 
         return this;
@@ -111,22 +88,15 @@ public class PlayerVariable implements INBTSerializable<CompoundTag> {
     public PlayerVariable copy() {
         var clone = new PlayerVariable();
 
-        clone.zoom = this.zoom;
-        clone.holdFire = this.holdFire;
         clone.rifleAmmo = this.rifleAmmo;
         clone.handgunAmmo = this.handgunAmmo;
         clone.shotgunAmmo = this.shotgunAmmo;
         clone.sniperAmmo = this.sniperAmmo;
         clone.heavyAmmo = this.heavyAmmo;
-        clone.bowPullHold = this.bowPullHold;
-        clone.bowPull = this.bowPull;
         clone.playerDoubleJump = this.playerDoubleJump;
         clone.tacticalSprint = this.tacticalSprint;
         clone.tacticalSprintTime = this.tacticalSprintTime;
         clone.tacticalSprintExhaustion = this.tacticalSprintExhaustion;
-        clone.breath = this.breath;
-        clone.breathTime = this.breathTime;
-        clone.breathExhaustion = this.breathExhaustion;
         clone.edit = this.edit;
 
         return clone;
@@ -136,22 +106,14 @@ public class PlayerVariable implements INBTSerializable<CompoundTag> {
     public boolean equals(Object obj) {
         if (!(obj instanceof PlayerVariable other)) return false;
 
-        return zoom == other.zoom
-                && holdFire == other.holdFire
-                && rifleAmmo == other.rifleAmmo
+        return rifleAmmo == other.rifleAmmo
                 && handgunAmmo == other.handgunAmmo
                 && shotgunAmmo == other.shotgunAmmo
                 && sniperAmmo == other.sniperAmmo
                 && heavyAmmo == other.heavyAmmo
-                && bowPullHold == other.bowPullHold
-                && bowPull == other.bowPull
                 && playerDoubleJump == other.playerDoubleJump
                 && tacticalSprint == other.tacticalSprint
-//                && tacticalSprintTime == other.tacticalSprintTime
                 && tacticalSprintExhaustion == other.tacticalSprintExhaustion
-                && breath == other.breath
-//                && breathTime == other.breathTime
-                && breathExhaustion == other.breathExhaustion
                 && edit == other.edit;
     }
 
