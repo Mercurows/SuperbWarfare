@@ -9,6 +9,7 @@ public class DisplayConfig {
     public static ModConfigSpec.BooleanValue FLOAT_CROSS_HAIR;
     public static ModConfigSpec.BooleanValue CAMERA_ROTATE;
     public static ModConfigSpec.BooleanValue ARMOR_PLATE_HUD;
+    public static ModConfigSpec.BooleanValue STAMINA_HUD;
 
     public static void init(ModConfigSpec.Builder builder) {
         builder.push("display");
@@ -27,6 +28,9 @@ public class DisplayConfig {
 
         builder.comment("Set true to enable armor plate hud");
         ARMOR_PLATE_HUD = builder.define("armor_plate_hud", true);
+
+        builder.comment("Set true to enable stamina hud");
+        STAMINA_HUD = builder.define("stamina_hud", true);
 
         builder.pop();
     }

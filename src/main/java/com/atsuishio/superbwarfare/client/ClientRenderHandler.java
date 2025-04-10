@@ -41,6 +41,7 @@ public class ClientRenderHandler {
     public static void registerOverlays(RegisterGuiLayersEvent event) {
         event.registerBelowAll(JavelinHudOverlay.ID, new JavelinHudOverlay());
         event.registerBelow(JavelinHudOverlay.ID, VehicleHudOverlay.ID, new VehicleHudOverlay());
+        event.registerBelow(StaminaOverlay.ID, StaminaOverlay.ID, new StaminaOverlay());
         event.registerBelowAll(KillMessageOverlay.ID, new KillMessageOverlay());
         event.registerBelowAll(VehicleTeamOverlay.ID, new VehicleTeamOverlay());
         event.registerBelowAll(VehicleMgHudOverlay.ID, new VehicleMgHudOverlay());
@@ -57,8 +58,6 @@ public class ClientRenderHandler {
         event.registerBelowAll(HandsomeFrameOverlay.ID, new HandsomeFrameOverlay());
         event.registerBelowAll(SpyglassRangeOverlay.ID, new SpyglassRangeOverlay());
         event.registerBelowAll(HelicopterHudOverlay.ID, new HelicopterHudOverlay());
-        event.registerBelowAll(StaminaOverlay.ID, new StaminaOverlay());
-
         event.registerBelowAll(MortarInfoOverlay.ID, new MortarInfoOverlay());
     }
 }

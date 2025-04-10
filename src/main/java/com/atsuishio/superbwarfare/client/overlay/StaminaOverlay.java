@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.client.overlay;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.config.client.DisplayConfig;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModAttachments;
@@ -36,7 +37,7 @@ public class StaminaOverlay implements LayeredDraw.Layer {
             return;
         if (player != null && player.getVehicle() instanceof ArmedVehicleEntity iArmedVehicle && iArmedVehicle.banHand(player))
             return;
-        if (!shouldRenderCrossHair(player)) return;
+        if (!shouldRender(player)) return;
 
         guiGraphics.pose().pushPose();
 
@@ -53,7 +54,8 @@ public class StaminaOverlay implements LayeredDraw.Layer {
         guiGraphics.pose().popPose();
     }
 
-    private static boolean shouldRenderCrossHair(Player player) {
+    private static boolean shouldRender(Player player) {
+        if (!DisplayConfig.STAMINA_HUD.get()) return false;
         if (player == null) return false;
         return ClientEventHandler.switchTime > 0;
     }

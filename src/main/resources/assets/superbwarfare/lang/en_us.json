@@ -535,6 +535,8 @@
   "config.superbwarfare.client.display.camera_rotate.des": "Slightly shaky view when holding a firearm in your hand",
   "config.superbwarfare.client.display.armor_plate_hud": "Armor Plate HUD",
   "config.superbwarfare.client.display.armor_plate_hud.des": "Display the durability of the bulletproof insert currently equipped on the chest armor in the lower left corner when turned on",
+  "config.superbwarfare.client.display.stamina_hud": "Stamina HUD",
+  "config.superbwarfare.client.display.stamina_hud.des": "Display Stamina HUD when tactical sprinting or holding breath",
   "config.superbwarfare.client.vehicle": "Control Vehicle",
   "config.superbwarfare.client.vehicle.invert_aircraft_control": "Invert Aircraft Control",
   "config.superbwarfare.client.vehicle.left_click_reload.des": "Set TRUE to invert aircraft control",
