@@ -108,7 +108,7 @@ public class AK47ItemModel extends GeoModel<AK47Item> {
 
         gun.setPosX(posX * (float) zp);
         gun.setPosY((posY) * (float) zp - (float) (0.2f * zpz) - posYAlt);
-        gun.setPosZ(posZ * (float) zp + (float) (0.5f * zpz));
+        gun.setPosZ(posZ * (float) zp + (float) (0.2f * zpz));
         gun.setScaleZ(1f - (scaleZ * (float) zp));
         scope.setScaleZ(1f - (0.4f * (float) zp));
         scope2.setScaleZ(1f - (0.3f * (float) zp));
