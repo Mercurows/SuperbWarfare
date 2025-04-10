@@ -26,7 +26,6 @@ import com.atsuishio.superbwarfare.tools.ParticleTool;
 import com.mojang.math.Axis;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -597,7 +596,7 @@ public class Lav150Entity extends ContainerMobileVehicleEntity implements GeoEnt
 
     @OnlyIn(Dist.CLIENT)
     @Override
-    public void renderFirstPersonOverlay(GuiGraphics guiGraphics, Font font, LocalPlayer player, int screenWidth, int screenHeight, float scale) {
+    public void renderFirstPersonOverlay(GuiGraphics guiGraphics, Font font, Player player, int screenWidth, int screenHeight, float scale) {
         super.renderFirstPersonOverlay(guiGraphics, font, player, screenWidth, screenHeight, scale);
 
         if (this.getWeaponIndex(0) == 0) {
@@ -611,7 +610,7 @@ public class Lav150Entity extends ContainerMobileVehicleEntity implements GeoEnt
 
     @OnlyIn(Dist.CLIENT)
     @Override
-    public void renderThirdPersonOverlay(GuiGraphics guiGraphics, Font font, LocalPlayer player, int screenWidth, int screenHeight, float scale) {
+    public void renderThirdPersonOverlay(GuiGraphics guiGraphics, Font font, Player player, int screenWidth, int screenHeight, float scale) {
         super.renderThirdPersonOverlay(guiGraphics, font, player, screenWidth, screenHeight, scale);
 
         if (this.getWeaponIndex(0) == 0) {

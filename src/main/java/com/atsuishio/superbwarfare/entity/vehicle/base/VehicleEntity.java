@@ -954,8 +954,9 @@ public abstract class VehicleEntity extends Entity {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void renderFirstPersonOverlay(GuiGraphics guiGraphics, Font font, LocalPlayer player, int screenWidth, int screenHeight, float scale) {
+    public void renderFirstPersonOverlay(GuiGraphics guiGraphics, Font font, Player player, int screenWidth, int screenHeight, float scale) {
         if (!(this instanceof WeaponVehicleEntity weaponVehicle)) return;
+        if (!(player instanceof LocalPlayer)) return;
 
         float minWH = (float) Math.min(screenWidth, screenHeight);
         float scaledMinWH = Mth.floor(minWH * scale);
@@ -982,6 +983,6 @@ public abstract class VehicleEntity extends Entity {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void renderThirdPersonOverlay(GuiGraphics guiGraphics, Font font, LocalPlayer player, int screenWidth, int screenHeight, float scale) {
+    public void renderThirdPersonOverlay(GuiGraphics guiGraphics, Font font, Player player, int screenWidth, int screenHeight, float scale) {
     }
 }
