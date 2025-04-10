@@ -77,17 +77,6 @@ public class PlayerEventHandler {
         if (stack.is(ModTags.Items.GUN)) {
             handleSpecialWeaponAmmo(player);
         }
-
-        handleGround(player);
-    }
-
-    private static void handleGround(Player player) {
-        var cap = player.getData(ModAttachments.PLAYER_VARIABLE);
-
-        if (player.onGround()) {
-            cap.playerDoubleJump = false;
-            player.setData(ModAttachments.PLAYER_VARIABLE, cap);
-        }
     }
 
     private static void handleSpecialWeaponAmmo(Player player) {

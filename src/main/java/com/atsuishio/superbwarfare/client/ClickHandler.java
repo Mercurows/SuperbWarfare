@@ -406,11 +406,11 @@ public class ClickHandler {
             return;
         }
 
-        if (player.getData(ModAttachments.PLAYER_VARIABLE).playerDoubleJump) {
+        if (canDoubleJump) {
             player.setDeltaMovement(new Vec3(player.getLookAngle().x, 0.8, player.getLookAngle().z));
             level.playLocalSound(x, y, z, ModSounds.DOUBLE_JUMP.get(), SoundSource.BLOCKS, 1, 1, false);
-
-            PacketDistributor.sendToServer(new DoubleJumpMessage(false));
+            PacketDistributor.sendToServer(new DoubleJumpMessage(0));
+            canDoubleJump = false;
         }
     }
 

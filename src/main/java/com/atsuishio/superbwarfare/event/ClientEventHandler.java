@@ -163,6 +163,8 @@ public class ClientEventHandler {
     public static float cameraRoll;
     public static float cantSprint = 0;
 
+    public static boolean canDoubleJump = false;
+
 
     @SubscribeEvent
     public static void handleWeaponTurn(RenderHandEvent event) {
@@ -278,6 +280,10 @@ public class ClientEventHandler {
         if (keys != keysCache) {
             PacketDistributor.sendToServer(new VehicleMovementMessage(keys));
             keysCache = keys;
+        }
+
+        if (player.onGround() && canDoubleJump) {
+            canDoubleJump = false;
         }
 
         handleVariableDecrease();

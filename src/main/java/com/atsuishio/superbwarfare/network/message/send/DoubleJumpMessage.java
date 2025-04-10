@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.network.message.send;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.init.ModAttachments;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.BlockPos;
@@ -14,12 +13,12 @@ import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.NotNull;
 
-public record DoubleJumpMessage(boolean canDoubleJump) implements CustomPacketPayload {
+public record DoubleJumpMessage(int empty) implements CustomPacketPayload {
     public static final Type<DoubleJumpMessage> TYPE = new Type<>(Mod.loc("double_jump"));
 
     public static final StreamCodec<ByteBuf, DoubleJumpMessage> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.BOOL,
-            DoubleJumpMessage::canDoubleJump,
+            ByteBufCodecs.INT,
+            DoubleJumpMessage::empty,
             DoubleJumpMessage::new
     );
 
@@ -32,12 +31,6 @@ public record DoubleJumpMessage(boolean canDoubleJump) implements CustomPacketPa
         double z = player.getZ();
 
         level.playSound(null, BlockPos.containing(x, y, z), ModSounds.DOUBLE_JUMP.get(), SoundSource.BLOCKS, 1, 1);
-
-        var cap = player.getData(ModAttachments.PLAYER_VARIABLE).watch();
-
-        cap.playerDoubleJump = message.canDoubleJump;
-        player.setData(ModAttachments.PLAYER_VARIABLE, cap);
-        cap.sync(player);
     }
 
     @Override
