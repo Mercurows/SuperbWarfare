@@ -173,7 +173,7 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
                         return 5f * damage;
                     }
                     if (source.getDirectEntity() instanceof MortarShellEntity) {
-                        return 4f * damage;
+                        return 3f * damage;
                     }
                     return damage;
                 })

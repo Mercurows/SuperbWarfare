@@ -140,7 +140,7 @@ public class Lav150Entity extends ContainerMobileVehicleEntity implements GeoEnt
                         return 3f * damage;
                     }
                     if (source.getDirectEntity() instanceof MortarShellEntity) {
-                        return 3f * damage;
+                        return 1.25f * damage;
                     }
                     if (source.getDirectEntity() instanceof GunGrenadeEntity) {
                         return 1.5f * damage;

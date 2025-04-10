@@ -5,7 +5,6 @@ import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.entity.projectile.GunGrenadeEntity;
 import com.atsuishio.superbwarfare.entity.projectile.MelonBombEntity;
-import com.atsuishio.superbwarfare.entity.projectile.MortarShellEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ContainerMobileVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.LandArmorEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
@@ -151,9 +150,6 @@ public class PrismTankEntity extends ContainerMobileVehicleEntity implements Geo
                 .custom((source, damage) -> {
                     if (source.getDirectEntity() instanceof MelonBombEntity) {
                         return 2f * damage;
-                    }
-                    if (source.getDirectEntity() instanceof MortarShellEntity) {
-                        return 3f * damage;
                     }
                     if (source.getDirectEntity() instanceof GunGrenadeEntity) {
                         return 1.5f * damage;

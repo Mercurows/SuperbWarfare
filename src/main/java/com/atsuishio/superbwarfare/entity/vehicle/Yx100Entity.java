@@ -231,6 +231,9 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
                     if (source.getDirectEntity() instanceof GunGrenadeEntity) {
                         return 2f * damage;
                     }
+                    if (source.getDirectEntity() instanceof MortarShellEntity) {
+                        return 2f * damage;
+                    }
                     return damage;
                 })
                 .reduce(9);

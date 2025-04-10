@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.tools;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.entity.ClaymoreEntity;
 import com.atsuishio.superbwarfare.entity.projectile.C4Entity;
+import com.atsuishio.superbwarfare.entity.projectile.DestroyableProjectileEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import net.minecraft.core.BlockPos;
@@ -161,7 +162,7 @@ public class SeekTool {
                 && !(entity instanceof ItemEntity
                 || entity instanceof ExperienceOrb
                 || entity instanceof HangingEntity
-                || entity instanceof Projectile
+                || (entity instanceof Projectile && !(entity instanceof DestroyableProjectileEntity))
                 || entity instanceof ArmorStand
                 || entity instanceof ClaymoreEntity
                 || entity instanceof C4Entity

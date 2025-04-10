@@ -158,7 +158,7 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
                         return 2f * damage;
                     }
                     if (source.getDirectEntity() instanceof MortarShellEntity) {
-                        return 3f * damage;
+                        return 1.1f * damage;
                     }
                     if (source.getDirectEntity() instanceof GunGrenadeEntity) {
                         return 1.5f * damage;

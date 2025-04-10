@@ -11,14 +11,20 @@ import com.atsuishio.superbwarfare.tools.CustomExplosion;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
 import com.atsuishio.superbwarfare.tools.TraceTool;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageTypes;
+import net.minecraft.world.entity.AreaEffectCloud;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.projectile.ThrowableItemProjectile;
+import net.minecraft.world.entity.projectile.ThrownPotion;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Explosion;
@@ -36,8 +42,8 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.Nullable;
 
-public class WgMissileEntity extends FastThrowableProjectile implements GeoEntity {
-
+public class WgMissileEntity extends FastThrowableProjectile implements GeoEntity, DestroyableProjectileEntity {
+    public static final EntityDataAccessor<Float> HEALTH = SynchedEntityData.defineId(WgMissileEntity.class, EntityDataSerializers.FLOAT);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     private float damage = 250f;
@@ -54,6 +60,52 @@ public class WgMissileEntity extends FastThrowableProjectile implements GeoEntit
         this.damage = damage;
         this.explosionDamage = explosionDamage;
         this.explosionRadius = explosionRadius;
+    }
+
+    @Override
+    public boolean hurt(DamageSource source, float amount) {
+        if (source.getDirectEntity() instanceof ThrownPotion || source.getDirectEntity() instanceof AreaEffectCloud)
+            return false;
+        if (source.is(DamageTypes.FALL))
+            return false;
+        if (source.is(DamageTypes.CACTUS))
+            return false;
+        if (source.is(DamageTypes.DROWN))
+            return false;
+        if (source.is(DamageTypes.DRAGON_BREATH))
+            return false;
+        if (source.is(DamageTypes.WITHER))
+            return false;
+        if (source.is(DamageTypes.WITHER_SKULL))
+            return false;
+        this.entityData.set(HEALTH, this.entityData.get(HEALTH) - amount);
+
+        return super.hurt(source, amount);
+    }
+
+    @Override
+    public boolean isPickable() {
+        return !this.isRemoved();
+    }
+
+    @Override
+    protected void defineSynchedData(SynchedEntityData.@NotNull Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(HEALTH, 10F);
+    }
+
+    @Override
+    public void readAdditionalSaveData(@NotNull CompoundTag compound) {
+        super.readAdditionalSaveData(compound);
+        if (compound.contains("Health")) {
+            this.entityData.set(HEALTH, compound.getFloat("Health"));
+        }
+    }
+
+    @Override
+    public void addAdditionalSaveData(@NotNull CompoundTag compound) {
+        super.addAdditionalSaveData(compound);
+        compound.putFloat("Health", this.entityData.get(HEALTH));
     }
 
     @Override
@@ -88,9 +140,7 @@ public class WgMissileEntity extends FastThrowableProjectile implements GeoEntit
 
         if (this.tickCount > 2) {
             if (this.level() instanceof ServerLevel) {
-                causeMissileExplode(this,
-                        ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(), this, this.getOwner()),
-                        entity, this.explosionDamage, this.explosionRadius);
+                causeMissileExplode(ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(), this, this.getOwner()), this.explosionDamage, this.explosionRadius);
             }
         }
     }
@@ -99,9 +149,7 @@ public class WgMissileEntity extends FastThrowableProjectile implements GeoEntit
     public void onHitBlock(@NotNull BlockHitResult blockHitResult) {
         super.onHitBlock(blockHitResult);
         if (this.level() instanceof ServerLevel) {
-            causeMissileExplode(this,
-                    ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(), this, this.getOwner()),
-                    this, this.explosionDamage, this.explosionRadius);
+            causeMissileExplode(ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(), this, this.getOwner()), this.explosionDamage, this.explosionRadius);
         }
     }
 
@@ -145,24 +193,22 @@ public class WgMissileEntity extends FastThrowableProjectile implements GeoEntit
             this.setDeltaMovement(this.getDeltaMovement().multiply(0.8, 0.8, 0.8));
         }
 
-        if (this.tickCount > 300 || this.isInWater()) {
+        if (this.tickCount > 300 || this.isInWater() || this.entityData.get(HEALTH) <= 0) {
             if (this.level() instanceof ServerLevel) {
-                causeMissileExplode(this,
-                        ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(), this, this.getOwner()),
-                        this, this.explosionDamage, this.explosionRadius);
+                causeMissileExplode(ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(), this, this.getOwner()), this.explosionDamage, this.explosionRadius);
             }
             this.discard();
         }
     }
 
-    public static void causeMissileExplode(ThrowableItemProjectile projectile, @Nullable DamageSource source, Entity target, float damage, float radius) {
-        CustomExplosion explosion = new CustomExplosion(projectile.level(), projectile, source, damage,
-                target.getX(), target.getEyeY(), target.getZ(), radius, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP).setDamageMultiplier(1.25f);
+    public void causeMissileExplode(@Nullable DamageSource source, float damage, float radius) {
+        CustomExplosion explosion = new CustomExplosion(level(), this, source, damage,
+                this.getX(), this.getY(), this.getZ(), radius, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP).setDamageMultiplier(1.25f);
         explosion.explode();
-        EventHooks.onExplosionStart(projectile.level(), explosion);
+        EventHooks.onExplosionStart(level(), explosion);
         explosion.finalizeExplosion(false);
-        ParticleTool.spawnMediumExplosionParticles(projectile.level(), projectile.position());
-        projectile.discard();
+        ParticleTool.spawnMediumExplosionParticles(level(), position());
+        discard();
     }
 
     private PlayState movementPredicate(AnimationState<WgMissileEntity> event) {

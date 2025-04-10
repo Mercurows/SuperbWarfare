@@ -41,7 +41,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.Nullable;
 
-public class SwarmDroneEntity extends FastThrowableProjectile implements GeoEntity {
+public class SwarmDroneEntity extends FastThrowableProjectile implements GeoEntity, DestroyableProjectileEntity {
 
     public static final EntityDataAccessor<String> TARGET_UUID = SynchedEntityData.defineId(SwarmDroneEntity.class, EntityDataSerializers.STRING);
     public static final EntityDataAccessor<Float> TARGET_X = SynchedEntityData.defineId(SwarmDroneEntity.class, EntityDataSerializers.FLOAT);
@@ -110,10 +110,6 @@ public class SwarmDroneEntity extends FastThrowableProjectile implements GeoEnti
         if (source.getDirectEntity() instanceof SwarmDroneEntity) {
             return false;
         }
-//        if (source.getEntity() == getOwner()) {
-//            return false;
-//        }
-
         this.entityData.set(HEALTH, this.entityData.get(HEALTH) - amount);
 
         return super.hurt(source, amount);
@@ -226,14 +222,7 @@ public class SwarmDroneEntity extends FastThrowableProjectile implements GeoEnti
             }
         }
 
-        if (this.tickCount > 300 || this.isInWater()) {
-            if (this.level() instanceof ServerLevel) {
-                causeMissileExplode(ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(), this, this.getOwner()), this.explosionDamage, this.explosionRadius);
-            }
-            this.discard();
-        }
-
-        if (this.entityData.get(HEALTH) <= 0) {
+        if (this.tickCount > 300 || this.isInWater() || this.entityData.get(HEALTH) <= 0) {
             if (this.level() instanceof ServerLevel) {
                 causeMissileExplode(ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(), this, this.getOwner()), this.explosionDamage, this.explosionRadius);
             }
