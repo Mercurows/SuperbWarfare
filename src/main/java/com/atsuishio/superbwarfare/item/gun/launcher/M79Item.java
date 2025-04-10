@@ -12,7 +12,6 @@ import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.network.message.receive.ShootClientMessage;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
-import com.atsuishio.superbwarfare.tools.GunsTool;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
 import com.atsuishio.superbwarfare.tools.SoundTool;
 import net.minecraft.client.Minecraft;
@@ -27,6 +26,7 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
@@ -125,8 +125,7 @@ public class M79Item extends GunItem implements GeoItem, SpecialFireWeapon {
         super.inventoryTick(stack, world, entity, slot, selected);
         if (entity instanceof Player player) {
             var data = GunData.from(stack);
-            final var tag = data.tag();
-            GunsTool.setGunIntTag(tag, "MaxAmmo", getAmmoCount(player));
+            data.setMaxAmmo(getAmmoCount(player));
             data.save();
         }
     }
@@ -219,5 +218,10 @@ public class M79Item extends GunItem implements GeoItem, SpecialFireWeapon {
 
         player.getCooldowns().addCooldown(stack.getItem(), 2);
         data.setAmmo(data.ammo() - 1);
+    }
+
+    @Override
+    public Item getCustomAmmoItem() {
+        return ModItems.GRENADE_40MM.get();
     }
 }

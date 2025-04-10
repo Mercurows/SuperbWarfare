@@ -6,7 +6,6 @@ import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.item.gun.rifle.MarlinItem;
-import com.atsuishio.superbwarfare.tools.NBTTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -84,7 +83,7 @@ public class MarlinItemModel extends GeoModel<MarlinItem> {
 
         CrossHairOverlay.gunRot = shen.getRotZ();
 
-        if (NBTTool.getTag(stack).getBoolean("IsEmpty")) {
+        if (GunData.from(stack).isEmpty()) {
             jichui.setRotX(-0.52f);
         }
 

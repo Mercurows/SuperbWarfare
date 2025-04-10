@@ -39,15 +39,15 @@ import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsE
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.ArrayList;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Consumer;
 
 @EventBusSubscriber(modid = Mod.MODID, bus = EventBusSubscriber.Bus.MOD)
 public abstract class GunItem extends Item implements CustomRendererItem {
 
     public GunItem(Properties properties) {
         super(properties);
+        addReloadTimeBehavior(this.reloadTimeBehaviors);
     }
 
     @Override
@@ -495,6 +495,18 @@ public abstract class GunItem extends Item implements CustomRendererItem {
         FireMode(int i) {
             this.flag = i;
         }
+    }
+
+    public final Map<Integer, Consumer<GunData>> reloadTimeBehaviors = new HashMap<>();
+
+    /**
+     * 添加达到指定换弹时间时的额外行为
+     */
+    public void addReloadTimeBehavior(Map<Integer, Consumer<GunData>> behaviors) {
+    }
+
+    public Item getCustomAmmoItem() {
+        return null;
     }
 
     @SubscribeEvent

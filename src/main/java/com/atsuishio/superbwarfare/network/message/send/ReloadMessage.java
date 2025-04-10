@@ -6,7 +6,6 @@ import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
-import com.atsuishio.superbwarfare.tools.GunsTool;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -40,7 +39,6 @@ public record ReloadMessage(int msgType) implements CustomPacketPayload {
         if (!(stack.getItem() instanceof GunItem gunItem)) return;
 
         var data = GunData.from(stack);
-        var tag = data.tag();
 
         if (!player.isSpectator()
                 && !data.charging()
@@ -60,15 +58,15 @@ public record ReloadMessage(int msgType) implements CustomPacketPayload {
                     return;
                 } else if (stack.is(ModTags.Items.USE_SNIPER_AMMO) && cap.sniperAmmo == 0) {
                     return;
-                } else if ((stack.is(ModTags.Items.USE_HANDGUN_AMMO) || stack.is(ModTags.Items.SMG)) && cap.handgunAmmo == 0) {
+                } else if (stack.is(ModTags.Items.USE_HANDGUN_AMMO) && cap.handgunAmmo == 0) {
                     return;
                 } else if (stack.is(ModTags.Items.USE_RIFLE_AMMO) && cap.rifleAmmo == 0) {
                     return;
                 } else if (stack.is(ModTags.Items.USE_HEAVY_AMMO) && cap.heavyAmmo == 0) {
                     return;
-                } else if (stack.getItem() == ModItems.TASER.get() && GunsTool.getGunIntTag(tag, "MaxAmmo") == 0) {
+                } else if (stack.getItem() == ModItems.TASER.get() && data.maxAmmo() == 0) {
                     return;
-                } else if (stack.is(ModTags.Items.LAUNCHER) && GunsTool.getGunIntTag(tag, "MaxAmmo") == 0) {
+                } else if (stack.is(ModTags.Items.LAUNCHER) && data.maxAmmo() == 0) {
                     return;
                 }
             }
@@ -79,13 +77,13 @@ public record ReloadMessage(int msgType) implements CustomPacketPayload {
                 var maxAmmo = magazine + extra;
 
                 if (data.ammo() < maxAmmo) {
-                    data.reload.markStart();
+                    data.reload.reloadStarter.markStart();
                 }
                 return;
             }
 
             if (canSingleReload && data.ammo() < data.magazine()) {
-                tag.putBoolean("StartSingleReload", true);
+                data.reload.singleReloadStarter.markStart();
             }
             data.save();
         }

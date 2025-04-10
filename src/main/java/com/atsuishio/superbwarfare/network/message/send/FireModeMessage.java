@@ -95,7 +95,7 @@ public record FireModeMessage(int msgType) implements CustomPacketPayload {
                     if (cell.is(ModItems.CELL.get())) {
                         var cap = cell.getCapability(Capabilities.EnergyStorage.ITEM);
                         if (cap != null && cap.getEnergyStored() > 0) {
-                            data.charge.markStart();
+                            data.charge.starter.markStart();
                         }
                     }
                 }
@@ -110,8 +110,8 @@ public record FireModeMessage(int msgType) implements CustomPacketPayload {
             }
 
             if (stack.getItem() == ModItems.TRACHELIUM.get() && !data.bolt.needed()) {
-                tag.putBoolean("DA", !tag.getBoolean("DA"));
-                if (!tag.getBoolean("canImmediatelyShoot")) {
+                data.setDA(!data.DA());
+                if (!data.canImmediatelyShoot()) {
                     data.bolt.markNeeded();
                 }
             }

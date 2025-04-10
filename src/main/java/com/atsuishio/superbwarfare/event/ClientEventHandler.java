@@ -187,13 +187,13 @@ public class ClientEventHandler {
         return player.getVehicle() instanceof VehicleEntity vehicle && vehicle.allowFreeCam() && Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON && ModKeyMappings.FREE_CAMERA.isDown();
     }
 
-    private static boolean revolverPre(final CompoundTag tag) {
+    private static boolean revolverPre(GunData data) {
         Player player = Minecraft.getInstance().player;
         if (player == null) return false;
         ItemStack stack = player.getMainHandItem();
         if (!stack.is(ModTags.Items.REVOLVER)) {
             return true;
-        } else if (stack.is(ModTags.Items.REVOLVER) && (tag.getBoolean("DA") || tag.getBoolean("canImmediatelyShoot"))) {
+        } else if (stack.is(ModTags.Items.REVOLVER) && (data.DA() || data.canImmediatelyShoot())) {
             return true;
         } else {
             return revolverPreTime >= 1;
@@ -456,11 +456,11 @@ public class ClientEventHandler {
         int cooldown = (int) (1000 / rps);
 
         //左轮类
-        if (clientTimer.getProgress() == 0 && stack.is(ModTags.Items.REVOLVER) && ((holdFire && !tag.getBoolean("DA"))
-                || (data.bolt.actionTime() < 7 && data.bolt.actionTime() > 2) || tag.getBoolean("canImmediatelyShoot"))) {
+        if (clientTimer.getProgress() == 0 && stack.is(ModTags.Items.REVOLVER) && ((holdFire && !data.DA())
+                || (data.bolt.actionTime() < 7 && data.bolt.actionTime() > 2) || data.canImmediatelyShoot())) {
             revolverPreTime = Mth.clamp(revolverPreTime + 0.3 * times, 0, 1);
             revolverWheelPreTime = Mth.clamp(revolverWheelPreTime + 0.32 * times, 0, revolverPreTime > 0.7 ? 1 : 0.55);
-        } else if (!tag.getBoolean("DA") && !tag.getBoolean("canImmediatelyShoot")) {
+        } else if (!data.DA() && !data.canImmediatelyShoot()) {
             revolverPreTime = Mth.clamp(revolverPreTime - 1.2 * times, 0, 1);
         }
 
@@ -480,7 +480,7 @@ public class ClientEventHandler {
                 && data.ammo() > 0
                 && !player.getCooldowns().isOnCooldown(stack.getItem())
                 && !data.bolt.needed()
-                && revolverPre(tag))
+                && revolverPre(data))
                 || (stack.is(ModItems.MINIGUN.get())
                 && !player.isSprinting()
                 && tag.getDouble("overheat") == 0

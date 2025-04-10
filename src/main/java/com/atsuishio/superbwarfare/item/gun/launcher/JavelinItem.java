@@ -32,6 +32,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.animal.Pig;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ClipContext;
@@ -136,7 +137,7 @@ public class JavelinItem extends GunItem implements GeoItem, SpecialFireWeapon {
         final var tag = data.tag();
 
         if (entity instanceof Player player && selected) {
-            GunsTool.setGunIntTag(tag, "MaxAmmo", getAmmoCount(player));
+            data.setMaxAmmo(getAmmoCount(player));
 
             if (tag.getBoolean("Seeking")) {
 
@@ -328,5 +329,10 @@ public class JavelinItem extends GunItem implements GeoItem, SpecialFireWeapon {
         }
         tag.putBoolean("Seeking", true);
         tag.putInt("SeekTime", 0);
+    }
+
+    @Override
+    public Item getCustomAmmoItem() {
+        return ModItems.JAVELIN_MISSILE.get();
     }
 }

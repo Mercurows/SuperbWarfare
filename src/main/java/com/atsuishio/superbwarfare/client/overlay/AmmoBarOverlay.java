@@ -52,7 +52,7 @@ public class AmmoBarOverlay implements LayeredDraw.Layer {
         }
 
         if (stack.getItem() == ModItems.BOCEK.get()) {
-            return GunData.from(stack).data().getInt("MaxAmmo");
+            return GunData.from(stack).maxAmmo();
         }
 
         return GunData.from(stack).ammo();
@@ -69,7 +69,7 @@ public class AmmoBarOverlay implements LayeredDraw.Layer {
         if (!hasCreativeAmmo()) {
             var data = GunData.from(stack);
             if (stack.is(ModTags.Items.LAUNCHER) || stack.getItem() == ModItems.TASER.get()) {
-                return "" + data.data().getInt("MaxAmmo");
+                return "" + data.maxAmmo();
             }
             if (stack.is(ModTags.Items.USE_RIFLE_AMMO)) {
                 return "" + cap.rifleAmmo;
@@ -175,7 +175,7 @@ public class AmmoBarOverlay implements LayeredDraw.Layer {
                 } else {
                     guiGraphics.drawString(
                             Minecraft.getInstance().font,
-                            tag.getBoolean("DA") ? Component.translatable("des.superbwarfare.revolver.sa").withStyle(ChatFormatting.BOLD) : Component.translatable("des.superbwarfare.revolver.da").withStyle(ChatFormatting.BOLD),
+                            data.DA() ? Component.translatable("des.superbwarfare.revolver.sa").withStyle(ChatFormatting.BOLD) : Component.translatable("des.superbwarfare.revolver.da").withStyle(ChatFormatting.BOLD),
                             w - 96,
                             h - 20,
                             0xFFFFFF,

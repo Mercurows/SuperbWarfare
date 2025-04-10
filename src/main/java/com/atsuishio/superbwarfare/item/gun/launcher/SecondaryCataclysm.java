@@ -13,7 +13,6 @@ import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.network.message.receive.ShootClientMessage;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
-import com.atsuishio.superbwarfare.tools.GunsTool;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
 import com.atsuishio.superbwarfare.tools.SoundTool;
 import net.minecraft.client.Minecraft;
@@ -30,6 +29,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
@@ -87,17 +87,16 @@ public class SecondaryCataclysm extends GunItem implements GeoItem, SpecialFireW
         ItemStack stack = player.getMainHandItem();
         if (!stack.is(ModTags.Items.GUN)) return PlayState.STOP;
         var data = GunData.from(stack);
-        final var tag = data.tag();
 
-        if (data.reload.stage() == 1 && tag.getDouble("PrepareLoadTime") > 0) {
+        if (data.reload.stage() == 1 && data.reload.prepareLoadTimer.get() > 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.sc.prepare"));
         }
 
-        if (tag.getDouble("LoadIndex") == 0 && data.reload.stage() == 2) {
+        if (data.loadIndex() == 0 && data.reload.stage() == 2) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.sc.iterativeload"));
         }
 
-        if (tag.getDouble("LoadIndex") == 1 && data.reload.stage() == 2) {
+        if (data.loadIndex() == 1 && data.reload.stage() == 2) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.sc.iterativeload2"));
         }
 
@@ -180,8 +179,7 @@ public class SecondaryCataclysm extends GunItem implements GeoItem, SpecialFireW
 
         if (entity instanceof Player player) {
             var data = GunData.from(stack);
-            final var tag = data.tag();
-            GunsTool.setGunIntTag(tag, "MaxAmmo", getAmmoCount(player));
+            data.setMaxAmmo(getAmmoCount(player));
             data.save();
         }
 
@@ -345,5 +343,10 @@ public class SecondaryCataclysm extends GunItem implements GeoItem, SpecialFireW
     @Override
     public int getMaxEnergy() {
         return 24000;
+    }
+
+    @Override
+    public Item getCustomAmmoItem() {
+        return ModItems.GRENADE_40MM.get();
     }
 }

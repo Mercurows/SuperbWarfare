@@ -52,7 +52,7 @@ public record ShootMessage(double spread) implements CustomPacketPayload {
                 }
 
                 if (stack.is(ModTags.Items.REVOLVER)) {
-                    tag.putBoolean("canImmediatelyShoot", false);
+                    data.setCanImmediatelyShoot(false);
                 }
 
                 // 判断是否为栓动武器（BoltActionTime > 0），并在开火后给一个需要上膛的状态
@@ -61,7 +61,7 @@ public record ShootMessage(double spread) implements CustomPacketPayload {
                 }
 
                 data.setAmmo(data.ammo() - 1);
-                tag.putBoolean("IsEmpty", true);
+                data.setIsEmpty(true);
 
                 if (stack.getItem() == ModItems.M_60.get() && data.ammo() <= 5) {
                     GunsTool.setGunBooleanTag(tag, "HideBulletChain", true);
@@ -86,7 +86,7 @@ public record ShootMessage(double spread) implements CustomPacketPayload {
                 var perk = data.perk.get(Perk.Type.AMMO);
 
                 for (int index0 = 0; index0 < (perk instanceof AmmoPerk ammoPerk && ammoPerk.slug ? 1 : projectileAmount); index0++) {
-                    GunEventHandler.gunShoot(player, tag, spared);
+                    GunEventHandler.gunShoot(player, data, spared);
                 }
 
                 GunEventHandler.playGunSounds(player);
@@ -119,7 +119,7 @@ public record ShootMessage(double spread) implements CustomPacketPayload {
                     }
                 }
 
-                GunEventHandler.gunShoot(player, tag, spared);
+                GunEventHandler.gunShoot(player, data, spared);
                 if (!InventoryTool.hasCreativeAmmoBox(player)) {
                     cap.rifleAmmo = cap.rifleAmmo - 1;
                     player.setData(ModAttachments.PLAYER_VARIABLE, cap);

@@ -12,7 +12,6 @@ import com.atsuishio.superbwarfare.item.gun.SpecialFireWeapon;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.network.message.receive.ShootClientMessage;
 import com.atsuishio.superbwarfare.perk.Perk;
-import com.atsuishio.superbwarfare.tools.GunsTool;
 import com.atsuishio.superbwarfare.tools.SoundTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -24,6 +23,7 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
@@ -142,10 +142,9 @@ public class TaserItem extends GunItem implements GeoItem, SpecialFireWeapon, En
     public void inventoryTick(ItemStack stack, Level world, Entity entity, int slot, boolean selected) {
         super.inventoryTick(stack, world, entity, slot, selected);
         var data = GunData.from(stack);
-        final var tag = data.tag();
 
         if (entity instanceof Player player) {
-            GunsTool.setGunIntTag(tag, "MaxAmmo", getAmmoCount(player));
+            data.setMaxAmmo(getAmmoCount(player));
             data.save();
         }
 
@@ -264,5 +263,10 @@ public class TaserItem extends GunItem implements GeoItem, SpecialFireWeapon, En
     @Override
     public int getMaxEnergy() {
         return MAX_ENERGY;
+    }
+
+    @Override
+    public Item getCustomAmmoItem() {
+        return ModItems.TASER_ELECTRODE.get();
     }
 }

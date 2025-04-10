@@ -12,7 +12,6 @@ import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.network.message.receive.ShootClientMessage;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
-import com.atsuishio.superbwarfare.tools.GunsTool;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
 import com.atsuishio.superbwarfare.tools.SoundTool;
 import net.minecraft.client.Minecraft;
@@ -27,6 +26,7 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
@@ -40,8 +40,10 @@ import software.bernie.geckolib.renderer.GeoItemRenderer;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Consumer;
 
 public class RpgItem extends GunItem implements GeoItem, SpecialFireWeapon {
 
@@ -134,12 +136,12 @@ public class RpgItem extends GunItem implements GeoItem, SpecialFireWeapon {
             tag.putBoolean("draw", false);
 
             if (data.ammo() == 0) {
-                tag.putBoolean("IsEmpty", true);
+                data.setIsEmpty(true);
             }
         }
 
         if (entity instanceof Player player) {
-            GunsTool.setGunIntTag(tag, "MaxAmmo", getAmmoCount(player));
+            data.setMaxAmmo(getAmmoCount(player));
         }
         data.save();
 
@@ -179,7 +181,6 @@ public class RpgItem extends GunItem implements GeoItem, SpecialFireWeapon {
     public void fireOnPress(Player player, final GunData data) {
         Level level = player.level();
         ItemStack stack = player.getMainHandItem();
-        var tag = data.tag();
 
         if (data.reloading()
                 || player.getCooldowns().isOnCooldown(stack.getItem())
@@ -236,11 +237,24 @@ public class RpgItem extends GunItem implements GeoItem, SpecialFireWeapon {
         }
 
         if (data.ammo() == 1) {
-            tag.putBoolean("IsEmpty", true);
-            GunsTool.setGunBooleanTag(tag, "CloseHammer", true);
+            data.setIsEmpty(true);
+            data.setCloseHammer(true);
         }
 
         player.getCooldowns().addCooldown(stack.getItem(), 10);
         data.setAmmo(data.ammo() - 1);
+    }
+
+    @Override
+    public void addReloadTimeBehavior(Map<Integer, Consumer<GunData>> behaviors) {
+        super.addReloadTimeBehavior(behaviors);
+
+        behaviors.put(84, data -> data.setIsEmpty(false));
+        behaviors.put(9, data -> data.setCloseHammer(false));
+    }
+
+    @Override
+    public Item getCustomAmmoItem() {
+        return ModItems.ROCKET.get();
     }
 }

@@ -348,38 +348,35 @@ public class LivingEventHandler {
             var newTag = NBTTool.getTag(newStack);
             if (player instanceof ServerPlayer serverPlayer
                     && (newStack.getItem() != oldStack.getItem()
-                    || (newStack.is(ModTags.Items.GUN) && !GunsTool.getGunData(newTag).hasUUID("UUID"))
-                    || (oldStack.is(ModTags.Items.GUN) && !GunsTool.getGunData(oldTag).hasUUID("UUID"))
+                    || (newStack.is(ModTags.Items.GUN) && !GunData.from(newStack).initialized())
+                    || (oldStack.is(ModTags.Items.GUN) && !GunData.from(oldStack).initialized())
                     || (newStack.is(ModTags.Items.GUN) && oldStack.is(ModTags.Items.GUN) && !Objects.equals(GunsTool.getGunUUID(newTag), GunsTool.getGunUUID(oldTag)))
             )) {
                 if (oldStack.getItem() instanceof GunItem oldGun) {
                     stopGunReloadSound(serverPlayer, oldGun);
 
                     var oldData = GunData.from(oldStack);
-                    oldTag = oldData.tag();
-                    var data = oldData.data();
 
                     if (oldData.bolt.defaultActionTime() > 0) {
                         oldData.bolt.setActionTime(0);
                     }
 
                     oldData.reload.setTime(0);
-                    oldTag.put("GunData", data);
 
                     oldData.reload.setState(ReloadState.NOT_RELOADING);
 
-                    if (oldData.iterativeTime() != 0) {
-                        oldTag.remove("ForceStop");
-                        oldTag.remove("Stopped");
+                    if (oldData.defaultIterativeTime() != 0) {
+                        oldData.setStopped(false);
+                        oldData.setForceStop(false);
                         oldData.reload.setStage(0);
-                        oldTag.remove("PrepareTime");
-                        oldTag.remove("PrepareLoadTime");
-                        oldTag.remove("IterativeLoadTime");
-                        oldTag.remove("FinishTime");
+                        oldData.reload.prepareTimer.reset();
+                        oldData.reload.prepareLoadTimer.reset();
+                        oldData.reload.iterativeLoadTimer.reset();
+                        oldData.reload.finishTimer.reset();
                     }
 
                     if (oldStack.is(ModItems.SENTINEL.get())) {
-                        oldData.charge.reset();
+                        oldData.charge.timer.reset();
                     }
 
                     var cap = player.getData(ModAttachments.PLAYER_VARIABLE).watch();
@@ -401,23 +398,20 @@ public class LivingEventHandler {
                     }
 
                     newData.reload.setState(ReloadState.NOT_RELOADING);
+                    newData.reload.reloadTimer.reset();
 
-                    var data = newData.data();
-                    newData.reload.setTime(0);
-                    newTag.put("GunData", data);
-
-                    if (newData.iterativeTime() != 0) {
-                        newTag.remove("ForceStop");
-                        newTag.remove("Stopped");
+                    if (newData.defaultIterativeTime() != 0) {
+                        newData.setForceStop(false);
+                        newData.setStopped(false);
                         newData.reload.setStage(0);
-                        newTag.remove("PrepareTime");
-                        newTag.remove("PrepareLoadTime");
-                        newTag.remove("IterativeLoadTime");
-                        newTag.remove("FinishTime");
+                        newData.reload.prepareTimer.reset();
+                        newData.reload.prepareLoadTimer.reset();
+                        newData.reload.iterativeLoadTimer.reset();
+                        newData.reload.finishTimer.reset();
                     }
 
                     if (newStack.is(ModItems.SENTINEL.get())) {
-                        newData.charge.reset();
+                        newData.charge.timer.reset();
                     }
 
                     int level = newData.perk.getLevel(ModPerks.KILLING_TALLY);

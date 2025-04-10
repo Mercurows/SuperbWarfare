@@ -10,7 +10,6 @@ import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
-import com.atsuishio.superbwarfare.tools.NBTTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.ResourceLocation;
@@ -54,25 +53,24 @@ public class M870Item extends GunItem implements GeoItem {
         ItemStack stack = player.getMainHandItem();
         if (!stack.is(ModTags.Items.GUN)) return PlayState.STOP;
         var data = GunData.from(stack);
-        final var tag = NBTTool.getTag(stack);
 
         if (data.bolt.actionTime() > 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m870.shift"));
         }
 
-        if (data.reload.stage() == 1 && tag.getDouble("PrepareLoadTime") > 0) {
+        if (data.reload.stage() == 1 && data.reload.iterativeLoadTimer.get() > 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m870.preparealt"));
         }
 
-        if (data.reload.stage() == 1 && tag.getDouble("PrepareTime") > 0) {
+        if (data.reload.stage() == 1 && data.reload.prepareTimer.get() > 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m870.prepare"));
         }
 
-        if (tag.getDouble("LoadIndex") == 0 && data.reload.stage() == 2) {
+        if (data.loadIndex() == 0 && data.reload.stage() == 2) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m870.iterativeload"));
         }
 
-        if (tag.getDouble("LoadIndex") == 1 && data.reload.stage() == 2) {
+        if (data.loadIndex() == 1 && data.reload.stage() == 2) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m870.iterativeload2"));
         }
 

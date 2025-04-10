@@ -23,7 +23,9 @@ import software.bernie.geckolib.animation.*;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
+import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 
 public class M1911Item extends GunItem implements GeoItem {
 
@@ -140,5 +142,12 @@ public class M1911Item extends GunItem implements GeoItem {
     @Override
     public int getAvailableFireModes() {
         return FireMode.SEMI.flag;
+    }
+
+    @Override
+    public void addReloadTimeBehavior(Map<Integer, Consumer<GunData>> behaviors) {
+        super.addReloadTimeBehavior(behaviors);
+
+        behaviors.put(9, data -> data.data().remove("HoldOpen"));
     }
 }

@@ -28,7 +28,9 @@ import software.bernie.geckolib.renderer.GeoItemRenderer;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 
 public class M60Item extends GunItem implements GeoItem {
 
@@ -158,5 +160,12 @@ public class M60Item extends GunItem implements GeoItem {
     @Override
     public int getAvailableFireModes() {
         return FireMode.AUTO.flag;
+    }
+
+    @Override
+    public void addReloadTimeBehavior(Map<Integer, Consumer<GunData>> behaviors) {
+        super.addReloadTimeBehavior(behaviors);
+
+        behaviors.put(55, data -> data.data().remove("HideBulletChain"));
     }
 }

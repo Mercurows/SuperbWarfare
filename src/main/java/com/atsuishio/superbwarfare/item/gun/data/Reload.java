@@ -5,8 +5,28 @@ import net.minecraft.nbt.CompoundTag;
 public final class Reload {
     private final CompoundTag data;
 
+    public final Timer reloadTimer;
+    public final Timer prepareTimer;
+    public final Timer prepareLoadTimer;
+    public final Timer iterativeLoadTimer;
+    public final Timer finishTimer;
+
+    public final Starter reloadStarter;
+    public final Starter singleReloadStarter;
+    public final Starter stage3Starter;
+
     Reload(GunData data) {
         this.data = data.data();
+
+        reloadTimer = new Timer(this.data, "Reload");
+        prepareTimer = new Timer(this.data, "Prepare");
+        prepareLoadTimer = new Timer(this.data, "PrepareLoad");
+        iterativeLoadTimer = new Timer(this.data, "IterativeLoad");
+        finishTimer = new Timer(this.data, "Finish");
+
+        reloadStarter = new Starter(this.data, "Reload");
+        singleReloadStarter = new Starter(this.data, "SingleReload");
+        stage3Starter = new Starter(this.data, "Stage3Forcefully");
     }
 
     public ReloadState state() {
@@ -45,31 +65,16 @@ public final class Reload {
         }
     }
 
-    public void markStart() {
-        data.putBoolean("StartReload", true);
-    }
-
-    public void markStarted() {
-        data.remove("StartReload");
-    }
-
-    public boolean shouldStart() {
-        return data.getBoolean("StartReload");
-    }
 
     public int time() {
-        return data.getInt("ReloadTime");
+        return reloadTimer.get();
     }
 
     public void setTime(int time) {
-        if (time <= 0) {
-            data.remove("ReloadTime");
-        } else {
-            data.putInt("ReloadTime", time);
-        }
+        reloadTimer.set(time);
     }
 
     public void reduce() {
-        setTime(time() - 1);
+        reloadTimer.reduce();
     }
 }

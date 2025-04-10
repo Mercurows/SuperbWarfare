@@ -45,15 +45,14 @@ public record FireMessage(int msgType) implements CustomPacketPayload {
         ItemStack stack = player.getMainHandItem();
         if (!stack.is(ModTags.Items.GUN)) return;
         var data = GunData.from(stack);
-        final var tag = data.tag();
 
         handleGunBolt(player, stack);
 
         var cap = player.getData(ModAttachments.PLAYER_VARIABLE).watch();
 
         if (type == 0) {
-            if (tag.getDouble("PrepareTime") == 0 && data.reloading() && data.ammo() > 0) {
-                tag.putBoolean("ForceStop", true);
+            if (data.reload.prepareTimer.get() == 0 && data.reloading() && data.ammo() > 0) {
+                data.setForceStop(true);
             }
 
             cap.edit = false;

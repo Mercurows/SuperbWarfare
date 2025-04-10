@@ -169,7 +169,7 @@ public class TracheliumItemModel extends GeoModel<Trachelium> {
         GeoBone root = getAnimationProcessor().getBone("root");
         root.setPosX((float) (movePosX + 20 * ClientEventHandler.drawTime + 9.3f * mph));
         root.setPosY((float) (swayY + movePosY - 40 * ClientEventHandler.drawTime - 2f * vY));
-        root.setPosZ(!NBTTool.getTag(stack).getBoolean("DA") && !NBTTool.getTag(stack).getBoolean("canImmediatelyShoot") ? 0.2f * (float) ClientEventHandler.revolverPreTime : 0);
+        root.setPosZ(!GunData.from(stack).DA() && !GunData.from(stack).canImmediatelyShoot() ? 0.2f * (float) ClientEventHandler.revolverPreTime : 0);
         root.setRotX((float) ((swayX - Mth.DEG_TO_RAD * 60 * ClientEventHandler.drawTime + Mth.DEG_TO_RAD * turnRotX - 0.15f * vY)));
         root.setRotY((float) (0.2f * movePosX + Mth.DEG_TO_RAD * 300 * ClientEventHandler.drawTime + Mth.DEG_TO_RAD * turnRotY));
         root.setRotZ((float) (0.2f * movePosX + moveRotZ + Mth.DEG_TO_RAD * 90 * ClientEventHandler.drawTime + 2.7f * mph + Mth.DEG_TO_RAD * turnRotZ));

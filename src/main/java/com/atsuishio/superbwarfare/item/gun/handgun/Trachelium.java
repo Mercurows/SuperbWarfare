@@ -249,7 +249,7 @@ public class Trachelium extends GunItem implements GeoItem {
 
     @Override
     public int getCustomBoltActionTime(ItemStack stack) {
-        return GunData.from(stack).tag().getBoolean("DA") ? 12 : 0;
+        return GunData.from(stack).DA() ? 12 : 0;
     }
 
     @Override

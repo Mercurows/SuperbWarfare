@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.client.AnimationHelper;
 import com.atsuishio.superbwarfare.client.model.item.BocekItemModel;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.item.gun.special.BocekItem;
 import com.atsuishio.superbwarfare.tools.GunsTool;
 import com.atsuishio.superbwarfare.tools.NBTTool;
@@ -90,7 +91,7 @@ public class BocekItemRenderer extends GeoItemRenderer<BocekItem> {
         }
 
         if (name.equals("jian")) {
-            bone.setHidden(GunsTool.getGunIntTag(tag, "MaxAmmo") == 0);
+            bone.setHidden(GunData.from(itemStack).maxAmmo() == 0);
         }
 
         if (renderingArms) {
