@@ -26,7 +26,6 @@ public class PlayerVariable implements INBTSerializable<CompoundTag> {
     public int shotgunAmmo = 0;
     public int sniperAmmo = 0;
     public int heavyAmmo = 0;
-    public boolean playerDoubleJump = false;
     public boolean edit = false;
 
     public void sync(Entity entity) {
@@ -59,7 +58,6 @@ public class PlayerVariable implements INBTSerializable<CompoundTag> {
             type.set(nbt, type.get(this));
         }
 
-        nbt.putBoolean("DoubleJump", playerDoubleJump);
         nbt.putBoolean("EditMode", edit);
 
         return nbt;
@@ -70,7 +68,6 @@ public class PlayerVariable implements INBTSerializable<CompoundTag> {
             type.set(this, type.get(tag));
         }
 
-        playerDoubleJump = tag.getBoolean("DoubleJump");
         edit = tag.getBoolean("EditMode");
 
         return this;
@@ -84,7 +81,6 @@ public class PlayerVariable implements INBTSerializable<CompoundTag> {
         clone.shotgunAmmo = this.shotgunAmmo;
         clone.sniperAmmo = this.sniperAmmo;
         clone.heavyAmmo = this.heavyAmmo;
-        clone.playerDoubleJump = this.playerDoubleJump;
         clone.edit = this.edit;
 
         return clone;
@@ -99,7 +95,6 @@ public class PlayerVariable implements INBTSerializable<CompoundTag> {
                 && shotgunAmmo == other.shotgunAmmo
                 && sniperAmmo == other.sniperAmmo
                 && heavyAmmo == other.heavyAmmo
-                && playerDoubleJump == other.playerDoubleJump
                 && edit == other.edit;
     }
 
