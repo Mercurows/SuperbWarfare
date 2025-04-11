@@ -13,6 +13,8 @@ import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoItem;
 import software.bernie.geckolib.animatable.client.GeoRenderProvider;
@@ -27,8 +29,21 @@ import java.util.function.Supplier;
 
 public abstract class BulletResistantArmor extends ArmorItem implements GeoItem {
 
-    private final Supplier<GeoArmorRenderer<? extends Item>> renderer;
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+
+    private float bulletResistance = 0.1f;
+
+    public BulletResistantArmor(Holder<ArmorMaterial> material, Type type, Properties properties) {
+        super(material, type, properties);
+    }
+
+    public BulletResistantArmor(Holder<ArmorMaterial> material, Type type, Properties properties, float bulletResistance) {
+        super(material, type, properties);
+        this.bulletResistance = bulletResistance;
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public abstract Supplier<GeoArmorRenderer<? extends Item>> getRenderer();
 
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
@@ -43,7 +58,7 @@ public abstract class BulletResistantArmor extends ArmorItem implements GeoItem 
             @Override
             public <T extends LivingEntity> HumanoidModel<?> getGeoArmorRenderer(T livingEntity, ItemStack itemStack, EquipmentSlot equipmentSlot, HumanoidModel<T> original) {
                 if (this.renderer == null)
-                    this.renderer = BulletResistantArmor.this.renderer.get();
+                    this.renderer = BulletResistantArmor.this.getRenderer().get();
                 return this.renderer;
             }
         });
@@ -51,19 +66,6 @@ public abstract class BulletResistantArmor extends ArmorItem implements GeoItem 
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar data) {
-    }
-
-    private float bulletResistance = 0.1f;
-
-    public BulletResistantArmor(Holder<ArmorMaterial> material, Type type, Properties properties, Supplier<GeoArmorRenderer<? extends Item>> renderer) {
-        super(material, type, properties);
-        this.renderer = renderer;
-    }
-
-    public BulletResistantArmor(Holder<ArmorMaterial> material, Type type, Properties properties, float bulletResistance, Supplier<GeoArmorRenderer<? extends Item>> renderer) {
-        super(material, type, properties);
-        this.bulletResistance = bulletResistance;
-        this.renderer = renderer;
     }
 
     @Override
