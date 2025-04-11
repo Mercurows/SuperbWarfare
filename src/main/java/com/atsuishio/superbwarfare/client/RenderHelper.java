@@ -5,6 +5,7 @@ import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
@@ -255,11 +256,45 @@ public class RenderHelper {
         Vector3f transformedPos = frustum.matrix.transformProject(relativePos.x, relativePos.y, relativePos.z, new Vector3f());
 
         double scaleFactor = minecraft.getWindow().getGuiScale();
-        float guiScaleMul = 0.5f / (float) scaleFactor;
+        float guiScaleMul = (float) (0.5f / scaleFactor);
 
         Vector3f screenPos = transformedPos.mul(1.0f, -1.0f, 1.0f).add(1.0f, 1.0f, 0.0f)
                 .mul(guiScaleMul * minecraft.getWindow().getWidth(), guiScaleMul * minecraft.getWindow().getHeight(), 1.0f);
 
         return transformedPos.z < 1.0f ? new Vec3(screenPos.x, screenPos.y, transformedPos.z) : null;
+    }
+
+    /**
+     * Fills a rectangle with the specified color and z-level using the given render type and coordinates as the boundaries.
+     *
+     * @param renderType the render type to use.
+     * @param minX       the minimum x-coordinate of the rectangle.
+     * @param minY       the minimum y-coordinate of the rectangle.
+     * @param maxX       the maximum x-coordinate of the rectangle.
+     * @param maxY       the maximum y-coordinate of the rectangle.
+     * @param z          the z-level of the rectangle.
+     * @param color      the color to fill the rectangle with.
+     */
+    public static void fill(GuiGraphics guiGraphics, RenderType renderType, float minX, float minY, float maxX, float maxY, float z, int color) {
+        Matrix4f matrix4f = guiGraphics.pose().last().pose();
+        if (minX < maxX) {
+            float i = minX;
+            minX = maxX;
+            maxX = i;
+        }
+
+        if (minY < maxY) {
+            float j = minY;
+            minY = maxY;
+            maxY = j;
+        }
+
+        VertexConsumer vertexconsumer = guiGraphics.bufferSource().getBuffer(renderType);
+        vertexconsumer.addVertex(matrix4f, minX, minY, z).setColor(color);
+        vertexconsumer.addVertex(matrix4f, minX, maxY, z).setColor(color);
+        vertexconsumer.addVertex(matrix4f, maxX, maxY, z).setColor(color);
+        vertexconsumer.addVertex(matrix4f, maxX, minY, z).setColor(color);
+
+        guiGraphics.flush();
     }
 }

@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.client.overlay;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.config.client.DisplayConfig;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
@@ -46,10 +47,15 @@ public class StaminaOverlay implements LayeredDraw.Layer {
         RenderSystem.enableBlend();
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-        RenderSystem.setShaderColor(1, 1, 1, (float) Mth.clamp(ClientEventHandler.switchTime, 0, 1));
 
-        guiGraphics.fill(RenderType.guiOverlay(), w / 2 - 64, h - 48, w / 2 + 64, h - 49, -90, -16777216);
-        guiGraphics.fill(RenderType.guiOverlay(), w / 2 - 64, h - 48, w / 2 + 64 - (int) (1.28 * ClientEventHandler.stamina), h - 49, -90, -1);
+        if (ClientEventHandler.exhaustion) {
+            RenderSystem.setShaderColor(1, 0, 0, (float) Mth.clamp(ClientEventHandler.switchTime, 0, 1));
+        } else {
+            RenderSystem.setShaderColor(1, 1, 1, (float) Mth.clamp(ClientEventHandler.switchTime, 0, 1));
+        }
+
+        RenderHelper.fill(guiGraphics, RenderType.guiOverlay(), (float) w / 2 - 64, h - 48, (float) w / 2 + 64, h - 49, -90, -16777216);
+        RenderHelper.fill(guiGraphics, RenderType.guiOverlay(), (float) w / 2 - 64, (float) (h - 48), (float) (w / 2 + 64 - (1.28 * ClientEventHandler.stamina)), h - 49, -90, -1);
 
         guiGraphics.pose().popPose();
     }
