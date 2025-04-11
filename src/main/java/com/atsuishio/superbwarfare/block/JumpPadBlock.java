@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.block;
 
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.entity.TargetEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.CannonEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
@@ -126,7 +127,7 @@ public class JumpPadBlock extends Block {
         }
 
         if (entity instanceof Player player && player.level().isClientSide) {
-            ClientEventHandler.canDoubleJump = true;
+            Mod.queueClientWork(2, () -> ClientEventHandler.canDoubleJump = true);
         }
     }
 }
