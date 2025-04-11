@@ -20,37 +20,40 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 
 public class Crowbar extends SwordItem {
+
+    public static final Tier TIER = new Tier() {
+        public int getUses() {
+            return 400;
+        }
+
+        public float getSpeed() {
+            return 4f;
+        }
+
+        public float getAttackDamageBonus() {
+            return 3.5f;
+        }
+
+        @Override
+        public @NotNull TagKey<Block> getIncorrectBlocksForDrops() {
+            return BlockTags.INCORRECT_FOR_IRON_TOOL;
+        }
+
+        public int getLevel() {
+            return 1;
+        }
+
+        public int getEnchantmentValue() {
+            return 9;
+        }
+
+        public @NotNull Ingredient getRepairIngredient() {
+            return Ingredient.of(new ItemStack(Items.IRON_INGOT));
+        }
+    };
+
     public Crowbar() {
-        super(new Tier() {
-            public int getUses() {
-                return 400;
-            }
-
-            public float getSpeed() {
-                return 4f;
-            }
-
-            public float getAttackDamageBonus() {
-                return 3.5f;
-            }
-
-            @Override
-            public @NotNull TagKey<Block> getIncorrectBlocksForDrops() {
-                return BlockTags.INCORRECT_FOR_IRON_TOOL;
-            }
-
-            public int getLevel() {
-                return 1;
-            }
-
-            public int getEnchantmentValue() {
-                return 9;
-            }
-
-            public @NotNull Ingredient getRepairIngredient() {
-                return Ingredient.of(new ItemStack(Items.IRON_INGOT));
-            }
-        }, new Properties());
+        super(TIER, new Properties().stacksTo(1).attributes(SwordItem.createAttributes(TIER, 2, -2f)));
     }
 
     @Override
@@ -60,12 +63,12 @@ public class Crowbar extends SwordItem {
 
     @Override
     public @NotNull ItemStack getCraftingRemainingItem(ItemStack itemstack) {
-        ItemStack retval = new ItemStack(this);
-        retval.setDamageValue(itemstack.getDamageValue() + 1);
-        if (retval.getDamageValue() >= retval.getMaxDamage()) {
+        ItemStack stack = new ItemStack(this);
+        stack.setDamageValue(itemstack.getDamageValue() + 1);
+        if (stack.getDamageValue() >= stack.getMaxDamage()) {
             return ItemStack.EMPTY;
         }
-        return retval;
+        return stack;
     }
 
     @Override
