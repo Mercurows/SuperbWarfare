@@ -14,6 +14,7 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
@@ -28,6 +29,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class SksItem extends GunItem implements GeoItem {
 
@@ -44,8 +46,8 @@ public class SksItem extends GunItem implements GeoItem {
     }
 
     @Override
-    public GeoItemRenderer<? extends GunItem> getRenderer() {
-        return new SksItemRenderer();
+    public Supplier<GeoItemRenderer<? extends Item>> getRenderer() {
+        return SksItemRenderer::new;
     }
 
     public void getTransformType(ItemDisplayContext type) {

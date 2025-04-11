@@ -62,7 +62,7 @@ public class LungeMine extends Item implements GeoItem {
             public HumanoidModel.ArmPose getArmPose(LivingEntity entityLiving, InteractionHand hand, ItemStack itemStack) {
                 if (!itemStack.isEmpty()) {
                     if (entityLiving.getUsedItemHand() == hand) {
-                        return ModEnumExtensions.getLungeMinePose();
+                        return ModEnumExtensions.Client.getLungeMinePose();
                     }
                 }
                 return HumanoidModel.ArmPose.EMPTY;

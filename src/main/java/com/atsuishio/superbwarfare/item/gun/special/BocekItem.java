@@ -25,10 +25,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
-import net.minecraft.world.item.ItemDisplayContext;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.Rarity;
+import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
@@ -40,6 +37,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import static com.atsuishio.superbwarfare.network.message.send.FireMessage.spawnBullet;
 
@@ -53,8 +51,8 @@ public class BocekItem extends GunItem implements GeoItem, SpecialFireWeapon {
     }
 
     @Override
-    public GeoItemRenderer<? extends GunItem> getRenderer() {
-        return new BocekItemRenderer();
+    public Supplier<GeoItemRenderer<? extends Item>> getRenderer() {
+        return BocekItemRenderer::new;
     }
 
     public void getTransformType(ItemDisplayContext type) {

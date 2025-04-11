@@ -44,6 +44,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Supplier;
 
 public class M79Item extends GunItem implements GeoItem, SpecialFireWeapon {
 
@@ -60,8 +61,8 @@ public class M79Item extends GunItem implements GeoItem, SpecialFireWeapon {
     }
 
     @Override
-    public GeoItemRenderer<? extends GunItem> getRenderer() {
-        return new M79ItemRenderer();
+    public Supplier<GeoItemRenderer<? extends Item>> getRenderer() {
+        return M79ItemRenderer::new;
     }
 
     public void getTransformType(ItemDisplayContext type) {

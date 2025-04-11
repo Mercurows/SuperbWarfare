@@ -17,6 +17,7 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
@@ -29,6 +30,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Set;
+import java.util.function.Supplier;
 
 public class VectorItem extends GunItem implements GeoItem {
 
@@ -107,8 +109,8 @@ public class VectorItem extends GunItem implements GeoItem {
     }
 
     @Override
-    public GeoItemRenderer<? extends GunItem> getRenderer() {
-        return new VectorItemRenderer();
+    public Supplier<GeoItemRenderer<? extends Item>> getRenderer() {
+        return VectorItemRenderer::new;
     }
 
     // TODO 移除inventoryTick

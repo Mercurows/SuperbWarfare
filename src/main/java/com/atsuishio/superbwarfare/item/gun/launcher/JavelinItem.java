@@ -51,6 +51,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Supplier;
 
 public class JavelinItem extends GunItem implements GeoItem, SpecialFireWeapon {
 
@@ -62,8 +63,8 @@ public class JavelinItem extends GunItem implements GeoItem, SpecialFireWeapon {
     }
 
     @Override
-    public GeoItemRenderer<? extends GunItem> getRenderer() {
-        return new JavelinItemRenderer();
+    public Supplier<GeoItemRenderer<? extends Item>> getRenderer() {
+        return JavelinItemRenderer::new;
     }
 
     public void getTransformType(ItemDisplayContext type) {

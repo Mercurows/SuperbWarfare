@@ -45,6 +45,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 public class SecondaryCataclysm extends GunItem implements GeoItem, SpecialFireWeapon, EnergyStorageItem {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
@@ -72,8 +73,8 @@ public class SecondaryCataclysm extends GunItem implements GeoItem, SpecialFireW
     }
 
     @Override
-    public GeoItemRenderer<? extends GunItem> getRenderer() {
-        return new SecondaryCataclysmRenderer();
+    public Supplier<GeoItemRenderer<? extends Item>> getRenderer() {
+        return SecondaryCataclysmRenderer::new;
     }
 
     public void getTransformType(ItemDisplayContext type) {

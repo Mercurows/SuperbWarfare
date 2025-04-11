@@ -42,6 +42,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Supplier;
 
 public class TaserItem extends GunItem implements GeoItem, SpecialFireWeapon, EnergyStorageItem {
 
@@ -49,7 +50,6 @@ public class TaserItem extends GunItem implements GeoItem, SpecialFireWeapon, En
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     public static ItemDisplayContext transformType;
-
 
     public TaserItem() {
         super(new Properties().stacksTo(1).rarity(Rarity.COMMON));
@@ -78,8 +78,8 @@ public class TaserItem extends GunItem implements GeoItem, SpecialFireWeapon, En
     }
 
     @Override
-    public GeoItemRenderer<? extends GunItem> getRenderer() {
-        return new TaserItemRenderer();
+    public Supplier<GeoItemRenderer<? extends Item>> getRenderer() {
+        return TaserItemRenderer::new;
     }
 
     public void getTransformType(ItemDisplayContext type) {

@@ -14,7 +14,7 @@
       "name": "SUPERBWARFARE_LUNGE_MINE_POSE",
       "constructor": "(ZLnet/neoforged/neoforge/client/IArmPoseTransformer;)V",
       "parameters": {
-        "class": "com/atsuishio/superbwarfare/init/ModEnumExtensions",
+        "class": "com/atsuishio/superbwarfare/init/ModEnumExtensions$Client",
         "field": "SUPERBWARFARE_LUNGE_MINE_POSE"
       }
     }

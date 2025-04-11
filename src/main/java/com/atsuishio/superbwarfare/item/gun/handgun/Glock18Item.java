@@ -14,6 +14,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
@@ -26,6 +27,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class Glock18Item extends GunItem implements GeoItem {
 
@@ -37,8 +39,8 @@ public class Glock18Item extends GunItem implements GeoItem {
     }
 
     @Override
-    public GeoItemRenderer<? extends GunItem> getRenderer() {
-        return new Glock18ItemRenderer();
+    public Supplier<GeoItemRenderer<? extends Item>> getRenderer() {
+        return Glock18ItemRenderer::new;
     }
 
     public void getTransformType(ItemDisplayContext type) {
@@ -80,7 +82,6 @@ public class Glock18Item extends GunItem implements GeoItem {
 
         return event.setAndContinue(RawAnimation.begin().thenLoop("animation.glock.idle"));
     }
-
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar data) {

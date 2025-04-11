@@ -19,10 +19,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.item.ItemDisplayContext;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Rarity;
-import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
 import software.bernie.geckolib.animatable.GeoItem;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
@@ -33,6 +30,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Supplier;
 
 public class Trachelium extends GunItem implements GeoItem {
 
@@ -49,8 +47,8 @@ public class Trachelium extends GunItem implements GeoItem {
     }
 
     @Override
-    public GeoItemRenderer<? extends GunItem> getRenderer() {
-        return new TracheliumItemRenderer();
+    public Supplier<GeoItemRenderer<? extends Item>> getRenderer() {
+        return TracheliumItemRenderer::new;
     }
 
     public void getTransformType(ItemDisplayContext type) {
@@ -226,7 +224,6 @@ public class Trachelium extends GunItem implements GeoItem {
         TooltipTool.addHideText(list, Component.translatable("des.superbwarfare.trachelium_3").withStyle(ChatFormatting.WHITE));
         TooltipTool.addHideText(list, Component.translatable("des.superbwarfare.trachelium_4").withStyle(Style.EMPTY.withColor(0xF4F0FF)));
     }
-
 
     @Override
     @ParametersAreNonnullByDefault

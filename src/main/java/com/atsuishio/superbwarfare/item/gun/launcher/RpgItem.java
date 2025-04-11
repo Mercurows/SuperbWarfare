@@ -46,6 +46,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class RpgItem extends GunItem implements GeoItem, SpecialFireWeapon {
 
@@ -62,8 +63,8 @@ public class RpgItem extends GunItem implements GeoItem, SpecialFireWeapon {
     }
 
     @Override
-    public GeoItemRenderer<? extends GunItem> getRenderer() {
-        return new RpgItemRenderer();
+    public Supplier<GeoItemRenderer<? extends Item>> getRenderer() {
+        return RpgItemRenderer::new;
     }
 
     public void getTransformType(ItemDisplayContext type) {

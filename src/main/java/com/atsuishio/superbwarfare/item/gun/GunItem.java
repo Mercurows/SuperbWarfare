@@ -513,7 +513,7 @@ public abstract class GunItem extends Item implements CustomRendererItem {
         for (var item : ModItems.GUNS.getEntries()) {
             if (item.get() instanceof GunItem gun) {
                 event.registerItem(new IClientItemExtensions() {
-                    private final BlockEntityWithoutLevelRenderer renderer = gun.getRenderer();
+                    private final BlockEntityWithoutLevelRenderer renderer = gun.getRenderer().get();
 
                     @Override
                     public @NotNull BlockEntityWithoutLevelRenderer getCustomRenderer() {

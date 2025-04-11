@@ -24,6 +24,7 @@ import software.bernie.geckolib.renderer.GeoItemRenderer;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.Set;
+import java.util.function.Supplier;
 
 public class InsidiousItem extends GunItem implements GeoItem {
 
@@ -35,8 +36,8 @@ public class InsidiousItem extends GunItem implements GeoItem {
     }
 
     @Override
-    public GeoItemRenderer<? extends Item> getRenderer() {
-        return new InsidiousItemRenderer();
+    public Supplier<GeoItemRenderer<? extends Item>> getRenderer() {
+        return InsidiousItemRenderer::new;
     }
 
     public void getTransformType(ItemDisplayContext type) {

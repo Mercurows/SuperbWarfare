@@ -17,6 +17,7 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.capabilities.Capabilities;
@@ -29,6 +30,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Supplier;
 
 public class SentinelItem extends GunItem implements GeoItem, EnergyStorageItem {
 
@@ -58,8 +60,8 @@ public class SentinelItem extends GunItem implements GeoItem, EnergyStorageItem 
     }
 
     @Override
-    public GeoItemRenderer<? extends GunItem> getRenderer() {
-        return new SentinelItemRenderer();
+    public Supplier<GeoItemRenderer<? extends Item>> getRenderer() {
+        return SentinelItemRenderer::new;
     }
 
     public void getTransformType(ItemDisplayContext type) {
