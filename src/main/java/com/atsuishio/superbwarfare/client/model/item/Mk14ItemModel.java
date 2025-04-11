@@ -166,7 +166,7 @@ public class Mk14ItemModel extends GeoModel<Mk14Item> {
 
         GeoBone shell = getAnimationProcessor().getBone("shell");
 
-        if (data.data().getBoolean("HoldOpen")) {
+        if (data.holdOpen.get()) {
             action.setPosZ(2.5f);
             shell.setScaleX(0);
             shell.setScaleY(0);

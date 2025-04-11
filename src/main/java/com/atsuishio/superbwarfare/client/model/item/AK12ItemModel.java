@@ -74,7 +74,6 @@ public class AK12ItemModel extends GeoModel<AK12Item> {
         double fr = ClientEventHandler.fireRot;
 
         var data = GunData.from(stack);
-        var tag = data.tag();
         int type = data.attachment.get(AttachmentType.SCOPE);
 
         float posY = switch (type) {

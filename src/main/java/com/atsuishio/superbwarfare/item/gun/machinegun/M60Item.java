@@ -10,7 +10,6 @@ import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
-import com.atsuishio.superbwarfare.tools.GunsTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.ResourceLocation;
@@ -109,12 +108,11 @@ public class M60Item extends GunItem implements GeoItem {
     @ParametersAreNonnullByDefault
     public void inventoryTick(ItemStack stack, Level level, Entity entity, int slot, boolean selected) {
         var data = GunData.from(stack);
-        final var tag = data.tag();
-        if (tag.getBoolean("draw")) {
-            tag.putBoolean("draw", false);
+        if (data.draw.get()) {
+            data.draw.set(false);
 
             if (data.ammo.get() <= 5) {
-                GunsTool.setGunBooleanTag(tag, "HideBulletChain", true);
+                data.hideBulletChain.set(true);
             }
             data.save();
         }
@@ -165,6 +163,6 @@ public class M60Item extends GunItem implements GeoItem {
     public void addReloadTimeBehavior(Map<Integer, Consumer<GunData>> behaviors) {
         super.addReloadTimeBehavior(behaviors);
 
-        behaviors.put(55, data -> data.data().remove("HideBulletChain"));
+        behaviors.put(55, data -> data.hideBulletChain.reset());
     }
 }

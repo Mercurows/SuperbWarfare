@@ -81,7 +81,6 @@ public class RpkItemRenderer extends GeoItemRenderer<RpkItem> {
         ItemStack itemStack = player.getMainHandItem();
         if (!itemStack.is(ModTags.Items.GUN)) return;
         var data = GunData.from(itemStack);
-        var tag = GunData.from(itemStack).tag();
 
         if (name.equals("Cross1")) {
             bone.setHidden(ClientEventHandler.zoomPos < 0.7 || data.attachment.get(AttachmentType.SCOPE) != 1);

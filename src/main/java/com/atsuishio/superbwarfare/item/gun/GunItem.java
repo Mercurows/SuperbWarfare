@@ -65,7 +65,6 @@ public abstract class GunItem extends Item implements CustomRendererItem {
         ) return;
 
         var data = GunData.from(stack);
-        var tag = data.tag();
 
         if (!data.initialized()) {
             data.initialize();
@@ -73,7 +72,7 @@ public abstract class GunItem extends Item implements CustomRendererItem {
                 data.ammo.set(data.magazine());
             }
         }
-        tag.putBoolean("draw", false);
+        data.draw.set(false);
         handleGunPerks(data);
 
         var hasBulletInBarrel = gunItem.hasBulletInBarrel(stack);

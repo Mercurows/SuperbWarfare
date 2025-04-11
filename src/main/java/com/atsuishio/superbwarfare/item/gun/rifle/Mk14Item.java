@@ -244,6 +244,6 @@ public class Mk14Item extends GunItem implements GeoItem {
     public void addReloadTimeBehavior(Map<Integer, Consumer<GunData>> behaviors) {
         super.addReloadTimeBehavior(behaviors);
 
-        behaviors.put(18, data -> data.data().remove("HoldOpen"));
+        behaviors.put(18, data -> data.holdOpen.set(false));
     }
 }

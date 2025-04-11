@@ -7,7 +7,6 @@ import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.item.gun.handgun.Glock18Item;
-import com.atsuishio.superbwarfare.tools.GunsTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -48,7 +47,6 @@ public class Glock18ItemModel extends GeoModel<Glock18Item> {
         if (!stack.is(ModTags.Items.GUN)) return;
 
         var data = GunData.from(stack);
-        var tag = data.tag();
         int mode = data.fireMode.get();
         if (mode == 0) {
             switch_.setRotX(35 * Mth.DEG_TO_RAD);
@@ -132,7 +130,7 @@ public class Glock18ItemModel extends GeoModel<Glock18Item> {
 
         GeoBone shell = getAnimationProcessor().getBone("shell");
         GeoBone barrel = getAnimationProcessor().getBone("guan");
-        if (GunsTool.getGunBooleanTag(tag, "HoldOpen")) {
+        if (data.holdOpen.get()) {
             slide.setPosZ(1.5f);
             barrel.setRotX(4 * Mth.DEG_TO_RAD);
             bullet.setScaleX(0);

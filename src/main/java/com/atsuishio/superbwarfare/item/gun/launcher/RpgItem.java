@@ -133,9 +133,8 @@ public class RpgItem extends GunItem implements GeoItem, SpecialFireWeapon {
     @ParametersAreNonnullByDefault
     public void inventoryTick(ItemStack stack, Level world, Entity entity, int slot, boolean selected) {
         var data = GunData.from(stack);
-        final var tag = data.tag();
-        if (tag.getBoolean("draw")) {
-            tag.putBoolean("draw", false);
+        if (data.draw.get()) {
+            data.draw.set(false);
 
             if (data.ammo.get() == 0) {
                 data.isEmpty.set(true);

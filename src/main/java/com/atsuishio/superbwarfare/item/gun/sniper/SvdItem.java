@@ -198,6 +198,6 @@ public class SvdItem extends GunItem implements GeoItem {
     public void addReloadTimeBehavior(Map<Integer, Consumer<GunData>> behaviors) {
         super.addReloadTimeBehavior(behaviors);
 
-        behaviors.put(17, data -> data.data().remove("HoldOpen"));
+        behaviors.put(17, data -> data.holdOpen.set(false));
     }
 }

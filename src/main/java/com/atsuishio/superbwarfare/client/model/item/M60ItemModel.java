@@ -7,7 +7,6 @@ import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.item.gun.machinegun.M60Item;
-import com.atsuishio.superbwarfare.tools.GunsTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -60,9 +59,8 @@ public class M60ItemModel extends GeoModel<M60Item> {
         }
 
         var data = GunData.from(stack);
-        var tag = data.tag();
         int ammo = data.ammo.get();
-        boolean flag = GunsTool.getGunBooleanTag(tag, "HideBulletChain");
+        boolean flag = data.hideBulletChain.get();
 
         if (ammo < 5 && flag) {
             b5.setScaleX(0);

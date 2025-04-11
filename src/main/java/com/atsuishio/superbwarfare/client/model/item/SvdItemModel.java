@@ -8,7 +8,6 @@ import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.item.gun.data.value.AttachmentType;
 import com.atsuishio.superbwarfare.item.gun.sniper.SvdItem;
-import com.atsuishio.superbwarfare.tools.GunsTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -112,7 +111,6 @@ public class SvdItemModel extends GeoModel<SvdItem> {
         cross3.setScaleY((float) (1f + (0.1 * zp)));
 
         var data = GunData.from(stack);
-        var tag = data.tag();
 
         GeoBone shen;
         if (zt < 0.5) {
@@ -148,7 +146,7 @@ public class SvdItemModel extends GeoModel<SvdItem> {
 
         bolt.setPosZ(4.5f * (float) fp);
 
-        if (GunsTool.getGunBooleanTag(tag, "HoldOpen")) {
+        if (data.holdOpen.get()) {
             bolt.setPosZ(3.5f);
         }
 

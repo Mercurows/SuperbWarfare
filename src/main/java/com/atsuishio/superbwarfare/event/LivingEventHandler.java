@@ -390,9 +390,9 @@ public class LivingEventHandler {
 
                 if (newStack.getItem() instanceof GunItem) {
                     var newData = GunData.from(newStack);
+                    newData.draw.set(true);
                     newTag = newData.tag();
 
-                    newTag.putBoolean("draw", true);
                     if (newData.defaultActionTime() > 0) {
                         newData.bolt.actionTimer.reset();
                     }

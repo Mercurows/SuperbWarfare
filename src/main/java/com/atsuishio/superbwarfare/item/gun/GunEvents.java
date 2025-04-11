@@ -14,8 +14,7 @@ public class GunEvents {
         var stack = event.getItemEntity().getItem();
         if (stack.is(ModTags.Items.GUN)) {
             var data = GunData.from(stack);
-            final var tag = data.tag();
-            tag.putBoolean("draw", true);
+            data.draw.set(true);
             data.save();
         }
     }

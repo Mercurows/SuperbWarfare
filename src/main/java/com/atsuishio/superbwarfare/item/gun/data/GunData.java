@@ -64,6 +64,9 @@ public class GunData {
         forceStop = new BooleanValue(data, "ForceStop");
         loadIndex = new IntValue(data, "LoadIndex");
         maxAmmo = new IntValue(data, "MaxAmmo");
+        holdOpen = new BooleanValue(data, "HoldOpen");
+        hideBulletChain = new BooleanValue(data, "HideBulletChain");
+        draw = new BooleanValue(data, "Draw");
     }
 
     private CompoundTag getOrPut(String name) {
@@ -301,6 +304,9 @@ public class GunData {
     public final IntValue loadIndex;
     public final IntValue maxAmmo;
 
+    public final BooleanValue holdOpen;
+    public final BooleanValue hideBulletChain;
+    public final BooleanValue draw;
 
     // 其他子级属性
 

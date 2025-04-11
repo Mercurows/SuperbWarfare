@@ -7,7 +7,6 @@ import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.item.gun.handgun.Mp443Item;
-import com.atsuishio.superbwarfare.tools.GunsTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -103,7 +102,6 @@ public class Mp443ItemModel extends GeoModel<Mp443Item> {
         float numP = (float) (1 - 0.68 * zt);
 
         var data = GunData.from(stack);
-        var tag = data.tag();
         if (data.reload.time() > 0) {
             main.setRotX(numR * main.getRotX());
             main.setRotY(numR * main.getRotY());
@@ -121,7 +119,7 @@ public class Mp443ItemModel extends GeoModel<Mp443Item> {
 
         GeoBone shell = getAnimationProcessor().getBone("shell");
 
-        if (GunsTool.getGunBooleanTag(tag, "HoldOpen")) {
+        if (data.holdOpen.get()) {
             slide.setPosZ(1.5f);
             bullet.setScaleX(0);
             bullet.setScaleY(0);

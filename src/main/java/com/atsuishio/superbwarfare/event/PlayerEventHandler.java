@@ -39,10 +39,7 @@ public class PlayerEventHandler {
         for (ItemStack stack : player.getInventory().items) {
             if (stack.getItem() instanceof GunItem) {
                 var data = GunData.from(stack);
-                tag = data.tag();
-
-                tag.putBoolean("draw", true);
-
+                data.draw.set(true);
                 data.save();
             }
         }
@@ -60,10 +57,7 @@ public class PlayerEventHandler {
         for (ItemStack stack : player.getInventory().items) {
             if (stack.is(ModTags.Items.GUN)) {
                 var data = GunData.from(stack);
-                final var tag = data.tag();
-
-                tag.putBoolean("draw", true);
-
+                data.draw.set(true);
                 data.save();
             }
         }
@@ -102,7 +96,6 @@ public class PlayerEventHandler {
         for (ItemStack stack : player.getInventory().items) {
             if (stack.is(ModTags.Items.GUN)) {
                 var data = GunData.from(stack);
-                var tag = data.tag();
 
                 if (!InventoryTool.hasCreativeAmmoBox(player)) {
                     var cap = player.getData(ModAttachments.PLAYER_VARIABLE);
@@ -142,7 +135,7 @@ public class PlayerEventHandler {
                 } else {
                     data.ammo.set(data.magazine());
                 }
-                GunsTool.setGunBooleanTag(tag, "HoldOpen", false);
+                data.holdOpen.set(false);
                 data.save();
             }
         }

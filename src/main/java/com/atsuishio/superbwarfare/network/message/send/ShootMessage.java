@@ -6,7 +6,6 @@ import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
-import com.atsuishio.superbwarfare.tools.GunsTool;
 import com.atsuishio.superbwarfare.tools.InventoryTool;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
 import com.atsuishio.superbwarfare.tools.SoundTool;
@@ -50,7 +49,7 @@ public record ShootMessage(double spread, boolean zoom) implements CustomPacketP
             if (data.ammo.get() > 0) {
                 // 空仓挂机
                 if (data.ammo.get() == 1) {
-                    GunsTool.setGunBooleanTag(tag, "HoldOpen", true);
+                    data.holdOpen.set(true);
                 }
 
                 if (stack.is(ModTags.Items.REVOLVER)) {
@@ -66,7 +65,7 @@ public record ShootMessage(double spread, boolean zoom) implements CustomPacketP
                 data.isEmpty.set(true);
 
                 if (stack.getItem() == ModItems.M_60.get() && data.ammo.get() <= 5) {
-                    GunsTool.setGunBooleanTag(tag, "HideBulletChain", true);
+                    data.hideBulletChain.set(true);
                 }
 
                 if (stack.getItem() == ModItems.HOMEMADE_SHOTGUN.get()) {

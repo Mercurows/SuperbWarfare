@@ -71,8 +71,6 @@ public class RpkItemModel extends GeoModel<RpkItem> {
         double fp = ClientEventHandler.firePos;
         double fr = ClientEventHandler.fireRot;
 
-        var data = GunData.from(stack);
-        var tag = data.tag();
         int type = GunData.from(stack).attachment.get(AttachmentType.SCOPE);
 
         float posYAlt = switch (type) {

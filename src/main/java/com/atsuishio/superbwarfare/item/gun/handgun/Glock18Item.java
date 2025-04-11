@@ -152,6 +152,6 @@ public class Glock18Item extends GunItem implements GeoItem {
     public void addReloadTimeBehavior(Map<Integer, Consumer<GunData>> behaviors) {
         super.addReloadTimeBehavior(behaviors);
 
-        behaviors.put(9, data -> data.data().remove("HoldOpen"));
+        behaviors.put(9, data -> data.holdOpen.set(false));
     }
 }
