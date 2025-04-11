@@ -8,8 +8,8 @@ import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.CustomRendererItem;
-import com.atsuishio.superbwarfare.item.gun.data.AttachmentType;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
+import com.atsuishio.superbwarfare.item.gun.data.value.AttachmentType;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.tools.AmmoType;
 import net.minecraft.client.model.HumanoidModel;
@@ -70,14 +70,14 @@ public abstract class GunItem extends Item implements CustomRendererItem {
         if (!data.initialized()) {
             data.initialize();
             if (level.getServer() != null && entity instanceof Player player && player.isCreative()) {
-                data.setAmmo(data.magazine());
+                data.ammo.set(data.magazine());
             }
         }
         tag.putBoolean("draw", false);
         handleGunPerks(data);
 
         var hasBulletInBarrel = gunItem.hasBulletInBarrel(stack);
-        var ammoCount = data.ammo();
+        var ammoCount = data.ammo.get();
         var magazine = data.magazine();
 
         if ((hasBulletInBarrel && ammoCount > magazine + 1) || (!hasBulletInBarrel && ammoCount > magazine)) {
@@ -97,7 +97,7 @@ public abstract class GunItem extends Item implements CustomRendererItem {
             }
             entity.setData(ModAttachments.PLAYER_VARIABLE, capability);
             capability.sync(entity);
-            data.setAmmo(magazine + (hasBulletInBarrel ? 1 : 0));
+            data.ammo.set(magazine + (hasBulletInBarrel ? 1 : 0));
         }
         data.save();
     }
@@ -185,7 +185,7 @@ public abstract class GunItem extends Item implements CustomRendererItem {
                 tag.remove("FourthTimesCharmCount");
 
                 int mag = data.magazine();
-                data.setAmmo(Math.min(mag, data.ammo() + 2));
+                data.ammo.set(Math.min(mag, data.ammo.get() + 2));
             }
         }
 

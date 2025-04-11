@@ -49,23 +49,23 @@ public class MosinNagantItem extends GunItem implements GeoItem {
         if (!stack.is(ModTags.Items.GUN)) return PlayState.STOP;
         var data = GunData.from(stack);
 
-        if (data.bolt.actionTime() > 0) {
+        if (data.bolt.actionTimer.get() > 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.mosin.shift"));
         }
 
-        if (data.reload.stage() == 1 && data.ammo() == 0) {
+        if (data.reload.stage() == 1 && data.ammo.get() == 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.mosin.prepare_empty"));
         }
 
-        if (data.reload.stage() == 1 && data.ammo() > 0) {
+        if (data.reload.stage() == 1 && data.ammo.get() > 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.mosin.prepare"));
         }
 
-        if (data.loadIndex() == 0 && data.reload.stage() == 2) {
+        if (data.loadIndex.get() == 0 && data.reload.stage() == 2) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.mosin.iterativeload"));
         }
 
-        if (data.loadIndex() == 1 && data.reload.stage() == 2) {
+        if (data.loadIndex.get() == 1 && data.reload.stage() == 2) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.mosin.iterativeload2"));
         }
 
@@ -92,7 +92,7 @@ public class MosinNagantItem extends GunItem implements GeoItem {
                 && ClientEventHandler.drawTime < 0.01
                 && !data.reloading()
         ) {
-            if (ClientEventHandler.tacticalSprint && data.bolt.actionTime() == 0) {
+            if (ClientEventHandler.tacticalSprint && data.bolt.actionTimer.get() == 0) {
                 return event.setAndContinue(RawAnimation.begin().thenLoop("animation.mosin.run_fast"));
             } else {
                 return event.setAndContinue(RawAnimation.begin().thenLoop("animation.mosin.run"));

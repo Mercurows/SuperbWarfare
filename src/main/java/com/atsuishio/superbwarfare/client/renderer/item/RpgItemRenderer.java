@@ -78,7 +78,7 @@ public class RpgItemRenderer extends GeoItemRenderer<RpgItem> {
         if (!itemStack.is(ModTags.Items.GUN)) return;
 
         if (name.equals("Rockets")) {
-            bone.setHidden(GunData.from(itemStack).isEmpty());
+            bone.setHidden(GunData.from(itemStack).isEmpty.get());
         }
 
         if (name.equals("flare")) {

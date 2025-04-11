@@ -136,7 +136,7 @@ public class JavelinItem extends GunItem implements GeoItem, SpecialFireWeapon {
         final var tag = data.tag();
 
         if (entity instanceof Player player && selected) {
-            data.setMaxAmmo(getAmmoCount(player));
+            data.maxAmmo.set(getAmmoCount(player));
 
             if (tag.getBoolean("Seeking")) {
 
@@ -288,7 +288,7 @@ public class JavelinItem extends GunItem implements GeoItem, SpecialFireWeapon {
         }
 
         player.getCooldowns().addCooldown(stack.getItem(), 10);
-        data.setAmmo(data.ammo() - 1);
+        data.ammo.set(data.ammo.get() - 1);
         data.save();
     }
 
@@ -309,7 +309,7 @@ public class JavelinItem extends GunItem implements GeoItem, SpecialFireWeapon {
     public void fireOnPress(Player player, final GunData data, boolean zoom) {
         var tag = data.tag();
 
-        if (!zoom || data.ammo() <= 0) return;
+        if (!zoom || data.ammo.get() <= 0) return;
 
         Entity seekingEntity = SeekTool.seekEntity(player, player.level(), 512, 8);
 

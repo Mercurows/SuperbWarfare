@@ -47,25 +47,25 @@ public record ShootMessage(double spread, boolean zoom) implements CustomPacketP
         if (stack.is(ModTags.Items.NORMAL_GUN)) {
             int projectileAmount = data.projectileAmount();
 
-            if (data.ammo() > 0) {
+            if (data.ammo.get() > 0) {
                 // 空仓挂机
-                if (data.ammo() == 1) {
+                if (data.ammo.get() == 1) {
                     GunsTool.setGunBooleanTag(tag, "HoldOpen", true);
                 }
 
                 if (stack.is(ModTags.Items.REVOLVER)) {
-                    data.setCanImmediatelyShoot(false);
+                    data.canImmediatelyShoot.set(true);
                 }
 
                 // 判断是否为栓动武器（BoltActionTime > 0），并在开火后给一个需要上膛的状态
-                if (data.bolt.defaultActionTime() > 0 && data.ammo() > (stack.is(ModTags.Items.REVOLVER) ? 0 : 1)) {
-                    data.bolt.markNeeded();
+                if (data.defaultActionTime() > 0 && data.ammo.get() > (stack.is(ModTags.Items.REVOLVER) ? 0 : 1)) {
+                    data.bolt.needed.set(true);
                 }
 
-                data.setAmmo(data.ammo() - 1);
-                data.setIsEmpty(true);
+                data.ammo.set(data.ammo.get() - 1);
+                data.isEmpty.set(true);
 
-                if (stack.getItem() == ModItems.M_60.get() && data.ammo() <= 5) {
+                if (stack.getItem() == ModItems.M_60.get() && data.ammo.get() <= 5) {
                     GunsTool.setGunBooleanTag(tag, "HideBulletChain", true);
                 }
 

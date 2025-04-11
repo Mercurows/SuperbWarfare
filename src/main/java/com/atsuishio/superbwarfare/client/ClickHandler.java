@@ -337,7 +337,7 @@ public class ClickHandler {
                 handTimer = 0;
             }
 
-            if (!gunItem.useBackpackAmmo(stack) && data.ammo() <= 0 && data.reload.time() == 0) {
+            if (!gunItem.useBackpackAmmo(stack) && data.ammo.get() <= 0 && data.reload.time() == 0) {
                 if (ReloadConfig.LEFT_CLICK_RELOAD.get()) {
                     PacketDistributor.sendToServer(new ReloadMessage(0));
                     ClientEventHandler.burstFireAmount = 0;
@@ -346,10 +346,10 @@ public class ClickHandler {
                 PacketDistributor.sendToServer(new FireMessage(0, handTimer, zoom));
                 if ((!data.reloading()
                         && !data.charging()
-                        && !data.bolt.needed())
+                        && !data.bolt.needed.get())
                         && drawTime < 0.01
                 ) {
-                    if (data.fireMode() == 1) {
+                    if (data.fireMode.get() == 1) {
                         if (ClientEventHandler.burstFireAmount == 0) {
                             ClientEventHandler.burstFireAmount = data.burstAmount();
                         }

@@ -83,7 +83,7 @@ public class MarlinItemModel extends GeoModel<MarlinItem> {
 
         CrossHairOverlay.gunRot = shen.getRotZ();
 
-        if (GunData.from(stack).isEmpty()) {
+        if (GunData.from(stack).isEmpty.get()) {
             jichui.setRotX(-0.52f);
         }
 

@@ -97,7 +97,7 @@ public class SksItem extends GunItem implements GeoItem {
         if (tag.getBoolean("draw")) {
             tag.putBoolean("draw", false);
 
-            if (data.ammo() == 0) {
+            if (data.ammo.get() == 0) {
                 GunsTool.setGunBooleanTag(tag, "HoldOpen", true);
             }
             data.save();

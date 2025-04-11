@@ -52,10 +52,10 @@ public class AmmoBarOverlay implements LayeredDraw.Layer {
         }
 
         if (stack.getItem() == ModItems.BOCEK.get()) {
-            return GunData.from(stack).maxAmmo();
+            return GunData.from(stack).maxAmmo.get();
         }
 
-        return GunData.from(stack).ammo();
+        return GunData.from(stack).ammo.get();
     }
 
     private static String getPlayerAmmoCount(Player player) {
@@ -69,7 +69,7 @@ public class AmmoBarOverlay implements LayeredDraw.Layer {
         if (!hasCreativeAmmo()) {
             var data = GunData.from(stack);
             if (stack.is(ModTags.Items.LAUNCHER) || stack.getItem() == ModItems.TASER.get()) {
-                return "" + data.maxAmmo();
+                return "" + data.maxAmmo.get();
             }
             if (stack.is(ModTags.Items.USE_RIFLE_AMMO)) {
                 return "" + cap.rifleAmmo;
@@ -175,7 +175,7 @@ public class AmmoBarOverlay implements LayeredDraw.Layer {
                 } else {
                     guiGraphics.drawString(
                             Minecraft.getInstance().font,
-                            data.DA() ? Component.translatable("des.superbwarfare.revolver.sa").withStyle(ChatFormatting.BOLD) : Component.translatable("des.superbwarfare.revolver.da").withStyle(ChatFormatting.BOLD),
+                            data.DA.get() ? Component.translatable("des.superbwarfare.revolver.sa").withStyle(ChatFormatting.BOLD) : Component.translatable("des.superbwarfare.revolver.da").withStyle(ChatFormatting.BOLD),
                             w - 96,
                             h - 20,
                             0xFFFFFF,
@@ -262,7 +262,7 @@ public class AmmoBarOverlay implements LayeredDraw.Layer {
     }
 
     private static ResourceLocation getFireMode(GunData data) {
-        return switch (data.fireMode()) {
+        return switch (data.fireMode.get()) {
             case 1 -> BURST;
             case 2 -> AUTO;
             default -> SEMI;

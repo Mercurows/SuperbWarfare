@@ -104,8 +104,8 @@ public class SentinelItemModel extends GeoModel<SentinelItem> {
         root.setRotY((float) (0.2f * movePosX + Mth.DEG_TO_RAD * 300 * ClientEventHandler.drawTime + Mth.DEG_TO_RAD * turnRotY));
         root.setRotZ((float) (0.2f * movePosX + moveRotZ + Mth.DEG_TO_RAD * 90 * ClientEventHandler.drawTime + 2.7f * mph + Mth.DEG_TO_RAD * turnRotZ));
 
-        if (data.ammo() <= 5) {
-            ammo.setScaleX((float) data.ammo() / 5);
+        if (data.ammo.get() <= 5) {
+            ammo.setScaleX((float) data.ammo.get() / 5);
         }
 
         GeoBone camera = getAnimationProcessor().getBone("camera");

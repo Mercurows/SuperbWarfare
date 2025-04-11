@@ -137,13 +137,13 @@ public class RpgItem extends GunItem implements GeoItem, SpecialFireWeapon {
         if (tag.getBoolean("draw")) {
             tag.putBoolean("draw", false);
 
-            if (data.ammo() == 0) {
-                data.setIsEmpty(true);
+            if (data.ammo.get() == 0) {
+                data.isEmpty.set(true);
             }
         }
 
         if (entity instanceof Player player) {
-            data.setMaxAmmo(getAmmoCount(player));
+            data.maxAmmo.set(getAmmoCount(player));
         }
         data.save();
 
@@ -186,7 +186,7 @@ public class RpgItem extends GunItem implements GeoItem, SpecialFireWeapon {
 
         if (data.reloading()
                 || player.getCooldowns().isOnCooldown(stack.getItem())
-                || data.ammo() <= 0
+                || data.ammo.get() <= 0
         ) return;
 
         double spread = data.spread();
@@ -237,21 +237,21 @@ public class RpgItem extends GunItem implements GeoItem, SpecialFireWeapon {
             PacketDistributor.sendToPlayer(serverPlayer, new ShootClientMessage(10));
         }
 
-        if (data.ammo() == 1) {
-            data.setIsEmpty(true);
-            data.setCloseHammer(true);
+        if (data.ammo.get() == 1) {
+            data.isEmpty.set(true);
+            data.closeHammer.set(true);
         }
 
         player.getCooldowns().addCooldown(stack.getItem(), 10);
-        data.setAmmo(data.ammo() - 1);
+        data.ammo.set(data.ammo.get() - 1);
     }
 
     @Override
     public void addReloadTimeBehavior(Map<Integer, Consumer<GunData>> behaviors) {
         super.addReloadTimeBehavior(behaviors);
 
-        behaviors.put(84, data -> data.setIsEmpty(false));
-        behaviors.put(9, data -> data.setCloseHammer(false));
+        behaviors.put(84, data -> data.isEmpty.set(false));
+        behaviors.put(9, data -> data.closeHammer.set(false));
     }
 
     @Override

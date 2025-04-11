@@ -209,13 +209,13 @@ public class ReforgingTableMenu extends AbstractContainerMenu {
         }
         var data = GunData.from(stack);
 
-        double oldPoint = data.upgradePoint();
+        double oldPoint = data.upgradePoint.get();
         int point = (int) oldPoint;
         int newPoint = this.upgradePoint.get();
         int delta = newPoint - point;
 
         if (delta != 0) {
-            data.setUpgradePoint(oldPoint + delta);
+            data.upgradePoint.set(oldPoint + delta);
             data.save();
         }
     }
@@ -292,7 +292,7 @@ public class ReforgingTableMenu extends AbstractContainerMenu {
             int level = inputData.perk.getLevel(perkItem);
 
             if (level <= 0) {
-                this.upgradePoint.set((int) inputData.upgradePoint());
+                this.upgradePoint.set((int) inputData.upgradePoint.get());
                 return;
             }
 
@@ -300,8 +300,8 @@ public class ReforgingTableMenu extends AbstractContainerMenu {
             var outputData = GunData.from(output);
             outputData.perk.remove(perkItem.getPerk());
 
-            inputData.setUpgradePoint(Math.min(MAX_UPGRADE_POINT, level - 1 + inputData.upgradePoint()));
-            this.upgradePoint.set((int) inputData.upgradePoint());
+            inputData.upgradePoint.set(Math.min(MAX_UPGRADE_POINT, level - 1 + inputData.upgradePoint.get()));
+            this.upgradePoint.set((int) inputData.upgradePoint.get());
 
             outputData.save();
             inputData.save();
@@ -336,7 +336,7 @@ public class ReforgingTableMenu extends AbstractContainerMenu {
         if (!(stack.getItem() instanceof GunItem)) return;
         var data = GunData.from(stack);
 
-        int point = (int) data.upgradePoint();
+        int point = (int) data.upgradePoint.get();
         this.upgradePoint.set(Mth.clamp(point, 0, MAX_UPGRADE_POINT));
 
         for (var type : Perk.Type.values()) {

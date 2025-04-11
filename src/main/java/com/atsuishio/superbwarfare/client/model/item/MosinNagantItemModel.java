@@ -121,7 +121,7 @@ public class MosinNagantItemModel extends GeoModel<MosinNagantItem> {
         float numR = (float) (1 - 0.97 * zt);
         float numP = (float) (1 - 0.81 * zt);
 
-        if (data.reloading() || data.bolt.actionTime() > 0) {
+        if (data.reloading() || data.bolt.actionTimer.get() > 0) {
             main.setRotX(numR * main.getRotX());
             main.setRotY(numR * main.getRotY());
             main.setRotZ(numR * main.getRotZ());

@@ -49,7 +49,7 @@ public class M98bItem extends GunItem implements GeoItem {
         if (!stack.is(ModTags.Items.GUN)) return PlayState.STOP;
         var data = GunData.from(stack);
 
-        if (data.bolt.actionTime() > 0) {
+        if (data.bolt.actionTimer.get() > 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m98b.shift"));
         }
 
@@ -74,7 +74,7 @@ public class M98bItem extends GunItem implements GeoItem {
         if (player.isSprinting() && player.onGround()
                 && ClientEventHandler.cantSprint == 0
                 && !(data.reload.normal() || data.reload.empty()) && ClientEventHandler.drawTime < 0.01) {
-            if (ClientEventHandler.tacticalSprint && data.bolt.actionTime() == 0) {
+            if (ClientEventHandler.tacticalSprint && data.bolt.actionTimer.get() == 0) {
                 return event.setAndContinue(RawAnimation.begin().thenLoop("animation.m98b.run_fast"));
             } else {
                 return event.setAndContinue(RawAnimation.begin().thenLoop("animation.m98b.run"));

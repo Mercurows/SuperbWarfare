@@ -1,7 +1,8 @@
-package com.atsuishio.superbwarfare.item.gun.data;
+package com.atsuishio.superbwarfare.item.gun.data.subdata;
 
 import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.item.PerkItem;
+import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkInstance;
 import net.minecraft.nbt.CompoundTag;
@@ -13,7 +14,7 @@ import java.util.ArrayList;
 public final class Perks {
     private final CompoundTag perks;
 
-    Perks(GunData gun) {
+    public Perks(GunData gun) {
         this.perks = gun.perk();
     }
 

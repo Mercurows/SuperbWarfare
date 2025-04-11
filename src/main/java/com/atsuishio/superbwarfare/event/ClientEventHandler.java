@@ -10,8 +10,8 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
-import com.atsuishio.superbwarfare.item.gun.data.AttachmentType;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
+import com.atsuishio.superbwarfare.item.gun.data.value.AttachmentType;
 import com.atsuishio.superbwarfare.network.message.send.*;
 import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
@@ -200,7 +200,7 @@ public class ClientEventHandler {
         ItemStack stack = player.getMainHandItem();
         if (!stack.is(ModTags.Items.REVOLVER)) {
             return true;
-        } else if (stack.is(ModTags.Items.REVOLVER) && (data.DA() || data.canImmediatelyShoot())) {
+        } else if (stack.is(ModTags.Items.REVOLVER) && (data.DA.get() || data.canImmediatelyShoot.get())) {
             return true;
         } else {
             return revolverPreTime >= 1;
@@ -489,7 +489,7 @@ public class ClientEventHandler {
         final var tag = data.tag();
 
         var perk = data.perk.get(Perk.Type.AMMO);
-        int mode = data.fireMode();
+        int mode = data.fireMode.get();
 
         // 精准度
         float times = (float) Math.min(Minecraft.getInstance().getTimer().getRealtimeDeltaTicks(), 0.8);
@@ -548,11 +548,11 @@ public class ClientEventHandler {
         int cooldown = (int) (1000 / rps);
 
         //左轮类
-        if (clientTimer.getProgress() == 0 && stack.is(ModTags.Items.REVOLVER) && ((holdFire && !data.DA())
-                || (data.bolt.actionTime() < 7 && data.bolt.actionTime() > 2) || data.canImmediatelyShoot())) {
+        if (clientTimer.getProgress() == 0 && stack.is(ModTags.Items.REVOLVER) && ((holdFire && !data.DA.get())
+                || (data.bolt.actionTimer.get() < 7 && data.bolt.actionTimer.get() > 2) || data.canImmediatelyShoot.get())) {
             revolverPreTime = Mth.clamp(revolverPreTime + 0.3 * times, 0, 1);
             revolverWheelPreTime = Mth.clamp(revolverWheelPreTime + 0.32 * times, 0, revolverPreTime > 0.7 ? 1 : 0.55);
-        } else if (!data.DA() && !data.canImmediatelyShoot()) {
+        } else if (!data.DA.get() && !data.canImmediatelyShoot.get()) {
             revolverPreTime = Mth.clamp(revolverPreTime - 1.2 * times, 0, 1);
         }
 
@@ -569,9 +569,9 @@ public class ClientEventHandler {
                 && (!(data.reload.normal() || data.reload.empty())
                 && !data.reloading()
                 && !data.charging()
-                && data.ammo() > 0
+                && data.ammo.get() > 0
                 && !player.getCooldowns().isOnCooldown(stack.getItem())
-                && !data.bolt.needed()
+                && !data.bolt.needed.get()
                 && revolverPre(data))
                 || (stack.is(ModItems.MINIGUN.get())
                 && !player.isSprinting()
@@ -646,14 +646,14 @@ public class ClientEventHandler {
         ItemStack stack = player.getMainHandItem();
         var data = GunData.from(stack);
         if (stack.is(ModTags.Items.NORMAL_GUN)) {
-            if (data.ammo() > 0) {
-                int mode = data.fireMode();
+            if (data.ammo.get() > 0) {
+                int mode = data.fireMode.get();
                 if (mode != 2) {
                     holdFire = false;
                 }
 
                 if (mode == 1) {
-                    if (data.ammo() == 1) {
+                    if (data.ammo.get() == 1) {
                         burstFireAmount = 1;
                     }
                     if (burstFireAmount == 1) {
@@ -679,8 +679,8 @@ public class ClientEventHandler {
                 }
 
                 // 判断是否为栓动武器（BoltActionTime > 0），并在开火后给一个需要上膛的状态
-                if (data.bolt.defaultActionTime() > 0 && data.ammo() > (stack.is(ModTags.Items.REVOLVER) ? 0 : 1)) {
-                    data.bolt.markNeeded();
+                if (data.defaultActionTime() > 0 && data.ammo.get() > (stack.is(ModTags.Items.REVOLVER) ? 0 : 1)) {
+                    data.bolt.needed.set(true);
                 }
 
                 revolverPreTime = 0;

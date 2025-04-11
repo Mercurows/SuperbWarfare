@@ -5,8 +5,8 @@ import com.atsuishio.superbwarfare.client.AnimationHelper;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModTags;
-import com.atsuishio.superbwarfare.item.gun.data.AttachmentType;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
+import com.atsuishio.superbwarfare.item.gun.data.value.AttachmentType;
 import com.atsuishio.superbwarfare.item.gun.smg.VectorItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
@@ -57,7 +57,7 @@ public class VectorItemModel extends GeoModel<VectorItem> {
 
         var data = GunData.from(stack);
         var tag = data.tag();
-        int mode = data.fireMode();
+        int mode = data.fireMode.get();
         if (mode == 0) {
             kmj.setRotX(-120 * Mth.DEG_TO_RAD);
         }

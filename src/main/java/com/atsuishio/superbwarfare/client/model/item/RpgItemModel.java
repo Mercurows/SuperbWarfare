@@ -45,7 +45,7 @@ public class RpgItemModel extends GeoModel<RpgItem> {
         if (!stack.is(ModTags.Items.GUN)) return;
 
         var data = GunData.from(stack);
-        if (data.closeHammer()) {
+        if (data.closeHammer.get()) {
             hammer.setRotX(-90 * Mth.DEG_TO_RAD);
         }
 

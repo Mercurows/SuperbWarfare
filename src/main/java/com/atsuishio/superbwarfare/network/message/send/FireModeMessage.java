@@ -35,20 +35,20 @@ public record FireModeMessage(int msgType) implements CustomPacketPayload {
         if (stack.getItem() instanceof GunItem gunItem) {
             var data = GunData.from(stack);
             var tag = data.tag();
-            int fireMode = data.fireMode();
+            int fireMode = data.fireMode.get();
 
             int mode = gunItem.getAvailableFireModes();
             mode &= 0b111;
 
             if (fireMode == 0) {
                 if ((mode & 2) != 0) {
-                    data.setFireMode(1);
+                    data.fireMode.set(1);
                     playChangeModeSound(player);
                     data.save();
                     return;
                 }
                 if ((mode & 4) != 0) {
-                    data.setFireMode(2);
+                    data.fireMode.set(2);
                     playChangeModeSound(player);
                     data.save();
                     return;
@@ -57,13 +57,13 @@ public record FireModeMessage(int msgType) implements CustomPacketPayload {
 
             if (fireMode == 1) {
                 if ((mode & 4) != 0) {
-                    data.setFireMode(2);
+                    data.fireMode.set(2);
                     playChangeModeSound(player);
                     data.save();
                     return;
                 }
                 if ((mode & 1) != 0) {
-                    data.setFireMode(0);
+                    data.fireMode.set(0);
                     playChangeModeSound(player);
                     data.save();
                     return;
@@ -72,13 +72,13 @@ public record FireModeMessage(int msgType) implements CustomPacketPayload {
 
             if (fireMode == 2) {
                 if ((mode & 1) != 0) {
-                    data.setFireMode(0);
+                    data.fireMode.set(0);
                     playChangeModeSound(player);
                     data.save();
                     return;
                 }
                 if ((mode & 2) != 0) {
-                    data.setFireMode(1);
+                    data.fireMode.set(1);
                     playChangeModeSound(player);
                     data.save();
                     return;
@@ -109,10 +109,10 @@ public record FireModeMessage(int msgType) implements CustomPacketPayload {
                 }
             }
 
-            if (stack.getItem() == ModItems.TRACHELIUM.get() && !data.bolt.needed()) {
-                data.setDA(!data.DA());
-                if (!data.canImmediatelyShoot()) {
-                    data.bolt.markNeeded();
+            if (stack.getItem() == ModItems.TRACHELIUM.get() && !data.bolt.needed.get()) {
+                data.DA.set(!data.DA.get());
+                if (!data.canImmediatelyShoot.get()) {
+                    data.bolt.needed.set(true);
                 }
             }
 

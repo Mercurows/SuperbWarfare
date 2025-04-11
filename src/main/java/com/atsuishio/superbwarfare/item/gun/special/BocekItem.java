@@ -117,7 +117,7 @@ public class BocekItem extends GunItem implements GeoItem, SpecialFireWeapon {
         var data = GunData.from(stack);
         final var tag = data.tag();
         if (entity instanceof Player player) {
-            data.setMaxAmmo(getAmmoCount(player));
+            data.maxAmmo.set(getAmmoCount(player));
             data.save();
         }
 

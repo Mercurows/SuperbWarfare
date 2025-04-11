@@ -7,8 +7,8 @@ import com.atsuishio.superbwarfare.init.ModAttachments;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
-import com.atsuishio.superbwarfare.item.gun.data.AttachmentType;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
+import com.atsuishio.superbwarfare.item.gun.data.value.AttachmentType;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
 import com.atsuishio.superbwarfare.tools.NBTTool;
@@ -108,7 +108,7 @@ public class Trachelium extends GunItem implements GeoItem {
         boolean stock = data.attachment.get(AttachmentType.STOCK) == 2;
         boolean grip = data.attachment.get(AttachmentType.GRIP) > 0 || data.attachment.get(AttachmentType.SCOPE) > 0;
 
-        if (data.bolt.actionTime() > 0) {
+        if (data.bolt.actionTimer.get() > 0) {
             if (stock) {
                 if (grip) {
                     return event.setAndContinue(RawAnimation.begin().thenPlay("animation.trachelium.action_stock_grip"));
@@ -248,7 +248,7 @@ public class Trachelium extends GunItem implements GeoItem {
 
     @Override
     public int getCustomBoltActionTime(ItemStack stack) {
-        return GunData.from(stack).DA() ? 12 : 0;
+        return GunData.from(stack).DA.get() ? 12 : 0;
     }
 
     @Override

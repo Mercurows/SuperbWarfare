@@ -1,5 +1,10 @@
-package com.atsuishio.superbwarfare.item.gun.data;
+package com.atsuishio.superbwarfare.item.gun.data.subdata;
 
+import com.atsuishio.superbwarfare.item.gun.data.GunData;
+import com.atsuishio.superbwarfare.item.gun.data.value.IntValue;
+import com.atsuishio.superbwarfare.item.gun.data.value.ReloadState;
+import com.atsuishio.superbwarfare.item.gun.data.value.Starter;
+import com.atsuishio.superbwarfare.item.gun.data.value.Timer;
 import net.minecraft.nbt.CompoundTag;
 
 public final class Reload {
@@ -15,7 +20,7 @@ public final class Reload {
     public final Starter singleReloadStarter;
     public final Starter stage3Starter;
 
-    Reload(GunData data) {
+    public Reload(GunData data) {
         this.data = data.data();
 
         reloadTimer = new Timer(this.data, "Reload");
@@ -27,6 +32,8 @@ public final class Reload {
         reloadStarter = new Starter(this.data, "Reload");
         singleReloadStarter = new Starter(this.data, "SingleReload");
         stage3Starter = new Starter(this.data, "Stage3Forcefully");
+
+        stage = new IntValue(this.data, "ReloadStage");
     }
 
     public ReloadState state() {
@@ -53,16 +60,14 @@ public final class Reload {
         }
     }
 
+    public final IntValue stage;
+
     public int stage() {
-        return data.getInt("ReloadStage");
+        return stage.get();
     }
 
     public void setStage(int stage) {
-        if (stage <= 0) {
-            data.remove("ReloadStage");
-        } else {
-            data.putInt("ReloadStage", stage);
-        }
+        this.stage.set(stage);
     }
 
 

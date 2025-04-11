@@ -1,6 +1,8 @@
 package com.atsuishio.superbwarfare.item.gun.data;
 
 import com.atsuishio.superbwarfare.item.gun.GunItem;
+import com.atsuishio.superbwarfare.item.gun.data.subdata.*;
+import com.atsuishio.superbwarfare.item.gun.data.value.*;
 import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.tools.GunsTool;
@@ -15,13 +17,13 @@ import java.util.UUID;
 import java.util.WeakHashMap;
 
 public class GunData {
-    private final ItemStack stack;
-    private final GunItem item;
-    private final CompoundTag tag;
-    private final CompoundTag data;
-    private final CompoundTag perkTag;
-    private final CompoundTag attachmentTag;
-    private final String id;
+    public final ItemStack stack;
+    public final GunItem item;
+    public final CompoundTag tag;
+    public final CompoundTag data;
+    public final CompoundTag perkTag;
+    public final CompoundTag attachmentTag;
+    public final String id;
 
     private static final WeakHashMap<ItemStack, GunData> dataCache = new WeakHashMap<>();
 
@@ -29,6 +31,7 @@ public class GunData {
         if (!(stack.getItem() instanceof GunItem gunItem)) {
             throw new IllegalArgumentException("stack is not GunItem!");
         }
+
         this.item = gunItem;
         this.stack = stack;
         var id = stack.getDescriptionId();
@@ -46,6 +49,21 @@ public class GunData {
         bolt = new Bolt(this);
         attachment = new Attachment(this);
         perk = new Perks(this);
+
+        ammo = new IntValue(data, "Ammo");
+        fireMode = new IntValue(data, "FireMode", (int) getGunData("FireMode"));
+        level = new IntValue(data, "Level");
+        exp = new DoubleValue(data, "Exp");
+        upgradePoint = new DoubleValue(data, "UpgradePoint");
+
+        canImmediatelyShoot = new BooleanValue(data, "CanImmediatelyShoot");
+        DA = new BooleanValue(data, "DA");
+        isEmpty = new BooleanValue(data, "IsEmpty");
+        closeHammer = new BooleanValue(data, "CloseHammer");
+        stopped = new BooleanValue(data, "Stopped");
+        forceStop = new BooleanValue(data, "ForceStop");
+        loadIndex = new IntValue(data, "LoadIndex");
+        maxAmmo = new IntValue(data, "MaxAmmo");
     }
 
     private CompoundTag getOrPut(String name) {
@@ -106,6 +124,9 @@ public class GunData {
     double getGunData(String key) {
         return getGunData(key, 0);
     }
+
+
+    // 枪械本体属性开始
 
     private double getGunData(String key, double defaultValue) {
         return GunsTool.gunsData.getOrDefault(id, new HashMap<>()).getOrDefault(key, defaultValue);
@@ -183,6 +204,10 @@ public class GunData {
         return (int) getGunData("FinishTime");
     }
 
+    public int defaultActionTime() {
+        return (int) getGunData("BoltActionTime") + item.getCustomBoltActionTime(stack());
+    }
+
     public double soundRadius() {
         return getGunData("SoundRadius", 15) + item.getCustomSoundRadius(stack);
     }
@@ -205,14 +230,6 @@ public class GunData {
 
     public double customWeight() {
         return item.getCustomWeight(stack);
-    }
-
-    public int ammo() {
-        return data.getInt("Ammo");
-    }
-
-    public void setAmmo(int ammo) {
-        data.putInt("Ammo", ammo);
     }
 
 
@@ -244,40 +261,15 @@ public class GunData {
         return (int) getGunData("BurstAmount");
     }
 
-    public int fireMode() {
-        if (data.contains("FireMode")) {
-            return data.getInt("FireMode");
-        }
-        return (int) getGunData("FireMode");
-    }
 
-    public void setFireMode(int fireMode) {
-        data.putInt("FireMode", fireMode);
-    }
+    // 可持久化属性开始
 
-    public int level() {
-        return data.getInt("Level");
-    }
 
-    public void setLevel(int level) {
-        data.putInt("Level", level);
-    }
-
-    public double exp() {
-        return data.getDouble("Exp");
-    }
-
-    public void setExp(double exp) {
-        data.putDouble("Exp", exp);
-    }
-
-    public double upgradePoint() {
-        return data.getDouble("UpgradePoint");
-    }
-
-    public void setUpgradePoint(double upgradePoint) {
-        data.putDouble("UpgradePoint", upgradePoint);
-    }
+    public final IntValue ammo;
+    public final IntValue fireMode;
+    public final IntValue level;
+    public final DoubleValue exp;
+    public final DoubleValue upgradePoint;
 
     public boolean canAdjustZoom() {
         return item.canAdjustZoom(stack);
@@ -300,101 +292,17 @@ public class GunData {
         return charge.time() > 0;
     }
 
-    public boolean canImmediatelyShoot() {
-        return data.getBoolean("CanImmediatelyShoot");
-    }
+    public final BooleanValue canImmediatelyShoot;
+    public final BooleanValue DA;
+    public final BooleanValue isEmpty;
+    public final BooleanValue closeHammer;
+    public final BooleanValue stopped;
+    public final BooleanValue forceStop;
+    public final IntValue loadIndex;
+    public final IntValue maxAmmo;
 
-    public void setCanImmediatelyShoot(boolean value) {
-        if (!value) {
-            data.remove("CanImmediatelyShoot");
-        } else {
-            data.putBoolean("CanImmediatelyShoot", true);
-        }
-    }
 
-    public boolean DA() {
-        return data.getBoolean("DA");
-    }
-
-    public void setDA(boolean value) {
-        if (!value) {
-            data.remove("DA");
-        } else {
-            data.putBoolean("DA", true);
-        }
-    }
-
-    public boolean isEmpty() {
-        return data.getBoolean("IsEmpty");
-    }
-
-    public void setIsEmpty(boolean value) {
-        if (!value) {
-            data.remove("IsEmpty");
-        } else {
-            data.putBoolean("IsEmpty", true);
-        }
-    }
-
-    public boolean closeHammer() {
-        return data.getBoolean("CloseHammer");
-    }
-
-    public void setCloseHammer(boolean value) {
-        if (!value) {
-            data.remove("CloseHammer");
-        } else {
-            data.putBoolean("CloseHammer", true);
-        }
-    }
-
-    public boolean stopped() {
-        return data.getBoolean("Stopped");
-    }
-
-    public void setStopped(boolean value) {
-        if (!value) {
-            data.remove("Stopped");
-        } else {
-            data.putBoolean("Stopped", true);
-        }
-    }
-
-    public boolean forceStop() {
-        return data.getBoolean("ForceStop");
-    }
-
-    public void setForceStop(boolean value) {
-        if (!value) {
-            data.remove("ForceStop");
-        } else {
-            data.putBoolean("ForceStop", true);
-        }
-    }
-
-    public int loadIndex() {
-        return data.getInt("LoadIndex");
-    }
-
-    public void setLoadIndex(int value) {
-        if (value == 0) {
-            data.remove("LoadIndex");
-            return;
-        }
-        data.putInt("LoadIndex", value);
-    }
-
-    public int maxAmmo() {
-        return data.getInt("MaxAmmo");
-    }
-
-    public void setMaxAmmo(int value) {
-        if (value == 0) {
-            data.remove("MaxAmmo");
-            return;
-        }
-        data.putInt("MaxAmmo", value);
-    }
+    // 其他子级属性
 
     public final Bolt bolt;
     public final Attachment attachment;

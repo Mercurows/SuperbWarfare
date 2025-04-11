@@ -16,7 +16,7 @@ import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.item.common.ammo.box.AmmoBoxInfo;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
-import com.atsuishio.superbwarfare.item.gun.data.ReloadState;
+import com.atsuishio.superbwarfare.item.gun.data.value.ReloadState;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
 import com.atsuishio.superbwarfare.network.message.receive.DrawClientMessage;
 import com.atsuishio.superbwarfare.network.message.receive.PlayerGunKillMessage;
@@ -218,14 +218,14 @@ public class LivingEventHandler {
         // 先处理发射器类武器或高爆弹的爆炸伤害
         if (source.is(ModDamageTypes.PROJECTILE_BOOM)) {
             if (stack.is(ModTags.Items.LAUNCHER) || data.perk.getLevel(ModPerks.HE_BULLET) > 0) {
-                data.setExp(data.exp() + amount);
+                data.exp.set(data.exp.get() + amount);
             }
         }
 
         // 再判断是不是枪械能造成的伤害
         if (!DamageTypeTool.isGunDamage(source)) return;
 
-        data.setExp(data.exp() + amount);
+        data.exp.set(data.exp.get() + amount);
         data.save();
     }
 
@@ -243,27 +243,27 @@ public class LivingEventHandler {
         // 先处理发射器类武器或高爆弹的爆炸伤害
         if (source.is(ModDamageTypes.PROJECTILE_BOOM)) {
             if (stack.is(ModTags.Items.LAUNCHER) || data.perk.getLevel(ModPerks.HE_BULLET) > 0) {
-                data.setExp(data.exp() + amount);
+                data.exp.set(data.exp.get() + amount);
             }
         }
 
         // 再判断是不是枪械能造成的伤害
         if (DamageTypeTool.isGunDamage(source)) {
-            data.setExp(data.exp() + amount);
+            data.exp.set(data.exp.get() + amount);
         }
 
         // 提升武器等级
-        int level = data.level();
-        double exp = data.exp();
+        int level = data.level.get();
+        double exp = data.exp.get();
         double upgradeExpNeeded = 20 * Math.pow(level, 2) + 160 * level + 20;
 
         while (exp >= upgradeExpNeeded) {
             exp -= upgradeExpNeeded;
-            level = data.level() + 1;
+            level = data.level.get() + 1;
             upgradeExpNeeded = 20 * Math.pow(level, 2) + 160 * level + 20;
-            data.setExp(exp);
-            data.setLevel(level);
-            data.setUpgradePoint(data.upgradePoint() + 0.5);
+            data.exp.set(exp);
+            data.level.set(level);
+            data.upgradePoint.set(data.upgradePoint.get() + 0.5);
         }
         data.save();
     }
@@ -277,17 +277,17 @@ public class LivingEventHandler {
         if (event.getEntity() instanceof TargetEntity) return;
 
         var data = GunData.from(stack);
-        int level = data.level();
-        double exp = data.exp();
+        int level = data.level.get();
+        double exp = data.exp.get();
         double upgradeExpNeeded = 20 * Math.pow(level, 2) + 160 * level + 20;
 
         while (exp >= upgradeExpNeeded) {
             exp -= upgradeExpNeeded;
-            level = data.level() + 1;
+            level = data.level.get() + 1;
             upgradeExpNeeded = 20 * Math.pow(level, 2) + 160 * level + 20;
-            data.setExp(exp);
-            data.setLevel(level);
-            data.setUpgradePoint(data.upgradePoint() + 0.5);
+            data.exp.set(exp);
+            data.level.set(level);
+            data.upgradePoint.set(data.upgradePoint.get() + 0.5);
         }
         data.save();
     }
@@ -357,8 +357,8 @@ public class LivingEventHandler {
 
                     var oldData = GunData.from(oldStack);
 
-                    if (oldData.bolt.defaultActionTime() > 0) {
-                        oldData.bolt.setActionTime(0);
+                    if (oldData.defaultActionTime() > 0) {
+                        oldData.bolt.actionTimer.reset();
                     }
 
                     oldData.reload.setTime(0);
@@ -366,8 +366,8 @@ public class LivingEventHandler {
                     oldData.reload.setState(ReloadState.NOT_RELOADING);
 
                     if (oldData.defaultIterativeTime() != 0) {
-                        oldData.setStopped(false);
-                        oldData.setForceStop(false);
+                        oldData.stopped.set(false);
+                        oldData.forceStop.set(false);
                         oldData.reload.setStage(0);
                         oldData.reload.prepareTimer.reset();
                         oldData.reload.prepareLoadTimer.reset();
@@ -393,16 +393,16 @@ public class LivingEventHandler {
                     newTag = newData.tag();
 
                     newTag.putBoolean("draw", true);
-                    if (newData.bolt.defaultActionTime() > 0) {
-                        newData.bolt.setActionTime(0);
+                    if (newData.defaultActionTime() > 0) {
+                        newData.bolt.actionTimer.reset();
                     }
 
                     newData.reload.setState(ReloadState.NOT_RELOADING);
                     newData.reload.reloadTimer.reset();
 
                     if (newData.defaultIterativeTime() != 0) {
-                        newData.setForceStop(false);
-                        newData.setStopped(false);
+                        newData.forceStop.set(false);
+                        newData.stopped.set(false);
                         newData.reload.setStage(0);
                         newData.reload.prepareTimer.reset();
                         newData.reload.prepareLoadTimer.reset();
@@ -643,7 +643,7 @@ public class LivingEventHandler {
         var cap = player.getData(ModAttachments.PLAYER_VARIABLE).watch();
 
         int mag = data.magazine();
-        int ammo = data.ammo();
+        int ammo = data.ammo.get();
         int ammoReload = (int) Math.min(mag, mag * rate);
         int ammoNeed = Math.min(mag - ammo, ammoReload);
 
@@ -656,7 +656,7 @@ public class LivingEventHandler {
             } else {
                 cap.rifleAmmo -= ammoFinal;
             }
-            data.setAmmo(Math.min(mag, ammo + ammoFinal));
+            data.ammo.set(Math.min(mag, ammo + ammoFinal));
         } else if (stack.is(ModTags.Items.USE_HANDGUN_AMMO)) {
             int ammoFinal = Math.min(cap.handgunAmmo, ammoNeed);
             if (flag) {
@@ -664,7 +664,7 @@ public class LivingEventHandler {
             } else {
                 cap.handgunAmmo -= ammoFinal;
             }
-            data.setAmmo(Math.min(mag, ammo + ammoFinal));
+            data.ammo.set(Math.min(mag, ammo + ammoFinal));
         }
         data.save();
         player.setData(ModAttachments.PLAYER_VARIABLE, cap);

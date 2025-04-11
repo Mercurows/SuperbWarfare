@@ -44,11 +44,11 @@ public record ReloadMessage(int msgType) implements CustomPacketPayload {
                 && !data.charging()
                 && !data.reloading()
                 && data.reload.time() == 0
-                && data.bolt.actionTime() == 0
+                && data.bolt.actionTimer.get() == 0
         ) {
             boolean canSingleReload = gunItem.isIterativeReload(stack);
             boolean canReload = gunItem.isMagazineReload(stack) && !gunItem.isClipReload(stack);
-            boolean clipLoad = data.ammo() == 0 && gunItem.isClipReload(stack);
+            boolean clipLoad = data.ammo.get() == 0 && gunItem.isClipReload(stack);
 
             // 检查备弹
             boolean hasCreativeAmmoBox = player.getInventory().hasAnyMatching(item -> item.is(ModItems.CREATIVE_AMMO_BOX.get()));
@@ -64,9 +64,9 @@ public record ReloadMessage(int msgType) implements CustomPacketPayload {
                     return;
                 } else if (stack.is(ModTags.Items.USE_HEAVY_AMMO) && cap.heavyAmmo == 0) {
                     return;
-                } else if (stack.getItem() == ModItems.TASER.get() && data.maxAmmo() == 0) {
+                } else if (stack.getItem() == ModItems.TASER.get() && data.maxAmmo.get() == 0) {
                     return;
-                } else if (stack.is(ModTags.Items.LAUNCHER) && data.maxAmmo() == 0) {
+                } else if (stack.is(ModTags.Items.LAUNCHER) && data.maxAmmo.get() == 0) {
                     return;
                 }
             }
@@ -76,13 +76,13 @@ public record ReloadMessage(int msgType) implements CustomPacketPayload {
                 var extra = (gunItem.isOpenBolt(stack) && gunItem.hasBulletInBarrel(stack)) ? 1 : 0;
                 var maxAmmo = magazine + extra;
 
-                if (data.ammo() < maxAmmo) {
+                if (data.ammo.get() < maxAmmo) {
                     data.reload.reloadStarter.markStart();
                 }
                 return;
             }
 
-            if (canSingleReload && data.ammo() < data.magazine()) {
+            if (canSingleReload && data.ammo.get() < data.magazine()) {
                 data.reload.singleReloadStarter.markStart();
             }
             data.save();

@@ -91,7 +91,7 @@ public class BocekItemRenderer extends GeoItemRenderer<BocekItem> {
         }
 
         if (name.equals("jian")) {
-            bone.setHidden(GunData.from(itemStack).maxAmmo() == 0);
+            bone.setHidden(GunData.from(itemStack).maxAmmo.get() == 0);
         }
 
         if (renderingArms) {

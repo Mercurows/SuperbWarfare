@@ -1,12 +1,15 @@
-package com.atsuishio.superbwarfare.item.gun.data;
+package com.atsuishio.superbwarfare.item.gun.data.value;
 
 import net.minecraft.nbt.CompoundTag;
 
+/**
+ * 标记某种状态是否应该开始
+ */
 public class Starter {
     private final CompoundTag tag;
     private final String name;
 
-    Starter(CompoundTag tag, String name) {
+    public Starter(CompoundTag tag, String name) {
         this.tag = tag;
         this.name = "Start" + name;
     }

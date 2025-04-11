@@ -82,7 +82,7 @@ public class JavelinHudOverlay implements LayeredDraw.Layer {
                 float j1 = l + j;
                 preciseBlit(guiGraphics, Mod.loc("textures/screens/javelin/javelin_hud.png"), k, l, 0, 0.0F, i, j, i, j);
                 preciseBlit(guiGraphics, Mod.loc(tag.getBoolean("TopMode") ? "textures/screens/javelin/top.png" : "textures/screens/javelin/dir.png"), k, l, 0, 0.0F, i, j, i, j);
-                preciseBlit(guiGraphics, Mod.loc(data.ammo() > 0 ? "textures/screens/javelin/missile_green.png" : "textures/screens/javelin/missile_red.png"), k, l, 0, 0.0F, i, j, i, j);
+                preciseBlit(guiGraphics, Mod.loc(data.ammo.get() > 0 ? "textures/screens/javelin/missile_green.png" : "textures/screens/javelin/missile_red.png"), k, l, 0, 0.0F, i, j, i, j);
                 if (tag.getInt("SeekTime") > 1 && tag.getInt("SeekTime") < 20) {
                     preciseBlit(guiGraphics, Mod.loc("textures/screens/javelin/seek.png"), k, l, 0, 0.0F, i, j, i, j);
                 }

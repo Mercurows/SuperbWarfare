@@ -91,11 +91,11 @@ public class SecondaryCataclysm extends GunItem implements GeoItem, SpecialFireW
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.sc.prepare"));
         }
 
-        if (data.loadIndex() == 0 && data.reload.stage() == 2) {
+        if (data.loadIndex.get() == 0 && data.reload.stage() == 2) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.sc.iterativeload"));
         }
 
-        if (data.loadIndex() == 1 && data.reload.stage() == 2) {
+        if (data.loadIndex.get() == 1 && data.reload.stage() == 2) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.sc.iterativeload2"));
         }
 
@@ -178,7 +178,7 @@ public class SecondaryCataclysm extends GunItem implements GeoItem, SpecialFireW
 
         if (entity instanceof Player player) {
             var data = GunData.from(stack);
-            data.setMaxAmmo(getAmmoCount(player));
+            data.maxAmmo.set(getAmmoCount(player));
             data.save();
         }
 
@@ -268,7 +268,7 @@ public class SecondaryCataclysm extends GunItem implements GeoItem, SpecialFireW
     public void fireOnPress(Player player, final GunData data, boolean zoom) {
         if (data.reloading()) return;
         ItemStack stack = data.stack();
-        if (player.getCooldowns().isOnCooldown(stack.getItem()) || data.ammo() <= 0) return;
+        if (player.getCooldowns().isOnCooldown(stack.getItem()) || data.ammo.get() <= 0) return;
 
         double spread = data.spread();
 
@@ -334,7 +334,7 @@ public class SecondaryCataclysm extends GunItem implements GeoItem, SpecialFireW
             PacketDistributor.sendToPlayer(serverPlayer, new ShootClientMessage(10));
         }
 
-        data.setAmmo(data.ammo() - 1);
+        data.ammo.set(data.ammo.get() - 1);
         player.getCooldowns().addCooldown(stack.getItem(), 6);
     }
 

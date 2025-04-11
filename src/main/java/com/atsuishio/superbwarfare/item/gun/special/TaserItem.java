@@ -146,7 +146,7 @@ public class TaserItem extends GunItem implements GeoItem, SpecialFireWeapon, En
         var data = GunData.from(stack);
 
         if (entity instanceof Player player) {
-            data.setMaxAmmo(getAmmoCount(player));
+            data.maxAmmo.set(getAmmoCount(player));
             data.save();
         }
 
@@ -228,7 +228,7 @@ public class TaserItem extends GunItem implements GeoItem, SpecialFireWeapon, En
         var hasEnoughEnergy = energyStorage != null && energyStorage.getEnergyStored() >= 400 + 100 * perkLevel;
 
         if (player.getCooldowns().isOnCooldown(stack.getItem())
-                || data.ammo() <= 0
+                || data.ammo.get() <= 0
                 || !hasEnoughEnergy
         ) return;
 
@@ -256,7 +256,7 @@ public class TaserItem extends GunItem implements GeoItem, SpecialFireWeapon, En
             PacketDistributor.sendToPlayer(serverPlayer, new ShootClientMessage(10));
         }
 
-        data.setAmmo(data.ammo() - 1);
+        data.ammo.set(data.ammo.get() - 1);
         data.tag().putBoolean("shoot", true);
         energyStorage.extractEnergy(400 + 100 * perkLevel, false);
     }

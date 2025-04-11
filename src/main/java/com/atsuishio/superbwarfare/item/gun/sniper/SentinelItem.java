@@ -73,7 +73,7 @@ public class SentinelItem extends GunItem implements GeoItem, EnergyStorageItem 
         if (!stack.is(ModTags.Items.GUN)) return PlayState.STOP;
         var data = GunData.from(stack);
 
-        if (data.bolt.actionTime() > 0) {
+        if (data.bolt.actionTimer.get() > 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.sentinel.shift"));
         }
 
@@ -105,7 +105,7 @@ public class SentinelItem extends GunItem implements GeoItem, EnergyStorageItem 
                 && !data.charging()
                 && ClientEventHandler.drawTime < 0.01
         ) {
-            if (ClientEventHandler.tacticalSprint && data.bolt.actionTime() == 0) {
+            if (ClientEventHandler.tacticalSprint && data.bolt.actionTimer.get() == 0) {
                 return event.setAndContinue(RawAnimation.begin().thenLoop("animation.sentinel.run_fast"));
             } else {
                 return event.setAndContinue(RawAnimation.begin().thenLoop("animation.sentinel.run"));

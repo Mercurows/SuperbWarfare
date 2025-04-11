@@ -55,8 +55,8 @@ public record FireMessage(int msgType, double power, boolean zoom) implements Cu
         var cap = player.getData(ModAttachments.PLAYER_VARIABLE).watch();
 
         if (type == 0) {
-            if (data.reload.prepareTimer.get() == 0 && data.reloading() && data.ammo() > 0) {
-                data.setForceStop(true);
+            if (data.reload.prepareTimer.get() == 0 && data.reloading() && data.ammo.get() > 0) {
+                data.forceStop.set(true);
             }
 
             cap.edit = false;
@@ -82,16 +82,16 @@ public record FireMessage(int msgType, double power, boolean zoom) implements Cu
         if (!stack.is(ModTags.Items.GUN)) return;
         var data = GunData.from(stack);
 
-        if (data.bolt.defaultActionTime() > 0
-                && data.ammo() > (stack.is(ModTags.Items.REVOLVER) ? -1 : 0)
-                && data.bolt.actionTime() == 0
+        if (data.defaultActionTime() > 0
+                && data.ammo.get() > (stack.is(ModTags.Items.REVOLVER) ? -1 : 0)
+                && data.bolt.actionTimer.get() == 0
                 && !(data.reload.normal()
                 || data.reload.empty())
                 && !data.reloading()
                 && !data.charging()
         ) {
-            if (!player.getCooldowns().isOnCooldown(stack.getItem()) && data.bolt.needed()) {
-                data.bolt.setActionTime(data.bolt.defaultActionTime() + 1);
+            if (!player.getCooldowns().isOnCooldown(stack.getItem()) && data.bolt.needed.get()) {
+                data.bolt.actionTimer.set(data.defaultActionTime() + 1);
                 GunEventHandler.playGunBoltSounds(player);
             }
         }

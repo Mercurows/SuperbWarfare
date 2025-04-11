@@ -49,7 +49,7 @@ public class Glock18ItemModel extends GeoModel<Glock18Item> {
 
         var data = GunData.from(stack);
         var tag = data.tag();
-        int mode = data.fireMode();
+        int mode = data.fireMode.get();
         if (mode == 0) {
             switch_.setRotX(35 * Mth.DEG_TO_RAD);
         }

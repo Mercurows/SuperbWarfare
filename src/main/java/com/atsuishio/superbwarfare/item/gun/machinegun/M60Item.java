@@ -113,7 +113,7 @@ public class M60Item extends GunItem implements GeoItem {
         if (tag.getBoolean("draw")) {
             tag.putBoolean("draw", false);
 
-            if (data.ammo() <= 5) {
+            if (data.ammo.get() <= 5) {
                 GunsTool.setGunBooleanTag(tag, "HideBulletChain", true);
             }
             data.save();

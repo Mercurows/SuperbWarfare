@@ -1,8 +1,8 @@
 package com.atsuishio.superbwarfare.client;
 
-import com.atsuishio.superbwarfare.item.gun.data.Attachment;
-import com.atsuishio.superbwarfare.item.gun.data.AttachmentType;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
+import com.atsuishio.superbwarfare.item.gun.data.subdata.Attachment;
+import com.atsuishio.superbwarfare.item.gun.data.value.AttachmentType;
 import net.minecraft.world.item.ItemStack;
 import software.bernie.geckolib.cache.object.GeoBone;
 

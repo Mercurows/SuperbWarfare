@@ -61,7 +61,7 @@ public class M60ItemModel extends GeoModel<M60Item> {
 
         var data = GunData.from(stack);
         var tag = data.tag();
-        int ammo = data.ammo();
+        int ammo = data.ammo.get();
         boolean flag = GunsTool.getGunBooleanTag(tag, "HideBulletChain");
 
         if (ammo < 5 && flag) {

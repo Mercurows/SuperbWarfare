@@ -127,7 +127,7 @@ public class M79Item extends GunItem implements GeoItem, SpecialFireWeapon {
         super.inventoryTick(stack, world, entity, slot, selected);
         if (entity instanceof Player player) {
             var data = GunData.from(stack);
-            data.setMaxAmmo(getAmmoCount(player));
+            data.maxAmmo.set(getAmmoCount(player));
             data.save();
         }
     }
@@ -170,7 +170,7 @@ public class M79Item extends GunItem implements GeoItem, SpecialFireWeapon {
     public void fireOnPress(Player player, final GunData data, boolean zoom) {
         if (data.reloading()) return;
         ItemStack stack = data.stack();
-        if (player.getCooldowns().isOnCooldown(stack.getItem()) || data.ammo() <= 0) return;
+        if (player.getCooldowns().isOnCooldown(stack.getItem()) || data.ammo.get() <= 0) return;
 
         double spread = data.spread();
 
@@ -218,7 +218,7 @@ public class M79Item extends GunItem implements GeoItem, SpecialFireWeapon {
         }
 
         player.getCooldowns().addCooldown(stack.getItem(), 2);
-        data.setAmmo(data.ammo() - 1);
+        data.ammo.set(data.ammo.get() - 1);
     }
 
     @Override
