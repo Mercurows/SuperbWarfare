@@ -25,19 +25,18 @@
 					"pivot": [8, 10, -8]
 				},
 				{
-					"name": "shen",
-					"parent": "bone",
-					"pivot": [0, 0, 0]
-				},
-				{
 					"name": "0",
-					"parent": "shen",
+					"parent": "bone",
 					"pivot": [0, 0, 0]
 				},
 				{
 					"name": "gun",
 					"parent": "0",
-					"pivot": [0, 0.46563, 1.72795]
+					"pivot": [
+						0,
+						1.71563,
+						3.72795
+					]
 				},
 				{
 					"name": "flare",

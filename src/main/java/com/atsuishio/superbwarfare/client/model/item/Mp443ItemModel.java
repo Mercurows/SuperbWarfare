@@ -18,6 +18,9 @@ import software.bernie.geckolib.model.GeoModel;
 
 public class Mp443ItemModel extends GeoModel<Mp443Item> {
 
+    public static float fireRotY = 0f;
+    public static float fireRotZ = 0f;
+
     @Override
     public ResourceLocation getAnimationResource(Mp443Item animatable) {
         return Mod.loc("animations/glock17.animation.json");
@@ -36,7 +39,6 @@ public class Mp443ItemModel extends GeoModel<Mp443Item> {
     @Override
     public void setCustomAnimations(Mp443Item animatable, long instanceId, AnimationState animationState) {
         GeoBone gun = getAnimationProcessor().getBone("bone");
-        GeoBone shen = getAnimationProcessor().getBone("shen");
         GeoBone slide = getAnimationProcessor().getBone("huatao");
         GeoBone bullet = getAnimationProcessor().getBone("bullet");
         GeoBone hammer = getAnimationProcessor().getBone("trigger");
@@ -60,7 +62,7 @@ public class Mp443ItemModel extends GeoModel<Mp443Item> {
         double turnRotX = ClientEventHandler.turnRot[0];
         double turnRotY = ClientEventHandler.turnRot[1];
         double turnRotZ = ClientEventHandler.turnRot[2];
-        double fpz = ClientEventHandler.firePosZ * 20 * times;
+        double fpz = ClientEventHandler.firePosZ * 13 * times;
         double fp = ClientEventHandler.firePos;
         double fr = ClientEventHandler.fireRot;
 
@@ -69,21 +71,26 @@ public class Mp443ItemModel extends GeoModel<Mp443Item> {
         gun.setPosZ(7f * (float) zp + (float) (0.3f * zpz));
         gun.setScaleZ(1f - (0.55f * (float) zp));
 
-        shen.setPosX((float) (0.95f * ClientEventHandler.recoilHorizon * fpz * fp));
-        shen.setPosY((float) (0.25f * fp + 0.28f * fr));
-        shen.setPosZ((float) (2.375 * fp + 0.44f * fr + 0.75 * fpz));
-        shen.setRotX((float) (0.15f * fp + 0.3f * fr + 0.3f * fpz));
-        shen.setRotY((float) (0.1f * ClientEventHandler.recoilHorizon * fpz));
-        shen.setRotZ((float) ((0.08f + 0.1 * fr) * ClientEventHandler.recoilHorizon));
+        GeoBone body = getAnimationProcessor().getBone("gun");
 
-        shen.setPosX((float) (shen.getPosX() * (1 - 0.4 * zt)));
-        shen.setPosY((float) (shen.getPosY() * (1 - 0.5 * zt)));
-        shen.setPosZ((float) (shen.getPosZ() * (1 - 0.3 * zt)));
-        shen.setRotX((float) (shen.getRotX() * (1 - 0.8 * zt)));
-        shen.setRotY((float) (shen.getRotY() * (1 - 0.7 * zt)));
-        shen.setRotZ((float) (shen.getRotZ() * (1 - 0.65 * zt)));
+        fireRotY = (float) Mth.lerp(0.3f * times, fireRotY, 0.6f * ClientEventHandler.recoilHorizon * fpz);
+        fireRotZ = (float) Mth.lerp(2f * times, fireRotZ, (0.4f + 0.5 * fpz) * ClientEventHandler.recoilHorizon);
 
-        CrossHairOverlay.gunRot = shen.getRotZ();
+        body.setPosX(-0.4f * (float) (ClientEventHandler.recoilHorizon * (0.5 + 0.4 * ClientEventHandler.fireSpread)));
+        body.setPosY((float) (0.15f * fp + 0.18f * fr));
+        body.setPosZ((float) (1.935 * fp + 0.16f * fr + 0.925 * fpz));
+        body.setRotX((float) (0.08f * fp + 0.1f * fr + 0.35f * fpz));
+        body.setRotY(fireRotY);
+        body.setRotZ(fireRotZ);
+
+        body.setPosX((float) (body.getPosX() * (1 - 0.4 * zt)));
+        body.setPosY((float) (body.getPosY() * (-1 + 0.5 * zt)));
+        body.setPosZ((float) (body.getPosZ() * (1 - 0.3 * zt)));
+        body.setRotX((float) (body.getRotX() * (1 - 0.8 * zt)));
+        body.setRotY((float) (body.getRotY() * (1 - 0.7 * zt)));
+        body.setRotZ((float) (body.getRotZ() * (1 - 0.65 * zt)));
+
+        CrossHairOverlay.gunRot = body.getRotZ();
 
         slide.setPosZ(1.5f * (float) fp);
         hammer.setRotX((120 * Mth.DEG_TO_RAD * (float) fp));

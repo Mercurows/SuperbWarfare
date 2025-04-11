@@ -25,19 +25,18 @@
 					"pivot": [8, 9.5, -8.5]
 				},
 				{
-					"name": "shen",
-					"parent": "bone",
-					"pivot": [0, -0.5, -0.5]
-				},
-				{
 					"name": "0",
-					"parent": "shen",
+					"parent": "bone",
 					"pivot": [0, 0, -1.5]
 				},
 				{
 					"name": "gun",
 					"parent": "0",
-					"pivot": [0, 0.25, 2]
+					"pivot": [
+						0,
+						1,
+						4
+					]
 				},
 				{
 					"name": "huatao",
@@ -2788,7 +2787,7 @@
 				},
 				{
 					"name": "magazine",
-					"parent": "0",
+					"parent": "gun",
 					"pivot": [0, -1, 2.75]
 				},
 				{
@@ -3110,7 +3109,7 @@
 				},
 				{
 					"name": "Righthand",
-					"parent": "0",
+					"parent": "gun",
 					"pivot": [-0.60468, -1.58634, 0.54587],
 					"rotation": [-76.32882, 10.3564, 179.6036],
 					"cubes": [
