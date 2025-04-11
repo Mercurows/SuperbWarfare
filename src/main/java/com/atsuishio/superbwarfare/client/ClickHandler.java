@@ -199,6 +199,9 @@ public class ClickHandler {
 
             if (key == Minecraft.getInstance().options.keyJump.getKey().getValue()) {
                 handleDoubleJump(player);
+                if (player.onGround()) {
+                    stamina += 5;
+                }
             }
 
             if (key == ModKeyMappings.RELOAD.getKey().getValue()) {
@@ -389,6 +392,7 @@ public class ClickHandler {
         ClientEventHandler.zoom = false;
         ClientEventHandler.zoomVehicle = false;
         ClientEventHandler.entity = null;
+        breath = false;
     }
 
     private static void editModelShake() {
