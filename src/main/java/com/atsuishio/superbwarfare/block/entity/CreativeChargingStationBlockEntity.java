@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.block.entity;
 
+import com.atsuishio.superbwarfare.block.CreativeChargingStationBlock;
 import com.atsuishio.superbwarfare.capability.energy.InfinityEnergyStorage;
 import com.atsuishio.superbwarfare.init.ModBlockEntities;
 import net.minecraft.core.BlockPos;
@@ -11,6 +12,7 @@ import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
@@ -35,7 +37,6 @@ public class CreativeChargingStationBlockEntity extends BlockEntity {
     public @NotNull CompoundTag getUpdateTag(HolderLookup.@NotNull Provider registries) {
         CompoundTag tag = new CompoundTag();
         tag.putBoolean("ShowRange", this.showRange);
-        saveAdditional(tag, registries);
         return tag;
     }
 
@@ -55,8 +56,11 @@ public class CreativeChargingStationBlockEntity extends BlockEntity {
         super(ModBlockEntities.CREATIVE_CHARGING_STATION.get(), pos, state);
     }
 
-    public static void serverTick(CreativeChargingStationBlockEntity blockEntity) {
-        if (blockEntity.level == null) return;
+    public static void serverTick(Level pLevel, BlockPos pPos, BlockState pState, CreativeChargingStationBlockEntity blockEntity) {
+        if (blockEntity.showRange != pState.getValue(CreativeChargingStationBlock.SHOW_RANGE)) {
+            pLevel.setBlockAndUpdate(pPos, pState.setValue(CreativeChargingStationBlock.SHOW_RANGE, blockEntity.showRange));
+            setChanged(pLevel, pPos, pState);
+        }
 
         blockEntity.chargeEntity();
         blockEntity.chargeBlock();
@@ -97,5 +101,17 @@ public class CreativeChargingStationBlockEntity extends BlockEntity {
     @Nullable
     public IEnergyStorage getEnergyStorage(@Nullable Direction side) {
         return energyStorage;
+    }
+
+    @Override
+    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
+        this.showRange = tag.getBoolean("ShowRange");
+    }
+
+    @Override
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.saveAdditional(tag, registries);
+        tag.putBoolean("ShowRange", this.showRange);
     }
 }

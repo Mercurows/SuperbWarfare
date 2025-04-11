@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.client.renderer.block;
 
-import com.atsuishio.superbwarfare.block.ChargingStationBlock;
+import com.atsuishio.superbwarfare.block.CreativeChargingStationBlock;
 import com.atsuishio.superbwarfare.block.entity.CreativeChargingStationBlockEntity;
 import com.atsuishio.superbwarfare.client.renderer.CustomRenderType;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -19,7 +19,7 @@ public class CreativeChargingStationBlockEntityRenderer implements BlockEntityRe
 
     @Override
     public void render(CreativeChargingStationBlockEntity blockEntity, float partialTick, @NotNull PoseStack poseStack, @NotNull MultiBufferSource bufferSource, int packedLight, int packedOverlay) {
-        if (!blockEntity.getBlockState().hasProperty(ChargingStationBlock.SHOW_RANGE) || !blockEntity.getBlockState().getValue(ChargingStationBlock.SHOW_RANGE))
+        if (!blockEntity.getBlockState().hasProperty(CreativeChargingStationBlock.SHOW_RANGE) || !blockEntity.getBlockState().getValue(CreativeChargingStationBlock.SHOW_RANGE))
             return;
 
         poseStack.pushPose();

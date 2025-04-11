@@ -70,7 +70,7 @@ public class CreativeChargingStationBlock extends BaseEntityBlock {
         if (!pLevel.isClientSide) {
             return createTickerHelper(
                     pBlockEntityType, ModBlockEntities.CREATIVE_CHARGING_STATION.get(),
-                    (pLevel1, pPos, pState1, blockEntity) -> CreativeChargingStationBlockEntity.serverTick(blockEntity)
+                    CreativeChargingStationBlockEntity::serverTick
             );
         }
         return null;
@@ -91,6 +91,8 @@ public class CreativeChargingStationBlock extends BaseEntityBlock {
     @Override
     @ParametersAreNonnullByDefault
     protected @NotNull ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+        if (stack.isEmpty()) return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+
         var cap = stack.getCapability(Capabilities.EnergyStorage.ITEM);
         if (cap == null) return ItemInteractionResult.FAIL;
 
@@ -114,7 +116,6 @@ public class CreativeChargingStationBlock extends BaseEntityBlock {
         return ItemInteractionResult.SUCCESS;
     }
 
-    // TODO 如何交互？
     @Override
     @ParametersAreNonnullByDefault
     protected @NotNull InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
