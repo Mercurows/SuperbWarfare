@@ -649,7 +649,7 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
             swarmDroneEntity.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
             swarmDroneEntity.shoot(direct.x, direct.y, direct.z, 1.2f, 10);
 
-            if (lookingEntity != null) {
+            if (lookingEntity != null && !(lookingEntity instanceof SwarmDroneEntity swarmDrone && swarmDrone.getOwner() == player)) {
                 swarmDroneEntity.setGuideType(0);
                 swarmDroneEntity.setTargetUuid(lookingEntity.getStringUUID());
                 swarmDroneEntity.setTargetVec(lookingEntity.getEyePosition());
