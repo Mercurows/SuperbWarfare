@@ -133,9 +133,9 @@ dependencies {
     runtimeOnly "mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}"
     implementation "curse.maven:jade-324717:6291517"
 
-//    // Cloth Config相关
-//    implementation fg.deobf("me.shedaniel.cloth:cloth-config-forge:${cloth_config_version}")
-//
+    // Cloth Config相关
+    implementation "me.shedaniel.cloth:cloth-config-neoforge:15.0.140"
+
 //    // 测试用mod
 //    implementation fg.deobf("curse.maven:oculus-581495:6020952")
 //    implementation fg.deobf("curse.maven:embeddium-908741:5681725")

@@ -1,6 +1,8 @@
 package com.atsuishio.superbwarfare;
 
 import com.atsuishio.superbwarfare.client.MouseMovementHandler;
+import com.atsuishio.superbwarfare.compat.CompatHolder;
+import com.atsuishio.superbwarfare.compat.clothconfig.ClothConfigHelper;
 import com.atsuishio.superbwarfare.component.ModDataComponents;
 import com.atsuishio.superbwarfare.config.ClientConfig;
 import com.atsuishio.superbwarfare.config.CommonConfig;
@@ -8,11 +10,13 @@ import com.atsuishio.superbwarfare.config.ServerConfig;
 import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.network.NetworkRegistry;
 import net.minecraft.resources.ResourceLocation;
+import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
@@ -58,11 +62,14 @@ public class Mod {
         ModCriteriaTriggers.REGISTRY.register(bus);
         ModAttachments.ATTACHMENT_TYPES.register(bus);
 
-//        bus.addListener(this::onCommonSetup);
         bus.addListener(this::onClientSetup);
         bus.addListener(ModItems::registerDispenserBehavior);
 
         bus.addListener(NetworkRegistry::register);
+
+        if (FMLEnvironment.dist == Dist.CLIENT) {
+            CompatHolder.hasMod(CompatHolder.CLOTH_CONFIG, ClothConfigHelper::registerScreen);
+        }
 
         NeoForge.EVENT_BUS.register(this);
     }

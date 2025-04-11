@@ -1,5 +1,7 @@
 package com.atsuishio.superbwarfare.client;
 
+import com.atsuishio.superbwarfare.compat.CompatHolder;
+import com.atsuishio.superbwarfare.compat.clothconfig.ClothConfigHelper;
 import com.atsuishio.superbwarfare.config.client.ReloadConfig;
 import com.atsuishio.superbwarfare.entity.MortarEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
@@ -15,6 +17,7 @@ import com.atsuishio.superbwarfare.tools.NBTTool;
 import com.atsuishio.superbwarfare.tools.SeekTool;
 import com.atsuishio.superbwarfare.tools.TraceTool;
 import com.mojang.blaze3d.platform.InputConstants;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.component.DataComponents;
@@ -29,6 +32,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.client.settings.KeyConflictContext;
@@ -204,10 +208,9 @@ public class ClickHandler {
                 }
             }
 
-            // TODO do we need cloth config?
-//            if (key == ModKeyMappings.CONFIG.getKey().getValue() && ModKeyMappings.CONFIG.getKeyModifier().isActive(KeyConflictContext.IN_GAME)) {
-//                handleConfigScreen(player);
-//            }
+            if (key == ModKeyMappings.CONFIG.getKey().getValue() && ModKeyMappings.CONFIG.getKeyModifier().isActive(KeyConflictContext.IN_GAME)) {
+                handleConfigScreen(player);
+            }
 
             if (key == ModKeyMappings.RELOAD.getKey().getValue()) {
                 ClientEventHandler.burstFireAmount = 0;
@@ -420,6 +423,14 @@ public class ClickHandler {
             level.playLocalSound(x, y, z, ModSounds.DOUBLE_JUMP.get(), SoundSource.BLOCKS, 1, 1, false);
             PacketDistributor.sendToServer(new DoubleJumpMessage(0));
             canDoubleJump = false;
+        }
+    }
+
+    private static void handleConfigScreen(Player player) {
+        if (ModList.get().isLoaded(CompatHolder.CLOTH_CONFIG)) {
+            CompatHolder.hasMod(CompatHolder.CLOTH_CONFIG, () -> Minecraft.getInstance().setScreen(ClothConfigHelper.getConfigScreen(null)));
+        } else {
+            player.displayClientMessage(Component.translatable("tips.superbwarfare.no_cloth_config").withStyle(ChatFormatting.RED), true);
         }
     }
 
