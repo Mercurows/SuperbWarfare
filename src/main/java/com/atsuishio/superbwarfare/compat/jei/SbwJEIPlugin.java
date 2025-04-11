@@ -18,8 +18,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.PotionContents;
 import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.ParametersAreNonnullByDefault;
+import org.jetbrains.annotations.Nullable;
 
 @JeiPlugin
 public class SbwJEIPlugin implements IModPlugin {
@@ -43,8 +42,7 @@ public class SbwJEIPlugin implements IModPlugin {
     public void registerItemSubtypes(ISubtypeRegistration registration) {
         registration.registerSubtypeInterpreter(ModItems.CONTAINER.get(), new ISubtypeInterpreter<>() {
             @Override
-            @ParametersAreNonnullByDefault
-            public @NotNull Object getSubtypeData(ItemStack ingredient, UidContext context) {
+            public @Nullable Object getSubtypeData(ItemStack ingredient, UidContext context) {
                 var data = ingredient.get(DataComponents.BLOCK_ENTITY_DATA);
                 var tag = data != null ? data.copyTag() : new CompoundTag();
                 if (tag.contains("EntityType")) {
@@ -54,38 +52,41 @@ public class SbwJEIPlugin implements IModPlugin {
             }
 
             @Override
-            @ParametersAreNonnullByDefault
-            public @NotNull String getLegacyStringSubtypeInfo(ItemStack ingredient, UidContext context) {
+            public String getLegacyStringSubtypeInfo(ItemStack ingredient, UidContext context) {
                 return (String) getSubtypeData(ingredient, context);
             }
         });
 
-
         registration.registerSubtypeInterpreter(ModItems.POTION_MORTAR_SHELL.get(), new ISubtypeInterpreter<>() {
             @Override
-            @ParametersAreNonnullByDefault
-            public @NotNull Object getSubtypeData(ItemStack ingredient, UidContext context) {
-                var potion = ingredient.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY);
-                return potion.potion().map(Holder::getRegisteredName);
+            public @Nullable Object getSubtypeData(ItemStack ingredient, UidContext context) {
+                PotionContents contents = ingredient.get(DataComponents.POTION_CONTENTS);
+                if (contents == null) {
+                    return null;
+                }
+                return contents.potion().orElse(null);
             }
 
             @Override
-            @ParametersAreNonnullByDefault
-            public @NotNull String getLegacyStringSubtypeInfo(ItemStack ingredient, UidContext context) {
-                return (String) getSubtypeData(ingredient, context);
+            public String getLegacyStringSubtypeInfo(ItemStack ingredient, UidContext context) {
+                if (ingredient.getComponentsPatch().isEmpty()) {
+                    return "";
+                }
+                PotionContents contents = ingredient.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY);
+                String itemDescriptionId = ingredient.getItem().getDescriptionId();
+                String potionEffectId = contents.potion().map(Holder::getRegisteredName).orElse("none");
+                return itemDescriptionId + ".effect_id." + potionEffectId;
             }
         });
 
         registration.registerSubtypeInterpreter(ModItems.C4_BOMB.get(), new ISubtypeInterpreter<>() {
             @Override
-            @ParametersAreNonnullByDefault
-            public @NotNull Object getSubtypeData(ItemStack ingredient, UidContext context) {
+            public @Nullable Object getSubtypeData(ItemStack ingredient, UidContext context) {
                 return NBTTool.getTag(ingredient).getBoolean("Control");
             }
 
             @Override
-            @ParametersAreNonnullByDefault
-            public @NotNull String getLegacyStringSubtypeInfo(ItemStack ingredient, UidContext context) {
+            public String getLegacyStringSubtypeInfo(ItemStack ingredient, UidContext context) {
                 return (String) getSubtypeData(ingredient, context);
             }
         });
