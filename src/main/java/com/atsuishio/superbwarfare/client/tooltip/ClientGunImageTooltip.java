@@ -255,10 +255,8 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
             var ammoItem = perkInstance.perk().getItem().get();
             guiGraphics.renderItem(ammoItem.getDefaultInstance(), x, y + 4 + yOffset);
 
-            var ids = perkInstance.perk().descriptionId.split(":");
-            if (ids.length <= 1) continue;
+            var id = perkInstance.perk().descriptionId;
 
-            String id = ids[1];
             var component = Component.translatable("item.superbwarfare." + id).withStyle(type.getColor())
                     .append(Component.literal(" ").withStyle(ChatFormatting.RESET))
                     .append(Component.literal(" Lvl. " + perkInstance.level()).withStyle(ChatFormatting.WHITE));
@@ -294,10 +292,8 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
             var perkInstance = data.perk.getInstance(type);
             if (perkInstance == null) continue;
 
-            var ids = perkInstance.perk().descriptionId.split(":");
-            if (ids.length <= 1) continue;
+            var id = perkInstance.perk().descriptionId;
 
-            String id = ids[1];
             var ammoDesComponent = Component.translatable("des.superbwarfare." + id).withStyle(ChatFormatting.GRAY);
             width = Math.max(width, font.width(ammoDesComponent));
         }

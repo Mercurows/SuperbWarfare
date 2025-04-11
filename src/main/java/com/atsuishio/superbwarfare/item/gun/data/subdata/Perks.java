@@ -24,7 +24,7 @@ public final class Perks {
     }
 
     public boolean has(Perk.Type type) {
-        return perks.contains(type.getName());
+        return perks.contains(type.getName()) && !perks.getCompound(type.getName()).getString("Name").isEmpty();
     }
 
     public void set(PerkInstance instance) {
