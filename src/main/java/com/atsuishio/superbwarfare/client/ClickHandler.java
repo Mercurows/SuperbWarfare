@@ -204,6 +204,11 @@ public class ClickHandler {
                 }
             }
 
+            // TODO do we need cloth config?
+//            if (key == ModKeyMappings.CONFIG.getKey().getValue() && ModKeyMappings.CONFIG.getKeyModifier().isActive(KeyConflictContext.IN_GAME)) {
+//                handleConfigScreen(player);
+//            }
+
             if (key == ModKeyMappings.RELOAD.getKey().getValue()) {
                 ClientEventHandler.burstFireAmount = 0;
                 PacketDistributor.sendToServer(new ReloadMessage(0));

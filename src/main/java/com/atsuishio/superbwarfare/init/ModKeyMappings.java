@@ -22,6 +22,9 @@ public class ModKeyMappings {
     public static final KeyMapping DISMOUNT = new KeyMapping("key.superbwarfare.dismount", GLFW.GLFW_KEY_LEFT_ALT, "key.categories.superbwarfare");
     public static final KeyMapping BREATH = new KeyMapping("key.superbwarfare.breath", GLFW.GLFW_KEY_LEFT_CONTROL, "key.categories.superbwarfare");
 
+    public static final KeyMapping CONFIG = new KeyMapping("key.superbwarfare.config", KeyConflictContext.IN_GAME,
+            KeyModifier.ALT, InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_O, "key.categories.superbwarfare");
+
     public static final KeyMapping EDIT_MODE = new KeyMapping("key.superbwarfare.edit_mode", GLFW.GLFW_KEY_H, "key.categories.superbwarfare");
     public static final KeyMapping EDIT_SCOPE = new KeyMapping("key.superbwarfare.edit_scope", GLFW.GLFW_KEY_UP, "key.categories.superbwarfare");
     public static final KeyMapping EDIT_BARREL = new KeyMapping("key.superbwarfare.edit_barrel", GLFW.GLFW_KEY_LEFT, "key.categories.superbwarfare");
@@ -46,6 +49,7 @@ public class ModKeyMappings {
         event.register(INTERACT);
         event.register(DISMOUNT);
         event.register(BREATH);
+        event.register(CONFIG);
         event.register(EDIT_MODE);
         event.register(EDIT_SCOPE);
         event.register(EDIT_BARREL);

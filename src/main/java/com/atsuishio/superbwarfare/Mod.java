@@ -8,16 +8,12 @@ import com.atsuishio.superbwarfare.config.ServerConfig;
 import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.network.NetworkRegistry;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
-import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
-import net.neoforged.neoforge.client.gui.ConfigurationScreen;
-import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import org.apache.logging.log4j.LogManager;
@@ -62,14 +58,11 @@ public class Mod {
         ModCriteriaTriggers.REGISTRY.register(bus);
         ModAttachments.ATTACHMENT_TYPES.register(bus);
 
+//        bus.addListener(this::onCommonSetup);
         bus.addListener(this::onClientSetup);
         bus.addListener(ModItems::registerDispenserBehavior);
 
         bus.addListener(NetworkRegistry::register);
-
-        if (FMLEnvironment.dist == Dist.CLIENT) {
-            container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
-        }
 
         NeoForge.EVENT_BUS.register(this);
     }
@@ -77,6 +70,7 @@ public class Mod {
     public static ResourceLocation loc(String path) {
         return ResourceLocation.fromNamespaceAndPath(MODID, path);
     }
+
 
     private static final Collection<AbstractMap.SimpleEntry<Runnable, Integer>> workQueue = new ConcurrentLinkedQueue<>();
     private static final Collection<AbstractMap.SimpleEntry<Runnable, Integer>> workQueueC = new ConcurrentLinkedQueue<>();
