@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.mixins;
 
+import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModMobEffects;
 import com.atsuishio.superbwarfare.tools.NBTTool;
@@ -16,12 +17,21 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(KeyboardInput.class)
 public abstract class KeyboardInputMixin extends Input {
 
+//    @Shadow
+//    private static float calculateImpulse(boolean pInput, boolean pOtherInput) {
+//        return 0;
+//    }
+
     // 按键修改mixin
     @Inject(method = "tick", at = @At("RETURN"))
     public void tick(boolean pIsSneaking, float pSneakingSpeedMultiplier, CallbackInfo ci) {
         Minecraft mc = Minecraft.getInstance();
         Player player = mc.player;
         if (player == null) return;
+
+        if (ClientEventHandler.tacticalSprint && player.onGround()) {
+            this.forwardImpulse *= 2f;
+        }
 
         ItemStack stack = player.getMainHandItem();
         var tag = NBTTool.getTag(stack);

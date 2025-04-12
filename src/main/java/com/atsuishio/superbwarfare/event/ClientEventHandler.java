@@ -350,10 +350,6 @@ public class ClientEventHandler {
         if (zoom) {
             tacticalSprint = false;
         }
-
-        if (tacticalSprint && player.onGround()) {
-            player.setDeltaMovement(player.getDeltaMovement().multiply(1.2, 1, 1.2));
-        }
     }
 
     /**
