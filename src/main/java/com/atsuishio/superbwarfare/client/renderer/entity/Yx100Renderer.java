@@ -128,10 +128,6 @@ public class Yx100Renderer extends GeoEntityRenderer<Yx100Entity> {
         }
 
         if (name.equals("base")) {
-
-            Player player = Minecraft.getInstance().player;
-            bone.setHidden(ClientEventHandler.zoomVehicle && animatable.getFirstPassenger() == player);
-
             float a = animatable.getEntityData().get(YAW);
             float r = (Mth.abs(a) - 90f) / 90f;
 
@@ -152,6 +148,11 @@ public class Yx100Renderer extends GeoEntityRenderer<Yx100Entity> {
 
             bone.setPosX(r2 * Mth.lerp(partialTick, (float) animatable.recoilShakeO, (float) animatable.getRecoilShake()) * 1f);
             bone.setRotZ(r2 * Mth.lerp(partialTick, (float) animatable.recoilShakeO, (float) animatable.getRecoilShake()) * Mth.DEG_TO_RAD * 1.5f);
+        }
+
+        if (name.equals("root")) {
+            Player player = Minecraft.getInstance().player;
+            bone.setHidden(ClientEventHandler.zoomVehicle && animatable.getFirstPassenger() == player);
         }
 
         for (int i = 0; i < 41; i++) {
