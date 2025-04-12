@@ -49,16 +49,7 @@ public class SentinelItemModel extends GeoModel<SentinelItem> {
         double zt = ClientEventHandler.zoomTime;
         double zp = ClientEventHandler.zoomPos;
         double zpz = ClientEventHandler.zoomPosZ;
-        double swayX = ClientEventHandler.swayX;
-        double swayY = ClientEventHandler.swayY;
-        float moveRotZ = (float) ClientEventHandler.moveRotZ;
-        float movePosX = (float) ClientEventHandler.movePosX;
-        float movePosY = (float) ClientEventHandler.movePosY;
-        double mph = ClientEventHandler.movePosHorizon;
-        double vY = ClientEventHandler.velocityY;
-        double turnRotX = ClientEventHandler.turnRot[0];
-        double turnRotY = ClientEventHandler.turnRot[1];
-        double turnRotZ = ClientEventHandler.turnRot[2];
+
         double fpz = ClientEventHandler.firePosZ * 7 * times;
         double fp = ClientEventHandler.firePos;
         double fr = ClientEventHandler.fireRot;
@@ -97,12 +88,7 @@ public class SentinelItemModel extends GeoModel<SentinelItem> {
 
         charge.setRotZ(charge.getRotZ() + times * 0.5f);
 
-        GeoBone root = getAnimationProcessor().getBone("root");
-        root.setPosX((float) (movePosX + 20 * ClientEventHandler.drawTime + 9.3f * mph));
-        root.setPosY((float) (swayY + movePosY - 40 * ClientEventHandler.drawTime - 2f * vY));
-        root.setRotX((float) (swayX - Mth.DEG_TO_RAD * 60 * ClientEventHandler.drawTime + Mth.DEG_TO_RAD * turnRotX - 0.15f * vY));
-        root.setRotY((float) (0.2f * movePosX + Mth.DEG_TO_RAD * 300 * ClientEventHandler.drawTime + Mth.DEG_TO_RAD * turnRotY));
-        root.setRotZ((float) (0.2f * movePosX + moveRotZ + Mth.DEG_TO_RAD * 90 * ClientEventHandler.drawTime + 2.7f * mph + Mth.DEG_TO_RAD * turnRotZ));
+        ClientEventHandler.gunRootMove(getAnimationProcessor());
 
         if (data.ammo.get() <= 5) {
             ammo.setScaleX((float) data.ammo.get() / 5);

@@ -4,7 +4,6 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModTags;
-import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.item.gun.special.BocekItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
@@ -63,16 +62,7 @@ public class BocekItemModel extends GeoModel<BocekItem> {
         double hp = ClientEventHandler.handPos;
         double zp = ClientEventHandler.zoomPos;
         double zpz = ClientEventHandler.zoomPosZ;
-        double swayX = ClientEventHandler.swayX;
-        double swayY = ClientEventHandler.swayY;
-        float moveRotZ = (float) ClientEventHandler.moveRotZ;
-        float movePosX = (float) ClientEventHandler.movePosX;
-        float movePosY = (float) ClientEventHandler.movePosY;
-        double mph = ClientEventHandler.movePosHorizon;
-        double vY = ClientEventHandler.velocityY;
-        double turnRotX = ClientEventHandler.turnRot[0];
-        double turnRotY = ClientEventHandler.turnRot[1];
-        double turnRotZ = ClientEventHandler.turnRot[2];
+
 
         arrow.setPosZ(9f * (float) bp);
         rh.setPosZ(9f * (float) hp);
@@ -114,12 +104,7 @@ public class BocekItemModel extends GeoModel<BocekItem> {
 
         CrossHairOverlay.gunRot = fire.getRotZ();
 
-        GeoBone root = getAnimationProcessor().getBone("root");
-        root.setPosX((float) (movePosX + 20 * ClientEventHandler.drawTime + 9.3f * mph));
-        root.setPosY((float) (swayY + movePosY - 40 * ClientEventHandler.drawTime - 2f * vY));
-        root.setRotX((float) (swayX - Mth.DEG_TO_RAD * 60 * ClientEventHandler.drawTime + Mth.DEG_TO_RAD * turnRotX - 0.15f * vY));
-        root.setRotY((float) (0.2f * movePosX + Mth.DEG_TO_RAD * 300 * ClientEventHandler.drawTime + Mth.DEG_TO_RAD * turnRotY));
-        root.setRotZ((float) (0.2f * movePosX + moveRotZ + Mth.DEG_TO_RAD * 90 * ClientEventHandler.drawTime + 2.7f * mph + Mth.DEG_TO_RAD * turnRotZ));
+        ClientEventHandler.gunRootMove(getAnimationProcessor());
 
         GeoBone camera = getAnimationProcessor().getBone("camera");
         ClientEventHandler.shake(Mth.RAD_TO_DEG * camera.getRotX(), Mth.RAD_TO_DEG * camera.getRotY(), Mth.RAD_TO_DEG * camera.getRotZ());

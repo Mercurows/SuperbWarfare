@@ -54,6 +54,7 @@ import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.lwjgl.glfw.GLFW;
+import software.bernie.geckolib.animation.AnimationProcessor;
 import software.bernie.geckolib.cache.object.GeoBone;
 
 import java.util.List;
@@ -126,6 +127,8 @@ public class ClientEventHandler {
     public static boolean tacticalSprint = false;
     public static float stamina = 0;
     public static double switchTime = 0;
+    public static double moveFadeTime = 0;
+
     public static boolean exhaustion = false;
     public static boolean holdFireVehicle = false;
 
@@ -1106,42 +1109,50 @@ public class ClientEventHandler {
                 }
             }
 
-            if (isMoving() && firePosTimer == 0) {
-                if (moveYTime < 1.25) {
-                    moveYTime += 1.2 * onGround * times * moveSpeed;
-                } else {
-                    moveYTime = 0.25;
-                }
-
-                if (moveXTime < 2) {
-                    moveXTime += 1.2 * onGround * times * moveSpeed;
-                } else {
-                    moveXTime = 0;
-                }
-
-                movePosX = 0.2 * Math.sin(1 * Math.PI * moveXTime) * (1 - 0.95 * zoomTime);
-                movePosY = -0.135 * Math.sin(2 * Math.PI * (moveYTime - 0.25)) * (1 - 0.95 * zoomTime);
+            if (isMoving()) {
+                moveYTime += 1.2 * onGround * times * moveSpeed;
+                moveXTime += 1.2 * onGround * times * moveSpeed;
+                moveFadeTime = Mth.lerp(0.13 * times, moveFadeTime, 1);
             } else {
-                moveXTime = Math.max(moveXTime - 0.5 * times, 0);
-                moveYTime = Math.max(moveYTime - 0.5 * times, 0.25);
-
-                movePosX = Mth.lerp(0.1f * times, movePosX, 0);
-                movePosY = Mth.lerp(0.1f * times, movePosY, 0);
-
+                moveFadeTime = Mth.lerp(0.1 * times, moveFadeTime, 0);
             }
 
-            if (Minecraft.getInstance().options.keyRight.isDown()) {
-                movePosHorizon = Mth.lerp(0.05f * times, movePosHorizon, 0.04) * (1 - zoomTime);
-            } else if (Minecraft.getInstance().options.keyLeft.isDown()) {
-                movePosHorizon = Mth.lerp(0.05f * times, movePosHorizon, -0.04) * (1 - zoomTime);
-            } else {
-                movePosHorizon = Mth.lerp(0.1f * times, movePosHorizon, 0);
+
+            movePosX = 0.2 * Math.sin(1 * Math.PI * moveXTime) * (1 - 0.95 * zoomTime) * moveFadeTime;
+            movePosY = -0.135 * Math.sin(2 * Math.PI * (moveYTime - 0.25)) * (1 - 0.95 * zoomTime) * moveFadeTime;
+
+            boolean left = Minecraft.getInstance().options.keyLeft.isDown();
+            boolean right = Minecraft.getInstance().options.keyRight.isDown();
+            double pos = 0;
+
+            if (left) {
+                pos = -0.04;
             }
+
+            if (right) {
+                pos = 0.04;
+            }
+
+            if (left && right) {
+                pos = 0;
+            }
+
+
+            movePosHorizon = Mth.lerp(0.1f * times, movePosHorizon, pos * (1 - 1 * zoomTime));
 
             double velocity = entity.getDeltaMovement().y() + 0.078;
 
             velocityY = Mth.clamp(Mth.lerp(0.23f * times, velocityY, velocity) * (1 - 0.8 * zoomTime), -0.8, 0.8);
         }
+    }
+
+    public static void gunRootMove(AnimationProcessor<?> animationProcessor) {
+        GeoBone root = animationProcessor.getBone("root");
+        root.setPosX((float) (movePosX + 20 * drawTime + 9.3f * movePosHorizon));
+        root.setPosY((float) (swayY + movePosY - 40 * drawTime - 2f * velocityY));
+        root.setRotX((float) (swayX - Mth.DEG_TO_RAD * 60 * drawTime + Mth.DEG_TO_RAD * turnRot[0] - 0.15f * velocityY));
+        root.setRotY((float) (0.2f * movePosX + Mth.DEG_TO_RAD * 300 * drawTime + Mth.DEG_TO_RAD * turnRot[1]));
+        root.setRotZ((float) (0.2f * movePosX + moveRotZ + Mth.DEG_TO_RAD * 90 * drawTime + 2.7f * movePosHorizon + Mth.DEG_TO_RAD * turnRot[2]));
     }
 
     private static void handleWeaponZoom(LivingEntity entity) {
