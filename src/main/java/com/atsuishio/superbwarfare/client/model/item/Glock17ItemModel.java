@@ -39,7 +39,6 @@ public class Glock17ItemModel extends GeoModel<Glock17Item> {
     @Override
     public void setCustomAnimations(Glock17Item animatable, long instanceId, AnimationState animationState) {
         GeoBone gun = getAnimationProcessor().getBone("bone");
-        GeoBone shen = getAnimationProcessor().getBone("shen");
         GeoBone slide = getAnimationProcessor().getBone("huatao");
         GeoBone bullet = getAnimationProcessor().getBone("bullet");
 
@@ -57,11 +56,8 @@ public class Glock17ItemModel extends GeoModel<Glock17Item> {
         double fr = ClientEventHandler.fireRot;
 
         gun.setPosX(1.23f * (float) zp);
-
         gun.setPosY(1.43f * (float) zp - (float) (0.2f * zpz));
-
         gun.setPosZ(7f * (float) zp + (float) (0.3f * zpz));
-
         gun.setScaleZ(1f - (0.55f * (float) zp));
 
         GeoBone body = getAnimationProcessor().getBone("gun");

@@ -57,21 +57,6 @@ public class Crowbar extends SwordItem {
     }
 
     @Override
-    public boolean hasCraftingRemainingItem(@NotNull ItemStack stack) {
-        return true;
-    }
-
-    @Override
-    public @NotNull ItemStack getCraftingRemainingItem(ItemStack itemstack) {
-        ItemStack stack = new ItemStack(this);
-        stack.setDamageValue(itemstack.getDamageValue() + 1);
-        if (stack.getDamageValue() >= stack.getMaxDamage()) {
-            return ItemStack.EMPTY;
-        }
-        return stack;
-    }
-
-    @Override
     public boolean isRepairable(@NotNull ItemStack itemstack) {
         return true;
     }
