@@ -10,8 +10,8 @@
   "Magazine": 3,
   "BoltActionTime": 37,
   "Weight": 13,
-  "NormalReloadTime": 63,
-  "EmptyReloadTime": 92,
+  "NormalReloadTime": 84,
+  "EmptyReloadTime": 112,
   "BypassesArmor": 1,
   "SoundRadius": 22
 }

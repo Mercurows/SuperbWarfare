@@ -140,7 +140,7 @@ public class Ntw20Model extends GeoModel<Ntw20Item> {
         GeoBone camera = getAnimationProcessor().getBone("camera");
         GeoBone main = getAnimationProcessor().getBone("0");
 
-        float numR = (float) (1 - 0.92 * zt);
+        float numR = (float) (1 - 0.98 * zt);
         float numP = (float) (1 - 0.88 * zt);
 
         if (data.reload.time() > 0 || data.bolt.actionTimer.get() > 0) {

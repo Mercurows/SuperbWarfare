@@ -1109,7 +1109,7 @@ public class ClientEventHandler {
                 }
             }
 
-            if (isMoving() && !entity.isSprinting()) {
+            if (isMoving() && !entity.isSprinting() && firePosTimer == 0) {
                 moveYTime += 1.2 * onGround * times * moveSpeed;
                 moveXTime += 1.2 * onGround * times * moveSpeed;
                 moveFadeTime = Mth.lerp(0.13 * times, moveFadeTime, 1);
