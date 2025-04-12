@@ -242,86 +242,100 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
         Entity passenger4 = getNthEntity(3);
         float diffX;
         float diffY;
+        float diffZ;
 
-
-        if (passenger == null) {
-            this.leftInputDown = false;
-            this.rightInputDown = false;
-            this.forwardInputDown = false;
-            this.backInputDown = false;
-            this.upInputDown = false;
-            this.downInputDown = false;
-            this.setZRot(this.roll * 0.98f);
-            this.setXRot(this.getXRot() * 0.98f);
-            if (passenger2 == null && passenger3 == null && passenger4 == null) {
-                this.entityData.set(POWER, this.entityData.get(POWER) * 0.99f);
-            }
-        } else if (passenger instanceof Player) {
-            diffY = Math.clamp(-90f, 90f, Mth.wrapDegrees(passenger.getYHeadRot() - this.getYRot()));
-            diffX = Math.clamp(-60f, 60f, Mth.wrapDegrees(passenger.getXRot() - this.getXRot()));
-
-            if (rightInputDown) {
-                holdTick++;
-                this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) - 2f * Math.min(holdTick, 7) * this.entityData.get(POWER));
-            } else if (this.leftInputDown) {
-                holdTick++;
-                this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) + 2f * Math.min(holdTick, 7) * this.entityData.get(POWER));
-            } else {
-                holdTick = 0;
-            }
-
-            this.setYRot(this.getYRot() + Mth.clamp((this.onGround() ? 0.1f : 2f) * diffY * this.entityData.get(PROPELLER_ROT), -10f, 10f));
-            this.setXRot(Mth.clamp(this.getXRot() + ((this.onGround()) ? 0 : 1.5f) * diffX * this.entityData.get(PROPELLER_ROT), -80, 80));
-            this.setZRot(this.getRoll() - this.entityData.get(DELTA_ROT) + (this.onGround() ? 0 : 0.25f) * diffY * this.entityData.get(PROPELLER_ROT));
-        }
-
-        if (this.level() instanceof ServerLevel) {
-            if (this.getEnergy() > 0) {
-                boolean up = upInputDown || forwardInputDown;
-                boolean down = this.downInputDown;
-
-                if (!engineStart && up) {
-                    engineStart = true;
-                    this.level().playSound(null, this, ModSounds.HELICOPTER_ENGINE_START.get(), this.getSoundSource(), 3, 1);
-                }
-
-                if (up && engineStartOver) {
-                    holdPowerTick++;
-                    this.entityData.set(POWER, Math.min(this.entityData.get(POWER) + 0.0007f * Math.min(holdPowerTick, 10), 0.12f));
-                }
-
-                if (engineStartOver) {
-                    if (down) {
-                        holdPowerTick++;
-                        this.entityData.set(POWER, Math.max(this.entityData.get(POWER) - 0.001f * Math.min(holdPowerTick, 5), this.onGround() ? 0 : 0.025f));
-                    } else if (backInputDown) {
-                        holdPowerTick++;
-                        this.entityData.set(POWER, Math.max(this.entityData.get(POWER) - 0.001f * Math.min(holdPowerTick, 5), this.onGround() ? 0 : 0.052f));
-                        if (passenger != null) {
-                            passenger.setXRot(0.8f * passenger.getXRot());
-                        }
-                    }
-                }
-
-                if (engineStart && !engineStartOver) {
-                    this.entityData.set(POWER, Math.min(this.entityData.get(POWER) + 0.0012f, 0.045f));
-                }
-
-                if (!(up || down || backInputDown) && engineStartOver) {
-                    if (this.getDeltaMovement().y() < 0) {
-                        this.entityData.set(POWER, Math.min(this.entityData.get(POWER) + 0.0002f, 0.12f));
-                    } else {
-                        this.entityData.set(POWER, Math.max(this.entityData.get(POWER) - (this.onGround() ? 0.00005f : 0.0002f), 0));
-                    }
-                    holdPowerTick = 0;
-                }
-            } else {
-                this.entityData.set(POWER, Math.max(this.entityData.get(POWER) - 0.0001f, 0));
+        if (getHealth() > 0) {
+            if (passenger == null) {
+                this.leftInputDown = false;
+                this.rightInputDown = false;
                 this.forwardInputDown = false;
                 this.backInputDown = false;
-                engineStart = false;
-                engineStartOver = false;
+                this.upInputDown = false;
+                this.downInputDown = false;
+                this.setZRot(this.roll * 0.98f);
+                this.setXRot(this.getXRot() * 0.98f);
+                if (passenger2 == null && passenger3 == null && passenger4 == null) {
+                    this.entityData.set(POWER, this.entityData.get(POWER) * 0.99f);
+                }
+            } else if (passenger instanceof Player) {
+                diffY = Math.clamp(-90f, 90f, Mth.wrapDegrees(passenger.getYHeadRot() - this.getYRot()));
+                diffX = Math.clamp(-60f, 60f, Mth.wrapDegrees(passenger.getXRot() - this.getXRot()));
+
+                if (rightInputDown) {
+                    holdTick++;
+                    this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) - 2f * Math.min(holdTick, 7) * this.entityData.get(POWER));
+                } else if (this.leftInputDown) {
+                    holdTick++;
+                    this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) + 2f * Math.min(holdTick, 7) * this.entityData.get(POWER));
+                } else {
+                    holdTick = 0;
+                }
+
+                this.setYRot(this.getYRot() + Mth.clamp((this.onGround() ? 0.1f : 2f) * diffY * this.entityData.get(PROPELLER_ROT), -10f, 10f));
+                this.setXRot(Mth.clamp(this.getXRot() + ((this.onGround()) ? 0 : 1.5f) * diffX * this.entityData.get(PROPELLER_ROT), -80, 80));
+                this.setZRot(this.getRoll() - this.entityData.get(DELTA_ROT) + (this.onGround() ? 0 : 0.25f) * diffY * this.entityData.get(PROPELLER_ROT));
             }
+
+            if (this.level() instanceof ServerLevel) {
+                if (this.getEnergy() > 0) {
+                    boolean up = upInputDown || forwardInputDown;
+                    boolean down = this.downInputDown;
+
+                    if (!engineStart && up) {
+                        engineStart = true;
+                        this.level().playSound(null, this, ModSounds.HELICOPTER_ENGINE_START.get(), this.getSoundSource(), 3, 1);
+                    }
+
+                    if (up && engineStartOver) {
+                        holdPowerTick++;
+                        this.entityData.set(POWER, Math.min(this.entityData.get(POWER) + 0.0007f * Math.min(holdPowerTick, 10), 0.12f));
+                    }
+
+                    if (engineStartOver) {
+                        if (down) {
+                            holdPowerTick++;
+                            this.entityData.set(POWER, Math.max(this.entityData.get(POWER) - 0.001f * Math.min(holdPowerTick, 5), this.onGround() ? 0 : 0.025f));
+                        } else if (backInputDown) {
+                            holdPowerTick++;
+                            this.entityData.set(POWER, Math.max(this.entityData.get(POWER) - 0.001f * Math.min(holdPowerTick, 5), this.onGround() ? 0 : 0.052f));
+                            if (passenger != null) {
+                                passenger.setXRot(0.8f * passenger.getXRot());
+                            }
+                        }
+                    }
+
+                    if (engineStart && !engineStartOver) {
+                        this.entityData.set(POWER, Math.min(this.entityData.get(POWER) + 0.0012f, 0.045f));
+                    }
+
+                    if (!(up || down || backInputDown) && engineStartOver) {
+                        if (this.getDeltaMovement().y() < 0) {
+                            this.entityData.set(POWER, Math.min(this.entityData.get(POWER) + 0.0002f, 0.12f));
+                        } else {
+                            this.entityData.set(POWER, Math.max(this.entityData.get(POWER) - (this.onGround() ? 0.00005f : 0.0002f), 0));
+                        }
+                        holdPowerTick = 0;
+                    }
+                } else {
+                    this.entityData.set(POWER, Math.max(this.entityData.get(POWER) - 0.0001f, 0));
+                    this.forwardInputDown = false;
+                    this.backInputDown = false;
+                    engineStart = false;
+                    engineStartOver = false;
+                }
+            }
+        } else {
+            this.entityData.set(POWER, Math.max(this.entityData.get(POWER) - 0.0001f, 0.01f));
+            float destroy = 0;
+            destroy += 9f;
+
+            diffX = 45 - this.getXRot();
+            diffZ = -20 - this.getRoll();
+
+            this.setXRot(this.getXRot() + diffX * 0.1f * this.entityData.get(PROPELLER_ROT));
+            this.setYRot(this.getYRot() + destroy);
+            this.setZRot(this.getRoll() + diffZ * 0.1f * this.entityData.get(PROPELLER_ROT));
+            setDeltaMovement(getDeltaMovement().add(0, -0.06, 0));
         }
 
         this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) * 0.9f);
@@ -337,10 +351,6 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
 
         Vector3f direction = getRightDirection().mul(-Math.sin(this.getRoll() * Mth.DEG_TO_RAD) * this.entityData.get(PROPELLER_ROT));
         setDeltaMovement(getDeltaMovement().add(new Vec3(direction.x, direction.y, direction.z).scale(3)));
-
-//        if (passenger instanceof Player player) {
-//            player.displayClientMessage(Component.literal(this.getRoll() + ""), true);
-//        }
 
         Vector3f directionZ = getForwardDirection().mul(-Math.cos((this.getXRot() + 90) * Mth.DEG_TO_RAD) * this.entityData.get(PROPELLER_ROT));
         setDeltaMovement(getDeltaMovement().add(new Vec3(directionZ.x, directionZ.y, directionZ.z).scale(3)));
@@ -469,6 +479,7 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
 
     @Override
     public void destroy() {
+        if (!onGround()) return;
         if (this.crash) {
             crashPassengers();
         } else {
