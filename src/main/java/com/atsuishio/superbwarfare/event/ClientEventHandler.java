@@ -299,9 +299,10 @@ public class ClientEventHandler {
 
     // 耐力
     public static void staminaSystem() {
-        if (notInGame()) return;
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.isPaused()) return;
 
-        LocalPlayer player = Minecraft.getInstance().player;
+        LocalPlayer player = mc.player;
         if (player == null) {
             return;
         }
