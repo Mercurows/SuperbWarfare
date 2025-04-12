@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.event;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.ClickHandler;
 import com.atsuishio.superbwarfare.config.client.DisplayConfig;
+import com.atsuishio.superbwarfare.config.server.MiscConfig;
 import com.atsuishio.superbwarfare.entity.vehicle.*;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity;
@@ -296,7 +297,7 @@ public class ClientEventHandler {
     }
 
 
-    //耐力
+    // 耐力
     public static void staminaSystem() {
         if (notInGame()) return;
 
@@ -306,6 +307,10 @@ public class ClientEventHandler {
         }
 
         tacticalSprint = !exhaustion && !zoom && isMoving() && player.isSprinting() && player.getVehicle() == null && !player.getAbilities().flying;
+
+        if (!MiscConfig.ALLOW_TACTICAL_SPRINT.get()) {
+            tacticalSprint = false;
+        }
 
         ItemStack stack = player.getMainHandItem();
 
