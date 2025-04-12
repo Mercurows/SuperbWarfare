@@ -203,9 +203,6 @@ public class ClickHandler {
 
             if (key == Minecraft.getInstance().options.keyJump.getKey().getValue()) {
                 handleDoubleJump(player);
-                if (player.onGround()) {
-                    stamina += 5;
-                }
             }
 
             if (key == ModKeyMappings.CONFIG.getKey().getValue() && ModKeyMappings.CONFIG.getKeyModifier().isActive(KeyConflictContext.IN_GAME)) {
