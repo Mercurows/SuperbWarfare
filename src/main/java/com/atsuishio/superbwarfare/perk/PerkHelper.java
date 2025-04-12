@@ -48,10 +48,10 @@ public class PerkHelper {
         case AMMO -> !perk.descriptionId.equals("butterfly_bullet") && perk != ModPerks.MICRO_MISSILE.get()
                 && perk != ModPerks.LONGER_WIRE.get();
         case FUNCTIONAL -> perk == ModPerks.HEAL_CLIP.get()
+                || perk == ModPerks.SUBSISTENCE.get()
                 || perk == ModPerks.FOURTH_TIMES_CHARM.get()
                 || perk == ModPerks.POWERFUL_ATTRACTION.get()
                 || perk == ModPerks.INTELLIGENT_CHIP.get();
-
         case DAMAGE -> perk == ModPerks.KILL_CLIP.get()
                 || perk == ModPerks.MONSTER_HUNTER.get()
                 || perk == ModPerks.VORPAL_WEAPON.get();

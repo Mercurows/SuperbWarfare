@@ -665,7 +665,32 @@ public class LivingEventHandler {
                 cap.handgunAmmo -= ammoFinal;
             }
             data.ammo.set(Math.min(mag, ammo + ammoFinal));
+        } else if (stack.is(ModTags.Items.USE_SHOTGUN_AMMO)) {
+            int ammoFinal = Math.min(cap.handgunAmmo, ammoNeed);
+            if (flag) {
+                ammoFinal = ammoNeed;
+            } else {
+                cap.shotgunAmmo -= ammoFinal;
+            }
+            data.ammo.set(Math.min(mag, ammo + ammoFinal));
+        } else if (stack.is(ModTags.Items.USE_SNIPER_AMMO)) {
+            int ammoFinal = Math.min(cap.handgunAmmo, ammoNeed);
+            if (flag) {
+                ammoFinal = ammoNeed;
+            } else {
+                cap.sniperAmmo -= ammoFinal;
+            }
+            data.ammo.set(Math.min(mag, ammo + ammoFinal));
+        } else if (stack.is(ModTags.Items.USE_HEAVY_AMMO)) {
+            int ammoFinal = Math.min(cap.heavyAmmo, ammoNeed);
+            if (flag) {
+                ammoFinal = ammoNeed;
+            } else {
+                cap.heavyAmmo -= ammoFinal;
+            }
+            data.ammo.set(Math.min(mag, ammo + ammoFinal));
         }
+
         data.save();
         player.setData(ModAttachments.PLAYER_VARIABLE, cap);
         cap.sync(player);
