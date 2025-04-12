@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.event;
 
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.common.GameplayConfig;
 import com.atsuishio.superbwarfare.init.ModAttachments;
 import com.atsuishio.superbwarfare.init.ModItems;
@@ -11,11 +12,14 @@ import com.atsuishio.superbwarfare.tools.AmmoType;
 import com.atsuishio.superbwarfare.tools.GunsTool;
 import com.atsuishio.superbwarfare.tools.InventoryTool;
 import com.atsuishio.superbwarfare.tools.NBTTool;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -27,6 +31,9 @@ import net.neoforged.neoforge.network.PacketDistributor;
 
 @EventBusSubscriber
 public class PlayerEventHandler {
+
+    public static final ResourceLocation TACTICAL_SPRINT = Mod.loc("tactical_sprint");
+
     @SubscribeEvent
     public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
         Player player = event.getEntity();
@@ -70,6 +77,10 @@ public class PlayerEventHandler {
 
         if (stack.is(ModTags.Items.GUN)) {
             handleSpecialWeaponAmmo(player);
+        }
+
+        if (!player.level().isClientSide) {
+            handleTacticalAttribute(player);
         }
     }
 
@@ -173,6 +184,23 @@ public class PlayerEventHandler {
                     }
                 }
             }
+        }
+    }
+
+    public static void handleTacticalAttribute(Player player) {
+        if (player == null) {
+            return;
+        }
+        var attr = player.getAttribute(Attributes.MOVEMENT_SPEED);
+        if (attr == null) return;
+
+        if (attr.getModifier(TACTICAL_SPRINT) != null) {
+            attr.removeModifier(TACTICAL_SPRINT);
+        }
+
+        if (player.getData(ModAttachments.PLAYER_VARIABLE).tacticalSprint) {
+            player.setSprinting(true);
+            attr.addTransientModifier(new AttributeModifier(TACTICAL_SPRINT, 0.25, AttributeModifier.Operation.ADD_MULTIPLIED_BASE));
         }
     }
 

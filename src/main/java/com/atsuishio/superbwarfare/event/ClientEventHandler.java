@@ -351,6 +351,12 @@ public class ClientEventHandler {
         if (zoom) {
             tacticalSprint = false;
         }
+
+        if (tacticalSprint && player.onGround()) {
+            PacketDistributor.sendToServer(new TacticalSprintMessage(true));
+        } else {
+            PacketDistributor.sendToServer(new TacticalSprintMessage(false));
+        }
     }
 
     /**

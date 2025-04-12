@@ -26,6 +26,7 @@ public class PlayerVariable implements INBTSerializable<CompoundTag> {
     public int shotgunAmmo = 0;
     public int sniperAmmo = 0;
     public int heavyAmmo = 0;
+    public boolean tacticalSprint = false;
     public boolean edit = false;
 
     public void sync(Entity entity) {
@@ -34,8 +35,8 @@ public class PlayerVariable implements INBTSerializable<CompoundTag> {
         var newVariable = entity.getData(ModAttachments.PLAYER_VARIABLE);
         if (old != null && old.equals(newVariable)) return;
 
-        if (entity instanceof ServerPlayer) {
-            PacketDistributor.sendToAllPlayers(new PlayerVariablesSyncMessage(entity.getId(), newVariable.writeToNBT()));
+        if (entity instanceof ServerPlayer serverPlayer) {
+            PacketDistributor.sendToPlayer(serverPlayer, new PlayerVariablesSyncMessage(entity.getId(), newVariable.writeToNBT()));
         }
     }
 
@@ -58,6 +59,7 @@ public class PlayerVariable implements INBTSerializable<CompoundTag> {
             type.set(nbt, type.get(this));
         }
 
+        nbt.putBoolean("TacticalSprint", tacticalSprint);
         nbt.putBoolean("EditMode", edit);
 
         return nbt;
@@ -68,6 +70,7 @@ public class PlayerVariable implements INBTSerializable<CompoundTag> {
             type.set(this, type.get(tag));
         }
 
+        tacticalSprint = tag.getBoolean("TacticalSprint");
         edit = tag.getBoolean("EditMode");
 
         return this;
@@ -82,6 +85,8 @@ public class PlayerVariable implements INBTSerializable<CompoundTag> {
         clone.sniperAmmo = this.sniperAmmo;
         clone.heavyAmmo = this.heavyAmmo;
         clone.edit = this.edit;
+        clone.tacticalSprint = this.tacticalSprint;
+
 
         return clone;
     }
