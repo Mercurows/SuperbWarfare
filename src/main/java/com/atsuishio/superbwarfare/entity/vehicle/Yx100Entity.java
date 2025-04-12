@@ -332,6 +332,8 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
         this.terrainCompat(4.6f, 6.7f);
         inertiaRotate(1.2f);
 
+        releaseSmokeDecoy();
+
         this.refreshDimensions();
     }
 
@@ -1218,5 +1220,10 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
             double heat2 = this.getEntityData().get(COAX_HEAT) / 100.0F;
             guiGraphics.drawString(font, Component.literal("12.7MM HMG " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getAmmoCount(player))), 30, -9, Mth.hsvToRgb(0F, (float) heat2, 1.0F), false);
         }
+    }
+
+    @Override
+    public boolean hasDecoy() {
+        return true;
     }
 }

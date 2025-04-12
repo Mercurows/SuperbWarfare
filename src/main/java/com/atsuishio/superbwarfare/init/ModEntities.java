@@ -36,6 +36,8 @@ public class ModEntities {
             EntityType.Builder.<LaserEntity>of(LaserEntity::new, MobCategory.MISC).sized(0.1f, 0.1f).fireImmune().setUpdateInterval(1));
     public static final DeferredHolder<EntityType<?>, EntityType<FlareDecoyEntity>> FLARE_DECOY = register("flare_decoy",
             EntityType.Builder.<FlareDecoyEntity>of(FlareDecoyEntity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).sized(0.5f, 0.5f));
+    public static final DeferredHolder<EntityType<?>, EntityType<SmokeDecoyEntity>> SMOKE_DECOY = register("smoke_decoy",
+            EntityType.Builder.<SmokeDecoyEntity>of(SmokeDecoyEntity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).noSave().sized(3f, 3f));
     public static final DeferredHolder<EntityType<?>, EntityType<ClaymoreEntity>> CLAYMORE = register("claymore",
             EntityType.Builder.<ClaymoreEntity>of(ClaymoreEntity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).sized(0.5f, 0.5f));
     public static final DeferredHolder<EntityType<?>, EntityType<C4Entity>> C_4 = register("c4",
@@ -101,7 +103,7 @@ public class ModEntities {
             EntityType.Builder.of(Yx100Entity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).fireImmune().sized(5.5f, 3.25f));
 
     public static final DeferredHolder<EntityType<?>, EntityType<DroneEntity>> DRONE = register("drone",
-            EntityType.Builder.<DroneEntity>of(DroneEntity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).sized(0.6f, 0.2f));
+            EntityType.Builder.of(DroneEntity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).sized(0.6f, 0.2f));
     public static final DeferredHolder<EntityType<?>, EntityType<LaserTowerEntity>> LASER_TOWER = register("laser_tower",
             EntityType.Builder.<LaserTowerEntity>of(LaserTowerEntity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).fireImmune().sized(0.9f, 1.65f));
     public static final DeferredHolder<EntityType<?>, EntityType<PrismTankEntity>> PRISM_TANK = register("prism_tank",

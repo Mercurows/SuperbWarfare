@@ -47,6 +47,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static com.atsuishio.superbwarfare.client.RenderHelper.preciseBlit;
 import static com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay.*;
+import static com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity.DECOY_COUNT;
 
 @OnlyIn(Dist.CLIENT)
 public class VehicleHudOverlay implements LayeredDraw.Layer {
@@ -233,6 +234,9 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
                 double heal = mobileVehicle.getHealth() / mobileVehicle.getMaxHealth();
                 guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(FormatTool.format0D(100 * heal)), w / 2 - 165, h / 2 - 46, Mth.hsvToRgb((float) heal / 3.745318352059925F, 1.0F, 1.0F), false);
 
+                // 诱饵
+                guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("SMOKE " + mobileVehicle.getEntityData().get(DECOY_COUNT)), w / 2 - 165, h / 2 - 36, 0x66FF00, false);
+
                 renderKillIndicator(guiGraphics, w, h);
             } else if (Minecraft.getInstance().options.getCameraType() == CameraType.THIRD_PERSON_BACK && !ClientEventHandler.zoomVehicle) {
                 Vec3 p = RenderHelper.worldToScreen(new Vec3(Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), player.xo, player.getX()), Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), player.yo + player.getEyeHeight(), player.getEyeY()), Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), player.zo, player.getZ())).add(iLand.getBarrelVec(deltaTracker.getGameTimeDeltaPartialTick(true)).scale(192)), cameraPos);
@@ -257,6 +261,10 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
 
                     guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("HP " +
                             FormatTool.format0D(100 * mobileVehicle.getHealth() / mobileVehicle.getMaxHealth())), 30, 1, Mth.hsvToRgb(0F, (float) health, 1.0F), false);
+
+                    if (mobileVehicle.hasDecoy()) {
+                        guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("SMOKE " + mobileVehicle.getEntityData().get(DECOY_COUNT)), 30, 11, -1, false);
+                    }
 
                     poseStack.popPose();
                     poseStack.popPose();

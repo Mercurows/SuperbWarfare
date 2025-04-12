@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.tools;
 
+import com.atsuishio.superbwarfare.entity.projectile.DecoyEntity;
 import com.atsuishio.superbwarfare.entity.projectile.DestroyableProjectileEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import net.minecraft.core.BlockPos;
@@ -105,7 +106,7 @@ public class TraceTool {
         Vec3 viewVec = vehicle.getBarrelVector(1);
         Vec3 toVec = eye.add(viewVec.x * entityReach, viewVec.y * entityReach, viewVec.z * entityReach);
         AABB aabb = vehicle.getBoundingBox().expandTowards(viewVec.scale(entityReach)).inflate(1.0D, 1.0D, 1.0D);
-        EntityHitResult entityhitresult = ProjectileUtil.getEntityHitResult(vehicle, eye, toVec, aabb, p -> !p.isSpectator() && p.isAlive() && !(p instanceof Projectile && !(p instanceof DestroyableProjectileEntity)), distance);
+        EntityHitResult entityhitresult = ProjectileUtil.getEntityHitResult(vehicle, eye, toVec, aabb, p -> !p.isSpectator() && p.isAlive() && !(p instanceof Projectile && !(p instanceof DestroyableProjectileEntity)) && SeekTool.baseFilter(p) && !(p instanceof DecoyEntity), distance);
         if (entityhitresult != null) {
             hitResult = entityhitresult;
 

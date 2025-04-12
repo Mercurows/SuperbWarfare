@@ -443,6 +443,7 @@
   "entity.superbwarfare.laser_tower": "Laser Defense Tower",
   "entity.superbwarfare.prism_tank": "Prism Tank",
   "entity.superbwarfare.swarm_drone": "Swarm Drone",
+  "entity.superbwarfare.smoke_decoy": "Smoke",
 
   "key.categories.superbwarfare": "Superb Warfare",
   "key.superbwarfare.hold_zoom": "Zoom (Hold)",

@@ -454,7 +454,7 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
         final Vec3 center = new Vec3(this.getX(), this.getY(), this.getZ());
         for (Entity target : level.getEntitiesOfClass(Entity.class, aabb, e -> true).stream().sorted(Comparator.comparingDouble(e -> e.distanceToSqr(center))).toList()) {
             if (this != target && target != null
-                    && !(target instanceof ItemEntity || target instanceof Projectile || target instanceof ProjectileEntity || target instanceof LaserEntity || target instanceof FlareDecoyEntity || target instanceof AreaEffectCloud || target instanceof C4Entity)) {
+                    && !(target instanceof ItemEntity || target instanceof Projectile || target instanceof ProjectileEntity || target instanceof LaserEntity || target instanceof DecoyEntity || target instanceof AreaEffectCloud || target instanceof C4Entity)) {
                 hitEntityCrash(controller, target);
             }
         }

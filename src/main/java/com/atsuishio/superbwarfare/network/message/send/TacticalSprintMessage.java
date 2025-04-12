@@ -10,7 +10,7 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.NotNull;
 
 public record TacticalSprintMessage(boolean sprint) implements CustomPacketPayload {
-    public static final Type<TacticalSprintMessage> TYPE = new Type<>(Mod.loc("vehicle_fire"));
+    public static final Type<TacticalSprintMessage> TYPE = new Type<>(Mod.loc("tactical_sprint"));
 
     public static final StreamCodec<ByteBuf, TacticalSprintMessage> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.BOOL,

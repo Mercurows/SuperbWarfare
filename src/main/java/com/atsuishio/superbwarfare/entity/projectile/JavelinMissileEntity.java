@@ -215,11 +215,11 @@ public class JavelinMissileEntity extends FastThrowableProjectile implements Geo
     public void tick() {
         super.tick();
         Entity entity = EntityFindUtil.findEntity(this.level(), entityData.get(TARGET_UUID));
-        List<Entity> decoy = SeekTool.seekLivingEntities(this, this.level(), 48, 160);
+        List<Entity> decoy = SeekTool.seekLivingEntities(this, this.level(), 32, 90);
 
         for (var e : decoy) {
-            if (e instanceof FlareDecoyEntity flareDecoy && !distracted) {
-                this.entityData.set(TARGET_UUID, flareDecoy.getStringUUID());
+            if (e instanceof DecoyEntity decoyEntity && !distracted) {
+                this.entityData.set(TARGET_UUID, decoyEntity.getStringUUID());
                 distracted = true;
             }
         }

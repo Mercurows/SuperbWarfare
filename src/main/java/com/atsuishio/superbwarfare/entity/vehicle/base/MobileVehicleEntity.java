@@ -2,6 +2,8 @@ package com.atsuishio.superbwarfare.entity.vehicle.base;
 
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.entity.TargetEntity;
+import com.atsuishio.superbwarfare.entity.projectile.FlareDecoyEntity;
+import com.atsuishio.superbwarfare.entity.projectile.SmokeDecoyEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModSounds;
@@ -52,7 +54,9 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
     public static final EntityDataAccessor<Integer> COAX_HEAT = SynchedEntityData.defineId(MobileVehicleEntity.class, EntityDataSerializers.INT);
 
     public static final EntityDataAccessor<Integer> AMMO = SynchedEntityData.defineId(MobileVehicleEntity.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Integer> DECOY_COUNT = SynchedEntityData.defineId(MobileVehicleEntity.class, EntityDataSerializers.INT);
 
+    public int decoyReloadCoolDown;
     public static boolean IGNORE_ENTITY_GROUND_CHECK_STEPPING = false;
     public boolean leftInputDown;
     public boolean rightInputDown;
@@ -193,6 +197,10 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
             cannotFireCoax = false;
         }
 
+        if (decoyReloadCoolDown > 0) {
+            decoyReloadCoolDown--;
+        }
+
         if (this.entityData.get(HEAT) > 100 && !cannotFire) {
             cannotFire = true;
             this.level().playSound(null, this.getOnPos(), ModSounds.MINIGUN_OVERHEAT.get(), SoundSource.PLAYERS, 1, 1);
@@ -218,6 +226,56 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
         this.move(MoverType.SELF, this.getDeltaMovement());
         collideLilyPadBlock();
         this.refreshDimensions();
+    }
+
+    //烟雾诱饵
+    public void releaseSmokeDecoy() {
+        if (decoyInputDown) {
+            if (this.entityData.get(DECOY_COUNT) > 0 && this.level() instanceof ServerLevel) {
+                Entity passenger = getFirstPassenger();
+                for (int i = 0; i < 16; i++) {
+                    SmokeDecoyEntity smokeDecoyEntity = new SmokeDecoyEntity(this.level());
+                    smokeDecoyEntity.setPos(this.getX(), this.getY() + 2, this.getZ());
+                    smokeDecoyEntity.decoyShoot(this, this.getViewVector(1).yRot((11.25F + 22.5F * i) * Mth.DEG_TO_RAD), 3.2f, 8);
+                    this.level().addFreshEntity(smokeDecoyEntity);
+                }
+                this.level().playSound(null, this, ModSounds.DECOY_FIRE.get(), this.getSoundSource(), 1, 1);
+                decoyReloadCoolDown = 400;
+                this.getEntityData().set(DECOY_COUNT, this.getEntityData().get(DECOY_COUNT) - 1);
+            }
+            decoyInputDown = false;
+        }
+        if (this.entityData.get(DECOY_COUNT) < 1 && decoyReloadCoolDown == 0 && this.level() instanceof ServerLevel) {
+            this.entityData.set(DECOY_COUNT, this.entityData.get(DECOY_COUNT) + 1);
+            this.level().playSound(null, this, ModSounds.DECOY_RELOAD.get(), this.getSoundSource(), 1, 1);
+            decoyReloadCoolDown = 400;
+        }
+    }
+
+    //热诱弹诱饵
+    public void releaseDecoy() {
+        if (decoyInputDown) {
+            if (this.entityData.get(DECOY_COUNT) > 0 && this.level() instanceof ServerLevel) {
+                Entity passenger = getFirstPassenger();
+                for (int i = 0; i < 4; i++) {
+                    FlareDecoyEntity flareDecoyEntity = new FlareDecoyEntity(this.level());
+                    flareDecoyEntity.setPos(this.getX() + this.getDeltaMovement().x, this.getY() + 0.5 + this.getDeltaMovement().y, this.getZ() + this.getDeltaMovement().z);
+                    flareDecoyEntity.decoyShoot(this, this.getViewVector(1).yRot((45 + 90 * i) * Mth.DEG_TO_RAD), 0.8f, 8);
+                    this.level().addFreshEntity(flareDecoyEntity);
+                }
+                this.level().playSound(null, this, ModSounds.DECOY_FIRE.get(), this.getSoundSource(), 1, 1);
+                if (this.getEntityData().get(DECOY_COUNT) == 3) {
+                    decoyReloadCoolDown = 300;
+                }
+                this.getEntityData().set(DECOY_COUNT, this.getEntityData().get(DECOY_COUNT) - 1);
+            }
+            decoyInputDown = false;
+        }
+        if (this.entityData.get(DECOY_COUNT) < 3 && decoyReloadCoolDown == 0 && this.level() instanceof ServerLevel) {
+            this.entityData.set(DECOY_COUNT, this.entityData.get(DECOY_COUNT) + 1);
+            this.level().playSound(null, this, ModSounds.DECOY_RELOAD.get(), this.getSoundSource(), 1, 1);
+            decoyReloadCoolDown = 300;
+        }
     }
 
     // 惯性倾斜
@@ -646,28 +704,35 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
         this.recoilShake = pRecoilShake;
     }
 
+    public boolean hasDecoy() {
+        return false;
+    }
+
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
-        builder.define(CANNON_RECOIL_TIME, 0);
-        builder.define(POWER, 0f);
-        builder.define(YAW, 0f);
-        builder.define(AMMO, 0);
-        builder.define(FIRE_ANIM, 0);
-        builder.define(HEAT, 0);
-        builder.define(COAX_HEAT, 0);
+        builder.define(CANNON_RECOIL_TIME, 0)
+                .define(POWER, 0f)
+                .define(YAW, 0f)
+                .define(AMMO, 0)
+                .define(FIRE_ANIM, 0)
+                .define(HEAT, 0)
+                .define(COAX_HEAT, 0)
+                .define(DECOY_COUNT, 0);
     }
 
     @Override
     protected void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
         this.entityData.set(POWER, compound.getFloat("Power"));
+        this.entityData.set(DECOY_COUNT, compound.getInt("DecoyCount"));
     }
 
     @Override
     public void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
         compound.putFloat("Power", this.entityData.get(POWER));
+        compound.putInt("DecoyCount", this.entityData.get(DECOY_COUNT));
     }
 
     public boolean canCrushEntities() {
