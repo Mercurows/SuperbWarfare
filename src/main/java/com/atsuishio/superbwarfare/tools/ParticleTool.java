@@ -48,7 +48,6 @@ public class ParticleTool {
             sendParticle(serverLevel, ParticleTypes.CAMPFIRE_COSY_SMOKE, x, y, z, 3, 0.1, 0.1, 0.1, 0.02, true);
             sendParticle(serverLevel, ParticleTypes.LARGE_SMOKE, x, y, z, 4, 0.2, 0.2, 0.2, 0.02, true);
             sendParticle(serverLevel, ModParticleTypes.FIRE_STAR.get(), x, y, z, 6, 0, 0, 0, 0.2, true);
-            sendParticle(serverLevel, ModParticleTypes.CUSTOM_SMOKE.get(), x, y, z, 400, 0.2, 0.2, 0.2, 0.05, true);
         }
     }
 

@@ -21,9 +21,7 @@ import com.atsuishio.superbwarfare.tools.AmmoType;
 import com.atsuishio.superbwarfare.tools.CustomExplosion;
 import com.atsuishio.superbwarfare.tools.InventoryTool;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
-import com.google.common.collect.Lists;
 import com.mojang.math.Axis;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -37,10 +35,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.vehicle.DismountHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
@@ -58,7 +53,6 @@ import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
@@ -244,7 +238,7 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
         float diffY;
         float diffZ;
 
-        if (getHealth() > 0) {
+        if (getHealth() > 0.1f * getMaxHealth()) {
             if (passenger == null) {
                 this.leftInputDown = false;
                 this.rightInputDown = false;
@@ -479,7 +473,6 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
 
     @Override
     public void destroy() {
-        if (!onGround()) return;
         if (this.crash) {
             crashPassengers();
         } else {
@@ -641,40 +634,6 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
                 }
             }
         }
-    }
-
-    @Override
-    public @NotNull Vec3 getDismountLocationForPassenger(LivingEntity passenger) {
-        Vec3 vec3d = getDismountOffset(getBbWidth() * Mth.SQRT_OF_TWO, passenger.getBbWidth() * Mth.SQRT_OF_TWO);
-        double ox = getX() + vec3d.x;
-        int i = this.getOrderedPassengers().indexOf(passenger);
-        if (i == 0 || i == 2 || i == 3 || i == 4) {
-            ox = getX() - vec3d.x;
-        }
-
-        double oz = getZ() + vec3d.z;
-        BlockPos exitPos = new BlockPos((int) ox, (int) getY(), (int) oz);
-        BlockPos floorPos = exitPos.below();
-        if (!level().isWaterAt(floorPos)) {
-            ArrayList<Vec3> list = Lists.newArrayList();
-            double exitHeight = level().getBlockFloorHeight(exitPos);
-            if (DismountHelper.isBlockFloorValid(exitHeight)) {
-                list.add(new Vec3(ox, (double) exitPos.getY() + exitHeight, oz));
-            }
-            double floorHeight = level().getBlockFloorHeight(floorPos);
-            if (DismountHelper.isBlockFloorValid(floorHeight)) {
-                list.add(new Vec3(ox, (double) floorPos.getY() + floorHeight, oz));
-            }
-            for (Pose entityPose : passenger.getDismountPoses()) {
-                for (Vec3 vec3d2 : list) {
-                    if (!DismountHelper.canDismountTo(level(), vec3d2, passenger, entityPose)) continue;
-                    passenger.setPose(entityPose);
-                    return vec3d2;
-                }
-            }
-        }
-
-        return super.getDismountLocationForPassenger(passenger);
     }
 
     @Override
