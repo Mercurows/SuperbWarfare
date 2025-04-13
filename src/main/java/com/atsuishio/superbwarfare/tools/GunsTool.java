@@ -3,10 +3,11 @@ package com.atsuishio.superbwarfare.tools;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.init.ModAttachments;
 import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.item.gun.data.DefaultGunData;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.item.gun.data.value.ReloadState;
 import com.atsuishio.superbwarfare.network.message.receive.GunsDataMessage;
-import com.google.gson.stream.JsonReader;
+import com.google.gson.Gson;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -27,7 +28,7 @@ import java.util.UUID;
 @EventBusSubscriber(modid = Mod.MODID)
 public class GunsTool {
 
-    public static HashMap<String, HashMap<String, Double>> gunsData = new HashMap<>();
+    public static HashMap<String, DefaultGunData> gunsData = new HashMap<>();
 
     /**
      * 初始化数据，从data中读取数据json文件
@@ -37,18 +38,11 @@ public class GunsTool {
             var id = entry.getKey();
             var attribute = entry.getValue();
             try {
-                JsonReader reader = new JsonReader(new InputStreamReader(attribute.open()));
-
-                reader.beginObject();
-                var map = new HashMap<String, Double>();
-                while (reader.hasNext()) {
-                    map.put(reader.nextName(), reader.nextDouble());
-                }
+                Gson gson = new Gson();
+                var data = gson.fromJson(new InputStreamReader(attribute.open()), DefaultGunData.class);
                 var path = id.getPath();
-                gunsData.put(path.substring(5, path.length() - 5), map);
 
-                reader.endObject();
-                reader.close();
+                gunsData.put(path.substring(5, path.length() - 5), data);
             } catch (Exception e) {
                 Mod.LOGGER.error(e.getMessage());
             }
@@ -58,7 +52,7 @@ public class GunsTool {
     @SubscribeEvent
     public static void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
-            PacketDistributor.sendToPlayer(player, new GunsDataMessage(GunsTool.gunsData));
+            PacketDistributor.sendToPlayer(player, GunsDataMessage.create());
         }
     }
 
@@ -71,7 +65,7 @@ public class GunsTool {
     public static void datapackSync(OnDatapackSyncEvent event) {
         initJsonData(event.getPlayerList().getServer().getResourceManager());
 
-        event.getRelevantPlayers().forEach(player -> PacketDistributor.sendToPlayer(player, new GunsDataMessage(GunsTool.gunsData)));
+        event.getRelevantPlayers().forEach(player -> PacketDistributor.sendToPlayer(player, GunsDataMessage.create()));
     }
 
     public static void reload(Player player, ItemStack stack, GunData gunData, AmmoType type) {
@@ -129,11 +123,6 @@ public class GunsTool {
     }
 
 
-    /* GunData */
-    public static CompoundTag getGunData(final CompoundTag tag) {
-        return tag.getCompound("GunData");
-    }
-
     public static void setGunIntTag(final CompoundTag tag, String name, int num) {
         var data = tag.getCompound("GunData");
         data.putInt(name, num);
@@ -150,12 +139,6 @@ public class GunsTool {
         return data.getInt(name);
     }
 
-    public static void setGunDoubleTag(final CompoundTag tag, String name, double num) {
-        var data = tag.getCompound("GunData");
-        data.putDouble(name, num);
-        tag.put("GunData", data);
-    }
-
     public static double getGunDoubleTag(final CompoundTag tag, String name) {
         return getGunDoubleTag(tag, name, 0);
     }
@@ -165,19 +148,6 @@ public class GunsTool {
         if (!data.contains(name)) return defaultValue;
         return data.getDouble(name);
     }
-
-    public static void setGunBooleanTag(final CompoundTag tag, String name, boolean flag) {
-        var data = tag.getCompound("GunData");
-        data.putBoolean(name, flag);
-        tag.put("GunData", data);
-    }
-
-    public static boolean getGunBooleanTag(final CompoundTag tag, String name) {
-        var data = tag.getCompound("GunData");
-        if (!data.contains(name)) return false;
-        return data.getBoolean(name);
-    }
-
     @Nullable
     public static UUID getGunUUID(final CompoundTag tag) {
         if (!tag.contains("GunData")) return null;
