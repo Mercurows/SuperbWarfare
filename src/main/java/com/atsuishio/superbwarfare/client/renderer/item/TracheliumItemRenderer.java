@@ -4,7 +4,7 @@ import com.atsuishio.superbwarfare.client.AnimationHelper;
 import com.atsuishio.superbwarfare.client.ItemModelHelper;
 import com.atsuishio.superbwarfare.client.model.item.TracheliumItemModel;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
-import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.item.gun.data.value.AttachmentType;
 import com.atsuishio.superbwarfare.item.gun.handgun.Trachelium;
@@ -82,7 +82,7 @@ public class TracheliumItemRenderer extends GeoItemRenderer<Trachelium> {
         var player = mc.player;
         if (player == null) return;
         ItemStack itemStack = player.getMainHandItem();
-        if (!itemStack.is(ModTags.Items.GUN)) return;
+        if (!(itemStack.getItem() instanceof GunItem)) return;
         var data = GunData.from(itemStack);
 
         if (name.equals("humu")) {

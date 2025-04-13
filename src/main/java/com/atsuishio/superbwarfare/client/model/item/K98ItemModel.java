@@ -3,7 +3,7 @@ package com.atsuishio.superbwarfare.client.model.item;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
-import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.item.gun.sniper.K98Item;
 import net.minecraft.client.Minecraft;
@@ -41,7 +41,7 @@ public class K98ItemModel extends GeoModel<K98Item> {
         Player player = Minecraft.getInstance().player;
         if (player == null) return;
         ItemStack stack = player.getMainHandItem();
-        if (!stack.is(ModTags.Items.GUN)) return;
+        if (!(stack.getItem() instanceof GunItem)) return;
 
         var data = GunData.from(stack);
         if (data.reload.prepareTimer.get() > 11 && data.ammo.get() == 1) {

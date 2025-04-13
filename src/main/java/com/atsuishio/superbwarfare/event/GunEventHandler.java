@@ -80,7 +80,7 @@ public class GunEventHandler {
      */
     public static void playGunSounds(Player player) {
         ItemStack stack = player.getMainHandItem();
-        if (!stack.is(ModTags.Items.GUN)) return;
+        if (!(stack.getItem() instanceof GunItem)) return;
         var data = GunData.from(stack);
 
         if (!player.level().isClientSide) {
@@ -138,7 +138,7 @@ public class GunEventHandler {
 
     public static void playGunBoltSounds(Player player) {
         ItemStack stack = player.getMainHandItem();
-        if (!stack.is(ModTags.Items.GUN)) return;
+        if (!(stack.getItem() instanceof GunItem)) return;
         var data = GunData.from(stack);
 
         if (!player.level().isClientSide) {
@@ -356,7 +356,7 @@ public class GunEventHandler {
 
     public static void playGunEmptyReloadSounds(Player player) {
         ItemStack stack = player.getMainHandItem();
-        if (!stack.is(ModTags.Items.GUN)) return;
+        if (!(stack.getItem() instanceof GunItem)) return;
 
         if (!player.level().isClientSide) {
             String origin = stack.getItem().getDescriptionId();
@@ -371,7 +371,7 @@ public class GunEventHandler {
 
     public static void playGunNormalReloadSounds(Player player) {
         ItemStack stack = player.getMainHandItem();
-        if (!stack.is(ModTags.Items.GUN)) {
+        if (!(stack.getItem() instanceof GunItem)) {
             return;
         }
 
@@ -598,7 +598,7 @@ public class GunEventHandler {
 
     public static void playGunPrepareReloadSounds(Player player) {
         ItemStack stack = player.getMainHandItem();
-        if (!stack.is(ModTags.Items.GUN)) return;
+        if (!(stack.getItem() instanceof GunItem)) return;
 
         if (!player.level().isClientSide) {
             String origin = stack.getItem().getDescriptionId();
@@ -613,7 +613,7 @@ public class GunEventHandler {
 
     public static void playGunEmptyPrepareSounds(Player player) {
         ItemStack stack = player.getMainHandItem();
-        if (!stack.is(ModTags.Items.GUN)) return;
+        if (!(stack.getItem() instanceof GunItem)) return;
         var data = GunData.from(stack);
 
         if (!player.level().isClientSide) {
@@ -642,7 +642,7 @@ public class GunEventHandler {
 
     public static void playGunPrepareLoadReloadSounds(Player player) {
         ItemStack stack = player.getMainHandItem();
-        if (!stack.is(ModTags.Items.GUN)) return;
+        if (!(stack.getItem() instanceof GunItem)) return;
 
         if (!player.level().isClientSide) {
             String origin = stack.getItem().getDescriptionId();
@@ -670,7 +670,7 @@ public class GunEventHandler {
 
     public static void playGunLoopReloadSounds(Player player) {
         ItemStack stack = player.getMainHandItem();
-        if (!stack.is(ModTags.Items.GUN)) {
+        if (!(stack.getItem() instanceof GunItem)) {
             return;
         }
 
@@ -687,7 +687,7 @@ public class GunEventHandler {
 
     public static void playGunEndReloadSounds(Player player) {
         ItemStack stack = player.getMainHandItem();
-        if (!stack.is(ModTags.Items.GUN)) return;
+        if (!(stack.getItem() instanceof GunItem)) return;
 
         if (!player.level().isClientSide) {
             String origin = stack.getItem().getDescriptionId();

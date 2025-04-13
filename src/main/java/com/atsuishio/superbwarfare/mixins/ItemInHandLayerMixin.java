@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.mixins;
 
-import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.layers.ItemInHandLayer;
@@ -23,7 +23,7 @@ public class ItemInHandLayerMixin {
     private void renderArmWithItemHead(LivingEntity entity, ItemStack stack, ItemDisplayContext display, HumanoidArm arm, PoseStack poseStack, MultiBufferSource source, int light, CallbackInfo ci) {
         if (entity.getType() == EntityType.PLAYER && arm == HumanoidArm.LEFT) {
             ItemStack mainHand = entity.getMainHandItem();
-            if (!mainHand.is(ModTags.Items.GUN)) return;
+            if (!(mainHand.getItem() instanceof GunItem)) return;
 
             ci.cancel();
         }

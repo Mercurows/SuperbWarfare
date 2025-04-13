@@ -3,7 +3,7 @@ package com.atsuishio.superbwarfare.client.model.item;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
-import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.item.gun.shotgun.M870Item;
 import net.minecraft.client.Minecraft;
@@ -40,7 +40,7 @@ public class M870ItemModel extends GeoModel<M870Item> {
         Player player = Minecraft.getInstance().player;
         if (player == null) return;
         ItemStack stack = player.getMainHandItem();
-        if (!stack.is(ModTags.Items.GUN)) return;
+        if (!(stack.getItem() instanceof GunItem)) return;
 
         float times = 0.6f * (float) Math.min(Minecraft.getInstance().getTimer().getRealtimeDeltaTicks(), 0.8);
         double zt = ClientEventHandler.zoomTime;

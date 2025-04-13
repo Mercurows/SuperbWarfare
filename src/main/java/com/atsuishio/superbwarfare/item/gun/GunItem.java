@@ -60,7 +60,7 @@ public abstract class GunItem extends Item implements CustomRendererItem {
     @ParametersAreNonnullByDefault
     public void inventoryTick(ItemStack stack, Level level, Entity entity, int slot, boolean selected) {
         if (!(entity instanceof LivingEntity)
-                || !stack.is(ModTags.Items.GUN)
+                || !(stack.getItem() instanceof GunItem)
                 || !(stack.getItem() instanceof GunItem gunItem)
         ) return;
 

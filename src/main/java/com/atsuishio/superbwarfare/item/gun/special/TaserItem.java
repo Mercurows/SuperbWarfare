@@ -8,7 +8,6 @@ import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.init.ModSounds;
-import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.EnergyStorageItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.SpecialFireWeapon;
@@ -90,7 +89,7 @@ public class TaserItem extends GunItem implements GeoItem, SpecialFireWeapon, En
         LocalPlayer player = Minecraft.getInstance().player;
         if (player == null) return PlayState.STOP;
         ItemStack stack = player.getMainHandItem();
-        if (!stack.is(ModTags.Items.GUN)) return PlayState.STOP;
+        if (!(stack.getItem() instanceof GunItem)) return PlayState.STOP;
 
         if (GunData.from(stack).reload.empty()) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.taser.reload"));

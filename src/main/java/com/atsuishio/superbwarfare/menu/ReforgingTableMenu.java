@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.menu;
 
 import com.atsuishio.superbwarfare.init.ModBlocks;
 import com.atsuishio.superbwarfare.init.ModMenuTypes;
-import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.PerkItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
@@ -111,7 +110,7 @@ public class ReforgingTableMenu extends AbstractContainerMenu {
                     return ItemStack.EMPTY;
                 }
             } else {
-                if (stack.is(ModTags.Items.GUN)) {
+                if (stack.getItem() instanceof GunItem) {
                     if (!this.moveItemStackTo(stack, INPUT_SLOT, INPUT_SLOT + 1, false)) {
                         return ItemStack.EMPTY;
                     }

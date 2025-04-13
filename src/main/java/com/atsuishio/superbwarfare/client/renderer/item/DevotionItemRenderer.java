@@ -3,9 +3,8 @@ package com.atsuishio.superbwarfare.client.renderer.item;
 import com.atsuishio.superbwarfare.client.AnimationHelper;
 import com.atsuishio.superbwarfare.client.model.item.DevotionItemModel;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
-import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.machinegun.DevotionItem;
-import com.atsuishio.superbwarfare.tools.NBTTool;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
@@ -77,7 +76,7 @@ public class DevotionItemRenderer extends GeoItemRenderer<DevotionItem> {
         var player = mc.player;
         if (player == null) return;
         ItemStack itemStack = player.getMainHandItem();
-        if (!itemStack.is(ModTags.Items.GUN)) return;
+        if (!(itemStack.getItem() instanceof GunItem)) return;
 
         if (name.equals("flare")) {
             if (ClientEventHandler.firePosTimer == 0 || ClientEventHandler.firePosTimer > 0.5) {

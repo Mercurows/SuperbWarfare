@@ -4,7 +4,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.PrismTankEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.SpeedboatEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.CannonEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
-import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.Camera;
@@ -33,7 +33,7 @@ public class GameRendererMixin {
         Player player = mc.player;
         if (player != null) {
             ItemStack stack = player.getMainHandItem();
-            if (stack.is(ModTags.Items.GUN) && Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON) {
+            if (stack.getItem() instanceof GunItem && Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON) {
                 ci.cancel();
             }
         }

@@ -6,7 +6,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.*;
 import com.atsuishio.superbwarfare.entity.vehicle.base.CannonEntity;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModMobEffects;
-import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.tools.NBTTool;
 import net.minecraft.client.CameraType;
@@ -162,7 +162,7 @@ public class ClientMouseHandler {
             return 0.33 / (1 + 0.08 * (droneFovLerp - 1));
         }
 
-        if (!stack.is(ModTags.Items.GUN)) {
+        if (!(stack.getItem() instanceof GunItem)) {
             return original;
         }
 

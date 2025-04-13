@@ -5,7 +5,6 @@ import com.atsuishio.superbwarfare.client.renderer.item.Mk14ItemRenderer;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModAttachments;
 import com.atsuishio.superbwarfare.init.ModSounds;
-import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.item.gun.data.value.AttachmentType;
@@ -54,7 +53,7 @@ public class Mk14Item extends GunItem implements GeoItem {
         LocalPlayer player = Minecraft.getInstance().player;
         if (player == null) return PlayState.STOP;
         ItemStack stack = player.getMainHandItem();
-        if (!stack.is(ModTags.Items.GUN)) return PlayState.STOP;
+        if (!(stack.getItem() instanceof GunItem)) return PlayState.STOP;
         var data = GunData.from(stack);
 
         boolean drum = data.attachment.get(AttachmentType.MAGAZINE) == 2;
@@ -115,7 +114,7 @@ public class Mk14Item extends GunItem implements GeoItem {
         LocalPlayer player = Minecraft.getInstance().player;
         if (player == null) return PlayState.STOP;
         ItemStack stack = player.getMainHandItem();
-        if (!stack.is(ModTags.Items.GUN)) return PlayState.STOP;
+        if (!(stack.getItem() instanceof GunItem)) return PlayState.STOP;
 
         if (player.getData(ModAttachments.PLAYER_VARIABLE).edit) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m14.edit"));

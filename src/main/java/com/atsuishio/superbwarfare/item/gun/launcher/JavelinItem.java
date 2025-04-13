@@ -7,7 +7,10 @@ import com.atsuishio.superbwarfare.entity.projectile.DecoyEntity;
 import com.atsuishio.superbwarfare.entity.projectile.JavelinMissileEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
-import com.atsuishio.superbwarfare.init.*;
+import com.atsuishio.superbwarfare.init.ModEnumExtensions;
+import com.atsuishio.superbwarfare.init.ModItems;
+import com.atsuishio.superbwarfare.init.ModPerks;
+import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.SpecialFireWeapon;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
@@ -75,7 +78,7 @@ public class JavelinItem extends GunItem implements GeoItem, SpecialFireWeapon {
         LocalPlayer player = Minecraft.getInstance().player;
         if (player == null) return PlayState.STOP;
         ItemStack stack = player.getMainHandItem();
-        if (!stack.is(ModTags.Items.GUN)) return PlayState.STOP;
+        if (!(stack.getItem() instanceof GunItem)) return PlayState.STOP;
 
         if (GunData.from(stack).reload.empty()) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.javelin.reload"));
@@ -241,7 +244,7 @@ public class JavelinItem extends GunItem implements GeoItem, SpecialFireWeapon {
     private void fire(Player player) {
         Level level = player.level();
         ItemStack stack = player.getMainHandItem();
-        if (!stack.is(ModTags.Items.GUN)) return;
+        if (!(stack.getItem() instanceof GunItem)) return;
         var data = GunData.from(stack);
         CompoundTag tag = data.tag();
 

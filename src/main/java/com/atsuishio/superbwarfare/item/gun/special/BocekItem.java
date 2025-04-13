@@ -7,7 +7,6 @@ import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.init.ModSounds;
-import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.SpecialFireWeapon;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
@@ -63,7 +62,7 @@ public class BocekItem extends GunItem implements GeoItem, SpecialFireWeapon {
         LocalPlayer player = Minecraft.getInstance().player;
         if (player == null) return PlayState.STOP;
         ItemStack stack = player.getMainHandItem();
-        if (!stack.is(ModTags.Items.GUN)) return PlayState.STOP;
+        if (!(stack.getItem() instanceof GunItem)) return PlayState.STOP;
 
         if (player.isSprinting() && player.onGround() && ClientEventHandler.cantSprint == 0 && ClientEventHandler.drawTime < 0.01) {
             if (ClientEventHandler.tacticalSprint) {
@@ -179,13 +178,13 @@ public class BocekItem extends GunItem implements GeoItem, SpecialFireWeapon {
 
         if (power * 12 >= 6) {
             if (zoom) {
-                spawnBullet(player, tag, power, true);
+                spawnBullet(player, power, true);
 
                 SoundTool.playLocalSound(player, ModSounds.BOCEK_ZOOM_FIRE_1P.get(), 10, 1);
                 player.playSound(ModSounds.BOCEK_ZOOM_FIRE_3P.get(), 2, 1);
             } else {
                 for (int i = 0; i < (perk instanceof AmmoPerk ammoPerk && ammoPerk.slug ? 1 : 10); i++) {
-                    spawnBullet(player, tag, power, false);
+                    spawnBullet(player, power, false);
                 }
 
                 SoundTool.playLocalSound(player, ModSounds.BOCEK_SHATTER_CAP_FIRE_1P.get(), 10, 1);

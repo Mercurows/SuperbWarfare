@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.network.message.send;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.chat.Component;
@@ -25,7 +25,7 @@ public record SensitivityMessage(boolean isAdd) implements CustomPacketPayload {
         var player = context.player();
 
         ItemStack stack = player.getMainHandItem();
-        if (!stack.is(ModTags.Items.GUN)) return;
+        if (!(stack.getItem() instanceof GunItem)) return;
 
         var data = GunData.from(stack);
         final var tag = data.tag();

@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.item.gun;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -12,7 +11,7 @@ public class GunEvents {
     @SubscribeEvent
     public static void onPickup(ItemEntityPickupEvent.Pre event) {
         var stack = event.getItemEntity().getItem();
-        if (stack.is(ModTags.Items.GUN)) {
+        if (stack.getItem() instanceof GunItem) {
             var data = GunData.from(stack);
             data.draw.set(true);
             data.save();

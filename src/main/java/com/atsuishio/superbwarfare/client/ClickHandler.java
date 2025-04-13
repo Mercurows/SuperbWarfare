@@ -93,7 +93,7 @@ public class ClickHandler {
 
         int button = event.getButton();
 
-        if (stack.is(ModTags.Items.GUN) || stack.is(ModItems.MONITOR.get()) || stack.is(ModItems.LUNGE_MINE.get()) || player.hasEffect(ModMobEffects.SHOCK)
+        if (stack.getItem() instanceof GunItem || stack.is(ModItems.MONITOR.get()) || stack.is(ModItems.LUNGE_MINE.get()) || player.hasEffect(ModMobEffects.SHOCK)
                 || (player.getVehicle() instanceof ArmedVehicleEntity iArmedVehicle && iArmedVehicle.banHand(player))) {
             if (button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
                 event.setCanceled(true);
@@ -103,7 +103,7 @@ public class ClickHandler {
         if (player.hasEffect(ModMobEffects.SHOCK)) return;
 
         if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
-            if (stack.is(ModTags.Items.GUN)
+            if (stack.getItem() instanceof GunItem
                     || (player.getVehicle() instanceof ArmedVehicleEntity iArmedVehicle && iArmedVehicle.isDriver(player) && stack.get(DataComponents.FOOD) != null)) {
                 event.setCanceled(true);
             }
@@ -115,7 +115,7 @@ public class ClickHandler {
             }
         }
 
-        if (stack.is(ModTags.Items.GUN)
+        if (stack.getItem() instanceof GunItem
                 || stack.is(ModItems.MONITOR.get())
                 || stack.is(ModItems.LUNGE_MINE.get())
                 || (player.getVehicle() instanceof ArmedVehicleEntity)
@@ -164,7 +164,7 @@ public class ClickHandler {
 
         var tag = NBTTool.getTag(stack);
 
-        if (stack.is(ModTags.Items.GUN) && ClientEventHandler.zoom) {
+        if (stack.getItem() instanceof GunItem && ClientEventHandler.zoom) {
             var data = GunData.from(stack);
             if (data.canSwitchScope()) {
                 PacketDistributor.sendToServer(new SwitchScopeMessage(scroll));

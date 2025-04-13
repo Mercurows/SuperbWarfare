@@ -3,7 +3,7 @@ package com.atsuishio.superbwarfare.client.renderer.item;
 import com.atsuishio.superbwarfare.client.AnimationHelper;
 import com.atsuishio.superbwarfare.client.model.item.RpgItemModel;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
-import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.item.gun.launcher.RpgItem;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -75,7 +75,7 @@ public class RpgItemRenderer extends GeoItemRenderer<RpgItem> {
         var player = mc.player;
         if (player == null) return;
         ItemStack itemStack = player.getMainHandItem();
-        if (!itemStack.is(ModTags.Items.GUN)) return;
+        if (!(itemStack.getItem() instanceof GunItem)) return;
 
         if (name.equals("Rockets")) {
             bone.setHidden(GunData.from(itemStack).isEmpty.get());

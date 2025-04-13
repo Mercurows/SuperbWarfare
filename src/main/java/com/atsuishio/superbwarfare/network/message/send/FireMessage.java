@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.event.GunEventHandler;
 import com.atsuishio.superbwarfare.init.ModAttachments;
 import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.SpecialFireWeapon;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.item.gun.special.BocekItem;
@@ -13,7 +14,6 @@ import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.Holder;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -47,7 +47,7 @@ public record FireMessage(int msgType, double power, boolean zoom) implements Cu
     public static void pressAction(Player player, int type, double power, boolean zoom) {
         if (player.isSpectator()) return;
         ItemStack stack = player.getMainHandItem();
-        if (!stack.is(ModTags.Items.GUN)) return;
+        if (!(stack.getItem() instanceof GunItem)) return;
         var data = GunData.from(stack);
 
         handleGunBolt(player, stack);
@@ -79,7 +79,7 @@ public record FireMessage(int msgType, double power, boolean zoom) implements Cu
     }
 
     private static void handleGunBolt(Player player, ItemStack stack) {
-        if (!stack.is(ModTags.Items.GUN)) return;
+        if (!(stack.getItem() instanceof GunItem)) return;
         var data = GunData.from(stack);
 
         if (data.defaultActionTime() > 0
@@ -110,10 +110,10 @@ public record FireMessage(int msgType, double power, boolean zoom) implements Cu
         return 1;
     }
 
-    public static void spawnBullet(Player player, final CompoundTag tag, double power, boolean zoom) {
+    public static void spawnBullet(Player player, double power, boolean zoom) {
         ItemStack stack = player.getMainHandItem();
         if (player.level().isClientSide()) return;
-        if (!stack.is(ModTags.Items.GUN)) return;
+        if (!(stack.getItem() instanceof GunItem)) return;
         var data = GunData.from(stack);
 
         var perk = data.perk.get(Perk.Type.AMMO);

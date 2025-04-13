@@ -5,7 +5,10 @@ import com.atsuishio.superbwarfare.client.renderer.item.SecondaryCataclysmRender
 import com.atsuishio.superbwarfare.client.tooltip.component.SecondaryCataclysmImageComponent;
 import com.atsuishio.superbwarfare.entity.projectile.GunGrenadeEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
-import com.atsuishio.superbwarfare.init.*;
+import com.atsuishio.superbwarfare.init.ModEnumExtensions;
+import com.atsuishio.superbwarfare.init.ModItems;
+import com.atsuishio.superbwarfare.init.ModPerks;
+import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.EnergyStorageItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.SpecialFireWeapon;
@@ -85,7 +88,7 @@ public class SecondaryCataclysm extends GunItem implements GeoItem, SpecialFireW
         LocalPlayer player = Minecraft.getInstance().player;
         if (player == null) return PlayState.STOP;
         ItemStack stack = player.getMainHandItem();
-        if (!stack.is(ModTags.Items.GUN)) return PlayState.STOP;
+        if (!(stack.getItem() instanceof GunItem)) return PlayState.STOP;
         var data = GunData.from(stack);
 
         if (data.reload.stage() == 1 && data.reload.prepareLoadTimer.get() > 0) {
@@ -115,7 +118,7 @@ public class SecondaryCataclysm extends GunItem implements GeoItem, SpecialFireW
         LocalPlayer player = Minecraft.getInstance().player;
         if (player == null) return PlayState.STOP;
         ItemStack stack = player.getMainHandItem();
-        if (!stack.is(ModTags.Items.GUN)) return PlayState.STOP;
+        if (!(stack.getItem() instanceof GunItem)) return PlayState.STOP;
         var data = GunData.from(stack);
 
         if (player.isSprinting() && player.onGround()

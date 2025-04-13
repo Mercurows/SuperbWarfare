@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.network.message.send;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.event.GunEventHandler;
 import com.atsuishio.superbwarfare.init.*;
+import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
@@ -40,7 +41,7 @@ public record ShootMessage(double spread, boolean zoom) implements CustomPacketP
 
     public static void pressAction(Player player, double spared, boolean zoom) {
         ItemStack stack = player.getMainHandItem();
-        if (!stack.is(ModTags.Items.GUN)) return;
+        if (!(stack.getItem() instanceof GunItem)) return;
         var data = GunData.from(stack);
         var tag = data.tag();
 

@@ -317,7 +317,7 @@ public class ClientEventHandler {
 
         float sprintCost;
 
-        if (stack.is(ModTags.Items.GUN)) {
+        if (stack.getItem() instanceof GunItem) {
             var data = GunData.from(stack);
             sprintCost = (float) (0.5 + 0.02 * data.weight());
         } else {
@@ -492,7 +492,7 @@ public class ClientEventHandler {
         }
 
         ItemStack stack = player.getMainHandItem();
-        if (!stack.is(ModTags.Items.GUN)) {
+        if (!(stack.getItem() instanceof GunItem)) {
             clientTimer.stop();
             fireSpread = 0;
             gunSpread = 0;
@@ -657,7 +657,7 @@ public class ClientEventHandler {
 
     public static void shootClient(Player player, final CompoundTag tag) {
         ItemStack stack = player.getMainHandItem();
-        if (!stack.is(ModTags.Items.GUN)) return;
+        if (!(stack.getItem() instanceof GunItem)) return;
         var data = GunData.from(stack);
         if (stack.is(ModTags.Items.NORMAL_GUN)) {
             if (data.ammo.get() > 0) {
@@ -733,7 +733,7 @@ public class ClientEventHandler {
         Player player = Minecraft.getInstance().player;
         if (player == null) return;
         ItemStack stack = player.getMainHandItem();
-        if (!stack.is(ModTags.Items.GUN)) return;
+        if (!(stack.getItem() instanceof GunItem)) return;
         var data = GunData.from(stack);
 
         PacketDistributor.sendToServer(new ShootMessage(gunSpread, zoom));
@@ -1016,7 +1016,7 @@ public class ClientEventHandler {
             return;
         }
 
-        if (level != null && stack.is(ModTags.Items.GUN)) {
+        if (level != null && stack.getItem() instanceof GunItem) {
             handleWeaponSway(living);
             handleWeaponMove(living);
             handleWeaponZoom(living);
@@ -1051,11 +1051,11 @@ public class ClientEventHandler {
         ItemStack rightHandItem = player.getItemInHand(rightHand);
         final var tag = NBTTool.getTag(rightHandItem);
 
-        if (event.getHand() == leftHand && rightHandItem.is(ModTags.Items.GUN)) {
+        if (event.getHand() == leftHand && rightHandItem.getItem() instanceof GunItem) {
             event.setCanceled(true);
         }
 
-        if (event.getHand() == rightHand && rightHandItem.is(ModTags.Items.GUN) && drawTime > 0.15) {
+        if (event.getHand() == rightHand && rightHandItem.getItem() instanceof GunItem && drawTime > 0.15) {
             event.setCanceled(true);
         }
 
@@ -1480,7 +1480,7 @@ public class ClientEventHandler {
             return;
         }
 
-        if (stack.is(ModTags.Items.GUN)) {
+        if (stack.getItem() instanceof GunItem) {
             if (!event.usedConfiguredFov()) {
                 return;
             }

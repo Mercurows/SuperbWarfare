@@ -3,7 +3,7 @@ package com.atsuishio.superbwarfare.network.message.send;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
 import com.atsuishio.superbwarfare.init.ModItems;
-import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.tools.EntityFindUtil;
 import com.atsuishio.superbwarfare.tools.NBTTool;
 import com.atsuishio.superbwarfare.tools.TraceTool;
@@ -43,7 +43,7 @@ public record InteractMessage(int msgType) implements CustomPacketPayload {
 
         ItemStack stack = player.getMainHandItem();
         var tag = NBTTool.getTag(stack);
-        if (stack.is(ModTags.Items.GUN)) {
+        if (stack.getItem() instanceof GunItem) {
             double blockRange = player.blockInteractionRange();
             double entityRange = player.blockInteractionRange();
 
