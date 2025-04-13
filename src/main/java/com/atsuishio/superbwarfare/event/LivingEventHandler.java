@@ -135,12 +135,13 @@ public class LivingEventHandler {
 
         ItemStack stack = sourceEntity instanceof LivingEntity living ? living.getMainHandItem() : ItemStack.EMPTY;
 
-        final var tag = NBTTool.getTag(stack);
+        if (!stack.is(ModTags.Items.GUN)) return;
+        var data = GunData.from(stack);
+        var tag = data.tag();
 
         // 距离衰减
         if (DamageTypeTool.isGunDamage(source) && stack.getItem() instanceof GunItem) {
             double distance = entity.position().distanceTo(sourceEntity.position());
-            var data = GunData.from(stack);
 
             if (stack.is(ModTags.Items.USE_SHOTGUN_AMMO)) {
                 var perk = data.perk.get(Perk.Type.AMMO);
