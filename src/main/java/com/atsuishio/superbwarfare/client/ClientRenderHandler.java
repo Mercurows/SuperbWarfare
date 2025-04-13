@@ -39,16 +39,16 @@ public class ClientRenderHandler {
 
     @SubscribeEvent
     public static void registerOverlays(RegisterGuiLayersEvent event) {
-        event.registerBelowAll(JavelinHudOverlay.ID, new JavelinHudOverlay());
-        event.registerBelow(JavelinHudOverlay.ID, VehicleHudOverlay.ID, new VehicleHudOverlay());
-        event.registerBelowAll(StaminaOverlay.ID, new StaminaOverlay());
         event.registerBelowAll(KillMessageOverlay.ID, new KillMessageOverlay());
+        event.registerBelow(KillMessageOverlay.ID, JavelinHudOverlay.ID, new JavelinHudOverlay());
+        event.registerBelow(JavelinHudOverlay.ID, ArmorPlateOverlay.ID, new ArmorPlateOverlay());
+        event.registerBelow(ArmorPlateOverlay.ID, VehicleHudOverlay.ID, new VehicleHudOverlay());
+        event.registerBelow(VehicleHudOverlay.ID, VehicleMgHudOverlay.ID, new VehicleMgHudOverlay());
+        event.registerBelowAll(StaminaOverlay.ID, new StaminaOverlay());
         event.registerBelowAll(VehicleTeamOverlay.ID, new VehicleTeamOverlay());
-        event.registerBelowAll(VehicleMgHudOverlay.ID, new VehicleMgHudOverlay());
         event.registerBelowAll(Yx100SwarmDroneHudOverlay.ID, new Yx100SwarmDroneHudOverlay());
         event.registerBelowAll(AmmoBarOverlay.ID, new AmmoBarOverlay());
         event.registerBelowAll(AmmoCountOverlay.ID, new AmmoCountOverlay());
-        event.registerBelowAll(ArmorPlateOverlay.ID, new ArmorPlateOverlay());
         event.registerBelowAll(ArmRendererFixOverlay.ID, new ArmRendererFixOverlay());
         event.registerBelowAll(CannonHudOverlay.ID, new CannonHudOverlay());
         event.registerBelowAll(CrossHairOverlay.ID, new CrossHairOverlay());
