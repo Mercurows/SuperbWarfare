@@ -58,7 +58,7 @@ public class M870Item extends GunItem implements GeoItem {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m870.shift"));
         }
 
-        if (data.reload.stage() == 1 && data.reload.iterativeLoadTimer.get() > 0) {
+        if (data.reload.stage() == 1 && data.reload.prepareLoadTimer.get() > 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m870.preparealt"));
         }
 
