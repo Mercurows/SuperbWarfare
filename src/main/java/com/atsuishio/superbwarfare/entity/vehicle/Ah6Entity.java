@@ -69,6 +69,7 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
     public int fireIndex;
     public int holdTick;
     public int holdPowerTick;
+    public float destroyRot;
 
     public Ah6Entity(EntityType<?> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
@@ -319,17 +320,16 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
                 }
             }
         } else {
-            this.entityData.set(POWER, Math.max(this.entityData.get(POWER) - 0.0001f, 0.01f));
-            float destroy = 0;
-            destroy += 9f;
+            this.entityData.set(POWER, Math.max(this.entityData.get(POWER) - 0.0003f, 0.01f));
+            destroyRot += 0.15f;
 
             diffX = 45 - this.getXRot();
             diffZ = -20 - this.getRoll();
 
             this.setXRot(this.getXRot() + diffX * 0.1f * this.entityData.get(PROPELLER_ROT));
-            this.setYRot(this.getYRot() + destroy);
+            this.setYRot(this.getYRot() + destroyRot);
             this.setZRot(this.getRoll() + diffZ * 0.1f * this.entityData.get(PROPELLER_ROT));
-            setDeltaMovement(getDeltaMovement().add(0, -0.06, 0));
+            setDeltaMovement(getDeltaMovement().add(0, -0.03, 0));
         }
 
         this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) * 0.9f);
@@ -441,21 +441,21 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
             float f = Mth.wrapDegrees(entity.getYRot() - getYRot());
             float g = Mth.clamp(f, -105.0f, 105.0f);
             entity.yRotO += g - f;
-            entity.setYRot(entity.getYRot() + g - f);
+            entity.setYRot(entity.getYRot() + g - f + 0.9f * destroyRot);
             entity.setYHeadRot(entity.getYRot());
             entity.setYBodyRot(getYRot());
         } else if (entity == getNthEntity(2)) {
             float f = Mth.wrapDegrees(entity.getYRot() - getYRot());
             float g = Mth.clamp(f, 10.0f, 170.0f);
             entity.yRotO += g - f;
-            entity.setYRot(entity.getYRot() + g - f);
+            entity.setYRot(entity.getYRot() + g - f + 0.9f * destroyRot);
             entity.setYHeadRot(entity.getYRot());
             entity.setYBodyRot(getYRot() + 90);
         } else if (entity == getNthEntity(3)) {
             float f = Mth.wrapDegrees(entity.getYRot() - getYRot());
             float g = Mth.clamp(f, -170.0f, -10.0f);
             entity.yRotO += g - f;
-            entity.setYRot(entity.getYRot() + g - f);
+            entity.setYRot(entity.getYRot() + g - f + 0.9f * destroyRot);
             entity.setYHeadRot(entity.getYRot());
             entity.setYBodyRot(getYRot() - 90);
         }
