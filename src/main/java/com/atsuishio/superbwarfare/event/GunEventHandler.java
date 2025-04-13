@@ -474,7 +474,7 @@ public class GunEventHandler {
 
         // 强制停止换弹，进入三阶段
         if (data.forceStop.get() && reload.stage() == 2 && reload.iterativeLoadTimer.get() > 0) {
-            data.forceStop.set(true);
+            data.stopped.set(true);
         }
 
         // 二阶段
