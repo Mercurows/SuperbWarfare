@@ -57,7 +57,6 @@ public class Aa12Item extends GunItem implements GeoItem {
         if (!stack.is(ModTags.Items.GUN)) return PlayState.STOP;
 
         if (this.animationProcedure.equals("empty")) {
-
             if (GunData.from(stack).reload.empty()) {
                 return event.setAndContinue(RawAnimation.begin().thenPlay("animation.aa12.reload_empty"));
             }

@@ -241,6 +241,7 @@ public class JavelinItem extends GunItem implements GeoItem, SpecialFireWeapon {
     private void fire(Player player) {
         Level level = player.level();
         ItemStack stack = player.getMainHandItem();
+        if (!stack.is(ModTags.Items.GUN)) return;
         var data = GunData.from(stack);
         CompoundTag tag = data.tag();
 

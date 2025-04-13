@@ -657,6 +657,7 @@ public class ClientEventHandler {
 
     public static void shootClient(Player player, final CompoundTag tag) {
         ItemStack stack = player.getMainHandItem();
+        if (!stack.is(ModTags.Items.GUN)) return;
         var data = GunData.from(stack);
         if (stack.is(ModTags.Items.NORMAL_GUN)) {
             if (data.ammo.get() > 0) {

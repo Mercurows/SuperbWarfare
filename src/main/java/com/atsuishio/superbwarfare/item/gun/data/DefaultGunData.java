@@ -34,7 +34,7 @@ public class DefaultGunData {
     public int fireMode;
     @SerializedName("BurstAmount")
     public int burstAmount;
-    @SerializedName("BypassArmor")
+    @SerializedName("BypassesArmor")
     public double bypassArmor;
 
     @SerializedName("NormalReloadTime")

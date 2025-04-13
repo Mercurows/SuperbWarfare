@@ -113,6 +113,7 @@ public record FireMessage(int msgType, double power, boolean zoom) implements Cu
     public static void spawnBullet(Player player, final CompoundTag tag, double power, boolean zoom) {
         ItemStack stack = player.getMainHandItem();
         if (player.level().isClientSide()) return;
+        if (!stack.is(ModTags.Items.GUN)) return;
         var data = GunData.from(stack);
 
         var perk = data.perk.get(Perk.Type.AMMO);
