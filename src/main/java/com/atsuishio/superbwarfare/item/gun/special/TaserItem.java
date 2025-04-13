@@ -257,7 +257,6 @@ public class TaserItem extends GunItem implements GeoItem, SpecialFireWeapon, En
         }
 
         data.ammo.set(data.ammo.get() - 1);
-        data.tag().putBoolean("shoot", true);
         energyStorage.extractEnergy(400 + 100 * perkLevel, false);
     }
 

@@ -60,9 +60,7 @@ public class GunEventHandler {
         var stack = data.stack();
 
         if (stack.is(ModTags.Items.NORMAL_GUN)) {
-            if (data.bolt.actionTimer.get() > 0) {
-                data.bolt.actionTimer.reduce();
-            }
+            data.bolt.actionTimer.reduce();
 
             if (stack.getItem() == ModItems.MARLIN.get() && data.bolt.actionTimer.get() == 9) {
                 data.isEmpty.set(false);

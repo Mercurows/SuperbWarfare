@@ -85,8 +85,7 @@ public record FireMessage(int msgType, double power, boolean zoom) implements Cu
         if (data.defaultActionTime() > 0
                 && data.ammo.get() > (stack.is(ModTags.Items.REVOLVER) ? -1 : 0)
                 && data.bolt.actionTimer.get() == 0
-                && !(data.reload.normal()
-                || data.reload.empty())
+                && !(data.reload.normal() || data.reload.empty())
                 && !data.reloading()
                 && !data.charging()
         ) {
