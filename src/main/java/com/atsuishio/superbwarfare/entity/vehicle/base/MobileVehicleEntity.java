@@ -264,14 +264,14 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
                     this.level().addFreshEntity(flareDecoyEntity);
                 }
                 this.level().playSound(null, this, ModSounds.DECOY_FIRE.get(), this.getSoundSource(), 1, 1);
-                if (this.getEntityData().get(DECOY_COUNT) == 3) {
+                if (this.getEntityData().get(DECOY_COUNT) == 4) {
                     decoyReloadCoolDown = 300;
                 }
                 this.getEntityData().set(DECOY_COUNT, this.getEntityData().get(DECOY_COUNT) - 1);
             }
             decoyInputDown = false;
         }
-        if (this.entityData.get(DECOY_COUNT) < 3 && decoyReloadCoolDown == 0 && this.level() instanceof ServerLevel) {
+        if (this.entityData.get(DECOY_COUNT) < 4 && decoyReloadCoolDown == 0 && this.level() instanceof ServerLevel) {
             this.entityData.set(DECOY_COUNT, this.entityData.get(DECOY_COUNT) + 1);
             this.level().playSound(null, this, ModSounds.DECOY_RELOAD.get(), this.getSoundSource(), 1, 1);
             decoyReloadCoolDown = 300;
