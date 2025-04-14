@@ -8,6 +8,7 @@ import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.tools.AmmoType;
 import com.atsuishio.superbwarfare.tools.GunsTool;
+import com.atsuishio.superbwarfare.tools.InventoryTool;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -304,6 +305,8 @@ public class GunData {
     }
 
     public int countAmmo(Player player) {
+        if (player.isCreative() || InventoryTool.hasCreativeAmmoBox(player)) return Integer.MAX_VALUE;
+
         var info = ammoTypeInfo();
         return switch (info.type()) {
             case PLAYER_AMMO -> {
@@ -327,6 +330,8 @@ public class GunData {
     }
 
     public void consumeAmmo(Player player, int count) {
+        if (player.isCreative() || InventoryTool.hasCreativeAmmoBox(player)) return;
+
         var info = ammoTypeInfo();
         switch (info.type()) {
             case PLAYER_AMMO -> {
