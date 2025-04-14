@@ -39,7 +39,7 @@ public class AmmoBarOverlay implements LayeredDraw.Layer {
     private static boolean hasCreativeAmmo() {
         Player player = Minecraft.getInstance().player;
         if (player == null) return false;
-        return InventoryTool.hasCreativeAmmoBox(player);
+        return player.isCreative() || InventoryTool.hasCreativeAmmoBox(player);
     }
 
     private static int getGunAmmoCount(Player player) {
