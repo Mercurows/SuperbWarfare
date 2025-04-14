@@ -9,21 +9,17 @@ import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
-import com.atsuishio.superbwarfare.item.gun.SpecialFireWeapon;
+import com.atsuishio.superbwarfare.item.gun.PressFireSpecialWeapon;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
-import com.atsuishio.superbwarfare.network.message.receive.ShootClientMessage;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
-import com.atsuishio.superbwarfare.tools.SoundTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
@@ -32,7 +28,6 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoItem;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
@@ -47,7 +42,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public class RpgItem extends GunItem implements GeoItem, SpecialFireWeapon {
+public class RpgItem extends GunItem implements GeoItem, PressFireSpecialWeapon {
 
     @Override
     public String getAmmoDisplayName(GunData data) {
@@ -179,16 +174,10 @@ public class RpgItem extends GunItem implements GeoItem, SpecialFireWeapon {
     }
 
     @Override
-    public void fireOnPress(Player player, final GunData data, boolean zoom) {
+    public void fireOnPress(Player player, final GunData data, double spread, boolean zoom) {
         Level level = player.level();
-        ItemStack stack = player.getMainHandItem();
 
-        if (data.reloading()
-                || player.getCooldowns().isOnCooldown(stack.getItem())
-                || data.ammo.get() <= 0
-        ) return;
-
-        double spread = data.spread();
+        if (data.reloading()) return;
 
         if (player.level() instanceof ServerLevel serverLevel) {
             RpgRocketEntity rocket = new RpgRocketEntity(player, level,
@@ -226,23 +215,9 @@ public class RpgItem extends GunItem implements GeoItem, SpecialFireWeapon {
                     player.getZ() + 1.8 * player.getLookAngle().z,
                     30, 0.4, 0.4, 0.4, 0.005, true);
 
-            var serverPlayer = (ServerPlayer) player;
-
-            SoundTool.playLocalSound(serverPlayer, ModSounds.RPG_FIRE_1P.get(), 2, 1);
-            serverPlayer.level().playSound(null, serverPlayer.getOnPos(), ModSounds.RPG_FIRE_3P.get(), SoundSource.PLAYERS, 2, 1);
-            serverPlayer.level().playSound(null, serverPlayer.getOnPos(), ModSounds.RPG_FAR.get(), SoundSource.PLAYERS, 5, 1);
-            serverPlayer.level().playSound(null, serverPlayer.getOnPos(), ModSounds.RPG_VERYFAR.get(), SoundSource.PLAYERS, 10, 1);
-
-            PacketDistributor.sendToPlayer(serverPlayer, new ShootClientMessage(10));
         }
-
-        if (data.ammo.get() == 1) {
-            data.isEmpty.set(true);
-            data.closeHammer.set(true);
-        }
-
-        player.getCooldowns().addCooldown(stack.getItem(), 10);
-        data.ammo.set(data.ammo.get() - 1);
+        data.isEmpty.set(true);
+        data.closeHammer.set(true);
     }
 
     @Override

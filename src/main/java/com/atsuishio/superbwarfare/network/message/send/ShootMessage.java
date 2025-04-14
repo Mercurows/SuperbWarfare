@@ -92,7 +92,7 @@ public record ShootMessage(double spread, boolean zoom) implements CustomPacketP
                     GunEventHandler.gunShoot(player, data, spared, zoom);
                 }
 
-                GunEventHandler.playGunSounds(player);
+                GunEventHandler.playGunSounds(player, zoom);
             }
         } else if (stack.is(ModItems.MINIGUN.get())) {
             var cap = player.getData(ModAttachments.PLAYER_VARIABLE).watch();

@@ -780,10 +780,19 @@ public class ClientEventHandler {
             var charged = cap != null && cap.getEnergyStored() > 0;
 
             if (charged) {
-                SoundEvent sound1p = BuiltInRegistries.SOUND_EVENT.get(Mod.loc("sentinel_charge_fire_1p"));
-                if (sound1p != null) {
-                    player.playSound(sound1p, 2f, (float) ((2 * org.joml.Math.random() - 1) * 0.05f + 1.0f));
-                }
+                SoundEvent sound1p = ModSounds.SENTINEL_CHARGE_FIRE_1P.get();
+                player.playSound(sound1p, 2f, (float) ((2 * org.joml.Math.random() - 1) * 0.05f + 1.0f));
+                return;
+            }
+        }
+
+        if (stack.getItem() == ModItems.SECONDARY_CATACLYSM.get()) {
+            var cap = stack.getCapability(Capabilities.EnergyStorage.ITEM);
+            var charged = cap != null && cap.getEnergyStored() > 3000;
+
+            if (charged && zoom) {
+                SoundEvent sound1p = ModSounds.SECONDARY_CATACLYSM_FIRE_1P_CHARGE.get();
+                player.playSound(sound1p, 2f, (float) ((2 * org.joml.Math.random() - 1) * 0.05f + 1.0f));
                 return;
             }
         }

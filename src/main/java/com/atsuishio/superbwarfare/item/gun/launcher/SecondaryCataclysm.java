@@ -8,24 +8,19 @@ import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModEnumExtensions;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModPerks;
-import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.EnergyStorageItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
-import com.atsuishio.superbwarfare.item.gun.SpecialFireWeapon;
+import com.atsuishio.superbwarfare.item.gun.PressFireSpecialWeapon;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
-import com.atsuishio.superbwarfare.network.message.receive.ShootClientMessage;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
 import com.atsuishio.superbwarfare.tools.InventoryTool;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
-import com.atsuishio.superbwarfare.tools.SoundTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -38,7 +33,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoItem;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
@@ -51,7 +45,7 @@ import java.util.ArrayList;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-public class SecondaryCataclysm extends GunItem implements GeoItem, SpecialFireWeapon, EnergyStorageItem {
+public class SecondaryCataclysm extends GunItem implements GeoItem, PressFireSpecialWeapon, EnergyStorageItem {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     public static ItemDisplayContext transformType;
 
@@ -264,12 +258,10 @@ public class SecondaryCataclysm extends GunItem implements GeoItem, SpecialFireW
     }
 
     @Override
-    public void fireOnPress(Player player, final GunData data, boolean zoom) {
+    public void fireOnPress(Player player, final GunData data, double spread, boolean zoom) {
         if (data.reloading()) return;
         ItemStack stack = data.stack();
         if (player.getCooldowns().isOnCooldown(stack.getItem()) || data.ammo.get() <= 0) return;
-
-        double spread = data.spread();
 
         var stackCap = stack.getCapability(Capabilities.EnergyStorage.ITEM);
         var hasEnoughEnergy = stackCap != null && stackCap.getEnergyStored() >= 3000;
@@ -310,31 +302,13 @@ public class SecondaryCataclysm extends GunItem implements GeoItem, SpecialFireW
                     player.getZ() + 1.8 * player.getLookAngle().z,
                     4, 0.1, 0.1, 0.1, 0.002, true);
 
-
-            var serverPlayer = (ServerPlayer) player;
-
             if (isChargedFire) {
-                SoundTool.playLocalSound(serverPlayer, ModSounds.SECONDARY_CATACLYSM_FIRE_1P_CHARGE.get(), 1, 1);
-                serverPlayer.level().playSound(null, serverPlayer.getOnPos(), ModSounds.SECONDARY_CATACLYSM_FIRE_3P_CHARGE.get(), SoundSource.PLAYERS, 3, 1);
-                serverPlayer.level().playSound(null, serverPlayer.getOnPos(), ModSounds.SECONDARY_CATACLYSM_FAR_CHARGE.get(), SoundSource.PLAYERS, 5, 1);
-                serverPlayer.level().playSound(null, serverPlayer.getOnPos(), ModSounds.SECONDARY_CATACLYSM_VERYFAR_CHARGE.get(), SoundSource.PLAYERS, 10, 1);
-
                 var itemCap = stack.getCapability(Capabilities.EnergyStorage.ITEM);
                 if (itemCap != null) {
                     itemCap.extractEnergy(3000, false);
                 }
-            } else {
-                SoundTool.playLocalSound(serverPlayer, ModSounds.SECONDARY_CATACLYSM_FIRE_1P.get(), 1, 1);
-                serverPlayer.level().playSound(null, serverPlayer.getOnPos(), ModSounds.SECONDARY_CATACLYSM_FIRE_3P.get(), SoundSource.PLAYERS, 3, 1);
-                serverPlayer.level().playSound(null, serverPlayer.getOnPos(), ModSounds.SECONDARY_CATACLYSM_FAR.get(), SoundSource.PLAYERS, 5, 1);
-                serverPlayer.level().playSound(null, serverPlayer.getOnPos(), ModSounds.SECONDARY_CATACLYSM_VERYFAR.get(), SoundSource.PLAYERS, 10, 1);
             }
-
-            PacketDistributor.sendToPlayer(serverPlayer, new ShootClientMessage(10));
         }
-
-        data.ammo.set(data.ammo.get() - 1);
-        player.getCooldowns().addCooldown(stack.getItem(), 6);
     }
 
     @Override

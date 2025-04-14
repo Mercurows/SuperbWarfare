@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity;
 import com.atsuishio.superbwarfare.event.events.ReloadEvent;
 import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
+import com.atsuishio.superbwarfare.item.gun.PressFireSpecialWeapon;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.item.gun.data.value.AttachmentType;
 import com.atsuishio.superbwarfare.item.gun.data.value.ReloadState;
@@ -80,7 +81,7 @@ public class GunEventHandler {
     /**
      * 根据武器的注册名来寻找音效并播放
      */
-    public static void playGunSounds(Player player) {
+    public static void playGunSounds(Player player, boolean zoom) {
         ItemStack stack = player.getMainHandItem();
         if (!(stack.getItem() instanceof GunItem)) return;
         var data = GunData.from(stack);
@@ -95,20 +96,24 @@ public class GunEventHandler {
                 if (cap != null && cap.getEnergyStored() > 0) {
                     float soundRadius = (float) data.soundRadius();
 
-                    SoundEvent sound3p = BuiltInRegistries.SOUND_EVENT.get(Mod.loc("sentinel_charge_fire_3p"));
-                    if (sound3p != null) {
-                        player.playSound(sound3p, soundRadius * 0.4f, 1f);
-                    }
+                    player.playSound(ModSounds.SENTINEL_CHARGE_FAR.get(), soundRadius * 0.7f, 1f);
+                    player.playSound(ModSounds.SENTINEL_CHARGE_FIRE_3P.get(), soundRadius * 0.4f, 1f);
+                    player.playSound(ModSounds.SENTINEL_CHARGE_VERYFAR.get(), soundRadius, 1f);
 
-                    SoundEvent soundFar = BuiltInRegistries.SOUND_EVENT.get(Mod.loc("sentinel_charge_far"));
-                    if (soundFar != null) {
-                        player.playSound(soundFar, soundRadius * 0.7f, 1f);
-                    }
+                    return;
+                }
+            }
 
-                    SoundEvent soundVeryFar = BuiltInRegistries.SOUND_EVENT.get(Mod.loc("sentinel_charge_veryfar"));
-                    if (soundVeryFar != null) {
-                        player.playSound(soundVeryFar, soundRadius, 1f);
-                    }
+            if (stack.getItem() == ModItems.SECONDARY_CATACLYSM.get()) {
+                var cap = stack.getCapability(Capabilities.EnergyStorage.ITEM);
+
+                if (cap != null && cap.getEnergyStored() > 3000 && zoom) {
+                    float soundRadius = (float) data.soundRadius();
+
+                    player.playSound(ModSounds.SECONDARY_CATACLYSM_FIRE_3P_CHARGE.get(), soundRadius * 0.4f, 1f);
+                    player.playSound(ModSounds.SECONDARY_CATACLYSM_FAR_CHARGE.get(), soundRadius * 0.7f, 1f);
+                    player.playSound(ModSounds.SECONDARY_CATACLYSM_VERYFAR_CHARGE.get(), soundRadius, 1f);
+
                     return;
                 }
             }
@@ -173,79 +178,83 @@ public class GunEventHandler {
         var stack = data.stack();
 
         if (!player.level().isClientSide()) {
-            float headshot = (float) data.headshot();
-            float damage = (float) data.damage();
-            float velocity = (float) (data.velocity() * perkSpeed(data));
-            int projectileAmount = data.projectileAmount();
-            float bypassArmorRate = (float) data.bypassArmor();
-            var perkInstance = data.perk.getInstance(Perk.Type.AMMO);
-            var perk = perkInstance != null ? perkInstance.perk() : null;
+            if (stack.getItem() instanceof PressFireSpecialWeapon pressFireSpecialWeapon) {
+                pressFireSpecialWeapon.fireOnPress(player, data, spared, zoom);
+            } else {
+                float headshot = (float) data.headshot();
+                float damage = (float) data.damage();
+                float velocity = (float) (data.velocity() * perkSpeed(data));
+                int projectileAmount = data.projectileAmount();
+                float bypassArmorRate = (float) data.bypassArmor();
+                var perkInstance = data.perk.getInstance(Perk.Type.AMMO);
+                var perk = perkInstance != null ? perkInstance.perk() : null;
 
-            ProjectileEntity projectile = new ProjectileEntity(player.level())
-                    .shooter(player)
-                    .damage(perk instanceof AmmoPerk ammoPerk && ammoPerk.slug ? projectileAmount * damage : damage)
-                    .damage(damage)
-                    .headShot(headshot)
-                    .zoom(zoom)
-                    .setGunItemId(stack);
+                ProjectileEntity projectile = new ProjectileEntity(player.level())
+                        .shooter(player)
+                        .damage(perk instanceof AmmoPerk ammoPerk && ammoPerk.slug ? projectileAmount * damage : damage)
+                        .damage(damage)
+                        .headShot(headshot)
+                        .zoom(zoom)
+                        .setGunItemId(stack);
 
-            if (perk instanceof AmmoPerk ammoPerk) {
-                int level = data.perk.getLevel(perk);
+                if (perk instanceof AmmoPerk ammoPerk) {
+                    int level = data.perk.getLevel(perk);
 
-                bypassArmorRate += ammoPerk.bypassArmorRate + (perk == ModPerks.AP_BULLET.get() ? 0.05f * (level - 1) : 0);
-                projectile.setRGB(ammoPerk.rgb);
+                    bypassArmorRate += ammoPerk.bypassArmorRate + (perk == ModPerks.AP_BULLET.get() ? 0.05f * (level - 1) : 0);
+                    projectile.setRGB(ammoPerk.rgb);
 
-                if (!ammoPerk.mobEffects.get().isEmpty()) {
-                    int amplifier;
-                    if (perk.descriptionId.equals("blade_bullet")) {
-                        amplifier = level / 3;
-                    } else if (perk.descriptionId.equals("bread_bullet")) {
-                        amplifier = 1;
-                    } else {
-                        amplifier = level - 1;
+                    if (!ammoPerk.mobEffects.get().isEmpty()) {
+                        int amplifier;
+                        if (perk.descriptionId.equals("blade_bullet")) {
+                            amplifier = level / 3;
+                        } else if (perk.descriptionId.equals("bread_bullet")) {
+                            amplifier = 1;
+                        } else {
+                            amplifier = level - 1;
+                        }
+
+                        ArrayList<MobEffectInstance> mobEffectInstances = new ArrayList<>();
+                        for (MobEffect effect : ammoPerk.mobEffects.get()) {
+                            mobEffectInstances.add(new MobEffectInstance(Holder.direct(effect), 70 + 30 * level, amplifier));
+                        }
+                        projectile.effect(mobEffectInstances);
                     }
 
-                    ArrayList<MobEffectInstance> mobEffectInstances = new ArrayList<>();
-                    for (MobEffect effect : ammoPerk.mobEffects.get()) {
-                        mobEffectInstances.add(new MobEffectInstance(Holder.direct(effect), 70 + 30 * level, amplifier));
+                    if (perk.descriptionId.equals("bread_bullet")) {
+                        projectile.knockback(level * 0.3f);
+                        projectile.forceKnockback();
                     }
-                    projectile.effect(mobEffectInstances);
                 }
 
-                if (perk.descriptionId.equals("bread_bullet")) {
-                    projectile.knockback(level * 0.3f);
-                    projectile.forceKnockback();
+                bypassArmorRate = Math.max(bypassArmorRate, 0);
+                projectile.bypassArmorRate(bypassArmorRate);
+
+                if (perk == ModPerks.SILVER_BULLET.get()) {
+                    int level = data.perk.getLevel(perk);
+                    projectile.undeadMultiple(1.0f + 0.5f * level);
+                } else if (perk == ModPerks.BEAST_BULLET.get()) {
+                    projectile.beast();
+                } else if (perk == ModPerks.JHP_BULLET.get()) {
+                    int level = data.perk.getLevel(perk);
+                    projectile.jhpBullet(level);
+                } else if (perk == ModPerks.HE_BULLET.get()) {
+                    int level = data.perk.getLevel(perk);
+                    projectile.heBullet(level);
+                } else if (perk == ModPerks.INCENDIARY_BULLET.get()) {
+                    int level = data.perk.getLevel(perk);
+                    projectile.fireBullet(level, stack.is(ModTags.Items.SHOTGUN));
                 }
+
+                var dmgPerk = data.perk.get(Perk.Type.DAMAGE);
+                if (dmgPerk == ModPerks.MONSTER_HUNTER.get()) {
+                    int level = data.perk.getLevel(dmgPerk);
+                    projectile.monsterMultiple(0.1f + 0.1f * level);
+                }
+
+                projectile.setPos(player.getX() - 0.1 * player.getLookAngle().x, player.getEyeY() - 0.1 - 0.1 * player.getLookAngle().y, player.getZ() + -0.1 * player.getLookAngle().z);
+                projectile.shoot(player, player.getLookAngle().x, player.getLookAngle().y + 0.001f, player.getLookAngle().z, stack.is(ModTags.Items.SHOTGUN) && perk == ModPerks.INCENDIARY_BULLET.get() ? 4.5f : velocity, (float) spared);
+                player.level().addFreshEntity(projectile);
             }
-
-            bypassArmorRate = Math.max(bypassArmorRate, 0);
-            projectile.bypassArmorRate(bypassArmorRate);
-
-            if (perk == ModPerks.SILVER_BULLET.get()) {
-                int level = data.perk.getLevel(perk);
-                projectile.undeadMultiple(1.0f + 0.5f * level);
-            } else if (perk == ModPerks.BEAST_BULLET.get()) {
-                projectile.beast();
-            } else if (perk == ModPerks.JHP_BULLET.get()) {
-                int level = data.perk.getLevel(perk);
-                projectile.jhpBullet(level);
-            } else if (perk == ModPerks.HE_BULLET.get()) {
-                int level = data.perk.getLevel(perk);
-                projectile.heBullet(level);
-            } else if (perk == ModPerks.INCENDIARY_BULLET.get()) {
-                int level = data.perk.getLevel(perk);
-                projectile.fireBullet(level, stack.is(ModTags.Items.SHOTGUN));
-            }
-
-            var dmgPerk = data.perk.get(Perk.Type.DAMAGE);
-            if (dmgPerk == ModPerks.MONSTER_HUNTER.get()) {
-                int level = data.perk.getLevel(dmgPerk);
-                projectile.monsterMultiple(0.1f + 0.1f * level);
-            }
-
-            projectile.setPos(player.getX() - 0.1 * player.getLookAngle().x, player.getEyeY() - 0.1 - 0.1 * player.getLookAngle().y, player.getZ() + -0.1 * player.getLookAngle().z);
-            projectile.shoot(player, player.getLookAngle().x, player.getLookAngle().y + 0.001f, player.getLookAngle().z, stack.is(ModTags.Items.SHOTGUN) && perk == ModPerks.INCENDIARY_BULLET.get() ? 4.5f : velocity, (float) spared);
-            player.level().addFreshEntity(projectile);
         }
     }
 

@@ -10,17 +10,14 @@ import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.EnergyStorageItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
-import com.atsuishio.superbwarfare.item.gun.SpecialFireWeapon;
+import com.atsuishio.superbwarfare.item.gun.PressFireSpecialWeapon;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
-import com.atsuishio.superbwarfare.network.message.receive.ShootClientMessage;
 import com.atsuishio.superbwarfare.perk.Perk;
-import com.atsuishio.superbwarfare.tools.SoundTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
@@ -30,7 +27,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoItem;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
@@ -43,7 +39,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
 
-public class TaserItem extends GunItem implements GeoItem, SpecialFireWeapon, EnergyStorageItem {
+public class TaserItem extends GunItem implements GeoItem, EnergyStorageItem, PressFireSpecialWeapon {
 
     public static final int MAX_ENERGY = 6000;
 
@@ -218,7 +214,7 @@ public class TaserItem extends GunItem implements GeoItem, SpecialFireWeapon, En
     }
 
     @Override
-    public void fireOnPress(Player player, final GunData data, boolean zoom) {
+    public void fireOnPress(Player player, final GunData data, double spread, boolean zoom) {
         if (data.reloading()) return;
         ItemStack stack = data.stack();
 
@@ -226,21 +222,13 @@ public class TaserItem extends GunItem implements GeoItem, SpecialFireWeapon, En
         var energyStorage = stack.getCapability(Capabilities.EnergyStorage.ITEM);
         var hasEnoughEnergy = energyStorage != null && energyStorage.getEnergyStored() >= 400 + 100 * perkLevel;
 
-        if (player.getCooldowns().isOnCooldown(stack.getItem())
-                || data.ammo.get() <= 0
-                || !hasEnoughEnergy
-        ) return;
+        if (!hasEnoughEnergy) return;
 
         player.getCooldowns().addCooldown(stack.getItem(), 5);
 
         if (player instanceof ServerPlayer serverPlayer) {
-            double spread = data.spread();
-
             int volt = data.perk.getLevel(ModPerks.VOLT_OVERLOAD);
             int wireLength = data.perk.getLevel(ModPerks.LONGER_WIRE);
-
-            SoundTool.playLocalSound(serverPlayer, ModSounds.TASER_FIRE_1P.get(), 1, 1);
-            serverPlayer.level().playSound(null, serverPlayer.getOnPos(), ModSounds.TASER_FIRE_3P.get(), SoundSource.PLAYERS, 1, 1);
 
             var level = serverPlayer.level();
 
@@ -251,11 +239,8 @@ public class TaserItem extends GunItem implements GeoItem, SpecialFireWeapon, En
             taserBulletProjectile.shoot(player.getLookAngle().x, player.getLookAngle().y, player.getLookAngle().z, (float) data.velocity(),
                     (float) (zoom ? 0.1 : spread));
             level.addFreshEntity(taserBulletProjectile);
-
-            PacketDistributor.sendToPlayer(serverPlayer, new ShootClientMessage(10));
         }
 
-        data.ammo.set(data.ammo.get() - 1);
         energyStorage.extractEnergy(400 + 100 * perkLevel, false);
     }
 

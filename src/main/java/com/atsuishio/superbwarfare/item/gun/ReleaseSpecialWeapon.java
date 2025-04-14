@@ -7,7 +7,7 @@ import net.minecraft.world.entity.player.Player;
 /**
  * 拥有特殊开火方式的武器的开火处理
  */
-public interface SpecialFireWeapon {
+public interface ReleaseSpecialWeapon {
 
 
     /**

@@ -7,7 +7,7 @@ import com.atsuishio.superbwarfare.init.ModAttachments;
 import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
-import com.atsuishio.superbwarfare.item.gun.SpecialFireWeapon;
+import com.atsuishio.superbwarfare.item.gun.ReleaseSpecialWeapon;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.item.gun.special.BocekItem;
 import com.atsuishio.superbwarfare.perk.AmmoPerk;
@@ -62,15 +62,15 @@ public record FireMessage(int msgType, double power, boolean zoom) implements Cu
             cap.edit = false;
 
             // 按下开火
-            if (!(stack.getItem() instanceof SpecialFireWeapon specialFireWeapon)) return;
-            specialFireWeapon.fireOnPress(player, data, zoom);
+            if (!(stack.getItem() instanceof ReleaseSpecialWeapon releaseSpecialWeapon)) return;
+            releaseSpecialWeapon.fireOnPress(player, data, zoom);
         } else if (type == 1) {
             // 松开开火
-            if (stack.getItem() instanceof SpecialFireWeapon specialFireWeapon) {
-                if (specialFireWeapon instanceof BocekItem) {
-                    specialFireWeapon.fireOnRelease(player, data, power, zoom);
+            if (stack.getItem() instanceof ReleaseSpecialWeapon releaseSpecialWeapon) {
+                if (releaseSpecialWeapon instanceof BocekItem) {
+                    releaseSpecialWeapon.fireOnRelease(player, data, power, zoom);
                 } else {
-                    specialFireWeapon.fireOnRelease(player, data, 0, zoom);
+                    releaseSpecialWeapon.fireOnRelease(player, data, 0, zoom);
                 }
             }
         }

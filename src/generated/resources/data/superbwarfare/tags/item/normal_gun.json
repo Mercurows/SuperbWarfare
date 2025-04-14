@@ -14,6 +14,7 @@
     "superbwarfare:m_4",
     "superbwarfare:devotion",
     "superbwarfare:trachelium",
+    "superbwarfare:m_79",
     "superbwarfare:hunting_rifle",
     "superbwarfare:ntw_20",
     "superbwarfare:m_98b",
@@ -21,12 +22,15 @@
     "superbwarfare:m_870",
     "superbwarfare:marlin",
     "superbwarfare:glock_17",
+    "superbwarfare:rpg",
     "superbwarfare:glock_18",
     "superbwarfare:m_1911",
     "superbwarfare:qbz_95",
     "superbwarfare:k_98",
     "superbwarfare:mosin_nagant",
     "superbwarfare:mp_443",
-    "superbwarfare:insidious"
+    "superbwarfare:insidious",
+    "superbwarfare:secondary_cataclysm",
+    "superbwarfare:taser"
   ]
 }
