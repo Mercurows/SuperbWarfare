@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.item.gun.data;
 
+import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.data.subdata.*;
 import com.atsuishio.superbwarfare.item.gun.data.value.*;
@@ -10,7 +11,9 @@ import com.atsuishio.superbwarfare.tools.GunsTool;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
 
@@ -295,6 +298,74 @@ public class GunData {
             return new AmmoTypeInfo(AmmoConsumeType.INVALID, ammoType);
         }
         return new AmmoTypeInfo(AmmoConsumeType.ITEM, ammoType);
+    }
+
+    public int countAmmo(Player player) {
+        var info = ammoTypeInfo();
+        return switch (info.type()) {
+            case PLAYER_AMMO -> {
+                var type = AmmoType.getType(info.value());
+                assert type != null;
+
+                yield type.get(player);
+            }
+            case ITEM -> player.getInventory().clearOrCountMatchingItems(
+                    p -> p.getItem().toString().equals(info.value()),
+                    0,
+                    player.inventoryMenu.getCraftSlots()
+            );
+            case TAG -> player.getInventory().clearOrCountMatchingItems(
+                    p -> p.is(ItemTags.create(ResourceLocation.parse(info.value()))),
+                    0,
+                    player.inventoryMenu.getCraftSlots()
+            );
+            case INVALID -> 0;
+        };
+    }
+
+    public void consumeAmmo(Player player, int count) {
+        var info = ammoTypeInfo();
+        switch (info.type()) {
+            case PLAYER_AMMO -> {
+                var type = AmmoType.getType(info.value());
+                assert type != null;
+
+                type.set(player, type.get(player) - count);
+            }
+            case ITEM -> player.getInventory().clearOrCountMatchingItems(
+                    p -> p.getItem().toString().equals(info.value()),
+                    count,
+                    player.inventoryMenu.getCraftSlots()
+            );
+            case TAG -> player.getInventory().clearOrCountMatchingItems(
+                    p -> p.is(ItemTags.create(ResourceLocation.parse(info.value()))),
+                    count,
+                    player.inventoryMenu.getCraftSlots()
+            );
+        }
+    }
+
+    public void reload(Player player) {
+        reload(player, false);
+    }
+
+    public void reload(Player player, boolean extraOne) {
+        int mag = magazine();
+        int ammo = this.ammo.get();
+        int ammoNeeded = mag - ammo + (extraOne ? 1 : 0);
+
+        // 空仓换弹的栓动武器应该在换弹后取消待上膛标记
+        if (ammo == 0 && defaultActionTime() > 0 && !stack.is(ModTags.Items.REVOLVER)) {
+            bolt.needed.set(false);
+        }
+
+        var available = countAmmo(player);
+        var ammoToAdd = Math.min(ammoNeeded, available);
+
+        consumeAmmo(player, ammoToAdd);
+        this.ammo.set(ammo + ammoToAdd);
+
+        reload.setState(ReloadState.NOT_RELOADING);
     }
 
     // 可持久化属性开始

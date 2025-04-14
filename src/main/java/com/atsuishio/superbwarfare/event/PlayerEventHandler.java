@@ -9,7 +9,6 @@ import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.network.message.receive.SimulationDistanceMessage;
 import com.atsuishio.superbwarfare.tools.AmmoType;
-import com.atsuishio.superbwarfare.tools.GunsTool;
 import com.atsuishio.superbwarfare.tools.InventoryTool;
 import com.atsuishio.superbwarfare.tools.NBTTool;
 import net.minecraft.resources.ResourceLocation;
@@ -118,7 +117,7 @@ public class PlayerEventHandler {
                             assert type != null;
 
                             if (type.get(cap) == 0) {
-                                GunsTool.reload(player, stack, data, type);
+                                data.reload(player);
                             }
                         }
                         case ITEM -> {

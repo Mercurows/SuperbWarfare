@@ -12,7 +12,6 @@ import com.atsuishio.superbwarfare.item.gun.data.value.ReloadState;
 import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.tools.AmmoType;
-import com.atsuishio.superbwarfare.tools.GunsTool;
 import com.atsuishio.superbwarfare.tools.InventoryTool;
 import com.atsuishio.superbwarfare.tools.SoundTool;
 import net.minecraft.core.Holder;
@@ -327,7 +326,7 @@ public class GunEventHandler {
             var ammoTypeInfo = data.ammoTypeInfo();
 
             if (ammoTypeInfo.type() == GunData.AmmoConsumeType.PLAYER_AMMO) {
-                GunsTool.reload(player, stack, data, AmmoType.getType(ammoTypeInfo.value()), gunItem.hasBulletInBarrel(stack));
+                data.reload(player, gunItem.hasBulletInBarrel(stack));
             }
         }
         data.reload.setState(ReloadState.NOT_RELOADING);
@@ -340,28 +339,8 @@ public class GunEventHandler {
         if (player.getInventory().hasAnyMatching(item -> item.is(ModItems.CREATIVE_AMMO_BOX.get()))) {
             data.ammo.set(data.magazine());
         } else {
-            var ammoTypeInfo = data.ammoTypeInfo();
-            switch (ammoTypeInfo.type()) {
-                case PLAYER_AMMO -> GunsTool.reload(player, stack, data, AmmoType.getType(ammoTypeInfo.value()));
-                case TAG -> {
-                    data.ammo.set(1);
-                    player.getInventory().clearOrCountMatchingItems(
-                            p -> p.is(ItemTags.create(ResourceLocation.parse(ammoTypeInfo.value()))),
-                            1,
-                            player.inventoryMenu.getCraftSlots()
-                    );
-                }
-                case ITEM -> {
-                    data.ammo.set(1);
-                    player.getInventory().clearOrCountMatchingItems(
-                            p -> p.getItem().toString().equals(ammoTypeInfo.value()),
-                            1,
-                            player.inventoryMenu.getCraftSlots()
-                    );
-                }
-            }
+            data.reload(player);
         }
-        data.reload.setState(ReloadState.NOT_RELOADING);
         NeoForge.EVENT_BUS.post(new ReloadEvent.Post(player, stack));
     }
 

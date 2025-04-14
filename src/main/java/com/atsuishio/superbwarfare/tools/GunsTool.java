@@ -1,18 +1,12 @@
 package com.atsuishio.superbwarfare.tools;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.init.ModAttachments;
-import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.data.DefaultGunData;
-import com.atsuishio.superbwarfare.item.gun.data.GunData;
-import com.atsuishio.superbwarfare.item.gun.data.value.ReloadState;
 import com.atsuishio.superbwarfare.network.message.receive.GunsDataMessage;
 import com.google.gson.Gson;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
@@ -68,35 +62,6 @@ public class GunsTool {
         event.getRelevantPlayers().forEach(player -> PacketDistributor.sendToPlayer(player, GunsDataMessage.create()));
     }
 
-    public static void reload(Player player, ItemStack stack, GunData gunData, AmmoType type) {
-        reload(player, stack, gunData, type, false);
-    }
-
-    public static void reload(Player player, ItemStack stack, GunData data, AmmoType type, boolean extraOne) {
-        int mag = data.magazine();
-        int ammo = data.ammo.get();
-        int ammoToAdd = mag - ammo + (extraOne ? 1 : 0);
-
-        // 空仓换弹的栓动武器应该在换弹后取消待上膛标记
-        if (ammo == 0 && data.defaultActionTime() > 0 && !stack.is(ModTags.Items.REVOLVER)) {
-            data.bolt.needed.set(false);
-        }
-
-        var capability = player.getData(ModAttachments.PLAYER_VARIABLE).watch();
-        var playerAmmo = 0;
-
-        playerAmmo = type.get(capability);
-        var newAmmoCount = Math.max(0, playerAmmo - ammoToAdd);
-        type.set(capability, newAmmoCount);
-        player.setData(ModAttachments.PLAYER_VARIABLE, capability);
-        capability.sync(player);
-
-        int needToAdd = ammo + Math.min(ammoToAdd, playerAmmo);
-
-        data.ammo.set(needToAdd);
-        data.reload.setState(ReloadState.NOT_RELOADING);
-    }
-
     /* PerkData */
     public static void setPerkIntTag(final CompoundTag rootTag, String name, int num) {
         CompoundTag tag = rootTag.getCompound("PerkData");
@@ -148,6 +113,7 @@ public class GunsTool {
         if (!data.contains(name)) return defaultValue;
         return data.getDouble(name);
     }
+
     @Nullable
     public static UUID getGunUUID(final CompoundTag tag) {
         if (!tag.contains("GunData")) return null;

@@ -8,6 +8,8 @@ import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Math;
 
+import java.util.function.Predicate;
+
 public class InventoryTool {
 
     /**
@@ -79,8 +81,13 @@ public class InventoryTool {
      * @return 成功消耗的物品数量
      */
     public static int consumeItem(NonNullList<ItemStack> itemList, Item item, int count) {
+        return consumeItem(itemList, stack -> stack.is(item), count);
+    }
+
+
+    public static int consumeItem(NonNullList<ItemStack> itemList, Predicate<ItemStack> predicate, int count) {
         int initialCount = count;
-        var items = itemList.stream().filter(stack -> stack.is(item)).toList();
+        var items = itemList.stream().filter(predicate).toList();
         for (var stack : items) {
             var countToShrink = Math.min(stack.getCount(), count);
             stack.shrink(countToShrink);
