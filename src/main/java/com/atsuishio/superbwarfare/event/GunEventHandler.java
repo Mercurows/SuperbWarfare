@@ -255,6 +255,15 @@ public class GunEventHandler {
         }
     }
 
+    public static double perkDamage(ItemStack stack) {
+        var data = GunData.from(stack);
+        var perk = data.perk.get(Perk.Type.AMMO);
+        if (perk instanceof AmmoPerk ammoPerk) {
+            return ammoPerk.damageRate;
+        }
+        return 1;
+    }
+
     public static double perkSpeed(GunData data) {
         var perk = data.perk.get(Perk.Type.AMMO);
         if (perk instanceof AmmoPerk ammoPerk) {
@@ -266,28 +275,27 @@ public class GunEventHandler {
     /**
      * 通用的武器换弹流程
      */
-    private static void handleGunReload(Player player, GunData gun) {
-        var data = GunData.from(gun.stack);
-        var stack = gun.stack();
-        var gunItem = gun.item();
-        var reload = gun.reload;
+    private static void handleGunReload(Player player, GunData data) {
+        var stack = data.stack();
+        var gunItem = data.item();
+        var reload = data.reload;
 
         // 启动换弹
         if (reload.reloadStarter.start()) {
             NeoForge.EVENT_BUS.post(new ReloadEvent.Pre(player, stack));
 
             if (gunItem.isOpenBolt(stack)) {
-                if (gun.ammo.get() == 0) {
-                    reload.setTime(gun.defaultEmptyReloadTime() + 1);
+                if (data.ammo.get() == 0) {
+                    reload.setTime(data.defaultEmptyReloadTime() + 1);
                     reload.setState(ReloadState.EMPTY_RELOADING);
                     playGunEmptyReloadSounds(player);
                 } else {
-                    reload.setTime(gun.defaultNormalReloadTime() + 1);
+                    reload.setTime(data.defaultNormalReloadTime() + 1);
                     reload.setState(ReloadState.NORMAL_RELOADING);
                     playGunNormalReloadSounds(player);
                 }
             } else {
-                reload.setTime(gun.defaultEmptyReloadTime() + 2);
+                reload.setTime(data.defaultEmptyReloadTime() + 2);
                 reload.setState(ReloadState.EMPTY_RELOADING);
                 playGunEmptyReloadSounds(player);
             }
@@ -298,21 +306,21 @@ public class GunEventHandler {
         // 换弹时额外行为
         var behavior = gunItem.reloadTimeBehaviors.get(reload.time());
         if (behavior != null) {
-            behavior.accept(gun);
+            behavior.accept(data);
         }
 
         if (reload.time() == 1) {
             if (gunItem.isOpenBolt(stack)) {
-                if (gun.ammo.get() == 0) {
-                    playGunEmptyReload(player, gun);
+                if (data.ammo.get() == 0) {
+                    playGunEmptyReload(player, data);
                 } else {
-                    playGunNormalReload(player, gun);
+                    playGunNormalReload(player, data);
                 }
             } else {
-                playGunEmptyReload(player, gun);
+                playGunEmptyReload(player, data);
             }
-            data.reload.setTime(0);
-            data.reload.setState(ReloadState.NOT_RELOADING);
+            reload.setTime(0);
+            reload.setState(ReloadState.NOT_RELOADING);
 
             reload.reloadStarter.finish();
         }
