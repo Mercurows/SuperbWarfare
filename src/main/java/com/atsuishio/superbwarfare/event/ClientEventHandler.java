@@ -121,6 +121,7 @@ public class ClientEventHandler {
     public static MillisTimer clientTimerVehicle = new MillisTimer();
 
     public static boolean holdFire = false;
+    public static boolean bowPull = false;
 
     public static boolean zoom = false;
     public static boolean breath = false;
@@ -1454,7 +1455,14 @@ public class ClientEventHandler {
     private static void handleBowPullAnimation(LivingEntity entity, ItemStack stack) {
         float times = 4 * (float) Math.min(Minecraft.getInstance().getTimer().getRealtimeDeltaTicks(), 0.8);
 
-        if (holdFire && entity instanceof Player player && !player.getCooldowns().isOnCooldown(stack.getItem())) {
+        var data = GunData.from(stack);
+
+        if (holdFire && data.ammo.get() > 0 && !bowPull && stack.is(ModItems.BOCEK.get())) {
+            entity.playSound(ModSounds.BOCEK_PULL_1P.get(), 1, 1);
+            bowPull = true;
+        }
+
+        if (bowPull) {
             pullTimer = Math.min(pullTimer + 0.024 * times, 1.4);
             bowTimer = Math.min(bowTimer + 0.018 * times, 1);
             handTimer = Math.min(handTimer + 0.018 * times, 1);

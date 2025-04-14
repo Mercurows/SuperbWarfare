@@ -319,7 +319,7 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
                     engineStartOver = false;
                 }
             }
-        } else {
+        } else if (!onGround() && engineStartOver) {
             this.entityData.set(POWER, Math.max(this.entityData.get(POWER) - 0.0003f, 0.01f));
             destroyRot += 0.15f;
 

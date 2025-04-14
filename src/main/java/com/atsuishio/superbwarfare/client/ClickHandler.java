@@ -336,7 +336,6 @@ public class ClickHandler {
             if (!stack.is(ModItems.BOCEK.get())) {
                 player.playSound(ModSounds.TRIGGER_CLICK.get(), 1, 1);
             } else {
-                player.playSound(ModSounds.BOCEK_PULL_1P.get(), 1, 1);
                 handTimer = 0;
             }
 
@@ -367,13 +366,13 @@ public class ClickHandler {
 
     public static void handleWeaponFireRelease() {
         PacketDistributor.sendToServer(new FireMessage(1, handTimer, zoom));
-        ClientEventHandler.holdFire = false;
-        ClientEventHandler.holdFireVehicle = false;
-        ClientEventHandler.customRpm = 0;
+        bowPull = false;
+        holdFire = false;
+        holdFireVehicle = false;
+        customRpm = 0;
     }
 
     public static void handleWeaponZoomPress(Player player, ItemStack stack) {
-        if (!(stack.getItem() instanceof GunItem)) return;
         PacketDistributor.sendToServer(new ZoomMessage(0));
 
         if (player.getVehicle() instanceof VehicleEntity pVehicle && player.getVehicle() instanceof WeaponVehicleEntity iVehicle && iVehicle.hasWeapon(pVehicle.getSeatIndex(player)) && iVehicle.banHand(player)) {

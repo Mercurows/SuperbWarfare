@@ -130,7 +130,7 @@ public class VectorItem extends GunItem implements GeoItem {
     @Override
     public double getCustomZoom(ItemStack stack) {
         int scopeType = GunData.from(stack).attachment.get(AttachmentType.SCOPE);
-        return scopeType == 2 ? (NBTTool.getTag(stack).getBoolean("ScopeAlt") ? 0 : 2.75) : 0;
+        return scopeType == 2 ? (NBTTool.getTag(stack).getBoolean("ScopeAlt") ? 0 : 0.75) : 0;
     }
 
     @Override
