@@ -8,7 +8,6 @@ import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.network.message.receive.SimulationDistanceMessage;
-import com.atsuishio.superbwarfare.tools.AmmoType;
 import com.atsuishio.superbwarfare.tools.InventoryTool;
 import com.atsuishio.superbwarfare.tools.NBTTool;
 import net.minecraft.resources.ResourceLocation;
@@ -16,7 +15,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.tags.ItemTags;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -109,40 +107,7 @@ public class PlayerEventHandler {
                 var data = GunData.from(stack);
 
                 if (!InventoryTool.hasCreativeAmmoBox(player)) {
-                    var cap = player.getData(ModAttachments.PLAYER_VARIABLE);
-                    var ammoTypeInfo = data.ammoTypeInfo();
-                    switch (ammoTypeInfo.type()) {
-                        case PLAYER_AMMO -> {
-                            var type = AmmoType.getType(ammoTypeInfo.value());
-                            assert type != null;
-
-                            if (type.get(cap) == 0) {
-                                data.reload(player);
-                            }
-                        }
-                        case ITEM -> {
-                            // TODO 弃用maxAmmo
-                            if (data.ammo.get() == 0 && data.maxAmmo.get() == 0) {
-                                data.ammo.set(1);
-                                player.getInventory().clearOrCountMatchingItems(
-                                        p -> p.getItem().toString().equals(ammoTypeInfo.value()),
-                                        1,
-                                        player.inventoryMenu.getCraftSlots()
-                                );
-                            }
-                        }
-                        case TAG -> {
-                            // TODO 弃用maxAmmo
-                            if (data.ammo.get() == 0 && data.maxAmmo.get() == 0) {
-                                data.ammo.set(1);
-                                player.getInventory().clearOrCountMatchingItems(
-                                        p -> p.is(ItemTags.create(ResourceLocation.parse(ammoTypeInfo.value()))),
-                                        1,
-                                        player.inventoryMenu.getCraftSlots()
-                                );
-                            }
-                        }
-                    }
+                    data.reload(player);
                 } else {
                     data.ammo.set(data.magazine());
                 }

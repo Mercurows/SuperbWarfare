@@ -4,7 +4,6 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.renderer.item.BocekItemRenderer;
 import com.atsuishio.superbwarfare.client.tooltip.component.BocekImageComponent;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
-import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
@@ -86,26 +85,6 @@ public class BocekItem extends GunItem implements GeoItem, ReleaseSpecialWeapon 
         return this.cache;
     }
 
-    public static int getAmmoCount(Player player) {
-        int count = 0;
-        for (var inv : player.getInventory().items) {
-            if (inv.is(ModItems.CREATIVE_AMMO_BOX.get())) {
-                count++;
-            }
-        }
-
-        if (count == 0) {
-            int sum = 0;
-            for (int i = 0; i < player.getInventory().getContainerSize(); ++i) {
-                ItemStack itemstack = player.getInventory().getItem(i);
-                if (check(itemstack)) {
-                    sum += itemstack.getCount();
-                }
-            }
-            return sum;
-        }
-        return (int) Double.POSITIVE_INFINITY;
-    }
 
     @Override
     @ParametersAreNonnullByDefault
@@ -113,10 +92,6 @@ public class BocekItem extends GunItem implements GeoItem, ReleaseSpecialWeapon 
         super.inventoryTick(stack, world, entity, slot, selected);
         var data = GunData.from(stack);
         final var tag = data.tag();
-        if (entity instanceof Player player) {
-            data.maxAmmo.set(getAmmoCount(player));
-            data.save();
-        }
 
         if (GunsTool.getGunIntTag(tag, "ArrowEmpty") > 0) {
             GunsTool.setGunIntTag(tag, "ArrowEmpty", GunsTool.getGunIntTag(tag, "ArrowEmpty") - 1);

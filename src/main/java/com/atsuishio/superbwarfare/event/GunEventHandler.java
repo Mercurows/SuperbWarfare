@@ -452,7 +452,7 @@ public class GunEventHandler {
                 }
 
                 // TODO 优化这坨判断
-                if (stack.is(ModTags.Items.LAUNCHER) && data.maxAmmo.get() == 0
+                if (stack.is(ModTags.Items.LAUNCHER) && !data.hasAmmo(player)
                         || stack.is(ModItems.SECONDARY_CATACLYSM.get()) && data.ammo.get() >= data.magazine()
                 ) {
                     startStage3 = true;

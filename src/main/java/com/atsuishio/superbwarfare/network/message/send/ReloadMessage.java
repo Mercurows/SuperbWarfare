@@ -61,10 +61,7 @@ public record ReloadMessage(int msgType) implements CustomPacketPayload {
                     assert ammoType != null;
 
                     if (ammoType.get(cap) == 0) return;
-                } else if ((ammoTypeInfo.type() == GunData.AmmoConsumeType.ITEM || ammoTypeInfo.type() == GunData.AmmoConsumeType.TAG)
-                        // TODO 弃用maxAmmo
-                        && data.maxAmmo.get() == 0
-                ) {
+                } else if ((ammoTypeInfo.type() == GunData.AmmoConsumeType.ITEM || ammoTypeInfo.type() == GunData.AmmoConsumeType.TAG) && !data.hasAmmo(player)) {
                     return;
                 }
             }

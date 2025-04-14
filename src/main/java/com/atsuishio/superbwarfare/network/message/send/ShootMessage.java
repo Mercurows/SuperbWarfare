@@ -97,7 +97,7 @@ public record ShootMessage(double spread, boolean zoom) implements CustomPacketP
         } else if (stack.is(ModItems.MINIGUN.get())) {
             var cap = player.getData(ModAttachments.PLAYER_VARIABLE).watch();
 
-            if (cap.rifleAmmo > 0 || InventoryTool.hasCreativeAmmoBox(player)) {
+            if (data.hasAmmo(player) || InventoryTool.hasCreativeAmmoBox(player)) {
                 tag.putDouble("heat", (tag.getDouble("heat") + 0.1));
                 if (tag.getDouble("heat") >= 50.5) {
                     tag.putDouble("overheat", 40);
@@ -124,7 +124,7 @@ public record ShootMessage(double spread, boolean zoom) implements CustomPacketP
 
                 GunEventHandler.gunShoot(player, data, spared, false);
                 if (!InventoryTool.hasCreativeAmmoBox(player)) {
-                    cap.rifleAmmo = cap.rifleAmmo - 1;
+                    data.consumeAmmo(player, 1);
                     player.setData(ModAttachments.PLAYER_VARIABLE, cap);
                     cap.sync(player);
                 }

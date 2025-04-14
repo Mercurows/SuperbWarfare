@@ -9,7 +9,6 @@ import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.ReleaseSpecialWeapon;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
-import com.atsuishio.superbwarfare.item.gun.special.BocekItem;
 import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
 import io.netty.buffer.ByteBuf;
@@ -67,11 +66,7 @@ public record FireMessage(int msgType, double power, boolean zoom) implements Cu
         } else if (type == 1) {
             // 松开开火
             if (stack.getItem() instanceof ReleaseSpecialWeapon releaseSpecialWeapon) {
-                if (releaseSpecialWeapon instanceof BocekItem) {
-                    releaseSpecialWeapon.fireOnRelease(player, data, power, zoom);
-                } else {
-                    releaseSpecialWeapon.fireOnRelease(player, data, 0, zoom);
-                }
+                releaseSpecialWeapon.fireOnRelease(player, data, power, zoom);
             }
         }
         cap.sync(player);

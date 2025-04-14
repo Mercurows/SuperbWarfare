@@ -106,27 +106,6 @@ public class JavelinItem extends GunItem implements GeoItem, ReleaseSpecialWeapo
         return this.cache;
     }
 
-    public static int getAmmoCount(Player player) {
-        int count = 0;
-        for (var inv : player.getInventory().items) {
-            if (inv.is(ModItems.CREATIVE_AMMO_BOX.get())) {
-                count++;
-            }
-        }
-
-        if (count == 0) {
-            int sum = 0;
-            for (int i = 0; i < player.getInventory().getContainerSize(); ++i) {
-                ItemStack itemstack = player.getInventory().getItem(i);
-                if (check(itemstack)) {
-                    sum += itemstack.getCount();
-                }
-            }
-            return sum;
-        }
-        return (int) Double.POSITIVE_INFINITY;
-    }
-
     @Override
     public Set<SoundEvent> getReloadSound() {
         return Set.of(ModSounds.JAVELIN_RELOAD_EMPTY.get(), ModSounds.JAVELIN_LOCK.get(), ModSounds.JAVELIN_LOCKON.get());
@@ -140,8 +119,6 @@ public class JavelinItem extends GunItem implements GeoItem, ReleaseSpecialWeapo
         final var tag = data.tag();
 
         if (entity instanceof Player player && selected) {
-            data.maxAmmo.set(getAmmoCount(player));
-
             if (tag.getBoolean("Seeking")) {
 
                 List<Entity> decoy = SeekTool.seekLivingEntities(player, player.level(), 512, 8);

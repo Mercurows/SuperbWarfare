@@ -67,7 +67,6 @@ public class GunData {
         stopped = new BooleanValue(data, "Stopped");
         forceStop = new BooleanValue(data, "ForceStop");
         loadIndex = new IntValue(data, "LoadIndex");
-        maxAmmo = new IntValue(data, "MaxAmmo");
         holdOpen = new BooleanValue(data, "HoldOpen");
         hideBulletChain = new BooleanValue(data, "HideBulletChain");
         draw = new BooleanValue(data, "Draw");
@@ -300,6 +299,10 @@ public class GunData {
         return new AmmoTypeInfo(AmmoConsumeType.ITEM, ammoType);
     }
 
+    public boolean hasAmmo(Player player) {
+        return countAmmo(player) > 0;
+    }
+
     public int countAmmo(Player player) {
         var info = ammoTypeInfo();
         return switch (info.type()) {
@@ -404,7 +407,6 @@ public class GunData {
     public final BooleanValue stopped;
     public final BooleanValue forceStop;
     public final IntValue loadIndex;
-    public final IntValue maxAmmo;
 
     public final BooleanValue holdOpen;
     public final BooleanValue hideBulletChain;

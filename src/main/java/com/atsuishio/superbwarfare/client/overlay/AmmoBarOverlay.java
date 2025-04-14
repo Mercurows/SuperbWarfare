@@ -3,13 +3,10 @@ package com.atsuishio.superbwarfare.client.overlay;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.client.DisplayConfig;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
-import com.atsuishio.superbwarfare.init.ModAttachments;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModKeyMappings;
-import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
-import com.atsuishio.superbwarfare.tools.AmmoType;
 import com.atsuishio.superbwarfare.tools.InventoryTool;
 import com.atsuishio.superbwarfare.tools.NBTTool;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -48,12 +45,13 @@ public class AmmoBarOverlay implements LayeredDraw.Layer {
     private static int getGunAmmoCount(Player player) {
         ItemStack stack = player.getMainHandItem();
 
+        // TODO 替换为直接使用背包弹药判断
         if (stack.getItem() == ModItems.MINIGUN.get()) {
-            return player.getData(ModAttachments.PLAYER_VARIABLE).rifleAmmo;
+            return GunData.from(stack).countAmmo(player);
         }
 
         if (stack.getItem() == ModItems.BOCEK.get()) {
-            return GunData.from(stack).maxAmmo.get();
+            return GunData.from(stack).countAmmo(player);
         }
 
         return GunData.from(stack).ammo.get();
@@ -66,25 +64,9 @@ public class AmmoBarOverlay implements LayeredDraw.Layer {
             return "";
         }
 
-        var cap = player.getData(ModAttachments.PLAYER_VARIABLE);
         if (!hasCreativeAmmo()) {
             var data = GunData.from(stack);
-            if (stack.is(ModTags.Items.LAUNCHER) || stack.getItem() == ModItems.TASER.get()) {
-                return "" + data.maxAmmo.get();
-            }
-            var ammoTypeInfo = data.ammoTypeInfo();
-            return switch (ammoTypeInfo.type()) {
-                case PLAYER_AMMO -> {
-                    var type = AmmoType.getType(ammoTypeInfo.value());
-                    assert type != null;
-
-                    yield type.get(cap) + "";
-                }
-
-                // TODO 正确计算弹药数量
-                case ITEM, TAG -> "" + data.maxAmmo.get();
-                default -> "";
-            };
+            return data.countAmmo(player) + "";
         }
 
         return "∞";

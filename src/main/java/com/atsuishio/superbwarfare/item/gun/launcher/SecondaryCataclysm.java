@@ -14,7 +14,6 @@ import com.atsuishio.superbwarfare.item.gun.PressFireSpecialWeapon;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
-import com.atsuishio.superbwarfare.tools.InventoryTool;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -149,31 +148,10 @@ public class SecondaryCataclysm extends GunItem implements GeoItem, PressFireSpe
         data.add(idleController);
     }
 
-    public static int getAmmoCount(Player player) {
-        if (InventoryTool.hasCreativeAmmoBox(player)) {
-            return (int) Double.POSITIVE_INFINITY;
-        }
-
-        int sum = 0;
-        for (int i = 0; i < player.getInventory().getContainerSize(); ++i) {
-            ItemStack itemstack = player.getInventory().getItem(i);
-            if (check(itemstack)) {
-                sum += itemstack.getCount();
-            }
-        }
-        return sum;
-    }
-
     @Override
     @ParametersAreNonnullByDefault
     public void inventoryTick(ItemStack stack, Level world, Entity entity, int slot, boolean selected) {
         super.inventoryTick(stack, world, entity, slot, selected);
-
-        if (entity instanceof Player player) {
-            var data = GunData.from(stack);
-            data.maxAmmo.set(getAmmoCount(player));
-            data.save();
-        }
 
         if (entity instanceof Player player) {
             for (var cell : player.getInventory().items) {
