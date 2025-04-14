@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.event;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.common.GameplayConfig;
+import com.atsuishio.superbwarfare.config.server.MiscConfig;
 import com.atsuishio.superbwarfare.init.ModAttachments;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModTags;
@@ -126,25 +127,25 @@ public class PlayerEventHandler {
         var tag = NBTTool.getTag(armor);
         double armorPlate = tag.getDouble("ArmorPlate");
 
-        int armorLevel = 1;
+        int armorLevel = MiscConfig.DEFAULT_ARMOR_LEVEL.get();
         if (armor.is(ModTags.Items.MILITARY_ARMOR)) {
-            armorLevel = 2;
+            armorLevel = MiscConfig.MILITARY_ARMOR_LEVEL.get();
         } else if (armor.is(ModTags.Items.MILITARY_ARMOR_HEAVY)) {
-            armorLevel = 3;
+            armorLevel = MiscConfig.HEAVY_MILITARY_ARMOR_LEVEL.get();
         }
 
-        if (armorPlate >= armorLevel * 15) return;
+        if (armorPlate >= armorLevel * MiscConfig.ARMOR_PONT_PER_LEVEL.get()) return;
 
         for (var stack : player.getInventory().items) {
             if (stack.is(ModItems.ARMOR_PLATE.get())) {
                 var stackTag = NBTTool.getTag(stack);
                 if (stackTag.getBoolean("Infinite")) {
-                    tag.putDouble("ArmorPlate", armorLevel * 15);
+                    tag.putDouble("ArmorPlate", armorLevel * MiscConfig.ARMOR_PONT_PER_LEVEL.get());
                     if (player instanceof ServerPlayer serverPlayer) {
                         serverPlayer.level().playSound(null, serverPlayer.getOnPos(), SoundEvents.ARMOR_EQUIP_IRON.value(), SoundSource.PLAYERS, 0.5f, 1);
                     }
                 } else {
-                    for (int index0 = 0; index0 < Math.ceil(((armorLevel * 15) - armorPlate) / 15); index0++) {
+                    for (int index0 = 0; index0 < Math.ceil(((armorLevel * MiscConfig.ARMOR_PONT_PER_LEVEL.get()) - armorPlate) / MiscConfig.ARMOR_PONT_PER_LEVEL.get()); index0++) {
                         stack.finishUsingItem(player.level(), player);
                     }
                 }

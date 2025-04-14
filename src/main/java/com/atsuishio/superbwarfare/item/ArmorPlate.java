@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.item;
 
+import com.atsuishio.superbwarfare.config.server.MiscConfig;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.tools.NBTTool;
@@ -46,14 +47,14 @@ public class ArmorPlate extends Item {
 
         if (armor == ItemStack.EMPTY) return InteractionResultHolder.fail(stack);
 
-        int armorLevel = 1;
+        int armorLevel = MiscConfig.DEFAULT_ARMOR_LEVEL.get();
         if (armor.is(ModTags.Items.MILITARY_ARMOR)) {
-            armorLevel = 2;
+            armorLevel = MiscConfig.MILITARY_ARMOR_LEVEL.get();
         } else if (armor.is(ModTags.Items.MILITARY_ARMOR_HEAVY)) {
-            armorLevel = 3;
+            armorLevel = MiscConfig.HEAVY_MILITARY_ARMOR_LEVEL.get();
         }
 
-        if (NBTTool.getTag(armor).getDouble("ArmorPlate") < armorLevel * 15) {
+        if (NBTTool.getTag(armor).getDouble("ArmorPlate") < armorLevel * MiscConfig.ARMOR_PONT_PER_LEVEL.get()) {
             playerIn.startUsingItem(handIn);
         }
 
@@ -71,15 +72,15 @@ public class ArmorPlate extends Item {
         if (!pLevel.isClientSide) {
             ItemStack armor = pLivingEntity.getItemBySlot(EquipmentSlot.CHEST);
 
-            int armorLevel = 1;
+            int armorLevel = MiscConfig.DEFAULT_ARMOR_LEVEL.get();
             if (armor.is(ModTags.Items.MILITARY_ARMOR)) {
-                armorLevel = 2;
+                armorLevel = MiscConfig.MILITARY_ARMOR_LEVEL.get();
             } else if (armor.is(ModTags.Items.MILITARY_ARMOR_HEAVY)) {
-                armorLevel = 3;
+                armorLevel = MiscConfig.HEAVY_MILITARY_ARMOR_LEVEL.get();
             }
 
             var tag = NBTTool.getTag(armor);
-            tag.putDouble("ArmorPlate", Mth.clamp(tag.getDouble("ArmorPlate") + 15, 0, armorLevel * 15));
+            tag.putDouble("ArmorPlate", Mth.clamp(tag.getDouble("ArmorPlate") + MiscConfig.ARMOR_PONT_PER_LEVEL.get(), 0, armorLevel * MiscConfig.ARMOR_PONT_PER_LEVEL.get()));
             NBTTool.saveTag(armor, tag);
 
             if (pLivingEntity instanceof ServerPlayer serverPlayer) {
