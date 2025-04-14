@@ -267,6 +267,7 @@ public class GunEventHandler {
      * 通用的武器换弹流程
      */
     private static void handleGunReload(Player player, GunData gun) {
+        var data = GunData.from(gun.stack);
         var stack = gun.stack();
         var gunItem = gun.item();
         var reload = gun.reload;
@@ -310,6 +311,9 @@ public class GunEventHandler {
             } else {
                 playGunEmptyReload(player, gun);
             }
+            data.reload.setTime(0);
+            data.reload.setState(ReloadState.NOT_RELOADING);
+
             reload.reloadStarter.finish();
         }
     }
