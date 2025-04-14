@@ -488,6 +488,10 @@
   "commands.ammo.no_permission": "Permission denied",
   "commands.config.explosion_destroy.enabled": "Enabled explosion destroy blocks",
   "commands.config.explosion_destroy.disabled": "Disabled explosion destroy blocks",
+  "commands.config.collision_destroy.none": "Disabled vehicle collision destroy blocks",
+  "commands.config.collision_destroy.soft": "Enabled vehicle collision destroy blocks (Soft Mode)",
+  "commands.config.collision_destroy.hard": "Enabled vehicle collision destroy blocks (Hard Mode)",
+  "commands.config.collision_destroy.beastly": "Enabled vehicle collision destroy blocks (Beastly Mode)",
 
   "tips.superbwarfare.sensitivity": "Current Sensitivity of This Gun: %1$s",
   "tips.superbwarfare.monitor.linked": "Connect！",
