@@ -126,7 +126,7 @@ public class PlayerEventHandler {
                             if (data.ammo.get() == 0 && data.maxAmmo.get() == 0) {
                                 data.ammo.set(1);
                                 player.getInventory().clearOrCountMatchingItems(
-                                        p -> p.getItem().getDescriptionId().equals(ammoTypeInfo.value()),
+                                        p -> p.getItem().toString().equals(ammoTypeInfo.value()),
                                         1,
                                         player.inventoryMenu.getCraftSlots()
                                 );

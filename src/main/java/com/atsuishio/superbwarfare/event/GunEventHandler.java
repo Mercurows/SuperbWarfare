@@ -354,7 +354,7 @@ public class GunEventHandler {
                 case ITEM -> {
                     data.ammo.set(1);
                     player.getInventory().clearOrCountMatchingItems(
-                            p -> p.getItem().getDescriptionId().equals(ammoTypeInfo.value()),
+                            p -> p.getItem().toString().equals(ammoTypeInfo.value()),
                             1,
                             player.inventoryMenu.getCraftSlots()
                     );
@@ -606,7 +606,7 @@ public class GunEventHandler {
                     type.add(cap, -1);
                 }
                 case ITEM -> player.getInventory().clearOrCountMatchingItems(
-                        p -> p.getItem().getDescriptionId().equals(ammoTypeInfo.value()),
+                        p -> p.getItem().toString().equals(ammoTypeInfo.value()),
                         1,
                         player.inventoryMenu.getCraftSlots()
                 );
