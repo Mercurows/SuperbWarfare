@@ -162,7 +162,7 @@ public class M79Item extends GunItem implements GeoItem, SpecialFireWeapon {
     }
 
     @Override
-    public String getAmmoDisplayName(ItemStack stack) {
+    public String getAmmoDisplayName(GunData data) {
         return "40mm Grenade";
     }
 
@@ -221,8 +221,4 @@ public class M79Item extends GunItem implements GeoItem, SpecialFireWeapon {
         data.ammo.set(data.ammo.get() - 1);
     }
 
-    @Override
-    public Item getCustomAmmoItem() {
-        return ModItems.GRENADE_40MM.get();
-    }
 }

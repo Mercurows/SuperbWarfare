@@ -213,7 +213,7 @@ public class TaserItem extends GunItem implements GeoItem, SpecialFireWeapon, En
     }
 
     @Override
-    public String getAmmoDisplayName(ItemStack stack) {
+    public String getAmmoDisplayName(GunData data) {
         return "Electrode Rod";
     }
 
@@ -264,8 +264,4 @@ public class TaserItem extends GunItem implements GeoItem, SpecialFireWeapon, En
         return MAX_ENERGY;
     }
 
-    @Override
-    public Item getCustomAmmoItem() {
-        return ModItems.TASER_ELECTRODE.get();
-    }
 }

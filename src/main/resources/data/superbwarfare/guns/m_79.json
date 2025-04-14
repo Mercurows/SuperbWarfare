@@ -8,5 +8,6 @@
   "Velocity": 3.75,
   "Magazine": 1,
   "Weight": 4,
-  "EmptyReloadTime": 64
+  "EmptyReloadTime": 64,
+  "AmmoType": "superbwarfare:grenade_40mm"
 }

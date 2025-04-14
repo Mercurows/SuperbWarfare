@@ -16,6 +16,7 @@ import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.network.message.receive.ShootClientMessage;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
+import com.atsuishio.superbwarfare.tools.InventoryTool;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
 import com.atsuishio.superbwarfare.tools.SoundTool;
 import net.minecraft.client.Minecraft;
@@ -155,24 +156,18 @@ public class SecondaryCataclysm extends GunItem implements GeoItem, SpecialFireW
     }
 
     public static int getAmmoCount(Player player) {
-        int count = 0;
-        for (var inv : player.getInventory().items) {
-            if (inv.is(ModItems.CREATIVE_AMMO_BOX.get())) {
-                count++;
-            }
+        if (InventoryTool.hasCreativeAmmoBox(player)) {
+            return (int) Double.POSITIVE_INFINITY;
         }
 
-        if (count == 0) {
-            int sum = 0;
-            for (int i = 0; i < player.getInventory().getContainerSize(); ++i) {
-                ItemStack itemstack = player.getInventory().getItem(i);
-                if (check(itemstack)) {
-                    sum += itemstack.getCount();
-                }
+        int sum = 0;
+        for (int i = 0; i < player.getInventory().getContainerSize(); ++i) {
+            ItemStack itemstack = player.getInventory().getItem(i);
+            if (check(itemstack)) {
+                sum += itemstack.getCount();
             }
-            return sum;
         }
-        return (int) Double.POSITIVE_INFINITY;
+        return sum;
     }
 
     @Override
@@ -264,7 +259,7 @@ public class SecondaryCataclysm extends GunItem implements GeoItem, SpecialFireW
     }
 
     @Override
-    public String getAmmoDisplayName(ItemStack stack) {
+    public String getAmmoDisplayName(GunData data) {
         return "40mm Grenade";
     }
 
@@ -347,8 +342,4 @@ public class SecondaryCataclysm extends GunItem implements GeoItem, SpecialFireW
         return 24000;
     }
 
-    @Override
-    public Item getCustomAmmoItem() {
-        return ModItems.GRENADE_40MM.get();
-    }
 }

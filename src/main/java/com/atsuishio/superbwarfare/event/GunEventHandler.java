@@ -16,8 +16,10 @@ import com.atsuishio.superbwarfare.tools.InventoryTool;
 import com.atsuishio.superbwarfare.tools.SoundTool;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.player.Player;
@@ -286,6 +288,7 @@ public class GunEventHandler {
 
         reload.reduce();
 
+        // 换弹时额外行为
         var behavior = gunItem.reloadTimeBehaviors.get(reload.time());
         if (behavior != null) {
             behavior.accept(gun);
@@ -305,26 +308,20 @@ public class GunEventHandler {
         }
     }
 
-    public static void playGunNormalReload(Player player, GunData gunData) {
-        var stack = gunData.stack();
-        var gunItem = gunData.item();
+    public static void playGunNormalReload(Player player, GunData data) {
+        var stack = data.stack();
+        var gunItem = data.item();
 
         if (player.getInventory().hasAnyMatching(item -> item.is(ModItems.CREATIVE_AMMO_BOX.get()))) {
-            gunData.ammo.set(gunData.magazine() + (gunItem.hasBulletInBarrel(stack) ? 1 : 0));
+            data.ammo.set(data.magazine() + (gunItem.hasBulletInBarrel(stack) ? 1 : 0));
         } else {
-            if (stack.is(ModTags.Items.USE_SHOTGUN_AMMO)) {
-                GunsTool.reload(player, stack, gunData, AmmoType.SHOTGUN, gunItem.hasBulletInBarrel(stack));
-            } else if (stack.is(ModTags.Items.USE_SNIPER_AMMO)) {
-                GunsTool.reload(player, stack, gunData, AmmoType.SNIPER, true);
-            } else if (stack.is(ModTags.Items.USE_HANDGUN_AMMO)) {
-                GunsTool.reload(player, stack, gunData, AmmoType.HANDGUN, true);
-            } else if (stack.is(ModTags.Items.USE_RIFLE_AMMO)) {
-                GunsTool.reload(player, stack, gunData, AmmoType.RIFLE, gunItem.hasBulletInBarrel(stack));
-            } else if (stack.is(ModTags.Items.USE_HEAVY_AMMO)) {
-                GunsTool.reload(player, stack, gunData, AmmoType.HEAVY, gunItem.hasBulletInBarrel(stack));
+            var ammoTypeInfo = data.ammoTypeInfo();
+
+            if (ammoTypeInfo.type() == GunData.AmmoConsumeType.PLAYER_AMMO) {
+                GunsTool.reload(player, stack, data, AmmoType.getType(ammoTypeInfo.value()), gunItem.hasBulletInBarrel(stack));
             }
         }
-        gunData.reload.setState(ReloadState.NOT_RELOADING);
+        data.reload.setState(ReloadState.NOT_RELOADING);
         NeoForge.EVENT_BUS.post(new ReloadEvent.Post(player, stack));
     }
 
@@ -334,20 +331,25 @@ public class GunEventHandler {
         if (player.getInventory().hasAnyMatching(item -> item.is(ModItems.CREATIVE_AMMO_BOX.get()))) {
             data.ammo.set(data.magazine());
         } else {
-            if (stack.is(ModTags.Items.USE_SHOTGUN_AMMO)) {
-                GunsTool.reload(player, stack, data, AmmoType.SHOTGUN);
-            } else if (stack.is(ModTags.Items.USE_SNIPER_AMMO)) {
-                GunsTool.reload(player, stack, data, AmmoType.SNIPER);
-            } else if (stack.is(ModTags.Items.USE_HANDGUN_AMMO)) {
-                GunsTool.reload(player, stack, data, AmmoType.HANDGUN);
-            } else if (stack.is(ModTags.Items.USE_RIFLE_AMMO)) {
-                GunsTool.reload(player, stack, data, AmmoType.RIFLE);
-            } else if (stack.is(ModTags.Items.USE_HEAVY_AMMO)) {
-                GunsTool.reload(player, stack, data, AmmoType.HEAVY);
-            } else if (data.item().getCustomAmmoItem() != null) {
-                var ammoItem = data.item().getCustomAmmoItem();
-                data.ammo.set(1);
-                player.getInventory().clearOrCountMatchingItems(p -> p.getItem() == ammoItem, 1, player.inventoryMenu.getCraftSlots());
+            var ammoTypeInfo = data.ammoTypeInfo();
+            switch (ammoTypeInfo.type()) {
+                case PLAYER_AMMO -> GunsTool.reload(player, stack, data, AmmoType.getType(ammoTypeInfo.value()));
+                case TAG -> {
+                    data.ammo.set(1);
+                    player.getInventory().clearOrCountMatchingItems(
+                            p -> p.is(ItemTags.create(ResourceLocation.parse(ammoTypeInfo.value()))),
+                            1,
+                            player.inventoryMenu.getCraftSlots()
+                    );
+                }
+                case ITEM -> {
+                    data.ammo.set(1);
+                    player.getInventory().clearOrCountMatchingItems(
+                            p -> p.getItem().getDescriptionId().equals(ammoTypeInfo.value()),
+                            1,
+                            player.inventoryMenu.getCraftSlots()
+                    );
+                }
             }
         }
         data.reload.setState(ReloadState.NOT_RELOADING);
@@ -449,15 +451,26 @@ public class GunEventHandler {
         if ((reload.prepareTimer.get() == 1 || reload.prepareLoadTimer.get() == 1)) {
             if (!InventoryTool.hasCreativeAmmoBox(player)) {
                 var capability = player.getData(ModAttachments.PLAYER_VARIABLE);
+                var startStage3 = false;
 
-                if (stack.is(ModTags.Items.USE_SHOTGUN_AMMO) && capability.shotgunAmmo == 0
-                        || stack.is(ModTags.Items.USE_SNIPER_AMMO) && capability.sniperAmmo == 0
-                        || stack.is(ModTags.Items.USE_HANDGUN_AMMO) && capability.handgunAmmo == 0
-                        || stack.is(ModTags.Items.USE_RIFLE_AMMO) && capability.rifleAmmo == 0
-                        || stack.is(ModTags.Items.USE_HEAVY_AMMO) && capability.heavyAmmo == 0
-                        || stack.is(ModTags.Items.LAUNCHER) && data.maxAmmo.get() == 0
+                var ammoTypeInfo = data.ammoTypeInfo();
+                if (ammoTypeInfo.type() == GunData.AmmoConsumeType.PLAYER_AMMO) {
+                    var type = AmmoType.getType(ammoTypeInfo.value());
+                    assert type != null;
+
+                    if (type.get(capability) == 0) {
+                        startStage3 = true;
+                    }
+                }
+
+                // TODO 优化这坨判断
+                if (stack.is(ModTags.Items.LAUNCHER) && data.maxAmmo.get() == 0
                         || stack.is(ModItems.SECONDARY_CATACLYSM.get()) && data.ammo.get() >= data.magazine()
                 ) {
+                    startStage3 = true;
+                }
+
+                if (startStage3) {
                     reload.stage3Starter.markStart();
                 } else {
                     reload.setStage(2);
@@ -521,16 +534,14 @@ public class GunEventHandler {
             if (!InventoryTool.hasCreativeAmmoBox(player)) {
                 var capability = player.getData(ModAttachments.PLAYER_VARIABLE);
 
-                if (stack.is(ModTags.Items.USE_SHOTGUN_AMMO) && capability.shotgunAmmo == 0) {
-                    reload.setStage(3);
-                } else if (stack.is(ModTags.Items.USE_SNIPER_AMMO) && capability.sniperAmmo == 0) {
-                    reload.setStage(3);
-                } else if (stack.is(ModTags.Items.USE_HANDGUN_AMMO) && capability.handgunAmmo == 0) {
-                    reload.setStage(3);
-                } else if (stack.is(ModTags.Items.USE_RIFLE_AMMO) && capability.rifleAmmo == 0) {
-                    reload.setStage(3);
-                } else if (stack.is(ModTags.Items.USE_HEAVY_AMMO) && capability.heavyAmmo == 0) {
-                    reload.setStage(3);
+                var ammoTypeInfo = data.ammoTypeInfo();
+                if (ammoTypeInfo.type() == GunData.AmmoConsumeType.PLAYER_AMMO) {
+                    var type = AmmoType.getType(ammoTypeInfo.value());
+                    assert type != null;
+
+                    if (type.get(capability) == 0) {
+                        reload.setStage(3);
+                    }
                 }
             }
 
@@ -577,19 +588,24 @@ public class GunEventHandler {
         if (!InventoryTool.hasCreativeAmmoBox(player)) {
             var cap = player.getData(ModAttachments.PLAYER_VARIABLE);
 
-            ItemStack stack = player.getMainHandItem();
-            if (stack.is(ModTags.Items.USE_SHOTGUN_AMMO)) {
-                AmmoType.SHOTGUN.add(cap, -1);
-            } else if (stack.is(ModTags.Items.USE_SNIPER_AMMO)) {
-                AmmoType.SNIPER.add(cap, -1);
-            } else if (stack.is(ModTags.Items.USE_HANDGUN_AMMO)) {
-                AmmoType.HANDGUN.add(cap, -1);
-            } else if (stack.is(ModTags.Items.USE_RIFLE_AMMO)) {
-                AmmoType.RIFLE.add(cap, -1);
-            } else if (stack.is(ModTags.Items.USE_HEAVY_AMMO)) {
-                AmmoType.HEAVY.add(cap, -1);
-            } else if (stack.getItem() == ModItems.SECONDARY_CATACLYSM.get()) {
-                player.getInventory().clearOrCountMatchingItems(p -> p.getItem() == data.item().getCustomAmmoItem(), 1, player.inventoryMenu.getCraftSlots());
+            var ammoTypeInfo = data.ammoTypeInfo();
+            switch (ammoTypeInfo.type()) {
+                case PLAYER_AMMO -> {
+                    var type = AmmoType.getType(ammoTypeInfo.value());
+                    assert type != null;
+
+                    type.add(cap, -1);
+                }
+                case ITEM -> player.getInventory().clearOrCountMatchingItems(
+                        p -> p.getItem().getDescriptionId().equals(ammoTypeInfo.value()),
+                        1,
+                        player.inventoryMenu.getCraftSlots()
+                );
+                case TAG -> player.getInventory().clearOrCountMatchingItems(
+                        p -> p.is(ItemTags.create(ResourceLocation.parse(ammoTypeInfo.value()))),
+                        1,
+                        player.inventoryMenu.getCraftSlots()
+                );
             }
 
             player.setData(ModAttachments.PLAYER_VARIABLE, cap);

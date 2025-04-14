@@ -14,5 +14,6 @@
   "IterativeTime": 11,
   "FinishTime": 18,
   "BypassesArmor": 0.54,
-  "SoundRadius": 18
+  "SoundRadius": 18,
+  "AmmoType": "@SniperAmmo"
 }

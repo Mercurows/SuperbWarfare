@@ -6,5 +6,6 @@
   "EmptyReloadTime": 78,
   "Damage": 700,
   "ExplosionDamage": 60,
-  "ExplosionRadius": 5
+  "ExplosionRadius": 5,
+  "AmmoType": "superbwarfare:javelin_missile"
 }

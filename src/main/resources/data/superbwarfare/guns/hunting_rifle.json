@@ -9,5 +9,6 @@
   "Weight": 5,
   "EmptyReloadTime": 64,
   "BypassesArmor": 0.7,
-  "SoundRadius": 20
+  "SoundRadius": 20,
+  "AmmoType": "@SniperAmmo"
 }

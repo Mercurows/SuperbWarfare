@@ -37,6 +37,9 @@ public class DefaultGunData {
     @SerializedName("BypassesArmor")
     public double bypassArmor;
 
+    @SerializedName("AmmoType")
+    public String ammoType = "";
+
     @SerializedName("NormalReloadTime")
     public int normalReloadTime;
     @SerializedName("EmptyReloadTime")

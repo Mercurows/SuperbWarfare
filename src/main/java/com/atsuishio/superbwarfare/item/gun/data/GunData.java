@@ -5,9 +5,11 @@ import com.atsuishio.superbwarfare.item.gun.data.subdata.*;
 import com.atsuishio.superbwarfare.item.gun.data.value.*;
 import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
+import com.atsuishio.superbwarfare.tools.AmmoType;
 import com.atsuishio.superbwarfare.tools.GunsTool;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
@@ -259,9 +261,43 @@ public class GunData {
         return defaultGunData().burstAmount;
     }
 
+    public enum AmmoConsumeType {
+        PLAYER_AMMO, ITEM, TAG, INVALID,
+    }
+
+    public record AmmoTypeInfo(AmmoConsumeType type, String value) {
+    }
+
+    public AmmoTypeInfo ammoTypeInfo() {
+        var ammoType = defaultGunData().ammoType;
+        if (ammoType.isEmpty()) {
+            return new AmmoTypeInfo(AmmoConsumeType.INVALID, "");
+        }
+
+        // 玩家弹药
+        if (ammoType.startsWith("@")) {
+            if (AmmoType.getType(ammoType.substring(1)) == null) {
+                return new AmmoTypeInfo(AmmoConsumeType.INVALID, ammoType.substring(1));
+            }
+            return new AmmoTypeInfo(AmmoConsumeType.PLAYER_AMMO, ammoType.substring(1));
+        }
+
+        // 物品Tag
+        if (ammoType.startsWith("#")) {
+            if (ResourceLocation.tryParse(ammoType.substring(1)) == null) {
+                return new AmmoTypeInfo(AmmoConsumeType.INVALID, ammoType.substring(1));
+            }
+            return new AmmoTypeInfo(AmmoConsumeType.TAG, ammoType.substring(1));
+        }
+
+        // 普通物品
+        if (ResourceLocation.tryParse(ammoType) == null) {
+            return new AmmoTypeInfo(AmmoConsumeType.INVALID, ammoType);
+        }
+        return new AmmoTypeInfo(AmmoConsumeType.ITEM, ammoType);
+    }
 
     // 可持久化属性开始
-
 
     public final IntValue ammo;
     public final IntValue fireMode;

@@ -12,5 +12,6 @@
   "EmptyReloadTime": 47,
   "BypassesArmor": 0.15,
   "SoundRadius": 8,
-  "RPM": 1300
+  "RPM": 1300,
+  "AmmoType": "@HandgunAmmo"
 }

@@ -13,5 +13,6 @@
   "NormalReloadTime": 84,
   "EmptyReloadTime": 112,
   "BypassesArmor": 1,
-  "SoundRadius": 22
+  "SoundRadius": 22,
+  "AmmoType": "@HeavyAmmo"
 }

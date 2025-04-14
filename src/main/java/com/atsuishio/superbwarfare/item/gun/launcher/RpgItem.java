@@ -50,7 +50,7 @@ import java.util.function.Supplier;
 public class RpgItem extends GunItem implements GeoItem, SpecialFireWeapon {
 
     @Override
-    public String getAmmoDisplayName(ItemStack stack) {
+    public String getAmmoDisplayName(GunData data) {
         return "Yassin105 TBG";
     }
 
@@ -253,8 +253,4 @@ public class RpgItem extends GunItem implements GeoItem, SpecialFireWeapon {
         behaviors.put(9, data -> data.closeHammer.set(false));
     }
 
-    @Override
-    public Item getCustomAmmoItem() {
-        return ModItems.ROCKET.get();
-    }
 }

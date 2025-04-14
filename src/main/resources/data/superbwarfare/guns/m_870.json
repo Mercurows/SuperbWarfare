@@ -14,5 +14,6 @@
   "FinishTime": 12,
   "BypassesArmor": 0.05,
   "SoundRadius": 16,
-  "BoltActionTime": 11
+  "BoltActionTime": 11,
+  "AmmoType": "@ShotgunAmmo"
 }

@@ -124,6 +124,7 @@ public class BocekItem extends GunItem implements GeoItem, SpecialFireWeapon {
         }
     }
 
+    // TODO 替换硬编码判断
     protected static boolean check(ItemStack stack) {
         return stack.getItem() == Items.ARROW;
     }
@@ -158,7 +159,7 @@ public class BocekItem extends GunItem implements GeoItem, SpecialFireWeapon {
     }
 
     @Override
-    public String getAmmoDisplayName(ItemStack stack) {
+    public String getAmmoDisplayName(GunData data) {
         return "Arrow";
     }
 

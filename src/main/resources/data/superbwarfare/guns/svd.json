@@ -13,5 +13,6 @@
   "EmptyReloadTime": 78,
   "BypassesArmor": 0.45,
   "SoundRadius": 17,
-  "RPM": 300
+  "RPM": 300,
+  "AmmoType": "@SniperAmmo"
 }

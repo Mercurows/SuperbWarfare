@@ -11,5 +11,6 @@
   "EmptyReloadTime": 75,
   "BypassesArmor": 0.23,
   "SoundRadius": 16,
-  "RPM": 400
+  "RPM": 400,
+  "AmmoType": "@RifleAmmo"
 }

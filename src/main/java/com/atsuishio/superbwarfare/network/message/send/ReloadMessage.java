@@ -3,9 +3,9 @@ package com.atsuishio.superbwarfare.network.message.send;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.init.ModAttachments;
 import com.atsuishio.superbwarfare.init.ModItems;
-import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
+import com.atsuishio.superbwarfare.tools.AmmoType;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -54,19 +54,17 @@ public record ReloadMessage(int msgType) implements CustomPacketPayload {
             boolean hasCreativeAmmoBox = player.getInventory().hasAnyMatching(item -> item.is(ModItems.CREATIVE_AMMO_BOX.get()));
 
             if (!hasCreativeAmmoBox) {
-                if (stack.is(ModTags.Items.USE_SHOTGUN_AMMO) && cap.shotgunAmmo == 0) {
-                    return;
-                } else if (stack.is(ModTags.Items.USE_SNIPER_AMMO) && cap.sniperAmmo == 0) {
-                    return;
-                } else if (stack.is(ModTags.Items.USE_HANDGUN_AMMO) && cap.handgunAmmo == 0) {
-                    return;
-                } else if (stack.is(ModTags.Items.USE_RIFLE_AMMO) && cap.rifleAmmo == 0) {
-                    return;
-                } else if (stack.is(ModTags.Items.USE_HEAVY_AMMO) && cap.heavyAmmo == 0) {
-                    return;
-                } else if (stack.getItem() == ModItems.TASER.get() && data.maxAmmo.get() == 0) {
-                    return;
-                } else if (stack.is(ModTags.Items.LAUNCHER) && data.maxAmmo.get() == 0) {
+                var ammoTypeInfo = data.ammoTypeInfo();
+
+                if (ammoTypeInfo.type() == GunData.AmmoConsumeType.PLAYER_AMMO) {
+                    var ammoType = AmmoType.getType(ammoTypeInfo.value());
+                    assert ammoType != null;
+
+                    if (ammoType.get(cap) == 0) return;
+                } else if ((ammoTypeInfo.type() == GunData.AmmoConsumeType.ITEM || ammoTypeInfo.type() == GunData.AmmoConsumeType.TAG)
+                        // TODO 弃用maxAmmo
+                        && data.maxAmmo.get() == 0
+                ) {
                     return;
                 }
             }

@@ -6,5 +6,6 @@
   "Velocity": 3,
   "Magazine": 1,
   "Weight": 1,
-  "EmptyReloadTime": 58
+  "EmptyReloadTime": 58,
+  "AmmoType": "superbwarfare:taser_electrode"
 }

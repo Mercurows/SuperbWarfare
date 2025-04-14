@@ -143,6 +143,7 @@ public class LivingEventHandler {
         if (DamageTypeTool.isGunDamage(source) && stack.getItem() instanceof GunItem) {
             double distance = entity.position().distanceTo(sourceEntity.position());
 
+            // TODO 正确计算距离衰减
             if (stack.is(ModTags.Items.USE_SHOTGUN_AMMO)) {
                 var perk = data.perk.get(Perk.Type.AMMO);
 
@@ -650,45 +651,18 @@ public class LivingEventHandler {
 
         boolean flag = InventoryTool.hasCreativeAmmoBox(player);
 
-        if (stack.is(ModTags.Items.USE_RIFLE_AMMO)) {
-            int ammoFinal = Math.min(cap.rifleAmmo, ammoNeed);
+        var ammoTypeInfo = data.ammoTypeInfo();
+        if (ammoTypeInfo.type() == GunData.AmmoConsumeType.PLAYER_AMMO) {
+            var type = AmmoType.getType(ammoTypeInfo.value());
+            assert type != null;
+
+            int ammoFinal = Math.min(type.get(cap), ammoNeed);
             if (flag) {
                 ammoFinal = ammoNeed;
             } else {
-                cap.rifleAmmo -= ammoFinal;
+                type.add(cap, -ammoFinal);
             }
-            data.ammo.set(Math.min(mag, ammo + ammoFinal));
-        } else if (stack.is(ModTags.Items.USE_HANDGUN_AMMO)) {
-            int ammoFinal = Math.min(cap.handgunAmmo, ammoNeed);
-            if (flag) {
-                ammoFinal = ammoNeed;
-            } else {
-                cap.handgunAmmo -= ammoFinal;
-            }
-            data.ammo.set(Math.min(mag, ammo + ammoFinal));
-        } else if (stack.is(ModTags.Items.USE_SHOTGUN_AMMO)) {
-            int ammoFinal = Math.min(cap.handgunAmmo, ammoNeed);
-            if (flag) {
-                ammoFinal = ammoNeed;
-            } else {
-                cap.shotgunAmmo -= ammoFinal;
-            }
-            data.ammo.set(Math.min(mag, ammo + ammoFinal));
-        } else if (stack.is(ModTags.Items.USE_SNIPER_AMMO)) {
-            int ammoFinal = Math.min(cap.handgunAmmo, ammoNeed);
-            if (flag) {
-                ammoFinal = ammoNeed;
-            } else {
-                cap.sniperAmmo -= ammoFinal;
-            }
-            data.ammo.set(Math.min(mag, ammo + ammoFinal));
-        } else if (stack.is(ModTags.Items.USE_HEAVY_AMMO)) {
-            int ammoFinal = Math.min(cap.heavyAmmo, ammoNeed);
-            if (flag) {
-                ammoFinal = ammoNeed;
-            } else {
-                cap.heavyAmmo -= ammoFinal;
-            }
+
             data.ammo.set(Math.min(mag, ammo + ammoFinal));
         }
 

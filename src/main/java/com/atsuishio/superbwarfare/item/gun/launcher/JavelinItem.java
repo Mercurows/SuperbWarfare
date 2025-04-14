@@ -237,7 +237,7 @@ public class JavelinItem extends GunItem implements GeoItem, SpecialFireWeapon {
     }
 
     @Override
-    public String getAmmoDisplayName(ItemStack stack) {
+    public String getAmmoDisplayName(GunData data) {
         return "Javelin Missile";
     }
 
@@ -335,8 +335,4 @@ public class JavelinItem extends GunItem implements GeoItem, SpecialFireWeapon {
         tag.putInt("SeekTime", 0);
     }
 
-    @Override
-    public Item getCustomAmmoItem() {
-        return ModItems.JAVELIN_MISSILE.get();
-    }
 }

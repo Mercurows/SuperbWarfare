@@ -8,5 +8,6 @@
   "Weight": 10,
   "BypassesArmor": 0.3,
   "SoundRadius": 14,
-  "RPM": 1200
+  "RPM": 1200,
+  "AmmoType": "@RifleAmmo"
 }

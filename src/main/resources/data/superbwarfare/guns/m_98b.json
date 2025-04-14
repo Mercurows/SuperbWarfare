@@ -14,5 +14,6 @@
   "NormalReloadTime": 60,
   "EmptyReloadTime": 78,
   "BypassesArmor": 0.6,
-  "SoundRadius": 18
+  "SoundRadius": 18,
+  "AmmoType": "@SniperAmmo"
 }

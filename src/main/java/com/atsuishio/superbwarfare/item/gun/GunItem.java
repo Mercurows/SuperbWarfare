@@ -6,7 +6,6 @@ import com.atsuishio.superbwarfare.client.tooltip.component.GunImageComponent;
 import com.atsuishio.superbwarfare.init.ModAttachments;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModPerks;
-import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.CustomRendererItem;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.item.gun.data.value.AttachmentType;
@@ -59,10 +58,7 @@ public abstract class GunItem extends Item implements CustomRendererItem {
     @Override
     @ParametersAreNonnullByDefault
     public void inventoryTick(ItemStack stack, Level level, Entity entity, int slot, boolean selected) {
-        if (!(entity instanceof LivingEntity)
-                || !(stack.getItem() instanceof GunItem)
-                || !(stack.getItem() instanceof GunItem gunItem)
-        ) return;
+        if (!(entity instanceof LivingEntity) || !(stack.getItem() instanceof GunItem gunItem)) return;
 
         var data = GunData.from(stack);
 
@@ -81,19 +77,16 @@ public abstract class GunItem extends Item implements CustomRendererItem {
 
         if ((hasBulletInBarrel && ammoCount > magazine + 1) || (!hasBulletInBarrel && ammoCount > magazine)) {
             int count = ammoCount - magazine - (hasBulletInBarrel ? 1 : 0);
-
             var capability = entity.getData(ModAttachments.PLAYER_VARIABLE).watch();
-            if (stack.is(ModTags.Items.USE_SHOTGUN_AMMO)) {
-                AmmoType.SHOTGUN.add(capability, count);
-            } else if (stack.is(ModTags.Items.USE_SNIPER_AMMO)) {
-                AmmoType.SNIPER.add(capability, count);
-            } else if (stack.is(ModTags.Items.USE_HANDGUN_AMMO)) {
-                AmmoType.HANDGUN.add(capability, count);
-            } else if (stack.is(ModTags.Items.USE_RIFLE_AMMO)) {
-                AmmoType.RIFLE.add(capability, count);
-            } else if (stack.is(ModTags.Items.USE_HEAVY_AMMO)) {
-                AmmoType.HEAVY.add(capability, count);
+
+            var ammoTypeInfo = data.ammoTypeInfo();
+            if (ammoTypeInfo.type() == GunData.AmmoConsumeType.PLAYER_AMMO) {
+                var type = AmmoType.getType(ammoTypeInfo.value());
+                assert type != null;
+
+                type.add(capability, count);
             }
+
             entity.setData(ModAttachments.PLAYER_VARIABLE, capability);
             capability.sync(entity);
             data.ammo.set(magazine + (hasBulletInBarrel ? 1 : 0));
@@ -465,21 +458,19 @@ public abstract class GunItem extends Item implements CustomRendererItem {
     /**
      * 右下角弹药显示名称
      */
-    public String getAmmoDisplayName(ItemStack stack) {
-        if (stack.is(ModTags.Items.USE_RIFLE_AMMO)) {
-            return "Rifle Ammo";
-        }
-        if (stack.is(ModTags.Items.USE_HANDGUN_AMMO)) {
-            return "Handgun Ammo";
-        }
-        if (stack.is(ModTags.Items.USE_SHOTGUN_AMMO)) {
-            return "Shotgun Ammo";
-        }
-        if (stack.is(ModTags.Items.USE_SNIPER_AMMO)) {
-            return "Sniper Ammo";
-        }
-        if (stack.is(ModTags.Items.USE_HEAVY_AMMO)) {
-            return "Heavy Ammo";
+    public String getAmmoDisplayName(GunData data) {
+        var ammoTypeInfo = data.ammoTypeInfo();
+        if (ammoTypeInfo.type() == GunData.AmmoConsumeType.PLAYER_AMMO) {
+            var type = AmmoType.getType(ammoTypeInfo.value());
+            assert type != null;
+
+            return switch (type) {
+                case RIFLE -> "Rifle Ammo";
+                case HANDGUN -> "Handgun Ammo";
+                case SHOTGUN -> "Shotgun Ammo";
+                case SNIPER -> "Sniper Ammo";
+                case HEAVY -> "Heavy Ammo";
+            };
         }
         return "";
     }
@@ -502,10 +493,6 @@ public abstract class GunItem extends Item implements CustomRendererItem {
      * 添加达到指定换弹时间时的额外行为
      */
     public void addReloadTimeBehavior(Map<Integer, Consumer<GunData>> behaviors) {
-    }
-
-    public Item getCustomAmmoItem() {
-        return null;
     }
 
     @SubscribeEvent
