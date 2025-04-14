@@ -16,10 +16,8 @@ import com.atsuishio.superbwarfare.tools.InventoryTool;
 import com.atsuishio.superbwarfare.tools.SoundTool;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.tags.ItemTags;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.player.Player;
@@ -575,27 +573,7 @@ public class GunEventHandler {
 
         if (!InventoryTool.hasCreativeAmmoBox(player)) {
             var cap = player.getData(ModAttachments.PLAYER_VARIABLE);
-
-            var ammoTypeInfo = data.ammoTypeInfo();
-            switch (ammoTypeInfo.type()) {
-                case PLAYER_AMMO -> {
-                    var type = AmmoType.getType(ammoTypeInfo.value());
-                    assert type != null;
-
-                    type.add(cap, -1);
-                }
-                case ITEM -> player.getInventory().clearOrCountMatchingItems(
-                        p -> p.getItem().toString().equals(ammoTypeInfo.value()),
-                        1,
-                        player.inventoryMenu.getCraftSlots()
-                );
-                case TAG -> player.getInventory().clearOrCountMatchingItems(
-                        p -> p.is(ItemTags.create(ResourceLocation.parse(ammoTypeInfo.value()))),
-                        1,
-                        player.inventoryMenu.getCraftSlots()
-                );
-            }
-
+            data.consumeAmmo(player, 1);
             player.setData(ModAttachments.PLAYER_VARIABLE, cap);
         }
     }
