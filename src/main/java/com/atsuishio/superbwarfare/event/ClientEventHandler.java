@@ -352,7 +352,7 @@ public class ClientEventHandler {
             tacticalSprint = false;
         }
 
-        if (tacticalSprint && player.onGround()) {
+        if (tacticalSprint && player.onGround() || player.jumping) {
             PacketDistributor.sendToServer(new TacticalSprintMessage(true));
         } else {
             PacketDistributor.sendToServer(new TacticalSprintMessage(false));
