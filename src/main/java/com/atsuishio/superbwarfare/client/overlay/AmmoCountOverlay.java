@@ -106,7 +106,7 @@ public class AmmoCountOverlay implements LayeredDraw.Layer {
                 var ammoBoxType = data == null ? "All" : data.type();
 
                 boxAmmoCount = type.get(stack);
-                if (ammoBoxType.equals("All") || ammoBoxType.equals(type.name)) {
+                if (ammoBoxType.equals("All") || ammoBoxType.equals(type.serializationName)) {
                     boxAnimator.forward(currentTime);
                     boxAmmoSelected = true;
                 } else {
@@ -158,7 +158,7 @@ public class AmmoCountOverlay implements LayeredDraw.Layer {
             // 弹药类型
             guiGraphics.drawString(
                     font,
-                    Component.translatable(type.translatableKey).getString(),
+                    Component.translatable(type.translationKey).getString(),
                     ammoX + 35,
                     h + yOffset,
                     fontColor,

@@ -77,7 +77,7 @@ public class AmmoBox extends Item {
         list.add("All");
 
         for (var ammoType : Ammo.values()) {
-            list.add(ammoType.name);
+            list.add(ammoType.serializationName);
         }
 
         return list;
@@ -102,18 +102,10 @@ public class AmmoBox extends Item {
                 return true;
             }
 
-            switch (type) {
-                case RIFLE ->
-                        player.displayClientMessage(Component.translatable("des.superbwarfare.ammo_box.type.rifle").withStyle(ChatFormatting.GREEN), true);
-                case HANDGUN ->
-                        player.displayClientMessage(Component.translatable("des.superbwarfare.ammo_box.type.handgun").withStyle(ChatFormatting.AQUA), true);
-                case SHOTGUN ->
-                        player.displayClientMessage(Component.translatable("des.superbwarfare.ammo_box.type.shotgun").withStyle(ChatFormatting.RED), true);
-                case SNIPER ->
-                        player.displayClientMessage(Component.translatable("des.superbwarfare.ammo_box.type.sniper").withStyle(ChatFormatting.GOLD), true);
-                case HEAVY ->
-                        player.displayClientMessage(Component.translatable("des.superbwarfare.ammo_box.type.heavy").withStyle(ChatFormatting.LIGHT_PURPLE), true);
-            }
+            player.displayClientMessage(
+                    Component.translatable("des.superbwarfare.ammo_box.type." + type.name).withStyle(type.color),
+                    true
+            );
         }
 
         return true;
@@ -127,24 +119,10 @@ public class AmmoBox extends Item {
 
         tooltipComponents.add(Component.translatable("des.superbwarfare.ammo_box").withStyle(ChatFormatting.GRAY));
 
-        tooltipComponents.add(Component.translatable("des.superbwarfare.ammo_box.handgun").withStyle(ChatFormatting.AQUA)
-                .append(Component.literal("").withStyle(ChatFormatting.RESET))
-                .append(Component.literal(FormatTool.format0D(Ammo.HANDGUN.get(stack)) + ((type != Ammo.HANDGUN) ? " " : " ←-")).withStyle(ChatFormatting.BOLD)));
-
-        tooltipComponents.add(Component.translatable("des.superbwarfare.ammo_box.rifle").withStyle(ChatFormatting.GREEN)
-                .append(Component.literal("").withStyle(ChatFormatting.RESET))
-                .append(Component.literal(FormatTool.format0D(Ammo.RIFLE.get(stack)) + ((type != Ammo.RIFLE) ? " " : " ←-")).withStyle(ChatFormatting.BOLD)));
-
-        tooltipComponents.add(Component.translatable("des.superbwarfare.ammo_box.shotgun").withStyle(ChatFormatting.RED)
-                .append(Component.literal("").withStyle(ChatFormatting.RESET))
-                .append(Component.literal(FormatTool.format0D(Ammo.SHOTGUN.get(stack)) + ((type != Ammo.SHOTGUN) ? " " : " ←-")).withStyle(ChatFormatting.BOLD)));
-
-        tooltipComponents.add(Component.translatable("des.superbwarfare.ammo_box.sniper").withStyle(ChatFormatting.GOLD)
-                .append(Component.literal("").withStyle(ChatFormatting.RESET))
-                .append(Component.literal(FormatTool.format0D(Ammo.SNIPER.get(stack)) + ((type != Ammo.SNIPER) ? " " : " ←-")).withStyle(ChatFormatting.BOLD)));
-
-        tooltipComponents.add(Component.translatable("des.superbwarfare.ammo_box.heavy").withStyle(ChatFormatting.LIGHT_PURPLE)
-                .append(Component.literal("").withStyle(ChatFormatting.RESET))
-                .append(Component.literal(FormatTool.format0D(Ammo.HEAVY.get(stack)) + ((type != Ammo.HEAVY) ? " " : " ←-")).withStyle(ChatFormatting.BOLD)));
+        for (var ammo : Ammo.values()) {
+            tooltipComponents.add(Component.translatable("des.superbwarfare.ammo_box." + ammo.name).withStyle(ammo.color)
+                    .append(Component.literal("").withStyle(ChatFormatting.RESET))
+                    .append(Component.literal(FormatTool.format0D(ammo.get(stack)) + ((type != ammo) ? " " : " ←-")).withStyle(ChatFormatting.BOLD)));
+        }
     }
 }

@@ -464,13 +464,7 @@ public abstract class GunItem extends Item implements CustomRendererItem {
             var type = Ammo.getType(ammoTypeInfo.value());
             assert type != null;
 
-            return switch (type) {
-                case RIFLE -> "Rifle Ammo";
-                case HANDGUN -> "Handgun Ammo";
-                case SHOTGUN -> "Shotgun Ammo";
-                case SNIPER -> "Sniper Ammo";
-                case HEAVY -> "Heavy Ammo";
-            };
+            return type.displayName;
         }
         return "";
     }

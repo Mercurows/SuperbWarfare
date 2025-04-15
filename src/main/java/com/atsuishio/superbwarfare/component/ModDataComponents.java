@@ -55,7 +55,7 @@ public class ModDataComponents {
 
     public static void register(IEventBus eventBus) {
         for (var type : Ammo.values()) {
-            type.dataComponent = register("ammo_" + type.name.toLowerCase(), builder -> builder.persistent(Codec.INT));
+            type.dataComponent = register("ammo_" + type.name, builder -> builder.persistent(Codec.INT));
         }
 
         DATA_COMPONENT_TYPES.register(eventBus);

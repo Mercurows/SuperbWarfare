@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.tools;
 
 import com.atsuishio.superbwarfare.capability.player.PlayerVariable;
 import com.atsuishio.superbwarfare.init.ModAttachments;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
@@ -9,23 +10,61 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.registries.DeferredHolder;
 
 public enum Ammo {
-    HANDGUN("item.superbwarfare.ammo.handgun", "HandgunAmmo"),
-    RIFLE("item.superbwarfare.ammo.rifle", "RifleAmmo"),
-    SHOTGUN("item.superbwarfare.ammo.shotgun", "ShotgunAmmo"),
-    SNIPER("item.superbwarfare.ammo.sniper", "SniperAmmo"),
-    HEAVY("item.superbwarfare.ammo.heavy", "HeavyAmmo");
-    public final String translatableKey;
+    HANDGUN(ChatFormatting.GREEN),
+    RIFLE(ChatFormatting.AQUA),
+    SHOTGUN(ChatFormatting.RED),
+    SNIPER(ChatFormatting.GOLD),
+    HEAVY(ChatFormatting.LIGHT_PURPLE);
+
+    /**
+     * 翻译字段名称，如 item.superbwarfare.ammo.rifle
+     */
+    public final String translationKey;
+    /**
+     * 大驼峰格式命名的序列化字段名称，如 RifleAmmo
+     */
+    public final String serializationName;
+    /**
+     * 下划线格式命名的小写名称，如 rifle
+     */
     public final String name;
+
+    /**
+     * 大驼峰格式命名的显示名称，如 Rifle Ammo
+     */
+    public final String displayName;
+
+    public final ChatFormatting color;
     public DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> dataComponent;
 
-    Ammo(String translatableKey, String name) {
-        this.translatableKey = translatableKey;
+    Ammo(ChatFormatting color) {
+        this.color = color;
+
+        var name = name().toLowerCase();
         this.name = name;
+        this.translationKey = "item.superbwarfare.ammo." + name;
+
+        var builder = new StringBuilder();
+        var useUpperCase = true;
+
+        for (char c : name.toCharArray()) {
+            if (c == '_') {
+                useUpperCase = true;
+            } else if (useUpperCase) {
+                builder.append(Character.toUpperCase(c));
+                useUpperCase = false;
+            } else {
+                builder.append(c);
+            }
+        }
+
+        this.displayName = builder + " Ammo";
+        this.serializationName = builder + "Ammo";
     }
 
     public static Ammo getType(String name) {
         for (Ammo type : values()) {
-            if (type.name.equals(name)) {
+            if (type.serializationName.equals(name)) {
                 return type;
             }
         }
@@ -48,12 +87,12 @@ public enum Ammo {
 
     // NBTTag
     public int get(CompoundTag tag) {
-        return tag.getInt(this.name);
+        return tag.getInt(this.serializationName);
     }
 
     public void set(CompoundTag tag, int count) {
         if (count < 0) count = 0;
-        tag.putInt(this.name, count);
+        tag.putInt(this.serializationName, count);
     }
 
     public void add(CompoundTag tag, int count) {
@@ -108,6 +147,6 @@ public enum Ammo {
 
     @Override
     public String toString() {
-        return this.name;
+        return this.serializationName;
     }
 }

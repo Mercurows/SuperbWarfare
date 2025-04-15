@@ -31,7 +31,7 @@ public class AmmoCommand {
                     var type = context.getArgument("type", Ammo.class);
 
                     var value = type.get(player);
-                    context.getSource().sendSuccess(() -> Component.translatable("commands.ammo.get", Component.translatable(type.translatableKey), value), true);
+                    context.getSource().sendSuccess(() -> Component.translatable("commands.ammo.get", Component.translatable(type.translationKey), value), true);
                     return 0;
                 }))))
                 .then(Commands.literal("set").requires(s -> s.hasPermission(2)).then(Commands.argument("players", EntityArgument.players()).then(Commands.argument("type", EnumArgument.enumArgument(Ammo.class)).then(Commands.argument("value", IntegerArgumentType.integer(0)).executes(context -> {
@@ -43,7 +43,7 @@ public class AmmoCommand {
                         type.set(player, value);
                     }
 
-                    context.getSource().sendSuccess(() -> Component.translatable("commands.ammo.set", Component.translatable(type.translatableKey), value, players.size()), true);
+                    context.getSource().sendSuccess(() -> Component.translatable("commands.ammo.set", Component.translatable(type.translationKey), value, players.size()), true);
                     return 0;
                 })))))
                 .then(Commands.literal("add").requires(s -> s.hasPermission(2)).then(Commands.argument("players", EntityArgument.players()).then(Commands.argument("type", EnumArgument.enumArgument(Ammo.class)).then(Commands.argument("value", IntegerArgumentType.integer(0)).executes(context -> {
@@ -55,7 +55,7 @@ public class AmmoCommand {
                         type.add(player, value);
                     }
 
-                    context.getSource().sendSuccess(() -> Component.translatable("commands.ammo.add", Component.translatable(type.translatableKey), value, players.size()), true);
+                    context.getSource().sendSuccess(() -> Component.translatable("commands.ammo.add", Component.translatable(type.translationKey), value, players.size()), true);
                     return 0;
                 })))));
     }
