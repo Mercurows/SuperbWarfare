@@ -509,13 +509,13 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
                     if (!hasCreativeAmmo) {
                         ItemStack ammoBox = this.getItemStacks().stream().filter(stack -> {
                             if (stack.is(ModItems.AMMO_BOX.get())) {
-                                return AmmoType.HEAVY.get(stack) > 0;
+                                return Ammo.HEAVY.get(stack) > 0;
                             }
                             return false;
                         }).findFirst().orElse(ItemStack.EMPTY);
 
                         if (!ammoBox.isEmpty()) {
-                            AmmoType.HEAVY.add(ammoBox, -1);
+                            Ammo.HEAVY.add(ammoBox, -1);
                         } else {
                             this.getItemStacks().stream().filter(stack -> stack.is(ModItems.HEAVY_AMMO.get())).findFirst().ifPresent(stack -> stack.shrink(1));
                         }
@@ -576,13 +576,13 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
 
             ItemStack ammoBox = this.getItemStacks().stream().filter(stack -> {
                 if (stack.is(ModItems.AMMO_BOX.get())) {
-                    return AmmoType.HEAVY.get(stack) > 0;
+                    return Ammo.HEAVY.get(stack) > 0;
                 }
                 return false;
             }).findFirst().orElse(ItemStack.EMPTY);
 
             if (!ammoBox.isEmpty()) {
-                AmmoType.HEAVY.add(ammoBox, -1);
+                Ammo.HEAVY.add(ammoBox, -1);
             } else {
                 consumeItem(getWeapon(1).ammo, 1);
             }

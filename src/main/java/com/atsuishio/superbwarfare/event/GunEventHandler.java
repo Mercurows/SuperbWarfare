@@ -11,7 +11,7 @@ import com.atsuishio.superbwarfare.item.gun.data.value.AttachmentType;
 import com.atsuishio.superbwarfare.item.gun.data.value.ReloadState;
 import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
-import com.atsuishio.superbwarfare.tools.AmmoType;
+import com.atsuishio.superbwarfare.tools.Ammo;
 import com.atsuishio.superbwarfare.tools.InventoryTool;
 import com.atsuishio.superbwarfare.tools.SoundTool;
 import net.minecraft.core.Holder;
@@ -255,15 +255,6 @@ public class GunEventHandler {
         }
     }
 
-    public static double perkDamage(ItemStack stack) {
-        var data = GunData.from(stack);
-        var perk = data.perk.get(Perk.Type.AMMO);
-        if (perk instanceof AmmoPerk ammoPerk) {
-            return ammoPerk.damageRate;
-        }
-        return 1;
-    }
-
     public static double perkSpeed(GunData data) {
         var perk = data.perk.get(Perk.Type.AMMO);
         if (perk instanceof AmmoPerk ammoPerk) {
@@ -453,7 +444,7 @@ public class GunEventHandler {
 
                 var ammoTypeInfo = data.ammoTypeInfo();
                 if (ammoTypeInfo.type() == GunData.AmmoConsumeType.PLAYER_AMMO) {
-                    var type = AmmoType.getType(ammoTypeInfo.value());
+                    var type = Ammo.getType(ammoTypeInfo.value());
                     assert type != null;
 
                     if (type.get(capability) == 0) {
@@ -534,7 +525,7 @@ public class GunEventHandler {
 
                 var ammoTypeInfo = data.ammoTypeInfo();
                 if (ammoTypeInfo.type() == GunData.AmmoConsumeType.PLAYER_AMMO) {
-                    var type = AmmoType.getType(ammoTypeInfo.value());
+                    var type = Ammo.getType(ammoTypeInfo.value());
                     assert type != null;
 
                     if (type.get(capability) == 0) {

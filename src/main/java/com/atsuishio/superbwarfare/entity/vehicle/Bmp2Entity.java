@@ -20,7 +20,7 @@ import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage;
-import com.atsuishio.superbwarfare.tools.AmmoType;
+import com.atsuishio.superbwarfare.tools.Ammo;
 import com.atsuishio.superbwarfare.tools.CustomExplosion;
 import com.atsuishio.superbwarfare.tools.InventoryTool;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
@@ -252,10 +252,10 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
 
         int ammoCount = this.getItemStacks().stream().filter(stack -> {
             if (stack.is(ModItems.AMMO_BOX.get())) {
-                return AmmoType.RIFLE.get(stack) > 0;
+                return Ammo.RIFLE.get(stack) > 0;
             }
             return false;
-        }).mapToInt(AmmoType.RIFLE::get).sum() + countItem(ModItems.RIFLE_AMMO.get());
+        }).mapToInt(Ammo.RIFLE::get).sum() + countItem(ModItems.RIFLE_AMMO.get());
 
         if ((hasItem(ModItems.WIRE_GUIDE_MISSILE.get())
                 || InventoryTool.hasCreativeAmmoBox(player))
@@ -353,13 +353,13 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
                 if (!hasCreativeAmmo) {
                     ItemStack ammoBox = this.getItemStacks().stream().filter(stack -> {
                         if (stack.is(ModItems.AMMO_BOX.get())) {
-                            return AmmoType.RIFLE.get(stack) > 0;
+                            return Ammo.RIFLE.get(stack) > 0;
                         }
                         return false;
                     }).findFirst().orElse(ItemStack.EMPTY);
 
                     if (!ammoBox.isEmpty()) {
-                        AmmoType.RIFLE.add(ammoBox, -1);
+                        Ammo.RIFLE.add(ammoBox, -1);
                     } else {
                         this.getItemStacks().stream().filter(stack -> stack.is(ModItems.RIFLE_AMMO.get())).findFirst().ifPresent(stack -> stack.shrink(1));
                     }

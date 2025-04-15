@@ -6,7 +6,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
 import com.atsuishio.superbwarfare.init.ModAttachments;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.item.common.ammo.AmmoSupplierItem;
-import com.atsuishio.superbwarfare.tools.AmmoType;
+import com.atsuishio.superbwarfare.tools.Ammo;
 import com.atsuishio.superbwarfare.tools.animation.AnimationCurves;
 import com.atsuishio.superbwarfare.tools.animation.AnimationTimer;
 import com.atsuishio.superbwarfare.tools.animation.ValueAnimator;
@@ -38,10 +38,10 @@ public class AmmoCountOverlay implements LayeredDraw.Layer {
             .backwardAnimation(AnimationCurves.EASE_IN_EXPO);
 
     private static final ValueAnimator<Integer>[] ammoCountAnimators = ValueAnimator.create(
-            AmmoType.values().length, 800, 0
+            Ammo.values().length, 800, 0
     );
     private static final ValueAnimator<Integer>[] ammoBoxAnimators = ValueAnimator.create(
-            AmmoType.values().length, 800, 0
+            Ammo.values().length, 800, 0
     );
 
     /**
@@ -86,13 +86,13 @@ public class AmmoCountOverlay implements LayeredDraw.Layer {
 
         var ammoX = ammoInfoTimer.lerp(w + 120, (float) w / 2 + 40, currentTime);
         final int fontHeight = 15;
-        var yOffset = (-h - AmmoType.values().length * fontHeight) / 2f;
+        var yOffset = (-h - Ammo.values().length * fontHeight) / 2f;
 
         // 渲染总弹药数量
         var cap = player.getData(ModAttachments.PLAYER_VARIABLE);
         var font = Minecraft.getInstance().font;
 
-        for (var type : AmmoType.values()) {
+        for (var type : Ammo.values()) {
             var index = type.ordinal();
             var ammoCount = type.get(cap);
             var animator = ammoCountAnimators[index];

@@ -10,7 +10,7 @@ import com.atsuishio.superbwarfare.item.CustomRendererItem;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.item.gun.data.value.AttachmentType;
 import com.atsuishio.superbwarfare.perk.Perk;
-import com.atsuishio.superbwarfare.tools.AmmoType;
+import com.atsuishio.superbwarfare.tools.Ammo;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.core.BlockPos;
@@ -81,7 +81,7 @@ public abstract class GunItem extends Item implements CustomRendererItem {
 
             var ammoTypeInfo = data.ammoTypeInfo();
             if (ammoTypeInfo.type() == GunData.AmmoConsumeType.PLAYER_AMMO) {
-                var type = AmmoType.getType(ammoTypeInfo.value());
+                var type = Ammo.getType(ammoTypeInfo.value());
                 assert type != null;
 
                 type.add(capability, count);
@@ -461,7 +461,7 @@ public abstract class GunItem extends Item implements CustomRendererItem {
     public String getAmmoDisplayName(GunData data) {
         var ammoTypeInfo = data.ammoTypeInfo();
         if (ammoTypeInfo.type() == GunData.AmmoConsumeType.PLAYER_AMMO) {
-            var type = AmmoType.getType(ammoTypeInfo.value());
+            var type = Ammo.getType(ammoTypeInfo.value());
             assert type != null;
 
             return switch (type) {

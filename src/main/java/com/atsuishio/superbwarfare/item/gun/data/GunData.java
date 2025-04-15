@@ -6,7 +6,7 @@ import com.atsuishio.superbwarfare.item.gun.data.subdata.*;
 import com.atsuishio.superbwarfare.item.gun.data.value.*;
 import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
-import com.atsuishio.superbwarfare.tools.AmmoType;
+import com.atsuishio.superbwarfare.tools.Ammo;
 import com.atsuishio.superbwarfare.tools.GunsTool;
 import com.atsuishio.superbwarfare.tools.InventoryTool;
 import net.minecraft.core.component.DataComponents;
@@ -279,7 +279,7 @@ public class GunData {
 
         // 玩家弹药
         if (ammoType.startsWith("@")) {
-            if (AmmoType.getType(ammoType.substring(1)) == null) {
+            if (Ammo.getType(ammoType.substring(1)) == null) {
                 return new AmmoTypeInfo(AmmoConsumeType.INVALID, ammoType.substring(1));
             }
             return new AmmoTypeInfo(AmmoConsumeType.PLAYER_AMMO, ammoType.substring(1));
@@ -310,7 +310,7 @@ public class GunData {
         var info = ammoTypeInfo();
         return switch (info.type()) {
             case PLAYER_AMMO -> {
-                var type = AmmoType.getType(info.value());
+                var type = Ammo.getType(info.value());
                 assert type != null;
 
                 yield type.get(player);
@@ -335,7 +335,7 @@ public class GunData {
         var info = ammoTypeInfo();
         switch (info.type()) {
             case PLAYER_AMMO -> {
-                var type = AmmoType.getType(info.value());
+                var type = Ammo.getType(info.value());
                 assert type != null;
 
                 type.set(player, type.get(player) - count);

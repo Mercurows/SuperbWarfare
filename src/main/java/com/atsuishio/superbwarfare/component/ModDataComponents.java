@@ -3,7 +3,7 @@ package com.atsuishio.superbwarfare.component;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.item.FiringParameters;
 import com.atsuishio.superbwarfare.item.common.ammo.box.AmmoBoxInfo;
-import com.atsuishio.superbwarfare.tools.AmmoType;
+import com.atsuishio.superbwarfare.tools.Ammo;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -54,7 +54,7 @@ public class ModDataComponents {
     }
 
     public static void register(IEventBus eventBus) {
-        for (var type : AmmoType.values()) {
+        for (var type : Ammo.values()) {
             type.dataComponent = register("ammo_" + type.name.toLowerCase(), builder -> builder.persistent(Codec.INT));
         }
 

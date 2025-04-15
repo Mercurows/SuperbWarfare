@@ -654,7 +654,7 @@ public class LivingEventHandler {
 
         var ammoTypeInfo = data.ammoTypeInfo();
         if (ammoTypeInfo.type() == GunData.AmmoConsumeType.PLAYER_AMMO) {
-            var type = AmmoType.getType(ammoTypeInfo.value());
+            var type = Ammo.getType(ammoTypeInfo.value());
             assert type != null;
 
             int ammoFinal = Math.min(type.get(cap), ammoNeed);
@@ -732,14 +732,14 @@ public class LivingEventHandler {
         if (event.getEntity() instanceof Player player && !player.level().getLevelData().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY)) {
             var cap = player.getData(ModAttachments.PLAYER_VARIABLE).watch();
 
-            boolean drop = Stream.of(AmmoType.values())
+            boolean drop = Stream.of(Ammo.values())
                     .mapToInt(type -> type.get(cap))
                     .sum() > 0;
 
             if (drop) {
                 var stack = new ItemStack(ModItems.AMMO_BOX.get());
 
-                for (var type : AmmoType.values()) {
+                for (var type : Ammo.values()) {
                     type.set(stack, type.get(cap));
                     type.set(cap, 0);
                 }

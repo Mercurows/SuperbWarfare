@@ -3,7 +3,7 @@ package com.atsuishio.superbwarfare.capability.player;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.init.ModAttachments;
 import com.atsuishio.superbwarfare.network.message.receive.PlayerVariablesSyncMessage;
-import com.atsuishio.superbwarfare.tools.AmmoType;
+import com.atsuishio.superbwarfare.tools.Ammo;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
@@ -24,7 +24,7 @@ import java.util.Map;
 public class PlayerVariable implements INBTSerializable<CompoundTag> {
     private PlayerVariable old = null;
 
-    public Map<AmmoType, Integer> ammo = new HashMap<>();
+    public Map<Ammo, Integer> ammo = new HashMap<>();
     public boolean tacticalSprint = false;
     public boolean edit = false;
 
@@ -54,7 +54,7 @@ public class PlayerVariable implements INBTSerializable<CompoundTag> {
     public CompoundTag writeToNBT() {
         CompoundTag nbt = new CompoundTag();
 
-        for (var type : AmmoType.values()) {
+        for (var type : Ammo.values()) {
             type.set(nbt, type.get(this));
         }
 
@@ -65,7 +65,7 @@ public class PlayerVariable implements INBTSerializable<CompoundTag> {
     }
 
     public PlayerVariable readFromNBT(CompoundTag tag) {
-        for (var type : AmmoType.values()) {
+        for (var type : Ammo.values()) {
             type.set(this, type.get(tag));
         }
 
@@ -78,7 +78,7 @@ public class PlayerVariable implements INBTSerializable<CompoundTag> {
     public PlayerVariable copy() {
         var clone = new PlayerVariable();
 
-        for (var type : AmmoType.values()) {
+        for (var type : Ammo.values()) {
             type.set(clone, type.get(this));
         }
 
@@ -92,7 +92,7 @@ public class PlayerVariable implements INBTSerializable<CompoundTag> {
     public boolean equals(Object obj) {
         if (!(obj instanceof PlayerVariable other)) return false;
 
-        for (var type : AmmoType.values()) {
+        for (var type : Ammo.values()) {
             if (type.get(this) != type.get(other)) return false;
         }
 

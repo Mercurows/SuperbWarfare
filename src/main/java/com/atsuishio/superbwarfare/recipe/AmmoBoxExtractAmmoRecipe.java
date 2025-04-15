@@ -4,7 +4,7 @@ import com.atsuishio.superbwarfare.component.ModDataComponents;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModRecipes;
 import com.atsuishio.superbwarfare.item.common.ammo.box.AmmoBox;
-import com.atsuishio.superbwarfare.tools.AmmoType;
+import com.atsuishio.superbwarfare.tools.Ammo;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.item.ItemStack;
@@ -43,7 +43,7 @@ public class AmmoBoxExtractAmmoRecipe extends CustomRecipe {
         if (data == null) return false;
 
         var typeString = data.type();
-        var type = AmmoType.getType(typeString);
+        var type = Ammo.getType(typeString);
         if (type == null) return false;
 
         return type.get(ammoBoxItem) > 0;
@@ -52,13 +52,13 @@ public class AmmoBoxExtractAmmoRecipe extends CustomRecipe {
     @Override
     @ParametersAreNonnullByDefault
     public @NotNull ItemStack assemble(CraftingInput input, HolderLookup.Provider registries) {
-        AmmoType type = null;
+        Ammo type = null;
 
         for (var item : input.items()) {
             if (item.getItem() instanceof AmmoBox) {
                 var data = item.get(ModDataComponents.AMMO_BOX_INFO);
                 assert data != null;
-                type = AmmoType.getType(data.type());
+                type = Ammo.getType(data.type());
                 break;
             }
         }
@@ -72,7 +72,6 @@ public class AmmoBoxExtractAmmoRecipe extends CustomRecipe {
             case SHOTGUN -> new ItemStack(ModItems.SHOTGUN_AMMO.get());
             case SNIPER -> new ItemStack(ModItems.SNIPER_AMMO.get());
             case HEAVY -> new ItemStack(ModItems.HEAVY_AMMO.get());
-            default -> throw new IllegalStateException("Unexpected value: " + type);
         };
     }
 
@@ -87,7 +86,7 @@ public class AmmoBoxExtractAmmoRecipe extends CustomRecipe {
 
                 var data = ammoBox.get(ModDataComponents.AMMO_BOX_INFO);
                 assert data != null;
-                AmmoType type = AmmoType.getType(data.type());
+                Ammo type = Ammo.getType(data.type());
 
                 assert type != null;
                 type.add(ammoBox, -1);

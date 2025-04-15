@@ -8,7 +8,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.registries.DeferredHolder;
 
-public enum AmmoType {
+public enum Ammo {
     HANDGUN("item.superbwarfare.ammo.handgun", "HandgunAmmo"),
     RIFLE("item.superbwarfare.ammo.rifle", "RifleAmmo"),
     SHOTGUN("item.superbwarfare.ammo.shotgun", "ShotgunAmmo"),
@@ -18,13 +18,13 @@ public enum AmmoType {
     public final String name;
     public DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> dataComponent;
 
-    AmmoType(String translatableKey, String name) {
+    Ammo(String translatableKey, String name) {
         this.translatableKey = translatableKey;
         this.name = name;
     }
 
-    public static AmmoType getType(String name) {
-        for (AmmoType type : values()) {
+    public static Ammo getType(String name) {
+        for (Ammo type : values()) {
             if (type.name.equals(name)) {
                 return type;
             }
