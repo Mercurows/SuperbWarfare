@@ -101,7 +101,7 @@ public enum Ammo {
 
     // PlayerVariables
     public int get(PlayerVariable variable) {
-        return variable.ammo.get(this);
+        return variable.ammo.getOrDefault(this, 0);
     }
 
     public void set(PlayerVariable variable, int count) {
