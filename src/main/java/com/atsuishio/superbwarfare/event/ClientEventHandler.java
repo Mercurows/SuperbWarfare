@@ -591,7 +591,7 @@ public class ClientEventHandler {
                 && !player.isSprinting()
                 && tag.getDouble("overheat") == 0
                 && !player.getCooldowns().isOnCooldown(stack.getItem()) && miniGunRot >= 20
-                && (cap.rifleAmmo > 0 || InventoryTool.hasCreativeAmmoBox(player))
+                && data.hasAmmo(player)
         ))) {
             if (mode == 0) {
                 if (clientTimer.getProgress() == 0) {
@@ -705,7 +705,7 @@ public class ClientEventHandler {
                 handleClientShoot();
             }
         } else if (stack.is(ModItems.MINIGUN.get())) {
-            if (player.getData(ModAttachments.PLAYER_VARIABLE).rifleAmmo > 0 || InventoryTool.hasCreativeAmmoBox(player)) {
+            if (data.hasAmmo(player)) {
                 var perk = data.perk.get(Perk.Type.AMMO);
                 float pitch = tag.getDouble("heat") <= 40 ? 1 : (float) (1 - 0.025 * Math.abs(40 - tag.getDouble("heat")));
 
@@ -824,7 +824,6 @@ public class ClientEventHandler {
                 } else {
                     player.playSound(ModSounds.SHELL_CASING_NORMAL.get(), (float) Math.max(1.5 - 0.2 * shooterHeight, 0), (float) ((2 * org.joml.Math.random() - 1) * 0.05f + 1.0f));
                 }
-
             }
         });
     }
