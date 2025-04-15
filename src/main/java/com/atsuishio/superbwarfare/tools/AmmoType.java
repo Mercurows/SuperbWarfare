@@ -62,25 +62,13 @@ public enum AmmoType {
 
     // PlayerVariables
     public int get(PlayerVariable variable) {
-        return switch (this) {
-            case HANDGUN -> variable.handgunAmmo;
-            case RIFLE -> variable.rifleAmmo;
-            case SHOTGUN -> variable.shotgunAmmo;
-            case SNIPER -> variable.sniperAmmo;
-            case HEAVY -> variable.heavyAmmo;
-        };
+        return variable.ammo.get(this);
     }
 
     public void set(PlayerVariable variable, int count) {
         if (count < 0) count = 0;
 
-        switch (this) {
-            case HANDGUN -> variable.handgunAmmo = count;
-            case RIFLE -> variable.rifleAmmo = count;
-            case SHOTGUN -> variable.shotgunAmmo = count;
-            case SNIPER -> variable.sniperAmmo = count;
-            case HEAVY -> variable.heavyAmmo = count;
-        }
+        variable.ammo.put(this, count);
     }
 
     public void add(PlayerVariable variable, int count) {
@@ -90,9 +78,7 @@ public enum AmmoType {
 
     // Entity
     public int get(Entity entity) {
-        var cap = entity.getData(ModAttachments.PLAYER_VARIABLE);
-
-        return get(cap);
+        return get(entity.getData(ModAttachments.PLAYER_VARIABLE));
     }
 
     public void set(Entity entity, int count) {

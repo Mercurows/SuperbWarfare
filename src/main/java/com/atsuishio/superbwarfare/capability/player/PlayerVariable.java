@@ -16,16 +16,15 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.HashMap;
+import java.util.Map;
 
 
 @EventBusSubscriber(modid = Mod.MODID)
 public class PlayerVariable implements INBTSerializable<CompoundTag> {
     private PlayerVariable old = null;
-    public int rifleAmmo = 0;
-    public int handgunAmmo = 0;
-    public int shotgunAmmo = 0;
-    public int sniperAmmo = 0;
-    public int heavyAmmo = 0;
+
+    public Map<AmmoType, Integer> ammo = new HashMap<>();
     public boolean tacticalSprint = false;
     public boolean edit = false;
 
@@ -79,14 +78,12 @@ public class PlayerVariable implements INBTSerializable<CompoundTag> {
     public PlayerVariable copy() {
         var clone = new PlayerVariable();
 
-        clone.rifleAmmo = this.rifleAmmo;
-        clone.handgunAmmo = this.handgunAmmo;
-        clone.shotgunAmmo = this.shotgunAmmo;
-        clone.sniperAmmo = this.sniperAmmo;
-        clone.heavyAmmo = this.heavyAmmo;
+        for (var type : AmmoType.values()) {
+            type.set(clone, type.get(this));
+        }
+
         clone.edit = this.edit;
         clone.tacticalSprint = this.tacticalSprint;
-
 
         return clone;
     }
@@ -95,11 +92,11 @@ public class PlayerVariable implements INBTSerializable<CompoundTag> {
     public boolean equals(Object obj) {
         if (!(obj instanceof PlayerVariable other)) return false;
 
-        return rifleAmmo == other.rifleAmmo
-                && handgunAmmo == other.handgunAmmo
-                && shotgunAmmo == other.shotgunAmmo
-                && sniperAmmo == other.sniperAmmo
-                && heavyAmmo == other.heavyAmmo
+        for (var type : AmmoType.values()) {
+            if (type.get(this) != type.get(other)) return false;
+        }
+
+        return tacticalSprint == other.tacticalSprint
                 && edit == other.edit;
     }
 

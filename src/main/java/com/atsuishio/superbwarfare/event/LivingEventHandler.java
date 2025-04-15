@@ -52,6 +52,7 @@ import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 @EventBusSubscriber
 public class LivingEventHandler {
@@ -731,7 +732,9 @@ public class LivingEventHandler {
         if (event.getEntity() instanceof Player player && !player.level().getLevelData().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY)) {
             var cap = player.getData(ModAttachments.PLAYER_VARIABLE).watch();
 
-            boolean drop = cap.rifleAmmo + cap.handgunAmmo + cap.shotgunAmmo + cap.sniperAmmo + cap.heavyAmmo > 0;
+            boolean drop = Stream.of(AmmoType.values())
+                    .mapToInt(type -> type.get(cap))
+                    .sum() > 0;
 
             if (drop) {
                 var stack = new ItemStack(ModItems.AMMO_BOX.get());
