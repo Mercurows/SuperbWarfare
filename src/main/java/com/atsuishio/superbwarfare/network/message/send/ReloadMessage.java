@@ -2,10 +2,8 @@ package com.atsuishio.superbwarfare.network.message.send;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.init.ModAttachments;
-import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
-import com.atsuishio.superbwarfare.tools.Ammo;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -51,20 +49,7 @@ public record ReloadMessage(int msgType) implements CustomPacketPayload {
             boolean clipLoad = data.ammo.get() == 0 && gunItem.isClipReload(stack);
 
             // 检查备弹
-            boolean hasCreativeAmmoBox = player.getInventory().hasAnyMatching(item -> item.is(ModItems.CREATIVE_AMMO_BOX.get()));
-
-            if (!hasCreativeAmmoBox) {
-                var ammoTypeInfo = data.ammoTypeInfo();
-
-                if (ammoTypeInfo.type() == GunData.AmmoConsumeType.PLAYER_AMMO) {
-                    var ammoType = Ammo.getType(ammoTypeInfo.value());
-                    assert ammoType != null;
-
-                    if (ammoType.get(cap) == 0) return;
-                } else if ((ammoTypeInfo.type() == GunData.AmmoConsumeType.ITEM || ammoTypeInfo.type() == GunData.AmmoConsumeType.TAG) && !data.hasAmmo(player)) {
-                    return;
-                }
-            }
+            if (!data.hasAmmo(player)) return;
 
             if (canReload || clipLoad) {
                 int magazine = data.magazine();
