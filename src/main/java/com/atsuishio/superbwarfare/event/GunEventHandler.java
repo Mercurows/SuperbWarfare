@@ -502,7 +502,7 @@ public class GunEventHandler {
             singleLoad(player, data);
         }
 
-        if (stack.getItem() == ModItems.SECONDARY_CATACLYSM.get() && reload.iterativeLoadTimer.get() == 16) {
+        if (stack.getItem() == ModItems.SECONDARY_CATACLYSM.get() && reload.iterativeLoadTimer.get() == 1) {
             singleLoad(player, data);
         }
 

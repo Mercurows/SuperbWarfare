@@ -47,6 +47,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 public class Tom6Entity extends MobileVehicleEntity implements GeoEntity {
     public static final EntityDataAccessor<Boolean> MELON = SynchedEntityData.defineId(Tom6Entity.class, EntityDataSerializers.BOOLEAN);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+    private float yRotSync;
 
 
     public Tom6Entity(EntityType<Tom6Entity> type, Level world) {
@@ -182,10 +183,15 @@ public class Tom6Entity extends MobileVehicleEntity implements GeoEntity {
 
             float addY = Mth.clamp(Math.min((this.onGround() ? 1.5f : 0.9f) * (float) Math.max(getDeltaMovement().length() - 0.06, 0.1), 0.9f) * diffY - 0.5f * this.entityData.get(DELTA_ROT), -3 * (roll + 1), 3 * (roll + 1));
             float addX = Mth.clamp(Math.min((float) Math.max(getDeltaMovement().length() - 0.1, 0.01), 0.9f) * diffX, -4, 4);
+            float addZ = this.entityData.get(DELTA_ROT) + (this.onGround() ? 0 : 0.01f) * diffY * (float) getDeltaMovement().length();
 
-            this.setYRot(this.getYRot() + addY);
+            float i = getXRot() / 90;
+
+            yRotSync = addY * (1 - Mth.abs(i)) + addZ * i;
+
+            this.setYRot(this.getYRot() + yRotSync);
             this.setXRot(Mth.clamp(this.getXRot() + addX, onGround() ? -12 : -120, onGround() ? 3 : 120));
-            this.setZRot(this.getRoll() - this.entityData.get(DELTA_ROT) + (this.onGround() ? 0 : 0.01f) * diffY * (float) getDeltaMovement().length());
+            this.setZRot(this.getRoll() - addZ * (1 - Mth.abs(i)));
 
             // 空格投掷西瓜炸弹
             if (upInputDown && !onGround() && entityData.get(MELON)) {
@@ -268,10 +274,12 @@ public class Tom6Entity extends MobileVehicleEntity implements GeoEntity {
     }
 
     public void copyEntityData(Entity entity) {
+        float i = getXRot() / 90;
+
         float f = Mth.wrapDegrees(entity.getYRot() - getYRot());
         float g = Mth.clamp(f, -105.0f, 105.0f);
         entity.yRotO += g - f;
-        entity.setYRot(entity.getYRot() + g - f);
+        entity.setYRot(entity.getYRot() + g - f + yRotSync * Mth.abs(i));
         entity.setYHeadRot(entity.getYRot());
         entity.setYBodyRot(getYRot());
     }

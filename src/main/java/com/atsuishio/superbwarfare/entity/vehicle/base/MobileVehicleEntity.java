@@ -288,55 +288,54 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
 
     // 地形适应测试
     public void terrainCompat(float w, float l) {
-        if (!onGround()) return;
+        if (onGround()) {
+            Matrix4f transform = this.getWheelsTransform(1);
 
-        Matrix4f transform = this.getWheelsTransform(1);
+            // 点位
+            // 前
+            Vector4f positionF = transformPosition(transform, 0, 0, l / 2);
+            // 后
+            Vector4f positionB = transformPosition(transform, 0, 0, -l / 2);
+            // 左
+            Vector4f positionL = transformPosition(transform, -w / 2, 0, 0);
+            // 右
+            Vector4f positionR = transformPosition(transform, w / 2, 0, 0);
+            // 左前
+            Vector4f positionLF = transformPosition(transform, w / 2, 0, l / 2);
+            // 右前
+            Vector4f positionRF = transformPosition(transform, -w / 2, 0, l / 2);
+            // 左后
+            Vector4f positionLB = transformPosition(transform, w / 2, 0, -l / 2);
+            // 右后
+            Vector4f positionRB = transformPosition(transform, -w / 2, 0, -l / 2);
 
-        // 点位
-        // 前
-        Vector4f positionF = transformPosition(transform, 0, 0, l / 2);
-        // 后
-        Vector4f positionB = transformPosition(transform, 0, 0, -l / 2);
-        // 左
-        Vector4f positionL = transformPosition(transform, -w / 2, 0, 0);
-        // 右
-        Vector4f positionR = transformPosition(transform, w / 2, 0, 0);
-        // 左前
-        Vector4f positionLF = transformPosition(transform, w / 2, 0, l / 2);
-        // 右前
-        Vector4f positionRF = transformPosition(transform, -w / 2, 0, l / 2);
-        // 左后
-        Vector4f positionLB = transformPosition(transform, w / 2, 0, -l / 2);
-        // 右后
-        Vector4f positionRB = transformPosition(transform, -w / 2, 0, -l / 2);
+            Vec3 p1 = new Vec3(positionLF.x, positionLF.y, positionLF.z);
+            Vec3 p2 = new Vec3(positionRF.x, positionRF.y, positionRF.z);
+            Vec3 p3 = new Vec3(positionLB.x, positionLB.y, positionLB.z);
+            Vec3 p4 = new Vec3(positionRB.x, positionRB.y, positionRB.z);
 
-        Vec3 p1 = new Vec3(positionLF.x, positionLF.y, positionLF.z);
-        Vec3 p2 = new Vec3(positionRF.x, positionRF.y, positionRF.z);
-        Vec3 p3 = new Vec3(positionLB.x, positionLB.y, positionLB.z);
-        Vec3 p4 = new Vec3(positionRB.x, positionRB.y, positionRB.z);
+            Vec3 p5 = new Vec3(positionF.x, positionF.y, positionF.z);
+            Vec3 p6 = new Vec3(positionB.x, positionB.y, positionB.z);
+            Vec3 p7 = new Vec3(positionL.x, positionL.y, positionL.z);
+            Vec3 p8 = new Vec3(positionR.x, positionR.y, positionR.z);
 
-        Vec3 p5 = new Vec3(positionF.x, positionF.y, positionF.z);
-        Vec3 p6 = new Vec3(positionB.x, positionB.y, positionB.z);
-        Vec3 p7 = new Vec3(positionL.x, positionL.y, positionL.z);
-        Vec3 p8 = new Vec3(positionR.x, positionR.y, positionR.z);
+            // 确定点位是否在墙里来调整点位高度
+            float p1y = (float) this.traceBlockY(p1, l);
+            float p2y = (float) this.traceBlockY(p2, l);
+            float p3y = (float) this.traceBlockY(p3, l);
+            float p4y = (float) this.traceBlockY(p4, l);
 
-        // 确定点位是否在墙里来调整点位高度
-        float p1y = (float) this.traceBlockY(p1, l);
-        float p2y = (float) this.traceBlockY(p2, l);
-        float p3y = (float) this.traceBlockY(p3, l);
-        float p4y = (float) this.traceBlockY(p4, l);
+            float p5y = (float) Mth.clamp(this.traceBlockY(p5, l), -l, l);
+            float p6y = (float) Mth.clamp(this.traceBlockY(p6, l), -l, l);
+            float p7y = (float) Mth.clamp(this.traceBlockY(p7, l), -l, l);
+            float p8y = (float) Mth.clamp(this.traceBlockY(p8, l), -l, l);
 
-        float p5y = (float) Mth.clamp(this.traceBlockY(p5, l), -l, l);
-        float p6y = (float) Mth.clamp(this.traceBlockY(p6, l), -l, l);
-        float p7y = (float) Mth.clamp(this.traceBlockY(p7, l), -l, l);
-        float p8y = (float) Mth.clamp(this.traceBlockY(p8, l), -l, l);
+            p1 = new Vec3(positionLF.x, p1y, positionLF.z);
+            p2 = new Vec3(positionRF.x, p2y, positionRF.z);
+            p3 = new Vec3(positionLB.x, p3y, positionLB.z);
+            p4 = new Vec3(positionRB.x, p4y, positionRB.z);
 
-        p1 = new Vec3(positionLF.x, p1y, positionLF.z);
-        p2 = new Vec3(positionRF.x, p2y, positionRF.z);
-        p3 = new Vec3(positionLB.x, p3y, positionLB.z);
-        p4 = new Vec3(positionRB.x, p4y, positionRB.z);
-
-        // 测试用粒子效果，用于确定点位位置
+            // 测试用粒子效果，用于确定点位位置
 //        var passenger = this.getFirstPassenger();
 //
 //        if (passenger != null) {
@@ -348,27 +347,31 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
 //            }
 //        }
 
-        // 通过点位位置获取角度
+            // 通过点位位置获取角度
 
-        // 左后-左前
-        Vec3 v0 = p3.vectorTo(p1);
-        // 右后-右前
-        Vec3 v1 = p4.vectorTo(p2);
-        // 左前-右前
-        Vec3 v2 = p1.vectorTo(p2);
-        // 左后-右后
-        Vec3 v3 = p3.vectorTo(p4);
+            // 左后-左前
+            Vec3 v0 = p3.vectorTo(p1);
+            // 右后-右前
+            Vec3 v1 = p4.vectorTo(p2);
+            // 左前-右前
+            Vec3 v2 = p1.vectorTo(p2);
+            // 左后-右后
+            Vec3 v3 = p3.vectorTo(p4);
 
-        double x1 = getXRotFromVector(v0);
-        double x2 = getXRotFromVector(v1);
-        double z1 = getXRotFromVector(v2);
-        double z2 = getXRotFromVector(v3);
+            double x1 = getXRotFromVector(v0);
+            double x2 = getXRotFromVector(v1);
+            double z1 = getXRotFromVector(v2);
+            double z2 = getXRotFromVector(v3);
 
-        float diffX = Math.clamp(-90f, 90f, Mth.wrapDegrees((float) (-(x1 + x2)) - this.getXRot()));
-        this.setXRot(Mth.clamp(this.getXRot() + 0.075f * diffX, -90f, 90f));
+            float diffX = Math.clamp(-90f, 90f, Mth.wrapDegrees((float) (-(x1 + x2)) - getXRot()));
+            setXRot(Mth.clamp(getXRot() + 0.075f * diffX, -90f, 90f));
 
-        float diffZ = Math.clamp(-90f, 90f, Mth.wrapDegrees((float) (-(z1 + z2)) - this.getRoll()));
-        this.setZRot(Mth.clamp(this.getRoll() + 0.15f * diffZ, -90f, 90f));
+            float diffZ = Math.clamp(-90f, 90f, Mth.wrapDegrees((float) (-(z1 + z2)) - getRoll()));
+            setZRot(Mth.clamp(getRoll() + 0.15f * diffZ, -90f, 90f));
+        } else if (isInWater()) {
+            setXRot(getXRot() * 0.9f);
+            setZRot(getRoll() * 0.9f);
+        }
     }
 
     public Matrix4f getWheelsTransform(float ticks) {
