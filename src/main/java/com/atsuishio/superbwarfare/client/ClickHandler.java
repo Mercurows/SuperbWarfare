@@ -345,7 +345,7 @@ public class ClickHandler {
                     ClientEventHandler.burstFireAmount = 0;
                 }
             } else {
-                PacketDistributor.sendToServer(new FireMessage(0, handTimer, zoom));
+                PacketDistributor.sendToServer(new FireKeyMessage(0, handTimer, zoom));
                 if ((!data.reloading()
                         && !data.charging()
                         && !data.bolt.needed.get())
@@ -365,7 +365,7 @@ public class ClickHandler {
     }
 
     public static void handleWeaponFireRelease() {
-        PacketDistributor.sendToServer(new FireMessage(1, handTimer, zoom));
+        PacketDistributor.sendToServer(new FireKeyMessage(1, handTimer, zoom));
         bowPull = false;
         holdFire = false;
         holdFireVehicle = false;

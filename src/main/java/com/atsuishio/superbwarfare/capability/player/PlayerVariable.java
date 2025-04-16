@@ -8,6 +8,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.common.util.INBTSerializable;
@@ -18,6 +19,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 
 
 @EventBusSubscriber(modid = Mod.MODID)
@@ -49,6 +51,15 @@ public class PlayerVariable implements INBTSerializable<CompoundTag> {
     public PlayerVariable watch() {
         this.old = this.copy();
         return this;
+    }
+
+    /**
+     * 编辑并同步玩家变量
+     */
+    public void modify(Player player, Consumer<PlayerVariable> consumer) {
+        watch();
+        consumer.accept(this);
+        sync(player);
     }
 
     public CompoundTag writeToNBT() {

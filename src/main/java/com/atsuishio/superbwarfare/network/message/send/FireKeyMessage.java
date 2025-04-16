@@ -25,21 +25,24 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-public record FireMessage(int msgType, double power, boolean zoom) implements CustomPacketPayload {
-    public static final Type<FireMessage> TYPE = new Type<>(Mod.loc("fire"));
+/**
+ * 开火按键按下/松开时的处理
+ */
+public record FireKeyMessage(int msgType, double power, boolean zoom) implements CustomPacketPayload {
+    public static final Type<FireKeyMessage> TYPE = new Type<>(Mod.loc("fire"));
 
-    public static final StreamCodec<ByteBuf, FireMessage> STREAM_CODEC = StreamCodec.composite(
+    public static final StreamCodec<ByteBuf, FireKeyMessage> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.INT,
-            FireMessage::msgType,
+            FireKeyMessage::msgType,
             ByteBufCodecs.DOUBLE,
-            FireMessage::power,
+            FireKeyMessage::power,
             ByteBufCodecs.BOOL,
-            FireMessage::zoom,
-            FireMessage::new
+            FireKeyMessage::zoom,
+            FireKeyMessage::new
     );
 
 
-    public static void handler(FireMessage message, final IPayloadContext context) {
+    public static void handler(FireKeyMessage message, final IPayloadContext context) {
         pressAction(context.player(), message.msgType, message.power, message.zoom);
     }
 
@@ -51,25 +54,24 @@ public record FireMessage(int msgType, double power, boolean zoom) implements Cu
 
         handleGunBolt(player, stack);
 
-        var cap = player.getData(ModAttachments.PLAYER_VARIABLE).watch();
 
         if (type == 0) {
             if (data.reload.prepareTimer.get() == 0 && data.reloading() && data.ammo.get() > 0) {
                 data.forceStop.set(true);
             }
 
-            cap.edit = false;
+            player.getData(ModAttachments.PLAYER_VARIABLE).modify(player, cap -> cap.edit = false);
 
             // 按下开火
-            if (!(stack.getItem() instanceof ReleaseSpecialWeapon releaseSpecialWeapon)) return;
-            releaseSpecialWeapon.fireOnPress(player, data, zoom);
+            if (stack.getItem() instanceof ReleaseSpecialWeapon releaseSpecialWeapon) {
+                releaseSpecialWeapon.fireOnPress(player, data, zoom);
+            }
         } else if (type == 1) {
             // 松开开火
             if (stack.getItem() instanceof ReleaseSpecialWeapon releaseSpecialWeapon) {
                 releaseSpecialWeapon.fireOnRelease(player, data, power, zoom);
             }
         }
-        cap.sync(player);
         data.save();
     }
 

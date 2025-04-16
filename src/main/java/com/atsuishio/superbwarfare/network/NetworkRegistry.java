@@ -40,7 +40,7 @@ public class NetworkRegistry {
         registrar.playToServer(SwitchVehicleWeaponMessage.TYPE, SwitchVehicleWeaponMessage.STREAM_CODEC, SwitchVehicleWeaponMessage::handler);
         registrar.playToServer(AdjustZoomFovMessage.TYPE, AdjustZoomFovMessage.STREAM_CODEC, AdjustZoomFovMessage::handler);
         registrar.playToServer(SwitchScopeMessage.TYPE, SwitchScopeMessage.STREAM_CODEC, SwitchScopeMessage::handler);
-        registrar.playToServer(FireMessage.TYPE, FireMessage.STREAM_CODEC, FireMessage::handler);
+        registrar.playToServer(FireKeyMessage.TYPE, FireKeyMessage.STREAM_CODEC, FireKeyMessage::handler);
         registrar.playToServer(ReloadMessage.TYPE, ReloadMessage.STREAM_CODEC, ReloadMessage::handler);
         registrar.playToServer(FireModeMessage.TYPE, FireModeMessage.STREAM_CODEC, FireModeMessage::handler);
         registrar.playToServer(PlayerStopRidingMessage.TYPE, PlayerStopRidingMessage.STREAM_CODEC, PlayerStopRidingMessage::handler);
