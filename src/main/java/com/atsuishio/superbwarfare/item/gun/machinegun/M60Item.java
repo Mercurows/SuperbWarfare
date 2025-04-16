@@ -14,6 +14,7 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
@@ -158,6 +159,15 @@ public class M60Item extends GunItem implements GeoItem {
     @Override
     public int getAvailableFireModes() {
         return FireMode.AUTO.flag;
+    }
+
+    @Override
+    public void onShoot(GunData data, Player player) {
+        super.onShoot(data, player);
+
+        if (data.ammo.get() <= 5) {
+            data.hideBulletChain.set(true);
+        }
     }
 
     @Override

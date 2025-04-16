@@ -15,6 +15,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -187,6 +188,16 @@ public class SentinelItem extends GunItem implements GeoItem, EnergyStorageItem 
     @Override
     public int getAvailableFireModes() {
         return FireMode.SEMI.flag;
+    }
+
+    @Override
+    public void onShoot(GunData data, Player player) {
+        super.onShoot(data, player);
+
+        var cap = data.stack.getCapability(Capabilities.EnergyStorage.ITEM);
+        if (cap != null) {
+            cap.extractEnergy(3000, false);
+        }
     }
 
     @Override

@@ -2,24 +2,23 @@ package com.atsuishio.superbwarfare.network.message.send;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.event.GunEventHandler;
-import com.atsuishio.superbwarfare.init.*;
+import com.atsuishio.superbwarfare.init.ModItems;
+import com.atsuishio.superbwarfare.init.ModPerks;
+import com.atsuishio.superbwarfare.init.ModSounds;
+import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.tools.InventoryTool;
-import com.atsuishio.superbwarfare.tools.ParticleTool;
 import com.atsuishio.superbwarfare.tools.SoundTool;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.NotNull;
 
@@ -54,37 +53,22 @@ public record ShootMessage(double spread, boolean zoom) implements CustomPacketP
                     data.holdOpen.set(true);
                 }
 
+                // TODO 替换左轮判断方式
                 if (stack.is(ModTags.Items.REVOLVER)) {
                     data.canImmediatelyShoot.set(true);
                 }
 
+                // TODO 替换左轮判断方式
                 // 判断是否为栓动武器（BoltActionTime > 0），并在开火后给一个需要上膛的状态
                 if (data.defaultActionTime() > 0 && data.ammo.get() > (stack.is(ModTags.Items.REVOLVER) ? 0 : 1)) {
                     data.bolt.needed.set(true);
                 }
 
+                // 调用事件
+                data.item.onShoot(data, player);
+
                 data.ammo.set(data.ammo.get() - 1);
                 data.isEmpty.set(true);
-
-                if (stack.getItem() == ModItems.M_60.get() && data.ammo.get() <= 5) {
-                    data.hideBulletChain.set(true);
-                }
-
-                if (stack.getItem() == ModItems.HOMEMADE_SHOTGUN.get()) {
-                    stack.hurtAndBreak(1, (ServerLevel) player.level(), player, p -> {
-                    });
-                    if (player instanceof ServerPlayer serverPlayer && player.level() instanceof ServerLevel serverLevel) {
-                        ParticleTool.sendParticle(serverLevel, ParticleTypes.CLOUD, player.getX() + 1.8 * player.getLookAngle().x, player.getY() + player.getBbHeight() - 0.1 + 1.8 * player.getLookAngle().y,
-                                player.getZ() + 1.8 * player.getLookAngle().z, 30, 0.4, 0.4, 0.4, 0.005, true, serverPlayer);
-                    }
-                }
-
-                if (stack.getItem() == ModItems.SENTINEL.get()) {
-                    var cap = stack.getCapability(Capabilities.EnergyStorage.ITEM);
-                    if (cap != null) {
-                        cap.extractEnergy(3000, false);
-                    }
-                }
 
                 var perk = data.perk.get(Perk.Type.AMMO);
 
@@ -95,9 +79,8 @@ public record ShootMessage(double spread, boolean zoom) implements CustomPacketP
                 GunEventHandler.playGunSounds(player, zoom);
             }
         } else if (stack.is(ModItems.MINIGUN.get())) {
-            var cap = player.getData(ModAttachments.PLAYER_VARIABLE).watch();
-
             if (data.hasAmmo(player)) {
+                // TODO 替换为通用过热处理
                 tag.putDouble("heat", (tag.getDouble("heat") + 0.1));
                 if (tag.getDouble("heat") >= 50.5) {
                     tag.putDouble("overheat", 40);
@@ -125,8 +108,6 @@ public record ShootMessage(double spread, boolean zoom) implements CustomPacketP
                 GunEventHandler.gunShoot(player, data, spared, false);
                 if (!InventoryTool.hasCreativeAmmoBox(player)) {
                     data.consumeAmmo(player, 1);
-                    player.setData(ModAttachments.PLAYER_VARIABLE, cap);
-                    cap.sync(player);
                 }
             }
         }

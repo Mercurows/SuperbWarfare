@@ -489,6 +489,12 @@ public abstract class GunItem extends Item implements CustomRendererItem {
     public void addReloadTimeBehavior(Map<Integer, Consumer<GunData>> behaviors) {
     }
 
+    /**
+     * 添加服务端在开火时的额外行为
+     */
+    public void onShoot(GunData data, Player player) {
+    }
+
     @SubscribeEvent
     private static void registerGunExtensions(RegisterClientExtensionsEvent event) {
         for (var item : ModItems.GUNS.getEntries()) {
