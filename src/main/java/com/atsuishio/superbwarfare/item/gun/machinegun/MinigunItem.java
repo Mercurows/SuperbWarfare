@@ -160,7 +160,7 @@ public class MinigunItem extends GunItem implements GeoItem {
     public void onShoot(GunData data, Player player, double spread, boolean zoom) {
         var tag = data.tag();
 
-        if (!data.hasAmmo(player)) return;
+        if (!data.hasBackupAmmo(player)) return;
 
         // TODO 替换为通用过热处理
         tag.putDouble("heat", (tag.getDouble("heat") + 0.1));
@@ -188,7 +188,7 @@ public class MinigunItem extends GunItem implements GeoItem {
         }
 
         shootBullet(player, data, spread, zoom);
-        data.consumeAmmo(player, 1);
+        data.consumeBackupAmmo(player, 1);
     }
 
     @Override

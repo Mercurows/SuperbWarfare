@@ -46,7 +46,7 @@ public class AmmoBarOverlay implements LayeredDraw.Layer {
         ItemStack stack = player.getMainHandItem();
 
         if (stack.getItem() == ModItems.MINIGUN.get()) {
-            return GunData.from(stack).countAmmo(player);
+            return GunData.from(stack).countBackupAmmo(player);
         }
         return GunData.from(stack).ammo.get();
     }
@@ -60,7 +60,7 @@ public class AmmoBarOverlay implements LayeredDraw.Layer {
 
         if (!hasCreativeAmmo()) {
             var data = GunData.from(stack);
-            return data.countAmmo(player) + "";
+            return data.countBackupAmmo(player) + "";
         }
 
         return "∞";

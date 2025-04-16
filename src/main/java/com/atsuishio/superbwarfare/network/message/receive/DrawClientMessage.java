@@ -6,7 +6,6 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.NotNull;
 
 public record DrawClientMessage(boolean draw) implements CustomPacketPayload {
@@ -18,8 +17,8 @@ public record DrawClientMessage(boolean draw) implements CustomPacketPayload {
             DrawClientMessage::new
     );
 
-    public static void handler(DrawClientMessage message, final IPayloadContext context) {
-        ClientEventHandler.handleDrawMessage(message.draw, context);
+    public static void handler() {
+        ClientEventHandler.handleDrawMessage();
     }
 
     @Override

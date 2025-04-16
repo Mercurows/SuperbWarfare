@@ -53,7 +53,6 @@ import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.client.event.*;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.network.PacketDistributor;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.lwjgl.glfw.GLFW;
 import software.bernie.geckolib.animation.AnimationProcessor;
 import software.bernie.geckolib.cache.object.GeoBone;
@@ -591,7 +590,7 @@ public class ClientEventHandler {
                 && !player.isSprinting()
                 && tag.getDouble("overheat") == 0
                 && !player.getCooldowns().isOnCooldown(stack.getItem()) && miniGunRot >= 20
-                && data.hasAmmo(player)
+                && data.hasBackupAmmo(player)
         ))) {
             if (mode == 0) {
                 if (clientTimer.getProgress() == 0) {
@@ -705,7 +704,7 @@ public class ClientEventHandler {
                 handleClientShoot();
             }
         } else if (stack.is(ModItems.MINIGUN.get())) {
-            if (data.hasAmmo(player)) {
+            if (data.hasBackupAmmo(player)) {
                 var perk = data.perk.get(Perk.Type.AMMO);
                 float pitch = tag.getDouble("heat") <= 40 ? 1 : (float) (1 - 0.025 * Math.abs(40 - tag.getDouble("heat")));
 
@@ -1617,7 +1616,7 @@ public class ClientEventHandler {
         }
     }
 
-    public static void handleDrawMessage(boolean draw, final IPayloadContext context) {
+    public static void handleDrawMessage() {
         drawTime = 1;
         for (int i = 0; i < 5; i++) {
             shellIndexTime[i] = 0;

@@ -17,7 +17,7 @@ public class NetworkRegistry {
         registrar.playToClient(GunsDataMessage.TYPE, GunsDataMessage.STREAM_CODEC, GunsDataMessage::handler);
         registrar.playToClient(ContainerDataMessage.TYPE, ContainerDataMessage.STREAM_CODEC, ContainerDataMessage::handler);
         registrar.playToClient(ShootClientMessage.TYPE, ShootClientMessage.STREAM_CODEC, ShootClientMessage::handler);
-        registrar.playToClient(DrawClientMessage.TYPE, DrawClientMessage.STREAM_CODEC, DrawClientMessage::handler);
+        registrar.playToClient(DrawClientMessage.TYPE, DrawClientMessage.STREAM_CODEC, (drawClientMessage, context) -> DrawClientMessage.handler());
         registrar.playToClient(ResetCameraTypeMessage.TYPE, ResetCameraTypeMessage.STREAM_CODEC, ResetCameraTypeMessage::handler);
         registrar.playToClient(RadarMenuOpenMessage.TYPE, RadarMenuOpenMessage.STREAM_CODEC, RadarMenuOpenMessage::handler);
         registrar.playToClient(RadarMenuCloseMessage.TYPE, RadarMenuCloseMessage.STREAM_CODEC, RadarMenuCloseMessage::handler);

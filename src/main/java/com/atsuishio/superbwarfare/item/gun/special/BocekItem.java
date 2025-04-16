@@ -13,7 +13,6 @@ import com.atsuishio.superbwarfare.network.message.receive.ShootClientMessage;
 import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.tools.GunsTool;
-import com.atsuishio.superbwarfare.tools.InventoryTool;
 import com.atsuishio.superbwarfare.tools.SoundTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -98,14 +97,12 @@ public class BocekItem extends GunItem implements GeoItem {
         var data = GunData.from(stack);
 
         if (entity instanceof Player player) {
-            if (GunsTool.getGunIntTag(GunData.from(stack).tag, "ArrowEmpty") > 0) {
-                GunsTool.setGunIntTag(GunData.from(stack).tag, "ArrowEmpty", GunsTool.getGunIntTag(GunData.from(stack).tag, "ArrowEmpty") - 1);
+            if (GunsTool.getGunIntTag(data.tag, "ArrowEmpty") > 0) {
+                GunsTool.setGunIntTag(data.tag, "ArrowEmpty", GunsTool.getGunIntTag(data.tag, "ArrowEmpty") - 1);
             }
 
-            if (GunsTool.getGunIntTag(GunData.from(stack).tag, "ArrowEmpty") == 0 && data.ammo.get() == 0 && (data.countAmmo(player) > 0 || InventoryTool.hasCreativeAmmoBox(player))) {
-                if (!InventoryTool.hasCreativeAmmoBox(player)) {
-                    data.consumeAmmo(player, 1);
-                }
+            if (GunsTool.getGunIntTag(data.tag, "ArrowEmpty") == 0 && data.ammo.get() == 0 && data.hasBackupAmmo(player)) {
+                data.consumeBackupAmmo(player, 1);
                 data.ammo.set(1);
             }
             data.save();

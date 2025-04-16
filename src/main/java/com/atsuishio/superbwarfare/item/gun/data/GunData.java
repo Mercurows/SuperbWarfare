@@ -300,11 +300,17 @@ public class GunData {
         return new AmmoTypeInfo(AmmoConsumeType.ITEM, ammoType);
     }
 
-    public boolean hasAmmo(Player player) {
-        return countAmmo(player) > 0;
+    /**
+     * 是否还有剩余弹药（不考虑枪内弹药）
+     */
+    public boolean hasBackupAmmo(Player player) {
+        return countBackupAmmo(player) > 0;
     }
 
-    public int countAmmo(Player player) {
+    /**
+     * 计算剩余弹药数量（不考虑枪内弹药）
+     */
+    public int countBackupAmmo(Player player) {
         if (player.isCreative() || InventoryTool.hasCreativeAmmoBox(player)) return Integer.MAX_VALUE;
 
         var info = ammoTypeInfo();
@@ -329,7 +335,10 @@ public class GunData {
         };
     }
 
-    public void consumeAmmo(Player player, int count) {
+    /**
+     * 消耗额外弹药（不影响枪内弹药）
+     */
+    public void consumeBackupAmmo(Player player, int count) {
         if (player.isCreative() || InventoryTool.hasCreativeAmmoBox(player)) return;
 
         var info = ammoTypeInfo();
@@ -367,10 +376,10 @@ public class GunData {
             bolt.needed.set(false);
         }
 
-        var available = countAmmo(player);
+        var available = countBackupAmmo(player);
         var ammoToAdd = Math.min(ammoNeeded, available);
 
-        consumeAmmo(player, ammoToAdd);
+        consumeBackupAmmo(player, ammoToAdd);
         this.ammo.set(ammo + ammoToAdd);
 
         reload.setState(ReloadState.NOT_RELOADING);
