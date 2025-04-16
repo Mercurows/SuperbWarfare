@@ -176,10 +176,6 @@ public class SecondaryCataclysm extends GunItem implements GeoItem, PressFireSpe
         }
     }
 
-    protected static boolean check(ItemStack stack) {
-        return stack.getItem() == ModItems.GRENADE_40MM.get();
-    }
-
     @Override
     public ResourceLocation getGunIcon() {
         return Mod.loc("textures/gun_icon/secondary_cataclysm_icon.png");
@@ -239,7 +235,6 @@ public class SecondaryCataclysm extends GunItem implements GeoItem, PressFireSpe
     public void fireOnPress(Player player, final GunData data, double spread, boolean zoom) {
         if (data.reloading()) return;
         ItemStack stack = data.stack();
-        if (player.getCooldowns().isOnCooldown(stack.getItem()) || data.ammo.get() <= 0) return;
 
         var stackCap = stack.getCapability(Capabilities.EnergyStorage.ITEM);
         var hasEnoughEnergy = stackCap != null && stackCap.getEnergyStored() >= 3000;

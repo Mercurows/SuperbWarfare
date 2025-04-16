@@ -5,7 +5,6 @@ import com.atsuishio.superbwarfare.client.renderer.item.RpgItemRenderer;
 import com.atsuishio.superbwarfare.client.tooltip.component.LauncherImageComponent;
 import com.atsuishio.superbwarfare.entity.projectile.RpgRocketEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
-import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
@@ -118,10 +117,6 @@ public class RpgItem extends GunItem implements GeoItem, PressFireSpecialWeapon 
         data.save();
 
         super.inventoryTick(stack, world, entity, slot, selected);
-    }
-
-    protected static boolean check(ItemStack stack) {
-        return stack.getItem() == ModItems.ROCKET.get();
     }
 
     @Override

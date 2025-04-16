@@ -97,7 +97,7 @@ public record ShootMessage(double spread, boolean zoom) implements CustomPacketP
         } else if (stack.is(ModItems.MINIGUN.get())) {
             var cap = player.getData(ModAttachments.PLAYER_VARIABLE).watch();
 
-            if (data.hasAmmo(player) || InventoryTool.hasCreativeAmmoBox(player)) {
+            if (data.hasAmmo(player)) {
                 tag.putDouble("heat", (tag.getDouble("heat") + 0.1));
                 if (tag.getDouble("heat") >= 50.5) {
                     tag.putDouble("overheat", 40);
@@ -107,8 +107,8 @@ public record ShootMessage(double spread, boolean zoom) implements CustomPacketP
                     }
                 }
 
-                var perk = data.perk.get(Perk.Type.AMMO);
                 float pitch = tag.getDouble("heat") <= 40 ? 1 : (float) (1 - 0.025 * Math.abs(40 - tag.getDouble("heat")));
+                var perk = data.perk.get(Perk.Type.AMMO);
 
                 if (!player.level().isClientSide() && player instanceof ServerPlayer) {
                     float soundRadius = (float) data.soundRadius();

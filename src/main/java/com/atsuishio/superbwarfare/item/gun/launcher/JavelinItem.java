@@ -8,7 +8,6 @@ import com.atsuishio.superbwarfare.entity.projectile.JavelinMissileEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModEnumExtensions;
-import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
@@ -182,10 +181,6 @@ public class JavelinItem extends GunItem implements GeoItem, ReleaseSpecialWeapo
             tag.putInt("SeekTime", 0);
         }
         data.save();
-    }
-
-    protected static boolean check(ItemStack stack) {
-        return stack.getItem() == ModItems.JAVELIN_MISSILE.get();
     }
 
     @Override

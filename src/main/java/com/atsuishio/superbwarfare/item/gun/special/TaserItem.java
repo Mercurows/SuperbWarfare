@@ -149,10 +149,6 @@ public class TaserItem extends GunItem implements GeoItem, EnergyStorageItem, Pr
         }
     }
 
-    protected static boolean check(ItemStack stack) {
-        return stack.getItem() == ModItems.TASER_ELECTRODE.get();
-    }
-
     @Override
     public ResourceLocation getGunIcon() {
         return Mod.loc("textures/gun_icon/taser_icon.png");

@@ -5,7 +5,6 @@ import com.atsuishio.superbwarfare.client.renderer.item.M79ItemRenderer;
 import com.atsuishio.superbwarfare.client.tooltip.component.LauncherImageComponent;
 import com.atsuishio.superbwarfare.entity.projectile.GunGrenadeEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
-import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
@@ -92,10 +91,6 @@ public class M79Item extends GunItem implements GeoItem, PressFireSpecialWeapon 
         data.add(idleController);
     }
 
-    protected static boolean check(ItemStack stack) {
-        return stack.getItem() == ModItems.GRENADE_40MM.get();
-    }
-
     @Override
     public ResourceLocation getGunIcon() {
         return Mod.loc("textures/gun_icon/m79_icon.png");
@@ -129,8 +124,6 @@ public class M79Item extends GunItem implements GeoItem, PressFireSpecialWeapon 
     @Override
     public void fireOnPress(Player player, final GunData data, double spread, boolean zoom) {
         if (data.reloading()) return;
-        ItemStack stack = data.stack();
-        if (player.getCooldowns().isOnCooldown(stack.getItem()) || data.ammo.get() <= 0) return;
 
         if (player.level() instanceof ServerLevel serverLevel) {
             GunGrenadeEntity gunGrenadeEntity = new GunGrenadeEntity(player, serverLevel,
