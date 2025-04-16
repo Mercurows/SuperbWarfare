@@ -2,12 +2,13 @@ package com.atsuishio.superbwarfare.event;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.event.events.ReloadEvent;
-import com.atsuishio.superbwarfare.init.*;
+import com.atsuishio.superbwarfare.init.ModAttachments;
+import com.atsuishio.superbwarfare.init.ModItems;
+import com.atsuishio.superbwarfare.init.ModSounds;
+import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
-import com.atsuishio.superbwarfare.item.gun.data.value.AttachmentType;
 import com.atsuishio.superbwarfare.item.gun.data.value.ReloadState;
-import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.tools.Ammo;
 import com.atsuishio.superbwarfare.tools.InventoryTool;
 import com.atsuishio.superbwarfare.tools.SoundTool;
@@ -63,71 +64,6 @@ public class GunEventHandler {
                 if (stack.is(ModTags.Items.REVOLVER)) {
                     data.canImmediatelyShoot.set(true);
                 }
-            }
-        }
-    }
-
-    /**
-     * 根据武器的注册名来寻找音效并播放
-     */
-    public static void playGunSounds(Player player, boolean zoom) {
-        ItemStack stack = player.getMainHandItem();
-        if (!(stack.getItem() instanceof GunItem)) return;
-        var data = GunData.from(stack);
-
-        if (!player.level().isClientSide) {
-            String origin = stack.getItem().getDescriptionId();
-            String name = origin.substring(origin.lastIndexOf(".") + 1);
-
-            if (stack.getItem() == ModItems.SENTINEL.get()) {
-                var cap = stack.getCapability(Capabilities.EnergyStorage.ITEM);
-
-                if (cap != null && cap.getEnergyStored() > 0) {
-                    float soundRadius = (float) data.soundRadius();
-
-                    player.playSound(ModSounds.SENTINEL_CHARGE_FAR.get(), soundRadius * 0.7f, 1f);
-                    player.playSound(ModSounds.SENTINEL_CHARGE_FIRE_3P.get(), soundRadius * 0.4f, 1f);
-                    player.playSound(ModSounds.SENTINEL_CHARGE_VERYFAR.get(), soundRadius, 1f);
-
-                    return;
-                }
-            }
-
-            if (stack.getItem() == ModItems.SECONDARY_CATACLYSM.get()) {
-                var cap = stack.getCapability(Capabilities.EnergyStorage.ITEM);
-
-                if (cap != null && cap.getEnergyStored() > 3000 && zoom) {
-                    float soundRadius = (float) data.soundRadius();
-
-                    player.playSound(ModSounds.SECONDARY_CATACLYSM_FIRE_3P_CHARGE.get(), soundRadius * 0.4f, 1f);
-                    player.playSound(ModSounds.SECONDARY_CATACLYSM_FAR_CHARGE.get(), soundRadius * 0.7f, 1f);
-                    player.playSound(ModSounds.SECONDARY_CATACLYSM_VERYFAR_CHARGE.get(), soundRadius, 1f);
-
-                    return;
-                }
-            }
-
-            var perk = data.perk.get(Perk.Type.AMMO);
-            if (perk == ModPerks.BEAST_BULLET.get()) {
-                player.playSound(ModSounds.HENG.get(), 4f, 1f);
-            }
-
-            float soundRadius = (float) data.soundRadius();
-            int barrelType = data.attachment.get(AttachmentType.BARREL);
-
-            SoundEvent sound3p = BuiltInRegistries.SOUND_EVENT.get(Mod.loc(name + (barrelType == 2 ? "_fire_3p_s" : "_fire_3p")));
-            if (sound3p != null) {
-                player.playSound(sound3p, soundRadius * 0.4f, 1f);
-            }
-
-            SoundEvent soundFar = BuiltInRegistries.SOUND_EVENT.get(Mod.loc(name + (barrelType == 2 ? "_far_s" : "_far")));
-            if (soundFar != null) {
-                player.playSound(soundFar, soundRadius * 0.7f, 1f);
-            }
-
-            SoundEvent soundVeryFar = BuiltInRegistries.SOUND_EVENT.get(Mod.loc(name + (barrelType == 2 ? "_veryfar_s" : "_veryfar")));
-            if (soundVeryFar != null) {
-                player.playSound(soundVeryFar, soundRadius, 1f);
             }
         }
     }

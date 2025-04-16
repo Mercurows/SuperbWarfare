@@ -201,6 +201,21 @@ public class SentinelItem extends GunItem implements GeoItem, EnergyStorageItem 
     }
 
     @Override
+    public void playFireSounds(GunData data, Player player, boolean zoom) {
+        var cap = data.stack.getCapability(Capabilities.EnergyStorage.ITEM);
+
+        if (cap != null && cap.getEnergyStored() > 0) {
+            float soundRadius = (float) data.soundRadius();
+
+            player.playSound(ModSounds.SENTINEL_CHARGE_FAR.get(), soundRadius * 0.7f, 1f);
+            player.playSound(ModSounds.SENTINEL_CHARGE_FIRE_3P.get(), soundRadius * 0.4f, 1f);
+            player.playSound(ModSounds.SENTINEL_CHARGE_VERYFAR.get(), soundRadius, 1f);
+        } else {
+            super.playFireSounds(data, player, zoom);
+        }
+    }
+
+    @Override
     public int getMaxEnergy() {
         return 24000;
     }

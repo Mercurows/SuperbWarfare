@@ -269,6 +269,10 @@ public class JavelinItem extends GunItem implements GeoItem {
     }
 
     @Override
+    public void onShoot(GunData data, Player player, double spread, boolean zoom) {
+    }
+
+    @Override
     public void onFireKeyRelease(GunData data, Player player, double power, boolean zoom) {
         super.onFireKeyRelease(data, player, power, zoom);
 
