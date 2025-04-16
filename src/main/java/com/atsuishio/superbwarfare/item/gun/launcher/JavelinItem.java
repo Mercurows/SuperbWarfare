@@ -11,7 +11,6 @@ import com.atsuishio.superbwarfare.init.ModEnumExtensions;
 import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
-import com.atsuishio.superbwarfare.item.gun.ReleaseSpecialWeapon;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.network.message.receive.ShootClientMessage;
 import com.atsuishio.superbwarfare.perk.Perk;
@@ -55,7 +54,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
 
-public class JavelinItem extends GunItem implements GeoItem, ReleaseSpecialWeapon {
+public class JavelinItem extends GunItem implements GeoItem {
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     public static ItemDisplayContext transformType;
@@ -270,8 +269,11 @@ public class JavelinItem extends GunItem implements GeoItem, ReleaseSpecialWeapo
     }
 
     @Override
-    public void fireOnRelease(Player player, final GunData data, double power, boolean zoom) {
+    public void onFireKeyRelease(GunData data, Player player, double power, boolean zoom) {
+        super.onFireKeyRelease(data, player, power, zoom);
+
         fire(player);
+
         var tag = data.tag();
         tag.putBoolean("Seeking", false);
         tag.putInt("SeekTime", 0);
@@ -283,11 +285,12 @@ public class JavelinItem extends GunItem implements GeoItem, ReleaseSpecialWeapo
     }
 
     @Override
-    public void fireOnPress(Player player, final GunData data, boolean zoom) {
-        var tag = data.tag();
+    public void onFireKeyPress(GunData data, Player player, boolean zoom) {
+        super.onFireKeyPress(data, player, zoom);
 
         if (!zoom || data.ammo.get() <= 0) return;
 
+        var tag = data.tag();
         Entity seekingEntity = SeekTool.seekEntity(player, player.level(), 512, 8);
 
         if (seekingEntity != null && !player.isCrouching()) {

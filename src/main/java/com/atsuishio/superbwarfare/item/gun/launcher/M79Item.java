@@ -8,7 +8,6 @@ import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
-import com.atsuishio.superbwarfare.item.gun.PressFireSpecialWeapon;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
@@ -36,7 +35,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
 
-public class M79Item extends GunItem implements GeoItem, PressFireSpecialWeapon {
+public class M79Item extends GunItem implements GeoItem {
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     public static ItemDisplayContext transformType;
@@ -122,7 +121,7 @@ public class M79Item extends GunItem implements GeoItem, PressFireSpecialWeapon 
     }
 
     @Override
-    public void fireOnPress(Player player, final GunData data, double spread, boolean zoom) {
+    public void shootBullet(Player player, GunData data, double spread, boolean zoom) {
         if (data.reloading()) return;
 
         if (player.level() instanceof ServerLevel serverLevel) {

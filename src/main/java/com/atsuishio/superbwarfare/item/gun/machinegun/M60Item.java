@@ -162,8 +162,8 @@ public class M60Item extends GunItem implements GeoItem {
     }
 
     @Override
-    public void onShoot(GunData data, Player player) {
-        super.onShoot(data, player);
+    public void beforeShoot(GunData data, Player player, double spread, boolean zoom) {
+        super.beforeShoot(data, player, spread, zoom);
 
         if (data.ammo.get() <= 5) {
             data.hideBulletChain.set(true);

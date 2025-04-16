@@ -124,8 +124,8 @@ public class HomemadeShotgunItem extends GunItem implements GeoItem {
     }
 
     @Override
-    public void onShoot(GunData data, Player player) {
-        super.onShoot(data, player);
+    public void beforeShoot(GunData data, Player player, double spread, boolean zoom) {
+        super.beforeShoot(data, player, spread, zoom);
 
         var stack = data.stack();
         stack.hurtAndBreak(1, (ServerLevel) player.level(), player, p -> {

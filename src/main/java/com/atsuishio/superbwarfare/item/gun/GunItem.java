@@ -3,12 +3,16 @@ package com.atsuishio.superbwarfare.item.gun;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.PoseTool;
 import com.atsuishio.superbwarfare.client.tooltip.component.GunImageComponent;
+import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity;
+import com.atsuishio.superbwarfare.event.GunEventHandler;
 import com.atsuishio.superbwarfare.init.ModAttachments;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModPerks;
+import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.CustomRendererItem;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.item.gun.data.value.AttachmentType;
+import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.tools.Ammo;
 import net.minecraft.client.model.HumanoidModel;
@@ -18,6 +22,8 @@ import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.LivingEntity;
@@ -490,9 +496,161 @@ public abstract class GunItem extends Item implements CustomRendererItem {
     }
 
     /**
-     * 添加服务端在开火时的额外行为
+     * 服务端在开火前的额外行为
      */
-    public void onShoot(GunData data, Player player) {
+    public void beforeShoot(GunData data, Player player, double spread, boolean zoom) {
+        // 空仓挂机
+        if (data.ammo.get() == 1) {
+            data.holdOpen.set(true);
+        }
+
+        // TODO 替换左轮判断方式
+        if (data.stack.is(ModTags.Items.REVOLVER)) {
+            data.canImmediatelyShoot.set(true);
+        }
+
+        // TODO 替换左轮判断方式
+        // 判断是否为栓动武器（BoltActionTime > 0），并在开火后给一个需要上膛的状态
+        if (data.defaultActionTime() > 0 && data.ammo.get() > (data.stack.is(ModTags.Items.REVOLVER) ? 0 : 1)) {
+            data.bolt.needed.set(true);
+        }
+
+        data.ammo.set(data.ammo.get() - 1);
+        data.isEmpty.set(true);
+    }
+
+    /**
+     * 服务端处理开火
+     */
+    public void onShoot(GunData data, Player player, double spread, boolean zoom) {
+        if (data.ammo.get() <= 0) return;
+
+        // 开火前事件
+        data.item.beforeShoot(data, player, spread, zoom);
+
+        int projectileAmount = data.projectileAmount();
+        var perk = data.perk.get(Perk.Type.AMMO);
+
+        // 生成所有子弹
+        for (int index0 = 0; index0 < (perk instanceof AmmoPerk ammoPerk && ammoPerk.slug ? 1 : projectileAmount); index0++) {
+            shootBullet(player, data, spread, zoom);
+        }
+
+        // TODO 提取对应方法
+        // 播放音效
+        GunEventHandler.playGunSounds(player, zoom);
+    }
+
+    /**
+     * 服务端处理按下开火按键时的额外行为
+     */
+    public void onFireKeyPress(final GunData data, Player player, boolean zoom) {
+        if (data.reload.prepareTimer.get() == 0 && data.reloading() && data.ammo.get() > 0) {
+            data.forceStop.set(true);
+        }
+
+        player.getData(ModAttachments.PLAYER_VARIABLE).modify(player, cap -> cap.edit = false);
+    }
+
+    /**
+     * 服务端处理松开开火按键时的额外行为
+     */
+    public void onFireKeyRelease(final GunData data, Player player, double power, boolean zoom) {
+    }
+
+    public static double perkSpeed(GunData data) {
+        var perk = data.perk.get(Perk.Type.AMMO);
+        if (perk instanceof AmmoPerk ammoPerk) {
+            return ammoPerk.speedRate;
+        }
+        return 1;
+    }
+
+    public static double perkDamage(Perk perk) {
+        if (perk instanceof AmmoPerk ammoPerk) {
+            return ammoPerk.damageRate;
+        }
+        return 1;
+    }
+
+    /**
+     * 服务端发射单发子弹
+     */
+    public void shootBullet(Player player, GunData data, double spread, boolean zoom) {
+        var stack = data.stack;
+
+        float headshot = (float) data.headshot();
+        float damage = (float) data.damage();
+        float velocity = (float) (data.velocity() * perkSpeed(data));
+        int projectileAmount = data.projectileAmount();
+        float bypassArmorRate = (float) data.bypassArmor();
+        var perkInstance = data.perk.getInstance(Perk.Type.AMMO);
+        var perk = perkInstance != null ? perkInstance.perk() : null;
+
+        ProjectileEntity projectile = new ProjectileEntity(player.level())
+                .shooter(player)
+                .damage(perk instanceof AmmoPerk ammoPerk && ammoPerk.slug ? projectileAmount * damage : damage)
+                .headShot(headshot)
+                .zoom(zoom)
+                .setGunItemId(stack);
+
+        if (perk instanceof AmmoPerk ammoPerk) {
+            int level = data.perk.getLevel(perk);
+
+            bypassArmorRate += ammoPerk.bypassArmorRate + (perk == ModPerks.AP_BULLET.get() ? 0.05f * (level - 1) : 0);
+            projectile.setRGB(ammoPerk.rgb);
+
+            if (!ammoPerk.mobEffects.get().isEmpty()) {
+                int amplifier;
+                if (perk.descriptionId.equals("blade_bullet")) {
+                    amplifier = level / 3;
+                } else if (perk.descriptionId.equals("bread_bullet")) {
+                    amplifier = 1;
+                } else {
+                    amplifier = level - 1;
+                }
+
+                ArrayList<MobEffectInstance> mobEffectInstances = new ArrayList<>();
+                for (MobEffect effect : ammoPerk.mobEffects.get()) {
+                    mobEffectInstances.add(new MobEffectInstance(Holder.direct(effect), 70 + 30 * level, amplifier));
+                }
+                projectile.effect(mobEffectInstances);
+            }
+
+            if (perk.descriptionId.equals("bread_bullet")) {
+                projectile.knockback(level * 0.3f);
+                projectile.forceKnockback();
+            }
+        }
+
+        bypassArmorRate = Math.max(bypassArmorRate, 0);
+        projectile.bypassArmorRate(bypassArmorRate);
+
+        if (perk == ModPerks.SILVER_BULLET.get()) {
+            int level = data.perk.getLevel(perk);
+            projectile.undeadMultiple(1.0f + 0.5f * level);
+        } else if (perk == ModPerks.BEAST_BULLET.get()) {
+            projectile.beast();
+        } else if (perk == ModPerks.JHP_BULLET.get()) {
+            int level = data.perk.getLevel(perk);
+            projectile.jhpBullet(level);
+        } else if (perk == ModPerks.HE_BULLET.get()) {
+            int level = data.perk.getLevel(perk);
+            projectile.heBullet(level);
+        } else if (perk == ModPerks.INCENDIARY_BULLET.get()) {
+            int level = data.perk.getLevel(perk);
+            projectile.fireBullet(level, stack.is(ModTags.Items.SHOTGUN));
+        }
+
+        var dmgPerk = data.perk.get(Perk.Type.DAMAGE);
+        if (dmgPerk == ModPerks.MONSTER_HUNTER.get()) {
+            int level = data.perk.getLevel(dmgPerk);
+            projectile.monsterMultiple(0.1f + 0.1f * level);
+        }
+
+        projectile.setPos(player.getX() - 0.1 * player.getLookAngle().x, player.getEyeY() - 0.1 - 0.1 * player.getLookAngle().y, player.getZ() + -0.1 * player.getLookAngle().z);
+        projectile.shoot(player, player.getLookAngle().x, player.getLookAngle().y + 0.001f, player.getLookAngle().z, stack.is(ModTags.Items.SHOTGUN) && perk == ModPerks.INCENDIARY_BULLET.get() ? 4.5f : velocity, (float) spread);
+        player.level().addFreshEntity(projectile);
     }
 
     @SubscribeEvent

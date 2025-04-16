@@ -10,7 +10,6 @@ import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.item.EnergyStorageItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
-import com.atsuishio.superbwarfare.item.gun.PressFireSpecialWeapon;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
@@ -44,7 +43,7 @@ import java.util.ArrayList;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-public class SecondaryCataclysm extends GunItem implements GeoItem, PressFireSpecialWeapon, EnergyStorageItem {
+public class SecondaryCataclysm extends GunItem implements GeoItem, EnergyStorageItem {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     public static ItemDisplayContext transformType;
 
@@ -232,7 +231,7 @@ public class SecondaryCataclysm extends GunItem implements GeoItem, PressFireSpe
     }
 
     @Override
-    public void fireOnPress(Player player, final GunData data, double spread, boolean zoom) {
+    public void shootBullet(Player player, GunData data, double spread, boolean zoom) {
         if (data.reloading()) return;
         ItemStack stack = data.stack();
 

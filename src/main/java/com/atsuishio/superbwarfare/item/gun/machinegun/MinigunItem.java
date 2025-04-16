@@ -6,11 +6,13 @@ import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModEnumExtensions;
 import com.atsuishio.superbwarfare.init.ModParticleTypes;
 import com.atsuishio.superbwarfare.init.ModPerks;
+import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.tools.NBTTool;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
+import com.atsuishio.superbwarfare.tools.SoundTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.particles.ParticleTypes;
@@ -19,6 +21,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
@@ -151,6 +154,41 @@ public class MinigunItem extends GunItem implements GeoItem {
         }
 
         data.save();
+    }
+
+    @Override
+    public void onShoot(GunData data, Player player, double spread, boolean zoom) {
+        var tag = data.tag();
+
+        if (!data.hasAmmo(player)) return;
+
+        // TODO 替换为通用过热处理
+        tag.putDouble("heat", (tag.getDouble("heat") + 0.1));
+        if (tag.getDouble("heat") >= 50.5) {
+            tag.putDouble("overheat", 40);
+            player.getCooldowns().addCooldown(data.item(), 40);
+            if (!player.level().isClientSide() && player instanceof ServerPlayer serverPlayer) {
+                SoundTool.playLocalSound(serverPlayer, ModSounds.MINIGUN_OVERHEAT.get(), 2f, 1f);
+            }
+        }
+
+        float pitch = tag.getDouble("heat") <= 40 ? 1 : (float) (1 - 0.025 * Math.abs(40 - tag.getDouble("heat")));
+        var perk = data.perk.get(Perk.Type.AMMO);
+
+        if (!player.level().isClientSide() && player instanceof ServerPlayer) {
+            float soundRadius = (float) data.soundRadius();
+
+            player.playSound(ModSounds.MINIGUN_FIRE_3P.get(), soundRadius * 0.2f, pitch);
+            player.playSound(ModSounds.MINIGUN_FAR.get(), soundRadius * 0.5f, pitch);
+            player.playSound(ModSounds.MINIGUN_VERYFAR.get(), soundRadius, pitch);
+
+            if (perk == ModPerks.BEAST_BULLET.get()) {
+                player.playSound(ModSounds.HENG.get(), 4f, pitch);
+            }
+        }
+
+        shootBullet(player, data, spread, zoom);
+        data.consumeAmmo(player, 1);
     }
 
     @Override

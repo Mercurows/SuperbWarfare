@@ -3,11 +3,11 @@ package com.atsuishio.superbwarfare.item.gun.special;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.renderer.item.BocekItemRenderer;
 import com.atsuishio.superbwarfare.client.tooltip.component.BocekImageComponent;
+import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
-import com.atsuishio.superbwarfare.item.gun.ReleaseSpecialWeapon;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.network.message.receive.ShootClientMessage;
 import com.atsuishio.superbwarfare.perk.AmmoPerk;
@@ -17,9 +17,12 @@ import com.atsuishio.superbwarfare.tools.InventoryTool;
 import com.atsuishio.superbwarfare.tools.SoundTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
@@ -37,12 +40,11 @@ import software.bernie.geckolib.renderer.GeoItemRenderer;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import static com.atsuishio.superbwarfare.network.message.send.FireKeyMessage.spawnBullet;
-
-public class BocekItem extends GunItem implements GeoItem, ReleaseSpecialWeapon {
+public class BocekItem extends GunItem implements GeoItem {
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     public static ItemDisplayContext transformType;
@@ -145,13 +147,16 @@ public class BocekItem extends GunItem implements GeoItem, ReleaseSpecialWeapon 
     }
 
     @Override
-    public void fireOnRelease(Player player, final GunData data, double power, boolean zoom) {
-        if (player.level().isClientSide()) return;
+    public void onShoot(GunData data, Player player, double spread, boolean zoom) {
+    }
 
-        ItemStack stack = player.getMainHandItem();
-        var perk = data.perk.get(Perk.Type.AMMO);
+    @Override
+    public void onFireKeyRelease(GunData data, Player player, double power, boolean zoom) {
+        super.onFireKeyRelease(data, player, power, zoom);
 
         if (data.ammo.get() == 0) return;
+
+        var perk = data.perk.get(Perk.Type.AMMO);
 
         if (player instanceof ServerPlayer serverPlayer) {
             SoundTool.stopSound(serverPlayer, ModSounds.BOCEK_PULL_1P.getId(), SoundSource.PLAYERS);
@@ -161,13 +166,13 @@ public class BocekItem extends GunItem implements GeoItem, ReleaseSpecialWeapon 
 
         if (power * 12 >= 6) {
             if (zoom) {
-                spawnBullet(player, power, true);
+                spawnBullet(data, player, power, true);
 
                 SoundTool.playLocalSound(player, ModSounds.BOCEK_ZOOM_FIRE_1P.get(), 10, 1);
                 player.playSound(ModSounds.BOCEK_ZOOM_FIRE_3P.get(), 2, 1);
             } else {
                 for (int i = 0; i < (perk instanceof AmmoPerk ammoPerk && ammoPerk.slug ? 1 : 10); i++) {
-                    spawnBullet(player, power, false);
+                    spawnBullet(data, player, power, false);
                 }
 
                 SoundTool.playLocalSound(player, ModSounds.BOCEK_SHATTER_CAP_FIRE_1P.get(), 10, 1);
@@ -182,9 +187,97 @@ public class BocekItem extends GunItem implements GeoItem, ReleaseSpecialWeapon 
                 }
             }
 
-            GunsTool.setGunIntTag(GunData.from(stack).tag, "ArrowEmpty", 7);
+            GunsTool.setGunIntTag(data.tag, "ArrowEmpty", 7);
             data.ammo.set(data.ammo.get() - 1);
             data.save();
         }
+    }
+
+
+    public void spawnBullet(GunData data, Player player, double power, boolean zoom) {
+        ItemStack stack = data.stack;
+
+        var perk = data.perk.get(Perk.Type.AMMO);
+        float headshot = (float) data.headshot();
+        float velocity = (float) (24 * power * (float) perkSpeed(data));
+        float bypassArmorRate = (float) data.bypassArmor();
+        double damage;
+
+        float spread;
+        if (zoom) {
+            spread = 0.01f;
+            damage = 0.08333333 * data.damage() *
+                    12 * power * perkDamage(perk);
+        } else {
+            spread = perk instanceof AmmoPerk ammoPerk && ammoPerk.slug ? 0.5f : 2.5f;
+            damage = (perk instanceof AmmoPerk ammoPerk && ammoPerk.slug ? 0.08333333 : 0.008333333) *
+                    data.damage() * 12 * power * perkDamage(perk);
+        }
+
+        ProjectileEntity projectile = new ProjectileEntity(player.level())
+                .shooter(player)
+                .headShot(headshot)
+                .zoom(zoom)
+                .setGunItemId(stack);
+
+        if (perk instanceof AmmoPerk ammoPerk) {
+            int level = data.perk.getLevel(perk);
+
+            bypassArmorRate += ammoPerk.bypassArmorRate + (perk == ModPerks.AP_BULLET.get() ? 0.05f * (level - 1) : 0);
+            projectile.setRGB(ammoPerk.rgb);
+
+            if (!ammoPerk.mobEffects.get().isEmpty()) {
+                int amplifier;
+                if (perk.descriptionId.equals("blade_bullet")) {
+                    amplifier = level / 3;
+                } else if (perk.descriptionId.equals("bread_bullet")) {
+                    amplifier = 1;
+                } else {
+                    amplifier = level - 1;
+                }
+
+                ArrayList<MobEffectInstance> mobEffectInstances = new ArrayList<>();
+                for (MobEffect effect : ammoPerk.mobEffects.get()) {
+                    mobEffectInstances.add(new MobEffectInstance(Holder.direct(effect), 70 + 30 * level, amplifier));
+                }
+                projectile.effect(mobEffectInstances);
+            }
+
+            if (perk.descriptionId.equals("bread_bullet")) {
+                projectile.knockback(level * 0.3f);
+                projectile.forceKnockback();
+            }
+        }
+
+        bypassArmorRate = Math.max(bypassArmorRate, 0);
+        projectile.bypassArmorRate(bypassArmorRate);
+
+        if (perk == ModPerks.SILVER_BULLET.get()) {
+            int level = data.perk.getLevel(perk);
+            projectile.undeadMultiple(1.0f + 0.5f * level);
+        } else if (perk == ModPerks.BEAST_BULLET.get()) {
+            projectile.beast();
+        } else if (perk == ModPerks.JHP_BULLET.get()) {
+            int level = data.perk.getLevel(perk);
+            projectile.jhpBullet(level);
+        } else if (perk == ModPerks.HE_BULLET.get()) {
+            int level = data.perk.getLevel(perk);
+            projectile.heBullet(level);
+        } else if (perk == ModPerks.INCENDIARY_BULLET.get()) {
+            int level = data.perk.getLevel(perk);
+            projectile.fireBullet(level, !zoom);
+        }
+
+        var dmgPerk = data.perk.get(Perk.Type.DAMAGE);
+        if (dmgPerk == ModPerks.MONSTER_HUNTER.get()) {
+            int perkLevel = data.perk.getLevel(dmgPerk);
+            projectile.monsterMultiple(0.1f + 0.1f * perkLevel);
+        }
+
+        projectile.setPos(player.getX() - 0.1 * player.getLookAngle().x, player.getEyeY() - 0.1 - 0.1 * player.getLookAngle().y, player.getZ() + -0.1 * player.getLookAngle().z);
+        projectile.shoot(player, player.getLookAngle().x, player.getLookAngle().y, player.getLookAngle().z, (!zoom && perk == ModPerks.INCENDIARY_BULLET.get() ? 0.2f : 1) * velocity, spread);
+        projectile.damage((float) damage);
+
+        player.level().addFreshEntity(projectile);
     }
 }

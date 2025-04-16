@@ -10,7 +10,6 @@ import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.EnergyStorageItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
-import com.atsuishio.superbwarfare.item.gun.PressFireSpecialWeapon;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.perk.Perk;
 import net.minecraft.client.Minecraft;
@@ -39,7 +38,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
 
-public class TaserItem extends GunItem implements GeoItem, EnergyStorageItem, PressFireSpecialWeapon {
+public class TaserItem extends GunItem implements GeoItem, EnergyStorageItem {
 
     public static final int MAX_ENERGY = 6000;
 
@@ -185,7 +184,7 @@ public class TaserItem extends GunItem implements GeoItem, EnergyStorageItem, Pr
     }
 
     @Override
-    public void fireOnPress(Player player, final GunData data, double spread, boolean zoom) {
+    public void shootBullet(Player player, GunData data, double spread, boolean zoom) {
         if (data.reloading()) return;
         ItemStack stack = data.stack();
 

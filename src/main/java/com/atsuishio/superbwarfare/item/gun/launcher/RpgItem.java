@@ -8,7 +8,6 @@ import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
-import com.atsuishio.superbwarfare.item.gun.PressFireSpecialWeapon;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
@@ -41,7 +40,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public class RpgItem extends GunItem implements GeoItem, PressFireSpecialWeapon {
+public class RpgItem extends GunItem implements GeoItem {
 
     @Override
     public String getAmmoDisplayName(GunData data) {
@@ -145,7 +144,7 @@ public class RpgItem extends GunItem implements GeoItem, PressFireSpecialWeapon 
     }
 
     @Override
-    public void fireOnPress(Player player, final GunData data, double spread, boolean zoom) {
+    public void shootBullet(Player player, GunData data, double spread, boolean zoom) {
         Level level = player.level();
 
         if (data.reloading()) return;
