@@ -171,6 +171,13 @@ public class GunData {
         return defaultGunData().magazine + item.getCustomMagazine(stack);
     }
 
+    /**
+     * 武器是否直接使用背包内弹药
+     */
+    public boolean useBackpackAmmo() {
+        return magazine() <= 0;
+    }
+
     public int projectileAmount() {
         return defaultGunData().projectileAmount;
     }
@@ -362,11 +369,20 @@ public class GunData {
         }
     }
 
+    /**
+     * 是否拥有足够的弹药进行开火
+     */
+    public boolean hasEnoughAmmoToShoot(Player player) {
+        return useBackpackAmmo() ? hasBackupAmmo(player) : this.ammo.get() > 0;
+    }
+
     public void reload(Player player) {
         reload(player, false);
     }
 
     public void reload(Player player, boolean extraOne) {
+        if (useBackpackAmmo()) return;
+
         int mag = magazine();
         int ammo = this.ammo.get();
         int ammoNeeded = mag - ammo + (extraOne ? 1 : 0);

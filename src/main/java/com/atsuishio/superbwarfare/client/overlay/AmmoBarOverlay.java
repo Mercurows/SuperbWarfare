@@ -42,28 +42,15 @@ public class AmmoBarOverlay implements LayeredDraw.Layer {
         return player.isCreative() || InventoryTool.hasCreativeAmmoBox(player);
     }
 
-    private static int getGunAmmoCount(Player player) {
-        ItemStack stack = player.getMainHandItem();
-
-        if (stack.getItem() == ModItems.MINIGUN.get()) {
-            return GunData.from(stack).countBackupAmmo(player);
-        }
-        return GunData.from(stack).ammo.get();
+    private static String getGunAmmoString(GunData data, Player player) {
+        if (data.useBackpackAmmo() && hasCreativeAmmo()) return "∞";
+        return data.useBackpackAmmo() ? data.countBackupAmmo(player) + "" : data.ammo.get() + "";
     }
 
-    private static String getPlayerAmmoCount(Player player) {
-        ItemStack stack = player.getMainHandItem();
+    private static String getBackupAmmoString(GunData data, Player player) {
+        if (data.useBackpackAmmo()) return "";
 
-        if (stack.getItem() == ModItems.MINIGUN.get()) {
-            return "";
-        }
-
-        if (!hasCreativeAmmo()) {
-            var data = GunData.from(stack);
-            return data.countBackupAmmo(player) + "";
-        }
-
-        return "∞";
+        return hasCreativeAmmo() ? "∞" : data.countBackupAmmo(player) + "";
     }
 
     @Override
@@ -79,8 +66,8 @@ public class AmmoBarOverlay implements LayeredDraw.Layer {
         if (player.isSpectator()) return;
 
         ItemStack stack = player.getMainHandItem();
-        final var tag = NBTTool.getTag(stack);
         if (stack.getItem() instanceof GunItem gunItem && !(player.getVehicle() instanceof ArmedVehicleEntity vehicle && vehicle.banHand(player))) {
+            final var tag = NBTTool.getTag(stack);
             PoseStack poseStack = guiGraphics.pose();
             var data = GunData.from(stack);
 
@@ -174,32 +161,21 @@ public class AmmoBarOverlay implements LayeredDraw.Layer {
             poseStack.pushPose();
             poseStack.scale(1.5f, 1.5f, 1f);
 
-            if (stack.getItem() == ModItems.MINIGUN.get() && hasCreativeAmmo()) {
-                guiGraphics.drawString(
-                        Minecraft.getInstance().font,
-                        "∞",
-                        w / 1.5f - 64 / 1.5f,
-                        h / 1.5f - 48 / 1.5f,
-                        0xFFFFFF,
-                        true
-                );
-            } else {
-                guiGraphics.drawString(
-                        Minecraft.getInstance().font,
-                        getGunAmmoCount(player) + "",
-                        w / 1.5f - 64 / 1.5f,
-                        h / 1.5f - 48 / 1.5f,
-                        0xFFFFFF,
-                        true
-                );
-            }
+            guiGraphics.drawString(
+                    Minecraft.getInstance().font,
+                    getGunAmmoString(data, player),
+                    w / 1.5f - 64 / 1.5f,
+                    h / 1.5f - 48 / 1.5f,
+                    0xFFFFFF,
+                    true
+            );
 
             poseStack.popPose();
 
             // 渲染备弹量
             guiGraphics.drawString(
                     Minecraft.getInstance().font,
-                    getPlayerAmmoCount(player),
+                    getBackupAmmoString(data, player),
                     w - 64,
                     h - 35,
                     0xCCCCCC,

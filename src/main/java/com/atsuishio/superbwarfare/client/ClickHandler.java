@@ -327,7 +327,7 @@ public class ClickHandler {
             ClientEventHandler.holdFire = true;
         }
 
-        if (stack.getItem() instanceof GunItem gunItem && !(player.getVehicle() != null
+        if (stack.getItem() instanceof GunItem && !(player.getVehicle() != null
                 && player.getVehicle() instanceof CannonEntity)
                 && clientTimer.getProgress() == 0
                 && !notInGame()
@@ -339,7 +339,7 @@ public class ClickHandler {
                 handTimer = 0;
             }
 
-            if (!gunItem.useBackpackAmmo(stack) && data.ammo.get() <= 0 && data.reload.time() == 0) {
+            if (!data.useBackpackAmmo() && data.ammo.get() <= 0 && data.reload.time() == 0) {
                 if (ReloadConfig.LEFT_CLICK_RELOAD.get()) {
                     PacketDistributor.sendToServer(new ReloadMessage(0));
                     ClientEventHandler.burstFireAmount = 0;

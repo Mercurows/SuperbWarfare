@@ -582,7 +582,7 @@ public class ClientEventHandler {
                 && (!(data.reload.normal() || data.reload.empty())
                 && !data.reloading()
                 && !data.charging()
-                && data.ammo.get() > 0
+                && data.hasEnoughAmmoToShoot(player)
                 && !player.getCooldowns().isOnCooldown(stack.getItem())
                 && !data.bolt.needed.get()
                 && revolverPre(data))
@@ -659,66 +659,65 @@ public class ClientEventHandler {
         ItemStack stack = player.getMainHandItem();
         if (!(stack.getItem() instanceof GunItem)) return;
         var data = GunData.from(stack);
+        if (!data.hasEnoughAmmoToShoot(player)) return;
+
         if (stack.is(ModTags.Items.NORMAL_GUN)) {
-            if (data.ammo.get() > 0) {
-                int mode = data.fireMode.get();
-                if (mode != 2) {
-                    holdFire = false;
-                }
-
-                if (mode == 1) {
-                    if (data.ammo.get() == 1) {
-                        burstFireAmount = 1;
-                    }
-                    if (burstFireAmount == 1) {
-                        cantFireTime = 30;
-                    }
-                }
-
-                if (burstFireAmount > 0) {
-                    burstFireAmount--;
-                }
-
-                if (stack.is(ModItems.DEVOTION.get())) {
-                    int perkLevel = data.perk.getLevel(ModPerks.TURBO_CHARGER);
-                    customRpm = Math.min(customRpm + 15 + ((perkLevel > 0 ? 5 : 0) + 3 * perkLevel), 500);
-                }
-
-                if (stack.getItem() == ModItems.SENTINEL.get()) {
-                    chamberRot = 1;
-                }
-
-                if (stack.getItem() == ModItems.NTW_20.get()) {
-                    actionMove = 1;
-                }
-
-                // 判断是否为栓动武器（BoltActionTime > 0），并在开火后给一个需要上膛的状态
-                if (data.defaultActionTime() > 0 && data.ammo.get() > (stack.is(ModTags.Items.REVOLVER) ? 0 : 1)) {
-                    data.bolt.needed.set(true);
-                }
-
-                revolverPreTime = 0;
-                revolverWheelPreTime = 0;
-
-                playGunClientSounds(player);
-                handleClientShoot();
+            int mode = data.fireMode.get();
+            if (mode != 2) {
+                holdFire = false;
             }
+
+            if (mode == 1) {
+                if (data.ammo.get() == 1) {
+                    burstFireAmount = 1;
+                }
+                if (burstFireAmount == 1) {
+                    cantFireTime = 30;
+                }
+            }
+
+            if (burstFireAmount > 0) {
+                burstFireAmount--;
+            }
+
+            if (stack.is(ModItems.DEVOTION.get())) {
+                int perkLevel = data.perk.getLevel(ModPerks.TURBO_CHARGER);
+                customRpm = Math.min(customRpm + 15 + ((perkLevel > 0 ? 5 : 0) + 3 * perkLevel), 500);
+            }
+
+            if (stack.getItem() == ModItems.SENTINEL.get()) {
+                chamberRot = 1;
+            }
+
+            if (stack.getItem() == ModItems.NTW_20.get()) {
+                actionMove = 1;
+            }
+
+            // 判断是否为栓动武器（BoltActionTime > 0），并在开火后给一个需要上膛的状态
+            if (data.defaultActionTime() > 0 && data.ammo.get() > (stack.is(ModTags.Items.REVOLVER) ? 0 : 1)) {
+                data.bolt.needed.set(true);
+            }
+
+            revolverPreTime = 0;
+            revolverWheelPreTime = 0;
+
+            playGunClientSounds(player);
+            handleClientShoot();
         } else if (stack.is(ModItems.MINIGUN.get())) {
-            if (data.hasBackupAmmo(player)) {
-                var perk = data.perk.get(Perk.Type.AMMO);
-                float pitch = tag.getDouble("heat") <= 40 ? 1 : (float) (1 - 0.025 * Math.abs(40 - tag.getDouble("heat")));
+            // TODO 提取通用处理方法
+            var perk = data.perk.get(Perk.Type.AMMO);
+            float pitch = tag.getDouble("heat") <= 40 ? 1 : (float) (1 - 0.025 * Math.abs(40 - tag.getDouble("heat")));
 
-                player.playSound(ModSounds.MINIGUN_FIRE_1P.get(), 1f, pitch);
+            player.playSound(ModSounds.MINIGUN_FIRE_1P.get(), 1f, pitch);
 
-                if (perk == ModPerks.BEAST_BULLET.get()) {
-                    player.playSound(ModSounds.HENG.get(), 1f, 1f);
-                }
-
-                double shooterHeight = player.getEyePosition().distanceTo((Vec3.atLowerCornerOf(player.level().clip(new ClipContext(player.getEyePosition(), player.getEyePosition().add(new Vec3(0, -1, 0).scale(10)),
-                        ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, player)).getBlockPos())));
-
-                Mod.queueClientWork((int) (1 + 1.5 * shooterHeight), () -> player.playSound(ModSounds.SHELL_CASING_NORMAL.get(), (float) Math.max(1.5 - 0.2 * shooterHeight, 0), 1));
+            if (perk == ModPerks.BEAST_BULLET.get()) {
+                player.playSound(ModSounds.HENG.get(), 1f, 1f);
             }
+
+            double shooterHeight = player.getEyePosition().distanceTo((Vec3.atLowerCornerOf(player.level().clip(new ClipContext(player.getEyePosition(), player.getEyePosition().add(new Vec3(0, -1, 0).scale(10)),
+                    ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, player)).getBlockPos())));
+
+            Mod.queueClientWork((int) (1 + 1.5 * shooterHeight), () -> player.playSound(ModSounds.SHELL_CASING_NORMAL.get(), (float) Math.max(1.5 - 0.2 * shooterHeight, 0), 1));
 
             handleClientShoot();
         }
