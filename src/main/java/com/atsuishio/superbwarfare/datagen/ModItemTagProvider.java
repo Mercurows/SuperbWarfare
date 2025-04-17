@@ -101,20 +101,6 @@ public class ModItemTagProvider extends ItemTagsProvider {
                 ModItems.TASER.get()
         );
 
-        this.tag(ModTags.Items.USE_HANDGUN_AMMO).add(
-                ModItems.GLOCK_17.get(), ModItems.GLOCK_18.get(), ModItems.M_1911.get(), ModItems.VECTOR.get(), ModItems.MP_443.get()
-        );
-
-        this.tag(ModTags.Items.USE_RIFLE_AMMO).add(ModItems.M_4.get(), ModItems.HK_416.get(), ModItems.SKS.get(), ModItems.MINIGUN.get(), ModItems.DEVOTION.get(), ModItems.M_60.get(),
-                ModItems.MK_14.get(), ModItems.MARLIN.get(), ModItems.AK_47.get(), ModItems.AK_12.get(), ModItems.QBZ_95.get(), ModItems.RPK.get(), ModItems.TRACHELIUM.get(), ModItems.INSIDIOUS.get());
-
-        this.tag(ModTags.Items.USE_SHOTGUN_AMMO).add(ModItems.HOMEMADE_SHOTGUN.get(), ModItems.M_870.get(), ModItems.AA_12.get());
-
-        this.tag(ModTags.Items.USE_SNIPER_AMMO).add(ModItems.HUNTING_RIFLE.get(), ModItems.SENTINEL.get(),
-                ModItems.SVD.get(), ModItems.M_98B.get(), ModItems.K_98.get(), ModItems.MOSIN_NAGANT.get());
-
-        this.tag(ModTags.Items.USE_HEAVY_AMMO).add(ModItems.NTW_20.get());
-
         this.tag(ModTags.Items.LAUNCHER).add(ModItems.RPG.get(), ModItems.JAVELIN.get())
                 .addTag(ModTags.Items.LAUNCHER_GRENADE);
         this.tag(ModTags.Items.LAUNCHER_GRENADE).add(ModItems.M_79.get(), ModItems.SECONDARY_CATACLYSM.get());

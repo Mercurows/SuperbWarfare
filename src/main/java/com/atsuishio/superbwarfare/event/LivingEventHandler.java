@@ -144,24 +144,33 @@ public class LivingEventHandler {
         if (DamageTypeTool.isGunDamage(source) && stack.getItem() instanceof GunItem) {
             double distance = entity.position().distanceTo(sourceEntity.position());
 
-            // TODO 正确计算距离衰减
-            if (stack.is(ModTags.Items.USE_SHOTGUN_AMMO)) {
-                var perk = data.perk.get(Perk.Type.AMMO);
+            var ammoInfo = data.ammoTypeInfo();
+            if (ammoInfo.type() == GunData.AmmoConsumeType.PLAYER_AMMO) {
+                var type = Ammo.getType(ammoInfo.value());
+                assert type != null;
 
-                if (perk instanceof AmmoPerk ammoPerk && ammoPerk.slug) {
-                    damage = reduceDamageByDistance(amount, distance, 0.015, 30);
-                } else {
-                    damage = reduceDamageByDistance(amount, distance, 0.05, 15);
+                switch (type) {
+                    case SHOTGUN -> {
+                        var perk = data.perk.get(Perk.Type.AMMO);
+
+                        if (perk instanceof AmmoPerk ammoPerk && ammoPerk.slug) {
+                            damage = reduceDamageByDistance(amount, distance, 0.015, 30);
+                        } else {
+                            damage = reduceDamageByDistance(amount, distance, 0.05, 15);
+                        }
+                    }
+
+                    case SNIPER -> damage = reduceDamageByDistance(amount, distance, 0.001, 150);
+                    case HEAVY -> damage = reduceDamageByDistance(amount, distance, 0.0007, 250);
+                    case HANDGUN -> damage = reduceDamageByDistance(amount, distance, 0.03, 40);
+                    case RIFLE -> damage = reduceDamageByDistance(amount, distance, 0.007, 100);
                 }
-            } else if (stack.is(ModTags.Items.USE_SNIPER_AMMO)) {
-                damage = reduceDamageByDistance(amount, distance, 0.001, 150);
-            } else if (stack.is(ModTags.Items.USE_HEAVY_AMMO)) {
-                damage = reduceDamageByDistance(amount, distance, 0.0007, 250);
-            } else if (stack.is(ModTags.Items.USE_HANDGUN_AMMO)) {
-                damage = reduceDamageByDistance(amount, distance, 0.03, 40);
-            } else if (stack.is(ModTags.Items.SMG)) {
+            }
+
+            // TODO 正确计算距离衰减
+            if (stack.is(ModTags.Items.SMG)) {
                 damage = reduceDamageByDistance(amount, distance, 0.02, 50);
-            } else if (stack.is(ModTags.Items.USE_RIFLE_AMMO) || stack.getItem() == ModItems.BOCEK.get()) {
+            } else if (stack.getItem() == ModItems.BOCEK.get()) {
                 damage = reduceDamageByDistance(amount, distance, 0.007, 100);
             }
         }
