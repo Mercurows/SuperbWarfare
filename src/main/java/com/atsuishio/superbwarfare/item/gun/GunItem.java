@@ -10,7 +10,6 @@ import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.item.gun.data.value.AttachmentType;
 import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
-import com.atsuishio.superbwarfare.tools.Ammo;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.core.BlockPos;
@@ -82,12 +81,9 @@ public abstract class GunItem extends Item implements CustomRendererItem {
             int count = ammoCount - magazine - (hasBulletInBarrel ? 1 : 0);
             var capability = entity.getData(ModAttachments.PLAYER_VARIABLE).watch();
 
-            var ammoTypeInfo = data.ammoTypeInfo();
-            if (ammoTypeInfo.type() == GunData.AmmoConsumeType.PLAYER_AMMO) {
-                var type = Ammo.getType(ammoTypeInfo.value());
-                assert type != null;
-
-                type.add(capability, count);
+            var ammoType = data.ammoTypeInfo().playerAmmoType();
+            if (ammoType != null) {
+                ammoType.add(capability, count);
             }
 
             entity.setData(ModAttachments.PLAYER_VARIABLE, capability);
@@ -453,11 +449,8 @@ public abstract class GunItem extends Item implements CustomRendererItem {
      * 右下角弹药显示名称
      */
     public String getAmmoDisplayName(GunData data) {
-        var ammoTypeInfo = data.ammoTypeInfo();
-        if (ammoTypeInfo.type() == GunData.AmmoConsumeType.PLAYER_AMMO) {
-            var type = Ammo.getType(ammoTypeInfo.value());
-            assert type != null;
-
+        var type = data.ammoTypeInfo().playerAmmoType();
+        if (type != null) {
             return type.displayName;
         }
         return "";

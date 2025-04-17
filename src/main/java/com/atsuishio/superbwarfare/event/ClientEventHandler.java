@@ -704,7 +704,7 @@ public class ClientEventHandler {
             playGunClientSounds(player);
             handleClientShoot();
         } else if (stack.is(ModItems.MINIGUN.get())) {
-            // TODO 提取通用处理方法
+            // TODO 提取通用过热处理方法
             var perk = data.perk.get(Perk.Type.AMMO);
             float pitch = tag.getDouble("heat") <= 40 ? 1 : (float) (1 - 0.025 * Math.abs(40 - tag.getDouble("heat")));
 

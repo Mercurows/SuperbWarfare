@@ -144,12 +144,9 @@ public class LivingEventHandler {
         if (DamageTypeTool.isGunDamage(source) && stack.getItem() instanceof GunItem) {
             double distance = entity.position().distanceTo(sourceEntity.position());
 
-            var ammoInfo = data.ammoTypeInfo();
-            if (ammoInfo.type() == GunData.AmmoConsumeType.PLAYER_AMMO) {
-                var type = Ammo.getType(ammoInfo.value());
-                assert type != null;
-
-                switch (type) {
+            var ammoType = data.ammoTypeInfo().playerAmmoType();
+            if (ammoType != null) {
+                switch (ammoType) {
                     case SHOTGUN -> {
                         var perk = data.perk.get(Perk.Type.AMMO);
 
@@ -661,16 +658,13 @@ public class LivingEventHandler {
 
         boolean flag = InventoryTool.hasCreativeAmmoBox(player);
 
-        var ammoTypeInfo = data.ammoTypeInfo();
-        if (ammoTypeInfo.type() == GunData.AmmoConsumeType.PLAYER_AMMO) {
-            var type = Ammo.getType(ammoTypeInfo.value());
-            assert type != null;
-
-            int ammoFinal = Math.min(type.get(cap), ammoNeed);
+        var ammoType = data.ammoTypeInfo().playerAmmoType();
+        if (ammoType != null) {
+            int ammoFinal = Math.min(ammoType.get(cap), ammoNeed);
             if (flag) {
                 ammoFinal = ammoNeed;
             } else {
-                type.add(cap, -ammoFinal);
+                ammoType.add(cap, -ammoFinal);
             }
 
             data.ammo.set(Math.min(mag, ammo + ammoFinal));
