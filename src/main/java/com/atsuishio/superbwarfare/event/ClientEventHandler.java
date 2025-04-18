@@ -314,11 +314,13 @@ public class ClientEventHandler {
             return;
         }
 
-        tacticalSprint = !exhaustion && !zoom && isMoving() && player.isSprinting() && player.getVehicle() == null && !player.getAbilities().flying;
-
-        if (!MiscConfig.ALLOW_TACTICAL_SPRINT.get()) {
-            tacticalSprint = false;
-        }
+        tacticalSprint = MiscConfig.ALLOW_TACTICAL_SPRINT.get()
+                && !exhaustion
+                && !zoom
+                && isMoving()
+                && player.isSprinting()
+                && player.getVehicle() == null
+                && !player.getAbilities().flying;
 
         ItemStack stack = player.getMainHandItem();
 

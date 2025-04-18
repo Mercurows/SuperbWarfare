@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.network.message.send;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.config.server.MiscConfig;
 import com.atsuishio.superbwarfare.init.ModAttachments;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -22,7 +23,7 @@ public record TacticalSprintMessage(boolean sprint) implements CustomPacketPaylo
         var player = context.player();
 
         var cap = player.getData(ModAttachments.PLAYER_VARIABLE).watch();
-        cap.tacticalSprint = message.sprint;
+        cap.tacticalSprint = MiscConfig.ALLOW_TACTICAL_SPRINT.get() && message.sprint;
         cap.sync(player);
     }
 
