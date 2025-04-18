@@ -136,6 +136,9 @@ dependencies {
     // Cloth Config相关
     implementation "me.shedaniel.cloth:cloth-config-neoforge:15.0.140"
 
+//    implementation "curse.maven:cupboard-326652:6078150"
+//    implementation "curse.maven:connectivity-470193:6229173"
+
 //    // 测试用mod
 //    implementation fg.deobf("curse.maven:oculus-581495:6020952")
 //    implementation fg.deobf("curse.maven:embeddium-908741:5681725")

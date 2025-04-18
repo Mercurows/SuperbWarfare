@@ -37,7 +37,7 @@ public class PlayerVariable implements INBTSerializable<CompoundTag> {
         if (old != null && old.equals(newVariable)) return;
 
         if (entity instanceof ServerPlayer serverPlayer) {
-            PacketDistributor.sendToPlayer(serverPlayer, new PlayerVariablesSyncMessage(entity.getId(), newVariable.writeToNBT()));
+            PacketDistributor.sendToPlayer(serverPlayer, new PlayerVariablesSyncMessage(entity.getId(), compareAndUpdate()));
         }
     }
 
@@ -45,12 +45,35 @@ public class PlayerVariable implements INBTSerializable<CompoundTag> {
     public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
 
-        PacketDistributor.sendToPlayer(player, new PlayerVariablesSyncMessage(player.getId(), player.getData(ModAttachments.PLAYER_VARIABLE).writeToNBT()));
+        PacketDistributor.sendToPlayer(player, new PlayerVariablesSyncMessage(player.getId(), player.getData(ModAttachments.PLAYER_VARIABLE).compareAndUpdate()));
     }
 
     public PlayerVariable watch() {
         this.old = this.copy();
         return this;
+    }
+
+    public Map<Byte, Integer> compareAndUpdate() {
+        var map = new HashMap<Byte, Integer>();
+        var old = this.old == null ? new PlayerVariable() : this.old;
+
+        for (var type : Ammo.values()) {
+            var oldCount = old.ammo.getOrDefault(type, 0);
+            var newCount = type.get(this);
+
+            if (oldCount != newCount) {
+                map.put((byte) type.ordinal(), newCount);
+            }
+        }
+
+        if (old.tacticalSprint != this.tacticalSprint) {
+            map.put((byte) -1, this.tacticalSprint ? 1 : 0);
+        }
+        if (old.edit != this.edit) {
+            map.put((byte) -2, this.edit ? 1 : 0);
+        }
+
+        return map;
     }
 
     /**
