@@ -141,7 +141,7 @@ public class ClientEventHandler {
     public static double chamberRot = 0;
     public static double actionMove = 0;
 
-    public static double shootDelay = 0;
+    public static int shootDelay = 0;
 
     public static double revolverPreTime = 0;
     public static double revolverWheelPreTime = 0;
