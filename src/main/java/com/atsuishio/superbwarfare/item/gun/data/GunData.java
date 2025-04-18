@@ -369,7 +369,7 @@ public class GunData {
      * 消耗额外弹药（不影响枪内弹药）
      */
     public void consumeBackupAmmo(Player player, int count) {
-        if (player.isCreative() || InventoryTool.hasCreativeAmmoBox(player)) return;
+        if (player.isCreative() || InventoryTool.hasCreativeAmmoBox(player) || count <= 0) return;
 
         var info = ammoTypeInfo();
         switch (info.type()) {

@@ -649,30 +649,22 @@ public class LivingEventHandler {
 
         float rate = level * 0.1f + (stack.is(ModTags.Items.SMG) || stack.is(ModTags.Items.RIFLE) ? 0.07f : 0f);
 
-        var cap = player.getData(ModAttachments.PLAYER_VARIABLE).watch();
-
         int mag = data.magazine();
         int ammo = data.ammo.get();
         int ammoReload = (int) Math.min(mag, mag * rate);
         int ammoNeed = Math.min(mag - ammo, ammoReload);
 
-        boolean flag = InventoryTool.hasCreativeAmmoBox(player);
+        boolean flag = player.isCreative() || InventoryTool.hasCreativeAmmoBox(player);
 
-        var ammoType = data.ammoTypeInfo().playerAmmoType();
-        if (ammoType != null) {
-            int ammoFinal = Math.min(ammoType.get(cap), ammoNeed);
-            if (flag) {
-                ammoFinal = ammoNeed;
-            } else {
-                ammoType.add(cap, -ammoFinal);
-            }
-
-            data.ammo.set(Math.min(mag, ammo + ammoFinal));
+        int ammoFinal = Math.min(data.countBackupAmmo(player), ammoNeed);
+        if (flag) {
+            ammoFinal = ammoNeed;
+        } else {
+            data.consumeBackupAmmo(player, ammoFinal);
         }
+        data.ammo.set(Math.min(mag, ammo + ammoFinal));
 
         data.save();
-        player.setData(ModAttachments.PLAYER_VARIABLE, cap);
-        cap.sync(player);
     }
 
 
