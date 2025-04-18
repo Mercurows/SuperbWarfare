@@ -342,7 +342,7 @@ public class ClientEventHandler {
             exhaustion = false;
         }
 
-        if ((ModKeyMappings.BREATH.isDown() && zoom) || (tacticalSprint)) {
+        if ((ModKeyMappings.BREATH.isDown() && zoom) || tacticalSprint) {
             switchTime = Math.min(switchTime + 0.65, 5);
         } else if (switchTime > 0 && stamina == 0) {
             switchTime = Math.max(switchTime - 0.15, 0);
@@ -352,7 +352,7 @@ public class ClientEventHandler {
             tacticalSprint = false;
         }
 
-        if (tacticalSprint && player.onGround() || player.jumping) {
+        if (tacticalSprint && (player.onGround() || player.jumping)) {
             PacketDistributor.sendToServer(new TacticalSprintMessage(true));
         } else {
             PacketDistributor.sendToServer(new TacticalSprintMessage(false));
