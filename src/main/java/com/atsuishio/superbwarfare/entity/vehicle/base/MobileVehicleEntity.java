@@ -33,6 +33,7 @@ import net.minecraft.world.entity.vehicle.Minecart;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.entity.EntityTypeTest;
 import net.minecraft.world.phys.AABB;
@@ -45,6 +46,7 @@ import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements ControllableVehicle {
+
     public static final EntityDataAccessor<Integer> CANNON_RECOIL_TIME = SynchedEntityData.defineId(MobileVehicleEntity.class, EntityDataSerializers.INT);
 
     public static final EntityDataAccessor<Float> POWER = SynchedEntityData.defineId(MobileVehicleEntity.class, EntityDataSerializers.FLOAT);
@@ -291,6 +293,14 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
             Matrix4f transform = this.getWheelsTransform(1);
 
             // 点位
+//            // 前
+//            Vector4f positionF = transformPosition(transform, 0, 0, l / 2);
+//            // 后
+//            Vector4f positionB = transformPosition(transform, 0, 0, -l / 2);
+//            // 左
+//            Vector4f positionL = transformPosition(transform, -w / 2, 0, 0);
+//            // 右
+//            Vector4f positionR = transformPosition(transform, w / 2, 0, 0);
             // 左前
             Vector4f positionLF = transformPosition(transform, w / 2, 0, l / 2);
             // 右前
@@ -305,11 +315,21 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
             Vec3 p3 = new Vec3(positionLB.x, positionLB.y, positionLB.z);
             Vec3 p4 = new Vec3(positionRB.x, positionRB.y, positionRB.z);
 
+//            Vec3 p5 = new Vec3(positionF.x, positionF.y, positionF.z);
+//            Vec3 p6 = new Vec3(positionB.x, positionB.y, positionB.z);
+//            Vec3 p7 = new Vec3(positionL.x, positionL.y, positionL.z);
+//            Vec3 p8 = new Vec3(positionR.x, positionR.y, positionR.z);
+
             // 确定点位是否在墙里来调整点位高度
             float p1y = (float) this.traceBlockY(p1, l);
             float p2y = (float) this.traceBlockY(p2, l);
             float p3y = (float) this.traceBlockY(p3, l);
             float p4y = (float) this.traceBlockY(p4, l);
+
+//            float p5y = (float) Mth.clamp(this.traceBlockY(p5, l), -l, l);
+//            float p6y = (float) Mth.clamp(this.traceBlockY(p6, l), -l, l);
+//            float p7y = (float) Mth.clamp(this.traceBlockY(p7, l), -l, l);
+//            float p8y = (float) Mth.clamp(this.traceBlockY(p8, l), -l, l);
 
             p1 = new Vec3(positionLF.x, p1y, positionLF.z);
             p2 = new Vec3(positionRF.x, p2y, positionRF.z);
@@ -385,7 +405,9 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
             AABB aabb = getBoundingBox().inflate(0.05).move(this.getDeltaMovement().scale(0.6));
             BlockPos.betweenClosedStream(aabb).forEach((pos) -> {
                 BlockState blockstate = this.level().getBlockState(pos);
-                if (blockstate.is(Blocks.LILY_PAD) || blockstate.is(BlockTags.LEAVES) || blockstate.is(Blocks.COBWEB) || blockstate.is(Blocks.CACTUS)) {
+                if (blockstate.is(Blocks.LILY_PAD) ||
+                        (blockstate.is(BlockTags.LEAVES) && blockstate.hasProperty(LeavesBlock.PERSISTENT) && !blockstate.getValue(LeavesBlock.PERSISTENT)) ||
+                        blockstate.is(Blocks.COBWEB) || blockstate.is(Blocks.CACTUS)) {
                     this.level().destroyBlock(pos, true);
                 }
             });
