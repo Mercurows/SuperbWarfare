@@ -18,7 +18,7 @@ public record PlayerVariablesSyncMessage(int target, Map<Byte, Integer> data) im
     public static final CustomPacketPayload.Type<PlayerVariablesSyncMessage> TYPE = new CustomPacketPayload.Type<>(Mod.loc("player_variable_sync"));
 
     public static final StreamCodec<ByteBuf, PlayerVariablesSyncMessage> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.INT,
+            ByteBufCodecs.VAR_INT,
             PlayerVariablesSyncMessage::target,
             ByteBufCodecs.map(
                     HashMap::new,
