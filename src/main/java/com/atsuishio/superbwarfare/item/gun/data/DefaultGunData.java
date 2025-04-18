@@ -67,4 +67,7 @@ public class DefaultGunData {
     @SerializedName("ExplosionRadius")
     public double explosionRadius;
 
+    @SerializedName("ShootDelay")
+    public double shootDelay = 0;
+
 }

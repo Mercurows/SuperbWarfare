@@ -277,6 +277,10 @@ public class GunData {
         return defaultGunData().burstAmount;
     }
 
+    public double shootDelay() {
+        return defaultGunData().shootDelay;
+    }
+
     public enum AmmoConsumeType {
         PLAYER_AMMO, ITEM, TAG, INVALID,
     }
