@@ -139,7 +139,7 @@ public class SenpaiEntity extends Monster implements GeoEntity {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.senpai.die"));
         }
         if (this.isAggressive() && event.isMoving()) {
-            return event.setAndContinue(RawAnimation.begin().thenLoop("animation.senpai.run"));
+            return event.setAndContinue(RawAnimation.begin().thenLoop("animation.senpai.run2"));
         }
         return event.setAndContinue(RawAnimation.begin().thenLoop("animation.senpai.idle"));
     }
