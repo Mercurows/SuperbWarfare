@@ -89,8 +89,9 @@ public class ClientMouseHandler {
 
     @SubscribeEvent
     public static void calculatePlayerTurn(CalculatePlayerTurnEvent event) {
-        var newSensitivity = changeSensitivity(event.getMouseSensitivity()) * invertY();
-        event.setMouseSensitivity(newSensitivity);
+        var raw = event.getMouseSensitivity() * 0.6 + 0.2;
+        var newSensitivity = changeSensitivity(raw) * invertY();
+        event.setMouseSensitivity((newSensitivity - 0.2) / 0.6);
     }
 
     public static float invertY() {
@@ -120,6 +121,18 @@ public class ClientMouseHandler {
         }
 
         ItemStack stack = mc.player.getMainHandItem();
+        if (stack.getItem() instanceof GunItem) {
+            var data = GunData.from(stack);
+            float customSens = (float) data.tag.getInt("sensitivity");
+
+            if (!player.getMainHandItem().isEmpty() && mc.options.getCameraType() == CameraType.FIRST_PERSON) {
+                return original / Math.max((1 + (0.2 * (data.zoom() - (0.3 * customSens)) * ClientEventHandler.zoomTime)), 0.1);
+            }
+        }
+
+        if (stack.is(ModItems.MONITOR.get()) && NBTTool.getTag(stack).getBoolean("Using") && NBTTool.getTag(stack).getBoolean("Linked")) {
+            return 0.33 / (1 + 0.08 * (droneFovLerp - 1));
+        }
 
         if (isFreeCam(player)) {
             return 0;
@@ -155,22 +168,6 @@ public class ClientMouseHandler {
 
         if (player.getVehicle() instanceof Tom6Entity) {
             return 0.3;
-        }
-
-        var tag = NBTTool.getTag(stack);
-        if (stack.is(ModItems.MONITOR.get()) && tag.getBoolean("Using") && tag.getBoolean("Linked")) {
-            return 0.33 / (1 + 0.08 * (droneFovLerp - 1));
-        }
-
-        if (!(stack.getItem() instanceof GunItem)) {
-            return original;
-        }
-
-        var data = GunData.from(stack);
-        float customSens = (float) data.tag().getInt("sensitivity");
-
-        if (!player.getMainHandItem().isEmpty() && mc.options.getCameraType() == CameraType.FIRST_PERSON) {
-            return original / Math.max((1 + (0.2 * (data.zoom() - (0.3 * customSens)) * ClientEventHandler.zoomTime)), 0.1);
         }
 
         return original;
