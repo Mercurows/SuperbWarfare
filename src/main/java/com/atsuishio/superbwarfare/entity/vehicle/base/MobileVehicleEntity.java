@@ -21,6 +21,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -224,7 +225,7 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
         }
 
         this.move(MoverType.SELF, this.getDeltaMovement());
-        collideLilyPadBlock();
+        baseCollideBlock();
         this.refreshDimensions();
     }
 
@@ -232,7 +233,6 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
     public void releaseSmokeDecoy() {
         if (decoyInputDown) {
             if (this.entityData.get(DECOY_COUNT) > 0 && this.level() instanceof ServerLevel) {
-                Entity passenger = getFirstPassenger();
                 for (int i = 0; i < 16; i++) {
                     SmokeDecoyEntity smokeDecoyEntity = new SmokeDecoyEntity(this.level());
                     smokeDecoyEntity.setPos(this.getX(), this.getY() + 2, this.getZ());
@@ -256,7 +256,6 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
     public void releaseDecoy() {
         if (decoyInputDown) {
             if (this.entityData.get(DECOY_COUNT) > 0 && this.level() instanceof ServerLevel) {
-                Entity passenger = getFirstPassenger();
                 for (int i = 0; i < 4; i++) {
                     FlareDecoyEntity flareDecoyEntity = new FlareDecoyEntity(this.level());
                     flareDecoyEntity.setPos(this.getX() + this.getDeltaMovement().x, this.getY() + 0.5 + this.getDeltaMovement().y, this.getZ() + this.getDeltaMovement().z);
@@ -292,14 +291,6 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
             Matrix4f transform = this.getWheelsTransform(1);
 
             // 点位
-            // 前
-            Vector4f positionF = transformPosition(transform, 0, 0, l / 2);
-            // 后
-            Vector4f positionB = transformPosition(transform, 0, 0, -l / 2);
-            // 左
-            Vector4f positionL = transformPosition(transform, -w / 2, 0, 0);
-            // 右
-            Vector4f positionR = transformPosition(transform, w / 2, 0, 0);
             // 左前
             Vector4f positionLF = transformPosition(transform, w / 2, 0, l / 2);
             // 右前
@@ -314,21 +305,11 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
             Vec3 p3 = new Vec3(positionLB.x, positionLB.y, positionLB.z);
             Vec3 p4 = new Vec3(positionRB.x, positionRB.y, positionRB.z);
 
-            Vec3 p5 = new Vec3(positionF.x, positionF.y, positionF.z);
-            Vec3 p6 = new Vec3(positionB.x, positionB.y, positionB.z);
-            Vec3 p7 = new Vec3(positionL.x, positionL.y, positionL.z);
-            Vec3 p8 = new Vec3(positionR.x, positionR.y, positionR.z);
-
             // 确定点位是否在墙里来调整点位高度
             float p1y = (float) this.traceBlockY(p1, l);
             float p2y = (float) this.traceBlockY(p2, l);
             float p3y = (float) this.traceBlockY(p3, l);
             float p4y = (float) this.traceBlockY(p4, l);
-
-            float p5y = (float) Mth.clamp(this.traceBlockY(p5, l), -l, l);
-            float p6y = (float) Mth.clamp(this.traceBlockY(p6, l), -l, l);
-            float p7y = (float) Mth.clamp(this.traceBlockY(p7, l), -l, l);
-            float p8y = (float) Mth.clamp(this.traceBlockY(p8, l), -l, l);
 
             p1 = new Vec3(positionLF.x, p1y, positionLF.z);
             p2 = new Vec3(positionRF.x, p2y, positionRF.z);
@@ -399,12 +380,12 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
         return pos.y + 0.5f * diffY;
     }
 
-    public void collideLilyPadBlock() {
+    public void baseCollideBlock() {
         if (level() instanceof ServerLevel) {
             AABB aabb = getBoundingBox().inflate(0.05).move(this.getDeltaMovement().scale(0.6));
             BlockPos.betweenClosedStream(aabb).forEach((pos) -> {
                 BlockState blockstate = this.level().getBlockState(pos);
-                if (blockstate.is(Blocks.LILY_PAD)) {
+                if (blockstate.is(Blocks.LILY_PAD) || blockstate.is(BlockTags.LEAVES) || blockstate.is(Blocks.COBWEB) || blockstate.is(Blocks.CACTUS)) {
                     this.level().destroyBlock(pos, true);
                 }
             });
