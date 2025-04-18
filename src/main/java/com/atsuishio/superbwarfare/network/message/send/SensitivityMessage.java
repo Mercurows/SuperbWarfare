@@ -28,15 +28,13 @@ public record SensitivityMessage(boolean isAdd) implements CustomPacketPayload {
         if (!(stack.getItem() instanceof GunItem)) return;
 
         var data = GunData.from(stack);
-        final var tag = data.tag();
         if (message.isAdd) {
-            tag.putInt("sensitivity", Math.min(10, tag.getInt("sensitivity") + 1));
+            data.sensitivity.set(Math.min(10, data.sensitivity.get() + 1));
         } else {
-            tag.putInt("sensitivity", Math.max(-10, tag.getInt("sensitivity") - 1));
+            data.sensitivity.set(Math.max(-10, data.sensitivity.get() - 1));
         }
         data.save();
-        player.displayClientMessage(Component.translatable("tips.superbwarfare.sensitivity", tag.getInt("sensitivity")), true);
-
+        player.displayClientMessage(Component.translatable("tips.superbwarfare.sensitivity", data.sensitivity.get()), true);
     }
 
     @Override

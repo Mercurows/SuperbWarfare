@@ -76,6 +76,7 @@ public class GunData {
         holdOpen = new BooleanValue(data, "HoldOpen");
         hideBulletChain = new BooleanValue(data, "HideBulletChain");
         draw = new BooleanValue(data, "Draw");
+        sensitivity = new IntValue(data, "Sensitivity");
     }
 
     private CompoundTag getOrPut(String name) {
@@ -458,6 +459,7 @@ public class GunData {
     public final BooleanValue holdOpen;
     public final BooleanValue hideBulletChain;
     public final BooleanValue draw;
+    public final IntValue sensitivity;
 
     // 其他子级属性
 

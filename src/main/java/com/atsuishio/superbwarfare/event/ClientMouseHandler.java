@@ -123,7 +123,7 @@ public class ClientMouseHandler {
         ItemStack stack = mc.player.getMainHandItem();
         if (stack.getItem() instanceof GunItem) {
             var data = GunData.from(stack);
-            float customSens = (float) data.tag.getInt("sensitivity");
+            float customSens = data.sensitivity.get();
 
             if (!player.getMainHandItem().isEmpty() && mc.options.getCameraType() == CameraType.FIRST_PERSON) {
                 return original / Math.max((1 + (0.2 * (data.zoom() - (0.3 * customSens)) * ClientEventHandler.zoomTime)), 0.1);
