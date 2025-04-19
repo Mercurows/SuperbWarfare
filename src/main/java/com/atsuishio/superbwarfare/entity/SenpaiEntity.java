@@ -3,9 +3,14 @@ package com.atsuishio.superbwarfare.entity;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
@@ -33,13 +38,31 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 public class SenpaiEntity extends Monster implements GeoEntity {
-
+    public static final EntityDataAccessor<Boolean> RUNNER = SynchedEntityData.defineId(SenpaiEntity.class, EntityDataSerializers.BOOLEAN);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     public SenpaiEntity(EntityType<SenpaiEntity> type, Level world) {
         super(type, world);
         xpReward = 40;
         setNoAi(false);
+    }
+
+    @Override
+    protected void defineSynchedData(SynchedEntityData.@NotNull Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(RUNNER, Math.random() < 0.5);
+    }
+
+    @Override
+    public void addAdditionalSaveData(@NotNull CompoundTag compound) {
+        super.addAdditionalSaveData(compound);
+        compound.putBoolean("Runner", this.entityData.get(RUNNER));
+    }
+
+    @Override
+    public void readAdditionalSaveData(@NotNull CompoundTag compound) {
+        super.readAdditionalSaveData(compound);
+        this.entityData.set(RUNNER, compound.getBoolean("Runner"));
     }
 
     @Override
@@ -95,18 +118,15 @@ public class SenpaiEntity extends Monster implements GeoEntity {
     }
 
     @Override
-    public void addAdditionalSaveData(@NotNull CompoundTag compound) {
-        super.addAdditionalSaveData(compound);
-    }
-
-    @Override
-    public void readAdditionalSaveData(@NotNull CompoundTag compound) {
-        super.readAdditionalSaveData(compound);
-    }
-
-    @Override
     public void baseTick() {
         super.baseTick();
+
+        if (entityData.get(RUNNER)) {
+            addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 20, 0));
+        } else {
+            addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 20, 0));
+        }
+
         this.refreshDimensions();
     }
 
@@ -139,7 +159,11 @@ public class SenpaiEntity extends Monster implements GeoEntity {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.senpai.die"));
         }
         if (this.isAggressive() && event.isMoving()) {
-            return event.setAndContinue(RawAnimation.begin().thenLoop("animation.senpai.run2"));
+            if (entityData.get(RUNNER)) {
+                return event.setAndContinue(RawAnimation.begin().thenLoop("animation.senpai.run2"));
+            } else {
+                return event.setAndContinue(RawAnimation.begin().thenLoop("animation.senpai.run"));
+            }
         }
         return event.setAndContinue(RawAnimation.begin().thenLoop("animation.senpai.idle"));
     }
