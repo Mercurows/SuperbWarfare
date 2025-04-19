@@ -329,7 +329,7 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
         turretAngle(5, 5);
         gunnerAngle(15, 15);
         lowHealthWarning();
-        this.terrainCompat(4.6f, 6.7f);
+        this.terrainCompat(4.375f, 6.3125f);
         inertiaRotate(1.2f);
 
         releaseSmokeDecoy();
@@ -595,46 +595,46 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
             int ammo = this.getEntityData().get(LOADED_DRONE);
 
             if (ammo == 1) {
-                worldPosition = transformPosition(transformT, -2.315275f, 0.71894375f, -0.25390625f);
+                worldPosition = transformPosition(transformT, -1.6290875f, 0.75536875f, -1.76616875f);
             }
             if (ammo == 2) {
-                worldPosition = transformPosition(transformT, 2.315275f, 0.71894375f, -0.25390625f);
+                worldPosition = transformPosition(transformT, 1.6290875f, 0.75536875f, -1.76616875f);
             }
             if (ammo == 3) {
-                worldPosition = transformPosition(transformT, -2.49105625f, 0.71894375f, -0.4296875f);
+                worldPosition = transformPosition(transformT, -1.7822125f, 0.75536875f, -1.9193f);
             }
             if (ammo == 4) {
-                worldPosition = transformPosition(transformT, 2.49105625f, 0.71894375f, -0.4296875f);
+                worldPosition = transformPosition(transformT, 1.7822125f, 0.75536875f, -1.9193f);
             }
             if (ammo == 5) {
-                worldPosition = transformPosition(transformT, -2.315275f, 0.71894375f, -0.60546875f);
+                worldPosition = transformPosition(transformT, -1.6290875f, 0.75536875f, -2.07241875f);
             }
             if (ammo == 6) {
-                worldPosition = transformPosition(transformT, 2.315275f, 0.71894375f, -0.60546875f);
+                worldPosition = transformPosition(transformT, 1.6290875f, 0.75536875f, -2.07241875f);
             }
             if (ammo == 7) {
-                worldPosition = transformPosition(transformT, -2.49105625f, 0.71894375f, -0.78125f);
+                worldPosition = transformPosition(transformT, -1.7822125f, 0.75536875f, -2.22555f);
             }
             if (ammo == 8) {
-                worldPosition = transformPosition(transformT, 2.49105625f, 0.71894375f, -0.78125f);
+                worldPosition = transformPosition(transformT, 1.7822125f, 0.75536875f, -2.22555f);
             }
             if (ammo == 9) {
-                worldPosition = transformPosition(transformT, -2.315275f, 0.71894375f, -0.95703125f);
+                worldPosition = transformPosition(transformT, -1.6290875f, 0.75536875f, -2.37866875f);
             }
             if (ammo == 10) {
-                worldPosition = transformPosition(transformT, 2.315275f, 0.71894375f, -0.95703125f);
+                worldPosition = transformPosition(transformT, 1.6290875f, 0.75536875f, -2.37866875f);
             }
             if (ammo == 11) {
-                worldPosition = transformPosition(transformT, -2.49105625f, 0.71894375f, -1.1328125f);
+                worldPosition = transformPosition(transformT, -1.7822125f, 0.75536875f, -2.5318f);
             }
             if (ammo == 12) {
-                worldPosition = transformPosition(transformT, 2.49105625f, 0.71894375f, -1.1328125f);
+                worldPosition = transformPosition(transformT, 1.7822125f, 0.75536875f, -2.5318f);
             }
             if (ammo == 13) {
-                worldPosition = transformPosition(transformT, -2.315275f, 0.71894375f, -1.30859375f);
+                worldPosition = transformPosition(transformT, -1.6290875f, 0.75536875f, -2.68491875f);
             }
             if (ammo == 14) {
-                worldPosition = transformPosition(transformT, 2.315275f, 0.71894375f, -1.30859375f);
+                worldPosition = transformPosition(transformT, 1.6290875f, 0.75536875f, -2.68491875f);
             }
 
             Vec3 lookVec = player.getViewVector(1);
@@ -751,9 +751,9 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
         int i = this.getOrderedPassengers().indexOf(passenger);
 
         var worldPosition = switch (i) {
-            case 0 -> transformPosition(transform, 0.8669625f, 0.2f, 0.6076875f);
-            case 1 -> transformPosition(transform, -0.87890625f, 0.5f, -0.6640625f);
-            case 2 -> transformPosition(transform, 1f, 0.15f, -0.6640625f);
+            case 0 -> transformPosition(transform, 0.6669625f, 0.07f, 0.4776875f);
+            case 1 -> transformPosition(transform, -0.75805625f, 0.3f, -0.57275625f);
+            case 2 -> transformPosition(transform, 0.86219375f, 0.07f, -0.5696875f);
             default -> throw new IllegalStateException("Unexpected value: " + i);
         };
 
@@ -772,14 +772,7 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
     @Override
     public Vec3 driverZoomPos(float ticks) {
         Matrix4f transform = getTurretTransform(ticks);
-        Vector4f worldPosition = transformPosition(transform, 0, 1.2f, 0.6076875f);
-        return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
-    }
-
-    @Override
-    public Vec3 getNewEyePos(float pPartialTicks) {
-        Matrix4f transform = getTurretTransform(pPartialTicks);
-        Vector4f worldPosition = transformPosition(transform, 0, 1.65f, 0.6076875f);
+        Vector4f worldPosition = transformPosition(transform, 0, 1f, 0.6076875f);
         return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
     }
 
@@ -806,7 +799,7 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
         Matrix4f transformT = getTurretTransform(ticks);
 
         Matrix4f transform = new Matrix4f();
-        Vector4f worldPosition = transformPosition(transform, 0f, 0.653275f, 0.750975f);
+        Vector4f worldPosition = transformPosition(transform, 0f, 0.56345f, 0.6477125f);
 
         transformT.translate(worldPosition.x, worldPosition.y, worldPosition.z);
 
@@ -838,7 +831,7 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
         Matrix4f transformV = getVehicleTransform(ticks);
 
         Matrix4f transform = new Matrix4f();
-        Vector4f worldPosition = transformPosition(transform, 0, 2.1484375f, 0);
+        Vector4f worldPosition = transformPosition(transform, 0, 2.1059375f, -0.43125f);
 
         transformV.translate(worldPosition.x, worldPosition.y, worldPosition.z);
         transformV.rotate(Axis.YP.rotationDegrees(Mth.lerp(ticks, turretYRotO, getTurretYRot())));
@@ -849,7 +842,7 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
         Matrix4f transformT = getTurretTransform(ticks);
 
         Matrix4f transform = new Matrix4f();
-        Vector4f worldPosition = transformPosition(transform, -0.87890625f, 1.31171875F, -0.6640625f);
+        Vector4f worldPosition = transformPosition(transform, -0.75805625f, 1.1446375F, -0.57275625f);
 
         transformT.translate(worldPosition.x, worldPosition.y, worldPosition.z);
         transformT.rotate(Axis.YP.rotationDegrees(Mth.lerp(ticks, gunYRotO, getGunYRot()) - Mth.lerp(ticks, turretYRotO, getTurretYRot())));
@@ -860,7 +853,7 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
         Matrix4f transformG = getGunTransform(ticks);
 
         Matrix4f transform = new Matrix4f();
-        Vector4f worldPosition = transformPosition(transform, 0f, 0.4325125f, 0.0632125f);
+        Vector4f worldPosition = transformPosition(transform, 0f, 0.35984375f, 0.0551625f);
 
         transformG.translate(worldPosition.x, worldPosition.y, worldPosition.z);
 

@@ -169,11 +169,6 @@ public class SenpaiEntity extends Monster implements GeoEntity {
     }
 
     @Override
-    public void die(@NotNull DamageSource source) {
-        super.die(source);
-    }
-
-    @Override
     protected void tickDeath() {
         ++this.deathTime;
         if (this.deathTime == 540) {
