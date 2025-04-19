@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.entity;
 
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -9,12 +10,11 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.Pose;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
@@ -29,6 +29,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.living.FinalizeSpawnEvent;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
@@ -37,6 +40,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
+@EventBusSubscriber(modid = Mod.MODID, bus = EventBusSubscriber.Bus.GAME)
 public class SenpaiEntity extends Monster implements GeoEntity {
     public static final EntityDataAccessor<Boolean> RUNNER = SynchedEntityData.defineId(SenpaiEntity.class, EntityDataSerializers.BOOLEAN);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
@@ -120,13 +124,6 @@ public class SenpaiEntity extends Monster implements GeoEntity {
     @Override
     public void baseTick() {
         super.baseTick();
-
-        if (entityData.get(RUNNER)) {
-            addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 20, 0));
-        } else {
-            addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 20, 0));
-        }
-
         this.refreshDimensions();
     }
 
@@ -185,5 +182,22 @@ public class SenpaiEntity extends Monster implements GeoEntity {
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return this.cache;
+    }
+
+    @SubscribeEvent
+    public static void onFinalizeSpawn(FinalizeSpawnEvent event) {
+        if (!(event.getEntity() instanceof SenpaiEntity senpai)) return;
+
+        if (senpai.entityData.get(RUNNER)) {
+            var attribute = senpai.getAttribute(Attributes.MOVEMENT_SPEED);
+            if (attribute != null) {
+                attribute.addPermanentModifier(new AttributeModifier(com.atsuishio.superbwarfare.Mod.ATTRIBUTE_MODIFIER, 0.4, AttributeModifier.Operation.ADD_MULTIPLIED_BASE));
+            }
+        } else {
+            var attribute = senpai.getAttribute(Attributes.ATTACK_DAMAGE);
+            if (attribute != null) {
+                attribute.addPermanentModifier(new AttributeModifier(com.atsuishio.superbwarfare.Mod.ATTRIBUTE_MODIFIER, 3, AttributeModifier.Operation.ADD_VALUE));
+            }
+        }
     }
 }
