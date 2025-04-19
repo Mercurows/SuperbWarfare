@@ -54,8 +54,8 @@ public class StaminaOverlay implements LayeredDraw.Layer {
             RenderSystem.setShaderColor(1, 1, 1, (float) Mth.clamp(ClientEventHandler.switchTime, 0, 1));
         }
 
-        RenderHelper.fill(guiGraphics, RenderType.guiOverlay(), (float) w / 2 - 64, h - 48, (float) w / 2 + 64, h - 49, -90, -16777216);
-        RenderHelper.fill(guiGraphics, RenderType.guiOverlay(), (float) w / 2 - 64, (float) (h - 48), (float) (w / 2 + 64 - (1.28 * ClientEventHandler.stamina)), h - 49, -90, -1);
+        RenderHelper.fill(guiGraphics, RenderType.guiOverlay(), (float) w / 2 - 90, h - 23, (float) w / 2 + 90, h - 24, -90, -16777216);
+        RenderHelper.fill(guiGraphics, RenderType.guiOverlay(), (float) w / 2 - 90, (float) (h - 23), (float) (w / 2 + 90 - 1.8 * ClientEventHandler.stamina), h - 24, -90, -1);
 
         RenderSystem.setShaderColor(1, 1, 1, 1);
 
