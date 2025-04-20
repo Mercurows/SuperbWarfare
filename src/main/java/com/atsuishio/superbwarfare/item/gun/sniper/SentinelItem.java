@@ -191,8 +191,8 @@ public class SentinelItem extends GunItem implements GeoItem, EnergyStorageItem 
     }
 
     @Override
-    public void beforeShoot(GunData data, Player player, double spread, boolean zoom) {
-        super.beforeShoot(data, player, spread, zoom);
+    public void afterShoot(GunData data, Player player) {
+        super.afterShoot(data, player);
 
         var cap = data.stack.getCapability(Capabilities.EnergyStorage.ITEM);
         if (cap != null) {

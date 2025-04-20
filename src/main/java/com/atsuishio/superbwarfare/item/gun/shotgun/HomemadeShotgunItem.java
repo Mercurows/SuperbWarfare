@@ -137,6 +137,15 @@ public class HomemadeShotgunItem extends GunItem implements GeoItem {
     }
 
     @Override
+    public void afterShoot(GunData data, Player player) {
+        super.afterShoot(data, player);
+
+        var stack = data.stack();
+        stack.hurtAndBreak(1, (ServerLevel) player.level(), player, p -> {
+        });
+    }
+
+    @Override
     public int getAvailableFireModes() {
         return FireMode.SEMI.flag;
     }

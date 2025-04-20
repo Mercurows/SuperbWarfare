@@ -121,8 +121,8 @@ public class M79Item extends GunItem implements GeoItem {
     }
 
     @Override
-    public void shootBullet(Player player, GunData data, double spread, boolean zoom) {
-        if (data.reloading()) return;
+    public boolean shootBullet(Player player, GunData data, double spread, boolean zoom) {
+        if (data.reloading()) return false;
 
         if (player.level() instanceof ServerLevel serverLevel) {
             GunGrenadeEntity gunGrenadeEntity = new GunGrenadeEntity(player, serverLevel,
@@ -157,6 +157,8 @@ public class M79Item extends GunItem implements GeoItem {
                     player.getZ() + 1.8 * player.getLookAngle().z,
                     4, 0.1, 0.1, 0.1, 0.002, true);
         }
+
+        return true;
     }
 
 }

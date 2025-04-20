@@ -232,9 +232,9 @@ public class SecondaryCataclysm extends GunItem implements GeoItem, EnergyStorag
     }
 
     @Override
-    public void shootBullet(Player player, GunData data, double spread, boolean zoom) {
-        if (data.reloading()) return;
-        ItemStack stack = data.stack();
+    public boolean shootBullet(Player player, GunData data, double spread, boolean zoom) {
+        if (data.reloading()) return false;
+        var stack = data.stack;
 
         var stackCap = stack.getCapability(Capabilities.EnergyStorage.ITEM);
         var hasEnoughEnergy = stackCap != null && stackCap.getEnergyStored() >= 3000;
@@ -282,6 +282,8 @@ public class SecondaryCataclysm extends GunItem implements GeoItem, EnergyStorag
                 }
             }
         }
+
+        return true;
     }
 
     @Override

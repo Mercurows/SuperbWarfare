@@ -737,12 +737,15 @@ public class ClientEventHandler {
         actionMove = Mth.lerp(0.125 * times, actionMove, 0);
     }
 
+    // TODO 添加canShoot()方法，提前判断是否能开火
     public static void handleClientShoot() {
         Player player = Minecraft.getInstance().player;
         if (player == null) return;
         ItemStack stack = player.getMainHandItem();
         if (!(stack.getItem() instanceof GunItem)) return;
         var data = GunData.from(stack);
+
+        if (data.projectileAmount() <= 0) return;
 
         PacketDistributor.sendToServer(new ShootMessage(gunSpread, zoom));
         fireRecoilTime = 10;
