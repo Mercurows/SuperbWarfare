@@ -39,11 +39,15 @@ import net.minecraft.world.level.entity.EntityTypeTest;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Math;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
+
+import java.util.List;
+import java.util.stream.StreamSupport;
 
 public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements ControllableVehicle {
 
@@ -228,8 +232,38 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
 
         this.move(MoverType.SELF, this.getDeltaMovement());
         baseCollideBlock();
+
         this.refreshDimensions();
     }
+
+//    public Vector3f calculateTerrainNormal() {
+//        BlockPos[] checkPoints = {
+//                this.blockPosition().offset(1, 0, 1),
+//                this.blockPosition().offset(-1, 0, 1),
+//                this.blockPosition().offset(1, 0, -1),
+//                this.blockPosition().offset(-1, 0, -1)
+//        };
+//
+//        List<Vec3> surfacePoints = new ArrayList<>();
+//        for (BlockPos pos : checkPoints) {
+//            BlockState state = level().getBlockState(pos);
+//            VoxelShape shape = state.getCollisionShape(level(), pos);
+//            if (!shape.isEmpty()) {
+//                double height = shape.max(Direction.Axis.Y);
+//                surfacePoints.add(new Vec3(pos.getX(), pos.getY() + height, pos.getZ()));
+//            }
+//        }
+//
+//        return surfacePoints;
+//    }
+
+//    public static Quaternionf calculateRotationQuaternion(Vector3f normal) {
+//        Vector3f up = new Vector3f(0, 1, 0);
+//        Vector3f axis = new Vector3f();
+//        normal.cross(up, axis);
+//        float angle = (float) Math.acos(normal.dot(up));
+//        return new Quaternionf().rotationAxis(angle, axis);
+//    }
 
     //烟雾诱饵
     public void releaseSmokeDecoy() {
@@ -287,20 +321,17 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
         setXRot(getXRot() - 0.5f * diffX);
     }
 
+    public static List<Entity> getPlayer(Level level) {
+        return StreamSupport.stream(EntityFindUtil.getEntities(level).getAll().spliterator(), false)
+                .filter(e -> e instanceof Player)
+                .toList();
+    }
+
     // 地形适应测试
     public void terrainCompat(float w, float l) {
         if (onGround()) {
             Matrix4f transform = this.getWheelsTransform(1);
 
-            // 点位
-//            // 前
-//            Vector4f positionF = transformPosition(transform, 0, 0, l / 2);
-//            // 后
-//            Vector4f positionB = transformPosition(transform, 0, 0, -l / 2);
-//            // 左
-//            Vector4f positionL = transformPosition(transform, -w / 2, 0, 0);
-//            // 右
-//            Vector4f positionR = transformPosition(transform, w / 2, 0, 0);
             // 左前
             Vector4f positionLF = transformPosition(transform, w / 2, 0, l / 2);
             // 右前
@@ -315,21 +346,15 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
             Vec3 p3 = new Vec3(positionLB.x, positionLB.y, positionLB.z);
             Vec3 p4 = new Vec3(positionRB.x, positionRB.y, positionRB.z);
 
-//            Vec3 p5 = new Vec3(positionF.x, positionF.y, positionF.z);
-//            Vec3 p6 = new Vec3(positionB.x, positionB.y, positionB.z);
-//            Vec3 p7 = new Vec3(positionL.x, positionL.y, positionL.z);
-//            Vec3 p8 = new Vec3(positionR.x, positionR.y, positionR.z);
+            if (mainSupportingBlockPos.isPresent()) {
+                BlockPos blockpos = this.mainSupportingBlockPos.get();
+            }
 
             // 确定点位是否在墙里来调整点位高度
-            float p1y = (float) this.traceBlockY(p1, l);
-            float p2y = (float) this.traceBlockY(p2, l);
-            float p3y = (float) this.traceBlockY(p3, l);
-            float p4y = (float) this.traceBlockY(p4, l);
-
-//            float p5y = (float) Mth.clamp(this.traceBlockY(p5, l), -l, l);
-//            float p6y = (float) Mth.clamp(this.traceBlockY(p6, l), -l, l);
-//            float p7y = (float) Mth.clamp(this.traceBlockY(p7, l), -l, l);
-//            float p8y = (float) Mth.clamp(this.traceBlockY(p8, l), -l, l);
+            float p1y = (float) this.traceBlockY(p1, 3);
+            float p2y = (float) this.traceBlockY(p2, 3);
+            float p3y = (float) this.traceBlockY(p3, 3);
+            float p4y = (float) this.traceBlockY(p4, 3);
 
             p1 = new Vec3(positionLF.x, p1y, positionLF.z);
             p2 = new Vec3(positionRF.x, p2y, positionRF.z);
@@ -337,16 +362,18 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
             p4 = new Vec3(positionRB.x, p4y, positionRB.z);
 
             // 测试用粒子效果，用于确定点位位置
-//        var passenger = this.getFirstPassenger();
-//
-//        if (passenger != null) {
-//            if (passenger.level() instanceof ServerLevel serverLevel) {
-//                sendParticle(serverLevel, ParticleTypes.END_ROD, p1.x, p1.y, p1.z, 1, 0, 0, 0, 0, true);
-//                sendParticle(serverLevel, ParticleTypes.END_ROD, p2.x, p2.y, p2.z, 1, 0, 0, 0, 0, true);
-//                sendParticle(serverLevel, ParticleTypes.END_ROD, p3.x, p3.y, p3.z, 1, 0, 0, 0, 0, true);
-//                sendParticle(serverLevel, ParticleTypes.END_ROD, p4.x, p4.y, p4.z, 1, 0, 0, 0, 0, true);
+
+//            List<Entity> entities = getPlayer(level());
+//            for (var e : entities) {
+//                if (e instanceof ServerPlayer player) {
+//                    if (player.level() instanceof ServerLevel serverLevel) {
+//                        sendParticle(serverLevel, ParticleTypes.END_ROD, p1.x, p1.y, p1.z, 1, 0, 0, 0, 0, true);
+//                        sendParticle(serverLevel, ParticleTypes.END_ROD, p2.x, p2.y, p2.z, 1, 0, 0, 0, 0, true);
+//                        sendParticle(serverLevel, ParticleTypes.END_ROD, p3.x, p3.y, p3.z, 1, 0, 0, 0, 0, true);
+//                        sendParticle(serverLevel, ParticleTypes.END_ROD, p4.x, p4.y, p4.z, 1, 0, 0, 0, 0, true);
+//                    }
+//                }
 //            }
-//        }
 
             // 通过点位位置获取角度
 
@@ -364,11 +391,11 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
             double z1 = getXRotFromVector(v2);
             double z2 = getXRotFromVector(v3);
 
-            float diffX = Math.clamp(-90f, 90f, Mth.wrapDegrees((float) (-(x1 + x2)) - getXRot()));
-            setXRot(Mth.clamp(getXRot() + 0.075f * diffX, -90f, 90f));
+            float diffX = Math.clamp(-15f, 15f, Mth.wrapDegrees((float) (-(x1 + x2)) - getXRot()));
+            setXRot(Mth.clamp(getXRot() + 0.15f * diffX, -45f, 45f));
 
-            float diffZ = Math.clamp(-90f, 90f, Mth.wrapDegrees((float) (-(z1 + z2)) - getRoll()));
-            setZRot(Mth.clamp(getRoll() + 0.15f * diffZ, -90f, 90f));
+            float diffZ = Math.clamp(-15f, 15f, Mth.wrapDegrees((float) (-(z1 + z2)) - getRoll()));
+            setZRot(Mth.clamp(getRoll() + 0.15f * diffZ, -45f, 45f));
         } else if (isInWater()) {
             setXRot(getXRot() * 0.9f);
             setZRot(getRoll() * 0.9f);
@@ -388,12 +415,12 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
 
         double targetY = 0;
 
-        if (res.getType() == HitResult.Type.BLOCK) {
+        BlockState state = level().getBlockState(BlockPos.containing(pos));
+        VoxelShape shape = state.getCollisionShape(level(), BlockPos.containing(pos));
+        if (!shape.isEmpty()) {
+            targetY = pos.y + shape.max(Direction.Axis.Y);
+        } else if (res.getType() == HitResult.Type.BLOCK && this.level().noCollision(new AABB(pos, pos))) {
             targetY = res.getLocation().y;
-        } else if (!this.level().noCollision(new AABB(pos, pos))) {
-            targetY = pos.y + maxLength / 2;
-        } else if (res.getType() == HitResult.Type.MISS) {
-            targetY = pos.y - maxLength / 2;
         }
 
         double diffY = targetY - pos.y;
