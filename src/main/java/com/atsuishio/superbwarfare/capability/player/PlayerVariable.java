@@ -41,6 +41,10 @@ public class PlayerVariable implements INBTSerializable<CompoundTag> {
         }
     }
 
+    public static boolean isEditing(Entity entity) {
+        return entity.getData(ModAttachments.PLAYER_VARIABLE).edit;
+    }
+
     @SubscribeEvent
     public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
@@ -84,6 +88,7 @@ public class PlayerVariable implements INBTSerializable<CompoundTag> {
         consumer.accept(this);
         sync(player);
     }
+
 
     public CompoundTag writeToNBT() {
         CompoundTag nbt = new CompoundTag();

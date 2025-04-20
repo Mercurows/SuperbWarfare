@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.item.gun.special;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.capability.player.PlayerVariable;
 import com.atsuishio.superbwarfare.client.renderer.item.BocekItemRenderer;
 import com.atsuishio.superbwarfare.client.tooltip.component.BocekImageComponent;
 import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity;
@@ -9,10 +10,12 @@ import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
+import com.atsuishio.superbwarfare.item.gun.data.value.AttachmentType;
 import com.atsuishio.superbwarfare.network.message.receive.ShootClientMessage;
 import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.tools.GunsTool;
+import com.atsuishio.superbwarfare.tools.InventoryTool;
 import com.atsuishio.superbwarfare.tools.SoundTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -67,6 +70,10 @@ public class BocekItem extends GunItem implements GeoItem {
         ItemStack stack = player.getMainHandItem();
         if (!(stack.getItem() instanceof GunItem)) return PlayState.STOP;
 
+        if (ClientEventHandler.bowPull) {
+            return event.setAndContinue(RawAnimation.begin().thenPlayAndHold("animation.bocek.pull"));
+        }
+
         if (player.isSprinting() && player.onGround() && ClientEventHandler.cantSprint == 0 && ClientEventHandler.drawTime < 0.01) {
             if (ClientEventHandler.tacticalSprint) {
                 return event.setAndContinue(RawAnimation.begin().thenLoop("animation.bocek.run_fast"));
@@ -78,10 +85,57 @@ public class BocekItem extends GunItem implements GeoItem {
         return event.setAndContinue(RawAnimation.begin().thenLoop("animation.bocek.idle"));
     }
 
+    private PlayState firePredicate(AnimationState<BocekItem> event) {
+        LocalPlayer player = Minecraft.getInstance().player;
+        if (player == null) return PlayState.STOP;
+        ItemStack stack = player.getMainHandItem();
+        if (!(stack.getItem() instanceof GunItem)) return PlayState.STOP;
+
+        if (GunsTool.getGunIntTag(GunData.from(stack).tag, "ArrowEmpty") > 0) {
+            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.bocek.fire"));
+        }
+
+        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.bocek.idle"));
+    }
+
+    private PlayState reloadPredicate(AnimationState<BocekItem> event) {
+        LocalPlayer player = Minecraft.getInstance().player;
+        if (player == null) return PlayState.STOP;
+        ItemStack stack = player.getMainHandItem();
+        if (!(stack.getItem() instanceof GunItem)) return PlayState.STOP;
+
+        var data = GunData.from(stack);
+
+        if (GunsTool.getGunIntTag(GunData.from(stack).tag, "ArrowEmpty") > 0 && data.ammo.get() == 0 && (data.countBackupAmmo(player) > 0 || InventoryTool.hasCreativeAmmoBox(player))) {
+            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.bocek.reload"));
+        }
+
+        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.bocek.idle"));
+    }
+
+    private PlayState editPredicate(AnimationState<BocekItem> event) {
+        LocalPlayer player = Minecraft.getInstance().player;
+        if (player == null) return PlayState.STOP;
+        ItemStack stack = player.getMainHandItem();
+        if (!(stack.getItem() instanceof GunItem)) return PlayState.STOP;
+
+        if (PlayerVariable.isEditing(player)) {
+            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.bocek.edit"));
+        }
+
+        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.bocek.idle"));
+    }
+
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar data) {
         var idleController = new AnimationController<>(this, "idleController", 3, this::idlePredicate);
         data.add(idleController);
+        var fireController = new AnimationController<>(this, "fireController", 0, this::firePredicate);
+        data.add(fireController);
+        var reloadController = new AnimationController<>(this, "reloadController", 0, this::reloadPredicate);
+        data.add(reloadController);
+        var editController = new AnimationController<>(this, "editController", 1, this::editPredicate);
+        data.add(editController);
     }
 
     @Override
@@ -117,6 +171,26 @@ public class BocekItem extends GunItem implements GeoItem {
     @Override
     public String getGunDisplayName() {
         return "Bocek";
+    }
+
+    @Override
+    public boolean isCustomizable(ItemStack stack) {
+        return true;
+    }
+
+    @Override
+    public boolean hasCustomScope(ItemStack stack) {
+        return true;
+    }
+
+    @Override
+    public double getCustomZoom(ItemStack stack) {
+        int scopeType = GunData.from(stack).attachment.get(AttachmentType.SCOPE);
+        return switch (scopeType) {
+            case 2 -> 0.75;
+            case 3 -> 1.75;
+            default -> 0;
+        };
     }
 
     @Override

@@ -6,8 +6,6 @@ import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.item.gun.special.BocekItem;
-import com.atsuishio.superbwarfare.tools.GunsTool;
-import com.atsuishio.superbwarfare.tools.NBTTool;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
@@ -81,22 +79,22 @@ public class BocekItemRenderer extends GeoItemRenderer<BocekItem> {
         ItemStack itemStack = player.getMainHandItem();
         if (!(itemStack.getItem() instanceof GunItem)) return;
 
-        final var tag = NBTTool.getTag(itemStack);
         if (name.equals("holo")) {
-            bone.setHidden(ClientEventHandler.zoomPos < 0.7 || ClientEventHandler.pullPos < 0.7 || !ClientEventHandler.zoom);
+            bone.setHidden(ClientEventHandler.zoomPos < 0.7 || ClientEventHandler.bowPullPos < 0.7 || !ClientEventHandler.zoom);
         }
 
         if (name.equals("arrow")) {
-            bone.setHidden(GunsTool.getGunIntTag(tag, "ArrowEmpty") > 1);
-        }
-
-        if (name.equals("jian")) {
             var data = GunData.from(itemStack);
             bone.setHidden(data.ammo.get() == 0);
         }
 
+        if (name.equals("arrow2")) {
+            var data = GunData.from(itemStack);
+            bone.setHidden(data.ammo.get() != 0);
+        }
+
         if (renderingArms) {
-            AnimationHelper.renderArms(mc, player, this.transformType, stack, name, bone, SCALE_RECIPROCAL, this.currentBuffer, type, packedLightIn, true, true);
+            AnimationHelper.renderArms(mc, player, this.transformType, stack, name, bone, SCALE_RECIPROCAL, this.currentBuffer, type, packedLightIn, false, false);
         }
         super.renderRecursively(stack, animatable, bone, type, buffer, bufferIn, isReRender, partialTick, packedLightIn, packedOverlayIn, color);
     }

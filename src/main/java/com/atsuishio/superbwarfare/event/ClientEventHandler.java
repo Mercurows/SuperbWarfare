@@ -97,12 +97,9 @@ public class ClientEventHandler {
     public static double droneFov = 1;
     public static double droneFovLerp = 1;
     public static double fov = 0;
-    public static double pullTimer = 0;
-    public static double bowTimer = 0;
-    public static double handTimer = 0;
-    public static double pullPos = 0;
-    public static double bowPos = 0;
-    public static double handPos = 0;
+    public static double bowPullTimer = 0;
+    public static double bowPower = 0;
+    public static double bowPullPos = 0;
     public static double gunSpread = 0;
     public static double fireSpread = 0;
     public static double cantFireTime = 0;
@@ -1473,20 +1470,13 @@ public class ClientEventHandler {
         }
 
         if (bowPull) {
-            pullTimer = Math.min(pullTimer + 0.024 * times, 1.4);
-            bowTimer = Math.min(bowTimer + 0.018 * times, 1);
-            handTimer = Math.min(handTimer + 0.018 * times, 1);
-            handPos = 0.5 * Math.cos(Math.PI * Math.pow(Math.pow(handTimer, 2) - 1, 2)) + 0.5;
+            bowPullTimer = Math.min(bowPullTimer + 0.024 * times, 1.4);
+            bowPower = Math.min(bowPower + 0.018 * times, 1);
         } else {
-            pullTimer = Math.max(pullTimer - 0.015 * times, 0);
-            bowTimer = Math.max(bowTimer - 1 * times, 0);
-            handTimer = Math.max(handTimer - 0.04 * times, 0);
-            if (handTimer > 0 && handTimer < 0.5) {
-                handPos = 0.5 * Math.cos(Math.PI * Math.pow(Math.pow(handTimer, 2) - 1, 2)) + 0.5;
-            }
+            bowPullTimer = Math.max(bowPullTimer - 0.025 * times, 0);
+            bowPower = Math.max(bowPower - 0.04 * times, 0);
         }
-        pullPos = 0.5 * Math.cos(Math.PI * Math.pow(Math.pow(Mth.clamp(pullTimer, 0, 1), 2) - 1, 2)) + 0.5;
-        bowPos = 0.5 * Math.cos(Math.PI * Math.pow(Math.pow(bowTimer, 2) - 1, 2)) + 0.5;
+        bowPullPos = 0.5 * Math.cos(Math.PI * Math.pow(Math.pow(Mth.clamp(bowPullTimer, 0, 1), 2) - 1, 2)) + 0.5;
     }
 
     @SubscribeEvent
@@ -1514,7 +1504,7 @@ public class ClientEventHandler {
 
             double p;
             if (stack.is(ModItems.BOCEK.get())) {
-                p = (pullPos + 0.25) * zoomTime;
+                p = bowPullPos * zoomTime;
             } else {
                 p = zoomPos;
             }
@@ -1640,10 +1630,8 @@ public class ClientEventHandler {
         lungeSprint = 0;
         lungeAttack = 0;
         burstFireAmount = 0;
-        pullTimer = 0;
-        bowTimer = 0;
-        handTimer = 0;
-        handPos = 0;
+        bowPullTimer = 0;
+        bowPower = 0;
         cantSprint = 20;
     }
 

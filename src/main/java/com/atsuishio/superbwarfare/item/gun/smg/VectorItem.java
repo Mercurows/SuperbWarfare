@@ -10,7 +10,6 @@ import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.item.gun.data.value.AttachmentType;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
-import com.atsuishio.superbwarfare.tools.NBTTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.ResourceLocation;
@@ -130,7 +129,7 @@ public class VectorItem extends GunItem implements GeoItem {
     @Override
     public double getCustomZoom(ItemStack stack) {
         int scopeType = GunData.from(stack).attachment.get(AttachmentType.SCOPE);
-        return scopeType == 2 ? (NBTTool.getTag(stack).getBoolean("ScopeAlt") ? 0 : 0.75) : 0;
+        return scopeType == 2 ? 0.75 : 0;
     }
 
     @Override

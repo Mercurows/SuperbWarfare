@@ -336,7 +336,10 @@ public class ClickHandler {
             if (!stack.is(ModItems.BOCEK.get())) {
                 player.playSound(ModSounds.TRIGGER_CLICK.get(), 1, 1);
             } else {
-                handTimer = 0;
+                bowPower = 0;
+                holdFire = true;
+                player.setSprinting(false);
+                return;
             }
 
             if (!data.useBackpackAmmo() && data.ammo.get() <= 0 && data.reload.time() == 0) {
@@ -345,8 +348,9 @@ public class ClickHandler {
                     ClientEventHandler.burstFireAmount = 0;
                 }
             } else {
-                PacketDistributor.sendToServer(new FireKeyMessage(0, handTimer, zoom));
-                if ((!data.reloading()
+                PacketDistributor.sendToServer(new FireKeyMessage(0, bowPower, zoom));
+                if ((!(data.reload.normal() || data.reload.empty())
+                        && !data.reloading()
                         && !data.charging()
                         && !data.bolt.needed.get())
                         && drawTime < 0.01
@@ -365,7 +369,7 @@ public class ClickHandler {
     }
 
     public static void handleWeaponFireRelease() {
-        PacketDistributor.sendToServer(new FireKeyMessage(1, handTimer, zoom));
+        PacketDistributor.sendToServer(new FireKeyMessage(1, bowPower, zoom));
         bowPull = false;
         holdFire = false;
         holdFireVehicle = false;

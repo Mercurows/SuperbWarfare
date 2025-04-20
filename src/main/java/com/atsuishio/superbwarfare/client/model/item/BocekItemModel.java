@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.client.model.item;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
+import com.atsuishio.superbwarfare.init.ModAttachments;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.special.BocekItem;
 import net.minecraft.client.Minecraft;
@@ -15,6 +16,9 @@ import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.model.GeoModel;
 
 public class BocekItemModel extends GeoModel<BocekItem> {
+    public static float rightHandPosZ;
+
+    public static float lerpEdit;
 
     @Override
     public ResourceLocation getAnimationResource(BocekItem animatable) {
@@ -34,79 +38,63 @@ public class BocekItemModel extends GeoModel<BocekItem> {
     @Override
     public void setCustomAnimations(BocekItem animatable, long instanceId, AnimationState animationState) {
         GeoBone gun = getAnimationProcessor().getBone("bone");
-        GeoBone arrow = getAnimationProcessor().getBone("arrow");
-        GeoBone rh = getAnimationProcessor().getBone("ys");
-        GeoBone lun = getAnimationProcessor().getBone("hualun1");
         GeoBone shen = getAnimationProcessor().getBone("shen");
-        GeoBone shen_pos = getAnimationProcessor().getBone("shen_pos");
-        GeoBone xian = getAnimationProcessor().getBone("xian1");
-        GeoBone xian2 = getAnimationProcessor().getBone("xian2");
-        GeoBone fire = getAnimationProcessor().getBone("fire");
-        GeoBone deng = getAnimationProcessor().getBone("deng");
-        GeoBone deng2 = getAnimationProcessor().getBone("deng2");
-        GeoBone deng3 = getAnimationProcessor().getBone("deng3");
-        GeoBone lh = getAnimationProcessor().getBone("lh");
-        GeoBone r = getAnimationProcessor().getBone("r");
+        GeoBone dRing = getAnimationProcessor().getBone("D_ring");
+        GeoBone rightHand = getAnimationProcessor().getBone("safang");
+        GeoBone leftHand = getAnimationProcessor().getBone("lh");
 
         Player player = Minecraft.getInstance().player;
         if (player == null) return;
         ItemStack stack = player.getMainHandItem();
         if (!(stack.getItem() instanceof GunItem)) return;
 
-        float times = 0.6f * (float) Math.min(Minecraft.getInstance().getTimer().getRealtimeDeltaTicks(), 0.8);
-        double fpz = ClientEventHandler.firePosZ * 13 * times;
-        double fp = ClientEventHandler.firePos;
-        double fr = ClientEventHandler.fireRot;
-        double pp = ClientEventHandler.pullPos;
-        double bp = ClientEventHandler.bowPos;
-        double hp = ClientEventHandler.handPos;
+        float times = Minecraft.getInstance().getTimer().getRealtimeDeltaTicks();
+
+        var cap = player.getData(ModAttachments.PLAYER_VARIABLE);
+        lerpEdit = Mth.lerp(0.2f * times, lerpEdit, cap.edit ? 0 : 1);
+
+        double pp = ClientEventHandler.bowPullPos;
+        double pp2 = 1 - ClientEventHandler.bowPullPos;
         double zp = ClientEventHandler.zoomPos;
-        double zpz = ClientEventHandler.zoomPosZ;
+        double zp2 = (1 - ClientEventHandler.zoomPos) * lerpEdit;
 
+        gun.setPosX((float) (0.2 * zp2 - 3 * pp2 * zp - 0.35 * pp + 0.35 * zp));
+        gun.setPosY((float) (11f * zp + 3 * zp2 - 1 * pp2 * zp - 0.55 * zp));
+        gun.setPosZ((float) (1.5f * zp + 2 * pp2));
+        gun.setRotZ((float) (-60 * Mth.DEG_TO_RAD * zp2 + -5 * Mth.DEG_TO_RAD * pp2 * zp));
+        gun.setScaleZ((float) (1f - (0.2f * zp)));
 
-        arrow.setPosZ(9f * (float) bp);
-        rh.setPosZ(9f * (float) hp);
-        rh.setRotZ((float) (160 * Mth.DEG_TO_RAD + 45 * Mth.DEG_TO_RAD * ClientEventHandler.handTimer));
-        lun.setRotX(1.6f * (float) bp);
+        leftHand.setRotY((float) (17.5 * Mth.DEG_TO_RAD * pp));
 
-        xian.setRotX(0.56f * (float) bp);
-        xian2.setRotX(-0.56f * (float) bp);
-        xian.setScaleY(1f + (0.25f * (float) bp));
-        xian2.setScaleY(1f + (0.25f * (float) bp));
-        xian.setPosZ(9f * (float) bp);
-        xian2.setPosZ(9f * (float) bp);
+        if (ClientEventHandler.bowPull) {
+            rightHandPosZ = dRing.getPosZ();
+        } else {
+            rightHandPosZ = Mth.lerp(0.06f * times, rightHandPosZ, 0);
+        }
 
-        gun.setScaleZ(1f - (0.2f * (float) pp));
-        gun.setRotZ((float) (-0.1 + 0.2f * pp + 0.07142857142857143f * ClientEventHandler.pullTimer));
-        gun.setRotX(0.01f * (float) pp);
-        gun.setPosZ((float) (3 + -3f * pp - 2.142857142857143 * ClientEventHandler.pullTimer));
-        gun.setPosY(0.1f * (float) pp);
-        r.setScaleZ(1f - (0.2f * (float) pp));
-        deng2.setRotX(1.6f * (float) bp);
-        deng2.setPosZ(0.05f * (float) bp);
-        deng3.setRotX(-1.6f * (float) bp);
-        deng3.setPosZ(0.05f * (float) bp);
-        deng.setScaleZ(1f + (0.07f * (float) bp));
+        GeoBone wing0 = getAnimationProcessor().getBone("wing0");
+        GeoBone wing1 = getAnimationProcessor().getBone("wing1");
+        GeoBone wing2 = getAnimationProcessor().getBone("wing2");
 
-        lh.setRotX(0.2f * (float) zp);
-        shen_pos.setPosX(-3.64f * (float) zp);
-        shen_pos.setPosY(6.46f * (float) zp - (float) (0.2f * zpz));
-        shen_pos.setPosZ(6.4f * (float) zp + (float) (0.3f * zpz));
-        r.setScaleZ(1f - (0.31f * (float) zp));
-        shen.setRotZ(60 * Mth.DEG_TO_RAD * (float) zp + (float) (0.05f * zpz) - 0.2f);
+        float m = (float) Math.min(zp, pp);
 
-        fire.setPosX((float) (0.75f * ClientEventHandler.recoilHorizon * fpz * fp));
-        fire.setPosY((float) (-0.03f * fp - 0.06f * fr));
-        fire.setPosZ((float) (0.625 * fp + 0.34f * fr + 0.95 * fpz));
-        fire.setRotX((float) (0.001f * fp + 0.001f * fr + 0.001f * fpz));
-        fire.setRotY((float) (0.01f * ClientEventHandler.recoilHorizon * fpz));
-        fire.setRotZ((float) ((0.02f + 0.1 * fr) * ClientEventHandler.recoilHorizon));
+        wingControl(wing0, m);
+        wingControl(wing1, m);
+        wingControl(wing2, m);
 
-        CrossHairOverlay.gunRot = fire.getRotZ();
+        rightHand.setPosZ(rightHandPosZ);
 
+        CrossHairOverlay.gunRot = shen.getRotZ();
         ClientEventHandler.gunRootMove(getAnimationProcessor());
 
         GeoBone camera = getAnimationProcessor().getBone("camera");
         ClientEventHandler.shake(Mth.RAD_TO_DEG * camera.getRotX(), Mth.RAD_TO_DEG * camera.getRotY(), Mth.RAD_TO_DEG * camera.getRotZ());
     }
+
+    public static void wingControl(GeoBone GeoBone, float m) {
+        GeoBone.setRotX(GeoBone.getRotX() * m);
+        GeoBone.setRotY(GeoBone.getRotY() * m);
+        GeoBone.setRotZ(GeoBone.getRotZ() * m);
+    }
+
 }

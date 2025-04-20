@@ -18,6 +18,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
+import org.joml.Math;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
 import org.spongepowered.asm.mixin.Mixin;
@@ -171,9 +172,9 @@ public abstract class CameraMixin {
         if (Minecraft.getInstance().options.getCameraType() == CameraType.THIRD_PERSON_BACK
                 && entity instanceof Player player
                 && player.getMainHandItem().is(ModTags.Items.GUN)
-                && Math.max(ClientEventHandler.pullPos, ClientEventHandler.zoomPos) > 0
+                && Math.max(ClientEventHandler.bowPullPos, ClientEventHandler.zoomPos) > 0
         ) {
-            move(-getMaxZoom((float) (-2.9 * Math.max(ClientEventHandler.pullPos, ClientEventHandler.zoomPos))), 0, (float) (-ClientEventHandler.cameraLocation * Math.max(ClientEventHandler.pullPos, ClientEventHandler.zoomPos)));
+            move(-getMaxZoom((float) (-2.9 * Math.max(ClientEventHandler.bowPullPos, ClientEventHandler.zoomPos))), 0F, (float) (-ClientEventHandler.cameraLocation * Math.max(ClientEventHandler.bowPullPos, ClientEventHandler.zoomPos)));
             return;
         }
 
