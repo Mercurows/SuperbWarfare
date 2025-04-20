@@ -477,6 +477,13 @@ public abstract class GunItem extends Item implements CustomRendererItem {
     }
 
     /**
+     * 判断武器能否开火
+     */
+    public boolean canShoot(GunData data) {
+        return data.projectileAmount() > 0;
+    }
+
+    /**
      * 服务端在开火前的额外行为
      */
     public void beforeShoot(GunData data, Player player, double spread, boolean zoom) {
@@ -598,6 +605,8 @@ public abstract class GunItem extends Item implements CustomRendererItem {
 
     /**
      * 服务端发射单发子弹
+     *
+     * @return 是否发射成功
      */
     public boolean shootBullet(Player player, GunData data, double spread, boolean zoom) {
         var stack = data.stack;

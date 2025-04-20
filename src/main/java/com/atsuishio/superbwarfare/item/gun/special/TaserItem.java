@@ -184,15 +184,7 @@ public class TaserItem extends GunItem implements GeoItem, EnergyStorageItem {
 
     @Override
     public boolean shootBullet(Player player, GunData data, double spread, boolean zoom) {
-        if (data.reloading()) return false;
         var stack = data.stack;
-
-        int perkLevel = data.perk.getLevel(ModPerks.VOLT_OVERLOAD);
-        var energyStorage = stack.getCapability(Capabilities.EnergyStorage.ITEM);
-        var hasEnoughEnergy = energyStorage != null && energyStorage.getEnergyStored() >= 400 + 100 * perkLevel;
-
-        if (!hasEnoughEnergy) return false;
-
         player.getCooldowns().addCooldown(stack.getItem(), 5);
 
         if (player instanceof ServerPlayer serverPlayer) {
@@ -200,7 +192,6 @@ public class TaserItem extends GunItem implements GeoItem, EnergyStorageItem {
             int wireLength = data.perk.getLevel(ModPerks.LONGER_WIRE);
 
             var level = serverPlayer.level();
-
             TaserBulletEntity taserBulletProjectile = new TaserBulletEntity(player, level,
                     (float) data.damage(), volt, wireLength);
 
@@ -209,10 +200,33 @@ public class TaserItem extends GunItem implements GeoItem, EnergyStorageItem {
                     (float) (zoom ? 0.1 : spread));
             level.addFreshEntity(taserBulletProjectile);
         }
-
-        energyStorage.extractEnergy(400 + 100 * perkLevel, false);
-
         return true;
+    }
+
+    @Override
+    public void afterShoot(GunData data, Player player) {
+        super.afterShoot(data, player);
+        var stack = data.stack;
+        int perkLevel = data.perk.getLevel(ModPerks.VOLT_OVERLOAD);
+
+        var energyStorage = stack.getCapability(Capabilities.EnergyStorage.ITEM);
+        if (energyStorage != null) {
+            energyStorage.extractEnergy(400 + 100 * perkLevel, false);
+        }
+    }
+
+    @Override
+    public boolean canShoot(GunData data) {
+        var stack = data.stack;
+
+        int perkLevel = data.perk.getLevel(ModPerks.VOLT_OVERLOAD);
+
+        var energyStorage = stack.getCapability(Capabilities.EnergyStorage.ITEM);
+        var hasEnoughEnergy = energyStorage != null && energyStorage.getEnergyStored() >= 400 + 100 * perkLevel;
+
+        if (!hasEnoughEnergy) return false;
+        if (data.reloading()) return false;
+        return super.canShoot(data);
     }
 
     @Override

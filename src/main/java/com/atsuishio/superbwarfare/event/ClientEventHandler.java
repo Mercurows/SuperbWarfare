@@ -666,9 +666,10 @@ public class ClientEventHandler {
 
     public static void shootClient(Player player, final CompoundTag tag) {
         ItemStack stack = player.getMainHandItem();
-        if (!(stack.getItem() instanceof GunItem)) return;
+        if (!(stack.getItem() instanceof GunItem gunItem)) return;
         var data = GunData.from(stack);
         if (!data.hasEnoughAmmoToShoot(player)) return;
+        if (!gunItem.canShoot(data)) return;
 
         if (stack.is(ModTags.Items.NORMAL_GUN)) {
             int mode = data.fireMode.get();
@@ -737,15 +738,15 @@ public class ClientEventHandler {
         actionMove = Mth.lerp(0.125 * times, actionMove, 0);
     }
 
-    // TODO 添加canShoot()方法，提前判断是否能开火
+    // TODO 完善canShoot()方法，提前判断是否能开火
     public static void handleClientShoot() {
         Player player = Minecraft.getInstance().player;
         if (player == null) return;
         ItemStack stack = player.getMainHandItem();
-        if (!(stack.getItem() instanceof GunItem)) return;
+        if (!(stack.getItem() instanceof GunItem gunItem)) return;
         var data = GunData.from(stack);
 
-        if (data.projectileAmount() <= 0) return;
+        if (!gunItem.canShoot(data)) return;
 
         PacketDistributor.sendToServer(new ShootMessage(gunSpread, zoom));
         fireRecoilTime = 10;
