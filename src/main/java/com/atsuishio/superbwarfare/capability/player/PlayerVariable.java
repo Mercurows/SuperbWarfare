@@ -52,9 +52,36 @@ public class PlayerVariable implements INBTSerializable<CompoundTag> {
         PacketDistributor.sendToPlayer(player, new PlayerVariablesSyncMessage(player.getId(), player.getData(ModAttachments.PLAYER_VARIABLE).compareAndUpdate()));
     }
 
+    @SubscribeEvent
+    public static void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
+        if (!(event.getEntity() instanceof ServerPlayer player)) return;
+
+        PacketDistributor.sendToPlayer(player, new PlayerVariablesSyncMessage(player.getId(), player.getData(ModAttachments.PLAYER_VARIABLE).compareAndUpdate()));
+    }
+
+    @SubscribeEvent
+    public static void onPlayerChangeDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
+        if (!(event.getEntity() instanceof ServerPlayer player)) return;
+
+        PacketDistributor.sendToPlayer(player, new PlayerVariablesSyncMessage(player.getId(), player.getData(ModAttachments.PLAYER_VARIABLE).forceUpdate()));
+    }
+
     public PlayerVariable watch() {
         this.old = this.copy();
         return this;
+    }
+
+    public Map<Byte, Integer> forceUpdate() {
+        var map = new HashMap<Byte, Integer>();
+
+        for (var type : Ammo.values()) {
+            map.put((byte) type.ordinal(), type.get(this));
+        }
+
+        map.put((byte) -1, this.tacticalSprint ? 1 : 0);
+        map.put((byte) -2, this.edit ? 1 : 0);
+
+        return map;
     }
 
     public Map<Byte, Integer> compareAndUpdate() {
