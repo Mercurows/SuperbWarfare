@@ -3,7 +3,6 @@ package com.atsuishio.superbwarfare.client.model.item;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
-import com.atsuishio.superbwarfare.init.ModAttachments;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.special.BocekItem;
 import net.minecraft.client.Minecraft;
@@ -17,8 +16,6 @@ import software.bernie.geckolib.model.GeoModel;
 
 public class BocekItemModel extends GeoModel<BocekItem> {
     public static float rightHandPosZ;
-
-    public static float lerpEdit;
 
     @Override
     public ResourceLocation getAnimationResource(BocekItem animatable) {
@@ -50,18 +47,15 @@ public class BocekItemModel extends GeoModel<BocekItem> {
 
         float times = Minecraft.getInstance().getTimer().getRealtimeDeltaTicks();
 
-        var cap = player.getData(ModAttachments.PLAYER_VARIABLE);
-        lerpEdit = Mth.lerp(0.2f * times, lerpEdit, cap.edit ? 0 : 1);
-
         double pp = ClientEventHandler.bowPullPos;
         double pp2 = 1 - ClientEventHandler.bowPullPos;
         double zp = ClientEventHandler.zoomPos;
-        double zp2 = (1 - ClientEventHandler.zoomPos) * lerpEdit;
+        double zp2 = 1 - ClientEventHandler.zoomPos;
 
         gun.setPosX((float) (0.2 * zp2 - 3 * pp2 * zp - 0.35 * pp + 0.35 * zp));
-        gun.setPosY((float) (11f * zp + 3 * zp2 - 1 * pp2 * zp - 0.55 * zp));
+        gun.setPosY((float) (11f * zp + 3 * zp2 - 1 * pp2 * zp - 0.5 * zp));
         gun.setPosZ((float) (1.5f * zp + 2 * pp2));
-        gun.setRotZ((float) (-60 * Mth.DEG_TO_RAD * zp2 + -5 * Mth.DEG_TO_RAD * pp2 * zp));
+        gun.setRotZ((float) (-45 * Mth.DEG_TO_RAD * zp2 + -5 * Mth.DEG_TO_RAD * pp2 * zp));
         gun.setScaleZ((float) (1f - (0.2f * zp)));
 
         leftHand.setRotY((float) (17.5 * Mth.DEG_TO_RAD * pp));
@@ -75,12 +69,16 @@ public class BocekItemModel extends GeoModel<BocekItem> {
         GeoBone wing0 = getAnimationProcessor().getBone("wing0");
         GeoBone wing1 = getAnimationProcessor().getBone("wing1");
         GeoBone wing2 = getAnimationProcessor().getBone("wing2");
+        GeoBone wing1Root = getAnimationProcessor().getBone("wing1Root");
+        GeoBone wing2Root = getAnimationProcessor().getBone("wing2Root");
 
         float m = (float) Math.min(zp, pp);
 
         wingControl(wing0, m);
         wingControl(wing1, m);
         wingControl(wing2, m);
+        wingControl(wing1Root, m);
+        wingControl(wing2Root, m);
 
         rightHand.setPosZ(rightHandPosZ);
 

@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.client.renderer.item;
 
 import com.atsuishio.superbwarfare.client.AnimationHelper;
 import com.atsuishio.superbwarfare.client.model.item.BocekItemModel;
-import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.item.gun.special.BocekItem;
@@ -26,7 +25,8 @@ public class BocekItemRenderer extends GeoItemRenderer<BocekItem> {
     public BocekItemRenderer() {
         super(new BocekItemModel());
         // TODO layer
-// this.addRenderLayer(new BocekLayer(this));
+//        this.addRenderLayer(new BocekLayer(this));
+//        this.addRenderLayer(new BocekPowerLightLayer(this));
     }
 
     @Override
@@ -79,10 +79,6 @@ public class BocekItemRenderer extends GeoItemRenderer<BocekItem> {
         ItemStack itemStack = player.getMainHandItem();
         if (!(itemStack.getItem() instanceof GunItem)) return;
 
-        if (name.equals("holo")) {
-            bone.setHidden(ClientEventHandler.zoomPos < 0.7 || ClientEventHandler.bowPullPos < 0.7 || !ClientEventHandler.zoom);
-        }
-
         if (name.equals("arrow")) {
             var data = GunData.from(itemStack);
             bone.setHidden(data.ammo.get() == 0);
@@ -98,6 +94,7 @@ public class BocekItemRenderer extends GeoItemRenderer<BocekItem> {
         }
         super.renderRecursively(stack, animatable, bone, type, buffer, bufferIn, isReRender, partialTick, packedLightIn, packedOverlayIn, color);
     }
+
 
     @Override
     public ResourceLocation getTextureLocation(BocekItem instance) {

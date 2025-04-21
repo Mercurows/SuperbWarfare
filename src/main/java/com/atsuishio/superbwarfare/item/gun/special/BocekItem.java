@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.item.gun.special;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.capability.player.PlayerVariable;
 import com.atsuishio.superbwarfare.client.renderer.item.BocekItemRenderer;
 import com.atsuishio.superbwarfare.client.tooltip.component.BocekImageComponent;
 import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity;
@@ -10,7 +9,6 @@ import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
-import com.atsuishio.superbwarfare.item.gun.data.value.AttachmentType;
 import com.atsuishio.superbwarfare.network.message.receive.ShootClientMessage;
 import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
@@ -113,19 +111,6 @@ public class BocekItem extends GunItem implements GeoItem {
         return event.setAndContinue(RawAnimation.begin().thenLoop("animation.bocek.idle"));
     }
 
-    private PlayState editPredicate(AnimationState<BocekItem> event) {
-        LocalPlayer player = Minecraft.getInstance().player;
-        if (player == null) return PlayState.STOP;
-        ItemStack stack = player.getMainHandItem();
-        if (!(stack.getItem() instanceof GunItem)) return PlayState.STOP;
-
-        if (PlayerVariable.isEditing(player)) {
-            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.bocek.edit"));
-        }
-
-        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.bocek.idle"));
-    }
-
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar data) {
         var idleController = new AnimationController<>(this, "idleController", 3, this::idlePredicate);
@@ -134,8 +119,6 @@ public class BocekItem extends GunItem implements GeoItem {
         data.add(fireController);
         var reloadController = new AnimationController<>(this, "reloadController", 0, this::reloadPredicate);
         data.add(reloadController);
-        var editController = new AnimationController<>(this, "editController", 1, this::editPredicate);
-        data.add(editController);
     }
 
     @Override
@@ -171,26 +154,6 @@ public class BocekItem extends GunItem implements GeoItem {
     @Override
     public String getGunDisplayName() {
         return "Bocek";
-    }
-
-    @Override
-    public boolean isCustomizable(ItemStack stack) {
-        return true;
-    }
-
-    @Override
-    public boolean hasCustomScope(ItemStack stack) {
-        return true;
-    }
-
-    @Override
-    public double getCustomZoom(ItemStack stack) {
-        int scopeType = GunData.from(stack).attachment.get(AttachmentType.SCOPE);
-        return switch (scopeType) {
-            case 2 -> 0.75;
-            case 3 -> 1.75;
-            default -> 0;
-        };
     }
 
     @Override
