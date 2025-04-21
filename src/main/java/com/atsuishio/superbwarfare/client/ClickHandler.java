@@ -225,8 +225,12 @@ public class ClickHandler {
             }
             if (key == ModKeyMappings.EDIT_MODE.getKey().getValue() && ClientEventHandler.burstFireAmount == 0) {
                 ClientEventHandler.holdFire = false;
-                isEditing = true;
-                player.playSound(ModSounds.EDIT_MODE.get(), 1, 1);
+
+                if (!isEditing) {
+                    player.playSound(ModSounds.EDIT_MODE.get(), 1, 1);
+                }
+                // TODO 退出时的动画渐变
+                isEditing = !isEditing;
             }
 
             if (key == ModKeyMappings.BREATH.getKey().getValue() && !exhaustion && zoom) {
