@@ -9,7 +9,7 @@ public class NetworkRegistry {
     public static void register(final RegisterPayloadHandlersEvent event) {
         final PayloadRegistrar registrar = event.registrar("1");
 
-        registrar.playToClient(PlayerVariablesSyncMessage.TYPE, PlayerVariablesSyncMessage.STREAM_CODEC, PlayerVariablesSyncMessage::handler);
+        registrar.playToClient(PlayerVariablesSyncMessage.TYPE, PlayerVariablesSyncMessage.STREAM_CODEC, (message, context1) -> PlayerVariablesSyncMessage.handler(message));
         registrar.playToClient(ShakeClientMessage.TYPE, ShakeClientMessage.STREAM_CODEC, ShakeClientMessage::handler);
         registrar.playToClient(ClientMotionSyncMessage.TYPE, ClientMotionSyncMessage.STREAM_CODEC, ClientMotionSyncMessage::handler);
         registrar.playToClient(ClientIndicatorMessage.TYPE, ClientIndicatorMessage.STREAM_CODEC, ClientIndicatorMessage::handler);
@@ -49,7 +49,6 @@ public class NetworkRegistry {
         registrar.playToServer(SetFiringParametersMessage.TYPE, SetFiringParametersMessage.STREAM_CODEC, SetFiringParametersMessage::handler);
         registrar.playToServer(SensitivityMessage.TYPE, SensitivityMessage.STREAM_CODEC, SensitivityMessage::handler);
         registrar.playToServer(EditMessage.TYPE, EditMessage.STREAM_CODEC, EditMessage::handler);
-        registrar.playToServer(EditModeMessage.TYPE, EditModeMessage.STREAM_CODEC, EditModeMessage::handler);
         registrar.playToServer(InteractMessage.TYPE, InteractMessage.STREAM_CODEC, InteractMessage::handler);
         registrar.playToServer(AdjustMortarAngleMessage.TYPE, AdjustMortarAngleMessage.STREAM_CODEC, AdjustMortarAngleMessage::handler);
         registrar.playToServer(ChangeVehicleSeatMessage.TYPE, ChangeVehicleSeatMessage.STREAM_CODEC, ChangeVehicleSeatMessage::handler);

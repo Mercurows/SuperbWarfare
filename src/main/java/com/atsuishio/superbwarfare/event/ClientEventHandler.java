@@ -415,7 +415,6 @@ public class ClientEventHandler {
     public static void handleGunMelee(Player player, ItemStack stack) {
         if (stack.getItem() instanceof GunItem gunItem) {
             var data = GunData.from(stack);
-            var cap = player.getData(ModAttachments.PLAYER_VARIABLE);
             if (gunItem.hasMeleeAttack(stack)
                     && gunMelee == 0
                     && drawTime < 0.01
@@ -423,7 +422,7 @@ public class ClientEventHandler {
                     && !(player.getVehicle() instanceof ArmedVehicleEntity iArmedVehicle && iArmedVehicle.banHand(player))
                     && !holdFireVehicle
                     && !notInGame()
-                    && !cap.edit
+                    && !ClickHandler.isEditing
                     && !(data.reload.normal() || data.reload.empty())
                     && !data.reloading()
                     && !data.charging() && !player.getCooldowns().isOnCooldown(stack.getItem())
@@ -575,8 +574,6 @@ public class ClientEventHandler {
             revolverPreTime = Mth.clamp(revolverPreTime - 1.2 * times, 0, 1);
         }
 
-        var cap = player.getData(ModAttachments.PLAYER_VARIABLE);
-
         if (((holdFire || burstFireAmount > 0) && shootDelay >= data.shootDelay())
                 && !(player.getVehicle() instanceof ArmedVehicleEntity iArmedVehicle && iArmedVehicle.banHand(player))
                 && !holdFireVehicle
@@ -585,8 +582,9 @@ public class ClientEventHandler {
                 && (stack.is(ModTags.Items.NORMAL_GUN)
                 && cantFireTime == 0
                 && drawTime < 0.01
-                && !cap.edit
+                && !ClickHandler.isEditing
                 && !notInGame()
+                && !ClickHandler.isEditing
                 && (!(data.reload.normal() || data.reload.empty())
                 && !data.reloading()
                 && !data.charging()
@@ -1119,7 +1117,7 @@ public class ClientEventHandler {
                 onGround = 0.001;
             }
 
-            if (!entity.getData(ModAttachments.PLAYER_VARIABLE).edit) {
+            if (!ClickHandler.isEditing) {
                 if (Minecraft.getInstance().options.keyUp.isDown() && firePosTimer == 0) {
                     moveRotZ = Mth.lerp(0.2f * times, moveRotZ, 0.14) * (1 - zoomTime);
                 } else {
@@ -1182,12 +1180,11 @@ public class ClientEventHandler {
         double weight = data.weight();
         double speed = 1.5 - (0.07 * weight);
 
-        var cap = player.getData(ModAttachments.PLAYER_VARIABLE);
         if (zoom
                 && !(player.getVehicle() instanceof ArmedVehicleEntity iArmedVehicle && iArmedVehicle.banHand(player))
                 && !notInGame()
                 && drawTime < 0.01
-                && !cap.edit) {
+                && !ClickHandler.isEditing) {
             if (Minecraft.getInstance().player != null) {
                 cantSprint = 5;
             }
@@ -1515,7 +1512,7 @@ public class ClientEventHandler {
             if (zoom
                     && !notInGame()
                     && drawTime < 0.01
-                    && !player.getData(ModAttachments.PLAYER_VARIABLE).edit) {
+                    && !ClickHandler.isEditing) {
                 if (!player.isShiftKeyDown()) {
                     int intelligentChipLevel = data.perk.getLevel(ModPerks.INTELLIGENT_CHIP);
 
@@ -1625,6 +1622,7 @@ public class ClientEventHandler {
         bowPullTimer = 0;
         bowPower = 0;
         cantSprint = 20;
+        ClickHandler.isEditing = false;
     }
 
     private static void handleWeaponDraw(LivingEntity entity) {

@@ -632,8 +632,6 @@ public abstract class GunItem extends Item implements CustomRendererItem {
         if (data.reload.prepareTimer.get() == 0 && data.reloading() && data.hasEnoughAmmoToShoot(player)) {
             data.forceStop.set(true);
         }
-
-        player.getData(ModAttachments.PLAYER_VARIABLE).modify(player, cap -> cap.edit = false);
     }
 
     /**

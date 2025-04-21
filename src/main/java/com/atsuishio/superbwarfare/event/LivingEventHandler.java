@@ -388,12 +388,6 @@ public class LivingEventHandler {
                         oldData.charge.timer.reset();
                     }
 
-                    var cap = player.getData(ModAttachments.PLAYER_VARIABLE).watch();
-                    cap.edit = false;
-
-                    player.setData(ModAttachments.PLAYER_VARIABLE, cap);
-                    cap.sync(player);
-
                     oldData.save();
                 }
 

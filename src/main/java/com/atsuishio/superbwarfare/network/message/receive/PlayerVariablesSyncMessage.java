@@ -8,7 +8,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
@@ -31,7 +30,7 @@ public record PlayerVariablesSyncMessage(int target, Map<Byte, Integer> data) im
     );
 
 
-    public static void handler(final PlayerVariablesSyncMessage message, final IPayloadContext context) {
+    public static void handler(final PlayerVariablesSyncMessage message) {
         if (Minecraft.getInstance().player == null) return;
 
         var entity = Minecraft.getInstance().player.level().getEntity(message.target());
@@ -42,15 +41,13 @@ public record PlayerVariablesSyncMessage(int target, Map<Byte, Integer> data) im
 
         for (var entry : map.entrySet()) {
             var type = entry.getKey();
-            switch (type) {
-                case -1 -> variable.tacticalSprint = entry.getValue() == 1;
-                case -2 -> variable.edit = entry.getValue() == 1;
-                default -> {
-                    var ammoTypes = Ammo.values();
-                    if (type < ammoTypes.length) {
-                        var ammo = ammoTypes[type];
-                        variable.ammo.put(ammo, entry.getValue());
-                    }
+            if (type == -1) {
+                variable.tacticalSprint = entry.getValue() == 1;
+            } else {
+                var ammoTypes = Ammo.values();
+                if (type < ammoTypes.length) {
+                    var ammo = ammoTypes[type];
+                    variable.ammo.put(ammo, entry.getValue());
                 }
             }
         }

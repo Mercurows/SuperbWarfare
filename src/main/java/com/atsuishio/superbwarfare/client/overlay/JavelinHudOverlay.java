@@ -1,10 +1,10 @@
 package com.atsuishio.superbwarfare.client.overlay;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.client.ClickHandler;
 import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
-import com.atsuishio.superbwarfare.init.ModAttachments;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.tools.EntityFindUtil;
@@ -53,8 +53,8 @@ public class JavelinHudOverlay implements LayeredDraw.Layer {
         if (player != null) {
             ItemStack stack = player.getMainHandItem();
 
-            if (player.getData(ModAttachments.PLAYER_VARIABLE).edit) return;
-
+            if (ClickHandler.isEditing)
+                return;
             if (player.getVehicle() instanceof ArmedVehicleEntity iArmedVehicle && iArmedVehicle.banHand(player))
                 return;
 

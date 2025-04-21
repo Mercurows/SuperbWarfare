@@ -50,13 +50,13 @@ public class TaserItem extends GunItem implements GeoItem, EnergyStorageItem {
     }
 
     @Override
-    public boolean isBarVisible(ItemStack stack) {
+    public boolean isBarVisible(@NotNull ItemStack stack) {
         var cap = stack.getCapability(Capabilities.EnergyStorage.ITEM);
         return cap != null && cap.getEnergyStored() != 0;
     }
 
     @Override
-    public int getBarWidth(ItemStack stack) {
+    public int getBarWidth(@NotNull ItemStack stack) {
         var cap = stack.getCapability(Capabilities.EnergyStorage.ITEM);
         return Math.round((float) (cap != null ? cap.getEnergyStored() : 0) * 13.0F / MAX_ENERGY);
     }

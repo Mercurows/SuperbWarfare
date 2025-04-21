@@ -1,9 +1,9 @@
 package com.atsuishio.superbwarfare.item.gun.handgun;
 
+import com.atsuishio.superbwarfare.client.ClickHandler;
 import com.atsuishio.superbwarfare.client.TooltipTool;
 import com.atsuishio.superbwarfare.client.renderer.item.TracheliumItemRenderer;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
-import com.atsuishio.superbwarfare.init.ModAttachments;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
@@ -190,7 +190,7 @@ public class Trachelium extends GunItem implements GeoItem {
         ItemStack stack = player.getMainHandItem();
         if (!(stack.getItem() instanceof GunItem)) return PlayState.STOP;
 
-        if (player.getData(ModAttachments.PLAYER_VARIABLE).edit) {
+        if (ClickHandler.isEditing) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.trachelium.edit"));
         }
 

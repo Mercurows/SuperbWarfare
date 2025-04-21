@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.network.message.send;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.init.ModAttachments;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import io.netty.buffer.ByteBuf;
@@ -28,17 +27,12 @@ public record ReloadMessage(int msgType) implements CustomPacketPayload {
 
     public static void pressAction(Player player, int type) {
         if (type != 0) return;
+
         ItemStack stack = player.getMainHandItem();
         if (!(stack.getItem() instanceof GunItem gunItem)) return;
 
         var data = GunData.from(stack);
         if (data.useBackpackAmmo()) return;
-
-        var cap = player.getData(ModAttachments.PLAYER_VARIABLE).watch();
-        cap.edit = false;
-        player.setData(ModAttachments.PLAYER_VARIABLE, cap);
-        cap.sync(player);
-
 
         if (!player.isSpectator()
                 && !data.charging()

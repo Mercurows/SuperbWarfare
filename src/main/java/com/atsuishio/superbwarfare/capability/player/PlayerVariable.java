@@ -8,7 +8,6 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.common.util.INBTSerializable;
@@ -19,7 +18,6 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Consumer;
 
 
 @EventBusSubscriber(modid = Mod.MODID)
@@ -28,7 +26,6 @@ public class PlayerVariable implements INBTSerializable<CompoundTag> {
 
     public Map<Ammo, Integer> ammo = new HashMap<>();
     public boolean tacticalSprint = false;
-    public boolean edit = false;
 
     public void sync(Entity entity) {
         if (!entity.hasData(ModAttachments.PLAYER_VARIABLE)) return;
@@ -39,10 +36,6 @@ public class PlayerVariable implements INBTSerializable<CompoundTag> {
         if (entity instanceof ServerPlayer serverPlayer) {
             PacketDistributor.sendToPlayer(serverPlayer, new PlayerVariablesSyncMessage(entity.getId(), compareAndUpdate()));
         }
-    }
-
-    public static boolean isEditing(Entity entity) {
-        return entity.getData(ModAttachments.PLAYER_VARIABLE).edit;
     }
 
     @SubscribeEvent
@@ -79,7 +72,6 @@ public class PlayerVariable implements INBTSerializable<CompoundTag> {
         }
 
         map.put((byte) -1, this.tacticalSprint ? 1 : 0);
-        map.put((byte) -2, this.edit ? 1 : 0);
 
         return map;
     }
@@ -100,20 +92,8 @@ public class PlayerVariable implements INBTSerializable<CompoundTag> {
         if (old.tacticalSprint != this.tacticalSprint) {
             map.put((byte) -1, this.tacticalSprint ? 1 : 0);
         }
-        if (old.edit != this.edit) {
-            map.put((byte) -2, this.edit ? 1 : 0);
-        }
 
         return map;
-    }
-
-    /**
-     * 编辑并同步玩家变量
-     */
-    public void modify(Player player, Consumer<PlayerVariable> consumer) {
-        watch();
-        consumer.accept(this);
-        sync(player);
     }
 
 
@@ -125,20 +105,17 @@ public class PlayerVariable implements INBTSerializable<CompoundTag> {
         }
 
         nbt.putBoolean("TacticalSprint", tacticalSprint);
-        nbt.putBoolean("EditMode", edit);
 
         return nbt;
     }
 
-    public PlayerVariable readFromNBT(CompoundTag tag) {
+    public void readFromNBT(CompoundTag tag) {
         for (var type : Ammo.values()) {
             type.set(this, type.get(tag));
         }
 
         tacticalSprint = tag.getBoolean("TacticalSprint");
-        edit = tag.getBoolean("EditMode");
 
-        return this;
     }
 
     public PlayerVariable copy() {
@@ -148,7 +125,6 @@ public class PlayerVariable implements INBTSerializable<CompoundTag> {
             type.set(clone, type.get(this));
         }
 
-        clone.edit = this.edit;
         clone.tacticalSprint = this.tacticalSprint;
 
         return clone;
@@ -162,8 +138,7 @@ public class PlayerVariable implements INBTSerializable<CompoundTag> {
             if (type.get(this) != type.get(other)) return false;
         }
 
-        return tacticalSprint == other.tacticalSprint
-                && edit == other.edit;
+        return tacticalSprint == other.tacticalSprint;
     }
 
     @SubscribeEvent

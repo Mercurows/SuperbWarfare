@@ -3,7 +3,6 @@ package com.atsuishio.superbwarfare.network.message.send;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
-import com.atsuishio.superbwarfare.init.ModAttachments;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
@@ -32,12 +31,8 @@ public record ZoomMessage(int msgType) implements CustomPacketPayload {
 
         var vehicle = player.getVehicle();
         // 缩放音效播放条件: 载具是武器载具，且该位置有可用武器
-        var cap = player.getData(ModAttachments.PLAYER_VARIABLE).watch();
 
         if (message.msgType == 0) {
-            cap.edit = false;
-            player.setData(ModAttachments.PLAYER_VARIABLE, cap);
-            cap.sync(player);
 
             if (player.isPassenger()
                     && vehicle instanceof WeaponVehicleEntity weaponEntity
