@@ -77,6 +77,8 @@ public class GunData {
         hideBulletChain = new BooleanValue(data, "HideBulletChain");
         draw = new BooleanValue(data, "Draw");
         sensitivity = new IntValue(data, "Sensitivity");
+        heat = new DoubleValue(data, "Heat");
+        overHeat = new BooleanValue(data, "OverHeat");
     }
 
     private CompoundTag getOrPut(String name) {
@@ -281,6 +283,10 @@ public class GunData {
         return defaultGunData().shootDelay;
     }
 
+    public double addHeat() {
+        return defaultGunData().addHeat;
+    }
+
     public enum AmmoConsumeType {
         PLAYER_AMMO, ITEM, TAG, INVALID,
     }
@@ -430,6 +436,9 @@ public class GunData {
     public final IntValue level;
     public final DoubleValue exp;
     public final DoubleValue upgradePoint;
+    public final DoubleValue heat;
+
+    public final BooleanValue overHeat;
 
     public boolean canAdjustZoom() {
         return item.canAdjustZoom(stack);

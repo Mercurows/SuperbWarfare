@@ -70,4 +70,6 @@ public class DefaultGunData {
     @SerializedName("ShootDelay")
     public int shootDelay = 0;
 
+    @SerializedName("AddHeat")
+    public double addHeat = 0;
 }

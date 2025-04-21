@@ -10,13 +10,16 @@ import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.item.gun.data.value.AttachmentType;
 import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
+import com.atsuishio.superbwarfare.tools.SoundTool;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -90,6 +93,24 @@ public abstract class GunItem extends Item implements CustomRendererItem {
             capability.sync(entity);
             data.ammo.set(magazine + (hasBulletInBarrel ? 1 : 0));
         }
+
+        //冷却
+
+        double cooldown = 0;
+        if (entity.wasInPowderSnow) {
+            cooldown = 0.15;
+        } else if (entity.isInWaterOrRain()) {
+            cooldown = 0.04;
+        } else if (entity.isOnFire() || entity.isInLava()) {
+            cooldown = -0.1;
+        }
+
+        data.heat.set(Mth.clamp(data.heat.get() - 0.25 - cooldown, 0, 100));
+
+        if (data.heat.get() < 80 && data.overHeat.get()) {
+            data.overHeat.set(false);
+        }
+
         data.save();
     }
 
@@ -533,6 +554,18 @@ public abstract class GunItem extends Item implements CustomRendererItem {
             if (!shootBullet(player, data, spread, zoom)) return;
         }
 
+        // 添加热量
+
+        data.heat.set(Mth.clamp(data.heat.get() + data.addHeat(), 0, 100));
+
+        // 过热
+        if (data.heat.get() >= 100 && !data.overHeat.get()) {
+            data.overHeat.set(true);
+            if (!player.level().isClientSide() && player instanceof ServerPlayer serverPlayer) {
+                SoundTool.playLocalSound(serverPlayer, ModSounds.MINIGUN_OVERHEAT.get(), 2f, 1f);
+            }
+        }
+
         data.item.afterShoot(data, player);
         playFireSounds(data, player, zoom);
     }
@@ -547,9 +580,11 @@ public abstract class GunItem extends Item implements CustomRendererItem {
         String origin = stack.getItem().getDescriptionId();
         String name = origin.substring(origin.lastIndexOf(".") + 1);
 
+        float pitch = data.heat.get() <= 75 ? 1 : (float) (1 - 0.02 * Math.abs(75 - data.heat.get()));
+
         var perk = data.perk.get(Perk.Type.AMMO);
         if (perk == ModPerks.BEAST_BULLET.get()) {
-            player.playSound(ModSounds.HENG.get(), 4f, 1f);
+            player.playSound(ModSounds.HENG.get(), 4f, pitch);
         }
 
         float soundRadius = (float) data.soundRadius();
@@ -557,17 +592,17 @@ public abstract class GunItem extends Item implements CustomRendererItem {
 
         SoundEvent sound3p = BuiltInRegistries.SOUND_EVENT.get(Mod.loc(name + (barrelType == 2 ? "_fire_3p_s" : "_fire_3p")));
         if (sound3p != null) {
-            player.playSound(sound3p, soundRadius * 0.4f, 1f);
+            player.playSound(sound3p, soundRadius * 0.4f, pitch);
         }
 
         SoundEvent soundFar = BuiltInRegistries.SOUND_EVENT.get(Mod.loc(name + (barrelType == 2 ? "_far_s" : "_far")));
         if (soundFar != null) {
-            player.playSound(soundFar, soundRadius * 0.7f, 1f);
+            player.playSound(soundFar, soundRadius * 0.7f, pitch);
         }
 
         SoundEvent soundVeryFar = BuiltInRegistries.SOUND_EVENT.get(Mod.loc(name + (barrelType == 2 ? "_veryfar_s" : "_veryfar")));
         if (soundVeryFar != null) {
-            player.playSound(soundVeryFar, soundRadius, 1f);
+            player.playSound(soundVeryFar, soundRadius, pitch);
         }
     }
 

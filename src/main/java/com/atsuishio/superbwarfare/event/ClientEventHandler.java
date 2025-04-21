@@ -498,7 +498,7 @@ public class ClientEventHandler {
         }
 
         ItemStack stack = player.getMainHandItem();
-        if (!(stack.getItem() instanceof GunItem)) {
+        if (!(stack.getItem() instanceof GunItem gunItem)) {
             clientTimer.stop();
             fireSpread = 0;
             gunSpread = 0;
@@ -580,6 +580,8 @@ public class ClientEventHandler {
         if (((holdFire || burstFireAmount > 0) && shootDelay >= data.shootDelay())
                 && !(player.getVehicle() instanceof ArmedVehicleEntity iArmedVehicle && iArmedVehicle.banHand(player))
                 && !holdFireVehicle
+                && gunItem.canShoot(data)
+                && !data.overHeat.get()
                 && (stack.is(ModTags.Items.NORMAL_GUN)
                 && cantFireTime == 0
                 && drawTime < 0.01
@@ -590,18 +592,13 @@ public class ClientEventHandler {
                 && !data.charging()
                 && data.hasEnoughAmmoToShoot(player)
                 && !player.getCooldowns().isOnCooldown(stack.getItem())
-                && !data.bolt.needed.get()
+                && !GunData.from(stack).bolt.needed.get()
                 && revolverPre(data))
-                || (stack.is(ModItems.MINIGUN.get())
-                && !player.isSprinting()
-                && tag.getDouble("overheat") == 0
-                && !player.getCooldowns().isOnCooldown(stack.getItem())
-                && data.hasBackupAmmo(player)
-        ))) {
+        )) {
             if (mode == 0) {
                 if (clientTimer.getProgress() == 0) {
                     clientTimer.start();
-                    shootClient(player, tag);
+                    shootClient(player);
                 }
             } else {
                 if (!clientTimer.started()) {
@@ -611,7 +608,7 @@ public class ClientEventHandler {
                 }
 
                 if (clientTimer.getProgress() >= cooldown) {
-                    shootClient(player, tag);
+                    shootClient(player);
                     clientTimer.setProgress((clientTimer.getProgress() - cooldown));
                 }
             }
@@ -661,7 +658,7 @@ public class ClientEventHandler {
         }
     }
 
-    public static void shootClient(Player player, final CompoundTag tag) {
+    public static void shootClient(Player player) {
         ItemStack stack = player.getMainHandItem();
         if (!(stack.getItem() instanceof GunItem gunItem)) return;
         var data = GunData.from(stack);
@@ -710,23 +707,6 @@ public class ClientEventHandler {
 
             playGunClientSounds(player);
             handleClientShoot();
-        } else if (stack.is(ModItems.MINIGUN.get())) {
-            // TODO 提取通用过热处理方法
-            var perk = data.perk.get(Perk.Type.AMMO);
-            float pitch = tag.getDouble("heat") <= 40 ? 1 : (float) (1 - 0.025 * Math.abs(40 - tag.getDouble("heat")));
-
-            player.playSound(ModSounds.MINIGUN_FIRE_1P.get(), 1f, pitch);
-
-            if (perk == ModPerks.BEAST_BULLET.get()) {
-                player.playSound(ModSounds.HENG.get(), 1f, 1f);
-            }
-
-            double shooterHeight = player.getEyePosition().distanceTo((Vec3.atLowerCornerOf(player.level().clip(new ClipContext(player.getEyePosition(), player.getEyePosition().add(new Vec3(0, -1, 0).scale(10)),
-                    ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, player)).getBlockPos())));
-
-            Mod.queueClientWork((int) (1 + 1.5 * shooterHeight), () -> player.playSound(ModSounds.SHELL_CASING_NORMAL.get(), (float) Math.max(1.5 - 0.2 * shooterHeight, 0), 1));
-
-            handleClientShoot();
         }
     }
 
@@ -735,15 +715,12 @@ public class ClientEventHandler {
         actionMove = Mth.lerp(0.125 * times, actionMove, 0);
     }
 
-    // TODO 完善canShoot()方法，提前判断是否能开火
     public static void handleClientShoot() {
         Player player = Minecraft.getInstance().player;
         if (player == null) return;
         ItemStack stack = player.getMainHandItem();
-        if (!(stack.getItem() instanceof GunItem gunItem)) return;
+        if (!(stack.getItem() instanceof GunItem)) return;
         var data = GunData.from(stack);
-
-        if (!gunItem.canShoot(data)) return;
 
         PacketDistributor.sendToServer(new ShootMessage(gunSpread, zoom));
         fireRecoilTime = 10;
@@ -807,9 +784,10 @@ public class ClientEventHandler {
         }
         var data = GunData.from(stack);
         var perk = data.perk.get(Perk.Type.AMMO);
+        float pitch = data.heat.get() <= 75 ? 1 : (float) (1 - 0.02 * Math.abs(75 - data.heat.get()));
 
         if (perk == ModPerks.BEAST_BULLET.get()) {
-            player.playSound(ModSounds.HENG.get(), 1f, (float) ((2 * org.joml.Math.random() - 1) * 0.1f + 1.0f));
+            player.playSound(ModSounds.HENG.get(), 1f, (float) ((2 * org.joml.Math.random() - 1) * 0.1f + pitch));
         }
 
         int barrelType = data.attachment.get(AttachmentType.BARREL);
@@ -817,7 +795,7 @@ public class ClientEventHandler {
         SoundEvent sound1p = BuiltInRegistries.SOUND_EVENT.get(Mod.loc(name + (barrelType == 2 ? "_fire_1p_s" : "_fire_1p")));
 
         if (sound1p != null) {
-            player.playSound(sound1p, 4f, (float) ((2 * org.joml.Math.random() - 1) * 0.05f + 1.0f));
+            player.playSound(sound1p, 4f, (float) ((2 * org.joml.Math.random() - 1) * 0.05f + pitch));
         }
 
         double shooterHeight = player.getEyePosition().distanceTo((Vec3.atLowerCornerOf(player.level().clip(new ClipContext(player.getEyePosition(), player.getEyePosition().add(new Vec3(0, -1, 0).scale(10)),

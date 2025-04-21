@@ -1,4 +1,4 @@
-// 1.21.1	2025-04-18T00:48:29.3124197	Tags for minecraft:item mod id superbwarfare
+// 1.21.1	2025-04-21T19:07:09.7051757	Tags for minecraft:item mod id superbwarfare
 44a232152f5941d0435a35483b37f8ed22fd10bf data/c/tags/item/dusts.json
 0fa06c2ff83bf09797e3ddff90f62d1124e645b4 data/c/tags/item/dusts/coal_coke.json
 295ddf906b7133a0558d03e9a60eea18281fe430 data/c/tags/item/dusts/iron.json
@@ -41,7 +41,7 @@ d39c5c787667ce78c214bc2fbd4931891ebaf936 data/superbwarfare/tags/item/launcher.j
 ab580f3989177c0589c43ca346db571011600187 data/superbwarfare/tags/item/launcher/grenade.json
 b404c6fd99d2ca68c6738f225cb7d68ee443c10a data/superbwarfare/tags/item/machine_gun.json
 a53020091752016da6602ee1b8b7e08823614344 data/superbwarfare/tags/item/military_armor.json
-9e203e417380442166a000bca86744916a2fb1c5 data/superbwarfare/tags/item/normal_gun.json
+8ea4fb7d3981141a953bd5510e8c76fb790307aa data/superbwarfare/tags/item/normal_gun.json
 15328cd564c931cc0a4fc000596240f93a7b29a1 data/superbwarfare/tags/item/revolver.json
 aaa533157491a82b8e23b2914deef67c4078cbed data/superbwarfare/tags/item/rifle.json
 a249d9d052cdc24b34e0e51ab991329f6c76e8ab data/superbwarfare/tags/item/shotgun.json
