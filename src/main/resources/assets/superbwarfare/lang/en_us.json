@@ -491,6 +491,8 @@
   "commands.config.collision_destroy.soft": "Enabled vehicle collision destroy blocks (Soft Mode)",
   "commands.config.collision_destroy.hard": "Enabled vehicle collision destroy blocks (Hard Mode)",
   "commands.config.collision_destroy.beastly": "Enabled vehicle collision destroy blocks (Beastly Mode)",
+  "commands.config.tactical_sprint.enabled": "Enabled tactical sprint",
+  "commands.config.tactical_sprint.disabled": "Disabled tactical sprint",
 
   "tips.superbwarfare.sensitivity": "Current Sensitivity of This Gun: %1$s",
   "tips.superbwarfare.monitor.linked": "Connect！",
