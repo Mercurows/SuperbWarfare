@@ -575,7 +575,7 @@ public abstract class GunItem extends Item implements CustomRendererItem {
 
         // 添加热量
 
-        data.heat.set(Mth.clamp(data.heat.get() + data.addHeat(), 0, 100));
+        data.heat.set(Mth.clamp(data.heat.get() + data.heatPerShoot(), 0, 100));
 
         // 过热
         if (data.heat.get() >= 100 && !data.overHeat.get()) {

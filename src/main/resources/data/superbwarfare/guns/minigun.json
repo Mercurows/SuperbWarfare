@@ -12,5 +12,5 @@
   "FireMode": 2,
   "AmmoType": "@RifleAmmo",
   "ShootDelay": 20,
-  "AddHeat": 0.5
+  "HeatPerShoot": 0.5
 }

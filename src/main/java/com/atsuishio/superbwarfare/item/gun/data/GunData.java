@@ -283,8 +283,8 @@ public class GunData {
         return defaultGunData().shootDelay;
     }
 
-    public double addHeat() {
-        return defaultGunData().addHeat;
+    public double heatPerShoot() {
+        return defaultGunData().heatPerShoot;
     }
 
     public enum AmmoConsumeType {
