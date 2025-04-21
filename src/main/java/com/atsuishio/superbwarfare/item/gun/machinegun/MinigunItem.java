@@ -11,11 +11,9 @@ import com.atsuishio.superbwarfare.perk.Perk;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoItem;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.*;
@@ -35,25 +33,6 @@ public class MinigunItem extends GunItem implements GeoItem {
 
     public MinigunItem() {
         super(new Properties().stacksTo(1).rarity(ModEnumExtensions.getLegendary()));
-    }
-
-    @Override
-    public boolean isBarVisible(@NotNull ItemStack stack) {
-        var data = GunData.from(stack);
-        return data.heat.get() != 0;
-    }
-
-    @Override
-    public int getBarWidth(@NotNull ItemStack stack) {
-        var data = GunData.from(stack);
-        return Math.round((float) data.heat.get() * 13.0F / 100F);
-    }
-
-    @Override
-    public int getBarColor(@NotNull ItemStack stack) {
-        var data = GunData.from(stack);
-        double f = 1 - data.heat.get() / 100.0F;
-        return Mth.hsvToRgb((float) f / 3.0F, 1.0F, 1.0F);
     }
 
     @Override
