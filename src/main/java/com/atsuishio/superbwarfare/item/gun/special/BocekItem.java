@@ -10,6 +10,7 @@ import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.network.message.receive.ShootClientMessage;
+import com.atsuishio.superbwarfare.network.message.send.ReloadMessage;
 import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.tools.GunsTool;
@@ -102,11 +103,7 @@ public class BocekItem extends GunItem implements GeoItem {
         if (!(stack.getItem() instanceof GunItem)) return PlayState.STOP;
 
         var data = GunData.from(stack);
-
-        // TODO 调整成正常的判断逻辑
-        if (GunsTool.getGunIntTag(GunData.from(stack).tag, "ArrowEmpty") > 0 && data.ammo.get() == 0
-//                && (data.countBackupAmmo(player) > 0 || InventoryTool.hasCreativeAmmoBox(player))
-        ) {
+        if (data.reload.empty()) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.bocek.reload"));
         }
 
@@ -133,19 +130,8 @@ public class BocekItem extends GunItem implements GeoItem {
     @ParametersAreNonnullByDefault
     public void inventoryTick(ItemStack stack, Level world, Entity entity, int slot, boolean selected) {
         super.inventoryTick(stack, world, entity, slot, selected);
-
-        if (entity instanceof Player player) {
-            var data = GunData.from(stack);
-
-            if (GunsTool.getGunIntTag(GunData.from(stack).tag, "ArrowEmpty") > 0) {
-                GunsTool.setGunIntTag(data.tag, "ArrowEmpty", GunsTool.getGunIntTag(GunData.from(stack).tag, "ArrowEmpty") - 1);
-            }
-
-            if (GunsTool.getGunIntTag(data.tag, "ArrowEmpty") == 0 && data.ammo.get() == 0 && data.hasBackupAmmo(player)) {
-                data.consumeBackupAmmo(player, 1);
-                data.ammo.set(1);
-            }
-            data.save();
+        if (GunsTool.getGunIntTag(GunData.from(stack).tag, "ArrowEmpty") > 0) {
+            GunsTool.setGunIntTag(GunData.from(stack).tag, "ArrowEmpty", GunsTool.getGunIntTag(GunData.from(stack).tag, "ArrowEmpty") - 1);
         }
     }
 
@@ -180,6 +166,11 @@ public class BocekItem extends GunItem implements GeoItem {
 
     @Override
     public void onShoot(GunData data, Player player, double spread, boolean zoom) {
+    }
+
+    @Override
+    public boolean isMagazineReload(ItemStack stack) {
+        return true;
     }
 
     @Override
@@ -223,6 +214,7 @@ public class BocekItem extends GunItem implements GeoItem {
             data.ammo.set(data.ammo.get() - 1);
             data.save();
         }
+        PacketDistributor.sendToServer(new ReloadMessage(0));
     }
 
 
