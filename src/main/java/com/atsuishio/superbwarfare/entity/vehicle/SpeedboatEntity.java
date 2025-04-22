@@ -164,7 +164,7 @@ public class SpeedboatEntity extends ContainerMobileVehicleEntity implements Geo
         turretAngle(40, 40);
         lowHealthWarning();
         inertiaRotate(2);
-        this.terrainCompat(2f, 3f);
+        this.terrainCompact(2f, 3f);
 
         this.refreshDimensions();
     }

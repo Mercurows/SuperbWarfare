@@ -328,7 +328,7 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
     }
 
     // 地形适应测试
-    public void terrainCompat(float w, float l) {
+    public void terrainCompact(float w, float l) {
         if (onGround()) {
             Matrix4f transform = this.getWheelsTransform(1);
 
@@ -400,6 +400,53 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
             setXRot(getXRot() * 0.9f);
             setZRot(getRoll() * 0.9f);
         }
+    }
+
+    //用于履带的地形适应
+
+    public float[] terrainCompactTrackValue(float w, float l) {
+        Matrix4f transform = this.getWheelsTransform(1);
+
+        // 左前
+        Vector4f positionLF = transformPosition(transform, w / 2, 0, l / 2);
+        // 右前
+        Vector4f positionRF = transformPosition(transform, -w / 2, 0, l / 2);
+        // 左后
+        Vector4f positionLB = transformPosition(transform, w / 2, 0, -l / 2);
+        // 右后
+        Vector4f positionRB = transformPosition(transform, -w / 2, 0, -l / 2);
+
+        Vec3 p1 = new Vec3(positionLF.x, positionLF.y, positionLF.z);
+        Vec3 p2 = new Vec3(positionRF.x, positionRF.y, positionRF.z);
+        Vec3 p3 = new Vec3(positionLB.x, positionLB.y, positionLB.z);
+        Vec3 p4 = new Vec3(positionRB.x, positionRB.y, positionRB.z);
+
+        // 确定点位是否在墙里来调整点位高度
+        float p1y = (float) this.traceBlockY(p1, 3);
+        float p2y = (float) this.traceBlockY(p2, 3);
+        float p3y = (float) this.traceBlockY(p3, 3);
+        float p4y = (float) this.traceBlockY(p4, 3);
+
+        p1 = new Vec3(positionLF.x, p1y, positionLF.z);
+        p2 = new Vec3(positionRF.x, p2y, positionRF.z);
+        p3 = new Vec3(positionLB.x, p3y, positionLB.z);
+        p4 = new Vec3(positionRB.x, p4y, positionRB.z);
+
+        Vec3 v0 = p3.vectorTo(p1);
+        Vec3 v1 = p4.vectorTo(p2);
+        Vec3 v2 = p1.vectorTo(p2);
+        Vec3 v3 = p3.vectorTo(p4);
+
+        double x1 = getXRotFromVector(v0);
+        double x2 = getXRotFromVector(v1);
+
+        double z1 = getXRotFromVector(v2);
+        double z2 = getXRotFromVector(v3);
+
+        float x = Math.clamp(-15f, 15f, Mth.wrapDegrees((float) (-(x1 + x2)) - getXRot()));
+        float z = Math.clamp(-15f, 15f, Mth.wrapDegrees((float) (-(z1 + z2)) - getRoll()));
+
+        return new float[]{x, z};
     }
 
     public Matrix4f getWheelsTransform(float ticks) {

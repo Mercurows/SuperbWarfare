@@ -129,7 +129,7 @@ public class Tom6Entity extends MobileVehicleEntity implements GeoEntity {
             }
         }
 
-        this.terrainCompat(1f, 1.2f);
+        this.terrainCompact(1f, 1.2f);
         this.setDeltaMovement(this.getDeltaMovement().add(0.0, 0.01, 0.0));
         this.refreshDimensions();
     }

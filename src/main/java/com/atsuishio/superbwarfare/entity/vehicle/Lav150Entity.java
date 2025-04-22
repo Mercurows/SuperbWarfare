@@ -188,7 +188,7 @@ public class Lav150Entity extends ContainerMobileVehicleEntity implements GeoEnt
 
         turretAngle(15, 12.5f);
         lowHealthWarning();
-        this.terrainCompat(2.7f, 3.61f);
+        this.terrainCompact(2.7f, 3.61f);
         inertiaRotate(1.25f);
 
         releaseSmokeDecoy();
@@ -376,8 +376,8 @@ public class Lav150Entity extends ContainerMobileVehicleEntity implements GeoEnt
 
         this.setRudderRot(Mth.clamp(this.getRudderRot() - this.entityData.get(DELTA_ROT), -0.8f, 0.8f) * 0.75f);
 
+        this.setYRot((float) (this.getYRot() - Math.max((isInWater() && !onGround() ? 5 : 10) * this.getDeltaMovement().horizontalDistance(), 0) * this.getRudderRot() * (this.entityData.get(POWER) > 0 ? 1 : -1)));
         if (this.isInWater() || onGround()) {
-            this.setYRot((float) (this.getYRot() - Math.max((isInWater() && !onGround() ? 5 : 10) * this.getDeltaMovement().horizontalDistance(), 0) * this.getRudderRot() * (this.entityData.get(POWER) > 0 ? 1 : -1)));
             this.setDeltaMovement(this.getDeltaMovement().add(getViewVector(1).scale((!isInWater() && !onGround() ? 0.05f : (isInWater() && !onGround() ? 0.3f : 1)) * this.entityData.get(POWER))));
         }
     }

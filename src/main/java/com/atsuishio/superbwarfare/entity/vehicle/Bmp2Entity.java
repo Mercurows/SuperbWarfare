@@ -54,6 +54,7 @@ import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Math;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
 import software.bernie.geckolib.animatable.GeoEntity;
@@ -62,7 +63,10 @@ import software.bernie.geckolib.animation.*;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 
@@ -232,13 +236,49 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
         }
 
         turretAngle(25, 25);
-        this.terrainCompat(4f, 5f);
+        this.terrainCompact(4f, 5f);
         inertiaRotate(1);
 
         releaseSmokeDecoy();
 
         lowHealthWarning();
         this.refreshDimensions();
+    }
+
+    @Override
+    public void terrainCompact(float w, float l) {
+        if (onGround()) {
+            float x1 = terrainCompactTrackValue(w, l)[0];
+            float x2 = terrainCompactTrackValue(w, l - 1)[0];
+            float x3 = terrainCompactTrackValue(w, l - 2)[0];
+            float x4 = terrainCompactTrackValue(w, l - 3)[0];
+            float x5 = terrainCompactTrackValue(w, l - 4)[0];
+            float x6 = terrainCompactTrackValue(w, l - 5)[0];
+
+            List<Float> numbersX = Arrays.asList(x1, x2, x3, x4, x5, x6);
+            float maxX = Collections.max(numbersX);
+            float minX = Collections.min(numbersX);
+
+            float z1 = terrainCompactTrackValue(w, l)[1];
+            float z2 = terrainCompactTrackValue(w, l - 1)[1];
+            float z3 = terrainCompactTrackValue(w, l - 2)[1];
+            float z4 = terrainCompactTrackValue(w, l - 3)[1];
+            float z5 = terrainCompactTrackValue(w, l - 4)[1];
+            float z6 = terrainCompactTrackValue(w, l - 5)[1];
+
+            List<Float> numbersZ = Arrays.asList(z1, z2, z3, z4, z5, z6);
+            float maxZ = Collections.max(numbersZ);
+            float minZ = Collections.min(numbersZ);
+
+            float diffX = Math.clamp(-15f, 15f, (minX + maxX) / 2);
+            setXRot(Mth.clamp(getXRot() + 0.15f * diffX, -45f, 45f));
+
+            float diffZ = Math.clamp(-15f, 15f, minZ + maxZ);
+            setZRot(Mth.clamp(getRoll() + 0.15f * diffZ, -45f, 45f));
+        } else if (isInWater()) {
+            setXRot(getXRot() * 0.9f);
+            setZRot(getRoll() * 0.9f);
+        }
     }
 
     @Override
@@ -452,8 +492,8 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
         setLeftTrack((float) ((getLeftTrack() - 1.9 * Math.PI * s0) + Mth.clamp(0.4f * Math.PI * this.entityData.get(DELTA_ROT), -5f, 5f)));
         setRightTrack((float) ((getRightTrack() - 1.9 * Math.PI * s0) - Mth.clamp(0.4f * Math.PI * this.entityData.get(DELTA_ROT), -5f, 5f)));
 
+        this.setYRot((float) (this.getYRot() - (isInWater() && !onGround() ? 2.5 : 6) * entityData.get(DELTA_ROT)));
         if (this.isInWater() || onGround()) {
-            this.setYRot((float) (this.getYRot() - (isInWater() && !onGround() ? 2.5 : 6) * entityData.get(DELTA_ROT)));
             this.setDeltaMovement(this.getDeltaMovement().add(getViewVector(1).scale((!isInWater() && !onGround() ? 0.13f : (isInWater() && !onGround() ? 2 : 2.4f)) * this.entityData.get(POWER))));
         }
     }

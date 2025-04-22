@@ -198,7 +198,7 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
 
         releaseDecoy();
         lowHealthWarning();
-        this.terrainCompat(2.7f, 2.7f);
+        this.terrainCompact(2.7f, 2.7f);
 
         this.refreshDimensions();
     }

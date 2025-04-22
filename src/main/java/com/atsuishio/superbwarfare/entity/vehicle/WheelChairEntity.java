@@ -85,7 +85,7 @@ public class WheelChairEntity extends MobileVehicleEntity implements GeoEntity {
     }
 
     @Override
-    protected void playStepSound(BlockPos pPos, BlockState pState) {
+    protected void playStepSound(@NotNull BlockPos pPos, @NotNull BlockState pState) {
         this.playSound(ModSounds.WHEEL_STEP.get(), (float) (getDeltaMovement().length() * 0.5), random.nextFloat() * 0.15f + 1);
     }
 
@@ -113,7 +113,7 @@ public class WheelChairEntity extends MobileVehicleEntity implements GeoEntity {
         }
         this.setSprinting(this.getDeltaMovement().horizontalDistance() > 0.15);
         attractEntity();
-        this.terrainCompat(0.9f, 1.2f);
+        this.terrainCompact(0.9f, 1.2f);
         inertiaRotate(10f);
 
         this.refreshDimensions();
