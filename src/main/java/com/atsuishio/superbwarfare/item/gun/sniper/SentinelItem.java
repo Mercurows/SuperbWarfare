@@ -15,11 +15,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoItem;
@@ -126,11 +128,6 @@ public class SentinelItem extends GunItem implements GeoItem, EnergyStorageItem 
     }
 
     @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return this.cache;
-    }
-
-    @Override
     public double getCustomDamage(ItemStack stack) {
         var data = GunData.from(stack);
         var cap = stack.getCapability(Capabilities.EnergyStorage.ITEM);
@@ -138,6 +135,20 @@ public class SentinelItem extends GunItem implements GeoItem, EnergyStorageItem 
             return 0.2857142857142857 * data.rawDamage();
         }
         return 0;
+    }
+
+    @Override
+    public void inventoryTick(@NotNull ItemStack stack, @NotNull Level level, @NotNull Entity entity, int slot, boolean selected) {
+        super.inventoryTick(stack, level, entity, slot, selected);
+        var cap = stack.getCapability(Capabilities.EnergyStorage.ITEM);
+        if (cap != null && cap.getEnergyStored() > 0) {
+            cap.extractEnergy(1, false);
+        }
+    }
+
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return this.cache;
     }
 
     @Override
