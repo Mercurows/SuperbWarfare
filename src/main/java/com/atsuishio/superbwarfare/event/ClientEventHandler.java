@@ -1462,7 +1462,7 @@ public class ClientEventHandler {
             bowPullTimer = Math.min(bowPullTimer + 0.024 * times, 1.4);
             bowPower = Math.min(bowPower + 0.018 * times, 1);
         } else {
-            bowPullTimer = Math.max(bowPullTimer - 0.025 * times, 0);
+            bowPullTimer = Math.max(bowPullTimer - 0.021 * times, 0);
             bowPower = Math.max(bowPower - 0.04 * times, 0);
         }
         bowPullPos = 0.5 * Math.cos(Math.PI * Math.pow(Math.pow(Mth.clamp(bowPullTimer, 0, 1), 2) - 1, 2)) + 0.5;
