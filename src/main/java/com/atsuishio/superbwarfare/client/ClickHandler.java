@@ -223,7 +223,8 @@ public class ClickHandler {
             if (key == ModKeyMappings.DISMOUNT.getKey().getValue()) {
                 handleDismountPress(player);
             }
-            if (key == ModKeyMappings.EDIT_MODE.getKey().getValue() && ClientEventHandler.burstFireAmount == 0 && stack.getItem() instanceof GunItem) {
+            if (key == ModKeyMappings.EDIT_MODE.getKey().getValue() && ClientEventHandler.burstFireAmount == 0
+                    && stack.getItem() instanceof GunItem gunItem && gunItem.isCustomizable(stack)) {
                 ClientEventHandler.holdFire = false;
 
                 if (!isEditing) {
