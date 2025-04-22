@@ -2,8 +2,8 @@ package com.atsuishio.superbwarfare.mixins;
 
 import com.atsuishio.superbwarfare.entity.ICustomKnockback;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -33,7 +33,7 @@ public class LivingEntityMixin implements ICustomKnockback {
 
     @Inject(method = "setSprinting(Z)V", at = @At("HEAD"), cancellable = true)
     public void setSprinting(boolean pSprinting, CallbackInfo ci) {
-        if (((LivingEntity) (Object) this) instanceof LocalPlayer) {
+        if (((LivingEntity) (Object) this) instanceof Player player && player.level().isClientSide) {
             if (pSprinting && ClientEventHandler.zoom) {
                 ci.cancel();
             }
