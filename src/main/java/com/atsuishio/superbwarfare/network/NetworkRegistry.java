@@ -9,7 +9,7 @@ public class NetworkRegistry {
     public static void register(final RegisterPayloadHandlersEvent event) {
         final PayloadRegistrar registrar = event.registrar("1");
 
-        registrar.playToClient(PlayerVariablesSyncMessage.TYPE, PlayerVariablesSyncMessage.STREAM_CODEC, (message, context1) -> PlayerVariablesSyncMessage.handler(message));
+        registrar.playToClient(PlayerVariablesSyncMessage.TYPE, PlayerVariablesSyncMessage.STREAM_CODEC, (msg, ctx) -> PlayerVariablesSyncMessage.handler(msg));
         registrar.playToClient(ShakeClientMessage.TYPE, ShakeClientMessage.STREAM_CODEC, ShakeClientMessage::handler);
         registrar.playToClient(ClientMotionSyncMessage.TYPE, ClientMotionSyncMessage.STREAM_CODEC, ClientMotionSyncMessage::handler);
         registrar.playToClient(ClientIndicatorMessage.TYPE, ClientIndicatorMessage.STREAM_CODEC, ClientIndicatorMessage::handler);
@@ -17,11 +17,12 @@ public class NetworkRegistry {
         registrar.playToClient(GunsDataMessage.TYPE, GunsDataMessage.STREAM_CODEC, GunsDataMessage::handler);
         registrar.playToClient(ContainerDataMessage.TYPE, ContainerDataMessage.STREAM_CODEC, ContainerDataMessage::handler);
         registrar.playToClient(ShootClientMessage.TYPE, ShootClientMessage.STREAM_CODEC, ShootClientMessage::handler);
-        registrar.playToClient(DrawClientMessage.TYPE, DrawClientMessage.STREAM_CODEC, (drawClientMessage, context) -> DrawClientMessage.handler());
+        registrar.playToClient(DrawClientMessage.TYPE, DrawClientMessage.STREAM_CODEC, (msg, ctx) -> DrawClientMessage.handler());
         registrar.playToClient(ResetCameraTypeMessage.TYPE, ResetCameraTypeMessage.STREAM_CODEC, ResetCameraTypeMessage::handler);
         registrar.playToClient(RadarMenuOpenMessage.TYPE, RadarMenuOpenMessage.STREAM_CODEC, RadarMenuOpenMessage::handler);
         registrar.playToClient(RadarMenuCloseMessage.TYPE, RadarMenuCloseMessage.STREAM_CODEC, RadarMenuCloseMessage::handler);
         registrar.playToClient(SimulationDistanceMessage.TYPE, SimulationDistanceMessage.STREAM_CODEC, SimulationDistanceMessage::handler);
+        registrar.playToClient(ClientTacticalSprintSyncMessage.TYPE, ClientTacticalSprintSyncMessage.STREAM_CODEC, (msg, ctx) -> ClientTacticalSprintSyncMessage.handler(msg));
 
         registrar.playToServer(LaserShootMessage.TYPE, LaserShootMessage.STREAM_CODEC, LaserShootMessage::handler);
         registrar.playToServer(ShootMessage.TYPE, ShootMessage.STREAM_CODEC, ShootMessage::handler);
