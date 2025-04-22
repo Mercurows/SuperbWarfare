@@ -9,7 +9,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import org.jetbrains.annotations.NotNull;
 
 public record ClientTacticalSprintSyncMessage(boolean flag) implements CustomPacketPayload {
-    public static final Type<ClientTacticalSprintSyncMessage> TYPE = new Type<>(Mod.loc("client_indicator"));
+    public static final Type<ClientTacticalSprintSyncMessage> TYPE = new Type<>(Mod.loc("client_tactical_sprint_sync"));
 
     public static final StreamCodec<ByteBuf, ClientTacticalSprintSyncMessage> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.BOOL,
