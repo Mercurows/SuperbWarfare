@@ -25,9 +25,7 @@ public class Mp443ItemRenderer extends GeoItemRenderer<Mp443Item> {
     public Mp443ItemRenderer() {
         super(new Mp443ItemModel());
         // TODO layer
-// this.addRenderLayer(new Mp443Layer(this));
-        // TODO layer
-// this.addRenderLayer(new Mp443LightLayer(this));
+//        this.addRenderLayer(new Mp443LightLayer(this));
     }
 
     @Override

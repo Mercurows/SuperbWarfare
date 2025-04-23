@@ -24,8 +24,6 @@ public class M870ItemRenderer extends GeoItemRenderer<M870Item> {
 
     public M870ItemRenderer() {
         super(new M870ItemModel());
-        // TODO layer
-// this.addRenderLayer(new M870Layer(this));
     }
 
     @Override

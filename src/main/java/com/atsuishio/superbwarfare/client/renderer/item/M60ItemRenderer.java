@@ -24,8 +24,6 @@ public class M60ItemRenderer extends GeoItemRenderer<M60Item> {
 
     public M60ItemRenderer() {
         super(new M60ItemModel());
-        // TODO layer
-// this.addRenderLayer(new M60Layer(this));
     }
 
     @Override

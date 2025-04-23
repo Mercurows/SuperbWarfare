@@ -24,8 +24,6 @@ public class MosinNagantItemRenderer extends GeoItemRenderer<MosinNagantItem> {
 
     public MosinNagantItemRenderer() {
         super(new MosinNagantItemModel());
-        // TODO layer
-// this.addRenderLayer(new MosinNagantLayer(this));
     }
 
     @Override

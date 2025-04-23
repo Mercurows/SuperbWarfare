@@ -25,9 +25,7 @@ public class Glock18ItemRenderer extends GeoItemRenderer<Glock18Item> {
     public Glock18ItemRenderer() {
         super(new Glock18ItemModel());
         // TODO layer
-// this.addRenderLayer(new Glock18Layer(this));
-        // TODO layer
-// this.addRenderLayer(new Glock18LightLayer(this));
+//        this.addRenderLayer(new Glock18LightLayer(this));
     }
 
     @Override

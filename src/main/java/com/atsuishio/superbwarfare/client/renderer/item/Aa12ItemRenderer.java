@@ -27,8 +27,6 @@ public class Aa12ItemRenderer extends GeoItemRenderer<Aa12Item> {
 
     public Aa12ItemRenderer() {
         super(new Aa12ItemModel());
-        // TODO layer
-// this.addRenderLayer(new Aa12Layer(this));
     }
 
     @Override

@@ -24,8 +24,6 @@ public class MarlinItemRenderer extends GeoItemRenderer<MarlinItem> {
 
     public MarlinItemRenderer() {
         super(new MarlinItemModel());
-        // TODO layer
-// this.addRenderLayer(new MarlinLayer(this));
     }
 
     @Override

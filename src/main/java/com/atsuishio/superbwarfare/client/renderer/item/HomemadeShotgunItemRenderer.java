@@ -24,8 +24,6 @@ public class HomemadeShotgunItemRenderer extends GeoItemRenderer<HomemadeShotgun
 
     public HomemadeShotgunItemRenderer() {
         super(new HomemadeShotgunItemModel());
-        // TODO layer
-// this.addRenderLayer(new HomemadeShotgunLayer(this));
     }
 
     @Override

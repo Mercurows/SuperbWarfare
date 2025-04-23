@@ -24,8 +24,6 @@ public class HuntingRifleItemRenderer extends GeoItemRenderer<HuntingRifleItem> 
 
     public HuntingRifleItemRenderer() {
         super(new HuntingRifleItemModel());
-        // TODO layer
-// this.addRenderLayer(new HuntingRifleLayer(this));
     }
 
     @Override

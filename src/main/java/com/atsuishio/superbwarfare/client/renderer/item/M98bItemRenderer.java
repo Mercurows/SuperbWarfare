@@ -24,8 +24,6 @@ public class M98bItemRenderer extends GeoItemRenderer<M98bItem> {
 
     public M98bItemRenderer() {
         super(new M98bItemModel());
-        // TODO layer
-// this.addRenderLayer(new M98bLayer(this));
     }
 
     @Override

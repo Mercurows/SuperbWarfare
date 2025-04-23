@@ -24,8 +24,6 @@ public class M1911ItemRenderer extends GeoItemRenderer<M1911Item> {
 
     public M1911ItemRenderer() {
         super(new M1911ItemModel());
-        // TODO layer
-// this.addRenderLayer(new M1911Layer(this));
     }
 
     @Override

@@ -25,9 +25,7 @@ public class MinigunItemRenderer extends GeoItemRenderer<MinigunItem> {
     public MinigunItemRenderer() {
         super(new MinigunItemModel());
         // TODO layer
-// this.addRenderLayer(new MinigunLayer(this));
-        // TODO layer
-// this.addRenderLayer(new MinigunHeatLayer(this));
+//        this.addRenderLayer(new MinigunHeatLayer(this));
     }
 
     @Override

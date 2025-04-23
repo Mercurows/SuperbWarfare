@@ -24,8 +24,6 @@ public class M79ItemRenderer extends GeoItemRenderer<M79Item> {
 
     public M79ItemRenderer() {
         super(new M79ItemModel());
-        // TODO layer
-// this.addRenderLayer(new M79Layer(this));
     }
 
     @Override
