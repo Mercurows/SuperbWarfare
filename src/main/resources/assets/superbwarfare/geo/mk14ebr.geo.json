@@ -67,7 +67,7 @@
 				{
 					"name": "flare",
 					"parent": "gun",
-					"pivot": [0.05, 2.57, -23.6]
+					"pivot": [0, 2.57, -23.6]
 				},
 				{
 					"name": "Barrel",

@@ -4,8 +4,6 @@ import com.atsuishio.superbwarfare.client.AnimationHelper;
 import com.atsuishio.superbwarfare.client.model.item.InsidiousItemModel;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
-import com.atsuishio.superbwarfare.item.gun.data.GunData;
-import com.atsuishio.superbwarfare.item.gun.data.value.AttachmentType;
 import com.atsuishio.superbwarfare.item.gun.rifle.InsidiousItem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -80,16 +78,7 @@ public class InsidiousItemRenderer extends GeoItemRenderer<InsidiousItem> {
         ItemStack itemStack = player.getMainHandItem();
         if (!(itemStack.getItem() instanceof GunItem)) return;
 
-        if (name.equals("flare")) {
-            if (ClientEventHandler.firePosTimer == 0 || ClientEventHandler.firePosTimer > 0.5 || GunData.from(itemStack).attachment.get(AttachmentType.BARREL) == 2) {
-                bone.setHidden(true);
-            } else {
-                bone.setHidden(false);
-                bone.setScaleX((float) (0.95 + 0.5 * (Math.random() - 0.5)));
-                bone.setScaleY((float) (0.95 + 0.5 * (Math.random() - 0.5)));
-                bone.setRotZ((float) (0.5 * (Math.random() - 0.5)));
-            }
-        }
+        AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn, 0, 0, 1, 0.38);
 
         if (name.equals("rot1")) {
             bone.setRotZ((System.currentTimeMillis() % 36000000) / 400f);

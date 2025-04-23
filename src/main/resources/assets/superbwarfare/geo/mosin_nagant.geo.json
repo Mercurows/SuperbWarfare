@@ -57,7 +57,7 @@
 				{
 					"name": "flare",
 					"parent": "mosinnagant",
-					"pivot": [-0.01172, 2.48125, -31.63516]
+					"pivot": [0, 2.41125, -38.13516]
 				},
 				{
 					"name": "scope",

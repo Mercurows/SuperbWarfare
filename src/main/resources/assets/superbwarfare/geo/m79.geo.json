@@ -43,7 +43,7 @@
 				{
 					"name": "flare",
 					"parent": "qian",
-					"pivot": [0.3, 1.25, -9.5]
+					"pivot": [0, 1.25, -9.5]
 				},
 				{
 					"name": "bullet",

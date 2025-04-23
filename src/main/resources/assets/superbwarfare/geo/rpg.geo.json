@@ -2617,6 +2617,11 @@
 					]
 				},
 				{
+					"name": "flare",
+					"parent": "gun",
+					"pivot": [0, 1.41656, -10]
+				},
+				{
 					"name": "rocket",
 					"parent": "rpg",
 					"pivot": [0, 1.5, -13]

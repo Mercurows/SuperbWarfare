@@ -108,16 +108,7 @@ public class Ntw20Renderer extends GeoItemRenderer<Ntw20Item> {
             bone.setHidden(ClientEventHandler.zoomPos > 0.7 && ClientEventHandler.zoom);
         }
 
-        if (name.equals("flare")) {
-            if (ClientEventHandler.firePosTimer == 0 || ClientEventHandler.firePosTimer > 0.5 || GunData.from(itemStack).attachment.get(AttachmentType.BARREL) == 2) {
-                bone.setHidden(true);
-            } else {
-                bone.setHidden(false);
-                bone.setScaleX((float) (0.55 + 0.5 * (Math.random() - 0.5)));
-                bone.setScaleY((float) (0.55 + 0.5 * (Math.random() - 0.5)));
-                bone.setRotZ((float) (0.5 * (Math.random() - 0.5)));
-            }
-        }
+        AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn, 0, 0, 3.70229375, 0.8);
 
         ItemModelHelper.handleGunAttachments(bone, itemStack, name);
 

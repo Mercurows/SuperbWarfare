@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.client.renderer.item;
 
 import com.atsuishio.superbwarfare.client.AnimationHelper;
 import com.atsuishio.superbwarfare.client.model.item.M60ItemModel;
-import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.machinegun.M60Item;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -76,16 +75,7 @@ public class M60ItemRenderer extends GeoItemRenderer<M60Item> {
         ItemStack itemStack = player.getMainHandItem();
         if (!(itemStack.getItem() instanceof GunItem)) return;
 
-        if (name.equals("flare")) {
-            if (ClientEventHandler.firePosTimer == 0 || ClientEventHandler.firePosTimer > 0.5) {
-                bone.setHidden(true);
-            } else {
-                bone.setHidden(false);
-                bone.setScaleX((float) (0.75 + 0.5 * (Math.random() - 0.5)));
-                bone.setScaleY((float) (0.75 + 0.5 * (Math.random() - 0.5)));
-                bone.setRotZ((float) (0.5 * (Math.random() - 0.5)));
-            }
-        }
+        AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn, 0, 0.1, 1.95, 0.45);
 
         if (renderingArms) {
             AnimationHelper.renderArms(mc, player, this.transformType, stack, name, bone, SCALE_RECIPROCAL, this.currentBuffer, type, packedLightIn, true, true);

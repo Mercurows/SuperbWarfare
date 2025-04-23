@@ -78,6 +78,7 @@ public class RpkItemRenderer extends GeoItemRenderer<RpkItem> {
 
         var player = mc.player;
         if (player == null) return;
+
         ItemStack itemStack = player.getMainHandItem();
         if (!(itemStack.getItem() instanceof GunItem)) return;
         var data = GunData.from(itemStack);
@@ -111,22 +112,13 @@ public class RpkItemRenderer extends GeoItemRenderer<RpkItem> {
                 && (name.equals("jing") || name.equals("Barrel") || name.equals("humu") || name.equals("qiangguan") || name.equals("houzhunxing"))) {
             bone.setHidden(ClientEventHandler.zoomPos > 0.7 && ClientEventHandler.zoom);
         }
+        float height = 0.02f;
 
-        if (name.equals("flare")) {
-            if (ClientEventHandler.firePosTimer == 0 || ClientEventHandler.firePosTimer > 0.5 || GunData.from(itemStack).attachment.get(AttachmentType.BARREL) == 2) {
-                bone.setHidden(true);
-            } else {
-                bone.setHidden(false);
-                bone.setScaleX((float) (0.55 + 0.5 * (Math.random() - 0.5)));
-                bone.setScaleY((float) (0.55 + 0.5 * (Math.random() - 0.5)));
-                bone.setRotZ((float) (0.5 * (Math.random() - 0.5)));
-            }
-            if ((data.attachment.get(AttachmentType.SCOPE) == 2 || data.attachment.get(AttachmentType.SCOPE) == 3) && ClientEventHandler.zoom) {
-                bone.setPosY(-2);
-            } else {
-                bone.setPosY(0);
-            }
+        if ((GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 2 || GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 3) && ClientEventHandler.zoom) {
+            height = -0.1f;
         }
+
+        AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn, 0, height, 1.475, 0.3);
         ItemModelHelper.handleGunAttachments(bone, itemStack, name);
 
         if (renderingArms) {

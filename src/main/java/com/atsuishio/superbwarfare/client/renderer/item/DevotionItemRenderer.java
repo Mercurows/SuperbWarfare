@@ -78,16 +78,7 @@ public class DevotionItemRenderer extends GeoItemRenderer<DevotionItem> {
         ItemStack itemStack = player.getMainHandItem();
         if (!(itemStack.getItem() instanceof GunItem)) return;
 
-        if (name.equals("flare")) {
-            if (ClientEventHandler.firePosTimer == 0 || ClientEventHandler.firePosTimer > 0.5) {
-                bone.setHidden(true);
-            } else {
-                bone.setHidden(false);
-                bone.setScaleX((float) (0.75 + 0.5 * (Math.random() - 0.5)));
-                bone.setScaleY((float) (0.75 + 0.5 * (Math.random() - 0.5)));
-                bone.setRotZ((float) (0.5 * (Math.random() - 0.5)));
-            }
-        }
+        AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn, 0, 0, 1.3875, 0.35);
 
         if (name.equals("holo")) {
             bone.setHidden(ClientEventHandler.zoomPos < 0.7 || !ClientEventHandler.zoom);

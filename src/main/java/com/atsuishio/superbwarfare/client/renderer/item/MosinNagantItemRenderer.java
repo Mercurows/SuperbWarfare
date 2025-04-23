@@ -84,16 +84,7 @@ public class MosinNagantItemRenderer extends GeoItemRenderer<MosinNagantItem> {
             bone.setHidden(ClientEventHandler.zoomPos > 0.7);
         }
 
-        if (name.equals("flare")) {
-            if (ClientEventHandler.firePosTimer == 0 || ClientEventHandler.firePosTimer > 0.5) {
-                bone.setHidden(true);
-            } else {
-                bone.setHidden(false);
-                bone.setScaleX((float) (0.75 + 0.5 * (Math.random() - 0.5)));
-                bone.setScaleY((float) (0.75 + 0.5 * (Math.random() - 0.5)));
-                bone.setRotZ((float) (0.5 * (Math.random() - 0.5)));
-            }
-        }
+        AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn, 0, 0, 2.38345, 0.6);
 
         if (renderingArms) {
             AnimationHelper.renderArms(mc, player, this.transformType, stack, name, bone, SCALE_RECIPROCAL, this.currentBuffer, type, packedLightIn, true, true);

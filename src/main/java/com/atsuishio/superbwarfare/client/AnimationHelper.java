@@ -20,6 +20,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import org.joml.Matrix3f;
+import org.joml.Matrix4f;
 import software.bernie.geckolib.animation.AnimationProcessor;
 import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.util.RenderUtil;
@@ -98,8 +99,14 @@ public class AnimationHelper {
             bone.setScaleY((float) (size + 0.8 * size * (Math.random() - 0.5)));
             bone.setRotZ((float) (0.5 * (Math.random() - 0.5)));
 
+            float height = 0f;
+
+            if ((GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 2 || GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 3) && ClientEventHandler.zoom) {
+                height = -0.07f;
+            }
+
             stack.pushPose();
-            stack.translate(x, y, -z);
+            stack.translate(x, y + 0.02 + height, -z);
             RenderUtil.translateMatrixToBone(stack, bone);
             RenderUtil.translateToPivotPoint(stack, bone);
             RenderUtil.rotateMatrixAroundBone(stack, bone);
@@ -115,7 +122,6 @@ public class AnimationHelper {
             stack.popPose();
         }
     }
-
     private static void vertex(VertexConsumer pConsumer, PoseStack.Pose pPose, Matrix3f pNormal, int pLightmapUV, float pX, float pY, int pU, int pV) {
         pConsumer.addVertex(pPose, pX - 0.5F, pY - 0.5F, 0.0F)
                 .setColor(255, 255, 255, 255)

@@ -114,6 +114,8 @@ public class SvdItemRenderer extends GeoItemRenderer<SvdItem> {
             }
         }
 
+        AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn, 0, 0, 1.76479375, 0.35);
+
         ItemModelHelper.handleGunAttachments(bone, itemStack, name);
 
         if (renderingArms) {

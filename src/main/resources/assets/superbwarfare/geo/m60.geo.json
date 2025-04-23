@@ -15107,7 +15107,7 @@
 				{
 					"name": "flare",
 					"parent": "0",
-					"pivot": [0, 1.7, -22.2]
+					"pivot": [0, 4.26, -31.2]
 				},
 				{
 					"name": "camera",
