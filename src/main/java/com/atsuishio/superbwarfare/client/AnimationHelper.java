@@ -1,7 +1,9 @@
 package com.atsuishio.superbwarfare.client;
 
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
+import com.atsuishio.superbwarfare.item.gun.data.value.AttachmentType;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
@@ -17,6 +19,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import org.joml.Matrix3f;
 import software.bernie.geckolib.animation.AnimationProcessor;
 import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.util.RenderUtil;
@@ -36,15 +39,7 @@ public class AnimationHelper {
     }
 
     public static void renderPartOverBoneR(ModelPart model, GeoBone bone, PoseStack stack, VertexConsumer buffer, int packedLightIn, int packedOverlayIn) {
-        setupModelFromBone(model, bone);
-        model.render(stack, buffer, packedLightIn, packedOverlayIn);
-    }
-
-    public static void setupModelFromBoneR(ModelPart model, GeoBone bone) {
-        model.setPos(bone.getPivotX(), bone.getPivotY(), bone.getPivotZ());
-        model.xRot = 0.0f;
-        model.yRot = 0.0f;
-        model.zRot = 0.0f;
+        renderPartOverBone(model, bone, stack, buffer, packedLightIn, packedOverlayIn);
     }
 
     public static void renderPartOverBone2(ModelPart model, GeoBone bone, PoseStack stack, VertexConsumer buffer, int packedLightIn, int packedOverlayIn) {
@@ -94,6 +89,40 @@ public class AnimationHelper {
             camera.setRotY(roll * camera.getRotY());
             camera.setRotZ(roll * camera.getRotZ());
         }
+    }
+
+
+    public static void handleShootFlare(String name, PoseStack stack, ItemStack itemStack, GeoBone bone, MultiBufferSource buffer, int packedLightIn, double x, double y, double z, double size) {
+        if (name.equals("flare") && ClientEventHandler.firePosTimer > 0 && ClientEventHandler.firePosTimer < 0.5 && GunData.from(itemStack).attachment.get(AttachmentType.BARREL) != 2) {
+            bone.setScaleX((float) (size + 0.8 * size * (Math.random() - 0.5)));
+            bone.setScaleY((float) (size + 0.8 * size * (Math.random() - 0.5)));
+            bone.setRotZ((float) (0.5 * (Math.random() - 0.5)));
+
+            stack.pushPose();
+            stack.translate(x, y, -z);
+            RenderUtil.translateMatrixToBone(stack, bone);
+            RenderUtil.translateToPivotPoint(stack, bone);
+            RenderUtil.rotateMatrixAroundBone(stack, bone);
+            RenderUtil.scaleMatrixForBone(stack, bone);
+            RenderUtil.translateAwayFromPivotPoint(stack, bone);
+            PoseStack.Pose pose = stack.last();
+            Matrix3f normal = pose.normal();
+            VertexConsumer vertexConsumer = buffer.getBuffer(RenderType.eyes(Mod.loc("textures/particle/flare.png")));
+            vertex(vertexConsumer, pose, normal, packedLightIn, 0.0F, 0, 0, 1);
+            vertex(vertexConsumer, pose, normal, packedLightIn, 1.0F, 0, 1, 1);
+            vertex(vertexConsumer, pose, normal, packedLightIn, 1.0F, 1, 1, 0);
+            vertex(vertexConsumer, pose, normal, packedLightIn, 0.0F, 1, 0, 0);
+            stack.popPose();
+        }
+    }
+
+    private static void vertex(VertexConsumer pConsumer, PoseStack.Pose pPose, Matrix3f pNormal, int pLightmapUV, float pX, float pY, int pU, int pV) {
+        pConsumer.addVertex(pPose, pX - 0.5F, pY - 0.5F, 0.0F)
+                .setColor(255, 255, 255, 255)
+                .setUv((float) pU, (float) pV)
+                .setOverlay(OverlayTexture.NO_OVERLAY)
+                .setLight(pLightmapUV)
+                .setNormal(pPose, 0.0F, 1.0F, 0.0F);
     }
 
     public static void renderArms(

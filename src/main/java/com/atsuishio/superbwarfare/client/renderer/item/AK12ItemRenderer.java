@@ -78,6 +78,7 @@ public class AK12ItemRenderer extends GeoItemRenderer<AK12Item> {
 
         var player = mc.player;
         if (player != null) {
+
             ItemStack itemStack = player.getMainHandItem();
             if (!(itemStack.getItem() instanceof GunItem)) return;
             var data = GunData.from(itemStack);
@@ -104,19 +105,8 @@ public class AK12ItemRenderer extends GeoItemRenderer<AK12Item> {
                 bone.setHidden(ClientEventHandler.zoomPos > 0.7 && ClientEventHandler.zoom);
             }
 
-            if (name.equals("flare")) {
-                if (GunData.from(itemStack).attachment.get(AttachmentType.BARREL) == 1) {
-                    bone.setPosZ(2.25f);
-                }
-                if (ClientEventHandler.firePosTimer == 0 || ClientEventHandler.firePosTimer > 0.5 || GunData.from(itemStack).attachment.get(AttachmentType.BARREL) == 2) {
-                    bone.setHidden(true);
-                } else {
-                    bone.setHidden(false);
-                    bone.setScaleX((float) (0.75 + 0.5 * (Math.random() - 0.5)));
-                    bone.setScaleY((float) (0.75 + 0.5 * (Math.random() - 0.5)));
-                    bone.setRotZ((float) (0.5 * (Math.random() - 0.5)));
-                }
-            }
+
+            AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn, -0.012, 0.02, 1.25229375, 0.3);
 
             ItemModelHelper.handleGunAttachments(bone, itemStack, name);
         }
