@@ -108,15 +108,6 @@ public record FireModeMessage(int msgType) implements CustomPacketPayload {
                     SoundTool.playLocalSound(serverPlayer, ModSounds.CANNON_ZOOM_OUT.get());
                 }
             }
-
-            if (stack.getItem() == ModItems.TRACHELIUM.get() && !data.bolt.needed.get()) {
-                data.DA.set(!data.DA.get());
-                if (!data.canImmediatelyShoot.get()) {
-                    data.bolt.needed.set(true);
-                }
-            }
-
-            data.save();
         }
     }
 

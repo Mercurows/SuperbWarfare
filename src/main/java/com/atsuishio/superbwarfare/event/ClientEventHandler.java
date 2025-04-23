@@ -195,19 +195,6 @@ public class ClientEventHandler {
         return player.getVehicle() instanceof VehicleEntity vehicle && vehicle.allowFreeCam() && Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON && ModKeyMappings.FREE_CAMERA.isDown();
     }
 
-    private static boolean revolverPre(GunData data) {
-        Player player = Minecraft.getInstance().player;
-        if (player == null) return false;
-        ItemStack stack = player.getMainHandItem();
-        if (!stack.is(ModTags.Items.REVOLVER)) {
-            return true;
-        } else if (stack.is(ModTags.Items.REVOLVER) && (data.DA.get() || data.canImmediatelyShoot.get())) {
-            return true;
-        } else {
-            return revolverPreTime >= 1;
-        }
-    }
-
     private static boolean isMoving() {
         Player player = Minecraft.getInstance().player;
         return Minecraft.getInstance().options.keyLeft.isDown()
@@ -566,11 +553,10 @@ public class ClientEventHandler {
         int cooldown = (int) Math.round(1000 / rps);
 
         //左轮类
-        if (clientTimer.getProgress() == 0 && stack.is(ModTags.Items.REVOLVER) && ((holdFire && !data.DA.get())
-                || (data.bolt.actionTimer.get() < 7 && data.bolt.actionTimer.get() > 2) || data.canImmediatelyShoot.get())) {
+        if (clientTimer.getProgress() == 0 && stack.is(ModItems.TRACHELIUM.get()) && holdFire) {
             revolverPreTime = Mth.clamp(revolverPreTime + 0.3 * times, 0, 1);
             revolverWheelPreTime = Mth.clamp(revolverWheelPreTime + 0.32 * times, 0, revolverPreTime > 0.7 ? 1 : 0.55);
-        } else if (!data.DA.get() && !data.canImmediatelyShoot.get()) {
+        } else {
             revolverPreTime = Mth.clamp(revolverPreTime - 1.2 * times, 0, 1);
         }
 
@@ -590,8 +576,7 @@ public class ClientEventHandler {
                 && !data.charging()
                 && data.hasEnoughAmmoToShoot(player)
                 && !player.getCooldowns().isOnCooldown(stack.getItem())
-                && !GunData.from(stack).bolt.needed.get()
-                && revolverPre(data))
+                && !GunData.from(stack).bolt.needed.get())
         )) {
             if (mode == 0) {
                 if (clientTimer.getProgress() == 0) {
@@ -703,7 +688,7 @@ public class ClientEventHandler {
             }
 
             // 判断是否为栓动武器（BoltActionTime > 0），并在开火后给一个需要上膛的状态
-            if (data.defaultActionTime() > 0 && data.ammo.get() > (stack.is(ModTags.Items.REVOLVER) ? 0 : 1)) {
+            if (data.defaultActionTime() > 0 && data.ammo.get() > 1) {
                 data.bolt.needed.set(true);
             }
 

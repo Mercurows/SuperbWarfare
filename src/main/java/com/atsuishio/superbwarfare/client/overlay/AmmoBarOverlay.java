@@ -10,12 +10,10 @@ import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.tools.InventoryTool;
 import com.atsuishio.superbwarfare.tools.NBTTool;
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.LayeredDraw;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -123,26 +121,15 @@ public class AmmoBarOverlay implements LayeredDraw.Layer {
                         12,
                         12);
             } else {
-                if (stack.getItem() != ModItems.TRACHELIUM.get()) {
-                    guiGraphics.blit(fireMode,
-                            w - 95,
-                            h - 21,
-                            0,
-                            0,
-                            8,
-                            8,
-                            8,
-                            8);
-                } else {
-                    guiGraphics.drawString(
-                            Minecraft.getInstance().font,
-                            data.DA.get() ? Component.translatable("des.superbwarfare.revolver.sa").withStyle(ChatFormatting.BOLD) : Component.translatable("des.superbwarfare.revolver.da").withStyle(ChatFormatting.BOLD),
-                            w - 96,
-                            h - 20,
-                            0xFFFFFF,
-                            false
-                    );
-                }
+                guiGraphics.blit(fireMode,
+                        w - 95,
+                        h - 21,
+                        0,
+                        0,
+                        8,
+                        8,
+                        8,
+                        8);
             }
 
             if (stack.getItem() != ModItems.MINIGUN.get() && stack.getItem() != ModItems.TRACHELIUM.get()) {

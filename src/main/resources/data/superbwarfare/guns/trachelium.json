@@ -11,5 +11,6 @@
   "BypassesArmor": 0.3,
   "SoundRadius": 10,
   "RPM": 240,
-  "AmmoType": "@RifleAmmo"
+  "AmmoType": "@RifleAmmo",
+  "ShootDelay": 6
 }

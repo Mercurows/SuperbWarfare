@@ -116,7 +116,7 @@ public class Qbz95ItemRenderer extends GeoItemRenderer<Qbz95Item> {
             bone.setHidden(ClientEventHandler.zoomPos > 0.7 && ClientEventHandler.zoom);
         }
 
-        AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn, 0, 0, 1.04375, 0.3);
+        AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn, 0, 0.02, 1.12375, 0.3);
 
         ItemModelHelper.handleGunAttachments(bone, itemStack, name);
 

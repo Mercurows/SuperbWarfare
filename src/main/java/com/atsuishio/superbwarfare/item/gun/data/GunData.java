@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.item.gun.data;
 
-import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.data.subdata.*;
 import com.atsuishio.superbwarfare.item.gun.data.value.*;
@@ -66,8 +65,6 @@ public class GunData {
         exp = new DoubleValue(data, "Exp");
         upgradePoint = new DoubleValue(data, "UpgradePoint");
 
-        canImmediatelyShoot = new BooleanValue(data, "CanImmediatelyShoot");
-        DA = new BooleanValue(data, "DA");
         isEmpty = new BooleanValue(data, "IsEmpty");
         closeHammer = new BooleanValue(data, "CloseHammer");
         stopped = new BooleanValue(data, "Stopped");
@@ -416,7 +413,7 @@ public class GunData {
         int ammoNeeded = mag - ammo + (extraOne ? 1 : 0);
 
         // 空仓换弹的栓动武器应该在换弹后取消待上膛标记
-        if (ammo == 0 && defaultActionTime() > 0 && !stack.is(ModTags.Items.REVOLVER)) {
+        if (ammo == 0 && defaultActionTime() > 0) {
             bolt.needed.set(false);
         }
 
@@ -461,8 +458,6 @@ public class GunData {
         return charge.time() > 0;
     }
 
-    public final BooleanValue canImmediatelyShoot;
-    public final BooleanValue DA;
     public final BooleanValue isEmpty;
     public final BooleanValue closeHammer;
     public final BooleanValue stopped;

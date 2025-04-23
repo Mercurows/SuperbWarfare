@@ -532,14 +532,9 @@ public abstract class GunItem extends Item implements CustomRendererItem {
             data.holdOpen.set(true);
         }
 
-        // TODO 替换左轮判断方式
-        if (data.stack.is(ModTags.Items.REVOLVER)) {
-            data.canImmediatelyShoot.set(true);
-        }
 
-        // TODO 替换左轮判断方式
         // 判断是否为栓动武器（BoltActionTime > 0），并在开火后给一个需要上膛的状态
-        if (data.defaultActionTime() > 0 && data.ammo.get() > (data.stack.is(ModTags.Items.REVOLVER) ? 0 : 1)) {
+        if (data.defaultActionTime() > 0 && data.ammo.get() > 1) {
             data.bolt.needed.set(true);
         }
     }

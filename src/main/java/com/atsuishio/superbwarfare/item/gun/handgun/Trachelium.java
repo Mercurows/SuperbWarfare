@@ -243,11 +243,6 @@ public class Trachelium extends GunItem implements GeoItem {
     }
 
     @Override
-    public int getCustomBoltActionTime(ItemStack stack) {
-        return GunData.from(stack).DA.get() ? 12 : 0;
-    }
-
-    @Override
     public boolean canSwitchScope(ItemStack stack) {
         return GunData.from(stack).attachment.get(AttachmentType.SCOPE) == 2;
     }

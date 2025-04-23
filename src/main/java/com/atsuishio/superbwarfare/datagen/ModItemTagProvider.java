@@ -104,8 +104,6 @@ public class ModItemTagProvider extends ItemTagsProvider {
                 .addTag(ModTags.Items.LAUNCHER_GRENADE);
         this.tag(ModTags.Items.LAUNCHER_GRENADE).add(ModItems.M_79.get(), ModItems.SECONDARY_CATACLYSM.get());
 
-        this.tag(ModTags.Items.REVOLVER).add(ModItems.TRACHELIUM.get());
-
         this.tag(ModTags.Items.MILITARY_ARMOR).add(ModItems.RU_CHEST_6B43.get(), ModItems.US_CHEST_IOTV.get());
 
         this.tag(ModTags.Items.BLUEPRINT).addTags(ModTags.Items.COMMON_BLUEPRINT, ModTags.Items.RARE_BLUEPRINT, ModTags.Items.EPIC_BLUEPRINT,
