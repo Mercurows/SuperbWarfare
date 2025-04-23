@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.client;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.item.gun.data.value.AttachmentType;
@@ -19,8 +18,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import org.joml.Matrix3f;
-import org.joml.Matrix4f;
 import software.bernie.geckolib.animation.AnimationProcessor;
 import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.util.RenderUtil;
@@ -113,16 +110,16 @@ public class AnimationHelper {
             RenderUtil.scaleMatrixForBone(stack, bone);
             RenderUtil.translateAwayFromPivotPoint(stack, bone);
             PoseStack.Pose pose = stack.last();
-            Matrix3f normal = pose.normal();
-            VertexConsumer vertexConsumer = buffer.getBuffer(RenderType.eyes(Mod.loc("textures/particle/flare.png")));
-            vertex(vertexConsumer, pose, normal, packedLightIn, 0.0F, 0, 0, 1);
-            vertex(vertexConsumer, pose, normal, packedLightIn, 1.0F, 0, 1, 1);
-            vertex(vertexConsumer, pose, normal, packedLightIn, 1.0F, 1, 1, 0);
-            vertex(vertexConsumer, pose, normal, packedLightIn, 0.0F, 1, 0, 0);
+            VertexConsumer vertexConsumer = buffer.getBuffer(ModRenderTypes.MUZZLE_FLASH_TYPE);
+            vertex(vertexConsumer, pose, packedLightIn, 0.0F, 0, 0, 1);
+            vertex(vertexConsumer, pose, packedLightIn, 1.0F, 0, 1, 1);
+            vertex(vertexConsumer, pose, packedLightIn, 1.0F, 1, 1, 0);
+            vertex(vertexConsumer, pose, packedLightIn, 0.0F, 1, 0, 0);
             stack.popPose();
         }
     }
-    private static void vertex(VertexConsumer pConsumer, PoseStack.Pose pPose, Matrix3f pNormal, int pLightmapUV, float pX, float pY, int pU, int pV) {
+
+    private static void vertex(VertexConsumer pConsumer, PoseStack.Pose pPose, int pLightmapUV, float pX, float pY, int pU, int pV) {
         pConsumer.addVertex(pPose, pX - 0.5F, pY - 0.5F, 0.0F)
                 .setColor(255, 255, 255, 255)
                 .setUv((float) pU, (float) pV)
