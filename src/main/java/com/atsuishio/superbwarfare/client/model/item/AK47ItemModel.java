@@ -46,7 +46,6 @@ public class AK47ItemModel extends GeoModel<AK47Item> {
         GeoBone scope = getAnimationProcessor().getBone("Scope1");
         GeoBone scope2 = getAnimationProcessor().getBone("Scope2");
         GeoBone scope3 = getAnimationProcessor().getBone("Scope3");
-        GeoBone cross3 = getAnimationProcessor().getBone("Cross3");
         GeoBone shuan = getAnimationProcessor().getBone("shuan");
 
         Player player = Minecraft.getInstance().player;
@@ -87,13 +86,13 @@ public class AK47ItemModel extends GeoModel<AK47Item> {
             case 0 -> 0.55f;
             case 1 -> 0.2f;
             case 2 -> 0.87f;
-            case 3 -> 0.78f;
+            case 3 -> 0.84f;
             default -> 0f;
         };
         float posZ = switch (type) {
             case 0, 1 -> 2.8f;
             case 2 -> 4.74f;
-            case 3 -> 3.9f;
+            case 3 -> 4.5f;
             default -> 0f;
         };
 
@@ -138,9 +137,6 @@ public class AK47ItemModel extends GeoModel<AK47Item> {
         CrossHairOverlay.gunRot = shen.getRotZ();
 
         shuan.setPosZ(2.4f * (float) fp);
-
-        cross3.setRotZ(0.01f * (float) (ClientEventHandler.recoilHorizon * fp));
-        cross3.setPosY(-0.23f * (float) (fp + 2.3 * fr));
 
         GeoBone l = getAnimationProcessor().getBone("l");
         GeoBone r = getAnimationProcessor().getBone("r");
