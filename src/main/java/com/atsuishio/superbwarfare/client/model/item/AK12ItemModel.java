@@ -46,7 +46,6 @@ public class AK12ItemModel extends GeoModel<AK12Item> {
         GeoBone scope1 = getAnimationProcessor().getBone("Scope1");
         GeoBone scope2 = getAnimationProcessor().getBone("Scope2");
         GeoBone scope3 = getAnimationProcessor().getBone("Scope3");
-        GeoBone cross3 = getAnimationProcessor().getBone("Cross3");
         GeoBone frontSight = getAnimationProcessor().getBone("qianjimiao");
         GeoBone shuan = getAnimationProcessor().getBone("shuan");
 
@@ -132,11 +131,7 @@ public class AK12ItemModel extends GeoModel<AK12Item> {
         shen.setRotZ((float) (shen.getRotZ() * (1 - 0.4 * zt)));
 
         CrossHairOverlay.gunRot = shen.getRotZ();
-
         shuan.setPosZ(2.4f * (float) fp);
-
-        cross3.setRotZ(0.01f * (float) (ClientEventHandler.recoilHorizon * fp));
-        cross3.setPosY(-0.23f * (float) (fp + 2.3 * fr));
 
         GeoBone l = getAnimationProcessor().getBone("l");
         GeoBone r = getAnimationProcessor().getBone("r");
