@@ -169,7 +169,7 @@ public class RpgItem extends GunItem implements GeoItem {
 
                 int perkLevel = data.perk.getLevel(ModPerks.MICRO_MISSILE);
                 if (perkLevel > 0) {
-                    rocket.setExplosionRadius(0.5f);
+                    rocket.setExplosionRadius((float) (data.explosionRadius() * 0.5f));
                     rocket.setDamage((float) data.damage() * (1.1f + perkLevel * 0.1f));
                     velocity *= 1.2f;
                 }
