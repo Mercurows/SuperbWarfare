@@ -74,5 +74,13 @@ public class DisplayClothConfig {
                 .setSaveConsumer(DisplayConfig.EXPLOSION_SCREEN_SHAKE::set)
                 .setTooltip(Component.translatable("config.superbwarfare.client.display.explosion_screen_shake.des"))
                 .build());
+
+        category.addEntry(entryBuilder
+                .startIntSlider(Component.translatable("config.superbwarfare.client.display.shock_screen_shake"), DisplayConfig.SHOCK_SCREEN_SHAKE.get(),
+                        0, 100)
+                .setDefaultValue(100)
+                .setSaveConsumer(DisplayConfig.SHOCK_SCREEN_SHAKE::set)
+                .setTooltip(Component.translatable("config.superbwarfare.client.display.shock_screen_shake.des"))
+                .build());
     }
 }

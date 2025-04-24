@@ -547,6 +547,8 @@
   "config.superbwarfare.client.display.weapon_screen_shake.des": "The strength of the screen shake caused by weapons",
   "config.superbwarfare.client.display.explosion_screen_shake": "Explosion Screen Shake Strength",
   "config.superbwarfare.client.display.explosion_screen_shake.des": "The strength of the screen shake caused by explosions",
+  "config.superbwarfare.client.display.shock_screen_shake": "Shock Screen Shake Strength",
+  "config.superbwarfare.client.display.shock_screen_shake.des": "The strength of the screen shake caused by shock effect",
   "config.superbwarfare.client.vehicle": "Control Vehicle",
   "config.superbwarfare.client.vehicle.invert_aircraft_control": "Invert Aircraft Control",
   "config.superbwarfare.client.vehicle.left_click_reload.des": "Set TRUE to invert aircraft control",

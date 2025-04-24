@@ -12,6 +12,7 @@ public class DisplayConfig {
     public static ModConfigSpec.BooleanValue STAMINA_HUD;
     public static ModConfigSpec.IntValue WEAPON_SCREEN_SHAKE;
     public static ModConfigSpec.IntValue EXPLOSION_SCREEN_SHAKE;
+    public static ModConfigSpec.IntValue SHOCK_SCREEN_SHAKE;
 
     public static void init(ModConfigSpec.Builder builder) {
         builder.push("display");
@@ -39,6 +40,9 @@ public class DisplayConfig {
 
         builder.comment("The strength of screen shaking while exploding");
         EXPLOSION_SCREEN_SHAKE = builder.defineInRange("explosion_screen_shake", 100, 0, 100);
+
+        builder.comment("The strength of screen shaking when shocked");
+        SHOCK_SCREEN_SHAKE = builder.defineInRange("shock_screen_shake", 100, 0, 100);
 
         builder.pop();
     }
