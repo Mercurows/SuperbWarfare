@@ -80,7 +80,7 @@ public class LivingEventHandler {
         handleVehicleHurt(event);
         handleGunPerksWhenHurt(event);
         renderDamageIndicator(event);
-        reduceBulletDamage(event);
+        reduceDamage(event);
         giveExpToWeapon(event);
         handleGunLevels(event);
     }
@@ -123,25 +123,23 @@ public class LivingEventHandler {
     }
 
     /**
-     * 计算子弹伤害衰减
+     * 计算伤害减免
      */
-    private static void reduceBulletDamage(LivingIncomingDamageEvent event) {
+    private static void reduceDamage(LivingIncomingDamageEvent event) {
         DamageSource source = event.getSource();
         LivingEntity entity = event.getEntity();
         Entity sourceEntity = source.getEntity();
         if (sourceEntity == null) return;
+        if (sourceEntity.level().isClientSide) return;
 
         double amount = event.getAmount();
         double damage = amount;
 
         ItemStack stack = sourceEntity instanceof LivingEntity living ? living.getMainHandItem() : ItemStack.EMPTY;
 
-        if (!(stack.getItem() instanceof GunItem)) return;
-        var data = GunData.from(stack);
-        var tag = data.tag();
-
         // 距离衰减
         if (DamageTypeTool.isGunDamage(source) && stack.getItem() instanceof GunItem) {
+            var data = GunData.from(stack);
             double distance = entity.position().distanceTo(sourceEntity.position());
 
             var ammoType = data.ammoTypeInfo().playerAmmoType();
@@ -175,11 +173,12 @@ public class LivingEventHandler {
         // 计算防弹插板减伤
         ItemStack armor = entity.getItemBySlot(EquipmentSlot.CHEST);
 
+        var tag = NBTTool.getTag(armor);
         if (armor != ItemStack.EMPTY && tag.contains("ArmorPlate")) {
             double armorValue;
             armorValue = tag.getDouble("ArmorPlate");
-            tag.putDouble("ArmorPlate", Math.max(tag.getDouble("ArmorPlate") - damage, 0));
-            NBTTool.saveTag(stack, tag);
+            tag.putDouble("ArmorPlate", Math.max(armorValue - damage, 0));
+            NBTTool.saveTag(armor, tag);
             damage = Math.max(damage - armorValue, 0);
         }
 

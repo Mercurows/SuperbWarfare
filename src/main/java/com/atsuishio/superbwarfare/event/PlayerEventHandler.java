@@ -151,6 +151,8 @@ public class PlayerEventHandler {
                 }
             }
         }
+
+        NBTTool.saveTag(armor, tag);
     }
 
     public static void handleTacticalAttribute(Player player) {
