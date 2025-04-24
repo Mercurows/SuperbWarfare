@@ -8,12 +8,14 @@ import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.item.gun.data.value.AttachmentType;
 import com.atsuishio.superbwarfare.item.gun.rifle.Hk416Item;
+import com.atsuishio.superbwarfare.tools.GunsTool;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import software.bernie.geckolib.cache.object.BakedGeoModel;
@@ -24,11 +26,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class Hk416ItemRenderer extends GeoItemRenderer<Hk416Item> {
+    public static double zoomFactor;
 
     public Hk416ItemRenderer() {
         super(new Hk416ItemModel());
-        // TODO layer
-// this.addRenderLayer(new Hk416Layer(this));
     }
 
     @Override
@@ -82,18 +83,6 @@ public class Hk416ItemRenderer extends GeoItemRenderer<Hk416Item> {
         if (!(itemStack.getItem() instanceof GunItem)) return;
         var data = GunData.from(itemStack);
 
-        if (name.equals("Cross1")) {
-            bone.setHidden(ClientEventHandler.zoomPos < 0.7 || data.attachment.get(AttachmentType.SCOPE) != 1);
-        }
-
-        if (name.equals("Cross2")) {
-            bone.setHidden(ClientEventHandler.zoomPos < 0.7 || data.attachment.get(AttachmentType.SCOPE) != 2);
-        }
-
-        if (name.equals("Cross3")) {
-            bone.setHidden(ClientEventHandler.zoomPos < 0.7 || data.attachment.get(AttachmentType.SCOPE) != 3);
-        }
-
         if (GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 2
                 && (name.equals("hidden"))) {
             bone.setHidden(ClientEventHandler.zoomPos > 0.7 && ClientEventHandler.zoom);
@@ -103,6 +92,19 @@ public class Hk416ItemRenderer extends GeoItemRenderer<Hk416Item> {
                 && (name.equals("jing") || name.equals("Barrel") || name.equals("yugu") || name.equals("qiangguan"))) {
             bone.setHidden(ClientEventHandler.zoomPos > 0.7 && ClientEventHandler.zoom);
         }
+
+        int scopeType = GunData.from(itemStack).attachment.get(AttachmentType.SCOPE);
+        zoomFactor = Mth.lerp(0.01 * partialTick, zoomFactor, GunsTool.getGunDoubleTag(GunData.from(itemStack).tag, "CustomZoom"));
+
+        switch (scopeType) {
+            case 1 ->
+                    AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, packedLightIn, 0, 0.25, 30, 0, 255, 0, 255, "eotech");
+            case 2 ->
+                    AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, packedLightIn, 0, 0.313, 9, 255, 0, 0, 255, "acog");
+            case 3 ->
+                    AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, packedLightIn, 0, 0.29, Math.max(38 - 5.2 * zoomFactor, 3), 255, 0, 0, 255, "lpvo");
+        }
+        ;
 
         AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn, 0, 0, 1.440625, 0.3);
 

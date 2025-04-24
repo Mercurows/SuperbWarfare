@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.client;
 
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.item.gun.data.value.AttachmentType;
@@ -18,6 +19,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import org.joml.Matrix4f;
 import software.bernie.geckolib.animation.AnimationProcessor;
 import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.util.RenderUtil;
@@ -110,7 +112,7 @@ public class AnimationHelper {
             RenderUtil.scaleMatrixForBone(stack, bone);
             RenderUtil.translateAwayFromPivotPoint(stack, bone);
             PoseStack.Pose pose = stack.last();
-            VertexConsumer vertexConsumer = buffer.getBuffer(ModRenderTypes.MUZZLE_FLASH_TYPE);
+            VertexConsumer vertexConsumer = buffer.getBuffer(ModRenderTypes.MUZZLE_FLASH_TYPE.apply(Mod.loc("textures/particle/flare.png")));
             vertex(vertexConsumer, pose, packedLightIn, 0.0F, 0, 0, 1);
             vertex(vertexConsumer, pose, packedLightIn, 1.0F, 0, 1, 1);
             vertex(vertexConsumer, pose, packedLightIn, 1.0F, 1, 1, 0);
@@ -174,5 +176,35 @@ public class AnimationHelper {
             currentBuffer.getBuffer(renderType);
             stack.popPose();
         }
+    }
+
+    public static void handleZoomCrossHair(MultiBufferSource currentBuffer, RenderType renderType, String boneName, PoseStack stack, GeoBone bone, MultiBufferSource buffer, int packedLightIn, double x, double y, double z, int r, int g, int b, int a, String name) {
+        if (boneName.equals("cross") && ClientEventHandler.zoomPos > 0.8) {
+            stack.pushPose();
+            stack.translate(x, y, -z);
+            RenderUtil.translateMatrixToBone(stack, bone);
+            RenderUtil.translateToPivotPoint(stack, bone);
+            RenderUtil.rotateMatrixAroundBone(stack, bone);
+            RenderUtil.scaleMatrixForBone(stack, bone);
+            RenderUtil.translateAwayFromPivotPoint(stack, bone);
+            PoseStack.Pose pose = stack.last();
+            Matrix4f $$7 = pose.pose();
+            VertexConsumer $$9 = buffer.getBuffer(ModRenderTypes.MUZZLE_FLASH_TYPE.apply(Mod.loc("textures/crosshair/" + name + ".png")));
+            vertexRGB($$9, $$7, pose, packedLightIn, 0.0F, 0, 0, 1, r, g, b, a);
+            vertexRGB($$9, $$7, pose, packedLightIn, 1.0F, 0, 1, 1, r, g, b, a);
+            vertexRGB($$9, $$7, pose, packedLightIn, 1.0F, 1, 1, 0, r, g, b, a);
+            vertexRGB($$9, $$7, pose, packedLightIn, 0.0F, 1, 0, 0, r, g, b, a);
+            stack.popPose();
+        }
+        currentBuffer.getBuffer(renderType);
+    }
+
+    private static void vertexRGB(VertexConsumer pConsumer, Matrix4f pPose, PoseStack.Pose pNormal, int pLightmapUV, float pX, float pY, int pU, int pV, int r, int g, int b, int a) {
+        pConsumer.addVertex(pPose, pX - 0.5F, pY - 0.5F, 0.0F)
+                .setColor(r, g, b, a)
+                .setUv((float) pU, (float) pV)
+                .setOverlay(OverlayTexture.NO_OVERLAY)
+                .setLight(pLightmapUV)
+                .setNormal(pNormal, 0.0F, 1.0F, 0.0F);
     }
 }

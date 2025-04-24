@@ -46,9 +46,6 @@ public class Hk416ItemModel extends GeoModel<Hk416Item> {
         GeoBone scope = getAnimationProcessor().getBone("Scope1");
         GeoBone scope2 = getAnimationProcessor().getBone("Scope2");
         GeoBone scope3 = getAnimationProcessor().getBone("Scope3");
-        GeoBone cross1 = getAnimationProcessor().getBone("Cross1");
-        GeoBone cross2 = getAnimationProcessor().getBone("Cross2");
-        GeoBone cross3 = getAnimationProcessor().getBone("Cross3");
         GeoBone kuaimanji = getAnimationProcessor().getBone("kuaimanji");
 
         Player player = Minecraft.getInstance().player;
@@ -79,14 +76,14 @@ public class Hk416ItemModel extends GeoModel<Hk416Item> {
             case 0 -> 0.2f;
             case 1 -> 0.4f;
             case 2 -> 0.8f;
-            case 3 -> 0.78f;
+            case 3 -> 0.9f;
             default -> 0f;
         };
         float posZ = switch (type) {
             case 0 -> 3f;
             case 1 -> 3.5f;
             case 2 -> 7.4f;
-            case 3 -> 6.8f;
+            case 3 -> 7.5f;
             default -> 0f;
         };
 
@@ -98,8 +95,6 @@ public class Hk416ItemModel extends GeoModel<Hk416Item> {
         scope.setScaleZ(1f - (0.6f * (float) zp));
         scope2.setScaleZ(1f - (0.8f * (float) zp));
         scope3.setScaleZ(1f - (0.5f * (float) zp));
-
-        var data = GunData.from(stack);
 
         GeoBone shen;
         if (zt < 0.5) {
@@ -133,17 +128,13 @@ public class Hk416ItemModel extends GeoModel<Hk416Item> {
 
         CrossHairOverlay.gunRot = shen.getRotZ();
 
-        cross1.setPosY(-0.75f * (float) fpz);
-        cross2.setPosY(-0.7f * (float) fpz);
-        cross3.setPosY(-0.2f * (float) fpz);
-
         GeoBone l = getAnimationProcessor().getBone("l");
         GeoBone r = getAnimationProcessor().getBone("r");
         rotXBipod = Mth.lerp(1.5f * times, rotXBipod, isProne(player) ? -90 : 0);
         l.setRotX(rotXBipod * Mth.DEG_TO_RAD);
         r.setRotX(rotXBipod * Mth.DEG_TO_RAD);
 
-        int mode = data.fireMode.get();
+        int mode = GunData.from(stack).fireMode.get();
 
         kuaimanji.setRotX(mode == 2 ? 90 * Mth.DEG_TO_RAD : 0);
 
