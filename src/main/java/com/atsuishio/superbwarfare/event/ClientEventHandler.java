@@ -735,12 +735,15 @@ public class ClientEventHandler {
     public static void handleShakeClient(double time, double radius, double amplitude, double x, double y, double z) {
         Player player = Minecraft.getInstance().player;
         if (player == null) return;
+        double shakeStrength = DisplayConfig.EXPLOSION_SCREEN_SHAKE.get() / 100.0;
+        if (shakeStrength <= 0.0) return;
+
         shakeTime = time;
         shakeRadius = radius;
-        shakeAmplitude = amplitude * Mth.DEG_TO_RAD;
-        shakePos[0] = x;
-        shakePos[1] = y;
-        shakePos[2] = z;
+        shakeAmplitude = amplitude * Mth.DEG_TO_RAD * shakeStrength;
+        shakePos[0] = x * shakeStrength;
+        shakePos[1] = y * shakeStrength;
+        shakePos[2] = z * shakeStrength;
         shakeType = 2 * (Math.random() - 0.5);
     }
 

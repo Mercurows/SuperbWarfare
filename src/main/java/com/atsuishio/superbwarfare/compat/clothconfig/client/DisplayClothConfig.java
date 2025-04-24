@@ -58,5 +58,21 @@ public class DisplayClothConfig {
                 .setTooltip(Component.translatable("config.superbwarfare.client.display.stamina_hud.des"))
                 .build()
         );
+
+        category.addEntry(entryBuilder
+                .startIntSlider(Component.translatable("config.superbwarfare.client.display.weapon_screen_shake"), DisplayConfig.WEAPON_SCREEN_SHAKE.get(),
+                        0, 100)
+                .setDefaultValue(100)
+                .setSaveConsumer(DisplayConfig.WEAPON_SCREEN_SHAKE::set)
+                .setTooltip(Component.translatable("config.superbwarfare.client.display.weapon_screen_shake.des"))
+                .build());
+
+        category.addEntry(entryBuilder
+                .startIntSlider(Component.translatable("config.superbwarfare.client.display.explosion_screen_shake"), DisplayConfig.EXPLOSION_SCREEN_SHAKE.get(),
+                        0, 100)
+                .setDefaultValue(100)
+                .setSaveConsumer(DisplayConfig.EXPLOSION_SCREEN_SHAKE::set)
+                .setTooltip(Component.translatable("config.superbwarfare.client.display.explosion_screen_shake.des"))
+                .build());
     }
 }

@@ -216,20 +216,12 @@ public class AnnihilatorEntity extends EnergyVehicleEntity implements GeoEntity,
                 .multiply(0.3f, ModDamageTypes.CANNON_FIRE)
                 .multiply(0.04f, ModTags.DamageTypes.PROJECTILE_ABSOLUTE)
                 .custom((source, damage) -> getSourceAngle(source, 3) * damage)
-                .custom((source, damage) -> {
-                    if (source.getDirectEntity() instanceof C4Entity) {
-                        return 10f * damage;
-                    }
-                    if (source.getDirectEntity() instanceof MelonBombEntity) {
-                        return 8f * damage;
-                    }
-                    if (source.getDirectEntity() instanceof GunGrenadeEntity) {
-                        return 3f * damage;
-                    }
-                    if (source.getDirectEntity() instanceof CannonShellEntity) {
-                        return 3f * damage;
-                    }
-                    return damage;
+                .custom((source, damage) -> switch (source.getDirectEntity()) {
+                    case C4Entity ignored -> 10f * damage;
+                    case MelonBombEntity ignored -> 8f * damage;
+                    case GunGrenadeEntity ignored -> 3f * damage;
+                    case CannonShellEntity ignored -> 3f * damage;
+                    case null, default -> damage;
                 })
                 .reduce(12);
     }
