@@ -8,6 +8,9 @@ import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.tools.Ammo;
 import com.atsuishio.superbwarfare.tools.GunsTool;
 import com.atsuishio.superbwarfare.tools.InventoryTool;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -34,7 +37,13 @@ public class GunData {
     public final CompoundTag attachmentTag;
     public final String id;
 
-    private static final WeakHashMap<ItemStack, GunData> dataCache = new WeakHashMap<>();
+    private static final LoadingCache<ItemStack, GunData> dataCache = CacheBuilder.newBuilder()
+            .weakKeys()
+            .build(new CacheLoader<>() {
+                public @NotNull GunData load(@NotNull ItemStack stack) {
+                    return new GunData(stack);
+                }
+            });
 
     private GunData(ItemStack stack) {
         if (!(stack.getItem() instanceof GunItem gunItem)) {
@@ -101,12 +110,7 @@ public class GunData {
     }
 
     public static GunData from(ItemStack stack) {
-        var value = dataCache.get(stack);
-        if (value == null) {
-            value = new GunData(stack);
-            dataCache.put(stack, value);
-        }
-        return value;
+        return dataCache.getUnchecked(stack);
     }
 
     public GunItem item() {
