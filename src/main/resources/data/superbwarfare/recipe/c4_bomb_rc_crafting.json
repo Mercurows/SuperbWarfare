@@ -17,8 +17,10 @@
   "result": {
     "id": "superbwarfare:c4_bomb",
     "count": 2,
-    "nbt": {
-      "Control": true
+    "components": {
+      "minecraft:custom_data": {
+        "Control": true
+      }
     }
   }
 }
