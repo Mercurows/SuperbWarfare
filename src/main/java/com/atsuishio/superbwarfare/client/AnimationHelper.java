@@ -189,7 +189,7 @@ public class AnimationHelper {
             RenderUtil.translateAwayFromPivotPoint(stack, bone);
             PoseStack.Pose pose = stack.last();
             Matrix4f $$7 = pose.pose();
-            VertexConsumer $$9 = buffer.getBuffer(ModRenderTypes.MUZZLE_FLASH_TYPE.apply(Mod.loc("textures/crosshair/" + name + ".png")));
+            VertexConsumer $$9 = buffer.getBuffer(RenderType.entityTranslucentEmissive(Mod.loc("textures/crosshair/" + name + ".png")));
             vertexRGB($$9, $$7, pose, packedLightIn, 0.0F, 0, 0, 1, r, g, b, a);
             vertexRGB($$9, $$7, pose, packedLightIn, 1.0F, 0, 1, 1, r, g, b, a);
             vertexRGB($$9, $$7, pose, packedLightIn, 1.0F, 1, 1, 0, r, g, b, a);
