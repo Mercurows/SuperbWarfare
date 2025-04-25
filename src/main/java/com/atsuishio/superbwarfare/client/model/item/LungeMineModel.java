@@ -29,6 +29,6 @@ public class LungeMineModel extends GeoModel<LungeMine> {
     @Override
     public void setCustomAnimations(LungeMine animatable, long instanceId, AnimationState animationState) {
         GeoBone camera = getAnimationProcessor().getBone("camera");
-        ClientEventHandler.shake(Mth.RAD_TO_DEG * camera.getRotX(), Mth.RAD_TO_DEG * camera.getRotY(), Mth.RAD_TO_DEG * camera.getRotZ());
+        ClientEventHandler.handleReloadShake(Mth.RAD_TO_DEG * camera.getRotX(), Mth.RAD_TO_DEG * camera.getRotY(), Mth.RAD_TO_DEG * camera.getRotZ());
     }
 }

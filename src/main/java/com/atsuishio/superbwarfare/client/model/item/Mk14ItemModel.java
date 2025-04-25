@@ -145,7 +145,7 @@ public class Mk14ItemModel extends GeoModel<Mk14Item> {
         r.setRotX(rotXBipod * Mth.DEG_TO_RAD);
 
         AnimationHelper.handleReloadShakeAnimation(stack, main, camera, numR, numP);
-        ClientEventHandler.shake(Mth.RAD_TO_DEG * camera.getRotX(), Mth.RAD_TO_DEG * camera.getRotY(), Mth.RAD_TO_DEG * camera.getRotZ());
+        ClientEventHandler.handleReloadShake(Mth.RAD_TO_DEG * camera.getRotX(), Mth.RAD_TO_DEG * camera.getRotY(), Mth.RAD_TO_DEG * camera.getRotZ());
         AnimationHelper.handleShellsAnimation(getAnimationProcessor(), 1.2f, 0.55f);
 
         GeoBone shell = getAnimationProcessor().getBone("shell");

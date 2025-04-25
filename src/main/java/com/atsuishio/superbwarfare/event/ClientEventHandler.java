@@ -1384,12 +1384,16 @@ public class ClientEventHandler {
         }
     }
 
-    public static void shake(double boneRotX, double boneRotY, double boneRotZ) {
+    public static void handleReloadShake(double boneRotX, double boneRotY, double boneRotZ) {
         LocalPlayer player = Minecraft.getInstance().player;
+
+        float shakeStrength = (float) (DisplayConfig.WEAPON_SCREEN_SHAKE.get() / 100.0);
+        if (shakeStrength <= 0.0f) return;
+
         if (player != null) {
-            cameraRot[0] = -boneRotX;
-            cameraRot[1] = -boneRotY;
-            cameraRot[2] = -boneRotZ;
+            cameraRot[0] = -boneRotX * shakeStrength;
+            cameraRot[1] = -boneRotY * shakeStrength;
+            cameraRot[2] = -boneRotZ * shakeStrength;
         }
     }
 

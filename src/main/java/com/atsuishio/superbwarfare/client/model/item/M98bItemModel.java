@@ -102,6 +102,6 @@ public class M98bItemModel extends GeoModel<M98bItem> {
             scope.setPosY(numP * scope.getPosY());
             scope.setPosZ(numP * scope.getPosZ());
         }
-        ClientEventHandler.shake(Mth.RAD_TO_DEG * camera.getRotX(), Mth.RAD_TO_DEG * camera.getRotY(), Mth.RAD_TO_DEG * camera.getRotZ());
+        ClientEventHandler.handleReloadShake(Mth.RAD_TO_DEG * camera.getRotX(), Mth.RAD_TO_DEG * camera.getRotY(), Mth.RAD_TO_DEG * camera.getRotZ());
     }
 }

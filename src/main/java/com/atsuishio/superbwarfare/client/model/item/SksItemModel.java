@@ -89,7 +89,7 @@ public class SksItemModel extends GeoModel<SksItem> {
         float numP = (float) (1 - 0.88 * zt);
 
         AnimationHelper.handleReloadShakeAnimation(stack, main, camera, numR, numP);
-        ClientEventHandler.shake(Mth.RAD_TO_DEG * camera.getRotX(), Mth.RAD_TO_DEG * camera.getRotY(), Mth.RAD_TO_DEG * camera.getRotZ());
+        ClientEventHandler.handleReloadShake(Mth.RAD_TO_DEG * camera.getRotX(), Mth.RAD_TO_DEG * camera.getRotY(), Mth.RAD_TO_DEG * camera.getRotZ());
 
         AnimationHelper.handleShellsAnimation(getAnimationProcessor(), 0.7f, 1.2f);
         GeoBone shell = getAnimationProcessor().getBone("shell");
