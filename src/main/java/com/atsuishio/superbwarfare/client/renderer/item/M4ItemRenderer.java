@@ -79,27 +79,6 @@ public class M4ItemRenderer extends GeoItemRenderer<M4Item> {
         if (player == null) return;
         ItemStack itemStack = player.getMainHandItem();
         if (!(itemStack.getItem() instanceof GunItem)) return;
-        var data = GunData.from(itemStack);
-
-        if (name.equals("Cross1")) {
-            bone.setHidden(ClientEventHandler.zoomPos < 0.7 || data.attachment.get(AttachmentType.SCOPE) != 1);
-        }
-
-        if (name.equals("Cross2")) {
-            bone.setHidden(ClientEventHandler.zoomPos < 0.7
-                    || GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) != 2
-                    || NBTTool.getTag(itemStack).getBoolean("ScopeAlt"));
-        }
-
-        if (name.equals("CrossAlt")) {
-            bone.setHidden(ClientEventHandler.zoomPos < 0.7
-                    || GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) != 2
-                    || !(NBTTool.getTag(itemStack).getBoolean("ScopeAlt")));
-        }
-
-        if (name.equals("Cross3")) {
-            bone.setHidden(ClientEventHandler.zoomPos < 0.7 || data.attachment.get(AttachmentType.SCOPE) != 3);
-        }
 
         if (GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 2 && !NBTTool.getTag(itemStack).getBoolean("ScopeAlt") && (name.equals("hidden"))) {
             bone.setHidden(ClientEventHandler.zoomPos > 0.7 && ClientEventHandler.zoom);
@@ -115,7 +94,7 @@ public class M4ItemRenderer extends GeoItemRenderer<M4Item> {
         switch (scopeType) {
             case 1 -> AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, packedLightIn, 0, 0.32, 30, 1.2f, 255, 0, 0, 255, "dot", false);
             case 2 -> {
-                if (itemStack.getOrCreateTag().getBoolean("ScopeAlt")) {
+                if (NBTTool.getTag(itemStack).getBoolean("ScopeAlt")) {
                     AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, packedLightIn, 0, 0.34, 30, 0.25f, 255, 0, 0, 255, "delta", false);
                 } else {
                     AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, packedLightIn, 0, 0.294, 13, 0.87f, 255, 0, 0, 255, "hamr", true);
