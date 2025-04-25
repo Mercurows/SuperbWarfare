@@ -178,7 +178,7 @@ public class AnimationHelper {
         }
     }
 
-    public static void handleZoomCrossHair(MultiBufferSource currentBuffer, RenderType renderType, String boneName, PoseStack stack, GeoBone bone, MultiBufferSource buffer, int packedLightIn, double x, double y, double z, int r, int g, int b, int a, String name) {
+    public static void handleZoomCrossHair(MultiBufferSource currentBuffer, RenderType renderType, String boneName, PoseStack stack, GeoBone bone, MultiBufferSource buffer, int packedLightIn, double x, double y, double z, int r, int g, int b, int a, String name, boolean hasBlackPart) {
         if (boneName.equals("cross") && ClientEventHandler.zoomPos > 0.8) {
             stack.pushPose();
             stack.translate(x, y, -z);
@@ -189,7 +189,17 @@ public class AnimationHelper {
             RenderUtil.translateAwayFromPivotPoint(stack, bone);
             PoseStack.Pose pose = stack.last();
             Matrix4f $$7 = pose.pose();
-            VertexConsumer $$9 = buffer.getBuffer(RenderType.entityTranslucentEmissive(Mod.loc("textures/crosshair/" + name + ".png")));
+
+            ResourceLocation tex = Mod.loc("textures/crosshair/" + name + ".png");
+            // 准星里如果有黑色部分则使用此渲染
+            if (hasBlackPart) {
+                VertexConsumer blackPart = buffer.getBuffer(RenderType.entityTranslucent(tex));
+                vertexRGB(blackPart, $$7, pose, packedLightIn, 0.0F, 0, 0, 1, r, g, b, a);
+                vertexRGB(blackPart, $$7, pose, packedLightIn, 1.0F, 0, 1, 1, r, g, b, a);
+                vertexRGB(blackPart, $$7, pose, packedLightIn, 1.0F, 1, 1, 0, r, g, b, a);
+                vertexRGB(blackPart, $$7, pose, packedLightIn, 0.0F, 1, 0, 0, r, g, b, a);
+            }
+            VertexConsumer $$9 = buffer.getBuffer(ModRenderTypes.MUZZLE_FLASH_TYPE.apply(tex));
             vertexRGB($$9, $$7, pose, packedLightIn, 0.0F, 0, 0, 1, r, g, b, a);
             vertexRGB($$9, $$7, pose, packedLightIn, 1.0F, 0, 1, 1, r, g, b, a);
             vertexRGB($$9, $$7, pose, packedLightIn, 1.0F, 1, 1, 0, r, g, b, a);
