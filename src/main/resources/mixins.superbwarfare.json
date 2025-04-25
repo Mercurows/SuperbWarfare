@@ -6,6 +6,7 @@
   "mixins": [
     "ClientboundSetPassengersPacketMixin",
     "EntityMixin",
+    "FishingHookMixin",
     "LivingEntityMixin",
     "PlayerMixin"
   ],
