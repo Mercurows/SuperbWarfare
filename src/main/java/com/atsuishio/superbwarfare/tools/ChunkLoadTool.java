@@ -44,7 +44,7 @@ public class ChunkLoadTool {
 
         chunksToUnload.forEach(chunk -> {
             var chunkPos = new ChunkPos(chunk);
-            controller.forceChunk(level, entity, chunkPos.x, chunkPos.z, false, false);
+            Mod.queueServerWork(10, () -> controller.forceChunk(level, entity, chunkPos.x, chunkPos.z, false, false));
         });
 
         loadedChunks.clear();
@@ -57,7 +57,7 @@ public class ChunkLoadTool {
     public static void unloadAllChunks(ServerLevel level, Entity entity, Set<Long> loadedChunks) {
         loadedChunks.forEach(chunk -> {
             var chunkPos = new ChunkPos(chunk);
-            controller.forceChunk(level, entity, chunkPos.x, chunkPos.z, false, false);
+            Mod.queueServerWork(10, () -> controller.forceChunk(level, entity, chunkPos.x, chunkPos.z, false, false));
         });
     }
 
