@@ -51,11 +51,7 @@ public class M4ItemModel extends GeoModel<M4Item> {
         GeoBone scope = getAnimationProcessor().getBone("Scope1");
         GeoBone scope2 = getAnimationProcessor().getBone("Scope2");
         GeoBone scope3 = getAnimationProcessor().getBone("Scope3");
-        GeoBone cross1 = getAnimationProcessor().getBone("Cross1");
-        GeoBone cross2 = getAnimationProcessor().getBone("Cross2");
-        GeoBone cross3 = getAnimationProcessor().getBone("Cross3");
         GeoBone lh = getAnimationProcessor().getBone("Lefthand");
-        GeoBone crossAlt = getAnimationProcessor().getBone("CrossAlt");
         GeoBone sight1fold = getAnimationProcessor().getBone("sight1fold");
         GeoBone sight2fold = getAnimationProcessor().getBone("sight2fold");
         GeoBone button = getAnimationProcessor().getBone("button");
@@ -146,11 +142,6 @@ public class M4ItemModel extends GeoModel<M4Item> {
         shen.setRotX((float) (0.01f * fp + 0.05f * fr + 0.01f * fpz));
         shen.setRotY(fireRotY);
         shen.setRotZ(fireRotZ);
-
-        cross1.setPosY(-0.25f * (float) fpz);
-        cross2.setPosY(-0.1f * (float) fpz);
-        crossAlt.setPosY(-0.2f * (float) fpz);
-        cross3.setPosY(-0.2f * (float) fpz);
 
         shen.setPosX((float) (shen.getPosX() * (1 - 0.1 * zt)));
         shen.setPosY((float) (shen.getPosY() * (-1 + 0.8 * zt)));

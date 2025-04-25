@@ -28,8 +28,6 @@ public class M4ItemRenderer extends GeoItemRenderer<M4Item> {
 
     public M4ItemRenderer() {
         super(new M4ItemModel());
-        // TODO layer
-// this.addRenderLayer(new M4Layer(this));
     }
 
     @Override
@@ -110,6 +108,20 @@ public class M4ItemRenderer extends GeoItemRenderer<M4Item> {
         if (GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 3
                 && (name.equals("hidden2") || name.equals("yugu") || name.equals("qiangguan") || name.equals("Barrel"))) {
             bone.setHidden(ClientEventHandler.zoomPos > 0.7 && ClientEventHandler.zoom);
+        }
+
+        int scopeType = GunData.from(itemStack).attachment.get(AttachmentType.SCOPE);
+
+        switch (scopeType) {
+            case 1 -> AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, packedLightIn, 0, 0.32, 30, 1.2f, 255, 0, 0, 255, "dot", false);
+            case 2 -> {
+                if (itemStack.getOrCreateTag().getBoolean("ScopeAlt")) {
+                    AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, packedLightIn, 0, 0.34, 30, 0.25f, 255, 0, 0, 255, "delta", false);
+                } else {
+                    AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, packedLightIn, 0, 0.294, 13, 0.87f, 255, 0, 0, 255, "hamr", true);
+                }
+            }
+            case 3 -> AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, packedLightIn, 0, 0.283, 27, 2f, 255, 0, 0, 255, "sniper", true);
         }
 
         AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn, 0, 0, 1.353125, 0.3);
