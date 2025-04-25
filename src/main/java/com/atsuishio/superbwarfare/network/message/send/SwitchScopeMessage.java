@@ -29,7 +29,7 @@ public record SwitchScopeMessage(double scroll) implements CustomPacketPayload {
 
         var data = GunData.from(stack);
         final var tag = data.tag();
-        tag.putBoolean("ScopeAlt", tag.getBoolean("ScopeAlt"));
+        tag.putBoolean("ScopeAlt", !tag.getBoolean("ScopeAlt"));
         data.save();
     }
 
