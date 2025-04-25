@@ -53,8 +53,8 @@ public class InsidiousItemModel extends GeoModel<InsidiousItem> {
         double fp = ClientEventHandler.firePos;
         double fr = ClientEventHandler.fireRot;
 
-        gun.setPosX(4.18f * (float) zp);
-        gun.setPosY(1.25f * (float) zp - (float) (0.2f * zpz));
+        gun.setPosX(4.23f * (float) zp);
+        gun.setPosY(1.28f * (float) zp - (float) (0.2f * zpz));
         gun.setPosZ(6.2f * (float) zp + (float) (0.5f * zpz));
         gun.setScaleZ(1f - (0.82f * (float) zp));
 
