@@ -236,35 +236,6 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
         this.refreshDimensions();
     }
 
-//    public Vector3f calculateTerrainNormal() {
-//        BlockPos[] checkPoints = {
-//                this.blockPosition().offset(1, 0, 1),
-//                this.blockPosition().offset(-1, 0, 1),
-//                this.blockPosition().offset(1, 0, -1),
-//                this.blockPosition().offset(-1, 0, -1)
-//        };
-//
-//        List<Vec3> surfacePoints = new ArrayList<>();
-//        for (BlockPos pos : checkPoints) {
-//            BlockState state = level().getBlockState(pos);
-//            VoxelShape shape = state.getCollisionShape(level(), pos);
-//            if (!shape.isEmpty()) {
-//                double height = shape.max(Direction.Axis.Y);
-//                surfacePoints.add(new Vec3(pos.getX(), pos.getY() + height, pos.getZ()));
-//            }
-//        }
-//
-//        return surfacePoints;
-//    }
-
-//    public static Quaternionf calculateRotationQuaternion(Vector3f normal) {
-//        Vector3f up = new Vector3f(0, 1, 0);
-//        Vector3f axis = new Vector3f();
-//        normal.cross(up, axis);
-//        float angle = (float) Math.acos(normal.dot(up));
-//        return new Quaternionf().rotationAxis(angle, axis);
-//    }
-
     //烟雾诱饵
     public void releaseSmokeDecoy() {
         if (decoyInputDown) {
@@ -476,7 +447,7 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
 
     public void baseCollideBlock() {
         if (level() instanceof ServerLevel) {
-            AABB aabb = getBoundingBox().inflate(0.05).move(this.getDeltaMovement().scale(0.6));
+            AABB aabb = getBoundingBox().inflate(0.25, 1, 0.25).expandTowards(0, 0.5 , 1).move(this.getDeltaMovement().scale(0.6));
             BlockPos.betweenClosedStream(aabb).forEach((pos) -> {
                 BlockState blockstate = this.level().getBlockState(pos);
                 if (blockstate.is(Blocks.LILY_PAD) ||
@@ -490,7 +461,7 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
 
     public void collideBlock() {
         if (!VehicleConfig.COLLISION_DESTROY_BLOCKS.get()) return;
-        AABB aabb = getBoundingBox().inflate(0.1, -0.05, 0.1);
+        AABB aabb = getBoundingBox().inflate(0.25, 1, 0.25).expandTowards(0, 0.5 , 1).move(this.getDeltaMovement().scale(0.6));
         BlockPos.betweenClosedStream(aabb).forEach((pos) -> {
             BlockState blockstate = this.level().getBlockState(pos);
             if (blockstate.is(ModTags.Blocks.SOFT_COLLISION)) {
@@ -501,7 +472,7 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
 
     public void collideHardBlock() {
         if (!VehicleConfig.COLLISION_DESTROY_HARD_BLOCKS.get()) return;
-        AABB aabb = getBoundingBox().inflate(0.25, -0.05, 0.25);
+        AABB aabb = getBoundingBox().inflate(0.25, 1, 0.25).expandTowards(0, 0.5 , 1).move(this.getDeltaMovement().scale(0.6));
         BlockPos.betweenClosedStream(aabb).forEach((pos) -> {
             BlockState blockstate = this.level().getBlockState(pos);
             if (blockstate.is(ModTags.Blocks.HARD_COLLISION)) {
@@ -513,7 +484,7 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
 
     public void collideBlockBeastly() {
         if (!VehicleConfig.COLLISION_DESTROY_BLOCKS_BEASTLY.get()) return;
-        AABB aabb = getBoundingBox().inflate(0.25, -0.05, 0.25);
+        AABB aabb = getBoundingBox().inflate(0.25, 1, 0.25).expandTowards(0, 0.52 , 1).move(this.getDeltaMovement().scale(0.6));
         BlockPos.betweenClosedStream(aabb).forEach((pos) -> {
             BlockState blockstate = this.level().getBlockState(pos);
             float hardness = blockstate.getBlock().defaultDestroyTime();
