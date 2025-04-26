@@ -20,6 +20,8 @@ import net.minecraft.world.item.alchemy.PotionContents;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+
 @JeiPlugin
 public class SbwJEIPlugin implements IModPlugin {
 
@@ -42,7 +44,7 @@ public class SbwJEIPlugin implements IModPlugin {
     public void registerItemSubtypes(ISubtypeRegistration registration) {
         registration.registerSubtypeInterpreter(ModItems.CONTAINER.get(), new ISubtypeInterpreter<>() {
             @Override
-            public @Nullable Object getSubtypeData(ItemStack ingredient, UidContext context) {
+            public @NotNull Object getSubtypeData(ItemStack ingredient, @NotNull UidContext context) {
                 var data = ingredient.get(DataComponents.BLOCK_ENTITY_DATA);
                 var tag = data != null ? data.copyTag() : new CompoundTag();
                 if (tag.contains("EntityType")) {
@@ -52,13 +54,15 @@ public class SbwJEIPlugin implements IModPlugin {
             }
 
             @Override
-            public String getLegacyStringSubtypeInfo(ItemStack ingredient, UidContext context) {
+            @ParametersAreNonnullByDefault
+            public @NotNull String getLegacyStringSubtypeInfo(ItemStack ingredient, UidContext context) {
                 return (String) getSubtypeData(ingredient, context);
             }
         });
 
         registration.registerSubtypeInterpreter(ModItems.POTION_MORTAR_SHELL.get(), new ISubtypeInterpreter<>() {
             @Override
+            @ParametersAreNonnullByDefault
             public @Nullable Object getSubtypeData(ItemStack ingredient, UidContext context) {
                 PotionContents contents = ingredient.get(DataComponents.POTION_CONTENTS);
                 if (contents == null) {

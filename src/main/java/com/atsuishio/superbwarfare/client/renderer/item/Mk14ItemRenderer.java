@@ -27,8 +27,6 @@ public class Mk14ItemRenderer extends GeoItemRenderer<Mk14Item> {
 
     public Mk14ItemRenderer() {
         super(new Mk14ItemModel());
-        // TODO layer
-// this.addRenderLayer(new Mk14Layer(this));
     }
 
     @Override
@@ -80,22 +78,9 @@ public class Mk14ItemRenderer extends GeoItemRenderer<Mk14Item> {
         if (player == null) return;
         ItemStack itemStack = player.getMainHandItem();
         if (!(itemStack.getItem() instanceof GunItem)) return;
-        var data = GunData.from(itemStack);
 
         if (name.equals("qiaojia")) {
             bone.setHidden(GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 0);
-        }
-
-        if (name.equals("Cross1")) {
-            bone.setHidden(ClientEventHandler.zoomPos < 0.7 || data.attachment.get(AttachmentType.SCOPE) != 1);
-        }
-
-        if (name.equals("Cross2")) {
-            bone.setHidden(ClientEventHandler.zoomPos < 0.7 || data.attachment.get(AttachmentType.SCOPE) != 2);
-        }
-
-        if (name.equals("Cross3")) {
-            bone.setHidden(ClientEventHandler.zoomPos < 0.7 || data.attachment.get(AttachmentType.SCOPE) != 3);
         }
 
         if (GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 2
@@ -106,6 +91,17 @@ public class Mk14ItemRenderer extends GeoItemRenderer<Mk14Item> {
         if (GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 3
                 && (name.equals("jing") || name.equals("yugu") || name.equals("qiangguan") || name.equals("Barrel"))) {
             bone.setHidden(ClientEventHandler.zoomPos > 0.7 && ClientEventHandler.zoom);
+        }
+
+        int scopeType = GunData.from(itemStack).attachment.get(AttachmentType.SCOPE);
+
+        switch (scopeType) {
+            case 1 ->
+                    AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, packedLightIn, 0, 0.25, 30, 0.8f, 255, 0, 0, 255, "eotech", false);
+            case 2 ->
+                    AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, packedLightIn, 0, 0.313, 9, 1, 255, 0, 0, 255, "acog", true);
+            case 3 ->
+                    AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, packedLightIn, 0, 0.29, 45, (float) ClientEventHandler.customZoom, 255, 0, 0, 255, "lpvo", true);
         }
 
         AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn, 0, 0, 1.475, 0.33);

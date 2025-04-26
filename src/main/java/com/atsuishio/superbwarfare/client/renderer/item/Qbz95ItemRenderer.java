@@ -27,8 +27,6 @@ public class Qbz95ItemRenderer extends GeoItemRenderer<Qbz95Item> {
 
     public Qbz95ItemRenderer() {
         super(new Qbz95ItemModel());
-        // TODO layer
-// this.addRenderLayer(new Qbz95Layer(this));
     }
 
     @Override
@@ -82,10 +80,6 @@ public class Qbz95ItemRenderer extends GeoItemRenderer<Qbz95Item> {
         if (!(itemStack.getItem() instanceof GunItem)) return;
         var data = GunData.from(itemStack);
 
-        if (name.equals("Cross1")) {
-            bone.setHidden(ClientEventHandler.zoomPos < 0.7 || data.attachment.get(AttachmentType.SCOPE) != 1);
-        }
-
         if (name.equals("tiba")) {
             bone.setHidden(GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) != 0);
         }
@@ -98,14 +92,6 @@ public class Qbz95ItemRenderer extends GeoItemRenderer<Qbz95Item> {
             bone.setHidden(GunData.from(itemStack).attachment.get(AttachmentType.GRIP) == 0);
         }
 
-        if (name.equals("Cross2")) {
-            bone.setHidden(ClientEventHandler.zoomPos < 0.7 || data.attachment.get(AttachmentType.SCOPE) != 2);
-        }
-
-        if (name.equals("Cross3")) {
-            bone.setHidden(ClientEventHandler.zoomPos < 0.7 || data.attachment.get(AttachmentType.SCOPE) != 3);
-        }
-
         if (GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 2
                 && (name.equals("hidden"))) {
             bone.setHidden(ClientEventHandler.zoomPos > 0.7 && ClientEventHandler.zoom);
@@ -114,6 +100,17 @@ public class Qbz95ItemRenderer extends GeoItemRenderer<Qbz95Item> {
         if (GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 3
                 && (name.equals("hidden2") || name.equals("jimiao2"))) {
             bone.setHidden(ClientEventHandler.zoomPos > 0.7 && ClientEventHandler.zoom);
+        }
+
+        int scopeType = GunData.from(itemStack).attachment.get(AttachmentType.SCOPE);
+
+        switch (scopeType) {
+            case 1 ->
+                    AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, packedLightIn, 0, 0.5363125, 16, 1, 255, 0, 0, 255, "dot", false);
+            case 2 ->
+                    AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, packedLightIn, 0, 0.55, 24, 1, 255, 0, 0, 255, "dot", false);
+            case 3 ->
+                    AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, packedLightIn, 0, 0.55, 36, (float) ClientEventHandler.customZoom, 255, 0, 0, 255, "sniper", true);
         }
 
         AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn, 0, 0.02, 1.12375, 0.3);

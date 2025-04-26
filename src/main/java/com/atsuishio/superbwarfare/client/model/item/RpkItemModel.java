@@ -78,14 +78,14 @@ public class RpkItemModel extends GeoModel<RpkItem> {
         float scaleZ = switch (type) {
             case 0, 1 -> 0.7f;
             case 2 -> 0.74f;
-            case 3 -> 0.78f;
+            case 3 -> 0.8f;
             default -> 0f;
         };
         float posZ = switch (type) {
             case 0 -> 3.3f;
             case 1 -> 4.2f;
             case 2 -> 4.4f;
-            case 3 -> 4.25f;
+            case 3 -> 4.6f;
             default -> 0f;
         };
 

@@ -192,7 +192,7 @@ public class AnimationHelper {
 
             ResourceLocation tex = Mod.loc("textures/crosshair/" + name + ".png");
 
-            int alpha = hasBlackPart ? a : (int) (0.05 * a);
+            int alpha = hasBlackPart ? a : (int) (0.12 * a);
 
             VertexConsumer blackPart = buffer.getBuffer(RenderType.entityTranslucent(tex));
             vertexRGB(blackPart, $$7, pose, packedLightIn, 0.0F, 0, 0, 1, r, g, b, alpha, size);

@@ -27,8 +27,6 @@ public class RpkItemRenderer extends GeoItemRenderer<RpkItem> {
 
     public RpkItemRenderer() {
         super(new RpkItemModel());
-        // TODO layer
-// this.addRenderLayer(new RpkLayer(this));
     }
 
     @Override
@@ -83,18 +81,6 @@ public class RpkItemRenderer extends GeoItemRenderer<RpkItem> {
         if (!(itemStack.getItem() instanceof GunItem)) return;
         var data = GunData.from(itemStack);
 
-        if (name.equals("Cross1")) {
-            bone.setHidden(ClientEventHandler.zoomPos < 0.7 || data.attachment.get(AttachmentType.SCOPE) != 1);
-        }
-
-        if (name.equals("Cross2")) {
-            bone.setHidden(ClientEventHandler.zoomPos < 0.7 || data.attachment.get(AttachmentType.SCOPE) != 2);
-        }
-
-        if (name.equals("Cross3")) {
-            bone.setHidden(ClientEventHandler.zoomPos < 0.7 || data.attachment.get(AttachmentType.SCOPE) != 3);
-        }
-
         if (name.equals("humu1")) {
             bone.setHidden(GunData.from(itemStack).attachment.get(AttachmentType.GRIP) != 0);
         }
@@ -108,10 +94,22 @@ public class RpkItemRenderer extends GeoItemRenderer<RpkItem> {
             bone.setHidden(ClientEventHandler.zoomPos > 0.7 && ClientEventHandler.zoom);
         }
 
-        if (data.attachment.get(AttachmentType.SCOPE) == 3
+        if (GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 3
                 && (name.equals("jing") || name.equals("Barrel") || name.equals("humu") || name.equals("qiangguan") || name.equals("houzhunxing"))) {
             bone.setHidden(ClientEventHandler.zoomPos > 0.7 && ClientEventHandler.zoom);
         }
+
+        int scopeType = GunData.from(itemStack).attachment.get(AttachmentType.SCOPE);
+
+        switch (scopeType) {
+            case 1 ->
+                    AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, packedLightIn, 0, 0.27363125, 20, 1, 255, 0, 0, 255, "pkas", true);
+            case 2 ->
+                    AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, packedLightIn, 0, 0.28, 13, 1, 0, 255, 0, 255, "1p78", false);
+            case 3 ->
+                    AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, packedLightIn, 0, 0.28, 36, (float) ClientEventHandler.customZoom, 255, 0, 0, 255, "lpvo", true);
+        }
+
         float height = 0.02f;
 
         if ((GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 2 || GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 3) && ClientEventHandler.zoom) {
