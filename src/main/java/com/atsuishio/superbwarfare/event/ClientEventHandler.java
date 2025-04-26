@@ -735,8 +735,8 @@ public class ClientEventHandler {
     public static void handleShakeClient(double time, double radius, double amplitude, double x, double y, double z) {
         Player player = Minecraft.getInstance().player;
         if (player == null) return;
-        double shakeStrength = DisplayConfig.EXPLOSION_SCREEN_SHAKE.get() / 100.0;
-        if (shakeStrength <= 0.0) return;
+        float shakeStrength = (float) DisplayConfig.EXPLOSION_SCREEN_SHAKE.get() / 100.0f;
+        if (shakeStrength <= 0.0f) return;
 
         shakeTime = time;
         shakeRadius = radius;
@@ -1373,7 +1373,7 @@ public class ClientEventHandler {
 
     private static void handleShockCamera(ViewportEvent.ComputeCameraAngles event, LivingEntity entity) {
         if (entity.hasEffect(ModMobEffects.SHOCK) && Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON) {
-            float shakeStrength = (float) (DisplayConfig.SHOCK_SCREEN_SHAKE.get() / 100.0);
+            float shakeStrength = (float) DisplayConfig.SHOCK_SCREEN_SHAKE.get() / 100.0f;
             if (shakeStrength <= 0.0f) return;
 
             event.setYaw(Minecraft.getInstance().gameRenderer.getMainCamera().getYRot() +
@@ -1387,7 +1387,7 @@ public class ClientEventHandler {
     public static void handleReloadShake(double boneRotX, double boneRotY, double boneRotZ) {
         LocalPlayer player = Minecraft.getInstance().player;
 
-        float shakeStrength = (float) (DisplayConfig.WEAPON_SCREEN_SHAKE.get() / 100.0);
+        float shakeStrength = (float) DisplayConfig.WEAPON_SCREEN_SHAKE.get() / 100.0f;
         if (shakeStrength <= 0.0f) return;
 
         if (player != null) {
