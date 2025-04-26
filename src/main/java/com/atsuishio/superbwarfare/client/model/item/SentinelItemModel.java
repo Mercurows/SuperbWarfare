@@ -63,9 +63,6 @@ public class SentinelItemModel extends GeoModel<SentinelItem> {
         scope.setScaleZ(1f - (0.8f * (float) zp));
         cb.setRotZ((float) (cb.getRotZ() + times * 10 * ClientEventHandler.chamberRot));
 
-        GeoBone holo = getAnimationProcessor().getBone("holo");
-        holo.setPosY(0.09f);
-
         var data = GunData.from(stack);
 
         shen.setPosX((float) (0.95f * ClientEventHandler.recoilHorizon * fpz * fp));

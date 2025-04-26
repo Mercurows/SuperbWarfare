@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.client.renderer.item;
 
 import com.atsuishio.superbwarfare.client.AnimationHelper;
 import com.atsuishio.superbwarfare.client.model.item.SentinelItemModel;
-import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.sniper.SentinelItem;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -81,18 +80,15 @@ public class SentinelItemRenderer extends GeoItemRenderer<SentinelItem> {
         ItemStack itemStack = player.getMainHandItem();
         if (!(itemStack.getItem() instanceof GunItem)) return;
 
-        AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn, 0, 0, 1.53125, 0.6);
-
-        if (name.equals("holo")) {
-            bone.setHidden(ClientEventHandler.zoomPos < 0.7 || !ClientEventHandler.zoom);
-        }
-
         var cap = itemStack.getCapability(Capabilities.EnergyStorage.ITEM);
         var flag = cap != null && cap.getEnergyStored() > 0;
 
         if (name.equals("charge")) {
             bone.setHidden(!flag);
         }
+
+        AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, packedLightIn, 0, 0.265, -0.05, 0.075f, 255, 0, 0, 255, "apex_3x", false);
+        AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn, 0, 0, 1.53125, 0.6);
 
         if (renderingArms) {
             AnimationHelper.renderArms(mc, player, this.transformType, stack, name, bone, SCALE_RECIPROCAL, this.currentBuffer, type, packedLightIn, true, true);
