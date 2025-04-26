@@ -98,11 +98,11 @@ public class Ntw20Renderer extends GeoItemRenderer<Ntw20Item> {
 
         switch (scopeType) {
             case 1 ->
-                    AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, packedLightIn, 0, 0.468755, 40, 1, 255, 0, 0, 255, "eotech", false);
+                    AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.468755, 40, 1, 255, 0, 0, 255, "eotech", false);
             case 2 ->
-                    AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, packedLightIn, 0, 0.48875, 9, 1, 255, 0, 0, 255, "acog", true);
+                    AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.48875, 9, 1, 255, 0, 0, 255, "acog", true);
             case 3 ->
-                    AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, packedLightIn, 0, 0.46875, 30, (float) ClientEventHandler.customZoom, 255, 0, 0, 255, "lpvo", true);
+                    AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.46875, 30, (float) ClientEventHandler.customZoom, 255, 0, 0, 255, "lpvo", true);
         }
 
         AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn, 0, 0, 3.70229375, 0.8);

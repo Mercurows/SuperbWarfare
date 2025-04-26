@@ -85,9 +85,9 @@ public class VectorItemRenderer extends GeoItemRenderer<VectorItem> {
         int scopeType = GunData.from(itemStack).attachment.get(AttachmentType.SCOPE);
         switch (scopeType) {
             case 1 ->
-                    AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, packedLightIn, 0, 0.27, 18, 1, 255, 0, 0, 255, "dot", false);
+                    AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.27, 18, 1, 255, 0, 0, 255, "dot", false);
             case 2 ->
-                    AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, packedLightIn, 0, 0.27, 16, 1, 255, 0, 0, 255, "apex_2x", true);
+                    AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.27, 16, 1, 255, 0, 0, 255, "apex_2x", true);
         }
 
         AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn, 0, 0, 1.453125, 0.35);

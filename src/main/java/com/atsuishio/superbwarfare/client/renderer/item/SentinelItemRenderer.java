@@ -85,7 +85,8 @@ public class SentinelItemRenderer extends GeoItemRenderer<SentinelItem> {
             bone.setHidden(!flag);
         }
 
-        AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, packedLightIn, 0, 0.265, -0.05, 0.075f, 255, 0, 0, 255, "apex_3x", false);
+        AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.265, -0.05, 0.075f, 255, 0, 0, 255, "apex_3x", false);
+
         AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn, 0, 0, 1.53125, 0.6);
 
         if (renderingArms) {

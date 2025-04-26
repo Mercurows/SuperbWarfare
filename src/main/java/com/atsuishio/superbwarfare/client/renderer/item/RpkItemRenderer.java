@@ -103,11 +103,11 @@ public class RpkItemRenderer extends GeoItemRenderer<RpkItem> {
 
         switch (scopeType) {
             case 1 ->
-                    AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, packedLightIn, 0, 0.27363125, 20, 1, 255, 0, 0, 255, "pkas", true);
+                    AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.27363125, 20, 1, 255, 0, 0, 255, "pkas", true);
             case 2 ->
-                    AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, packedLightIn, 0, 0.28, 13, 1, 0, 255, 0, 255, "1p78", false);
+                    AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.28, 13, 1, 0, 255, 0, 255, "1p78", false);
             case 3 ->
-                    AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, packedLightIn, 0, 0.28, 36, (float) ClientEventHandler.customZoom, 255, 0, 0, 255, "lpvo", true);
+                    AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.28, 36, (float) ClientEventHandler.customZoom, 255, 0, 0, 255, "lpvo", true);
         }
 
         float height = 0.02f;

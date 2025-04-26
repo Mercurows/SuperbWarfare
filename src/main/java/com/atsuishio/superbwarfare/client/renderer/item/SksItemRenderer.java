@@ -75,7 +75,7 @@ public class SksItemRenderer extends GeoItemRenderer<SksItem> {
         ItemStack itemStack = player.getMainHandItem();
         if (!(itemStack.getItem() instanceof GunItem)) return;
 
-        AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, packedLightIn, 0, 0.25654375, 20, 2f, 0, 255, 0, 255, "okp_7", false);
+        AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.25654375, 20, 2f, 0, 255, 0, 255, "okp_7", false);
 
         AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn, 0, 0, 1.4375, 0.35);
 

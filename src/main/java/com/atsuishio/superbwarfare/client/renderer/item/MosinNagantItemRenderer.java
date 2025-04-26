@@ -81,7 +81,7 @@ public class MosinNagantItemRenderer extends GeoItemRenderer<MosinNagantItem> {
             bone.setHidden(ClientEventHandler.zoomPos > 0.7);
         }
 
-        AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, packedLightIn, 0, 0.259025, -0.05, 0.08f, 0, 0, 0, 255, "pu", true);
+        AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.259025, -0.05, 0.08f, 0, 0, 0, 255, "pu", true);
 
         AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn, 0, 0, 2.38345, 0.6);
 

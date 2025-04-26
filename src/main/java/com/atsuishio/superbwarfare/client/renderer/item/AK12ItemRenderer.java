@@ -93,9 +93,12 @@ public class AK12ItemRenderer extends GeoItemRenderer<AK12Item> {
             int scopeType = GunData.from(itemStack).attachment.get(AttachmentType.SCOPE);
 
             switch (scopeType) {
-                case 1 -> AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, packedLightIn, -0.03, 0.27363125, 28, 1, 0, 255, 0, 255, "okp_7", false);
-                case 2 -> AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, packedLightIn, -0.03, 0.29, 18, 1, 255, 0, 0, 255, "dot", false);
-                case 3 -> AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, packedLightIn, -0.03, 0.29, 36, (float) ClientEventHandler.customZoom, 255, 0, 0, 255, "lpvo", true);
+                case 1 ->
+                        AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, -0.03, 0.27363125, 28, 1, 0, 255, 0, 255, "okp_7", false);
+                case 2 ->
+                        AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, -0.03, 0.29, 18, 1, 255, 0, 0, 255, "dot", false);
+                case 3 ->
+                        AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, -0.03, 0.29, 36, (float) ClientEventHandler.customZoom, 255, 0, 0, 255, "lpvo", true);
             }
 
             AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn, -0.012, 0.02, 1.25229375, 0.3);

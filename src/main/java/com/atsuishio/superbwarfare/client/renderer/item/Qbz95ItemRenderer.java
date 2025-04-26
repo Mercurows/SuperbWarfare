@@ -106,11 +106,11 @@ public class Qbz95ItemRenderer extends GeoItemRenderer<Qbz95Item> {
 
         switch (scopeType) {
             case 1 ->
-                    AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, packedLightIn, 0, 0.5363125, 16, 1, 255, 0, 0, 255, "dot", false);
+                    AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.5363125, 16, 1, 255, 0, 0, 255, "dot", false);
             case 2 ->
-                    AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, packedLightIn, 0, 0.55, 24, 1, 255, 0, 0, 255, "dot", false);
+                    AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.55, 24, 1, 255, 0, 0, 255, "dot", false);
             case 3 ->
-                    AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, packedLightIn, 0, 0.55, 36, (float) ClientEventHandler.customZoom, 255, 0, 0, 255, "sniper", true);
+                    AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.55, 36, (float) ClientEventHandler.customZoom, 255, 0, 0, 255, "sniper", true);
         }
 
         AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn, 0, 0.02, 1.12375, 0.3);
