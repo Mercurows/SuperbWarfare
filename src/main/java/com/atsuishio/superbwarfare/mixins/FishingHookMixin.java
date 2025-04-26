@@ -13,7 +13,7 @@ public class FishingHookMixin {
 
     @Inject(method = "canHitEntity(Lnet/minecraft/world/entity/Entity;)Z", at = @At("HEAD"), cancellable = true)
     private void canHook(Entity entity, CallbackInfoReturnable<Boolean> cir) {
-        if (entity instanceof VehicleEntity) {
+        if (entity instanceof VehicleEntity || entity.getVehicle() instanceof VehicleEntity) {
             cir.setReturnValue(false);
             cir.cancel();
         }
