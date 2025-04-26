@@ -40,7 +40,6 @@ public class MosinNagantItemModel extends GeoModel<MosinNagantItem> {
         GeoBone bone15 = getAnimationProcessor().getBone("bone15");
         GeoBone bone16 = getAnimationProcessor().getBone("bone16");
         GeoBone qiangshen = getAnimationProcessor().getBone("qiangshen");
-        GeoBone rex = getAnimationProcessor().getBone("rex");
 
         Player player = Minecraft.getInstance().player;
         if (player == null) return;
@@ -93,11 +92,6 @@ public class MosinNagantItemModel extends GeoModel<MosinNagantItem> {
         shen.setRotZ((float) (shen.getRotZ() * (1 - 0.65 * zt)));
 
         CrossHairOverlay.gunRot = shen.getRotZ();
-
-        rex.setPosY(0.05f + 0.1f * (float) fp);
-        rex.setRotZ((float) (-0.08f * fp * ClientEventHandler.recoilHorizon * fp));
-
-
         ClientEventHandler.gunRootMove(getAnimationProcessor());
 
         GeoBone camera = getAnimationProcessor().getBone("camera");

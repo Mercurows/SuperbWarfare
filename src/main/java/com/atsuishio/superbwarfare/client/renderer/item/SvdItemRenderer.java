@@ -27,8 +27,6 @@ public class SvdItemRenderer extends GeoItemRenderer<SvdItem> {
 
     public SvdItemRenderer() {
         super(new SvdItemModel());
-        // TODO layer
-// this.addRenderLayer(new SvdLayer(this));
     }
 
     @Override
@@ -86,33 +84,23 @@ public class SvdItemRenderer extends GeoItemRenderer<SvdItem> {
             bone.setHidden(GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 0 || GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 2);
         }
 
-        if (name.equals("Cross1")) {
-            bone.setHidden(ClientEventHandler.zoomPos < 0.7 || data.attachment.get(AttachmentType.SCOPE) != 1);
-        }
-
-        if (name.equals("Cross2")) {
-            bone.setHidden(ClientEventHandler.zoomPos < 0.7 || data.attachment.get(AttachmentType.SCOPE) != 2);
-        }
-
         if ((GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 2 || GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 3)
                 && (name.equals("Hidden2") || name.equals("Hidden") || name.equals("gun") || name.equals("bolt") || name.equals("Lefthand") || name.equals("Barrel") || name.equals("bipod") || name.equals("mount")) && ClientEventHandler.zoom && ClientEventHandler.zoomPos > 0.7) {
             bone.setHidden(true);
             renderingArms = false;
         }
 
-        if (name.equals("flare")) {
-            if (ClientEventHandler.firePosTimer == 0 || ClientEventHandler.firePosTimer > 0.5 || GunData.from(itemStack).attachment.get(AttachmentType.BARREL) == 2 || GunData.from(itemStack).attachment.get(AttachmentType.BARREL) == 3) {
-                bone.setHidden(true);
-            } else {
-                if (GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 2 && ClientEventHandler.zoom && ClientEventHandler.zoomPos > 0.7) {
-                    bone.setPosY(-2f);
-                }
-                bone.setHidden(false);
-                bone.setScaleX((float) (0.75 + 0.5 * (Math.random() - 0.5)));
-                bone.setScaleY((float) (0.75 + 0.5 * (Math.random() - 0.5)));
-                bone.setRotZ((float) (0.5 * (Math.random() - 0.5)));
-            }
+        int scopeType = GunData.from(itemStack).attachment.get(AttachmentType.SCOPE);
+
+        switch (scopeType) {
+            case 1 ->
+                    AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, packedLightIn, 0, 0.24, 20, 1, 255, 0, 0, 255, "dot", false);
+            case 2 ->
+                    AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, packedLightIn, -0.01, 0.24, 18, 1, 255, 0, 0, 255, "pso_1", true);
+            case 3 ->
+                    AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, packedLightIn, 0, 0.2525, -0.1, 0.08f, 255, 0, 0, 255, "sniper", true);
         }
+
 
         AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn, 0, 0, 1.76479375, 0.35);
 

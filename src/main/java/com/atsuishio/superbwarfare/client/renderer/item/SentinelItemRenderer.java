@@ -25,9 +25,7 @@ public class SentinelItemRenderer extends GeoItemRenderer<SentinelItem> {
     public SentinelItemRenderer() {
         super(new SentinelItemModel());
         // TODO layer
-// this.addRenderLayer(new SentinelLayer(this));
-        // TODO layer
-// this.addRenderLayer(new SentinelLightLayer(this));
+//        this.addRenderLayer(new SentinelLightLayer(this));
     }
 
     @Override

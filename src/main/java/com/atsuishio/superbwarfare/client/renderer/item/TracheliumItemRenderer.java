@@ -28,10 +28,6 @@ public class TracheliumItemRenderer extends GeoItemRenderer<Trachelium> {
 
     public TracheliumItemRenderer() {
         super(new TracheliumItemModel());
-        // TODO layer
-// this.addRenderLayer(new TracheliumLayer(this));
-        // TODO layer
-// this.addRenderLayer(new TracheliumLightLayer(this));
     }
 
     @Override
@@ -101,25 +97,23 @@ public class TracheliumItemRenderer extends GeoItemRenderer<Trachelium> {
             bone.setHidden(GunData.from(itemStack).attachment.get(AttachmentType.GRIP) == 0);
         }
 
-        if (name.equals("Cross1")) {
-            bone.setHidden(ClientEventHandler.zoomPos < 0.7 || data.attachment.get(AttachmentType.SCOPE) != 1);
-        }
-
-        if (name.equals("Cross2")) {
-            bone.setHidden(ClientEventHandler.zoomPos < 0.7
-                    || GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) != 2
-                    || NBTTool.getTag(itemStack).getBoolean("ScopeAlt"));
-        }
-
-        if (name.equals("CrossAlt")) {
-            bone.setHidden(ClientEventHandler.zoomPos < 0.7
-                    || !ClientEventHandler.zoom
-                    || GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) != 2
-                    || !(NBTTool.getTag(itemStack).getBoolean("ScopeAlt")));
-        }
 
         if (GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 2 && !NBTTool.getTag(itemStack).getBoolean("ScopeAlt") && (name.equals("hidden"))) {
             bone.setHidden(ClientEventHandler.zoomPos > 0.7 && ClientEventHandler.zoom);
+        }
+
+        int scopeType = GunData.from(itemStack).attachment.get(AttachmentType.SCOPE);
+
+        switch (scopeType) {
+            case 1 ->
+                    AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, packedLightIn, 0, 0.3, 30, 1.2f, 255, 0, 0, 255, "dot", false);
+            case 2 -> {
+                if (NBTTool.getTag(itemStack).getBoolean("ScopeAlt")) {
+                    AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, packedLightIn, 0, 0.36, 30, 0.18f, 255, 0, 0, 255, "delta", false);
+                } else {
+                    AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, packedLightIn, 0, 0.294, 13, 0.87f, 255, 0, 0, 255, "hamr", true);
+                }
+            }
         }
 
         ItemModelHelper.handleGunAttachments(bone, itemStack, name);
