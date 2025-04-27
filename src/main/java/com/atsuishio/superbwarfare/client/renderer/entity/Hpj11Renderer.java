@@ -1,5 +1,7 @@
 package com.atsuishio.superbwarfare.client.renderer.entity;
 
+import com.atsuishio.superbwarfare.client.layer.vehicle.Hpj11HeatLayer;
+import com.atsuishio.superbwarfare.client.layer.vehicle.Hpj11Layer;
 import com.atsuishio.superbwarfare.client.model.entity.Hpj11Model;
 import com.atsuishio.superbwarfare.entity.vehicle.Hpj11Entity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
@@ -19,12 +21,15 @@ import software.bernie.geckolib.cache.object.BakedGeoModel;
 import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
 
+import static com.atsuishio.superbwarfare.entity.vehicle.Hpj11Entity.ANIM_TIME;
+
 public class Hpj11Renderer extends GeoEntityRenderer<Hpj11Entity> {
 
     public Hpj11Renderer(EntityRendererProvider.Context renderManager) {
         super(renderManager, new Hpj11Model());
         this.shadowRadius = 1.5f;
-//        this.addRenderLayer(new Mk42Layer(this));
+        this.addRenderLayer(new Hpj11Layer(this));
+        this.addRenderLayer(new Hpj11HeatLayer(this));
     }
 
     @Override
@@ -68,6 +73,13 @@ public class Hpj11Renderer extends GeoEntityRenderer<Hpj11Entity> {
 
         if (name.equals("paoguanroll")) {
             bone.setRotZ(-Mth.lerp(partialTick, animatable.gunRotO, animatable.getGunRot()));
+        }
+
+        if (name.equals("flare")) {
+            bone.setHidden(animatable.getEntityData().get(ANIM_TIME) == 0);
+            bone.setScaleX((float) (2 + 0.8 * (Math.random() - 0.5)));
+            bone.setScaleY((float) (2 + 0.8 * (Math.random() - 0.5)));
+            bone.setRotZ((float) (0.5 * (Math.random() - 0.5)));
         }
 
         super.renderRecursively(poseStack, animatable, bone, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, color);

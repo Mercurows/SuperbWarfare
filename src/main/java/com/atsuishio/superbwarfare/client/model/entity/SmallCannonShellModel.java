@@ -11,24 +11,22 @@ public class SmallCannonShellModel extends GeoModel<SmallCannonShellEntity> {
 
     @Override
     public ResourceLocation getAnimationResource(SmallCannonShellEntity entity) {
-        return Mod.loc("animations/cannon_shell.animation.json");
+        return null;
     }
 
     @Override
     public ResourceLocation getModelResource(SmallCannonShellEntity entity) {
-        return Mod.loc("geo/cannon_shell.geo.json");
+        return Mod.loc("geo/small_cannon_shell.geo.json");
     }
 
     @Override
     public ResourceLocation getTextureResource(SmallCannonShellEntity entity) {
-        return Mod.loc("textures/entity/cannon_shell.png");
+        return Mod.loc("textures/entity/small_cannon_shell.png");
     }
 
     @Override
     public void setCustomAnimations(SmallCannonShellEntity animatable, long instanceId, AnimationState animationState) {
         GeoBone bone = getAnimationProcessor().getBone("bone");
-        bone.setScaleX(0.17f);
-        bone.setScaleY(0.17f);
-        bone.setScaleZ(0.17f);
+        bone.setScaleY((float) (1 + animatable.getDeltaMovement().length()));
     }
 }

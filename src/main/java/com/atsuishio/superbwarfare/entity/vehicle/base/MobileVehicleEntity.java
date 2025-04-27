@@ -57,7 +57,6 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
     public static final EntityDataAccessor<Float> YAW = SynchedEntityData.defineId(MobileVehicleEntity.class, EntityDataSerializers.FLOAT);
 
     public static final EntityDataAccessor<Integer> FIRE_ANIM = SynchedEntityData.defineId(MobileVehicleEntity.class, EntityDataSerializers.INT);
-    public static final EntityDataAccessor<Integer> HEAT = SynchedEntityData.defineId(MobileVehicleEntity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> COAX_HEAT = SynchedEntityData.defineId(MobileVehicleEntity.class, EntityDataSerializers.INT);
 
     public static final EntityDataAccessor<Integer> AMMO = SynchedEntityData.defineId(MobileVehicleEntity.class, EntityDataSerializers.INT);
@@ -98,7 +97,6 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
     public double recoilShake;
     public double recoilShakeO;
 
-    public boolean cannotFire;
     public boolean cannotFireCoax;
     public int reloadCoolDown;
 
@@ -184,20 +182,12 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
             turretYRotO = deltaT + getTurretYRot();
         }
 
-        if (this.entityData.get(HEAT) > 0) {
-            this.entityData.set(HEAT, this.entityData.get(HEAT) - 1);
-        }
-
         if (this.entityData.get(COAX_HEAT) > 0) {
             this.entityData.set(COAX_HEAT, this.entityData.get(COAX_HEAT) - 1);
         }
 
         if (this.entityData.get(FIRE_ANIM) > 0) {
             this.entityData.set(FIRE_ANIM, this.entityData.get(FIRE_ANIM) - 1);
-        }
-
-        if (this.entityData.get(HEAT) < 40) {
-            cannotFire = false;
         }
 
         if (this.entityData.get(COAX_HEAT) < 40) {
@@ -208,10 +198,6 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
             decoyReloadCoolDown--;
         }
 
-        if (this.entityData.get(HEAT) > 100 && !cannotFire) {
-            cannotFire = true;
-            this.level().playSound(null, this.getOnPos(), ModSounds.MINIGUN_OVERHEAT.get(), SoundSource.PLAYERS, 1, 1);
-        }
         if (this.entityData.get(COAX_HEAT) > 100) {
             cannotFireCoax = true;
             this.level().playSound(null, this.getOnPos(), ModSounds.MINIGUN_OVERHEAT.get(), SoundSource.PLAYERS, 1, 1);
@@ -447,7 +433,7 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
 
     public void baseCollideBlock() {
         if (level() instanceof ServerLevel) {
-            AABB aabb = getBoundingBox().inflate(0.25, 1, 0.25).expandTowards(0, 0.5 , 1).move(this.getDeltaMovement().scale(0.6));
+            AABB aabb = getBoundingBox().inflate(0.25, 1, 0.25).expandTowards(0, 0.5, 1).move(this.getDeltaMovement().scale(0.6));
             BlockPos.betweenClosedStream(aabb).forEach((pos) -> {
                 BlockState blockstate = this.level().getBlockState(pos);
                 if (blockstate.is(Blocks.LILY_PAD) ||
@@ -461,7 +447,7 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
 
     public void collideBlock() {
         if (!VehicleConfig.COLLISION_DESTROY_BLOCKS.get()) return;
-        AABB aabb = getBoundingBox().inflate(0.25, 1, 0.25).expandTowards(0, 0.5 , 1).move(this.getDeltaMovement().scale(0.6));
+        AABB aabb = getBoundingBox().inflate(0.25, 1, 0.25).expandTowards(0, 0.5, 1).move(this.getDeltaMovement().scale(0.6));
         BlockPos.betweenClosedStream(aabb).forEach((pos) -> {
             BlockState blockstate = this.level().getBlockState(pos);
             if (blockstate.is(ModTags.Blocks.SOFT_COLLISION)) {
@@ -472,7 +458,7 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
 
     public void collideHardBlock() {
         if (!VehicleConfig.COLLISION_DESTROY_HARD_BLOCKS.get()) return;
-        AABB aabb = getBoundingBox().inflate(0.25, 1, 0.25).expandTowards(0, 0.5 , 1).move(this.getDeltaMovement().scale(0.6));
+        AABB aabb = getBoundingBox().inflate(0.25, 1, 0.25).expandTowards(0, 0.5, 1).move(this.getDeltaMovement().scale(0.6));
         BlockPos.betweenClosedStream(aabb).forEach((pos) -> {
             BlockState blockstate = this.level().getBlockState(pos);
             if (blockstate.is(ModTags.Blocks.HARD_COLLISION)) {
@@ -484,7 +470,7 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
 
     public void collideBlockBeastly() {
         if (!VehicleConfig.COLLISION_DESTROY_BLOCKS_BEASTLY.get()) return;
-        AABB aabb = getBoundingBox().inflate(0.25, 1, 0.25).expandTowards(0, 0.52 , 1).move(this.getDeltaMovement().scale(0.6));
+        AABB aabb = getBoundingBox().inflate(0.25, 1, 0.25).expandTowards(0, 0.52, 1).move(this.getDeltaMovement().scale(0.6));
         BlockPos.betweenClosedStream(aabb).forEach((pos) -> {
             BlockState blockstate = this.level().getBlockState(pos);
             float hardness = blockstate.getBlock().defaultDestroyTime();
@@ -767,7 +753,6 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
                 .define(YAW, 0f)
                 .define(AMMO, 0)
                 .define(FIRE_ANIM, 0)
-                .define(HEAT, 0)
                 .define(COAX_HEAT, 0)
                 .define(DECOY_COUNT, 0);
     }

@@ -107,6 +107,11 @@ public class VehicleConfig {
     public static ModConfigSpec.IntValue PRISM_TANK_DAMAGE_MODE_2;
     public static ModConfigSpec.IntValue PRISM_TANK_SHOOT_COST_MODE_2;
 
+    public static ModConfigSpec.IntValue HPJ11_HP;
+    public static ModConfigSpec.DoubleValue HPJ11_DAMAGE;
+    public static ModConfigSpec.DoubleValue HPJ11_EXPLOSION_DAMAGE;
+    public static ModConfigSpec.DoubleValue HPJ11_EXPLOSION_RADIUS;
+
     public static void init(ModConfigSpec.Builder builder) {
         builder.push("vehicle");
 
@@ -415,6 +420,21 @@ public class VehicleConfig {
         builder.comment("The energy cost of PrismTank Mode 2 per tick");
         PRISM_TANK_SHOOT_COST_MODE_2 = builder.defineInRange("prism_tank_shoot_cost_mode_2", 5000, 1, 10000000);
 
+        builder.pop();
+
+        builder.push("hpj_11");
+
+        builder.comment("The health of HPJ_11");
+        HPJ11_HP = builder.defineInRange("hpj_11_hp", 350, 1, 10000000);
+
+        builder.comment("The damage of HPJ_11");
+        HPJ11_DAMAGE = builder.defineInRange("hpj_11_damage", 20d, 1, 10000000);
+
+        builder.comment("The explosion damage of HPJ_11");
+        HPJ11_EXPLOSION_DAMAGE = builder.defineInRange("hpj_11_explosion_damage", 7d, 1, 10000000);
+
+        builder.comment("The explosion radius of HPJ_11");
+        HPJ11_EXPLOSION_RADIUS = builder.defineInRange("hpj_11_explosion_radius", 4d, 1, 50);
 
         builder.pop();
 

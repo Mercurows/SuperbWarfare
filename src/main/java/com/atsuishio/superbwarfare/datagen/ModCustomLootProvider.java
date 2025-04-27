@@ -142,6 +142,7 @@ public class ModCustomLootProvider implements LootTableSubProvider {
                                 new ItemEntry(ModItems.SECONDARY_CATACLYSM_BLUEPRINT.get(), 3),
                                 new ItemEntry(ModItems.MK_42_BLUEPRINT.get(), 3),
                                 new ItemEntry(ModItems.MLE_1934_BLUEPRINT.get(), 3),
+                                new ItemEntry(ModItems.HPJ_11_BLUEPRINT.get(), 3),
                                 new ItemEntry(ModItems.ANNIHILATOR_BLUEPRINT.get(), 1)
                         ))
                         .withPool(multiItems(2, 0,
@@ -186,6 +187,7 @@ public class ModCustomLootProvider implements LootTableSubProvider {
                                 new ItemEntry(ModItems.SECONDARY_CATACLYSM_BLUEPRINT.get(), 15),
                                 new ItemEntry(ModItems.MK_42_BLUEPRINT.get(), 10),
                                 new ItemEntry(ModItems.MLE_1934_BLUEPRINT.get(), 10),
+                                new ItemEntry(ModItems.HPJ_11_BLUEPRINT.get(), 10),
                                 new ItemEntry(ModItems.ANNIHILATOR_BLUEPRINT.get(), 5)
                         ))
                         .withPool(multiItems(2, 0,

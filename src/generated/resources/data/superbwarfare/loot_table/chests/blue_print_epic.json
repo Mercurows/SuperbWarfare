@@ -101,6 +101,11 @@
         },
         {
           "type": "minecraft:item",
+          "name": "superbwarfare:hpj_11_blueprint",
+          "weight": 10
+        },
+        {
+          "type": "minecraft:item",
           "name": "superbwarfare:annihilator_blueprint",
           "weight": 5
         }

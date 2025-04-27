@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.client.overlay;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.entity.vehicle.AnnihilatorEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.Hpj11Entity;
 import com.atsuishio.superbwarfare.entity.vehicle.Mk42Entity;
 import com.atsuishio.superbwarfare.entity.vehicle.Mle1934Entity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.CannonEntity;
@@ -134,17 +135,37 @@ public class CannonHudOverlay implements LayeredDraw.Layer {
                                     w / 2 + 14, h / 2 - 20, -1, false);
                         }
                     }
-                    if (cannon instanceof AnnihilatorEntity) {
-                        preciseBlit(guiGraphics, Mod.loc("textures/screens/cannon/laser_cannon_crosshair.png"), k, l, 0, 0.0F, i, j, i, j);
-                    } else {
-                        preciseBlit(guiGraphics, Mod.loc("textures/screens/cannon/cannon_crosshair.png"), k, l, 0, 0.0F, i, j, i, j);
-                    }
-                    float diffY = -Mth.wrapDegrees(Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), player.yHeadRotO, player.getYHeadRot()) - Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), cannon.yRotO, cannon.getYRot()));
 
-                    preciseBlit(guiGraphics, Mod.loc("textures/screens/cannon/indicator.png"), (float) w / 2 - 4.3f + 0.45f * diffY, (float) h / 2 - 10, 0, 0.0F, 8, 8, 8, 8);
+                    if (!(cannon instanceof Hpj11Entity)) {
+                        if (cannon instanceof AnnihilatorEntity) {
+                            preciseBlit(guiGraphics, Mod.loc("textures/screens/cannon/laser_cannon_crosshair.png"), k, l, 0, 0.0F, i, j, i, j);
+                        } else {
+                            preciseBlit(guiGraphics, Mod.loc("textures/screens/cannon/cannon_crosshair.png"), k, l, 0, 0.0F, i, j, i, j);
+                        }
+                        float diffY = -Mth.wrapDegrees(Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), player.yHeadRotO, player.getYHeadRot()) - Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), cannon.yRotO, cannon.getYRot()));
+
+                        preciseBlit(guiGraphics, Mod.loc("textures/screens/cannon/indicator.png"), (float) w / 2 - 4.3f + 0.45f * diffY, (float) h / 2 - 10, 0, 0.0F, 8, 8, 8, 8);
+                    } else {
+                        preciseBlit(guiGraphics, Mod.loc("textures/screens/cannon/hpj_crosshair.png"), k, l, 0, 0.0F, i, j, i, j);
+                    }
+
+
                 } else {
-                    preciseBlit(guiGraphics, Mod.loc("textures/screens/cannon/cannon_crosshair_notzoom.png"), k, l, 0, 0.0F, i, j, i, j);
+                    if (!(cannon instanceof Hpj11Entity)) {
+                        preciseBlit(guiGraphics, Mod.loc("textures/screens/cannon/cannon_crosshair_notzoom.png"), k, l, 0, 0.0F, i, j, i, j);
+                    } else {
+                        preciseBlit(guiGraphics, Mod.loc("textures/screens/cannon/hpj_crosshair_notzoom.png"), k, l, 0, 0.0F, i, j, i, j);
+                    }
+
                 }
+
+                RenderSystem.disableDepthTest();
+                RenderSystem.depthMask(false);
+                RenderSystem.enableBlend();
+                RenderSystem.setShader(GameRenderer::getPositionTexShader);
+                RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+                RenderSystem.setShaderColor(1, 1, 1, 1);
+
                 renderKillIndicator(guiGraphics, w, h);
             } else if (Minecraft.getInstance().options.getCameraType() == CameraType.THIRD_PERSON_BACK && !ClientEventHandler.zoomVehicle) {
                 Vec3 p = RenderHelper.worldToScreen(new Vec3(Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), player.xo, player.getX()), Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), player.yo, player.getY()),

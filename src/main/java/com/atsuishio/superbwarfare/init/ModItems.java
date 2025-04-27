@@ -247,6 +247,7 @@ public class ModItems {
     public static final DeferredHolder<Item, BlueprintItem> INSIDIOUS_BLUEPRINT = ITEMS.register("insidious_blueprint", () -> new BlueprintItem(Rarity.EPIC));
     public static final DeferredHolder<Item, BlueprintItem> MK_42_BLUEPRINT = ITEMS.register("mk_42_blueprint", () -> new BlueprintItem(ModEnumExtensions.getLegendary()));
     public static final DeferredHolder<Item, BlueprintItem> MLE_1934_BLUEPRINT = ITEMS.register("mle_1934_blueprint", () -> new BlueprintItem(ModEnumExtensions.getLegendary()));
+    public static final DeferredHolder<Item, BlueprintItem> HPJ_11_BLUEPRINT = ITEMS.register("hpj_11_blueprint", () -> new BlueprintItem(ModEnumExtensions.getLegendary()));
     public static final DeferredHolder<Item, BlueprintItem> ANNIHILATOR_BLUEPRINT = ITEMS.register("annihilator_blueprint", () -> new BlueprintItem(ModEnumExtensions.getLegendary()));
 
     public static final DeferredHolder<Item, Item> LIGHT_ARMAMENT_MODULE = ITEMS.register("light_armament_module", () -> new Item(new Item.Properties().rarity(Rarity.RARE)));

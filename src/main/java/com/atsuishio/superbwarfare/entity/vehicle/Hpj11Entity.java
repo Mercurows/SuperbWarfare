@@ -17,7 +17,7 @@ import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.tools.CustomExplosion;
 import com.atsuishio.superbwarfare.tools.InventoryTool;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
-import com.atsuishio.superbwarfare.tools.SoundTool;
+import com.mojang.math.Axis;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -46,7 +46,7 @@ import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 public class Hpj11Entity extends VehicleEntity implements GeoEntity, CannonEntity {
-    public static final EntityDataAccessor<Integer> COOL_DOWN = SynchedEntityData.defineId(Hpj11Entity.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Integer> ANIM_TIME = SynchedEntityData.defineId(Hpj11Entity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Float> GUN_ROTATE = SynchedEntityData.defineId(Hpj11Entity.class, EntityDataSerializers.FLOAT);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
@@ -60,7 +60,7 @@ public class Hpj11Entity extends VehicleEntity implements GeoEntity, CannonEntit
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
-        builder.define(COOL_DOWN, 0)
+        builder.define(ANIM_TIME, 0)
                 .define(GUN_ROTATE, 0f);
     }
 
@@ -69,9 +69,9 @@ public class Hpj11Entity extends VehicleEntity implements GeoEntity, CannonEntit
         return new VehicleWeapon[][]{
                 new VehicleWeapon[]{
                         new SmallCannonShellWeapon()
-                                .damage(40)
-                                .explosionDamage(8)
-                                .explosionRadius(4f)
+                                .damage(VehicleConfig.HPJ11_DAMAGE.get().floatValue())
+                                .explosionDamage(VehicleConfig.HPJ11_EXPLOSION_DAMAGE.get().floatValue())
+                                .explosionRadius(VehicleConfig.HPJ11_EXPLOSION_RADIUS.get().floatValue())
                                 .icon(Mod.loc("textures/screens/vehicle_weapon/cannon_30mm.png"))
                 }
         };
@@ -79,19 +79,19 @@ public class Hpj11Entity extends VehicleEntity implements GeoEntity, CannonEntit
 
     @Override
     public ThirdPersonCameraPosition getThirdPersonCameraPosition(int index) {
-        return new ThirdPersonCameraPosition(5, 0.25, 0);
+        return new ThirdPersonCameraPosition(2, 0.75, 0);
     }
 
     @Override
     public void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
-        compound.putInt("CoolDown", this.entityData.get(COOL_DOWN));
+        compound.putInt("AnimTime", this.entityData.get(ANIM_TIME));
     }
 
     @Override
     protected void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
-        this.entityData.set(COOL_DOWN, compound.getInt("CoolDown"));
+        this.entityData.set(ANIM_TIME, compound.getInt("AnimTime"));
     }
 
     @Override
@@ -133,8 +133,8 @@ public class Hpj11Entity extends VehicleEntity implements GeoEntity, CannonEntit
         gunRotO = this.getGunRot();
         super.baseTick();
 
-        if (this.entityData.get(COOL_DOWN) > 0) {
-            this.entityData.set(COOL_DOWN, this.entityData.get(COOL_DOWN) - 1);
+        if (this.entityData.get(ANIM_TIME) > 0) {
+            this.entityData.set(ANIM_TIME, this.entityData.get(ANIM_TIME) - 1);
         }
 
         this.move(MoverType.SELF, this.getDeltaMovement());
@@ -146,10 +146,6 @@ public class Hpj11Entity extends VehicleEntity implements GeoEntity, CannonEntit
 
         this.entityData.set(GUN_ROTATE, this.entityData.get(GUN_ROTATE) * 0.8f);
         setGunRot(getGunRot() + entityData.get(GUN_ROTATE));
-
-        if (level().isClientSide && (Math.abs(entityData.get(GUN_ROTATE)) > 0.02)) {
-            level().playLocalSound(this.getX(), this.getY() + this.getBbHeight() * 0.5, this.getZ(), ModSounds.TURRET_TURN.get(), this.getSoundSource(), (float) Math.min(0.2 * entityData.get(GUN_ROTATE), 1), (random.nextFloat() * 0.05f + 1), false);
-        }
 
         lowHealthWarning();
     }
@@ -229,70 +225,53 @@ public class Hpj11Entity extends VehicleEntity implements GeoEntity, CannonEntit
 
     @Override
     public Vec3 driverZoomPos(float ticks) {
-        Matrix4f transform = getVehicleFlatTransform(ticks);
-        Vector4f worldPosition = transformPosition(transform, 0f, 1.5f, 0.25f);
+        Matrix4f transform = getBarrelTransform(ticks);
+        Vector4f worldPosition = transformPosition(transform, 0f, 1f, 0);
         return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
     }
 
     @Override
     public void vehicleShoot(Player player, int type) {
-//        if (this.entityData.get(COOL_DOWN) > 0) return;
+        if (cannotFire) return;
 
-        Level level = player.level();
-        if (level instanceof ServerLevel) {
-            if (!InventoryTool.hasCreativeAmmoBox(player)) {
-                var ammo = ModItems.SMALL_SHELL.get();
-                var ammoCount = InventoryTool.countItem(player.getInventory().items, ammo);
+        if (!InventoryTool.hasCreativeAmmoBox(player)) {
+            var ammo = ModItems.SMALL_SHELL.get();
+            var ammoCount = InventoryTool.countItem(player.getInventory().items, ammo);
 
-                if (ammoCount <= 0) return;
-                InventoryTool.consumeItem(player.getInventory().items, ammo, 1);
-            }
-
-            var entityToSpawn = ((SmallCannonShellWeapon) getWeapon(0)).create(player);
-
-            Matrix4f transform = getVehicleFlatTransform(1);
-            Vector4f worldPosition = transformPosition(transform, 0f, 1.375f, 0.25f);
-
-            entityToSpawn.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
-            entityToSpawn.shoot(getLookAngle().x, getLookAngle().y, getLookAngle().z, 30, 0.3f);
-            level.addFreshEntity(entityToSpawn);
-
-            if (player instanceof ServerPlayer serverPlayer) {
-                SoundTool.playLocalSound(serverPlayer, ModSounds.MINIGUN_FIRE_1P.get(), 2, 1);
-                serverPlayer.level().playSound(null, serverPlayer.getOnPos(), ModSounds.MINIGUN_FIRE_3P.get(), SoundSource.PLAYERS, 6, 1);
-                serverPlayer.level().playSound(null, serverPlayer.getOnPos(), ModSounds.MINIGUN_FAR.get(), SoundSource.PLAYERS, 16, 1);
-                serverPlayer.level().playSound(null, serverPlayer.getOnPos(), ModSounds.MINIGUN_VERYFAR.get(), SoundSource.PLAYERS, 32, 1);
-            }
-
-            this.entityData.set(GUN_ROTATE, entityData.get(GUN_ROTATE) + 0.5f);
-
-//            this.entityData.set(COOL_DOWN, 30);
-
-//            server.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE,
-//                    this.getX() + 5 * this.getLookAngle().x,
-//                    this.getY(),
-//                    this.getZ() + 5 * this.getLookAngle().z,
-//                    100, 7, 0.02, 7, 0.005);
-//
-//            double x = worldPosition.x + 9 * this.getLookAngle().x;
-//            double y = worldPosition.y + 9 * this.getLookAngle().y;
-//            double z = worldPosition.z + 9 * this.getLookAngle().z;
-//
-//            server.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, x, y, z, 10, 0.4, 0.4, 0.4, 0.0075);
-//            server.sendParticles(ParticleTypes.CLOUD, x, y, z, 10, 0.4, 0.4, 0.4, 0.0075);
-//
-//            int count = 6;
-//
-//            for (float i = 9.5f; i < 16; i += .5f) {
-//                server.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE,
-//                        this.getX() + i * this.getLookAngle().x,
-//                        this.getEyeY() + i * this.getLookAngle().y,
-//                        this.getZ() + i * this.getLookAngle().z,
-//                        Mth.clamp(count--, 1, 5), 0.15, 0.15, 0.15, 0.0025);
-//            }
+            if (ammoCount <= 0) return;
+            InventoryTool.consumeItem(player.getInventory().items, ammo, 1);
         }
+
+        var entityToSpawn = ((SmallCannonShellWeapon) getWeapon(0)).create(player);
+
+        Matrix4f transform = getBarrelTransform(1);
+        Vector4f worldPosition = transformPosition(transform, 0f, 0.4f, 2.6875f);
+
+        entityToSpawn.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
+        entityToSpawn.shoot(getLookAngle().x, getLookAngle().y, getLookAngle().z, 40, 0.3f);
+        level().addFreshEntity(entityToSpawn);
+
+        if (!player.level().isClientSide) {
+            if (player instanceof ServerPlayer serverPlayer) {
+                serverPlayer.level().playSound(null, serverPlayer.getOnPos(), ModSounds.HPJ_11_FIRE_3P.get(), SoundSource.PLAYERS, 8, random.nextFloat() * 0.05f + 1);
+            }
+        }
+
+        this.entityData.set(GUN_ROTATE, entityData.get(GUN_ROTATE) + 0.5f);
+        this.entityData.set(HEAT, this.entityData.get(HEAT) + 1);
+        this.entityData.set(ANIM_TIME, 1);
     }
 
+    public Matrix4f getBarrelTransform(float ticks) {
+        Matrix4f transformV = getVehicleFlatTransform(ticks);
+
+        Matrix4f transform = new Matrix4f();
+        Vector4f worldPosition = transformPosition(transform, 0, 1.375f, 0.25f);
+
+        transformV.translate(worldPosition.x, worldPosition.y, worldPosition.z);
+        transformV.rotate(Axis.XP.rotationDegrees(Mth.lerp(ticks, xRotO, getXRot())));
+        return transformV;
+    }
 
     @Override
     public void travel() {
@@ -322,7 +301,6 @@ public class Hpj11Entity extends VehicleEntity implements GeoEntity, CannonEntit
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar data) {
-//        data.add(new AnimationController<>(this, "movement", 0, this::movementPredicate));
     }
 
     @Override
@@ -332,17 +310,18 @@ public class Hpj11Entity extends VehicleEntity implements GeoEntity, CannonEntit
 
     @Override
     public float getMaxHealth() {
-        return VehicleConfig.MK42_HP.get();
+        return VehicleConfig.HPJ11_HP.get();
     }
 
     @Override
     public int mainGunRpm(Player player) {
-        return 1200;
+        return 2400;
     }
 
     @Override
     public boolean canShoot(Player player) {
-        return true;
+        var ammo = ModItems.SMALL_SHELL.get();
+        return (InventoryTool.countItem(player.getInventory().items, ammo) > 0 || InventoryTool.hasCreativeAmmoBox(player)) && !cannotFire;
     }
 
     @Override
@@ -371,6 +350,6 @@ public class Hpj11Entity extends VehicleEntity implements GeoEntity, CannonEntit
 
     @Override
     public ResourceLocation getVehicleIcon() {
-        return Mod.loc("textures/vehicle_icon/sherman_icon.png");
+        return Mod.loc("textures/vehicle_icon/hpj_11.png");
     }
 }
