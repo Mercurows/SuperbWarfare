@@ -49,6 +49,7 @@ public class ContainerBlockItem extends BlockItem implements GeoItem {
     public static final List<Supplier<ItemStack>> CONTAINER_ENTITIES = List.of(
             () -> ContainerBlockItem.createInstance(ModEntities.MK_42.get()),
             () -> ContainerBlockItem.createInstance(ModEntities.MLE_1934.get()),
+            () -> ContainerBlockItem.createInstance(ModEntities.HPJ_11.get()),
             () -> ContainerBlockItem.createInstance(ModEntities.ANNIHILATOR.get()),
             () -> ContainerBlockItem.createInstance(ModEntities.LASER_TOWER.get()),
             () -> ContainerBlockItem.createInstance(ModEntities.SPEEDBOAT.get(), true),
