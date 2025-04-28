@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.client.overlay;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.config.client.DisplayConfig;
+import com.atsuishio.superbwarfare.entity.vehicle.Hpj11Entity;
 import com.atsuishio.superbwarfare.entity.vehicle.SpeedboatEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.*;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.HeliRocketWeapon;
@@ -103,7 +104,7 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
 
         int compatHeight = getArmorPlateCompatHeight(player);
 
-        if (vehicle instanceof EnergyVehicleEntity energyVehicleEntity) {
+        if (vehicle instanceof EnergyVehicleEntity energyVehicleEntity && !(vehicle instanceof Hpj11Entity)) {
             float energy = energyVehicleEntity.getEnergy();
             float maxEnergy = energyVehicleEntity.getMaxEnergy();
             preciseBlit(guiGraphics, ENERGY, 10, h - 22 - compatHeight, 100, 0, 0, 8, 8, 8, 8);

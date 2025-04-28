@@ -212,6 +212,10 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
             this.entityData.set(ANIM_TIME, this.entityData.get(ANIM_TIME) - 1);
         }
 
+        if (this.level() instanceof ServerLevel) {
+            this.handleAmmo();
+        }
+
         this.move(MoverType.SELF, this.getDeltaMovement());
         if (this.onGround()) {
             this.setDeltaMovement(Vec3.ZERO);
@@ -227,13 +231,25 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
         lowHealthWarning();
     }
 
+    private void handleAmmo() {
+        if (hasItem(ModItems.CREATIVE_AMMO_BOX.get())) {
+            entityData.set(AMMO, 9999);
+        } else {
+            entityData.set(AMMO, countItem(ModItems.SMALL_SHELL.get()));
+        }
+    }
+
     public void autoAim() {
         if (this.getFirstPassenger() != null || !entityData.get(ACTIVE)) {
             return;
         }
 
+        Matrix4f transform = getBarrelTransform(1);
+        Vector4f worldPosition = transformPosition(transform, 0f, 0.4f, 0);
+        Vec3 barrelRootPos = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
+
         if (entityData.get(TARGET_UUID).equals("none") && tickCount % 10 == 0) {
-            Entity naerestEntity = seekNearLivingEntity(128);
+            Entity naerestEntity = seekNearLivingEntity(barrelRootPos,-32.5,90,3,128);
             if (naerestEntity != null) {
                 entityData.set(TARGET_UUID, naerestEntity.getStringUUID());
             }
@@ -251,10 +267,6 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
                 return;
             }
 
-            Matrix4f transform = getBarrelTransform(1);
-            Vector4f worldPosition = transformPosition(transform, 0f, 0.4f, 2.6875f);
-
-            Vec3 barrelRootPos = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
             Vec3 targetPos = new Vec3(target.getX(), target.getY() + target.getBbHeight() / 2, target.getZ());
             Vec3 targetVec = barrelRootPos.vectorTo(targetPos).normalize();
 
@@ -273,7 +285,7 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
             this.setRot(this.getYRot(), this.getXRot());
 
             if (VectorTool.calculateAngle(getViewVector(1), targetVec) < 1) {
-                if (checkNoClip(target)) {
+                if (checkNoClip(target) && entityData.get(AMMO) > 0) {
                     vehicleShoot(player, 0);
                 } else {
                     changeTargetTimer++;
@@ -294,17 +306,23 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
         }
     }
 
-    public Entity seekNearLivingEntity(double seekRange) {
+    public Entity seekNearLivingEntity(Vec3 pos, double minAngle, double maxAngle, double minRange, double seekRange) {
         return StreamSupport.stream(EntityFindUtil.getEntities(level()).getAll().spliterator(), false)
                 .filter(e -> {
                     // TODO 自定义目标列表
-                    if (e.distanceTo(this) <= seekRange && ((e instanceof LivingEntity living && living instanceof Enemy && living.getHealth() > 0)
-                    )) {
+                    if (e.distanceTo(this) > minRange
+                            && e.distanceTo(this) <= seekRange
+                            && canAim(pos, e, minAngle, maxAngle)
+                            && e instanceof LivingEntity living
+                            && living instanceof Enemy
+                            && living.getHealth() > 0) {
                         return checkNoClip(e);
                     }
                     return false;
                 }).min(Comparator.comparingDouble(e -> e.distanceTo(this))).orElse(null);
     }
+
+
 
     public boolean checkNoClip(Entity target) {
         return level().clip(new ClipContext(this.getEyePosition(), target.getEyePosition(),
@@ -479,16 +497,12 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
 
     @Override
     public boolean canShoot(Player player) {
-        return (countItem(ModItems.SMALL_SHELL.get()) > 0 || InventoryTool.hasCreativeAmmoBox(player) || hasItem(ModItems.CREATIVE_AMMO_BOX.get())) && !cannotFire;
+        return (this.entityData.get(AMMO) > 0 || InventoryTool.hasCreativeAmmoBox(player)) && !cannotFire;
     }
 
     @Override
     public int getAmmoCount(Player player) {
-        if (hasItem(ModItems.CREATIVE_AMMO_BOX.get())) {
-            return 9999;
-        } else {
-            return countItem(ModItems.SMALL_SHELL.get());
-        }
+        return this.entityData.get(AMMO);
     }
 
     @Override

@@ -969,6 +969,13 @@ public abstract class VehicleEntity extends Entity {
         return getEyePosition();
     }
 
+    public static boolean canAim (Vec3 pos, Entity target, double minAngle, double maxAngle) {
+        Vec3 targetPos = new Vec3(target.getX(), target.getY() + target.getBbHeight() / 2, target.getZ());
+        Vec3 toVec = pos.vectorTo(targetPos).normalize();
+        double targetAngle = VehicleEntity.getXRotFromVector(toVec);
+        return minAngle < targetAngle && targetAngle < maxAngle;
+    }
+
     @OnlyIn(Dist.CLIENT)
     public void renderFirstPersonOverlay(GuiGraphics guiGraphics, Font font, Player player, int screenWidth, int screenHeight, float scale) {
         if (!(this instanceof WeaponVehicleEntity weaponVehicle)) return;
