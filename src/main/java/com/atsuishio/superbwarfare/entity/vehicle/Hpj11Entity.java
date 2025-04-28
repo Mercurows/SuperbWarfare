@@ -166,6 +166,7 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
                 return InteractionResult.sidedSuccess(this.level().isClientSide());
             }
         }
+        entityData.set(TARGET_UUID, "none");
         return super.interact(player, hand);
     }
 
