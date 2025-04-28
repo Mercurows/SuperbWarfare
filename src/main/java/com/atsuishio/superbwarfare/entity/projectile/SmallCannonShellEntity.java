@@ -63,24 +63,26 @@ public class SmallCannonShellEntity extends FastThrowableProjectile implements G
 
     @Override
     protected void onHitEntity(EntityHitResult result) {
-        Entity entity = result.getEntity();
-        if (this.getOwner() instanceof LivingEntity living) {
-            if (!living.level().isClientSide() && living instanceof ServerPlayer player) {
-                living.level().playSound(null, living.blockPosition(), ModSounds.INDICATION.get(), SoundSource.VOICE, 1, 1);
-                PacketDistributor.sendToPlayer(player, new ClientIndicatorMessage(0, 5));
+        if (this.level() instanceof ServerLevel) {
+            Entity entity = result.getEntity();
+            if (this.getOwner() instanceof LivingEntity living) {
+                if (!living.level().isClientSide() && living instanceof ServerPlayer player) {
+                    living.level().playSound(null, living.blockPosition(), ModSounds.INDICATION.get(), SoundSource.VOICE, 1, 1);
+                    PacketDistributor.sendToPlayer(player, new ClientIndicatorMessage(0, 5));
+                }
             }
-        }
 
-        entity.hurt(ModDamageTypes.causeCannonFireDamage(this.level().registryAccess(), this, this.getOwner()), damage);
+            entity.hurt(ModDamageTypes.causeCannonFireDamage(this.level().registryAccess(), this, this.getOwner()), damage);
 
-        if (entity instanceof LivingEntity) {
-            entity.invulnerableTime = 0;
-        }
+            if (entity instanceof LivingEntity) {
+                entity.invulnerableTime = 0;
+            }
 
-        if (this.tickCount > 0 && this.level() instanceof ServerLevel) {
-            causeExplode(result.getLocation());
+            if (this.tickCount > 0) {
+                causeExplode(result.getLocation());
+            }
+            this.discard();
         }
-        this.discard();
     }
 
     @Override

@@ -267,7 +267,7 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
                 return;
             }
 
-            Vec3 targetPos = new Vec3(target.getX(), target.getY() + target.getBbHeight() / 2, target.getZ());
+            Vec3 targetPos = new Vec3(target.getX(), target.getY() + target.getBbHeight() / 2, target.getZ()).add(target.getDeltaMovement().scale(2.5));
             Vec3 targetVec = barrelRootPos.vectorTo(targetPos).normalize();
 
             double d0 = targetVec.x;
@@ -280,11 +280,9 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
             float diffY = Math.clamp(-90f, 90f, Mth.wrapDegrees(targetY - this.getYRot()));
 
             turretTurnSound(0, diffY, 1.1f);
+            this.setYRot(this.getYRot() + Mth.clamp(0.9f * diffY, -20f, 20f));
 
-            this.setYRot(this.getYRot() + Mth.clamp(0.5f * diffY, -60f, 60f));
-            this.setRot(this.getYRot(), this.getXRot());
-
-            if (VectorTool.calculateAngle(getViewVector(1), targetVec) < 1) {
+            if (VectorTool.calculateAngle(getViewVector(1), targetVec) < 3) {
                 if (checkNoClip(target) && entityData.get(AMMO) > 0) {
                     vehicleShoot(player, 0);
                 } else {
@@ -421,7 +419,7 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
         Vector4f worldPosition = transformPosition(transform, 0f, 0.4f, 2.6875f);
 
         entityToSpawn.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
-        entityToSpawn.shoot(getLookAngle().x, getLookAngle().y, getLookAngle().z, 40, 0.3f);
+        entityToSpawn.shoot(getLookAngle().x, getLookAngle().y, getLookAngle().z, 50, 0.5f);
         level().addFreshEntity(entityToSpawn);
 
         if (!player.level().isClientSide) {
