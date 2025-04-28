@@ -3,10 +3,11 @@ package com.atsuishio.superbwarfare.entity.vehicle;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
+import com.atsuishio.superbwarfare.entity.TargetEntity;
 import com.atsuishio.superbwarfare.entity.projectile.GunGrenadeEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.CannonEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.ContainerMobileVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
-import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.SmallCannonShellWeapon;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.VehicleWeapon;
@@ -14,9 +15,8 @@ import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
-import com.atsuishio.superbwarfare.tools.CustomExplosion;
-import com.atsuishio.superbwarfare.tools.InventoryTool;
-import com.atsuishio.superbwarfare.tools.ParticleTool;
+import com.atsuishio.superbwarfare.item.ContainerBlockItem;
+import com.atsuishio.superbwarfare.tools.*;
 import com.mojang.math.Axis;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -25,18 +25,25 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.players.OldUsersConverter;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageTypes;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.MoverType;
+import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.event.EventHooks;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Math;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
@@ -45,14 +52,24 @@ import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-public class Hpj11Entity extends VehicleEntity implements GeoEntity, CannonEntity {
+import java.util.Comparator;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.StreamSupport;
+
+public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEntity, CannonEntity, OwnableEntity {
     public static final EntityDataAccessor<Integer> ANIM_TIME = SynchedEntityData.defineId(Hpj11Entity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Float> GUN_ROTATE = SynchedEntityData.defineId(Hpj11Entity.class, EntityDataSerializers.FLOAT);
+    public static final EntityDataAccessor<Boolean> ACTIVE = SynchedEntityData.defineId(Hpj11Entity.class, EntityDataSerializers.BOOLEAN);
+    public static final EntityDataAccessor<String> TARGET_UUID = SynchedEntityData.defineId(Hpj11Entity.class, EntityDataSerializers.STRING);
+    public static final EntityDataAccessor<Optional<UUID>> OWNER_UUID = SynchedEntityData.defineId(Hpj11Entity.class, EntityDataSerializers.OPTIONAL_UUID);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     public Hpj11Entity(EntityType<Hpj11Entity> type, Level world) {
         super(type, world);
     }
+
+    public int changeTargetTimer = 60;
 
     public float gunRot;
     public float gunRotO;
@@ -61,7 +78,10 @@ public class Hpj11Entity extends VehicleEntity implements GeoEntity, CannonEntit
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
         builder.define(ANIM_TIME, 0)
-                .define(GUN_ROTATE, 0f);
+                .define(GUN_ROTATE, 0f)
+                .define(TARGET_UUID, "none")
+                .define(OWNER_UUID, Optional.empty())
+                .define(ACTIVE, false);
     }
 
     @Override
@@ -86,12 +106,67 @@ public class Hpj11Entity extends VehicleEntity implements GeoEntity, CannonEntit
     public void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
         compound.putInt("AnimTime", this.entityData.get(ANIM_TIME));
+        compound.putBoolean("Active", this.entityData.get(ACTIVE));
+        if (this.getOwnerUUID() != null) {
+            compound.putUUID("Owner", this.getOwnerUUID());
+        }
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundTag compound) {
+    public void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
         this.entityData.set(ANIM_TIME, compound.getInt("AnimTime"));
+        this.entityData.set(ACTIVE, compound.getBoolean("Active"));
+
+        UUID uuid;
+        if (compound.hasUUID("Owner")) {
+            uuid = compound.getUUID("Owner");
+        } else {
+            String s = compound.getString("Owner");
+
+            assert this.getServer() != null;
+            uuid = OldUsersConverter.convertMobOwnerIfNecessary(this.getServer(), s);
+        }
+
+        if (uuid != null) {
+            try {
+                this.setOwnerUUID(uuid);
+            } catch (Throwable ignored) {
+            }
+        }
+    }
+
+    public void setOwnerUUID(@Nullable UUID pUuid) {
+        this.entityData.set(OWNER_UUID, Optional.ofNullable(pUuid));
+    }
+
+    @Nullable
+    public UUID getOwnerUUID() {
+        return this.entityData.get(OWNER_UUID).orElse(null);
+    }
+
+    @Override
+    public @NotNull InteractionResult interact(Player player, @NotNull InteractionHand hand) {
+        ItemStack stack = player.getMainHandItem();
+        if (player.isCrouching()) {
+            if (stack.is(ModItems.CROWBAR.get()) && (getOwner() == null || player == getOwner())) {
+                ItemStack container = ContainerBlockItem.createInstance(this);
+                if (!player.addItem(container)) {
+                    player.drop(container, false);
+                }
+                this.remove(RemovalReason.DISCARDED);
+                this.discard();
+                return InteractionResult.SUCCESS;
+            } else if (!entityData.get(ACTIVE)) {
+                entityData.set(ACTIVE, true);
+                this.setOwnerUUID(player.getUUID());
+                if (player instanceof ServerPlayer serverPlayer) {
+                    serverPlayer.level().playSound(null, serverPlayer.getOnPos(), SoundEvents.ARROW_HIT_PLAYER, SoundSource.PLAYERS, 0.5F, 1);
+                }
+                return InteractionResult.sidedSuccess(this.level().isClientSide());
+            }
+        }
+        return super.interact(player, hand);
     }
 
     @Override
@@ -147,7 +222,93 @@ public class Hpj11Entity extends VehicleEntity implements GeoEntity, CannonEntit
         this.entityData.set(GUN_ROTATE, this.entityData.get(GUN_ROTATE) * 0.8f);
         setGunRot(getGunRot() + entityData.get(GUN_ROTATE));
 
+        autoAim();
+
         lowHealthWarning();
+    }
+
+    public void autoAim() {
+        if (this.getFirstPassenger() != null || !entityData.get(ACTIVE)) {
+            return;
+        }
+
+        if (entityData.get(TARGET_UUID).equals("none") && tickCount % 10 == 0) {
+            Entity naerestEntity = seekNearLivingEntity(128);
+            if (naerestEntity != null) {
+                entityData.set(TARGET_UUID, naerestEntity.getStringUUID());
+            }
+        }
+
+        Entity target = EntityFindUtil.findEntity(level(), entityData.get(TARGET_UUID));
+
+        if (target != null && this.getOwner() instanceof Player player) {
+            if (target instanceof LivingEntity living && living.getHealth() <= 0) {
+                this.entityData.set(TARGET_UUID, "none");
+                return;
+            }
+            if (target == this || target instanceof TargetEntity) {
+                this.entityData.set(TARGET_UUID, "none");
+                return;
+            }
+
+            Matrix4f transform = getBarrelTransform(1);
+            Vector4f worldPosition = transformPosition(transform, 0f, 0.4f, 2.6875f);
+
+            Vec3 barrelRootPos = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
+            Vec3 targetPos = new Vec3(target.getX(), target.getY() + target.getBbHeight() / 2, target.getZ());
+            Vec3 targetVec = barrelRootPos.vectorTo(targetPos).normalize();
+
+            double d0 = targetVec.x;
+            double d1 = targetVec.y;
+            double d2 = targetVec.z;
+            double d3 = Math.sqrt(d0 * d0 + d2 * d2);
+            this.setXRot(Mth.clamp(Mth.wrapDegrees((float) (-(Mth.atan2(d1, d3) * 57.2957763671875))), -90, 40));
+            float targetY = Mth.wrapDegrees((float) (Mth.atan2(d2, d0) * 57.2957763671875) - 90.0F);
+
+            float diffY = Math.clamp(-90f, 90f, Mth.wrapDegrees(targetY - this.getYRot()));
+
+            turretTurnSound(0, diffY, 1.1f);
+
+            this.setYRot(this.getYRot() + Mth.clamp(0.5f * diffY, -60f, 60f));
+            this.setRot(this.getYRot(), this.getXRot());
+
+            if (VectorTool.calculateAngle(getViewVector(1), targetVec) < 1) {
+                if (checkNoClip(target)) {
+                    vehicleShoot(player, 0);
+                } else {
+                    changeTargetTimer++;
+                }
+
+                if (!target.isAlive()) {
+                    entityData.set(TARGET_UUID, "none");
+                }
+            }
+
+        } else {
+            entityData.set(TARGET_UUID, "none");
+        }
+
+        if (changeTargetTimer > 60) {
+            entityData.set(TARGET_UUID, "none");
+            changeTargetTimer = 0;
+        }
+    }
+
+    public Entity seekNearLivingEntity(double seekRange) {
+        return StreamSupport.stream(EntityFindUtil.getEntities(level()).getAll().spliterator(), false)
+                .filter(e -> {
+                    // TODO 自定义目标列表
+                    if (e.distanceTo(this) <= seekRange && ((e instanceof LivingEntity living && living instanceof Enemy && living.getHealth() > 0)
+                    )) {
+                        return checkNoClip(e);
+                    }
+                    return false;
+                }).min(Comparator.comparingDouble(e -> e.distanceTo(this))).orElse(null);
+    }
+
+    public boolean checkNoClip(Entity target) {
+        return level().clip(new ClipContext(this.getEyePosition(), target.getEyePosition(),
+                ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this)).getType() != HitResult.Type.BLOCK;
     }
 
     public float getGunRot() {
@@ -234,13 +395,7 @@ public class Hpj11Entity extends VehicleEntity implements GeoEntity, CannonEntit
     public void vehicleShoot(Player player, int type) {
         if (cannotFire) return;
 
-        if (!InventoryTool.hasCreativeAmmoBox(player)) {
-            var ammo = ModItems.SMALL_SHELL.get();
-            var ammoCount = InventoryTool.countItem(player.getInventory().items, ammo);
-
-            if (ammoCount <= 0) return;
-            InventoryTool.consumeItem(player.getInventory().items, ammo, 1);
-        }
+        boolean hasCreativeAmmo = (getFirstPassenger() instanceof Player pPlayer && InventoryTool.hasCreativeAmmoBox(pPlayer)) || hasItem(ModItems.CREATIVE_AMMO_BOX.get());
 
         var entityToSpawn = ((SmallCannonShellWeapon) getWeapon(0)).create(player);
 
@@ -253,13 +408,17 @@ public class Hpj11Entity extends VehicleEntity implements GeoEntity, CannonEntit
 
         if (!player.level().isClientSide) {
             if (player instanceof ServerPlayer serverPlayer) {
-                serverPlayer.level().playSound(null, serverPlayer.getOnPos(), ModSounds.HPJ_11_FIRE_3P.get(), SoundSource.PLAYERS, 8, random.nextFloat() * 0.05f + 1);
+                serverPlayer.level().playSound(null, this.getOnPos(), ModSounds.HPJ_11_FIRE_3P.get(), SoundSource.PLAYERS, 8, random.nextFloat() * 0.05f + 1);
             }
         }
 
         this.entityData.set(GUN_ROTATE, entityData.get(GUN_ROTATE) + 0.5f);
         this.entityData.set(HEAT, this.entityData.get(HEAT) + 1);
         this.entityData.set(ANIM_TIME, 1);
+
+        if (hasCreativeAmmo) return;
+
+        this.getItemStacks().stream().filter(stack -> stack.is(ModItems.SMALL_SHELL.get())).findFirst().ifPresent(stack -> stack.shrink(1));
     }
 
     public Matrix4f getBarrelTransform(float ticks) {
@@ -320,14 +479,16 @@ public class Hpj11Entity extends VehicleEntity implements GeoEntity, CannonEntit
 
     @Override
     public boolean canShoot(Player player) {
-        var ammo = ModItems.SMALL_SHELL.get();
-        return (InventoryTool.countItem(player.getInventory().items, ammo) > 0 || InventoryTool.hasCreativeAmmoBox(player)) && !cannotFire;
+        return (countItem(ModItems.SMALL_SHELL.get()) > 0 || InventoryTool.hasCreativeAmmoBox(player) || hasItem(ModItems.CREATIVE_AMMO_BOX.get())) && !cannotFire;
     }
 
     @Override
     public int getAmmoCount(Player player) {
-        var ammo = ModItems.SMALL_SHELL.get();
-        return InventoryTool.countItem(player.getInventory().items, ammo);
+        if (hasItem(ModItems.CREATIVE_AMMO_BOX.get())) {
+            return 9999;
+        } else {
+            return countItem(ModItems.SMALL_SHELL.get());
+        }
     }
 
     @Override

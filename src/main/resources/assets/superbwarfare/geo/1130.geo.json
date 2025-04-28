@@ -69,13 +69,8 @@
 					]
 				},
 				{
-					"name": "paotiroll",
-					"parent": "root",
-					"pivot": [0, 0, 0]
-				},
-				{
 					"name": "dizuoroll",
-					"parent": "paotiroll",
+					"parent": "dizuo",
 					"pivot": [0, 2, 0],
 					"cubes": [
 						{
@@ -117,6 +112,11 @@
 							}
 						}
 					]
+				},
+				{
+					"name": "paotiroll",
+					"parent": "root",
+					"pivot": [0, 0, 0]
 				},
 				{
 					"name": "guding",

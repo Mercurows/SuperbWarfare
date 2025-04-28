@@ -7,7 +7,6 @@ import com.atsuishio.superbwarfare.entity.vehicle.Hpj11Entity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Axis;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -16,10 +15,11 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
-import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.cache.object.BakedGeoModel;
 import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
+
+import javax.annotation.ParametersAreNonnullByDefault;
 
 import static com.atsuishio.superbwarfare.entity.vehicle.Hpj11Entity.ANIM_TIME;
 
@@ -46,11 +46,9 @@ public class Hpj11Renderer extends GeoEntityRenderer<Hpj11Entity> {
     }
 
     @Override
-    public void render(Hpj11Entity entityIn, float entityYaw, float partialTicks, PoseStack poseStack, @NotNull MultiBufferSource bufferIn, int packedLightIn) {
-        poseStack.pushPose();
-        poseStack.mulPose(Axis.YP.rotationDegrees(-Mth.lerp(partialTicks, entityIn.yRotO, entityIn.getYRot())));
+    @ParametersAreNonnullByDefault
+    public void render(Hpj11Entity entityIn, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource bufferIn, int packedLightIn) {
         super.render(entityIn, entityYaw, partialTicks, poseStack, bufferIn, packedLightIn);
-        poseStack.popPose();
     }
 
     @Override
@@ -60,6 +58,10 @@ public class Hpj11Renderer extends GeoEntityRenderer<Hpj11Entity> {
         if (name.equals("root")) {
             Player player = Minecraft.getInstance().player;
             bone.setHidden(ClientEventHandler.zoomVehicle && animatable.getFirstPassenger() == player);
+        }
+
+        if (name.equals("paotiroll")) {
+            bone.setRotY(-Mth.lerp(partialTick, animatable.yRotO, animatable.getYRot()) * Mth.DEG_TO_RAD);
         }
 
         if (name.equals("radar2")) {
