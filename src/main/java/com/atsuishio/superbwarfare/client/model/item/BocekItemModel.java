@@ -80,6 +80,12 @@ public class BocekItemModel extends GeoModel<BocekItem> {
         wingControl(wing1Root, m);
         wingControl(wing2Root, m);
 
+        GeoBone shake = getAnimationProcessor().getBone("shake");
+
+        shake.setPosX((float) (shake.getPosX() * pp));
+        shake.setPosY((float) (shake.getPosY() * pp));
+        shake.setPosZ((float) (shake.getPosZ() * pp));
+
         rightHand.setPosZ(rightHandPosZ);
 
         CrossHairOverlay.gunRot = shen.getRotZ();

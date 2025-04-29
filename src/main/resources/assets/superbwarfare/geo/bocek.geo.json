@@ -20,8 +20,13 @@
 					"pivot": [0, 0, 0]
 				},
 				{
-					"name": "move",
+					"name": "shake",
 					"parent": "root",
+					"pivot": [0, 0, 0]
+				},
+				{
+					"name": "move",
+					"parent": "shake",
 					"pivot": [0, 0, 0]
 				},
 				{
