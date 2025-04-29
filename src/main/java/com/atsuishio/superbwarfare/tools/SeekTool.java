@@ -2,9 +2,7 @@ package com.atsuishio.superbwarfare.tools;
 
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.entity.ClaymoreEntity;
-import com.atsuishio.superbwarfare.entity.projectile.C4Entity;
-import com.atsuishio.superbwarfare.entity.projectile.DestroyableProjectileEntity;
-import com.atsuishio.superbwarfare.entity.projectile.SwarmDroneEntity;
+import com.atsuishio.superbwarfare.entity.projectile.*;
 import com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import net.minecraft.core.BlockPos;
@@ -19,6 +17,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.entity.EntityTypeTest;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 
@@ -47,6 +46,7 @@ public class SeekTool {
                             && calculateAngle(e, entity) < seekAngle
                             && e != entity
                             && baseFilter(e)
+                            && smokeFilter(e)
                             && e.getVehicle() == null
                     ) {
                         return level.clip(new ClipContext(
@@ -69,6 +69,7 @@ public class SeekTool {
                             && calculateAngle(e, entity) < seekAngle
                             && e != entity
                             && baseFilter(e)
+                            && smokeFilter(e)
                             && e.getVehicle() == null
                             && !(e instanceof SwarmDroneEntity swarmDrone && swarmDrone.getOwner() != entity)
                             && (!e.isAlliedTo(entity) || e.getTeam() == null || e.getTeam().getName().equals("TDM"))) {
@@ -88,6 +89,7 @@ public class SeekTool {
                             && calculateAngle(e, entity) < seekAngle
                             && e != entity
                             && baseFilter(e)
+                            && smokeFilter(e)
                             && e.getVehicle() == null
                             && (!e.isAlliedTo(entity) || e.getTeam() == null || e.getTeam().getName().equals("TDM"))
                     ) {
@@ -109,6 +111,7 @@ public class SeekTool {
                             && calculateAngleVehicle(e, vehicle) < seekAngle
                             && e != vehicle
                             && baseFilter(e)
+                            && smokeFilter(e)
                             && e.getVehicle() == null
                             && (!e.isAlliedTo(vehicle) || e.getTeam() == null || e.getTeam().getName().equals("TDM"))) {
                         return level.clip(new ClipContext(
@@ -137,7 +140,8 @@ public class SeekTool {
 
     public static List<Entity> getEntitiesWithinRange(BlockPos pos, Level level, double range) {
         return StreamSupport.stream(EntityFindUtil.getEntities(level).getAll().spliterator(), false)
-                .filter(e -> e.distanceToSqr(pos.getX(), pos.getY(), pos.getZ()) <= range * range && baseFilter(e))
+                .filter(e -> e.distanceToSqr(pos.getX(), pos.getY(), pos.getZ()) <= range * range
+                        && baseFilter(e) && smokeFilter(e) && !(e instanceof DecoyEntity))
                 .toList();
     }
 
@@ -166,6 +170,25 @@ public class SeekTool {
                 || entity instanceof AreaEffectCloud)
                 && !(entity instanceof Player player && player.isSpectator())
                 || includedByConfig(entity);
+    }
+
+    public static boolean smokeFilter(Entity pEntity) {
+        var Box = pEntity.getBoundingBox().inflate(8);
+
+        var entities = pEntity.level().getEntities(EntityTypeTest.forClass(Entity.class), Box,
+                        entity -> entity instanceof SmokeDecoyEntity)
+                .stream().toList();
+
+        boolean result = true;
+
+        for (var e : entities) {
+            if (e != null) {
+                result = false;
+                break;
+            }
+        }
+
+        return result;
     }
 
     public static boolean includedByConfig(Entity entity) {

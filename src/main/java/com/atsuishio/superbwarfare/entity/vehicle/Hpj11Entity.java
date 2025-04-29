@@ -57,6 +57,8 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.StreamSupport;
 
+import static com.atsuishio.superbwarfare.tools.SeekTool.smokeFilter;
+
 public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEntity, CannonEntity, OwnableEntity {
     public static final EntityDataAccessor<Integer> ANIM_TIME = SynchedEntityData.defineId(Hpj11Entity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Float> GUN_ROTATE = SynchedEntityData.defineId(Hpj11Entity.class, EntityDataSerializers.FLOAT);
@@ -258,7 +260,7 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
 
         Entity target = EntityFindUtil.findEntity(level(), entityData.get(TARGET_UUID));
 
-        if (target != null && this.getOwner() instanceof Player player) {
+        if (target != null && this.getOwner() instanceof Player player && smokeFilter(target)) {
             if (target instanceof LivingEntity living && living.getHealth() <= 0) {
                 this.entityData.set(TARGET_UUID, "none");
                 return;
@@ -314,7 +316,8 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
                             && canAim(pos, e, minAngle, maxAngle)
                             && e instanceof LivingEntity living
                             && living instanceof Enemy
-                            && living.getHealth() > 0) {
+                            && living.getHealth() > 0
+                            && smokeFilter(e)) {
                         return checkNoClip(e);
                     }
                     return false;

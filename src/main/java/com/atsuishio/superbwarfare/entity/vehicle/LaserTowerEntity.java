@@ -49,6 +49,7 @@ import java.util.UUID;
 import java.util.stream.StreamSupport;
 
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
+import static com.atsuishio.superbwarfare.tools.SeekTool.smokeFilter;
 
 public class LaserTowerEntity extends EnergyVehicleEntity implements GeoEntity, OwnableEntity {
 
@@ -252,7 +253,7 @@ public class LaserTowerEntity extends EnergyVehicleEntity implements GeoEntity, 
 
         Entity target = EntityFindUtil.findEntity(level(), entityData.get(TARGET_UUID));
 
-        if (target != null) {
+        if (target != null && smokeFilter(target)) {
             if (target instanceof LivingEntity living && living.getHealth() <= 0) {
                 this.entityData.set(TARGET_UUID, "none");
                 return;
@@ -322,7 +323,8 @@ public class LaserTowerEntity extends EnergyVehicleEntity implements GeoEntity, 
                             && canAim(pos, e, minAngle, maxAngle)
                             && e instanceof LivingEntity living
                             && living instanceof Enemy
-                            && living.getHealth() > 0) {
+                            && living.getHealth() > 0
+                            && smokeFilter(e)) {
                         return checkNoClip(e);
                     }
                     return false;
