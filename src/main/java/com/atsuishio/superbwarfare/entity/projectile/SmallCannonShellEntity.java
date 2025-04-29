@@ -175,7 +175,7 @@ public class SmallCannonShellEntity extends FastThrowableProjectile implements G
                 .getEntities(this,
                         this.getBoundingBox()
                                 .expandTowards(this.getDeltaMovement())
-                                .inflate(0.1)
+                                .inflate(0.5)
                 );
 
         for (Entity entity : entities) {

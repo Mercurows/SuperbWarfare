@@ -258,7 +258,7 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
         Vec3 barrelRootPos = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
 
         if (entityData.get(TARGET_UUID).equals("none") && tickCount % 2 == 0) {
-            Entity naerestEntity = seekNearLivingEntity(barrelRootPos,-32.5,90,3,128);
+            Entity naerestEntity = seekNearLivingEntity(barrelRootPos,-32.5,90,3,160);
             if (naerestEntity != null) {
                 entityData.set(TARGET_UUID, naerestEntity.getStringUUID());
             }
@@ -267,6 +267,10 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
         Entity target = EntityFindUtil.findEntity(level(), entityData.get(TARGET_UUID));
 
         if (target != null && this.getOwner() instanceof Player player && smokeFilter(target)) {
+            if (target.distanceTo(this) > 160) {
+                this.entityData.set(TARGET_UUID, "none");
+                return;
+            }
             if (target instanceof LivingEntity living && living.getHealth() <= 0) {
                 this.entityData.set(TARGET_UUID, "none");
                 return;
@@ -275,12 +279,12 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
                 this.entityData.set(TARGET_UUID, "none");
                 return;
             }
-            if ((target instanceof Projectile && VectorTool.calculateAngle(target.getDeltaMovement().normalize(), target.position().vectorTo(this.position()).normalize()) > 60) || target.onGround()) {
+            if (target instanceof Projectile && (VectorTool.calculateAngle(target.getDeltaMovement().normalize(), target.position().vectorTo(this.position()).normalize()) > 60 || target.onGround())) {
                 this.entityData.set(TARGET_UUID, "none");
                 return;
             }
 
-            Vec3 targetPos = new Vec3(target.getX(), target.getY() + target.getBbHeight() / 2, target.getZ()).add(target.getDeltaMovement().scale(2.5));
+            Vec3 targetPos = new Vec3(target.getX(), target.getY() + target.getBbHeight() / 2, target.getZ()).add(target.getDeltaMovement().scale(4 + 0.025 * target.distanceTo(this)));
             Vec3 targetVec = barrelRootPos.vectorTo(targetPos).normalize();
 
             double d0 = targetVec.x;
@@ -295,7 +299,7 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
             turretTurnSound(0, diffY, 1.1f);
             this.setYRot(this.getYRot() + Mth.clamp(0.9f * diffY, -20f, 20f));
 
-            if (VectorTool.calculateAngle(getViewVector(1), targetVec) < 3) {
+            if (target.distanceTo(this) <= 144 && VectorTool.calculateAngle(getViewVector(1), targetVec) < 3) {
                 if (checkNoClip(target) && entityData.get(AMMO) > 0) {
                     vehicleShoot(player, 0);
 
@@ -324,7 +328,7 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
         List<Entity> entities = this.level()
                 .getEntities(this,
                         new AABB(pos, pos)
-                                .expandTowards(toVec.scale(50))
+                                .expandTowards(toVec.scale(30))
                                 .inflate(0.125)
                 );
         for (Entity entity : entities) {
@@ -379,7 +383,7 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
     public Entity seekThreateningEntity() {
         return StreamSupport.stream(EntityFindUtil.getEntities(level()).getAll().spliterator(), false)
                 .filter(e -> {
-                    if (!e.onGround() && e instanceof Projectile && e.getDeltaMovement().length() < 20 && VectorTool.calculateAngle(e.getDeltaMovement().normalize(), e.position().vectorTo(this.position()).normalize()) < 30) {
+                    if (!e.onGround() && e instanceof Projectile && e.getDeltaMovement().length() < 15 && VectorTool.calculateAngle(e.getDeltaMovement().normalize(), e.position().vectorTo(this.position()).normalize()) < 30) {
                         return checkNoClip(e);
                     }
                     return false;
@@ -483,7 +487,7 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
         Vector4f worldPosition = transformPosition(transform, 0f, 0.4f, 2.6875f);
 
         entityToSpawn.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
-        entityToSpawn.shoot(getLookAngle().x, getLookAngle().y, getLookAngle().z, 50, 0.5f);
+        entityToSpawn.shoot(getLookAngle().x, getLookAngle().y, getLookAngle().z, 30, 0.5f);
         level().addFreshEntity(entityToSpawn);
 
         if (!player.level().isClientSide) {
