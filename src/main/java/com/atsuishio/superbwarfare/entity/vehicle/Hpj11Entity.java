@@ -229,6 +229,12 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
             this.setDeltaMovement(this.getDeltaMovement().add(0.0, -0.04, 0.0));
         }
 
+        if (this.getFirstPassenger() instanceof Player player && fireInputDown) {
+            if ((this.entityData.get(AMMO) > 0 || InventoryTool.hasCreativeAmmoBox(player)) && !cannotFire) {
+                vehicleShoot(player, 0);
+            }
+        }
+
         this.entityData.set(GUN_ROTATE, this.entityData.get(GUN_ROTATE) * 0.8f);
         setGunRot(getGunRot() + entityData.get(GUN_ROTATE));
 
@@ -307,9 +313,7 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
             if (target.distanceTo(this) <= 144 && VectorTool.calculateAngle(getViewVector(1), targetVec) < 10) {
                 if (checkNoClip(target, barrelRootPos) && entityData.get(AMMO) > 0) {
                     vehicleShoot(player, 0);
-
                     findEntityOnPath(barrelRootPos, targetVec);
-
                 } else {
                     changeTargetTimer++;
                 }
@@ -550,12 +554,12 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
 
     @Override
     public int mainGunRpm(Player player) {
-        return 1200;
+        return 0;
     }
 
     @Override
     public boolean canShoot(Player player) {
-        return (this.entityData.get(AMMO) > 0 || InventoryTool.hasCreativeAmmoBox(player)) && !cannotFire;
+        return false;
     }
 
     @Override

@@ -270,6 +270,9 @@ public class ClientEventHandler {
             if (ModKeyMappings.RELEASE_DECOY.isDown()) {
                 keys |= 0b1000000;
             }
+            if (holdFireVehicle) {
+                keys |= 0b1000001;
+            }
         }
 
         if (keys != keysCache) {
