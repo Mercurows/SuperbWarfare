@@ -1006,7 +1006,7 @@ public abstract class VehicleEntity extends Entity {
 
     //判断载具和目标之间有无障碍物
     public boolean checkNoClip(Entity target, Vec3 pos) {
-        return level().clip(new ClipContext(this.getEyePosition(), target.getEyePosition(),
+        return level().clip(new ClipContext(pos, target.getEyePosition(),
                 ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this)).getType() != HitResult.Type.BLOCK;
     }
 
