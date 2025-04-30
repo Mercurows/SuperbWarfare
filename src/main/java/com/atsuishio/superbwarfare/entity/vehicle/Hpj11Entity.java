@@ -256,14 +256,17 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
             return;
         }
 
+        if (this.getEnergy() <= VehicleConfig.HPJ11_SEEK_COST.get()) return;
+
         Matrix4f transform = getBarrelTransform(1);
         Vector4f worldPosition = transformPosition(transform, 0f, 0.4f, 0);
         Vec3 barrelRootPos = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
 
         if (entityData.get(TARGET_UUID).equals("none") && tickCount % 2 == 0) {
-            Entity naerestEntity = seekNearLivingEntity(barrelRootPos,-32.5,90,3,160, 0.3);
+            Entity naerestEntity = seekNearLivingEntity(barrelRootPos, -32.5, 90, 3, 160, 0.3);
             if (naerestEntity != null) {
                 entityData.set(TARGET_UUID, naerestEntity.getStringUUID());
+                this.consumeEnergy(VehicleConfig.HPJ11_SEEK_COST.get());
             }
         }
 
@@ -474,6 +477,7 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
     @Override
     public void vehicleShoot(Player player, int type) {
         if (cannotFire) return;
+        if (this.getEnergy() < VehicleConfig.HPJ11_SHOOT_COST.get()) return;
 
         boolean hasCreativeAmmo = (getFirstPassenger() instanceof Player pPlayer && InventoryTool.hasCreativeAmmoBox(pPlayer)) || hasItem(ModItems.CREATIVE_AMMO_BOX.get());
 
@@ -496,6 +500,8 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
         this.entityData.set(HEAT, this.entityData.get(HEAT) + 2);
         this.entityData.set(ANIM_TIME, 1);
 
+        this.consumeEnergy(VehicleConfig.HPJ11_SHOOT_COST.get());
+
         if (hasCreativeAmmo) return;
 
         this.getItemStacks().stream().filter(stack -> stack.is(ModItems.SMALL_SHELL.get())).findFirst().ifPresent(stack -> stack.shrink(1));
@@ -514,6 +520,8 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
 
     @Override
     public void travel() {
+        if (this.getEnergy() <= 0) return;
+
         Entity passenger = this.getFirstPassenger();
         if (passenger != null) {
             float diffY = Mth.wrapDegrees(passenger.getYHeadRot() - this.getYRot());
@@ -545,6 +553,11 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return this.cache;
+    }
+
+    @Override
+    public int getMaxEnergy() {
+        return VehicleConfig.HPJ11_MAX_ENERGY.get();
     }
 
     @Override
