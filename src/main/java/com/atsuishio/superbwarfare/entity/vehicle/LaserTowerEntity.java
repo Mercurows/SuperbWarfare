@@ -25,13 +25,11 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.*;
-import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.event.EventHooks;
 import org.jetbrains.annotations.NotNull;
@@ -43,10 +41,8 @@ import software.bernie.geckolib.animation.AnimationState;
 import software.bernie.geckolib.animation.*;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-import java.util.Comparator;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.StreamSupport;
 
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 import static com.atsuishio.superbwarfare.tools.SeekTool.smokeFilter;
@@ -244,8 +240,8 @@ public class LaserTowerEntity extends EnergyVehicleEntity implements GeoEntity, 
 
         Vec3 barrelRootPos = new Vec3(this.getX(), this.getY() + 1.390625f, this.getZ());
 
-        if (entityData.get(TARGET_UUID).equals("none") && tickCount % 10 == 0) {
-            Entity naerestEntity = seekNearLivingEntity(barrelRootPos,-40, 90,1,72);
+        if (entityData.get(TARGET_UUID).equals("none") && tickCount % 5 == 0) {
+            Entity naerestEntity = seekNearLivingEntity(barrelRootPos,-40, 90,1,72, 0.01);
             if (naerestEntity != null) {
                 entityData.set(TARGET_UUID, naerestEntity.getStringUUID());
             }
@@ -254,11 +250,19 @@ public class LaserTowerEntity extends EnergyVehicleEntity implements GeoEntity, 
         Entity target = EntityFindUtil.findEntity(level(), entityData.get(TARGET_UUID));
 
         if (target != null && smokeFilter(target)) {
+            if (target.distanceTo(this) > 72) {
+                this.entityData.set(TARGET_UUID, "none");
+                return;
+            }
             if (target instanceof LivingEntity living && living.getHealth() <= 0) {
                 this.entityData.set(TARGET_UUID, "none");
                 return;
             }
             if (target == this || target instanceof TargetEntity) {
+                this.entityData.set(TARGET_UUID, "none");
+                return;
+            }
+            if (target instanceof Projectile && (VectorTool.calculateAngle(target.getDeltaMovement().normalize(), target.position().vectorTo(this.position()).normalize()) > 60 || target.onGround())) {
                 this.entityData.set(TARGET_UUID, "none");
                 return;
             }
@@ -283,7 +287,7 @@ public class LaserTowerEntity extends EnergyVehicleEntity implements GeoEntity, 
                 changeTargetTimer++;
             }
 
-            if (this.entityData.get(COOL_DOWN) == 0 && VectorTool.calculateAngle(getViewVector(1), targetVec) < 1 && checkNoClip(target)) {
+            if (this.entityData.get(COOL_DOWN) == 0 && VectorTool.calculateAngle(getViewVector(1), targetVec) < 1 && checkNoClip(target, barrelRootPos)) {
                 this.entityData.set(COOL_DOWN, VehicleConfig.LASER_TOWER_COOLDOWN.get());
 
                 if (level() instanceof ServerLevel serverLevel) {
@@ -298,6 +302,12 @@ public class LaserTowerEntity extends EnergyVehicleEntity implements GeoEntity, 
                 if (Math.random() < 0.25 && target instanceof LivingEntity living) {
                     living.setRemainingFireTicks(2);
                 }
+
+                if (target instanceof Projectile) {
+                    causeAirExplode(target.position());
+                    target.discard();
+                }
+
                 if (!target.isAlive()) {
                     entityData.set(TARGET_UUID, "none");
                 }
@@ -314,26 +324,22 @@ public class LaserTowerEntity extends EnergyVehicleEntity implements GeoEntity, 
         }
     }
 
-    public Entity seekNearLivingEntity(Vec3 pos, double minAngle, double maxAngle, double minRange, double seekRange) {
-        return StreamSupport.stream(EntityFindUtil.getEntities(level()).getAll().spliterator(), false)
-                .filter(e -> {
-                    // TODO 自定义目标列表
-                    if (e.distanceTo(this) > minRange
-                            && e.distanceTo(this) <= seekRange
-                            && canAim(pos, e, minAngle, maxAngle)
-                            && e instanceof LivingEntity living
-                            && living instanceof Enemy
-                            && living.getHealth() > 0
-                            && smokeFilter(e)) {
-                        return checkNoClip(e);
-                    }
-                    return false;
-                }).min(Comparator.comparingDouble(e -> e.distanceTo(this))).orElse(null);
-    }
-
-    public boolean checkNoClip(Entity target) {
-        return level().clip(new ClipContext(this.getEyePosition(), target.getEyePosition(),
-                ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this)).getType() != HitResult.Type.BLOCK;
+    private void causeAirExplode(Vec3 vec3) {
+        CustomExplosion explosion = new CustomExplosion(this.level(), this,
+                ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(),
+                        this,
+                        this.getOwner()),
+                5,
+                vec3.x,
+                vec3.y,
+                vec3.z,
+                1,
+                Explosion.BlockInteraction.KEEP).
+                setDamageMultiplier(1);
+        explosion.explode();
+        EventHooks.onExplosionStart(this.level(), explosion);
+        explosion.finalizeExplosion(false);
+        ParticleTool.spawnMediumExplosionParticles(this.level(), vec3);
     }
 
     private PlayState movementPredicate(AnimationState<LaserTowerEntity> event) {

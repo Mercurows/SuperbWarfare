@@ -42,15 +42,19 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.ThrownPotion;
 import net.minecraft.world.entity.vehicle.DismountHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -63,12 +67,15 @@ import org.joml.Matrix4f;
 import org.joml.Vector4f;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
+import java.util.stream.StreamSupport;
 
 import static com.atsuishio.superbwarfare.client.RenderHelper.preciseBlit;
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
+import static com.atsuishio.superbwarfare.tools.SeekTool.smokeFilter;
 
 public abstract class VehicleEntity extends Entity {
     public static final EntityDataAccessor<Float> HEALTH = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.FLOAT);
@@ -969,7 +976,40 @@ public abstract class VehicleEntity extends Entity {
         return getEyePosition();
     }
 
-    public static boolean canAim (Vec3 pos, Entity target, double minAngle, double maxAngle) {
+    //防御类载具实体搜寻周围实体
+    public Entity seekNearLivingEntity(Vec3 pos, double minAngle, double maxAngle, double minRange, double seekRange, double size) {
+        return StreamSupport.stream(EntityFindUtil.getEntities(level()).getAll().spliterator(), false)
+                .filter(e -> {
+                    // TODO 自定义目标列表
+                    if (e.distanceTo(this) > minRange
+                            && e.distanceTo(this) <= seekRange
+                            && canAim(pos, e, minAngle, maxAngle)
+                            && ((e instanceof LivingEntity living && living instanceof Enemy && living.getHealth() > 0) || e == seekThreateningEntity(size, pos))
+                            && smokeFilter(e)) {
+                        return checkNoClip(e, pos);
+                    }
+                    return false;
+                }).min(Comparator.comparingDouble(e -> e.distanceTo(this))).orElse(null);
+    }
+
+    //判断具有威胁的弹射物
+    public Entity seekThreateningEntity(double size, Vec3 pos) {
+        return StreamSupport.stream(EntityFindUtil.getEntities(level()).getAll().spliterator(), false)
+                .filter(e -> {
+                    if (!e.onGround() && e instanceof Projectile && (e.getBbWidth() >= size || e.getBbHeight() >= size) && VectorTool.calculateAngle(e.getDeltaMovement().normalize(), e.position().vectorTo(this.position()).normalize()) < 30) {
+                        return checkNoClip(e, pos);
+                    }
+                    return false;
+                }).min(Comparator.comparingDouble(e -> e.distanceTo(this))).orElse(null);
+    }
+
+    //判断载具和目标之间有无障碍物
+    public boolean checkNoClip(Entity target, Vec3 pos) {
+        return level().clip(new ClipContext(this.getEyePosition(), target.getEyePosition(),
+                ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this)).getType() != HitResult.Type.BLOCK;
+    }
+
+    public static boolean canAim(Vec3 pos, Entity target, double minAngle, double maxAngle) {
         Vec3 targetPos = new Vec3(target.getX(), target.getY() + target.getBbHeight() / 2, target.getZ());
         Vec3 toVec = pos.vectorTo(targetPos).normalize();
         double targetAngle = VehicleEntity.getXRotFromVector(toVec);

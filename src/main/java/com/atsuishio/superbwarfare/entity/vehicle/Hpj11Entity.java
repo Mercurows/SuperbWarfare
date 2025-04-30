@@ -35,15 +35,12 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.*;
-import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.event.EventHooks;
 import org.jetbrains.annotations.NotNull;
@@ -258,7 +255,7 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
         Vec3 barrelRootPos = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
 
         if (entityData.get(TARGET_UUID).equals("none") && tickCount % 2 == 0) {
-            Entity naerestEntity = seekNearLivingEntity(barrelRootPos,-32.5,90,3,160);
+            Entity naerestEntity = seekNearLivingEntity(barrelRootPos,-32.5,90,3,160, 0.3);
             if (naerestEntity != null) {
                 entityData.set(TARGET_UUID, naerestEntity.getStringUUID());
             }
@@ -300,7 +297,7 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
             this.setYRot(this.getYRot() + Mth.clamp(0.9f * diffY, -20f, 20f));
 
             if (target.distanceTo(this) <= 144 && VectorTool.calculateAngle(getViewVector(1), targetVec) < 10) {
-                if (checkNoClip(target) && entityData.get(AMMO) > 0) {
+                if (checkNoClip(target, barrelRootPos) && entityData.get(AMMO) > 0) {
                     vehicleShoot(player, 0);
 
                     findEntityOnPath(barrelRootPos, targetVec);
@@ -335,7 +332,7 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
             Entity target = StreamSupport.stream(EntityFindUtil.getEntities(level()).getAll().spliterator(), false)
                     .filter(e -> {
                         if (e == entity && e instanceof Projectile && !(e instanceof ProjectileEntity || e instanceof SmallCannonShellEntity)) {
-                            return checkNoClip(e);
+                            return checkNoClip(e, pos);
                         }
                         return false;
                     }).min(Comparator.comparingDouble(e -> e.distanceTo(this))).orElse(null);
@@ -363,36 +360,6 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
         EventHooks.onExplosionStart(this.level(), explosion);
         explosion.finalizeExplosion(false);
         ParticleTool.spawnMediumExplosionParticles(this.level(), vec3);
-    }
-
-    public Entity seekNearLivingEntity(Vec3 pos, double minAngle, double maxAngle, double minRange, double seekRange) {
-        return StreamSupport.stream(EntityFindUtil.getEntities(level()).getAll().spliterator(), false)
-                .filter(e -> {
-                    // TODO 自定义目标列表
-                    if (e.distanceTo(this) > minRange
-                            && e.distanceTo(this) <= seekRange
-                            && canAim(pos, e, minAngle, maxAngle)
-                            && ((e instanceof LivingEntity living && living instanceof Enemy && living.getHealth() > 0) || e == seekThreateningEntity())
-                            && smokeFilter(e)) {
-                        return checkNoClip(e);
-                    }
-                    return false;
-                }).min(Comparator.comparingDouble(e -> e.distanceTo(this))).orElse(null);
-    }
-
-    public Entity seekThreateningEntity() {
-        return StreamSupport.stream(EntityFindUtil.getEntities(level()).getAll().spliterator(), false)
-                .filter(e -> {
-                    if (!e.onGround() && e instanceof Projectile && (e.getBbWidth() >= 0.3 || e.getBbHeight() >= 0.3) && VectorTool.calculateAngle(e.getDeltaMovement().normalize(), e.position().vectorTo(this.position()).normalize()) < 30) {
-                        return checkNoClip(e);
-                    }
-                    return false;
-                }).min(Comparator.comparingDouble(e -> e.distanceTo(this))).orElse(null);
-    }
-
-    public boolean checkNoClip(Entity target) {
-        return level().clip(new ClipContext(this.getEyePosition(), target.getEyePosition(),
-                ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this)).getType() != HitResult.Type.BLOCK;
     }
 
     public float getGunRot() {
