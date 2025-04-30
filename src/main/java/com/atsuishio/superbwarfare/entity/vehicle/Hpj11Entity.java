@@ -284,7 +284,7 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
                 return;
             }
 
-            Vec3 targetPos = new Vec3(target.getX(), target.getY() + target.getBbHeight() / 2, target.getZ()).add(target.getDeltaMovement().scale(4 + 0.025 * target.distanceTo(this)));
+            Vec3 targetPos = new Vec3(target.getX(), target.getY() + target.getBbHeight() / 2, target.getZ()).add(target.getDeltaMovement().scale((4 + 0.025 * target.distanceTo(this)) * random.nextFloat() * 0.2f + 1));
             Vec3 targetVec = barrelRootPos.vectorTo(targetPos).normalize();
 
             double d0 = targetVec.x;
@@ -299,7 +299,7 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
             turretTurnSound(0, diffY, 1.1f);
             this.setYRot(this.getYRot() + Mth.clamp(0.9f * diffY, -20f, 20f));
 
-            if (target.distanceTo(this) <= 144 && VectorTool.calculateAngle(getViewVector(1), targetVec) < 3) {
+            if (target.distanceTo(this) <= 144 && VectorTool.calculateAngle(getViewVector(1), targetVec) < 10) {
                 if (checkNoClip(target) && entityData.get(AMMO) > 0) {
                     vehicleShoot(player, 0);
 
@@ -383,7 +383,7 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
     public Entity seekThreateningEntity() {
         return StreamSupport.stream(EntityFindUtil.getEntities(level()).getAll().spliterator(), false)
                 .filter(e -> {
-                    if (!e.onGround() && e instanceof Projectile && e.getDeltaMovement().length() < 15 && VectorTool.calculateAngle(e.getDeltaMovement().normalize(), e.position().vectorTo(this.position()).normalize()) < 30) {
+                    if (!e.onGround() && e instanceof Projectile && (e.getBbWidth() >= 0.3 || e.getBbHeight() >= 0.3) && VectorTool.calculateAngle(e.getDeltaMovement().normalize(), e.position().vectorTo(this.position()).normalize()) < 30) {
                         return checkNoClip(e);
                     }
                     return false;
