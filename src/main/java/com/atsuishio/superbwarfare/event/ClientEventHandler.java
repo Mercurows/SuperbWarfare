@@ -250,28 +250,28 @@ public class ClientEventHandler {
                 && tag.getBoolean("Linked"))
         ) {
             if (options.keyLeft.isDown()) {
-                keys |= 0b0000001;
+                keys |= 0b00000001;
             }
             if (options.keyRight.isDown()) {
-                keys |= 0b0000010;
+                keys |= 0b00000010;
             }
             if (options.keyUp.isDown()) {
-                keys |= 0b0000100;
+                keys |= 0b00000100;
             }
             if (options.keyDown.isDown()) {
-                keys |= 0b0001000;
+                keys |= 0b00001000;
             }
             if (options.keyJump.isDown()) {
-                keys |= 0b0010000;
+                keys |= 0b00010000;
             }
             if (options.keyShift.isDown()) {
-                keys |= 0b0100000;
+                keys |= 0b00100000;
             }
             if (ModKeyMappings.RELEASE_DECOY.isDown()) {
-                keys |= 0b1000000;
+                keys |= 0b01000000;
             }
             if (holdFireVehicle) {
-                keys |= 0b1000001;
+                keys |= 0b10000000;
             }
         }
 

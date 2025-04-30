@@ -178,7 +178,7 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
     @Override
     public DamageModifier getDamageModifier() {
         return super.getDamageModifier()
-                .multiply(0.2f)
+                .multiply(0.6f)
                 .multiply(1.5f, DamageTypes.ARROW)
                 .multiply(1.5f, DamageTypes.TRIDENT)
                 .multiply(2.5f, DamageTypes.MOB_ATTACK)
@@ -187,8 +187,8 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
                 .multiply(12.5f, DamageTypes.LAVA)
                 .multiply(6f, DamageTypes.EXPLOSION)
                 .multiply(6f, DamageTypes.PLAYER_EXPLOSION)
-                .multiply(2.4f, ModDamageTypes.CUSTOM_EXPLOSION)
-                .multiply(2f, ModDamageTypes.PROJECTILE_BOOM)
+                .multiply(1.4f, ModDamageTypes.CUSTOM_EXPLOSION)
+                .multiply(1f, ModDamageTypes.PROJECTILE_BOOM)
                 .multiply(0.75f, ModDamageTypes.MINE)
                 .multiply(1.5f, ModDamageTypes.CANNON_FIRE)
                 .multiply(0.25f, ModTags.DamageTypes.PROJECTILE)

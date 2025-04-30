@@ -123,21 +123,21 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
     @Override
     public void processInput(short keys) {
         leftInputDown
-                = (keys & 0b0000001) > 0;
+                = (keys & 0b00000001) > 0;
         rightInputDown
-                = (keys & 0b0000010) > 0;
+                = (keys & 0b00000010) > 0;
         forwardInputDown
-                = (keys & 0b0000100) > 0;
+                = (keys & 0b00000100) > 0;
         backInputDown
-                = (keys & 0b0001000) > 0;
+                = (keys & 0b00001000) > 0;
         upInputDown
-                = (keys & 0b0010000) > 0;
+                = (keys & 0b00010000) > 0;
         downInputDown
-                = (keys & 0b0100000) > 0;
+                = (keys & 0b00100000) > 0;
         decoyInputDown
-                = (keys & 0b1000000) > 0;
+                = (keys & 0b01000000) > 0;
         fireInputDown
-                = (keys & 0b1000001) > 0;
+                = (keys & 0b10000000) > 0;
     }
 
     @Override
