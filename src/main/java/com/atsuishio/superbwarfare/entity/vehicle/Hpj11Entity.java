@@ -484,12 +484,12 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
 
         if (!player.level().isClientSide) {
             if (player instanceof ServerPlayer serverPlayer) {
-                serverPlayer.level().playSound(null, this.getOnPos(), ModSounds.HPJ_11_FIRE_3P.get(), SoundSource.PLAYERS, 8, random.nextFloat() * 0.05f + 1);
+                serverPlayer.level().playSound(null, this.getOnPos(), ModSounds.HPJ_11_FIRE_3P.get(), SoundSource.PLAYERS, 16, random.nextFloat() * 0.05f + 1);
             }
         }
 
         this.entityData.set(GUN_ROTATE, entityData.get(GUN_ROTATE) + 0.5f);
-        this.entityData.set(HEAT, this.entityData.get(HEAT) + 1);
+        this.entityData.set(HEAT, this.entityData.get(HEAT) + 2);
         this.entityData.set(ANIM_TIME, 1);
 
         if (hasCreativeAmmo) return;
@@ -550,7 +550,7 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
 
     @Override
     public int mainGunRpm(Player player) {
-        return 2400;
+        return 1200;
     }
 
     @Override
