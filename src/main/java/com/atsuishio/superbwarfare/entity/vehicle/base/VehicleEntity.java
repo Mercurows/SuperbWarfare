@@ -984,7 +984,8 @@ public abstract class VehicleEntity extends Entity {
                     if (e.distanceTo(this) > minRange
                             && e.distanceTo(this) <= seekRange
                             && canAim(pos, e, minAngle, maxAngle)
-                            && ((e instanceof LivingEntity living && living instanceof Enemy && living.getHealth() > 0) || e == seekThreateningEntity(size, pos))
+                            && !(e instanceof Player player && (player.isSpectator() || player.isCreative()))
+                            && ((e instanceof LivingEntity living && living instanceof Enemy && living.getHealth() > 0) || e == seekThreateningEntity(size, pos) || basicEnemyFilter(e))
                             && smokeFilter(e)) {
                         return checkNoClip(e, pos);
                     }
@@ -996,8 +997,8 @@ public abstract class VehicleEntity extends Entity {
     public Entity seekThreateningEntity(double size, Vec3 pos) {
         return StreamSupport.stream(EntityFindUtil.getEntities(level()).getAll().spliterator(), false)
                 .filter(e -> {
-                    if (!e.onGround() && e instanceof Projectile && (e.getBbWidth() >= size || e.getBbHeight() >= size) && VectorTool.calculateAngle(e.getDeltaMovement().normalize(), e.position().vectorTo(this.position()).normalize()) < 30) {
-                        return checkNoClip(e, pos);
+                    if (!e.onGround() && e instanceof Projectile projectile && (e.getBbWidth() >= size || e.getBbHeight() >= size) && VectorTool.calculateAngle(e.getDeltaMovement().normalize(), e.position().vectorTo(this.position()).normalize()) < 30) {
+                        return checkNoClip(e, pos) && basicEnemyProjectileFilter(projectile);
                     }
                     return false;
                 }).min(Comparator.comparingDouble(e -> e.distanceTo(this))).orElse(null);
@@ -1007,6 +1008,14 @@ public abstract class VehicleEntity extends Entity {
     public boolean checkNoClip(Entity target, Vec3 pos) {
         return level().clip(new ClipContext(this.getEyePosition(), target.getEyePosition(),
                 ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this)).getType() != HitResult.Type.BLOCK;
+    }
+
+    public boolean basicEnemyFilter(Entity pEntity) {
+        return false;
+    }
+
+    public boolean basicEnemyProjectileFilter(Projectile projectile) {
+        return false;
     }
 
     public static boolean canAim(Vec3 pos, Entity target, double minAngle, double maxAngle) {

@@ -264,6 +264,10 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
         Entity target = EntityFindUtil.findEntity(level(), entityData.get(TARGET_UUID));
 
         if (target != null && this.getOwner() instanceof Player player && smokeFilter(target)) {
+            if (target instanceof Player player1 && (player1.isSpectator() || player1.isCreative())) {
+                this.entityData.set(TARGET_UUID, "none");
+                return;
+            }
             if (target.distanceTo(this) > 160) {
                 this.entityData.set(TARGET_UUID, "none");
                 return;
@@ -281,7 +285,11 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
                 return;
             }
 
-            Vec3 targetPos = new Vec3(target.getX(), target.getY() + target.getBbHeight() / 2, target.getZ()).add(target.getDeltaMovement().scale((4 + 0.025 * target.distanceTo(this)) * random.nextFloat() * 0.2f + 1));
+            if (target.getVehicle() != null) {
+                this.entityData.set(TARGET_UUID, target.getVehicle().getStringUUID());
+            }
+
+            Vec3 targetPos = new Vec3(target.getX(), target.getY() + target.getBbHeight() / 4, target.getZ()).add(target.getDeltaMovement().scale((1 * (random.nextFloat() * 0.1f + 1) + 0.05 * target.distanceTo(this))));
             Vec3 targetVec = barrelRootPos.vectorTo(targetPos).normalize();
 
             double d0 = targetVec.x;
@@ -319,6 +327,23 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
             entityData.set(TARGET_UUID, "none");
             changeTargetTimer = 0;
         }
+    }
+
+    @Override
+    public boolean basicEnemyFilter(Entity pEntity) {
+        if (pEntity instanceof Projectile) return false;
+        if (this.getOwner() == null) return false;
+        if (pEntity.getTeam() == null) return false;
+
+        return !pEntity.isAlliedTo(this.getOwner()) || (pEntity.getTeam() != null && pEntity.getTeam().getName().equals("TDM"));
+    }
+
+    @Override
+    public boolean basicEnemyProjectileFilter(Projectile projectile) {
+        if (this.getOwner() == null) return false;
+        if (projectile.getOwner() == null) return false;
+        if (projectile.getOwner() == this.getOwner()) return false;
+        return !projectile.getOwner().isAlliedTo(this.getOwner()) || (projectile.getOwner().getTeam() != null && projectile.getOwner().getTeam().getName().equals("TDM"));
     }
 
     public void findEntityOnPath(Vec3 pos, Vec3 toVec) {
@@ -454,7 +479,7 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
         Vector4f worldPosition = transformPosition(transform, 0f, 0.4f, 2.6875f);
 
         entityToSpawn.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
-        entityToSpawn.shoot(getLookAngle().x, getLookAngle().y, getLookAngle().z, 30, 0.5f);
+        entityToSpawn.shoot(getLookAngle().x, getLookAngle().y, getLookAngle().z, 30, 1f);
         level().addFreshEntity(entityToSpawn);
 
         if (!player.level().isClientSide) {

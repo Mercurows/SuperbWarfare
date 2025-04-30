@@ -250,6 +250,10 @@ public class LaserTowerEntity extends EnergyVehicleEntity implements GeoEntity, 
         Entity target = EntityFindUtil.findEntity(level(), entityData.get(TARGET_UUID));
 
         if (target != null && smokeFilter(target)) {
+            if (target instanceof Player player1 && (player1.isSpectator() || player1.isCreative())) {
+                this.entityData.set(TARGET_UUID, "none");
+                return;
+            }
             if (target.distanceTo(this) > 72) {
                 this.entityData.set(TARGET_UUID, "none");
                 return;
@@ -322,6 +326,23 @@ public class LaserTowerEntity extends EnergyVehicleEntity implements GeoEntity, 
             entityData.set(TARGET_UUID, "none");
             changeTargetTimer = 0;
         }
+    }
+
+    @Override
+    public boolean basicEnemyFilter(Entity pEntity) {
+        if (pEntity instanceof Projectile) return false;
+        if (this.getOwner() == null) return false;
+        if (pEntity.getTeam() == null) return false;
+
+        return !pEntity.isAlliedTo(this.getOwner()) || (pEntity.getTeam() != null && pEntity.getTeam().getName().equals("TDM"));
+    }
+
+    @Override
+    public boolean basicEnemyProjectileFilter(Projectile projectile) {
+        if (this.getOwner() == null) return false;
+        if (projectile.getOwner() == null) return false;
+        if (projectile.getOwner() == this.getOwner()) return false;
+        return !projectile.getOwner().isAlliedTo(this.getOwner()) || (projectile.getOwner().getTeam() != null && projectile.getOwner().getTeam().getName().equals("TDM"));
     }
 
     private void causeAirExplode(Vec3 vec3) {
