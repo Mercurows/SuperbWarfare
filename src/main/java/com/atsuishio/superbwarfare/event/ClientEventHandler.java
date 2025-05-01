@@ -915,15 +915,7 @@ public class ClientEventHandler {
         if (iVehicle instanceof PrismTankEntity prismTank) {
             if (prismTank.getWeaponIndex(0) == 0) {
                 player.playSound(ModSounds.PRISM_FIRE_1P.get(), 1f, 1);
-            } else if (prismTank.getWeaponIndex(0) == 1) {
-                float pitch = prismTank.getEntityData().get(HEAT) <= 60 ? 1.1f : (float) (1.1f - 0.011 * Math.abs(60 - prismTank.getEntityData().get(HEAT)));
-                player.playSound(ModSounds.PRISM_FIRE_1P_2.get(), 1f, pitch);
             }
-        }
-
-        if (iVehicle instanceof Hpj11Entity hpj11Entity) {
-            float pitch = hpj11Entity.getEntityData().get(HEAT) <= 60 ? 1 : (float) (1 - 0.011 * Math.abs(60 - hpj11Entity.getEntityData().get(HEAT)));
-            player.playSound(ModSounds.HPJ_11_FIRE_1P.get(), 1f, (float) ((2 * org.joml.Math.random() - 1) * 0.05f + pitch));
         }
     }
 

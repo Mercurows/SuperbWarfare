@@ -17,10 +17,7 @@ import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
 import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage;
-import com.atsuishio.superbwarfare.tools.CustomExplosion;
-import com.atsuishio.superbwarfare.tools.EntityFindUtil;
-import com.atsuishio.superbwarfare.tools.ParticleTool;
-import com.atsuishio.superbwarfare.tools.SeekTool;
+import com.atsuishio.superbwarfare.tools.*;
 import com.mojang.math.Axis;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.Font;
@@ -224,6 +221,10 @@ public class PrismTankEntity extends ContainerMobileVehicleEntity implements Geo
 
         releaseSmokeDecoy();
 
+        if (this.getFirstPassenger() instanceof Player player && fireInputDown && getWeaponIndex(0) == 1 && getEnergy() > VehicleConfig.PRISM_TANK_SHOOT_COST_MODE_2.get() && !cannotFire) {
+            vehicleShoot(player, 0);
+        }
+
         lowHealthWarning();
         this.refreshDimensions();
     }
@@ -329,6 +330,10 @@ public class PrismTankEntity extends ContainerMobileVehicleEntity implements Geo
             }
 
             Level level = player.level();
+
+            float pitch = entityData.get(HEAT) <= 60 ? 1.1f : (float) (1.1f - 0.011 * Math.abs(60 - entityData.get(HEAT)));
+            SoundTool.playLocalSound(player, ModSounds.PRISM_FIRE_1P_2.get(), 1f, pitch);
+
             if (level instanceof ServerLevel) {
                 if (!player.level().isClientSide) {
                     if (player instanceof ServerPlayer serverPlayer) {
@@ -338,13 +343,6 @@ public class PrismTankEntity extends ContainerMobileVehicleEntity implements Geo
 
                 this.entityData.set(HEAT, entityData.get(HEAT) + 2);
                 this.consumeEnergy(VehicleConfig.PRISM_TANK_SHOOT_COST_MODE_2.get());
-            }
-
-            final Vec3 center = new Vec3(this.getX(), this.getEyeY(), this.getZ());
-            for (Entity target : level.getEntitiesOfClass(Entity.class, new AABB(center, center).inflate(2), e -> true).stream().sorted(Comparator.comparingDouble(e -> e.distanceToSqr(center))).toList()) {
-                if (target instanceof ServerPlayer serverPlayer) {
-                    PacketDistributor.sendToPlayer(serverPlayer, new ShakeClientMessage(5, 3, 3, this.getX(), this.getEyeY(), this.getZ()));
-                }
             }
 
             float dis = laserLengthEntity(root);
@@ -738,17 +736,15 @@ public class PrismTankEntity extends ContainerMobileVehicleEntity implements Geo
         if (getWeaponIndex(0) == 0) {
             return 30;
         } else if (getWeaponIndex(0) == 1) {
-            return 1200;
+            return 0;
         }
-        return 20;
+        return 30;
     }
 
     @Override
     public boolean canShoot(Player player) {
         if (getWeaponIndex(0) == 0) {
             return getEnergy() > VehicleConfig.PRISM_TANK_SHOOT_COST_MODE_1.get() && !cannotFire;
-        } else if (getWeaponIndex(0) == 1) {
-            return getEnergy() > VehicleConfig.PRISM_TANK_SHOOT_COST_MODE_2.get() && !cannotFire;
         }
         return false;
     }

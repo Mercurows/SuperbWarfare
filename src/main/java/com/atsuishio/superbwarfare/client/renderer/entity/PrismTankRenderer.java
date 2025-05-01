@@ -11,10 +11,12 @@ import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.AABB;
 import software.bernie.geckolib.cache.object.BakedGeoModel;
 import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
@@ -55,6 +57,19 @@ public class PrismTankRenderer extends GeoEntityRenderer<PrismTankEntity> {
     @Override
     public void renderRecursively(PoseStack poseStack, PrismTankEntity animatable, GeoBone bone, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, int color) {
         String name = bone.getName();
+
+        Minecraft minecraft = Minecraft.getInstance();
+        Frustum pCamera = minecraft.levelRenderer.getFrustum();
+
+        AABB aabb = animatable.getBoundingBoxForCulling().inflate(0.5);
+        if (aabb.hasNaN() || aabb.getSize() == 0.0) {
+            aabb = new AABB(animatable.getX() - 4.0, animatable.getY() - 3.0, animatable.getZ() - 4.0, animatable.getX() + 4.0, animatable.getY() + 3.0, animatable.getZ() + 4.0);
+        }
+
+        if (name.equals("root")) {
+            bone.setHidden(!pCamera.isVisible(aabb));
+        }
+
         for (int i = 0; i < 8; i++) {
             if (name.equals("wheelL" + i)) {
                 bone.setRotX(1.5f * Mth.lerp(partialTick, animatable.leftWheelRotO, animatable.getLeftWheelRot()));
@@ -64,11 +79,11 @@ public class PrismTankRenderer extends GeoEntityRenderer<PrismTankEntity> {
             }
         }
 
-        if (name.equals("cannon")) {
+        if (name.equals("cannon") || name.equals("cannon2")) {
             bone.setRotY(Mth.lerp(partialTick, animatable.turretYRotO, animatable.getTurretYRot()) * Mth.DEG_TO_RAD);
         }
 
-        if (name.equals("head")) {
+        if (name.equals("head") || name.equals("head2")) {
             Player player = Minecraft.getInstance().player;
             bone.setHidden(ClientEventHandler.zoomVehicle && animatable.getFirstPassenger() == player);
         }
@@ -89,7 +104,7 @@ public class PrismTankRenderer extends GeoEntityRenderer<PrismTankEntity> {
             bone.setRotY((System.currentTimeMillis() % 36000000) / 75f);
         }
 
-        if (name.equals("barrel")) {
+        if (name.equals("barrel") || name.equals("barrel2")) {
 
             float a = animatable.getTurretYaw(partialTick);
             float r = (Mth.abs(a) - 90f) / 90f;
@@ -111,13 +126,6 @@ public class PrismTankRenderer extends GeoEntityRenderer<PrismTankEntity> {
                             - r * animatable.getPitch(partialTick) * Mth.DEG_TO_RAD
                             - r2 * animatable.getRoll(partialTick) * Mth.DEG_TO_RAD
             );
-        }
-
-        if (name.equals("flare")) {
-            bone.setRotZ((float) (0.5 * (Math.random() - 0.5)));
-        }
-        if (name.equals("flare2")) {
-            bone.setRotZ((float) (0.5 * (Math.random() - 0.5)));
         }
 
         for (int i = 0; i < 51; i++) {

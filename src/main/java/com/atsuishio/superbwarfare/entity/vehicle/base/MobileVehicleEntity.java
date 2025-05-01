@@ -428,6 +428,8 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
             targetY = pos.y + shape.max(Direction.Axis.Y);
         } else if (res.getType() == HitResult.Type.BLOCK && this.level().noCollision(new AABB(pos, pos))) {
             targetY = res.getLocation().y;
+        } else {
+            targetY = pos.y - maxLength;
         }
 
         double diffY = targetY - pos.y;

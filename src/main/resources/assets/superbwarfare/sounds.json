@@ -3044,14 +3044,6 @@
       }
     ]
   },
-  "hpj_11_fire_1p": {
-    "sounds": [
-      {
-        "name": "superbwarfare:hpj11/hpj_11_fire_1p",
-        "stream": false
-      }
-    ]
-  },
   "hpj_11_fire_3p": {
     "sounds": [
       {
