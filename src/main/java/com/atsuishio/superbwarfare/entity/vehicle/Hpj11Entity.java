@@ -7,6 +7,7 @@ import com.atsuishio.superbwarfare.entity.TargetEntity;
 import com.atsuishio.superbwarfare.entity.projectile.GunGrenadeEntity;
 import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity;
 import com.atsuishio.superbwarfare.entity.projectile.SmallCannonShellEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.AutoAimable;
 import com.atsuishio.superbwarfare.entity.vehicle.base.CannonEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ContainerMobileVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
@@ -61,7 +62,8 @@ import java.util.stream.StreamSupport;
 
 import static com.atsuishio.superbwarfare.tools.SeekTool.smokeFilter;
 
-public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEntity, CannonEntity, OwnableEntity {
+public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEntity, CannonEntity, OwnableEntity, AutoAimable {
+
     public static final EntityDataAccessor<Integer> ANIM_TIME = SynchedEntityData.defineId(Hpj11Entity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Float> GUN_ROTATE = SynchedEntityData.defineId(Hpj11Entity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Boolean> ACTIVE = SynchedEntityData.defineId(Hpj11Entity.class, EntityDataSerializers.BOOLEAN);
@@ -263,7 +265,7 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
         Vec3 barrelRootPos = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
 
         if (entityData.get(TARGET_UUID).equals("none") && tickCount % 2 == 0) {
-            Entity naerestEntity = seekNearLivingEntity(barrelRootPos, -32.5, 90, 3, 160, 0.3);
+            Entity naerestEntity = seekNearLivingEntity(this, barrelRootPos, -32.5, 90, 3, 160, 0.3);
             if (naerestEntity != null) {
                 entityData.set(TARGET_UUID, naerestEntity.getStringUUID());
                 this.consumeEnergy(VehicleConfig.HPJ11_SEEK_COST.get());
@@ -314,7 +316,7 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
             this.setYRot(this.getYRot() + Mth.clamp(0.9f * diffY, -20f, 20f));
 
             if (target.distanceTo(this) <= 144 && VectorTool.calculateAngle(getViewVector(1), targetVec) < 10) {
-                if (checkNoClip(target, barrelRootPos) && entityData.get(AMMO) > 0) {
+                if (checkNoClip(this, target, barrelRootPos) && entityData.get(AMMO) > 0) {
                     vehicleShoot(player, 0);
                     findEntityOnPath(barrelRootPos, targetVec);
                 } else {
@@ -364,7 +366,7 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
             Entity target = StreamSupport.stream(EntityFindUtil.getEntities(level()).getAll().spliterator(), false)
                     .filter(e -> {
                         if (e == entity && e instanceof Projectile && !(e instanceof ProjectileEntity || e instanceof SmallCannonShellEntity)) {
-                            return checkNoClip(e, pos);
+                            return checkNoClip(this, e, pos);
                         }
                         return false;
                     }).min(Comparator.comparingDouble(e -> e.distanceTo(this))).orElse(null);

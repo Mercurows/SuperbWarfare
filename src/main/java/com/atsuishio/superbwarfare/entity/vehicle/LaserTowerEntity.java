@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.entity.vehicle;
 
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.entity.TargetEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.AutoAimable;
 import com.atsuishio.superbwarfare.entity.vehicle.base.EnergyVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.init.*;
@@ -47,7 +48,7 @@ import java.util.UUID;
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 import static com.atsuishio.superbwarfare.tools.SeekTool.smokeFilter;
 
-public class LaserTowerEntity extends EnergyVehicleEntity implements GeoEntity, OwnableEntity {
+public class LaserTowerEntity extends EnergyVehicleEntity implements GeoEntity, OwnableEntity, AutoAimable {
 
     public static final EntityDataAccessor<Integer> COOL_DOWN = SynchedEntityData.defineId(LaserTowerEntity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<String> TARGET_UUID = SynchedEntityData.defineId(LaserTowerEntity.class, EntityDataSerializers.STRING);
@@ -241,7 +242,7 @@ public class LaserTowerEntity extends EnergyVehicleEntity implements GeoEntity, 
         Vec3 barrelRootPos = new Vec3(this.getX(), this.getY() + 1.390625f, this.getZ());
 
         if (entityData.get(TARGET_UUID).equals("none") && tickCount % 5 == 0) {
-            Entity naerestEntity = seekNearLivingEntity(barrelRootPos,-40, 90,1,72, 0.01);
+            Entity naerestEntity = seekNearLivingEntity(this, barrelRootPos, -40, 90, 1, 72, 0.01);
             if (naerestEntity != null) {
                 entityData.set(TARGET_UUID, naerestEntity.getStringUUID());
             }
@@ -291,7 +292,7 @@ public class LaserTowerEntity extends EnergyVehicleEntity implements GeoEntity, 
                 changeTargetTimer++;
             }
 
-            if (this.entityData.get(COOL_DOWN) == 0 && VectorTool.calculateAngle(getViewVector(1), targetVec) < 1 && checkNoClip(target, barrelRootPos)) {
+            if (this.entityData.get(COOL_DOWN) == 0 && VectorTool.calculateAngle(getViewVector(1), targetVec) < 1 && checkNoClip(this, target, barrelRootPos)) {
                 this.entityData.set(COOL_DOWN, VehicleConfig.LASER_TOWER_COOLDOWN.get());
 
                 if (level() instanceof ServerLevel serverLevel) {
