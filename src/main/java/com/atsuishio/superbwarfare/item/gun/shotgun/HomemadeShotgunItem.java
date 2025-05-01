@@ -17,6 +17,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.Item;
@@ -46,6 +47,23 @@ public class HomemadeShotgunItem extends GunItem implements GeoItem {
 
     public HomemadeShotgunItem() {
         super(new Properties().durability(24).rarity(Rarity.COMMON));
+    }
+
+    @Override
+    public boolean isBarVisible(@NotNull ItemStack stack) {
+        return stack.isDamaged();
+    }
+
+    @Override
+    public int getBarWidth(ItemStack stack) {
+        return Math.round(13.0F - (float) stack.getDamageValue() * 13.0F / (float) this.getMaxDamage(stack));
+    }
+
+    @Override
+    public int getBarColor(ItemStack stack) {
+        float stackMaxDamage = (float) this.getMaxDamage(stack);
+        float f = Math.max(0.0F, (stackMaxDamage - (float) stack.getDamageValue()) / stackMaxDamage);
+        return Mth.hsvToRgb(f / 3.0F, 1.0F, 1.0F);
     }
 
     @Override
@@ -127,9 +145,6 @@ public class HomemadeShotgunItem extends GunItem implements GeoItem {
     public void beforeShoot(GunData data, Player player, double spread, boolean zoom) {
         super.beforeShoot(data, player, spread, zoom);
 
-        var stack = data.stack();
-        stack.hurtAndBreak(1, (ServerLevel) player.level(), player, p -> {
-        });
         if (player instanceof ServerPlayer serverPlayer && player.level() instanceof ServerLevel serverLevel) {
             ParticleTool.sendParticle(serverLevel, ParticleTypes.CLOUD, player.getX() + 1.8 * player.getLookAngle().x, player.getY() + player.getBbHeight() - 0.1 + 1.8 * player.getLookAngle().y,
                     player.getZ() + 1.8 * player.getLookAngle().z, 30, 0.4, 0.4, 0.4, 0.005, true, serverPlayer);
