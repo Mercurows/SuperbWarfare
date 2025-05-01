@@ -5,13 +5,10 @@ import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.entity.vehicle.AnnihilatorEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import software.bernie.geckolib.animation.AnimationState;
 import software.bernie.geckolib.cache.object.GeoBone;
-import software.bernie.geckolib.constant.DataTickets;
 import software.bernie.geckolib.model.GeoModel;
-import software.bernie.geckolib.model.data.EntityModelData;
 
 import static com.atsuishio.superbwarfare.entity.vehicle.AnnihilatorEntity.*;
 
@@ -46,10 +43,6 @@ public class AnnihilatorModel extends GeoModel<AnnihilatorEntity> {
 
     @Override
     public void setCustomAnimations(AnnihilatorEntity animatable, long instanceId, AnimationState<AnnihilatorEntity> animationState) {
-        GeoBone bone = getAnimationProcessor().getBone("PaoGuan");
-        EntityModelData entityData = animationState.getData(DataTickets.ENTITY_MODEL_DATA);
-        bone.setRotX((entityData.headPitch()) * Mth.DEG_TO_RAD);
-
         GeoBone laserLeft = getAnimationProcessor().getBone("laser1");
         GeoBone laserMiddle = getAnimationProcessor().getBone("laser2");
         GeoBone laserRight = getAnimationProcessor().getBone("laser3");
