@@ -2,13 +2,10 @@ package com.atsuishio.superbwarfare.tools;
 
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.projectile.ThrowableItemProjectile;
 import net.minecraft.world.level.Explosion;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.event.EventHooks;
 
 import javax.annotation.Nullable;
@@ -31,12 +28,6 @@ public class ProjectileTool {
             ParticleTool.spawnMediumExplosionParticles(projectile.level(), projectile.position().add(projectile.getDeltaMovement().scale(0.5)));
         } else {
             ParticleTool.spawnHugeExplosionParticles(projectile.level(), projectile.position().add(projectile.getDeltaMovement().scale(0.5)));
-        }
-
-        Vec3 pos = projectile.position().add(projectile.getDeltaMovement().scale(0.5));
-
-        if (projectile.level() instanceof ServerLevel) {
-            projectile.level().explode(source == null ? null : source.getEntity(), pos.x, pos.y, pos.z, 0.5f * radius, ExplosionConfig.EXPLOSION_DESTROY.get() ? Level.ExplosionInteraction.BLOCK : Level.ExplosionInteraction.NONE);
         }
 
         projectile.discard();
