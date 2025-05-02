@@ -203,7 +203,7 @@ public class WgMissileEntity extends FastThrowableProjectile implements GeoEntit
 
     public void causeMissileExplode(@Nullable DamageSource source, float damage, float radius) {
         CustomExplosion explosion = new CustomExplosion(level(), this, source, damage,
-                this.getX(), this.getY(), this.getZ(), radius, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP).setDamageMultiplier(1.25f);
+                this.getX(), this.getY(), this.getZ(), radius, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).setDamageMultiplier(1.25f);
         explosion.explode();
         EventHooks.onExplosionStart(level(), explosion);
         explosion.finalizeExplosion(false);

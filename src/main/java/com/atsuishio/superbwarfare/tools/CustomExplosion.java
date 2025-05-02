@@ -76,14 +76,24 @@ public class CustomExplosion extends Explosion {
         this(pLevel, pSource, null, null, damage, pToBlowX, pToBlowY, pToBlowZ, pRadius, pBlockInteraction);
     }
 
-    public CustomExplosion(Level pLevel, @Nullable Entity pSource, @Nullable DamageSource source, float damage, double pToBlowX, double pToBlowY, double pToBlowZ, float pRadius, BlockInteraction pBlockInteraction) {
+    public CustomExplosion(Level pLevel, @Nullable Entity pSource, @Nullable DamageSource source, float damage, double pToBlowX, double pToBlowY, double pToBlowZ, float pRadius, Explosion.BlockInteraction pBlockInteraction, boolean vanillaExplode) {
         this(pLevel, pSource, source, null, damage, pToBlowX, pToBlowY, pToBlowZ, pRadius, pBlockInteraction);
         final Vec3 center = new Vec3(pToBlowX, pToBlowY, pToBlowZ);
 
-        if (pLevel instanceof ServerLevel) {
+        if (pLevel instanceof ServerLevel && vanillaExplode) {
             pLevel.explode(source == null ? null : source.getEntity(), pToBlowX, pToBlowY, pToBlowZ, 0.5f * pRadius, ExplosionConfig.EXPLOSION_DESTROY.get() ? Level.ExplosionInteraction.BLOCK : Level.ExplosionInteraction.NONE);
         }
 
+        for (Entity target : level.getEntitiesOfClass(Entity.class, new AABB(center, center).inflate(4 * radius), e -> true).stream().sorted(Comparator.comparingDouble(e -> e.distanceToSqr(center))).toList()) {
+            if (target instanceof ServerPlayer serverPlayer) {
+                PacketDistributor.sendToPlayer(serverPlayer, new ShakeClientMessage(20 + 0.02 * damage, 3 * pRadius, 50 + 0.05 * damage, pToBlowX, pToBlowY, pToBlowZ));
+            }
+        }
+    }
+
+    public CustomExplosion(Level pLevel, @Nullable Entity pSource, @Nullable DamageSource source, float damage, double pToBlowX, double pToBlowY, double pToBlowZ, float pRadius, Explosion.BlockInteraction pBlockInteraction) {
+        this(pLevel, pSource, source, null, damage, pToBlowX, pToBlowY, pToBlowZ, pRadius, pBlockInteraction);
+        final Vec3 center = new Vec3(pToBlowX, pToBlowY, pToBlowZ);
         for (Entity target : level.getEntitiesOfClass(Entity.class, new AABB(center, center).inflate(4 * radius), e -> true).stream().sorted(Comparator.comparingDouble(e -> e.distanceToSqr(center))).toList()) {
             if (target instanceof ServerPlayer serverPlayer) {
                 PacketDistributor.sendToPlayer(serverPlayer, new ShakeClientMessage(5 + 0.02 * damage, 0.75 * pRadius, 4 + 0.02 * damage, pToBlowX, pToBlowY, pToBlowZ));

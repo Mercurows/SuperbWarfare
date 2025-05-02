@@ -6,7 +6,6 @@ import net.minecraft.world.entity.LivingEntity;
 public class SmallCannonShellWeapon extends VehicleWeapon {
 
     public float damage = 40, explosionDamage = 80, explosionRadius = 5;
-    public boolean antiAir = false;
 
     public SmallCannonShellWeapon damage(float damage) {
         this.damage = damage;
@@ -23,12 +22,7 @@ public class SmallCannonShellWeapon extends VehicleWeapon {
         return this;
     }
 
-    public SmallCannonShellWeapon antiAir(boolean antiAir) {
-        this.antiAir = antiAir;
-        return this;
-    }
-
     public SmallCannonShellEntity create(LivingEntity entity) {
-        return new SmallCannonShellEntity(entity, entity.level(), damage, explosionDamage, explosionRadius, antiAir);
+        return new SmallCannonShellEntity(entity, entity.level(), damage, explosionDamage, explosionRadius);
     }
 }

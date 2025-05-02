@@ -340,7 +340,7 @@ public class JavelinMissileEntity extends FastThrowableProjectile implements Geo
                 this.getEyeY(),
                 this.getZ(),
                 explosion_radius,
-                ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP).
+                ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).
                 setDamageMultiplier(this.monsterMultiplier);
         explosion.explode();
         EventHooks.onExplosionStart(this.level(), explosion);

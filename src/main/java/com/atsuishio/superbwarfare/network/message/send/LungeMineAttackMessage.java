@@ -64,12 +64,11 @@ public record LungeMineAttackMessage(int msgType, UUID uuid, Vec3 hitPos) implem
                 }
                 CustomExplosion explosion = new CustomExplosion(player.level(), null,
                         ModDamageTypes.causeProjectileBoomDamage(player.level().registryAccess(), player, player), 60,
-                        message.hitPos.x, message.hitPos.y, message.hitPos.z, 4f, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP).setDamageMultiplier(1.25f);
+                        message.hitPos.x, message.hitPos.y, message.hitPos.z, 4f, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).setDamageMultiplier(1.25f);
                 explosion.explode();
                 EventHooks.onExplosionStart(player.level(), explosion);
                 explosion.finalizeExplosion(false);
                 ParticleTool.spawnMediumExplosionParticles(player.level(), message.hitPos);
-
             }
             player.swing(InteractionHand.MAIN_HAND);
         }
@@ -78,7 +77,7 @@ public record LungeMineAttackMessage(int msgType, UUID uuid, Vec3 hitPos) implem
     public static void causeLungeMineExplode(Level pLevel, Entity entity, Entity pLivingEntity) {
         CustomExplosion explosion = new CustomExplosion(pLevel, pLivingEntity,
                 ModDamageTypes.causeProjectileBoomDamage(pLevel.registryAccess(), pLivingEntity, entity), 60,
-                pLivingEntity.getX(), pLivingEntity.getEyeY(), pLivingEntity.getZ(), 4f, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP).setDamageMultiplier(1.25f);
+                pLivingEntity.getX(), pLivingEntity.getEyeY(), pLivingEntity.getZ(), 4f, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).setDamageMultiplier(1.25f);
         explosion.explode();
         EventHooks.onExplosionStart(pLevel, explosion);
         explosion.finalizeExplosion(false);

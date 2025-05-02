@@ -36,6 +36,7 @@ import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Comparator;
 import java.util.Optional;
 import java.util.UUID;
@@ -153,7 +154,8 @@ public class ClaymoreEntity extends Entity implements GeoEntity, OwnableEntity {
     }
 
     @Override
-    public InteractionResult interact(Player player, InteractionHand hand) {
+    @ParametersAreNonnullByDefault
+    public @NotNull InteractionResult interact(Player player, InteractionHand hand) {
         if (this.isOwnedBy(player) && player.isShiftKeyDown()) {
             if (!this.level().isClientSide()) {
                 this.discard();
@@ -236,7 +238,7 @@ public class ClaymoreEntity extends Entity implements GeoEntity, OwnableEntity {
             Entity attacker = EntityFindUtil.findEntity(this.level(), this.entityData.get(LAST_ATTACKER_UUID));
             CustomExplosion explosion = new CustomExplosion(this.level(), attacker == null ? this : attacker,
                     ModDamageTypes.causeCustomExplosionDamage(this.level().registryAccess(), attacker == null ? this : attacker, attacker == null ? this : attacker), 25.0f,
-                    this.getX(), this.getY(), this.getZ(), 5f, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP).setDamageMultiplier(1);
+                    this.getX(), this.getY(), this.getZ(), 5f, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).setDamageMultiplier(1);
             explosion.explode();
             EventHooks.onExplosionStart(this.level(), explosion);
             explosion.finalizeExplosion(false);
@@ -248,7 +250,7 @@ public class ClaymoreEntity extends Entity implements GeoEntity, OwnableEntity {
     private void triggerExplode() {
         CustomExplosion explosion = new CustomExplosion(this.level(), this,
                 ModDamageTypes.causeMineDamage(this.level().registryAccess(), this.getOwner()), 140f,
-                this.getX(), this.getEyeY(), this.getZ(), 4f, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP).setDamageMultiplier(1);
+                this.getX(), this.getEyeY(), this.getZ(), 4f, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).setDamageMultiplier(1);
         explosion.explode();
         EventHooks.onExplosionStart(this.level(), explosion);
         explosion.finalizeExplosion(false);

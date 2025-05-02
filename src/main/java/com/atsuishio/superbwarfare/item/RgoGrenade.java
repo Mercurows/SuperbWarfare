@@ -79,7 +79,7 @@ public class RgoGrenade extends Item implements ProjectileItem {
             RgoGrenadeEntity rgoGrenade = new RgoGrenadeEntity(pLivingEntity, pLevel, 100);
             CustomExplosion explosion = new CustomExplosion(pLevel, null,
                     ModDamageTypes.causeProjectileBoomDamage(pLevel.registryAccess(), rgoGrenade, pLivingEntity), ExplosionConfig.RGO_GRENADE_EXPLOSION_DAMAGE.get(),
-                    pLivingEntity.getX(), pLivingEntity.getY(), pLivingEntity.getZ(), ExplosionConfig.RPG_EXPLOSION_RADIUS.get(), ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP).setDamageMultiplier(1.25f);
+                    pLivingEntity.getX(), pLivingEntity.getY(), pLivingEntity.getZ(), ExplosionConfig.RPG_EXPLOSION_RADIUS.get(), ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).setDamageMultiplier(1.25f);
             explosion.explode();
             EventHooks.onExplosionStart(pLevel, explosion);
             explosion.finalizeExplosion(false);

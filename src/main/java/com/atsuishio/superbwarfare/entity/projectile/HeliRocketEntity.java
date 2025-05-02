@@ -133,7 +133,7 @@ public class HeliRocketEntity extends FastThrowableProjectile implements GeoEnti
 
     public static void causeRocketExplode(ThrowableItemProjectile projectile, @Nullable DamageSource source, Entity target, float damage, float radius, float damageMultiplier) {
         CustomExplosion explosion = new CustomExplosion(projectile.level(), projectile, source, damage,
-                projectile.getX(), projectile.getY(), projectile.getZ(), radius, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP).setDamageMultiplier(damageMultiplier);
+                projectile.getX(), projectile.getY(), projectile.getZ(), radius, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).setDamageMultiplier(damageMultiplier);
         explosion.explode();
         EventHooks.onExplosionStart(projectile.level(), explosion);
         explosion.finalizeExplosion(false);

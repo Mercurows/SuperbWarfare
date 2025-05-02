@@ -5,8 +5,6 @@ import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.entity.TargetEntity;
 import com.atsuishio.superbwarfare.entity.projectile.GunGrenadeEntity;
-import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity;
-import com.atsuishio.superbwarfare.entity.projectile.SmallCannonShellEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.AutoAimable;
 import com.atsuishio.superbwarfare.entity.vehicle.base.CannonEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ContainerMobileVehicleEntity;
@@ -55,10 +53,8 @@ import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.Comparator;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.StreamSupport;
 
 import static com.atsuishio.superbwarfare.tools.SeekTool.smokeFilter;
 
@@ -98,7 +94,6 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
                                 .damage(VehicleConfig.HPJ11_DAMAGE.get().floatValue())
                                 .explosionDamage(VehicleConfig.HPJ11_EXPLOSION_DAMAGE.get().floatValue())
                                 .explosionRadius(VehicleConfig.HPJ11_EXPLOSION_RADIUS.get().floatValue())
-                                .antiAir(true)
                                 .icon(Mod.loc("textures/screens/vehicle_weapon/cannon_30mm.png"))
                 }
         };
@@ -300,7 +295,7 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
                 this.entityData.set(TARGET_UUID, target.getVehicle().getStringUUID());
             }
 
-            Vec3 targetPos = new Vec3(target.getX(), target.getY() + target.getBbHeight() / 4, target.getZ()).add(target.getDeltaMovement().scale((1 * (random.nextFloat() * 0.1f + 1) + 0.05 * target.distanceTo(this))));
+            Vec3 targetPos = new Vec3(target.getX(), target.getY() + target.getBbHeight() / 4, target.getZ()).add(target.getDeltaMovement().scale(1.0 + 0.04 * target.distanceTo(this)));
             Vec3 targetVec = barrelRootPos.vectorTo(targetPos).normalize();
 
             double d0 = targetVec.x;
@@ -318,7 +313,7 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
             if (target.distanceTo(this) <= 144 && VectorTool.calculateAngle(getViewVector(1), targetVec) < 10) {
                 if (checkNoClip(this, target, barrelRootPos) && entityData.get(AMMO) > 0) {
                     vehicleShoot(player, 0);
-                    findEntityOnPath(barrelRootPos, targetVec);
+                    findEntityOnPath(barrelRootPos, targetVec, 0.3);
                 } else {
                     changeTargetTimer++;
                 }
@@ -355,25 +350,12 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
         return !projectile.getOwner().isAlliedTo(this.getOwner()) || (projectile.getOwner().getTeam() != null && projectile.getOwner().getTeam().getName().equals("TDM"));
     }
 
-    public void findEntityOnPath(Vec3 pos, Vec3 toVec) {
-        List<Entity> entities = this.level()
-                .getEntities(this,
-                        new AABB(pos, pos)
-                                .expandTowards(toVec.scale(30))
-                                .inflate(0.125)
-                );
-        for (Entity entity : entities) {
-            Entity target = StreamSupport.stream(EntityFindUtil.getEntities(level()).getAll().spliterator(), false)
-                    .filter(e -> {
-                        if (e == entity && e instanceof Projectile && !(e instanceof ProjectileEntity || e instanceof SmallCannonShellEntity)) {
-                            return checkNoClip(this, e, pos);
-                        }
-                        return false;
-                    }).min(Comparator.comparingDouble(e -> e.distanceTo(this))).orElse(null);
-
-            if (target != null) {
-                target.discard();
+    public void findEntityOnPath(Vec3 pos, Vec3 toVec, double size) {
+        for (Entity target : level().getEntitiesOfClass(Entity.class, new AABB(pos, pos).inflate(0.125).expandTowards(toVec.scale(30)), e -> true).stream().sorted(Comparator.comparingDouble(e -> e.distanceToSqr(pos))).toList()) {
+            var condition = target instanceof Projectile && isThreateningEntity(this, target, size, pos) && smokeFilter(target);
+            if (condition) {
                 causeAirExplode(target.position());
+                target.discard();
             }
         }
     }
@@ -489,7 +471,7 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
         Vector4f worldPosition = transformPosition(transform, 0f, 0.4f, 2.6875f);
 
         entityToSpawn.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
-        entityToSpawn.shoot(getLookAngle().x, getLookAngle().y, getLookAngle().z, 30, 1f);
+        entityToSpawn.shoot(getLookAngle().x, getLookAngle().y + 0.001, getLookAngle().z, 30, 0.75f);
         level().addFreshEntity(entityToSpawn);
 
         if (!player.level().isClientSide) {

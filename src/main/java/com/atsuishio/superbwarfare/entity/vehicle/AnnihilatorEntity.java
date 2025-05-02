@@ -414,7 +414,7 @@ public class AnnihilatorEntity extends EnergyVehicleEntity implements GeoEntity,
         if (passenger != null) {
             CustomExplosion explosion = new CustomExplosion(this.level(), passenger,
                     ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(), this, passenger), 300f,
-                    pos.x, pos.y, pos.z, 15f, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP).setDamageMultiplier(1);
+                    pos.x, pos.y, pos.z, 15f, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).setDamageMultiplier(1);
             explosion.explode();
             EventHooks.onExplosionStart(this.level(), explosion);
             explosion.finalizeExplosion(false);
@@ -423,7 +423,7 @@ public class AnnihilatorEntity extends EnergyVehicleEntity implements GeoEntity,
             Entity shooter = EntityFindUtil.findEntity(this.level(), this.entityData.get(SHOOTER_UUID));
             CustomExplosion explosion = new CustomExplosion(this.level(), shooter,
                     ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(), this, shooter), 300f,
-                    pos.x, pos.y, pos.z, 15f, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP).setDamageMultiplier(1);
+                    pos.x, pos.y, pos.z, 15f, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).setDamageMultiplier(1);
             explosion.explode();
             EventHooks.onExplosionStart(this.level(), explosion);
             explosion.finalizeExplosion(false);
@@ -436,7 +436,7 @@ public class AnnihilatorEntity extends EnergyVehicleEntity implements GeoEntity,
         if (level() instanceof ServerLevel) {
             CustomExplosion explosion = new CustomExplosion(this.level(), this,
                     ModDamageTypes.causeCustomExplosionDamage(this.level().registryAccess(), getAttacker(), getAttacker()), 600f,
-                    this.getX(), this.getY(), this.getZ(), 15f, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP).setDamageMultiplier(1);
+                    this.getX(), this.getY(), this.getZ(), 15f, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).setDamageMultiplier(1);
             explosion.explode();
             EventHooks.onExplosionStart(this.level(), explosion);
             explosion.finalizeExplosion(false);

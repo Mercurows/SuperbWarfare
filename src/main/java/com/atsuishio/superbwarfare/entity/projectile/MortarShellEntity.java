@@ -235,7 +235,7 @@ public class MortarShellEntity extends FastThrowableProjectile implements GeoEnt
                 vec3.y,
                 vec3.z,
                 radius,
-                ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP).
+                ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).
                 setDamageMultiplier(1.25f);
         explosion.explode();
         EventHooks.onExplosionStart(this.level(), explosion);

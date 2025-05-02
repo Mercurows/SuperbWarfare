@@ -7,26 +7,27 @@ import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
 import com.atsuishio.superbwarfare.tools.CustomExplosion;
-import com.atsuishio.superbwarfare.tools.EntityFindUtil;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageTypes;
+import net.minecraft.world.entity.AreaEffectCloud;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.entity.projectile.ThrownPotion;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BellBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
-import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -36,16 +37,11 @@ import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.StreamSupport;
-
 public class SmallCannonShellEntity extends FastThrowableProjectile implements GeoEntity {
 
     private float damage = 40.0f;
     private float explosionDamage = 80f;
     private float explosionRadius = 5f;
-    private boolean antiAir = false;
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     public SmallCannonShellEntity(EntityType<? extends SmallCannonShellEntity> type, Level world) {
@@ -53,12 +49,47 @@ public class SmallCannonShellEntity extends FastThrowableProjectile implements G
         this.noCulling = true;
     }
 
-    public SmallCannonShellEntity(LivingEntity entity, Level level, float damage, float explosionDamage, float explosionRadius, boolean antiAir) {
+    public SmallCannonShellEntity(LivingEntity entity, Level level, float damage, float explosionDamage, float explosionRadius) {
         super(ModEntities.SMALL_CANNON_SHELL.get(), entity, level);
         this.damage = damage;
         this.explosionDamage = explosionDamage;
         this.explosionRadius = explosionRadius;
-        this.antiAir = antiAir;
+    }
+
+    @Override
+    public boolean hurt(DamageSource source, float amount) {
+        if (source.getDirectEntity() instanceof ThrownPotion || source.getDirectEntity() instanceof AreaEffectCloud)
+            return false;
+        if (source.is(DamageTypes.FALL))
+            return false;
+        if (source.is(DamageTypes.CACTUS))
+            return false;
+        if (source.is(DamageTypes.DROWN))
+            return false;
+        if (source.is(DamageTypes.DRAGON_BREATH))
+            return false;
+        if (source.is(DamageTypes.WITHER))
+            return false;
+        if (source.is(DamageTypes.WITHER_SKULL))
+            return false;
+
+        if (source.getDirectEntity() instanceof Projectile) {
+            source.getDirectEntity().discard();
+        }
+
+        if (source.getEntity() instanceof Projectile) {
+            source.getEntity().discard();
+        }
+
+        this.discard();
+        causeExplode(position());
+
+        return super.hurt(source, amount);
+    }
+
+    @Override
+    public boolean isPickable() {
+        return !this.isRemoved();
     }
 
     @Override
@@ -127,24 +158,6 @@ public class SmallCannonShellEntity extends FastThrowableProjectile implements G
         ParticleTool.spawnSmallExplosionParticles(this.level(), vec3);
     }
 
-    private void causeAirExplode(Vec3 vec3) {
-        CustomExplosion explosion = new CustomExplosion(this.level(), this,
-                ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(),
-                        this,
-                        this.getOwner()),
-                explosionDamage,
-                vec3.x,
-                vec3.y,
-                vec3.z,
-                explosionRadius,
-                ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP).
-                setDamageMultiplier(1.25f);
-        explosion.explode();
-        EventHooks.onExplosionStart(this.level(), explosion);
-        explosion.finalizeExplosion(false);
-        ParticleTool.spawnMediumExplosionParticles(this.level(), vec3);
-    }
-
     @Override
     public void tick() {
         super.tick();
@@ -158,46 +171,12 @@ public class SmallCannonShellEntity extends FastThrowableProjectile implements G
             this.setDeltaMovement(0, 0, 0);
         }
 
-        if (antiAir) {
-            findEntityOnPath();
-        }
-
         if (this.tickCount > 200 || this.isInWater()) {
             if (this.level() instanceof ServerLevel && !onGround()) {
                 causeExplode(position());
             }
             this.discard();
         }
-    }
-
-    public void findEntityOnPath() {
-        List<Entity> entities = this.level()
-                .getEntities(this,
-                        this.getBoundingBox()
-                                .expandTowards(this.getDeltaMovement())
-                                .inflate(0.75)
-                );
-
-        for (Entity entity : entities) {
-            Entity target = StreamSupport.stream(EntityFindUtil.getEntities(level()).getAll().spliterator(), false)
-                    .filter(e -> {
-                        if (e == entity && e instanceof Projectile && !(e instanceof ProjectileEntity || e instanceof SmallCannonShellEntity)) {
-                            return checkNoClip(e);
-                        }
-                        return false;
-                    }).min(Comparator.comparingDouble(e -> e.distanceTo(this))).orElse(null);
-
-            if (target != null) {
-                target.discard();
-                causeAirExplode(target.position());
-            }
-
-        }
-    }
-
-    public boolean checkNoClip(Entity target) {
-        return level().clip(new ClipContext(this.getEyePosition(), target.getEyePosition(),
-                ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this)).getType() != HitResult.Type.BLOCK;
     }
 
     @Override
