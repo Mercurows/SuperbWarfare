@@ -94,6 +94,7 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
                                 .damage(VehicleConfig.HPJ11_DAMAGE.get().floatValue())
                                 .explosionDamage(VehicleConfig.HPJ11_EXPLOSION_DAMAGE.get().floatValue())
                                 .explosionRadius(VehicleConfig.HPJ11_EXPLOSION_RADIUS.get().floatValue())
+                                .aa(true)
                                 .icon(Mod.loc("textures/screens/vehicle_weapon/cannon_30mm.png"))
                 }
         };

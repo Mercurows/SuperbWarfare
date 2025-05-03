@@ -60,6 +60,8 @@ public class VehicleConfig {
     public static ModConfigSpec.IntValue AH_6_MAX_ENERGY_COST;
     public static ModConfigSpec.IntValue AH_6_MAX_ENERGY;
     public static ModConfigSpec.IntValue AH_6_CANNON_DAMAGE;
+    public static ModConfigSpec.IntValue AH_6_CANNON_EXPLOSION_DAMAGE;
+    public static ModConfigSpec.DoubleValue AH_6_CANNON_EXPLOSION_RADIUS;
     public static ModConfigSpec.IntValue AH_6_ROCKET_DAMAGE;
     public static ModConfigSpec.IntValue AH_6_ROCKET_EXPLOSION_DAMAGE;
     public static ModConfigSpec.IntValue AH_6_ROCKET_EXPLOSION_RADIUS;
@@ -278,7 +280,13 @@ public class VehicleConfig {
         AH_6_MAX_ENERGY = builder.defineInRange("ah_6_max_energy", 5000000, 0, 2147483647);
 
         builder.comment("The cannon damage of AH-6");
-        AH_6_CANNON_DAMAGE = builder.defineInRange("ah_6_cannon_damage", 20, 1, 10000000);
+        AH_6_CANNON_DAMAGE = builder.defineInRange("ah_6_cannon_damage", 25, 1, 10000000);
+
+        builder.comment("The cannon explosion damage of AH-6");
+        AH_6_CANNON_EXPLOSION_DAMAGE = builder.defineInRange("ah_6_cannon_explosion_damage", 13, 1, 10000000);
+
+        builder.comment("The cannon explosion damage of AH-6");
+        AH_6_CANNON_EXPLOSION_RADIUS = builder.defineInRange("ah_6_cannon_explosion_damage", 4d, 1, 10000000);
 
         builder.comment("The rocket damage of AH-6");
         AH_6_ROCKET_DAMAGE = builder.defineInRange("ah_6_rocket_damage", 80, 1, 10000000);
@@ -309,7 +317,7 @@ public class VehicleConfig {
         LAV_150_CANNON_EXPLOSION_DAMAGE = builder.defineInRange("lav_150_cannon_explosion_damage", 12, 1, 10000000);
 
         builder.comment("The rocket explosion radius of LAV-150");
-        LAV_150_CANNON_EXPLOSION_RADIUS = builder.defineInRange("lav_150_cannon_explosion_radius", 3d, 1d, 10000000d);
+        LAV_150_CANNON_EXPLOSION_RADIUS = builder.defineInRange("lav_150_cannon_explosion_radius", 4d, 1d, 10000000d);
 
         builder.pop();
 
@@ -350,7 +358,7 @@ public class VehicleConfig {
         BMP_2_CANNON_EXPLOSION_DAMAGE = builder.defineInRange("bmp_2_cannon_explosion_damage", 15, 1, 10000000);
 
         builder.comment("The cannon explosion radius of BMP-2");
-        BMP_2_CANNON_EXPLOSION_RADIUS = builder.defineInRange("bmp_2_cannon_explosion_radius", 3.2d, 1d, 10000000d);
+        BMP_2_CANNON_EXPLOSION_RADIUS = builder.defineInRange("bmp_2_cannon_explosion_radius", 4d, 1d, 10000000d);
 
         builder.pop();
 

@@ -27,6 +27,6 @@ public class SmallCannonShellModel extends GeoModel<SmallCannonShellEntity> {
     @Override
     public void setCustomAnimations(SmallCannonShellEntity animatable, long instanceId, AnimationState animationState) {
         GeoBone bone = getAnimationProcessor().getBone("bone");
-        bone.setScaleY((float) (1 + animatable.getDeltaMovement().length()));
+        bone.setScaleY((float) (1 + 2 * animatable.getDeltaMovement().length()));
     }
 }
