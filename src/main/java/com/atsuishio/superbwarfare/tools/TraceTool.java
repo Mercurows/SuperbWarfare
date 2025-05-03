@@ -7,6 +7,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.level.ClipContext;
@@ -109,6 +110,30 @@ public class TraceTool {
         Vec3 toVec = eye.add(viewVec.x * entityReach, viewVec.y * entityReach, viewVec.z * entityReach);
         AABB aabb = vehicle.getBoundingBox().expandTowards(viewVec.scale(entityReach)).inflate(1.0D, 1.0D, 1.0D);
         EntityHitResult entityhitresult = ProjectileUtil.getEntityHitResult(vehicle, eye, toVec, aabb, p -> !p.isSpectator() && p.isAlive() && !(p instanceof Projectile && !(p instanceof DestroyableProjectileEntity)) && SeekTool.baseFilter(p) && !(p instanceof DecoyEntity) && smokeFilter(p), distance);
+        if (entityhitresult != null) {
+            hitResult = entityhitresult;
+
+        }
+        if (hitResult.getType() == HitResult.Type.ENTITY) {
+            return ((EntityHitResult) hitResult).getEntity();
+        }
+        return null;
+    }
+
+    public static Entity camerafFindLookingEntity(Player player, Vec3 pos, double entityReach, float ticks) {
+        double distance = entityReach * entityReach;
+        HitResult hitResult = player.pick(entityReach, 1.0f, false);
+
+        Vec3 viewVec = player.getViewVector(ticks);
+        Vec3 toVec = pos.add(viewVec.x * entityReach, viewVec.y * entityReach, viewVec.z * entityReach);
+        AABB aabb = player.getBoundingBox().expandTowards(viewVec.scale(entityReach)).inflate(1.0D, 1.0D, 1.0D);
+        EntityHitResult entityhitresult = ProjectileUtil.getEntityHitResult(player, pos, toVec, aabb, p -> !p.isSpectator()
+                && p.isAlive()
+                && !(p instanceof Projectile)
+                && SeekTool.baseFilter(p)
+                && !(p instanceof DecoyEntity) && smokeFilter(p)
+                && p != player
+                && p != player.getVehicle(), distance);
         if (entityhitresult != null) {
             hitResult = entityhitresult;
 

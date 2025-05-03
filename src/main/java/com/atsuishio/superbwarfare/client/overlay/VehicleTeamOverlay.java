@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.tools.FormatTool;
 import com.atsuishio.superbwarfare.tools.TraceTool;
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -13,6 +14,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
@@ -28,14 +30,17 @@ public class VehicleTeamOverlay implements LayeredDraw.Layer {
     public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
         int w = guiGraphics.guiWidth();
         int h = guiGraphics.guiHeight();
-        Player player = Minecraft.getInstance().player;
+        Minecraft mc = Minecraft.getInstance();
+        Player player = mc.player;
+        Camera camera = mc.gameRenderer.getMainCamera();
+        Vec3 cameraPos = camera.getPosition();
         PoseStack poseStack = guiGraphics.pose();
         if (player == null) return;
 
         boolean lookAtEntity = false;
 
         double entityRange = 0;
-        Entity lookingEntity = TraceTool.findLookingEntity(player, 520);
+        Entity lookingEntity = TraceTool.camerafFindLookingEntity(player, cameraPos, 512, deltaTracker.getRealtimeDeltaTicks());
 
         if (lookingEntity instanceof VehicleEntity) {
             lookAtEntity = true;

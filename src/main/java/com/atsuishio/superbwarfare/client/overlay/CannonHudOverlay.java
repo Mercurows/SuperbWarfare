@@ -105,7 +105,7 @@ public class CannonHudOverlay implements LayeredDraw.Layer {
                         shootPos = cannon.driverZoomPos(deltaTracker.getRealtimeDeltaTicks());
                     }
 
-                    Entity lookingEntity = TraceTool.vehiclefFindLookingEntity(cannon, shootPos, 512);
+                    Entity lookingEntity = TraceTool.camerafFindLookingEntity(player, cameraPos, 512, deltaTracker.getRealtimeDeltaTicks());
                     boolean lookAtEntity = false;
 
                     BlockHitResult result = player.level().clip(new ClipContext(shootPos, shootPos.add(player.getViewVector(1).scale(512)),

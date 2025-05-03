@@ -5,13 +5,11 @@ import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModItems;
-import com.atsuishio.superbwarfare.tools.EntityFindUtil;
-import com.atsuishio.superbwarfare.tools.FormatTool;
-import com.atsuishio.superbwarfare.tools.NBTTool;
-import com.atsuishio.superbwarfare.tools.SeekTool;
+import com.atsuishio.superbwarfare.tools.*;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -53,6 +51,8 @@ public class DroneHudOverlay implements LayeredDraw.Layer {
 
         Minecraft mc = Minecraft.getInstance();
         Player player = mc.player;
+        Camera camera = mc.gameRenderer.getMainCamera();
+        Vec3 cameraPos = camera.getPosition();
 
         if (player == null) return;
 
@@ -95,7 +95,7 @@ public class DroneHudOverlay implements LayeredDraw.Layer {
 
                 double entityRange = 0;
 
-                Entity lookingEntity = SeekTool.seekLivingEntity(entity, entity.level(), 512, 2);
+                Entity lookingEntity = TraceTool.camerafFindLookingEntity(player, cameraPos, 512, deltaTracker.getRealtimeDeltaTicks());
                 if (lookingEntity != null) {
                     lookAtEntity = true;
                     entityRange = entity.distanceTo(lookingEntity);
