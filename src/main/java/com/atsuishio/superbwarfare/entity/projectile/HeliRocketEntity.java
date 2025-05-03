@@ -44,6 +44,11 @@ public class HeliRocketEntity extends FastThrowableProjectile implements GeoEnti
         this.noCulling = true;
     }
 
+    public HeliRocketEntity(EntityType<? extends ThrowableItemProjectile> pEntityType, double pX, double pY, double pZ, Level pLevel) {
+        super(pEntityType, pX, pY, pZ, pLevel);
+        this.noCulling = true;
+    }
+
     public HeliRocketEntity(LivingEntity entity, Level level, float damage, float explosionDamage, float explosionRadius) {
         super(ModEntities.HELI_ROCKET.get(), entity, level);
         this.damage = damage;
@@ -145,7 +150,7 @@ public class HeliRocketEntity extends FastThrowableProjectile implements GeoEnti
 
     @Override
     protected double getDefaultGravity() {
-        return 0.002f;
+        return 0;
     }
 
     @Override
