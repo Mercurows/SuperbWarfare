@@ -14,10 +14,9 @@ public class SmallShellItem extends Item {
         super(new Properties());
     }
 
-    // TODO 正确添加翻译字段
     @Override
     @ParametersAreNonnullByDefault
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
-        tooltipComponents.add(Component.translatable("20mm ~ 40mm").withStyle(ChatFormatting.GRAY));
+        tooltipComponents.add(Component.translatable("des.superbwarfare.small_shell_item").withStyle(ChatFormatting.GRAY));
     }
 }
