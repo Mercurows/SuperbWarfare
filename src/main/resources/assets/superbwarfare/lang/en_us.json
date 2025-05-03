@@ -618,5 +618,8 @@
   "superbwarfare.advancement.main.boomstick_melee.des": "Who said RPGs can't be baseball bats?",
   "warning.title.example": "[SuperbWarfare Mod Warning]",
   "warning.content.example": "This mod is Free And Open-Source, No Commercial Use\nCode: GPL-3.0 License; Asserts: Private (No Commercialization)\nBan on paid downloads or EULA-breaking purchases\nReport violations by submitting an issue in the mod's repository",
-  "warning.check.example": "I have read and agreed to the content. Do not show this message again"
+  "warning.check.example": "I have read and agreed to the content. Do not show this message again",
+  "block.superbwarfare.vehicle_deployer": "Vehicle Deployer",
+  "des.superbwarfare.vehicle_deployer.success": "Vehicle info set successfully!",
+  "des.superbwarfare.vehicle_deployer.fail": "Please click with a container!"
 }

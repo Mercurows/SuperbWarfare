@@ -619,5 +619,8 @@
   "superbwarfare.advancement.main.boomstick_melee.des": "谁说RPG不能当棒球棒用？",
   "warning.title.example": "【卓越前线 警示声明】",
   "warning.content.example": "== 本模组完全免费开源，禁止用于任何商业行为 ==\n本模组代码采用GPL-3协议开源，美术资源私有禁止商用\n禁止付费下载、充值获取道具等违反协议和Mojang EULA的行为\n如遇以上行为，请到本模组仓库处提交Issue进行举报",
-  "warning.check.example": "我已阅读并同意，不再显示此警告"
+  "warning.check.example": "我已阅读并同意，不再显示此警告",
+  "block.superbwarfare.vehicle_deployer": "载具部署器",
+  "des.superbwarfare.vehicle_deployer.success": "成功设置载具信息！",
+  "des.superbwarfare.vehicle_deployer.fail": "请使用集装箱点击！"
 }
