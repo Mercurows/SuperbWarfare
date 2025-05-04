@@ -436,6 +436,11 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
     }
 
     @Override
+    public int getWeaponHeat(Player player) {
+        return 0;
+    }
+
+    @Override
     public Vec3 getBarrelVector(float pPartialTicks) {
         if (getFirstPassenger() != null) {
             return getFirstPassenger().getViewVector(pPartialTicks);

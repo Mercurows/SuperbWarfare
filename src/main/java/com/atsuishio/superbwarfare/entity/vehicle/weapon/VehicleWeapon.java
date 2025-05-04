@@ -24,6 +24,14 @@ public abstract class VehicleWeapon {
     public int backupAmmo;
 
     public SoundEvent sound;
+    // 第一人称射击音效
+    public SoundEvent sound1p;
+    // 第三人称射击音效
+    public SoundEvent sound3p;
+    public SoundEvent sound3pFar;
+    // 第一人称射击音效
+    public SoundEvent sound3pVeryFar;
+
 
     public VehicleWeapon icon(ResourceLocation icon) {
         this.icon = icon;
@@ -74,6 +82,26 @@ public abstract class VehicleWeapon {
 
     public VehicleWeapon maxAmmo(int maxAmmo) {
         this.maxAmmo = maxAmmo;
+        return this;
+    }
+
+    public VehicleWeapon sound1p(SoundEvent sound1p) {
+        this.sound1p = sound1p;
+        return this;
+    }
+
+    public VehicleWeapon sound3p(SoundEvent sound3p) {
+        this.sound3p = sound3p;
+        return this;
+    }
+
+    public VehicleWeapon sound3pFar(SoundEvent sound3pFar) {
+        this.sound3pFar = sound3pFar;
+        return this;
+    }
+
+    public VehicleWeapon sound3pVeryFar(SoundEvent sound3pVeryFar) {
+        this.sound3pVeryFar = sound3pVeryFar;
         return this;
     }
 }

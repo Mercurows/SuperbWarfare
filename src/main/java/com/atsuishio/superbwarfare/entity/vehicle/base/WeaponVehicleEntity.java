@@ -1,6 +1,8 @@
 package com.atsuishio.superbwarfare.entity.vehicle.base;
 
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.VehicleWeapon;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -143,5 +145,23 @@ public interface WeaponVehicleEntity extends ArmedVehicleEntity {
         var selectedWeapons = new ArrayList<>(vehicle.getEntityData().get(VehicleEntity.SELECTED_WEAPON));
         selectedWeapons.set(index, type);
         vehicle.getEntityData().set(VehicleEntity.SELECTED_WEAPON, selectedWeapons);
+    }
+
+    default void playShootSound3p(Player player, int seat, int radius, int radius2, int radius3) {
+        var weapons = getAvailableWeapons(seat);
+        var weapon = weapons.get(getWeaponIndex(seat));
+        float pitch = getWeaponHeat(player) <= 60 ? 1 : (float) (1 - 0.011 * java.lang.Math.abs(60 - getWeaponHeat(player)));
+
+        if (player instanceof ServerPlayer serverPlayer) {
+            if (weapon.sound3p != null) {
+                serverPlayer.playSound(weapon.sound3p, radius, pitch);
+            }
+            if (weapon.sound3pFar != null) {
+                serverPlayer.playSound(weapon.sound3pFar, radius2, pitch);
+            }
+            if (weapon.sound3pVeryFar != null) {
+                serverPlayer.playSound(weapon.sound3pVeryFar, radius3, pitch);
+            }
+        }
     }
 }

@@ -4,7 +4,8 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.ClickHandler;
 import com.atsuishio.superbwarfare.config.client.DisplayConfig;
 import com.atsuishio.superbwarfare.config.server.MiscConfig;
-import com.atsuishio.superbwarfare.entity.vehicle.*;
+import com.atsuishio.superbwarfare.entity.vehicle.Ah6Entity;
+import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
@@ -58,9 +59,6 @@ import software.bernie.geckolib.animation.AnimationProcessor;
 import software.bernie.geckolib.cache.object.GeoBone;
 
 import java.util.List;
-
-import static com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity.COAX_HEAT;
-import static com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity.HEAT;
 
 @EventBusSubscriber(modid = Mod.MODID, bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
 public class ClientEventHandler {
@@ -860,114 +858,18 @@ public class ClientEventHandler {
     }
 
     public static void playVehicleClientSounds(Player player, WeaponVehicleEntity iVehicle, int type) {
-        if (iVehicle instanceof SpeedboatEntity speedboat) {
-            float pitch = speedboat.getEntityData().get(HEAT) <= 60 ? 1 : (float) (1 - 0.011 * Math.abs(60 - speedboat.getEntityData().get(HEAT)));
-            player.playSound(ModSounds.M_2_FIRE_1P.get(), 1f, pitch);
-            player.playSound(ModSounds.SHELL_CASING_50CAL.get(), 0.3f, 1);
-        }
+        var weapons = iVehicle.getAvailableWeapons(type);
+        var weapon = weapons.get(iVehicle.getWeaponIndex(type));
 
-        if (iVehicle instanceof Ah6Entity ah6Entity) {
-            float pitch = ah6Entity.getEntityData().get(HEAT) <= 60 ? 1 : (float) (1 - 0.011 * Math.abs(60 - ah6Entity.getEntityData().get(HEAT)));
-            if (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON) {
-                if (ah6Entity.getWeaponIndex(0) == 0) {
-                    player.playSound(ModSounds.HELICOPTER_CANNON_FIRE_1P.get(), 1f, pitch);
-                } else if (ah6Entity.getWeaponIndex(0) == 1) {
-                    player.playSound(ModSounds.HELICOPTER_ROCKET_FIRE_1P.get(), 1f, 1);
-                }
-            } else {
-                if (ah6Entity.getWeaponIndex(0) == 0) {
-                    player.playSound(ModSounds.HELICOPTER_CANNON_FIRE_3P.get(), 4f, pitch);
-                } else if (ah6Entity.getWeaponIndex(0) == 1) {
-                    player.playSound(ModSounds.HELICOPTER_ROCKET_FIRE_3P.get(), 4f, 1);
-                }
+        float pitch = iVehicle.getWeaponHeat(player) <= 60 ? 1 : (float) (1 - 0.011 * Math.abs(60 - iVehicle.getWeaponHeat(player)));
+
+        if (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON || (zoomVehicle && !(iVehicle instanceof Ah6Entity))) {
+            if (weapon.sound1p != null) {
+                player.playSound(weapon.sound1p, 1f, pitch);
             }
-
-        }
-        if (iVehicle instanceof Lav150Entity lav150) {
-            if (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON) {
-                if (lav150.getWeaponIndex(0) == 0) {
-                    float pitch = lav150.getEntityData().get(HEAT) <= 60 ? 1 : (float) (1 - 0.011 * Math.abs(60 - lav150.getEntityData().get(HEAT)));
-                    player.playSound(ModSounds.LAV_CANNON_FIRE_1P.get(), 1f, pitch);
-                    player.playSound(ModSounds.SHELL_CASING_50CAL.get(), 0.3f, 1);
-                } else if (lav150.getWeaponIndex(0) == 1) {
-                    float pitch = lav150.getEntityData().get(COAX_HEAT) <= 60 ? 1 : (float) (1 - 0.011 * Math.abs(60 - lav150.getEntityData().get(COAX_HEAT)));
-                    player.playSound(ModSounds.COAX_FIRE_1P.get(), 1f, pitch);
-                }
-            } else {
-                if (lav150.getWeaponIndex(0) == 0) {
-                    float pitch = lav150.getEntityData().get(HEAT) <= 60 ? 1 : (float) (1 - 0.011 * Math.abs(60 - lav150.getEntityData().get(HEAT)));
-                    player.playSound(ModSounds.LAV_CANNON_FIRE_3P.get(), 4f, pitch);
-                } else if (lav150.getWeaponIndex(0) == 1) {
-                    float pitch = lav150.getEntityData().get(COAX_HEAT) <= 60 ? 1 : (float) (1 - 0.011 * Math.abs(60 - lav150.getEntityData().get(COAX_HEAT)));
-                    player.playSound(ModSounds.M_60_FIRE_3P.get(), 4f, pitch);
-                }
-            }
-
-
-        }
-        if (iVehicle instanceof Bmp2Entity bmp2) {
-            if (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON) {
-                if (bmp2.getWeaponIndex(0) == 0) {
-                    float pitch = bmp2.getEntityData().get(HEAT) <= 60 ? 1 : (float) (1 - 0.011 * Math.abs(60 - bmp2.getEntityData().get(HEAT)));
-                    player.playSound(ModSounds.BMP_CANNON_FIRE_1P.get(), 1f, pitch);
-                    player.playSound(ModSounds.SHELL_CASING_50CAL.get(), 0.3f, 1);
-                } else if (bmp2.getWeaponIndex(0) == 1) {
-                    float pitch = bmp2.getEntityData().get(COAX_HEAT) <= 60 ? 1 : (float) (1 - 0.011 * Math.abs(60 - bmp2.getEntityData().get(COAX_HEAT)));
-                    player.playSound(ModSounds.COAX_FIRE_1P.get(), 1f, pitch);
-                } else if (bmp2.getWeaponIndex(0) == 2) {
-                    player.playSound(ModSounds.BMP_MISSILE_FIRE_1P.get(), 1f, 1);
-                }
-            } else {
-                if (bmp2.getWeaponIndex(0) == 0) {
-                    float pitch = bmp2.getEntityData().get(HEAT) <= 60 ? 1 : (float) (1 - 0.011 * Math.abs(60 - bmp2.getEntityData().get(HEAT)));
-                    player.playSound(ModSounds.BMP_CANNON_FIRE_3P.get(), 4f, pitch);
-                } else if (bmp2.getWeaponIndex(0) == 1) {
-                    float pitch = bmp2.getEntityData().get(COAX_HEAT) <= 60 ? 1 : (float) (1 - 0.011 * Math.abs(60 - bmp2.getEntityData().get(COAX_HEAT)));
-                    player.playSound(ModSounds.M_60_FIRE_3P.get(), 4f, pitch);
-                } else if (bmp2.getWeaponIndex(0) == 2) {
-                    player.playSound(ModSounds.BMP_MISSILE_FIRE_3P.get(), 4f, 1);
-                }
-            }
-        }
-        if (iVehicle instanceof Yx100Entity yx100) {
-            if (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON) {
-                if (type == 1) {
-                    float pitch = yx100.getEntityData().get(HEAT) <= 60 ? 1 : (float) (1 - 0.011 * Math.abs(60 - yx100.getEntityData().get(HEAT)));
-                    player.playSound(ModSounds.M_2_FIRE_1P.get(), 1f, pitch);
-                    player.playSound(ModSounds.SHELL_CASING_50CAL.get(), 0.3f, 1);
-                } else if (type == 0) {
-                    if (yx100.getWeaponIndex(0) == 0 || yx100.getWeaponIndex(0) == 1) {
-                        player.playSound(ModSounds.YX_100_FIRE_1P.get(), 1f, 1);
-                    } else if (yx100.getWeaponIndex(0) == 2) {
-                        float pitch = yx100.getEntityData().get(COAX_HEAT) <= 60 ? 1 : (float) (1 - 0.011 * Math.abs(60 - yx100.getEntityData().get(COAX_HEAT)));
-                        player.playSound(ModSounds.M_2_FIRE_1P.get(), 1f, pitch);
-                        player.playSound(ModSounds.SHELL_CASING_50CAL.get(), 0.3f, 1);
-                    }
-                }
-            } else {
-                if (type == 1) {
-                    float pitch = yx100.getEntityData().get(HEAT) <= 60 ? 1 : (float) (1 - 0.011 * Math.abs(60 - yx100.getEntityData().get(HEAT)));
-                    player.playSound(ModSounds.M_2_FIRE_3P.get(), 4f, pitch);
-                } else if (type == 0) {
-                    if (yx100.getWeaponIndex(0) == 0 || yx100.getWeaponIndex(0) == 1) {
-                        player.playSound(ModSounds.YX_100_FIRE_3P.get(), 4f, 1);
-                    } else if (yx100.getWeaponIndex(0) == 2) {
-                        float pitch = yx100.getEntityData().get(COAX_HEAT) <= 60 ? 1 : (float) (1 - 0.011 * Math.abs(60 - yx100.getEntityData().get(COAX_HEAT)));
-                        player.playSound(ModSounds.M_2_FIRE_3P.get(), 4f, pitch);
-                    }
-                }
-            }
-
-        }
-        if (iVehicle instanceof PrismTankEntity prismTank) {
-            if (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON) {
-                if (prismTank.getWeaponIndex(0) == 0) {
-                    player.playSound(ModSounds.PRISM_FIRE_1P.get(), 1f, 1);
-                }
-            } else {
-                if (prismTank.getWeaponIndex(0) == 0) {
-                    player.playSound(ModSounds.PRISM_FIRE_3P.get(), 4f, 1);
-                }
+        } else {
+            if (weapon.sound3p != null) {
+                player.playSound(weapon.sound3p, 3f, pitch);
             }
         }
     }

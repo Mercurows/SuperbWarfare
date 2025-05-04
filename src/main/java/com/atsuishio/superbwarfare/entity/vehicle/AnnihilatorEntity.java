@@ -589,6 +589,11 @@ public class AnnihilatorEntity extends EnergyVehicleEntity implements GeoEntity,
     }
 
     @Override
+    public int getWeaponHeat(Player player) {
+        return 0;
+    }
+
+    @Override
     public ResourceLocation getVehicleIcon() {
         return Mod.loc("textures/vehicle_icon/annihilator_icon.png");
     }

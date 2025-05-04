@@ -94,7 +94,9 @@ public class PrismTankEntity extends ContainerMobileVehicleEntity implements Geo
         return new VehicleWeapon[][]{
                 new VehicleWeapon[]{
                         new LaserWeapon()
-                                .sound(ModSounds.INTO_MISSILE.get()),
+                                .sound(ModSounds.INTO_MISSILE.get())
+                                .sound1p(ModSounds.PRISM_FIRE_1P.get())
+                                .sound3p(ModSounds.PRISM_FIRE_3P.get()),
                         new LaserWeapon()
                                 .sound(ModSounds.INTO_CANNON.get())
                 }
@@ -295,9 +297,7 @@ public class PrismTankEntity extends ContainerMobileVehicleEntity implements Geo
             Level level = player.level();
             if (level instanceof ServerLevel) {
                 if (!player.level().isClientSide) {
-                    if (player instanceof ServerPlayer serverPlayer) {
-                        serverPlayer.playSound(ModSounds.PRISM_FIRE_3P.get(), 5, 1);
-                    }
+                    playShootSound3p(player, 0, 5, 5, 5);
                 }
 
                 this.entityData.set(HEAT, entityData.get(HEAT) + 55);
@@ -336,9 +336,7 @@ public class PrismTankEntity extends ContainerMobileVehicleEntity implements Geo
 
             if (level instanceof ServerLevel) {
                 if (!player.level().isClientSide) {
-                    if (player instanceof ServerPlayer serverPlayer) {
-                        serverPlayer.playSound(ModSounds.PRISM_FIRE_3P_2.get(), 4, 1);
-                    }
+                    playShootSound3p(player, 0, 4, 4, 4);
                 }
 
                 this.entityData.set(HEAT, entityData.get(HEAT) + 2);
@@ -769,6 +767,11 @@ public class PrismTankEntity extends ContainerMobileVehicleEntity implements Geo
     @Override
     public int zoomFov() {
         return 3;
+    }
+
+    @Override
+    public int getWeaponHeat(Player player) {
+        return entityData.get(HEAT);
     }
 
     @Override

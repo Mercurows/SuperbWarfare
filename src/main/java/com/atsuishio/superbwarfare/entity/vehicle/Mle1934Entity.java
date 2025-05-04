@@ -505,6 +505,11 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
     }
 
     @Override
+    public int getWeaponHeat(Player player) {
+        return 0;
+    }
+
+    @Override
     public Vec3 getBarrelVector(float pPartialTicks) {
         if (getFirstPassenger() != null) {
             return getFirstPassenger().getViewVector(pPartialTicks);

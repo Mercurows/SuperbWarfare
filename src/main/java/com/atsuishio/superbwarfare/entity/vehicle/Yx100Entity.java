@@ -109,7 +109,11 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
                                 .gravity(0.1f)
                                 .sound(ModSounds.INTO_MISSILE.get())
                                 .ammo(ModItems.AP_5_INCHES.get())
-                                .icon(Mod.loc("textures/screens/vehicle_weapon/ap_shell.png")),
+                                .icon(Mod.loc("textures/screens/vehicle_weapon/ap_shell.png"))
+                                .sound1p(ModSounds.YX_100_FIRE_1P.get())
+                                .sound3p(ModSounds.YX_100_FIRE_3P.get())
+                                .sound3pFar(ModSounds.YX_100_FAR.get())
+                                .sound3pVeryFar(ModSounds.YX_100_VERYFAR.get()),
                         // HE
                         new CannonShellWeapon()
                                 .hitDamage(VehicleConfig.YX_100_HE_CANNON_DAMAGE.get())
@@ -122,7 +126,11 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
                                 .gravity(0.1f)
                                 .sound(ModSounds.INTO_CANNON.get())
                                 .ammo(ModItems.HE_5_INCHES.get())
-                                .icon(Mod.loc("textures/screens/vehicle_weapon/he_shell.png")),
+                                .icon(Mod.loc("textures/screens/vehicle_weapon/he_shell.png"))
+                                .sound1p(ModSounds.YX_100_FIRE_1P.get())
+                                .sound3p(ModSounds.YX_100_FIRE_3P.get())
+                                .sound3pFar(ModSounds.YX_100_FAR.get())
+                                .sound3pVeryFar(ModSounds.YX_100_VERYFAR.get()),
                         // 同轴重机枪
                         new ProjectileWeapon()
                                 .damage(VehicleConfig.HEAVY_MACHINE_GUN_DAMAGE.get())
@@ -131,7 +139,11 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
                                 .bypassArmorRate(0.4f)
                                 .ammo(ModItems.HEAVY_AMMO.get())
                                 .sound(ModSounds.INTO_CANNON.get())
-                                .icon(Mod.loc("textures/screens/vehicle_weapon/gun_12_7mm.png")),
+                                .icon(Mod.loc("textures/screens/vehicle_weapon/gun_12_7mm.png"))
+                                .sound1p(ModSounds.M_2_FIRE_1P.get())
+                                .sound3p(ModSounds.M_2_FIRE_3P.get())
+                                .sound3pFar(ModSounds.M_2_FAR.get())
+                                .sound3pVeryFar(ModSounds.M_2_VERYFAR.get()),
                 },
                 new VehicleWeapon[]{
                         // 机枪
@@ -141,7 +153,11 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
                                 .zoom(false)
                                 .bypassArmorRate(0.4f)
                                 .ammo(ModItems.HEAVY_AMMO.get())
-                                .icon(Mod.loc("textures/screens/vehicle_weapon/gun_12_7mm.png")),
+                                .icon(Mod.loc("textures/screens/vehicle_weapon/gun_12_7mm.png"))
+                                .sound1p(ModSounds.M_2_FIRE_1P.get())
+                                .sound3p(ModSounds.M_2_FIRE_3P.get())
+                                .sound3pFar(ModSounds.M_2_FAR.get())
+                                .sound3pVeryFar(ModSounds.M_2_VERYFAR.get()),
                 },
                 new VehicleWeapon[]{
                         // 蜂群无人机
@@ -465,11 +481,7 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
                 level().addFreshEntity(entityToSpawn);
 
                 if (!player.level().isClientSide) {
-                    if (player instanceof ServerPlayer serverPlayer) {
-                        serverPlayer.playSound(ModSounds.YX_100_FIRE_3P.get(), 8, 1);
-                        serverPlayer.playSound(ModSounds.YX_100_FAR.get(), 16, 1);
-                        serverPlayer.playSound(ModSounds.YX_100_VERYFAR.get(), 32, 1);
-                    }
+                    playShootSound3p(player, 0, 8, 16, 32);
                 }
 
                 this.entityData.set(CANNON_RECOIL_TIME, 40);
@@ -568,14 +580,8 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
                 this.entityData.set(COAX_HEAT, this.entityData.get(COAX_HEAT) + 4);
                 this.entityData.set(FIRE_ANIM, 2);
 
-                float pitch = this.entityData.get(COAX_HEAT) <= 60 ? 1 : (float) (1 - 0.011 * Math.abs(60 - this.entityData.get(COAX_HEAT)));
-
                 if (!player.level().isClientSide) {
-                    if (player instanceof ServerPlayer serverPlayer) {
-                        serverPlayer.playSound(ModSounds.M_2_FIRE_3P.get(), 4, pitch);
-                        serverPlayer.playSound(ModSounds.M_2_FAR.get(), 12, pitch);
-                        serverPlayer.playSound(ModSounds.M_2_VERYFAR.get(), 24, pitch);
-                    }
+                    playShootSound3p(player, 0, 4, 12, 24);
                 }
             }
         }
@@ -593,14 +599,8 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
 
             this.level().addFreshEntity(projectileEntity);
 
-            float pitch = this.entityData.get(HEAT) <= 60 ? 1 : (float) (1 - 0.011 * Math.abs(60 - this.entityData.get(HEAT)));
-
             if (!player.level().isClientSide) {
-                if (player instanceof ServerPlayer serverPlayer) {
-                    serverPlayer.playSound(ModSounds.M_2_FIRE_3P.get(), 4, pitch);
-                    serverPlayer.playSound(ModSounds.M_2_FAR.get(), 12, pitch);
-                    serverPlayer.playSound(ModSounds.M_2_VERYFAR.get(), 24, pitch);
-                }
+                playShootSound3p(player, 1, 4, 12, 24);
             }
 
             this.entityData.set(GUN_FIRE_TIME, 2);
@@ -1161,6 +1161,19 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
     @Override
     public int zoomFov() {
         return 3;
+    }
+
+    @Override
+    public int getWeaponHeat(Player player) {
+        if (player == getNthEntity(0)) {
+            return entityData.get(COAX_HEAT);
+        }
+
+        if (player == getNthEntity(1)) {
+            return entityData.get(HEAT);
+        }
+
+        return 0;
     }
 
     @Override

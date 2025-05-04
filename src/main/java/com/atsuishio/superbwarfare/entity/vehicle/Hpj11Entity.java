@@ -576,6 +576,10 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
     }
 
     @Override
+    public int getWeaponHeat(Player player) {
+        return entityData.get(HEAT);
+    }
+    @Override
     public Vec3 getBarrelVector(float pPartialTicks) {
         if (getFirstPassenger() != null) {
             return getFirstPassenger().getViewVector(pPartialTicks);

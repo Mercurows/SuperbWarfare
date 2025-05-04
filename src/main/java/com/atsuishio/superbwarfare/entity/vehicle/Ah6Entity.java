@@ -28,7 +28,6 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageTypes;
@@ -84,12 +83,18 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
                                 .explosionDamage(VehicleConfig.AH_6_CANNON_EXPLOSION_DAMAGE.get().floatValue())
                                 .explosionRadius(VehicleConfig.AH_6_CANNON_EXPLOSION_RADIUS.get().floatValue())
                                 .sound(ModSounds.INTO_CANNON.get())
-                                .icon(Mod.loc("textures/screens/vehicle_weapon/cannon_20mm.png")),
+                                .icon(Mod.loc("textures/screens/vehicle_weapon/cannon_20mm.png"))
+                                .sound1p(ModSounds.HELICOPTER_CANNON_FIRE_1P.get())
+                                .sound3p(ModSounds.HELICOPTER_CANNON_FIRE_3P.get())
+                                .sound3pFar(ModSounds.HELICOPTER_CANNON_FAR.get())
+                                .sound3pVeryFar(ModSounds.HELICOPTER_CANNON_VERYFAR.get()),
                         new HeliRocketWeapon()
                                 .damage(VehicleConfig.AH_6_ROCKET_DAMAGE.get())
                                 .explosionDamage(VehicleConfig.AH_6_ROCKET_EXPLOSION_DAMAGE.get())
                                 .explosionRadius(VehicleConfig.AH_6_ROCKET_EXPLOSION_RADIUS.get())
-                                .sound(ModSounds.INTO_MISSILE.get()),
+                                .sound(ModSounds.INTO_MISSILE.get())
+                                .sound1p(ModSounds.HELICOPTER_ROCKET_FIRE_1P.get())
+                                .sound3p(ModSounds.HELICOPTER_ROCKET_FIRE_3P.get()),
                 }
         };
     }
@@ -563,12 +568,9 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
             this.entityData.set(HEAT, this.entityData.get(HEAT) + 4);
 
             if (!player.level().isClientSide) {
-                if (player instanceof ServerPlayer serverPlayer) {
-                    serverPlayer.playSound(ModSounds.HELICOPTER_CANNON_FIRE_3P.get(), 4, 1);
-                    serverPlayer.playSound(ModSounds.HELICOPTER_CANNON_FAR.get(), 12, 1);
-                    serverPlayer.playSound(ModSounds.HELICOPTER_CANNON_VERYFAR.get(), 24, 1);
-                }
+                playShootSound3p(player, 0, 4, 12, 24);
             }
+
         } else if (getWeaponIndex(0) == 1 && this.getEntityData().get(LOADED_ROCKET) > 0) {
             x = 1.7f;
             y = 0.62f - 1.45f;
@@ -591,9 +593,7 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
             player.level().addFreshEntity(heliRocketEntity);
 
             if (!player.level().isClientSide) {
-                if (player instanceof ServerPlayer serverPlayer) {
-                    serverPlayer.playSound(ModSounds.HELICOPTER_ROCKET_FIRE_3P.get(), 6, 1);
-                }
+                playShootSound3p(player, 0, 6, 6, 6);
             }
 
             this.entityData.set(LOADED_ROCKET, this.getEntityData().get(LOADED_ROCKET) - 1);
@@ -629,6 +629,11 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
     @Override
     public int zoomFov() {
         return 3;
+    }
+
+    @Override
+    public int getWeaponHeat(Player player) {
+        return entityData.get(HEAT);
     }
 
     @Override

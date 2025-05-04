@@ -74,4 +74,6 @@ public interface ArmedVehicleEntity {
      * @return 放大倍率
      */
     int zoomFov();
+
+    int getWeaponHeat(Player player);
 }

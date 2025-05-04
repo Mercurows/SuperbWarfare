@@ -84,13 +84,21 @@ public class Lav150Entity extends ContainerMobileVehicleEntity implements GeoEnt
                                 .explosionDamage(VehicleConfig.LAV_150_CANNON_EXPLOSION_DAMAGE.get())
                                 .explosionRadius(VehicleConfig.LAV_150_CANNON_EXPLOSION_RADIUS.get().floatValue())
                                 .sound(ModSounds.INTO_MISSILE.get())
-                                .icon(Mod.loc("textures/screens/vehicle_weapon/cannon_20mm.png")),
+                                .icon(Mod.loc("textures/screens/vehicle_weapon/cannon_20mm.png"))
+                                .sound1p(ModSounds.LAV_CANNON_FIRE_1P.get())
+                                .sound3p(ModSounds.LAV_CANNON_FIRE_3P.get())
+                                .sound3pFar(ModSounds.LAV_CANNON_FAR.get())
+                                .sound3pVeryFar(ModSounds.LAV_CANNON_VERYFAR.get()),
                         new ProjectileWeapon()
                                 .damage(9.5f)
                                 .headShot(2)
                                 .zoom(false)
                                 .sound(ModSounds.INTO_CANNON.get())
-                                .icon(Mod.loc("textures/screens/vehicle_weapon/gun_7_62mm.png")),
+                                .icon(Mod.loc("textures/screens/vehicle_weapon/gun_7_62mm.png"))
+                                .sound1p(ModSounds.COAX_FIRE_1P.get())
+                                .sound3p(ModSounds.RPK_FIRE_3P.get())
+                                .sound3pFar(ModSounds.RPK_FAR.get())
+                                .sound3pVeryFar(ModSounds.RPK_VERYFAR.get()),
                 }
         };
     }
@@ -252,14 +260,8 @@ public class Lav150Entity extends ContainerMobileVehicleEntity implements GeoEnt
 
             sendParticle((ServerLevel) this.level(), ParticleTypes.LARGE_SMOKE, worldPosition.x - 1.1 * this.getDeltaMovement().x, worldPosition.y, worldPosition.z - 1.1 * this.getDeltaMovement().z, 1, 0.02, 0.02, 0.02, 0, false);
 
-            float pitch = this.entityData.get(HEAT) <= 60 ? 1 : (float) (1 - 0.011 * Math.abs(60 - this.entityData.get(HEAT)));
-
             if (!player.level().isClientSide) {
-                if (player instanceof ServerPlayer serverPlayer) {
-                    serverPlayer.playSound(ModSounds.LAV_CANNON_FIRE_3P.get(), 4, pitch);
-                    serverPlayer.playSound(ModSounds.LAV_CANNON_FAR.get(), 12, pitch);
-                    serverPlayer.playSound(ModSounds.LAV_CANNON_VERYFAR.get(), 24, pitch);
-                }
+                playShootSound3p(player, 0, 4, 12, 24);
             }
 
             Level level = player.level();
@@ -318,11 +320,7 @@ public class Lav150Entity extends ContainerMobileVehicleEntity implements GeoEnt
             this.entityData.set(FIRE_ANIM, 2);
 
             if (!player.level().isClientSide) {
-                if (player instanceof ServerPlayer serverPlayer) {
-                    serverPlayer.playSound(ModSounds.RPK_FIRE_3P.get(), 3, 1);
-                    serverPlayer.playSound(ModSounds.RPK_FAR.get(), 6, 1);
-                    serverPlayer.playSound(ModSounds.RPK_VERYFAR.get(), 12, 1);
-                }
+                playShootSound3p(player, 0, 3, 6, 12);
             }
         }
     }
@@ -589,6 +587,16 @@ public class Lav150Entity extends ContainerMobileVehicleEntity implements GeoEnt
     @Override
     public int zoomFov() {
         return 3;
+    }
+
+    @Override
+    public int getWeaponHeat(Player player) {
+        if (getWeaponIndex(0) == 0) {
+            return entityData.get(HEAT);
+        } else if (getWeaponIndex(0) == 1) {
+            return entityData.get(COAX_HEAT);
+        }
+        return 0;
     }
 
     @Override

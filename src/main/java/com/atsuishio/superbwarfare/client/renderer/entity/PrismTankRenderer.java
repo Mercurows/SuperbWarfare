@@ -17,6 +17,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.AABB;
+import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.cache.object.BakedGeoModel;
 import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
@@ -45,7 +46,7 @@ public class PrismTankRenderer extends GeoEntityRenderer<PrismTankEntity> {
     }
 
     @Override
-    public void render(PrismTankEntity entityIn, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource bufferIn, int packedLightIn) {
+    public void render(PrismTankEntity entityIn, float entityYaw, float partialTicks, PoseStack poseStack, @NotNull MultiBufferSource bufferIn, int packedLightIn) {
         poseStack.pushPose();
         poseStack.mulPose(Axis.YP.rotationDegrees(-Mth.lerp(partialTicks, entityIn.yRotO, entityIn.getYRot())));
         poseStack.mulPose(Axis.XP.rotationDegrees(Mth.lerp(partialTicks, entityIn.xRotO, entityIn.getXRot())));
@@ -83,7 +84,7 @@ public class PrismTankRenderer extends GeoEntityRenderer<PrismTankEntity> {
             bone.setRotY(Mth.lerp(partialTick, animatable.turretYRotO, animatable.getTurretYRot()) * Mth.DEG_TO_RAD);
         }
 
-        if (name.equals("head") || name.equals("head2")) {
+        if (name.equals("head")) {
             Player player = Minecraft.getInstance().player;
             bone.setHidden(ClientEventHandler.zoomVehicle && animatable.getFirstPassenger() == player);
         }

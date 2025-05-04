@@ -66,6 +66,10 @@ public class SpeedboatEntity extends ContainerMobileVehicleEntity implements Geo
                                 .headShot(2)
                                 .zoom(false)
                                 .icon(Mod.loc("textures/screens/vehicle_weapon/gun_12_7mm.png"))
+                                .sound1p(ModSounds.M_2_FIRE_1P.get())
+                                .sound3p(ModSounds.M_2_FIRE_3P.get())
+                                .sound3pFar(ModSounds.M_2_FAR.get())
+                                .sound3pVeryFar(ModSounds.M_2_VERYFAR.get())
                 }
         };
     }
@@ -215,11 +219,7 @@ public class SpeedboatEntity extends ContainerMobileVehicleEntity implements Geo
         float pitch = this.entityData.get(HEAT) <= 60 ? 1 : (float) (1 - 0.011 * Math.abs(60 - this.entityData.get(HEAT)));
 
         if (!player.level().isClientSide) {
-            if (player instanceof ServerPlayer serverPlayer) {
-                serverPlayer.playSound(ModSounds.M_2_FIRE_3P.get(), 4, pitch);
-                serverPlayer.playSound(ModSounds.M_2_FAR.get(), 12, pitch);
-                serverPlayer.playSound(ModSounds.M_2_VERYFAR.get(), 24, pitch);
-            }
+            playShootSound3p(player, 0, 4, 12, 24);
         }
 
         Level level = player.level();
@@ -559,6 +559,11 @@ public class SpeedboatEntity extends ContainerMobileVehicleEntity implements Geo
     @Override
     public int zoomFov() {
         return 1;
+    }
+
+    @Override
+    public int getWeaponHeat(Player player) {
+        return entityData.get(HEAT);
     }
 
     @Override
