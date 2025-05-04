@@ -71,7 +71,7 @@ public class ContainerBlockItem extends BlockItem implements GeoItem {
     @Override
     public @NotNull InteractionResult useOn(UseOnContext context) {
         ItemStack stack = context.getItemInHand();
-        var data = stack.get(DataComponents.CUSTOM_DATA);
+        var data = stack.get(DataComponents.BLOCK_ENTITY_DATA);
 
         if (data != null && data.copyTag().getBoolean("CanPlacedAboveWater")) {
             return InteractionResult.PASS;
@@ -82,7 +82,7 @@ public class ContainerBlockItem extends BlockItem implements GeoItem {
     @Override
     public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, Player player, @NotNull InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
-        var data = stack.get(DataComponents.CUSTOM_DATA);
+        var data = stack.get(DataComponents.BLOCK_ENTITY_DATA);
 
         if (data != null && data.copyTag().getBoolean("CanPlacedAboveWater")) {
             BlockHitResult playerPOVHitResult = getPlayerPOVHitResult(level, player, ClipContext.Fluid.WATER);
@@ -156,7 +156,7 @@ public class ContainerBlockItem extends BlockItem implements GeoItem {
     public static ItemStack createInstance(Entity entity, boolean canPlacedAboveWater) {
         ItemStack stack = new ItemStack(ModBlocks.CONTAINER.get());
 
-        var data = stack.get(DataComponents.CUSTOM_DATA);
+        var data = stack.get(DataComponents.BLOCK_ENTITY_DATA);
         var tag = data != null ? data.copyTag() : new CompoundTag();
 
         var entityTag = new CompoundTag();
@@ -170,20 +170,20 @@ public class ContainerBlockItem extends BlockItem implements GeoItem {
         tag.putString("EntityType", EntityType.getKey(entity.getType()).toString());
         BlockItem.setBlockEntityData(stack, ModBlockEntities.CONTAINER.get(), tag);
         tag.putBoolean("CanPlacedAboveWater", canPlacedAboveWater);
-        stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
+        stack.set(DataComponents.BLOCK_ENTITY_DATA, CustomData.of(tag));
 
         return stack;
     }
 
     public static ItemStack createInstance(EntityType<?> entityType, boolean canPlacedAboveWater) {
         ItemStack stack = new ItemStack(ModBlocks.CONTAINER.get());
-        var data = stack.get(DataComponents.CUSTOM_DATA);
+        var data = stack.get(DataComponents.BLOCK_ENTITY_DATA);
         var tag = data != null ? data.copyTag() : new CompoundTag();
 
         tag.putString("EntityType", EntityType.getKey(entityType).toString());
         BlockItem.setBlockEntityData(stack, ModBlockEntities.CONTAINER.get(), tag);
         tag.putBoolean("CanPlacedAboveWater", canPlacedAboveWater);
-        stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
+        stack.set(DataComponents.BLOCK_ENTITY_DATA, CustomData.of(tag));
 
         return stack;
     }

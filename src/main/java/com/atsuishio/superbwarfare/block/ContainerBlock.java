@@ -14,7 +14,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.ItemInteractionResult;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -75,7 +74,7 @@ public class ContainerBlock extends BaseEntityBlock {
             return ItemInteractionResult.FAIL;
         }
 
-        if (canOpen(level, pos, containerBlockEntity.entityType, containerBlockEntity.entity)) {
+        if (canOpen(level, pos, containerBlockEntity.entityType)) {
             level.setBlockAndUpdate(pos, state.setValue(OPENED, true));
             level.playSound(null, BlockPos.containing(pos.getX(), pos.getY(), pos.getZ()), ModSounds.OPEN.get(), SoundSource.BLOCKS, 1, 1);
 
@@ -89,10 +88,10 @@ public class ContainerBlock extends BaseEntityBlock {
     public boolean hasEntity(Level level, BlockPos pos) {
         BlockEntity blockEntity = level.getBlockEntity(pos);
         if (!(blockEntity instanceof ContainerBlockEntity containerBlockEntity)) return false;
-        return containerBlockEntity.entity != null || containerBlockEntity.entityType != null;
+        return containerBlockEntity.entityTag != null || containerBlockEntity.entityType != null;
     }
 
-    public static boolean canOpen(Level level, BlockPos pos, EntityType<?> entityType, Entity entity) {
+    public static boolean canOpen(Level level, BlockPos pos, EntityType<?> entityType) {
         boolean flag = true;
 
         int w = 0;
@@ -101,11 +100,6 @@ public class ContainerBlock extends BaseEntityBlock {
         if (entityType != null) {
             w = (int) (entityType.getDimensions().width() / 2 + 1);
             h = (int) (entityType.getDimensions().height() + 1);
-        }
-
-        if (entity != null) {
-            w = (int) (entity.getType().getDimensions().width() / 2 + 1);
-            h = (int) (entity.getType().getDimensions().height() + 1);
         }
 
         for (int i = -w; i < w + 1; i++) {
@@ -193,7 +187,7 @@ public class ContainerBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() {
+    protected @NotNull MapCodec<? extends BaseEntityBlock> codec() {
         return simpleCodec(ContainerBlock::new);
     }
 

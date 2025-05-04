@@ -46,16 +46,11 @@ public class ContainerBlockPreview {
 
         // 获取实体信息
         var entityType = container.entityType;
-        var entity = container.entity;
 
         int w = 0, h = 0;
         if (entityType != null) {
             w = (int) (entityType.getDimensions().width() / 2 + 1);
             h = (int) (entityType.getDimensions().height() + 1);
-        }
-        if (entity != null) {
-            w = (int) (entity.getType().getDimensions().width() / 2 + 1);
-            h = (int) (entity.getType().getDimensions().height() + 1);
         }
         if (w == 0 || h == 0) return;
 
@@ -78,7 +73,7 @@ public class ContainerBlockPreview {
         float endY = (float) aabb.maxY + 0.001f - pos.getY();
         float endZ = (float) aabb.maxZ + 0.001f - pos.getZ();
 
-        var hasEnoughSpace = ContainerBlock.canOpen(level, pos, entityType, entity);
+        var hasEnoughSpace = ContainerBlock.canOpen(level, pos, entityType);
 
         var red = hasEnoughSpace ? 0 : 1;
         var green = 1 - red;

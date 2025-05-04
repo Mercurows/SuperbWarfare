@@ -16,18 +16,9 @@
       ],
       "functions": [
         {
-          "function": "minecraft:copy_custom_data",
-          "ops": [
-            {
-              "op": "replace",
-              "source": "Entity",
-              "target": "BlockEntityTag.Entity"
-            },
-            {
-              "op": "replace",
-              "source": "EntityType",
-              "target": "BlockEntityTag.EntityType"
-            }
+          "function": "minecraft:copy_components",
+          "include": [
+            "minecraft:block_entity_data"
           ],
           "source": "block_entity"
         }

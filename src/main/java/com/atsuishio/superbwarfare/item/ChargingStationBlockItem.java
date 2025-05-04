@@ -1,10 +1,9 @@
 package com.atsuishio.superbwarfare.item;
 
 import com.atsuishio.superbwarfare.client.tooltip.component.ChargingStationImageComponent;
+import com.atsuishio.superbwarfare.component.ModDataComponents;
 import com.atsuishio.superbwarfare.init.ModBlocks;
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.component.DataComponents;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.BlockItem;
@@ -26,17 +25,13 @@ public class ChargingStationBlockItem extends BlockItem {
 
     @Override
     public boolean isBarVisible(ItemStack stack) {
-        var data = stack.get(DataComponents.BLOCK_ENTITY_DATA);
-        CompoundTag tag = data != null ? data.copyTag() : new CompoundTag();
-        int energy = tag.getInt("Energy");
+        int energy = stack.getOrDefault(ModDataComponents.ENERGY.get(), 0);
         return energy != MAX_ENERGY && energy != 0;
     }
 
     @Override
     public int getBarWidth(ItemStack stack) {
-        var data = stack.get(DataComponents.BLOCK_ENTITY_DATA);
-        CompoundTag tag = data != null ? data.copyTag() : new CompoundTag();
-        int energy = tag.getInt("Energy");
+        int energy = stack.getOrDefault(ModDataComponents.ENERGY.get(), 0);
         return Math.round((float) energy * 13.0F / MAX_ENERGY);
     }
 

@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.block.entity;
 
 import com.atsuishio.superbwarfare.block.ChargingStationBlock;
+import com.atsuishio.superbwarfare.component.ModDataComponents;
 import com.atsuishio.superbwarfare.init.ModBlockEntities;
 import com.atsuishio.superbwarfare.menu.ChargingStationMenu;
 import com.atsuishio.superbwarfare.network.dataslot.ContainerEnergyData;
@@ -8,6 +9,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.IntTag;
@@ -251,6 +253,22 @@ public class ChargingStationBlockEntity extends BlockEntity implements WorldlyCo
 
     public NonNullList<ItemStack> getItems() {
         return this.items;
+    }
+
+    @Override
+    protected void applyImplicitComponents(@NotNull DataComponentInput componentInput) {
+        super.applyImplicitComponents(componentInput);
+
+        if (this.level != null) {
+            ((EnergyStorage) this.energyStorage).deserializeNBT(level.registryAccess(), IntTag.valueOf(componentInput.getOrDefault(ModDataComponents.ENERGY, 0)));
+        }
+    }
+
+    @Override
+    protected void collectImplicitComponents(DataComponentMap.@NotNull Builder components) {
+        super.collectImplicitComponents(components);
+
+        components.set(ModDataComponents.ENERGY, this.energyStorage.getEnergyStored());
     }
 
     @Override
