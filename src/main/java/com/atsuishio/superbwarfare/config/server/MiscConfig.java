@@ -15,7 +15,7 @@ public class MiscConfig {
         builder.push("misc");
 
         builder.comment("Set true to enable tactical sprint");
-        ALLOW_TACTICAL_SPRINT = builder.define("allow_tactical_sprint", true);
+        ALLOW_TACTICAL_SPRINT = builder.define("allow_tactical_sprint", false);
 
         builder.comment("Set true to enable kill feedback sending");
         SEND_KILL_FEEDBACK = builder.define("send_kill_feedback", true);
