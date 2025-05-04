@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.event;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.event.events.ReloadEvent;
+import com.atsuishio.superbwarfare.api.event.ReloadEvent;
 import com.atsuishio.superbwarfare.init.ModAttachments;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
@@ -103,7 +103,7 @@ public class GunEventHandler {
 
         // 启动换弹
         if (reload.reloadStarter.start()) {
-            NeoForge.EVENT_BUS.post(new ReloadEvent.Pre(player, stack));
+            NeoForge.EVENT_BUS.post(new ReloadEvent.Pre(player, data));
 
             if (gunItem.isOpenBolt(stack)) {
                 if (data.ammo.get() == 0) {
@@ -161,18 +161,16 @@ public class GunEventHandler {
             }
         }
         data.reload.setState(ReloadState.NOT_RELOADING);
-        NeoForge.EVENT_BUS.post(new ReloadEvent.Post(player, stack));
+        NeoForge.EVENT_BUS.post(new ReloadEvent.Post(player, data));
     }
 
     public static void playGunEmptyReload(Player player, GunData data) {
-        ItemStack stack = data.stack();
-
         if (player.getInventory().hasAnyMatching(item -> item.is(ModItems.CREATIVE_AMMO_BOX.get()))) {
             data.ammo.set(data.magazine());
         } else {
             data.reload(player);
         }
-        NeoForge.EVENT_BUS.post(new ReloadEvent.Post(player, stack));
+        NeoForge.EVENT_BUS.post(new ReloadEvent.Post(player, data));
     }
 
     public static void playGunEmptyReloadSounds(Player player) {
@@ -231,7 +229,7 @@ public class GunEventHandler {
 
         // 一阶段
         if (reload.singleReloadStarter.start()) {
-            NeoForge.EVENT_BUS.post(new ReloadEvent.Pre(player, stack));
+            NeoForge.EVENT_BUS.post(new ReloadEvent.Pre(player, data));
 
             if ((data.defaultPrepareLoadTime() != 0 && data.ammo.get() == 0) || stack.is(ModItems.SECONDARY_CATACLYSM.get())) {
                 // 此处判断空仓换弹的时候，是否在准备阶段就需要装填一发，如M870
@@ -353,7 +351,7 @@ public class GunEventHandler {
             reload.setState(ReloadState.NOT_RELOADING);
             reload.singleReloadStarter.finish();
 
-            NeoForge.EVENT_BUS.post(new ReloadEvent.Post(player, stack));
+            NeoForge.EVENT_BUS.post(new ReloadEvent.Post(player, data));
         }
     }
 

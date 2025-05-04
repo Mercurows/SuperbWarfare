@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.event;
 
-import com.atsuishio.superbwarfare.event.events.ReloadEvent;
+import com.atsuishio.superbwarfare.api.event.ReloadEvent;
 import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
