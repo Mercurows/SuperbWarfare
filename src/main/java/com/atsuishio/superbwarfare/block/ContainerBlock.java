@@ -212,7 +212,6 @@ public class ContainerBlock extends BaseEntityBlock {
         return this.defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite()).setValue(OPENED, false);
     }
 
-
     @Override
     @ParametersAreNonnullByDefault
     public @NotNull ItemStack getCloneItemStack(BlockState state, HitResult target, LevelReader level, BlockPos pos, Player player) {
@@ -220,6 +219,5 @@ public class ContainerBlock extends BaseEntityBlock {
         level.getBlockEntity(pos, ModBlockEntities.CONTAINER.get()).ifPresent((blockEntity) -> blockEntity.saveToItem(itemStack, level.registryAccess()));
         return itemStack;
     }
-
 }
 

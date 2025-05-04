@@ -10,7 +10,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionResult;
@@ -90,10 +89,9 @@ public class SmallContainerBlock extends BaseEntityBlock {
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
         super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
 
-        var data = stack.get(DataComponents.BLOCK_ENTITY_DATA);
-        CompoundTag tag = data != null ? data.copyTag() : null;
-        if (tag != null) {
-            String lootTable = tag.getString("LootTable");
+        var data = stack.get(DataComponents.CONTAINER_LOOT);
+        if (data != null) {
+            String lootTable = data.lootTable().location().toString();
             if (lootTable.startsWith(Mod.MODID + ":containers/")) {
                 var split = lootTable.split(Mod.MODID + ":containers/");
                 if (split.length == 2) {
@@ -101,7 +99,7 @@ public class SmallContainerBlock extends BaseEntityBlock {
                 }
                 tooltipComponents.add(Component.translatable("des.superbwarfare.small_container." + lootTable).withStyle(ChatFormatting.GRAY));
             } else {
-                long seed = tag.getLong("LootTableSeed");
+                long seed = data.seed();
                 if (seed != 0 && seed % 205 == 0) {
                     tooltipComponents.add(Component.translatable("des.superbwarfare.small_container.special").withStyle(ChatFormatting.GRAY));
                 } else {
