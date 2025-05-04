@@ -4,11 +4,11 @@ import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.Event;
-import net.neoforged.bus.api.ICancellableEvent;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
-public class ReloadEvent extends Event implements ICancellableEvent {
+@ApiStatus.AvailableSince("0.7.7")
+public class ReloadEvent extends Event {
 
     public final Player player;
     public final GunData data;
