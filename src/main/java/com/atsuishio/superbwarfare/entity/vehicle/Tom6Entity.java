@@ -161,7 +161,7 @@ public class Tom6Entity extends MobileVehicleEntity implements GeoEntity {
 
             if (forwardInputDown && getEnergy() > 0) {
                 this.consumeEnergy(VehicleConfig.TOM_6_ENERGY_COST.get());
-                this.entityData.set(POWER, Math.min(this.entityData.get(POWER) + 0.01f, 0.15f));
+                this.entityData.set(POWER, Math.min(this.entityData.get(POWER) + 0.01f, 0.07f));
             }
 
             if (backInputDown || downInputDown) {
@@ -183,7 +183,7 @@ public class Tom6Entity extends MobileVehicleEntity implements GeoEntity {
 
             float addY = Mth.clamp(Math.min((this.onGround() ? 1.5f : 0.9f) * (float) Math.max(getDeltaMovement().length() - 0.06, 0.1), 0.9f) * diffY - 0.5f * this.entityData.get(DELTA_ROT), -3 * (roll + 1), 3 * (roll + 1));
             float addX = Mth.clamp(Math.min((float) Math.max(getDeltaMovement().length() - 0.1, 0.01), 0.9f) * diffX, -4, 4);
-            float addZ = this.entityData.get(DELTA_ROT) + (this.onGround() ? 0 : 0.01f) * diffY * (float) getDeltaMovement().length();
+            float addZ = this.entityData.get(DELTA_ROT) - (this.onGround() ? 0 : 0.01f) * diffY * (float) getDeltaMovement().length();
 
             float i = getXRot() / 90;
 
