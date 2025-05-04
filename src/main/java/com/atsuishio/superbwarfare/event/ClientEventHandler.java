@@ -735,7 +735,8 @@ public class ClientEventHandler {
 
     public static void handleShakeClient(double time, double radius, double amplitude, double x, double y, double z) {
         Player player = Minecraft.getInstance().player;
-        if (player == null) return;
+        if (player == null || player.isSpectator()) return;
+
         float shakeStrength = (float) DisplayConfig.EXPLOSION_SCREEN_SHAKE.get() / 100.0f;
         if (shakeStrength <= 0.0f) return;
 
@@ -1190,6 +1191,17 @@ public class ClientEventHandler {
         shake[1] = (float) (4.2 * amplitude * (1 / 6.3 * (fireRotTimer - 0.5)) * Math.sin(6.3 * (fireRotTimer - 0.5)) * (3 - Math.pow(fireRotTimer, 2))
                 + 3 * Mth.clamp(0.5 - fireRotTimer, 0, 0.5) * (2 * Math.random() - 1)) * (float) (DisplayConfig.WEAPON_SCREEN_SHAKE.get() / 100.0);
 
+
+        if (firePosTimer >= 1) {
+            firePosTimer = 0;
+        }
+        if (fireRotTimer >= 1.732) {
+            fireRotTimer = 0;
+            fireRot = 0;
+        }
+
+        if (entity instanceof Player player && player.isSpectator()) return;
+
         if (0 < fireRotTimer && fireRotTimer < 1.732) {
             fireRot = 1 / 6.3 * (fireRotTimer - 0.5) * Math.sin(6.3 * (fireRotTimer - 0.5)) * (3 - Math.pow(fireRotTimer, 2));
             if (recoilY > 0) {
@@ -1201,14 +1213,6 @@ public class ClientEventHandler {
                 event.setPitch((float) (pitch - shake[0] * rpm));
                 event.setRoll((float) (roll - shake[1] * rpm));
             }
-        }
-
-        if (firePosTimer >= 1) {
-            firePosTimer = 0;
-        }
-        if (fireRotTimer >= 1.732) {
-            fireRotTimer = 0;
-            fireRot = 0;
         }
     }
 
@@ -1341,15 +1345,14 @@ public class ClientEventHandler {
 
     public static void handleReloadShake(double boneRotX, double boneRotY, double boneRotZ) {
         LocalPlayer player = Minecraft.getInstance().player;
+        if (player == null || player.isSpectator()) return;
 
         float shakeStrength = (float) DisplayConfig.WEAPON_SCREEN_SHAKE.get() / 100.0f;
         if (shakeStrength <= 0.0f) return;
 
-        if (player != null) {
-            cameraRot[0] = -boneRotX * shakeStrength;
-            cameraRot[1] = -boneRotY * shakeStrength;
-            cameraRot[2] = -boneRotZ * shakeStrength;
-        }
+        cameraRot[0] = -boneRotX * shakeStrength;
+        cameraRot[1] = -boneRotY * shakeStrength;
+        cameraRot[2] = -boneRotZ * shakeStrength;
     }
 
     private static void handlePlayerCamera(ViewportEvent.ComputeCameraAngles event) {
