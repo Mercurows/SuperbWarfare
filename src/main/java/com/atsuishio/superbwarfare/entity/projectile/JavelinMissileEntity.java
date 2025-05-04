@@ -219,7 +219,7 @@ public class JavelinMissileEntity extends FastThrowableProjectile implements Geo
 
         for (var e : decoy) {
             if (e instanceof DecoyEntity decoyEntity && !distracted) {
-                this.entityData.set(TARGET_UUID, decoyEntity.getStringUUID());
+                this.entityData.set(TARGET_UUID, decoyEntity.getDecoyUUID());
                 distracted = true;
             }
         }

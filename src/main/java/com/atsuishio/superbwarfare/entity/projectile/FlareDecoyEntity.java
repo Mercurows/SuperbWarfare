@@ -63,6 +63,11 @@ public class FlareDecoyEntity extends Entity implements DecoyEntity {
     }
 
     @Override
+    public String getDecoyUUID() {
+        return this.getStringUUID();
+    }
+
+    @Override
     public Vec3 getPosition() {
         return position();
     }

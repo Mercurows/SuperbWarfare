@@ -122,7 +122,7 @@ public class JavelinItem extends GunItem implements GeoItem {
                 List<Entity> decoy = SeekTool.seekLivingEntities(player, player.level(), 512, 8);
                 for (var e : decoy) {
                     if (e instanceof DecoyEntity decoyEntity) {
-                        tag.putString("TargetEntity", decoyEntity.getStringUUID());
+                        tag.putString("TargetEntity", decoyEntity.getDecoyUUID());
                         tag.putDouble("TargetPosX", decoyEntity.getPosition().x);
                         tag.putDouble("TargetPosY", decoyEntity.getPosition().y);
                         tag.putDouble("TargetPosZ", decoyEntity.getPosition().z);
