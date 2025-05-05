@@ -78,8 +78,8 @@ public class KillMessageOverlay implements LayeredDraw.Layer {
         var pos = KillMessageConfig.KILL_MESSAGE_POSITION.get();
         int posX = screenWidth;
         float posY = KillMessageConfig.KILL_MESSAGE_MARGIN_Y.get();
-        int count = KillMessageConfig.KILL_MESSAGE_COUNT.get();
         boolean left = false;
+        boolean bottom = false;
 
         switch (pos) {
             case LEFT_TOP -> {
@@ -93,12 +93,14 @@ public class KillMessageOverlay implements LayeredDraw.Layer {
             }
             case LEFT_BOTTOM -> {
                 posX = KillMessageConfig.KILL_MESSAGE_MARGIN_X.get();
-                posY = screenHeight - KillMessageConfig.KILL_MESSAGE_MARGIN_Y.get() - count * 10;
+                posY = screenHeight - KillMessageConfig.KILL_MESSAGE_MARGIN_Y.get() - 10;
                 left = true;
+                bottom = true;
             }
             case RIGHT_BOTTOM -> {
                 posX = screenWidth - KillMessageConfig.KILL_MESSAGE_MARGIN_X.get();
-                posY = screenHeight - KillMessageConfig.KILL_MESSAGE_MARGIN_Y.get() - count * 10;
+                posY = screenHeight - KillMessageConfig.KILL_MESSAGE_MARGIN_Y.get() - 10;
+                bottom = true;
             }
         }
 
@@ -122,11 +124,11 @@ public class KillMessageOverlay implements LayeredDraw.Layer {
         }
 
         for (PlayerKillRecord r : KillMessageHandler.QUEUE) {
-            posY = renderKillMessages(r, guiGraphics, deltaTracker.getGameTimeDeltaPartialTick(true), posX, posY, left);
+            posY = renderKillMessages(r, guiGraphics, deltaTracker.getGameTimeDeltaPartialTick(true), posX, posY, left, bottom);
         }
     }
 
-    private static float renderKillMessages(PlayerKillRecord record, GuiGraphics guiGraphics, float partialTick, int width, float baseTop, boolean left) {
+    private static float renderKillMessages(PlayerKillRecord record, GuiGraphics guiGraphics, float partialTick, int width, float baseTop, boolean left, boolean bottom) {
         float top = baseTop;
 
         Font font = Minecraft.getInstance().font;
@@ -155,9 +157,9 @@ public class KillMessageOverlay implements LayeredDraw.Layer {
             float rate = (float) Math.pow((record.tick + partialTick - 80) / animationTickCount, 5);
             guiGraphics.pose().translate(rate * 100 * (left ? -1 : 1), 0, 0);
             guiGraphics.setColor(1, 1, 1, 1 - rate);
-            baseTop += 10 * (1 - rate);
+            baseTop += 10 * (1 - rate) * (bottom ? -1 : 1);
         } else {
-            baseTop += 10;
+            baseTop += 10 * (bottom ? -1 : 1);
         }
 
         // 击杀提示默认是右对齐的，这里从右向左渲染
