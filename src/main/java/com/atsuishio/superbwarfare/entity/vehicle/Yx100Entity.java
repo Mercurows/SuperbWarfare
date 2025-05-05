@@ -55,6 +55,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
@@ -1223,6 +1225,7 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
         return Mod.loc("textures/vehicle_icon/yx_100_icon.png");
     }
 
+    @OnlyIn(Dist.CLIENT)
     @Override
     public void renderFirstPersonOverlay(GuiGraphics guiGraphics, Font font, Player player, int screenWidth, int screenHeight, float scale) {
         float minWH = (float) Math.min(screenWidth, screenHeight);
@@ -1259,6 +1262,7 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
         }
     }
 
+    @OnlyIn(Dist.CLIENT)
     @Override
     public void renderThirdPersonOverlay(GuiGraphics guiGraphics, Font font, Player player, int screenWidth, int screenHeight, float scale) {
         if (this.getWeaponIndex(0) == 0) {

@@ -970,6 +970,10 @@ public abstract class VehicleEntity extends Entity {
         return getEyePosition();
     }
 
+    /**
+     * 渲染载具的第一人称UI
+     * 务必标记 @OnlyIn(Dist.CLIENT) !
+     */
     @OnlyIn(Dist.CLIENT)
     public void renderFirstPersonOverlay(GuiGraphics guiGraphics, Font font, Player player, int screenWidth, int screenHeight, float scale) {
         if (!(this instanceof WeaponVehicleEntity weaponVehicle)) return;
@@ -999,6 +1003,10 @@ public abstract class VehicleEntity extends Entity {
         preciseBlit(guiGraphics, texture, centerW, centerH, 0, 0, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH);
     }
 
+    /**
+     * 渲染载具的第三人称UI
+     * 务必标记 @OnlyIn(Dist.CLIENT) !
+     */
     @OnlyIn(Dist.CLIENT)
     public void renderThirdPersonOverlay(GuiGraphics guiGraphics, Font font, Player player, int screenWidth, int screenHeight, float scale) {
     }
