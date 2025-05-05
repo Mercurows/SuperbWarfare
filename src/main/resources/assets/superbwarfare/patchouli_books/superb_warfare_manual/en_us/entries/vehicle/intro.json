@@ -1,0 +1,12 @@
+{
+  "name": "superbwarfare.entry.vehicle.intro",
+  "icon": "superbwarfare:crowbar",
+  "category": "superbwarfare:vehicle",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "superbwarfare.page.vehicle.intro1"
+    }
+  ],
+  "sortnum": 20000
+}

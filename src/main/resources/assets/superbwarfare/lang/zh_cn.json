@@ -265,6 +265,9 @@
   "des.superbwarfare.small_container.special": "岁己补给",
   "des.superbwarfare.small_container.loot.blueprints": "枪械蓝图",
   "des.superbwarfare.small_container.loot.common": "普通补给",
+  "block.superbwarfare.vehicle_deployer": "载具部署器",
+  "des.superbwarfare.vehicle_deployer.success": "成功设置载具信息！",
+  "des.superbwarfare.vehicle_deployer.fail": "请使用集装箱点击！",
 
   "item.superbwarfare.high_energy_explosives": "高能炸药",
   "item.superbwarfare.grain": "推进药柱",
@@ -631,8 +634,14 @@
   "warning.title.example": "【卓越前线 警示声明】",
   "warning.content.example": "== 本模组完全免费开源，禁止用于任何商业行为 ==\n本模组代码采用GPL-3协议开源，美术资源私有禁止商用\n禁止付费下载、充值获取道具等违反协议和Mojang EULA的行为\n如遇以上行为，请到本模组仓库处提交Issue进行举报",
   "warning.check.example": "我已阅读并同意，不再显示此警告",
-
-  "block.superbwarfare.vehicle_deployer": "载具部署器",
-  "des.superbwarfare.vehicle_deployer.success": "成功设置载具信息！",
-  "des.superbwarfare.vehicle_deployer.fail": "请使用集装箱点击！"
+  "superbwarfare.book.superb_warfare_manual": "卓越单兵手册",
+  "superbwarfare.book.superb_warfare_manual.des": "卓越前线模组的教程，教你如何成为一名卓越的士兵",
+  "superbwarfare.category.weapon": "武器",
+  "superbwarfare.category.weapon.des": "了解如何使用卓越前线的枪械",
+  "superbwarfare.category.vehicle": "载具",
+  "superbwarfare.category.vehicle.des": "了解如何驾驶卓越前线的载具",
+  "superbwarfare.category.perk": "武器模组",
+  "superbwarfare.category.perk.des": "了解卓越前线的武器模组的作用",
+  "superbwarfare.category.misc": "杂项",
+  "superbwarfare.category.misc.des": "了解卓越前线的其他物品用法"
 }

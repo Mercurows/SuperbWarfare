@@ -45,3 +45,9 @@ side = "BOTH"
 [features.superbwarfare]
 openGLVersion = "[3.2,)"
 
+[[dependencies.superbwarfare]]
+modId = "patchouli"
+mandatory = false
+versionRange = "[1.21-87-NEOFORGE,)"
+ordering = "NONE"
+side = "BOTH"
