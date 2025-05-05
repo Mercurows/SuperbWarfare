@@ -384,7 +384,6 @@ public class ModSounds {
 
     public static final DeferredHolder<SoundEvent, SoundEvent> HELICOPTER_ENGINE_START = REGISTRY.register("helicopter_engine_start", () -> SoundEvent.createVariableRangeEvent(Mod.loc("helicopter_engine_start")));
     public static final DeferredHolder<SoundEvent, SoundEvent> HELICOPTER_ENGINE = REGISTRY.register("helicopter_engine", () -> SoundEvent.createVariableRangeEvent(Mod.loc("helicopter_engine")));
-    public static final DeferredHolder<SoundEvent, SoundEvent> HELICOPTER_ENGINE_1P = REGISTRY.register("helicopter_engine_1p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("helicopter_engine_1p")));
     public static final DeferredHolder<SoundEvent, SoundEvent> HELICOPTER_CANNON_FIRE_1P = REGISTRY.register("heli_cannon_fire_1p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("heli_cannon_fire_1p")));
     public static final DeferredHolder<SoundEvent, SoundEvent> HELICOPTER_CANNON_FIRE_3P = REGISTRY.register("heli_cannon_fire_3p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("heli_cannon_fire_3p")));
     public static final DeferredHolder<SoundEvent, SoundEvent> HELICOPTER_CANNON_FAR = REGISTRY.register("heli_cannon_far", () -> SoundEvent.createVariableRangeEvent(Mod.loc("heli_cannon_far")));
@@ -407,16 +406,13 @@ public class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> LAV_CANNON_FAR = REGISTRY.register("lav_cannon_far", () -> SoundEvent.createVariableRangeEvent(Mod.loc("lav_far")));
     public static final DeferredHolder<SoundEvent, SoundEvent> LAV_CANNON_VERYFAR = REGISTRY.register("lav_cannon_veryfar", () -> SoundEvent.createVariableRangeEvent(Mod.loc("lav_veryfar")));
     public static final DeferredHolder<SoundEvent, SoundEvent> LAV_ENGINE = REGISTRY.register("lav_engine", () -> SoundEvent.createVariableRangeEvent(Mod.loc("lav_engine")));
-    public static final DeferredHolder<SoundEvent, SoundEvent> LAV_ENGINE_1P = REGISTRY.register("lav_engine_1p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("lav_engine_1p")));
     public static final DeferredHolder<SoundEvent, SoundEvent> COAX_FIRE_1P = REGISTRY.register("coax_fire_1p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("coax_fire_1p")));
     public static final DeferredHolder<SoundEvent, SoundEvent> BMP_CANNON_FIRE_1P = REGISTRY.register("bmp_cannon_fire_1p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("bmp_fire_1p")));
     public static final DeferredHolder<SoundEvent, SoundEvent> BMP_CANNON_FIRE_3P = REGISTRY.register("bmp_cannon_fire_3p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("bmp_fire_3p")));
     public static final DeferredHolder<SoundEvent, SoundEvent> BMP_ENGINE = REGISTRY.register("bmp_engine", () -> SoundEvent.createVariableRangeEvent(Mod.loc("bmp_engine")));
-    public static final DeferredHolder<SoundEvent, SoundEvent> BMP_ENGINE_1P = REGISTRY.register("bmp_engine_1p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("bmp_engine_1p")));
     public static final DeferredHolder<SoundEvent, SoundEvent> BMP_MISSILE_FIRE_1P = REGISTRY.register("bmp_missile_fire_1p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("bmp_missile_fire_1p")));
     public static final DeferredHolder<SoundEvent, SoundEvent> BMP_MISSILE_FIRE_3P = REGISTRY.register("bmp_missile_fire_3p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("bmp_missile_fire_3p")));
     public static final DeferredHolder<SoundEvent, SoundEvent> BMP_MISSILE_RELOAD = REGISTRY.register("bmp_missile_reload", () -> SoundEvent.createVariableRangeEvent(Mod.loc("bmp_missile_reload")));
-    public static final DeferredHolder<SoundEvent, SoundEvent> BMP_STEP = REGISTRY.register("bmp_step", () -> SoundEvent.createVariableRangeEvent(Mod.loc("bmp_step")));
     public static final DeferredHolder<SoundEvent, SoundEvent> WHEEL_STEP = REGISTRY.register("wheel_step", () -> SoundEvent.createVariableRangeEvent(Mod.loc("wheel_step")));
     public static final DeferredHolder<SoundEvent, SoundEvent> LASER_TOWER_SHOOT = REGISTRY.register("laser_tower_shoot", () -> SoundEvent.createVariableRangeEvent(Mod.loc("laser_tower_shoot")));
     public static final DeferredHolder<SoundEvent, SoundEvent> YX_100_RELOAD = REGISTRY.register("yx_100_reload", () -> SoundEvent.createVariableRangeEvent(Mod.loc("yx_100_reload")));
@@ -424,6 +420,7 @@ public class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> YX_100_FIRE_3P = REGISTRY.register("yx_100_fire_3p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("yx_100_fire_3p")));
     public static final DeferredHolder<SoundEvent, SoundEvent> YX_100_FAR = REGISTRY.register("yx_100_far", () -> SoundEvent.createVariableRangeEvent(Mod.loc("yx_100_far")));
     public static final DeferredHolder<SoundEvent, SoundEvent> YX_100_VERYFAR = REGISTRY.register("yx_100_veryfar", () -> SoundEvent.createVariableRangeEvent(Mod.loc("yx_100_veryfar")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> YX_100_ENGINE = REGISTRY.register("yx_100_engine", () -> SoundEvent.createVariableRangeEvent(Mod.loc("yx_100_engine")));
     public static final DeferredHolder<SoundEvent, SoundEvent> TURRET_TURN = REGISTRY.register("turret_turn", () -> SoundEvent.createVariableRangeEvent(Mod.loc("turret_turn")));
     public static final DeferredHolder<SoundEvent, SoundEvent> C4_BEEP = REGISTRY.register("c4_beep", () -> SoundEvent.createVariableRangeEvent(Mod.loc("c4_beep")));
     public static final DeferredHolder<SoundEvent, SoundEvent> C4_FINAL = REGISTRY.register("c4_final", () -> SoundEvent.createVariableRangeEvent(Mod.loc("c4_final")));
@@ -433,6 +430,7 @@ public class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> PRISM_FIRE_3P = REGISTRY.register("prism_fire_3p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("prism_fire_3p")));
     public static final DeferredHolder<SoundEvent, SoundEvent> PRISM_FIRE_1P_2 = REGISTRY.register("prism_fire_1p_2", () -> SoundEvent.createVariableRangeEvent(Mod.loc("prism_fire_1p_2")));
     public static final DeferredHolder<SoundEvent, SoundEvent> PRISM_FIRE_3P_2 = REGISTRY.register("prism_fire_3p_2", () -> SoundEvent.createVariableRangeEvent(Mod.loc("prism_fire_3p_2")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> PRISM_ENGINE = REGISTRY.register("prism_engine", () -> SoundEvent.createVariableRangeEvent(Mod.loc("prism_engine")));
     public static final DeferredHolder<SoundEvent, SoundEvent> INSIDIOUS_FIRE_1P = REGISTRY.register("insidious_fire_1p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("insidious_fire_1p")));
     public static final DeferredHolder<SoundEvent, SoundEvent> INSIDIOUS_FIRE_3P = REGISTRY.register("insidious_fire_3p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("insidious_fire_3p")));
     public static final DeferredHolder<SoundEvent, SoundEvent> INSIDIOUS_FAR = REGISTRY.register("insidious_far", () -> SoundEvent.createVariableRangeEvent(Mod.loc("insidious_far")));
@@ -442,8 +440,7 @@ public class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> HPJ_11_FIRE_3P = REGISTRY.register("hpj_11_fire_3p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("hpj_11_fire_3p")));
     public static final DeferredHolder<SoundEvent, SoundEvent> HPJ_11_FAR = REGISTRY.register("hpj_11_far", () -> SoundEvent.createVariableRangeEvent(Mod.loc("hpj_11_far")));
     public static final DeferredHolder<SoundEvent, SoundEvent> HPJ_11_VERYFAR = REGISTRY.register("hpj_11_veryfar", () -> SoundEvent.createVariableRangeEvent(Mod.loc("hpj_11_veryfar")));
-    public static final DeferredHolder<SoundEvent, SoundEvent> WIND_LOOP = REGISTRY.register("wind_loop", () -> SoundEvent.createVariableRangeEvent(Mod.loc("wind_loop")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> TRACK_MOVE = REGISTRY.register("track_move", () -> SoundEvent.createVariableRangeEvent(Mod.loc("track_move")));
     public static final DeferredHolder<SoundEvent, SoundEvent> A_10_ENGINE = REGISTRY.register("a10_engine", () -> SoundEvent.createVariableRangeEvent(Mod.loc("a10_engine")));
-    public static final DeferredHolder<SoundEvent, SoundEvent> A_10_ENGINE_1P = REGISTRY.register("a10_engine_1p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("a10_engine_1p")));
 }
 

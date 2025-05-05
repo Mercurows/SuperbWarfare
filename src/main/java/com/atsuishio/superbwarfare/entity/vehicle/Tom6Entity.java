@@ -238,11 +238,6 @@ public class Tom6Entity extends MobileVehicleEntity implements GeoEntity {
     }
 
     @Override
-    public int getEngineSoundRadius() {
-        return 64;
-    }
-
-    @Override
     public float getEngineSoundVolume() {
         return entityData.get(POWER);
     }

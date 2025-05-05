@@ -84,7 +84,7 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
 
     @Override
     protected void playStepSound(@NotNull BlockPos pPos, @NotNull BlockState pState) {
-        this.playSound(ModSounds.WHEEL_STEP.get(), (float) (getDeltaMovement().length() * 0.5), random.nextFloat() * 0.1f + 1f);
+        this.playSound(ModSounds.WHEEL_STEP.get(), (float) (getDeltaMovement().length() * 0.2), random.nextFloat() * 0.1f + 1f);
     }
 
     @Override
@@ -132,7 +132,7 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
         super.baseTick();
         float f;
 
-        f = (float) Mth.clamp(Math.max((onGround() ? 0.785f : 0.79f) - 0.013 * getDeltaMovement().length(), 0.5) + 0.031f * Mth.abs(90 - (float) calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90, 0.01, 0.99);
+        f = (float) Mth.clamp(Math.max((onGround() ? 0.785f : 0.79f) - 0.01 * getDeltaMovement().length(), 0.5) + 0.031f * Mth.abs(90 - (float) calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90, 0.01, 0.99);
 
         boolean forward = Mth.abs((float) calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) < 90;
 
@@ -309,11 +309,6 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
     @Override
     public SoundEvent getEngineSound() {
         return ModSounds.A_10_ENGINE.get();
-    }
-
-    @Override
-    public int getEngineSoundRadius() {
-        return 192;
     }
 
     @Override

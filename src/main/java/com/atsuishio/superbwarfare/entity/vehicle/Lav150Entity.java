@@ -121,7 +121,7 @@ public class Lav150Entity extends ContainerMobileVehicleEntity implements GeoEnt
     @Override
     @ParametersAreNonnullByDefault
     protected void playStepSound(BlockPos pPos, BlockState pState) {
-        this.playSound(ModSounds.BMP_STEP.get(), Mth.abs(this.entityData.get(POWER)) * 3, random.nextFloat() * 0.15f + 1.05f);
+        this.playSound(ModSounds.WHEEL_STEP.get(), (float) (getDeltaMovement().length() * 0.3), random.nextFloat() * 0.15f + 1.05f);
     }
 
     @Override
@@ -383,6 +383,11 @@ public class Lav150Entity extends ContainerMobileVehicleEntity implements GeoEnt
     @Override
     public SoundEvent getEngineSound() {
         return ModSounds.LAV_ENGINE.get();
+    }
+
+    @Override
+    public float getEngineSoundVolume() {
+        return Mth.abs(entityData.get(POWER)) * 2f;
     }
 
     @Override

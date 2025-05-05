@@ -363,13 +363,8 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
     }
 
     @Override
-    public int getEngineSoundRadius() {
-        return 192;
-    }
-
-    @Override
     public float getEngineSoundVolume() {
-        return entityData.get(PROPELLER_ROT) * 1.5f;
+        return entityData.get(PROPELLER_ROT) * 2f;
     }
 
     protected void clampRotation(Entity entity) {

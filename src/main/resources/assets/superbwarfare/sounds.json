@@ -2474,8 +2474,8 @@
   "wheel_chair_engine": {
     "sounds": [
       {
-        "name": "superbwarfare:wheel_chair/wheel_chair_engine",
-        "stream": false
+        "stream": true,
+        "name": "superbwarfare:wheel_chair/wheel_chair_engine"
       }
     ]
   },
@@ -2518,14 +2518,9 @@
   "helicopter_engine": {
     "sounds": [
       {
+        "attenuation_distance": 160,
+        "stream": true,
         "name": "superbwarfare:helicopter/heli_engine"
-      }
-    ]
-  },
-  "helicopter_engine_1p": {
-    "sounds": [
-      {
-        "name": "superbwarfare:helicopter/heli_engine_1p"
       }
     ]
   },
@@ -2788,14 +2783,9 @@
   "lav_engine": {
     "sounds": [
       {
+        "attenuation_distance": 64,
+        "stream": true,
         "name": "superbwarfare:lav/lav_engine"
-      }
-    ]
-  },
-  "lav_engine_1p": {
-    "sounds": [
-      {
-        "name": "superbwarfare:lav/lav_engine_1p"
       }
     ]
   },
@@ -2825,14 +2815,9 @@
   "bmp_engine": {
     "sounds": [
       {
+        "attenuation_distance": 64,
+        "stream": true,
         "name": "superbwarfare:bmp/bmp_engine"
-      }
-    ]
-  },
-  "bmp_engine_1p": {
-    "sounds": [
-      {
-        "name": "superbwarfare:bmp/bmp_engine_1p"
       }
     ]
   },
@@ -2856,14 +2841,6 @@
     "sounds": [
       {
         "name": "superbwarfare:bmp/bmp_missile_reload",
-        "stream": false
-      }
-    ]
-  },
-  "bmp_step": {
-    "sounds": [
-      {
-        "name": "superbwarfare:bmp/bmp_step",
         "stream": false
       }
     ]
@@ -2921,6 +2898,15 @@
       {
         "name": "superbwarfare:yx100/yx100_veryfar",
         "stream": false
+      }
+    ]
+  },
+  "yx_100_engine": {
+    "sounds": [
+      {
+        "attenuation_distance": 64,
+        "stream": true,
+        "name": "superbwarfare:yx100/yx100_engine"
       }
     ]
   },
@@ -2996,6 +2982,15 @@
       }
     ]
   },
+  "prism_engine": {
+    "sounds": [
+      {
+        "attenuation_distance": 64,
+        "stream": true,
+        "name": "superbwarfare:prism/prism_engine"
+      }
+    ]
+  },
   "insidious_fire_1p": {
     "sounds": [
       {
@@ -3068,24 +3063,21 @@
       }
     ]
   },
-  "wind_loop": {
+  "track_move": {
     "sounds": [
       {
-        "name": "superbwarfare:wind_loop"
+        "attenuation_distance": 32,
+        "stream": true,
+        "name": "superbwarfare:track_move"
       }
     ]
   },
   "a10_engine": {
     "sounds": [
       {
+        "attenuation_distance": 160,
+        "stream": true,
         "name": "superbwarfare:a10/a10_engine"
-      }
-    ]
-  },
-  "a10_engine_1p": {
-    "sounds": [
-      {
-        "name": "superbwarfare:a10/a10_engine_1p"
       }
     ]
   }
