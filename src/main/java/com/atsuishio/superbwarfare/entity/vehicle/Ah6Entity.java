@@ -362,6 +362,16 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
         return ModSounds.HELICOPTER_ENGINE.get();
     }
 
+    @Override
+    public int getEngineSoundRadius() {
+        return 192;
+    }
+
+    @Override
+    public float getEngineSoundVolume() {
+        return entityData.get(PROPELLER_ROT) * 1.5f;
+    }
+
     protected void clampRotation(Entity entity) {
         if (entity == getNthEntity(0) || entity == getNthEntity(1)) {
             float f = Mth.wrapDegrees(entity.getXRot());

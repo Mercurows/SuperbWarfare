@@ -87,7 +87,7 @@ public class Tom6Entity extends MobileVehicleEntity implements GeoEntity {
     @Override
     @ParametersAreNonnullByDefault
     protected void playStepSound(BlockPos pPos, BlockState pState) {
-        this.playSound(ModSounds.WHEEL_STEP.get(), (float) (getDeltaMovement().length() * 0.5), random.nextFloat() * 0.1f + 1f);
+        this.playSound(ModSounds.WHEEL_STEP.get(), (float) (getDeltaMovement().length() * 0.3), random.nextFloat() * 0.1f + 1f);
     }
 
     @Override
@@ -234,7 +234,17 @@ public class Tom6Entity extends MobileVehicleEntity implements GeoEntity {
 
     @Override
     public SoundEvent getEngineSound() {
-        return SoundEvents.ELYTRA_FLYING;
+        return SoundEvents.EMPTY;
+    }
+
+    @Override
+    public int getEngineSoundRadius() {
+        return 64;
+    }
+
+    @Override
+    public float getEngineSoundVolume() {
+        return entityData.get(POWER);
     }
 
     protected void clampRotation(Entity entity) {

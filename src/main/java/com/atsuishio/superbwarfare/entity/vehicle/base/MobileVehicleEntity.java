@@ -692,6 +692,13 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
     public SoundEvent getEngineSound() {
         return SoundEvents.EMPTY;
     }
+    public int getEngineSoundRadius() {
+        return 32;
+    }
+
+    public float getEngineSoundVolume() {
+        return (float) Mth.lerp(Mth.clamp(getDeltaMovement().length(), 0F, 0.5F), 0.0F, 0.7F);
+    }
 
     public double getVelocity() {
         return this.velocity;

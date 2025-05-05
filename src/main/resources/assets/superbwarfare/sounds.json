@@ -3068,6 +3068,13 @@
       }
     ]
   },
+  "wind_loop": {
+    "sounds": [
+      {
+        "name": "superbwarfare:wind_loop"
+      }
+    ]
+  },
   "a10_engine": {
     "sounds": [
       {

@@ -86,7 +86,7 @@ public class WheelChairEntity extends MobileVehicleEntity implements GeoEntity {
 
     @Override
     protected void playStepSound(@NotNull BlockPos pPos, @NotNull BlockState pState) {
-        this.playSound(ModSounds.WHEEL_STEP.get(), (float) (getDeltaMovement().length() * 0.5), random.nextFloat() * 0.15f + 1);
+        this.playSound(ModSounds.WHEEL_STEP.get(), (float) (getDeltaMovement().length() * 0.3), random.nextFloat() * 0.15f + 1);
     }
 
     @Override
@@ -148,9 +148,6 @@ public class WheelChairEntity extends MobileVehicleEntity implements GeoEntity {
             this.forwardInputDown = false;
             this.backInputDown = false;
         } else if (passenger instanceof Player) {
-            if (level().isClientSide && this.getEnergy() > 0) {
-                level().playLocalSound(this.getX(), this.getY() + this.getBbHeight() * 0.5, this.getZ(), this.getEngineSound(), this.getSoundSource(), Math.min((this.forwardInputDown || this.backInputDown ? 7.5f : 5f) * 2 * Mth.abs(this.entityData.get(POWER)), 0.25f), (random.nextFloat() * 0.1f + 1f), false);
-            }
             diffY = Math.clamp(-90f, 90f, Mth.wrapDegrees(passenger.getYHeadRot() - this.getYRot()));
             this.setYRot(this.getYRot() + Mth.clamp(0.4f * diffY, -5f, 5f));
 
@@ -224,6 +221,11 @@ public class WheelChairEntity extends MobileVehicleEntity implements GeoEntity {
     @Override
     public SoundEvent getEngineSound() {
         return ModSounds.WHEEL_CHAIR_ENGINE.get();
+    }
+
+    @Override
+    public float getEngineSoundVolume() {
+        return entityData.get(POWER);
     }
 
     protected void clampRotation(Entity entity) {

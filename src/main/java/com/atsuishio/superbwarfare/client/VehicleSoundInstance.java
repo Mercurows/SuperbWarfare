@@ -5,13 +5,12 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
+import org.joml.Math;
 
 public abstract class VehicleSoundInstance extends AbstractTickableSoundInstance {
     private final Minecraft client;
     private final MobileVehicleEntity mobileVehicle;
-
     private double lastDistance;
-
     private int fade = 0;
     private boolean die = false;
 
@@ -28,6 +27,7 @@ public abstract class VehicleSoundInstance extends AbstractTickableSoundInstance
     protected abstract float getPitch(MobileVehicleEntity mobileVehicle);
 
     protected abstract float getVolume(MobileVehicleEntity mobileVehicle);
+    protected abstract float getRadius(MobileVehicleEntity mobileVehicle);
 
     @Override
     public void tick() {
@@ -48,7 +48,10 @@ public abstract class VehicleSoundInstance extends AbstractTickableSoundInstance
         } else if (this.fade < 3) {
             this.fade++;
         }
-        this.volume = this.getVolume(this.mobileVehicle) * (float)fade / 3;
+
+        float distanceReduce = Math.max((1 - player.distanceTo(mobileVehicle) / getRadius(mobileVehicle)), 0);
+
+        this.volume = this.getVolume(this.mobileVehicle) * fade * distanceReduce * distanceReduce;
 
         this.x = this.mobileVehicle.getX();
         this.y = this.mobileVehicle.getY();
@@ -58,7 +61,7 @@ public abstract class VehicleSoundInstance extends AbstractTickableSoundInstance
 
         if (player.getVehicle() != this.mobileVehicle) {
             double distance = this.mobileVehicle.position().subtract(player.position()).length();
-            this.pitch += (float) (0.36 * Math.atan(lastDistance - distance));
+            this.pitch += (float) (0.16 * java.lang.Math.atan(lastDistance - distance));
 
             this.lastDistance = distance;
         } else {
@@ -66,9 +69,14 @@ public abstract class VehicleSoundInstance extends AbstractTickableSoundInstance
         }
     }
 
+    @Override
+    public Attenuation getAttenuation() {
+        return Attenuation.NONE;
+    }
+
     public static class EngineSound extends VehicleSoundInstance {
-        public EngineSound(Minecraft client, MobileVehicleEntity mobileVehicle) {
-            super(mobileVehicle.getEngineSound(), client, mobileVehicle);
+        public EngineSound(MobileVehicleEntity mobileVehicle, SoundEvent soundEvent) {
+            super(soundEvent, Minecraft.getInstance(), mobileVehicle);
         }
 
         @Override
@@ -83,7 +91,12 @@ public abstract class VehicleSoundInstance extends AbstractTickableSoundInstance
 
         @Override
         protected float getVolume(MobileVehicleEntity mobileVehicle) {
-            return 1;
+            return mobileVehicle.getEngineSoundVolume();
+        }
+
+        @Override
+        protected float getRadius(MobileVehicleEntity mobileVehicle) {
+            return mobileVehicle.getEngineSoundRadius();
         }
     }
 }

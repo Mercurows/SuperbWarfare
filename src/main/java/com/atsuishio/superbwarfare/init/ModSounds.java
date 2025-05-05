@@ -442,6 +442,7 @@ public class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> HPJ_11_FIRE_3P = REGISTRY.register("hpj_11_fire_3p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("hpj_11_fire_3p")));
     public static final DeferredHolder<SoundEvent, SoundEvent> HPJ_11_FAR = REGISTRY.register("hpj_11_far", () -> SoundEvent.createVariableRangeEvent(Mod.loc("hpj_11_far")));
     public static final DeferredHolder<SoundEvent, SoundEvent> HPJ_11_VERYFAR = REGISTRY.register("hpj_11_veryfar", () -> SoundEvent.createVariableRangeEvent(Mod.loc("hpj_11_veryfar")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> WIND_LOOP = REGISTRY.register("wind_loop", () -> SoundEvent.createVariableRangeEvent(Mod.loc("wind_loop")));
     public static final DeferredHolder<SoundEvent, SoundEvent> A_10_ENGINE = REGISTRY.register("a10_engine", () -> SoundEvent.createVariableRangeEvent(Mod.loc("a10_engine")));
     public static final DeferredHolder<SoundEvent, SoundEvent> A_10_ENGINE_1P = REGISTRY.register("a10_engine_1p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("a10_engine_1p")));
 }
