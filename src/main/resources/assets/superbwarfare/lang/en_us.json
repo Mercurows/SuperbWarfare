@@ -163,6 +163,7 @@
   "item.superbwarfare.lunge_mine": "Lunge Mine",
   "item.superbwarfare.rocket_70": "70mm Rocket",
   "item.superbwarfare.small_shell": "Small Caliber Shells",
+  "des.superbwarfare.small_shell": "Suitable for 20mm ~ 40mm caliber weapons",
   "item.superbwarfare.wire_guide_missile": "Wire Guide Missile",
   "item.superbwarfare.swarm_drone": "Swarm Drone",
 
@@ -632,7 +633,5 @@
 
   "block.superbwarfare.vehicle_deployer": "Vehicle Deployer",
   "des.superbwarfare.vehicle_deployer.success": "Vehicle info set successfully!",
-  "des.superbwarfare.vehicle_deployer.fail": "Please click with a container!",
-
-  "des.superbwarfare.small_shell_item": "20mm ~ 40mm"
+  "des.superbwarfare.vehicle_deployer.fail": "Please click with a container!"
 }

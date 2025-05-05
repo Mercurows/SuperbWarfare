@@ -10,6 +10,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 
 public class SmallShellItem extends Item {
+
     public SmallShellItem() {
         super(new Properties());
     }
@@ -17,6 +18,6 @@ public class SmallShellItem extends Item {
     @Override
     @ParametersAreNonnullByDefault
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
-        tooltipComponents.add(Component.translatable("des.superbwarfare.small_shell_item").withStyle(ChatFormatting.GRAY));
+        tooltipComponents.add(Component.translatable("des.superbwarfare.small_shell").withStyle(ChatFormatting.GRAY));
     }
 }

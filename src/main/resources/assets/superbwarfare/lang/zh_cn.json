@@ -164,6 +164,7 @@
   "item.superbwarfare.lunge_mine": "突刺爆雷",
   "item.superbwarfare.rocket_70": "70mm火箭弹",
   "item.superbwarfare.small_shell": "小口径炮弹",
+  "des.superbwarfare.small_shell": "适配20mm ~ 40mm口径武器",
   "item.superbwarfare.wire_guide_missile": "线控导弹",
   "item.superbwarfare.swarm_drone": "蜂群无人机",
 
@@ -633,7 +634,5 @@
 
   "block.superbwarfare.vehicle_deployer": "载具部署器",
   "des.superbwarfare.vehicle_deployer.success": "成功设置载具信息！",
-  "des.superbwarfare.vehicle_deployer.fail": "请使用集装箱点击！",
-
-  "des.superbwarfare.small_shell_item": "20mm ~ 40mm"
+  "des.superbwarfare.vehicle_deployer.fail": "请使用集装箱点击！"
 }
