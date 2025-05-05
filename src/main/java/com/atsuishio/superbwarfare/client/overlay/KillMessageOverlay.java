@@ -71,7 +71,35 @@ public class KillMessageOverlay implements LayeredDraw.Layer {
             return;
         }
 
-        float totalTop = 5;
+        int screenWidth = guiGraphics.guiWidth();
+        int screenHeight = guiGraphics.guiHeight();
+
+        var pos = KillMessageConfig.KILL_MESSAGE_POSITION.get();
+        int posX = screenWidth;
+        float posY = KillMessageConfig.KILL_MESSAGE_MARGIN_Y.get();
+        int count = KillMessageConfig.KILL_MESSAGE_COUNT.get();
+        boolean left = false;
+
+        switch (pos) {
+            case LEFT_TOP -> {
+                posX = KillMessageConfig.KILL_MESSAGE_MARGIN_X.get();
+                posY = KillMessageConfig.KILL_MESSAGE_MARGIN_Y.get();
+                left = true;
+            }
+            case RIGHT_TOP -> {
+                posX = screenWidth - KillMessageConfig.KILL_MESSAGE_MARGIN_X.get();
+                posY = KillMessageConfig.KILL_MESSAGE_MARGIN_Y.get();
+            }
+            case LEFT_BOTTOM -> {
+                posX = KillMessageConfig.KILL_MESSAGE_MARGIN_X.get();
+                posY = screenHeight - KillMessageConfig.KILL_MESSAGE_MARGIN_Y.get() - count * 10;
+                left = true;
+            }
+            case RIGHT_BOTTOM -> {
+                posX = screenWidth - KillMessageConfig.KILL_MESSAGE_MARGIN_X.get();
+                posY = screenHeight - KillMessageConfig.KILL_MESSAGE_MARGIN_Y.get() - count * 10;
+            }
+        }
 
         var arr = KillMessageHandler.QUEUE.toArray(new PlayerKillRecord[0]);
         var record = arr[0];
@@ -93,12 +121,11 @@ public class KillMessageOverlay implements LayeredDraw.Layer {
         }
 
         for (PlayerKillRecord r : KillMessageHandler.QUEUE) {
-            totalTop = renderKillMessages(r, guiGraphics, deltaTracker, totalTop);
+            posY = renderKillMessages(r, guiGraphics, deltaTracker.getGameTimeDeltaPartialTick(true), posX, posY, left);
         }
     }
 
-    private static float renderKillMessages(PlayerKillRecord record, GuiGraphics guiGraphics, DeltaTracker deltaTracker, float baseTop) {
-        int w = guiGraphics.guiWidth();
+    private static float renderKillMessages(PlayerKillRecord record, GuiGraphics guiGraphics, float partialTick, int width, float baseTop, boolean left) {
         float top = baseTop;
 
         Font font = Minecraft.getInstance().font;
@@ -124,34 +151,34 @@ public class KillMessageOverlay implements LayeredDraw.Layer {
 
         // 入场效果
         if (record.tick < 3) {
-            guiGraphics.pose().translate((3 - record.tick - deltaTracker.getGameTimeDeltaPartialTick(true)) * 33, 0, 0);
+            guiGraphics.pose().translate((3 - record.tick - partialTick) * 33 * (left ? -1 : 1), 0, 0);
         }
 
         // 4s后开始消失
         if (record.tick >= 80) {
             int animationTickCount = record.fastRemove ? 2 : 20;
-            float rate = (float) Math.pow((record.tick + deltaTracker.getGameTimeDeltaPartialTick(true) - 80) / animationTickCount, 5);
-            guiGraphics.pose().translate(rate * 100, 0, 0);
+            float rate = (float) Math.pow((record.tick + partialTick - 80) / animationTickCount, 5);
+            guiGraphics.pose().translate(rate * 100 * (left ? -1 : 1), 0, 0);
             guiGraphics.setColor(1, 1, 1, 1 - rate);
             baseTop += 10 * (1 - rate);
         } else {
             baseTop += 10;
         }
 
-        // 击杀提示是右对齐的，这里从右向左渲染
+        // 击杀提示默认是右对齐的，这里从右向左渲染
 
         // 渲染被击杀者名称
         guiGraphics.drawString(
                 Minecraft.getInstance().font,
                 targetName.get(),
-                w - targetNameWidth - 10f,
+                width - targetNameWidth - 10f,
                 top,
                 record.target.getTeamColor(),
                 false
         );
 
         // 第一个图标：爆头/爆炸/近战等图标
-        int damageTypeIconW = w - targetNameWidth - 28;
+        int damageTypeIconW = width - targetNameWidth - 28;
 
         ResourceLocation damageTypeIcon = getDamageTypeIcon(record);
 
@@ -171,7 +198,7 @@ public class KillMessageOverlay implements LayeredDraw.Layer {
 
         Player player = record.attacker;
         boolean renderItem = false;
-        int itemIconW = damageTypeIcon != null ? w - targetNameWidth - 64 : w - targetNameWidth - 46;
+        int itemIconW = damageTypeIcon != null ? width - targetNameWidth - 64 : width - targetNameWidth - 46;
 
         if (player != null && player.getVehicle() instanceof VehicleEntity vehicleEntity) {
             // 载具图标
@@ -255,7 +282,7 @@ public class KillMessageOverlay implements LayeredDraw.Layer {
                 .ifPresent(s -> attackerName.set(s.stack().getHoverName().getString()));
 
         int attackerNameWidth = font.width(attackerName.get());
-        int nameW = w - targetNameWidth - 16 - attackerNameWidth;
+        int nameW = width - targetNameWidth - 16 - attackerNameWidth;
         if (renderItem) {
             nameW -= 32;
         }
