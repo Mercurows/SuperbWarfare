@@ -3051,5 +3051,35 @@
         "stream": false
       }
     ]
+  },
+  "hpj_11_far": {
+    "sounds": [
+      {
+        "name": "superbwarfare:hpj11/hpj_11_far",
+        "stream": false
+      }
+    ]
+  },
+  "hpj_11_veryfar": {
+    "sounds": [
+      {
+        "name": "superbwarfare:hpj11/hpj_11_veryfar",
+        "stream": false
+      }
+    ]
+  },
+  "a10_engine": {
+    "sounds": [
+      {
+        "name": "superbwarfare:a10/a10_engine"
+      }
+    ]
+  },
+  "a10_engine_1p": {
+    "sounds": [
+      {
+        "name": "superbwarfare:a10/a10_engine_1p"
+      }
+    ]
   }
 }

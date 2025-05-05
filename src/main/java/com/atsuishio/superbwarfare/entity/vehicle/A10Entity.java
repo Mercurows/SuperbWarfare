@@ -152,9 +152,6 @@ public class A10Entity extends MobileVehicleEntity implements GeoEntity {
     @Override
     public void travel() {
         Entity passenger = this.getFirstPassenger();
-
-//        if (this.getEnergy() <= 0) return;
-
         float diffX;
         float diffY;
 
@@ -170,9 +167,6 @@ public class A10Entity extends MobileVehicleEntity implements GeoEntity {
                 this.setXRot(Mth.clamp(this.getXRot() + 0.1f, -89, 89));
             }
         } else if (passenger instanceof Player player) {
-            if (level().isClientSide && this.getEnergy() > 0) {
-                level().playLocalSound(this.getX(), this.getY() + this.getBbHeight() * 0.5, this.getZ(), this.getEngineSound(), this.getSoundSource(), Math.min((this.forwardInputDown ? 7.5f : 5f) * 2 * Mth.abs(this.entityData.get(POWER)), 0.25f), (random.nextFloat() * 0.1f + 1.2f), false);
-            }
 
             if (forwardInputDown && getEnergy() > 0) {
                 this.consumeEnergy(VehicleConfig.TOM_6_ENERGY_COST.get());
@@ -220,6 +214,8 @@ public class A10Entity extends MobileVehicleEntity implements GeoEntity {
             setFlap2RRot(Mth.clamp(Mth.clamp(diffX, -22.5f, 22.5f) + 8 * addZ * (1 - Mth.abs(i)), -22.5f, 22.5f));
 
             setFlap3Rot(diffY * 0.7f);
+
+            this.setPropellerRot(this.getPropellerRot() + 30 * this.entityData.get(POWER));
 
             if (!onGround() && getDeltaMovement().dot(getViewVector(1)) * 72 > 150) {
                 flyTime = Math.min(flyTime + 1, 20);
@@ -311,7 +307,7 @@ public class A10Entity extends MobileVehicleEntity implements GeoEntity {
 
     @Override
     public SoundEvent getEngineSound() {
-        return ModSounds.WHEEL_CHAIR_ENGINE.get();
+        return ModSounds.A_10_ENGINE.get();
     }
 
     protected void clampRotation(Entity entity) {

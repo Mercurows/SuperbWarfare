@@ -69,6 +69,9 @@ public class A10Renderer extends GeoEntityRenderer<A10Entity> {
         if (name.equals("gear") || name.equals("gear2") || name.equals("gear3")) {
             bone.setRotX(Mth.lerp(partialTick, animatable.gearRotO, animatable.getEntityData().get(GEAR_ROT)) * Mth.DEG_TO_RAD);
         }
+        if (name.equals("qianzhou") || name.equals("qianzhou2")) {
+            bone.setRotZ(Mth.lerp(partialTick, animatable.propellerRotO, animatable.getPropellerRot()));
+        }
         super.renderRecursively(poseStack, animatable, bone, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, color);
     }
 }

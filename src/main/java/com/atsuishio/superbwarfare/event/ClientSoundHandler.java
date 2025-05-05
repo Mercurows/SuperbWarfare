@@ -97,6 +97,14 @@ public class ClientSoundHandler {
                         player.level().playLocalSound(BlockPos.containing(engineSoundPos), engineSound, mobileVehicle.getSoundSource(), e.onGround() ? 0 : distanceReduce * distanceReduce, (float) ((2 * Math.random() - 1) * 0.002f + 1.05), false);
                     }
                 }
+                if (e instanceof A10Entity a10Entity) {
+                    distanceReduce = (float) Math.max((1 - distance / 128), 0);
+                    if (player.getVehicle() == a10Entity) {
+                        player.playSound(ModSounds.A_10_ENGINE_1P.get(), 2 * (mobileVehicle.getEntityData().get(POWER) - 0.012f), (float) ((2 * Math.random() - 1) * 0.1f + 1.0f));
+                    } else {
+                        player.level().playLocalSound(BlockPos.containing(engineSoundPos), engineSound, mobileVehicle.getSoundSource(), 5 * (mobileVehicle.getEntityData().get(POWER) - 0.012f) * distanceReduce * distanceReduce, (float) ((2 * Math.random() - 1) * 0.1f + 1), false);
+                    }
+                }
             }
         }
 
