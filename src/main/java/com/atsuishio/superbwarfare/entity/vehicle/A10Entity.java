@@ -13,10 +13,12 @@ import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.tools.CustomExplosion;
+import com.atsuishio.superbwarfare.tools.EntityFindUtil;
 import com.atsuishio.superbwarfare.tools.FormatTool;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
 import com.mojang.math.Axis;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -27,10 +29,12 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.event.EventHooks;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Math;
@@ -44,6 +48,8 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 public class A10Entity extends MobileVehicleEntity implements GeoEntity {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private float yRotSync;
+    private boolean fly;
+    private int flyTime;
 
 
     public A10Entity(EntityType<A10Entity> type, Level world) {
@@ -174,7 +180,7 @@ public class A10Entity extends MobileVehicleEntity implements GeoEntity {
             }
 
             if (backInputDown) {
-                this.entityData.set(POWER, Math.max(this.entityData.get(POWER) - 0.002f, onGround() ? -0.2f : 0.01f));
+                this.entityData.set(POWER, Math.max(this.entityData.get(POWER) - 0.002f, onGround() ? -0.04f : 0.01f));
             }
 
             if (!onGround()) {
@@ -187,10 +193,7 @@ public class A10Entity extends MobileVehicleEntity implements GeoEntity {
                 // 刹车
                 if (upInputDown) {
                     this.entityData.set(POWER, this.entityData.get(POWER) * 0.8f);
-                    this.setDeltaMovement(this.getDeltaMovement().multiply(0.9, 1, 0.9));
-                }
-                if (!(backInputDown || forwardInputDown)) {
-                    this.setDeltaMovement(this.getDeltaMovement().multiply(0.97, 1, 0.97));
+                    this.setDeltaMovement(this.getDeltaMovement().multiply(0.91, 1, 0.91));
                 }
             }
 
@@ -218,6 +221,28 @@ public class A10Entity extends MobileVehicleEntity implements GeoEntity {
 
             setFlap3Rot(diffY * 0.7f);
 
+            if (!onGround() && getDeltaMovement().dot(getViewVector(1)) * 72 > 150) {
+                flyTime = Math.min(flyTime + 1, 20);
+            }
+
+            if (getDeltaMovement().dot(getViewVector(1)) * 72 < 150 && fly) {
+                flyTime = Math.max(flyTime - 1, 0);
+            }
+
+            if (!fly && flyTime == 20) {
+                fly = true;
+            }
+
+            if (fly && flyTime == 0) {
+                fly = false;
+            }
+
+            if (fly) {
+                entityData.set(GEAR_ROT, Math.min(entityData.get(GEAR_ROT) + 5, 85));
+            } else {
+                entityData.set(GEAR_ROT, Math.max(entityData.get(GEAR_ROT) - 5, 0));
+            }
+
             player.displayClientMessage(Component.literal("speed: " + FormatTool.format2D(getDeltaMovement().dot(getViewVector(1)) * 72)), true);
         }
 
@@ -228,7 +253,60 @@ public class A10Entity extends MobileVehicleEntity implements GeoEntity {
 
         double flapAngle = (getFlap1LRot() + getFlap1RRot()) / 2;
 
-        setDeltaMovement(getDeltaMovement().add(0.0f, Mth.clamp(Math.sin((onGround() ? 25 + flapAngle : -(getXRot() - 25) + flapAngle) * Mth.DEG_TO_RAD) * Math.sin((90 - this.getXRot()) * Mth.DEG_TO_RAD) * getDeltaMovement().dot(getViewVector(1)) * 0.06, -0.04, 0.065), 0.0f));
+        setDeltaMovement(getDeltaMovement().add(0.0f, Mth.clamp(Math.sin((onGround() ? 17 + flapAngle : -(getXRot() - 17) + flapAngle) * Mth.DEG_TO_RAD) * Math.sin((90 - this.getXRot()) * Mth.DEG_TO_RAD) * getDeltaMovement().dot(getViewVector(1)) * 0.06, -0.04, 0.065), 0.0f));
+    }
+
+    @Override
+    public void move(@NotNull MoverType movementType, @NotNull Vec3 movement) {
+        if (!this.level().isClientSide()) {
+            MobileVehicleEntity.IGNORE_ENTITY_GROUND_CHECK_STEPPING = true;
+        }
+        if (level() instanceof ServerLevel && canCollideBlockBeastly()) {
+            collideBlockBeastly();
+        }
+
+        super.move(movementType, movement);
+        if (level() instanceof ServerLevel) {
+            if (this.horizontalCollision) {
+                collideBlock();
+                if (canCollideHardBlock()) {
+                    collideHardBlock();
+                }
+            }
+
+            if (lastTickSpeed < 0.3 || collisionCoolDown > 0) return;
+            Entity driver = EntityFindUtil.findEntity(this.level(), this.entityData.get(LAST_DRIVER_UUID));
+
+            if ((verticalCollision)) {
+                if (entityData.get(GEAR_ROT) > 10 || (Mth.abs(getRoll()) > 20)) {
+                    this.hurt(ModDamageTypes.causeVehicleStrikeDamage(this.level().registryAccess(), this, driver == null ? this : driver), (float) ((8 + Mth.abs(getRoll() * 0.2f)) * (lastTickSpeed - 0.3) * (lastTickSpeed - 0.3)));
+                    if (!this.level().isClientSide) {
+                        this.level().playSound(null, this, ModSounds.VEHICLE_STRIKE.get(), this.getSoundSource(), 1, 1);
+                    }
+                    this.bounceVertical(Direction.getNearest(this.getDeltaMovement().x(), this.getDeltaMovement().y(), this.getDeltaMovement().z()).getOpposite());
+                } else {
+                    if (Mth.abs((float) lastTickVerticalSpeed) > 0.4) {
+                        this.hurt(ModDamageTypes.causeVehicleStrikeDamage(this.level().registryAccess(), this, driver == null ? this : driver), (float) (96 * ((Mth.abs((float) lastTickVerticalSpeed) - 0.4) * (lastTickSpeed - 0.3) * (lastTickSpeed - 0.3))));
+                        if (!this.level().isClientSide) {
+                            this.level().playSound(null, this, ModSounds.VEHICLE_STRIKE.get(), this.getSoundSource(), 1, 1);
+                        }
+                        this.bounceVertical(Direction.getNearest(this.getDeltaMovement().x(), this.getDeltaMovement().y(), this.getDeltaMovement().z()).getOpposite());
+                    }
+                }
+
+            }
+
+            if (this.horizontalCollision) {
+                this.hurt(ModDamageTypes.causeVehicleStrikeDamage(this.level().registryAccess(), this, driver == null ? this : driver), (float) (126 * ((lastTickSpeed - 0.4) * (lastTickSpeed - 0.4))));
+                this.bounceHorizontal(Direction.getNearest(this.getDeltaMovement().x(), this.getDeltaMovement().y(), this.getDeltaMovement().z()).getOpposite());
+                if (!this.level().isClientSide) {
+                    this.level().playSound(null, this, ModSounds.VEHICLE_STRIKE.get(), this.getSoundSource(), 1, 1);
+                }
+                collisionCoolDown = 4;
+                crash = true;
+                this.entityData.set(POWER, 0.8f * entityData.get(POWER));
+            }
+        }
     }
 
     @Override
