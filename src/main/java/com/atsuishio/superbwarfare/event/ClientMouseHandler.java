@@ -170,7 +170,7 @@ public class ClientMouseHandler {
             return 0.33;
         }
 
-        if (player.getVehicle() instanceof Tom6Entity) {
+        if (player.getVehicle() instanceof Tom6Entity || player.getVehicle() instanceof A10Entity) {
             return 0.3;
         }
 

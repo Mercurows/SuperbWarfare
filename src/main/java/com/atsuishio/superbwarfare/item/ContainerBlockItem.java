@@ -59,7 +59,8 @@ public class ContainerBlockItem extends BlockItem implements GeoItem {
             () -> ContainerBlockItem.createInstance(ModEntities.PRISM_TANK.get(), true),
             () -> ContainerBlockItem.createInstance(ModEntities.YX_100.get()),
             () -> ContainerBlockItem.createInstance(ModEntities.WHEEL_CHAIR.get()),
-            () -> ContainerBlockItem.createInstance(ModEntities.TOM_6.get())
+            () -> ContainerBlockItem.createInstance(ModEntities.TOM_6.get()),
+            () -> ContainerBlockItem.createInstance(ModEntities.A_10A.get())
     );
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);

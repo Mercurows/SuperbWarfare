@@ -3,12 +3,15 @@ package com.atsuishio.superbwarfare.entity.vehicle;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
+import com.atsuishio.superbwarfare.entity.projectile.GunGrenadeEntity;
 import com.atsuishio.superbwarfare.entity.projectile.MelonBombEntity;
+import com.atsuishio.superbwarfare.entity.projectile.MortarShellEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModSounds;
+import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.tools.CustomExplosion;
 import com.atsuishio.superbwarfare.tools.FormatTool;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
@@ -16,21 +19,15 @@ import com.mojang.math.Axis;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.syncher.EntityDataAccessor;
-import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -44,49 +41,42 @@ import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-import javax.annotation.ParametersAreNonnullByDefault;
-
-public class Tom6Entity extends MobileVehicleEntity implements GeoEntity {
-    public static final EntityDataAccessor<Boolean> MELON = SynchedEntityData.defineId(Tom6Entity.class, EntityDataSerializers.BOOLEAN);
+public class A10Entity extends MobileVehicleEntity implements GeoEntity {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private float yRotSync;
 
 
-    public Tom6Entity(EntityType<Tom6Entity> type, Level world) {
+    public A10Entity(EntityType<A10Entity> type, Level world) {
         super(type, world);
     }
 
     @Override
     public float maxUpStep() {
-        return 0.5F;
+        return 0.5f;
     }
 
     @Override
     public ThirdPersonCameraPosition getThirdPersonCameraPosition(int index) {
-        return new ThirdPersonCameraPosition(4, 1, 0);
+        return new ThirdPersonCameraPosition(17, 3, 0);
     }
 
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
-        builder.define(MELON, false);
     }
 
     @Override
     public void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
-        compound.putBoolean("Melon", this.entityData.get(MELON));
     }
 
     @Override
     public void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
-        this.entityData.set(MELON, compound.getBoolean("Melon"));
     }
 
     @Override
-    @ParametersAreNonnullByDefault
-    protected void playStepSound(BlockPos pPos, BlockState pState) {
+    protected void playStepSound(@NotNull BlockPos pPos, @NotNull BlockState pState) {
         this.playSound(ModSounds.WHEEL_STEP.get(), (float) (getDeltaMovement().length() * 0.5), random.nextFloat() * 0.1f + 1f);
     }
 
@@ -98,18 +88,36 @@ public class Tom6Entity extends MobileVehicleEntity implements GeoEntity {
     @Override
     public DamageModifier getDamageModifier() {
         return super.getDamageModifier()
-                .multiply(2, ModDamageTypes.VEHICLE_STRIKE);
-    }
-
-    @Override
-    public @NotNull InteractionResult interact(Player player, @NotNull InteractionHand hand) {
-        if (player.getMainHandItem().is(Items.MELON) && !entityData.get(MELON)) {
-            entityData.set(MELON, true);
-            player.getMainHandItem().shrink(1);
-            player.level().playSound(player, this.getOnPos(), SoundEvents.WOOD_PLACE, SoundSource.PLAYERS, 1, 1);
-            return InteractionResult.SUCCESS;
-        }
-        return super.interact(player, hand);
+                .multiply(0.4f)
+                .multiply(1.5f, DamageTypes.ARROW)
+                .multiply(1.5f, DamageTypes.TRIDENT)
+                .multiply(2.5f, DamageTypes.MOB_ATTACK)
+                .multiply(2f, DamageTypes.MOB_ATTACK_NO_AGGRO)
+                .multiply(1.5f, DamageTypes.MOB_PROJECTILE)
+                .multiply(12.5f, DamageTypes.LAVA)
+                .multiply(6f, DamageTypes.EXPLOSION)
+                .multiply(6f, DamageTypes.PLAYER_EXPLOSION)
+                .multiply(2.4f, ModDamageTypes.CUSTOM_EXPLOSION)
+                .multiply(2f, ModDamageTypes.PROJECTILE_BOOM)
+                .multiply(0.75f, ModDamageTypes.MINE)
+                .multiply(1.5f, ModDamageTypes.CANNON_FIRE)
+                .multiply(0.25f, ModTags.DamageTypes.PROJECTILE)
+                .multiply(0.85f, ModTags.DamageTypes.PROJECTILE_ABSOLUTE)
+                .multiply(15f, ModDamageTypes.VEHICLE_STRIKE)
+                .custom((source, damage) -> getSourceAngle(source, 0.25f) * damage)
+                .custom((source, damage) -> {
+                    if (source.getDirectEntity() instanceof MelonBombEntity) {
+                        return 3f * damage;
+                    }
+                    if (source.getDirectEntity() instanceof MortarShellEntity) {
+                        return 1.25f * damage;
+                    }
+                    if (source.getDirectEntity() instanceof GunGrenadeEntity) {
+                        return 1.5f * damage;
+                    }
+                    return damage;
+                })
+                .reduce(7);
     }
 
     @Override
@@ -117,11 +125,11 @@ public class Tom6Entity extends MobileVehicleEntity implements GeoEntity {
         super.baseTick();
         float f;
 
-        f = (float) Mth.clamp(0.69f + 0.101f * Mth.abs(90 - (float) calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90, 0.01, 0.99);
+        f = (float) Mth.clamp(Math.max((onGround() ? 0.785f : 0.79f) - 0.01 * getDeltaMovement().length(), 0.5) + 0.031f * Mth.abs(90 - (float) calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90, 0.01, 0.99);
 
         boolean forward = Mth.abs((float) calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) < 90;
 
-        this.setDeltaMovement(this.getDeltaMovement().add(this.getViewVector(1).scale((forward ? 0.24 : -0.24) * this.getDeltaMovement().length())));
+        this.setDeltaMovement(this.getDeltaMovement().add(this.getViewVector(1).scale((forward ? 0.23 : -0.23) * this.getDeltaMovement().length())));
         this.setDeltaMovement(this.getDeltaMovement().multiply(f, f, f));
 
         if (this.isInWater() && this.tickCount % 4 == 0) {
@@ -131,7 +139,7 @@ public class Tom6Entity extends MobileVehicleEntity implements GeoEntity {
             }
         }
 
-        this.terrainCompact(1f, 1.2f);
+        this.terrainCompact(5f, 5f);
         this.refreshDimensions();
     }
 
@@ -151,7 +159,7 @@ public class Tom6Entity extends MobileVehicleEntity implements GeoEntity {
             this.backInputDown = false;
             this.entityData.set(POWER, this.entityData.get(POWER) * 0.95f);
             if (onGround()) {
-                this.setDeltaMovement(this.getDeltaMovement().multiply(0.96, 1, 0.96));
+                this.setDeltaMovement(this.getDeltaMovement().multiply(0.94, 1, 0.94));
             } else {
                 this.setXRot(Mth.clamp(this.getXRot() + 0.1f, -89, 89));
             }
@@ -162,74 +170,65 @@ public class Tom6Entity extends MobileVehicleEntity implements GeoEntity {
 
             if (forwardInputDown && getEnergy() > 0) {
                 this.consumeEnergy(VehicleConfig.TOM_6_ENERGY_COST.get());
-                this.entityData.set(POWER, Math.min(this.entityData.get(POWER) + 0.1f, 1f));
+                this.entityData.set(POWER, Math.min(this.entityData.get(POWER) + 0.002f, 1f));
             }
 
-            if (backInputDown || downInputDown) {
-                this.entityData.set(POWER, Math.max(this.entityData.get(POWER) - (this.entityData.get(POWER) > 0 ? 0.1f : 0.01f), onGround() ? -0.2f : 0.2f));
+            if (backInputDown) {
+                this.entityData.set(POWER, Math.max(this.entityData.get(POWER) - 0.002f, onGround() ? -0.2f : 0.01f));
             }
 
             if (!onGround()) {
                 if (rightInputDown) {
-                    this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) - 0.4f);
+                    this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) - 0.2f);
                 } else if (this.leftInputDown) {
-                    this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) + 0.4f);
+                    this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) + 0.2f);
+                }
+            } else {
+                // 刹车
+                if (upInputDown) {
+                    this.entityData.set(POWER, this.entityData.get(POWER) * 0.8f);
+                    this.setDeltaMovement(this.getDeltaMovement().multiply(0.9, 1, 0.9));
+                }
+                if (!(backInputDown || forwardInputDown)) {
+                    this.setDeltaMovement(this.getDeltaMovement().multiply(0.97, 1, 0.97));
                 }
             }
 
-            diffY = Math.clamp(-90f, 90f, Mth.wrapDegrees(passenger.getYHeadRot() - this.getYRot()));
-            diffX = Math.clamp(-60f, 60f, Mth.wrapDegrees(passenger.getXRot() - this.getXRot()));
+            diffY = Mth.clamp(Mth.wrapDegrees(passenger.getYHeadRot() - this.getYRot()), -90f, 90f);
+            diffX = Mth.clamp(Mth.wrapDegrees(passenger.getXRot() - this.getXRot()), -90f, 90f);
 
             float roll = Mth.abs(Mth.clamp(getRoll() / 60, -1.5f, 1.5f));
 
-            float addY = Mth.clamp(Math.min((this.onGround() ? 1.5f : 0.9f) * (float) Math.max(getDeltaMovement().length() - 0.06, 0.1), 0.9f) * diffY - 0.5f * this.entityData.get(DELTA_ROT), -3 * (roll + 1), 3 * (roll + 1));
-            float addX = Mth.clamp(Math.min((float) Math.max(getDeltaMovement().length() - 0.1, 0.01), 0.9f) * diffX, -4, 4);
-            float addZ = this.entityData.get(DELTA_ROT) - (this.onGround() ? 0 : 0.01f) * diffY * (float) getDeltaMovement().length();
+            float addY = Mth.clamp(Math.max((this.onGround() ? 0.1f : 0.2f) * (float) Math.max(getDeltaMovement().dot(getViewVector(1)), 0.05), 0f) * diffY - 0.5f * this.entityData.get(DELTA_ROT), -1.5f * (roll + 1), 1.5f * (roll + 1));
+            float addX = Mth.clamp(Math.min((float) Math.max(getDeltaMovement().dot(getViewVector(1)) - 0.2, 0.02), 0.5f) * diffX, -1.3f, 1.3f);
+            float addZ = this.entityData.get(DELTA_ROT) - (this.onGround() ? 0 : 0.01f) * diffY * (float) getDeltaMovement().dot(getViewVector(1));
 
             float i = getXRot() / 90;
-
             yRotSync = addY * (1 - Mth.abs(i)) + addZ * i;
 
             this.setYRot(this.getYRot() + yRotSync);
-            this.setXRot(Mth.clamp(this.getXRot() + addX, onGround() ? -12 : -120, onGround() ? 3 : 120));
+            this.setXRot(Mth.clamp(this.getXRot() + addX, onGround() ? 0 : -120, onGround() ? 0 : 120));
             this.setZRot(this.getRoll() - addZ * (1 - Mth.abs(i)));
 
-            // 空格投掷西瓜炸弹
-            if (upInputDown && !onGround() && entityData.get(MELON)) {
-                entityData.set(MELON, false);
+            setFlap1LRot(Mth.clamp(-Mth.clamp(diffX, -22.5f, 22.5f) - 8 * addZ * (1 - Mth.abs(i)), -22.5f, 22.5f));
+            setFlap1RRot(Mth.clamp(-Mth.clamp(diffX, -22.5f, 22.5f) + 8 * addZ * (1 - Mth.abs(i)), -22.5f, 22.5f));
 
-                Matrix4f transform = getVehicleTransform(1);
-                Vector4f worldPosition;
-                worldPosition = transformPosition(transform, 0, -0.2f, 0);
+            setFlap2LRot(Mth.clamp(Mth.clamp(diffX, -22.5f, 22.5f) - 8 * addZ * (1 - Mth.abs(i)), -22.5f, 22.5f));
+            setFlap2RRot(Mth.clamp(Mth.clamp(diffX, -22.5f, 22.5f) + 8 * addZ * (1 - Mth.abs(i)), -22.5f, 22.5f));
 
-                MelonBombEntity melonBomb = new MelonBombEntity(player, player.level());
-                melonBomb.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
-                melonBomb.shoot(getDeltaMovement().x, getDeltaMovement().y, getDeltaMovement().z, (float) getDeltaMovement().length(), 0);
-                passenger.level().addFreshEntity(melonBomb);
+            setFlap3Rot(diffY * 0.7f);
 
-                this.level().playSound(null, getOnPos(), SoundEvents.IRON_DOOR_OPEN, SoundSource.PLAYERS, 1, 1);
-                upInputDown = false;
-            }
-
-            player.displayClientMessage(Component.literal("speed: " + FormatTool.format2D(getDeltaMovement().dot(getViewVector(1)) * 20)), true);
+            player.displayClientMessage(Component.literal("speed: " + FormatTool.format2D(getDeltaMovement().dot(getViewVector(1)) * 72)), true);
         }
 
-        this.entityData.set(POWER, this.entityData.get(POWER) * 0.995f);
+        this.entityData.set(POWER, this.entityData.get(POWER) * 0.99f);
         this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) * 0.95f);
 
+        this.setDeltaMovement(this.getDeltaMovement().add(getViewVector(1).scale(Math.max((90 + this.getXRot()) / 90, 0.3) * 0.4 * this.entityData.get(POWER))));
 
-        this.setDeltaMovement(this.getDeltaMovement().add(getViewVector(1).scale(0.03 * this.entityData.get(POWER))));
+        double flapAngle = (getFlap1LRot() + getFlap1RRot()) / 2;
 
-        setDeltaMovement(getDeltaMovement().add(0.0f, Mth.clamp(Math.sin((onGround() ? 45 : -(getXRot() - 20)) * Mth.DEG_TO_RAD) * Math.sin((90 - this.getXRot()) * Mth.DEG_TO_RAD) * getDeltaMovement().dot(getViewVector(1)) * 0.04, -0.04, 0.09), 0.0f));
-
-//        Vector3f direction = getRightDirection().mul(-Math.sin(this.getRoll() * Mth.DEG_TO_RAD) * this.entityData.get(POWER));
-//        setDeltaMovement(getDeltaMovement().add(new Vec3(direction.x, direction.y, direction.z).scale(3)));
-//
-//        this.setDeltaMovement(this.getDeltaMovement().add(
-//                Mth.sin(-this.getYRot() * 0.017453292F) * 0.19 * this.entityData.get(POWER),
-//                Mth.clamp(Math.sin((onGround() ? 45 : -(getXRot() - 30)) * Mth.DEG_TO_RAD) * getDeltaMovement().dot(getViewVector(1)) * 0.067, -0.04, 0.09),
-//                Mth.cos(this.getYRot() * 0.017453292F) * 0.19 * this.entityData.get(POWER)
-//        ));
+        setDeltaMovement(getDeltaMovement().add(0.0f, Mth.clamp(Math.sin((onGround() ? 25 + flapAngle : -(getXRot() - 25) + flapAngle) * Mth.DEG_TO_RAD) * Math.sin((90 - this.getXRot()) * Mth.DEG_TO_RAD) * getDeltaMovement().dot(getViewVector(1)) * 0.06, -0.04, 0.065), 0.0f));
     }
 
     @Override
@@ -245,7 +244,7 @@ public class Tom6Entity extends MobileVehicleEntity implements GeoEntity {
 
         entity.setYBodyRot(this.getYRot());
         float f2 = Mth.wrapDegrees(entity.getYRot() - this.getYRot());
-        float f3 = Mth.clamp(f2, -45.0F, 45.0F);
+        float f3 = Mth.clamp(f2, -90.0F, 90.0F);
         entity.yRotO += f3 - f2;
         entity.setYRot(entity.getYRot() + f3 - f2);
         entity.setYBodyRot(this.getYRot());
@@ -266,8 +265,11 @@ public class Tom6Entity extends MobileVehicleEntity implements GeoEntity {
         Matrix4f transform = getVehicleTransform(1);
 
         float x = 0f;
-        float y = 0.05f;
-        float z = -0.4f;
+        float y = 0.1f;
+        float z = 3.8494875f;
+
+        // TODO 正确调整乘客位置
+        y += (float) passenger.getVehicleAttachmentPoint(this).y;
 
         int i = this.getSeatIndex(passenger);
 
@@ -298,7 +300,7 @@ public class Tom6Entity extends MobileVehicleEntity implements GeoEntity {
     @Override
     public Matrix4f getVehicleTransform(float ticks) {
         Matrix4f transform = new Matrix4f();
-        transform.translate((float) Mth.lerp(ticks, xo, getX()), (float) Mth.lerp(ticks, yo + 0.5f, getY() + 0.5f), (float) Mth.lerp(ticks, zo, getZ()));
+        transform.translate((float) Mth.lerp(ticks, xo, getX()), (float) Mth.lerp(ticks, yo + 2.375f, getY() + 2.375f), (float) Mth.lerp(ticks, zo, getZ()));
         transform.rotate(Axis.YP.rotationDegrees(-Mth.lerp(ticks, yRotO, getYRot())));
         transform.rotate(Axis.XP.rotationDegrees(Mth.lerp(ticks, xRotO, getXRot())));
         transform.rotate(Axis.ZP.rotationDegrees(Mth.lerp(ticks, prevRoll, getRoll())));
@@ -307,7 +309,6 @@ public class Tom6Entity extends MobileVehicleEntity implements GeoEntity {
 
     @Override
     public void destroy() {
-
         if (this.crash) {
             crashPassengers();
         } else {
@@ -315,25 +316,14 @@ public class Tom6Entity extends MobileVehicleEntity implements GeoEntity {
         }
 
         if (level() instanceof ServerLevel) {
-            if (entityData.get(MELON)) {
-                CustomExplosion explosion = new CustomExplosion(this.level(), this,
-                        ModDamageTypes.causeCustomExplosionDamage(this.level().registryAccess(), this, getAttacker()), VehicleConfig.TOM_6_BOMB_EXPLOSION_DAMAGE.get(),
-                        this.getX(), this.getY(), this.getZ(), VehicleConfig.TOM_6_BOMB_EXPLOSION_RADIUS.get().floatValue(), ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP).setDamageMultiplier(1);
-                explosion.explode();
-                EventHooks.onExplosionStart(this.level(), explosion);
-                explosion.finalizeExplosion(false);
-                ParticleTool.spawnHugeExplosionParticles(this.level(), this.position());
-            } else {
-                CustomExplosion explosion = new CustomExplosion(this.level(), this,
-                        ModDamageTypes.causeCustomExplosionDamage(this.level().registryAccess(), this, getAttacker()), 15.0f,
-                        this.getX(), this.getY(), this.getZ(), 2f, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP).setDamageMultiplier(1);
-                explosion.explode();
-                EventHooks.onExplosionStart(this.level(), explosion);
-                explosion.finalizeExplosion(false);
-                ParticleTool.spawnMediumExplosionParticles(this.level(), this.position());
-            }
+            CustomExplosion explosion = new CustomExplosion(this.level(), this,
+                    ModDamageTypes.causeCustomExplosionDamage(this.level().registryAccess(), this, getAttacker()), 300.0f,
+                    this.getX(), this.getY(), this.getZ(), 8f, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).setDamageMultiplier(1);
+            explosion.explode();
+            EventHooks.onExplosionStart(this.level(), explosion);
+            explosion.finalizeExplosion(false);
+            ParticleTool.spawnHugeExplosionParticles(this.level(), this.position());
         }
-
         this.discard();
     }
 
@@ -348,12 +338,12 @@ public class Tom6Entity extends MobileVehicleEntity implements GeoEntity {
 
     @Override
     public float getMaxHealth() {
-        return VehicleConfig.TOM_6_HP.get();
+        return 300;
     }
 
     @Override
     public int getMaxEnergy() {
-        return VehicleConfig.TOM_6_MAX_ENERGY.get();
+        return 5000000;
     }
 
     @Override

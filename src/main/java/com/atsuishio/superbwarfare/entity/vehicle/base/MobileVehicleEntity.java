@@ -104,6 +104,17 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
     public double velocityO;
     public double velocity;
 
+    public float flap1LRot;
+    public float flap1LRotO;
+    public float flap1RRot;
+    public float flap1RRotO;
+    public float flap2LRot;
+    public float flap2LRotO;
+    public float flap2RRot;
+    public float flap2RRotO;
+    public float flap3Rot;
+    public float flap3RotO;
+
     public MobileVehicleEntity(EntityType<?> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
     }
@@ -169,6 +180,12 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
         if (collisionCoolDown > 0) {
             collisionCoolDown--;
         }
+
+        flap1LRotO = this.getFlap1LRot();
+        flap1RRotO = this.getFlap1RRot();
+        flap2LRotO = this.getFlap2LRot();
+        flap2RRotO = this.getFlap2RRot();
+        flap3RotO = this.getFlap3Rot();
 
         super.baseTick();
 
@@ -744,6 +761,46 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
 
     public void setRecoilShake(double pRecoilShake) {
         this.recoilShake = pRecoilShake;
+    }
+
+    public float getFlap1LRot() {
+        return this.flap1LRot;
+    }
+
+    public void setFlap1LRot(float pFlap1LRot) {
+        this.flap1LRot = pFlap1LRot;
+    }
+
+    public float getFlap1RRot() {
+        return this.flap1RRot;
+    }
+
+    public void setFlap1RRot(float pFlap1RRot) {
+        this.flap1RRot = pFlap1RRot;
+    }
+
+    public float getFlap2LRot() {
+        return this.flap2LRot;
+    }
+
+    public void setFlap2LRot(float pFlap2LRot) {
+        this.flap2LRot = pFlap2LRot;
+    }
+
+    public float getFlap2RRot() {
+        return this.flap2RRot;
+    }
+
+    public void setFlap2RRot(float pFlap2RRot) {
+        this.flap2RRot = pFlap2RRot;
+    }
+
+    public float getFlap3Rot() {
+        return this.flap3Rot;
+    }
+
+    public void setFlap3Rot(float pFlap3Rot) {
+        this.flap3Rot = pFlap3Rot;
     }
 
     public boolean hasDecoy() {
