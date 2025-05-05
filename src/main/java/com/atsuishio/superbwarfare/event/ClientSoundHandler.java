@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.event;
 
+import com.atsuishio.superbwarfare.ModClient;
 import com.atsuishio.superbwarfare.entity.projectile.SwarmDroneEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.*;
 import com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity;
@@ -18,6 +19,7 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import org.joml.Math;
 
@@ -29,6 +31,12 @@ import static com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntit
 
 @EventBusSubscriber(bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
 public class ClientSoundHandler {
+
+    @SubscribeEvent
+    public static void initClient(FMLClientSetupEvent setup) {
+        ModClient.init();
+    }
+
     @SubscribeEvent
     public static void handleClientTick(ClientTickEvent.Pre event) {
         LocalPlayer player = Minecraft.getInstance().player;

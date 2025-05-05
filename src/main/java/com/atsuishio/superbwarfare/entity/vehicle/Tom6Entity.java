@@ -234,7 +234,7 @@ public class Tom6Entity extends MobileVehicleEntity implements GeoEntity {
 
     @Override
     public SoundEvent getEngineSound() {
-        return ModSounds.WHEEL_CHAIR_ENGINE.get();
+        return SoundEvents.ELYTRA_FLYING;
     }
 
     protected void clampRotation(Entity entity) {
