@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.entity.projectile.GunGrenadeEntity;
 import com.atsuishio.superbwarfare.entity.projectile.MelonBombEntity;
 import com.atsuishio.superbwarfare.entity.projectile.MortarShellEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.ContainerMobileVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
@@ -45,7 +46,7 @@ import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-public class A10Entity extends MobileVehicleEntity implements GeoEntity {
+public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private float yRotSync;
     private boolean fly;
@@ -340,7 +341,7 @@ public class A10Entity extends MobileVehicleEntity implements GeoEntity {
 
         float x = 0f;
         float y = 0.1f;
-        float z = 3.8494875f;
+        float z = 3.95f;
 
         // TODO 正确调整乘客位置
         y += (float) passenger.getVehicleAttachmentPoint(this).y;

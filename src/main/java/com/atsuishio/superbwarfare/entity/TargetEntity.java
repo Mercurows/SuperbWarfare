@@ -116,7 +116,7 @@ public class TargetEntity extends LivingEntity implements GeoEntity {
 
             if (sourceEntity instanceof Player player) {
                 player.displayClientMessage(Component.translatable("tips.superbwarfare.target.down",
-                        FormatTool.format1D((entity.position()).distanceTo((sourceEntity.position()))), "m"), true);
+                        FormatTool.format1D(entity.position().distanceTo(sourceEntity.position())), "m"), true);
                 SoundTool.playLocalSound(player, ModSounds.TARGET_DOWN.get(), 1, 1);
                 targetEntity.entityData.set(DOWN_TIME, 40);
             }
