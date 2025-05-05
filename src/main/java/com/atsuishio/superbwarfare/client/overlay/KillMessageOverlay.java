@@ -21,6 +21,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.damagesource.DamageTypes;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -130,14 +131,8 @@ public class KillMessageOverlay implements LayeredDraw.Layer {
 
         Font font = Minecraft.getInstance().font;
 
-        AtomicReference<String> targetName = new AtomicReference<>(record.target.getDisplayName().getString());
-        if (record.target instanceof Player targetPlayer) {
-            CuriosApi.getCuriosInventory(targetPlayer)
-                    .flatMap(c -> c.findFirstCurio(ModItems.DOG_TAG.get()))
-                    .ifPresent(s -> targetName.set(s.stack().getHoverName().getString()));
-        }
-
-        int targetNameWidth = font.width(targetName.get());
+        String targetName = getEntityName(record.target);
+        int targetNameWidth = font.width(targetName);
 
         guiGraphics.pose().pushPose();
 
@@ -166,138 +161,125 @@ public class KillMessageOverlay implements LayeredDraw.Layer {
         }
 
         // 击杀提示默认是右对齐的，这里从右向左渲染
+        if (!left) {
+            float currentPosX = width - targetNameWidth - 10f;
 
-        // 渲染被击杀者名称
-        guiGraphics.drawString(
-                Minecraft.getInstance().font,
-                targetName.get(),
-                width - targetNameWidth - 10f,
-                top,
-                record.target.getTeamColor(),
-                false
-        );
+            // 渲染被击杀者名称
+            guiGraphics.drawString(
+                    Minecraft.getInstance().font,
+                    targetName,
+                    currentPosX,
+                    top,
+                    record.target.getTeamColor(),
+                    false
+            );
 
-        // 第一个图标：爆头/爆炸/近战等图标
-        int damageTypeIconW = width - targetNameWidth - 28;
+            // 渲染伤害类型图标
+            ResourceLocation damageTypeIcon = getDamageTypeIcon(record);
+            if (damageTypeIcon != null) {
+                currentPosX -= 18;
+                preciseBlit(guiGraphics,
+                        damageTypeIcon,
+                        currentPosX,
+                        top - 2,
+                        0,
+                        0,
+                        12,
+                        12,
+                        12,
+                        12
+                );
+            }
 
-        ResourceLocation damageTypeIcon = getDamageTypeIcon(record);
+            // 渲染武器图标
+            ResourceLocation currentWeaponIcon = getWeaponIcon(record);
+            if (currentWeaponIcon != null) {
+                currentPosX -= 36;
+                preciseBlit(guiGraphics,
+                        currentWeaponIcon,
+                        currentPosX,
+                        top,
+                        0,
+                        0,
+                        32,
+                        8,
+                        -32,
+                        8
+                );
+            }
 
-        if (damageTypeIcon != null) {
-            preciseBlit(guiGraphics,
-                    damageTypeIcon,
-                    damageTypeIconW,
-                    top - 2,
-                    0,
-                    0,
-                    12,
-                    12,
-                    12,
-                    12
+            // 渲染击杀者名称
+            String attackerName = getEntityName(record.attacker);
+            currentPosX -= font.width(attackerName) + 6;
+
+            guiGraphics.drawString(
+                    Minecraft.getInstance().font,
+                    attackerName,
+                    currentPosX,
+                    top,
+                    record.attacker.getTeamColor(),
+                    false
+            );
+        } else {
+            float currentPosX = width + 10f;
+
+            // 渲染击杀者名称
+            String attackerName = getEntityName(record.attacker);
+            guiGraphics.drawString(
+                    Minecraft.getInstance().font,
+                    attackerName,
+                    currentPosX,
+                    top,
+                    record.attacker.getTeamColor(),
+                    false
+            );
+
+            currentPosX += font.width(attackerName) + 6;
+
+            // 渲染武器图标
+            ResourceLocation currentWeaponIcon = getWeaponIcon(record);
+            if (currentWeaponIcon != null) {
+                preciseBlit(guiGraphics,
+                        currentWeaponIcon,
+                        currentPosX,
+                        top,
+                        0,
+                        0,
+                        32,
+                        8,
+                        -32,
+                        8
+                );
+                currentPosX += 36;
+            }
+
+            // 渲染伤害类型图标
+            ResourceLocation damageTypeIcon = getDamageTypeIcon(record);
+            if (damageTypeIcon != null) {
+                preciseBlit(guiGraphics,
+                        damageTypeIcon,
+                        currentPosX,
+                        top - 2,
+                        0,
+                        0,
+                        12,
+                        12,
+                        12,
+                        12
+                );
+                currentPosX += 18;
+            }
+
+            // 渲染被击杀者名称
+            guiGraphics.drawString(
+                    Minecraft.getInstance().font,
+                    targetName,
+                    currentPosX,
+                    top,
+                    record.target.getTeamColor(),
+                    false
             );
         }
-
-        Player player = record.attacker;
-        boolean renderItem = false;
-        int itemIconW = damageTypeIcon != null ? width - targetNameWidth - 64 : width - targetNameWidth - 46;
-
-        if (player != null && player.getVehicle() instanceof VehicleEntity vehicleEntity) {
-            // 载具图标
-            if ((vehicleEntity instanceof ArmedVehicleEntity iArmedVehicle && iArmedVehicle.banHand(player)) || record.damageType == ModDamageTypes.VEHICLE_STRIKE) {
-                renderItem = true;
-
-                ResourceLocation resourceLocation = vehicleEntity.getVehicleIcon();
-
-                preciseBlit(guiGraphics,
-                        resourceLocation,
-                        itemIconW,
-                        top,
-                        0,
-                        0,
-                        32,
-                        8,
-                        -32,
-                        8
-                );
-            } else {
-                if (record.stack.getItem() instanceof GunItem gunItem) {
-                    renderItem = true;
-
-                    ResourceLocation resourceLocation = gunItem.getGunIcon();
-
-                    preciseBlit(guiGraphics,
-                            resourceLocation,
-                            itemIconW,
-                            top,
-                            0,
-                            0,
-                            32,
-                            8,
-                            -32,
-                            8
-                    );
-                }
-            }
-        } else {
-            // 如果是枪械击杀，则渲染枪械图标
-            if (record.stack.getItem() instanceof GunItem gunItem) {
-                renderItem = true;
-
-                ResourceLocation resourceLocation = gunItem.getGunIcon();
-
-                preciseBlit(guiGraphics,
-                        resourceLocation,
-                        itemIconW,
-                        top,
-                        0,
-                        0,
-                        32,
-                        8,
-                        -32,
-                        8
-                );
-            }
-
-            // TODO 如果是特殊武器击杀，则渲染对应图标
-            if (record.stack.getItem().getDescriptionId().equals("item.dreamaticvoyage.world_peace_staff")) {
-                renderItem = true;
-
-                preciseBlit(guiGraphics,
-                        WORLD_PEACE_STAFF,
-                        itemIconW,
-                        top,
-                        0,
-                        0,
-                        32,
-                        8,
-                        32,
-                        8
-                );
-            }
-        }
-
-        // 渲染击杀者名称
-        AtomicReference<String> attackerName = new AtomicReference<>(record.attacker.getDisplayName().getString());
-        CuriosApi.getCuriosInventory(record.attacker)
-                .flatMap(c -> c.findFirstCurio(ModItems.DOG_TAG.get()))
-                .ifPresent(s -> attackerName.set(s.stack().getHoverName().getString()));
-
-        int attackerNameWidth = font.width(attackerName.get());
-        int nameW = width - targetNameWidth - 16 - attackerNameWidth;
-        if (renderItem) {
-            nameW -= 32;
-        }
-        if (damageTypeIcon != null) {
-            nameW -= 18;
-        }
-
-        guiGraphics.drawString(
-                Minecraft.getInstance().font,
-                attackerName.get(),
-                nameW,
-                top,
-                record.attacker.getTeamColor(),
-                false
-        );
 
         RenderSystem.defaultBlendFunc();
         RenderSystem.disableBlend();
@@ -349,5 +331,41 @@ public class KillMessageOverlay implements LayeredDraw.Layer {
             }
         }
         return icon;
+    }
+
+    public static String getEntityName(Entity entity) {
+        AtomicReference<String> targetName = new AtomicReference<>(entity.getDisplayName().getString());
+        if (entity instanceof Player targetPlayer) {
+            CuriosApi.getCuriosInventory(targetPlayer)
+                    .flatMap(c -> c.findFirstCurio(ModItems.DOG_TAG.get()))
+                    .ifPresent(s -> targetName.set(s.stack().getHoverName().getString()));
+        }
+        return targetName.get();
+    }
+
+    @Nullable
+    public static ResourceLocation getWeaponIcon(PlayerKillRecord record) {
+        Player player = record.attacker;
+        if (player != null && player.getVehicle() instanceof VehicleEntity vehicleEntity) {
+            // 载具图标
+            if ((vehicleEntity instanceof ArmedVehicleEntity iArmedVehicle && iArmedVehicle.banHand(player)) || record.damageType == ModDamageTypes.VEHICLE_STRIKE) {
+                return vehicleEntity.getVehicleIcon();
+            } else {
+                if (record.stack.getItem() instanceof GunItem gunItem) {
+                    return gunItem.getGunIcon();
+                }
+            }
+        } else {
+            // 如果是枪械击杀，则渲染枪械图标
+            if (record.stack.getItem() instanceof GunItem gunItem) {
+                return gunItem.getGunIcon();
+            }
+
+            // TODO 如果是特殊武器击杀，则渲染对应图标
+            if (record.stack.getItem().getDescriptionId().equals("item.dreamaticvoyage.world_peace_staff")) {
+                return WORLD_PEACE_STAFF;
+            }
+        }
+        return null;
     }
 }
