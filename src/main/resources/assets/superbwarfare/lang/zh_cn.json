@@ -598,6 +598,7 @@
   "config.jade.plugin_superbwarfare.c4_info": "C4信息",
   "des.jade_plugin_superbwarfare.c4.remote_control": "远程遥控",
   "des.jade_plugin_superbwarfare.c4.time_left": "爆炸剩余时间：%1$s秒",
+  "config.jade.plugin_superbwarfare.vehicle_deployer": "载具部署器",
 
   "superbwarfare.advancement.main.root": "卓越前线",
   "superbwarfare.advancement.main.root.des": "欢迎来到卓越前线！",
