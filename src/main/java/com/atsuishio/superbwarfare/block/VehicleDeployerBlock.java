@@ -49,7 +49,7 @@ public class VehicleDeployerBlock extends BaseEntityBlock {
     protected @NotNull ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
         if (level.isClientSide
                 || !(level.getBlockEntity(pos) instanceof VehicleDeployerBlockEntity blockEntity)
-        ) return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        ) return ItemInteractionResult.SUCCESS;
 
         if (stack.getItem() != ModItems.CONTAINER.get()) {
             player.displayClientMessage(Component.translatable("des.superbwarfare.vehicle_deployer.fail").withStyle(ChatFormatting.RED), true);
@@ -59,8 +59,7 @@ public class VehicleDeployerBlock extends BaseEntityBlock {
         blockEntity.writeEntityInfo(stack);
         player.displayClientMessage(Component.translatable("des.superbwarfare.vehicle_deployer.success").withStyle(ChatFormatting.GREEN), true);
 
-        // TODO 取消原本的放置动作
-        return ItemInteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
+        return ItemInteractionResult.SUCCESS;
     }
 
     @Override
