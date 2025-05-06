@@ -23,12 +23,9 @@ public class ClientSoundHandler {
             if (event.getEntity() instanceof MobileVehicleEntity mobileVehicle && mobileVehicle instanceof TrackEntity) {
                 Minecraft.getInstance().getSoundManager().play(new VehicleSoundInstance.TrackSound(mobileVehicle));
             }
-
-            if (event.getEntity() instanceof LoudlyEntity loudlyEntity) {
+            if (event.getEntity() instanceof LoudlyEntity) {
                 Minecraft.getInstance().getSoundManager().play(new LoudlyEntitySoundInstance.EntitySound(event.getEntity()));
-                if (loudlyEntity.getCloseSound() != null) {
-                    Minecraft.getInstance().getSoundManager().play(new LoudlyEntitySoundInstance.EntitySoundClose(event.getEntity()));
-                }
+                Minecraft.getInstance().getSoundManager().play(new LoudlyEntitySoundInstance.EntitySoundClose(event.getEntity()));
             }
         }
     }

@@ -285,11 +285,6 @@ public class MortarShellEntity extends FastThrowableProjectile implements GeoEnt
     }
 
     @Override
-    public SoundEvent getCloseSound() {
-        return null;
-    }
-
-    @Override
     public SoundEvent getSound() {
         return ModSounds.SHELL_FLY.get();
     }

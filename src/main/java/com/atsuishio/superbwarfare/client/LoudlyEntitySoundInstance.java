@@ -8,6 +8,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 
 public abstract class LoudlyEntitySoundInstance extends AbstractTickableSoundInstance {
+
     private final Minecraft client;
     private final Entity entity;
     private double lastDistance;
@@ -27,6 +28,7 @@ public abstract class LoudlyEntitySoundInstance extends AbstractTickableSoundIns
     protected abstract float getPitch(Entity entity);
 
     protected abstract float getVolume(Entity entity);
+
     @Override
     public void tick() {
         var player = this.client.player;
@@ -64,7 +66,7 @@ public abstract class LoudlyEntitySoundInstance extends AbstractTickableSoundIns
             this.lastDistance = 0;
         }
     }
-    
+
     public static class EntitySound extends LoudlyEntitySoundInstance {
         public EntitySound(Entity entity) {
             super(entity instanceof LoudlyEntity loudlyEntity ? loudlyEntity.getSound() : null, Minecraft.getInstance(), entity);

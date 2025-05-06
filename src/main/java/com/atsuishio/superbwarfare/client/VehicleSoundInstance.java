@@ -14,6 +14,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 
 public abstract class VehicleSoundInstance extends AbstractTickableSoundInstance {
+
     private final Minecraft client;
     private final MobileVehicleEntity mobileVehicle;
     private double lastDistance;
