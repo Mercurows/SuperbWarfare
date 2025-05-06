@@ -643,5 +643,11 @@
   "superbwarfare.category.perk": "Perks",
   "superbwarfare.category.perk.des": "Understand the function of Superb Warfare's perks",
   "superbwarfare.category.misc": "Misc",
-  "superbwarfare.category.misc.des": "Understand how to use Superb Warfare's misc items"
+  "superbwarfare.category.misc.des": "Understand how to use Superb Warfare's misc items",
+
+  "superbwarfare.entry.vehicle.intro": "Basic Knowledge",
+  "superbwarfare.page.vehicle.intro1": "The vehicles in Superb Warfare are stored in $(item)Containers$() and need to be opened by a $(item)Crowbar$().$(p)Opening a container requires sufficient space. You can check the required space by aiming at the container when holding a crowbar.",
+  "superbwarfare.page.vehicle.intro2": "$(thing)Sneak and Right-Click$() an empty vehicle with a crowbar, you can store it into a container.",
+  "superbwarfare.page.vehicle.intro3": "Most of the vehicles need energy, you can charge them by $(item)Charging Station$().$(p)Right Click the Charging Station to open the GUI, charge it by putting $(thing)Fuels or Foods$() in the left grid. The Charging Station will automatically charge all vehicles in the range, and the right grid can be used to charge items.",
+  "superbwarfare.page.vehicle.intro4": "The Charging Station can also receive $(thing)FE$() from other mods."
 }

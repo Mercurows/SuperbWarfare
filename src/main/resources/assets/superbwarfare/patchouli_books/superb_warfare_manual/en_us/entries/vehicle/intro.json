@@ -6,6 +6,20 @@
     {
       "type": "patchouli:text",
       "text": "superbwarfare.page.vehicle.intro1"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "superbwarfare:crowbar_crafting",
+      "text": "superbwarfare.page.vehicle.intro2"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "superbwarfare.page.vehicle.intro3"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "superbwarfare:charging_station_crafting",
+      "text": "superbwarfare.page.vehicle.intro4"
     }
   ],
   "sortnum": 20000

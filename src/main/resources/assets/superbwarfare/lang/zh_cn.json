@@ -644,5 +644,11 @@
   "superbwarfare.category.perk": "武器模组",
   "superbwarfare.category.perk.des": "了解卓越前线的武器模组的作用",
   "superbwarfare.category.misc": "杂项",
-  "superbwarfare.category.misc.des": "了解卓越前线的其他物品用法"
+  "superbwarfare.category.misc.des": "了解卓越前线的其他物品用法",
+
+  "superbwarfare.entry.vehicle.intro": "载具基础",
+  "superbwarfare.page.vehicle.intro1": "卓越前线的载具平时被储存在$(item)集装箱$()中，需要使用$(item)撬棍$()打开。$(p)开启集装箱需要足够的空间，手持撬棍时瞄准集装箱，即可查看集装箱所需空间大小。",
+  "superbwarfare.page.vehicle.intro2": "使用撬棍对准无人的载具$(thing)潜行右击$()，即可将载具回收到集装箱中。",
+  "superbwarfare.page.vehicle.intro3": "绝大部分的载具需要能量，可以通过$(item)充电站$()进行充能。$(p)右击充电站可以打开GUI，在左侧的格子中放入$(thing)燃料或食物$()进行发电，充电站会自动给范围内的所有载具进行充能，右侧的格子能够给物品充电。",
+  "superbwarfare.page.vehicle.intro4": "充电站也能接收其他模组提供的$(thing)FE$()。"
 }
