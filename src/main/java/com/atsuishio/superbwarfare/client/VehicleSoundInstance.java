@@ -119,7 +119,28 @@ public abstract class VehicleSoundInstance extends AbstractTickableSoundInstance
 
         @Override
         protected float getVolume(MobileVehicleEntity mobileVehicle) {
-            return (float) Mth.lerp(Mth.clamp(mobileVehicle.getDeltaMovement().length(), 0F, 0.3F), 0.0F, 0.3F);
+            return (float) Mth.lerp(Mth.clamp(mobileVehicle.getDeltaMovement().length(), 0F, 0.3F), 0.0F, 0.3F) * (mobileVehicle.onGround() ? 1 : 0.5f);
+        }
+    }
+
+    public static class SwimSound extends VehicleSoundInstance {
+        public SwimSound(MobileVehicleEntity mobileVehicle) {
+            super(ModSounds.VEHICLE_SWIM.get(), Minecraft.getInstance(), mobileVehicle);
+        }
+
+        @Override
+        protected boolean canPlay(MobileVehicleEntity mobileVehicle) {
+            return true;
+        }
+
+        @Override
+        protected float getPitch(MobileVehicleEntity mobileVehicle) {
+            return 1;
+        }
+
+        @Override
+        protected float getVolume(MobileVehicleEntity mobileVehicle) {
+            return (float) Mth.lerp(Mth.clamp(mobileVehicle.getDeltaMovement().horizontalDistance() * (mobileVehicle.isInWater() ? 1.2 : 0), 0F, 0.6F), 0.0F, 0.6F);
         }
     }
 }

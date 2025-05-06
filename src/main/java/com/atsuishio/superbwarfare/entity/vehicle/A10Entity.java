@@ -6,26 +6,31 @@ import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.entity.projectile.GunGrenadeEntity;
 import com.atsuishio.superbwarfare.entity.projectile.MelonBombEntity;
 import com.atsuishio.superbwarfare.entity.projectile.MortarShellEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.ContainerMobileVehicleEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
+import com.atsuishio.superbwarfare.entity.vehicle.base.*;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
+import com.atsuishio.superbwarfare.entity.vehicle.weapon.HeliRocketWeapon;
+import com.atsuishio.superbwarfare.entity.vehicle.weapon.SmallCannonShellWeapon;
+import com.atsuishio.superbwarfare.entity.vehicle.weapon.VehicleWeapon;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
+import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
-import com.atsuishio.superbwarfare.tools.CustomExplosion;
-import com.atsuishio.superbwarfare.tools.EntityFindUtil;
-import com.atsuishio.superbwarfare.tools.FormatTool;
-import com.atsuishio.superbwarfare.tools.ParticleTool;
+import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage;
+import com.atsuishio.superbwarfare.tools.*;
 import com.mojang.math.Axis;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
@@ -35,8 +40,10 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.event.EventHooks;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Math;
 import org.joml.Matrix4f;
@@ -46,12 +53,17 @@ import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity {
+import java.util.Comparator;
+
+import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
+
+public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity, WeaponVehicleEntity, AircraftEntity {
+    public static final EntityDataAccessor<Integer> LOADED_ROCKET = SynchedEntityData.defineId(A10Entity.class, EntityDataSerializers.INT);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private float yRotSync;
     private boolean fly;
     private int flyTime;
-
+    public int fireIndex;
 
     public A10Entity(EntityType<A10Entity> type, Level world) {
         super(type, world);
@@ -63,6 +75,25 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
     }
 
     @Override
+    public VehicleWeapon[][] initWeapons() {
+        return new VehicleWeapon[][]{
+                new VehicleWeapon[]{
+                        new SmallCannonShellWeapon()
+                                .damage(VehicleConfig.BMP_2_CANNON_DAMAGE.get())
+                                .explosionDamage(VehicleConfig.BMP_2_CANNON_EXPLOSION_DAMAGE.get().floatValue())
+                                .explosionRadius(VehicleConfig.BMP_2_CANNON_EXPLOSION_RADIUS.get().floatValue())
+                                .sound(ModSounds.INTO_CANNON.get())
+                                .icon(Mod.loc("textures/screens/vehicle_weapon/cannon_20mm.png")),
+                        new HeliRocketWeapon()
+                                .damage(VehicleConfig.AH_6_ROCKET_DAMAGE.get())
+                                .explosionDamage(VehicleConfig.AH_6_ROCKET_EXPLOSION_DAMAGE.get())
+                                .explosionRadius(VehicleConfig.AH_6_ROCKET_EXPLOSION_RADIUS.get())
+                                .sound(ModSounds.INTO_MISSILE.get()),
+                }
+        };
+    }
+
+    @Override
     public ThirdPersonCameraPosition getThirdPersonCameraPosition(int index) {
         return new ThirdPersonCameraPosition(17, 3, 0);
     }
@@ -70,16 +101,19 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
+        builder.define(LOADED_ROCKET, 0);
     }
 
     @Override
     public void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
+        compound.putInt("LoadedRocket", this.entityData.get(LOADED_ROCKET));
     }
 
     @Override
     public void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
+        this.entityData.set(LOADED_ROCKET, compound.getInt("LoadedRocket"));
     }
 
     @Override
@@ -146,8 +180,53 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
             }
         }
 
-        this.terrainCompact(5f, 5f);
+        if (this.level() instanceof ServerLevel) {
+            if (reloadCoolDown > 0) {
+                reloadCoolDown--;
+            }
+            handleAmmo();
+        }
+
+        if (this.getFirstPassenger() instanceof Player player && fireInputDown) {
+            if (this.getWeaponIndex(0) == 0) {
+                if ((this.entityData.get(AMMO) > 0 || InventoryTool.hasCreativeAmmoBox(player)) && !cannotFire) {
+                    vehicleShoot(player, 0);
+                }
+            } else {
+                if (this.entityData.get(AMMO) > 0) {
+                    vehicleShoot(player, 0);
+                }
+            }
+        }
+
+        this.terrainCompact(4f, 4f);
         this.refreshDimensions();
+    }
+
+    private void handleAmmo() {
+        if (!(this.getFirstPassenger() instanceof Player player)) return;
+
+        int ammoCount = this.getItemStacks().stream().filter(stack -> {
+            if (stack.is(ModItems.AMMO_BOX.get())) {
+                return Ammo.HEAVY.get(stack) > 0;
+            }
+            return false;
+        }).mapToInt(Ammo.HEAVY::get).sum() + countItem(ModItems.SMALL_SHELL.get());
+
+        if ((hasItem(ModItems.ROCKET_70.get()) || InventoryTool.hasCreativeAmmoBox(player)) && reloadCoolDown == 0 && this.getEntityData().get(LOADED_ROCKET) < 28) {
+            this.entityData.set(LOADED_ROCKET, this.getEntityData().get(LOADED_ROCKET) + 1);
+            reloadCoolDown = 15;
+            if (!InventoryTool.hasCreativeAmmoBox(player)) {
+                this.getItemStacks().stream().filter(stack -> stack.is(ModItems.ROCKET_70.get())).findFirst().ifPresent(stack -> stack.shrink(1));
+            }
+            this.level().playSound(null, this, ModSounds.MISSILE_RELOAD.get(), this.getSoundSource(), 1, 1);
+        }
+
+        if (this.getWeaponIndex(0) == 0) {
+            this.entityData.set(AMMO, ammoCount);
+        } else {
+            this.entityData.set(AMMO, this.getEntityData().get(LOADED_ROCKET));
+        }
     }
 
     @Override
@@ -434,5 +513,164 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
     @Override
     public boolean allowFreeCam() {
         return true;
+    }
+
+    @Override
+    public void vehicleShoot(Player player, int type) {
+        Matrix4f transform = getVehicleTransform(1);
+
+        if (getWeaponIndex(0) == 0) {
+            if (this.cannotFire) return;
+
+            boolean hasCreativeAmmo = (getFirstPassenger() instanceof Player pPlayer && InventoryTool.hasCreativeAmmoBox(pPlayer)) || hasItem(ModItems.CREATIVE_AMMO_BOX.get());
+
+            Vector4f worldPosition = transformPosition(transform, 0.1321625f, -0.56446875f, 7.85210625f);
+
+            if (this.entityData.get(AMMO) > 0 || hasCreativeAmmo) {
+                var entityToSpawn = ((SmallCannonShellWeapon) getWeapon(0)).create(player);
+
+                entityToSpawn.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
+                entityToSpawn.shoot(getLookAngle().x, getLookAngle().y - 0.01, getLookAngle().z, 20, 0.5f);
+                level().addFreshEntity(entityToSpawn);
+
+                sendParticle((ServerLevel) this.level(), ParticleTypes.LARGE_SMOKE, worldPosition.x, worldPosition.y, worldPosition.z, 1, 0, 0, 0, 0, false);
+
+                if (!player.level().isClientSide) {
+                    if (player instanceof ServerPlayer serverPlayer) {
+                        serverPlayer.level().playSound(null, this.getOnPos(), ModSounds.HPJ_11_FIRE_3P.get(), SoundSource.PLAYERS, 6, random.nextFloat() * 0.05f + 1);
+                        serverPlayer.level().playSound(null, this.getOnPos(), ModSounds.HPJ_11_FAR.get(), SoundSource.PLAYERS, 12, random.nextFloat() * 0.05f + 1);
+                        serverPlayer.level().playSound(null, this.getOnPos(), ModSounds.HPJ_11_VERYFAR.get(), SoundSource.PLAYERS, 24, random.nextFloat() * 0.05f + 1);
+                    }
+                }
+
+                if (!hasCreativeAmmo) {
+                    this.getItemStacks().stream().filter(stack -> stack.is(ModItems.SMALL_SHELL.get())).findFirst().ifPresent(stack -> stack.shrink(1));
+                }
+
+            }
+
+            Level level = player.level();
+            final Vec3 center = new Vec3(this.getX(), this.getEyeY(), this.getZ());
+
+            for (Entity target : level.getEntitiesOfClass(Entity.class, new AABB(center, center).inflate(5), e -> true).stream().sorted(Comparator.comparingDouble(e -> e.distanceToSqr(center))).toList()) {
+                if (target instanceof ServerPlayer serverPlayer) {
+                    PacketDistributor.sendToPlayer(serverPlayer, new ShakeClientMessage(6, 5, 12, this.getX(), this.getEyeY(), this.getZ()));
+                }
+            }
+
+            this.entityData.set(HEAT, this.entityData.get(HEAT) + 2);
+
+
+        } else if (getWeaponIndex(0) == 1 && this.getEntityData().get(LOADED_ROCKET) > 0) {
+            var heliRocketEntity = ((HeliRocketWeapon) getWeapon(0)).create(player);
+
+            Vector4f worldPosition;
+            Vector4f worldPosition2;
+            Vec3 shootAngle;
+
+            if (fireIndex == 0) {
+                worldPosition = transformPosition(transform, -6.63f, -0.55f, 1.83f);
+                worldPosition2 = transformPosition(transform, -6.61f, -0.55f, 2.83f);
+                fireIndex = 1;
+            } else if (fireIndex == 1) {
+                worldPosition = transformPosition(transform, -5.28f, -1.76f, 1.87f);
+                worldPosition2 = transformPosition(transform, -5.27f, -1.76f, 2.87f);
+                fireIndex = 2;
+            } else if (fireIndex == 2) {
+                worldPosition = transformPosition(transform, 5.28f, -1.76f, 1.87f);
+                worldPosition2 = transformPosition(transform, 5.27f, -1.76f, 2.87f);
+                fireIndex = 3;
+            } else {
+                worldPosition = transformPosition(transform, 6.63f, -0.55f, 1.83f);
+                worldPosition2 = transformPosition(transform, 6.61f, -0.55f, 2.83f);
+                fireIndex = 0;
+            }
+
+            shootAngle = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z).vectorTo(new Vec3(worldPosition2.x, worldPosition2.y, worldPosition2.z)).normalize();
+
+            heliRocketEntity.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
+            heliRocketEntity.shoot(shootAngle.x, shootAngle.y - 0.01, shootAngle.z, 8, 0.5f);
+            player.level().addFreshEntity(heliRocketEntity);
+
+            this.level().playSound(null, BlockPos.containing(new Vec3(worldPosition.x, worldPosition.y, worldPosition.z)), ModSounds.HELICOPTER_ROCKET_FIRE_3P.get(), SoundSource.PLAYERS, 5, 1);
+
+            this.entityData.set(LOADED_ROCKET, this.getEntityData().get(LOADED_ROCKET) - 1);
+
+            Level level = player.level();
+            final Vec3 center = new Vec3(this.getX(), this.getEyeY(), this.getZ());
+
+            for (Entity target : level.getEntitiesOfClass(Entity.class, new AABB(center, center).inflate(5), e -> true).stream().sorted(Comparator.comparingDouble(e -> e.distanceToSqr(center))).toList()) {
+                if (target instanceof ServerPlayer serverPlayer) {
+                    PacketDistributor.sendToPlayer(serverPlayer, new ShakeClientMessage(6, 5, 12, this.getX(), this.getEyeY(), this.getZ()));
+                }
+            }
+
+            reloadCoolDown = 15;
+        }
+    }
+
+    @Override
+    public int mainGunRpm(Player player) {
+        return 0;
+    }
+
+    @Override
+    public boolean canShoot(Player player) {
+        if (getWeaponIndex(0) == 0) {
+            return false;
+        } else if (getWeaponIndex(0) == 1) {
+            return this.entityData.get(AMMO) > 0;
+        }
+        return false;
+    }
+
+    @Override
+    public int getAmmoCount(Player player) {
+        return this.entityData.get(AMMO);
+    }
+
+    @Override
+    public boolean banHand(Player player) {
+        return true;
+    }
+
+    @Override
+    public boolean hidePassenger(Entity entity) {
+        return false;
+    }
+
+    @Override
+    public int zoomFov() {
+        return 3;
+    }
+
+    @Override
+    public int getWeaponHeat(Player player) {
+        return entityData.get(HEAT);
+    }
+
+    @Override
+    public float getRotX(float tickDelta) {
+        return this.getPitch(tickDelta);
+    }
+
+    @Override
+    public float getRotY(float tickDelta) {
+        return this.getYaw(tickDelta);
+    }
+
+    @Override
+    public float getRotZ(float tickDelta) {
+        return this.getRoll(tickDelta);
+    }
+
+    @Override
+    public float getPower() {
+        return this.entityData.get(POWER);
+    }
+
+    @Override
+    public int getDecoy() {
+        return this.entityData.get(DECOY_COUNT);
     }
 }

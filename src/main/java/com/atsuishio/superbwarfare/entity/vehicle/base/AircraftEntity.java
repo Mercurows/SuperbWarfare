@@ -1,5 +1,5 @@
 package com.atsuishio.superbwarfare.entity.vehicle.base;
 
-public interface HelicopterEntity extends AirEntity {
+public interface AircraftEntity extends AirEntity {
 
 }

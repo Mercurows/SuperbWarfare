@@ -19,6 +19,7 @@ public class ClientSoundHandler {
         if (event.getLevel().isClientSide) {
             if (event.getEntity() instanceof MobileVehicleEntity mobileVehicle) {
                 Minecraft.getInstance().getSoundManager().play(new VehicleSoundInstance.EngineSound(mobileVehicle, mobileVehicle.getEngineSound()));
+                Minecraft.getInstance().getSoundManager().play(new VehicleSoundInstance.SwimSound(mobileVehicle));
             }
             if (event.getEntity() instanceof MobileVehicleEntity mobileVehicle && mobileVehicle instanceof TrackEntity) {
                 Minecraft.getInstance().getSoundManager().play(new VehicleSoundInstance.TrackSound(mobileVehicle));

@@ -295,10 +295,6 @@ public class SpeedboatEntity extends ContainerMobileVehicleEntity implements Geo
                 this.consumeEnergy(VehicleConfig.SPEEDBOAT_ENERGY_COST.get());
             }
 
-            if (level().isClientSide) {
-                level().playLocalSound(this.getX(), this.getY() + this.getBbHeight() * 0.5, this.getZ(), this.getEngineSound(), this.getSoundSource(), Math.min((this.forwardInputDown || this.backInputDown ? 7.5f : 5f) * 2 * Mth.abs(this.entityData.get(POWER)), 0.25f), (random.nextFloat() * 0.1f + 1f), false);
-            }
-
             this.entityData.set(POWER, this.entityData.get(POWER) * 0.96f);
             this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) * 0.8f);
 
@@ -325,6 +321,11 @@ public class SpeedboatEntity extends ContainerMobileVehicleEntity implements Geo
     @Override
     public SoundEvent getEngineSound() {
         return ModSounds.BOAT_ENGINE.get();
+    }
+
+    @Override
+    public float getEngineSoundVolume() {
+        return (Mth.abs(entityData.get(POWER)) - 0.01f) * 2f;
     }
 
     @Override

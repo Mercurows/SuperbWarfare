@@ -2427,8 +2427,9 @@
   "boat_engine": {
     "sounds": [
       {
-        "name": "superbwarfare:speedboat/engine",
-        "stream": false
+        "attenuation_distance": 48,
+        "stream": false,
+        "name": "superbwarfare:speedboat/engine"
       }
     ]
   },
@@ -3097,6 +3098,15 @@
         "attenuation_distance": 48,
         "stream": true,
         "name": "superbwarfare:rocket_engine"
+      }
+    ]
+  },
+  "vehicle_swim": {
+    "sounds": [
+      {
+        "attenuation_distance": 48,
+        "stream": true,
+        "name": "superbwarfare:vehicle_swim"
       }
     ]
   },
