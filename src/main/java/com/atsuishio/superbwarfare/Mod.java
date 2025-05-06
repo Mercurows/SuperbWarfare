@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare;
 
+import com.atsuishio.superbwarfare.api.event.RegisterContainersEvent;
 import com.atsuishio.superbwarfare.client.MouseMovementHandler;
 import com.atsuishio.superbwarfare.compat.CompatHolder;
 import com.atsuishio.superbwarfare.compat.clothconfig.ClothConfigHelper;
@@ -16,6 +17,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.common.NeoForge;
@@ -63,6 +65,7 @@ public class Mod {
         ModAttachments.ATTACHMENT_TYPES.register(bus);
 
         bus.addListener(this::onClientSetup);
+        bus.addListener(FMLCommonSetupEvent.class, event -> onCommonSetup(bus));
         bus.addListener(ModItems::registerDispenserBehavior);
 
         bus.addListener(NetworkRegistry::register);
@@ -109,6 +112,10 @@ public class Mod {
         });
         actions.forEach(e -> e.getKey().run());
         workQueueC.removeAll(actions);
+    }
+
+    public void onCommonSetup(IEventBus bus) {
+        bus.post(new RegisterContainersEvent());
     }
 
     public void onClientSetup(final FMLClientSetupEvent event) {

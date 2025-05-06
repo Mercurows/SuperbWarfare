@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.item;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.api.event.RegisterContainersEvent;
 import com.atsuishio.superbwarfare.client.renderer.item.ContainerBlockItemRenderer;
 import com.atsuishio.superbwarfare.init.ModBlockEntities;
 import com.atsuishio.superbwarfare.init.ModBlocks;
@@ -24,6 +25,7 @@ import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
@@ -37,31 +39,26 @@ import software.bernie.geckolib.animation.AnimationState;
 import software.bernie.geckolib.animation.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-import java.util.List;
-import java.util.function.Supplier;
-
 @EventBusSubscriber(modid = Mod.MODID, bus = EventBusSubscriber.Bus.MOD)
 public class ContainerBlockItem extends BlockItem implements GeoItem {
 
-    /**
-     * 集装箱可用实体列表
-     */
-    public static final List<Supplier<ItemStack>> CONTAINER_ENTITIES = List.of(
-            () -> ContainerBlockItem.createInstance(ModEntities.MK_42.get()),
-            () -> ContainerBlockItem.createInstance(ModEntities.MLE_1934.get()),
-            () -> ContainerBlockItem.createInstance(ModEntities.HPJ_11.get()),
-            () -> ContainerBlockItem.createInstance(ModEntities.ANNIHILATOR.get()),
-            () -> ContainerBlockItem.createInstance(ModEntities.LASER_TOWER.get()),
-            () -> ContainerBlockItem.createInstance(ModEntities.SPEEDBOAT.get(), true),
-            () -> ContainerBlockItem.createInstance(ModEntities.AH_6.get()),
-            () -> ContainerBlockItem.createInstance(ModEntities.LAV_150.get(), true),
-            () -> ContainerBlockItem.createInstance(ModEntities.BMP_2.get(), true),
-            () -> ContainerBlockItem.createInstance(ModEntities.PRISM_TANK.get(), true),
-            () -> ContainerBlockItem.createInstance(ModEntities.YX_100.get()),
-            () -> ContainerBlockItem.createInstance(ModEntities.WHEEL_CHAIR.get()),
-            () -> ContainerBlockItem.createInstance(ModEntities.TOM_6.get()),
-            () -> ContainerBlockItem.createInstance(ModEntities.A_10A.get())
-    );
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public static void registerContainers(RegisterContainersEvent event) {
+        event.add(ModEntities.MK_42);
+        event.add(ModEntities.MLE_1934);
+        event.add(ModEntities.HPJ_11);
+        event.add(ModEntities.ANNIHILATOR);
+        event.add(ModEntities.LASER_TOWER);
+        event.add(ModEntities.SPEEDBOAT, true);
+        event.add(ModEntities.AH_6);
+        event.add(ModEntities.LAV_150, true);
+        event.add(ModEntities.BMP_2, true);
+        event.add(ModEntities.PRISM_TANK);
+        event.add(ModEntities.YX_100);
+        event.add(ModEntities.WHEEL_CHAIR);
+        event.add(ModEntities.TOM_6);
+        event.add(ModEntities.A_10A);
+    }
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 

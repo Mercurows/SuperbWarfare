@@ -1,7 +1,11 @@
 package com.atsuishio.superbwarfare.init;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.item.*;
+import com.atsuishio.superbwarfare.api.event.RegisterContainersEvent;
+import com.atsuishio.superbwarfare.item.ArmorPlate;
+import com.atsuishio.superbwarfare.item.BatteryItem;
+import com.atsuishio.superbwarfare.item.C4Bomb;
+import com.atsuishio.superbwarfare.item.SmallContainerBlockItem;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -100,7 +104,7 @@ public class ModTabs {
                     .withTabsBefore(ITEM_TAB.getKey())
                     .displayItems((param, output) -> ModItems.BLOCKS.getEntries().forEach(registryObject -> {
                         if (registryObject.get() == ModItems.CONTAINER.get()) {
-                            ContainerBlockItem.CONTAINER_ENTITIES.stream().map(Supplier::get).forEach(output::accept);
+                            RegisterContainersEvent.containers.forEach(output::accept);
                         } else if (registryObject.get() == ModItems.SMALL_CONTAINER.get()) {
                             output.accept(registryObject.get());
                             SmallContainerBlockItem.SMALL_CONTAINER_LOOT_TABLES.stream().map(Supplier::get).forEach(output::accept);
