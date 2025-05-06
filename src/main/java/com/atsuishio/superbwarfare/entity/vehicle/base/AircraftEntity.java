@@ -1,5 +1,9 @@
 package com.atsuishio.superbwarfare.entity.vehicle.base;
 
-public interface AircraftEntity extends AirEntity {
+import net.minecraft.world.phys.Vec3;
 
+public interface AircraftEntity extends AirEntity {
+    Vec3 shootPos(float tickDelta);
+
+    Vec3 shootVec(float tickDelta);
 }

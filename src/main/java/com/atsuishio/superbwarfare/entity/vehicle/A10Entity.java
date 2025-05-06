@@ -22,7 +22,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -198,8 +197,11 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
                 }
             }
         }
-
-        this.terrainCompact(4f, 4f);
+        if (onGround()) {
+            this.terrainCompact(4f, 4f);
+        } else {
+            this.setZRot(this.roll * 0.99f);
+        }
         this.refreshDimensions();
     }
 
@@ -254,14 +256,14 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
             }
 
             if (backInputDown) {
-                this.entityData.set(POWER, Math.max(this.entityData.get(POWER) - 0.002f, onGround() ? -0.04f : 0.01f));
+                this.entityData.set(POWER, Math.max(this.entityData.get(POWER) - 0.002f, onGround() ? -0.005f : 0.01f));
             }
 
             if (!onGround()) {
                 if (rightInputDown) {
-                    this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) - 0.2f);
+                    this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) - 0.3f);
                 } else if (this.leftInputDown) {
-                    this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) + 0.2f);
+                    this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) + 0.3f);
                 }
             } else {
                 // 刹车
@@ -277,7 +279,7 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
             float roll = Mth.abs(Mth.clamp(getRoll() / 60, -1.5f, 1.5f));
 
             float addY = Mth.clamp(Math.max((this.onGround() ? 0.1f : 0.2f) * (float) Math.max(getDeltaMovement().dot(getViewVector(1)), 0.05), 0f) * diffY - 0.5f * this.entityData.get(DELTA_ROT), -1.5f * (roll + 1), 1.5f * (roll + 1));
-            float addX = Mth.clamp(Math.min((float) Math.max(getDeltaMovement().dot(getViewVector(1)) - 0.2, 0.02), 0.5f) * diffX, -1.3f, 1.3f);
+            float addX = Mth.clamp(Math.min((float) Math.max(getDeltaMovement().dot(getViewVector(1)) - 0.17, 0.02), 0.5f) * diffX, -1.8f, 1.8f);
             float addZ = this.entityData.get(DELTA_ROT) - (this.onGround() ? 0 : 0.01f) * diffY * (float) getDeltaMovement().dot(getViewVector(1));
 
             float i = getXRot() / 90;
@@ -318,8 +320,6 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
             } else {
                 entityData.set(GEAR_ROT, Math.max(entityData.get(GEAR_ROT) - 5, 0));
             }
-
-            player.displayClientMessage(Component.literal("speed: " + FormatTool.format2D(getDeltaMovement().dot(getViewVector(1)) * 72)), true);
         }
 
         this.entityData.set(POWER, this.entityData.get(POWER) * 0.99f);
@@ -516,6 +516,23 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
     }
 
     @Override
+    public Vec3 shootPos(float tickDelta) {
+        Matrix4f transform = getVehicleTransform(tickDelta);
+        Vector4f worldPosition;
+        if (getWeaponIndex(0) == 0) {
+            worldPosition = transformPosition(transform, 0.1321625f, -0.56446875f, 7.85210625f);
+        } else {
+            worldPosition = transformPosition(transform, 0f, -1.76f, 1.87f);
+        }
+        return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
+    }
+
+    @Override
+    public Vec3 shootVec(float tickDelta) {
+        return new Vec3(getViewVector(tickDelta).x, getViewVector(tickDelta).y - 0.08, getViewVector(tickDelta).z);
+    }
+
+    @Override
     public void vehicleShoot(Player player, int type) {
         Matrix4f transform = getVehicleTransform(1);
 
@@ -530,7 +547,7 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
                 var entityToSpawn = ((SmallCannonShellWeapon) getWeapon(0)).create(player);
 
                 entityToSpawn.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
-                entityToSpawn.shoot(getLookAngle().x, getLookAngle().y - 0.01, getLookAngle().z, 20, 0.5f);
+                entityToSpawn.shoot(getLookAngle().x, getLookAngle().y - 0.062, getLookAngle().z, 20, 0.5f);
                 level().addFreshEntity(entityToSpawn);
 
                 sendParticle((ServerLevel) this.level(), ParticleTypes.LARGE_SMOKE, worldPosition.x, worldPosition.y, worldPosition.z, 1, 0, 0, 0, 0, false);
@@ -589,7 +606,7 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
             shootAngle = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z).vectorTo(new Vec3(worldPosition2.x, worldPosition2.y, worldPosition2.z)).normalize();
 
             heliRocketEntity.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
-            heliRocketEntity.shoot(shootAngle.x, shootAngle.y - 0.01, shootAngle.z, 8, 0.5f);
+            heliRocketEntity.shoot(shootAngle.x, shootAngle.y - 0.07, shootAngle.z, 8, 0.5f);
             player.level().addFreshEntity(heliRocketEntity);
 
             this.level().playSound(null, BlockPos.containing(new Vec3(worldPosition.x, worldPosition.y, worldPosition.z)), ModSounds.HELICOPTER_ROCKET_FIRE_3P.get(), SoundSource.PLAYERS, 5, 1);
