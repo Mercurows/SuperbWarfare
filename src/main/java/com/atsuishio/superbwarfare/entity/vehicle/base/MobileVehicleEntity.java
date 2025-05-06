@@ -239,9 +239,7 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
         preventStacking();
         crushEntities(this.getDeltaMovement());
 
-        if (!(this instanceof DroneEntity)) {
-            this.setDeltaMovement(this.getDeltaMovement().add(0.0, -0.06, 0.0));
-        }
+        this.setDeltaMovement(this.getDeltaMovement().add(0.0, -0.06, 0.0));
 
         this.move(MoverType.SELF, this.getDeltaMovement());
         baseCollideBlock();
@@ -691,9 +689,6 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
 
     public SoundEvent getEngineSound() {
         return SoundEvents.EMPTY;
-    }
-    public int getEngineSoundRadius() {
-        return 32;
     }
 
     public float getEngineSoundVolume() {

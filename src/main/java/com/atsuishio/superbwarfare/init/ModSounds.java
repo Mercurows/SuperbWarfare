@@ -441,6 +441,9 @@ public class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> HPJ_11_FAR = REGISTRY.register("hpj_11_far", () -> SoundEvent.createVariableRangeEvent(Mod.loc("hpj_11_far")));
     public static final DeferredHolder<SoundEvent, SoundEvent> HPJ_11_VERYFAR = REGISTRY.register("hpj_11_veryfar", () -> SoundEvent.createVariableRangeEvent(Mod.loc("hpj_11_veryfar")));
     public static final DeferredHolder<SoundEvent, SoundEvent> TRACK_MOVE = REGISTRY.register("track_move", () -> SoundEvent.createVariableRangeEvent(Mod.loc("track_move")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> ROCKET_FLY = REGISTRY.register("rocket_fly", () -> SoundEvent.createVariableRangeEvent(Mod.loc("rocket_fly")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> SHELL_FLY = REGISTRY.register("shell_fly", () -> SoundEvent.createVariableRangeEvent(Mod.loc("shell_fly")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> ROCKET_ENGINE = REGISTRY.register("rocket_engine", () -> SoundEvent.createVariableRangeEvent(Mod.loc("rocket_engine")));
     public static final DeferredHolder<SoundEvent, SoundEvent> A_10_ENGINE = REGISTRY.register("a10_engine", () -> SoundEvent.createVariableRangeEvent(Mod.loc("a10_engine")));
 }
 

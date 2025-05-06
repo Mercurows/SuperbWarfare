@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.entity.projectile;
 
+import com.atsuishio.superbwarfare.entity.LoudlyEntity;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModItems;
@@ -11,6 +12,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -30,7 +32,7 @@ import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.*;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-public class RpgRocketEntity extends FastThrowableProjectile implements GeoEntity {
+public class RpgRocketEntity extends FastThrowableProjectile implements GeoEntity, LoudlyEntity {
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
@@ -192,5 +194,20 @@ public class RpgRocketEntity extends FastThrowableProjectile implements GeoEntit
     @Override
     public boolean shouldSyncMotion() {
         return true;
+    }
+
+    @Override
+    public SoundEvent getCloseSound() {
+        return ModSounds.ROCKET_ENGINE.get();
+    }
+
+    @Override
+    public SoundEvent getSound() {
+        return ModSounds.ROCKET_FLY.get();
+    }
+
+    @Override
+    public float getVolume() {
+        return 0.2f;
     }
 }

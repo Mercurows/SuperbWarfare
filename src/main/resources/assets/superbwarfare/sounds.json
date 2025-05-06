@@ -2186,8 +2186,9 @@
   "drone_sound": {
     "sounds": [
       {
-        "name": "superbwarfare:drone_sound",
-        "stream": false
+        "attenuation_distance": 48,
+        "stream": false,
+        "name": "superbwarfare:drone_sound"
       }
     ]
   },
@@ -3069,6 +3070,33 @@
         "attenuation_distance": 32,
         "stream": true,
         "name": "superbwarfare:track_move"
+      }
+    ]
+  },
+  "rocket_fly": {
+    "sounds": [
+      {
+        "attenuation_distance": 128,
+        "stream": true,
+        "name": "superbwarfare:rocket_fly"
+      }
+    ]
+  },
+  "shell_fly": {
+    "sounds": [
+      {
+        "attenuation_distance": 160,
+        "stream": true,
+        "name": "superbwarfare:shell_fly"
+      }
+    ]
+  },
+  "rocket_engine": {
+    "sounds": [
+      {
+        "attenuation_distance": 48,
+        "stream": true,
+        "name": "superbwarfare:rocket_engine"
       }
     ]
   },

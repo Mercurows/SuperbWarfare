@@ -187,9 +187,9 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
                 ItemStack stack = controller.getMainHandItem();
                 var tag = NBTTool.getTag(stack);
                 if (stack.is(ModItems.MONITOR.get()) && tag.getBoolean("Using")) {
-                    if (controller.level().isClientSide) {
-                        controller.playSound(ModSounds.DRONE_SOUND.get(), 114, 1);
-                    }
+//                    if (controller.level().isClientSide) {
+//                        controller.playSound(ModSounds.DRONE_SOUND.get(), 114, 1);
+//                    }
                 } else {
                     upInputDown = false;
                     downInputDown = false;
@@ -395,7 +395,7 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
                 holdTickZ = 0;
             }
 
-            this.setDeltaMovement(this.getDeltaMovement().multiply(0.94, 0.55, 0.94));
+            this.setDeltaMovement(this.getDeltaMovement().multiply(0.97, 0.94, 0.97));
         } else {
             this.setDeltaMovement(this.getDeltaMovement().multiply(0.8, 1, 0.8));
             this.setZRot(this.roll * 0.7f);
@@ -413,28 +413,36 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
 
         if (up) {
             holdTickY++;
-            this.entityData.set(POWER, Math.min(this.entityData.get(POWER) + 0.06f * Math.min(holdTickY, 5), 0.9f));
+            this.entityData.set(POWER, Math.min(this.entityData.get(POWER) + 0.02f * Math.min(holdTickY, 5), 0.4f));
         } else if (down) {
             holdTickY++;
-            this.entityData.set(POWER, Math.max(this.entityData.get(POWER) - 0.06f * Math.min(holdTickY, 5), -0.9f));
+            this.entityData.set(POWER, Math.max(this.entityData.get(POWER) - 0.02f * Math.min(holdTickY, 5), this.onGround() ? 0 : 0.01f));
         } else {
             holdTickY = 0;
         }
 
-        this.entityData.set(POWER, this.entityData.get(POWER) * 0.7f);
+        if (!(up || down)) {
+            if (this.getDeltaMovement().y() < 0) {
+                this.entityData.set(POWER, Math.min(this.entityData.get(POWER) + 0.01f, 0.4f));
+            } else {
+                this.entityData.set(POWER, Math.max(this.entityData.get(POWER) - 0.01f, 0f));
+            }
+        }
+
+        this.entityData.set(POWER, this.entityData.get(POWER) * 0.99f);
         this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) * 0.7f);
         this.entityData.set(DELTA_X_ROT, this.entityData.get(DELTA_X_ROT) * 0.7f);
 
         this.setZRot(Mth.clamp(this.getRoll() - this.entityData.get(DELTA_ROT), -30, 30));
         this.setBodyXRot(Mth.clamp(this.getBodyPitch() - this.entityData.get(DELTA_X_ROT), -30, 30));
 
-        setDeltaMovement(getDeltaMovement().add(0.0f, Math.min(Math.sin((90 - this.getBodyPitch()) * Mth.DEG_TO_RAD), Math.sin((90 + this.getRoll()) * Mth.DEG_TO_RAD)) * this.entityData.get(POWER), 0.0f));
+        setDeltaMovement(getDeltaMovement().add(0.0f, this.entityData.get(POWER) * 0.6f, 0.0f));
 
         Vector3f direction = getRightDirection().mul(this.entityData.get(DELTA_ROT));
-        setDeltaMovement(getDeltaMovement().add(new Vec3(direction.x, direction.y, direction.z).scale(0.04)));
+        setDeltaMovement(getDeltaMovement().add(new Vec3(direction.x, direction.y, direction.z).scale(0.03)));
 
         Vector3f directionZ = getForwardDirection().mul(-this.entityData.get(DELTA_X_ROT));
-        setDeltaMovement(getDeltaMovement().add(new Vec3(directionZ.x, directionZ.y, directionZ.z).scale(0.04)));
+        setDeltaMovement(getDeltaMovement().add(new Vec3(directionZ.x, directionZ.y, directionZ.z).scale(0.03)));
 
         Player controller = EntityFindUtil.findPlayer(this.level(), this.entityData.get(CONTROLLER));
         if (controller != null) {
@@ -492,6 +500,11 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
     @Override
     public SoundEvent getEngineSound() {
         return ModSounds.DRONE_SOUND.get();
+    }
+
+    @Override
+    public float getEngineSoundVolume() {
+        return onGround() ? 0 : 0.1f;
     }
 
     @Override
@@ -626,11 +639,6 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
             cloud.setOwner(controller);
         }
         level.addFreshEntity(cloud);
-    }
-
-    @Override
-    public boolean isNoGravity() {
-        return super.isNoGravity();
     }
 
     @Override

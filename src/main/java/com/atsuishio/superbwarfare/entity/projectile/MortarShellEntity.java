@@ -1,9 +1,11 @@
 package com.atsuishio.superbwarfare.entity.projectile;
 
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
+import com.atsuishio.superbwarfare.entity.LoudlyEntity;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModItems;
+import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.tools.ChunkLoadTool;
 import com.atsuishio.superbwarfare.tools.CustomExplosion;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
@@ -16,6 +18,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.AreaEffectCloud;
 import net.minecraft.world.entity.Entity;
@@ -44,7 +47,7 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-public class MortarShellEntity extends FastThrowableProjectile implements GeoEntity {
+public class MortarShellEntity extends FastThrowableProjectile implements GeoEntity, LoudlyEntity {
 
     private float damage = ExplosionConfig.MORTAR_SHELL_EXPLOSION_DAMAGE.get();
     private int life = 600;
@@ -279,5 +282,20 @@ public class MortarShellEntity extends FastThrowableProjectile implements GeoEnt
             cloud.setOwner(living);
         }
         level.addFreshEntity(cloud);
+    }
+
+    @Override
+    public SoundEvent getCloseSound() {
+        return null;
+    }
+
+    @Override
+    public SoundEvent getSound() {
+        return ModSounds.SHELL_FLY.get();
+    }
+
+    @Override
+    public float getVolume() {
+        return 0.06f;
     }
 }
