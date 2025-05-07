@@ -320,6 +320,8 @@
   "des.superbwarfare.butterfly_bullet": "将子弹替换成骤雨之蝶",
   "item.superbwarfare.bread_bullet": "面包弹",
   "des.superbwarfare.bread_bullet": "命中后会使目标移速下降，并造成强大的击退",
+  "item.superbwarfare.micro_missile": "微型导弹",
+  "des.superbwarfare.micro_missile": "使武器发射无视重力前进的高速弹药",
 
   "item.superbwarfare.heal_clip": "治疗弹匣",
   "des.superbwarfare.heal_clip": "最后一击后短时间内填装，可治疗自身和附近队友",
@@ -354,8 +356,8 @@
   "des.superbwarfare.desperado": "精准击杀后进行换弹，可暂时提升射速",
   "item.superbwarfare.vorpal_weapon": "斩首武器",
   "des.superbwarfare.vorpal_weapon": "提升对强大敌人造成的伤害",
-  "item.superbwarfare.micro_missile": "微型导弹",
-  "des.superbwarfare.micro_missile": "使武器发射无视重力前进的高速弹药",
+  "item.superbwarfare.magnificent_howl": "宏伟之嚎",
+  "des.superbwarfare.magnificent_howl": "填装前精准最后一击的次数会影响伤害增加的子弹总数",
 
   "item.superbwarfare.empty_perk": "空白模组",
   "item.superbwarfare.shortcut_pack": "捷径包",

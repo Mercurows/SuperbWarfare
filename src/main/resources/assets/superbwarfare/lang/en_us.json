@@ -322,6 +322,8 @@
   "des.superbwarfare.butterfly_bullet": "Replace fired bullets with Rain Shower Butterflies.",
   "item.superbwarfare.bread_bullet": "Bread Bullet",
   "des.superbwarfare.bread_bullet": "Deals extreme knockback and slowness to stuck mobs.",
+  "item.superbwarfare.micro_missile": "Micro Missile",
+  "des.superbwarfare.micro_missile": "Fires a high-speed projectile without gravity.",
 
   "item.superbwarfare.heal_clip": "Heal Clip",
   "des.superbwarfare.heal_clip": "Reloading after defeating a mob will heal you and your nearby allies.",
@@ -356,8 +358,8 @@
   "des.superbwarfare.desperado": "Reload after a headshot-kill will increase rate of fire.",
   "item.superbwarfare.vorpal_weapon": "Vorpal Weapon",
   "des.superbwarfare.vorpal_weapon": "Increases damage against bosses.",
-  "item.superbwarfare.micro_missile": "Micro Missile",
-  "des.superbwarfare.micro_missile": "Fires a high-speed projectile without gravity",
+  "item.superbwarfare.magnificent_howl": "Magnificent Howl",
+  "des.superbwarfare.magnificent_howl": "The number of precision final blows before reloading affects the total rounds granted with increased damage.",
 
   "item.superbwarfare.empty_perk": "Empty Perk",
   "item.superbwarfare.shortcut_pack": "Shortcut Pack",

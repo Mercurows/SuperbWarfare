@@ -207,6 +207,8 @@ public class ModVillagers {
                     new ItemStack(getItemHolder("monster_hunter"), 1), 4, 25, 0.05f));
             trades.get(5).add(new BasicItemListing(new ItemStack(Items.EMERALD, 40),
                     new ItemStack(getItemHolder("vorpal_weapon"), 1), 4, 25, 0.05f));
+            trades.get(5).add(new BasicItemListing(new ItemStack(Items.EMERALD, 42),
+                    new ItemStack(getItemHolder("magnificent_howl"), 1), 4, 25, 0.05f));
 
             trades.get(5).add(new BasicItemListing(new ItemStack(Items.EMERALD, 64),
                     new ItemStack(ModItems.HUNTING_RIFLE_BLUEPRINT.get()), 10, 30, 0.05f));

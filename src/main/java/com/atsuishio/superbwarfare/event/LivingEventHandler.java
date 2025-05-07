@@ -493,8 +493,8 @@ public class LivingEventHandler {
         for (Perk.Type type : Perk.Type.values()) {
             var instance = data.perk.getInstance(type);
             if (instance != null) {
-                instance.perk().onHit(damage, data, instance, event.getEntity(), source);
                 damage = instance.perk().getModifiedDamage(damage, data, instance, event.getEntity(), source);
+                instance.perk().onHit(damage, data, instance, event.getEntity(), source);
                 if (instance.perk().shouldCancelHurtEvent(damage, data, instance, event.getEntity(), source)) {
                     event.setCanceled(true);
                     return;
