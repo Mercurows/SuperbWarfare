@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.client.TooltipTool;
 import com.atsuishio.superbwarfare.client.tooltip.component.GunImageComponent;
 import com.atsuishio.superbwarfare.init.ModKeyMappings;
 import com.atsuishio.superbwarfare.init.ModPerks;
+import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.perk.AmmoPerk;
@@ -41,7 +42,7 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
         renderLevelAndUpgradePointTooltip(font, guiGraphics, x, y + 10);
 
         int yo = 20;
-        if (shouldRenderBypassAndHeadshotTooltip()) {
+        if (shouldRenderBypassAndHeadshotTooltip(stack)) {
             renderBypassAndHeadshotTooltip(font, guiGraphics, x, y + yo);
             yo += 10;
         }
@@ -61,8 +62,8 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
         guiGraphics.pose().popPose();
     }
 
-    protected boolean shouldRenderBypassAndHeadshotTooltip() {
-        return data.bypassArmor() > 0 || data.headshot() > 0;
+    protected boolean shouldRenderBypassAndHeadshotTooltip(ItemStack stack) {
+        return !stack.is(ModTags.Items.LAUNCHER);
     }
 
     protected boolean shouldRenderEditTooltip() {
@@ -273,7 +274,7 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
     protected int getDefaultMaxWidth(Font font) {
         int width = font.width(getDamageComponent().getVisualOrderText()) + font.width(getRpmComponent().getVisualOrderText()) + 16;
         width = Math.max(width, font.width(getLevelComponent().getVisualOrderText()) + font.width(getUpgradePointComponent().getVisualOrderText()) + 16);
-        if (shouldRenderBypassAndHeadshotTooltip()) {
+        if (shouldRenderBypassAndHeadshotTooltip(stack)) {
             width = Math.max(width, font.width(getBypassComponent().getVisualOrderText()) + font.width(getHeadshotComponent().getVisualOrderText()) + 16);
         }
         if (shouldRenderEditTooltip()) {
@@ -305,7 +306,7 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
     public int getHeight() {
         int height = Math.max(20, this.height);
 
-        if (shouldRenderBypassAndHeadshotTooltip()) height += 10;
+        if (shouldRenderBypassAndHeadshotTooltip(stack)) height += 10;
         if (shouldRenderEditTooltip()) height += 20;
         if (shouldRenderPerks()) {
             height += 16;

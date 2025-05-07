@@ -86,7 +86,7 @@ public class ProjectileEntity extends Projectile implements IEntityWithComplexSp
     protected int shooterId;
     private float damage = 1f;
     private float headShot = 1f;
-    private float monsterMultiple = 0.0f;
+    private float monsterMultiplier = 0.0f;
     private float legShot = 0.5f;
     private boolean beast = false;
     private boolean zoom = false;
@@ -315,7 +315,7 @@ public class ProjectileEntity extends Projectile implements IEntityWithComplexSp
     protected void readAdditionalSaveData(CompoundTag tag) {
         this.damage = tag.getFloat("Damage");
         this.headShot = tag.getFloat("HeadShot");
-        this.monsterMultiple = tag.getFloat("MonsterMultiple");
+        this.monsterMultiplier = tag.getFloat("MonsterMultiplier");
         this.legShot = tag.getFloat("LegShot");
         this.bypassArmorRate = tag.getFloat("BypassArmorRate");
         this.undeadMultiple = tag.getFloat("UndeadMultiple");
@@ -333,7 +333,7 @@ public class ProjectileEntity extends Projectile implements IEntityWithComplexSp
     protected void addAdditionalSaveData(CompoundTag tag) {
         tag.putFloat("Damage", this.damage);
         tag.putFloat("HeadShot", this.headShot);
-        tag.putFloat("MonsterMultiple", this.monsterMultiple);
+        tag.putFloat("MonsterMultiplier", this.monsterMultiplier);
         tag.putFloat("LegShot", this.legShot);
         tag.putFloat("BypassArmorRate", this.bypassArmorRate);
         tag.putFloat("UndeadMultiple", this.undeadMultiple);
@@ -379,7 +379,7 @@ public class ProjectileEntity extends Projectile implements IEntityWithComplexSp
 
             this.onHitBlock(hitVec);
             if (heLevel > 0) {
-                explosionBulletBlock(this, this.damage, heLevel, monsterMultiple + 1, hitVec);
+                explosionBulletBlock(this, this.damage, heLevel, monsterMultiplier + 1, hitVec);
             }
             if (fireLevel > 0 && this.level() instanceof ServerLevel serverLevel) {
                 ParticleTool.sendParticle(serverLevel, ParticleTypes.LAVA, hitVec.x, hitVec.y, hitVec.z,
@@ -472,7 +472,7 @@ public class ProjectileEntity extends Projectile implements IEntityWithComplexSp
     protected void onHitEntity(Entity entity, boolean headshot, boolean legShot) {
         if (this.shooter == null) return;
 
-        float mMultiple = 1 + this.monsterMultiple;
+        float mMultiple = 1 + this.monsterMultiplier;
 
         if (entity == null) return;
 
@@ -842,8 +842,8 @@ public class ProjectileEntity extends Projectile implements IEntityWithComplexSp
         return this;
     }
 
-    public ProjectileEntity monsterMultiple(float monsterMultiple) {
-        this.monsterMultiple = monsterMultiple;
+    public ProjectileEntity setMonsterMultiplier(float monsterMultiplier) {
+        this.monsterMultiplier = monsterMultiplier;
         return this;
     }
 

@@ -26,7 +26,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 import java.util.UUID;
-import java.util.WeakHashMap;
 
 public class GunData {
     public final ItemStack stack;
@@ -250,7 +249,6 @@ public class GunData {
     public double customWeight() {
         return item.getCustomWeight(stack);
     }
-
 
     public double defaultZoom() {
         return defaultGunData().defaultZoom;

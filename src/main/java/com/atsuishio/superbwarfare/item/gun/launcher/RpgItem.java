@@ -9,6 +9,7 @@ import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
+import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
@@ -156,23 +157,15 @@ public class RpgItem extends GunItem implements GeoItem {
                     (float) data.explosionRadius()
             );
 
+            float velocity = (float) data.velocity();
+
             for (Perk.Type type : Perk.Type.values()) {
                 var instance = data.perk.getInstance(type);
                 if (instance != null) {
                     instance.perk().modifyProjectile(data, instance, rocket);
-                }
-            }
-
-            float velocity = (float) data.velocity();
-
-            if (data.perk.get(Perk.Type.AMMO) == ModPerks.MICRO_MISSILE.get()) {
-                rocket.setNoGravity(true);
-
-                int perkLevel = data.perk.getLevel(ModPerks.MICRO_MISSILE);
-                if (perkLevel > 0) {
-                    rocket.setExplosionRadius((float) (data.explosionRadius() * 0.5f));
-                    rocket.setDamage((float) data.damage() * (1.1f + perkLevel * 0.1f));
-                    velocity *= 1.2f;
+                    if (instance.perk() instanceof AmmoPerk ammoPerk) {
+                        velocity = (float) ammoPerk.getModifiedVelocity(data, instance);
+                    }
                 }
             }
 

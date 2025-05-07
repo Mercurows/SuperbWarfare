@@ -25,7 +25,7 @@ public class ClientEnergyImageTooltip extends ClientGunImageTooltip {
         renderLevelAndUpgradePointTooltip(font, guiGraphics, x, y + 10);
 
         int yo = 20;
-        if (shouldRenderBypassAndHeadshotTooltip()) {
+        if (shouldRenderBypassAndHeadshotTooltip(stack)) {
             renderBypassAndHeadshotTooltip(font, guiGraphics, x, y + yo);
             yo += 10;
         }

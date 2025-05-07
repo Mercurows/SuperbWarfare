@@ -12,6 +12,7 @@ import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.EnergyStorageItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
+import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkHelper;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
@@ -248,23 +249,19 @@ public class SecondaryCataclysm extends GunItem implements GeoItem, EnergyStorag
                     (float) data.explosionRadius()
             );
 
+            float velocity = (float) data.velocity();
+
             for (Perk.Type type : Perk.Type.values()) {
                 var instance = data.perk.getInstance(type);
                 if (instance != null) {
                     instance.perk().modifyProjectile(data, instance, gunGrenadeEntity);
+                    if (instance.perk() instanceof AmmoPerk ammoPerk) {
+                        velocity = (float) ammoPerk.getModifiedVelocity(data, instance);
+                    }
                 }
             }
 
-            gunGrenadeEntity.setNoGravity(data.perk.get(Perk.Type.AMMO) == ModPerks.MICRO_MISSILE.get());
             gunGrenadeEntity.charged(isChargedFire);
-
-            float velocity = (float) data.velocity();
-            int perkLevel = data.perk.getLevel(ModPerks.MICRO_MISSILE);
-            if (perkLevel > 0) {
-                gunGrenadeEntity.setExplosionRadius((float) data.explosionRadius() * 0.5f);
-                gunGrenadeEntity.setDamage((float) data.damage() * (1.1f + perkLevel * 0.1f));
-                velocity *= 1.2f;
-            }
 
             gunGrenadeEntity.setPos(player.getX(), player.getEyeY() - 0.1, player.getZ());
             gunGrenadeEntity.shoot(player.getLookAngle().x, player.getLookAngle().y, player.getLookAngle().z, (isChargedFire ? 4 : 1) * velocity,
