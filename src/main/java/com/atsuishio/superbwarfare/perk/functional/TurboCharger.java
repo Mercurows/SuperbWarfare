@@ -12,6 +12,6 @@ public class TurboCharger extends Perk {
 
     @Override
     public int getModifiedCustomRPM(int rpm, GunData data, PerkInstance instance) {
-        return rpm + 5 + 3 * instance.level();
+        return Math.min(rpm + 5 + 3 * instance.level(), 1200);
     }
 }
