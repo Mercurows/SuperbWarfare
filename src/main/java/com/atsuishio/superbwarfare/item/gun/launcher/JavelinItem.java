@@ -8,7 +8,6 @@ import com.atsuishio.superbwarfare.entity.projectile.JavelinMissileEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModEnumExtensions;
-import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
@@ -237,10 +236,11 @@ public class JavelinItem extends GunItem implements GeoItem {
                     new Vec3(tag.getDouble("TargetPosX"), tag.getDouble("TargetPosY"), tag.getDouble("TargetPosZ"))
             );
 
-            var dmgPerk = data.perk.get(Perk.Type.DAMAGE);
-            if (dmgPerk == ModPerks.MONSTER_HUNTER.get()) {
-                int perkLevel = data.perk.getLevel(dmgPerk);
-                missileEntity.setMonsterMultiplier(0.1f + 0.1f * perkLevel);
+            for (Perk.Type type : Perk.Type.values()) {
+                var instance = data.perk.getInstance(type);
+                if (instance != null) {
+                    instance.perk().modifyProjectile(data, instance, missileEntity);
+                }
             }
 
             missileEntity.setPos(player.getX() + firePos.x, player.getEyeY() + firePos.y, player.getZ() + firePos.z);
@@ -313,5 +313,4 @@ public class JavelinItem extends GunItem implements GeoItem {
         tag.putBoolean("Seeking", true);
         tag.putInt("SeekTime", 0);
     }
-
 }

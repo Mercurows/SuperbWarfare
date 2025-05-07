@@ -156,10 +156,11 @@ public class RpgItem extends GunItem implements GeoItem {
                     (float) data.explosionRadius()
             );
 
-            var dmgPerk = data.perk.get(Perk.Type.DAMAGE);
-            if (dmgPerk == ModPerks.MONSTER_HUNTER.get()) {
-                int perkLevel = data.perk.getLevel(dmgPerk);
-                rocket.setMonsterMultiplier(0.1f + 0.1f * perkLevel);
+            for (Perk.Type type : Perk.Type.values()) {
+                var instance = data.perk.getInstance(type);
+                if (instance != null) {
+                    instance.perk().modifyProjectile(data, instance, rocket);
+                }
             }
 
             float velocity = (float) data.velocity();

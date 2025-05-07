@@ -3,9 +3,7 @@ package com.atsuishio.superbwarfare.init;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
-import com.atsuishio.superbwarfare.perk.ammo.APBullet;
-import com.atsuishio.superbwarfare.perk.ammo.BeastBullet;
-import com.atsuishio.superbwarfare.perk.ammo.SilverBullet;
+import com.atsuishio.superbwarfare.perk.ammo.*;
 import com.atsuishio.superbwarfare.perk.damage.*;
 import com.atsuishio.superbwarfare.perk.functional.*;
 import net.minecraft.resources.ResourceKey;
@@ -33,18 +31,15 @@ public class ModPerks {
     public static final DeferredRegister<Perk> AMMO_PERKS = DeferredRegister.create(Mod.loc("perk"), Mod.MODID);
 
     public static final DeferredHolder<Perk, Perk> AP_BULLET = AMMO_PERKS.register("ap_bullet", APBullet::new);
-    public static final DeferredHolder<Perk, Perk> JHP_BULLET = AMMO_PERKS.register("jhp_bullet",
-            () -> new AmmoPerk(new AmmoPerk.Builder("jhp_bullet", Perk.Type.AMMO).bypassArmorRate(-0.2f).damageRate(1.1f).speedRate(0.95f).slug(true).rgb(230, 131, 65)));
-    public static final DeferredHolder<Perk, Perk> HE_BULLET = AMMO_PERKS.register("he_bullet",
-            () -> new AmmoPerk(new AmmoPerk.Builder("he_bullet", Perk.Type.AMMO).bypassArmorRate(-0.3f).damageRate(0.5f).speedRate(0.85f).slug(true).rgb(240, 20, 10)));
+    public static final DeferredHolder<Perk, Perk> JHP_BULLET = AMMO_PERKS.register("jhp_bullet", JHPBullet::new);
+    public static final DeferredHolder<Perk, Perk> HE_BULLET = AMMO_PERKS.register("he_bullet", HEBullet::new);
     public static final DeferredHolder<Perk, Perk> SILVER_BULLET = AMMO_PERKS.register("silver_bullet", SilverBullet::new);
     public static final DeferredHolder<Perk, Perk> POISONOUS_BULLET = AMMO_PERKS.register("poisonous_bullet",
             () -> new AmmoPerk(new AmmoPerk.Builder("poisonous_bullet", Perk.Type.AMMO).bypassArmorRate(0.0f).damageRate(1.0f).speedRate(1.0f).rgb(48, 131, 6)
                     .mobEffect(MobEffects.POISON::value)));
     public static final DeferredHolder<Perk, Perk> BEAST_BULLET = AMMO_PERKS.register("beast_bullet", BeastBullet::new);
     public static final DeferredHolder<Perk, Perk> LONGER_WIRE = AMMO_PERKS.register("longer_wire", () -> new Perk("longer_wire", Perk.Type.AMMO));
-    public static final DeferredHolder<Perk, Perk> INCENDIARY_BULLET = AMMO_PERKS.register("incendiary_bullet",
-            () -> new AmmoPerk(new AmmoPerk.Builder("incendiary_bullet", Perk.Type.AMMO).bypassArmorRate(-0.4f).damageRate(0.7f).speedRate(0.75f).slug(false).rgb(230, 131, 65)));
+    public static final DeferredHolder<Perk, Perk> INCENDIARY_BULLET = AMMO_PERKS.register("incendiary_bullet", IncendiaryBullet::new);
     public static final DeferredHolder<Perk, Perk> MICRO_MISSILE = AMMO_PERKS.register("micro_missile",
             () -> new AmmoPerk(new AmmoPerk.Builder("micro_missile", Perk.Type.AMMO).speedRate(1.2f)));
 
@@ -71,7 +66,7 @@ public class ModPerks {
     public static final DeferredHolder<Perk, Perk> GUTSHOT_STRAIGHT = DAMAGE_PERKS.register("gutshot_straight", GutshotStraight::new);
     public static final DeferredHolder<Perk, Perk> KILLING_TALLY = DAMAGE_PERKS.register("killing_tally", KillingTally::new);
     public static final DeferredHolder<Perk, Perk> HEAD_SEEKER = DAMAGE_PERKS.register("head_seeker", HeadSeeker::new);
-    public static final DeferredHolder<Perk, Perk> MONSTER_HUNTER = DAMAGE_PERKS.register("monster_hunter", () -> new Perk("monster_hunter", Perk.Type.DAMAGE));
+    public static final DeferredHolder<Perk, Perk> MONSTER_HUNTER = DAMAGE_PERKS.register("monster_hunter", MonsterHunter::new);
     public static final DeferredHolder<Perk, Perk> VOLT_OVERLOAD = DAMAGE_PERKS.register("volt_overload", () -> new Perk("volt_overload", Perk.Type.DAMAGE));
     public static final DeferredHolder<Perk, Perk> DESPERADO = DAMAGE_PERKS.register("desperado", Desperado::new);
     public static final DeferredHolder<Perk, Perk> VORPAL_WEAPON = DAMAGE_PERKS.register("vorpal_weapon", VorpalWeapon::new);

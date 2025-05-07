@@ -52,6 +52,10 @@ public class AmmoPerk extends Perk {
         return instance.level() - 1;
     }
 
+    public double getModifiedVelocity(GunData data, PerkInstance instance) {
+        return data.velocity() * this.speedRate;
+    }
+
     public static class Builder {
 
         String descriptionId;

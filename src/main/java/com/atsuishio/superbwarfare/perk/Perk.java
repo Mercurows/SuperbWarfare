@@ -88,7 +88,7 @@ public class Perk {
         return false;
     }
 
-    public void modifyProjectile(GunData data, PerkInstance instance, Entity projectile) {
+    public void modifyProjectile(GunData data, PerkInstance instance, Entity entity) {
     }
 
     public enum Type {

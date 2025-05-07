@@ -216,7 +216,7 @@ public class BocekItem extends GunItem implements GeoItem {
 
         var perk = data.perk.get(Perk.Type.AMMO);
         float headshot = (float) data.headshot();
-        float velocity = (float) (24 * power * (float) perkSpeed(data));
+        float velocity = (float) (24 * power);
         float bypassArmorRate = (float) data.bypassArmor();
         double damage;
 
@@ -243,23 +243,6 @@ public class BocekItem extends GunItem implements GeoItem {
             if (instance != null) {
                 instance.perk().modifyProjectile(data, instance, projectile);
             }
-        }
-
-        if (perk == ModPerks.JHP_BULLET.get()) {
-            int level = data.perk.getLevel(perk);
-            projectile.jhpBullet(level);
-        } else if (perk == ModPerks.HE_BULLET.get()) {
-            int level = data.perk.getLevel(perk);
-            projectile.heBullet(level);
-        } else if (perk == ModPerks.INCENDIARY_BULLET.get()) {
-            int level = data.perk.getLevel(perk);
-            projectile.fireBullet(level, !zoom);
-        }
-
-        var dmgPerk = data.perk.get(Perk.Type.DAMAGE);
-        if (dmgPerk == ModPerks.MONSTER_HUNTER.get()) {
-            int perkLevel = data.perk.getLevel(dmgPerk);
-            projectile.monsterMultiple(0.1f + 0.1f * perkLevel);
         }
 
         projectile.setPos(player.getX() - 0.1 * player.getLookAngle().x, player.getEyeY() - 0.1 - 0.1 * player.getLookAngle().y, player.getZ() + -0.1 * player.getLookAngle().z);
