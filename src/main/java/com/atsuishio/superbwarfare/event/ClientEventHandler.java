@@ -677,9 +677,15 @@ public class ClientEventHandler {
                 burstFireAmount--;
             }
 
+            for (Perk.Type type : Perk.Type.values()) {
+                var instance = data.perk.getInstance(type);
+                if (instance != null) {
+                    customRpm = instance.perk().getModifiedCustomRPM(customRpm, data, instance);
+                }
+            }
+
             if (stack.is(ModItems.DEVOTION.get())) {
-                int perkLevel = data.perk.getLevel(ModPerks.TURBO_CHARGER);
-                customRpm = Math.min(customRpm + 15 + ((perkLevel > 0 ? 5 : 0) + 3 * perkLevel), 500);
+                customRpm = Math.min(customRpm + 15, 500);
             }
 
             if (stack.getItem() == ModItems.SENTINEL.get()) {

@@ -78,6 +78,10 @@ public class Perk {
         return rpm;
     }
 
+    public int getModifiedCustomRPM(int rpm, GunData data, PerkInstance instance) {
+        return rpm;
+    }
+
     /**
      * 在切换物品时触发
      */
