@@ -63,7 +63,7 @@ public class Perk {
     public void onKill(GunData data, PerkInstance instance, LivingEntity target, DamageSource source) {
     }
 
-    public void onShoot() {
+    public void onHit(float damage, GunData data, PerkInstance instance, LivingEntity target, DamageSource source) {
     }
 
     public float getModifiedDamage(float damage, GunData data, PerkInstance instance, @Nullable LivingEntity target, DamageSource source) {

@@ -17,15 +17,12 @@ public class KillClip extends Perk {
 
     @Override
     public void tick(GunData data, PerkInstance instance, @Nullable LivingEntity living) {
-        super.tick(data, instance, living);
         data.perk.reduceCooldown(this, "KillClipReloadTime");
         data.perk.reduceCooldown(this, "KillClipTime");
     }
 
     @Override
     public void preReload(GunData data, PerkInstance instance, @Nullable LivingEntity living) {
-        super.preReload(data, instance, living);
-
         int time = data.perk.getTag(this).getInt("KillClipReloadTime");
         if (time > 0) {
             data.perk.getTag(this).remove("KillClipReloadTime");
@@ -37,8 +34,6 @@ public class KillClip extends Perk {
 
     @Override
     public void postReload(GunData data, PerkInstance instance, @Nullable LivingEntity living) {
-        super.postReload(data, instance, living);
-
         if (!data.perk.getTag(this).getBoolean("KillClip")) {
             return;
         }
@@ -49,8 +44,6 @@ public class KillClip extends Perk {
 
     @Override
     public void onKill(GunData data, PerkInstance instance, LivingEntity target, DamageSource source) {
-        super.onKill(data, instance, target, source);
-
         if (DamageTypeTool.isGunDamage(source) || source.is(ModDamageTypes.PROJECTILE_BOOM)) {
             int killClipLevel = instance.level();
             if (killClipLevel != 0) {

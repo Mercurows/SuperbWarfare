@@ -20,14 +20,11 @@ public class HealClip extends Perk {
 
     @Override
     public void tick(GunData data, PerkInstance instance, @Nullable LivingEntity living) {
-        super.tick(data, instance, living);
         data.perk.reduceCooldown(this, "HealClipTime");
     }
 
     @Override
     public void onKill(GunData data, PerkInstance instance, LivingEntity target, DamageSource source) {
-        super.onKill(data, instance, target, source);
-
         if (DamageTypeTool.isGunDamage(source) || source.is(ModDamageTypes.PROJECTILE_BOOM)) {
             int healClipLevel = instance.level();
             if (healClipLevel != 0) {
@@ -38,8 +35,6 @@ public class HealClip extends Perk {
 
     @Override
     public void preReload(GunData data, PerkInstance instance, @Nullable LivingEntity living) {
-        super.preReload(data, instance, living);
-
         int time = data.perk.getTag(this).getInt("HealClipTime");
         if (time > 0) {
             data.perk.getTag(this).remove("HealClipTime");
@@ -51,8 +46,6 @@ public class HealClip extends Perk {
 
     @Override
     public void postReload(GunData data, PerkInstance instance, @Nullable LivingEntity living) {
-        super.postReload(data, instance, living);
-
         if (living == null) return;
 
         if (!data.perk.getTag(this).contains("HealClip")) {
