@@ -116,18 +116,11 @@ public class TaserItem extends GunItem implements GeoItem, EnergyStorageItem {
     @ParametersAreNonnullByDefault
     public void inventoryTick(ItemStack stack, Level world, Entity entity, int slot, boolean selected) {
         super.inventoryTick(stack, world, entity, slot, selected);
-        var data = GunData.from(stack);
-
-        int perkLevel = data.perk.getLevel(ModPerks.REGENERATION);
-
-        var stackStorage = stack.getCapability(Capabilities.EnergyStorage.ITEM);
-        if (stackStorage != null) {
-            stackStorage.receiveEnergy(perkLevel, false);
-        }
 
         if (entity instanceof Player player) {
             for (var cell : player.getInventory().items) {
                 if (cell.is(ModItems.CELL.get())) {
+                    var stackStorage = stack.getCapability(Capabilities.EnergyStorage.ITEM);
                     if (stackStorage == null) continue;
                     int stackMaxEnergy = stackStorage.getMaxEnergyStored();
                     int stackEnergy = stackStorage.getEnergyStored();

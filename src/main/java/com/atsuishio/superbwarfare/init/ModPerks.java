@@ -4,10 +4,7 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.damage.*;
-import com.atsuishio.superbwarfare.perk.functional.FieldDoctor;
-import com.atsuishio.superbwarfare.perk.functional.FourthTimesCharm;
-import com.atsuishio.superbwarfare.perk.functional.HealClip;
-import com.atsuishio.superbwarfare.perk.functional.Subsistence;
+import com.atsuishio.superbwarfare.perk.functional.*;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.effect.MobEffects;
 import net.neoforged.bus.api.IEventBus;
@@ -61,9 +58,9 @@ public class ModPerks {
     public static final DeferredHolder<Perk, Perk> FOURTH_TIMES_CHARM = FUNC_PERKS.register("fourth_times_charm", FourthTimesCharm::new);
     public static final DeferredHolder<Perk, Perk> SUBSISTENCE = FUNC_PERKS.register("subsistence", Subsistence::new);
     public static final DeferredHolder<Perk, Perk> FIELD_DOCTOR = FUNC_PERKS.register("field_doctor", FieldDoctor::new);
-    public static final DeferredHolder<Perk, Perk> REGENERATION = FUNC_PERKS.register("regeneration", () -> new Perk("regeneration", Perk.Type.FUNCTIONAL));
+    public static final DeferredHolder<Perk, Perk> REGENERATION = FUNC_PERKS.register("regeneration", Regeneration::new);
     public static final DeferredHolder<Perk, Perk> TURBO_CHARGER = FUNC_PERKS.register("turbo_charger", () -> new Perk("turbo_charger", Perk.Type.FUNCTIONAL));
-    public static final DeferredHolder<Perk, Perk> POWERFUL_ATTRACTION = FUNC_PERKS.register("powerful_attraction", () -> new Perk("powerful_attraction", Perk.Type.FUNCTIONAL));
+    public static final DeferredHolder<Perk, Perk> POWERFUL_ATTRACTION = FUNC_PERKS.register("powerful_attraction", PowerfulAttraction::new);
     public static final DeferredHolder<Perk, Perk> INTELLIGENT_CHIP = FUNC_PERKS.register("intelligent_chip", () -> new Perk("intelligent_chip", Perk.Type.FUNCTIONAL));
 
     /**
