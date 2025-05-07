@@ -52,10 +52,40 @@ public class TaserBulletEntity extends AbstractArrow implements GeoEntity {
         this.wireLength = wireLength;
     }
 
+    public TaserBulletEntity(LivingEntity entity, Level level, float damage) {
+        super(ModEntities.TASER_BULLET.get(), level);
+        this.damage = damage;
+    }
+
     public TaserBulletEntity(EntityType<? extends TaserBulletEntity> type, Level world) {
         super(type, world);
         this.noCulling = true;
     }
+
+    public float getDamage() {
+        return damage;
+    }
+
+    public void setDamage(float damage) {
+        this.damage = damage;
+    }
+
+    public int getVolt() {
+        return volt;
+    }
+
+    public void setVolt(int volt) {
+        this.volt = volt;
+    }
+
+    public int getWireLength() {
+        return wireLength;
+    }
+
+    public void setWireLength(int wireLength) {
+        this.wireLength = wireLength;
+    }
+
     @Override
     public void playerTouch(@NotNull Player pEntity) {
     }

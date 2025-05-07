@@ -38,7 +38,7 @@ public class ModPerks {
             () -> new AmmoPerk(new AmmoPerk.Builder("poisonous_bullet", Perk.Type.AMMO).bypassArmorRate(0.0f).damageRate(1.0f).speedRate(1.0f).rgb(48, 131, 6)
                     .mobEffect(MobEffects.POISON::value)));
     public static final DeferredHolder<Perk, Perk> BEAST_BULLET = AMMO_PERKS.register("beast_bullet", BeastBullet::new);
-    public static final DeferredHolder<Perk, Perk> LONGER_WIRE = AMMO_PERKS.register("longer_wire", () -> new Perk("longer_wire", Perk.Type.AMMO));
+    public static final DeferredHolder<Perk, Perk> LONGER_WIRE = AMMO_PERKS.register("longer_wire", LongerWire::new);
     public static final DeferredHolder<Perk, Perk> INCENDIARY_BULLET = AMMO_PERKS.register("incendiary_bullet", IncendiaryBullet::new);
     public static final DeferredHolder<Perk, Perk> MICRO_MISSILE = AMMO_PERKS.register("micro_missile", MicroMissile::new);
 
@@ -66,7 +66,7 @@ public class ModPerks {
     public static final DeferredHolder<Perk, Perk> KILLING_TALLY = DAMAGE_PERKS.register("killing_tally", KillingTally::new);
     public static final DeferredHolder<Perk, Perk> HEAD_SEEKER = DAMAGE_PERKS.register("head_seeker", HeadSeeker::new);
     public static final DeferredHolder<Perk, Perk> MONSTER_HUNTER = DAMAGE_PERKS.register("monster_hunter", MonsterHunter::new);
-    public static final DeferredHolder<Perk, Perk> VOLT_OVERLOAD = DAMAGE_PERKS.register("volt_overload", () -> new Perk("volt_overload", Perk.Type.DAMAGE));
+    public static final DeferredHolder<Perk, Perk> VOLT_OVERLOAD = DAMAGE_PERKS.register("volt_overload", VoltOverload::new);
     public static final DeferredHolder<Perk, Perk> DESPERADO = DAMAGE_PERKS.register("desperado", Desperado::new);
     public static final DeferredHolder<Perk, Perk> VORPAL_WEAPON = DAMAGE_PERKS.register("vorpal_weapon", VorpalWeapon::new);
 

@@ -181,17 +181,21 @@ public class TaserItem extends GunItem implements GeoItem, EnergyStorageItem {
         player.getCooldowns().addCooldown(stack.getItem(), 5);
 
         if (player instanceof ServerPlayer serverPlayer) {
-            int volt = data.perk.getLevel(ModPerks.VOLT_OVERLOAD);
-            int wireLength = data.perk.getLevel(ModPerks.LONGER_WIRE);
-
             var level = serverPlayer.level();
-            TaserBulletEntity taserBulletProjectile = new TaserBulletEntity(player, level,
-                    (float) data.damage(), volt, wireLength);
+            TaserBulletEntity projectile = new TaserBulletEntity(player, level,
+                    (float) data.damage());
 
-            taserBulletProjectile.setPos(player.getX(), player.getEyeY() - 0.1, player.getZ());
-            taserBulletProjectile.shoot(player.getLookAngle().x, player.getLookAngle().y, player.getLookAngle().z, (float) data.velocity(),
+            for (Perk.Type type : Perk.Type.values()) {
+                var instance = data.perk.getInstance(type);
+                if (instance != null) {
+                    instance.perk().modifyProjectile(data, instance, projectile);
+                }
+            }
+
+            projectile.setPos(player.getX(), player.getEyeY() - 0.1, player.getZ());
+            projectile.shoot(player.getLookAngle().x, player.getLookAngle().y, player.getLookAngle().z, (float) data.velocity(),
                     (float) (zoom ? 0.1 : spread));
-            level.addFreshEntity(taserBulletProjectile);
+            level.addFreshEntity(projectile);
         }
         return true;
     }

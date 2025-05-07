@@ -30,6 +30,12 @@ public class AmmoPerk extends Perk {
         this.mobEffects = () -> builder.mobEffects;
     }
 
+    public AmmoPerk(String descriptionId, Type type) {
+        super(descriptionId, type);
+        this.rgb = new float[]{1, 222 / 255f, 39 / 255f};
+        this.mobEffects = ArrayList::new;
+    }
+
     @Override
     public void modifyProjectile(GunData data, PerkInstance instance, Entity entity) {
         if (!(entity instanceof ProjectileEntity projectile)) return;
