@@ -10,5 +10,12 @@
   "Weight": 7,
   "EmptyReloadTime": 103,
   "RPM": 120,
-  "AmmoType": "superbwarfare:rocket"
+  "AmmoType": "superbwarfare:rocket",
+  "AvailablePerks": [
+    "superbwarfare:powerful_attraction",
+    "superbwarfare:intelligent_chip",
+    "superbwarfare:monster_hunter",
+    "superbwarfare:vorpal_weapon",
+    "superbwarfare:micro_missile"
+  ]
 }

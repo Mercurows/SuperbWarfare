@@ -8,5 +8,12 @@
   "Weight": 1,
   "EmptyReloadTime": 58,
   "RPM": 240,
-  "AmmoType": "superbwarfare:taser_electrode"
+  "AmmoType": "superbwarfare:taser_electrode",
+  "AvailablePerks": [
+    "superbwarfare:longer_wire",
+    "superbwarfare:regeneration",
+    "superbwarfare:powerful_attraction",
+    "superbwarfare:intelligent_chip",
+    "superbwarfare:volt_overload"
+  ]
 }

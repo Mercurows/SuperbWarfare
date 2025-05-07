@@ -141,15 +141,6 @@ public class BocekItem extends GunItem implements GeoItem {
     }
 
     @Override
-    public boolean canApplyPerk(Perk perk) {
-        return switch (perk.type) {
-            case AMMO -> !perk.descriptionId.equals("butterfly_bullet") && perk != ModPerks.MICRO_MISSILE.get();
-            case FUNCTIONAL -> perk == ModPerks.FIELD_DOCTOR.get() || perk == ModPerks.INTELLIGENT_CHIP.get();
-            case DAMAGE -> perk == ModPerks.MONSTER_HUNTER.get() || perk == ModPerks.KILLING_TALLY.get();
-        };
-    }
-
-    @Override
     public @NotNull Optional<TooltipComponent> getTooltipImage(@NotNull ItemStack pStack) {
         return Optional.of(new BocekImageComponent(pStack));
     }

@@ -15,5 +15,19 @@
   "FinishTime": 18,
   "BypassesArmor": 0.54,
   "SoundRadius": 18,
-  "AmmoType": "@SniperAmmo"
+  "AmmoType": "@SniperAmmo",
+  "AvailablePerks": [
+    "@Ammo",
+    "superbwarfare:heal_clip",
+    "superbwarfare:fourth_times_charm",
+    "superbwarfare:subsistence",
+    "superbwarfare:powerful_attraction",
+    "superbwarfare:intelligent_chip",
+    "superbwarfare:kill_clip",
+    "superbwarfare:monster_hunter",
+    "superbwarfare:vorpal_weapon",
+    "!superbwarfare:micro_missile",
+    "!superbwarfare:longer_wire",
+    "!superbwarfare:butterfly_bullet"
+  ]
 }

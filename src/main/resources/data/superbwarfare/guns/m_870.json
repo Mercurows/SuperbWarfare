@@ -15,5 +15,20 @@
   "BypassesArmor": 0.05,
   "SoundRadius": 16,
   "BoltActionTime": 11,
-  "AmmoType": "@ShotgunAmmo"
+  "AmmoType": "@ShotgunAmmo",
+  "AvailablePerks": [
+    "@Ammo",
+    "superbwarfare:field_doctor",
+    "superbwarfare:heal_clip",
+    "superbwarfare:subsistence",
+    "superbwarfare:powerful_attraction",
+    "superbwarfare:intelligent_chip",
+    "superbwarfare:kill_clip",
+    "superbwarfare:gutshot_straight",
+    "superbwarfare:monster_hunter",
+    "superbwarfare:vorpal_weapon",
+    "!superbwarfare:micro_missile",
+    "!superbwarfare:longer_wire",
+    "!superbwarfare:butterfly_bullet"
+  ]
 }

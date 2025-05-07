@@ -8,8 +8,6 @@ import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.item.gun.data.value.AttachmentType;
-import com.atsuishio.superbwarfare.perk.Perk;
-import com.atsuishio.superbwarfare.perk.PerkHelper;
 import com.atsuishio.superbwarfare.tools.NBTTool;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -294,11 +292,6 @@ public class Trachelium extends GunItem implements GeoItem {
     @Override
     public String getGunDisplayName() {
         return "TRACHELIUM";
-    }
-
-    @Override
-    public boolean canApplyPerk(Perk perk) {
-        return PerkHelper.HANDGUN_PERKS.test(perk);
     }
 
     @Override

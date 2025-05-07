@@ -15,5 +15,18 @@
   "BypassesArmor": 0.23,
   "SoundRadius": 14,
   "RPM": 600,
-  "AmmoType": "@RifleAmmo"
+  "AmmoType": "@RifleAmmo",
+  "AvailablePerks": [
+    "@Ammo",
+    "superbwarfare:fourth_times_charm",
+    "superbwarfare:subsistence",
+    "superbwarfare:powerful_attraction",
+    "superbwarfare:intelligent_chip",
+    "superbwarfare:killing_tally",
+    "superbwarfare:desperado",
+    "superbwarfare:monster_hunter",
+    "superbwarfare:vorpal_weapon",
+    "!superbwarfare:micro_missile",
+    "!superbwarfare:longer_wire"
+  ]
 }

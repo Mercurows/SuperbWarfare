@@ -12,5 +12,15 @@
   "FireMode": 2,
   "AmmoType": "@RifleAmmo",
   "ShootDelay": 20,
-  "HeatPerShoot": 0.5
+  "HeatPerShoot": 0.5,
+  "AvailablePerks": [
+    "@Ammo",
+    "superbwarfare:field_doctor",
+    "superbwarfare:powerful_attraction",
+    "superbwarfare:intelligent_chip",
+    "superbwarfare:monster_hunter",
+    "superbwarfare:vorpal_weapon",
+    "!superbwarfare:micro_missile",
+    "!superbwarfare:longer_wire"
+  ]
 }

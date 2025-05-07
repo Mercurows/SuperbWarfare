@@ -5,13 +5,11 @@ import com.atsuishio.superbwarfare.client.renderer.item.RpgItemRenderer;
 import com.atsuishio.superbwarfare.client.tooltip.component.LauncherImageComponent;
 import com.atsuishio.superbwarfare.entity.projectile.RpgRocketEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
-import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
-import com.atsuishio.superbwarfare.perk.PerkHelper;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -127,11 +125,6 @@ public class RpgItem extends GunItem implements GeoItem {
     @Override
     public String getGunDisplayName() {
         return "RPG-7";
-    }
-
-    @Override
-    public boolean canApplyPerk(Perk perk) {
-        return PerkHelper.LAUNCHER_PERKS.test(perk) || perk == ModPerks.MICRO_MISSILE.get();
     }
 
     @Override

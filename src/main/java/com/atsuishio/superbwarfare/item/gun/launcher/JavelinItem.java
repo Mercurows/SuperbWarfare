@@ -13,7 +13,6 @@ import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.network.message.receive.ShootClientMessage;
 import com.atsuishio.superbwarfare.perk.Perk;
-import com.atsuishio.superbwarfare.perk.PerkHelper;
 import com.atsuishio.superbwarfare.tools.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -189,11 +188,6 @@ public class JavelinItem extends GunItem implements GeoItem {
     @Override
     public String getGunDisplayName() {
         return "FGM-148";
-    }
-
-    @Override
-    public boolean canApplyPerk(Perk perk) {
-        return PerkHelper.LAUNCHER_PERKS.test(perk);
     }
 
     @Override

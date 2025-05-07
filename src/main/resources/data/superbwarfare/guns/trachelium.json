@@ -12,5 +12,21 @@
   "SoundRadius": 10,
   "RPM": 240,
   "AmmoType": "@RifleAmmo",
-  "ShootDelay": 6
+  "ShootDelay": 6,
+  "AvailablePerks": [
+    "@Ammo",
+    "superbwarfare:heal_clip",
+    "superbwarfare:field_doctor",
+    "superbwarfare:fourth_times_charm",
+    "superbwarfare:subsistence",
+    "superbwarfare:powerful_attraction",
+    "superbwarfare:intelligent_chip",
+    "superbwarfare:kill_clip",
+    "superbwarfare:gutshot_straight",
+    "superbwarfare:monster_hunter",
+    "superbwarfare:vorpal_weapon",
+    "!superbwarfare:micro_missile",
+    "!superbwarfare:longer_wire",
+    "!superbwarfare:butterfly_bullet"
+  ]
 }

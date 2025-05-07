@@ -10,5 +10,12 @@
   "Weight": 4,
   "EmptyReloadTime": 64,
   "RPM": 180,
-  "AmmoType": "superbwarfare:grenade_40mm"
+  "AmmoType": "superbwarfare:grenade_40mm",
+  "AvailablePerks": [
+    "superbwarfare:powerful_attraction",
+    "superbwarfare:intelligent_chip",
+    "superbwarfare:monster_hunter",
+    "superbwarfare:vorpal_weapon",
+    "superbwarfare:micro_missile"
+  ]
 }

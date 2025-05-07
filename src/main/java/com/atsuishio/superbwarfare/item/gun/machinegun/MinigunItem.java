@@ -4,10 +4,8 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.renderer.item.MinigunItemRenderer;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModEnumExtensions;
-import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
-import com.atsuishio.superbwarfare.perk.Perk;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.ResourceLocation;
@@ -23,16 +21,17 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 import java.util.function.Supplier;
 
 public class MinigunItem extends GunItem implements GeoItem {
-    @Override
-    public int getCustomRPM(ItemStack stack) {
-        return GunData.from(stack).data().getInt("CustomRPM");
-    }
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     public static ItemDisplayContext transformType;
 
     public MinigunItem() {
         super(new Properties().stacksTo(1).rarity(ModEnumExtensions.getLegendary()));
+    }
+
+    @Override
+    public int getCustomRPM(ItemStack stack) {
+        return GunData.from(stack).data().getInt("CustomRPM");
     }
 
     @Override
@@ -79,15 +78,6 @@ public class MinigunItem extends GunItem implements GeoItem {
     @Override
     public String getGunDisplayName() {
         return "M134 MINIGUN";
-    }
-
-    @Override
-    public boolean canApplyPerk(Perk perk) {
-        return switch (perk.type) {
-            case AMMO -> perk != ModPerks.MICRO_MISSILE.get() && perk != ModPerks.LONGER_WIRE.get();
-            case FUNCTIONAL -> perk == ModPerks.FIELD_DOCTOR.get() || perk == ModPerks.INTELLIGENT_CHIP.get();
-            case DAMAGE -> perk == ModPerks.MONSTER_HUNTER.get() || perk == ModPerks.KILLING_TALLY.get();
-        };
     }
 
     @Override

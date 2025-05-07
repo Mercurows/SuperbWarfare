@@ -13,5 +13,22 @@
   "BypassesArmor": 0.15,
   "SoundRadius": 8,
   "RPM": 1300,
-  "AmmoType": "@HandgunAmmo"
+  "AmmoType": "@HandgunAmmo",
+  "AvailablePerks": [
+    "@Ammo",
+    "superbwarfare:heal_clip",
+    "superbwarfare:field_doctor",
+    "superbwarfare:fourth_times_charm",
+    "superbwarfare:subsistence",
+    "superbwarfare:powerful_attraction",
+    "superbwarfare:intelligent_chip",
+    "superbwarfare:kill_clip",
+    "superbwarfare:gutshot_straight",
+    "superbwarfare:monster_hunter",
+    "superbwarfare:vorpal_weapon",
+    "superbwarfare:desperado",
+    "!superbwarfare:micro_missile",
+    "!superbwarfare:longer_wire",
+    "!superbwarfare:butterfly_bullet"
+  ]
 }

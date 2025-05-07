@@ -7,8 +7,6 @@ import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
-import com.atsuishio.superbwarfare.perk.Perk;
-import com.atsuishio.superbwarfare.perk.PerkHelper;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -60,7 +58,7 @@ public class HomemadeShotgunItem extends GunItem implements GeoItem {
     }
 
     @Override
-    public int getBarColor(ItemStack stack) {
+    public int getBarColor(@NotNull ItemStack stack) {
         float stackMaxDamage = (float) this.getMaxDamage(stack);
         float f = Math.max(0.0F, (stackMaxDamage - (float) stack.getDamageValue()) / stackMaxDamage);
         return Mth.hsvToRgb(f / 3.0F, 1.0F, 1.0F);
@@ -119,11 +117,6 @@ public class HomemadeShotgunItem extends GunItem implements GeoItem {
     @Override
     public String getGunDisplayName() {
         return "Homemade Shotgun";
-    }
-
-    @Override
-    public boolean canApplyPerk(Perk perk) {
-        return PerkHelper.SHOTGUN_PERKS.test(perk);
     }
 
     @Override

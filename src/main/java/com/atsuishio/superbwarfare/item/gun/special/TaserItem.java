@@ -151,16 +151,6 @@ public class TaserItem extends GunItem implements GeoItem, EnergyStorageItem {
     }
 
     @Override
-    public boolean canApplyPerk(Perk perk) {
-        return switch (perk.type) {
-            case AMMO -> perk == ModPerks.LONGER_WIRE.get();
-            case FUNCTIONAL ->
-                    perk == ModPerks.REGENERATION.get() || perk == ModPerks.POWERFUL_ATTRACTION.get() || perk == ModPerks.INTELLIGENT_CHIP.get();
-            case DAMAGE -> perk == ModPerks.VOLT_OVERLOAD.get();
-        };
-    }
-
-    @Override
     public @NotNull Optional<TooltipComponent> getTooltipImage(@NotNull ItemStack pStack) {
         return Optional.of(new EnergyImageComponent(pStack));
     }

@@ -6,5 +6,13 @@
   "BypassesArmor": 0.25,
   "Magazine": 1,
   "EmptyReloadTime": 6,
-  "AmmoType": "minecraft:arrow"
+  "AmmoType": "minecraft:arrow",
+  "AvailablePerks": [
+    "@Ammo",
+    "superbwarfare:field_doctor",
+    "superbwarfare:intelligent_chip",
+    "superbwarfare:monster_hunter",
+    "!superbwarfare:micro_missile",
+    "!superbwarfare:butterfly_bullet"
+  ]
 }
