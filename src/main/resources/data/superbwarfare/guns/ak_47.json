@@ -15,5 +15,12 @@
   "BypassesArmor": 0.2,
   "SoundRadius": 14,
   "RPM": 600,
-  "AmmoType": "@RifleAmmo"
+  "AmmoType": "@RifleAmmo",
+  "AvailablePerks": [
+    "superbwarfare:heal_clip",
+    "superbwarfare:kill_clip",
+    "@Ammo",
+    "!superbwarfare:micro_missile",
+    "!superbwarfare:longer_wire"
+  ]
 }

@@ -2,6 +2,8 @@ package com.atsuishio.superbwarfare.item.gun.data;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.List;
+
 public class DefaultGunData {
 
     @SerializedName("RecoilX")
@@ -72,4 +74,7 @@ public class DefaultGunData {
 
     @SerializedName("HeatPerShoot")
     public double heatPerShoot = 0;
+
+    @SerializedName("AvailablePerks")
+    public List<String> availablePerks;
 }

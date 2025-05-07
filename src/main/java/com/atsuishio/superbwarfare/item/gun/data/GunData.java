@@ -1,5 +1,7 @@
 package com.atsuishio.superbwarfare.item.gun.data;
 
+import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.data.subdata.*;
 import com.atsuishio.superbwarfare.item.gun.data.value.*;
@@ -21,13 +23,17 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
 public class GunData {
+
     public final ItemStack stack;
     public final GunItem item;
     public final CompoundTag tag;
@@ -140,9 +146,7 @@ public class GunData {
         return GunsTool.gunsData.getOrDefault(id, new DefaultGunData());
     }
 
-
     // 枪械本体属性开始
-
     public double rawDamage() {
         return defaultGunData().damage;
     }
@@ -428,8 +432,72 @@ public class GunData {
         reload.setState(ReloadState.NOT_RELOADING);
     }
 
-    // 可持久化属性开始
+    private static int getPriority(String s) {
+        if (s == null || s.isEmpty()) return 2;
+        if (s.startsWith("@")) return 0;
+        else if (s.startsWith("!")) return 2;
+        else return 1;
+    }
 
+    public List<Perk> availablePerks() {
+        List<Perk> availablePerks = new ArrayList<>();
+        var perkNames = defaultGunData().availablePerks;
+        perkNames.sort((s1, s2) -> {
+            int p1 = getPriority(s1);
+            int p2 = getPriority(s2);
+
+            if (p1 != p2) {
+                return Integer.compare(p1, p2);
+            } else {
+                return s1.compareTo(s2);
+            }
+        });
+
+        // TODO 正确实现注册项读取
+        var perks = new ArrayList<DeferredHolder<Perk, ? extends Perk>>();
+        perks.addAll(ModPerks.AMMO_PERKS.getEntries());
+        perks.addAll(ModPerks.DAMAGE_PERKS.getEntries());
+        perks.addAll(ModPerks.FUNC_PERKS.getEntries());
+
+        var perkValues = perks.stream().map(DeferredHolder::get).toList();
+        var perkKeys = perks.stream().map(perk -> perk.getKey().location().toString()).toList();
+
+        for (String name : perkNames) {
+            if (name.startsWith("@")) {
+                String type = name.substring(1);
+                switch (type) {
+                    case "Ammo" ->
+                            availablePerks.addAll(perkValues.stream().filter(perk -> perk.type == Perk.Type.AMMO).toList());
+                    case "Functional" ->
+                            availablePerks.addAll(perkValues.stream().filter(perk -> perk.type == Perk.Type.FUNCTIONAL).toList());
+                    case "Damage" ->
+                            availablePerks.addAll(perkValues.stream().filter(perk -> perk.type == Perk.Type.DAMAGE).toList());
+                }
+            } else if (name.startsWith("!")) {
+                String n = name.substring(1);
+                var index = perkKeys.indexOf(n);
+                if (index != -1) {
+                    availablePerks.remove(perkValues.get(index));
+                } else {
+                    Mod.LOGGER.warn("Perk {} not found", n);
+                }
+            } else {
+                var index = perkKeys.indexOf(name);
+                if (index != -1) {
+                    availablePerks.add(perkValues.get(index));
+                } else {
+                    Mod.LOGGER.warn("Perk {} not found", name);
+                }
+            }
+        }
+        return availablePerks;
+    }
+
+    public boolean canApplyPerk(Perk perk) {
+        return availablePerks().contains(perk);
+    }
+
+    // 可持久化属性开始
     public final IntValue ammo;
     public final IntValue fireMode;
     public final IntValue level;
@@ -446,7 +514,6 @@ public class GunData {
     public boolean canSwitchScope() {
         return item.canSwitchScope(stack);
     }
-
 
     public final Reload reload;
 
@@ -472,7 +539,6 @@ public class GunData {
     public final IntValue sensitivity;
 
     // 其他子级属性
-
     public final Bolt bolt;
     public final Attachment attachment;
     public final Perks perk;

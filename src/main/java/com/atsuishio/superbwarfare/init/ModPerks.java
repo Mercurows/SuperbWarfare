@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.ammo.*;
 import com.atsuishio.superbwarfare.perk.damage.*;
 import com.atsuishio.superbwarfare.perk.functional.*;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.effect.MobEffects;
 import net.neoforged.bus.api.IEventBus;
@@ -19,6 +20,8 @@ import net.neoforged.neoforge.registries.RegistryBuilder;
 @EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD)
 @SuppressWarnings("unused")
 public class ModPerks {
+
+    public static final ResourceKey<Registry<Perk>> PERK_KEY = ResourceKey.createRegistryKey(Mod.loc("perk"));
 
     @SubscribeEvent
     public static void registry(NewRegistryEvent event) {
