@@ -9,6 +9,7 @@
   "item.superbwarfare.ammo.rifle": "Rifle Ammo",
   "item.superbwarfare.ammo.sniper": "Sniper Ammo",
   "item.superbwarfare.ammo.heavy": "Heavy Ammo",
+
   "item.superbwarfare.sentinel": "Sentinel",
   "item.superbwarfare.rpk": "RPK",
   "item.superbwarfare.m_870": "M870",
@@ -591,6 +592,7 @@
 
   "jei.superbwarfare.ancient_cpu": "Mysterious ancient technology, can be found at ancient cities.",
   "jei.superbwarfare.charging_station": "Generates power by consuming fuel or food, and can also accept FE energy input. This block supplies FE energy to adjacent blocks, and can also charge rechargeable vehicles within range.",
+  "jei.superbwarfare.gun_perks": "Available Perks",
 
   "config.jade.plugin_superbwarfare.vehicle_energy": "Vehicle Energy",
   "config.jade.plugin_superbwarfare.vehicle_health": "Vehicle Health",

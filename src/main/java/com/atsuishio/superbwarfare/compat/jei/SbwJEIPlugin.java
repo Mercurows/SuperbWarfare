@@ -8,6 +8,8 @@ import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.ingredients.subtypes.ISubtypeInterpreter;
 import mezz.jei.api.ingredients.subtypes.UidContext;
+import mezz.jei.api.registration.IRecipeCatalystRegistration;
+import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
 import mezz.jei.api.registration.ISubtypeRegistration;
 import net.minecraft.core.Holder;
@@ -28,6 +30,16 @@ public class SbwJEIPlugin implements IModPlugin {
     @Override
     public @NotNull ResourceLocation getPluginUid() {
         return Mod.loc("jei_plugin");
+    }
+
+    @Override
+    public void registerCategories(IRecipeCategoryRegistration registration) {
+        registration.addRecipeCategories(new GunPerksCategory(registration.getJeiHelpers().getGuiHelper()));
+    }
+
+    @Override
+    public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
+        registration.addRecipeCatalyst(new ItemStack(ModItems.REFORGING_TABLE.get()), GunPerksCategory.TYPE);
     }
 
     // TODO 正确注册subtypes
@@ -72,7 +84,7 @@ public class SbwJEIPlugin implements IModPlugin {
             }
 
             @Override
-            public String getLegacyStringSubtypeInfo(ItemStack ingredient, UidContext context) {
+            public @NotNull String getLegacyStringSubtypeInfo(ItemStack ingredient, UidContext context) {
                 if (ingredient.getComponentsPatch().isEmpty()) {
                     return "";
                 }
@@ -85,12 +97,12 @@ public class SbwJEIPlugin implements IModPlugin {
 
         registration.registerSubtypeInterpreter(ModItems.C4_BOMB.get(), new ISubtypeInterpreter<>() {
             @Override
-            public @Nullable Object getSubtypeData(ItemStack ingredient, UidContext context) {
+            public @NotNull Object getSubtypeData(ItemStack ingredient, UidContext context) {
                 return NBTTool.getTag(ingredient).getBoolean("Control");
             }
 
             @Override
-            public String getLegacyStringSubtypeInfo(ItemStack ingredient, UidContext context) {
+            public @NotNull String getLegacyStringSubtypeInfo(ItemStack ingredient, UidContext context) {
                 return (String) getSubtypeData(ingredient, context);
             }
         });
