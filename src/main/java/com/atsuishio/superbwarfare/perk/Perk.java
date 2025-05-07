@@ -51,6 +51,9 @@ public class Perk {
         return result.get();
     }
 
+    /**
+     * 在背包中每Tick触发
+     */
     public void tick(GunData data, PerkInstance instance, @Nullable LivingEntity living) {
     }
 
@@ -68,6 +71,16 @@ public class Perk {
 
     public float getModifiedDamage(float damage, GunData data, PerkInstance instance, @Nullable LivingEntity target, DamageSource source) {
         return damage;
+    }
+
+    public int getModifiedRPM(int rpm, GunData data, PerkInstance instance) {
+        return rpm;
+    }
+
+    /**
+     * 在切换物品时触发
+     */
+    public void onChangeSlot(GunData data, PerkInstance instance, @Nullable LivingEntity living) {
     }
 
     public enum Type {

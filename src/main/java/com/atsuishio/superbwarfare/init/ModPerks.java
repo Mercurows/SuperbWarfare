@@ -3,10 +3,7 @@ package com.atsuishio.superbwarfare.init;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
-import com.atsuishio.superbwarfare.perk.damage.GutshotStraight;
-import com.atsuishio.superbwarfare.perk.damage.HeadSeeker;
-import com.atsuishio.superbwarfare.perk.damage.KillClip;
-import com.atsuishio.superbwarfare.perk.damage.VorpalWeapon;
+import com.atsuishio.superbwarfare.perk.damage.*;
 import com.atsuishio.superbwarfare.perk.functional.HealClip;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.effect.MobEffects;
@@ -73,11 +70,11 @@ public class ModPerks {
 
     public static final DeferredHolder<Perk, Perk> KILL_CLIP = DAMAGE_PERKS.register("kill_clip", KillClip::new);
     public static final DeferredHolder<Perk, Perk> GUTSHOT_STRAIGHT = DAMAGE_PERKS.register("gutshot_straight", GutshotStraight::new);
-    public static final DeferredHolder<Perk, Perk> KILLING_TALLY = DAMAGE_PERKS.register("killing_tally", () -> new Perk("killing_tally", Perk.Type.DAMAGE));
+    public static final DeferredHolder<Perk, Perk> KILLING_TALLY = DAMAGE_PERKS.register("killing_tally", KillingTally::new);
     public static final DeferredHolder<Perk, Perk> HEAD_SEEKER = DAMAGE_PERKS.register("head_seeker", HeadSeeker::new);
     public static final DeferredHolder<Perk, Perk> MONSTER_HUNTER = DAMAGE_PERKS.register("monster_hunter", () -> new Perk("monster_hunter", Perk.Type.DAMAGE));
     public static final DeferredHolder<Perk, Perk> VOLT_OVERLOAD = DAMAGE_PERKS.register("volt_overload", () -> new Perk("volt_overload", Perk.Type.DAMAGE));
-    public static final DeferredHolder<Perk, Perk> DESPERADO = DAMAGE_PERKS.register("desperado", () -> new Perk("desperado", Perk.Type.DAMAGE));
+    public static final DeferredHolder<Perk, Perk> DESPERADO = DAMAGE_PERKS.register("desperado", Desperado::new);
     public static final DeferredHolder<Perk, Perk> VORPAL_WEAPON = DAMAGE_PERKS.register("vorpal_weapon", VorpalWeapon::new);
 
 //    public static void registerCompatPerks() {

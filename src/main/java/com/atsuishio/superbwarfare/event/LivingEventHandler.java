@@ -416,9 +416,11 @@ public class LivingEventHandler {
                         newData.charge.timer.reset();
                     }
 
-                    int level = newData.perk.getLevel(ModPerks.KILLING_TALLY);
-                    if (level != 0) {
-                        GunsTool.setPerkIntTag(newTag, "KillingTally", 0);
+                    for (Perk.Type type : Perk.Type.values()) {
+                        var instance = newData.perk.getInstance(type);
+                        if (instance != null) {
+                            instance.perk().onChangeSlot(newData, instance, player);
+                        }
                     }
 
                     if (player.level() instanceof ServerLevel) {
@@ -497,10 +499,6 @@ public class LivingEventHandler {
             }
         }
 
-        if (DamageTypeTool.isGunDamage(source)) {
-            handleKillingTallyDamage(stack, event);
-        }
-
         if (source.getDirectEntity() instanceof ProjectileEntity projectile) {
             if (data.perk.getLevel(ModPerks.FOURTH_TIMES_CHARM) > 0) {
                 float bypassArmorRate = projectile.getBypassArmorRate();
@@ -548,37 +546,7 @@ public class LivingEventHandler {
         }
 
         if (DamageTypeTool.isGunDamage(source)) {
-            handleKillingTallyAddCount(stack);
             handleSubsistence(stack, attacker);
-        }
-
-        if (DamageTypeTool.isHeadshotDamage(source)) {
-            handleDesperado(stack);
-        }
-    }
-
-    private static void handleKillingTallyDamage(ItemStack stack, LivingIncomingDamageEvent event) {
-        var data = GunData.from(stack);
-        int level = data.perk.getLevel(ModPerks.KILLING_TALLY);
-        if (level == 0) {
-            return;
-        }
-
-        int killTally = data.perk.getTag(ModPerks.KILLING_TALLY).getInt("KillingTally");
-        if (killTally == 0) {
-            return;
-        }
-
-        event.setAmount(event.getAmount() * (1.0f + (0.1f * level) * killTally));
-    }
-
-    private static void handleKillingTallyAddCount(ItemStack stack) {
-        var data = GunData.from(stack);
-        int level = data.perk.getLevel(ModPerks.KILLING_TALLY);
-        if (level != 0) {
-            var tag = data.perk.getTag(ModPerks.KILLING_TALLY);
-            tag.putInt("KillingTally", Math.min(3, tag.getInt("KillingTally") + 1));
-            data.save();
         }
     }
 
@@ -637,16 +605,6 @@ public class LivingEventHandler {
             event.getEntity().heal(event.getAmount() * Math.min(1.0f, 0.25f + 0.05f * level));
             event.setCanceled(true);
         }
-    }
-
-    private static void handleDesperado(ItemStack stack) {
-        var data = GunData.from(stack);
-        int level = data.perk.getLevel(ModPerks.DESPERADO);
-        if (level == 0) return;
-
-        var tag = data.perk.getTag(ModPerks.DESPERADO);
-        tag.putInt("DesperadoTime", 90 + level * 10);
-        data.save();
     }
 
     @SubscribeEvent

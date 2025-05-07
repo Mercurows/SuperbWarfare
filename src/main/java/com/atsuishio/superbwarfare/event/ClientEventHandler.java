@@ -543,9 +543,11 @@ public class ClientEventHandler {
             rpm = 600;
         }
 
-        if (GunsTool.getPerkIntTag(tag, "DesperadoTimePost") > 0) {
-            int perkLevel = data.perk.getLevel(ModPerks.DESPERADO);
-            rpm *= (int) (1.285 + 0.015 * perkLevel);
+        for (Perk.Type type : Perk.Type.values()) {
+            var instance = data.perk.getInstance(type);
+            if (instance != null) {
+                rpm = instance.perk().getModifiedRPM(rpm, data, instance);
+            }
         }
 
         double rps = (double) rpm / 60;
