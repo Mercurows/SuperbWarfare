@@ -82,7 +82,7 @@ public abstract class GunItem extends Item implements CustomRendererItem {
     @Override
     @ParametersAreNonnullByDefault
     public void inventoryTick(ItemStack stack, Level level, Entity entity, int slot, boolean selected) {
-        if (!(entity instanceof LivingEntity) || !(stack.getItem() instanceof GunItem gunItem)) return;
+        if (!(entity instanceof LivingEntity living) || !(stack.getItem() instanceof GunItem gunItem)) return;
 
         var data = GunData.from(stack);
 
@@ -93,6 +93,13 @@ public abstract class GunItem extends Item implements CustomRendererItem {
             }
         }
         data.draw.set(false);
+
+        for (Perk.Type type : Perk.Type.values()) {
+            var instance = data.perk.getInstance(type);
+            if (instance != null) {
+                instance.perk().tick(data, instance, living);
+            }
+        }
         handleGunPerks(data);
 
         var hasBulletInBarrel = gunItem.hasBulletInBarrel(stack);
@@ -113,8 +120,7 @@ public abstract class GunItem extends Item implements CustomRendererItem {
             data.ammo.set(magazine + (hasBulletInBarrel ? 1 : 0));
         }
 
-        //冷却
-
+        // 冷却
         double cooldown = 0;
         if (entity.wasInPowderSnow) {
             cooldown = 0.15;
@@ -194,11 +200,6 @@ public abstract class GunItem extends Item implements CustomRendererItem {
 
     private void handleGunPerks(GunData data) {
         var perk = data.perk;
-
-        perk.reduceCooldown(ModPerks.HEAL_CLIP, "HealClipTime");
-
-        perk.reduceCooldown(ModPerks.KILL_CLIP, "KillClipReloadTime");
-        perk.reduceCooldown(ModPerks.KILL_CLIP, "KillClipTime");
 
         perk.reduceCooldown(ModPerks.FOURTH_TIMES_CHARM, "FourthTimesCharmTick");
 

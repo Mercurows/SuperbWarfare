@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.init;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
+import com.atsuishio.superbwarfare.perk.damage.KillClip;
 import com.atsuishio.superbwarfare.perk.functional.HealClip;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.effect.MobEffects;
@@ -67,7 +68,7 @@ public class ModPerks {
      */
     public static final DeferredRegister<Perk> DAMAGE_PERKS = DeferredRegister.create(Mod.loc("perk"), Mod.MODID);
 
-    public static final DeferredHolder<Perk, Perk> KILL_CLIP = DAMAGE_PERKS.register("kill_clip", () -> new Perk("kill_clip", Perk.Type.DAMAGE));
+    public static final DeferredHolder<Perk, Perk> KILL_CLIP = DAMAGE_PERKS.register("kill_clip", KillClip::new);
     public static final DeferredHolder<Perk, Perk> GUTSHOT_STRAIGHT = DAMAGE_PERKS.register("gutshot_straight", () -> new Perk("gutshot_straight", Perk.Type.DAMAGE));
     public static final DeferredHolder<Perk, Perk> KILLING_TALLY = DAMAGE_PERKS.register("killing_tally", () -> new Perk("killing_tally", Perk.Type.DAMAGE));
     public static final DeferredHolder<Perk, Perk> HEAD_SEEKER = DAMAGE_PERKS.register("head_seeker", () -> new Perk("head_seeker", Perk.Type.DAMAGE));

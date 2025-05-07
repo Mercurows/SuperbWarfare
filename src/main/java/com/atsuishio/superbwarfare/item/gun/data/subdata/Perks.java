@@ -12,6 +12,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 
 public final class Perks {
+
     private final CompoundTag perks;
 
     public Perks(GunData gun) {

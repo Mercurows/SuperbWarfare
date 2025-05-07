@@ -6,23 +6,16 @@ import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import net.minecraft.ChatFormatting;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.function.BiFunction;
-
 public class Perk {
+
     public final String descriptionId;
     public final String name;
     public final Type type;
     public int level = 1;
-
-    public BiFunction<GunData, PerkInstance, Void> tick;
-    public BiFunction<GunData, PerkInstance, Void> preReload;
-    public BiFunction<GunData, PerkInstance, Void> postReload;
-    public BiFunction<GunData, PerkInstance, Void> onKill;
 
     public Perk(String descriptionId, Type type) {
         this.descriptionId = descriptionId;
@@ -58,19 +51,23 @@ public class Perk {
         return result.get();
     }
 
-    public void tick(GunData data, PerkInstance instance, @Nullable Player player) {
+    public void tick(GunData data, PerkInstance instance, @Nullable LivingEntity living) {
     }
 
-    public void preReload(GunData data, PerkInstance instance, @Nullable Player player) {
+    public void preReload(GunData data, PerkInstance instance, @Nullable LivingEntity living) {
     }
 
-    public void postReload(GunData data, PerkInstance instance, @Nullable Player player) {
+    public void postReload(GunData data, PerkInstance instance, @Nullable LivingEntity living) {
     }
 
-    public void onKill(GunData data, PerkInstance instance, @Nullable Player player, LivingEntity target, DamageSource source) {
+    public void onKill(GunData data, PerkInstance instance, LivingEntity target, DamageSource source) {
     }
 
     public void onShoot() {
+    }
+
+    public float getModifiedDamage(float damage, GunData data, PerkInstance instance, @Nullable LivingEntity target, DamageSource source) {
+        return damage;
     }
 
     public enum Type {
