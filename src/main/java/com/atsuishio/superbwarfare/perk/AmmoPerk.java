@@ -1,7 +1,12 @@
 package com.atsuishio.superbwarfare.perk;
 
+import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity;
+import com.atsuishio.superbwarfare.item.gun.data.GunData;
+import net.minecraft.core.Holder;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.Entity;
 
 import java.util.ArrayList;
 import java.util.function.Supplier;
@@ -23,6 +28,28 @@ public class AmmoPerk extends Perk {
         this.slug = builder.slug;
         this.rgb = builder.rgb;
         this.mobEffects = () -> builder.mobEffects;
+    }
+
+    @Override
+    public void modifyProjectile(GunData data, PerkInstance instance, Entity entity) {
+        if (!(entity instanceof ProjectileEntity projectile)) return;
+        projectile.setRGB(this.rgb);
+        projectile.bypassArmorRate((float) Math.max(this.bypassArmorRate + data.bypassArmor(), 0));
+        if (this.slug) {
+            projectile.setDamage((float) (data.damage() * data.projectileAmount()));
+        }
+        if (!this.mobEffects.get().isEmpty()) {
+            int amplifier = this.getEffectAmplifier(instance);
+            ArrayList<MobEffectInstance> mobEffectInstances = new ArrayList<>();
+            for (MobEffect effect : this.mobEffects.get()) {
+                mobEffectInstances.add(new MobEffectInstance(Holder.direct(effect), 70 + 30 * level, amplifier));
+            }
+            projectile.effect(mobEffectInstances);
+        }
+    }
+
+    public int getEffectAmplifier(PerkInstance instance) {
+        return instance.level() - 1;
     }
 
     public static class Builder {

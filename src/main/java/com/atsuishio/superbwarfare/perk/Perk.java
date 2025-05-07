@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.item.PerkItem;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import net.minecraft.ChatFormatting;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -85,6 +86,9 @@ public class Perk {
 
     public boolean shouldCancelHurtEvent(float damage, GunData data, PerkInstance instance, LivingEntity target, DamageSource source) {
         return false;
+    }
+
+    public void modifyProjectile(GunData data, PerkInstance instance, Entity projectile) {
     }
 
     public enum Type {
