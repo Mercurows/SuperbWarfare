@@ -16,7 +16,10 @@ import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage;
-import com.atsuishio.superbwarfare.tools.*;
+import com.atsuishio.superbwarfare.tools.CustomExplosion;
+import com.atsuishio.superbwarfare.tools.EntityFindUtil;
+import com.atsuishio.superbwarfare.tools.InventoryTool;
+import com.atsuishio.superbwarfare.tools.ParticleTool;
 import com.mojang.math.Axis;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -82,7 +85,7 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
                                 .explosionDamage(VehicleConfig.BMP_2_CANNON_EXPLOSION_DAMAGE.get().floatValue())
                                 .explosionRadius(VehicleConfig.BMP_2_CANNON_EXPLOSION_RADIUS.get().floatValue())
                                 .sound(ModSounds.INTO_CANNON.get())
-                                .icon(Mod.loc("textures/screens/vehicle_weapon/cannon_20mm.png")),
+                                .icon(Mod.loc("textures/screens/vehicle_weapon/cannon_30mm.png")),
                         new HeliRocketWeapon()
                                 .damage(VehicleConfig.AH_6_ROCKET_DAMAGE.get())
                                 .explosionDamage(VehicleConfig.AH_6_ROCKET_EXPLOSION_DAMAGE.get())
@@ -165,11 +168,11 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
         super.baseTick();
         float f;
 
-        f = (float) Mth.clamp(Math.max((onGround() ? 0.785f : 0.79f) - 0.01 * getDeltaMovement().length(), 0.5) + 0.031f * Mth.abs(90 - (float) calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90, 0.01, 0.99);
+        f = (float) Mth.clamp(Math.max((onGround() ? 0.88f : 0.89f) - 0.01 * getDeltaMovement().length(), 0.5) + 0.001f * Mth.abs(90 - (float) calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90, 0.01, 0.99);
 
         boolean forward = Mth.abs((float) calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) < 90;
 
-        this.setDeltaMovement(this.getDeltaMovement().add(this.getViewVector(1).scale((forward ? 0.23 : -0.23) * this.getDeltaMovement().length())));
+        this.setDeltaMovement(this.getDeltaMovement().add(this.getViewVector(1).scale((forward ? 0.13 : -0.02) * this.getDeltaMovement().length())));
         this.setDeltaMovement(this.getDeltaMovement().multiply(f, f, f));
 
         if (this.isInWater() && this.tickCount % 4 == 0) {
@@ -208,12 +211,7 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
     private void handleAmmo() {
         if (!(this.getFirstPassenger() instanceof Player player)) return;
 
-        int ammoCount = this.getItemStacks().stream().filter(stack -> {
-            if (stack.is(ModItems.AMMO_BOX.get())) {
-                return Ammo.HEAVY.get(stack) > 0;
-            }
-            return false;
-        }).mapToInt(Ammo.HEAVY::get).sum() + countItem(ModItems.SMALL_SHELL.get());
+        int ammoCount = countItem(ModItems.SMALL_SHELL.get());
 
         if ((hasItem(ModItems.ROCKET_70.get()) || InventoryTool.hasCreativeAmmoBox(player)) && reloadCoolDown == 0 && this.getEntityData().get(LOADED_ROCKET) < 28) {
             this.entityData.set(LOADED_ROCKET, this.getEntityData().get(LOADED_ROCKET) + 1);
@@ -261,9 +259,9 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
 
             if (!onGround()) {
                 if (rightInputDown) {
-                    this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) - 0.3f);
+                    this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) - 0.4f);
                 } else if (this.leftInputDown) {
-                    this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) + 0.3f);
+                    this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) + 0.4f);
                 }
             } else {
                 // 刹车
@@ -278,8 +276,8 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
 
             float roll = Mth.abs(Mth.clamp(getRoll() / 60, -1.5f, 1.5f));
 
-            float addY = Mth.clamp(Math.max((this.onGround() ? 0.1f : 0.2f) * (float) Math.max(getDeltaMovement().dot(getViewVector(1)), 0.05), 0f) * diffY - 0.5f * this.entityData.get(DELTA_ROT), -1.5f * (roll + 1), 1.5f * (roll + 1));
-            float addX = Mth.clamp(Math.min((float) Math.max(getDeltaMovement().dot(getViewVector(1)) - 0.17, 0.02), 0.5f) * diffX, -1.8f, 1.8f);
+            float addY = Mth.clamp(Math.max((this.onGround() ? 0.1f : 0.2f) * (float) Math.max(getDeltaMovement().dot(getViewVector(1)), 0), 0f) * diffY - 0.5f * this.entityData.get(DELTA_ROT), -1.5f * (roll + 1), 1.5f * (roll + 1));
+            float addX = Mth.clamp(Math.min((float) Math.max(getDeltaMovement().dot(getViewVector(1)) - 0.17, 0.01), 0.7f) * diffX, -2.4f, 2.4f);
             float addZ = this.entityData.get(DELTA_ROT) - (this.onGround() ? 0 : 0.01f) * diffY * (float) getDeltaMovement().dot(getViewVector(1));
 
             float i = getXRot() / 90;
@@ -325,7 +323,7 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
         this.entityData.set(POWER, this.entityData.get(POWER) * 0.99f);
         this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) * 0.95f);
 
-        this.setDeltaMovement(this.getDeltaMovement().add(getViewVector(1).scale(Math.max((90 + this.getXRot()) / 90, 0.3) * 0.4 * this.entityData.get(POWER))));
+        this.setDeltaMovement(this.getDeltaMovement().add(getViewVector(1).scale(Math.max((90 + this.getXRot()) / 90, 0.8) * 0.4 * this.entityData.get(POWER))));
 
         double flapAngle = (getFlap1LRot() + getFlap1RRot()) / 2;
 
@@ -539,7 +537,7 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
         if (getWeaponIndex(0) == 0) {
             if (this.cannotFire) return;
 
-            boolean hasCreativeAmmo = (getFirstPassenger() instanceof Player pPlayer && InventoryTool.hasCreativeAmmoBox(pPlayer)) || hasItem(ModItems.CREATIVE_AMMO_BOX.get());
+            boolean hasCreativeAmmo = getFirstPassenger() instanceof Player pPlayer && InventoryTool.hasCreativeAmmoBox(pPlayer);
 
             Vector4f worldPosition = transformPosition(transform, 0.1321625f, -0.56446875f, 7.85210625f);
 
@@ -547,16 +545,18 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
                 var entityToSpawn = ((SmallCannonShellWeapon) getWeapon(0)).create(player);
 
                 entityToSpawn.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
-                entityToSpawn.shoot(getLookAngle().x, getLookAngle().y - 0.062, getLookAngle().z, 20, 0.5f);
+                entityToSpawn.shoot(getLookAngle().x, getLookAngle().y - 0.057, getLookAngle().z, 20, 0.5f);
                 level().addFreshEntity(entityToSpawn);
 
                 sendParticle((ServerLevel) this.level(), ParticleTypes.LARGE_SMOKE, worldPosition.x, worldPosition.y, worldPosition.z, 1, 0, 0, 0, 0, false);
 
+                BlockPos pos = BlockPos.containing(new Vec3(worldPosition.x, worldPosition.y, worldPosition.z));
+
                 if (!player.level().isClientSide) {
                     if (player instanceof ServerPlayer serverPlayer) {
-                        serverPlayer.level().playSound(null, this.getOnPos(), ModSounds.HPJ_11_FIRE_3P.get(), SoundSource.PLAYERS, 6, random.nextFloat() * 0.05f + 1);
-                        serverPlayer.level().playSound(null, this.getOnPos(), ModSounds.HPJ_11_FAR.get(), SoundSource.PLAYERS, 12, random.nextFloat() * 0.05f + 1);
-                        serverPlayer.level().playSound(null, this.getOnPos(), ModSounds.HPJ_11_VERYFAR.get(), SoundSource.PLAYERS, 24, random.nextFloat() * 0.05f + 1);
+                        serverPlayer.level().playSound(null, pos, ModSounds.HPJ_11_FIRE_3P.get(), SoundSource.PLAYERS, 6, random.nextFloat() * 0.05f + 1);
+                        serverPlayer.level().playSound(null, pos, ModSounds.HPJ_11_FAR.get(), SoundSource.PLAYERS, 12, random.nextFloat() * 0.05f + 1);
+                        serverPlayer.level().playSound(null, pos, ModSounds.HPJ_11_VERYFAR.get(), SoundSource.PLAYERS, 24, random.nextFloat() * 0.05f + 1);
                     }
                 }
 
@@ -606,10 +606,12 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
             shootAngle = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z).vectorTo(new Vec3(worldPosition2.x, worldPosition2.y, worldPosition2.z)).normalize();
 
             heliRocketEntity.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
-            heliRocketEntity.shoot(shootAngle.x, shootAngle.y - 0.07, shootAngle.z, 8, 0.5f);
+            heliRocketEntity.shoot(shootAngle.x, shootAngle.y - 0.08, shootAngle.z, 8, 0.5f);
             player.level().addFreshEntity(heliRocketEntity);
 
-            this.level().playSound(null, BlockPos.containing(new Vec3(worldPosition.x, worldPosition.y, worldPosition.z)), ModSounds.HELICOPTER_ROCKET_FIRE_3P.get(), SoundSource.PLAYERS, 5, 1);
+            BlockPos pos = BlockPos.containing(new Vec3(worldPosition.x, worldPosition.y, worldPosition.z));
+
+            this.level().playSound(null, pos, ModSounds.HELICOPTER_ROCKET_FIRE_3P.get(), SoundSource.PLAYERS, 5, 1);
 
             this.entityData.set(LOADED_ROCKET, this.getEntityData().get(LOADED_ROCKET) - 1);
 
