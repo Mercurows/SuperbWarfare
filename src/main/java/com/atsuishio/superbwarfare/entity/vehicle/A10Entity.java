@@ -168,7 +168,7 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
         super.baseTick();
         float f;
 
-        f = (float) Mth.clamp(Math.max((onGround() ? 0.88f : 0.89f) - 0.01 * getDeltaMovement().length(), 0.5) + 0.001f * Mth.abs(90 - (float) calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90, 0.01, 0.99);
+        f = (float) Mth.clamp(Math.max((onGround() ? 0.88f : 0.885f) - 0.01 * getDeltaMovement().length(), 0.5) + 0.001f * Mth.abs(90 - (float) calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90, 0.01, 0.99);
 
         boolean forward = Mth.abs((float) calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) < 90;
 
@@ -327,7 +327,7 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
 
         double flapAngle = (getFlap1LRot() + getFlap1RRot()) / 2;
 
-        setDeltaMovement(getDeltaMovement().add(0.0f, Mth.clamp(Math.sin((onGround() ? 17 + flapAngle : -(getXRot() - 17) + flapAngle) * Mth.DEG_TO_RAD) * Math.sin((90 - this.getXRot()) * Mth.DEG_TO_RAD) * getDeltaMovement().dot(getViewVector(1)) * 0.06, -0.04, 0.065), 0.0f));
+        setDeltaMovement(getDeltaMovement().add(0.0f, Mth.clamp(Math.sin((onGround() ? 23 + flapAngle : -(getXRot() - 23) + flapAngle) * Mth.DEG_TO_RAD) * Math.sin((90 - this.getXRot()) * Mth.DEG_TO_RAD) * getDeltaMovement().dot(getViewVector(1)) * 0.063, -0.04, 0.065), 0.0f));
     }
 
     @Override
