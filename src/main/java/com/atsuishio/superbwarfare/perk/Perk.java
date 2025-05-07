@@ -4,8 +4,12 @@ import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.item.PerkItem;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import net.minecraft.ChatFormatting;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.registries.DeferredHolder;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.function.BiFunction;
 
@@ -52,6 +56,21 @@ public class Perk {
         if (result.isEmpty()) throw new IllegalStateException("Perk " + this.name + " not found");
 
         return result.get();
+    }
+
+    public void tick(GunData data, PerkInstance instance, @Nullable Player player) {
+    }
+
+    public void preReload(GunData data, PerkInstance instance, @Nullable Player player) {
+    }
+
+    public void postReload(GunData data, PerkInstance instance, @Nullable Player player) {
+    }
+
+    public void onKill(GunData data, PerkInstance instance, @Nullable Player player, LivingEntity target, DamageSource source) {
+    }
+
+    public void onShoot() {
     }
 
     public enum Type {

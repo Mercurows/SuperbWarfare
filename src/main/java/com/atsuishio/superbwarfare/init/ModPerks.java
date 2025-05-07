@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.init;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
+import com.atsuishio.superbwarfare.perk.functional.HealClip;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.effect.MobEffects;
 import net.neoforged.bus.api.IEventBus;
@@ -52,7 +53,7 @@ public class ModPerks {
      */
     public static final DeferredRegister<Perk> FUNC_PERKS = DeferredRegister.create(Mod.loc("perk"), Mod.MODID);
 
-    public static final DeferredHolder<Perk, Perk> HEAL_CLIP = FUNC_PERKS.register("heal_clip", () -> new Perk("heal_clip", Perk.Type.FUNCTIONAL));
+    public static final DeferredHolder<Perk, Perk> HEAL_CLIP = FUNC_PERKS.register("heal_clip", HealClip::new);
     public static final DeferredHolder<Perk, Perk> FOURTH_TIMES_CHARM = FUNC_PERKS.register("fourth_times_charm", () -> new Perk("fourth_times_charm", Perk.Type.FUNCTIONAL));
     public static final DeferredHolder<Perk, Perk> SUBSISTENCE = FUNC_PERKS.register("subsistence", () -> new Perk("subsistence", Perk.Type.FUNCTIONAL));
     public static final DeferredHolder<Perk, Perk> FIELD_DOCTOR = FUNC_PERKS.register("field_doctor", () -> new Perk("field_doctor", Perk.Type.FUNCTIONAL));

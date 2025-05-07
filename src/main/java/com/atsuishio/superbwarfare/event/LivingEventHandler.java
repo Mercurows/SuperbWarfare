@@ -544,6 +544,14 @@ public class LivingEventHandler {
             return;
         }
 
+        GunData data = GunData.from(stack);
+        for (Perk.Type type : Perk.Type.values()) {
+            var instance = data.perk.getInstance(type);
+            if (instance != null) {
+                instance.perk().onKill(data, instance, attacker, event.getEntity(), source);
+            }
+        }
+
         if (DamageTypeTool.isGunDamage(source) || source.is(ModDamageTypes.PROJECTILE_BOOM)) {
             handleClipPerks(stack);
         }
@@ -560,15 +568,9 @@ public class LivingEventHandler {
 
     private static void handleClipPerks(ItemStack stack) {
         var data = GunData.from(stack);
-        int healClipLevel = data.perk.getLevel(ModPerks.HEAL_CLIP);
-        var tag = data.perk.getTag(ModPerks.HEAL_CLIP);
-        if (healClipLevel != 0) {
-            tag.putInt("HealClipTime", 80 + healClipLevel * 20);
-        }
-
         int killClipLevel = data.perk.getLevel(ModPerks.KILL_CLIP);
         if (killClipLevel != 0) {
-            tag.putInt("KillClipReloadTime", 80);
+            data.perk.getTag(ModPerks.KILL_CLIP).putInt("KillClipReloadTime", 80);
         }
         data.save();
     }
