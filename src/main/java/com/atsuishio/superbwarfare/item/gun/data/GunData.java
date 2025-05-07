@@ -483,14 +483,14 @@ public class GunData {
                 if (index != -1) {
                     availablePerks.remove(perkValues.get(index));
                 } else {
-                    Mod.LOGGER.warn("Perk {} not found", n);
+                    Mod.LOGGER.info("Perk {} not found", n);
                 }
             } else {
                 var index = perkKeys.indexOf(name);
                 if (index != -1) {
                     availablePerks.add(perkValues.get(index));
                 } else {
-                    Mod.LOGGER.warn("Perk {} not found", name);
+                    Mod.LOGGER.info("Perk {} not found", name);
                 }
             }
         }
