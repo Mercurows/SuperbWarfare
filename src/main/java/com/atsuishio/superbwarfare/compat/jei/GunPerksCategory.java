@@ -73,7 +73,7 @@ public class GunPerksCategory implements IRecipeCategory<ItemStack> {
 
         for (int i = 0; i < sortedPerks.size(); i++) {
             var perkItem = sortedPerks.get(i).getItem().get();
-            builder.addSlot(RecipeIngredientRole.OUTPUT, 5 + (i % 7) * 18, 20 + i / 7 * 18).addItemStack(perkItem.getDefaultInstance());
+            builder.addSlot(RecipeIngredientRole.INPUT, 5 + (i % 7) * 18, 20 + i / 7 * 18).addItemStack(perkItem.getDefaultInstance());
         }
     }
 
