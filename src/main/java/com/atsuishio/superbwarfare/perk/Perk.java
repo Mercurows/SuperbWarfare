@@ -83,6 +83,10 @@ public class Perk {
     public void onChangeSlot(GunData data, PerkInstance instance, @Nullable LivingEntity living) {
     }
 
+    public boolean shouldCancelHurtEvent(float damage, GunData data, PerkInstance instance, LivingEntity target, DamageSource source) {
+        return false;
+    }
+
     public enum Type {
         AMMO("Ammo", ChatFormatting.YELLOW),
         FUNCTIONAL("Functional", ChatFormatting.GREEN),

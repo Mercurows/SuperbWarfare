@@ -100,7 +100,6 @@ public abstract class GunItem extends Item implements CustomRendererItem {
                 instance.perk().tick(data, instance, living);
             }
         }
-        handleGunPerks(data);
 
         var hasBulletInBarrel = gunItem.hasBulletInBarrel(stack);
         var ammoCount = data.ammo.get();
@@ -195,28 +194,6 @@ public abstract class GunItem extends Item implements CustomRendererItem {
     @ParametersAreNonnullByDefault
     public boolean supportsEnchantment(ItemStack stack, Holder<Enchantment> enchantment) {
         return false;
-    }
-
-
-    private void handleGunPerks(GunData data) {
-        var perk = data.perk;
-
-        perk.reduceCooldown(ModPerks.FOURTH_TIMES_CHARM, "FourthTimesCharmTick");
-
-        if (perk.getLevel(ModPerks.FOURTH_TIMES_CHARM) > 0) {
-            var tag = data.perk.getTag(ModPerks.FOURTH_TIMES_CHARM);
-            int count = perk.getTag(ModPerks.FOURTH_TIMES_CHARM).getInt("FourthTimesCharmCount");
-
-            if (count >= 4) {
-                tag.remove("FourthTimesCharmTick");
-                tag.remove("FourthTimesCharmCount");
-
-                int mag = data.magazine();
-                data.ammo.set(Math.min(mag, data.ammo.get() + 2));
-            }
-        }
-
-        data.save();
     }
 
     public boolean canApplyPerk(Perk perk) {
