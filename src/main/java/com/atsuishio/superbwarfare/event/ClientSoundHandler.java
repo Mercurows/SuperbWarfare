@@ -1,8 +1,11 @@
 package com.atsuishio.superbwarfare.event;
 
 import com.atsuishio.superbwarfare.client.LoudlyEntitySoundInstance;
+import com.atsuishio.superbwarfare.client.VehicleFireSoundInstance;
 import com.atsuishio.superbwarfare.client.VehicleSoundInstance;
 import com.atsuishio.superbwarfare.entity.LoudlyEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.A10Entity;
+import com.atsuishio.superbwarfare.entity.vehicle.Hpj11Entity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.TrackEntity;
 import net.minecraft.client.Minecraft;
@@ -27,6 +30,12 @@ public class ClientSoundHandler {
             if (event.getEntity() instanceof LoudlyEntity) {
                 Minecraft.getInstance().getSoundManager().play(new LoudlyEntitySoundInstance.EntitySound(event.getEntity()));
                 Minecraft.getInstance().getSoundManager().play(new LoudlyEntitySoundInstance.EntitySoundClose(event.getEntity()));
+            }
+            if (event.getEntity() instanceof MobileVehicleEntity mobileVehicle && mobileVehicle instanceof A10Entity) {
+                Minecraft.getInstance().getSoundManager().play(new VehicleFireSoundInstance.A10FireSound(mobileVehicle));
+            }
+            if (event.getEntity() instanceof MobileVehicleEntity mobileVehicle && mobileVehicle instanceof Hpj11Entity) {
+                Minecraft.getInstance().getSoundManager().play(new VehicleFireSoundInstance.HPJ11CloseFireSound(mobileVehicle));
             }
         }
     }

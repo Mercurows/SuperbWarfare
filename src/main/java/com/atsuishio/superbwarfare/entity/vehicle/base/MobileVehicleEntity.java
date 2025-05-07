@@ -64,6 +64,9 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
     public static final EntityDataAccessor<Integer> DECOY_COUNT = SynchedEntityData.defineId(MobileVehicleEntity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> GEAR_ROT = SynchedEntityData.defineId(MobileVehicleEntity.class, EntityDataSerializers.INT);
 
+    private Vec3 previousVelocity = Vec3.ZERO;
+
+    public double acceleration;
     public int decoyReloadCoolDown;
     public static boolean IGNORE_ENTITY_GROUND_CHECK_STEPPING = false;
     public boolean leftInputDown;
@@ -193,6 +196,19 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
         gearRotO = entityData.get(GEAR_ROT);
 
         super.baseTick();
+
+        // 获取当前速度（deltaMovement 是当前速度向量）
+        Vec3 currentVelocity = this.getDeltaMovement();
+
+        // 计算加速度向量（时间间隔 Δt = 0.05秒）
+        Vec3 accelerationVec = currentVelocity.subtract(previousVelocity).scale(20); // scale(1/0.05) = scale(20)
+
+        // 计算加速度的绝对值
+        acceleration = accelerationVec.length() * 20;
+
+        // 更新前一时刻的速度
+        previousVelocity = currentVelocity;
+
 
         engineSound.accept(this);
 

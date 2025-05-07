@@ -14,7 +14,6 @@ import com.atsuishio.superbwarfare.entity.vehicle.weapon.SmallCannonShellWeapon;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.VehicleWeapon;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModItems;
-import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.ContainerBlockItem;
 import com.atsuishio.superbwarfare.tools.*;
@@ -65,6 +64,7 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
     public static final EntityDataAccessor<Boolean> ACTIVE = SynchedEntityData.defineId(Hpj11Entity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<String> TARGET_UUID = SynchedEntityData.defineId(Hpj11Entity.class, EntityDataSerializers.STRING);
     public static final EntityDataAccessor<Optional<UUID>> OWNER_UUID = SynchedEntityData.defineId(Hpj11Entity.class, EntityDataSerializers.OPTIONAL_UUID);
+    public static final EntityDataAccessor<Integer> FIRE_TIME = SynchedEntityData.defineId(Hpj11Entity.class, EntityDataSerializers.INT);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     public Hpj11Entity(EntityType<Hpj11Entity> type, Level world) {
@@ -83,7 +83,8 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
                 .define(GUN_ROTATE, 0f)
                 .define(TARGET_UUID, "none")
                 .define(OWNER_UUID, Optional.empty())
-                .define(ACTIVE, false);
+                .define(ACTIVE, false)
+                .define(FIRE_TIME, 0);
     }
 
     @Override
@@ -237,6 +238,10 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
         setGunRot(getGunRot() + entityData.get(GUN_ROTATE));
 
         autoAim();
+
+        if (entityData.get(FIRE_TIME) > 0) {
+            entityData.set(FIRE_TIME, entityData.get(FIRE_TIME) - 1);
+        }
 
         lowHealthWarning();
     }
@@ -466,6 +471,8 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
 
         boolean hasCreativeAmmo = (getFirstPassenger() instanceof Player pPlayer && InventoryTool.hasCreativeAmmoBox(pPlayer)) || hasItem(ModItems.CREATIVE_AMMO_BOX.get());
 
+        entityData.set(FIRE_TIME, Math.min(entityData.get(FIRE_TIME) + 3, 3));
+
         var entityToSpawn = ((SmallCannonShellWeapon) getWeapon(0)).create(player);
 
         Matrix4f transform = getBarrelTransform(1);
@@ -474,12 +481,6 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
         entityToSpawn.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
         entityToSpawn.shoot(getLookAngle().x, getLookAngle().y + 0.001, getLookAngle().z, 30, 0.75f);
         level().addFreshEntity(entityToSpawn);
-
-        if (!player.level().isClientSide) {
-            if (player instanceof ServerPlayer serverPlayer) {
-                serverPlayer.level().playSound(null, this.getOnPos(), ModSounds.HPJ_11_FIRE_3P.get(), SoundSource.PLAYERS, 16, random.nextFloat() * 0.05f + 1);
-            }
-        }
 
         this.entityData.set(GUN_ROTATE, entityData.get(GUN_ROTATE) + 0.5f);
         this.entityData.set(HEAT, this.entityData.get(HEAT) + 2);
@@ -490,6 +491,14 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
         if (hasCreativeAmmo) return;
 
         this.getItemStacks().stream().filter(stack -> stack.is(ModItems.SMALL_SHELL.get())).findFirst().ifPresent(stack -> stack.shrink(1));
+    }
+
+    public float shootingVolume() {
+        return entityData.get(FIRE_TIME) * 0.4f;
+    }
+
+    public float shootingPitch() {
+        return 0.8f + entityData.get(FIRE_TIME) * 0.1f;
     }
 
     public Matrix4f getBarrelTransform(float ticks) {
