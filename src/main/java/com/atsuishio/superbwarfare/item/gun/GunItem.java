@@ -203,9 +203,6 @@ public abstract class GunItem extends Item implements CustomRendererItem {
 
         perk.reduceCooldown(ModPerks.FOURTH_TIMES_CHARM, "FourthTimesCharmTick");
 
-        perk.reduceCooldown(ModPerks.DESPERADO, "DesperadoTime");
-        perk.reduceCooldown(ModPerks.DESPERADO, "DesperadoTimePost");
-
         if (perk.getLevel(ModPerks.FOURTH_TIMES_CHARM) > 0) {
             var tag = data.perk.getTag(ModPerks.FOURTH_TIMES_CHARM);
             int count = perk.getTag(ModPerks.FOURTH_TIMES_CHARM).getInt("FourthTimesCharmCount");

@@ -15,9 +15,15 @@ public class Desperado extends Perk {
     }
 
     @Override
+    public void tick(GunData data, PerkInstance instance, @Nullable LivingEntity living) {
+        data.perk.reduceCooldown(this, "DesperadoTime");
+        data.perk.reduceCooldown(this, "DesperadoTimePost");
+    }
+
+    @Override
     public int getModifiedRPM(int rpm, GunData data, PerkInstance instance) {
         if (data.perk.getTag(this).getInt("DesperadoTimePost") > 0) {
-            return rpm * (int) (1.285 + 0.015 * instance.level());
+            return (int) (rpm * (1.285 + 0.015 * instance.level()));
         }
         return super.getModifiedRPM(rpm, data, instance);
     }
