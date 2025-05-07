@@ -197,11 +197,6 @@ public abstract class GunItem extends Item implements CustomRendererItem {
         return false;
     }
 
-    public boolean canApplyPerk(Perk perk) {
-        return true;
-    }
-
-
     /**
      * 是否使用弹匣换弹
      *

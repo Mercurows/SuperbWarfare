@@ -76,5 +76,14 @@ public class DefaultGunData {
     public double heatPerShoot = 0;
 
     @SerializedName("AvailablePerks")
-    public List<String> availablePerks;
+    public List<String> availablePerks = List.of(
+            "@Ammo",
+            "superbwarfare:field_doctor",
+            "superbwarfare:powerful_attraction",
+            "superbwarfare:intelligent_chip",
+            "superbwarfare:monster_hunter",
+            "superbwarfare:vorpal_weapon",
+            "!superbwarfare:micro_missile",
+            "!superbwarfare:longer_wire"
+    );
 }
