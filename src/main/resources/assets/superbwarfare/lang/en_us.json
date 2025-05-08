@@ -660,5 +660,10 @@
   "superbwarfare.entry.vehicle.control": "载具驾驶",
   "superbwarfare.page.vehicle.control1": "$(o)“司机一定要会开车！”$()$(br)——作者$(p)本章节会对卓越前线的载具操作进行简单的介绍，让你了解如何驾驶载具。",
   "superbwarfare.page.vehicle.control2": "$(l)基础操作：$()$(p)$(thing)$(k:key.use)$() - 上车$(br)$(thing)$(k:key.superbwarfare.dismount)$() - 离开载具，离开移动中的载具需要双击此按键$(br)$(thing)$(k:key.forward)$() - 油门/前进$(br)$(thing)$(k:key.back)$() - 刹车/后退$(br)$(thing)$(k:key.left) / $(k:key.right)$() - 转向/滚转$(br)$(thing)$(k:key.jump)$() - 刹车$(br)$(thing)$(k:key.inventory)$() - 打开载具物品栏$(p)对于可以换座位的载具：$(br)$(thing)$(k:key.sneak) + $(k:key.hotbar.1) ~ $(k:key.hotbar.9)$() - 更换座位",
-  "superbwarfare.page.vehicle.control3": "$(l)武器操作：$()$(p)$(thing)$(k:key.superbwarfare.fire)$() - 开火$(br)$(thing)$(k:key.superbwarfare.hold_zoom) / $(k:key.superbwarfare.switch_zoom)$() - 瞄准$(br)$(thing)滚轮切换 / $(k:key.hotbar.1) ~ $(k:key.hotbar.9)$() - 切换武器$(p)部分载具可用功能：$(br)$(thing)$(k:key.superbwarfare.release_decoy)$() - 释放诱饵/烟雾$(br)$(thing)$(k:key.superbwarfare.free_camera)$() - 切换自由视角$(br)$(thing)$(k:key.jump)$() - 投弹"
+  "superbwarfare.page.vehicle.control3": "$(l)武器操作：$()$(p)$(thing)$(k:key.superbwarfare.fire)$() - 开火$(br)$(thing)$(k:key.superbwarfare.hold_zoom) / $(k:key.superbwarfare.switch_zoom)$() - 瞄准$(br)$(thing)滚轮切换 / $(k:key.hotbar.1) ~ $(k:key.hotbar.9)$() - 切换武器$(p)部分载具可用功能：$(br)$(thing)$(k:key.superbwarfare.release_decoy)$() - 释放诱饵/烟雾$(br)$(thing)$(k:key.superbwarfare.free_camera)$() - 切换自由视角$(br)$(thing)$(k:key.jump)$() - 投弹",
+  "superbwarfare.entry.vehicle.lav_150": "LAV-150 轮式步兵战车",
+  "superbwarfare.page.vehicle.lav_1501": "$(thing)LAV-150$()是一款轻型步兵战车，可搭载5人，具备浮渡能力。$(p)战车搭载了能够干扰锁定的烟雾，每隔一段时间自动补充。",
+  "superbwarfare.page.vehicle.lav_1502": "需要至少 5 x 5 x 4 的空间放置。",
+  "superbwarfare.page.vehicle.lav_1503": "$(l)基础属性：$()$(p)耐久值 - 250$(br)最大乘员数 - 5$(br)爬坡高度 - 1.5m$(br)最大能量 - 5,000,000FE$(br)能耗 - 64FE/tick$(br)封闭载具",
+  "superbwarfare.page.vehicle.lav_1504": "$(l)武器属性：$()$(p)1号位：$(p)(1) 20mm机炮$(br)射速 - 300RPM$(br)伤害 - 45$(br)弹药 - $(item)小口径炮弹$()$(p)(2) 7.62mm机枪$(br)射速 - 600RPM$(br)伤害 - 9.5$(br)弹药 - $(item)步枪弹药$()"
 }

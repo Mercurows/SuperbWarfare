@@ -64,6 +64,7 @@ import java.util.Comparator;
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 
 public class Lav150Entity extends ContainerMobileVehicleEntity implements GeoEntity, LandArmorEntity, WeaponVehicleEntity {
+
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     public Lav150Entity(EntityType<Lav150Entity> type, Level world) {
@@ -90,7 +91,7 @@ public class Lav150Entity extends ContainerMobileVehicleEntity implements GeoEnt
                                 .sound3pFar(ModSounds.LAV_CANNON_FAR.get())
                                 .sound3pVeryFar(ModSounds.LAV_CANNON_VERYFAR.get()),
                         new ProjectileWeapon()
-                                .damage(9.5f)
+                                .damage(VehicleConfig.LAV_150_MACHINE_GUN_DAMAGE.get())
                                 .headShot(2)
                                 .zoom(false)
                                 .sound(ModSounds.INTO_CANNON.get())

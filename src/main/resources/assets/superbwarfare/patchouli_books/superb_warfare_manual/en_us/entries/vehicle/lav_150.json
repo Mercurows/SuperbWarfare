@@ -1,0 +1,26 @@
+{
+  "name": "superbwarfare.entry.vehicle.lav_150",
+  "icon": "superbwarfare:container",
+  "category": "superbwarfare:vehicle",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "superbwarfare.page.vehicle.lav_1501"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "superbwarfare:lav_150_crafting",
+      "text": "superbwarfare.page.vehicle.lav_1502"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "superbwarfare.page.vehicle.lav_1503"
+    },
+    {
+      "type": "patchouli:text",
+      "recipe": "superbwarfare:charging_station_crafting",
+      "text": "superbwarfare.page.vehicle.lav_1504"
+    }
+  ],
+  "sortnum": 20101
+}

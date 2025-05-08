@@ -72,6 +72,7 @@ public class VehicleConfig {
     public static ModConfigSpec.IntValue LAV_150_CANNON_DAMAGE;
     public static ModConfigSpec.IntValue LAV_150_CANNON_EXPLOSION_DAMAGE;
     public static ModConfigSpec.DoubleValue LAV_150_CANNON_EXPLOSION_RADIUS;
+    public static ModConfigSpec.DoubleValue LAV_150_MACHINE_GUN_DAMAGE;
 
     public static ModConfigSpec.IntValue TOM_6_HP;
     public static ModConfigSpec.IntValue TOM_6_MAX_ENERGY;
@@ -313,11 +314,14 @@ public class VehicleConfig {
         builder.comment("The cannon damage of LAV-150");
         LAV_150_CANNON_DAMAGE = builder.defineInRange("lav_150_cannon_damage", 45, 1, 10000000);
 
-        builder.comment("The rocket explosion damage of LAV-150");
+        builder.comment("The cannon explosion damage of LAV-150");
         LAV_150_CANNON_EXPLOSION_DAMAGE = builder.defineInRange("lav_150_cannon_explosion_damage", 12, 1, 10000000);
 
-        builder.comment("The rocket explosion radius of LAV-150");
+        builder.comment("The cannon explosion radius of LAV-150");
         LAV_150_CANNON_EXPLOSION_RADIUS = builder.defineInRange("lav_150_cannon_explosion_radius", 4d, 1d, 10000000d);
+
+        builder.comment("The machine gun damage of LAV-150");
+        LAV_150_MACHINE_GUN_DAMAGE = builder.defineInRange("lav_150_machine_gun_damage", 9.5, 1d, 10000000d);
 
         builder.pop();
 

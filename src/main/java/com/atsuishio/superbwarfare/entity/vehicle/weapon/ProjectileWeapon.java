@@ -19,6 +19,11 @@ public class ProjectileWeapon extends VehicleWeapon {
         return this;
     }
 
+    public ProjectileWeapon damage(double damage) {
+        this.damage = (float) damage;
+        return this;
+    }
+
     public ProjectileWeapon bypassArmorRate(float bypassArmorRate) {
         this.bypassArmorRate = bypassArmorRate;
         return this;
