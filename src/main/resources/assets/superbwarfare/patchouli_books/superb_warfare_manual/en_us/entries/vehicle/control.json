@@ -1,0 +1,20 @@
+{
+  "name": "superbwarfare.entry.vehicle.control",
+  "icon": "superbwarfare:monitor",
+  "category": "superbwarfare:vehicle",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "superbwarfare.page.vehicle.control1"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "superbwarfare.page.vehicle.control2"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "superbwarfare.page.vehicle.control3"
+    }
+  ],
+  "sortnum": 20001
+}
