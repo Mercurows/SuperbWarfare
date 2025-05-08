@@ -28,11 +28,11 @@ public enum ContainerEntityProvider implements IBlockComponentProvider {
         // 所需尺寸显示
         var entityType = EntityType.byString(registerName).orElse(null);
         if (entityType != null) {
-            int w = (int) (entityType.getDimensions().width() + 1);
-            if (w % 2 == 0) w++;
+            float w = (float) Math.ceil(entityType.getDimensions().width() / 2) * 2;
+            if ((int) w % 2 == 0) w++;
             int h = (int) (entityType.getDimensions().height() + 1);
             if (h != 0) {
-                iTooltip.add(Component.literal(w + " x " + w + " x " + h).withStyle(ChatFormatting.YELLOW));
+                iTooltip.add(Component.literal((int) w + " x " + (int) w + " x " + h).withStyle(ChatFormatting.YELLOW));
             }
         }
 
@@ -46,6 +46,5 @@ public enum ContainerEntityProvider implements IBlockComponentProvider {
     public ResourceLocation getUid() {
         return ID;
     }
-
 }
 

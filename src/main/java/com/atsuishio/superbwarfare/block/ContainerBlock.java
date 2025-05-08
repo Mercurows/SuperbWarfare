@@ -142,7 +142,8 @@ public class ContainerBlock extends BaseEntityBlock {
 
             var entityType = EntityType.byString(tag.getString("EntityType")).orElse(null);
             if (entityType != null) {
-                int w = 0, h = 0;
+                float w = 0;
+                int h = 0;
 
                 Level level = null;
                 try {
@@ -150,21 +151,21 @@ public class ContainerBlock extends BaseEntityBlock {
                 } catch (Exception ignored) {
                 }
 
-                if (level != null && tag.contains("Entity")) {
+                if (level instanceof Level && tag.contains("Entity")) {
                     var entity = entityType.create(level);
                     if (entity != null) {
                         entity.load(tag.getCompound("Entity"));
-                        w = (int) (entity.getType().getDimensions().width() + 1);
-                        if (w % 2 == 0) w++;
+                        w = (float) Math.ceil(entity.getType().getDimensions().width() / 2);
                         h = (int) (entity.getType().getDimensions().height() + 1);
                     }
                 } else {
-                    w = (int) (entityType.getDimensions().width() + 1);
-                    if (w % 2 == 0) w++;
+                    w = (float) Math.ceil(entityType.getDimensions().width() / 2);
                     h = (int) (entityType.getDimensions().height() + 1);
                 }
                 if (w != 0 && h != 0) {
-                    tooltipComponents.add(Component.literal(w + " x " + w + " x " + h).withStyle(ChatFormatting.YELLOW));
+                    w *= 2;
+                    if ((int) w % 2 == 0) w++;
+                    tooltipComponents.add(Component.literal((int) w + " x " + (int) w + " x " + h).withStyle(ChatFormatting.YELLOW));
                 }
             }
         }
