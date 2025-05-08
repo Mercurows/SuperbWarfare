@@ -50,5 +50,6 @@ public class ModEntityRenderers {
         event.registerEntityRenderer(ModEntities.SWARM_DRONE.get(), SwarmDroneRenderer::new);
         event.registerEntityRenderer(ModEntities.HPJ_11.get(), Hpj11Renderer::new);
         event.registerEntityRenderer(ModEntities.A_10A.get(), A10Renderer::new);
+        event.registerEntityRenderer(ModEntities.MK_82.get(), Mk82Renderer::new);
     }
 }

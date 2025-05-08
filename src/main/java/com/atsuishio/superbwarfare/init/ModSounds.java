@@ -445,5 +445,7 @@ public class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> VEHICLE_SWIM = REGISTRY.register("vehicle_swim", () -> SoundEvent.createVariableRangeEvent(Mod.loc("vehicle_swim")));
     public static final DeferredHolder<SoundEvent, SoundEvent> A_10_ENGINE = REGISTRY.register("a10_engine", () -> SoundEvent.createVariableRangeEvent(Mod.loc("a10_engine")));
     public static final DeferredHolder<SoundEvent, SoundEvent> A_10_FIRE = REGISTRY.register("a10_fire", () -> SoundEvent.createVariableRangeEvent(Mod.loc("a10_fire")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> BOMB_RELEASE = REGISTRY.register("bomb_release", () -> SoundEvent.createVariableRangeEvent(Mod.loc("bomb_release")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> BOMB_RELOAD = REGISTRY.register("bomb_reload", () -> SoundEvent.createVariableRangeEvent(Mod.loc("bomb_reload")));
 }
 

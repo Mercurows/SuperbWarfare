@@ -233,7 +233,7 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
                 .multiply(0.15f, ModTags.DamageTypes.PROJECTILE_ABSOLUTE)
                 .custom((source, damage) -> getSourceAngle(source, 1f) * damage)
                 .custom((source, damage) -> {
-                    if (source.getDirectEntity() instanceof MelonBombEntity) {
+                    if (source.getDirectEntity() instanceof AerialBombEntity) {
                         return 3f * damage;
                     }
                     if (source.getDirectEntity() instanceof SmallCannonShellEntity) {

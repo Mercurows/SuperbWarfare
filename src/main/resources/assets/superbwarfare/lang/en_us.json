@@ -167,6 +167,8 @@
   "des.superbwarfare.small_shell": "Suitable for 20mm ~ 40mm caliber weapons",
   "item.superbwarfare.wire_guide_missile": "Wire Guide Missile",
   "item.superbwarfare.swarm_drone": "Swarm Drone",
+  "item.superbwarfare.medium_aerial_bomb": "Medium Aerial Bomb",
+  "des.superbwarfare.medium_aerial_bomb": "Suitable for A-10 Thunderbolt II",
 
   "item.superbwarfare.firing_parameters": "Firing Parameters",
   "item.superbwarfare.ancient_cpu": "Ancient CPU",
@@ -455,6 +457,7 @@
   "entity.superbwarfare.smoke_decoy": "Smoke",
   "entity.superbwarfare.hpj_11": "H/PJ-11 CIWS",
   "entity.superbwarfare.a_10a": "A-10 Thunderbolt II",
+  "entity.superbwarfare.mk_82": "MK-82 Aerial Bomb",
 
   "key.categories.superbwarfare": "Superb Warfare",
   "key.superbwarfare.hold_zoom": "Zoom (Hold)",

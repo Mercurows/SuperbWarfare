@@ -3112,5 +3112,23 @@
         "name": "superbwarfare:a10/a10_fire"
       }
     ]
+  },
+  "bomb_release": {
+    "sounds": [
+      {
+        "attenuation_distance": 32,
+        "stream": true,
+        "name": "superbwarfare:bomb_release"
+      }
+    ]
+  },
+  "bomb_reload": {
+    "sounds": [
+      {
+        "attenuation_distance": 16,
+        "stream": true,
+        "name": "superbwarfare:bomb_reload"
+      }
+    ]
   }
 }

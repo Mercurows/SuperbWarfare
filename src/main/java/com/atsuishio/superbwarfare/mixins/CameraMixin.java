@@ -152,6 +152,17 @@ public abstract class CameraMixin {
             return;
         }
 
+        if (player.getVehicle() instanceof A10Entity a10Entity && (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON)) {
+            setRotation(Mth.lerp(partialTicks, player.yRotO, player.getYRot()), Mth.lerp(partialTicks, player.xRotO, player.getXRot()));
+            if (ClientEventHandler.zoomVehicle) {
+                setPosition(a10Entity.driverZoomPos(partialTicks).x, a10Entity.driverZoomPos(partialTicks).y, a10Entity.driverZoomPos(partialTicks).z);
+            } else {
+                setPosition(a10Entity.driverPos(partialTicks).x, a10Entity.driverPos(partialTicks).y, a10Entity.driverPos(partialTicks).z);
+            }
+            info.cancel();
+            return;
+        }
+
         if (player.getVehicle() instanceof VehicleEntity vehicle && vehicle instanceof CannonEntity cannon && (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON || ClientEventHandler.zoomVehicle)) {
             setRotation(Mth.lerp(partialTicks, player.yRotO, player.getYRot()), Mth.lerp(partialTicks, player.xRotO, player.getXRot()));
             if (!(cannon instanceof AnnihilatorEntity) && ClientEventHandler.zoomVehicle) {

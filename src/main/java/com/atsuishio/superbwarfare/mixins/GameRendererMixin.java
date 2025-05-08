@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.mixins;
 
+import com.atsuishio.superbwarfare.entity.vehicle.A10Entity;
 import com.atsuishio.superbwarfare.entity.vehicle.PrismTankEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.SpeedboatEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.CannonEntity;
@@ -68,10 +69,9 @@ public class GameRendererMixin {
 
             poseStack.mulPose(Axis.ZP.rotationDegrees(-r * vehicle.getRoll(partialTicks) + r2 * vehicle.getViewXRot(partialTicks)));
 
-            if (
-                    !(vehicle instanceof SpeedboatEntity speedboat && entity == speedboat.getFirstPassenger()) &&
-                            !(vehicle instanceof PrismTankEntity prismTank && entity == prismTank.getFirstPassenger()) &&
-                            !(vehicle instanceof CannonEntity)
+            if (!(vehicle instanceof SpeedboatEntity speedboat && entity == speedboat.getFirstPassenger()) &&
+                    !(vehicle instanceof PrismTankEntity prismTank && entity == prismTank.getFirstPassenger()) &&
+                    !(vehicle instanceof CannonEntity) && !(vehicle instanceof A10Entity)
             ) {
                 // fetch eye offset
                 float eye = entity.getEyeHeight();

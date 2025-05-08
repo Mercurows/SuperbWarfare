@@ -44,9 +44,6 @@ public class AircraftOverlay implements LayeredDraw.Layer {
 
     @Override
     public void render(GuiGraphics guiGraphics, @NotNull DeltaTracker deltaTracker) {
-        int screenWidth = guiGraphics.guiWidth();
-        int screenHeight = guiGraphics.guiHeight();
-
         Minecraft mc = Minecraft.getInstance();
         Player player = mc.player;
         Camera camera = mc.gameRenderer.getMainCamera();
@@ -122,7 +119,7 @@ public class AircraftOverlay implements LayeredDraw.Layer {
                     preciseBlit(guiGraphics, Mod.loc("textures/screens/helicopter/speed_frame.png"), x - 108, y - 64, 0, 0, 36, 12, 36, 12);
                     preciseBlit(guiGraphics, Mod.loc("textures/screens/helicopter/speed_frame.png"), x + 108 - 36, y - 64, 0, 0, 36, 12, 36, 12);
                     //垂直速度
-                    guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(FormatTool.format0D(lerpVy * 20)), (int) x - 96, (int) y + 60, 0x66FF00, false);
+                    guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(FormatTool.DECIMAL_FORMAT_1ZZ.format(lerpVy * 20)), (int) x - 96, (int) y + 60, 0x66FF00, false);
                     //加速度
                     lerpG = (float) Mth.lerp(0.1f * partialTick, lerpG, mobileVehicle.acceleration / 9.8);
                     guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("M"), (int) x - 105, (int) y + 70, 0x66FF00, false);
@@ -146,7 +143,7 @@ public class AircraftOverlay implements LayeredDraw.Layer {
                             String count = InventoryTool.hasCreativeAmmoBox(player) ? "∞" : String.valueOf(aircraftEntity.getAmmoCount(player));
                             int width2 = Minecraft.getInstance().font.width(count);
                             guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(count), (int) x - width2 / 2, (int) y + 76, Mth.hsvToRgb((float) heat / 3.745318352059925F, 1.0F, 1.0F), false);
-                        } else {
+                        } else if (weaponVehicle.getWeaponIndex(0) == 1) {
                             String name = "70MM ROCKET";
                             int width = Minecraft.getInstance().font.width(name);
                             guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(name), (int) x - width / 2, (int) y + 67, 0x66FF00, false);
@@ -154,7 +151,15 @@ public class AircraftOverlay implements LayeredDraw.Layer {
                             String count = String.valueOf(aircraftEntity.getAmmoCount(player));
                             int width2 = Minecraft.getInstance().font.width(count);
                             guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(count), (int) x - width2 / 2, (int) y + 76, 0x66FF00, false);
-                    }
+                        } else if (weaponVehicle.getWeaponIndex(0) == 2) {
+                            String name = "MK82 BOMB";
+                            int width = Minecraft.getInstance().font.width(name);
+                            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(name), (int) x - width / 2, (int) y + 67, 0x66FF00, false);
+
+                            String count = String.valueOf(aircraftEntity.getAmmoCount(player));
+                            int width2 = Minecraft.getInstance().font.width(count);
+                            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(count), (int) x - width2 / 2, (int) y + 76, 0x66FF00, false);
+                        }
                     }
 
                     //角度
@@ -220,8 +225,10 @@ public class AircraftOverlay implements LayeredDraw.Layer {
                         if (weaponVehicle.getWeaponIndex(0) == 0) {
                             double heat = a10Entity.getEntityData().get(HEAT) / 100.0F;
                             guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("30MM CANNON " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : aircraftEntity.getAmmoCount(player))), 25, -9, Mth.hsvToRgb(0F, (float) heat, 1.0F), false);
-                        } else {
+                        } else if (weaponVehicle.getWeaponIndex(0) == 1) {
                             guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("70MM ROCKET " + aircraftEntity.getAmmoCount(player)), 25, -9, -1, false);
+                        } else if (weaponVehicle.getWeaponIndex(0) == 2) {
+                            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("MK82 BOMB " + aircraftEntity.getAmmoCount(player)), 25, -9, -1, false);
                         }
                     }
 

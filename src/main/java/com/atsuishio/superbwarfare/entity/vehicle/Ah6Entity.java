@@ -151,7 +151,7 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
                     if (source.getDirectEntity() instanceof GunGrenadeEntity) {
                         return 2.2f * damage;
                     }
-                    if (source.getDirectEntity() instanceof MelonBombEntity) {
+                    if (source.getDirectEntity() instanceof AerialBombEntity) {
                         return 2f * damage;
                     }
                     if (source.getDirectEntity() instanceof RgoGrenadeEntity) {

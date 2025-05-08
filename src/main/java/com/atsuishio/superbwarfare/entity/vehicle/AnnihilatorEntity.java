@@ -4,10 +4,10 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.component.ModDataComponents;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
+import com.atsuishio.superbwarfare.entity.projectile.AerialBombEntity;
 import com.atsuishio.superbwarfare.entity.projectile.C4Entity;
 import com.atsuishio.superbwarfare.entity.projectile.CannonShellEntity;
 import com.atsuishio.superbwarfare.entity.projectile.GunGrenadeEntity;
-import com.atsuishio.superbwarfare.entity.projectile.MelonBombEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.CannonEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.EnergyVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
@@ -216,12 +216,20 @@ public class AnnihilatorEntity extends EnergyVehicleEntity implements GeoEntity,
                 .multiply(0.3f, ModDamageTypes.CANNON_FIRE)
                 .multiply(0.04f, ModTags.DamageTypes.PROJECTILE_ABSOLUTE)
                 .custom((source, damage) -> getSourceAngle(source, 3) * damage)
-                .custom((source, damage) -> switch (source.getDirectEntity()) {
-                    case C4Entity ignored -> 10f * damage;
-                    case MelonBombEntity ignored -> 8f * damage;
-                    case GunGrenadeEntity ignored -> 3f * damage;
-                    case CannonShellEntity ignored -> 3f * damage;
-                    case null, default -> damage;
+                .custom((source, damage) -> {
+                    if (source.getDirectEntity() instanceof C4Entity) {
+                        return 10f * damage;
+                    }
+                    if (source.getDirectEntity() instanceof AerialBombEntity) {
+                        return 8f * damage;
+                    }
+                    if (source.getDirectEntity() instanceof GunGrenadeEntity) {
+                        return 3f * damage;
+                    }
+                    if (source.getDirectEntity() instanceof CannonShellEntity) {
+                        return 3f * damage;
+                    }
+                    return damage;
                 })
                 .reduce(12);
     }

@@ -85,7 +85,7 @@ public abstract class LoudlyEntitySoundInstance extends AbstractTickableSoundIns
         @Override
         protected float getVolume(Entity entity) {
             if (entity instanceof LoudlyEntity loudlyEntity) {
-                return loudlyEntity.getVolume();
+                return (float) Math.min(loudlyEntity.getVolume() * 0.1 * entity.getDeltaMovement().length(), 1.5);
             }
             return 0;
         }
@@ -109,7 +109,7 @@ public abstract class LoudlyEntitySoundInstance extends AbstractTickableSoundIns
         @Override
         protected float getVolume(Entity entity) {
             if (entity instanceof LoudlyEntity loudlyEntity) {
-                return loudlyEntity.getVolume() * 1.5f;
+                return (float) Math.min(loudlyEntity.getVolume() * 0.1 * entity.getDeltaMovement().length(), 1.5);
             }
             return 0;
         }

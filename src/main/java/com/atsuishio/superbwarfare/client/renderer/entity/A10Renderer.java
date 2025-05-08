@@ -15,6 +15,7 @@ import software.bernie.geckolib.cache.object.BakedGeoModel;
 import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
 
+import static com.atsuishio.superbwarfare.entity.vehicle.A10Entity.LOADED_BOMB;
 import static com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity.GEAR_ROT;
 
 public class A10Renderer extends GeoEntityRenderer<A10Entity> {
@@ -71,6 +72,15 @@ public class A10Renderer extends GeoEntityRenderer<A10Entity> {
         }
         if (name.equals("qianzhou") || name.equals("qianzhou2")) {
             bone.setRotZ(Mth.lerp(partialTick, animatable.propellerRotO, animatable.getPropellerRot()));
+        }
+        if (name.equals("bomb1")) {
+            bone.setHidden(animatable.getEntityData().get(LOADED_BOMB) < 3);
+        }
+        if (name.equals("bomb2")) {
+            bone.setHidden(animatable.getEntityData().get(LOADED_BOMB) < 2);
+        }
+        if (name.equals("bomb3")) {
+            bone.setHidden(animatable.getEntityData().get(LOADED_BOMB) < 1);
         }
         super.renderRecursively(poseStack, animatable, bone, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, color);
     }
