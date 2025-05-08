@@ -4,7 +4,9 @@ import com.atsuishio.superbwarfare.Mod;
 import net.minecraft.ChatFormatting;
 import net.minecraft.advancements.*;
 import net.minecraft.advancements.critereon.*;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
@@ -166,7 +168,7 @@ public class ModAdvancement {
         }
 
         Builder awardedForFree() {
-            return externalTrigger(InventoryChangeTrigger.TriggerInstance.hasItems(new ItemLike[]{}));
+            return externalTrigger(PlayerTrigger.TriggerInstance.tick());
         }
 
         Builder whenEffectChanged(MobEffectsPredicate.Builder predicate) {
@@ -191,6 +193,11 @@ public class ModAdvancement {
 
         Builder rewardExp(int exp) {
             builder.rewards(AdvancementRewards.Builder.experience(exp).build());
+            return this;
+        }
+
+        Builder rewardLootTable(ResourceLocation location) {
+            builder.rewards(AdvancementRewards.Builder.loot(ResourceKey.create(Registries.LOOT_TABLE, location)).build());
             return this;
         }
     }
