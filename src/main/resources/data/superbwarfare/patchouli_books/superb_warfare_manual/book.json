@@ -4,7 +4,7 @@
   "version": 1,
   "creative_tab": "superbwarfare:item",
   "use_resource_pack": true,
-  "model": "minecraft:book",
+  "model": "superbwarfare:superb_warfare_manual",
   "i18n": true,
   "macros": {
   }
