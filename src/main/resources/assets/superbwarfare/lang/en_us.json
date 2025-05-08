@@ -360,6 +360,8 @@
   "des.superbwarfare.vorpal_weapon": "Increases damage against bosses.",
   "item.superbwarfare.magnificent_howl": "Magnificent Howl",
   "des.superbwarfare.magnificent_howl": "The number of precision final blows before reloading affects the total rounds granted with increased damage.",
+  "item.superbwarfare.firefly": "Firefly",
+  "des.superbwarfare.firefly": "Precision kills cause the target to explode with fire.",
 
   "item.superbwarfare.empty_perk": "Empty Perk",
   "item.superbwarfare.shortcut_pack": "Shortcut Pack",

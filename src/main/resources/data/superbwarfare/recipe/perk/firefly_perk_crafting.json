@@ -1,0 +1,32 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "cbc",
+    "bab",
+    "cbc"
+  ],
+  "key": {
+    "a": {
+      "item": "superbwarfare:empty_perk"
+    },
+    "b": [
+      {
+        "item": "minecraft:ochre_froglight"
+      },
+      {
+        "item": "minecraft:verdant_froglight"
+      },
+      {
+        "item": "minecraft:pearlescent_froglight"
+      }
+    ],
+    "c": {
+      "item": "superbwarfare:high_energy_explosives"
+    }
+  },
+  "result": {
+    "id": "superbwarfare:firefly",
+    "count": 1
+  }
+}
