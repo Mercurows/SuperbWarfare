@@ -23,31 +23,28 @@ side = "BOTH"# Here's another dependency
 
 [[dependencies.superbwarfare]]
 modId = "minecraft"
-mandatory = true
+type = "required"
 versionRange = "${minecraft_version_range}"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.superbwarfare]]
 modId = "curios"
-mandatory = true
+type = "required"
 versionRange = "[5.4.0,)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.superbwarfare]]
 modId = "geckolib"
-mandatory = true
+type = "required"
 versionRange = "[4.7.0,)"
 ordering = "NONE"
 side = "BOTH"
 
+[[dependencies.superbwarfare]]
+modId = "optifine"
+type = "discouraged"
+
 [features.superbwarfare]
 openGLVersion = "[3.2,)"
-
-[[dependencies.superbwarfare]]
-modId = "patchouli"
-mandatory = false
-versionRange = "[1.21-87-NEOFORGE,)"
-ordering = "NONE"
-side = "BOTH"
