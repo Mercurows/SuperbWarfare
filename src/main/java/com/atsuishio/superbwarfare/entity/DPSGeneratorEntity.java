@@ -195,7 +195,7 @@ public class DPSGeneratorEntity extends LivingEntity implements GeoEntity {
 
                 // 发电
                 ((SyncedEntityEnergyStorage) entityCap).setMaxReceive(entityCap.getMaxEnergyStored());
-                entityCap.receiveEnergy(Math.round(256 * damage), false);
+                entityCap.receiveEnergy(Math.round(128 * damage), false);
                 ((SyncedEntityEnergyStorage) entityCap).setMaxReceive(0);
             }
 
