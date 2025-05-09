@@ -119,6 +119,7 @@ public class DPSGeneratorEntity extends LivingEntity implements GeoEntity {
 
         if (entity instanceof DPSGeneratorEntity generatorEntity) {
             event.setCanceled(true);
+            generatorEntity.setHealth(0.00001F);
 
             if (sourceEntity instanceof Player player) {
                 SoundTool.playLocalSound(player, ModSounds.TARGET_DOWN.get(), 1, 1);
