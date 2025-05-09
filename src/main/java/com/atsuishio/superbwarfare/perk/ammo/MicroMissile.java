@@ -27,4 +27,9 @@ public class MicroMissile extends AmmoPerk {
             projectile.setExplosionDamage(damage);
         }
     }
+
+    @Override
+    public double getDisplayDamage(double damage, GunData data, PerkInstance instance) {
+        return damage * (1.1f + instance.level() * 0.1f);
+    }
 }
