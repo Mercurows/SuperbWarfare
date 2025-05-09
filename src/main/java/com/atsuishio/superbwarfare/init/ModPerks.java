@@ -31,7 +31,7 @@ public class ModPerks {
     /**
      * Ammo Perks
      */
-    public static final DeferredRegister<Perk> AMMO_PERKS = DeferredRegister.create(Mod.loc("per"), Mod.MODID);
+    public static final DeferredRegister<Perk> AMMO_PERKS = DeferredRegister.create(Mod.loc("perk"), Mod.MODID);
 
     public static final DeferredHolder<Perk, APBullet> AP_BULLET = AMMO_PERKS.register("ap_bullet", APBullet::new);
     public static final DeferredHolder<Perk, JHPBullet> JHP_BULLET = AMMO_PERKS.register("jhp_bullet", JHPBullet::new);
