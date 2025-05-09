@@ -96,5 +96,11 @@ public class ModCapabilities {
             }
         }
 
+        // DPS发电机
+        event.registerEntity(Capabilities.EnergyStorage.ENTITY,
+                ModEntities.DPS_GENERATOR.get(),
+                (obj, ctx) -> obj.getEnergyStorage()
+        );
+
     }
 }

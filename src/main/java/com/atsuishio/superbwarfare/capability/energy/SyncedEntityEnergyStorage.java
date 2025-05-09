@@ -23,10 +23,31 @@ public class SyncedEntityEnergyStorage extends EnergyStorage {
      * @param energyDataAccessor 能量的EntityDataAccessor
      */
     public SyncedEntityEnergyStorage(int capacity, SynchedEntityData data, EntityDataAccessor<Integer> energyDataAccessor) {
-        super(capacity, capacity, capacity, 0);
+        this(capacity, capacity, capacity, data, energyDataAccessor);
+    }
+
+    public SyncedEntityEnergyStorage(int capacity, int maxReceive, int maxExtract, SynchedEntityData data, EntityDataAccessor<Integer> energyDataAccessor) {
+        super(capacity, maxReceive, maxExtract, 0);
 
         this.entityData = data;
         this.energyDataAccessor = energyDataAccessor;
+    }
+
+    public void setEnergy(int energy) {
+        this.energy = energy;
+        entityData.set(energyDataAccessor, energy);
+    }
+
+    public void setCapacity(int capacity) {
+        this.capacity = capacity;
+    }
+
+    public void setMaxExtract(int maxExtract) {
+        this.maxExtract = maxExtract;
+    }
+
+    public void setMaxReceive(int maxReceive) {
+        this.maxReceive = maxReceive;
     }
 
     @Override
@@ -62,5 +83,4 @@ public class SyncedEntityEnergyStorage extends EnergyStorage {
         super.deserializeNBT(provider, nbt);
         entityData.set(energyDataAccessor, energy);
     }
-
 }
