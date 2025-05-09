@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.client.tooltip;
 
-import com.atsuishio.superbwarfare.client.TooltipTool;
 import com.atsuishio.superbwarfare.client.tooltip.component.GunImageComponent;
+import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.tools.FormatTool;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -19,17 +19,22 @@ public class ClientSentinelImageTooltip extends ClientEnergyImageTooltip {
 
         if (cap != null && cap.getEnergyStored() > 0) {
             double damage = data.damage();
+            double extraDamage = -1;
+            for (var type : Perk.Type.values()) {
+                var instance = data.perk.getInstance(type);
+                if (instance != null) {
+                    damage = instance.perk().getDisplayDamage(damage, data, instance);
+                    if (instance.perk().getExtraDisplayDamage(damage, data, instance) >= 0) {
+                        extraDamage = instance.perk().getExtraDisplayDamage(damage, data, instance);
+                    }
+                }
+            }
             return Component.translatable("des.superbwarfare.guns.damage").withStyle(ChatFormatting.GRAY)
                     .append(Component.literal("").withStyle(ChatFormatting.RESET))
-                    .append(Component.literal(FormatTool.format1D(damage) + (TooltipTool.heBullet(stack) ? " + " +
-                                    FormatTool.format1D(0.8 * damage * (1 + 0.1 * TooltipTool.heBulletLevel(stack))) : ""))
+                    .append(Component.literal(FormatTool.format1D(damage) + (extraDamage >= 0 ? " + " + FormatTool.format1D(extraDamage) : ""))
                             .withStyle(ChatFormatting.AQUA).withStyle(ChatFormatting.BOLD));
         } else {
-            double damage = data.damage();
-            return Component.translatable("des.superbwarfare.guns.damage").withStyle(ChatFormatting.GRAY)
-                    .append(Component.literal("").withStyle(ChatFormatting.RESET))
-                    .append(Component.literal(FormatTool.format1D(damage) + (TooltipTool.heBullet(stack) ?
-                            FormatTool.format1D(0.4 * damage * (1 + 0.1 * TooltipTool.heBulletLevel(stack))) : "")).withStyle(ChatFormatting.GREEN));
+            return super.getDamageComponent();
         }
     }
 }

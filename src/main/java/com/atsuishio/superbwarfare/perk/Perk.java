@@ -95,6 +95,20 @@ public class Perk {
     public void modifyProjectile(GunData data, PerkInstance instance, Entity entity) {
     }
 
+    /**
+     * 用于武器伤害信息显示
+     */
+    public double getDisplayDamage(double damage, GunData data, PerkInstance instance) {
+        return damage;
+    }
+
+    /**
+     * 用于武器额外伤害信息显示，默认为负数
+     */
+    public double getExtraDisplayDamage(double damage, GunData data, PerkInstance instance) {
+        return -1;
+    }
+
     public enum Type {
         AMMO("Ammo", ChatFormatting.YELLOW),
         FUNCTIONAL("Functional", ChatFormatting.GREEN),

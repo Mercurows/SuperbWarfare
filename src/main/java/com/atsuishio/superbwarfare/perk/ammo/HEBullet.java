@@ -19,4 +19,9 @@ public class HEBullet extends AmmoPerk {
         if (!(entity instanceof ProjectileEntity projectile)) return;
         projectile.heBullet(instance.level());
     }
+
+    @Override
+    public double getExtraDisplayDamage(double damage, GunData data, PerkInstance instance) {
+        return 0.8 * damage * (1 + 0.1 * instance.level());
+    }
 }
