@@ -58,7 +58,7 @@ public final class Perks {
         return getLevel(item.getPerk());
     }
 
-    public short getLevel(DeferredHolder<Perk, Perk> perk) {
+    public short getLevel(DeferredHolder<Perk, ? extends Perk> perk) {
         return getLevel(perk.get());
     }
 
