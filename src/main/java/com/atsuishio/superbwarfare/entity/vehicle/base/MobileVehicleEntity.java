@@ -296,7 +296,7 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
                     flareDecoyEntity.decoyShoot(this, this.getViewVector(1).yRot((45 + 90 * i) * Mth.DEG_TO_RAD), 0.8f, 8);
                     this.level().addFreshEntity(flareDecoyEntity);
                 }
-                this.level().playSound(null, this, ModSounds.DECOY_FIRE.get(), this.getSoundSource(), 1, 1);
+                this.level().playSound(null, this, ModSounds.DECOY_FIRE.get(), this.getSoundSource(), 2, 1);
                 if (this.getEntityData().get(DECOY_COUNT) == 4) {
                     decoyReloadCoolDown = 300;
                 }

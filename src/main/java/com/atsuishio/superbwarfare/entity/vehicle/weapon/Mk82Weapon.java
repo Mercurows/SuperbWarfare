@@ -6,7 +6,7 @@ import net.minecraft.world.entity.LivingEntity;
 
 public class Mk82Weapon extends VehicleWeapon {
 
-    public float explosionDamage = 500, explosionRadius = 12;
+    public float explosionDamage = 520, explosionRadius = 14;
 
     public Mk82Weapon() {
         this.icon = Mod.loc("textures/screens/vehicle_weapon/mk_82.png");

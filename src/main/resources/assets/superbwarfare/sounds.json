@@ -3122,12 +3122,35 @@
       }
     ]
   },
+  "missile_start": {
+    "sounds": [
+      {
+        "name": "superbwarfare:missile_start"
+      }
+    ]
+  },
   "bomb_reload": {
     "sounds": [
       {
         "attenuation_distance": 16,
         "stream": true,
         "name": "superbwarfare:bomb_reload"
+      }
+    ]
+  },
+  "jet_lock": {
+    "sounds": [
+      {
+        "name": "superbwarfare:a10/jet_lock",
+        "stream": false
+      }
+    ]
+  },
+  "jet_lockon": {
+    "sounds": [
+      {
+        "name": "superbwarfare:a10/jet_lockon",
+        "stream": false
       }
     ]
   }

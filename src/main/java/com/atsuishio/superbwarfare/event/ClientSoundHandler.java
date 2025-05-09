@@ -20,23 +20,25 @@ public class ClientSoundHandler {
     @SubscribeEvent
     public static void handleJoinLevelEvent(EntityJoinLevelEvent event) {
         if (event.getLevel().isClientSide) {
-            if (event.getEntity() instanceof MobileVehicleEntity mobileVehicle) {
-                Minecraft.getInstance().getSoundManager().play(new VehicleSoundInstance.EngineSound(mobileVehicle, mobileVehicle.getEngineSound()));
-                Minecraft.getInstance().getSoundManager().play(new VehicleSoundInstance.SwimSound(mobileVehicle));
-            }
-            if (event.getEntity() instanceof MobileVehicleEntity mobileVehicle && mobileVehicle instanceof TrackEntity) {
-                Minecraft.getInstance().getSoundManager().play(new VehicleSoundInstance.TrackSound(mobileVehicle));
-            }
-            if (event.getEntity() instanceof LoudlyEntity) {
-                Minecraft.getInstance().getSoundManager().play(new LoudlyEntitySoundInstance.EntitySound(event.getEntity()));
-                Minecraft.getInstance().getSoundManager().play(new LoudlyEntitySoundInstance.EntitySoundClose(event.getEntity()));
-            }
-            if (event.getEntity() instanceof MobileVehicleEntity mobileVehicle && mobileVehicle instanceof A10Entity) {
-                Minecraft.getInstance().getSoundManager().play(new VehicleFireSoundInstance.A10FireSound(mobileVehicle));
-            }
-            if (event.getEntity() instanceof MobileVehicleEntity mobileVehicle && mobileVehicle instanceof Hpj11Entity) {
-                Minecraft.getInstance().getSoundManager().play(new VehicleFireSoundInstance.HPJ11CloseFireSound(mobileVehicle));
-            }
+            com.atsuishio.superbwarfare.Mod.queueClientWork(60, () -> {
+                if (event.getEntity() instanceof MobileVehicleEntity mobileVehicle) {
+                    Minecraft.getInstance().getSoundManager().play(new VehicleSoundInstance.EngineSound(mobileVehicle, mobileVehicle.getEngineSound()));
+                    Minecraft.getInstance().getSoundManager().play(new VehicleSoundInstance.SwimSound(mobileVehicle));
+                }
+                if (event.getEntity() instanceof MobileVehicleEntity mobileVehicle && mobileVehicle instanceof TrackEntity) {
+                    Minecraft.getInstance().getSoundManager().play(new VehicleSoundInstance.TrackSound(mobileVehicle));
+                }
+                if (event.getEntity() instanceof LoudlyEntity) {
+                    Minecraft.getInstance().getSoundManager().play(new LoudlyEntitySoundInstance.EntitySound(event.getEntity()));
+                    Minecraft.getInstance().getSoundManager().play(new LoudlyEntitySoundInstance.EntitySoundClose(event.getEntity()));
+                }
+                if (event.getEntity() instanceof MobileVehicleEntity mobileVehicle && mobileVehicle instanceof A10Entity) {
+                    Minecraft.getInstance().getSoundManager().play(new VehicleFireSoundInstance.A10FireSound(mobileVehicle));
+                }
+                if (event.getEntity() instanceof MobileVehicleEntity mobileVehicle && mobileVehicle instanceof Hpj11Entity) {
+                    Minecraft.getInstance().getSoundManager().play(new VehicleFireSoundInstance.HPJ11CloseFireSound(mobileVehicle));
+                }
+            });
         }
     }
 }

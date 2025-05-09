@@ -166,9 +166,12 @@
   "item.superbwarfare.small_shell": "小口径炮弹",
   "des.superbwarfare.small_shell": "适配20mm ~ 40mm口径武器",
   "item.superbwarfare.wire_guide_missile": "线控导弹",
+  "des.superbwarfare.wire_guide_missile": "适配BMP-2步兵战车",
   "item.superbwarfare.swarm_drone": "蜂群无人机",
   "item.superbwarfare.medium_aerial_bomb": "中型航空炸弹",
   "des.superbwarfare.medium_aerial_bomb": "适配A-10攻击机",
+  "item.superbwarfare.agm": "空对地导弹",
+  "des.superbwarfare.agm": "适配A-10攻击机",
 
   "item.superbwarfare.firing_parameters": "射击诸元",
   "item.superbwarfare.ancient_cpu": "古代处理器",
@@ -456,6 +459,7 @@
   "entity.superbwarfare.hpj_11": "H/PJ-11近防炮",
   "entity.superbwarfare.a_10a": "A-10 “雷电II” 攻击机",
   "entity.superbwarfare.mk_82": "MK-82 航空炸弹",
+  "entity.superbwarfare.agm_65": "AGM-65 “小牛”空对地导弹",
 
   "key.categories.superbwarfare": "卓越前线",
   "key.superbwarfare.hold_zoom": "瞄准(按住)",

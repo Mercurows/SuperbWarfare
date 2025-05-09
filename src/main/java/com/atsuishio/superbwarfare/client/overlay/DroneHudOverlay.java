@@ -87,11 +87,11 @@ public class DroneHudOverlay implements LayeredDraw.Layer {
                 boolean lookAtEntity = false;
                 double distance = player.distanceTo(entity);
 
-                BlockHitResult result = entity.level().clip(new ClipContext(entity.getEyePosition(), entity.getEyePosition().add(player.getViewVector(1).scale(512)),
+                BlockHitResult result = entity.level().clip(new ClipContext(cameraPos, cameraPos.add(player.getViewVector(1).scale(512)),
                         ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, entity));
                 Vec3 hitPos = result.getLocation();
 
-                double blockRange = player.getEyePosition(1).distanceTo(hitPos);
+                double blockRange = cameraPos.distanceTo(hitPos);
 
                 double entityRange = 0;
 

@@ -62,6 +62,23 @@ public class SeekTool {
                 .orElse(null);
     }
 
+    public static Entity seekCustomSizeEntitiy(Entity entity, Level level, double seekRange, double seekAngle, double size) {
+        return StreamSupport.stream(EntityFindUtil.getEntities(level).getAll().spliterator(), false)
+                .filter(e -> {
+                    if (e.distanceTo(entity) <= seekRange && calculateAngle(e, entity) < seekAngle
+                            && e != entity
+                            && baseFilter(e)
+                            && e.getBoundingBox().getSize() >= size
+                            && smokeFilter(e)
+                            && e.getVehicle() == null
+                    ) {
+                        return level.clip(new ClipContext(entity.getEyePosition(), e.getEyePosition(),
+                                ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, entity)).getType() != HitResult.Type.BLOCK;
+                    }
+                    return false;
+                }).min(Comparator.comparingDouble(e -> calculateAngle(e, entity))).orElse(null);
+    }
+
     public static Entity seekLivingEntity(Entity entity, Level level, double seekRange, double seekAngle) {
         return StreamSupport.stream(EntityFindUtil.getEntities(level).getAll().spliterator(), false)
                 .filter(e -> {
@@ -99,6 +116,23 @@ public class SeekTool {
                                 ClipContext.Block.COLLIDER,
                                 ClipContext.Fluid.NONE, entity)
                         ).getType() != HitResult.Type.BLOCK;
+                    }
+                    return false;
+                }).toList();
+    }
+
+    public static List<Entity> seekCustomSizeEntities(Entity entity, Level level, double seekRange, double seekAngle, double size) {
+        return StreamSupport.stream(EntityFindUtil.getEntities(level).getAll().spliterator(), false)
+                .filter(e -> {
+                    if (e.distanceTo(entity) <= seekRange && calculateAngle(e, entity) < seekAngle
+                            && e != entity
+                            && e.getBoundingBox().getSize() >= size
+                            && baseFilter(e)
+                            && smokeFilter(e)
+                            && e.getVehicle() == null
+                            && (!e.isAlliedTo(entity) || e.getTeam() == null || e.getTeam().getName().equals("TDM"))) {
+                        return level.clip(new ClipContext(entity.getEyePosition(), e.getEyePosition(),
+                                ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, entity)).getType() != HitResult.Type.BLOCK;
                     }
                     return false;
                 }).toList();

@@ -8,8 +8,10 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.AircraftEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
+import com.atsuishio.superbwarfare.tools.EntityFindUtil;
 import com.atsuishio.superbwarfare.tools.FormatTool;
 import com.atsuishio.superbwarfare.tools.InventoryTool;
+import com.atsuishio.superbwarfare.tools.SeekTool;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -24,12 +26,15 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Math;
+
+import java.util.List;
 
 import static com.atsuishio.superbwarfare.client.RenderHelper.preciseBlit;
 import static com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.HEAT;
@@ -41,6 +46,10 @@ public class AircraftOverlay implements LayeredDraw.Layer {
 
     private static float lerpVy = 1;
     private static float lerpG = 1;
+
+    private static final ResourceLocation FRAME = Mod.loc("textures/screens/frame/frame.png");
+    private static final ResourceLocation FRAME_TARGET = Mod.loc("textures/screens/frame/frame_target.png");
+    private static final ResourceLocation FRAME_LOCK = Mod.loc("textures/screens/frame/frame_lock.png");
 
     @Override
     public void render(GuiGraphics guiGraphics, @NotNull DeltaTracker deltaTracker) {
@@ -72,16 +81,18 @@ public class AircraftOverlay implements LayeredDraw.Layer {
             float diffX = Mth.wrapDegrees(Mth.lerp(partialTick, player.xRotO, player.getXRot()) - Mth.lerp(partialTick, mobileVehicle.xRotO, mobileVehicle.getXRot())) * 0.5f;
 
             float fovAdjust2 = (float) (Minecraft.getInstance().options.fov().get() / 30) - 1;
-            double zoom = 0.96 * 3 + 0.06 * fovAdjust2;
+            double zoom = 3 + 0.06 * fovAdjust2;
 
             Vec3 pos = aircraftEntity.shootPos(partialTick).add(mobileVehicle.getViewVector(partialTick).scale(192));
             Vec3 posCross = aircraftEntity.shootPos(partialTick).add(aircraftEntity.shootVec(partialTick).scale(192));
             Vec3 lookAngle = player.getViewVector(partialTick).normalize().scale(pos.distanceTo(cameraPos) * (1 - 1.0 / zoom));
+            Vec3 lookAngle2 = player.getViewVector(partialTick).normalize().scale(posCross.distanceTo(cameraPos) * (1 - 1.0 / zoom));
 
             var cPos = cameraPos.add(lookAngle);
+            var cPos2 = cameraPos.add(lookAngle2);
 
             Vec3 p = RenderHelper.worldToScreen(pos, ClientEventHandler.zoomVehicle ? cPos : cameraPos);
-            Vec3 pCross = RenderHelper.worldToScreen(posCross, ClientEventHandler.zoomVehicle ? cPos : cameraPos);
+            Vec3 pCross = RenderHelper.worldToScreen(posCross, ClientEventHandler.zoomVehicle ? cPos2 : cameraPos);
 
             if (p != null) {
                 poseStack.pushPose();
@@ -159,6 +170,14 @@ public class AircraftOverlay implements LayeredDraw.Layer {
                             String count = String.valueOf(aircraftEntity.getAmmoCount(player));
                             int width2 = Minecraft.getInstance().font.width(count);
                             guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(count), (int) x - width2 / 2, (int) y + 76, 0x66FF00, false);
+                        } else if (weaponVehicle.getWeaponIndex(0) == 3) {
+                            String name = "AGM-65";
+                            int width = Minecraft.getInstance().font.width(name);
+                            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(name), (int) x - width / 2, (int) y + 67, 0x66FF00, false);
+
+                            String count = String.valueOf(aircraftEntity.getAmmoCount(player));
+                            int width2 = Minecraft.getInstance().font.width(count);
+                            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(count), (int) x - width2 / 2, (int) y + 76, 0x66FF00, false);
                         }
                     }
 
@@ -192,11 +211,12 @@ public class AircraftOverlay implements LayeredDraw.Layer {
 
             // 准星
             if (pCross != null) {
+
                 poseStack.pushPose();
                 float x = (float) pCross.x;
                 float y = (float) pCross.y;
 
-                if (mc.options.getCameraType() == CameraType.FIRST_PERSON) {
+                if (mc.options.getCameraType() == CameraType.FIRST_PERSON && !(mobileVehicle instanceof A10Entity a10Entity && a10Entity.getWeaponIndex(0) == 3)) {
 
                     RenderSystem.disableDepthTest();
                     RenderSystem.depthMask(false);
@@ -229,6 +249,8 @@ public class AircraftOverlay implements LayeredDraw.Layer {
                             guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("70MM ROCKET " + aircraftEntity.getAmmoCount(player)), 25, -9, -1, false);
                         } else if (weaponVehicle.getWeaponIndex(0) == 2) {
                             guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("MK82 BOMB " + aircraftEntity.getAmmoCount(player)), 25, -9, -1, false);
+                        } else if (weaponVehicle.getWeaponIndex(0) == 3) {
+                            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("AGM-65 " + aircraftEntity.getAmmoCount(player)), 25, -9, -1, false);
                         }
                     }
 
@@ -238,6 +260,33 @@ public class AircraftOverlay implements LayeredDraw.Layer {
                 }
                 poseStack.popPose();
             }
+
+            //A-10的导弹锁定
+
+            if (mobileVehicle instanceof A10Entity a10Entity && a10Entity.getWeaponIndex(0) == 3) {
+                Entity targetEntity = EntityFindUtil.findEntity(player.level(), a10Entity.getTargetUuid());
+                List<Entity> entities = SeekTool.seekCustomSizeEntities(a10Entity, player.level(), 384, 20, 0.9);
+
+                for (var e : entities) {
+                    Vec3 pos3 = new Vec3(Mth.lerp(partialTick, e.xo, e.getX()), Mth.lerp(partialTick, e.yo + e.getEyeHeight(), e.getEyeY()), Mth.lerp(partialTick, e.zo, e.getZ()));
+                    Vec3 lookAngle3 = player.getViewVector(partialTick).normalize().scale(pos3.distanceTo(cameraPos) * (1 - 1.0 / zoom));
+                    var cPos3 = cameraPos.add(lookAngle3);
+                    Vec3 point = RenderHelper.worldToScreen(pos3, ClientEventHandler.zoomVehicle ? cPos3 : cameraPos);
+                    if (point != null) {
+                        boolean nearest = e == targetEntity;
+                        boolean lockOn = a10Entity.locked && nearest;
+
+                        poseStack.pushPose();
+                        float x = (float) point.x;
+                        float y = (float) point.y;
+
+                        RenderHelper.preciseBlit(guiGraphics, lockOn ? FRAME_LOCK : nearest ? FRAME_TARGET : FRAME, x - 12, y - 12, 24, 24, 0, 0, 24, 24, 24, 24);
+                        poseStack.popPose();
+                    }
+                }
+            }
+
+
             poseStack.popPose();
         }
     }

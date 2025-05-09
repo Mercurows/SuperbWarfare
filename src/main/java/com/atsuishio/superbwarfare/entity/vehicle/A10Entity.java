@@ -3,29 +3,23 @@ package com.atsuishio.superbwarfare.entity.vehicle;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
-import com.atsuishio.superbwarfare.entity.projectile.AerialBombEntity;
 import com.atsuishio.superbwarfare.entity.projectile.GunGrenadeEntity;
 import com.atsuishio.superbwarfare.entity.projectile.MortarShellEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.*;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
-import com.atsuishio.superbwarfare.entity.vehicle.weapon.HeliRocketWeapon;
-import com.atsuishio.superbwarfare.entity.vehicle.weapon.Mk82Weapon;
-import com.atsuishio.superbwarfare.entity.vehicle.weapon.SmallCannonShellWeapon;
-import com.atsuishio.superbwarfare.entity.vehicle.weapon.VehicleWeapon;
+import com.atsuishio.superbwarfare.entity.vehicle.weapon.*;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage;
-import com.atsuishio.superbwarfare.tools.CustomExplosion;
-import com.atsuishio.superbwarfare.tools.EntityFindUtil;
-import com.atsuishio.superbwarfare.tools.InventoryTool;
-import com.atsuishio.superbwarfare.tools.ParticleTool;
+import com.atsuishio.superbwarfare.tools.*;
 import com.mojang.math.Axis;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.game.ClientboundStopSoundPacket;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -63,13 +57,24 @@ import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity, WeaponVehicleEntity, AircraftEntity {
     public static final EntityDataAccessor<Integer> LOADED_ROCKET = SynchedEntityData.defineId(A10Entity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> LOADED_BOMB = SynchedEntityData.defineId(A10Entity.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Integer> LOADED_MISSILE = SynchedEntityData.defineId(A10Entity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> FIRE_TIME = SynchedEntityData.defineId(A10Entity.class, EntityDataSerializers.INT);
+
+    public static final EntityDataAccessor<String> TARGET_UUID = SynchedEntityData.defineId(A10Entity.class, EntityDataSerializers.STRING);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private float yRotSync;
     private boolean fly;
     private int flyTime;
     public int fireIndex;
     public int reloadCoolDownBomb;
+    public int reloadCoolDownMissile;
+    public String lockingTargetO = "none";
+    public String lockingTarget = "none";
+
+    public String test;
+    public int lockTime;
+    public boolean locking;
+    public boolean locked;
 
     public A10Entity(EntityType<A10Entity> type, Level world) {
         super(type, world);
@@ -96,8 +101,13 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
                                 .explosionRadius(VehicleConfig.AH_6_ROCKET_EXPLOSION_RADIUS.get())
                                 .sound(ModSounds.INTO_MISSILE.get()),
                         new Mk82Weapon()
-                                .explosionDamage(500)
-                                .explosionRadius(12)
+                                .explosionDamage(520)
+                                .explosionRadius(14)
+                                .sound(ModSounds.INTO_MISSILE.get()),
+                        new Agm65Weapon()
+                                .damage(1000)
+                                .explosionDamage(150)
+                                .explosionRadius(11)
                                 .sound(ModSounds.INTO_MISSILE.get()),
                 }
         };
@@ -113,7 +123,9 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
         super.defineSynchedData(builder);
         builder.define(LOADED_ROCKET, 0)
                 .define(LOADED_BOMB, 0)
-                .define(FIRE_TIME, 0);
+                .define(LOADED_MISSILE, 0)
+                .define(FIRE_TIME, 0)
+                .define(TARGET_UUID, "none");
     }
 
     @Override
@@ -121,6 +133,7 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
         super.addAdditionalSaveData(compound);
         compound.putInt("LoadedRocket", this.entityData.get(LOADED_ROCKET));
         compound.putInt("LoadedBomb", this.entityData.get(LOADED_BOMB));
+        compound.putInt("LoadedMissile", this.entityData.get(LOADED_MISSILE));
     }
 
     @Override
@@ -128,6 +141,7 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
         super.readAdditionalSaveData(compound);
         this.entityData.set(LOADED_ROCKET, compound.getInt("LoadedRocket"));
         this.entityData.set(LOADED_BOMB, compound.getInt("LoadedBomb"));
+        this.entityData.set(LOADED_MISSILE, compound.getInt("LoadedMissile"));
     }
 
     @Override
@@ -161,9 +175,6 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
                 .multiply(15f, ModDamageTypes.VEHICLE_STRIKE)
                 .custom((source, damage) -> getSourceAngle(source, 0.25f) * damage)
                 .custom((source, damage) -> {
-                    if (source.getDirectEntity() instanceof AerialBombEntity) {
-                        return 3f * damage;
-                    }
                     if (source.getDirectEntity() instanceof MortarShellEntity) {
                         return 1.25f * damage;
                     }
@@ -177,6 +188,9 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
 
     @Override
     public void baseTick() {
+
+        lockingTargetO = getTargetUuid();
+
         super.baseTick();
         float f;
 
@@ -201,6 +215,9 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
             if (reloadCoolDownBomb > 0) {
                 reloadCoolDownBomb--;
             }
+            if (reloadCoolDownMissile > 0) {
+                reloadCoolDownMissile--;
+            }
             handleAmmo();
         }
 
@@ -224,6 +241,12 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
         if (entityData.get(FIRE_TIME) > 0) {
             entityData.set(FIRE_TIME, entityData.get(FIRE_TIME) - 1);
         }
+
+        if (this.getWeaponIndex(0) == 3) {
+            seekTarget();
+        }
+
+        releaseDecoy();
         this.refreshDimensions();
     }
 
@@ -243,9 +266,18 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
 
         if ((hasItem(ModItems.MEDIUM_AERIAL_BOMB.get()) || hasCreativeAmmoBox) && reloadCoolDownBomb == 0 && this.getEntityData().get(LOADED_BOMB) < 3) {
             this.entityData.set(LOADED_BOMB, this.getEntityData().get(LOADED_BOMB) + 1);
-            reloadCoolDownBomb = 200;
+            reloadCoolDownBomb = 300;
             if (!hasCreativeAmmoBox) {
                 this.getItemStacks().stream().filter(stack -> stack.is(ModItems.MEDIUM_AERIAL_BOMB.get())).findFirst().ifPresent(stack -> stack.shrink(1));
+            }
+            this.level().playSound(null, this, ModSounds.BOMB_RELOAD.get(), this.getSoundSource(), 2, 1);
+        }
+
+        if ((hasItem(ModItems.AGM.get()) || hasCreativeAmmoBox) && reloadCoolDownMissile == 0 && this.getEntityData().get(LOADED_MISSILE) < 4) {
+            this.entityData.set(LOADED_MISSILE, this.getEntityData().get(LOADED_MISSILE) + 1);
+            reloadCoolDownMissile = 400;
+            if (!hasCreativeAmmoBox) {
+                this.getItemStacks().stream().filter(stack -> stack.is(ModItems.AGM.get())).findFirst().ifPresent(stack -> stack.shrink(1));
             }
             this.level().playSound(null, this, ModSounds.BOMB_RELOAD.get(), this.getSoundSource(), 2, 1);
         }
@@ -254,9 +286,64 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
             this.entityData.set(AMMO, ammoCount);
         } else if (this.getWeaponIndex(0) == 1) {
             this.entityData.set(AMMO, this.getEntityData().get(LOADED_ROCKET));
-        } else {
+        } else if (this.getWeaponIndex(0) == 2) {
             this.entityData.set(AMMO, this.getEntityData().get(LOADED_BOMB));
+        } else if (this.getWeaponIndex(0) == 3) {
+            this.entityData.set(AMMO, this.getEntityData().get(LOADED_MISSILE));
         }
+    }
+
+    public void seekTarget() {
+        if (!(this.getFirstPassenger() instanceof Player player)) return;
+
+        if (getTargetUuid().equals(lockingTargetO) && !getTargetUuid().equals("none")) {
+            lockTime++;
+        } else {
+            resetSeek(player);
+        }
+
+        Entity entity = SeekTool.seekCustomSizeEntitiy(this, this.level(), 384, 20, 0.9);
+        if (entity != null) {
+            if (lockTime == 0) {
+                setTargetUuid(String.valueOf(entity.getUUID()));
+            }
+            if (!String.valueOf(entity.getUUID()).equals(getTargetUuid())) {
+                resetSeek(player);
+                setTargetUuid(String.valueOf(entity.getUUID()));
+            }
+        } else {
+            setTargetUuid("none");
+        }
+
+        if (lockTime == 1) {
+            if (player instanceof ServerPlayer serverPlayer) {
+                SoundTool.playLocalSound(serverPlayer, ModSounds.JET_LOCK.get(), 2, 1);
+            }
+        }
+
+        if (lockTime > 20) {
+            if (player instanceof ServerPlayer serverPlayer) {
+                SoundTool.playLocalSound(serverPlayer, ModSounds.JET_LOCKON.get(), 2, 1);
+            }
+            locked = true;
+        }
+    }
+
+    public void resetSeek(Player player) {
+        lockTime = 0;
+        locked = false;
+        if (player instanceof ServerPlayer serverPlayer) {
+            var clientboundstopsoundpacket = new ClientboundStopSoundPacket(Mod.loc("jet_lock"), SoundSource.PLAYERS);
+            serverPlayer.connection.send(clientboundstopsoundpacket);
+        }
+    }
+
+    public void setTargetUuid(String uuid) {
+        this.lockingTarget = uuid;
+    }
+
+    public String getTargetUuid() {
+        return this.lockingTarget;
     }
 
     @Override
@@ -284,7 +371,7 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
             }
 
             if (backInputDown) {
-                this.entityData.set(POWER, Math.max(this.entityData.get(POWER) - 0.002f, onGround() ? -0.005f : 0.01f));
+                this.entityData.set(POWER, Math.max(this.entityData.get(POWER) - 0.002f, onGround() ? -0.04f : 0.05f));
             }
 
             if (!onGround()) {
@@ -297,7 +384,7 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
                 // 刹车
                 if (upInputDown) {
                     this.entityData.set(POWER, this.entityData.get(POWER) * 0.8f);
-                    this.setDeltaMovement(this.getDeltaMovement().multiply(0.91, 1, 0.91));
+                    this.setDeltaMovement(this.getDeltaMovement().multiply(0.98, 1, 0.98));
                 }
             }
 
@@ -481,15 +568,9 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
 
     @Override
     public Vec3 driverZoomPos(float ticks) {
-        if (getWeaponIndex(0) == 2) {
-            Matrix4f transform = getVehicleTransform(ticks);
-            Vector4f worldPosition = transformPosition(transform, 0, -0.75f, 7f);
-            return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
-        } else {
-            Matrix4f transform = getVehicleTransform(ticks);
-            Vector4f worldPosition = transformPosition(transform, 0, 1.35f, 4.15f);
-            return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
-        }
+        Matrix4f transform = getVehicleTransform(ticks);
+        Vector4f worldPosition = transformPosition(transform, 0, 1.35f, 4.15f);
+        return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
     }
 
     public void copyEntityData(Entity entity) {
@@ -676,11 +757,11 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
             Vector4f worldPosition;
 
             if (this.getEntityData().get(LOADED_BOMB) == 3) {
-                worldPosition = transformPosition(transform, -0.55625f, -1.203125f, 0.0625f);
+                worldPosition = transformPosition(transform, 0.55625f, -1.203125f, 0.0625f);
             } else if (this.getEntityData().get(LOADED_BOMB) == 2) {
                 worldPosition = transformPosition(transform, 0f, -1.203125f, 0.0625f);
             } else {
-                worldPosition = transformPosition(transform, 0.55625f, -1.203125f, 0.0625f);
+                worldPosition = transformPosition(transform, -0.55625f, -1.203125f, 0.0625f);
             }
 
             Mk82Entity.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
@@ -692,10 +773,41 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
             this.level().playSound(null, pos, ModSounds.BOMB_RELEASE.get(), SoundSource.PLAYERS, 3, 1);
 
             if (this.getEntityData().get(LOADED_BOMB) == 3) {
-                reloadCoolDownBomb = 200;
+                reloadCoolDownBomb = 300;
+            }
+            this.entityData.set(LOADED_BOMB, this.getEntityData().get(LOADED_BOMB) - 1);
+
+        } else if (getWeaponIndex(0) == 3 && this.getEntityData().get(LOADED_MISSILE) > 0) {
+            var Agm65Entity = ((Agm65Weapon) getWeapon(0)).create(player);
+
+            Vector4f worldPosition;
+
+            if (this.getEntityData().get(LOADED_MISSILE) == 4) {
+                worldPosition = transformPosition(transform, 1.56875f, -0.943f, 0.1272f);
+            } else if (this.getEntityData().get(LOADED_MISSILE) == 3) {
+                worldPosition = transformPosition(transform, -1.56875f, -0.943f, 0.1272f);
+            } else if (this.getEntityData().get(LOADED_MISSILE) == 2) {
+                worldPosition = transformPosition(transform, 3.9321875f, -0.88680625f, 0.12965f);
+            } else {
+                worldPosition = transformPosition(transform, -3.9321875f, -0.88680625f, 0.12965f);
             }
 
-            this.entityData.set(LOADED_BOMB, this.getEntityData().get(LOADED_BOMB) - 1);
+            if (locked) {
+                Agm65Entity.setTargetUuid(getTargetUuid());
+            }
+            Agm65Entity.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
+            Agm65Entity.shoot(getDeltaMovement().x, getDeltaMovement().y, getDeltaMovement().z, (float) getDeltaMovement().length() * 0.8f, 1);
+            player.level().addFreshEntity(Agm65Entity);
+
+            BlockPos pos = BlockPos.containing(new Vec3(worldPosition.x, worldPosition.y, worldPosition.z));
+
+            this.level().playSound(null, pos, ModSounds.BOMB_RELEASE.get(), SoundSource.PLAYERS, 3, 1);
+
+            if (this.getEntityData().get(LOADED_MISSILE) == 3) {
+                reloadCoolDownMissile = 400;
+            }
+
+            this.entityData.set(LOADED_MISSILE, this.getEntityData().get(LOADED_MISSILE) - 1);
         }
     }
 
@@ -712,12 +824,15 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
         if (getWeaponIndex(0) == 2) {
             return 600;
         }
+        if (getWeaponIndex(0) == 3) {
+            return 120;
+        }
         return 0;
     }
 
     @Override
     public boolean canShoot(Player player) {
-        if (getWeaponIndex(0) == 2) {
+        if (getWeaponIndex(0) == 2 || getWeaponIndex(0) == 3) {
             return this.entityData.get(AMMO) > 0;
         }
         return false;

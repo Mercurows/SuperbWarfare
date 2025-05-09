@@ -20,7 +20,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.AreaEffectCloud;
@@ -29,7 +28,6 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.Pig;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
-import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.projectile.ThrownPotion;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Explosion;
@@ -50,52 +48,34 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.List;
 
-public class JavelinMissileEntity extends FastThrowableProjectile implements GeoEntity, DestroyableProjectileEntity, LoudlyEntity {
-    public static final EntityDataAccessor<Float> HEALTH = SynchedEntityData.defineId(JavelinMissileEntity.class, EntityDataSerializers.FLOAT);
-    public static final EntityDataAccessor<String> TARGET_UUID = SynchedEntityData.defineId(JavelinMissileEntity.class, EntityDataSerializers.STRING);
-    public static final EntityDataAccessor<Boolean> TOP = SynchedEntityData.defineId(JavelinMissileEntity.class, EntityDataSerializers.BOOLEAN);
-    public static final EntityDataAccessor<Float> TARGET_X = SynchedEntityData.defineId(JavelinMissileEntity.class, EntityDataSerializers.FLOAT);
-    public static final EntityDataAccessor<Float> TARGET_Y = SynchedEntityData.defineId(JavelinMissileEntity.class, EntityDataSerializers.FLOAT);
-    public static final EntityDataAccessor<Float> TARGET_Z = SynchedEntityData.defineId(JavelinMissileEntity.class, EntityDataSerializers.FLOAT);
+public class Agm65Entity extends FastThrowableProjectile implements GeoEntity, DestroyableProjectileEntity, LoudlyEntity {
+    public static final EntityDataAccessor<Float> HEALTH = SynchedEntityData.defineId(Agm65Entity.class, EntityDataSerializers.FLOAT);
+    public static final EntityDataAccessor<String> TARGET_UUID = SynchedEntityData.defineId(Agm65Entity.class, EntityDataSerializers.STRING);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-    private float monsterMultiplier = 0.0f;
-    private float damage = 500.0f;
-    private float explosion_damage = 140f;
-    private float explosion_radius = 6f;
+    private float damage = 1000.0f;
+    private float explosion_damage = 150f;
+    private float explosion_radius = 11f;
     private boolean distracted = false;
-    private int guide_type = 0;
 
-    public JavelinMissileEntity(EntityType<? extends JavelinMissileEntity> type, Level world) {
+    public Agm65Entity(EntityType<? extends Agm65Entity> type, Level world) {
         super(type, world);
         this.noCulling = true;
     }
 
-    public JavelinMissileEntity(LivingEntity entity, Level level, float damage, float explosion_damage, float explosion_radius, int guide_type, Vec3 targetPos) {
-        super(ModEntities.JAVELIN_MISSILE.get(), entity, level);
+    public Agm65Entity(LivingEntity entity, Level level, float damage, float explosion_damage, float explosion_radius) {
+        super(ModEntities.AGM_65.get(), entity, level);
         this.damage = damage;
         this.explosion_damage = explosion_damage;
         this.explosion_radius = explosion_radius;
-        this.guide_type = guide_type;
-        this.entityData.set(TARGET_X, (float) targetPos.x);
-        this.entityData.set(TARGET_Y, (float) targetPos.y);
-        this.entityData.set(TARGET_Z, (float) targetPos.z);
-    }
-
-    public void setMonsterMultiplier(float monsterMultiplier) {
-        this.monsterMultiplier = monsterMultiplier;
-    }
-
-    @Override
-    protected @NotNull Item getDefaultItem() {
-        return ModItems.JAVELIN_MISSILE.get();
     }
 
     public void setTargetUuid(String uuid) {
         this.entityData.set(TARGET_UUID, uuid);
     }
 
-    public void setAttackMode(boolean mode) {
-        this.entityData.set(TOP, mode);
+    @Override
+    protected @NotNull Item getDefaultItem() {
+        return ModItems.JAVELIN_MISSILE.get();
     }
 
     @Override
@@ -122,12 +102,9 @@ public class JavelinMissileEntity extends FastThrowableProjectile implements Geo
     @Override
     protected void defineSynchedData(SynchedEntityData.@NotNull Builder builder) {
         super.defineSynchedData(builder);
-        builder.define(HEALTH, 10f)
-                .define(TARGET_UUID, "none")
-                .define(TOP, false)
-                .define(TARGET_X, 0f)
-                .define(TARGET_Y, 0f)
-                .define(TARGET_Z, 0f);
+
+        builder.define(HEALTH, 30f)
+                .define(TARGET_UUID, "none");
     }
 
     @Override
@@ -135,11 +112,8 @@ public class JavelinMissileEntity extends FastThrowableProjectile implements Geo
         return !this.isRemoved();
     }
 
-
     @Override
     public void readAdditionalSaveData(@NotNull CompoundTag compound) {
-        super.readAdditionalSaveData(compound);
-
         super.readAdditionalSaveData(compound);
         if (compound.contains("Health")) {
             this.entityData.set(HEALTH, compound.getFloat("Health"));
@@ -159,34 +133,26 @@ public class JavelinMissileEntity extends FastThrowableProjectile implements Geo
 
     @Override
     protected void onHitEntity(EntityHitResult result) {
-        float damageMultiplier = 1 + this.monsterMultiplier;
         Entity entity = result.getEntity();
-        if (entity == this.getOwner() || entity == this.getVehicle()) return;
-        if (this.getOwner() instanceof LivingEntity living) {
-            if (!living.level().isClientSide() && living instanceof ServerPlayer player) {
-                living.level().playSound(null, living.blockPosition(), ModSounds.INDICATION.get(), SoundSource.VOICE, 1, 1);
+        if (this.level() instanceof ServerLevel && tickCount > 8) {
+            if (entity == this.getOwner() || (this.getOwner() != null && entity == this.getOwner().getVehicle()))
+                return;
+            if (this.getOwner() instanceof LivingEntity living) {
+                if (!living.level().isClientSide() && living instanceof ServerPlayer player) {
+                    living.level().playSound(null, living.blockPosition(), ModSounds.INDICATION.get(), SoundSource.VOICE, 1, 1);
 
-                PacketDistributor.sendToPlayer(player, new ClientIndicatorMessage(0, 5));
+                    PacketDistributor.sendToPlayer(player, new ClientIndicatorMessage(0, 5));
+                }
             }
-        }
 
-        if (entity instanceof Monster monster) {
-            monster.hurt(ModDamageTypes.causeCannonFireDamage(this.level().registryAccess(), this, this.getOwner()), (entityData.get(TOP) ? 1.3f : 1f) * this.damage * damageMultiplier);
-        } else {
-            entity.hurt(ModDamageTypes.causeCannonFireDamage(this.level().registryAccess(), this, this.getOwner()), (entityData.get(TOP) ? 1.3f : 1f) * this.damage);
-        }
+            entity.hurt(ModDamageTypes.causeCannonFireDamage(this.level().registryAccess(), this, this.getOwner()), this.damage);
 
-        if (entity instanceof LivingEntity) {
-            entity.invulnerableTime = 0;
-        }
-
-        if (this.tickCount > 1) {
-            if (this.level() instanceof ServerLevel) {
-                causeExplode(result);
+            if (entity instanceof LivingEntity) {
+                entity.invulnerableTime = 0;
             }
+            causeExplode(result);
+            this.discard();
         }
-
-        this.discard();
     }
 
     @Override
@@ -204,7 +170,7 @@ public class JavelinMissileEntity extends FastThrowableProjectile implements Geo
             bell.attemptToRing(this.level(), resultPos, blockHitResult.getDirection());
         }
 
-        if (this.tickCount > 1) {
+        if (this.tickCount > 8) {
             if (this.level() instanceof ServerLevel) {
                 causeExplode(blockHitResult);
             }
@@ -226,40 +192,17 @@ public class JavelinMissileEntity extends FastThrowableProjectile implements Geo
             }
         }
 
-        if (guide_type == 0 || !entityData.get(TARGET_UUID).equals("none")) {
+        if (!entityData.get(TARGET_UUID).equals("none")) {
             if (entity != null) {
                 if (entity.level() instanceof ServerLevel) {
-                    this.entityData.set(TARGET_X, (float) entity.getX());
-                    this.entityData.set(TARGET_Y, (float) entity.getY() + 0.5f * entity.getBbHeight());
-                    this.entityData.set(TARGET_Z, (float) entity.getZ());
                     if ((!entity.getPassengers().isEmpty() || entity instanceof VehicleEntity) && entity.tickCount % ((int) Math.max(0.04 * this.distanceTo(entity), 2)) == 0) {
                         entity.level().playSound(null, entity.getOnPos(), entity instanceof Pig ? SoundEvents.PIG_HURT : ModSounds.MISSILE_WARNING.get(), SoundSource.PLAYERS, 2, 1f);
                     }
-                }
-            }
 
+                    Vec3 targetPos = new Vec3(entity.getX(), entity.getEyeY() + (entity instanceof EnderDragon ? -3 : 0), entity.getZ()).add(entity.getDeltaMovement());
 
-            double px = this.getX();
-            double ex = this.entityData.get(TARGET_X);
-            double pz = this.getZ();
-            double ez = this.entityData.get(TARGET_Z);
-            boolean dir = Math.sqrt(Math.pow(px - ex, 2) + Math.pow(pz - ez, 2)) < 30;
-            Vec3 targetPos = new Vec3(this.entityData.get(TARGET_X), this.entityData.get(TARGET_Y) + (entity instanceof EnderDragon ? -3 : 0), this.entityData.get(TARGET_Z));
-            if (entity != null) {
-                Vec3 toVec = getEyePosition().vectorTo(targetPos.add(entity.getDeltaMovement().scale(0.5))).normalize();
-                if (this.tickCount > 3) {
-                    if (entityData.get(TOP)) {
-                        if (!dir) {
-                            Vec3 targetTopPos = new Vec3(this.entityData.get(TARGET_X), this.entityData.get(TARGET_Y) + Mth.clamp(5 * this.tickCount, 0, 90), this.entityData.get(TARGET_Z));
-                            Vec3 toTopVec = getEyePosition().vectorTo(targetTopPos).normalize();
-                            setDeltaMovement(getDeltaMovement().add(toTopVec.scale(0.5)));
-                        } else {
-                            boolean lostTarget = this.getY() < entity.getY();
-                            if (!lostTarget) {
-                                setDeltaMovement(getDeltaMovement().add(toVec.scale(1)).scale(0.87));
-                            }
-                        }
-                    } else {
+                    Vec3 toVec = getEyePosition().vectorTo(targetPos).normalize();
+                    if (this.tickCount > 8) {
                         boolean lostTarget = (VectorTool.calculateAngle(getDeltaMovement(), toVec) > 80);
                         if (!lostTarget) {
                             setDeltaMovement(getDeltaMovement().add(toVec.scale(1)).scale(0.87));
@@ -267,45 +210,17 @@ public class JavelinMissileEntity extends FastThrowableProjectile implements Geo
                     }
                 }
             }
-        } else if (guide_type == 1) {
-            double px = this.getX();
-            double ex = this.entityData.get(TARGET_X);
-            double pz = this.getZ();
-            double ez = this.entityData.get(TARGET_Z);
-            boolean dir = Math.sqrt(Math.pow(px - ex, 2) + Math.pow(pz - ez, 2)) < 30;
-            Vec3 targetPos = new Vec3(this.entityData.get(TARGET_X), this.entityData.get(TARGET_Y), this.entityData.get(TARGET_Z));
-            Vec3 toVec = getEyePosition().vectorTo(targetPos).normalize();
-
-            if (this.tickCount > 3) {
-                if (entityData.get(TOP)) {
-                    if (!dir) {
-                        Vec3 targetTopPos = new Vec3(this.entityData.get(TARGET_X), this.entityData.get(TARGET_Y) + Mth.clamp(5 * this.tickCount, 0, 90), this.entityData.get(TARGET_Z));
-                        Vec3 toTopVec = getEyePosition().vectorTo(targetTopPos).normalize();
-                        setDeltaMovement(getDeltaMovement().add(toTopVec.scale(0.5)));
-                    } else {
-                        boolean lostTarget = this.getY() < this.entityData.get(TARGET_Y);
-                        if (!lostTarget) {
-                            setDeltaMovement(getDeltaMovement().add(toVec.scale(1)).scale(0.87));
-                        }
-                    }
-                } else {
-                    boolean lostTarget = (VectorTool.calculateAngle(getDeltaMovement(), toVec) > 80);
-                    if (!lostTarget) {
-                        setDeltaMovement(getDeltaMovement().add(toVec.scale(1)).scale(0.87));
-                    }
-                }
-            }
-
         }
 
-        if (this.tickCount == 4) {
+        if (this.tickCount == 8) {
+            this.level().playSound(null, BlockPos.containing(position()), ModSounds.MISSILE_START.get(), SoundSource.PLAYERS, 4, 1);
             if (!this.level().isClientSide() && this.level() instanceof ServerLevel serverLevel) {
                 ParticleTool.sendParticle(serverLevel, ParticleTypes.CLOUD, this.xo, this.yo, this.zo, 15, 0.8, 0.8, 0.8, 0.01, true);
                 ParticleTool.sendParticle(serverLevel, ParticleTypes.CAMPFIRE_COSY_SMOKE, this.xo, this.yo, this.zo, 10, 0.8, 0.8, 0.8, 0.01, true);
             }
         }
 
-        if (this.tickCount > 4) {
+        if (this.tickCount > 8) {
             if (!this.level().isClientSide() && this.level() instanceof ServerLevel serverLevel) {
                 ParticleTool.sendParticle(serverLevel, ParticleTypes.CAMPFIRE_COSY_SMOKE, this.xo, this.yo, this.zo, 1, 0, 0, 0, 0, true);
             }
@@ -315,21 +230,21 @@ public class JavelinMissileEntity extends FastThrowableProjectile implements Geo
             if (this.level() instanceof ServerLevel) {
                 ProjectileTool.causeCustomExplode(this,
                         ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(), this, this.getOwner()),
-                        this, this.explosion_damage, this.explosion_radius, this.monsterMultiplier);
+                        this, this.explosion_damage, this.explosion_radius, 1);
             }
             this.discard();
         }
 
         // 控制速度
-        if (this.getDeltaMovement().length() < 2.6) {
+        if (this.getDeltaMovement().length() < 6) {
             this.setDeltaMovement(this.getDeltaMovement().multiply(1.06, 1.06, 1.06));
         }
 
-        if (this.getDeltaMovement().length() > 2.9) {
-            this.setDeltaMovement(this.getDeltaMovement().multiply(0.9, 0.9, 0.9));
+        if (this.getDeltaMovement().length() > 7) {
+            this.setDeltaMovement(this.getDeltaMovement().multiply(0.95, 0.95, 0.95));
         }
 
-        this.setDeltaMovement(this.getDeltaMovement().multiply(0.96, 0.96, 0.96));
+        this.setDeltaMovement(this.getDeltaMovement().multiply(0.99, 0.99, 0.99));
     }
 
     private void causeExplode(HitResult result) {
@@ -343,20 +258,20 @@ public class JavelinMissileEntity extends FastThrowableProjectile implements Geo
                 this.getZ(),
                 explosion_radius,
                 ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).
-                setDamageMultiplier(this.monsterMultiplier);
+                setDamageMultiplier(1);
         explosion.explode();
         EventHooks.onExplosionStart(this.level(), explosion);
         explosion.finalizeExplosion(false);
-        ParticleTool.spawnMediumExplosionParticles(this.level(), result.getLocation());
+        ParticleTool.spawnHugeExplosionParticles(this.level(), result.getLocation());
     }
 
-    private PlayState movementPredicate(AnimationState<JavelinMissileEntity> event) {
+    private PlayState movementPredicate(AnimationState<Agm65Entity> event) {
         return event.setAndContinue(RawAnimation.begin().thenLoop("animation.jvm.idle"));
     }
 
     @Override
     protected double getDefaultGravity() {
-        return 0F;
+        return 0.1;
     }
 
     @Override
@@ -386,6 +301,6 @@ public class JavelinMissileEntity extends FastThrowableProjectile implements Geo
 
     @Override
     public float getVolume() {
-        return 0.4f;
+        return 0.7f;
     }
 }

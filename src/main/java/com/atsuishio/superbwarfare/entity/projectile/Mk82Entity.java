@@ -10,7 +10,6 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.AreaEffectCloud;
@@ -30,8 +29,8 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 public class Mk82Entity extends FastThrowableProjectile implements GeoEntity, DestroyableProjectileEntity, LoudlyEntity, AerialBombEntity {
     public static final EntityDataAccessor<Float> HEALTH = SynchedEntityData.defineId(Mk82Entity.class, EntityDataSerializers.FLOAT);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-    private float explosion_damage = 500f;
-    private float explosion_radius = 12f;
+    private float explosion_damage = 520f;
+    private float explosion_radius = 14f;
 
     public Mk82Entity(EntityType<? extends Mk82Entity> type, Level world) {
         super(type, world);
@@ -89,7 +88,7 @@ public class Mk82Entity extends FastThrowableProjectile implements GeoEntity, De
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundTag compound) {
+    public void readAdditionalSaveData(@NotNull CompoundTag compound) {
         super.readAdditionalSaveData(compound);
         if (compound.contains("Health")) {
             this.entityData.set(HEALTH, compound.getFloat("Health"));
@@ -97,7 +96,7 @@ public class Mk82Entity extends FastThrowableProjectile implements GeoEntity, De
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundTag compound) {
+    public void addAdditionalSaveData(@NotNull CompoundTag compound) {
         super.addAdditionalSaveData(compound);
         compound.putFloat("Health", this.entityData.get(HEALTH));
     }
@@ -108,7 +107,7 @@ public class Mk82Entity extends FastThrowableProjectile implements GeoEntity, De
     }
 
     @Override
-    public void onHitBlock(BlockHitResult blockHitResult) {
+    public void onHitBlock(@NotNull BlockHitResult blockHitResult) {
         super.onHitBlock(blockHitResult);
         ProjectileTool.causeCustomExplode(this, explosion_damage, explosion_radius, 1.2f);
         this.discard();
@@ -149,7 +148,7 @@ public class Mk82Entity extends FastThrowableProjectile implements GeoEntity, De
 
     @Override
     public @NotNull SoundEvent getCloseSound() {
-        return SoundEvents.EMPTY;
+        return LoudlyEntity.super.getCloseSound();
     }
 
     @Override

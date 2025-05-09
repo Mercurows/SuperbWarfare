@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " c ",
+    "dad",
+    " b "
+  ],
+  "key": {
+    "a": {
+      "item":"minecraft:tnt"
+    },
+    "b": {
+      "item": "minecraft:iron_ingot"
+    },
+    "c": {
+      "item": "superbwarfare:fusee"
+    },
+    "d": {
+      "item": "superbwarfare:high_energy_explosives"
+    }
+  },
+  "result": {
+    "id": "superbwarfare:medium_aerial_bomb",
+    "count": 1
+  }
+}
