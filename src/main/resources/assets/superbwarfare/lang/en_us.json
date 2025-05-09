@@ -247,8 +247,6 @@
   "block.superbwarfare.cemented_carbide_block": "Cemented Carbide Block",
   "block.superbwarfare.charging_station": "Charging Station",
   "des.superbwarfare.charging_station": "Charge nearby entities and adjacent blocks",
-  "container.superbwarfare.charging_station.show_range": "Show Range",
-  "container.superbwarfare.charging_station.hide_range": "Hide Range",
   "des.superbwarfare.charging_station.energy": "Energy: %1$s / %2$s FE",
   "block.superbwarfare.creative_charging_station": "Creative Charging Station",
   "des.superbwarfare.creative_charging_station": "Charge nearby entities and adjacent blocks, can also be used as a power source item",
@@ -438,7 +436,6 @@
   "entity.superbwarfare.flare_decoy": "Flare Decoy",
   "entity.superbwarfare.mortar": "Mortar",
   "entity.superbwarfare.target": "Target",
-  "entity.superbwarfare.dps_generator": "DPS Generator",
   "entity.superbwarfare.claymore": "Claymore",
   "entity.superbwarfare.c4": "C4",
   "entity.superbwarfare.senpai": "Beast Senpai",
@@ -464,6 +461,7 @@
   "entity.superbwarfare.a_10a": "A-10 Thunderbolt II",
   "entity.superbwarfare.mk_82": "MK-82 Aerial Bomb",
   "entity.superbwarfare.agm_65": "AGM-65 Maverick",
+  "entity.superbwarfare.dps_generator": "DPS Generator",
 
   "key.categories.superbwarfare": "Superb Warfare",
   "key.superbwarfare.hold_zoom": "Zoom (Hold)",
@@ -542,6 +540,8 @@
 
   "container.superbwarfare.reforging_table": "Gun Reforge Table",
   "container.superbwarfare.charging_station": "Charging Station",
+  "container.superbwarfare.charging_station.show_range": "Show Range",
+  "container.superbwarfare.charging_station.hide_range": "Hide Range",
 
   "config.superbwarfare.title": "SuperbWarfare: Config",
   "config.superbwarfare.client.reload": "Reload Config",
