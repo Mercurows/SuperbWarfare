@@ -142,6 +142,7 @@ public class ModItems {
 
     public static final DeferredHolder<Item, Detonator> DETONATOR = ITEMS.register("detonator", Detonator::new);
     public static final DeferredHolder<Item, TargetDeployer> TARGET_DEPLOYER = ITEMS.register("target_deployer", TargetDeployer::new);
+    public static final DeferredHolder<Item, DPSGeneratorDeployer> DPS_GENERATOR_DEPLOYER = ITEMS.register("dps_generator_deployer", DPSGeneratorDeployer::new);
     public static final DeferredHolder<Item, Knife> KNIFE = ITEMS.register("knife", Knife::new);
     public static final DeferredHolder<Item, Hammer> HAMMER = ITEMS.register("hammer", Hammer::new);
     public static final DeferredHolder<Item, Crowbar> CROWBAR = ITEMS.register("crowbar", Crowbar::new);

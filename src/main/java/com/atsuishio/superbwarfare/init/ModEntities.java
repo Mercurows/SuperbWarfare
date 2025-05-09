@@ -25,6 +25,8 @@ public class ModEntities {
     // Living Entities
     public static final DeferredHolder<EntityType<?>, EntityType<TargetEntity>> TARGET = register("target",
             EntityType.Builder.of(TargetEntity::new, MobCategory.CREATURE).setTrackingRange(64).setUpdateInterval(3).fireImmune().sized(0.875f, 2f));
+    public static final DeferredHolder<EntityType<?>, EntityType<DPSGeneratorEntity>> DPS_GENERATOR = register("dps_generator",
+            EntityType.Builder.of(DPSGeneratorEntity::new, MobCategory.CREATURE).setTrackingRange(64).setUpdateInterval(3).fireImmune().sized(0.875f, 2f));
     public static final DeferredHolder<EntityType<?>, EntityType<SenpaiEntity>> SENPAI = register("senpai",
             EntityType.Builder.of(SenpaiEntity::new, MobCategory.MONSTER).setTrackingRange(64).setUpdateInterval(3)
                     .sized(0.6f, 2f));
@@ -132,6 +134,7 @@ public class ModEntities {
     @SubscribeEvent
     public static void registerAttributes(EntityAttributeCreationEvent event) {
         event.put(TARGET.get(), TargetEntity.createAttributes().build());
+        event.put(DPS_GENERATOR.get(), DPSGeneratorEntity.createAttributes().build());
         event.put(SENPAI.get(), SenpaiEntity.createAttributes().build());
     }
 }

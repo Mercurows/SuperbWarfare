@@ -40,6 +40,7 @@ public class ModItemModelProvider extends ItemModelProvider {
         simpleItem(ModItems.HEAVY_ARMAMENT_MODULE);
 
         simpleItem(ModItems.TARGET_DEPLOYER);
+        simpleItem(ModItems.DPS_GENERATOR_DEPLOYER);
         simpleItem(ModItems.MORTAR_DEPLOYER);
         simpleItem(ModItems.MORTAR_BARREL);
         simpleItem(ModItems.MORTAR_BASE_PLATE);

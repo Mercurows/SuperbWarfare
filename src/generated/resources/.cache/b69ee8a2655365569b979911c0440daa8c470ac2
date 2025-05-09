@@ -1,4 +1,4 @@
-// 1.21.1	2025-05-09T21:50:05.0172065	Item Models: superbwarfare
+// 1.21.1	2025-05-09T23:24:48.8440376	Item Models: superbwarfare
 13ca8d5676888ff51f3308d88e4bf67691fa34f8 assets/superbwarfare/models/item/aa_12_blueprint.json
 0a9bfb695c2b5668863a2de4770f5bfca663c1dc assets/superbwarfare/models/item/agm.json
 13ca8d5676888ff51f3308d88e4bf67691fa34f8 assets/superbwarfare/models/item/ak_12_blueprint.json
@@ -25,6 +25,7 @@ b0296c3d68f3b5ae4945b46384fa20a1ff32cac5 assets/superbwarfare/models/item/crowba
 d81b738e17048945459ff8b59f8f83e872171473 assets/superbwarfare/models/item/defuser.json
 13ca8d5676888ff51f3308d88e4bf67691fa34f8 assets/superbwarfare/models/item/devotion_blueprint.json
 6f4a829dc159f1740f52265d01730ecb6a840d81 assets/superbwarfare/models/item/dog_tag.json
+9112aa14b3f057c3b29c932cfaa60a11b37757dc assets/superbwarfare/models/item/dps_generator_deployer.json
 dd455cf29eed0ef5eb5e90ef3d7140cb8de61efe assets/superbwarfare/models/item/drone.json
 831ce33c5a4c90b71a42515f42f16d4c1a946c50 assets/superbwarfare/models/item/empty_perk.json
 2419503d8b597c92684d1921895a12fca33fec69 assets/superbwarfare/models/item/epic_material_pack.json
