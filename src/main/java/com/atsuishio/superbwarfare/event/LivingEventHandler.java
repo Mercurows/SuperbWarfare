@@ -645,4 +645,11 @@ public class LivingEventHandler {
             event.setCanceled(true);
         }
     }
+
+    @SubscribeEvent
+    public static void onEffectApply(MobEffectEvent.Applicable event) {
+        if (event.getEntity().getVehicle() instanceof ArmedVehicleEntity vehicle && vehicle.hidePassenger(event.getEntity())) {
+            event.setResult(MobEffectEvent.Applicable.Result.DO_NOT_APPLY);
+        }
+    }
 }
