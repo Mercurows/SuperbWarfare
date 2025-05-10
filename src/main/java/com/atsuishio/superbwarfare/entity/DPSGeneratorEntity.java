@@ -109,6 +109,8 @@ public class DPSGeneratorEntity extends LivingEntity implements GeoEntity {
         if (entityCap == null) return;
 
         ((SyncedEntityEnergyStorage) entityCap).setEnergy(compound.getInt("Energy"));
+        ((SyncedEntityEnergyStorage) entityCap).setCapacity(this.getMaxEnergy());
+        ((SyncedEntityEnergyStorage) entityCap).setMaxExtract(this.getMaxTransfer());
     }
 
     @Override
