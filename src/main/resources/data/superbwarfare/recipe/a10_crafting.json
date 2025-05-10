@@ -1,0 +1,38 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "dad",
+    "ece",
+    "fbf"
+  ],
+  "key": {
+    "a": {
+      "item": "superbwarfare:medium_armament_module"
+    },
+    "b": {
+      "tag": "superbwarfare:storage_blocks/steel"
+    },
+    "c": {
+      "item": "superbwarfare:heavy_armament_module"
+    },
+    "d": {
+      "item": "superbwarfare:large_propeller"
+    },
+    "e": {
+      "item": "superbwarfare:large_motor"
+    },
+    "f": {
+      "item": "superbwarfare:medium_battery_pack"
+    }
+  },
+  "result": {
+    "id": "superbwarfare:container",
+    "components": {
+      "minecraft:block_entity_data": {
+        "id": "superbwarfare:container",
+        "EntityType": "superbwarfare:a_10a"
+      }
+    }
+  }
+}

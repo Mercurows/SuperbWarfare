@@ -90,24 +90,19 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
         return new VehicleWeapon[][]{
                 new VehicleWeapon[]{
                         new SmallCannonShellWeapon()
-                                .damage(25)
-                                .explosionDamage(10)
-                                .explosionRadius(4)
+                                .damage(VehicleConfig.A_10_CANNON_DAMAGE.get())
+                                .explosionDamage(VehicleConfig.A_10_CANNON_EXPLOSION_DAMAGE.get())
+                                .explosionRadius(VehicleConfig.A_10_CANNON_EXPLOSION_RADIUS.get().floatValue())
                                 .sound(ModSounds.INTO_CANNON.get())
                                 .icon(Mod.loc("textures/screens/vehicle_weapon/cannon_30mm.png")),
                         new HeliRocketWeapon()
-                                .damage(100)
-                                .explosionDamage(50)
-                                .explosionRadius(6)
+                                .damage(VehicleConfig.A_10_ROCKET_DAMAGE.get())
+                                .explosionDamage(VehicleConfig.A_10_ROCKET_EXPLOSION_DAMAGE.get())
+                                .explosionRadius(VehicleConfig.A_10_ROCKET_EXPLOSION_RADIUS.get().floatValue())
                                 .sound(ModSounds.INTO_MISSILE.get()),
                         new Mk82Weapon()
-                                .explosionDamage(650)
-                                .explosionRadius(11)
                                 .sound(ModSounds.INTO_MISSILE.get()),
                         new Agm65Weapon()
-                                .damage(1100)
-                                .explosionDamage(150)
-                                .explosionRadius(9)
                                 .sound(ModSounds.INTO_MISSILE.get()),
                 }
         };
@@ -365,13 +360,14 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
             }
         } else if (passenger instanceof Player player) {
 
-            if (forwardInputDown && getEnergy() > 0) {
-                this.consumeEnergy(VehicleConfig.TOM_6_ENERGY_COST.get());
-                this.entityData.set(POWER, Math.min(this.entityData.get(POWER) + 0.002f, 1f));
-            }
+            if (getEnergy() > 0) {
+                if (forwardInputDown) {
+                    this.entityData.set(POWER, Math.min(this.entityData.get(POWER) + 0.002f, 1f));
+                }
 
-            if (backInputDown) {
-                this.entityData.set(POWER, Math.max(this.entityData.get(POWER) - 0.002f, onGround() ? -0.04f : 0.05f));
+                if (backInputDown) {
+                    this.entityData.set(POWER, Math.max(this.entityData.get(POWER) - 0.002f, onGround() ? -0.04f : 0.05f));
+                }
             }
 
             if (!onGround()) {
@@ -441,10 +437,12 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
         this.entityData.set(POWER, this.entityData.get(POWER) * 0.99f);
         this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) * 0.95f);
 
+        if (getEnergy() > 0) {
+            this.consumeEnergy((int) Mth.abs(this.entityData.get(POWER)) * VehicleConfig.A_10_MAX_ENERGY_COST.get());
+        }
+
         this.setDeltaMovement(this.getDeltaMovement().add(getViewVector(1).scale(Math.max((90 + this.getXRot()) / 90, 0.8) * 0.4 * this.entityData.get(POWER))));
-
         double flapAngle = (getFlap1LRot() + getFlap1RRot()) / 2;
-
         setDeltaMovement(getDeltaMovement().add(0.0f, Mth.clamp(Math.sin((onGround() ? 23 + flapAngle : -(getXRot() - 23) + flapAngle) * Mth.DEG_TO_RAD) * Math.sin((90 - this.getXRot()) * Mth.DEG_TO_RAD) * getDeltaMovement().dot(getViewVector(1)) * 0.063, -0.04, 0.065), 0.0f));
     }
 
@@ -626,12 +624,12 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
 
     @Override
     public float getMaxHealth() {
-        return 300;
+        return VehicleConfig.A_10_HP.get();
     }
 
     @Override
     public int getMaxEnergy() {
-        return 5000000;
+        return VehicleConfig.A_10_MAX_ENERGY.get();
     }
 
     @Override

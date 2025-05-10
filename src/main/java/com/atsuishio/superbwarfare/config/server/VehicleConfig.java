@@ -118,6 +118,16 @@ public class VehicleConfig {
     public static ModConfigSpec.IntValue HPJ11_SHOOT_COST;
     public static ModConfigSpec.IntValue HPJ11_SEEK_COST;
 
+    public static ModConfigSpec.IntValue A_10_HP;
+    public static ModConfigSpec.IntValue A_10_MAX_ENERGY_COST;
+    public static ModConfigSpec.IntValue A_10_MAX_ENERGY;
+    public static ModConfigSpec.IntValue A_10_CANNON_DAMAGE;
+    public static ModConfigSpec.IntValue A_10_CANNON_EXPLOSION_DAMAGE;
+    public static ModConfigSpec.DoubleValue A_10_CANNON_EXPLOSION_RADIUS;
+    public static ModConfigSpec.IntValue A_10_ROCKET_DAMAGE;
+    public static ModConfigSpec.IntValue A_10_ROCKET_EXPLOSION_DAMAGE;
+    public static ModConfigSpec.DoubleValue A_10_ROCKET_EXPLOSION_RADIUS;
+
     public static void init(ModConfigSpec.Builder builder) {
         builder.push("vehicle");
 
@@ -459,6 +469,37 @@ public class VehicleConfig {
 
         builder.comment("The energy cost of HPJ-11 find a new target");
         HPJ11_SEEK_COST = builder.defineInRange("hpj_11_seek_cost", 1024, 0, 2147483647);
+
+        builder.pop();
+
+        builder.push("A-10");
+
+        builder.comment("The health of A-10");
+        A_10_HP = builder.defineInRange("A_10_hp", 350, 1, 10000000);
+
+        builder.comment("The max energy cost of A-10 per tick");
+        A_10_MAX_ENERGY_COST = builder.defineInRange("A_10_max_energy_cost", 256, 0, 2147483647);
+
+        builder.comment("The max energy storage of A-10");
+        A_10_MAX_ENERGY = builder.defineInRange("A_10_max_energy", 10000000, 0, 2147483647);
+
+        builder.comment("The cannon damage of A-10");
+        A_10_CANNON_DAMAGE = builder.defineInRange("A_10_cannon_damage", 30, 1, 10000000);
+
+        builder.comment("The cannon explosion damage of A-10");
+        A_10_CANNON_EXPLOSION_DAMAGE = builder.defineInRange("A_10_cannon_explosion_damage", 10, 1, 10000000);
+
+        builder.comment("The cannon explosion damage of A-10");
+        A_10_CANNON_EXPLOSION_RADIUS = builder.defineInRange("A_10_cannon_explosion_damage", 4d, 1, 10000000);
+
+        builder.comment("The rocket damage of A-10");
+        A_10_ROCKET_DAMAGE = builder.defineInRange("A_10_rocket_damage", 90, 1, 10000000);
+
+        builder.comment("The rocket explosion damage of A-10");
+        A_10_ROCKET_EXPLOSION_DAMAGE = builder.defineInRange("A_10_rocket_explosion_damage", 50, 1, 10000000);
+
+        builder.comment("The rocket explosion radius of A-10");
+        A_10_ROCKET_EXPLOSION_RADIUS = builder.defineInRange("A_10_rocket_explosion_radius", 6d, 1, 10000000);
 
         builder.pop();
 

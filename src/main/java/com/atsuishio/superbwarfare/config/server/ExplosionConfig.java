@@ -32,6 +32,13 @@ public class ExplosionConfig {
     public static ModConfigSpec.IntValue WIRE_GUIDE_MISSILE_DAMAGE;
     public static ModConfigSpec.IntValue WIRE_GUIDE_MISSILE_EXPLOSION_DAMAGE;
     public static ModConfigSpec.IntValue WIRE_GUIDE_MISSILE_EXPLOSION_RADIUS;
+    
+    public static ModConfigSpec.IntValue AGM_65_DAMAGE;
+    public static ModConfigSpec.IntValue AGM_65_EXPLOSION_DAMAGE;
+    public static ModConfigSpec.DoubleValue AGM_65_EXPLOSION_RADIUS;
+
+    public static ModConfigSpec.IntValue MK_82_EXPLOSION_DAMAGE;
+    public static ModConfigSpec.DoubleValue MK_82_EXPLOSION_RADIUS;
 
     public static void init(ModConfigSpec.Builder builder) {
         builder.push("explosion");
@@ -115,7 +122,7 @@ public class ExplosionConfig {
         builder.comment("The explosion damage of wire guide missile");
         WIRE_GUIDE_MISSILE_EXPLOSION_DAMAGE = builder.defineInRange("wire_guide_missile_explosion_damage", 60, 1, Integer.MAX_VALUE);
 
-        builder.comment("The explosion radius of wre guide missile");
+        builder.comment("The explosion radius of wire guide missile");
         WIRE_GUIDE_MISSILE_EXPLOSION_RADIUS = builder.defineInRange("wire_guide_missile_explosion_radius", 6, 1, Integer.MAX_VALUE);
 
         builder.pop();
@@ -127,6 +134,29 @@ public class ExplosionConfig {
 
         builder.comment("The explosion radius of RPG in the drone");
         RPG_EXPLOSION_RADIUS = builder.defineInRange("rpg_explosion_radius", 10, 1, Integer.MAX_VALUE);
+
+        builder.pop();
+
+        builder.push("AGM-65");
+
+        builder.comment("The damage of AGM-65");
+        AGM_65_DAMAGE = builder.defineInRange("agm_65_damage", 1100, 1, Integer.MAX_VALUE);
+
+        builder.comment("The explosion damage of AGM-65");
+        AGM_65_EXPLOSION_DAMAGE = builder.defineInRange("agm_65_explosion_damage", 150, 1, Integer.MAX_VALUE);
+
+        builder.comment("The explosion radius of AGM-65");
+        AGM_65_EXPLOSION_RADIUS = builder.defineInRange("agm_65_explosion_radius", 9d, 1, Integer.MAX_VALUE);
+
+        builder.pop();
+
+        builder.push("MK-82");
+
+        builder.comment("The explosion damage of MK-82");
+        MK_82_EXPLOSION_DAMAGE = builder.defineInRange("mk_82_explosion_damage", 650, 1, Integer.MAX_VALUE);
+
+        builder.comment("The explosion radius of MK-82");
+        MK_82_EXPLOSION_RADIUS = builder.defineInRange("mk_82_explosion_radius", 11d, 1, Integer.MAX_VALUE);
 
         builder.pop();
 
