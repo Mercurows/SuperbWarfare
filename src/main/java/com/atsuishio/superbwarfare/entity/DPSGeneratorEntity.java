@@ -199,7 +199,7 @@ public class DPSGeneratorEntity extends LivingEntity implements GeoEntity {
                         var attacker = getLastDamageSource().getEntity();
                         if (attacker instanceof Player player) {
                             player.displayClientMessage(Component.translatable("tips.superbwarfare.dps_generator.dps",
-                                    FormatTool.format1D(damage * Math.pow(2, getGeneratorLevel()))), true);
+                                    FormatTool.format1DZ(damage * Math.pow(2, getGeneratorLevel()))), true);
                         }
                     }
 
@@ -216,6 +216,13 @@ public class DPSGeneratorEntity extends LivingEntity implements GeoEntity {
                     this.entityData.set(LEVEL, Math.min(this.entityData.get(LEVEL) + 1, 7));
                     ((SyncedEntityEnergyStorage) entityCap).setCapacity(this.getMaxEnergy());
                     ((SyncedEntityEnergyStorage) entityCap).setMaxExtract(this.getMaxTransfer());
+
+
+                    if (!this.level().isClientSide()) {
+                        this.level().playSound(null, BlockPos.containing(this.getX(), this.getY(), this.getZ()), ModSounds.DPS_GENERATOR_EVOLVE.get(), SoundSource.BLOCKS, 0.5f, 1);
+                    } else {
+                        this.level().playLocalSound(this.getX(), this.getY(), this.getZ(), ModSounds.DPS_GENERATOR_EVOLVE.get(), SoundSource.BLOCKS, 0.5f, 1, false);
+                    }
                 }
                 this.setHealth(this.getMaxHealth());
             }

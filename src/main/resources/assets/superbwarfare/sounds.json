@@ -3153,5 +3153,14 @@
         "stream": false
       }
     ]
+  },
+  "dps_generator_evolve": {
+    "sounds": [
+      {
+        "attenuation_distance": 16,
+        "name": "superbwarfare:dps_generator_evolve",
+        "volume": 0.7
+      }
+    ]
   }
 }
