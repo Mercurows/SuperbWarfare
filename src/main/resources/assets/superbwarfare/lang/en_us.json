@@ -616,6 +616,9 @@
   "config.jade.plugin_superbwarfare.c4_info": "C4 Info",
   "des.jade_plugin_superbwarfare.c4.remote_control": "Remote Controlled",
   "des.jade_plugin_superbwarfare.c4.time_left": "Time Before Explosion: %1$ss",
+  "config.jade.plugin_superbwarfare.dps_generator": "DPS Generator Info",
+  "des.jade_plugin_superbwarfare.dps_generator.level": "Generator Level: %1$s",
+  "des.jade_plugin_superbwarfare.dps_generator.health": "Maximum Health: %1$s",
   "config.jade.plugin_superbwarfare.vehicle_deployer": "Vehicle Deployer",
 
   "superbwarfare.advancement.main.root": "Superb Warfare",

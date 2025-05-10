@@ -616,6 +616,9 @@
   "config.jade.plugin_superbwarfare.c4_info": "C4信息",
   "des.jade_plugin_superbwarfare.c4.remote_control": "远程遥控",
   "des.jade_plugin_superbwarfare.c4.time_left": "爆炸剩余时间：%1$s秒",
+  "config.jade.plugin_superbwarfare.dps_generator": "DPS发电机信息",
+  "des.jade_plugin_superbwarfare.dps_generator.level": "发电机等级：%1$s",
+  "des.jade_plugin_superbwarfare.dps_generator.health": "当前最大血量：%1$s",
   "config.jade.plugin_superbwarfare.vehicle_deployer": "载具部署器",
 
   "superbwarfare.advancement.main.root": "卓越前线",

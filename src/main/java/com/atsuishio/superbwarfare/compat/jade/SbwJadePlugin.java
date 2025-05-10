@@ -3,10 +3,8 @@ package com.atsuishio.superbwarfare.compat.jade;
 import com.atsuishio.superbwarfare.block.ContainerBlock;
 import com.atsuishio.superbwarfare.block.VehicleDeployerBlock;
 import com.atsuishio.superbwarfare.block.entity.VehicleDeployerBlockEntity;
-import com.atsuishio.superbwarfare.compat.jade.providers.C4InfoProvider;
-import com.atsuishio.superbwarfare.compat.jade.providers.ContainerEntityProvider;
-import com.atsuishio.superbwarfare.compat.jade.providers.VehicleDeployerProvider;
-import com.atsuishio.superbwarfare.compat.jade.providers.VehicleHealthProvider;
+import com.atsuishio.superbwarfare.compat.jade.providers.*;
+import com.atsuishio.superbwarfare.entity.DPSGeneratorEntity;
 import com.atsuishio.superbwarfare.entity.projectile.C4Entity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import snownee.jade.api.IWailaClientRegistration;
@@ -26,6 +24,7 @@ public class SbwJadePlugin implements IWailaPlugin {
     public void registerClient(IWailaClientRegistration registration) {
         registration.registerEntityComponent(VehicleHealthProvider.INSTANCE, VehicleEntity.class);
         registration.registerEntityComponent(C4InfoProvider.INSTANCE, C4Entity.class);
+        registration.registerEntityComponent(DPSGeneratorProvider.INSTANCE, DPSGeneratorEntity.class);
         registration.registerBlockComponent(ContainerEntityProvider.INSTANCE, ContainerBlock.class);
         registration.registerBlockComponent(VehicleDeployerProvider.INSTANCE, VehicleDeployerBlock.class);
     }
