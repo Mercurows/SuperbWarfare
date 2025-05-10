@@ -489,8 +489,8 @@ public class VehicleConfig {
         builder.comment("The cannon explosion damage of A-10");
         A_10_CANNON_EXPLOSION_DAMAGE = builder.defineInRange("A_10_cannon_explosion_damage", 10, 1, 10000000);
 
-        builder.comment("The cannon explosion damage of A-10");
-        A_10_CANNON_EXPLOSION_RADIUS = builder.defineInRange("A_10_cannon_explosion_damage", 4d, 1, 10000000);
+        builder.comment("The cannon explosion radius of A-10");
+        A_10_CANNON_EXPLOSION_RADIUS = builder.defineInRange("A_10_cannon_explosion_radius", 4d, 1, 10000000);
 
         builder.comment("The rocket damage of A-10");
         A_10_ROCKET_DAMAGE = builder.defineInRange("A_10_rocket_damage", 90, 1, 10000000);
