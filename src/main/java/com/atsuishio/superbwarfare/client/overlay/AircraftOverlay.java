@@ -118,7 +118,6 @@ public class AircraftOverlay implements LayeredDraw.Layer {
                         preciseBlit(guiGraphics, Mod.loc("textures/screens/aircraft/hud_base.png"), x - 160, y - 160, 0, 0, 320, 320, 320, 320);
                     }
 
-
                     //指南针
                     preciseBlit(guiGraphics, Mod.loc("textures/screens/compass.png"), x - 128, y - 122, 128 + ((float) 64 / 45 * mobileVehicle.getYRot()), 0, 256, 16, 512, 16);
                     preciseBlit(guiGraphics, Mod.loc("textures/screens/aircraft/compass_ind.png"), x - 4, y - 123, 0, 0, 8, 8, 8, 8);
@@ -128,7 +127,6 @@ public class AircraftOverlay implements LayeredDraw.Layer {
                     poseStack.rotateAround(Axis.ZP.rotationDegrees(aircraftEntity.getRotZ(partialTick)), x, y + 48, 0);
                     preciseBlit(guiGraphics, Mod.loc("textures/screens/helicopter/roll_ind.png"), x - 4, y + 144, 0, 0, 8, 8, 8, 8);
                     poseStack.popPose();
-
 
                     //时速
                     guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(FormatTool.format0D(mobileVehicle.getDeltaMovement().dot(mobileVehicle.getViewVector(1)) * 72)),
@@ -152,7 +150,6 @@ public class AircraftOverlay implements LayeredDraw.Layer {
                     guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("IR FLARES " + aircraftEntity.getDecoy()), (int) x + 72, (int) y, 0x66FF00, false);
 
                     guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("TGT"), (int) x + 76, (int) y + 78, 0x66FF00, false);
-
 
                     if (mobileVehicle instanceof A10Entity a10Entity) {
                         if (weaponVehicle.getWeaponIndex(0) == 0) {
@@ -207,8 +204,7 @@ public class AircraftOverlay implements LayeredDraw.Layer {
                     preciseBlit(guiGraphics, Mod.loc("textures/screens/aircraft/hud_ind.png"), x - 18 + diffY, y - 12, 0, 0, 36, 24, 36, 24);
                     poseStack.popPose();
 
-                    //能量警告
-
+                    // 能量警告
                     if (mobileVehicle.getEnergy() < 0.02 * mobileVehicle.getMaxEnergy()) {
                         guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("NO POWER!"),
                                 (int) x - 144, (int) y + 14, -65536, false);
@@ -221,13 +217,11 @@ public class AircraftOverlay implements LayeredDraw.Layer {
 
             // 准星
             if (pCross != null) {
-
                 poseStack.pushPose();
                 float x = (float) pCross.x;
                 float y = (float) pCross.y;
 
                 if (mc.options.getCameraType() == CameraType.FIRST_PERSON && !(mobileVehicle instanceof A10Entity a10Entity && a10Entity.getWeaponIndex(0) == 3)) {
-
                     RenderSystem.disableDepthTest();
                     RenderSystem.depthMask(false);
                     RenderSystem.enableBlend();
@@ -239,7 +233,6 @@ public class AircraftOverlay implements LayeredDraw.Layer {
 
                     preciseBlit(guiGraphics, Mod.loc("textures/screens/aircraft/crosshair_ind.png"), x - 16, y - 16, 0, 0, 32, 32, 32, 32);
                     renderKillIndicator(guiGraphics, x - 7.5f + (float) (2 * (Math.random() - 0.5f)), y - 7.5f + (float) (2 * (Math.random() - 0.5f)));
-
                 } else if (mc.options.getCameraType() == CameraType.THIRD_PERSON_BACK) {
                     poseStack.pushPose();
                     poseStack.rotateAround(Axis.ZP.rotationDegrees(aircraftEntity.getRotZ(partialTick)), x, y, 0);
@@ -271,8 +264,7 @@ public class AircraftOverlay implements LayeredDraw.Layer {
                 poseStack.popPose();
             }
 
-            //A-10的导弹锁定
-
+            // A-10的导弹锁定
             if (mobileVehicle instanceof A10Entity a10Entity && a10Entity.getWeaponIndex(0) == 3) {
                 Entity targetEntity = EntityFindUtil.findEntity(player.level(), a10Entity.getTargetUuid());
                 List<Entity> entities = SeekTool.seekCustomSizeEntities(a10Entity, player.level(), 384, 20, 0.9, true);
@@ -307,7 +299,6 @@ public class AircraftOverlay implements LayeredDraw.Layer {
                     }
                 }
             }
-
 
             poseStack.popPose();
         }
