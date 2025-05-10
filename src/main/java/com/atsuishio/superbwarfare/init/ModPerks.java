@@ -44,6 +44,7 @@ public class ModPerks {
     public static final DeferredHolder<Perk, LongerWire> LONGER_WIRE = AMMO_PERKS.register("longer_wire", LongerWire::new);
     public static final DeferredHolder<Perk, IncendiaryBullet> INCENDIARY_BULLET = AMMO_PERKS.register("incendiary_bullet", IncendiaryBullet::new);
     public static final DeferredHolder<Perk, MicroMissile> MICRO_MISSILE = AMMO_PERKS.register("micro_missile", MicroMissile::new);
+    public static final DeferredHolder<Perk, CupidArrow> CUPID_ARROW = AMMO_PERKS.register("cupid_arrow", CupidArrow::new);
 
     /**
      * Functional Perks
@@ -58,7 +59,6 @@ public class ModPerks {
     public static final DeferredHolder<Perk, TurboCharger> TURBO_CHARGER = FUNC_PERKS.register("turbo_charger", TurboCharger::new);
     public static final DeferredHolder<Perk, PowerfulAttraction> POWERFUL_ATTRACTION = FUNC_PERKS.register("powerful_attraction", PowerfulAttraction::new);
     public static final DeferredHolder<Perk, Perk> INTELLIGENT_CHIP = FUNC_PERKS.register("intelligent_chip", () -> new Perk("intelligent_chip", Perk.Type.FUNCTIONAL));
-    public static final DeferredHolder<Perk, CupidArrow> CUPID_ARROW = FUNC_PERKS.register("cupid_arrow", CupidArrow::new);
 
     /**
      * Damage Perks

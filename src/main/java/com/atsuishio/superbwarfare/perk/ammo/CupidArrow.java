@@ -1,7 +1,8 @@
-package com.atsuishio.superbwarfare.perk.functional;
+package com.atsuishio.superbwarfare.perk.ammo;
 
 import com.atsuishio.superbwarfare.entity.CupidLove;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
+import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkInstance;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
@@ -17,12 +18,11 @@ import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.schedule.Activity;
-import org.jetbrains.annotations.Nullable;
 
-public class CupidArrow extends Perk {
+public class CupidArrow extends AmmoPerk {
 
     public CupidArrow() {
-        super("cupid_arrow", Perk.Type.FUNCTIONAL);
+        super(new AmmoPerk.Builder("cupid_arrow", Perk.Type.AMMO).bypassArmorRate(0.0f).damageRate(0.0f).speedRate(1.0f).slug(true).rgb(255, 185, 215));
     }
 
     @Override
@@ -55,11 +55,6 @@ public class CupidArrow extends Perk {
             ParticleTool.sendParticle(serverLevel, ParticleTypes.HEART, target.getRandomX(1.0D), target.getRandomY() + 0.5D, target.getRandomZ(1.0D),
                     5, d0, d1, d2, 0.1, false);
         }
-    }
-
-    @Override
-    public float getModifiedDamage(float damage, GunData data, PerkInstance instance, @Nullable LivingEntity target, DamageSource source) {
-        return 0;
     }
 
     @Override

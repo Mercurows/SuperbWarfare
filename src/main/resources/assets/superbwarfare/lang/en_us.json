@@ -329,6 +329,8 @@
   "des.superbwarfare.bread_bullet": "Deals extreme knockback and slowness to stuck mobs.",
   "item.superbwarfare.micro_missile": "Micro Missile",
   "des.superbwarfare.micro_missile": "Fires a high-speed projectile without gravity.",
+  "item.superbwarfare.cupid_arrow": "Cupid's Arrow",
+  "des.superbwarfare.cupid_arrow": "Make the target fall in love after being hit. Deals no damage to living entities.",
 
   "item.superbwarfare.heal_clip": "Heal Clip",
   "des.superbwarfare.heal_clip": "Reloading after defeating a mob will heal you and your nearby allies.",
@@ -346,8 +348,6 @@
   "des.superbwarfare.powerful_attraction": "Experience and items dropped by slain mods will instantly be transferred to your inventory.",
   "item.superbwarfare.intelligent_chip": "Intelligent Chip",
   "des.superbwarfare.intelligent_chip": "Aims at enemies automatically (Do not use this in PVP mode)",
-  "item.superbwarfare.cupid_arrow": "Cupid's Arrow",
-  "des.superbwarfare.cupid_arrow": "Make the target fall in love after being hit. Deals no damage to living entities.",
 
   "item.superbwarfare.kill_clip": "Kill Clip",
   "des.superbwarfare.kill_clip": "Increases the damage of weapon after dealing a final blow.",

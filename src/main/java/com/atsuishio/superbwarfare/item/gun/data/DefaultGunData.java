@@ -84,6 +84,7 @@ public class DefaultGunData {
             "superbwarfare:monster_hunter",
             "superbwarfare:vorpal_weapon",
             "!superbwarfare:micro_missile",
-            "!superbwarfare:longer_wire"
+            "!superbwarfare:longer_wire",
+            "!superbwarfare:cupid_arrow"
     );
 }
