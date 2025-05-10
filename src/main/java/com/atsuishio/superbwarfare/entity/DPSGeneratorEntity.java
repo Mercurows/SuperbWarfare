@@ -45,6 +45,7 @@ public class DPSGeneratorEntity extends LivingEntity implements GeoEntity {
 
     public static final EntityDataAccessor<Integer> DOWN_TIME = SynchedEntityData.defineId(DPSGeneratorEntity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> ENERGY = SynchedEntityData.defineId(DPSGeneratorEntity.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Integer> LEVEL = SynchedEntityData.defineId(DPSGeneratorEntity.class, EntityDataSerializers.INT);
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
@@ -58,7 +59,8 @@ public class DPSGeneratorEntity extends LivingEntity implements GeoEntity {
         super.defineSynchedData(builder);
 
         builder.define(DOWN_TIME, 0)
-                .define(ENERGY, 0);
+                .define(ENERGY, 0)
+                .define(LEVEL, 0);
     }
 
 
@@ -86,6 +88,29 @@ public class DPSGeneratorEntity extends LivingEntity implements GeoEntity {
         return true;
     }
 
+
+    @Override
+    public void addAdditionalSaveData(@NotNull CompoundTag compound) {
+        super.addAdditionalSaveData(compound);
+        compound.putInt("Level", this.entityData.get(LEVEL));
+
+        var entityCap = this.getCapability(Capabilities.EnergyStorage.ENTITY, null);
+        if (entityCap == null) return;
+
+        compound.putInt("Energy", entityCap.getEnergyStored());
+    }
+
+    @Override
+    public void readAdditionalSaveData(@NotNull CompoundTag compound) {
+        super.readAdditionalSaveData(compound);
+        this.entityData.set(LEVEL, compound.getInt("Level"));
+
+        var entityCap = this.getCapability(Capabilities.EnergyStorage.ENTITY, null);
+        if (entityCap == null) return;
+
+        ((SyncedEntityEnergyStorage) entityCap).setEnergy(compound.getInt("Energy"));
+    }
+
     @Override
     public boolean hurt(DamageSource source, float amount) {
         if (source.is(DamageTypes.IN_FIRE)
@@ -109,7 +134,7 @@ public class DPSGeneratorEntity extends LivingEntity implements GeoEntity {
         } else {
             this.level().playLocalSound(this.getX(), this.getY(), this.getZ(), ModSounds.HIT.get(), SoundSource.BLOCKS, 1, 1, false);
         }
-        return super.hurt(source, amount);
+        return super.hurt(source, (float) (amount / Math.pow(2, getGeneratorLevel())));
     }
 
     @SubscribeEvent
@@ -126,31 +151,6 @@ public class DPSGeneratorEntity extends LivingEntity implements GeoEntity {
                 generatorEntity.entityData.set(DOWN_TIME, 40);
             }
         }
-    }
-
-    @Override
-    public float getHealth() {
-        return 200;
-    }
-
-    @Override
-    public void addAdditionalSaveData(@NotNull CompoundTag compound) {
-        super.addAdditionalSaveData(compound);
-
-        var entityCap = this.getCapability(Capabilities.EnergyStorage.ENTITY, null);
-        if (entityCap == null) return;
-
-        compound.putInt("Energy", entityCap.getEnergyStored());
-    }
-
-    @Override
-    public void readAdditionalSaveData(@NotNull CompoundTag compound) {
-        super.readAdditionalSaveData(compound);
-
-        var entityCap = this.getCapability(Capabilities.EnergyStorage.ENTITY, null);
-        if (entityCap == null) return;
-
-        ((SyncedEntityEnergyStorage) entityCap).setEnergy(compound.getInt("Energy"));
     }
 
     @Override
@@ -190,28 +190,33 @@ public class DPSGeneratorEntity extends LivingEntity implements GeoEntity {
             var damage = this.getMaxHealth() - this.getHealth();
             var entityCap = this.getCapability(Capabilities.EnergyStorage.ENTITY, null);
 
-            if (damage > 0 && entityCap != null) {
-                // DPS显示
-                if (getLastDamageSource() != null) {
-                    var attacker = getLastDamageSource().getEntity();
-                    if (attacker instanceof Player player) {
-                        player.displayClientMessage(Component.translatable("tips.superbwarfare.dps_generator.dps", FormatTool.format1D(damage)), true);
+            if (entityCap != null) {
+                if (damage > 0) {
+                    // DPS显示
+                    if (getLastDamageSource() != null) {
+                        var attacker = getLastDamageSource().getEntity();
+                        if (attacker instanceof Player player) {
+                            player.displayClientMessage(Component.translatable("tips.superbwarfare.dps_generator.dps", FormatTool.format1D(damage * Math.pow(2, getGeneratorLevel()))), true);
+                        }
                     }
+
+                    // 发电
+                    ((SyncedEntityEnergyStorage) entityCap).setMaxReceive(entityCap.getMaxEnergyStored());
+                    entityCap.receiveEnergy((int) Math.round(128 * Math.max(getGeneratorLevel(), 1) * Math.pow(2, getGeneratorLevel()) * damage), false);
+                    ((SyncedEntityEnergyStorage) entityCap).setMaxReceive(0);
                 }
 
-                // 发电
-                ((SyncedEntityEnergyStorage) entityCap).setMaxReceive(entityCap.getMaxEnergyStored());
-                entityCap.receiveEnergy(Math.round(128 * damage), false);
-                ((SyncedEntityEnergyStorage) entityCap).setMaxReceive(0);
+                // 充能底部方块
+                this.chargeBlockBelow();
+
+                if (this.getHealth() < 0.01) {
+                    this.entityData.set(LEVEL, Math.min(this.entityData.get(LEVEL) + 1, 7));
+                    ((SyncedEntityEnergyStorage) entityCap).setCapacity(this.getMaxEnergy());
+                    ((SyncedEntityEnergyStorage) entityCap).setMaxExtract(this.getMaxTransfer());
+                }
+                this.setHealth(this.getMaxHealth());
             }
 
-            // 充能底部方块
-            chargeBlockBelow();
-
-            if (this.getHealth() < 0.01) {
-                // TODO 升级
-            }
-            this.setHealth(this.getMaxHealth());
         }
     }
 
@@ -304,10 +309,30 @@ public class DPSGeneratorEntity extends LivingEntity implements GeoEntity {
         return this.cache;
     }
 
-    // TODO 发电机升级容量+传输速率实现
     protected final SyncedEntityEnergyStorage energyStorage = new SyncedEntityEnergyStorage(5120, 0, 2560, this.entityData, ENERGY);
 
     public IEnergyStorage getEnergyStorage() {
         return this.energyStorage;
+    }
+
+    public int getGeneratorLevel() {
+        return this.entityData.get(LEVEL);
+    }
+
+    public int getMaxEnergy() {
+        return switch (getGeneratorLevel()) {
+            case 1 -> 25600;
+            case 2 -> 102400;
+            case 3 -> 409600;
+            case 4 -> 1638400;
+            case 5 -> 6553600;
+            case 6 -> 26214400;
+            case 7 -> 104857600;
+            default -> 5120;
+        };
+    }
+
+    public int getMaxTransfer() {
+        return getMaxEnergy() / 2;
     }
 }

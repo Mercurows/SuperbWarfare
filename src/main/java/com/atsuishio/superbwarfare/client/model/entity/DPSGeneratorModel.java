@@ -19,7 +19,6 @@ public class DPSGeneratorModel extends GeoModel<DPSGeneratorEntity> {
 
     @Override
     public ResourceLocation getTextureResource(DPSGeneratorEntity entity) {
-        int tier = entity.getEntityData().get(DPSGeneratorEntity.LEVEL);
-        return Mod.loc("textures/entity/dps_generator_tier_" + tier + ".png");
+        return Mod.loc("textures/entity/dps_generator_tier_" + entity.getGeneratorLevel() + ".png");
     }
 }
