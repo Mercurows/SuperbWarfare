@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "a",
+    "b",
+    "c"
+  ],
+  "key": {
+    "a": {
+      "item": "superbwarfare:target_deployer"
+    },
+    "b": {
+      "item": "superbwarfare:large_motor"
+    },
+    "c": {
+      "item": "superbwarfare:charging_station"
+    }
+  },
+  "result": {
+    "id": "superbwarfare:dps_generator_deployer",
+    "count": 1
+  }
+}
