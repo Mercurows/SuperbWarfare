@@ -17,12 +17,16 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.entity.EntityTypeTest;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.StreamSupport;
 
 public class SeekTool {
@@ -62,12 +66,13 @@ public class SeekTool {
                 .orElse(null);
     }
 
-    public static Entity seekCustomSizeEntitiy(Entity entity, Level level, double seekRange, double seekAngle, double size) {
+    public static Entity seekCustomSizeEntitiy(Entity entity, Level level, double seekRange, double seekAngle, double size, boolean checkOnGround) {
         return StreamSupport.stream(EntityFindUtil.getEntities(level).getAll().spliterator(), false)
                 .filter(e -> {
                     if (e.distanceTo(entity) <= seekRange && calculateAngle(e, entity) < seekAngle
                             && e != entity
                             && baseFilter(e)
+                            && (!checkOnGround || isOnGround(e))
                             && e.getBoundingBox().getSize() >= size
                             && smokeFilter(e)
                             && e.getVehicle() == null
@@ -121,13 +126,14 @@ public class SeekTool {
                 }).toList();
     }
 
-    public static List<Entity> seekCustomSizeEntities(Entity entity, Level level, double seekRange, double seekAngle, double size) {
+    public static List<Entity> seekCustomSizeEntities(Entity entity, Level level, double seekRange, double seekAngle, double size, boolean checkOnGround) {
         return StreamSupport.stream(EntityFindUtil.getEntities(level).getAll().spliterator(), false)
                 .filter(e -> {
                     if (e.distanceTo(entity) <= seekRange && calculateAngle(e, entity) < seekAngle
                             && e != entity
                             && e.getBoundingBox().getSize() >= size
                             && baseFilter(e)
+                            && (!checkOnGround || isOnGround(e))
                             && smokeFilter(e)
                             && e.getVehicle() == null
                             && (!e.isAlliedTo(entity) || e.getTeam() == null || e.getTeam().getName().equals("TDM"))) {
@@ -204,6 +210,20 @@ public class SeekTool {
                 || entity instanceof AreaEffectCloud)
                 && !(entity instanceof Player player && player.isSpectator())
                 || includedByConfig(entity);
+    }
+
+    public static boolean isOnGround(Entity entity) {
+        AtomicBoolean onGround = new AtomicBoolean(false);
+        AABB aabb = entity.getBoundingBox().expandTowards(0, -10, 0);
+        BlockPos.betweenClosedStream(aabb).forEach((pos) -> {
+            BlockState blockstate = entity.level().getBlockState(pos);
+            if (!blockstate.is(Blocks.AIR)) {
+                onGround.set(true);
+            }
+        });
+
+
+        return entity.onGround() || entity.isInWater() || onGround.get();
     }
 
     public static boolean smokeFilter(Entity pEntity) {

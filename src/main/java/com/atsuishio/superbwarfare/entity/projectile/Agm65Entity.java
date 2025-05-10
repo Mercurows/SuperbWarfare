@@ -20,6 +20,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.AreaEffectCloud;
@@ -52,9 +53,9 @@ public class Agm65Entity extends FastThrowableProjectile implements GeoEntity, D
     public static final EntityDataAccessor<Float> HEALTH = SynchedEntityData.defineId(Agm65Entity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<String> TARGET_UUID = SynchedEntityData.defineId(Agm65Entity.class, EntityDataSerializers.STRING);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-    private float damage = 1000.0f;
+    private float damage = 1100.0f;
     private float explosion_damage = 150f;
-    private float explosion_radius = 11f;
+    private float explosion_radius = 9f;
     private boolean distracted = false;
 
     public Agm65Entity(EntityType<? extends Agm65Entity> type, Level world) {
@@ -199,13 +200,13 @@ public class Agm65Entity extends FastThrowableProjectile implements GeoEntity, D
                         entity.level().playSound(null, entity.getOnPos(), entity instanceof Pig ? SoundEvents.PIG_HURT : ModSounds.MISSILE_WARNING.get(), SoundSource.PLAYERS, 2, 1f);
                     }
 
-                    Vec3 targetPos = new Vec3(entity.getX(), entity.getEyeY() + (entity instanceof EnderDragon ? -3 : 0), entity.getZ()).add(entity.getDeltaMovement());
+                    Vec3 targetPos = new Vec3(entity.getX(), entity.getEyeY() + (entity instanceof EnderDragon ? -3 : 0), entity.getZ());
 
                     Vec3 toVec = getEyePosition().vectorTo(targetPos).normalize();
                     if (this.tickCount > 8) {
                         boolean lostTarget = (VectorTool.calculateAngle(getDeltaMovement(), toVec) > 80);
                         if (!lostTarget) {
-                            setDeltaMovement(getDeltaMovement().add(toVec.scale(1)).scale(0.87));
+                            setDeltaMovement(getDeltaMovement().add(toVec.scale(1.4)).scale(0.75).add(entity.getDeltaMovement()));
                         }
                     }
                 }
@@ -224,6 +225,7 @@ public class Agm65Entity extends FastThrowableProjectile implements GeoEntity, D
             if (!this.level().isClientSide() && this.level() instanceof ServerLevel serverLevel) {
                 ParticleTool.sendParticle(serverLevel, ParticleTypes.CAMPFIRE_COSY_SMOKE, this.xo, this.yo, this.zo, 1, 0, 0, 0, 0, true);
             }
+            this.setDeltaMovement(this.getDeltaMovement().multiply(1.06, 1.06, 1.06));
         }
 
         if (this.tickCount > 200 || this.isInWater() || this.entityData.get(HEALTH) <= 0) {
@@ -235,16 +237,9 @@ public class Agm65Entity extends FastThrowableProjectile implements GeoEntity, D
             this.discard();
         }
 
-        // 控制速度
-        if (this.getDeltaMovement().length() < 6) {
-            this.setDeltaMovement(this.getDeltaMovement().multiply(1.06, 1.06, 1.06));
-        }
+        float f = (float) Mth.clamp(1 - 0.005 * getDeltaMovement().length(), 0.001, 1);
 
-        if (this.getDeltaMovement().length() > 7) {
-            this.setDeltaMovement(this.getDeltaMovement().multiply(0.95, 0.95, 0.95));
-        }
-
-        this.setDeltaMovement(this.getDeltaMovement().multiply(0.99, 0.99, 0.99));
+        this.setDeltaMovement(this.getDeltaMovement().multiply(f, f, f));
     }
 
     private void causeExplode(HitResult result) {
@@ -271,7 +266,7 @@ public class Agm65Entity extends FastThrowableProjectile implements GeoEntity, D
 
     @Override
     protected double getDefaultGravity() {
-        return 0.1;
+        return tickCount > 8 ? 0 : 0.15F;
     }
 
     @Override

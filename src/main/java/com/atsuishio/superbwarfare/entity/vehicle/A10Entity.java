@@ -90,24 +90,24 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
         return new VehicleWeapon[][]{
                 new VehicleWeapon[]{
                         new SmallCannonShellWeapon()
-                                .damage(VehicleConfig.BMP_2_CANNON_DAMAGE.get())
-                                .explosionDamage(VehicleConfig.BMP_2_CANNON_EXPLOSION_DAMAGE.get().floatValue())
-                                .explosionRadius(VehicleConfig.BMP_2_CANNON_EXPLOSION_RADIUS.get().floatValue())
+                                .damage(25)
+                                .explosionDamage(10)
+                                .explosionRadius(4)
                                 .sound(ModSounds.INTO_CANNON.get())
                                 .icon(Mod.loc("textures/screens/vehicle_weapon/cannon_30mm.png")),
                         new HeliRocketWeapon()
-                                .damage(VehicleConfig.AH_6_ROCKET_DAMAGE.get())
-                                .explosionDamage(VehicleConfig.AH_6_ROCKET_EXPLOSION_DAMAGE.get())
-                                .explosionRadius(VehicleConfig.AH_6_ROCKET_EXPLOSION_RADIUS.get())
+                                .damage(100)
+                                .explosionDamage(50)
+                                .explosionRadius(6)
                                 .sound(ModSounds.INTO_MISSILE.get()),
                         new Mk82Weapon()
-                                .explosionDamage(520)
-                                .explosionRadius(14)
+                                .explosionDamage(650)
+                                .explosionRadius(11)
                                 .sound(ModSounds.INTO_MISSILE.get()),
                         new Agm65Weapon()
-                                .damage(1000)
+                                .damage(1100)
                                 .explosionDamage(150)
-                                .explosionRadius(11)
+                                .explosionRadius(9)
                                 .sound(ModSounds.INTO_MISSILE.get()),
                 }
         };
@@ -302,7 +302,7 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
             resetSeek(player);
         }
 
-        Entity entity = SeekTool.seekCustomSizeEntitiy(this, this.level(), 384, 20, 0.9);
+        Entity entity = SeekTool.seekCustomSizeEntitiy(this, this.level(), 384, 20, 0.9, true);
         if (entity != null) {
             if (lockTime == 0) {
                 setTargetUuid(String.valueOf(entity.getUUID()));
@@ -414,11 +414,12 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
 
             this.setPropellerRot(this.getPropellerRot() + 30 * this.entityData.get(POWER));
 
-            if (!onGround() && getDeltaMovement().dot(getViewVector(1)) * 72 > 120) {
+            // 起落架
+            if (!onGround() && getDeltaMovement().dot(getViewVector(1)) * 72 > 140) {
                 flyTime = Math.min(flyTime + 1, 20);
             }
 
-            if (getDeltaMovement().dot(getViewVector(1)) * 72 < 120 && fly) {
+            if (getDeltaMovement().dot(getViewVector(1)) * 72 < 140 && fly) {
                 flyTime = Math.max(flyTime - 1, 0);
             }
 
@@ -783,20 +784,20 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
             Vector4f worldPosition;
 
             if (this.getEntityData().get(LOADED_MISSILE) == 4) {
-                worldPosition = transformPosition(transform, 1.56875f, -0.943f, 0.1272f);
+                worldPosition = transformPosition(transform, 1.56875f, -0.943f - 0.5f, 0.1272f);
             } else if (this.getEntityData().get(LOADED_MISSILE) == 3) {
-                worldPosition = transformPosition(transform, -1.56875f, -0.943f, 0.1272f);
+                worldPosition = transformPosition(transform, -1.56875f, -0.943f - 0.5f, 0.1272f);
             } else if (this.getEntityData().get(LOADED_MISSILE) == 2) {
-                worldPosition = transformPosition(transform, 3.9321875f, -0.88680625f, 0.12965f);
+                worldPosition = transformPosition(transform, 3.9321875f, -0.88680625f - 0.5f, 0.12965f);
             } else {
-                worldPosition = transformPosition(transform, -3.9321875f, -0.88680625f, 0.12965f);
+                worldPosition = transformPosition(transform, -3.9321875f, -0.88680625f - 0.5f, 0.12965f);
             }
 
             if (locked) {
                 Agm65Entity.setTargetUuid(getTargetUuid());
             }
             Agm65Entity.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
-            Agm65Entity.shoot(getDeltaMovement().x, getDeltaMovement().y, getDeltaMovement().z, (float) getDeltaMovement().length() * 0.8f, 1);
+            Agm65Entity.shoot(getDeltaMovement().x, getDeltaMovement().y, getDeltaMovement().z, (float) getDeltaMovement().length() + 1, 1);
             player.level().addFreshEntity(Agm65Entity);
 
             BlockPos pos = BlockPos.containing(new Vec3(worldPosition.x, worldPosition.y, worldPosition.z));

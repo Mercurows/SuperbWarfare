@@ -6,7 +6,7 @@ import net.minecraft.world.entity.LivingEntity;
 
 public class Agm65Weapon extends VehicleWeapon {
 
-    public float damage = 1000, explosionDamage = 150, explosionRadius = 11;
+    public float damage = 1100, explosionDamage = 150, explosionRadius = 9;
 
     public Agm65Weapon() {
         this.icon = Mod.loc("textures/screens/vehicle_weapon/agm_65.png");

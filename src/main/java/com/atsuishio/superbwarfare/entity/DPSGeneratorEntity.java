@@ -129,6 +129,11 @@ public class DPSGeneratorEntity extends LivingEntity implements GeoEntity {
     }
 
     @Override
+    public float getHealth() {
+        return 200;
+    }
+
+    @Override
     public void addAdditionalSaveData(@NotNull CompoundTag compound) {
         super.addAdditionalSaveData(compound);
 
