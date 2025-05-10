@@ -198,13 +198,14 @@ public class DPSGeneratorEntity extends LivingEntity implements GeoEntity {
                     if (getLastDamageSource() != null) {
                         var attacker = getLastDamageSource().getEntity();
                         if (attacker instanceof Player player) {
-                            player.displayClientMessage(Component.translatable("tips.superbwarfare.dps_generator.dps", FormatTool.format1D(damage * Math.pow(2, getGeneratorLevel()))), true);
+                            player.displayClientMessage(Component.translatable("tips.superbwarfare.dps_generator.dps",
+                                    FormatTool.format1D(damage * Math.pow(2, getGeneratorLevel()))), true);
                         }
                     }
 
                     // 发电
                     ((SyncedEntityEnergyStorage) entityCap).setMaxReceive(entityCap.getMaxEnergyStored());
-                    entityCap.receiveEnergy((int) Math.round(128 * Math.max(getGeneratorLevel(), 1) * Math.pow(2, getGeneratorLevel()) * damage), false);
+                    entityCap.receiveEnergy((int) Math.round(128D * Math.max(getGeneratorLevel(), 1) * Math.pow(2, getGeneratorLevel()) * damage), false);
                     ((SyncedEntityEnergyStorage) entityCap).setMaxReceive(0);
                 }
 
