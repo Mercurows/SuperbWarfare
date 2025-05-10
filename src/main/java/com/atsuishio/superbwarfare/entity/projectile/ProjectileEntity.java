@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.block.BarbedWireBlock;
 import com.atsuishio.superbwarfare.component.ModDataComponents;
 import com.atsuishio.superbwarfare.config.server.MiscConfig;
 import com.atsuishio.superbwarfare.config.server.ProjectileConfig;
+import com.atsuishio.superbwarfare.entity.DPSGeneratorEntity;
 import com.atsuishio.superbwarfare.entity.ICustomKnockback;
 import com.atsuishio.superbwarfare.entity.TargetEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
@@ -132,6 +133,8 @@ public class ProjectileEntity extends Projectile implements IEntityWithComplexSp
             if (entity.equals(this.shooter.getVehicle())) continue;
 
             if (entity instanceof TargetEntity && entity.getEntityData().get(TargetEntity.DOWN_TIME) > 0) continue;
+            if (entity instanceof DPSGeneratorEntity && entity.getEntityData().get(DPSGeneratorEntity.DOWN_TIME) > 0)
+                continue;
 
             EntityResult result = this.getHitResult(entity, startVec, endVec);
             if (result == null) continue;
@@ -270,7 +273,8 @@ public class ProjectileEntity extends Projectile implements IEntityWithComplexSp
                 if (!this.beast) {
                     this.bypassArmorRate -= 0.2F;
                     if (this.bypassArmorRate < 0.8F) {
-                        if (result != null && !(((EntityHitResult) result).getEntity() instanceof TargetEntity target && target.getEntityData().get(TargetEntity.DOWN_TIME) > 0)) {
+                        if (result != null && !(((EntityHitResult) result).getEntity() instanceof TargetEntity target && target.getEntityData().get(TargetEntity.DOWN_TIME) > 0)
+                                && !(((EntityHitResult) result).getEntity() instanceof DPSGeneratorEntity dpsGeneratorEntity && dpsGeneratorEntity.getEntityData().get(DPSGeneratorEntity.DOWN_TIME) > 0)) {
                             break;
                         }
                     }
@@ -483,6 +487,10 @@ public class ProjectileEntity extends Projectile implements IEntityWithComplexSp
         if (beast && entity instanceof LivingEntity living) {
             if (living.isDeadOrDying()) return;
             if (living instanceof TargetEntity) return;
+            if (living instanceof DPSGeneratorEntity dpsGeneratorEntity) {
+                dpsGeneratorEntity.beastCharge();
+                return;
+            }
 
             if (this.shooter instanceof ServerPlayer player) {
                 PacketDistributor.sendToPlayer(player, new ClientIndicatorMessage(0, 5));

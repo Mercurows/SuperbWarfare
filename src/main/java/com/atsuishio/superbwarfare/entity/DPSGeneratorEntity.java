@@ -345,4 +345,15 @@ public class DPSGeneratorEntity extends LivingEntity implements GeoEntity {
     public int getMaxTransfer() {
         return getMaxEnergy() / 2;
     }
+
+    public void beastCharge() {
+        this.entityData.set(LEVEL, 7);
+        this.getEnergy().ifPresent(cap -> {
+            if (cap instanceof SyncedEntityEnergyStorage storage) {
+                storage.setCapacity(this.getMaxEnergy());
+                storage.setMaxExtract(this.getMaxTransfer());
+                storage.setEnergy(this.getMaxEnergy());
+            }
+        });
+    }
 }
