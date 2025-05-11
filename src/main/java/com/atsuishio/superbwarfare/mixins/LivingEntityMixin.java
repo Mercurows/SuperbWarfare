@@ -1,9 +1,7 @@
 package com.atsuishio.superbwarfare.mixins;
 
 import com.atsuishio.superbwarfare.entity.mixin.ICustomKnockback;
-import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import org.spongepowered.asm.mixin.Mixin;
@@ -39,15 +37,6 @@ public class LivingEntityMixin implements ICustomKnockback {
             if (pSprinting && ClientEventHandler.zoom) {
                 ci.cancel();
             }
-        }
-    }
-
-    @Inject(method = "stopRiding()V", at = @At("HEAD"), cancellable = true)
-    public void stopRiding(CallbackInfo ci) {
-        var living = ((LivingEntity) (Object) this);
-        Entity entity = living.getVehicle();
-        if (entity instanceof VehicleEntity && living instanceof Player) {
-            ci.cancel();
         }
     }
 }

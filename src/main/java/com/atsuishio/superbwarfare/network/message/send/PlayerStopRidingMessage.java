@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.network.message.send;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.entity.mixin.CustomStopRiding;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -25,9 +24,7 @@ public record PlayerStopRidingMessage(int msgType) implements CustomPacketPayloa
         var vehicle = player.getVehicle();
         if (!(vehicle instanceof VehicleEntity)) return;
 
-        CustomStopRiding customStopRiding = CustomStopRiding.getInstance(player);
-        customStopRiding.superbwarfare$stopRiding();
-
+        player.stopRiding();
         player.setJumping(false);
     }
 
