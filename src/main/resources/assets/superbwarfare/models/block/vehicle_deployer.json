@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "superbwarfare:block/vehicle_deployer_button",
+    "up": "superbwarfare:block/vehicle_deployer_top",
+    "north": "superbwarfare:block/vehicle_deployer_side",
+    "east": "superbwarfare:block/vehicle_deployer_side",
+    "south": "superbwarfare:block/vehicle_deployer_side",
+    "west": "superbwarfare:block/vehicle_deployer_side",
+    "particle": "superbwarfare:block/vehicle_deployer_button"
+  },
+  "render_type": "solid"
+}
