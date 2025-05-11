@@ -1,7 +1,34 @@
 {
   "variants": {
-    "": {
+    "facing=east,triggered=false": {
+      "model": "superbwarfare:block/vehicle_deployer",
+      "y": 90
+    },
+    "facing=east,triggered=true": {
+      "model": "superbwarfare:block/vehicle_deployer",
+      "y": 90
+    },
+    "facing=north,triggered=false": {
       "model": "superbwarfare:block/vehicle_deployer"
+    },
+    "facing=north,triggered=true": {
+      "model": "superbwarfare:block/vehicle_deployer"
+    },
+    "facing=south,triggered=false": {
+      "model": "superbwarfare:block/vehicle_deployer",
+      "y": 180
+    },
+    "facing=south,triggered=true": {
+      "model": "superbwarfare:block/vehicle_deployer",
+      "y": 180
+    },
+    "facing=west,triggered=false": {
+      "model": "superbwarfare:block/vehicle_deployer",
+      "y": 270
+    },
+    "facing=west,triggered=true": {
+      "model": "superbwarfare:block/vehicle_deployer",
+      "y": 270
     }
   }
 }

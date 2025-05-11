@@ -5,22 +5,22 @@ import com.atsuishio.superbwarfare.init.ModItems;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.BaseEntityBlock;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.RenderShape;
-import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -30,11 +30,12 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @SuppressWarnings("deprecation")
 public class VehicleDeployerBlock extends BaseEntityBlock {
 
+    public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
     public static final BooleanProperty TRIGGERED = BlockStateProperties.TRIGGERED;
 
     public VehicleDeployerBlock() {
         super(Properties.of().sound(SoundType.METAL).strength(3.0f).requiresCorrectToolForDrops());
-        this.registerDefaultState(this.stateDefinition.any().setValue(TRIGGERED, false));
+        this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(TRIGGERED, false));
     }
 
     private VehicleDeployerBlock(BlockBehaviour.Properties properties) {
@@ -43,7 +44,7 @@ public class VehicleDeployerBlock extends BaseEntityBlock {
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.@NotNull Builder<Block, BlockState> builder) {
-        builder.add(TRIGGERED);
+        builder.add(FACING).add(TRIGGERED);
     }
 
     @Override
@@ -73,7 +74,7 @@ public class VehicleDeployerBlock extends BaseEntityBlock {
         if (charged && !triggered) {
             level.setBlock(pos, state.setValue(TRIGGERED, Boolean.TRUE), 4);
             if (level.getBlockEntity(pos) instanceof VehicleDeployerBlockEntity blockEntity) {
-                blockEntity.deploy();
+                blockEntity.deploy(state);
             }
         } else if (!charged && triggered) {
             level.setBlock(pos, state.setValue(TRIGGERED, Boolean.FALSE), 4);
@@ -94,5 +95,10 @@ public class VehicleDeployerBlock extends BaseEntityBlock {
     @Override
     public @NotNull RenderShape getRenderShape(@NotNull BlockState state) {
         return RenderShape.MODEL;
+    }
+
+    @Override
+    public BlockState getStateForPlacement(BlockPlaceContext context) {
+        return this.defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
     }
 }

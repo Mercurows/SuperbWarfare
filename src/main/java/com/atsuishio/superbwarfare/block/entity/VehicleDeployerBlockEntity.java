@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.block.entity;
 
+import com.atsuishio.superbwarfare.block.VehicleDeployerBlock;
 import com.atsuishio.superbwarfare.init.ModBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
@@ -43,7 +44,7 @@ public class VehicleDeployerBlockEntity extends BlockEntity {
         this.entityData = tag.copy();
     }
 
-    public void deploy() {
+    public void deploy(BlockState state) {
         if (this.level == null) return;
 
         if (this.entityData.contains("EntityType")) {
@@ -59,8 +60,11 @@ public class VehicleDeployerBlockEntity extends BlockEntity {
                 entity.load(entityTag);
             }
 
+            var direction = state.getValue(VehicleDeployerBlock.FACING);
+
             entity.setUUID(UUID.randomUUID());
             entity.setPos(this.getBlockPos().getX() + 0.5 + (2 * Math.random() - 1) * 0.1f, this.getBlockPos().getY() + 1.5 + (2 * Math.random() - 1) * 0.1f, this.getBlockPos().getZ() + 0.5 + (2 * Math.random() - 1) * 0.1f);
+            entity.setYRot(direction.toYRot());
             this.level.addFreshEntity(entity);
         }
     }
@@ -71,5 +75,4 @@ public class VehicleDeployerBlockEntity extends BlockEntity {
 
         this.entityData = tag.copyTag();
     }
-
 }
