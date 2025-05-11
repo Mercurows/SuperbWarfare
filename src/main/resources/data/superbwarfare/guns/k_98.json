@@ -8,7 +8,7 @@
   "Magazine": 5,
   "BoltActionTime": 22,
   "Weight": 5,
-  "FireMode": 0,
+  "DefaultFireMode": "Auto",
   "EmptyReloadTime": 59,
   "PrepareTime": 29,
   "IterativeTime": 11,

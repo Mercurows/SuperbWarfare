@@ -200,9 +200,9 @@ public class AmmoBarOverlay implements LayeredDraw.Layer {
 
     private static ResourceLocation getFireMode(GunData data) {
         return switch (data.fireMode.get()) {
-            case 1 -> BURST;
-            case 2 -> AUTO;
-            default -> SEMI;
+            case SEMI -> SEMI;
+            case BURST -> BURST;
+            case AUTO -> AUTO;
         };
     }
 }

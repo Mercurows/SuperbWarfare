@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.client.AnimationHelper;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
+import com.atsuishio.superbwarfare.item.gun.data.FireMode;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.item.gun.data.value.AttachmentType;
 import com.atsuishio.superbwarfare.item.gun.rifle.Hk416Item;
@@ -134,9 +135,9 @@ public class Hk416ItemModel extends GeoModel<Hk416Item> {
         l.setRotX(rotXBipod * Mth.DEG_TO_RAD);
         r.setRotX(rotXBipod * Mth.DEG_TO_RAD);
 
-        int mode = GunData.from(stack).fireMode.get();
+        var mode = GunData.from(stack).fireMode.get();
 
-        kuaimanji.setRotX(mode == 2 ? 90 * Mth.DEG_TO_RAD : 0);
+        kuaimanji.setRotX(mode == FireMode.AUTO ? 90 * Mth.DEG_TO_RAD : 0);
 
         ClientEventHandler.gunRootMove(getAnimationProcessor());
 

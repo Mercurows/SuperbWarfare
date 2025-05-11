@@ -9,7 +9,7 @@
   "BypassesArmor": 0.3,
   "SoundRadius": 14,
   "RPM": 1200,
-  "FireMode": 2,
+  "DefaultFireMode": "Auto",
   "AmmoType": "@RifleAmmo",
   "ShootDelay": 20,
   "HeatPerShoot": 0.5,

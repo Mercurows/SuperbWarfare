@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
+import com.atsuishio.superbwarfare.item.gun.data.FireMode;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.tools.SoundTool;
 import io.netty.buffer.ByteBuf;
@@ -35,50 +36,49 @@ public record FireModeMessage(int msgType) implements CustomPacketPayload {
         if (stack.getItem() instanceof GunItem) {
             var data = GunData.from(stack);
             var tag = data.tag();
-            int fireMode = data.fireMode.get();
+            var fireMode = data.fireMode.get();
 
-            int mode = data.getAvailableFireModes();
-            mode &= 0b111;
+            var mode = data.getAvailableFireModes();
 
-            if (fireMode == 0) {
-                if ((mode & 2) != 0) {
-                    data.fireMode.set(1);
+            if (fireMode == FireMode.SEMI) {
+                if (mode.contains(FireMode.BURST)) {
+                    data.fireMode.set(FireMode.BURST);
                     playChangeModeSound(player);
                     data.save();
                     return;
                 }
-                if ((mode & 4) != 0) {
-                    data.fireMode.set(2);
+                if (mode.contains(FireMode.AUTO)) {
+                    data.fireMode.set(FireMode.AUTO);
                     playChangeModeSound(player);
                     data.save();
                     return;
                 }
             }
 
-            if (fireMode == 1) {
-                if ((mode & 4) != 0) {
-                    data.fireMode.set(2);
+            if (fireMode == FireMode.BURST) {
+                if (mode.contains(FireMode.AUTO)) {
+                    data.fireMode.set(FireMode.AUTO);
                     playChangeModeSound(player);
                     data.save();
                     return;
                 }
-                if ((mode & 1) != 0) {
-                    data.fireMode.set(0);
+                if (mode.contains(FireMode.SEMI)) {
+                    data.fireMode.set(FireMode.SEMI);
                     playChangeModeSound(player);
                     data.save();
                     return;
                 }
             }
 
-            if (fireMode == 2) {
-                if ((mode & 1) != 0) {
-                    data.fireMode.set(0);
+            if (fireMode == FireMode.AUTO) {
+                if (mode.contains(FireMode.SEMI)) {
+                    data.fireMode.set(FireMode.SEMI);
                     playChangeModeSound(player);
                     data.save();
                     return;
                 }
-                if ((mode & 2) != 0) {
-                    data.fireMode.set(1);
+                if (mode.contains(FireMode.BURST)) {
+                    data.fireMode.set(FireMode.BURST);
                     playChangeModeSound(player);
                     data.save();
                     return;

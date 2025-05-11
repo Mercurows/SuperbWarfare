@@ -458,18 +458,6 @@ public abstract class GunItem extends Item implements CustomRendererItem {
         return "";
     }
 
-    public enum FireMode {
-        SEMI(1),
-        BURST(2),
-        AUTO(4);
-
-        public final int flag;
-
-        FireMode(int i) {
-            this.flag = i;
-        }
-    }
-
     public final Map<Integer, Consumer<GunData>> reloadTimeBehaviors = new HashMap<>();
 
     /**

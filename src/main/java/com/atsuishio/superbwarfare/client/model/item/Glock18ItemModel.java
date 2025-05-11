@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.client.AnimationHelper;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
+import com.atsuishio.superbwarfare.item.gun.data.FireMode;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.item.gun.handgun.Glock18Item;
 import net.minecraft.client.Minecraft;
@@ -49,11 +50,11 @@ public class Glock18ItemModel extends GeoModel<Glock18Item> {
         if (!(stack.getItem() instanceof GunItem)) return;
 
         var data = GunData.from(stack);
-        int mode = data.fireMode.get();
-        if (mode == 0) {
+        var mode = data.fireMode.get();
+        if (mode == FireMode.SEMI) {
             switch_.setRotX(35 * Mth.DEG_TO_RAD);
         }
-        if (mode == 2) {
+        if (mode == FireMode.AUTO) {
             switch_.setRotX(0);
         }
 

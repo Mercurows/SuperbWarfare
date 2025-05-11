@@ -12,6 +12,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
+import com.atsuishio.superbwarfare.item.gun.data.FireMode;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.network.message.send.*;
 import com.atsuishio.superbwarfare.tools.NBTTool;
@@ -365,7 +366,7 @@ public class ClickHandler {
                         && !data.bolt.needed.get())
                         && drawTime < 0.01
                 ) {
-                    if (data.fireMode.get() == 1) {
+                    if (data.fireMode.get() == FireMode.BURST) {
                         if (ClientEventHandler.burstFireAmount == 0) {
                             ClientEventHandler.burstFireAmount = data.burstAmount();
                         }

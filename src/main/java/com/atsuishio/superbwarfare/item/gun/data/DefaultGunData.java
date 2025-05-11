@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.item.gun.data;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
+import java.util.Set;
 
 public class DefaultGunData {
 
@@ -32,8 +33,12 @@ public class DefaultGunData {
     public int projectileAmount = 1;
     @SerializedName("Weight")
     public double weight;
-    @SerializedName("FireMode")
-    public int fireMode;
+
+    @SerializedName("DefaultFireMode")
+    public FireMode defaultFireMode = FireMode.SEMI;
+    @SerializedName("AvailableFireModes")
+    public Set<FireMode> availableFireModes = Set.of(FireMode.SEMI);
+
     @SerializedName("BurstAmount")
     public int burstAmount;
     @SerializedName("BypassesArmor")
@@ -87,7 +92,4 @@ public class DefaultGunData {
             "!superbwarfare:longer_wire",
             "!superbwarfare:cupid_arrow"
     );
-
-    @SerializedName("AvailableFireModes")
-    public int availableFireModes = 1;
 }
