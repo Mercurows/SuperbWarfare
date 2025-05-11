@@ -196,11 +196,6 @@ public class JavelinItem extends GunItem implements GeoItem {
     }
 
     @Override
-    public boolean isMagazineReload(ItemStack stack) {
-        return true;
-    }
-
-    @Override
     public String getAmmoDisplayName(GunData data) {
         return "Javelin Missile";
     }

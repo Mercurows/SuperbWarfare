@@ -103,12 +103,6 @@ public class M79Item extends GunItem implements GeoItem {
     public @NotNull Optional<TooltipComponent> getTooltipImage(@NotNull ItemStack pStack) {
         return Optional.of(new LauncherImageComponent(pStack));
     }
-
-    @Override
-    public boolean isMagazineReload(ItemStack stack) {
-        return true;
-    }
-
     @Override
     public String getAmmoDisplayName(GunData data) {
         return "40mm Grenade";

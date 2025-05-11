@@ -86,9 +86,4 @@ public class HuntingRifleItem extends GunItem implements GeoItem {
     public String getGunDisplayName() {
         return "Hunting Rifle";
     }
-
-    @Override
-    public boolean isMagazineReload(ItemStack stack) {
-        return true;
-    }
 }

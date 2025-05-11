@@ -39,6 +39,9 @@ public class DefaultGunData {
     @SerializedName("AvailableFireModes")
     public Set<FireMode> availableFireModes = Set.of(FireMode.SEMI);
 
+    @SerializedName("ReloadTypes")
+    public Set<ReloadType> reloadTypes = Set.of(ReloadType.MAGAZINE);
+
     @SerializedName("BurstAmount")
     public int burstAmount;
     @SerializedName("BypassesArmor")

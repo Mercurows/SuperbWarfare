@@ -87,9 +87,4 @@ public class InsidiousItem extends GunItem implements GeoItem {
     public String getGunDisplayName() {
         return "INSIDIOUS";
     }
-
-    @Override
-    public boolean isMagazineReload(ItemStack stack) {
-        return true;
-    }
 }

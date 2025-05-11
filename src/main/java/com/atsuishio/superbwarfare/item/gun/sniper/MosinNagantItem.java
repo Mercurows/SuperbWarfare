@@ -134,9 +134,4 @@ public class MosinNagantItem extends GunItem implements GeoItem {
     public String getGunDisplayName() {
         return "MOSIN NAGANT";
     }
-
-    @Override
-    public boolean isIterativeReload(ItemStack stack) {
-        return true;
-    }
 }

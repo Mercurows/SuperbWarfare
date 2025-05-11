@@ -198,33 +198,6 @@ public abstract class GunItem extends Item implements CustomRendererItem {
     }
 
     /**
-     * 是否使用弹匣换弹
-     *
-     * @param stack 武器物品
-     */
-    public boolean isMagazineReload(ItemStack stack) {
-        return false;
-    }
-
-    /**
-     * 是否使用弹夹换弹
-     *
-     * @param stack 武器物品
-     */
-    public boolean isClipReload(ItemStack stack) {
-        return false;
-    }
-
-    /**
-     * 是否是单发装填换弹
-     *
-     * @param stack 武器物品
-     */
-    public boolean isIterativeReload(ItemStack stack) {
-        return false;
-    }
-
-    /**
      * 开膛待击
      *
      * @param stack 武器物品
@@ -239,15 +212,6 @@ public abstract class GunItem extends Item implements CustomRendererItem {
      * @param stack 武器物品
      */
     public boolean hasBulletInBarrel(ItemStack stack) {
-        return false;
-    }
-
-    /**
-     * 武器是否为全自动武器
-     *
-     * @param stack 武器物品
-     */
-    public boolean isAutoWeapon(ItemStack stack) {
         return false;
     }
 

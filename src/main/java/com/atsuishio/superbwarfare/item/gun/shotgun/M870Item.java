@@ -137,9 +137,4 @@ public class M870Item extends GunItem implements GeoItem {
     public @NotNull Optional<TooltipComponent> getTooltipImage(@NotNull ItemStack pStack) {
         return Optional.of(new ShotgunImageComponent(pStack));
     }
-
-    @Override
-    public boolean isIterativeReload(ItemStack stack) {
-        return true;
-    }
 }

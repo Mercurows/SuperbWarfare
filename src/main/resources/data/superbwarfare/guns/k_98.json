@@ -9,6 +9,10 @@
   "BoltActionTime": 22,
   "Weight": 5,
   "DefaultFireMode": "Auto",
+  "ReloadTypes": [
+    "Clip",
+    "Iterative"
+  ],
   "EmptyReloadTime": 59,
   "PrepareTime": 29,
   "IterativeTime": 11,

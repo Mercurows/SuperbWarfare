@@ -173,22 +173,12 @@ public class AK47Item extends GunItem implements GeoItem {
     }
 
     @Override
-    public boolean isMagazineReload(ItemStack stack) {
-        return true;
-    }
-
-    @Override
     public boolean isOpenBolt(ItemStack stack) {
         return true;
     }
 
     @Override
     public boolean hasBulletInBarrel(ItemStack stack) {
-        return true;
-    }
-
-    @Override
-    public boolean isAutoWeapon(ItemStack stack) {
         return true;
     }
 

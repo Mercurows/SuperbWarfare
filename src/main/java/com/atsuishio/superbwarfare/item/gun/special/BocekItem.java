@@ -155,11 +155,6 @@ public class BocekItem extends GunItem implements GeoItem {
     }
 
     @Override
-    public boolean isMagazineReload(ItemStack stack) {
-        return true;
-    }
-
-    @Override
     public void onFireKeyRelease(GunData data, Player player, double power, boolean zoom) {
         super.onFireKeyRelease(data, player, power, zoom);
 

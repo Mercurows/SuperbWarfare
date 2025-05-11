@@ -7,6 +7,9 @@
   "Headshot": 3,
   "Velocity": 42,
   "Magazine": 5,
+  "ReloadTypes": [
+    "Iterative"
+  ],
   "BoltActionTime": 22,
   "Weight": 5,
   "PrepareTime": 29,

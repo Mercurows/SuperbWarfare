@@ -80,9 +80,4 @@ public class MinigunItem extends GunItem implements GeoItem {
         return "M134 MINIGUN";
     }
 
-    @Override
-    public boolean isAutoWeapon(ItemStack stack) {
-        return true;
-    }
-
 }

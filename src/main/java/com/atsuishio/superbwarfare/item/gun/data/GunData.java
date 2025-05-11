@@ -195,6 +195,10 @@ public class GunData {
         return defaultGunData().headshot + item.getCustomHeadshot(stack);
     }
 
+    public Set<ReloadType> reloadTypes() {
+        return defaultGunData().reloadTypes;
+    }
+
     public int defaultNormalReloadTime() {
         return defaultGunData().normalReloadTime;
     }

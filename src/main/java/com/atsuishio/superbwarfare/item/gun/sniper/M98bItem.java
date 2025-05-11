@@ -112,11 +112,6 @@ public class M98bItem extends GunItem implements GeoItem {
     }
 
     @Override
-    public boolean isMagazineReload(ItemStack stack) {
-        return true;
-    }
-
-    @Override
     public boolean isOpenBolt(ItemStack stack) {
         return true;
     }

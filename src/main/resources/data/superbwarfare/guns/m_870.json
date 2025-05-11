@@ -8,6 +8,9 @@
   "Magazine": 8,
   "ProjectileAmount": 12,
   "Weight": 4,
+  "ReloadTypes": [
+    "Iterative"
+  ],
   "PrepareTime": 7,
   "PrepareLoadTime": 36,
   "IterativeTime": 16,

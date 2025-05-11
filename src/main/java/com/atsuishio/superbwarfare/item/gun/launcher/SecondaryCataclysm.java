@@ -206,11 +206,6 @@ public class SecondaryCataclysm extends GunItem implements GeoItem, EnergyStorag
     }
 
     @Override
-    public boolean isIterativeReload(ItemStack stack) {
-        return true;
-    }
-
-    @Override
     public boolean hasMeleeAttack(ItemStack stack) {
         return true;
     }

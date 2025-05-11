@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.network.message.send;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
+import com.atsuishio.superbwarfare.item.gun.data.ReloadType;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -40,9 +41,10 @@ public record ReloadMessage(int msgType) implements CustomPacketPayload {
                 && data.reload.time() == 0
                 && data.bolt.actionTimer.get() == 0
         ) {
-            boolean canSingleReload = gunItem.isIterativeReload(stack);
-            boolean canReload = gunItem.isMagazineReload(stack) && !gunItem.isClipReload(stack);
-            boolean clipLoad = data.ammo.get() == 0 && gunItem.isClipReload(stack);
+            var reloadTypes = data.reloadTypes();
+            boolean canSingleReload = reloadTypes.contains(ReloadType.ITERATIVE);
+            boolean canReload = reloadTypes.contains(ReloadType.MAGAZINE) && !reloadTypes.contains(ReloadType.CLIP);
+            boolean clipLoad = data.ammo.get() == 0 && reloadTypes.contains(ReloadType.CLIP);
 
             // 检查备弹
             if (!data.hasBackupAmmo(player)) return;

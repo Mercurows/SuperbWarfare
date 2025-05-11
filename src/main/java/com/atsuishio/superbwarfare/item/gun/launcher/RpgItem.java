@@ -133,11 +133,6 @@ public class RpgItem extends GunItem implements GeoItem {
     }
 
     @Override
-    public boolean isMagazineReload(ItemStack stack) {
-        return true;
-    }
-
-    @Override
     public boolean shootBullet(Player player, GunData data, double spread, boolean zoom) {
         Level level = player.level();
 

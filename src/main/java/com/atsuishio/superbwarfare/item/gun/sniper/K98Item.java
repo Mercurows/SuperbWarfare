@@ -136,14 +136,4 @@ public class K98Item extends GunItem implements GeoItem {
     public String getGunDisplayName() {
         return "KAR-98K";
     }
-
-    @Override
-    public boolean isClipReload(ItemStack stack) {
-        return true;
-    }
-
-    @Override
-    public boolean isIterativeReload(ItemStack stack) {
-        return true;
-    }
 }

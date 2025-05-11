@@ -8,6 +8,9 @@
   "Velocity": 3.75,
   "Magazine": 8,
   "Weight": 9,
+  "ReloadTypes": [
+    "Iterative"
+  ],
   "PrepareLoadTime": 31,
   "IterativeTime": 20,
   "FinishTime": 19,

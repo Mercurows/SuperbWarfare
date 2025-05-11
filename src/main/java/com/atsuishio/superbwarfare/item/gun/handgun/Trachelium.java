@@ -295,11 +295,6 @@ public class Trachelium extends GunItem implements GeoItem {
     }
 
     @Override
-    public boolean isMagazineReload(ItemStack stack) {
-        return true;
-    }
-
-    @Override
     public boolean isCustomizable(ItemStack stack) {
         return true;
     }

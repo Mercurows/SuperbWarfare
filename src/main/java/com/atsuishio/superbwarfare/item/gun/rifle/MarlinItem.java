@@ -127,9 +127,4 @@ public class MarlinItem extends GunItem implements GeoItem {
     public String getGunDisplayName() {
         return "MARLIN-1894";
     }
-
-    @Override
-    public boolean isIterativeReload(ItemStack stack) {
-        return true;
-    }
 }
