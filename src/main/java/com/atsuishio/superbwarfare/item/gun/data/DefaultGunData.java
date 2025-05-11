@@ -64,6 +64,8 @@ public class DefaultGunData {
     public int prepareEmptyTime;
     @SerializedName("IterativeTime")
     public int iterativeTime;
+    @SerializedName("IterativeAmmoLoadTime")
+    public int iterativeAmmoLoadTime = 1;
     @SerializedName("FinishTime")
     public int finishTime;
 

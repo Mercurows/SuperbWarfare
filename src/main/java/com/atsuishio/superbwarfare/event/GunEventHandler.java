@@ -294,24 +294,11 @@ public class GunEventHandler {
         }
 
         // 装填
-        if ((stack.getItem() == ModItems.M_870.get()
-                || stack.getItem() == ModItems.MARLIN.get())
-                && reload.iterativeLoadTimer.get() == 3
-        ) {
+        if (data.iterativeAmmoLoadTime() == reload.iterativeLoadTimer.get()) {
             singleLoad(player, data);
         }
 
-        if (stack.getItem() == ModItems.SECONDARY_CATACLYSM.get() && reload.iterativeLoadTimer.get() == 1) {
-            singleLoad(player, data);
-        }
-
-        if ((stack.getItem() == ModItems.K_98.get() || stack.getItem() == ModItems.MOSIN_NAGANT.get())
-                && reload.iterativeLoadTimer.get() == 1
-        ) {
-            singleLoad(player, data);
-        }
-
-        // 二阶段结束
+        // 二阶段打断
         if (reload.iterativeLoadTimer.get() == 1) {
             // 装满或备弹耗尽结束
             if (!data.hasBackupAmmo(player) || data.ammo.get() >= data.magazine()) {

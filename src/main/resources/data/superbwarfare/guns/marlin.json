@@ -12,6 +12,7 @@
   ],
   "PrepareTime": 7,
   "IterativeTime": 16,
+  "IterativeAmmoLoadTime": 3,
   "FinishTime": 19,
   "BypassesArmor": 0.3,
   "SoundRadius": 15,

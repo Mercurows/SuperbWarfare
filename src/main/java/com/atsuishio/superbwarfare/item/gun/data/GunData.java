@@ -211,6 +211,10 @@ public class GunData {
         return defaultGunData().iterativeTime;
     }
 
+    public int iterativeAmmoLoadTime() {
+        return defaultGunData().iterativeAmmoLoadTime;
+    }
+
     public int defaultPrepareTime() {
         return defaultGunData().prepareTime;
     }
