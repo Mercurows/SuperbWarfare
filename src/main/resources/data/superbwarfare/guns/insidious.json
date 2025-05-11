@@ -7,7 +7,7 @@
   "Velocity": 50,
   "Magazine": 48,
   "Weight": 6,
-  "DefaultFireMode": "Auto",
+  "DefaultFireMode": "Burst",
   "BurstAmount": 4,
   "EmptyReloadTime": 56,
   "BypassesArmor": 0.4,
