@@ -44,8 +44,9 @@ public class LivingEntityMixin implements ICustomKnockback {
 
     @Inject(method = "stopRiding()V", at = @At("HEAD"), cancellable = true)
     public void stopRiding(CallbackInfo ci) {
-        Entity entity = ((LivingEntity) (Object) this).getVehicle();
-        if (entity instanceof VehicleEntity) {
+        var living = ((LivingEntity) (Object) this);
+        Entity entity = living.getVehicle();
+        if (entity instanceof VehicleEntity && living instanceof Player) {
             ci.cancel();
         }
     }
