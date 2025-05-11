@@ -273,6 +273,7 @@
   "des.superbwarfare.small_container.loot.blueprints": "枪械蓝图",
   "des.superbwarfare.small_container.loot.common": "普通补给",
   "block.superbwarfare.vehicle_deployer": "载具部署器",
+  "des.superbwarfare.vehicle_deployer": "使用集装箱右击设置待部署载具类型，通入红石信号后可以部署载具",
   "des.superbwarfare.vehicle_deployer.success": "成功设置载具信息！",
   "des.superbwarfare.vehicle_deployer.fail": "请使用集装箱点击！",
 

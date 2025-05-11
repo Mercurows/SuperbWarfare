@@ -273,6 +273,7 @@
   "des.superbwarfare.small_container.loot.blueprints": "Gun Blueprints",
   "des.superbwarfare.small_container.loot.common": "Common Supplies",
   "block.superbwarfare.vehicle_deployer": "Vehicle Deployer",
+  "des.superbwarfare.vehicle_deployer": "Right click with a container to set vehicle info. Summon a vehicle when triggered",
   "des.superbwarfare.vehicle_deployer.success": "Vehicle info set successfully!",
   "des.superbwarfare.vehicle_deployer.fail": "Please click with a container!",
 
