@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.perk.ammo;
 
-import com.atsuishio.superbwarfare.entity.CupidLove;
+import com.atsuishio.superbwarfare.entity.mixin.CupidLove;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;

@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.mixins;
 
-import com.atsuishio.superbwarfare.entity.CupidLove;
+import com.atsuishio.superbwarfare.entity.mixin.CupidLove;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.npc.Villager;
 import org.spongepowered.asm.mixin.Mixin;

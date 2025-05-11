@@ -1,4 +1,4 @@
-package com.atsuishio.superbwarfare.entity;
+package com.atsuishio.superbwarfare.entity.mixin;
 
 import net.minecraft.world.entity.LivingEntity;
 
