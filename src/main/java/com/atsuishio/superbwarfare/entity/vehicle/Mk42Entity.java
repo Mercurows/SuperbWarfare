@@ -264,7 +264,7 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
         }
 
         explodePassengers();
-        this.discard();
+        super.destroy();
     }
 
     @Override

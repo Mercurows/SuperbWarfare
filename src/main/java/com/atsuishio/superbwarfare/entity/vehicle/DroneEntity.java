@@ -576,7 +576,7 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
                     });
         }
 
-        this.discard();
+        super.destroy();
     }
 
     private void kamikazeExplosion(int mode) {

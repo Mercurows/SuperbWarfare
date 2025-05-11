@@ -308,7 +308,6 @@ public class Tom6Entity extends MobileVehicleEntity implements GeoEntity {
 
     @Override
     public void destroy() {
-
         if (this.crash) {
             crashPassengers();
         } else {
@@ -335,7 +334,7 @@ public class Tom6Entity extends MobileVehicleEntity implements GeoEntity {
             }
         }
 
-        this.discard();
+        super.destroy();
     }
 
     @Override

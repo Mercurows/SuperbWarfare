@@ -452,7 +452,7 @@ public class AnnihilatorEntity extends EnergyVehicleEntity implements GeoEntity,
         }
 
         explodePassengers();
-        this.discard();
+        super.destroy();
     }
 
     @Override

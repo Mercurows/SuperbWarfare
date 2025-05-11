@@ -231,7 +231,7 @@ public class LaserTowerEntity extends EnergyVehicleEntity implements GeoEntity, 
             ParticleTool.spawnMediumExplosionParticles(this.level(), this.position());
         }
 
-        this.discard();
+        super.destroy();
     }
 
     public void autoAim() {

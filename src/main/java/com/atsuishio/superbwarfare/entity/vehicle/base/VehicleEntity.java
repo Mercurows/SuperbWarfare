@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.entity.vehicle.base;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
+import com.atsuishio.superbwarfare.entity.mixin.CustomStopRiding;
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.VehicleWeapon;
@@ -718,6 +719,15 @@ public abstract class VehicleEntity extends Entity {
     }
 
     public void destroy() {
+        this.getPassengers().forEach(p -> {
+            if (p instanceof Player player) {
+                CustomStopRiding customStopRiding = CustomStopRiding.getInstance(player);
+                customStopRiding.superbwarfare$stopRiding();
+            } else {
+                p.stopRiding();
+            }
+        });
+        this.discard();
     }
 
     protected Entity getAttacker() {
@@ -969,6 +979,34 @@ public abstract class VehicleEntity extends Entity {
     public Vec3 driverZoomPos(float ticks) {
         return getEyePosition();
     }
+
+    @Override
+    public void ejectPassengers() {
+        for(int i = this.passengers.size() - 1; i >= 0; --i) {
+            var passenger = this.passengers.get(i);
+            if (passenger instanceof Player player) {
+                CustomStopRiding stopRiding = CustomStopRiding.getInstance(player);
+                stopRiding.superbwarfare$stopRiding();
+            } else {
+                passenger.stopRiding();
+            }
+        }
+    }
+
+//    @Override
+//    public void remove(RemovalReason pReason) {
+//        if (this.getRemovalReason() == null) {
+//            this.removalReason = pReason;
+//        }
+//
+//        if (this.getRemovalReason().shouldDestroy()) {
+//            this.stopRiding();
+//        }
+//
+//        this.getPassengers().forEach(Entity::stopRiding);
+//        this.levelCallback.onRemove(pReason);
+//        this.invalidateCaps();
+//    }
 
     /**
      * 渲染载具的第一人称UI

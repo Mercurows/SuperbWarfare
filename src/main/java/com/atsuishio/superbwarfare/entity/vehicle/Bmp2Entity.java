@@ -616,7 +616,7 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
         }
 
         explodePassengers();
-        this.discard();
+        super.destroy();
     }
 
     protected void clampRotation(Entity entity) {

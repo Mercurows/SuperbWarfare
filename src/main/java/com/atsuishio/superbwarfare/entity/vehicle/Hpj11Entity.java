@@ -429,7 +429,7 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
         }
 
         explodePassengers();
-        this.discard();
+        super.destroy();
     }
 
     @Override

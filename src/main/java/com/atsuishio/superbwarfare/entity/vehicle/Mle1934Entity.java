@@ -291,7 +291,7 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
         }
 
         explodePassengers();
-        this.discard();
+        super.destroy();
     }
 
     @Override

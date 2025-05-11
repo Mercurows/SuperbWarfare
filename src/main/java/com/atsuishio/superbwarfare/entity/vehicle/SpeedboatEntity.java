@@ -390,7 +390,7 @@ public class SpeedboatEntity extends ContainerMobileVehicleEntity implements Geo
         }
 
         explodePassengers();
-        this.discard();
+        super.destroy();
     }
 
     protected void clampRotation(Entity entity) {
