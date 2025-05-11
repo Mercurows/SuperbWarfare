@@ -333,13 +333,6 @@ public abstract class GunItem extends Item implements CustomRendererItem {
     }
 
     /**
-     * 获取武器可用的开火模式
-     */
-    public int getAvailableFireModes() {
-        return 0;
-    }
-
-    /**
      * 获取额外伤害加成
      */
     public double getCustomDamage(ItemStack stack) {

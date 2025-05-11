@@ -87,4 +87,7 @@ public class DefaultGunData {
             "!superbwarfare:longer_wire",
             "!superbwarfare:cupid_arrow"
     );
+
+    @SerializedName("AvailableFireModes")
+    public int availableFireModes = 1;
 }

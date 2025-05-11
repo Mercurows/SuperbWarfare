@@ -131,11 +131,6 @@ public class M1911Item extends GunItem implements GeoItem {
     }
 
     @Override
-    public int getAvailableFireModes() {
-        return FireMode.SEMI.flag;
-    }
-
-    @Override
     public void addReloadTimeBehavior(Map<Integer, Consumer<GunData>> behaviors) {
         super.addReloadTimeBehavior(behaviors);
 

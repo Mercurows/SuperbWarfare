@@ -209,9 +209,4 @@ public class VectorItem extends GunItem implements GeoItem {
     public boolean canEjectShell(ItemStack stack) {
         return true;
     }
-
-    @Override
-    public int getAvailableFireModes() {
-        return FireMode.SEMI.flag + FireMode.BURST.flag + FireMode.AUTO.flag;
-    }
 }

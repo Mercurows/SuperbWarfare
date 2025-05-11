@@ -149,11 +149,6 @@ public class M60Item extends GunItem implements GeoItem {
     }
 
     @Override
-    public int getAvailableFireModes() {
-        return FireMode.AUTO.flag;
-    }
-
-    @Override
     public void beforeShoot(GunData data, Player player, double spread, boolean zoom) {
         super.beforeShoot(data, player, spread, zoom);
 

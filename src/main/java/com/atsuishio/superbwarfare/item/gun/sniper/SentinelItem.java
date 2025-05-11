@@ -190,11 +190,6 @@ public class SentinelItem extends GunItem implements GeoItem, EnergyStorageItem 
     }
 
     @Override
-    public int getAvailableFireModes() {
-        return FireMode.SEMI.flag;
-    }
-
-    @Override
     public void afterShoot(GunData data, Player player) {
         super.afterShoot(data, player);
 

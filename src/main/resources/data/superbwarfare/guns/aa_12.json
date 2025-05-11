@@ -14,6 +14,7 @@
   "BypassesArmor": 0.05,
   "SoundRadius": 18,
   "RPM": 360,
+  "AvailableFireModes": 5,
   "AmmoType": "@ShotgunAmmo",
   "AvailablePerks": [
     "@Ammo",

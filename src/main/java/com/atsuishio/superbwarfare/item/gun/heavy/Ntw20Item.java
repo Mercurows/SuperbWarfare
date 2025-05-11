@@ -189,9 +189,4 @@ public class Ntw20Item extends GunItem implements GeoItem {
     public boolean hasBipod(ItemStack stack) {
         return true;
     }
-
-    @Override
-    public int getAvailableFireModes() {
-        return FireMode.SEMI.flag;
-    }
 }

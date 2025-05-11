@@ -13,6 +13,7 @@
   "BypassesArmor": 0.25,
   "SoundRadius": 15,
   "RPM": 600,
+  "AvailableFireModes": 4,
   "AmmoType": "@RifleAmmo",
   "AvailablePerks": [
     "@Ammo",

@@ -226,9 +226,4 @@ public class AK47Item extends GunItem implements GeoItem {
     public boolean canEjectShell(ItemStack stack) {
         return true;
     }
-
-    @Override
-    public int getAvailableFireModes() {
-        return FireMode.SEMI.flag + FireMode.AUTO.flag;
-    }
 }

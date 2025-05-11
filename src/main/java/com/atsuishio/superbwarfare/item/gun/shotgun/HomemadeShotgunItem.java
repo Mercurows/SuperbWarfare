@@ -53,7 +53,7 @@ public class HomemadeShotgunItem extends GunItem implements GeoItem {
     }
 
     @Override
-    public int getBarWidth(ItemStack stack) {
+    public int getBarWidth(@NotNull ItemStack stack) {
         return Math.round(13.0F - (float) stack.getDamageValue() * 13.0F / (float) this.getMaxDamage(stack));
     }
 
@@ -151,10 +151,5 @@ public class HomemadeShotgunItem extends GunItem implements GeoItem {
         var stack = data.stack();
         stack.hurtAndBreak(1, (ServerLevel) player.level(), player, p -> {
         });
-    }
-
-    @Override
-    public int getAvailableFireModes() {
-        return FireMode.SEMI.flag;
     }
 }

@@ -216,11 +216,6 @@ public class SecondaryCataclysm extends GunItem implements GeoItem, EnergyStorag
     }
 
     @Override
-    public int getAvailableFireModes() {
-        return FireMode.SEMI.flag;
-    }
-
-    @Override
     public String getAmmoDisplayName(GunData data) {
         return "40mm Grenade";
     }

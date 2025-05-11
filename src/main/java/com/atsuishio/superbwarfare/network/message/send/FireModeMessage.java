@@ -32,12 +32,12 @@ public record FireModeMessage(int msgType) implements CustomPacketPayload {
 
     public static void changeFireMode(Player player) {
         ItemStack stack = player.getMainHandItem();
-        if (stack.getItem() instanceof GunItem gunItem) {
+        if (stack.getItem() instanceof GunItem) {
             var data = GunData.from(stack);
             var tag = data.tag();
             int fireMode = data.fireMode.get();
 
-            int mode = gunItem.getAvailableFireModes();
+            int mode = data.getAvailableFireModes();
             mode &= 0b111;
 
             if (fireMode == 0) {

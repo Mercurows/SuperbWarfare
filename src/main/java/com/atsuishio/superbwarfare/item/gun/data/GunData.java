@@ -501,6 +501,10 @@ public class GunData {
         return availablePerks().contains(perk);
     }
 
+    public int getAvailableFireModes() {
+        return defaultGunData().availableFireModes;
+    }
+
     // 可持久化属性开始
     public final IntValue ammo;
     public final IntValue fireMode;
