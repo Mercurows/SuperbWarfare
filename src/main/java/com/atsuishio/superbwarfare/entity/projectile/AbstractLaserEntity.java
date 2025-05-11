@@ -16,6 +16,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.*;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -77,20 +78,12 @@ public abstract class AbstractLaserEntity extends Entity implements TraceableEnt
             this.on = false;
         }
     }
-
-//    @Override
-//    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-//        return NetworkHooks.getEntitySpawningPacket(this);
-//    }
-
     @Override
-    protected void readAdditionalSaveData(CompoundTag pCompound) {
-
+    protected void readAdditionalSaveData(@NotNull CompoundTag pCompound) {
     }
 
     @Override
-    protected void addAdditionalSaveData(CompoundTag pCompound) {
-
+    protected void addAdditionalSaveData(@NotNull CompoundTag pCompound) {
     }
 
     protected void beamTick() {
@@ -107,11 +100,11 @@ public abstract class AbstractLaserEntity extends Entity implements TraceableEnt
     }
 
     @Override
-    public void push(Entity entityIn) {
+    public void push(@NotNull Entity entityIn) {
     }
 
     @Override
-    public PushReaction getPistonPushReaction() {
+    public @NotNull PushReaction getPistonPushReaction() {
         return PushReaction.IGNORE;
     }
 

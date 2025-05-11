@@ -84,12 +84,6 @@ public class RpgRocketEntity extends FastThrowableProjectile implements GeoEntit
         this.monsterMultiplier = monsterMultiplier;
     }
 
-    // TOD AEP
-//    @Override
-//    public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket() {
-//        return NetworkHooks.getEntitySpawningPacket(this);
-//    }
-
     @Override
     protected @NotNull Item getDefaultItem() {
         return ModItems.ROCKET.get();
