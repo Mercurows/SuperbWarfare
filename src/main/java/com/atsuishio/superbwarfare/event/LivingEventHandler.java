@@ -45,6 +45,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.util.TriState;
+import net.neoforged.neoforge.event.entity.EntityMountEvent;
 import net.neoforged.neoforge.event.entity.living.*;
 import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -650,6 +651,14 @@ public class LivingEventHandler {
     public static void onEffectApply(MobEffectEvent.Applicable event) {
         if (event.getEntity().getVehicle() instanceof ArmedVehicleEntity vehicle && vehicle.hidePassenger(event.getEntity())) {
             event.setResult(MobEffectEvent.Applicable.Result.DO_NOT_APPLY);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onMountEntity(EntityMountEvent event) {
+        var entity = event.getEntityMounting();
+        if (entity instanceof Player player && player.getVehicle() instanceof VehicleEntity && !(event.getEntityBeingMounted() instanceof VehicleEntity)) {
+            event.setCanceled(true);
         }
     }
 }
