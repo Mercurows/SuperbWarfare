@@ -257,11 +257,11 @@ public class GunEventHandler {
         }
 
         if (stack.getItem() == ModItems.M_870.get() && reload.prepareLoadTimer.get() == 10) {
-            singleLoad(player, data);
+            iterativeLoad(player, data);
         }
 
         if (stack.getItem() == ModItems.SECONDARY_CATACLYSM.get() && reload.prepareLoadTimer.get() == 3) {
-            singleLoad(player, data);
+            iterativeLoad(player, data);
         }
 
         // 一阶段结束，检查备弹，如果有则二阶段启动，无则直接跳到三阶段
@@ -295,7 +295,7 @@ public class GunEventHandler {
 
         // 装填
         if (data.iterativeAmmoLoadTime() == reload.iterativeLoadTimer.get()) {
-            singleLoad(player, data);
+            iterativeLoad(player, data);
         }
 
         // 二阶段打断
@@ -342,12 +342,14 @@ public class GunEventHandler {
         }
     }
 
-    public static void singleLoad(Player player, GunData data) {
-        data.ammo.set(data.ammo.get() + 1);
+    public static void iterativeLoad(Player player, GunData data) {
+        var required = Math.min(data.magazine() - data.ammo.get(), data.iterativeLoadAmount());
+        var available = Math.min(required, data.countBackupAmmo(player));
+        data.ammo.add(available);
 
         if (!InventoryTool.hasCreativeAmmoBox(player)) {
             var cap = player.getData(ModAttachments.PLAYER_VARIABLE);
-            data.consumeBackupAmmo(player, 1);
+            data.consumeBackupAmmo(player, available);
             player.setData(ModAttachments.PLAYER_VARIABLE, cap);
         }
     }

@@ -62,10 +62,19 @@ public class DefaultGunData {
     public int prepareLoadTime;
     @SerializedName("PrepareEmptyTime")
     public int prepareEmptyTime;
+
+    // 每次单发装填用时的
     @SerializedName("IterativeTime")
     public int iterativeTime;
+
+    // 单发装填时的上弹时间
     @SerializedName("IterativeAmmoLoadTime")
     public int iterativeAmmoLoadTime = 1;
+
+    // 单次单发装填上弹数量
+    @SerializedName("IterativeLoadAmount")
+    public int iterativeLoadAmount = 1;
+
     @SerializedName("FinishTime")
     public int finishTime;
 

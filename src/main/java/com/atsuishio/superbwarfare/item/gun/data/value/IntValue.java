@@ -32,6 +32,10 @@ public class IntValue {
         }
     }
 
+    public void add(int value) {
+        set(get() + value);
+    }
+
     public void reset() {
         set(defaultValue);
     }
