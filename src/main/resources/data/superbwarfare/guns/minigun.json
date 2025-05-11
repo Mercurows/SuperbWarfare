@@ -10,6 +10,7 @@
   "SoundRadius": 14,
   "RPM": 1200,
   "DefaultFireMode": "Auto",
+  "AvailableFireModes": ["Auto"],
   "AmmoType": "@RifleAmmo",
   "ShootDelay": 20,
   "HeatPerShoot": 0.5,
