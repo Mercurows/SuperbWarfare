@@ -535,7 +535,7 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
     }
 
     public int getMaxPassengers() {
-        return 5;
+        return 7;
     }
 
     @Override
