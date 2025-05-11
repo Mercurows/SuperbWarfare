@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "bottom": "superbwarfare:block/vehicle_deployer_bottom",
+    "particle": "superbwarfare:block/vehicle_deployer_bottom",
+    "side": "superbwarfare:block/vehicle_deployer_side",
+    "top": "superbwarfare:block/vehicle_deployer_top"
+  }
+}

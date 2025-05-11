@@ -13,6 +13,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -26,8 +27,9 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
-// TODO 渲染
+@SuppressWarnings("deprecation")
 public class VehicleDeployerBlock extends BaseEntityBlock {
+
     public static final BooleanProperty TRIGGERED = BlockStateProperties.TRIGGERED;
 
     public VehicleDeployerBlock() {
@@ -87,5 +89,10 @@ public class VehicleDeployerBlock extends BaseEntityBlock {
     @Override
     protected @NotNull MapCodec<? extends BaseEntityBlock> codec() {
         return simpleCodec(VehicleDeployerBlock::new);
+    }
+
+    @Override
+    public @NotNull RenderShape getRenderShape(@NotNull BlockState state) {
+        return RenderShape.MODEL;
     }
 }
