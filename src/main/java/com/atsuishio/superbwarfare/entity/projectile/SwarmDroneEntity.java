@@ -45,7 +45,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class SwarmDroneEntity extends FastThrowableProjectile implements GeoEntity, DestroyableProjectileEntity, LoudlyEntity {
+public class SwarmDroneEntity extends FastThrowableProjectile implements GeoEntity, DestroyableProjectileEntity, LoudlyEntity, ExplosiveProjectile {
 
     public static final EntityDataAccessor<String> TARGET_UUID = SynchedEntityData.defineId(SwarmDroneEntity.class, EntityDataSerializers.STRING);
     public static final EntityDataAccessor<Float> TARGET_X = SynchedEntityData.defineId(SwarmDroneEntity.class, EntityDataSerializers.FLOAT);
@@ -291,12 +291,26 @@ public class SwarmDroneEntity extends FastThrowableProjectile implements GeoEnti
     }
 
     @Override
-    public SoundEvent getSound() {
+    public @NotNull SoundEvent getSound() {
         return ModSounds.DRONE_SOUND.get();
     }
 
     @Override
     public float getVolume() {
         return 0.07f;
+    }
+
+    @Override
+    public void setDamage(float damage) {
+    }
+
+    @Override
+    public void setExplosionDamage(float explosionDamage) {
+        this.explosionDamage = explosionDamage;
+    }
+
+    @Override
+    public void setExplosionRadius(float radius) {
+        this.explosionRadius = radius;
     }
 }

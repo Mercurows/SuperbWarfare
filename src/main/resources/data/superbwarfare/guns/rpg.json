@@ -3,6 +3,7 @@
   "RecoilX": 0.008,
   "RecoilY": 0.018,
   "Damage": 270,
+  "ProjectileType": "superbwarfare:rpg_rocket",
   "ExplosionDamage": 130,
   "ExplosionRadius": 10,
   "Velocity": 4,

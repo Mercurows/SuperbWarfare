@@ -1,4 +1,4 @@
 package com.atsuishio.superbwarfare.entity.projectile;
 
-public interface AerialBombEntity {
+public interface AerialBombEntity extends ExplosiveProjectile {
 }

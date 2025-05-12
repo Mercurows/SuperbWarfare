@@ -29,7 +29,7 @@ import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-public class GunGrenadeEntity extends FastThrowableProjectile implements GeoEntity {
+public class GunGrenadeEntity extends FastThrowableProjectile implements GeoEntity, ExplosiveProjectile {
 
     private float monsterMultiplier = 0.0f;
     private float damage = 40.0f;
@@ -50,14 +50,17 @@ public class GunGrenadeEntity extends FastThrowableProjectile implements GeoEnti
         this.explosionRadius = explosionRadius;
     }
 
+    @Override
     public void setDamage(float damage) {
         this.damage = damage;
     }
 
+    @Override
     public void setExplosionDamage(float explosionDamage) {
         this.explosionDamage = explosionDamage;
     }
 
+    @Override
     public void setExplosionRadius(float explosionRadius) {
         this.explosionRadius = explosionRadius;
     }

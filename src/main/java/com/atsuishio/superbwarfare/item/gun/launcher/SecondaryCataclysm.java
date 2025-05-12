@@ -215,6 +215,7 @@ public class SecondaryCataclysm extends GunItem implements GeoItem, EnergyStorag
         return "40mm Grenade";
     }
 
+    // TODO 这玩意能提取吗
     @Override
     public boolean shootBullet(Player player, GunData data, double spread, boolean zoom) {
         if (data.reloading()) return false;

@@ -29,6 +29,10 @@ public class DefaultGunData {
     public double velocity;
     @SerializedName("Magazine")
     public int magazine;
+
+    @SerializedName("ProjectileType")
+    public String projectileType = "superbwarfare:projectile";
+
     @SerializedName("ProjectileAmount")
     public int projectileAmount = 1;
     @SerializedName("Weight")

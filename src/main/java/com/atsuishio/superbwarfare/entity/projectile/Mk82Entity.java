@@ -162,4 +162,20 @@ public class Mk82Entity extends FastThrowableProjectile implements GeoEntity, De
     public boolean shouldSyncMotion() {
         return true;
     }
+
+    // TODO setter
+    @Override
+    public void setDamage(float damage) {
+
+    }
+
+    @Override
+    public void setExplosionDamage(float damage) {
+
+    }
+
+    @Override
+    public void setExplosionRadius(float radius) {
+
+    }
 }

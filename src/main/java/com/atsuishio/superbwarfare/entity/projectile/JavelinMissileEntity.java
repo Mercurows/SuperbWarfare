@@ -50,7 +50,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.List;
 
-public class JavelinMissileEntity extends FastThrowableProjectile implements GeoEntity, DestroyableProjectileEntity, LoudlyEntity {
+public class JavelinMissileEntity extends FastThrowableProjectile implements GeoEntity, DestroyableProjectileEntity, LoudlyEntity, ExplosiveProjectile {
     public static final EntityDataAccessor<Float> HEALTH = SynchedEntityData.defineId(JavelinMissileEntity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<String> TARGET_UUID = SynchedEntityData.defineId(JavelinMissileEntity.class, EntityDataSerializers.STRING);
     public static final EntityDataAccessor<Boolean> TOP = SynchedEntityData.defineId(JavelinMissileEntity.class, EntityDataSerializers.BOOLEAN);
@@ -387,5 +387,20 @@ public class JavelinMissileEntity extends FastThrowableProjectile implements Geo
     @Override
     public float getVolume() {
         return 0.4f;
+    }
+
+    @Override
+    public void setDamage(float damage) {
+        this.damage = damage;
+    }
+
+    @Override
+    public void setExplosionDamage(float damage) {
+        this.explosion_damage = damage;
+    }
+
+    @Override
+    public void setExplosionRadius(float radius) {
+        this.explosion_radius = radius;
     }
 }

@@ -3,13 +3,10 @@ package com.atsuishio.superbwarfare.item.gun.launcher;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.renderer.item.RpgItemRenderer;
 import com.atsuishio.superbwarfare.client.tooltip.component.LauncherImageComponent;
-import com.atsuishio.superbwarfare.entity.projectile.RpgRocketEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
-import com.atsuishio.superbwarfare.perk.AmmoPerk;
-import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -134,40 +131,13 @@ public class RpgItem extends GunItem implements GeoItem {
 
     @Override
     public boolean shootBullet(Player player, GunData data, double spread, boolean zoom) {
-        Level level = player.level();
+        if (!super.shootBullet(player, data, spread, zoom)) return false;
 
-        if (data.reloading()) return false;
+        ParticleTool.sendParticle((ServerLevel) player.level(), ParticleTypes.CLOUD, player.getX() + 1.8 * player.getLookAngle().x,
+                player.getY() + player.getBbHeight() - 0.1 + 1.8 * player.getLookAngle().y,
+                player.getZ() + 1.8 * player.getLookAngle().z,
+                30, 0.4, 0.4, 0.4, 0.005, true);
 
-        if (player.level() instanceof ServerLevel serverLevel) {
-            RpgRocketEntity rocket = new RpgRocketEntity(player, level,
-                    (float) data.damage(),
-                    (float) data.explosionDamage(),
-                    (float) data.explosionRadius()
-            );
-
-            float velocity = (float) data.velocity();
-
-            for (Perk.Type type : Perk.Type.values()) {
-                var instance = data.perk.getInstance(type);
-                if (instance != null) {
-                    instance.perk().modifyProjectile(data, instance, rocket);
-                    if (instance.perk() instanceof AmmoPerk ammoPerk) {
-                        velocity = (float) ammoPerk.getModifiedVelocity(data, instance);
-                    }
-                }
-            }
-
-            rocket.setPos(player.getX(), player.getEyeY() - 0.1, player.getZ());
-            rocket.shoot(player.getLookAngle().x, player.getLookAngle().y, player.getLookAngle().z, velocity,
-                    (float) (zoom ? 0.1 : spread));
-            level.addFreshEntity(rocket);
-
-            ParticleTool.sendParticle(serverLevel, ParticleTypes.CLOUD, player.getX() + 1.8 * player.getLookAngle().x,
-                    player.getY() + player.getBbHeight() - 0.1 + 1.8 * player.getLookAngle().y,
-                    player.getZ() + 1.8 * player.getLookAngle().z,
-                    30, 0.4, 0.4, 0.4, 0.005, true);
-
-        }
         data.isEmpty.set(true);
         data.closeHammer.set(true);
 

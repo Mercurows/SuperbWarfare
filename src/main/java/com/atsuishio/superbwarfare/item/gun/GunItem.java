@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.item.gun;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.PoseTool;
 import com.atsuishio.superbwarfare.client.tooltip.component.GunImageComponent;
+import com.atsuishio.superbwarfare.entity.projectile.ExplosiveProjectile;
 import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity;
 import com.atsuishio.superbwarfare.init.ModAttachments;
 import com.atsuishio.superbwarfare.init.ModItems;
@@ -25,11 +26,13 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -45,6 +48,7 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 @EventBusSubscriber(modid = Mod.MODID, bus = EventBusSubscriber.Bus.MOD)
@@ -563,19 +567,40 @@ public abstract class GunItem extends Item implements CustomRendererItem {
      */
     public boolean shootBullet(Player player, GunData data, double spread, boolean zoom) {
         var stack = data.stack;
+        var level = player.level();
 
         float headshot = (float) data.headshot();
         float damage = (float) data.damage();
         float velocity = (float) data.velocity();
         float bypassArmorRate = (float) data.bypassArmor();
 
-        ProjectileEntity projectile = new ProjectileEntity(player.level())
-                .shooter(player)
-                .damage(damage)
-                .headShot(headshot)
-                .zoom(zoom)
-                .bypassArmorRate(bypassArmorRate)
-                .setGunItemId(stack);
+        var projectileType = data.projectileType();
+        AtomicReference<Projectile> projectileHolder = new AtomicReference<>();
+        EntityType.byString(projectileType).ifPresent(entityType -> {
+            var entity = entityType.create(level);
+            if (!(entity instanceof Projectile)) return;
+            ((Projectile) entity).setOwner(player);
+
+            if (entity instanceof ProjectileEntity projectile) {
+                projectile.shooter(player)
+                        .damage(damage)
+                        .headShot(headshot)
+                        .zoom(zoom)
+                        .bypassArmorRate(bypassArmorRate)
+                        .setGunItemId(stack);
+            }
+
+            if (entity instanceof ExplosiveProjectile explosive) {
+                explosive.setDamage(damage);
+                explosive.setExplosionDamage((float) data.explosionDamage());
+                explosive.setExplosionRadius((float) data.explosionRadius());
+            }
+
+            projectileHolder.set((Projectile) entity);
+        });
+
+        var projectile = projectileHolder.get();
+        if (projectile == null) return false;
 
         for (Perk.Type type : Perk.Type.values()) {
             var instance = data.perk.getInstance(type);
@@ -588,8 +613,8 @@ public abstract class GunItem extends Item implements CustomRendererItem {
         }
 
         projectile.setPos(player.getX() - 0.1 * player.getLookAngle().x, player.getEyeY() - 0.1 - 0.1 * player.getLookAngle().y, player.getZ() + -0.1 * player.getLookAngle().z);
-        projectile.shoot(player, player.getLookAngle().x, player.getLookAngle().y + 0.001f, player.getLookAngle().z, velocity, (float) spread);
-        player.level().addFreshEntity(projectile);
+        projectile.shoot(player.getLookAngle().x, player.getLookAngle().y + 0.001f, player.getLookAngle().z, velocity, (float) spread);
+        level.addFreshEntity(projectile);
 
         return true;
     }

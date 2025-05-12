@@ -19,6 +19,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.NotNull;
 
+// TODO 配置文件
 public class MelonBombEntity extends FastThrowableProjectile implements DestroyableProjectileEntity, AerialBombEntity {
     public static final EntityDataAccessor<Float> HEALTH = SynchedEntityData.defineId(MelonBombEntity.class, EntityDataSerializers.FLOAT);
 
@@ -107,5 +108,20 @@ public class MelonBombEntity extends FastThrowableProjectile implements Destroya
     @Override
     protected double getDefaultGravity() {
         return 0.05F;
+    }
+
+    @Override
+    public void setDamage(float damage) {
+
+    }
+
+    @Override
+    public void setExplosionDamage(float damage) {
+
+    }
+
+    @Override
+    public void setExplosionRadius(float radius) {
+
     }
 }

@@ -3,13 +3,10 @@ package com.atsuishio.superbwarfare.item.gun.launcher;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.renderer.item.M79ItemRenderer;
 import com.atsuishio.superbwarfare.client.tooltip.component.LauncherImageComponent;
-import com.atsuishio.superbwarfare.entity.projectile.GunGrenadeEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.data.GunData;
-import com.atsuishio.superbwarfare.perk.AmmoPerk;
-import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -103,6 +100,7 @@ public class M79Item extends GunItem implements GeoItem {
     public @NotNull Optional<TooltipComponent> getTooltipImage(@NotNull ItemStack pStack) {
         return Optional.of(new LauncherImageComponent(pStack));
     }
+
     @Override
     public String getAmmoDisplayName(GunData data) {
         return "40mm Grenade";
@@ -110,37 +108,12 @@ public class M79Item extends GunItem implements GeoItem {
 
     @Override
     public boolean shootBullet(Player player, GunData data, double spread, boolean zoom) {
-        if (data.reloading()) return false;
+        if (!super.shootBullet(player, data, spread, zoom)) return false;
 
-        if (player.level() instanceof ServerLevel serverLevel) {
-            GunGrenadeEntity gunGrenadeEntity = new GunGrenadeEntity(player, serverLevel,
-                    (float) data.damage(),
-                    (float) data.explosionDamage(),
-                    (float) data.explosionRadius()
-            );
-
-            float velocity = (float) data.velocity();
-
-            for (Perk.Type type : Perk.Type.values()) {
-                var instance = data.perk.getInstance(type);
-                if (instance != null) {
-                    instance.perk().modifyProjectile(data, instance, gunGrenadeEntity);
-                    if (instance.perk() instanceof AmmoPerk ammoPerk) {
-                        velocity = (float) ammoPerk.getModifiedVelocity(data, instance);
-                    }
-                }
-            }
-
-            gunGrenadeEntity.setPos(player.getX(), player.getEyeY() - 0.1, player.getZ());
-            gunGrenadeEntity.shoot(player.getLookAngle().x, player.getLookAngle().y, player.getLookAngle().z, velocity,
-                    (float) (zoom ? 0.1 : spread));
-            serverLevel.addFreshEntity(gunGrenadeEntity);
-
-            ParticleTool.sendParticle(serverLevel, ParticleTypes.CLOUD, player.getX() + 1.8 * player.getLookAngle().x,
-                    player.getY() + player.getBbHeight() - 0.1 + 1.8 * player.getLookAngle().y,
-                    player.getZ() + 1.8 * player.getLookAngle().z,
-                    4, 0.1, 0.1, 0.1, 0.002, true);
-        }
+        ParticleTool.sendParticle((ServerLevel) player.level(), ParticleTypes.CLOUD, player.getX() + 1.8 * player.getLookAngle().x,
+                player.getY() + player.getBbHeight() - 0.1 + 1.8 * player.getLookAngle().y,
+                player.getZ() + 1.8 * player.getLookAngle().z,
+                4, 0.1, 0.1, 0.1, 0.002, true);
 
         return true;
     }
