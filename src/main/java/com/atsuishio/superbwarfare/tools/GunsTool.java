@@ -56,37 +56,11 @@ public class GunsTool {
     }
 
     @SubscribeEvent
-    public static void datapackSync(OnDatapackSyncEvent event) {
+    public static void onDataPackSync(OnDatapackSyncEvent event) {
         initJsonData(event.getPlayerList().getServer().getResourceManager());
 
         event.getRelevantPlayers().forEach(player -> PacketDistributor.sendToPlayer(player, GunsDataMessage.create()));
     }
-
-    /* PerkData */
-    public static void setPerkIntTag(final CompoundTag rootTag, String name, int num) {
-        CompoundTag tag = rootTag.getCompound("PerkData");
-        if (!tag.contains(name) && num == 0) return;
-        tag.putInt(name, num);
-        rootTag.put("PerkData", tag);
-    }
-
-    public static int getPerkIntTag(final CompoundTag rootTag, String name) {
-        CompoundTag tag = rootTag.getCompound("PerkData");
-        return tag.getInt(name);
-    }
-
-    public static void setPerkBooleanTag(final CompoundTag rootTag, String name, boolean flag) {
-        CompoundTag tag = rootTag.getCompound("PerkData");
-        if (!tag.contains(name) && !flag) return;
-        tag.putBoolean(name, flag);
-        rootTag.put("PerkData", tag);
-    }
-
-    public static boolean getPerkBooleanTag(final CompoundTag rootTag, String name) {
-        CompoundTag tag = rootTag.getCompound("PerkData");
-        return tag.getBoolean(name);
-    }
-
 
     public static void setGunIntTag(final CompoundTag tag, String name, int num) {
         var data = tag.getCompound("GunData");
