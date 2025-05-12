@@ -284,6 +284,7 @@ public class ModItems {
     public static final DeferredHolder<Item, ContainerBlockItem> CONTAINER = BLOCKS.register("container", ContainerBlockItem::new);
     public static final DeferredHolder<Item, SmallContainerBlockItem> SMALL_CONTAINER = BLOCKS.register("small_container", SmallContainerBlockItem::new);
     public static final DeferredHolder<Item, VehicleDeployerBlockItem> VEHICLE_DEPLOYER = BLOCKS.register("vehicle_deployer", VehicleDeployerBlockItem::new);
+    public static final DeferredHolder<Item, BlockItem> AIRCRAFT_CATAPULT = block(ModBlocks.AIRCRAFT_CATAPULT);
 
     /**
      * Perk Items
