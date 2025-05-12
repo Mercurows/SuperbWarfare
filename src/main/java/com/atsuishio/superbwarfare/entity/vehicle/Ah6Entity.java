@@ -30,6 +30,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -167,6 +169,21 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
                 })
 
                 .reduce(2);
+    }
+
+    @Override
+    public @NotNull InteractionResult interact(Player player, @NotNull InteractionHand hand) {
+        ItemStack stack = player.getMainHandItem();
+        if (stack.getItem() == ModItems.ROCKET_70.get() && this.entityData.get(LOADED_ROCKET) < 14) {
+            // 装载火箭
+            this.entityData.set(LOADED_ROCKET, this.entityData.get(LOADED_ROCKET) + 1);
+            if (!player.isCreative()) {
+                stack.shrink(1);
+            }
+            this.level().playSound(null, this, ModSounds.MISSILE_RELOAD.get(), this.getSoundSource(), 2, 1);
+            return InteractionResult.sidedSuccess(this.level().isClientSide());
+        }
+        return super.interact(player, hand);
     }
 
     @Override

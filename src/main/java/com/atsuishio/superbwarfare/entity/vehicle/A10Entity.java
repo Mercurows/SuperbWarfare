@@ -8,10 +8,7 @@ import com.atsuishio.superbwarfare.entity.projectile.MortarShellEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.*;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.*;
-import com.atsuishio.superbwarfare.init.ModDamageTypes;
-import com.atsuishio.superbwarfare.init.ModItems;
-import com.atsuishio.superbwarfare.init.ModSounds;
-import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage;
 import com.atsuishio.superbwarfare.tools.*;
 import com.mojang.math.Axis;
@@ -27,13 +24,17 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -51,6 +52,7 @@ import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.Comparator;
+import java.util.List;
 
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 
@@ -182,6 +184,39 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
     }
 
     @Override
+    public @NotNull InteractionResult interact(Player player, @NotNull InteractionHand hand) {
+        ItemStack stack = player.getMainHandItem();
+        if (stack.getItem() == ModItems.ROCKET_70.get() && this.entityData.get(LOADED_ROCKET) < 28) {
+            // 装载火箭
+            this.entityData.set(LOADED_ROCKET, this.entityData.get(LOADED_ROCKET) + 1);
+            if (!player.isCreative()) {
+                stack.shrink(1);
+            }
+            this.level().playSound(null, this, ModSounds.MISSILE_RELOAD.get(), this.getSoundSource(), 2, 1);
+            return InteractionResult.sidedSuccess(this.level().isClientSide());
+        }
+        if (stack.getItem() == ModItems.MEDIUM_AERIAL_BOMB.get() && this.entityData.get(LOADED_BOMB) < 3) {
+            // 装载航弹
+            this.entityData.set(LOADED_BOMB, this.entityData.get(LOADED_BOMB) + 1);
+            if (!player.isCreative()) {
+                stack.shrink(1);
+            }
+            this.level().playSound(null, this, ModSounds.BOMB_RELOAD.get(), this.getSoundSource(), 2, 1);
+            return InteractionResult.sidedSuccess(this.level().isClientSide());
+        }
+        if (stack.getItem() == ModItems.AGM.get() && this.entityData.get(LOADED_MISSILE) < 4) {
+            // 装载导弹
+            this.entityData.set(LOADED_MISSILE, this.entityData.get(LOADED_MISSILE) + 1);
+            if (!player.isCreative()) {
+                stack.shrink(1);
+            }
+            this.level().playSound(null, this, ModSounds.BOMB_RELOAD.get(), this.getSoundSource(), 2, 1);
+            return InteractionResult.sidedSuccess(this.level().isClientSide());
+        }
+        return super.interact(player, hand);
+    }
+
+    @Override
     public void baseTick() {
         lockingTargetO = getTargetUuid();
 
@@ -242,6 +277,66 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
 
         releaseDecoy();
         this.refreshDimensions();
+    }
+
+    @Override
+    public void lowHealthWarning() {
+        Matrix4f transform = this.getVehicleTransform(1);
+        if (this.getHealth() <= 0.4 * this.getMaxHealth()) {
+            List<Entity> entities = getPlayer(level());
+            for (var e : entities) {
+                if (e instanceof ServerPlayer player) {
+                    if (player.level() instanceof ServerLevel serverLevel) {
+                        Vector4f position = transformPosition(transform, -1.603125f, 0.875f, -5.0625f);
+                        sendParticle(serverLevel, ParticleTypes.LARGE_SMOKE, position.x, position.y, position.z, 5, 0.25, 0.25, 0.25, 0, true);
+                    }
+                }
+            }
+        }
+
+        if (this.level() instanceof ServerLevel serverLevel) {
+            if (this.getHealth() <= 0.25 * this.getMaxHealth()) {
+                playLowHealthParticle(serverLevel);
+            }
+            if (this.getHealth() <= 0.15 * this.getMaxHealth()) {
+                playLowHealthParticle(serverLevel);
+            }
+        }
+
+        if (this.getHealth() <= 0.1 * this.getMaxHealth()) {
+            List<Entity> entities = getPlayer(level());
+            for (var e : entities) {
+                if (e instanceof ServerPlayer player) {
+                    if (player.level() instanceof ServerLevel serverLevel) {
+                        Vector4f position = transformPosition(transform, -1.603125f, 0.875f, -5.0625f);
+                        sendParticle(serverLevel, ParticleTypes.LARGE_SMOKE, position.x, position.y, position.z, 5, 0.25, 0.25, 0.25, 0, true);
+                        sendParticle(serverLevel, ParticleTypes.CAMPFIRE_COSY_SMOKE, position.x, position.y, position.z, 5, 0.25, 0.25, 0.25, 0, true);
+                        sendParticle(serverLevel, ParticleTypes.FLAME, position.x, position.y, position.z, 5, 0.25, 0.25, 0.25, 0, true);
+                        sendParticle(serverLevel, ModParticleTypes.FIRE_STAR.get(), position.x, position.y, position.z, 5, 0.25, 0.25, 0.25, 0, true);
+                        Vector4f position2 = transformPosition(transform, 1.603125f, 0.875f, -5.0625f);
+                        sendParticle(serverLevel, ParticleTypes.LARGE_SMOKE, position2.x, position2.y, position2.z, 5, 0.25, 0.25, 0.25, 0, true);
+                        sendParticle(serverLevel, ParticleTypes.CAMPFIRE_COSY_SMOKE, position2.x, position2.y, position2.z, 5, 0.25, 0.25, 0.25, 0, true);
+                        sendParticle(serverLevel, ParticleTypes.FLAME, position2.x, position2.y, position2.z, 5, 0.25, 0.25, 0.25, 0, true);
+                        sendParticle(serverLevel, ModParticleTypes.FIRE_STAR.get(), position2.x, position2.y, position2.z, 5, 0.25, 0.25, 0.25, 0, true);
+                    }
+                }
+            }
+            if (this.level() instanceof ServerLevel serverLevel) {
+                ParticleTool.sendParticle(serverLevel, ParticleTypes.LARGE_SMOKE, this.getX(), this.getY() + 0.7f * getBbHeight(), this.getZ(), 2, 0.35 * this.getBbWidth(), 0.15 * this.getBbHeight(), 0.35 * this.getBbWidth(), 0.01, true);
+                ParticleTool.sendParticle(serverLevel, ParticleTypes.CAMPFIRE_COSY_SMOKE, this.getX(), this.getY() + 0.7f * getBbHeight(), this.getZ(), 2, 0.35 * this.getBbWidth(), 0.15 * this.getBbHeight(), 0.35 * this.getBbWidth(), 0.01, true);
+                ParticleTool.sendParticle(serverLevel, ParticleTypes.FLAME, this.getX(), this.getY() + 0.85f * getBbHeight(), this.getZ(), 4, 0.35 * this.getBbWidth(), 0.12 * this.getBbHeight(), 0.35 * this.getBbWidth(), 0.05, true);
+                ParticleTool.sendParticle(serverLevel, ModParticleTypes.FIRE_STAR.get(), this.getX(), this.getY() + 0.85f * getBbHeight(), this.getZ(), 4, 0.1 * this.getBbWidth(), 0.05 * this.getBbHeight(), 0.1 * this.getBbWidth(), 0.4, true);
+            }
+            if (this.tickCount % 15 == 0) {
+                this.level().playSound(null, this.getOnPos(), SoundEvents.FIRE_AMBIENT, SoundSource.PLAYERS, 1, 1);
+            }
+        }
+
+        if (this.getHealth() < 0.1f * this.getMaxHealth() && tickCount % 13 == 0) {
+            this.level().playSound(null, this.getOnPos(), ModSounds.NO_HEALTH.get(), SoundSource.PLAYERS, 1, 1);
+        } else if (this.getHealth() >= 0.1f && this.getHealth() < 0.4f * this.getMaxHealth() && tickCount % 10 == 0) {
+            this.level().playSound(null, this.getOnPos(), ModSounds.LOW_HEALTH.get(), SoundSource.PLAYERS, 1, 1);
+        }
     }
 
     public void terrainCompactA10() {
