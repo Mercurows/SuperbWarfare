@@ -194,7 +194,7 @@ public class Agm65Entity extends FastThrowableProjectile implements GeoEntity, D
                         entity.level().playSound(null, entity.getOnPos(), entity instanceof Pig ? SoundEvents.PIG_HURT : ModSounds.MISSILE_WARNING.get(), SoundSource.PLAYERS, 2, 1f);
                     }
 
-                    Vec3 targetPos = new Vec3(entity.getX(), entity.getEyeY() + (entity instanceof EnderDragon ? -3 : 0), entity.getZ());
+                    Vec3 targetPos = new Vec3(entity.getX(), entity.getEyeY() + (entity instanceof EnderDragon ? -3 : 0) + 0.2 * distanceTo(entity), entity.getZ());
 
                     Vec3 toVec = getEyePosition().vectorTo(targetPos).normalize();
                     if (this.tickCount > 8) {

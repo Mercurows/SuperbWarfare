@@ -3098,7 +3098,7 @@
   "a10_engine": {
     "sounds": [
       {
-        "attenuation_distance": 160,
+        "attenuation_distance": 256,
         "stream": true,
         "name": "superbwarfare:a10/a10_engine"
       }

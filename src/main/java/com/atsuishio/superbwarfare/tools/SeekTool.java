@@ -66,13 +66,13 @@ public class SeekTool {
                 .orElse(null);
     }
 
-    public static Entity seekCustomSizeEntitiy(Entity entity, Level level, double seekRange, double seekAngle, double size, boolean checkOnGround) {
+    public static Entity seekCustomSizeEntity(Entity entity, Level level, double seekRange, double seekAngle, double size, boolean checkOnGround) {
         return StreamSupport.stream(EntityFindUtil.getEntities(level).getAll().spliterator(), false)
                 .filter(e -> {
                     if (e.distanceTo(entity) <= seekRange && calculateAngle(e, entity) < seekAngle
                             && e != entity
                             && baseFilter(e)
-                            && (!checkOnGround || isOnGround(e))
+                            && (!checkOnGround || isOnGround(e, 10))
                             && e.getBoundingBox().getSize() >= size
                             && smokeFilter(e)
                             && e.getVehicle() == null
@@ -133,7 +133,7 @@ public class SeekTool {
                             && e != entity
                             && e.getBoundingBox().getSize() >= size
                             && baseFilter(e)
-                            && (!checkOnGround || isOnGround(e))
+                            && (!checkOnGround || isOnGround(e, 10))
                             && smokeFilter(e)
                             && e.getVehicle() == null
                             && (!e.isAlliedTo(entity) || e.getTeam() == null || e.getTeam().getName().equals("TDM"))) {
@@ -212,9 +212,9 @@ public class SeekTool {
                 || includedByConfig(entity);
     }
 
-    public static boolean isOnGround(Entity entity) {
+    public static boolean isOnGround(Entity entity, double height) {
         AtomicBoolean onGround = new AtomicBoolean(false);
-        AABB aabb = entity.getBoundingBox().expandTowards(0, -10, 0);
+        AABB aabb = entity.getBoundingBox().expandTowards(0, -height, 0);
         BlockPos.betweenClosedStream(aabb).forEach((pos) -> {
             BlockState blockstate = entity.level().getBlockState(pos);
             if (!blockstate.is(Blocks.AIR)) {
