@@ -39,6 +39,7 @@ public class SmallCannonShellEntity extends FastThrowableProjectile implements G
     private float explosionDamage = 80f;
     private float explosionRadius = 5f;
     private boolean aa;
+    private Explosion.BlockInteraction blockInteraction;
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     public SmallCannonShellEntity(EntityType<? extends SmallCannonShellEntity> type, Level world) {
@@ -52,6 +53,11 @@ public class SmallCannonShellEntity extends FastThrowableProjectile implements G
         this.explosionDamage = explosionDamage;
         this.explosionRadius = explosionRadius;
         this.aa = aa;
+    }
+
+    public SmallCannonShellEntity setBlockInteraction(Explosion.BlockInteraction blockInteraction) {
+        this.blockInteraction = blockInteraction;
+        return this;
     }
 
     @Override
@@ -112,8 +118,10 @@ public class SmallCannonShellEntity extends FastThrowableProjectile implements G
                 vec3.y,
                 vec3.z,
                 explosionRadius,
-                hitEntity ? Explosion.BlockInteraction.KEEP : (ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP)).
-                setDamageMultiplier(1.25f);
+                this.blockInteraction != null ? this.blockInteraction :
+                        hitEntity ? Explosion.BlockInteraction.KEEP :
+                                (ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP)
+        ).setDamageMultiplier(1.25f);
         explosion.explode();
         EventHooks.onExplosionStart(this.level(), explosion);
         explosion.finalizeExplosion(false);
@@ -154,13 +162,11 @@ public class SmallCannonShellEntity extends FastThrowableProjectile implements G
                     .filter(entity -> !(entity instanceof SmallCannonShellEntity) && (entity.getBbWidth() >= 0.3 || entity.getBbHeight() >= 0.3))
                     .toList();
             for (var entity : entities) {
-
                 causeExplode(entity.position(), false);
 
                 entity.discard();
                 this.discard();
             }
-
         }
     }
 
