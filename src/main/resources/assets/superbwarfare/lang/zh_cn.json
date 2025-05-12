@@ -276,6 +276,7 @@
   "des.superbwarfare.vehicle_deployer": "使用集装箱右击设置待部署载具类型，通入红石信号后可以部署载具",
   "des.superbwarfare.vehicle_deployer.success": "成功设置载具信息！",
   "des.superbwarfare.vehicle_deployer.fail": "请使用集装箱点击！",
+  "block.superbwarfare.aircraft_catapult": "飞行器弹射装置",
 
   "item.superbwarfare.high_energy_explosives": "高能炸药",
   "item.superbwarfare.grain": "推进药柱",

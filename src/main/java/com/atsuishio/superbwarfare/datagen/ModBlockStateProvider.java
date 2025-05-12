@@ -31,6 +31,11 @@ public class ModBlockStateProvider extends BlockStateProvider {
                         Mod.loc("block/vehicle_deployer_bottom"), Mod.loc("block/vehicle_deployer_top"))
                 .texture("particle", Mod.loc("block/vehicle_deployer_bottom")));
 
+        // TODO 替换模型
+        horizontalBlock(ModBlocks.AIRCRAFT_CATAPULT.get(), models().cubeBottomTop("aircraft_catapult", Mod.loc("block/vehicle_deployer_side"),
+                        Mod.loc("block/vehicle_deployer_bottom"), Mod.loc("block/vehicle_deployer_top"))
+                .texture("particle", Mod.loc("block/vehicle_deployer_bottom")));
+
         blockWithItem(ModBlocks.GALENA_ORE);
         blockWithItem(ModBlocks.DEEPSLATE_GALENA_ORE);
         blockWithItem(ModBlocks.SCHEELITE_ORE);

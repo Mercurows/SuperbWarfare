@@ -1,4 +1,5 @@
-// 1.21.1	2025-05-11T18:58:17.1566789	Block States: superbwarfare
+// 1.21.1	2025-05-12T23:49:56.0122177	Block States: superbwarfare
+1db13c2f6bc5225df98d2c1a550b3e175d1e9f92 assets/superbwarfare/blockstates/aircraft_catapult.json
 f3b778ca36ca78c3d80f1b778078897f59bdb0c5 assets/superbwarfare/blockstates/barbed_wire.json
 0cfad4f53a8047c402edf978d0c8cf6269f063cb assets/superbwarfare/blockstates/cemented_carbide_block.json
 472c06e6b43ad09925edaa88e9376bfd27ab267f assets/superbwarfare/blockstates/charging_station.json
@@ -19,6 +20,7 @@ cf801445ce7cec678d5e811b5985506472e6ba4c assets/superbwarfare/blockstates/silver
 a175c908c9aabee3a073844cd58ec9dfe6498bf0 assets/superbwarfare/blockstates/steel_block.json
 d4bbef5040ef43c362b28ea12ea73fb4a3db9adc assets/superbwarfare/blockstates/tungsten_block.json
 df138042591221cb2091c7e2f86a0ce5c77949be assets/superbwarfare/blockstates/vehicle_deployer.json
+4deddc7d84204f7942d0fa211f9815b26af415d9 assets/superbwarfare/models/block/aircraft_catapult.json
 5f1c22b64ff3ca4db9987f91a7179c9e705c7601 assets/superbwarfare/models/block/cemented_carbide_block.json
 0fe4613a4446ac485eee58bed6d0d8f5b38f6253 assets/superbwarfare/models/block/deepslate_galena_ore.json
 84f584f684519f686e976b994f0a2639a98a7851 assets/superbwarfare/models/block/deepslate_scheelite_ore.json

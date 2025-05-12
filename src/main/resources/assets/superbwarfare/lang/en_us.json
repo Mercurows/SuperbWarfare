@@ -276,6 +276,7 @@
   "des.superbwarfare.vehicle_deployer": "Right click with a container to set vehicle info. Summon a vehicle when triggered",
   "des.superbwarfare.vehicle_deployer.success": "Vehicle info set successfully!",
   "des.superbwarfare.vehicle_deployer.fail": "Please click with a container!",
+  "block.superbwarfare.aircraft_catapult": "Aircraft Catapult",
 
   "item.superbwarfare.high_energy_explosives": "High Energy Explosives",
   "item.superbwarfare.grain": "Grain",

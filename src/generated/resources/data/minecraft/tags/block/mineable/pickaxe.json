@@ -17,6 +17,8 @@
     "superbwarfare:container",
     "superbwarfare:charging_station",
     "superbwarfare:fumo_25",
-    "superbwarfare:small_container"
+    "superbwarfare:small_container",
+    "superbwarfare:vehicle_deployer",
+    "superbwarfare:aircraft_catapult"
   ]
 }

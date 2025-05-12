@@ -16,6 +16,7 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 
 @SuppressWarnings({"ConstantConditions", "UnusedReturnValue", "SameParameterValue", "unused"})
 public class ModItemModelProvider extends ItemModelProvider {
+
     public ModItemModelProvider(PackOutput output, ExistingFileHelper existingFileHelper) {
         super(output, Mod.MODID, existingFileHelper);
     }
@@ -166,6 +167,7 @@ public class ModItemModelProvider extends ItemModelProvider {
         evenSimplerBlockItem(ModBlocks.REFORGING_TABLE);
         evenSimplerBlockItem(ModBlocks.CHARGING_STATION);
         evenSimplerBlockItem(ModBlocks.CREATIVE_CHARGING_STATION);
+        evenSimplerBlockItem(ModBlocks.AIRCRAFT_CATAPULT);
     }
 
     private ItemModelBuilder simpleItem(DeferredHolder<Item, ? extends Item> item) {

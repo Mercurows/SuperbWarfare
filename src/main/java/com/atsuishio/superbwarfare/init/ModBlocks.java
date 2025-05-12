@@ -49,4 +49,5 @@ public class ModBlocks {
     public static final DeferredHolder<Block, Block> CREATIVE_CHARGING_STATION = REGISTRY.register("creative_charging_station", () -> new CreativeChargingStationBlock());
     public static final DeferredHolder<Block, Block> FUMO_25 = REGISTRY.register("fumo_25", FuMO25Block::new);
     public static final DeferredHolder<Block, Block> VEHICLE_DEPLOYER = REGISTRY.register("vehicle_deployer", VehicleDeployerBlock::new);
+    public static final DeferredHolder<Block, Block> AIRCRAFT_CATAPULT = REGISTRY.register("aircraft_catapult", AircraftCatapultBlock::new);
 }
