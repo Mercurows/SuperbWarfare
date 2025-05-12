@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.entity.projectile;
 
-import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.tools.ProjectileTool;
 import net.minecraft.nbt.CompoundTag;
@@ -19,9 +18,12 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.NotNull;
 
-// TODO 配置文件
 public class MelonBombEntity extends FastThrowableProjectile implements DestroyableProjectileEntity, AerialBombEntity {
+
     public static final EntityDataAccessor<Float> HEALTH = SynchedEntityData.defineId(MelonBombEntity.class, EntityDataSerializers.FLOAT);
+
+    private float explosionDamage = 500;
+    private float explosionRadius = 10;
 
     public MelonBombEntity(EntityType<? extends MelonBombEntity> type, Level world) {
         super(type, world);
@@ -90,7 +92,7 @@ public class MelonBombEntity extends FastThrowableProjectile implements Destroya
     @Override
     public void onHitBlock(@NotNull BlockHitResult blockHitResult) {
         super.onHitBlock(blockHitResult);
-        ProjectileTool.causeCustomExplode(this, VehicleConfig.TOM_6_BOMB_EXPLOSION_DAMAGE.get(), VehicleConfig.TOM_6_BOMB_EXPLOSION_RADIUS.get().floatValue(), 1.5f);
+        ProjectileTool.causeCustomExplode(this, this.explosionDamage, this.explosionRadius, 1.5f);
         this.discard();
     }
 
@@ -100,7 +102,7 @@ public class MelonBombEntity extends FastThrowableProjectile implements Destroya
         if (tickCount > 600 || this.entityData.get(HEALTH) <= 0) {
             this.discard();
             if (!this.level().isClientSide) {
-                ProjectileTool.causeCustomExplode(this, VehicleConfig.TOM_6_BOMB_EXPLOSION_DAMAGE.get(), VehicleConfig.TOM_6_BOMB_EXPLOSION_RADIUS.get().floatValue(), 1.5f);
+                ProjectileTool.causeCustomExplode(this, this.explosionDamage, this.explosionRadius, 1.5f);
             }
         }
     }
@@ -112,16 +114,15 @@ public class MelonBombEntity extends FastThrowableProjectile implements Destroya
 
     @Override
     public void setDamage(float damage) {
-
     }
 
     @Override
     public void setExplosionDamage(float damage) {
-
+        this.explosionDamage = damage;
     }
 
     @Override
     public void setExplosionRadius(float radius) {
-
+        this.explosionRadius = radius;
     }
 }

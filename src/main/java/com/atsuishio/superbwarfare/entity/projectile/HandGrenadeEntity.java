@@ -33,6 +33,9 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 public class HandGrenadeEntity extends FastThrowableProjectile implements GeoEntity, ExplosiveProjectile {
 
+    private float damage = 1f;
+    private float explosionDamage = ExplosionConfig.M67_GRENADE_EXPLOSION_DAMAGE.get();
+    private float explosionRadius = ExplosionConfig.M67_GRENADE_EXPLOSION_RADIUS.get();
     private int fuse = 100;
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
@@ -93,7 +96,7 @@ public class HandGrenadeEntity extends FastThrowableProjectile implements GeoEnt
                             PacketDistributor.sendToPlayer(player, new ClientIndicatorMessage(0, 5));
                         }
                     }
-                    entity.hurt(entity.damageSources().thrown(this, this.getOwner()), 1.0F);
+                    entity.hurt(entity.damageSources().thrown(this, this.getOwner()), this.damage);
                 }
                 this.bounce(Direction.getNearest(this.getDeltaMovement().x(), this.getDeltaMovement().y(), this.getDeltaMovement().z()).getOpposite());
                 this.setDeltaMovement(this.getDeltaMovement().multiply(0.25, 1.0, 0.25));
@@ -128,7 +131,7 @@ public class HandGrenadeEntity extends FastThrowableProjectile implements GeoEnt
         if (this.fuse <= 0) {
             this.discard();
             if (!this.level().isClientSide) {
-                ProjectileTool.causeCustomExplode(this, ExplosionConfig.M67_GRENADE_EXPLOSION_DAMAGE.get(), ExplosionConfig.M67_GRENADE_EXPLOSION_RADIUS.get(), 1.2f);
+                ProjectileTool.causeCustomExplode(this, this.explosionDamage, this.explosionRadius, 1.2f);
             }
         }
 
@@ -152,19 +155,18 @@ public class HandGrenadeEntity extends FastThrowableProjectile implements GeoEnt
         return 0.07F;
     }
 
-    // TODO setter
     @Override
     public void setDamage(float damage) {
-
+        this.damage = damage;
     }
 
     @Override
     public void setExplosionDamage(float explosionDamage) {
-
+        this.explosionDamage = explosionDamage;
     }
 
     @Override
     public void setExplosionRadius(float radius) {
-
+        this.explosionRadius = radius;
     }
 }

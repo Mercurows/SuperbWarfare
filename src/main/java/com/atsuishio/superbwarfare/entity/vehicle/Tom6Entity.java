@@ -201,6 +201,8 @@ public class Tom6Entity extends MobileVehicleEntity implements GeoEntity {
                 worldPosition = transformPosition(transform, 0, -0.2f, 0);
 
                 MelonBombEntity melonBomb = new MelonBombEntity(player, player.level());
+                melonBomb.setExplosionDamage(VehicleConfig.TOM_6_BOMB_EXPLOSION_DAMAGE.get());
+                melonBomb.setExplosionRadius(VehicleConfig.TOM_6_BOMB_EXPLOSION_RADIUS.get().floatValue());
                 melonBomb.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
                 melonBomb.shoot(getDeltaMovement().x, getDeltaMovement().y, getDeltaMovement().z, (float) getDeltaMovement().length(), 0);
                 passenger.level().addFreshEntity(melonBomb);

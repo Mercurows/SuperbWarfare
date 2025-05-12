@@ -53,6 +53,10 @@ public class Agm65Entity extends FastThrowableProjectile implements GeoEntity, D
     public static final EntityDataAccessor<Float> HEALTH = SynchedEntityData.defineId(Agm65Entity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<String> TARGET_UUID = SynchedEntityData.defineId(Agm65Entity.class, EntityDataSerializers.STRING);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+
+    private float damage = ExplosionConfig.AGM_65_DAMAGE.get();
+    private float explosionDamage = ExplosionConfig.AGM_65_EXPLOSION_DAMAGE.get();
+    private float explosionRadius = ExplosionConfig.AGM_65_EXPLOSION_RADIUS.get().floatValue();
     private boolean distracted = false;
 
     public Agm65Entity(EntityType<? extends Agm65Entity> type, Level world) {
@@ -70,7 +74,7 @@ public class Agm65Entity extends FastThrowableProjectile implements GeoEntity, D
 
     @Override
     protected @NotNull Item getDefaultItem() {
-        return ModItems.JAVELIN_MISSILE.get();
+        return ModItems.AGM.get();
     }
 
     @Override
@@ -140,7 +144,7 @@ public class Agm65Entity extends FastThrowableProjectile implements GeoEntity, D
                 }
             }
 
-            entity.hurt(ModDamageTypes.causeCannonFireDamage(this.level().registryAccess(), this, this.getOwner()), ExplosionConfig.AGM_65_DAMAGE.get());
+            entity.hurt(ModDamageTypes.causeCannonFireDamage(this.level().registryAccess(), this, this.getOwner()), this.damage);
 
             if (entity instanceof LivingEntity) {
                 entity.invulnerableTime = 0;
@@ -226,7 +230,7 @@ public class Agm65Entity extends FastThrowableProjectile implements GeoEntity, D
             if (this.level() instanceof ServerLevel) {
                 ProjectileTool.causeCustomExplode(this,
                         ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(), this, this.getOwner()),
-                        this, ExplosionConfig.AGM_65_EXPLOSION_DAMAGE.get(), ExplosionConfig.AGM_65_EXPLOSION_RADIUS.get().floatValue(), 1);
+                        this, this.explosionDamage, this.explosionRadius, 1);
             }
             this.discard();
         }
@@ -241,11 +245,11 @@ public class Agm65Entity extends FastThrowableProjectile implements GeoEntity, D
                 ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(),
                         this,
                         this.getOwner()),
-                ExplosionConfig.AGM_65_EXPLOSION_DAMAGE.get(),
+                this.explosionDamage,
                 this.getX(),
                 this.getEyeY(),
                 this.getZ(),
-                ExplosionConfig.AGM_65_EXPLOSION_RADIUS.get().floatValue(),
+                this.explosionRadius,
                 ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).
                 setDamageMultiplier(1);
         explosion.explode();
@@ -296,16 +300,16 @@ public class Agm65Entity extends FastThrowableProjectile implements GeoEntity, D
     // TODO setter
     @Override
     public void setDamage(float damage) {
-
+        this.damage = damage;
     }
 
     @Override
     public void setExplosionDamage(float explosionDamage) {
-
+        this.explosionDamage = explosionDamage;
     }
 
     @Override
     public void setExplosionRadius(float radius) {
-
+        this.explosionRadius = radius;
     }
 }
