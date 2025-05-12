@@ -1,0 +1,33 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "cbc",
+    "dad",
+    "cdc"
+  ],
+  "key": {
+    "a": {
+      "item": "superbwarfare:empty_perk"
+    },
+    "b": {
+      "item": "minecraft:bow"
+    },
+    "c": {
+      "tag": "minecraft:arrows"
+    },
+    "d": {
+      "type": "neoforge:components",
+      "components": {
+        "minecraft:potion_contents": {
+          "potion": "minecraft:healing"
+        }
+      },
+      "items": "minecraft:potion"
+    }
+  },
+  "result": {
+    "id": "superbwarfare:cupid_arrow",
+    "count": 1
+  }
+}
