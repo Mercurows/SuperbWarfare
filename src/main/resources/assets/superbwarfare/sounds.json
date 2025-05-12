@@ -3062,7 +3062,7 @@
   "rocket_fly": {
     "sounds": [
       {
-        "attenuation_distance": 128,
+        "attenuation_distance": 192,
         "stream": true,
         "name": "superbwarfare:rocket_fly"
       }
@@ -3071,7 +3071,7 @@
   "shell_fly": {
     "sounds": [
       {
-        "attenuation_distance": 160,
+        "attenuation_distance": 256,
         "stream": true,
         "name": "superbwarfare:shell_fly"
       }

@@ -128,7 +128,7 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
     @Override
     public DamageModifier getDamageModifier() {
         return super.getDamageModifier()
-                .multiply(0.5f)
+                .multiply(getHealth() > 0.1f ? 0.7f : 0.05f)
                 .multiply(0.2f, DamageTypes.ARROW)
                 .multiply(0.4f, DamageTypes.TRIDENT)
                 .multiply(0.4f, DamageTypes.MOB_ATTACK)
@@ -319,15 +319,15 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
             }
         } else if (!onGround() && engineStartOver) {
             this.entityData.set(POWER, Math.max(this.entityData.get(POWER) - 0.0003f, 0.01f));
-            destroyRot += 0.15f;
+            destroyRot += 0.08f;
 
             diffX = 45 - this.getXRot();
             diffZ = -20 - this.getRoll();
 
-            this.setXRot(this.getXRot() + diffX * 0.1f * this.entityData.get(PROPELLER_ROT));
+            this.setXRot(this.getXRot() + diffX * 0.05f * this.entityData.get(PROPELLER_ROT));
             this.setYRot(this.getYRot() + destroyRot);
             this.setZRot(this.getRoll() + diffZ * 0.1f * this.entityData.get(PROPELLER_ROT));
-            setDeltaMovement(getDeltaMovement().add(0, -0.03, 0));
+            setDeltaMovement(getDeltaMovement().add(0, -destroyRot * 0.004, 0));
         }
 
         this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) * 0.9f);

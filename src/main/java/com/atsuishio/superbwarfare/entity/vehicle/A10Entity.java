@@ -52,6 +52,8 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.Comparator;
 
+import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
+
 public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity, WeaponVehicleEntity, AircraftEntity {
 
     public static final EntityDataAccessor<Integer> LOADED_ROCKET = SynchedEntityData.defineId(A10Entity.class, EntityDataSerializers.INT);
@@ -68,6 +70,8 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
     public int reloadCoolDownMissile;
     public String lockingTargetO = "none";
     public String lockingTarget = "none";
+
+    public float destroyRot;
 
     public int lockTime;
     public boolean locked;
@@ -148,7 +152,7 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
     @Override
     public DamageModifier getDamageModifier() {
         return super.getDamageModifier()
-                .multiply(0.4f)
+                .multiply(getHealth() > 0.1f ? 0.4f : 0.05f)
                 .multiply(1.5f, DamageTypes.ARROW)
                 .multiply(1.5f, DamageTypes.TRIDENT)
                 .multiply(2.5f, DamageTypes.MOB_ATTACK)
@@ -221,7 +225,7 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
             }
         }
         if (onGround()) {
-            this.terrainCompact(4f, 4f);
+            terrainCompactA10();
         } else {
             this.setZRot(this.roll * 0.99f);
         }
@@ -234,8 +238,70 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
             seekTarget();
         }
 
+        lowHealthWarning();
+
         releaseDecoy();
         this.refreshDimensions();
+    }
+
+    public void terrainCompactA10() {
+        if (onGround()) {
+            Matrix4f transform = this.getWheelsTransform(1);
+
+            // 前
+            Vector4f positionF = transformPosition(transform, 0.141675f, 0, 4.6315125f);
+            // 左后
+            Vector4f positionLB = transformPosition(transform, 2.5752f, 0, -0.7516125f);
+            // 右后
+            Vector4f positionRB = transformPosition(transform, -2.5752f, 0, -0.7516125f);
+
+            Vec3 p1 = new Vec3(positionF.x, positionF.y, positionF.z);
+            Vec3 p2 = new Vec3(positionLB.x, positionLB.y, positionLB.z);
+            Vec3 p3 = new Vec3(positionRB.x, positionRB.y, positionRB.z);
+
+            // 确定点位是否在墙里来调整点位高度
+            float p1y = (float) this.traceBlockY(p1, 3);
+            float p2y = (float) this.traceBlockY(p2, 3);
+            float p3y = (float) this.traceBlockY(p3, 3);
+
+            p1 = new Vec3(positionF.x, p1y, positionF.z);
+            p2 = new Vec3(positionLB.x, p2y, positionLB.z);
+            p3 = new Vec3(positionRB.x, p3y, positionRB.z);
+            Vec3 p4 = p2.add(p3).scale(0.5);
+
+//            // 测试用粒子效果，用于确定点位位置
+//
+//            List<Entity> entities = getPlayer(level());
+//            for (var e : entities) {
+//                if (e instanceof ServerPlayer player) {
+//                    if (player.level() instanceof ServerLevel serverLevel) {
+//                        sendParticle(serverLevel, ParticleTypes.END_ROD, p1.x, p1.y, p1.z, 1, 0, 0, 0, 0, true);
+//                        sendParticle(serverLevel, ParticleTypes.END_ROD, p2.x, p2.y, p2.z, 1, 0, 0, 0, 0, true);
+//                        sendParticle(serverLevel, ParticleTypes.END_ROD, p3.x, p3.y, p3.z, 1, 0, 0, 0, 0, true);
+//                        sendParticle(serverLevel, ParticleTypes.END_ROD, p4.x, p4.y, p4.z, 1, 0, 0, 0, 0, true);
+//                    }
+//                }
+//            }
+
+            // 通过点位位置获取角度
+
+            // 左后-右后
+            Vec3 v1 = p2.vectorTo(p3);
+            // 后-前
+            Vec3 v2 = p4.vectorTo(p1);
+
+            double x = getXRotFromVector(v2);
+            double z = getXRotFromVector(v1);
+
+            float diffX = Math.clamp(-5f, 5f, Mth.wrapDegrees((float) (-2 * x) - getXRot()));
+            setXRot(Mth.clamp(getXRot() + 0.05f * diffX, -45f, 45f));
+
+            float diffZ = Math.clamp(-5f, 5f, Mth.wrapDegrees((float) (-2 * z) - getRoll()));
+            setZRot(Mth.clamp(getRoll() + 0.05f * diffZ, -45f, 45f));
+        } else if (isInWater()) {
+            setXRot(getXRot() * 0.9f);
+            setZRot(getRoll() * 0.9f);
+        }
     }
 
     private void handleAmmo() {
@@ -340,93 +406,106 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
         float diffX;
         float diffY;
 
-        if (passenger == null || isInWater()) {
-            this.leftInputDown = false;
-            this.rightInputDown = false;
-            this.forwardInputDown = false;
-            this.backInputDown = false;
-            this.entityData.set(POWER, this.entityData.get(POWER) * 0.95f);
-            if (onGround()) {
-                this.setDeltaMovement(this.getDeltaMovement().multiply(0.94, 1, 0.94));
-            } else {
-                this.setXRot(Mth.clamp(this.getXRot() + 0.1f, -89, 89));
-            }
-        } else if (passenger instanceof Player) {
-            if (getEnergy() > 0) {
-                if (forwardInputDown) {
-                    this.entityData.set(POWER, Math.min(this.entityData.get(POWER) + 0.002f, 1f));
+        if (getHealth() > 0.1f * getMaxHealth()) {
+
+            if (passenger == null || isInWater()) {
+                this.leftInputDown = false;
+                this.rightInputDown = false;
+                this.forwardInputDown = false;
+                this.backInputDown = false;
+                this.entityData.set(POWER, this.entityData.get(POWER) * 0.95f);
+                if (onGround()) {
+                    this.setDeltaMovement(this.getDeltaMovement().multiply(0.94, 1, 0.94));
+                } else {
+                    this.setXRot(Mth.clamp(this.getXRot() + 0.1f, -89, 89));
+                }
+            } else if (passenger instanceof Player) {
+                if (getEnergy() > 0) {
+                    if (forwardInputDown) {
+                        this.entityData.set(POWER, Math.min(this.entityData.get(POWER) + 0.001f, 1f));
+                    }
+
+                    if (backInputDown) {
+                        this.entityData.set(POWER, Math.max(this.entityData.get(POWER) - 0.001f, onGround() ? -0.04f : 0.01f));
+                    }
                 }
 
-                if (backInputDown) {
-                    this.entityData.set(POWER, Math.max(this.entityData.get(POWER) - 0.002f, onGround() ? -0.04f : 0.02f));
+                if (!onGround()) {
+                    if (rightInputDown) {
+                        this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) - 0.4f);
+                    } else if (this.leftInputDown) {
+                        this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) + 0.4f);
+                    }
+                } else {
+                    // 刹车
+                    if (upInputDown) {
+                        this.entityData.set(POWER, this.entityData.get(POWER) * 0.8f);
+                        this.setDeltaMovement(this.getDeltaMovement().multiply(0.98, 1, 0.98));
+                    }
+                }
+
+                diffY = Mth.clamp(Mth.wrapDegrees(passenger.getYHeadRot() - this.getYRot()), -90f, 90f);
+                diffX = Mth.clamp(Mth.wrapDegrees(passenger.getXRot() - this.getXRot()), -90f, 90f);
+
+                float roll = Mth.abs(Mth.clamp(getRoll() / 60, -1.5f, 1.5f));
+
+                float addY = Mth.clamp(Math.max((this.onGround() ? 0.1f : 0.2f) * (float) getDeltaMovement().length(), 0f) * diffY - 0.5f * this.entityData.get(DELTA_ROT), -2f * (roll + 1), 2f * (roll + 1));
+                float addX = Mth.clamp(Math.min((float) Math.max(getDeltaMovement().dot(getViewVector(1)) - 0.15, 0.01), 0.7f) * diffX, -3.4f, 3.4f);
+                float addZ = this.entityData.get(DELTA_ROT) - (this.onGround() ? 0 : 0.01f) * diffY * (float) getDeltaMovement().dot(getViewVector(1));
+
+                float i = getXRot() / 90;
+                yRotSync = addY * (1 - Mth.abs(i)) + addZ * i;
+
+                this.setYRot(this.getYRot() + yRotSync);
+                if (!onGround()) {
+                    this.setXRot(Mth.clamp(this.getXRot() + addX, -80, 80));
+                    this.setZRot(this.getRoll() - addZ * (1 - Mth.abs(i)));
+                }
+
+                setFlap1LRot(Mth.clamp(-Mth.clamp(diffX, -22.5f, 22.5f) - 8 * addZ * (1 - Mth.abs(i)), -22.5f, 22.5f));
+                setFlap1RRot(Mth.clamp(-Mth.clamp(diffX, -22.5f, 22.5f) + 8 * addZ * (1 - Mth.abs(i)), -22.5f, 22.5f));
+
+                setFlap2LRot(Mth.clamp(Mth.clamp(diffX, -22.5f, 22.5f) - 8 * addZ * (1 - Mth.abs(i)), -22.5f, 22.5f));
+                setFlap2RRot(Mth.clamp(Mth.clamp(diffX, -22.5f, 22.5f) + 8 * addZ * (1 - Mth.abs(i)), -22.5f, 22.5f));
+
+                setFlap3Rot(diffY * 0.7f);
+
+                this.setPropellerRot(this.getPropellerRot() + 30 * this.entityData.get(POWER));
+
+                // 起落架
+                if (!SeekTool.isOnGround(this, 15)) {
+                    flyTime = Math.min(flyTime + 1, 20);
+                }
+
+                if (SeekTool.isOnGround(this, 15) && fly) {
+                    flyTime = Math.max(flyTime - 1, 0);
+                }
+
+                if (!fly && flyTime == 10) {
+                    fly = true;
+                }
+
+                if (fly && flyTime == 0) {
+                    fly = false;
+                }
+
+                if (fly) {
+                    entityData.set(GEAR_ROT, Math.min(entityData.get(GEAR_ROT) + 5, 85));
+                } else {
+                    entityData.set(GEAR_ROT, Math.max(entityData.get(GEAR_ROT) - 5, 0));
                 }
             }
-
-            if (!onGround()) {
-                if (rightInputDown) {
-                    this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) - 0.4f);
-                } else if (this.leftInputDown) {
-                    this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) + 0.4f);
-                }
-            } else {
-                // 刹车
-                if (upInputDown) {
-                    this.entityData.set(POWER, this.entityData.get(POWER) * 0.8f);
-                    this.setDeltaMovement(this.getDeltaMovement().multiply(0.98, 1, 0.98));
-                }
-            }
-
-            diffY = Mth.clamp(Mth.wrapDegrees(passenger.getYHeadRot() - this.getYRot()), -90f, 90f);
-            diffX = Mth.clamp(Mth.wrapDegrees(passenger.getXRot() - this.getXRot()), -90f, 90f);
-
-            float roll = Mth.abs(Mth.clamp(getRoll() / 60, -1.5f, 1.5f));
-
-            float addY = Mth.clamp(Math.max((this.onGround() ? 0.1f : 0.2f) * (float) getDeltaMovement().length(), 0f) * diffY - 0.5f * this.entityData.get(DELTA_ROT), -2f * (roll + 1), 2f * (roll + 1));
-            float addX = Mth.clamp(Math.min((float) Math.max(getDeltaMovement().dot(getViewVector(1)) - 0.15, 0.01), 0.7f) * diffX, -3.4f, 3.4f);
-            float addZ = this.entityData.get(DELTA_ROT) - (this.onGround() ? 0 : 0.01f) * diffY * (float) getDeltaMovement().dot(getViewVector(1));
-
-            float i = getXRot() / 90;
-            yRotSync = addY * (1 - Mth.abs(i)) + addZ * i;
-
-            this.setYRot(this.getYRot() + yRotSync);
-            this.setXRot(Mth.clamp(this.getXRot() + addX, onGround() ? 0 : -120, onGround() ? 0 : 120));
-            this.setZRot(this.getRoll() - addZ * (1 - Mth.abs(i)));
-
-            setFlap1LRot(Mth.clamp(-Mth.clamp(diffX, -22.5f, 22.5f) - 8 * addZ * (1 - Mth.abs(i)), -22.5f, 22.5f));
-            setFlap1RRot(Mth.clamp(-Mth.clamp(diffX, -22.5f, 22.5f) + 8 * addZ * (1 - Mth.abs(i)), -22.5f, 22.5f));
-
-            setFlap2LRot(Mth.clamp(Mth.clamp(diffX, -22.5f, 22.5f) - 8 * addZ * (1 - Mth.abs(i)), -22.5f, 22.5f));
-            setFlap2RRot(Mth.clamp(Mth.clamp(diffX, -22.5f, 22.5f) + 8 * addZ * (1 - Mth.abs(i)), -22.5f, 22.5f));
-
-            setFlap3Rot(diffY * 0.7f);
-
-            this.setPropellerRot(this.getPropellerRot() + 30 * this.entityData.get(POWER));
-
-            // 起落架
-            if (!SeekTool.isOnGround(this, 15)) {
-                flyTime = Math.min(flyTime + 1, 20);
-            }
-
-            if (SeekTool.isOnGround(this, 15) && fly) {
-                flyTime = Math.max(flyTime - 1, 0);
-            }
-
-            if (!fly && flyTime == 10) {
-                fly = true;
-            }
-
-            if (fly && flyTime == 0) {
-                fly = false;
-            }
-
-            if (fly) {
-                entityData.set(GEAR_ROT, Math.min(entityData.get(GEAR_ROT) + 5, 85));
-            } else {
-                entityData.set(GEAR_ROT, Math.max(entityData.get(GEAR_ROT) - 5, 0));
-            }
+        } else if (!onGround()) {
+            this.entityData.set(POWER, Math.max(this.entityData.get(POWER) - 0.0003f, 0.02f));
+            destroyRot += 0.1f;
+            diffX = 90 - this.getXRot();
+            this.setXRot(this.getXRot() + diffX * 0.0015f * destroyRot);
+            this.setZRot(this.getRoll() - destroyRot);
+            setDeltaMovement(getDeltaMovement().add(0, -0.03, 0));
+            setDeltaMovement(getDeltaMovement().add(0, -destroyRot * 0.005, 0));
         }
 
-        this.entityData.set(POWER, this.entityData.get(POWER) * 0.99f);
+        this.entityData.set(POWER, this.entityData.get(POWER) * 0.995f);
         this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) * 0.95f);
 
         if (getEnergy() > 0 && !this.level().isClientSide) {
@@ -435,7 +514,7 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
 
         this.setDeltaMovement(this.getDeltaMovement().add(getViewVector(1).scale(Math.max((90 + this.getXRot()) / 90, 0.8) * 0.43 * this.entityData.get(POWER))));
         double flapAngle = (getFlap1LRot() + getFlap1RRot()) / 2;
-        setDeltaMovement(getDeltaMovement().add(0.0f, Mth.clamp(Math.sin((onGround() ? 23 + flapAngle : -(getXRot() - 23) + flapAngle) * Mth.DEG_TO_RAD) * Math.sin((90 - this.getXRot()) * Mth.DEG_TO_RAD) * getDeltaMovement().dot(getViewVector(1)) * 0.063, -0.04, 0.065), 0.0f));
+        setDeltaMovement(getDeltaMovement().add(0.0f, Mth.clamp(Math.sin((onGround() ? 20 + flapAngle : -(getXRot() - 20) + flapAngle) * Mth.DEG_TO_RAD) * Math.sin((90 - this.getXRot()) * Mth.DEG_TO_RAD) * getDeltaMovement().dot(getViewVector(1)) * 0.055, -0.04, 0.065), 0.0f));
     }
 
     @Override
@@ -673,7 +752,7 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
                 entityToSpawn.shoot(getLookAngle().x, getLookAngle().y - 0.07, getLookAngle().z, 30, 0.5f);
                 level().addFreshEntity(entityToSpawn);
 
-                ParticleTool.sendParticle((ServerLevel) this.level(), ParticleTypes.LARGE_SMOKE, worldPosition.x, worldPosition.y, worldPosition.z, 1, 0, 0, 0, 0, false);
+                sendParticle((ServerLevel) this.level(), ParticleTypes.LARGE_SMOKE, worldPosition.x, worldPosition.y, worldPosition.z, 1, 0, 0, 0, 0, false);
 
                 if (!hasCreativeAmmo) {
                     this.getItemStacks().stream().filter(stack -> stack.is(ModItems.SMALL_SHELL.get())).findFirst().ifPresent(stack -> stack.shrink(1));
