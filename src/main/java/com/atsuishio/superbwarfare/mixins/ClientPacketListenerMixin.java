@@ -80,24 +80,26 @@ public abstract class ClientPacketListenerMixin {
 
     @Inject(method = "postAddEntitySoundInstance(Lnet/minecraft/world/entity/Entity;)V", at = @At("RETURN"))
     private void postAddEntitySoundInstance(Entity pEntity, CallbackInfo ci) {
-        Mod.queueClientWork(60, () -> {
-            if (pEntity instanceof MobileVehicleEntity mobileVehicle) {
-                Minecraft.getInstance().getSoundManager().play(new VehicleSoundInstance.EngineSound(mobileVehicle, mobileVehicle.getEngineSound()));
-                Minecraft.getInstance().getSoundManager().play(new VehicleSoundInstance.SwimSound(mobileVehicle));
-            }
-            if (pEntity instanceof MobileVehicleEntity mobileVehicle && mobileVehicle instanceof TrackEntity) {
-                Minecraft.getInstance().getSoundManager().play(new VehicleSoundInstance.TrackSound(mobileVehicle));
-            }
-            if (pEntity instanceof LoudlyEntity) {
-                Minecraft.getInstance().getSoundManager().play(new LoudlyEntitySoundInstance.EntitySound(pEntity));
-                Minecraft.getInstance().getSoundManager().play(new LoudlyEntitySoundInstance.EntitySoundClose(pEntity));
-            }
-            if (pEntity instanceof MobileVehicleEntity mobileVehicle && mobileVehicle instanceof A10Entity) {
-                Minecraft.getInstance().getSoundManager().play(new VehicleFireSoundInstance.A10FireSound(mobileVehicle));
-            }
-            if (pEntity instanceof MobileVehicleEntity mobileVehicle && mobileVehicle instanceof Hpj11Entity) {
-                Minecraft.getInstance().getSoundManager().play(new VehicleFireSoundInstance.HPJ11CloseFireSound(mobileVehicle));
-            }
-        });
+        if (pEntity instanceof LoudlyEntity) {
+            Minecraft.getInstance().getSoundManager().play(new LoudlyEntitySoundInstance.EntitySound(pEntity));
+            Minecraft.getInstance().getSoundManager().play(new LoudlyEntitySoundInstance.EntitySoundClose(pEntity));
+        } else {
+            Mod.queueClientWork(30, () -> {
+                if (pEntity instanceof MobileVehicleEntity mobileVehicle) {
+                    if (mobileVehicle instanceof TrackEntity) {
+                        Minecraft.getInstance().getSoundManager().play(new VehicleSoundInstance.TrackSound(mobileVehicle));
+                    }
+                    if (mobileVehicle instanceof A10Entity) {
+                        Minecraft.getInstance().getSoundManager().play(new VehicleFireSoundInstance.A10FireSound(mobileVehicle));
+                    }
+                    if (mobileVehicle instanceof Hpj11Entity) {
+                        Minecraft.getInstance().getSoundManager().play(new VehicleFireSoundInstance.HPJ11CloseFireSound(mobileVehicle));
+                    }
+
+                    Minecraft.getInstance().getSoundManager().play(new VehicleSoundInstance.EngineSound(mobileVehicle, mobileVehicle.getEngineSound()));
+                    Minecraft.getInstance().getSoundManager().play(new VehicleSoundInstance.SwimSound(mobileVehicle));
+                }
+            });
+        }
     }
 }
