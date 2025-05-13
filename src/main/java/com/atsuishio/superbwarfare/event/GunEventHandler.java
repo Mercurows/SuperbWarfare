@@ -198,8 +198,7 @@ public class GunEventHandler {
             String origin = stack.getItem().getDescriptionId();
             String name = origin.substring(origin.lastIndexOf(".") + 1);
 
-            SoundEvent sound1p;
-            sound1p = BuiltInRegistries.SOUND_EVENT.get(Mod.loc(name + "_reload_normal"));
+            SoundEvent sound1p = BuiltInRegistries.SOUND_EVENT.get(Mod.loc(name + "_reload_normal"));
 
             if (sound1p != null && player instanceof ServerPlayer serverPlayer) {
                 SoundTool.playLocalSound(serverPlayer, sound1p, 10f, 1f);
@@ -219,13 +218,6 @@ public class GunEventHandler {
         reload.prepareLoadTimer.reduce();
         reload.iterativeLoadTimer.reduce();
         reload.finishTimer.reduce();
-
-//        player.displayClientMessage(Component.literal("prepare: " +  new DecimalFormat("##.#").format(data.reload.prepareTimer.get())
-//                        + " prepare_load: " +  new DecimalFormat("##.#").format(data.reload.iterativeLoadTimer.get())
-//                        + " iterative: " +  new DecimalFormat("##.#").format(tag.getDouble("IterativeLoadTime"))
-//                        + " finish: " +  new DecimalFormat("##.#").format(tag.getDouble("FinishTime"))
-//                        + " reload_stage: " +  new DecimalFormat("##.#").format(tag.getDouble("reload_stage"))
-//        ), true);
 
         // 一阶段
         if (reload.singleReloadStarter.start()) {
