@@ -229,7 +229,7 @@ public class AircraftOverlay implements LayeredDraw.Layer {
                     RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
                     RenderSystem.setShaderColor(1, 1, 1, 1);
 
-                    preciseBlit(guiGraphics, Mod.loc("textures/screens/aircraft/hud_base2.png"), x - 72 + diffX, y - 72 + diffY, 0, 0, 144, 144, 144, 144);
+                    preciseBlit(guiGraphics, Mod.loc("textures/screens/aircraft/hud_base2.png"), x - 72 + diffY, y - 72 + diffX, 0, 0, 144, 144, 144, 144);
 
                     preciseBlit(guiGraphics, Mod.loc("textures/screens/aircraft/crosshair_ind.png"), x - 16, y - 16, 0, 0, 32, 32, 32, 32);
                     renderKillIndicator(guiGraphics, x - 7.5f + (float) (2 * (Math.random() - 0.5f)), y - 7.5f + (float) (2 * (Math.random() - 0.5f)));

@@ -25,11 +25,13 @@ public class AircraftCatapultBlockEntity extends BlockEntity {
 
         var list = pLevel.getEntitiesOfClass(Entity.class, new AABB(pPos.above()));
         list.forEach(entity -> {
-            float rate = power / 800f;
+            float rate = power / 1200f;
             if (entity instanceof LivingEntity) {
                 rate = power / 100f;
             }
-            entity.addDeltaMovement(new Vec3(direction.getStepX() * rate, 0, direction.getStepZ() * rate));
+            if (entity.getDeltaMovement().dot(new Vec3(direction.getStepX(), 0, direction.getStepZ())) < 0.2 * power) {
+                entity.addDeltaMovement(new Vec3(direction.getStepX() * rate, 0, direction.getStepZ() * rate));
+            }
         });
     }
 

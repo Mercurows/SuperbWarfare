@@ -44,7 +44,6 @@ import net.neoforged.neoforge.event.EventHooks;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Math;
 import org.joml.Matrix4f;
-import org.joml.Vector3f;
 import org.joml.Vector4f;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
@@ -202,7 +201,7 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
             this.setDeltaMovement(this.getDeltaMovement().multiply(0.8, 1, 0.8));
         } else {
             setZRot(getRoll() * (backInputDown ? 0.9f : 0.99f));
-            float f = (float) Mth.clamp(0.9f - 0.015 * getDeltaMovement().length() + 0.02f * Mth.abs(90 - (float) calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90, 0.01, 0.99);
+            float f = (float) Mth.clamp(0.95f - 0.015 * getDeltaMovement().length() + 0.02f * Mth.abs(90 - (float) calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90, 0.01, 0.99);
             this.setDeltaMovement(this.getDeltaMovement().add(this.getViewVector(1).scale((this.getXRot() < 0 ? -0.035 : (this.getXRot() > 0 ? 0.035 : 0)) * this.getDeltaMovement().length())));
             this.setDeltaMovement(this.getDeltaMovement().multiply(f, 0.95, f));
         }
@@ -357,13 +356,14 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
             this.consumeEnergy((int) (VehicleConfig.AH_6_MIN_ENERGY_COST.get() + this.entityData.get(POWER) * ((VehicleConfig.AH_6_MAX_ENERGY_COST.get() - VehicleConfig.AH_6_MIN_ENERGY_COST.get()) / 0.12)));
         }
 
-        setDeltaMovement(getDeltaMovement().add(0.0f, Math.min(Math.sin((90 - this.getXRot()) * Mth.DEG_TO_RAD), Math.sin((90 + this.getRoll()) * Mth.DEG_TO_RAD)) * this.entityData.get(POWER), 0.0f));
+        Matrix4f transform = getVehicleTransform(1);
 
-        Vector3f direction = getRightDirection().mul(-Math.sin(this.getRoll() * Mth.DEG_TO_RAD) * this.entityData.get(PROPELLER_ROT));
-        setDeltaMovement(getDeltaMovement().add(new Vec3(direction.x, direction.y, direction.z).scale(3)));
+        Vector4f force0 = transformPosition(transform, 0, 0, 0);
+        Vector4f force1 = transformPosition(transform, 0, 1, 0);
 
-        Vector3f directionZ = getForwardDirection().mul(-Math.cos((this.getXRot() + 90) * Mth.DEG_TO_RAD) * this.entityData.get(PROPELLER_ROT));
-        setDeltaMovement(getDeltaMovement().add(new Vec3(directionZ.x, directionZ.y, directionZ.z).scale(3)));
+        Vec3 force = new Vec3(force0.x, force0.y, force0.z).vectorTo(new Vec3(force1.x, force1.y, force1.z));
+
+        setDeltaMovement(getDeltaMovement().add(force.scale(this.entityData.get(POWER))));
 
         if (this.entityData.get(POWER) > 0.04f) {
             engineStartOver = true;

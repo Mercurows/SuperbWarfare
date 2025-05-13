@@ -221,11 +221,10 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
         lockingTargetO = getTargetUuid();
 
         super.baseTick();
-        float f = (float) Mth.clamp(Math.max((onGround() ? 0.805f : 0.81f) - 0.004 * getDeltaMovement().length(), 0.5) + 0.001f * Mth.abs(90 - (float) calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90, 0.01, 0.99);
+        float f = (float) Mth.clamp(Math.max((onGround() ? 0.815f : 0.82f) - 0.003 * getDeltaMovement().length(), 0.5) + 0.001f * Mth.abs(90 - (float) calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90, 0.01, 0.99);
 
-        boolean forward = Mth.abs((float) calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) < 90;
-
-        this.setDeltaMovement(this.getDeltaMovement().add(this.getViewVector(1).scale((forward ? 0.23 : -0.02) * this.getDeltaMovement().length())));
+        boolean forward = getDeltaMovement().dot(getViewVector(1)) > 0;
+        this.setDeltaMovement(this.getDeltaMovement().add(this.getViewVector(1).scale((forward ? 0.23 : 0.1) * getDeltaMovement().dot(getViewVector(1)))));
         this.setDeltaMovement(this.getDeltaMovement().multiply(f, f, f));
 
         if (this.isInWater() && this.tickCount % 4 == 0) {
@@ -517,11 +516,11 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
             } else if (passenger instanceof Player) {
                 if (getEnergy() > 0) {
                     if (forwardInputDown) {
-                        this.entityData.set(POWER, Math.min(this.entityData.get(POWER) + 0.001f, 1f));
+                        this.entityData.set(POWER, Math.min(this.entityData.get(POWER) + 0.005f, 1f));
                     }
 
                     if (backInputDown) {
-                        this.entityData.set(POWER, Math.max(this.entityData.get(POWER) - 0.001f, onGround() ? -0.04f : 0.01f));
+                        this.entityData.set(POWER, Math.max(this.entityData.get(POWER) - 0.004f, -0.6f));
                     }
                 }
 
@@ -535,7 +534,7 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
                     // 刹车
                     if (upInputDown) {
                         this.entityData.set(POWER, this.entityData.get(POWER) * 0.8f);
-                        this.setDeltaMovement(this.getDeltaMovement().multiply(0.98, 1, 0.98));
+                        this.setDeltaMovement(this.getDeltaMovement().multiply(0.97, 1, 0.97));
                     }
                 }
 
@@ -544,8 +543,8 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
 
                 float roll = Mth.abs(Mth.clamp(getRoll() / 60, -1.5f, 1.5f));
 
-                float addY = Mth.clamp(Math.max((this.onGround() ? 0.1f : 0.2f) * (float) getDeltaMovement().length(), 0f) * diffY - 0.5f * this.entityData.get(DELTA_ROT), -2f * (roll + 1), 2f * (roll + 1));
-                float addX = Mth.clamp(Math.min((float) Math.max(getDeltaMovement().dot(getViewVector(1)) - 0.15, 0.01), 0.7f) * diffX, -3.4f, 3.4f);
+                float addY = Mth.clamp(Math.max((this.onGround() ? 0.1f : 0.2f) * (float) getDeltaMovement().length(), 0f) * diffY - 0.5f * this.entityData.get(DELTA_ROT), -1.5f * (roll + 1), 1.5f * (roll + 1));
+                float addX = Mth.clamp(Math.min((float) Math.max(getDeltaMovement().dot(getViewVector(1)) - 0.17, 0.01), 0.7f) * diffX, -3.5f, 3.5f);
                 float addZ = this.entityData.get(DELTA_ROT) - (this.onGround() ? 0 : 0.01f) * diffY * (float) getDeltaMovement().dot(getViewVector(1));
 
                 float i = getXRot() / 90;
@@ -600,16 +599,24 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
             setDeltaMovement(getDeltaMovement().add(0, -destroyRot * 0.005, 0));
         }
 
-        this.entityData.set(POWER, this.entityData.get(POWER) * 0.995f);
+        this.entityData.set(POWER, this.entityData.get(POWER) * 0.99f);
         this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) * 0.95f);
 
         if (getEnergy() > 0 && !this.level().isClientSide) {
             this.consumeEnergy((int) (Mth.abs(this.entityData.get(POWER)) * VehicleConfig.A_10_MAX_ENERGY_COST.get()));
         }
 
-        this.setDeltaMovement(this.getDeltaMovement().add(getViewVector(1).scale(Math.max((90 + this.getXRot()) / 90, 0.8) * 0.43 * this.entityData.get(POWER))));
+        Matrix4f transform = getVehicleTransform(1);
         double flapAngle = (getFlap1LRot() + getFlap1RRot()) / 2;
-        setDeltaMovement(getDeltaMovement().add(0.0f, Mth.clamp(Math.sin((onGround() ? 20 + flapAngle : -(getXRot() - 20) + flapAngle) * Mth.DEG_TO_RAD) * Math.sin((90 - this.getXRot()) * Mth.DEG_TO_RAD) * getDeltaMovement().dot(getViewVector(1)) * 0.055, -0.04, 0.065), 0.0f));
+
+        Vector4f force0 = transformPosition(transform, 0, 0, 0);
+        Vector4f force1 = transformPosition(transform, 0, 1, 0);
+
+        Vec3 force = new Vec3(force0.x, force0.y, force0.z).vectorTo(new Vec3(force1.x, force1.y, force1.z));
+
+        setDeltaMovement(getDeltaMovement().add(force.scale(getDeltaMovement().dot(getViewVector(1)) * 0.022 * (1 + Math.sin((onGround() ? 25 : flapAngle + 25) * Mth.DEG_TO_RAD)))));
+
+        this.setDeltaMovement(this.getDeltaMovement().add(getViewVector(1).scale(0.05 * this.entityData.get(POWER))));
     }
 
     @Override

@@ -118,9 +118,7 @@ public class SmallCannonShellEntity extends FastThrowableProjectile implements G
                 vec3.y,
                 vec3.z,
                 explosionRadius,
-                this.blockInteraction != null ? this.blockInteraction :
-                        hitEntity ? Explosion.BlockInteraction.KEEP :
-                                (ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP)
+                hitEntity ? Explosion.BlockInteraction.KEEP : (ExplosionConfig.EXPLOSION_DESTROY.get() ? (this.blockInteraction != null ? this.blockInteraction : Explosion.BlockInteraction.DESTROY) : Explosion.BlockInteraction.KEEP)
         ).setDamageMultiplier(1.25f);
         explosion.explode();
         EventHooks.onExplosionStart(this.level(), explosion);
