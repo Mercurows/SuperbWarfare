@@ -11,7 +11,6 @@ import com.atsuishio.superbwarfare.network.message.receive.PlayerGunKillMessage;
 import com.atsuishio.superbwarfare.tools.TraceTool;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSoundPacket;
@@ -27,7 +26,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.item.Tiers;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.component.Unbreakable;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -45,7 +43,6 @@ public class Beast extends SwordItem {
                 .rarity(ModEnumExtensions.getLegendary())
                 .setNoRepair()
                 .durability(114514)
-                .component(DataComponents.UNBREAKABLE, new Unbreakable(false))
         );
     }
 
@@ -54,6 +51,11 @@ public class Beast extends SwordItem {
     public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
         beastKill(attacker, target);
         return true;
+    }
+
+    @Override
+    public boolean isDamageable(@NotNull ItemStack stack) {
+        return false;
     }
 
     public static void beastKill(@Nullable Entity attacker, @NotNull Entity target) {
