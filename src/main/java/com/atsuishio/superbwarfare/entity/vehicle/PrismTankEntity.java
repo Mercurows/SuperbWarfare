@@ -812,4 +812,9 @@ public class PrismTankEntity extends ContainerMobileVehicleEntity implements Geo
     public boolean hasDecoy() {
         return true;
     }
+
+    @Override
+    public double getSensitivity(double original, boolean zoom, int seatIndex, boolean isOnGround) {
+        return zoom ? 0.26 : 0.33;
+    }
 }

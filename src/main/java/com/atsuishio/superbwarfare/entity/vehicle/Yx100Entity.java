@@ -1281,4 +1281,13 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
     public boolean hasDecoy() {
         return true;
     }
+
+    @Override
+    public double getSensitivity(double original, boolean zoom, int seatIndex, boolean isOnGround) {
+        if (seatIndex == 0) {
+            return zoom ? 0.17 : 0.22;
+        } else if (seatIndex == 1) {
+            return zoom ? 0.25 : 0.35;
+        } else return original;
+    }
 }

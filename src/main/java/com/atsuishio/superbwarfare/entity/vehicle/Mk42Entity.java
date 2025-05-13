@@ -452,4 +452,9 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
     public ResourceLocation getVehicleIcon() {
         return Mod.loc("textures/vehicle_icon/sherman_icon.png");
     }
+
+    @Override
+    public double getSensitivity(double original, boolean zoom, int seatIndex, boolean isOnGround) {
+        return zoom ? 0.15 : 0.3;
+    }
 }

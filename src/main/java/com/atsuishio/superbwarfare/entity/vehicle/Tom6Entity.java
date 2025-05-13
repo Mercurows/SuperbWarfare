@@ -232,7 +232,7 @@ public class Tom6Entity extends MobileVehicleEntity implements GeoEntity {
 
     @Override
     public SoundEvent getEngineSound() {
-        return SoundEvents.EMPTY;
+        return super.getEngineSound();
     }
 
     @Override
@@ -366,5 +366,10 @@ public class Tom6Entity extends MobileVehicleEntity implements GeoEntity {
     @Override
     public boolean allowFreeCam() {
         return true;
+    }
+
+    @Override
+    public double getSensitivity(double original, boolean zoom, int seatIndex, boolean isOnGround) {
+        return 0.3;
     }
 }

@@ -697,4 +697,9 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
     public boolean allowFreeCam() {
         return true;
     }
+
+    @Override
+    public double getSensitivity(double original, boolean zoom, int seatIndex, boolean isOnGround) {
+        return seatIndex == 0 && !isOnGround ? 0.33 : original;
+    }
 }

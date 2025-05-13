@@ -972,6 +972,19 @@ public abstract class VehicleEntity extends Entity {
     }
 
     /**
+     * 玩家在载具上的灵敏度调整
+     *
+     * @param original   原始灵敏度
+     * @param zoom       是否在载具上瞄准
+     * @param seatIndex  玩家座位
+     * @param isOnGround 载具是否在地面
+     * @return 调整后的灵敏度
+     */
+    public double getSensitivity(double original, boolean zoom, int seatIndex, boolean isOnGround) {
+        return original;
+    }
+
+    /**
      * 渲染载具的第一人称UI
      * 务必标记 @OnlyIn(Dist.CLIENT) !
      */

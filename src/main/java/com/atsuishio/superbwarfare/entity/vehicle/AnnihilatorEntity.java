@@ -605,4 +605,9 @@ public class AnnihilatorEntity extends EnergyVehicleEntity implements GeoEntity,
     public ResourceLocation getVehicleIcon() {
         return Mod.loc("textures/vehicle_icon/annihilator_icon.png");
     }
+
+    @Override
+    public double getSensitivity(double original, boolean zoom, int seatIndex, boolean isOnGround) {
+        return zoom ? 0.15 : 0.3;
+    }
 }

@@ -2,8 +2,9 @@ package com.atsuishio.superbwarfare.event;
 
 import com.atsuishio.superbwarfare.client.MouseMovementHandler;
 import com.atsuishio.superbwarfare.config.client.VehicleControlConfig;
-import com.atsuishio.superbwarfare.entity.vehicle.*;
-import com.atsuishio.superbwarfare.entity.vehicle.base.CannonEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.Ah6Entity;
+import com.atsuishio.superbwarfare.entity.vehicle.Tom6Entity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModMobEffects;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
@@ -138,44 +139,8 @@ public class ClientMouseHandler {
             return 0;
         }
 
-        if (player.getVehicle() instanceof Hpj11Entity) {
-            return ClientEventHandler.zoomVehicle ? 0.25 : 0.3;
-        }
-
-        if (player.getVehicle() instanceof CannonEntity) {
-            return ClientEventHandler.zoomVehicle ? 0.15 : 0.3;
-        }
-
-        if (player.getVehicle() instanceof Lav150Entity) {
-            return ClientEventHandler.zoomVehicle ? 0.23 : 0.3;
-        }
-
-        if (player.getVehicle() instanceof Bmp2Entity) {
-            return ClientEventHandler.zoomVehicle ? 0.22 : 0.27;
-        }
-
-        if (player.getVehicle() instanceof Yx100Entity yx100) {
-            if (player == yx100.getFirstPassenger()) {
-                return ClientEventHandler.zoomVehicle ? 0.17 : 0.22;
-            } else if (player == yx100.getNthEntity(1)) {
-                return ClientEventHandler.zoomVehicle ? 0.25 : 0.35;
-            }
-        }
-
-        if (player.getVehicle() instanceof PrismTankEntity) {
-            return ClientEventHandler.zoomVehicle ? 0.26 : 0.33;
-        }
-
-        if (player.getVehicle() instanceof Ah6Entity ah6Entity && !ah6Entity.onGround() && ah6Entity.getFirstPassenger() == player) {
-            return 0.33;
-        }
-
-        if (player.getVehicle() instanceof Tom6Entity) {
-            return 0.3;
-        }
-
-        if (player.getVehicle() instanceof A10Entity) {
-            return 0.25;
+        if (player.getVehicle() instanceof VehicleEntity vehicle) {
+            return vehicle.getSensitivity(original, ClientEventHandler.zoomVehicle, vehicle.getSeatIndex(player), vehicle.onGround());
         }
 
         return original;

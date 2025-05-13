@@ -521,4 +521,9 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
     public ResourceLocation getVehicleIcon() {
         return Mod.loc("textures/vehicle_icon/mle1934_icon.png");
     }
+
+    @Override
+    public double getSensitivity(double original, boolean zoom, int seatIndex, boolean isOnGround) {
+        return zoom ? 0.15 : 0.3;
+    }
 }

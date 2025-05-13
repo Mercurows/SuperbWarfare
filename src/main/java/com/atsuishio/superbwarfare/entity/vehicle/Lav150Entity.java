@@ -642,4 +642,9 @@ public class Lav150Entity extends ContainerMobileVehicleEntity implements GeoEnt
     public boolean hasDecoy() {
         return true;
     }
+
+    @Override
+    public double getSensitivity(double original, boolean zoom, int seatIndex, boolean isOnGround) {
+        return zoom ? 0.23 : 0.3;
+    }
 }
