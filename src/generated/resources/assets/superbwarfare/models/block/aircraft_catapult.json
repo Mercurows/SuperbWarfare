@@ -1,9 +1,12 @@
 {
-  "parent": "minecraft:block/cube_bottom_top",
+  "parent": "minecraft:block/cube",
   "textures": {
-    "bottom": "superbwarfare:block/vehicle_deployer_bottom",
-    "particle": "superbwarfare:block/vehicle_deployer_bottom",
-    "side": "superbwarfare:block/vehicle_deployer_side",
-    "top": "superbwarfare:block/vehicle_deployer_top"
+    "down": "superbwarfare:block/vehicle_deployer_bottom",
+    "east": "superbwarfare:block/aircraft_catapult_side2",
+    "north": "superbwarfare:block/aircraft_catapult_side",
+    "particle": "superbwarfare:block/aircraft_catapult_top",
+    "south": "superbwarfare:block/aircraft_catapult_side",
+    "up": "superbwarfare:block/aircraft_catapult_top",
+    "west": "superbwarfare:block/aircraft_catapult_side2"
   }
 }
