@@ -187,6 +187,7 @@ public class ModItems {
     public static final DeferredHolder<Item, BatteryItem> SMALL_BATTERY_PACK = ITEMS.register("small_battery_pack", () -> new BatteryItem(500000, new Item.Properties()));
     public static final DeferredHolder<Item, BatteryItem> MEDIUM_BATTERY_PACK = ITEMS.register("medium_battery_pack", () -> new BatteryItem(5000000, new Item.Properties()));
     public static final DeferredHolder<Item, BatteryItem> LARGE_BATTERY_PACK = ITEMS.register("large_battery_pack", () -> new BatteryItem(20000000, new Item.Properties()));
+    public static final DeferredHolder<Item, Beast> BEAST = ITEMS.register("beast", Beast::new);
     public static final DeferredHolder<Item, Transcript> TRANSCRIPT = ITEMS.register("transcript", Transcript::new);
     public static final DeferredHolder<Item, FiringParameters> FIRING_PARAMETERS = ITEMS.register("firing_parameters", FiringParameters::new);
 

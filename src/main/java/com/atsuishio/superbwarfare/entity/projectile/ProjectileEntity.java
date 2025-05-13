@@ -2,16 +2,15 @@ package com.atsuishio.superbwarfare.entity.projectile;
 
 import com.atsuishio.superbwarfare.block.BarbedWireBlock;
 import com.atsuishio.superbwarfare.component.ModDataComponents;
-import com.atsuishio.superbwarfare.config.server.MiscConfig;
 import com.atsuishio.superbwarfare.config.server.ProjectileConfig;
 import com.atsuishio.superbwarfare.entity.DPSGeneratorEntity;
 import com.atsuishio.superbwarfare.entity.TargetEntity;
 import com.atsuishio.superbwarfare.entity.mixin.ICustomKnockback;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.*;
+import com.atsuishio.superbwarfare.item.Beast;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
 import com.atsuishio.superbwarfare.network.message.receive.ClientMotionSyncMessage;
-import com.atsuishio.superbwarfare.network.message.receive.PlayerGunKillMessage;
 import com.atsuishio.superbwarfare.tools.*;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.BlockPos;
@@ -45,7 +44,6 @@ import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.*;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -485,42 +483,7 @@ public class ProjectileEntity extends Projectile implements IEntityWithComplexSp
         }
 
         if (beast && entity instanceof LivingEntity living) {
-            if (living.isDeadOrDying()) return;
-            if (living instanceof TargetEntity) return;
-            if (living instanceof DPSGeneratorEntity dpsGeneratorEntity) {
-                dpsGeneratorEntity.beastCharge();
-                return;
-            }
-
-            if (this.shooter instanceof ServerPlayer player) {
-                PacketDistributor.sendToPlayer(player, new ClientIndicatorMessage(0, 5));
-                var holder = Holder.direct(ModSounds.INDICATION.get());
-                player.connection.send(new ClientboundSoundPacket(holder, SoundSource.PLAYERS, player.getX(), player.getY(), player.getZ(), 1f, 1f, player.level().random.nextLong()));
-                ((ServerLevel) this.level()).sendParticles(ParticleTypes.DAMAGE_INDICATOR, living.getX(), living.getY() + .5, living.getZ(), 1000, .4, .7, .4, 0);
-
-                if (MiscConfig.SEND_KILL_FEEDBACK.get()) {
-                    PacketDistributor.sendToAllPlayers(new PlayerGunKillMessage(player.getId(), living.getId(), false, ModDamageTypes.BEAST));
-                }
-            }
-
-            if (living instanceof ServerPlayer victim) {
-                living.setHealth(0);
-                living.level().players().forEach(
-                        p -> p.sendSystemMessage(
-                                Component.translatable("death.attack.beast_gun",
-                                        victim.getDisplayName(),
-                                        shooter == null ? "" : shooter.getDisplayName()
-                                )
-                        )
-                );
-            } else {
-                living.setHealth(0);
-                living.level().broadcastEntityEvent(living, (byte) 60);
-                living.remove(RemovalReason.KILLED);
-                living.gameEvent(GameEvent.ENTITY_DIE);
-            }
-
-            level().playSound(living, new BlockPos((int) living.getX(), (int) living.getY(), (int) living.getZ()), ModSounds.OUCH.get(), SoundSource.PLAYERS, 2.0F, 1.0F);
+            Beast.beastKill(this.shooter, living);
             return;
         }
 

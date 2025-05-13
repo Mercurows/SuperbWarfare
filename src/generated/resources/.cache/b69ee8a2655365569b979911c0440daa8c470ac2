@@ -1,4 +1,4 @@
-// 1.21.1	2025-05-13T23:25:47.0587486	Item Models: superbwarfare
+// 1.21.1	2025-05-13T23:50:15.1356608	Item Models: superbwarfare
 13ca8d5676888ff51f3308d88e4bf67691fa34f8 assets/superbwarfare/models/item/aa_12_blueprint.json
 0a9bfb695c2b5668863a2de4770f5bfca663c1dc assets/superbwarfare/models/item/agm.json
 29ad5daadcdf7c10771fc45b649c527d16325cbb assets/superbwarfare/models/item/aircraft_catapult.json
@@ -9,6 +9,7 @@ a5cf666a970906ba6ac0af9a4d5d52dd0e093dec assets/superbwarfare/models/item/annihi
 4b8fe8fbe5e64c3449ad539317254e4ed7188411 assets/superbwarfare/models/item/ap_head.json
 984c08ca6f6893a15721a85e30118f9e32c65c7f assets/superbwarfare/models/item/barbed_wire.json
 e8f16946c6f9429989d05e9ec250a72ffc64f9e1 assets/superbwarfare/models/item/beam_test.json
+bda38dd5cb3ca4c3e289a012c0529609ac02ded2 assets/superbwarfare/models/item/beast.json
 13ca8d5676888ff51f3308d88e4bf67691fa34f8 assets/superbwarfare/models/item/bocek_blueprint.json
 140e04e98d9d1c0ee790ca43cb28ad549900ab44 assets/superbwarfare/models/item/cannon_core.json
 1e5b4637c3787516305dd3d1598f401a5e78a954 assets/superbwarfare/models/item/cemented_carbide_action.json

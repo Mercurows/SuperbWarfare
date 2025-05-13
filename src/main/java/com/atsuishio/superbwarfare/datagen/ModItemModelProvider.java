@@ -71,6 +71,7 @@ public class ModItemModelProvider extends ItemModelProvider {
         simpleItem(ModItems.TRANSCRIPT);
         simpleItem(ModItems.RAW_SILVER);
         simpleItem(ModItems.SILVER_INGOT);
+        handheldItem(ModItems.BEAST.getId());
         handheldItem(ModItems.CROWBAR.getId());
         handheldItem(ModItems.DEFUSER.getId());
         simpleItem(ModItems.FIRING_PARAMETERS);
