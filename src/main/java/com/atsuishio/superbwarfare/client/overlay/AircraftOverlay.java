@@ -120,7 +120,7 @@ public class AircraftOverlay implements LayeredDraw.Layer {
 
                     //指南针
                     preciseBlit(guiGraphics, Mod.loc("textures/screens/compass.png"), x - 128, y - 122, 128 + ((float) 64 / 45 * mobileVehicle.getYRot()), 0, 256, 16, 512, 16);
-                    preciseBlit(guiGraphics, Mod.loc("textures/screens/aircraft/compass_ind.png"), x - 4, y - 123, 0, 0, 8, 8, 8, 8);
+                    preciseBlit(guiGraphics, Mod.loc("textures/screens/aircraft/compass_ind.png"), x - 4, y - 130, 0, 0, 8, 8, 8, 8);
 
                     //滚转指示
                     poseStack.pushPose();

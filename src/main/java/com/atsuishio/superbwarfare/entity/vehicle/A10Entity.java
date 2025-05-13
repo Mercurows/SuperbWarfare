@@ -516,7 +516,7 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
             } else if (passenger instanceof Player) {
                 if (getEnergy() > 0) {
                     if (forwardInputDown) {
-                        this.entityData.set(POWER, Math.min(this.entityData.get(POWER) + 0.005f, 1f));
+                        this.entityData.set(POWER, Math.min(this.entityData.get(POWER) + 0.004f, 1f));
                     }
 
                     if (backInputDown) {
