@@ -149,6 +149,12 @@ public class SwarmDroneEntity extends FastThrowableProjectile implements GeoEnti
         if (compound.contains("TargetZ")) {
             this.entityData.set(TARGET_X, compound.getFloat("TargetZ"));
         }
+        if (compound.contains("ExplosionDamage")) {
+            this.explosionDamage = compound.getFloat("ExplosionDamage");
+        }
+        if (compound.contains("Radius")) {
+            this.explosionRadius = compound.getFloat("Radius");
+        }
     }
 
     @Override
@@ -159,6 +165,8 @@ public class SwarmDroneEntity extends FastThrowableProjectile implements GeoEnti
         compound.putFloat("TargetX", this.entityData.get(TARGET_X));
         compound.putFloat("TargetY", this.entityData.get(TARGET_Y));
         compound.putFloat("TargetZ", this.entityData.get(TARGET_Z));
+        compound.putFloat("ExplosionDamage", this.explosionDamage);
+        compound.putFloat("Radius", this.explosionRadius);
     }
 
     @Override

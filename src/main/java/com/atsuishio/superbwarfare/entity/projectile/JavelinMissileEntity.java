@@ -60,8 +60,8 @@ public class JavelinMissileEntity extends FastThrowableProjectile implements Geo
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private float monsterMultiplier = 0.0f;
     private float damage = 500.0f;
-    private float explosion_damage = 140f;
-    private float explosion_radius = 6f;
+    private float explosionDamage = 140f;
+    private float explosionRadius = 6f;
     private boolean distracted = false;
     private int guide_type = 0;
 
@@ -70,11 +70,11 @@ public class JavelinMissileEntity extends FastThrowableProjectile implements Geo
         this.noCulling = true;
     }
 
-    public JavelinMissileEntity(LivingEntity entity, Level level, float damage, float explosion_damage, float explosion_radius, int guide_type, Vec3 targetPos) {
+    public JavelinMissileEntity(LivingEntity entity, Level level, float damage, float explosionDamage, float explosionRadius, int guide_type, Vec3 targetPos) {
         super(ModEntities.JAVELIN_MISSILE.get(), entity, level);
         this.damage = damage;
-        this.explosion_damage = explosion_damage;
-        this.explosion_radius = explosion_radius;
+        this.explosionDamage = explosionDamage;
+        this.explosionRadius = explosionRadius;
         this.guide_type = guide_type;
         this.entityData.set(TARGET_X, (float) targetPos.x);
         this.entityData.set(TARGET_Y, (float) targetPos.y);
@@ -144,12 +144,24 @@ public class JavelinMissileEntity extends FastThrowableProjectile implements Geo
         if (compound.contains("Health")) {
             this.entityData.set(HEALTH, compound.getFloat("Health"));
         }
+        if (compound.contains("Damage")) {
+            this.damage = compound.getFloat("Damage");
+        }
+        if (compound.contains("ExplosionDamage")) {
+            this.explosionDamage = compound.getFloat("ExplosionDamage");
+        }
+        if (compound.contains("Radius")) {
+            this.explosionRadius = compound.getFloat("Radius");
+        }
     }
 
     @Override
     public void addAdditionalSaveData(@NotNull CompoundTag compound) {
         super.addAdditionalSaveData(compound);
         compound.putFloat("Health", this.entityData.get(HEALTH));
+        compound.putFloat("Damage", this.damage);
+        compound.putFloat("ExplosionDamage", this.explosionDamage);
+        compound.putFloat("Radius", this.explosionRadius);
     }
 
     @Override
@@ -315,7 +327,7 @@ public class JavelinMissileEntity extends FastThrowableProjectile implements Geo
             if (this.level() instanceof ServerLevel) {
                 ProjectileTool.causeCustomExplode(this,
                         ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(), this, this.getOwner()),
-                        this, this.explosion_damage, this.explosion_radius, this.monsterMultiplier);
+                        this, this.explosionDamage, this.explosionRadius, this.monsterMultiplier);
             }
             this.discard();
         }
@@ -337,11 +349,11 @@ public class JavelinMissileEntity extends FastThrowableProjectile implements Geo
                 ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(),
                         this,
                         this.getOwner()),
-                explosion_damage,
+                explosionDamage,
                 this.getX(),
                 this.getEyeY(),
                 this.getZ(),
-                explosion_radius,
+                explosionRadius,
                 ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).
                 setDamageMultiplier(this.monsterMultiplier);
         explosion.explode();
@@ -396,11 +408,11 @@ public class JavelinMissileEntity extends FastThrowableProjectile implements Geo
 
     @Override
     public void setExplosionDamage(float damage) {
-        this.explosion_damage = damage;
+        this.explosionDamage = damage;
     }
 
     @Override
     public void setExplosionRadius(float radius) {
-        this.explosion_radius = radius;
+        this.explosionRadius = radius;
     }
 }

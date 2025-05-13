@@ -81,12 +81,20 @@ public class MelonBombEntity extends FastThrowableProjectile implements Destroya
         if (compound.contains("Health")) {
             this.entityData.set(HEALTH, compound.getFloat("Health"));
         }
+        compound.putFloat("ExplosionDamage", this.explosionDamage);
+        compound.putFloat("Radius", this.explosionRadius);
     }
 
     @Override
     public void addAdditionalSaveData(@NotNull CompoundTag compound) {
         super.addAdditionalSaveData(compound);
         compound.putFloat("Health", this.entityData.get(HEALTH));
+        if (compound.contains("ExplosionDamage")) {
+            this.explosionDamage = compound.getFloat("ExplosionDamage");
+        }
+        if (compound.contains("Radius")) {
+            this.explosionRadius = compound.getFloat("Radius");
+        }
     }
 
     @Override

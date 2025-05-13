@@ -10,6 +10,7 @@ import com.atsuishio.superbwarfare.tools.CustomExplosion;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
@@ -58,6 +59,28 @@ public class SmallCannonShellEntity extends FastThrowableProjectile implements G
     public SmallCannonShellEntity setBlockInteraction(Explosion.BlockInteraction blockInteraction) {
         this.blockInteraction = blockInteraction;
         return this;
+    }
+
+    @Override
+    public void addAdditionalSaveData(CompoundTag pCompound) {
+        super.addAdditionalSaveData(pCompound);
+        pCompound.putFloat("Damage", this.damage);
+        pCompound.putFloat("ExplosionDamage", this.explosionDamage);
+        pCompound.putFloat("Radius", this.explosionRadius);
+    }
+
+    @Override
+    public void readAdditionalSaveData(CompoundTag pCompound) {
+        super.readAdditionalSaveData(pCompound);
+        if (pCompound.contains("Damage")) {
+            this.damage = pCompound.getFloat("Damage");
+        }
+        if (pCompound.contains("ExplosionDamage")) {
+            this.explosionDamage = pCompound.getFloat("ExplosionDamage");
+        }
+        if (pCompound.contains("Radius")) {
+            this.explosionRadius = pCompound.getFloat("Radius");
+        }
     }
 
     @Override

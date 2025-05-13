@@ -93,12 +93,20 @@ public class Mk82Entity extends FastThrowableProjectile implements GeoEntity, De
         if (compound.contains("Health")) {
             this.entityData.set(HEALTH, compound.getFloat("Health"));
         }
+        if (compound.contains("ExplosionDamage")) {
+            this.explosionDamage = compound.getFloat("ExplosionDamage");
+        }
+        if (compound.contains("Radius")) {
+            this.explosionRadius = compound.getFloat("Radius");
+        }
     }
 
     @Override
     public void addAdditionalSaveData(@NotNull CompoundTag compound) {
         super.addAdditionalSaveData(compound);
         compound.putFloat("Health", this.entityData.get(HEALTH));
+        compound.putFloat("ExplosionDamage", this.explosionDamage);
+        compound.putFloat("Radius", this.explosionRadius);
     }
 
     @Override

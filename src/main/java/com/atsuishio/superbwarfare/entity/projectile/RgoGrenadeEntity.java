@@ -10,6 +10,7 @@ import com.atsuishio.superbwarfare.tools.ParticleTool;
 import com.atsuishio.superbwarfare.tools.ProjectileTool;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
@@ -34,6 +35,8 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 public class RgoGrenadeEntity extends FastThrowableProjectile implements GeoEntity, ExplosiveProjectile {
 
+    private float explosionDamage = ExplosionConfig.RGO_GRENADE_EXPLOSION_DAMAGE.get();
+    private float explosionRadius = ExplosionConfig.RGO_GRENADE_EXPLOSION_RADIUS.get();
     private int fuse = 80;
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
@@ -50,6 +53,24 @@ public class RgoGrenadeEntity extends FastThrowableProjectile implements GeoEnti
     public RgoGrenadeEntity(LivingEntity entity, Level level, int fuse) {
         super(ModEntities.RGO_GRENADE.get(), entity, level);
         this.fuse = fuse;
+    }
+
+    @Override
+    public void addAdditionalSaveData(CompoundTag pCompound) {
+        super.addAdditionalSaveData(pCompound);
+        pCompound.putFloat("ExplosionDamage", this.explosionDamage);
+        pCompound.putFloat("Radius", this.explosionRadius);
+    }
+
+    @Override
+    public void readAdditionalSaveData(CompoundTag pCompound) {
+        super.readAdditionalSaveData(pCompound);
+        if (pCompound.contains("ExplosionDamage")) {
+            this.explosionDamage = pCompound.getFloat("ExplosionDamage");
+        }
+        if (pCompound.contains("Radius")) {
+            this.explosionRadius = pCompound.getFloat("Radius");
+        }
     }
 
     @Override
@@ -73,7 +94,7 @@ public class RgoGrenadeEntity extends FastThrowableProjectile implements GeoEnti
                     if (state.getBlock() instanceof BellBlock bell) {
                         bell.attemptToRing(this.level(), resultPos, blockResult.getDirection());
                     }
-                    ProjectileTool.causeCustomExplode(this, ExplosionConfig.RGO_GRENADE_EXPLOSION_DAMAGE.get(), ExplosionConfig.RGO_GRENADE_EXPLOSION_RADIUS.get(), 1.2f);
+                    ProjectileTool.causeCustomExplode(this, this.explosionDamage, this.explosionRadius, 1.2f);
 
                     break;
                 case ENTITY:
@@ -87,7 +108,7 @@ public class RgoGrenadeEntity extends FastThrowableProjectile implements GeoEnti
                         }
                     }
                     if (!(entity instanceof DroneEntity)) {
-                        ProjectileTool.causeCustomExplode(this, ExplosionConfig.RGO_GRENADE_EXPLOSION_DAMAGE.get(), ExplosionConfig.RGO_GRENADE_EXPLOSION_RADIUS.get(), 1.2f);
+                        ProjectileTool.causeCustomExplode(this, this.explosionDamage, this.explosionRadius, 1.2f);
                     }
                     break;
                 default:
@@ -104,7 +125,7 @@ public class RgoGrenadeEntity extends FastThrowableProjectile implements GeoEnti
         if (this.fuse <= 0) {
             this.discard();
             if (!this.level().isClientSide) {
-                ProjectileTool.causeCustomExplode(this, ExplosionConfig.RGO_GRENADE_EXPLOSION_DAMAGE.get(), ExplosionConfig.RGO_GRENADE_EXPLOSION_RADIUS.get(), 1.2f);
+                ProjectileTool.causeCustomExplode(this, this.explosionDamage, this.explosionRadius, 1.2f);
             }
         }
 
@@ -138,18 +159,17 @@ public class RgoGrenadeEntity extends FastThrowableProjectile implements GeoEnti
         this.xRotO = this.getXRot();
     }
 
-    // TODO setter
     @Override
     public void setDamage(float damage) {
     }
 
     @Override
     public void setExplosionDamage(float explosionDamage) {
-
+        this.explosionDamage = explosionDamage;
     }
 
     @Override
     public void setExplosionRadius(float radius) {
-
+        this.explosionRadius = radius;
     }
 }

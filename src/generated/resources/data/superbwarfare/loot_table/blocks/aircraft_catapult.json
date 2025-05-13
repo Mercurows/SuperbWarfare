@@ -11,7 +11,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "minecraft:air"
+          "name": "superbwarfare:aircraft_catapult"
         }
       ],
       "rolls": 1.0
