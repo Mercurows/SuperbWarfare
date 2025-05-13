@@ -51,7 +51,8 @@ import java.util.function.Consumer;
 import java.util.stream.StreamSupport;
 
 public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements ControllableVehicle {
-    public static Consumer<MobileVehicleEntity> engineSound = e -> {};
+    public static Consumer<MobileVehicleEntity> engineSound = e -> {
+    };
     public static final EntityDataAccessor<Integer> CANNON_RECOIL_TIME = SynchedEntityData.defineId(MobileVehicleEntity.class, EntityDataSerializers.INT);
 
     public static final EntityDataAccessor<Float> POWER = SynchedEntityData.defineId(MobileVehicleEntity.class, EntityDataSerializers.FLOAT);
@@ -63,6 +64,7 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
     public static final EntityDataAccessor<Integer> AMMO = SynchedEntityData.defineId(MobileVehicleEntity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> DECOY_COUNT = SynchedEntityData.defineId(MobileVehicleEntity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> GEAR_ROT = SynchedEntityData.defineId(MobileVehicleEntity.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Float> PLANE_BREAK = SynchedEntityData.defineId(MobileVehicleEntity.class, EntityDataSerializers.FLOAT);
 
     private Vec3 previousVelocity = Vec3.ZERO;
 
@@ -113,13 +115,16 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
     public float flap1LRotO;
     public float flap1RRot;
     public float flap1RRotO;
+    public float flap1L2Rot;
+    public float flap1L2RotO;
+    public float flap1R2Rot;
+    public float flap1R2RotO;
     public float flap2LRot;
     public float flap2LRotO;
     public float flap2RRot;
     public float flap2RRotO;
     public float flap3Rot;
     public float flap3RotO;
-    public float gearRot;
     public float gearRotO;
 
     public MobileVehicleEntity(EntityType<?> pEntityType, Level pLevel) {
@@ -190,6 +195,8 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
 
         flap1LRotO = this.getFlap1LRot();
         flap1RRotO = this.getFlap1RRot();
+        flap1L2RotO = this.getFlap1L2Rot();
+        flap1R2RotO = this.getFlap1R2Rot();
         flap2LRotO = this.getFlap2LRot();
         flap2RRotO = this.getFlap2RRot();
         flap3RotO = this.getFlap3Rot();
@@ -792,6 +799,22 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
         return this.flap1LRot;
     }
 
+    public void setFlap1L2Rot(float pFlap1L2Rot) {
+        this.flap1L2Rot = pFlap1L2Rot;
+    }
+
+    public float getFlap1R2Rot() {
+        return this.flap1R2Rot;
+    }
+
+    public void setFlap1R2Rot(float pFlap1R2Rot) {
+        this.flap1R2Rot = pFlap1R2Rot;
+    }
+
+    public float getFlap1L2Rot() {
+        return this.flap1L2Rot;
+    }
+
     public void setFlap1LRot(float pFlap1LRot) {
         this.flap1LRot = pFlap1LRot;
     }
@@ -842,7 +865,8 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
                 .define(FIRE_ANIM, 0)
                 .define(COAX_HEAT, 0)
                 .define(DECOY_COUNT, 0)
-                .define(GEAR_ROT, 0);
+                .define(GEAR_ROT, 0)
+                .define(PLANE_BREAK, 0f);
     }
 
     @Override
