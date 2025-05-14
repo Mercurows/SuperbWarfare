@@ -710,7 +710,7 @@
   "superbwarfare.page.vehicle.speedboat4": "$(l)武器属性：$()$(p)1号位：$(p)(1) 12.7mm重机枪$(br)射速 - 500RPM$(br)伤害 - 25$(br)弹药 - $(item)重型弹药$()",
   "superbwarfare.entry.vehicle.ah_6": "AH-6 小鸟直升机",
   "superbwarfare.page.vehicle.ah_61": "$(thing)AH-6 小鸟直升机$()是一款轻型直升机，可搭载4人，装甲防护较为贫弱。携带4发可干扰制导锁定的热诱弹，每隔一段时间自动逐发补充。",
-  "superbwarfare.page.vehicle.ah_62": "需要至少 3 x 3 x 3 的空间放置。",
+  "superbwarfare.page.vehicle.ah_62": "需要至少 5 x 5 x 3 的空间放置。",
   "superbwarfare.page.vehicle.ah_63": "$(l)基础属性：$()$(p)耐久值 - 250$(br)最大乘员数 - 4$(br)最大能量 - 500,000FE$(br)能耗 - 64 ~ 128FE/tick",
   "superbwarfare.page.vehicle.ah_64": "$(l)武器属性：$()$(p)1号位：$(p)(1) 20mm机炮$(br)射速 - 500RPM$(br)直击伤害 - 25$(br)爆炸伤害 - 13$(br)爆炸半径 - 4m$(br)弹药 - $(item)小口径炮弹$()$(br)(2) 70mm火箭弹$(br)直击伤害 - 80$(br)爆炸伤害 - 40$(br)爆炸半径 - 5m$(br)弹药 - $(item)70mm火箭弹$()"
 }

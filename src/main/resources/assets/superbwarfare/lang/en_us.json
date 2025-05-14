@@ -710,7 +710,7 @@
   "superbwarfare.page.vehicle.speedboat4": "$(l)Weapon Attributes: $()$(p)Position 1: $(p)(1) 12.7mm Heavy Machine Gun$(br)Fire Rate - 500RPM$(br)Damage - 25$(br)Ammo - $(item)Heavy Ammo$()",
   "superbwarfare.entry.vehicle.ah_6": "AH-6 Little Bird",
   "superbwarfare.page.vehicle.ah_61": "$(thing)AH-6 Little Bird$() is a light helicopter carrying 4 crew members, with weak armor protection. Carries 4 flare countermeasures to disrupt guided targeting, automatically replenishing flares one by one over time.",
-  "superbwarfare.page.vehicle.ah_62": "Requires at least 3 x 3 x 3 space for placement.",
+  "superbwarfare.page.vehicle.ah_62": "Requires at least 5 x 5 x 3 space for placement.",
   "superbwarfare.page.vehicle.ah_63": "$(l)Basic Attributes: $()$(p)Durability - 250$(br)Max Passengers - 4$(br)Max Energy - 500,000FE$(br)Energy Cost - 64 ~ 128FE/tick",
   "superbwarfare.page.vehicle.ah_64": "$(l)Weapon Attributes: $()$(p)Position 1: $(p)(1) 20mm Cannon$(br)Fire Rate - 500RPM$(br)Direct Damage - 25$(br)Explosion Damage - 13$(br)Explosion Radius - 4m$(br)Ammo - $(item)Small Caliber Shells$()$(br)(2) 70mm Rocket$(br)Direct Damage - 80$(br)Explosion Damage - 40$(br)Explosion Radius - 5m$(br)Ammo - $(item)70mm Rocket$()"
 }
