@@ -1,0 +1,38 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "dbf",
+    "eee",
+    "hgh"
+  ],
+  "key": {
+    "b": {
+      "item": "superbwarfare:light_armament_module"
+    },
+    "d": {
+      "item": "superbwarfare:large_battery_pack"
+    },
+    "e": {
+      "item": "superbwarfare:cemented_carbide_block"
+    },
+    "f": {
+      "item": "superbwarfare:heavy_armament_module"
+    },
+    "g": {
+      "item": "superbwarfare:large_motor"
+    },
+    "h": {
+      "item": "superbwarfare:track"
+    }
+  },
+  "result": {
+    "id": "superbwarfare:container",
+    "components": {
+      "minecraft:block_entity_data": {
+        "id": "superbwarfare:container",
+        "EntityType": "superbwarfare:yx_100"
+      }
+    }
+  }
+}

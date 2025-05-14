@@ -18,7 +18,6 @@
     },
     {
       "type": "patchouli:text",
-      "recipe": "superbwarfare:charging_station_crafting",
       "text": "superbwarfare.page.vehicle.lav_1504"
     }
   ],

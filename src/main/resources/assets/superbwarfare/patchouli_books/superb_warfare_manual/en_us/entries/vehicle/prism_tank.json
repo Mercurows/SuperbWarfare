@@ -1,0 +1,25 @@
+{
+  "name": "superbwarfare.entry.vehicle.prism_tank",
+  "icon": "superbwarfare:container",
+  "category": "superbwarfare:vehicle",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "superbwarfare.page.vehicle.prism_tank1"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "superbwarfare:prism_tank_crafting",
+      "text": "superbwarfare.page.vehicle.prism_tank2"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "superbwarfare.page.vehicle.prism_tank3"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "superbwarfare.page.vehicle.prism_tank4"
+    }
+  ],
+  "sortnum": 20104
+}

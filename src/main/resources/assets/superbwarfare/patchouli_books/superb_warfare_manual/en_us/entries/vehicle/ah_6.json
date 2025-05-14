@@ -1,0 +1,25 @@
+{
+  "name": "superbwarfare.entry.vehicle.ah_6",
+  "icon": "superbwarfare:container",
+  "category": "superbwarfare:vehicle",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "superbwarfare.page.vehicle.ah_61"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "superbwarfare:ah_6_crafting",
+      "text": "superbwarfare.page.vehicle.ah_62"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "superbwarfare.page.vehicle.ah_63"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "superbwarfare.page.vehicle.ah_64"
+    }
+  ],
+  "sortnum": 20301
+}

@@ -1,0 +1,33 @@
+{
+  "name": "superbwarfare.entry.vehicle.yx_100",
+  "icon": "superbwarfare:container",
+  "category": "superbwarfare:vehicle",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "superbwarfare.page.vehicle.yx_1001"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "superbwarfare:yx_100_crafting",
+      "text": "superbwarfare.page.vehicle.yx_1002"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "superbwarfare.page.vehicle.yx_1003"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "superbwarfare.page.vehicle.yx_1004"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "superbwarfare.page.vehicle.yx_1005"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "superbwarfare.page.vehicle.yx_1006"
+    }
+  ],
+  "sortnum": 20103
+}

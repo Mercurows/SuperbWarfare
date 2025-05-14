@@ -1,0 +1,25 @@
+{
+  "name": "superbwarfare.entry.vehicle.bmp_2",
+  "icon": "superbwarfare:container",
+  "category": "superbwarfare:vehicle",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "superbwarfare.page.vehicle.bmp_21"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "superbwarfare:bmp_2_crafting",
+      "text": "superbwarfare.page.vehicle.bmp_22"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "superbwarfare.page.vehicle.bmp_23"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "superbwarfare.page.vehicle.bmp_24"
+    }
+  ],
+  "sortnum": 20102
+}

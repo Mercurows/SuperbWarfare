@@ -1,0 +1,25 @@
+{
+  "name": "superbwarfare.entry.vehicle.speedboat",
+  "icon": "superbwarfare:container",
+  "category": "superbwarfare:vehicle",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "superbwarfare.page.vehicle.speedboat1"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "superbwarfare:speedboat_crafting",
+      "text": "superbwarfare.page.vehicle.speedboat2"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "superbwarfare.page.vehicle.speedboat3"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "superbwarfare.page.vehicle.speedboat4"
+    }
+  ],
+  "sortnum": 20201
+}
