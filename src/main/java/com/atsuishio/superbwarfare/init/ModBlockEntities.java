@@ -28,7 +28,4 @@ public class ModBlockEntities {
 
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<VehicleDeployerBlockEntity>> VEHICLE_DEPLOYER = REGISTRY.register("vehicle_deployer",
             () -> BlockEntityType.Builder.of(VehicleDeployerBlockEntity::new, ModBlocks.VEHICLE_DEPLOYER.get()).build(null));
-
-    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<AircraftCatapultBlockEntity>> AIRCRAFT_CATAPULT = REGISTRY.register("aircraft_catapult",
-            () -> BlockEntityType.Builder.of(AircraftCatapultBlockEntity::new, ModBlocks.AIRCRAFT_CATAPULT.get()).build(null));
 }

@@ -1,18 +1,17 @@
 package com.atsuishio.superbwarfare.block;
 
-import com.atsuishio.superbwarfare.block.entity.AircraftCatapultBlockEntity;
-import com.atsuishio.superbwarfare.init.ModBlockEntities;
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.*;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityTicker;
-import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.HorizontalDirectionalBlock;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
@@ -20,12 +19,12 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
-public class AircraftCatapultBlock extends BaseEntityBlock {
+public class AircraftCatapultBlock extends Block {
 
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
     public static final IntegerProperty POWER = BlockStateProperties.POWER;
@@ -36,21 +35,6 @@ public class AircraftCatapultBlock extends BaseEntityBlock {
         this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(POWER, 0).setValue(UPDATING, false));
     }
 
-    @Nullable
-    @Override
-    public BlockEntity newBlockEntity(@NotNull BlockPos pPos, @NotNull BlockState pState) {
-        return new AircraftCatapultBlockEntity(pPos, pState);
-    }
-
-    @Nullable
-    @Override
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level pLevel, @NotNull BlockState pState, @NotNull BlockEntityType<T> pBlockEntityType) {
-        if (!pLevel.isClientSide) {
-            return createTickerHelper(pBlockEntityType, ModBlockEntities.AIRCRAFT_CATAPULT.get(), AircraftCatapultBlockEntity::serverTick);
-        } else {
-            return createTickerHelper(pBlockEntityType, ModBlockEntities.AIRCRAFT_CATAPULT.get(), AircraftCatapultBlockEntity::clientTick);
-        }
-    }
 
     @Override
     @ParametersAreNonnullByDefault
@@ -68,13 +52,6 @@ public class AircraftCatapultBlock extends BaseEntityBlock {
         builder.add(FACING).add(POWER).add(UPDATING);
     }
 
-    public static final MapCodec<AircraftCatapultBlock> CODEC = simpleCodec((prop) -> new AircraftCatapultBlock());
-
-    @Override
-    protected @NotNull MapCodec<? extends BaseEntityBlock> codec() {
-        return CODEC;
-    }
-
     @Override
     public @NotNull RenderShape getRenderShape(@NotNull BlockState pState) {
         return RenderShape.MODEL;
@@ -82,7 +59,7 @@ public class AircraftCatapultBlock extends BaseEntityBlock {
 
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
-        return this.defaultBlockState().setValue(FACING, context.getHorizontalDirection());
+        return this.defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
     }
 
     @Override
@@ -129,5 +106,22 @@ public class AircraftCatapultBlock extends BaseEntityBlock {
             max = Math.max(max, blockState.getValue(POWER));
         }
         return max;
+    }
+
+    @Override
+    @ParametersAreNonnullByDefault
+    public void stepOn(Level pLevel, BlockPos pPos, BlockState pState, Entity pEntity) {
+        super.stepOn(pLevel, pPos, pState, pEntity);
+        var direction = pState.getValue(AircraftCatapultBlock.FACING);
+        int power = pState.getValue(AircraftCatapultBlock.POWER);
+        if (power == 0) return;
+
+        float rate = power / 400f;
+        if (pEntity instanceof LivingEntity) {
+            rate = power / 50f;
+        }
+        if (pEntity.getDeltaMovement().dot(new Vec3(direction.getStepX(), 0, direction.getStepZ())) < 0.2 * power) {
+            pEntity.addDeltaMovement(new Vec3(direction.getStepX() * rate, 0, direction.getStepZ() * rate));
+        }
     }
 }
