@@ -18,6 +18,7 @@ import com.atsuishio.superbwarfare.tools.CustomExplosion;
 import com.atsuishio.superbwarfare.tools.InventoryTool;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
 import com.mojang.math.Axis;
+import it.unimi.dsi.fastutil.Pair;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -43,6 +44,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Math;
 import org.joml.Matrix4f;
+import org.joml.Quaternionf;
 import org.joml.Vector4f;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
@@ -602,5 +604,11 @@ public class SpeedboatEntity extends ContainerMobileVehicleEntity implements Geo
     @OnlyIn(Dist.CLIENT)
     public boolean useFixedCameraPos(Entity entity) {
         return this.getSeatIndex(entity) == 0;
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    @Nullable
+    public Pair<Quaternionf, Quaternionf> getPassengerRotation(Entity entity, float tickDelta) {
+        return Pair.of(Axis.XP.rotationDegrees(-this.getViewXRot(tickDelta)), Axis.ZP.rotationDegrees(-this.getRoll(tickDelta)));
     }
 }

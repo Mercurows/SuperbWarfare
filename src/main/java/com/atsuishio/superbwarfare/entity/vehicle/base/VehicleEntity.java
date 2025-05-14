@@ -16,6 +16,7 @@ import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.math.Axis;
+import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -61,6 +62,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Math;
 import org.joml.Matrix4f;
+import org.joml.Quaternionf;
 import org.joml.Vector4f;
 
 import java.util.ArrayList;
@@ -1054,5 +1056,16 @@ public abstract class VehicleEntity extends Entity {
     @OnlyIn(Dist.CLIENT)
     public boolean useFixedCameraPos(Entity entity) {
         return false;
+    }
+
+    /**
+     * 获取载具上玩家的旋转
+     *
+     * @return X轴旋转，Z轴旋转
+     */
+    @OnlyIn(Dist.CLIENT)
+    @Nullable
+    public Pair<Quaternionf, Quaternionf> getPassengerRotation(Entity entity, float tickDelta) {
+        return null;
     }
 }

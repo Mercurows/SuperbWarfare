@@ -12,6 +12,7 @@ import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage;
 import com.atsuishio.superbwarfare.tools.*;
 import com.mojang.math.Axis;
+import it.unimi.dsi.fastutil.Pair;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
@@ -49,6 +50,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Math;
 import org.joml.Matrix4f;
+import org.joml.Quaternionf;
 import org.joml.Vector4f;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
@@ -1098,5 +1100,11 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
     @OnlyIn(Dist.CLIENT)
     public boolean useFixedCameraPos(Entity entity) {
         return true;
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    @Nullable
+    public Pair<Quaternionf, Quaternionf> getPassengerRotation(Entity entity, float tickDelta) {
+        return Pair.of(Axis.XP.rotationDegrees(-this.getViewXRot(tickDelta)), Axis.ZP.rotationDegrees(-this.getRoll(tickDelta)));
     }
 }
