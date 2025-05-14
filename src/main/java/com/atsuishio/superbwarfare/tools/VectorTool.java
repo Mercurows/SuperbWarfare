@@ -13,4 +13,14 @@ public class VectorTool {
             return 0.0D;
         }
     }
+
+    public static float calculateY(float x) {
+        if (x < -90) {
+            return (-(x + 180.0f) / 90.0f);  // x ∈ [-180, -90)
+        } else if (x <= 90) {
+            return (x / 90.0f);              // x ∈ [-90, 90]
+        } else {
+            return ((180.0f - x) / 90.0f);   // x ∈ (90, 180]
+        }
+    }
 }
