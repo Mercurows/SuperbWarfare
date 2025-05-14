@@ -727,11 +727,8 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
         Matrix4f transform = getVehicleTransform(1);
 
         float x = 0f;
-        float y = 0.1f;
+        float y = -0.2f;
         float z = 3.95f;
-
-        // TODO 正确调整乘客位置
-        y += (float) passenger.getVehicleAttachmentPoint(this).y;
 
         int i = this.getSeatIndex(passenger);
 
