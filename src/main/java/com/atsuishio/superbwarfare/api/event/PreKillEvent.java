@@ -11,7 +11,7 @@ import org.jetbrains.annotations.ApiStatus;
  * 玩家击杀生物后，用于判断是否发送击杀播报/显示击杀指示
  */
 @ApiStatus.Internal
-@ApiStatus.AvailableSince("0.7.7")
+@ApiStatus.AvailableSince("0.8.0")
 public class PreKillEvent extends Event implements ICancellableEvent {
 
     private final Player player;

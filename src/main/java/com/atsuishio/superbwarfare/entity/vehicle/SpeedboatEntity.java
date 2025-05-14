@@ -598,4 +598,9 @@ public class SpeedboatEntity extends ContainerMobileVehicleEntity implements Geo
         }
         return super.getCameraPosition(partialTicks, player, zoom, isFirstPerson);
     }
+
+    @OnlyIn(Dist.CLIENT)
+    public boolean useFixedCameraPos(Entity entity) {
+        return this.getSeatIndex(entity) == 0;
+    }
 }

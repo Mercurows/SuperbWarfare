@@ -1,9 +1,5 @@
 package com.atsuishio.superbwarfare.mixins;
 
-import com.atsuishio.superbwarfare.entity.vehicle.A10Entity;
-import com.atsuishio.superbwarfare.entity.vehicle.PrismTankEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.SpeedboatEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.CannonEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -52,11 +48,8 @@ public class GameRendererMixin {
         if (entity != null && !mainCamera.isDetached() && entity.getRootVehicle() instanceof VehicleEntity vehicle) {
             // rotate camera
             float a = vehicle.getTurretYaw(partialTicks);
-
             float r = (Mth.abs(a) - 90f) / 90f;
-
             float r2;
-
             if (Mth.abs(a) <= 90f) {
                 r2 = a / 90f;
             } else {
@@ -69,10 +62,7 @@ public class GameRendererMixin {
 
             poseStack.mulPose(Axis.ZP.rotationDegrees(-r * vehicle.getRoll(partialTicks) + r2 * vehicle.getViewXRot(partialTicks)));
 
-            if (!(vehicle instanceof SpeedboatEntity speedboat && entity == speedboat.getFirstPassenger()) &&
-                    !(vehicle instanceof PrismTankEntity prismTank && entity == prismTank.getFirstPassenger()) &&
-                    !(vehicle instanceof CannonEntity) && !(vehicle instanceof A10Entity)
-            ) {
+            if (!vehicle.useFixedCameraPos(entity)) {
                 // fetch eye offset
                 float eye = entity.getEyeHeight();
 

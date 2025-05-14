@@ -483,4 +483,9 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
         }
         return super.getCameraPosition(partialTicks, player, false, false);
     }
+
+    @OnlyIn(Dist.CLIENT)
+    public boolean useFixedCameraPos(Entity entity) {
+        return true;
+    }
 }

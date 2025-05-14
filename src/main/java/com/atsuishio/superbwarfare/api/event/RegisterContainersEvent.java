@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * Register Entities as a container
  */
-@ApiStatus.AvailableSince("0.7.7")
+@ApiStatus.AvailableSince("0.8.0")
 public class RegisterContainersEvent extends Event implements IModBusEvent {
     public static final List<ItemStack> containers = new ArrayList<>();
 

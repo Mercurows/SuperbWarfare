@@ -844,4 +844,9 @@ public class PrismTankEntity extends ContainerMobileVehicleEntity implements Geo
         }
         return super.getCameraPosition(partialTicks, player, false, false);
     }
+
+    @OnlyIn(Dist.CLIENT)
+    public boolean useFixedCameraPos(Entity entity) {
+        return this.getSeatIndex(entity) == 0;
+    }
 }

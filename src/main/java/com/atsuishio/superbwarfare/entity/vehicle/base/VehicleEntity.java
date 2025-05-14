@@ -1026,14 +1026,33 @@ public abstract class VehicleEntity extends Entity {
     public void renderThirdPersonOverlay(GuiGraphics guiGraphics, Font font, Player player, int screenWidth, int screenHeight, float scale) {
     }
 
+    /**
+     * 获取视角旋转
+     *
+     * @param zoom          是否在载具上瞄准
+     * @param isFirstPerson 是否是第一人称视角
+     */
     @OnlyIn(Dist.CLIENT)
     @Nullable
     public Vec2 getCameraRotation(float partialTicks, Player player, boolean zoom, boolean isFirstPerson) {
         return null;
     }
 
+    /**
+     * 获取视角位置
+     * @param zoom 是否在载具上瞄准
+     * @param isFirstPerson 是否是第一人称视角
+     */
     @OnlyIn(Dist.CLIENT)
     public Vec3 getCameraPosition(float partialTicks, Player player, boolean zoom, boolean isFirstPerson) {
         return null;
+    }
+
+    /**
+     * 是否使用载具固定视角
+     */
+    @OnlyIn(Dist.CLIENT)
+    public boolean useFixedCameraPos(Entity entity) {
+        return false;
     }
 }

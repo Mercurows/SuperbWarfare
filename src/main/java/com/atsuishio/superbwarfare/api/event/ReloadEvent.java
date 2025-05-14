@@ -7,7 +7,7 @@ import net.neoforged.bus.api.Event;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
-@ApiStatus.AvailableSince("0.7.7")
+@ApiStatus.AvailableSince("0.8.0")
 public class ReloadEvent extends Event {
 
     public final Player player;
