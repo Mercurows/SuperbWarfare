@@ -264,8 +264,6 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
         }
         if (onGround()) {
             terrainCompactA10();
-        } else {
-            this.setZRot(this.roll * 0.98f);
         }
 
         if (entityData.get(FIRE_TIME) > 0) {
@@ -366,20 +364,6 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
             p2 = new Vec3(positionLB.x, p2y, positionLB.z);
             p3 = new Vec3(positionRB.x, p3y, positionRB.z);
             Vec3 p4 = p2.add(p3).scale(0.5);
-
-//            // 测试用粒子效果，用于确定点位位置
-//
-//            List<Entity> entities = getPlayer(level());
-//            for (var e : entities) {
-//                if (e instanceof ServerPlayer player) {
-//                    if (player.level() instanceof ServerLevel serverLevel) {
-//                        sendParticle(serverLevel, ParticleTypes.END_ROD, p1.x, p1.y, p1.z, 1, 0, 0, 0, 0, true);
-//                        sendParticle(serverLevel, ParticleTypes.END_ROD, p2.x, p2.y, p2.z, 1, 0, 0, 0, 0, true);
-//                        sendParticle(serverLevel, ParticleTypes.END_ROD, p3.x, p3.y, p3.z, 1, 0, 0, 0, 0, true);
-//                        sendParticle(serverLevel, ParticleTypes.END_ROD, p4.x, p4.y, p4.z, 1, 0, 0, 0, 0, true);
-//                    }
-//                }
-//            }
 
             // 通过点位位置获取角度
 
@@ -505,7 +489,6 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
         float diffY = 0;
 
         if (getHealth() > 0.1f * getMaxHealth()) {
-
             if (passenger == null || isInWater()) {
                 this.leftInputDown = false;
                 this.rightInputDown = false;
@@ -551,11 +534,73 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
                 diffY = Mth.clamp(Mth.wrapDegrees(passenger.getYHeadRot() - this.getYRot()), -90f, 90f);
                 diffX = Mth.clamp(Mth.wrapDegrees(passenger.getXRot() - this.getXRot()), -90f, 90f);
             }
+
+            if (getEnergy() > 0 && !this.level().isClientSide) {
+                this.consumeEnergy((int) (Mth.abs(this.entityData.get(POWER)) * VehicleConfig.A_10_MAX_ENERGY_COST.get()));
+            }
+
+            float addY = Mth.clamp(Math.max((this.onGround() ? 0.1f : 0.2f) * (float) getDeltaMovement().length(), 0f) * diffY, -3.5f, 3.5f);
+            float addX = Mth.clamp(Math.min((float) Math.max(getDeltaMovement().dot(getViewVector(1)) - 0.17, 0.01), 0.7f) * diffX, -3.5f, 3.5f);
+            float addZ = this.entityData.get(DELTA_ROT) - (this.onGround() ? 0 : 0.01f) * diffY * (float) getDeltaMovement().dot(getViewVector(1));
+
+            float i = getXRot() / 80;
+
+            yRotSync = addY - VectorTool.calculateY(getXRot()) * addZ;
+
+            this.setYRot(this.getYRot() + yRotSync);
+            if (!onGround()) {
+                this.setXRot(Mth.clamp(this.getXRot() + addX, -80, 80));
+                this.setZRot(this.getRoll() - addZ * (1 - Mth.abs(i)));
+            }
+
+            if (!onGround()) {
+                this.setZRot(this.roll * 0.98f);
+            }
+
+            this.setPropellerRot(this.getPropellerRot() + 30 * this.entityData.get(POWER));
+
+            // 起落架
+            if (!SeekTool.isOnGround(this, 15)) {
+                flyTime = Math.min(flyTime + 1, 10);
+            }
+
+            if (SeekTool.isOnGround(this, 15) && fly) {
+                flyTime = Math.max(flyTime - 1, 0);
+            }
+
+            if (!fly && flyTime == 10) {
+                fly = true;
+            }
+
+            if (fly && flyTime == 0) {
+                fly = false;
+            }
+
+            if (fly) {
+                entityData.set(GEAR_ROT, Math.min(entityData.get(GEAR_ROT) + 5, 85));
+            } else {
+                entityData.set(GEAR_ROT, Math.max(entityData.get(GEAR_ROT) - 5, 0));
+            }
+
+            float flapX = (1 - (Mth.abs(getRoll())) / 90) * Mth.clamp(diffX, -22.5f, 22.5f) - VectorTool.calculateY(getRoll()) * Mth.clamp(diffY, -22.5f, 22.5f);
+
+            setFlap1LRot(Mth.clamp(-flapX - 8 * addZ - this.entityData.get(PLANE_BREAK), -22.5f, 22.5f));
+            setFlap1RRot(Mth.clamp(-flapX + 8 * addZ - this.entityData.get(PLANE_BREAK), -22.5f, 22.5f));
+            setFlap1L2Rot(Mth.clamp(-flapX - 8 * addZ + this.entityData.get(PLANE_BREAK), -22.5f, 22.5f));
+            setFlap1R2Rot(Mth.clamp(-flapX + 8 * addZ + this.entityData.get(PLANE_BREAK), -22.5f, 22.5f));
+
+            setFlap2LRot(Mth.clamp(flapX - 8 * addZ, -22.5f, 22.5f));
+            setFlap2RRot(Mth.clamp(flapX + 8 * addZ, -22.5f, 22.5f));
+
+            float flapY = (1 - (Mth.abs(getRoll())) / 90) * Mth.clamp(diffY, -22.5f, 22.5f) + VectorTool.calculateY(getRoll()) * Mth.clamp(diffX, -22.5f, 22.5f);
+
+            setFlap3Rot(flapY * 5);
+
         } else if (!onGround()) {
             this.entityData.set(POWER, Math.max(this.entityData.get(POWER) - 0.0003f, 0.02f));
             destroyRot += 0.1f;
             diffX = 90 - this.getXRot();
-            this.setXRot(this.getXRot() + diffX * 0.0015f * destroyRot);
+            this.setXRot(this.getXRot() + diffX * 0.001f * destroyRot);
             this.setZRot(this.getRoll() - destroyRot);
             setDeltaMovement(getDeltaMovement().add(0, -0.03, 0));
             setDeltaMovement(getDeltaMovement().add(0, -destroyRot * 0.005, 0));
@@ -564,63 +609,6 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
         this.entityData.set(POWER, this.entityData.get(POWER) * 0.99f);
         this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) * 0.85f);
         this.entityData.set(PLANE_BREAK, this.entityData.get(PLANE_BREAK) * 0.8f);
-
-        if (getEnergy() > 0 && !this.level().isClientSide) {
-            this.consumeEnergy((int) (Mth.abs(this.entityData.get(POWER)) * VehicleConfig.A_10_MAX_ENERGY_COST.get()));
-        }
-
-        float addY = Mth.clamp(Math.max((this.onGround() ? 0.1f : 0.2f) * (float) getDeltaMovement().length(), 0f) * diffY, -3.5f, 3.5f);
-        float addX = Mth.clamp(Math.min((float) Math.max(getDeltaMovement().dot(getViewVector(1)) - 0.17, 0.01), 0.7f) * diffX, -3.5f, 3.5f);
-        float addZ = this.entityData.get(DELTA_ROT) - (this.onGround() ? 0 : 0.01f) * diffY * (float) getDeltaMovement().dot(getViewVector(1));
-
-        float i = getXRot() / 80;
-
-        yRotSync = addY - VectorTool.calculateY(getXRot()) * addZ;
-
-        this.setYRot(this.getYRot() + yRotSync);
-        if (!onGround()) {
-            this.setXRot(Mth.clamp(this.getXRot() + addX, -80, 80));
-            this.setZRot(this.getRoll() - addZ * (1 - Mth.abs(i)));
-        }
-
-        this.setPropellerRot(this.getPropellerRot() + 30 * this.entityData.get(POWER));
-
-        // 起落架
-        if (!SeekTool.isOnGround(this, 15)) {
-            flyTime = Math.min(flyTime + 1, 10);
-        }
-
-        if (SeekTool.isOnGround(this, 15) && fly) {
-            flyTime = Math.max(flyTime - 1, 0);
-        }
-
-        if (!fly && flyTime == 10) {
-            fly = true;
-        }
-
-        if (fly && flyTime == 0) {
-            fly = false;
-        }
-
-        if (fly) {
-            entityData.set(GEAR_ROT, Math.min(entityData.get(GEAR_ROT) + 5, 85));
-        } else {
-            entityData.set(GEAR_ROT, Math.max(entityData.get(GEAR_ROT) - 5, 0));
-        }
-
-        float flapX = (1 - (Mth.abs(getRoll())) / 90) * Mth.clamp(diffX, -22.5f, 22.5f) - VectorTool.calculateY(getRoll()) * Mth.clamp(diffY, -22.5f, 22.5f);
-
-        setFlap1LRot(Mth.clamp(-flapX - 8 * addZ - this.entityData.get(PLANE_BREAK), -22.5f, 22.5f));
-        setFlap1RRot(Mth.clamp(-flapX + 8 * addZ - this.entityData.get(PLANE_BREAK), -22.5f, 22.5f));
-        setFlap1L2Rot(Mth.clamp(-flapX - 8 * addZ + this.entityData.get(PLANE_BREAK), -22.5f, 22.5f));
-        setFlap1R2Rot(Mth.clamp(-flapX + 8 * addZ + this.entityData.get(PLANE_BREAK), -22.5f, 22.5f));
-
-        setFlap2LRot(Mth.clamp(flapX - 8 * addZ, -22.5f, 22.5f));
-        setFlap2RRot(Mth.clamp(flapX + 8 * addZ, -22.5f, 22.5f));
-
-        float flapY = (1 - (Mth.abs(getRoll())) / 90) * Mth.clamp(diffY, -22.5f, 22.5f) + VectorTool.calculateY(getRoll()) * Mth.clamp(diffX, -22.5f, 22.5f);
-
-        setFlap3Rot(flapY * 5);
 
         Matrix4f transform = getVehicleTransform(1);
         double flapAngle = (getFlap1LRot() + getFlap1RRot() + getFlap1L2Rot() + getFlap1R2Rot()) / 4;
