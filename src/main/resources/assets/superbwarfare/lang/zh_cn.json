@@ -391,7 +391,7 @@
   "death.attack.gunfire_headshot": "%1$s被%2$s射爆了脑袋",
   "death.attack.gunfire_headshot.entity": "%1$s被%2$s射爆了脑袋",
   "death.attack.gunfire_headshot.item": "%1$s被%2$s用%3$s射爆了脑袋",
-  "death.attack.beast_gun": "%1$s被%2$s用BEAST枪械臭炸了",
+  "death.attack.beast_gun": "%1$s被%2$s用BEAST臭炸了",
   "death.attack.mine": "%1$s不慎踩到了阔剑地雷",
   "death.attack.mine.entity": "%1$s踩到了%2$s的阔剑地雷",
   "death.attack.mine.item": "%1$s踩到了%2$s的阔剑地雷",

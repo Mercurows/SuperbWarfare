@@ -391,7 +391,7 @@
   "death.attack.gunfire_headshot": "%1$s was assassinated by %2$s",
   "death.attack.gunfire_headshot.entity": "%1$s was assassinated by %2$s",
   "death.attack.gunfire_headshot.item": "%1$s was assassinated by %2$s using %3$s",
-  "death.attack.beast_gun": "%1$s was killed by %2$s using BEAST guns",
+  "death.attack.beast_gun": "%1$s was killed by %2$s using BEAST",
   "death.attack.mine": "%1$s didn't watch their step",
   "death.attack.mine.entity": "%1$s step on %2$s's Claymore",
   "death.attack.mine.item": "%1$s stepped into %2$s's Claymore",
