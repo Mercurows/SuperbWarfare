@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(LivingEntity.class)
+@Mixin(value = LivingEntity.class, priority = Integer.MAX_VALUE)
 public abstract class BeastMixin implements BeastEntityKiller {
 
     @Unique
