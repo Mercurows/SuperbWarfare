@@ -51,6 +51,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -1023,5 +1024,16 @@ public abstract class VehicleEntity extends Entity {
      */
     @OnlyIn(Dist.CLIENT)
     public void renderThirdPersonOverlay(GuiGraphics guiGraphics, Font font, Player player, int screenWidth, int screenHeight, float scale) {
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    @Nullable
+    public Vec2 getCameraRotation(float partialTicks, Player player, boolean zoom, boolean isFirstPerson) {
+        return null;
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public Vec3 getCameraPosition(float partialTicks, Player player, boolean zoom, boolean isFirstPerson) {
+        return null;
     }
 }
