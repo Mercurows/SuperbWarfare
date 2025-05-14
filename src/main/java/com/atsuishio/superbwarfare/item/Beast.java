@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.item;
 import com.atsuishio.superbwarfare.config.server.MiscConfig;
 import com.atsuishio.superbwarfare.entity.DPSGeneratorEntity;
 import com.atsuishio.superbwarfare.entity.TargetEntity;
+import com.atsuishio.superbwarfare.entity.mixin.BeastEntityKiller;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModEnumExtensions;
 import com.atsuishio.superbwarfare.init.ModSounds;
@@ -99,6 +100,7 @@ public class Beast extends SwordItem {
             );
         } else {
             if (target instanceof LivingEntity living) {
+                BeastEntityKiller.getInstance(living).sbw$kill();
                 living.setHealth(0);
             }
             target.level().broadcastEntityEvent(target, (byte) 60);
@@ -129,7 +131,7 @@ public class Beast extends SwordItem {
     @Override
     @ParametersAreNonnullByDefault
     public boolean onEntitySwing(ItemStack stack, LivingEntity entity, InteractionHand hand) {
-        var target = TraceTool.findMeleeEntity(entity, 50);
+        var target = TraceTool.findMeleeEntity(entity, 51.4);
         if (target != null) {
             beastKill(entity, target);
         }
