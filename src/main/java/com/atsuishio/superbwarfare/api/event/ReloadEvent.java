@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.api.event;
 
-import com.atsuishio.superbwarfare.item.gun.data.GunData;
+import com.atsuishio.superbwarfare.data.gun.GunData;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.Event;

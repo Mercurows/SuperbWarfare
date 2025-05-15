@@ -1,8 +1,8 @@
-package com.atsuishio.superbwarfare.item.gun.data.subdata;
+package com.atsuishio.superbwarfare.data.gun.subdata;
 
-import com.atsuishio.superbwarfare.item.gun.data.GunData;
-import com.atsuishio.superbwarfare.item.gun.data.value.Starter;
-import com.atsuishio.superbwarfare.item.gun.data.value.Timer;
+import com.atsuishio.superbwarfare.data.gun.GunData;
+import com.atsuishio.superbwarfare.data.gun.value.Starter;
+import com.atsuishio.superbwarfare.data.gun.value.Timer;
 
 public final class Charge {
     public final Timer timer;

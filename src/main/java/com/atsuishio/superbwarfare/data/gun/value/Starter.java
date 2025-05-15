@@ -1,4 +1,4 @@
-package com.atsuishio.superbwarfare.item.gun.data.value;
+package com.atsuishio.superbwarfare.data.gun.value;
 
 import net.minecraft.nbt.CompoundTag;
 

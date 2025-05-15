@@ -1,8 +1,8 @@
-package com.atsuishio.superbwarfare.item.gun.data.subdata;
+package com.atsuishio.superbwarfare.data.gun.subdata;
 
+import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.item.PerkItem;
-import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkInstance;
 import net.minecraft.nbt.CompoundTag;

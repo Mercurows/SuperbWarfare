@@ -1,9 +1,9 @@
 package com.atsuishio.superbwarfare.compat.jei;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
-import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.perk.Perk;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
@@ -22,6 +22,7 @@ import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,6 +42,7 @@ public class GunPerksCategory implements IRecipeCategory<ItemStack> {
     }
 
     @Override
+    @ParametersAreNonnullByDefault
     public void draw(ItemStack recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
         var name = recipe.getHoverName();
         guiGraphics.drawString(Minecraft.getInstance().font, name,

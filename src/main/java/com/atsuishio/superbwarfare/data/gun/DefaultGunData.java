@@ -1,4 +1,4 @@
-package com.atsuishio.superbwarfare.item.gun.data;
+package com.atsuishio.superbwarfare.data.gun;
 
 import com.google.gson.annotations.SerializedName;
 

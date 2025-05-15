@@ -5,8 +5,8 @@ import com.atsuishio.superbwarfare.client.ItemModelHelper;
 import com.atsuishio.superbwarfare.client.model.item.SvdItemModel;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
-import com.atsuishio.superbwarfare.item.gun.data.GunData;
-import com.atsuishio.superbwarfare.item.gun.data.value.AttachmentType;
+import com.atsuishio.superbwarfare.data.gun.GunData;
+import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
 import com.atsuishio.superbwarfare.item.gun.sniper.SvdItem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -78,7 +78,6 @@ public class SvdItemRenderer extends GeoItemRenderer<SvdItem> {
         if (player == null) return;
         ItemStack itemStack = player.getMainHandItem();
         if (!(itemStack.getItem() instanceof GunItem)) return;
-        var data = GunData.from(itemStack);
 
         if (name.equals("mount")) {
             bone.setHidden(GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 0 || GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 2);

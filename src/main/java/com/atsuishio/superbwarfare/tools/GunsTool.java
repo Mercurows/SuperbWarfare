@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.tools;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.item.gun.data.DefaultGunData;
+import com.atsuishio.superbwarfare.data.gun.DefaultGunData;
 import com.atsuishio.superbwarfare.network.message.receive.GunsDataMessage;
 import com.google.gson.Gson;
 import net.minecraft.nbt.CompoundTag;

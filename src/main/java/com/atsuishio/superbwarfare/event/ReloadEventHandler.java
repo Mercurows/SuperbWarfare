@@ -1,8 +1,8 @@
 package com.atsuishio.superbwarfare.event;
 
 import com.atsuishio.superbwarfare.api.event.ReloadEvent;
+import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
-import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.perk.Perk;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;

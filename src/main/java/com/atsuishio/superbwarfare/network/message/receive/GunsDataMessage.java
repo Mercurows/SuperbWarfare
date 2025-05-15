@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.network.message.receive;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.item.gun.data.DefaultGunData;
+import com.atsuishio.superbwarfare.data.gun.DefaultGunData;
 import com.atsuishio.superbwarfare.tools.GunsTool;
 import com.google.gson.Gson;
 import io.netty.buffer.ByteBuf;

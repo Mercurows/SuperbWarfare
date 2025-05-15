@@ -1,10 +1,10 @@
-package com.atsuishio.superbwarfare.item.gun.data;
+package com.atsuishio.superbwarfare.data.gun;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.data.gun.subdata.*;
+import com.atsuishio.superbwarfare.data.gun.value.*;
 import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
-import com.atsuishio.superbwarfare.item.gun.data.subdata.*;
-import com.atsuishio.superbwarfare.item.gun.data.value.*;
 import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.tools.Ammo;

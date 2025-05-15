@@ -3,10 +3,10 @@ package com.atsuishio.superbwarfare.client.renderer.item;
 import com.atsuishio.superbwarfare.client.AnimationHelper;
 import com.atsuishio.superbwarfare.client.ItemModelHelper;
 import com.atsuishio.superbwarfare.client.model.item.AK47ItemModel;
+import com.atsuishio.superbwarfare.data.gun.GunData;
+import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
-import com.atsuishio.superbwarfare.item.gun.data.GunData;
-import com.atsuishio.superbwarfare.item.gun.data.value.AttachmentType;
 import com.atsuishio.superbwarfare.item.gun.rifle.AK47Item;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -77,7 +77,6 @@ public class AK47ItemRenderer extends GeoItemRenderer<AK47Item> {
         if (player != null) {
             ItemStack itemStack = player.getMainHandItem();
             if (!(itemStack.getItem() instanceof GunItem)) return;
-            var data = GunData.from(itemStack);
 
             if (name.equals("humu1")) {
                 bone.setHidden(GunData.from(itemStack).attachment.get(AttachmentType.GRIP) != 0);

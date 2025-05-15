@@ -1,7 +1,7 @@
-package com.atsuishio.superbwarfare.item.gun.data.subdata;
+package com.atsuishio.superbwarfare.data.gun.subdata;
 
-import com.atsuishio.superbwarfare.item.gun.data.GunData;
-import com.atsuishio.superbwarfare.item.gun.data.value.AttachmentType;
+import com.atsuishio.superbwarfare.data.gun.GunData;
+import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
 import net.minecraft.nbt.CompoundTag;
 
 public final class Attachment {

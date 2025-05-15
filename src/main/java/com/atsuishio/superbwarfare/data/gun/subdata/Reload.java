@@ -1,10 +1,10 @@
-package com.atsuishio.superbwarfare.item.gun.data.subdata;
+package com.atsuishio.superbwarfare.data.gun.subdata;
 
-import com.atsuishio.superbwarfare.item.gun.data.GunData;
-import com.atsuishio.superbwarfare.item.gun.data.value.IntValue;
-import com.atsuishio.superbwarfare.item.gun.data.value.ReloadState;
-import com.atsuishio.superbwarfare.item.gun.data.value.Starter;
-import com.atsuishio.superbwarfare.item.gun.data.value.Timer;
+import com.atsuishio.superbwarfare.data.gun.GunData;
+import com.atsuishio.superbwarfare.data.gun.value.IntValue;
+import com.atsuishio.superbwarfare.data.gun.value.ReloadState;
+import com.atsuishio.superbwarfare.data.gun.value.Starter;
+import com.atsuishio.superbwarfare.data.gun.value.Timer;
 import net.minecraft.nbt.CompoundTag;
 
 public final class Reload {

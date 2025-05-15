@@ -1,8 +1,8 @@
 package com.atsuishio.superbwarfare.perk.functional;
 
+import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
-import com.atsuishio.superbwarfare.item.gun.data.GunData;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.tools.DamageTypeTool;
 import net.minecraft.world.damagesource.DamageSource;
