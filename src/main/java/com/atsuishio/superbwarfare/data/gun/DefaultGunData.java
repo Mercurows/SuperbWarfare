@@ -30,8 +30,8 @@ public class DefaultGunData {
     @SerializedName("Magazine")
     public int magazine;
 
-    @SerializedName("ProjectileType")
-    public String projectileType = "superbwarfare:projectile";
+    @SerializedName("Projectile")
+    public ProjectileInfo projectile = new ProjectileInfo();
 
     @SerializedName("ProjectileAmount")
     public int projectileAmount = 1;

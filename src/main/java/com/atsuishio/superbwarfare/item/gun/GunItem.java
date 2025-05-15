@@ -4,7 +4,10 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.PoseTool;
 import com.atsuishio.superbwarfare.client.tooltip.component.GunImageComponent;
 import com.atsuishio.superbwarfare.data.gun.GunData;
+import com.atsuishio.superbwarfare.data.gun.ProjectileInfo;
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
+import com.atsuishio.superbwarfare.data.launchable.LaunchableEntityTool;
+import com.atsuishio.superbwarfare.data.launchable.ShootData;
 import com.atsuishio.superbwarfare.entity.projectile.ExplosiveProjectile;
 import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity;
 import com.atsuishio.superbwarfare.init.ModAttachments;
@@ -575,12 +578,14 @@ public abstract class GunItem extends Item implements CustomRendererItem {
         float bypassArmorRate = (float) data.bypassArmor();
 
         var projectileType = data.projectileType();
+        var projectileInfo = data.projectileInfo();
         AtomicReference<Projectile> projectileHolder = new AtomicReference<>();
         EntityType.byString(projectileType).ifPresent(entityType -> {
             var entity = entityType.create(level);
             if (!(entity instanceof Projectile)) return;
             ((Projectile) entity).setOwner(player);
 
+            // SBW子弹弹射物专属属性
             if (entity instanceof ProjectileEntity projectile) {
                 projectile.shooter(player)
                         .damage(damage)
@@ -590,10 +595,34 @@ public abstract class GunItem extends Item implements CustomRendererItem {
                         .setGunItemId(stack);
             }
 
+            // SBW爆炸物专属属性
             if (entity instanceof ExplosiveProjectile explosive) {
                 explosive.setDamage(damage);
                 explosive.setExplosionDamage((float) data.explosionDamage());
                 explosive.setExplosionRadius((float) data.explosionRadius());
+            }
+
+            // 填充其他自定义NBT数据
+            if (projectileInfo.data != null) {
+                var tag = LaunchableEntityTool.getModifiedTag(projectileInfo,
+                        new ShootData(player.getUUID(), damage, data.explosionDamage(), data.explosionRadius(), data.spread())
+                );
+                if (tag != null) {
+                    entity.load(tag);
+                }
+
+            } else if (LaunchableEntityTool.launchableEntitiesData.containsKey(projectileType)) {
+                var newInfo = new ProjectileInfo();
+                newInfo.data = LaunchableEntityTool.launchableEntitiesData.get(projectileType);
+                newInfo.type = projectileType;
+
+                var tag = LaunchableEntityTool.getModifiedTag(
+                        newInfo,
+                        new ShootData(player.getUUID(), damage, data.explosionDamage(), data.explosionRadius(), data.spread())
+                );
+                if (tag != null) {
+                    entity.load(tag);
+                }
             }
 
             projectileHolder.set((Projectile) entity);

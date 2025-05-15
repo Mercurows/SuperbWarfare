@@ -1,0 +1,8 @@
+{
+  "Type": "minecraft:arrow",
+  "Data": {
+    "damage": "@sbw:damage",
+    "pickup": 2,
+    "crit": false
+  }
+}

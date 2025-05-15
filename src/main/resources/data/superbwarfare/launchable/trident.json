@@ -1,0 +1,7 @@
+{
+  "Type": "minecraft:trident",
+  "Data": {
+    "pickup": 2,
+    "crit": false
+  }
+}
