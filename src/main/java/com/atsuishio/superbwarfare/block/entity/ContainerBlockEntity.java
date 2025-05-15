@@ -56,21 +56,16 @@ public class ContainerBlockEntity extends BlockEntity implements GeoBlockEntity 
         } else {
             var direction = pState.getValue(ContainerBlock.FACING);
 
+            var entity = blockEntity.entityType.create(pLevel);
+            if (entity == null) return;
+
             if (blockEntity.entityTag != null) {
-                var entity = blockEntity.entityType.create(pLevel);
-                if (entity != null) {
-                    entity.setPos(pPos.getX() + 0.5 + (2 * Math.random() - 1) * 0.1f, pPos.getY() + 0.5 + (2 * Math.random() - 1) * 0.1f, pPos.getZ() + 0.5 + (2 * Math.random() - 1) * 0.1f);
-                    entity.setYRot(direction.toYRot());
-                    pLevel.addFreshEntity(entity);
-                }
-            } else if (blockEntity.entityType != null) {
-                var entity = blockEntity.entityType.create(pLevel);
-                if (entity != null) {
-                    entity.setPos(pPos.getX() + 0.5 + (2 * Math.random() - 1) * 0.1f, pPos.getY() + 0.5 + (2 * Math.random() - 1) * 0.1f, pPos.getZ() + 0.5 + (2 * Math.random() - 1) * 0.1f);
-                    entity.setYRot(direction.toYRot());
-                    pLevel.addFreshEntity(entity);
-                }
+                entity.load(blockEntity.entityTag);
             }
+
+            entity.setPos(pPos.getX() + 0.5 + (2 * Math.random() - 1) * 0.1f, pPos.getY() + 0.5 + (2 * Math.random() - 1) * 0.1f, pPos.getZ() + 0.5 + (2 * Math.random() - 1) * 0.1f);
+            entity.setYRot(direction.toYRot());
+            pLevel.addFreshEntity(entity);
 
             pLevel.setBlockAndUpdate(pPos, Blocks.AIR.defaultBlockState());
         }
