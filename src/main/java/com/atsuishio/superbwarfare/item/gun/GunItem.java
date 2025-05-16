@@ -43,6 +43,7 @@ import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
@@ -579,11 +580,14 @@ public abstract class GunItem extends Item implements CustomRendererItem {
 
         var projectileType = data.projectileType();
         var projectileInfo = data.projectileInfo();
-        AtomicReference<Projectile> projectileHolder = new AtomicReference<>();
+        AtomicReference<Entity> entityHolder = new AtomicReference<>();
         EntityType.byString(projectileType).ifPresent(entityType -> {
             var entity = entityType.create(level);
-            if (!(entity instanceof Projectile)) return;
-            ((Projectile) entity).setOwner(player);
+            if (entity == null) return;
+
+            if (entity instanceof Projectile projectileEntity) {
+                projectileEntity.setOwner(player);
+            }
 
             // SBW子弹弹射物专属属性
             if (entity instanceof ProjectileEntity projectile) {
@@ -625,26 +629,51 @@ public abstract class GunItem extends Item implements CustomRendererItem {
                 }
             }
 
-            projectileHolder.set((Projectile) entity);
+            entityHolder.set(entity);
         });
 
-        var projectile = projectileHolder.get();
-        if (projectile == null) return false;
+        var entity = entityHolder.get();
+        if (entity == null) return false;
 
         for (Perk.Type type : Perk.Type.values()) {
             var instance = data.perk.getInstance(type);
             if (instance != null) {
-                instance.perk().modifyProjectile(data, instance, projectile);
+                instance.perk().modifyProjectile(data, instance, entity);
                 if (instance.perk() instanceof AmmoPerk ammoPerk) {
                     velocity = (float) ammoPerk.getModifiedVelocity(data, instance);
                 }
             }
         }
 
-        projectile.setPos(player.getX() - 0.1 * player.getLookAngle().x, player.getEyeY() - 0.1 - 0.1 * player.getLookAngle().y, player.getZ() + -0.1 * player.getLookAngle().z);
-        projectile.shoot(player.getLookAngle().x, player.getLookAngle().y + 0.001f, player.getLookAngle().z, velocity, (float) spread);
-        level.addFreshEntity(projectile);
+        // 发射任意实体
+        entity.setPos(player.getX() - 0.1 * player.getLookAngle().x, player.getEyeY() - 0.1 - 0.1 * player.getLookAngle().y, player.getZ() + -0.1 * player.getLookAngle().z);
 
+        var x = player.getLookAngle().x;
+        var y = player.getLookAngle().y + 0.001f;
+        var z = player.getLookAngle().z;
+
+        if (entity instanceof Projectile projectile) {
+            projectile.shoot(x, y, z, velocity, (float) spread);
+        } else {
+            Vec3 vec3 = new Vec3(x, y, z)
+                    .normalize()
+                    .add(
+                            entity.getRandom().triangle(0.0, 0.0172275 * spread),
+                            entity.getRandom().triangle(0.0, 0.0172275 * spread),
+                            entity.getRandom().triangle(0.0, 0.0172275 * spread)
+                    )
+                    .scale(velocity);
+
+            entity.setDeltaMovement(vec3);
+            entity.hasImpulse = true;
+            double d0 = vec3.horizontalDistance();
+            entity.setYRot((float) (Mth.atan2(vec3.x, vec3.z) * 180.0F / (float) Math.PI));
+            entity.setXRot((float) (Mth.atan2(vec3.y, d0) * 180.0F / (float) Math.PI));
+            entity.yRotO = entity.getYRot();
+            entity.xRotO = entity.getXRot();
+        }
+
+        level.addFreshEntity(entity);
         return true;
     }
 
