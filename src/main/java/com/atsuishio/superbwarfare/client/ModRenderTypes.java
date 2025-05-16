@@ -34,6 +34,16 @@ public class ModRenderTypes extends RenderType {
         return RenderType.create("illuminated", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, true, false, state);
     });
 
+    public static final Function<ResourceLocation, RenderType> GUN_ILLUMINATED = Util.memoize((location) -> {
+        TextureStateShard shard = new RenderStateShard.TextureStateShard(location, false, false);
+        RenderType.CompositeState state = RenderType.CompositeState.builder().setTextureState(shard)
+                .setShaderState(RENDERTYPE_EYES_SHADER).setTransparencyState(NO_TRANSPARENCY)
+                .setLightmapState(RenderStateShard.NO_LIGHTMAP)
+                .setOverlayState(RenderStateShard.NO_OVERLAY)
+                .createCompositeState(false);
+        return RenderType.create("gun_illuminated", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, true, false, state);
+    });
+
     //DickSheep的恩情还不完
 
     public static final TransparencyStateShard TEST_TRANSPARENCY = new TransparencyStateShard("test_transparency", () -> {
