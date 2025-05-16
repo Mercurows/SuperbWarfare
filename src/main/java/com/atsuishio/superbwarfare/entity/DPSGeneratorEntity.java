@@ -171,6 +171,10 @@ public class DPSGeneratorEntity extends LivingEntity implements GeoEntity {
                 player.addItem(new ItemStack(ModItems.DPS_GENERATOR_DEPLOYER.get()));
             }
         } else {
+            if (player.getMainHandItem() != ItemStack.EMPTY) {
+                return InteractionResult.PASS;
+            }
+
             this.lookAt(EntityAnchorArgument.Anchor.EYES, new Vec3((player.getX()), this.getY(), (player.getZ())));
             this.setXRot(0);
             this.xRotO = this.getXRot();

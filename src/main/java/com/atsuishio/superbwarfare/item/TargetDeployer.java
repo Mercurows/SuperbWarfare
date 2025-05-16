@@ -9,6 +9,7 @@ import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -24,11 +25,15 @@ import net.minecraft.world.phys.HitResult;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
+import java.util.function.Predicate;
 
 public class TargetDeployer extends Item {
     public TargetDeployer() {
         super(new Properties());
     }
+
+
+    private static final Predicate<Entity> IS_TARGET = e -> e instanceof TargetEntity;
 
     @Override
     public @NotNull InteractionResult useOn(UseOnContext pContext) {
@@ -45,6 +50,15 @@ public class TargetDeployer extends Item {
                 pos = blockpos;
             } else {
                 pos = blockpos.relative(direction);
+            }
+
+            // 禁止堆叠
+            if (!level.getEntities(
+                    (Entity) null,
+                    ModEntities.TARGET.get().getSpawnAABB(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5),
+                    IS_TARGET
+            ).isEmpty()) {
+                return InteractionResult.FAIL;
             }
 
             if (ModEntities.TARGET.get().spawn((ServerLevel) level, itemstack, pContext.getPlayer(), pos, MobSpawnType.SPAWN_EGG, true, !Objects.equals(blockpos, pos) && direction == Direction.UP) != null) {
@@ -69,6 +83,15 @@ public class TargetDeployer extends Item {
             if (!(pLevel.getBlockState(blockpos).getBlock() instanceof LiquidBlock)) {
                 return InteractionResultHolder.pass(itemstack);
             } else if (pLevel.mayInteract(pPlayer, blockpos) && pPlayer.mayUseItemAt(blockpos, blockhitresult.getDirection(), itemstack)) {
+                // 禁止堆叠
+                if (!pLevel.getEntities(
+                        (Entity) null,
+                        ModEntities.TARGET.get().getSpawnAABB(blockpos.getX() + 0.5, blockpos.getY() + 0.5, blockpos.getZ() + 0.5),
+                        IS_TARGET
+                ).isEmpty()) {
+                    return InteractionResultHolder.fail(itemstack);
+                }
+
                 TargetEntity entity = ModEntities.TARGET.get().spawn((ServerLevel) pLevel, itemstack, pPlayer, blockpos, MobSpawnType.SPAWN_EGG, false, false);
                 if (entity == null) {
                     return InteractionResultHolder.pass(itemstack);
