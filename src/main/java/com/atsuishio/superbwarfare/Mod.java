@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare;
 
 import com.atsuishio.superbwarfare.api.event.RegisterContainersEvent;
 import com.atsuishio.superbwarfare.client.MouseMovementHandler;
+import com.atsuishio.superbwarfare.client.renderer.molang.MolangVariable;
 import com.atsuishio.superbwarfare.compat.CompatHolder;
 import com.atsuishio.superbwarfare.compat.clothconfig.ClothConfigHelper;
 import com.atsuishio.superbwarfare.component.ModDataComponents;
@@ -66,6 +67,7 @@ public class Mod {
 
         bus.addListener(this::onClientSetup);
         bus.addListener(FMLCommonSetupEvent.class, event -> onCommonSetup(bus));
+        bus.addListener(FMLCommonSetupEvent.class, event -> MolangVariable.register());
         bus.addListener(ModItems::registerDispenserBehavior);
 
         bus.addListener(NetworkRegistry::register);

@@ -77,14 +77,6 @@ public class InsidiousItemRenderer extends GeoItemRenderer<InsidiousItem> {
 
         AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn, 0, 0, 1, 0.38);
 
-        if (name.equals("rot1")) {
-            bone.setRotZ((System.currentTimeMillis() % 36000000) / 400f);
-        }
-
-        if (name.equals("rot2")) {
-            bone.setRotZ(-(System.currentTimeMillis() % 36000000) / 400f);
-        }
-
         AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.359325, 40, 0.33f, 255, 0, 0, 255, "insidious", false);
 
         if (renderingArms) {
