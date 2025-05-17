@@ -33,8 +33,7 @@ import net.minecraft.world.entity.projectile.ThrownPotion;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.BellBlock;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
@@ -58,6 +57,8 @@ public class Agm65Entity extends FastThrowableProjectile implements GeoEntity, D
     private float explosionDamage = ExplosionConfig.AGM_65_EXPLOSION_DAMAGE.get();
     private float explosionRadius = ExplosionConfig.AGM_65_EXPLOSION_RADIUS.get().floatValue();
     private boolean distracted = false;
+    private int durability = 40;
+    private boolean firstHit = true;
 
     public Agm65Entity(EntityType<? extends Agm65Entity> type, Level world) {
         super(type, world);
@@ -173,21 +174,43 @@ public class Agm65Entity extends FastThrowableProjectile implements GeoEntity, D
 
     @Override
     public void onHitBlock(@NotNull BlockHitResult blockHitResult) {
-        super.onHitBlock(blockHitResult);
-        BlockPos resultPos = blockHitResult.getBlockPos();
-        BlockState state = this.level().getBlockState(resultPos);
+        if (this.level() instanceof ServerLevel) {
+            double x = blockHitResult.getLocation().x;
+            double y = blockHitResult.getLocation().y;
+            double z = blockHitResult.getLocation().z;
 
-        if (state.getBlock() instanceof BellBlock bell) {
-            bell.attemptToRing(this.level(), resultPos, blockHitResult.getDirection());
-        }
-
-        if (this.tickCount > 8) {
-            if (this.level() instanceof ServerLevel) {
-                causeExplode(blockHitResult);
+            if (ExplosionConfig.EXPLOSION_DESTROY.get()) {
+                float hardness = this.level().getBlockState(BlockPos.containing(x, y, z)).getBlock().defaultDestroyTime();
+                if (hardness <= 50) {
+                    BlockPos blockPos = BlockPos.containing(x, y, z);
+                    Block.dropResources(this.level().getBlockState(blockPos), this.level(), BlockPos.containing(x, y, z), null);
+                    this.level().destroyBlock(blockPos, true);
+                }
             }
-        }
 
-        this.discard();
+            for (int i = 0; i < 5; i++) {
+                apExplode(blockHitResult, i);
+            }
+
+            causeExplode(blockHitResult);
+        }
+    }
+
+    private void apExplode(HitResult result, int index) {
+        CustomExplosion explosion = new CustomExplosion(this.level(), this,
+                ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(),
+                        this,
+                        this.getOwner()),
+                explosionDamage,
+                result.getLocation().x + index * getDeltaMovement().normalize().x,
+                result.getLocation().y + index * getDeltaMovement().normalize().y,
+                result.getLocation().z + index * getDeltaMovement().normalize().z,
+                0.5f * explosionRadius,
+                ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).
+                setDamageMultiplier(1);
+        explosion.explode();
+        EventHooks.onExplosionStart(this.level(), explosion);
+        explosion.finalizeExplosion(false);
     }
 
     @Override
