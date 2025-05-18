@@ -66,6 +66,7 @@ public class BocekItemRenderer extends CustomGunRenderer<BocekItem> {
 
         var player = mc.player;
         if (player == null) return;
+
         ItemStack itemStack = player.getMainHandItem();
         if (!(itemStack.getItem() instanceof GunItem)) return;
 
@@ -82,7 +83,7 @@ public class BocekItemRenderer extends CustomGunRenderer<BocekItem> {
         AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0.002, 0.1790625, 0.13, 0.08f, 255, 0, 0, 255, "dot", false);
 
         if (renderingArms) {
-            AnimationHelper.renderArms(mc, player, this.transformType, stack, name, bone, SCALE_RECIPROCAL, this.currentBuffer, type, packedLightIn, false, false);
+            AnimationHelper.renderArms(player, this.transformType, stack, name, bone, buffer, type, packedLightIn, false);
         }
         super.renderRecursively(stack, animatable, bone, type, buffer, bufferIn, isReRender, partialTick, packedLightIn, packedOverlayIn, color);
     }
