@@ -70,8 +70,7 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
     public static final EntityDataAccessor<Integer> FIRE_TIME = SynchedEntityData.defineId(A10Entity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<String> TARGET_UUID = SynchedEntityData.defineId(A10Entity.class, EntityDataSerializers.STRING);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-    private boolean fly;
-    private int flyTime;
+    private boolean gearUp;
     public int fireIndex;
     public int reloadCoolDownBomb;
     public int reloadCoolDownMissile;
@@ -525,8 +524,8 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
                         this.entityData.set(POWER, this.entityData.get(POWER) * 0.8f);
                         this.setDeltaMovement(this.getDeltaMovement().multiply(0.97, 1, 0.97));
                     } else {
-                        this.entityData.set(POWER, this.entityData.get(POWER) * 0.95f);
-                        this.setDeltaMovement(this.getDeltaMovement().multiply(0.99, 1, 0.99));
+                        this.entityData.set(POWER, this.entityData.get(POWER) * 0.97f);
+                        this.setDeltaMovement(this.getDeltaMovement().multiply(0.994, 1, 0.994));
                     }
                     this.entityData.set(PLANE_BREAK, Math.min(this.entityData.get(PLANE_BREAK) + 10, 60f));
                 }
@@ -560,23 +559,20 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
             this.setPropellerRot(this.getPropellerRot() + 30 * this.entityData.get(POWER));
 
             // 起落架
-            if (!SeekTool.isOnGround(this, 15)) {
-                flyTime = Math.min(flyTime + 1, 10);
+            if (downInputDown) {
+                downInputDown = false;
+                if (entityData.get(GEAR_ROT) == 0 && !onGround()) {
+                    entityData.set(GEAR_UP, true);
+                } else if (entityData.get(GEAR_ROT) == 85) {
+                    entityData.set(GEAR_UP, false);
+                }
             }
 
-            if (SeekTool.isOnGround(this, 15) && fly) {
-                flyTime = Math.max(flyTime - 1, 0);
+            if (onGround()) {
+                entityData.set(GEAR_UP, false);
             }
 
-            if (!fly && flyTime == 10) {
-                fly = true;
-            }
-
-            if (fly && flyTime == 0) {
-                fly = false;
-            }
-
-            if (fly) {
+            if (entityData.get(GEAR_UP)) {
                 entityData.set(GEAR_ROT, Math.min(entityData.get(GEAR_ROT) + 5, 85));
             } else {
                 entityData.set(GEAR_ROT, Math.max(entityData.get(GEAR_ROT) - 5, 0));
@@ -584,13 +580,13 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
 
             float flapX = (1 - (Mth.abs(getRoll())) / 90) * Mth.clamp(diffX, -22.5f, 22.5f) - VectorTool.calculateY(getRoll()) * Mth.clamp(diffY, -22.5f, 22.5f);
 
-            setFlap1LRot(Mth.clamp(-flapX - 8 * addZ - this.entityData.get(PLANE_BREAK), -22.5f, 22.5f));
-            setFlap1RRot(Mth.clamp(-flapX + 8 * addZ - this.entityData.get(PLANE_BREAK), -22.5f, 22.5f));
-            setFlap1L2Rot(Mth.clamp(-flapX - 8 * addZ + this.entityData.get(PLANE_BREAK), -22.5f, 22.5f));
-            setFlap1R2Rot(Mth.clamp(-flapX + 8 * addZ + this.entityData.get(PLANE_BREAK), -22.5f, 22.5f));
+            setFlap1LRot(Mth.clamp(-flapX - 4 * addZ - this.entityData.get(PLANE_BREAK), -22.5f, 22.5f));
+            setFlap1RRot(Mth.clamp(-flapX + 4 * addZ - this.entityData.get(PLANE_BREAK), -22.5f, 22.5f));
+            setFlap1L2Rot(Mth.clamp(-flapX - 4 * addZ + this.entityData.get(PLANE_BREAK), -22.5f, 22.5f));
+            setFlap1R2Rot(Mth.clamp(-flapX + 4 * addZ + this.entityData.get(PLANE_BREAK), -22.5f, 22.5f));
 
-            setFlap2LRot(Mth.clamp(flapX - 8 * addZ, -22.5f, 22.5f));
-            setFlap2RRot(Mth.clamp(flapX + 8 * addZ, -22.5f, 22.5f));
+            setFlap2LRot(Mth.clamp(flapX - 4 * addZ, -22.5f, 22.5f));
+            setFlap2RRot(Mth.clamp(flapX + 4 * addZ, -22.5f, 22.5f));
 
             float flapY = (1 - (Mth.abs(getRoll())) / 90) * Mth.clamp(diffY, -22.5f, 22.5f) + VectorTool.calculateY(getRoll()) * Mth.clamp(diffX, -22.5f, 22.5f);
 
