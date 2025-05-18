@@ -220,6 +220,7 @@ public class SeekTool {
             if (!blockstate.is(Blocks.AIR)) {
                 onGround.set(true);
             }
+            // TODO 添加超出可建筑高度之外的判断
         });
         return entity.onGround() || entity.isInWater() || onGround.get();
     }
