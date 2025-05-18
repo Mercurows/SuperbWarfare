@@ -2,7 +2,7 @@ package com.atsuishio.superbwarfare.item.gun.rifle;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.ClickHandler;
-import com.atsuishio.superbwarfare.client.renderer.item.Mk14ItemRenderer;
+import com.atsuishio.superbwarfare.client.renderer.gun.Mk14ItemRenderer;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;

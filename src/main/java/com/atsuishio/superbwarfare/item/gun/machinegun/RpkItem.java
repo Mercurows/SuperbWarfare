@@ -2,7 +2,7 @@ package com.atsuishio.superbwarfare.item.gun.machinegun;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.ClickHandler;
-import com.atsuishio.superbwarfare.client.renderer.item.RpkItemRenderer;
+import com.atsuishio.superbwarfare.client.renderer.gun.RpkItemRenderer;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
