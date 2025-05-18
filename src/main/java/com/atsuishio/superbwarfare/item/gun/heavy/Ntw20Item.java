@@ -16,7 +16,6 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import software.bernie.geckolib.animatable.GeoItem;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
@@ -30,7 +29,6 @@ import java.util.function.Supplier;
 public class Ntw20Item extends GunItem implements GeoItem {
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-    public static ItemDisplayContext transformType;
 
     public Ntw20Item() {
         super(new Properties().stacksTo(1).rarity(ModEnumExtensions.getLegendary()));
@@ -44,10 +42,6 @@ public class Ntw20Item extends GunItem implements GeoItem {
     @Override
     public Supplier<GeoItemRenderer<? extends Item>> getRenderer() {
         return Ntw20Renderer::new;
-    }
-
-    public void getTransformType(ItemDisplayContext type) {
-        transformType = type;
     }
 
     private PlayState fireAnimPredicate(AnimationState<Ntw20Item> event) {

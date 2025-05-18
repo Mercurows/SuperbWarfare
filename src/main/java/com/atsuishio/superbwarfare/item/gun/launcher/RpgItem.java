@@ -18,7 +18,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.Level;
@@ -38,25 +37,20 @@ import java.util.function.Supplier;
 
 public class RpgItem extends GunItem implements GeoItem {
 
-    @Override
-    public String getAmmoDisplayName(GunData data) {
-        return "Yassin105 TBG";
-    }
-
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-    public static ItemDisplayContext transformType;
 
     public RpgItem() {
         super(new Properties().stacksTo(1).rarity(Rarity.RARE));
     }
 
     @Override
-    public Supplier<GeoItemRenderer<? extends Item>> getRenderer() {
-        return RpgItemRenderer::new;
+    public String getAmmoDisplayName(GunData data) {
+        return "Yassin105 TBG";
     }
 
-    public void getTransformType(ItemDisplayContext type) {
-        transformType = type;
+    @Override
+    public Supplier<GeoItemRenderer<? extends Item>> getRenderer() {
+        return RpgItemRenderer::new;
     }
 
     private PlayState idlePredicate(AnimationState<RpgItem> event) {

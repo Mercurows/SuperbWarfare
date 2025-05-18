@@ -21,7 +21,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.Level;
@@ -43,7 +42,6 @@ public class TaserItem extends GunItem implements GeoItem, EnergyStorageItem {
     public static final int MAX_ENERGY = 6000;
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-    public static ItemDisplayContext transformType;
 
     public TaserItem() {
         super(new Properties().stacksTo(1).rarity(Rarity.COMMON));
@@ -74,10 +72,6 @@ public class TaserItem extends GunItem implements GeoItem, EnergyStorageItem {
     @Override
     public Supplier<GeoItemRenderer<? extends Item>> getRenderer() {
         return TaserItemRenderer::new;
-    }
-
-    public void getTransformType(ItemDisplayContext type) {
-        transformType = type;
     }
 
     private PlayState idlePredicate(AnimationState<TaserItem> event) {
