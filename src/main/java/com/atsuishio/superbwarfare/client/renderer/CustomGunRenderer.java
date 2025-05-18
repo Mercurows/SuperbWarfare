@@ -1,6 +1,5 @@
-package com.atsuishio.superbwarfare.client;
+package com.atsuishio.superbwarfare.client.renderer;
 
-import com.atsuishio.superbwarfare.client.renderer.ModRenderTypes;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -62,10 +61,6 @@ public class CustomGunRenderer<T extends Item & GeoAnimatable> extends GeoItemRe
         poseStack.pushPose();
 
         Color renderColor = getRenderColor(animatable, partialTick, packedLight);
-        float red = renderColor.getRedFloat();
-        float green = renderColor.getGreenFloat();
-        float blue = renderColor.getBlueFloat();
-        float alpha = renderColor.getAlphaFloat();
         int packedOverlay = getPackedOverlay(animatable, 0, partialTick);
         BakedGeoModel model = getGeoModel().getBakedModel(getGeoModel().getModelResource(animatable));
 

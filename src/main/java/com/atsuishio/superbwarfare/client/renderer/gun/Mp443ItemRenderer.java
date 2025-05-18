@@ -1,8 +1,8 @@
 package com.atsuishio.superbwarfare.client.renderer.gun;
 
 import com.atsuishio.superbwarfare.client.AnimationHelper;
-import com.atsuishio.superbwarfare.client.CustomGunRenderer;
 import com.atsuishio.superbwarfare.client.model.item.Mp443ItemModel;
+import com.atsuishio.superbwarfare.client.renderer.CustomGunRenderer;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.handgun.Mp443Item;
 import com.mojang.blaze3d.vertex.PoseStack;
