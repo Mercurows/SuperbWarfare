@@ -17,7 +17,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.entity.EntityTypeTest;
 import net.minecraft.world.phys.AABB;
@@ -212,15 +211,34 @@ public class SeekTool {
                 || includedByConfig(entity);
     }
 
+    public static boolean isOnGround(Entity entity) {
+        return isOnGround(entity, 0);
+    }
+
+    /**
+     * 判断实体是否位于离地面n米的范围内
+     */
     public static boolean isOnGround(Entity entity, double height) {
+        Level level = entity.level();
+
+        double y = entity.getY();
+        int minY = level.getMinBuildHeight();
+        int maxY = level.getMaxBuildHeight();
+
+        // 如果实体已低于世界底部或高于顶部
+        if (y < minY || y > maxY) {
+            return false;
+        }
+
         AtomicBoolean onGround = new AtomicBoolean(false);
         AABB aabb = entity.getBoundingBox().expandTowards(0, -height, 0);
         BlockPos.betweenClosedStream(aabb).forEach((pos) -> {
-            BlockState blockstate = entity.level().getBlockState(pos);
-            if (!blockstate.is(Blocks.AIR)) {
+            if (pos.getY() < minY || pos.getY() > maxY) return;
+
+            BlockState state = level.getBlockState(pos);
+            if (!state.isAir()) {
                 onGround.set(true);
             }
-            // TODO 添加超出可建筑高度之外的判断
         });
         return entity.onGround() || entity.isInWater() || onGround.get();
     }
