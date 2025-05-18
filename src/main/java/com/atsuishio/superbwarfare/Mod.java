@@ -67,10 +67,11 @@ public class Mod {
 
         bus.addListener(this::onClientSetup);
         bus.addListener(FMLCommonSetupEvent.class, event -> onCommonSetup(bus));
-        bus.addListener(FMLCommonSetupEvent.class, event -> MolangVariable.register());
         bus.addListener(ModItems::registerDispenserBehavior);
 
         bus.addListener(NetworkRegistry::register);
+
+        MolangVariable.register();
 
         if (FMLEnvironment.dist == Dist.CLIENT) {
             CompatHolder.hasMod(CompatHolder.CLOTH_CONFIG, ClothConfigHelper::registerScreen);
