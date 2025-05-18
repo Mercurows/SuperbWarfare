@@ -26,22 +26,13 @@ public class ModRenderTypes extends RenderType {
         return RenderType.create("laser", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, true, false, state);
     });
 
-    public static final Function<ResourceLocation, RenderType> ILLUMINATED = Util.memoize((location) -> {
-        TextureStateShard shard = new TextureStateShard(location, false, false);
-        CompositeState state = CompositeState.builder().setTextureState(shard)
-                .setShaderState(RENDERTYPE_ENTITY_TRANSLUCENT_EMISSIVE_SHADER).setTransparencyState(RenderStateShard.GLINT_TRANSPARENCY)
-                .setCullState(NO_CULL).setOverlayState(NO_OVERLAY).setWriteMaskState(COLOR_WRITE).createCompositeState(false);
-        return RenderType.create("illuminated", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, true, false, state);
-    });
 
-    public static final Function<ResourceLocation, RenderType> GUN_ILLUMINATED = Util.memoize((location) -> {
+    public static final Function<ResourceLocation, RenderType> ILLUMINATED = Util.memoize((location) -> {
         TextureStateShard shard = new RenderStateShard.TextureStateShard(location, false, false);
         RenderType.CompositeState state = RenderType.CompositeState.builder().setTextureState(shard)
-                .setShaderState(RENDERTYPE_EYES_SHADER).setTransparencyState(NO_TRANSPARENCY)
-                .setLightmapState(RenderStateShard.NO_LIGHTMAP)
-                .setOverlayState(RenderStateShard.NO_OVERLAY)
-                .createCompositeState(false);
-        return RenderType.create("gun_illuminated", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, true, false, state);
+                .setShaderState(RENDERTYPE_BEACON_BEAM_SHADER).setTransparencyState(RenderStateShard.GLINT_TRANSPARENCY)
+                .setLightmapState(RenderStateShard.NO_LIGHTMAP).setCullState(NO_CULL).setOverlayState(NO_OVERLAY).setWriteMaskState(COLOR_WRITE).createCompositeState(false);
+        return RenderType.create("illuminated", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, true, false, state);
     });
 
     //DickSheep的恩情还不完

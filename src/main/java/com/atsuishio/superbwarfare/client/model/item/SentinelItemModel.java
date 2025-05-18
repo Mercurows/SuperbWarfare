@@ -2,9 +2,9 @@ package com.atsuishio.superbwarfare.client.model.item;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
+import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
-import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.item.gun.sniper.SentinelItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
@@ -80,11 +80,6 @@ public class SentinelItemModel extends GeoModel<SentinelItem> {
         shen.setRotZ((float) (shen.getRotZ() * (1 - 0.65 * zt)));
 
         CrossHairOverlay.gunRot = shen.getRotZ();
-
-        GeoBone charge = getAnimationProcessor().getBone("charge");
-
-        charge.setRotZ(charge.getRotZ() + times * 0.5f);
-
         ClientEventHandler.gunRootMove(getAnimationProcessor());
 
         if (data.ammo.get() <= 5) {

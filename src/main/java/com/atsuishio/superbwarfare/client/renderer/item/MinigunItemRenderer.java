@@ -1,7 +1,9 @@
 package com.atsuishio.superbwarfare.client.renderer.item;
 
 import com.atsuishio.superbwarfare.client.AnimationHelper;
+import com.atsuishio.superbwarfare.client.CustomRenderer;
 import com.atsuishio.superbwarfare.client.model.item.MinigunItemModel;
+import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.machinegun.MinigunItem;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -14,17 +16,14 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import software.bernie.geckolib.cache.object.BakedGeoModel;
 import software.bernie.geckolib.cache.object.GeoBone;
-import software.bernie.geckolib.renderer.GeoItemRenderer;
 
 import java.util.HashSet;
 import java.util.Set;
 
-public class MinigunItemRenderer extends GeoItemRenderer<MinigunItem> {
+public class MinigunItemRenderer extends CustomRenderer<MinigunItem> {
 
     public MinigunItemRenderer() {
         super(new MinigunItemModel());
-        // TODO layer
-//        this.addRenderLayer(new MinigunHeatLayer(this));
     }
 
     @Override
@@ -76,6 +75,13 @@ public class MinigunItemRenderer extends GeoItemRenderer<MinigunItem> {
         if (player == null) return;
         ItemStack itemStack = player.getMainHandItem();
         if (!(itemStack.getItem() instanceof GunItem)) return;
+
+        var data = GunData.from(itemStack);
+        float heat = (float) data.heat.get();
+
+        if (bone.getName().endsWith("_illuminated")) {
+            bone.setScaleZ(heat / 2);
+        }
 
         AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn, 0, 0.1, 1.45, 0.9);
 

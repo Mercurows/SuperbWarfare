@@ -194,17 +194,17 @@ public class AnimationHelper {
 
             int alpha = hasBlackPart ? a : (int) (0.12 * a);
 
-            VertexConsumer blackPart = buffer.getBuffer(RenderType.entityTranslucent(tex));
-            vertexRGB(blackPart, $$7, pose, 255, 0.0F, 0, 0, 1, r, g, b, alpha, size);
-            vertexRGB(blackPart, $$7, pose, 255, size, 0, 1, 1, r, g, b, alpha, size);
-            vertexRGB(blackPart, $$7, pose, 255, size, size, 1, 0, r, g, b, alpha, size);
-            vertexRGB(blackPart, $$7, pose, 255, 0.0F, size, 0, 0, r, g, b, alpha, size);
-
             VertexConsumer $$9 = buffer.getBuffer(ModRenderTypes.MUZZLE_FLASH_TYPE.apply(tex));
             vertexRGB($$9, $$7, pose, 255, 0.0F, 0, 0, 1, r, g, b, a, size);
             vertexRGB($$9, $$7, pose, 255, size, 0, 1, 1, r, g, b, a, size);
             vertexRGB($$9, $$7, pose, 255, size, size, 1, 0, r, g, b, a, size);
             vertexRGB($$9, $$7, pose, 255, 0.0F, size, 0, 0, r, g, b, a, size);
+
+            VertexConsumer blackPart = buffer.getBuffer(RenderType.entityTranslucent(tex));
+            vertexRGB(blackPart, $$7, pose, 255, 0.0F, 0, 0, 1, r, g, b, alpha, size);
+            vertexRGB(blackPart, $$7, pose, 255, size, 0, 1, 1, r, g, b, alpha, size);
+            vertexRGB(blackPart, $$7, pose, 255, size, size, 1, 0, r, g, b, alpha, size);
+            vertexRGB(blackPart, $$7, pose, 255, 0.0F, size, 0, 0, r, g, b, alpha, size);
             stack.popPose();
         }
         currentBuffer.getBuffer(renderType);

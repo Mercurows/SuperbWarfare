@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.client.renderer.item;
 
 import com.atsuishio.superbwarfare.client.AnimationHelper;
+import com.atsuishio.superbwarfare.client.CustomRenderer;
 import com.atsuishio.superbwarfare.client.model.item.Mp443ItemModel;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.handgun.Mp443Item;
@@ -14,17 +15,14 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import software.bernie.geckolib.cache.object.BakedGeoModel;
 import software.bernie.geckolib.cache.object.GeoBone;
-import software.bernie.geckolib.renderer.GeoItemRenderer;
 
 import java.util.HashSet;
 import java.util.Set;
 
-public class Mp443ItemRenderer extends GeoItemRenderer<Mp443Item> {
+public class Mp443ItemRenderer extends CustomRenderer<Mp443Item> {
 
     public Mp443ItemRenderer() {
         super(new Mp443ItemModel());
-        // TODO layer
-//        this.addRenderLayer(new Mp443LightLayer(this));
     }
 
     @Override

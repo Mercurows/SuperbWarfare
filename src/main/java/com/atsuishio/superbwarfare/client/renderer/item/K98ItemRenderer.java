@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.client.renderer.item;
 
 import com.atsuishio.superbwarfare.client.AnimationHelper;
+import com.atsuishio.superbwarfare.client.CustomRenderer;
 import com.atsuishio.superbwarfare.client.model.item.K98ItemModel;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.sniper.K98Item;
@@ -14,17 +15,14 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import software.bernie.geckolib.cache.object.BakedGeoModel;
 import software.bernie.geckolib.cache.object.GeoBone;
-import software.bernie.geckolib.renderer.GeoItemRenderer;
 
 import java.util.HashSet;
 import java.util.Set;
 
-public class K98ItemRenderer extends GeoItemRenderer<K98Item> {
+public class K98ItemRenderer extends CustomRenderer<K98Item> {
 
     public K98ItemRenderer() {
         super(new K98ItemModel());
-        // TODO layer
-// this.addRenderLayer(new K98Layer(this));
     }
 
     @Override

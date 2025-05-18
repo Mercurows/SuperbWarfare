@@ -1753,7 +1753,7 @@
 					]
 				},
 				{
-					"name": "glow",
+					"name": "glow_illuminated",
 					"parent": "jimiao",
 					"pivot": [0.06161, -2.12152, 0.88585],
 					"cubes": [

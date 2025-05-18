@@ -162,6 +162,11 @@ public class Agm65Entity extends FastThrowableProjectile implements GeoEntity, D
             if (entity instanceof LivingEntity) {
                 entity.invulnerableTime = 0;
             }
+
+            for (int i = 0; i < 5; i++) {
+                apExplode(result, i);
+            }
+
             causeExplode(result);
             this.discard();
         }

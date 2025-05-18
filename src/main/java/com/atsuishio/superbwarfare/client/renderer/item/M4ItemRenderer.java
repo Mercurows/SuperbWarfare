@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.client.renderer.item;
 
 import com.atsuishio.superbwarfare.client.AnimationHelper;
+import com.atsuishio.superbwarfare.client.CustomRenderer;
 import com.atsuishio.superbwarfare.client.ItemModelHelper;
 import com.atsuishio.superbwarfare.client.model.item.M4ItemModel;
 import com.atsuishio.superbwarfare.data.gun.GunData;
@@ -19,12 +20,11 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import software.bernie.geckolib.cache.object.BakedGeoModel;
 import software.bernie.geckolib.cache.object.GeoBone;
-import software.bernie.geckolib.renderer.GeoItemRenderer;
 
 import java.util.HashSet;
 import java.util.Set;
 
-public class M4ItemRenderer extends GeoItemRenderer<M4Item> {
+public class M4ItemRenderer extends CustomRenderer<M4Item> {
 
     public M4ItemRenderer() {
         super(new M4ItemModel());
