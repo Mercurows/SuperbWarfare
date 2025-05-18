@@ -71,8 +71,6 @@ public class Mod {
 
         bus.addListener(NetworkRegistry::register);
 
-        MolangVariable.register();
-
         if (FMLEnvironment.dist == Dist.CLIENT) {
             CompatHolder.hasMod(CompatHolder.CLOTH_CONFIG, ClothConfigHelper::registerScreen);
         }
@@ -123,6 +121,7 @@ public class Mod {
 
     public void onClientSetup(final FMLClientSetupEvent event) {
         MouseMovementHandler.init();
+        MolangVariable.register();
     }
 
 }
