@@ -2,7 +2,7 @@ package com.atsuishio.superbwarfare.client.renderer.block;
 
 import com.atsuishio.superbwarfare.block.CreativeChargingStationBlock;
 import com.atsuishio.superbwarfare.block.entity.CreativeChargingStationBlockEntity;
-import com.atsuishio.superbwarfare.client.renderer.CustomRenderType;
+import com.atsuishio.superbwarfare.client.renderer.ModRenderTypes;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
@@ -41,7 +41,7 @@ public class CreativeChargingStationBlockEntityRenderer implements BlockEntityRe
         var alpha = 0.2f;
 
 
-        var builder = bufferSource.getBuffer(CustomRenderType.BLOCK_OVERLAY);
+        var builder = bufferSource.getBuffer(ModRenderTypes.BLOCK_OVERLAY);
         var m4f = poseStack.last().pose();
 
         // east

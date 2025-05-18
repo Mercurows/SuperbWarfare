@@ -1,14 +1,5 @@
 package com.atsuishio.superbwarfare.mixins;
 
-import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.client.LoudlyEntitySoundInstance;
-import com.atsuishio.superbwarfare.client.VehicleFireSoundInstance;
-import com.atsuishio.superbwarfare.client.VehicleSoundInstance;
-import com.atsuishio.superbwarfare.entity.LoudlyEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.A10Entity;
-import com.atsuishio.superbwarfare.entity.vehicle.Hpj11Entity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.TrackEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.ModKeyMappings;
 import net.minecraft.client.Minecraft;
@@ -78,28 +69,29 @@ public abstract class ClientPacketListenerMixin {
         vehicle.entityIndexOverride = null;
     }
 
-    @Inject(method = "postAddEntitySoundInstance(Lnet/minecraft/world/entity/Entity;)V", at = @At("RETURN"))
-    private void postAddEntitySoundInstance(Entity pEntity, CallbackInfo ci) {
-        if (pEntity instanceof LoudlyEntity) {
-            Minecraft.getInstance().getSoundManager().play(new LoudlyEntitySoundInstance.EntitySound(pEntity));
-            Minecraft.getInstance().getSoundManager().play(new LoudlyEntitySoundInstance.EntitySoundClose(pEntity));
-        } else {
-            Mod.queueClientWork(30, () -> {
-                if (pEntity instanceof MobileVehicleEntity mobileVehicle) {
-                    if (mobileVehicle instanceof TrackEntity) {
-                        Minecraft.getInstance().getSoundManager().play(new VehicleSoundInstance.TrackSound(mobileVehicle));
-                    }
-                    if (mobileVehicle instanceof A10Entity) {
-                        Minecraft.getInstance().getSoundManager().play(new VehicleFireSoundInstance.A10FireSound(mobileVehicle));
-                    }
-                    if (mobileVehicle instanceof Hpj11Entity) {
-                        Minecraft.getInstance().getSoundManager().play(new VehicleFireSoundInstance.HPJ11CloseFireSound(mobileVehicle));
-                    }
-
-                    Minecraft.getInstance().getSoundManager().play(new VehicleSoundInstance.EngineSound(mobileVehicle, mobileVehicle.getEngineSound()));
-                    Minecraft.getInstance().getSoundManager().play(new VehicleSoundInstance.SwimSound(mobileVehicle));
-                }
-            });
-        }
-    }
+    // TODO what is this
+//    @Inject(method = "postAddEntitySoundInstance(Lnet/minecraft/world/entity/Entity;)V", at = @At("RETURN"))
+//    private void postAddEntitySoundInstance(Entity pEntity, CallbackInfo ci) {
+//        if (pEntity instanceof LoudlyEntity) {
+//            Minecraft.getInstance().getSoundManager().play(new LoudlyEntitySoundInstance.EntitySound(pEntity));
+//            Minecraft.getInstance().getSoundManager().play(new LoudlyEntitySoundInstance.EntitySoundClose(pEntity));
+//        } else {
+//            Mod.queueClientWork(30, () -> {
+//                if (pEntity instanceof MobileVehicleEntity mobileVehicle) {
+//                    if (mobileVehicle instanceof TrackEntity) {
+//                        Minecraft.getInstance().getSoundManager().play(new VehicleSoundInstance.TrackSound(mobileVehicle));
+//                    }
+//                    if (mobileVehicle instanceof A10Entity) {
+//                        Minecraft.getInstance().getSoundManager().play(new VehicleFireSoundInstance.A10FireSound(mobileVehicle));
+//                    }
+//                    if (mobileVehicle instanceof Hpj11Entity) {
+//                        Minecraft.getInstance().getSoundManager().play(new VehicleFireSoundInstance.HPJ11CloseFireSound(mobileVehicle));
+//                    }
+//
+//                    Minecraft.getInstance().getSoundManager().play(new VehicleSoundInstance.EngineSound(mobileVehicle, mobileVehicle.getEngineSound()));
+//                    Minecraft.getInstance().getSoundManager().play(new VehicleSoundInstance.SwimSound(mobileVehicle));
+//                }
+//            });
+//        }
+//    }
 }
