@@ -1,13 +1,16 @@
-package com.atsuishio.superbwarfare.client;
+package com.atsuishio.superbwarfare.client.sound;
 
-import com.atsuishio.superbwarfare.entity.LoudlyEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.A10Entity;
+import com.atsuishio.superbwarfare.entity.vehicle.Hpj11Entity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity;
+import com.atsuishio.superbwarfare.init.ModSounds;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 
-public abstract class LoudlyEntitySoundInstance extends AbstractTickableSoundInstance {
+public abstract class VehicleFireSoundInstance extends AbstractTickableSoundInstance {
 
     private final Minecraft client;
     private final Entity entity;
@@ -15,7 +18,7 @@ public abstract class LoudlyEntitySoundInstance extends AbstractTickableSoundIns
     private int fade = 0;
     private boolean die = false;
 
-    public LoudlyEntitySoundInstance(SoundEvent sound, Minecraft client, Entity entity) {
+    public VehicleFireSoundInstance(SoundEvent sound, Minecraft client, Entity entity) {
         super(sound, SoundSource.AMBIENT, entity.getCommandSenderWorld().getRandom());
         this.client = client;
         this.entity = entity;
@@ -56,60 +59,57 @@ public abstract class LoudlyEntitySoundInstance extends AbstractTickableSoundIns
         this.z = this.entity.getZ();
 
         this.pitch = this.getPitch(this.entity);
-
-        if (player.getVehicle() != this.entity) {
-            double distance = this.entity.position().subtract(player.position()).length();
-            this.pitch += (float) (0.16 * java.lang.Math.atan(lastDistance - distance));
-
-            this.lastDistance = distance;
-        } else {
-            this.lastDistance = 0;
-        }
     }
 
-    public static class EntitySound extends LoudlyEntitySoundInstance {
-        public EntitySound(Entity entity) {
-            super(entity instanceof LoudlyEntity loudlyEntity ? loudlyEntity.getSound() : null, Minecraft.getInstance(), entity);
+    public static class A10FireSound extends VehicleSoundInstance {
+        public A10FireSound(MobileVehicleEntity mobileVehicle) {
+            super(ModSounds.A_10_FIRE.get(), Minecraft.getInstance(), mobileVehicle);
         }
 
         @Override
-        protected boolean canPlay(Entity entity) {
+        protected boolean canPlay(MobileVehicleEntity mobileVehicle) {
             return true;
         }
 
         @Override
-        protected float getPitch(Entity entity) {
+        protected float getPitch(MobileVehicleEntity mobileVehicle) {
+            if (mobileVehicle instanceof A10Entity a10Entity) {
+                return a10Entity.shootingPitch();
+            }
             return 1;
         }
 
         @Override
-        protected float getVolume(Entity entity) {
-            if (entity instanceof LoudlyEntity loudlyEntity) {
-                return (float) Math.min(loudlyEntity.getVolume() * 0.1 * entity.getDeltaMovement().length(), 1.5);
+        protected float getVolume(MobileVehicleEntity mobileVehicle) {
+            if (mobileVehicle instanceof A10Entity a10Entity) {
+                return a10Entity.shootingVolume();
             }
             return 0;
         }
     }
 
-    public static class EntitySoundClose extends LoudlyEntitySoundInstance {
-        public EntitySoundClose(Entity entity) {
-            super(entity instanceof LoudlyEntity loudlyEntity ? loudlyEntity.getCloseSound() : null, Minecraft.getInstance(), entity);
+    public static class HPJ11CloseFireSound extends VehicleSoundInstance {
+        public HPJ11CloseFireSound(MobileVehicleEntity mobileVehicle) {
+            super(ModSounds.HPJ_11_FIRE_3P.get(), Minecraft.getInstance(), mobileVehicle);
         }
 
         @Override
-        protected boolean canPlay(Entity entity) {
+        protected boolean canPlay(MobileVehicleEntity mobileVehicle) {
             return true;
         }
 
         @Override
-        protected float getPitch(Entity entity) {
+        protected float getPitch(MobileVehicleEntity mobileVehicle) {
+            if (mobileVehicle instanceof Hpj11Entity hpj11Entity) {
+                return hpj11Entity.shootingPitch();
+            }
             return 1;
         }
 
         @Override
-        protected float getVolume(Entity entity) {
-            if (entity instanceof LoudlyEntity loudlyEntity) {
-                return (float) Math.min(loudlyEntity.getVolume() * 0.1 * entity.getDeltaMovement().length(), 1.5);
+        protected float getVolume(MobileVehicleEntity mobileVehicle) {
+            if (mobileVehicle instanceof Hpj11Entity hpj11Entity) {
+                return hpj11Entity.shootingVolume();
             }
             return 0;
         }

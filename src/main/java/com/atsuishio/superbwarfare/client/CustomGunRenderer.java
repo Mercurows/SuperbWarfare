@@ -1,10 +1,12 @@
 package com.atsuishio.superbwarfare.client;
 
+import com.atsuishio.superbwarfare.client.renderer.ModRenderTypes;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
@@ -18,7 +20,9 @@ import software.bernie.geckolib.renderer.GeoItemRenderer;
 import software.bernie.geckolib.util.Color;
 import software.bernie.geckolib.util.RenderUtil;
 
-public class CustomRenderer<T extends Item & GeoAnimatable> extends GeoItemRenderer<T> {
+public class CustomGunRenderer<T extends Item & GeoAnimatable> extends GeoItemRenderer<T> {
+
+    public static final float SCALE_RECIPROCAL = 1.0f / 16.0f;
 
     protected T animatable;
     protected boolean renderArms = false;
@@ -26,7 +30,7 @@ public class CustomRenderer<T extends Item & GeoAnimatable> extends GeoItemRende
     protected RenderType renderType;
     public ItemDisplayContext transformType;
 
-    public CustomRenderer(GeoModel<T> model) {
+    public CustomGunRenderer(GeoModel<T> model) {
         super(model);
     }
 
@@ -46,6 +50,11 @@ public class CustomRenderer<T extends Item & GeoAnimatable> extends GeoItemRende
         if (this.renderArms) {
             this.renderArms = false;
         }
+    }
+
+    @Override
+    public RenderType getRenderType(T animatable, ResourceLocation texture, MultiBufferSource bufferSource, float partialTick) {
+        return RenderType.entityTranslucent(getTextureLocation(animatable));
     }
 
     @Override

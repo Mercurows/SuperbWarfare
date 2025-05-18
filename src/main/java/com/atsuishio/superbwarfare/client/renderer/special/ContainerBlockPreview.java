@@ -2,7 +2,7 @@ package com.atsuishio.superbwarfare.client.renderer.special;
 
 import com.atsuishio.superbwarfare.block.ContainerBlock;
 import com.atsuishio.superbwarfare.block.entity.ContainerBlockEntity;
-import com.atsuishio.superbwarfare.client.renderer.CustomRenderType;
+import com.atsuishio.superbwarfare.client.renderer.ModRenderTypes;
 import com.atsuishio.superbwarfare.item.Crowbar;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.level.ClipContext;
@@ -80,7 +80,7 @@ public class ContainerBlockPreview {
         var blue = 0.0f;
         var alpha = 0.2f;
 
-        var builder = Minecraft.getInstance().renderBuffers().bufferSource().getBuffer(CustomRenderType.BLOCK_OVERLAY);
+        var builder = Minecraft.getInstance().renderBuffers().bufferSource().getBuffer(ModRenderTypes.BLOCK_OVERLAY);
         var m4f = poseStack.last().pose();
 
         // east
