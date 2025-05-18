@@ -3,12 +3,12 @@ package com.atsuishio.superbwarfare.item.gun.sniper;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.renderer.item.SentinelItemRenderer;
 import com.atsuishio.superbwarfare.client.tooltip.component.SentinelImageComponent;
+import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModEnumExtensions;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.EnergyStorageItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
-import com.atsuishio.superbwarfare.data.gun.GunData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.ResourceLocation;
@@ -17,7 +17,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.capabilities.Capabilities;
@@ -35,7 +34,6 @@ import java.util.function.Supplier;
 public class SentinelItem extends GunItem implements GeoItem, EnergyStorageItem {
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-    public static ItemDisplayContext transformType;
 
     public SentinelItem() {
         super(new Properties().stacksTo(1).rarity(ModEnumExtensions.getLegendary()));
@@ -62,10 +60,6 @@ public class SentinelItem extends GunItem implements GeoItem, EnergyStorageItem 
     @Override
     public Supplier<GeoItemRenderer<? extends Item>> getRenderer() {
         return SentinelItemRenderer::new;
-    }
-
-    public void getTransformType(ItemDisplayContext type) {
-        transformType = type;
     }
 
     private PlayState fireAnimPredicate(AnimationState<SentinelItem> event) {

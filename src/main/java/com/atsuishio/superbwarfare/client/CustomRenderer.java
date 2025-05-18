@@ -6,6 +6,8 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import software.bernie.geckolib.animatable.GeoAnimatable;
@@ -18,8 +20,32 @@ import software.bernie.geckolib.util.RenderUtil;
 
 public class CustomRenderer<T extends Item & GeoAnimatable> extends GeoItemRenderer<T> {
 
+    protected T animatable;
+    protected boolean renderArms = false;
+    protected MultiBufferSource currentBuffer;
+    protected RenderType renderType;
+    public ItemDisplayContext transformType;
+
     public CustomRenderer(GeoModel<T> model) {
         super(model);
+    }
+
+    @Override
+    public void renderByItem(ItemStack stack, ItemDisplayContext transformType, PoseStack matrixStack, MultiBufferSource bufferIn, int combinedLightIn, int p_239207_6_) {
+        this.transformType = transformType;
+        super.renderByItem(stack, transformType, matrixStack, bufferIn, combinedLightIn, p_239207_6_);
+    }
+
+    @Override
+    public void actuallyRender(PoseStack matrixStackIn, T animatable, BakedGeoModel model, RenderType type, MultiBufferSource renderTypeBuffer, VertexConsumer vertexBuilder, boolean isRenderer, float partialTicks, int packedLightIn,
+                               int packedOverlayIn, int color) {
+        this.currentBuffer = renderTypeBuffer;
+        this.renderType = type;
+        this.animatable = animatable;
+        super.actuallyRender(matrixStackIn, animatable, model, type, renderTypeBuffer, vertexBuilder, isRenderer, partialTicks, packedLightIn, packedOverlayIn, color);
+        if (this.renderArms) {
+            this.renderArms = false;
+        }
     }
 
     @Override

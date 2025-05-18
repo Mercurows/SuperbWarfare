@@ -11,7 +11,6 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import software.bernie.geckolib.animatable.GeoItem;
@@ -26,7 +25,6 @@ import java.util.function.Supplier;
 public class K98Item extends GunItem implements GeoItem {
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-    public static ItemDisplayContext transformType;
 
     public K98Item() {
         super(new Properties().stacksTo(1).rarity(Rarity.RARE));
@@ -35,10 +33,6 @@ public class K98Item extends GunItem implements GeoItem {
     @Override
     public Supplier<GeoItemRenderer<? extends Item>> getRenderer() {
         return K98ItemRenderer::new;
-    }
-
-    public void getTransformType(ItemDisplayContext type) {
-        transformType = type;
     }
 
     private PlayState fireAnimPredicate(AnimationState<K98Item> event) {

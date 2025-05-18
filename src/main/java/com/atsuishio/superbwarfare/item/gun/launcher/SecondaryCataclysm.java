@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.item.gun.launcher;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.renderer.item.SecondaryCataclysmRenderer;
 import com.atsuishio.superbwarfare.client.tooltip.component.SecondaryCataclysmImageComponent;
+import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.entity.projectile.GunGrenadeEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModEnumExtensions;
@@ -10,7 +11,6 @@ import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.EnergyStorageItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
-import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
@@ -26,7 +26,6 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.level.Level;
@@ -45,7 +44,6 @@ import java.util.function.Supplier;
 
 public class SecondaryCataclysm extends GunItem implements GeoItem, EnergyStorageItem {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-    public static ItemDisplayContext transformType;
 
     public SecondaryCataclysm() {
         super(new Properties().stacksTo(1).fireResistant().rarity(ModEnumExtensions.getLegendary()));
@@ -71,10 +69,6 @@ public class SecondaryCataclysm extends GunItem implements GeoItem, EnergyStorag
     @Override
     public Supplier<GeoItemRenderer<? extends Item>> getRenderer() {
         return SecondaryCataclysmRenderer::new;
-    }
-
-    public void getTransformType(ItemDisplayContext type) {
-        transformType = type;
     }
 
     private PlayState reloadAnimPredicate(AnimationState<SecondaryCataclysm> event) {
