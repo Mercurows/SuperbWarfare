@@ -244,7 +244,7 @@ public class Agm65Entity extends FastThrowableProjectile implements GeoEntity, D
                     if (this.tickCount > 8) {
                         boolean lostTarget = (VectorTool.calculateAngle(getDeltaMovement(), toVec) > 80);
                         if (!lostTarget) {
-                            setDeltaMovement(getDeltaMovement().add(toVec.scale(1.4)).scale(0.25).add(entity.getDeltaMovement()));
+                            setDeltaMovement(getDeltaMovement().add(toVec.scale(4)).scale(0.65).add(entity.getDeltaMovement().scale(0.2)));
                         }
                     }
                 }
