@@ -64,7 +64,7 @@ public class Hk416ItemRenderer extends CustomGunRenderer<Hk416Item> {
         ItemModelHelper.handleGunAttachments(bone, itemStack, name);
 
         if (renderingArms) {
-            AnimationHelper.renderArms(mc, player, this.transformType, stack, name, bone, SCALE_RECIPROCAL, this.currentBuffer, type, packedLightIn, false, false);
+            AnimationHelper.renderArms(player, this.transformType, stack, name, bone, this.currentBuffer, type, packedLightIn, false);
         }
         super.renderRecursively(stack, animatable, bone, type, buffer, bufferIn, isReRender, partialTick, packedLightIn, packedOverlayIn, color);
     }

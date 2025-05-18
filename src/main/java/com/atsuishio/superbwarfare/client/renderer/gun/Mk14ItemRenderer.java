@@ -68,7 +68,7 @@ public class Mk14ItemRenderer extends CustomGunRenderer<Mk14Item> {
         ItemModelHelper.handleGunAttachments(bone, itemStack, name);
 
         if (renderingArms) {
-            AnimationHelper.renderArms(mc, player, this.transformType, stack, name, bone, SCALE_RECIPROCAL, this.currentBuffer, type, packedLightIn, true, true);
+            AnimationHelper.renderArms(player, this.transformType, stack, name, bone, this.currentBuffer, type, packedLightIn, true);
         }
         super.renderRecursively(stack, animatable, bone, type, buffer, bufferIn, isReRender, partialTick, packedLightIn, packedOverlayIn, color);
     }

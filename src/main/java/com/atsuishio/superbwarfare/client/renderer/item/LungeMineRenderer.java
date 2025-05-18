@@ -29,7 +29,6 @@ public class LungeMineRenderer extends GeoItemRenderer<LungeMine> {
         return RenderType.entityTranslucent(getTextureLocation(animatable));
     }
 
-    private static final float SCALE_RECIPROCAL = 1.0f / 16.0f;
     protected boolean renderArms = false;
     protected MultiBufferSource currentBuffer;
     protected RenderType renderType;
@@ -73,7 +72,7 @@ public class LungeMineRenderer extends GeoItemRenderer<LungeMine> {
         if (player == null) return;
 
         if (renderingArms) {
-            AnimationHelper.renderArms(mc, player, this.transformType, stack, name, bone, SCALE_RECIPROCAL, this.currentBuffer, type, packedLightIn, true, true);
+            AnimationHelper.renderArms(player, this.transformType, stack, name, bone, this.currentBuffer, type, packedLightIn, true);
         }
         super.renderRecursively(stack, animatable, bone, type, buffer, bufferIn, isReRender, partialTick, packedLightIn, packedOverlayIn, color);
     }
