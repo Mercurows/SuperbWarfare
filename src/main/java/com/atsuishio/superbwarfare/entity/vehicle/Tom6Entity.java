@@ -354,16 +354,6 @@ public class Tom6Entity extends MobileVehicleEntity implements GeoEntity {
     }
 
     @Override
-    public float getMaxHealth() {
-        return VehicleConfig.TOM_6_HP.get();
-    }
-
-    @Override
-    public int getMaxEnergy() {
-        return VehicleConfig.TOM_6_MAX_ENERGY.get();
-    }
-
-    @Override
     public ResourceLocation getVehicleIcon() {
         return Mod.loc("textures/vehicle_icon/tom_6_icon.png");
     }

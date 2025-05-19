@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.entity.vehicle.base;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.config.server.VehicleConfig;
+import com.atsuishio.superbwarfare.data.vehicle.VehicleData;
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.VehicleWeapon;
@@ -501,7 +501,7 @@ public abstract class VehicleEntity extends Entity {
     }
 
     public float getMaxHealth() {
-        return 50;
+        return VehicleData.from(this).maxHealth();
     }
 
     @Override
@@ -546,14 +546,14 @@ public abstract class VehicleEntity extends Entity {
      * 呼吸回血冷却时长(单位:tick)，设为小于0的值以禁用呼吸回血
      */
     public int maxRepairCoolDown() {
-        return VehicleConfig.REPAIR_COOLDOWN.get();
+        return VehicleData.from(this).repairCooldown();
     }
 
     /**
      * 呼吸回血回血量
      */
     public float repairAmount() {
-        return VehicleConfig.REPAIR_AMOUNT.get().floatValue();
+        return VehicleData.from(this).repairAmount();
     }
 
     @Override

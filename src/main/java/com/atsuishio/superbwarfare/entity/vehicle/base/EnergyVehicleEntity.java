@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.entity.vehicle.base;
 
 import com.atsuishio.superbwarfare.capability.energy.SyncedEntityEnergyStorage;
+import com.atsuishio.superbwarfare.data.vehicle.VehicleData;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.IntTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -75,7 +76,7 @@ public abstract class EnergyVehicleEntity extends VehicleEntity {
     }
 
     public int getMaxEnergy() {
-        return 100000;
+        return VehicleData.from(this).maxEnergy();
     }
 
 }

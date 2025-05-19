@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.entity.vehicle.damage;
 
+import com.google.gson.annotations.SerializedName;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.damagesource.DamageSource;
@@ -9,17 +10,25 @@ import java.util.function.Function;
 
 public class DamageModify {
     public enum ModifyType {
+        @SerializedName("Immunity")
         IMMUNITY,   // 完全免疫
+        @SerializedName("Reduce")
         REDUCE,     // 固定数值减伤
+        @SerializedName("Multiply")
         MULTIPLY,   // 乘以指定倍数
     }
 
-    private final float value;
-    private final ModifyType type;
+    @SerializedName("Value")
+    private float value;
+    @SerializedName("Type")
+    private ModifyType type;
 
-    private TagKey<DamageType> sourceTagKey = null;
-    private ResourceKey<DamageType> sourceKey = null;
-    private Function<DamageSource, Boolean> condition = null;
+    @SerializedName("Source")
+    private String source;
+
+    private transient TagKey<DamageType> sourceTagKey = null;
+    private transient ResourceKey<DamageType> sourceKey = null;
+    private transient Function<DamageSource, Boolean> condition = null;
 
     public DamageModify(ModifyType type, float value) {
         this.type = type;
