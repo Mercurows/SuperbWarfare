@@ -14,9 +14,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import software.bernie.geckolib.animation.AnimationState;
 import software.bernie.geckolib.cache.object.GeoBone;
-import software.bernie.geckolib.model.GeoModel;
 
-public class RpgItemModel extends GeoModel<RpgItem> {
+public class RpgItemModel extends CustomGunModel<RpgItem> {
 
     @Override
     public ResourceLocation getAnimationResource(RpgItem animatable) {

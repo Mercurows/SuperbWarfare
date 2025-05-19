@@ -3,7 +3,6 @@ package com.atsuishio.superbwarfare.client.renderer.gun;
 import com.atsuishio.superbwarfare.client.AnimationHelper;
 import com.atsuishio.superbwarfare.client.model.item.RpgItemModel;
 import com.atsuishio.superbwarfare.client.renderer.CustomGunRenderer;
-import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.launcher.RpgItem;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -36,10 +35,6 @@ public class RpgItemRenderer extends CustomGunRenderer<RpgItem> {
         if (player == null) return;
         ItemStack itemStack = player.getMainHandItem();
         if (!(itemStack.getItem() instanceof GunItem)) return;
-
-        if (name.equals("Rockets")) {
-            bone.setHidden(GunData.from(itemStack).isEmpty.get());
-        }
 
         AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn, 0, 0, 0.625, 0.7);
 
