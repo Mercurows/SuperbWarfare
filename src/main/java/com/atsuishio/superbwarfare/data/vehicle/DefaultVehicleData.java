@@ -8,7 +8,7 @@ public class DefaultVehicleData {
     public String id = "";
 
     @SerializedName("MaxHealth")
-    public float maxHealth = 5;
+    public float maxHealth = 50;
 
     @SerializedName("RepairCooldown")
     public int repairCooldown = VehicleConfig.REPAIR_COOLDOWN.get();
@@ -17,7 +17,7 @@ public class DefaultVehicleData {
     public float repairAmount = VehicleConfig.REPAIR_AMOUNT.get().floatValue();
 
     @SerializedName("MaxEnergy")
-    public int maxEnergy = 10;
+    public int maxEnergy = 100000;
 
     @SerializedName("UpStep")
     public float upStep = 0;
