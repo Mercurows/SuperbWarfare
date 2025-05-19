@@ -19,12 +19,10 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.ThrownPotion;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
@@ -48,6 +46,8 @@ public class DPSGeneratorEntity extends LivingEntity implements GeoEntity {
     public static final EntityDataAccessor<Integer> LEVEL = SynchedEntityData.defineId(DPSGeneratorEntity.class, EntityDataSerializers.INT);
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+
+    private float damageDealt = 0;
 
     public DPSGeneratorEntity(EntityType<DPSGeneratorEntity> type, Level world) {
         super(type, world);
@@ -114,21 +114,11 @@ public class DPSGeneratorEntity extends LivingEntity implements GeoEntity {
     }
 
     @Override
-    public boolean hurt(DamageSource source, float amount) {
-        if (source.is(DamageTypes.IN_FIRE)
-                || source.getDirectEntity() instanceof ThrownPotion
-                || source.getDirectEntity() instanceof AreaEffectCloud
-                || source.is(DamageTypes.FALL)
-                || source.is(DamageTypes.CACTUS)
-                || source.is(DamageTypes.DROWN)
-                || source.is(DamageTypes.LIGHTNING_BOLT)
-                || source.is(DamageTypes.FALLING_ANVIL)
-                || source.is(DamageTypes.DRAGON_BREATH)
-                || source.is(DamageTypes.WITHER)
-                || source.is(DamageTypes.WITHER_SKULL)
-                || source.is(DamageTypes.MAGIC)
-                || this.entityData.get(DOWN_TIME) > 0) {
-            return false;
+    public boolean hurt(@NotNull DamageSource source, float amount) {
+        damageDealt += amount;
+
+        if (this.getHealth() < 0.01) {
+            amount = 0;
         }
 
         if (!this.level().isClientSide()) {
@@ -201,9 +191,9 @@ public class DPSGeneratorEntity extends LivingEntity implements GeoEntity {
                     // DPS显示
                     if (getLastDamageSource() != null) {
                         var attacker = getLastDamageSource().getEntity();
-                        if (attacker instanceof Player player) {
+                        if (attacker instanceof Player player && !this.level().isClientSide) {
                             player.displayClientMessage(Component.translatable("tips.superbwarfare.dps_generator.dps",
-                                    FormatTool.format1DZ(damage * Math.pow(2, getGeneratorLevel()))), true);
+                                    FormatTool.format1DZ(damageDealt)), true);
                         }
                     }
 
@@ -229,6 +219,7 @@ public class DPSGeneratorEntity extends LivingEntity implements GeoEntity {
                     }
                 }
                 this.setHealth(this.getMaxHealth());
+                damageDealt = 0;
             }
 
         }
