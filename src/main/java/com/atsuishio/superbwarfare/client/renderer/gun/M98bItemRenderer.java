@@ -28,6 +28,8 @@ public class M98bItemRenderer extends CustomGunRenderer<M98bItem> {
         if (name.equals("Lefthand") || name.equals("Righthand")) {
             bone.setHidden(true);
             renderingArms = true;
+        } else {
+            bone.setHidden(false);
         }
 
         var player = mc.player;

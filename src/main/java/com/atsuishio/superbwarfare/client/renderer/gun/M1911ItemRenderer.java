@@ -28,6 +28,8 @@ public class M1911ItemRenderer extends CustomGunRenderer<M1911Item> {
         if (name.equals("Lefthand") || name.equals("Righthand")) {
             bone.setHidden(true);
             renderingArms = true;
+        } else {
+            bone.setHidden(false);
         }
 
         var player = mc.player;

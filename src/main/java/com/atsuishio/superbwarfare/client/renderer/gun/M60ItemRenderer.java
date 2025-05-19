@@ -27,6 +27,8 @@ public class M60ItemRenderer extends CustomGunRenderer<M60Item> {
         if (name.equals("Lefthand") || name.equals("Righthand")) {
             bone.setHidden(true);
             renderingArms = true;
+        } else {
+            bone.setHidden(false);
         }
 
         var player = mc.player;
