@@ -25,6 +25,7 @@ public class LaunchableEntityTool {
      */
     public static void initJsonData(ResourceManager manager) {
         launchableEntitiesData.clear();
+
         for (var entry : manager.listResources("launchable", file -> file.getPath().endsWith(".json")).entrySet()) {
             var attribute = entry.getValue();
             try {

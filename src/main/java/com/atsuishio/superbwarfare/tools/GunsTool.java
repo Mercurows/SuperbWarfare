@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.tools;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.data.gun.DefaultGunData;
+import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.network.message.receive.GunsDataMessage;
 import com.google.gson.Gson;
 import net.minecraft.nbt.CompoundTag;
@@ -28,6 +29,10 @@ public class GunsTool {
      * 初始化数据，从data中读取数据json文件
      */
     public static void initJsonData(ResourceManager manager) {
+        gunsData.clear();
+        GunData.dataCache.invalidateAll();
+
+        // TODO 将枪械ID挪至JSON数据内
         for (var entry : manager.listResources("guns", file -> file.getPath().endsWith(".json")).entrySet()) {
             var id = entry.getKey();
             var attribute = entry.getValue();

@@ -39,7 +39,7 @@ public class GunData {
     public final CompoundTag attachmentTag;
     public final String id;
 
-    private static final LoadingCache<ItemStack, GunData> dataCache = CacheBuilder.newBuilder()
+    public static final LoadingCache<ItemStack, GunData> dataCache = CacheBuilder.newBuilder()
             .weakKeys()
             .build(new CacheLoader<>() {
                 public @NotNull GunData load(@NotNull ItemStack stack) {
