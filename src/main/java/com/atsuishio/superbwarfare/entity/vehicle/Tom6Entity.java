@@ -60,11 +60,6 @@ public class Tom6Entity extends MobileVehicleEntity implements GeoEntity {
     }
 
     @Override
-    public float maxUpStep() {
-        return 0.5F;
-    }
-
-    @Override
     public ThirdPersonCameraPosition getThirdPersonCameraPosition(int index) {
         return new ThirdPersonCameraPosition(4, 1, 0);
     }

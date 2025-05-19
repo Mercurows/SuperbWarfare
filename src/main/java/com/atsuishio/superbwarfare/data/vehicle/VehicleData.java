@@ -15,11 +15,9 @@ public class VehicleData {
     private VehicleData(VehicleEntity entity) {
         this.id = EntityType.getKey(entity.getType()).toString();
         this.data = VehicleDataTool.vehicleData.getOrDefault(id, new DefaultVehicleData());
-
-        System.out.println(111);
     }
 
-    private static final LoadingCache<VehicleEntity, VehicleData> dataCache = CacheBuilder.newBuilder()
+    public static final LoadingCache<VehicleEntity, VehicleData> dataCache = CacheBuilder.newBuilder()
             .weakKeys()
             .build(new CacheLoader<>() {
                 public @NotNull VehicleData load(@NotNull VehicleEntity entity) {
@@ -45,6 +43,10 @@ public class VehicleData {
 
     public int maxEnergy() {
         return data.maxEnergy;
+    }
+
+    public float upStep() {
+        return data.upStep;
     }
 
 }

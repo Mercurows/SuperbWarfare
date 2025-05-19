@@ -1,5 +1,6 @@
 {
   "ID": "superbwarfare:tom_6",
   "MaxHealth": 40,
-  "MaxEnergy": 100000
+  "MaxEnergy": 100000,
+  "UpStep": 0.5
 }

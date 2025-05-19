@@ -19,6 +19,9 @@ public class DefaultVehicleData {
     @SerializedName("MaxEnergy")
     public int maxEnergy = 100000;
 
+    @SerializedName("UpStep")
+    public float upStep = 0;
+
     // TODO damage modifier
 //    @SerializedName("DamageModifier")
 //    private List<DamageModify> damageModifier;

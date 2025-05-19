@@ -174,6 +174,15 @@ public abstract class VehicleEntity extends Entity {
         this.gameEvent(GameEvent.ENTITY_DISMOUNT, pPassenger);
     }
 
+    public VehicleData data() {
+        return VehicleData.from(this);
+    }
+
+    @Override
+    public float maxUpStep() {
+        return data().upStep();
+    }
+
     @Nullable
     @Override
     public Entity getFirstPassenger() {
@@ -501,7 +510,7 @@ public abstract class VehicleEntity extends Entity {
     }
 
     public float getMaxHealth() {
-        return VehicleData.from(this).maxHealth();
+        return data().maxHealth();
     }
 
     @Override
@@ -546,14 +555,14 @@ public abstract class VehicleEntity extends Entity {
      * 呼吸回血冷却时长(单位:tick)，设为小于0的值以禁用呼吸回血
      */
     public int maxRepairCoolDown() {
-        return VehicleData.from(this).repairCooldown();
+        return data().repairCooldown();
     }
 
     /**
      * 呼吸回血回血量
      */
     public float repairAmount() {
-        return VehicleData.from(this).repairAmount();
+        return data().repairAmount();
     }
 
     @Override
