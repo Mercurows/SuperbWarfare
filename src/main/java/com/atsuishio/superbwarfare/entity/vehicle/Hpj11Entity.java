@@ -553,16 +553,6 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
     }
 
     @Override
-    public int getMaxEnergy() {
-        return VehicleConfig.HPJ11_MAX_ENERGY.get();
-    }
-
-    @Override
-    public float getMaxHealth() {
-        return VehicleConfig.HPJ11_HP.get();
-    }
-
-    @Override
     public int mainGunRpm(Player player) {
         return 0;
     }

@@ -68,7 +68,6 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
     public static final EntityDataAccessor<Float> DELTA_X_ROT = SynchedEntityData.defineId(DroneEntity.class, EntityDataSerializers.FLOAT);
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-    public static final float MAX_HEALTH = 5;
 
     public boolean fire;
     public int collisionCoolDown;
@@ -108,12 +107,6 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
     public boolean playHitSoundOnHurt() {
         return false;
     }
-
-    @Override
-    public float getMaxHealth() {
-        return MAX_HEALTH;
-    }
-
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);

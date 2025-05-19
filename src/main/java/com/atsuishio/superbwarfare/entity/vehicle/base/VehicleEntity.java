@@ -879,7 +879,7 @@ public abstract class VehicleEntity extends Entity {
     }
 
     public boolean allowFreeCam() {
-        return false;
+        return data().allowFreeCam();
     }
 
     // 本方法留空

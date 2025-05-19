@@ -90,11 +90,6 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
     }
 
     @Override
-    public float maxUpStep() {
-        return 2.25F;
-    }
-
-    @Override
     public VehicleWeapon[][] initWeapons() {
         return new VehicleWeapon[][]{
                 new VehicleWeapon[]{
@@ -1074,16 +1069,6 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return this.cache;
-    }
-
-    @Override
-    public int getMaxEnergy() {
-        return VehicleConfig.YX_100_MAX_ENERGY.get();
-    }
-
-    @Override
-    public float getMaxHealth() {
-        return VehicleConfig.YX_100_HP.get();
     }
 
     @Override

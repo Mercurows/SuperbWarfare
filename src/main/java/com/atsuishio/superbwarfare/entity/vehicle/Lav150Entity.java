@@ -74,11 +74,6 @@ public class Lav150Entity extends ContainerMobileVehicleEntity implements GeoEnt
     }
 
     @Override
-    public float maxUpStep() {
-        return 1.5F;
-    }
-
-    @Override
     public VehicleWeapon[][] initWeapons() {
         return new VehicleWeapon[][]{
                 new VehicleWeapon[]{
@@ -545,16 +540,6 @@ public class Lav150Entity extends ContainerMobileVehicleEntity implements GeoEnt
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return this.cache;
-    }
-
-    @Override
-    public int getMaxEnergy() {
-        return VehicleConfig.LAV_150_MAX_ENERGY.get();
-    }
-
-    @Override
-    public float getMaxHealth() {
-        return VehicleConfig.LAV_150_HP.get();
     }
 
     @Override

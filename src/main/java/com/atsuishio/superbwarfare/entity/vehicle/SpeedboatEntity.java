@@ -533,16 +533,6 @@ public class SpeedboatEntity extends ContainerMobileVehicleEntity implements Geo
     }
 
     @Override
-    public int getMaxEnergy() {
-        return VehicleConfig.SPEEDBOAT_MAX_ENERGY.get();
-    }
-
-    @Override
-    public float getMaxHealth() {
-        return VehicleConfig.SPEEDBOAT_HP.get();
-    }
-
-    @Override
     public int mainGunRpm(Player player) {
         return 500;
     }

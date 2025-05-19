@@ -380,14 +380,4 @@ public class LaserTowerEntity extends EnergyVehicleEntity implements GeoEntity, 
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return this.cache;
     }
-
-    @Override
-    public int getMaxEnergy() {
-        return VehicleConfig.LASER_TOWER_MAX_ENERGY.get();
-    }
-
-    @Override
-    public float getMaxHealth() {
-        return VehicleConfig.LASER_TOWER_HP.get();
-    }
 }

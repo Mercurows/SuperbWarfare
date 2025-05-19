@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.network.message.send;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.entity.MortarEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.MortarEntity;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.tools.SoundTool;
 import com.atsuishio.superbwarfare.tools.TraceTool;
@@ -15,7 +15,7 @@ import net.minecraft.world.entity.Entity;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.NotNull;
 
-import static com.atsuishio.superbwarfare.entity.MortarEntity.PITCH;
+import static com.atsuishio.superbwarfare.entity.vehicle.MortarEntity.PITCH;
 
 public record AdjustMortarAngleMessage(double scroll) implements CustomPacketPayload {
     public static final Type<AdjustMortarAngleMessage> TYPE = new Type<>(Mod.loc("adjust_mortar_angle"));

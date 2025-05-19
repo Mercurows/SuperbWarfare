@@ -409,11 +409,6 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
     }
 
     @Override
-    public float getMaxHealth() {
-        return VehicleConfig.MK42_HP.get();
-    }
-
-    @Override
     public int mainGunRpm(Player player) {
         return 0;
     }

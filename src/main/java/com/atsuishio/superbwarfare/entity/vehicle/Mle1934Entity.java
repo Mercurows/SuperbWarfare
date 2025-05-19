@@ -473,11 +473,6 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
     }
 
     @Override
-    public float getMaxHealth() {
-        return VehicleConfig.MLE1934_HP.get();
-    }
-
-    @Override
     public int mainGunRpm(Player player) {
         return 0;
     }

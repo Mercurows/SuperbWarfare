@@ -86,11 +86,6 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
     }
 
     @Override
-    public float maxUpStep() {
-        return 0.5f;
-    }
-
-    @Override
     public VehicleWeapon[][] initWeapons() {
         return new VehicleWeapon[][]{
                 new VehicleWeapon[]{
@@ -793,23 +788,8 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
     }
 
     @Override
-    public float getMaxHealth() {
-        return VehicleConfig.A_10_HP.get();
-    }
-
-    @Override
-    public int getMaxEnergy() {
-        return VehicleConfig.A_10_MAX_ENERGY.get();
-    }
-
-    @Override
     public ResourceLocation getVehicleIcon() {
         return Mod.loc("textures/vehicle_icon/a10_icon.png");
-    }
-
-    @Override
-    public boolean allowFreeCam() {
-        return true;
     }
 
     @Override

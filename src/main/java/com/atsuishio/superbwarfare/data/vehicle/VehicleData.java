@@ -49,4 +49,8 @@ public class VehicleData {
         return data.upStep;
     }
 
+    public boolean allowFreeCam() {
+        return data.allowFreeCam;
+    }
+
 }

@@ -76,11 +76,6 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
     }
 
     @Override
-    public float maxUpStep() {
-        return 1.1F;
-    }
-
-    @Override
     public VehicleWeapon[][] initWeapons() {
         return new VehicleWeapon[][]{
                 new VehicleWeapon[]{
@@ -527,16 +522,6 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
     }
 
     @Override
-    public float getMaxHealth() {
-        return VehicleConfig.AH_6_HP.get();
-    }
-
-    @Override
-    public int getMaxEnergy() {
-        return VehicleConfig.AH_6_MAX_ENERGY.get();
-    }
-
-    @Override
     public void vehicleShoot(Player player, int type) {
         boolean hasCreativeAmmo = false;
         for (int i = 0; i < getMaxPassengers() - 1; i++) {
@@ -696,11 +681,6 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
     @Override
     public ResourceLocation getVehicleIcon() {
         return Mod.loc("textures/vehicle_icon/ah_6_icon.png");
-    }
-
-    @Override
-    public boolean allowFreeCam() {
-        return true;
     }
 
     @Override

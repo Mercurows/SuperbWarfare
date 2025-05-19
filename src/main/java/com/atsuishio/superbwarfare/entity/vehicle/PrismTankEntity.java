@@ -85,11 +85,6 @@ public class PrismTankEntity extends ContainerMobileVehicleEntity implements Geo
     }
 
     @Override
-    public float maxUpStep() {
-        return 2.25f;
-    }
-
-    @Override
     public VehicleWeapon[][] initWeapons() {
         return new VehicleWeapon[][]{
                 new VehicleWeapon[]{
@@ -722,16 +717,6 @@ public class PrismTankEntity extends ContainerMobileVehicleEntity implements Geo
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return this.cache;
-    }
-
-    @Override
-    public int getMaxEnergy() {
-        return VehicleConfig.PRISM_TANK_MAX_ENERGY.get();
-    }
-
-    @Override
-    public float getMaxHealth() {
-        return VehicleConfig.PRISM_TANK_HP.get();
     }
 
     @Override

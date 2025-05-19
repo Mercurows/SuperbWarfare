@@ -1,0 +1,7 @@
+{
+  "ID": "superbwarfare:ah_6",
+  "MaxHealth": 250,
+  "MaxEnergy": 5000000,
+  "UpStep": 1.1,
+  "allowFreeCam": true
+}

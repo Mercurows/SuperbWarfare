@@ -3,7 +3,6 @@ package com.atsuishio.superbwarfare.entity.vehicle;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
-import com.atsuishio.superbwarfare.entity.MortarEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
@@ -54,11 +53,6 @@ public class WheelChairEntity extends MobileVehicleEntity implements GeoEntity {
 
     public WheelChairEntity(EntityType<WheelChairEntity> type, Level world) {
         super(type, world);
-    }
-
-    @Override
-    public float maxUpStep() {
-        return 1.1F;
     }
 
     @Override
@@ -305,16 +299,6 @@ public class WheelChairEntity extends MobileVehicleEntity implements GeoEntity {
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return this.cache;
-    }
-
-    @Override
-    public float getMaxHealth() {
-        return VehicleConfig.WHEELCHAIR_HP.get();
-    }
-
-    @Override
-    public int getMaxEnergy() {
-        return VehicleConfig.WHEELCHAIR_MAX_ENERGY.get();
     }
 
     @Override

@@ -564,16 +564,6 @@ public class AnnihilatorEntity extends EnergyVehicleEntity implements GeoEntity,
     }
 
     @Override
-    public int getMaxEnergy() {
-        return VehicleConfig.ANNIHILATOR_MAX_ENERGY.get();
-    }
-
-    @Override
-    public float getMaxHealth() {
-        return VehicleConfig.ANNIHILATOR_HP.get();
-    }
-
-    @Override
     public int mainGunRpm(Player player) {
         return 0;
     }

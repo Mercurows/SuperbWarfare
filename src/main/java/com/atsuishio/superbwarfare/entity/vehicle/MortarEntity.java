@@ -1,4 +1,4 @@
-package com.atsuishio.superbwarfare.entity;
+package com.atsuishio.superbwarfare.entity.vehicle;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.component.ModDataComponents;
@@ -266,11 +266,6 @@ public class MortarEntity extends VehicleEntity implements GeoEntity {
             level.addFreshEntity(mortar);
         }
         super.destroy();
-    }
-
-    @Override
-    public float getMaxHealth() {
-        return 100;
     }
 
     @Override
