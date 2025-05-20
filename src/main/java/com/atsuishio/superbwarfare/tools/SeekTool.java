@@ -1,18 +1,16 @@
 package com.atsuishio.superbwarfare.tools;
 
-import com.atsuishio.superbwarfare.config.server.VehicleConfig;
-import com.atsuishio.superbwarfare.entity.ClaymoreEntity;
-import com.atsuishio.superbwarfare.entity.projectile.*;
+import com.atsuishio.superbwarfare.config.client.SeekConfig;
+import com.atsuishio.superbwarfare.entity.projectile.DecoyEntity;
+import com.atsuishio.superbwarfare.entity.projectile.DestroyableProjectileEntity;
+import com.atsuishio.superbwarfare.entity.projectile.SmokeDecoyEntity;
+import com.atsuishio.superbwarfare.entity.projectile.SwarmDroneEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.world.entity.AreaEffectCloud;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.ExperienceOrb;
-import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.decoration.HangingEntity;
-import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.ClipContext;
@@ -199,16 +197,9 @@ public class SeekTool {
 
     public static boolean baseFilter(Entity entity) {
         return entity.isAlive()
-                && !(entity instanceof ItemEntity
-                || entity instanceof ExperienceOrb
-                || entity instanceof HangingEntity
-                || (entity instanceof Projectile && !(entity instanceof DestroyableProjectileEntity))
-                || entity instanceof ArmorStand
-                || entity instanceof ClaymoreEntity
-                || entity instanceof C4Entity
-                || entity instanceof AreaEffectCloud)
+                && !(entity instanceof HangingEntity || (entity instanceof Projectile && !(entity instanceof DestroyableProjectileEntity)))
                 && !(entity instanceof Player player && player.isSpectator())
-                || includedByConfig(entity);
+                && !isInBlackList(entity);
     }
 
     public static boolean isOnGround(Entity entity) {
@@ -262,8 +253,8 @@ public class SeekTool {
         return result;
     }
 
-    public static boolean includedByConfig(Entity entity) {
+    public static boolean isInBlackList(Entity entity) {
         var type = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType());
-        return VehicleConfig.COLLISION_ENTITY_WHITELIST.get().contains(type.toString());
+        return SeekConfig.SEEK_BLACKLIST.get().contains(type.toString());
     }
 }
