@@ -42,10 +42,12 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
-import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
-import net.minecraft.world.entity.projectile.ThrownPotion;
 import net.minecraft.world.entity.vehicle.DismountHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -450,14 +452,7 @@ public abstract class VehicleEntity extends Entity {
      * @return DamageModifier
      */
     public DamageModifier getDamageModifier() {
-        return new DamageModifier()
-                .immuneTo(source -> source.getDirectEntity() instanceof ThrownPotion || source.getDirectEntity() instanceof AreaEffectCloud)
-                .immuneTo(DamageTypes.FALL)
-                .immuneTo(DamageTypes.DROWN)
-                .immuneTo(DamageTypes.DRAGON_BREATH)
-                .immuneTo(DamageTypes.WITHER)
-                .immuneTo(DamageTypes.WITHER_SKULL)
-                .reduce(5, ModDamageTypes.VEHICLE_STRIKE);
+        return data().damageModifier();
     }
 
     public float getSourceAngle(DamageSource source, float multiply) {

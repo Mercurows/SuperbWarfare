@@ -1,7 +1,10 @@
 package com.atsuishio.superbwarfare.data.vehicle;
 
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
+import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModify;
 import com.google.gson.annotations.SerializedName;
+
+import java.util.List;
 
 public class DefaultVehicleData {
     @SerializedName("ID")
@@ -25,7 +28,9 @@ public class DefaultVehicleData {
     @SerializedName("AllowFreeCam")
     public boolean allowFreeCam = false;
 
-    // TODO damage modifier
-//    @SerializedName("DamageModifier")
-//    private List<DamageModify> damageModifier;
+    @SerializedName("ApplyDefaultDamageModifiers")
+    public boolean applyDefaultDamageModifiers = true;
+
+    @SerializedName("DamageModifiers")
+    public List<DamageModify> damageModifiers = List.of();
 }

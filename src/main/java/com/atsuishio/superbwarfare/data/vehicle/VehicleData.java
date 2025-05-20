@@ -1,9 +1,12 @@
 package com.atsuishio.superbwarfare.data.vehicle;
 
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
+import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.EntityType;
 import org.jetbrains.annotations.NotNull;
 
@@ -51,6 +54,23 @@ public class VehicleData {
 
     public boolean allowFreeCam() {
         return data.allowFreeCam;
+    }
+
+    public DamageModifier damageModifier() {
+        var modifier = new DamageModifier();
+
+        if (data.applyDefaultDamageModifiers) {
+            modifier.immuneTo(EntityType.POTION)
+                    .immuneTo(EntityType.AREA_EFFECT_CLOUD)
+                    .immuneTo(DamageTypes.FALL)
+                    .immuneTo(DamageTypes.DROWN)
+                    .immuneTo(DamageTypes.DRAGON_BREATH)
+                    .immuneTo(DamageTypes.WITHER)
+                    .immuneTo(DamageTypes.WITHER_SKULL)
+                    .reduce(5, ModDamageTypes.VEHICLE_STRIKE);
+        }
+
+        return modifier.addAll(data.damageModifiers);
     }
 
 }

@@ -3,5 +3,12 @@
   "MaxHealth": 40,
   "MaxEnergy": 100000,
   "UpStep": 0.5,
-  "allowFreeCam": true
+  "allowFreeCam": true,
+  "DamageModifiers": [
+    {
+      "Type": "Multiply",
+      "Value": 2,
+      "Source": "superbwarfare:vehicle_strike"
+    }
+  ]
 }
