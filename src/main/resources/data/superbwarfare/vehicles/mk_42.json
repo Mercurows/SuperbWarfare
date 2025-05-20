@@ -1,4 +1,94 @@
 {
   "ID": "superbwarfare:mk_42",
-  "MaxHealth": 350
+  "MaxHealth": 350,
+  "DamageModifiers": [
+    {
+      "Type": "Multiply",
+      "Value": 0.2
+    },
+    {
+      "Type": "Multiply",
+      "Value": 1.5,
+      "Source": "minecraft:arrow"
+    },
+    {
+      "Type": "Multiply",
+      "Value": 1.5,
+      "Source": "minecraft:trident"
+    },
+    {
+      "Type": "Multiply",
+      "Value": 2.5,
+      "Source": "minecraft:mob_attack"
+    },
+    {
+      "Type": "Multiply",
+      "Value": 2,
+      "Source": "minecraft:mob_attack_no_aggro"
+    },
+    {
+      "Type": "Multiply",
+      "Value": 1.5,
+      "Source": "minecraft:mob_projectile"
+    },
+    {
+      "Type": "Multiply",
+      "Value": 12.5,
+      "Source": "minecraft:lava"
+    },
+    {
+      "Type": "Multiply",
+      "Value": 6,
+      "Source": "minecraft:explosion"
+    },
+    {
+      "Type": "Multiply",
+      "Value": 6,
+      "Source": "minecraft:player_explosion"
+    },
+    {
+      "Type": "Multiply",
+      "Value": 2.4,
+      "Source": "superbwarfare:custom_explosion"
+    },
+    {
+      "Type": "Multiply",
+      "Value": 2,
+      "Source": "superbwarfare:projectile_boom"
+    },
+    {
+      "Type": "Multiply",
+      "Value": 0.75,
+      "Source": "superbwarfare:mine"
+    },
+    {
+      "Type": "Multiply",
+      "Value": 1.5,
+      "Source": "superbwarfare:cannon_fire"
+    },
+    {
+      "Type": "Multiply",
+      "Value": 0.25,
+      "Source": "#superbwarfare:explosion"
+    },
+    {
+      "Type": "Multiply",
+      "Value": 0.85,
+      "Source": "#superbwarfare:projectile_absolute"
+    },
+    {
+      "Type": "Multiply",
+      "Value": 10,
+      "Source": "superbwarfare:vehicle_strike"
+    },
+    {
+      "Type": "Multiply",
+      "Value": 1.5,
+      "Source": "@superbwarfare:gun_grenade"
+    },
+    {
+      "Type": "Reduce",
+      "Value": 8
+    }
+  ]
 }

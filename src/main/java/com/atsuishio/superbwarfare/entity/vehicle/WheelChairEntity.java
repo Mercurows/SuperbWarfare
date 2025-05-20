@@ -4,7 +4,6 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.tools.CustomExplosion;
@@ -65,12 +64,6 @@ public class WheelChairEntity extends MobileVehicleEntity implements GeoEntity {
             this.setDeltaMovement(this.getDeltaMovement().add(new Vec3(pPlayer.position().vectorTo(this.position()).toVector3f()).scale(0.5 * f * pPlayer.getDeltaMovement().length())));
             this.setYRot(pPlayer.getYHeadRot());
         }
-    }
-
-    @Override
-    public DamageModifier getDamageModifier() {
-        return super.getDamageModifier()
-                .multiply(2, ModDamageTypes.VEHICLE_STRIKE);
     }
 
     @Override

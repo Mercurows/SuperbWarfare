@@ -4,8 +4,10 @@ import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.entity.TargetEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.AutoAimable;
 import com.atsuishio.superbwarfare.entity.vehicle.base.EnergyVehicleEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
-import com.atsuishio.superbwarfare.init.*;
+import com.atsuishio.superbwarfare.init.ModDamageTypes;
+import com.atsuishio.superbwarfare.init.ModEntities;
+import com.atsuishio.superbwarfare.init.ModItems;
+import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.ContainerBlockItem;
 import com.atsuishio.superbwarfare.tools.CustomExplosion;
 import com.atsuishio.superbwarfare.tools.EntityFindUtil;
@@ -24,7 +26,6 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
@@ -125,28 +126,6 @@ public class LaserTowerEntity extends EnergyVehicleEntity implements GeoEntity, 
     @Nullable
     public UUID getOwnerUUID() {
         return this.entityData.get(OWNER_UUID).orElse(null);
-    }
-
-    @Override
-    public DamageModifier getDamageModifier() {
-        return super.getDamageModifier()
-                .multiply(0.1f, DamageTypes.ARROW)
-                .multiply(0.2f, DamageTypes.TRIDENT)
-                .multiply(0.2f, DamageTypes.MOB_ATTACK)
-                .multiply(0.2f, DamageTypes.MOB_ATTACK_NO_AGGRO)
-                .multiply(0.4f, DamageTypes.MOB_PROJECTILE)
-                .multiply(0.4f, DamageTypes.PLAYER_ATTACK)
-                .multiply(1.5f, DamageTypes.EXPLOSION)
-                .multiply(1.5f, DamageTypes.PLAYER_EXPLOSION)
-                .multiply(0.5f, ModDamageTypes.CUSTOM_EXPLOSION)
-                .multiply(0.5f, ModDamageTypes.PROJECTILE_BOOM)
-                .multiply(0.5f, ModDamageTypes.MINE)
-                .multiply(0.5f, ModDamageTypes.LUNGE_MINE)
-                .multiply(0.6f, ModDamageTypes.CANNON_FIRE)
-                .multiply(0.5f, ModTags.DamageTypes.PROJECTILE)
-                .multiply(0.8f, ModTags.DamageTypes.PROJECTILE_ABSOLUTE)
-                .multiply(2f, ModDamageTypes.VEHICLE_STRIKE)
-                .reduce(1);
     }
 
     @Override

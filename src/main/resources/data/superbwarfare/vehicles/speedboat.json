@@ -1,5 +1,105 @@
 {
   "ID": "superbwarfare:speedboat",
   "MaxHealth": 200,
-  "MaxEnergy": 500000
+  "MaxEnergy": 500000,
+  "DamageModifiers": [
+    {
+      "Type": "Multiply",
+      "Value": 0.5
+    },
+    {
+      "Type": "Multiply",
+      "Value": 0.2,
+      "Source": "minecraft:arrow"
+    },
+    {
+      "Type": "Multiply",
+      "Value": 0.4,
+      "Source": "minecraft:trident"
+    },
+    {
+      "Type": "Multiply",
+      "Value": 0.4,
+      "Source": "minecraft:mob_attack"
+    },
+    {
+      "Type": "Multiply",
+      "Value": 0.4,
+      "Source": "minecraft:mob_attack_no_aggro"
+    },
+    {
+      "Type": "Multiply",
+      "Value": 0.4,
+      "Source": "minecraft:mob_projectile"
+    },
+    {
+      "Type": "Multiply",
+      "Value": 0.4,
+      "Source": "minecraft:player_attack"
+    },
+    {
+      "Type": "Multiply",
+      "Value": 4,
+      "Source": "minecraft:lava"
+    },
+    {
+      "Type": "Multiply",
+      "Value": 4,
+      "Source": "minecraft:explosion"
+    },
+    {
+      "Type": "Multiply",
+      "Value": 4,
+      "Source": "minecraft:player_explosion"
+    },
+    {
+      "Type": "Multiply",
+      "Value": 0.8,
+      "Source": "superbwarfare:cannon_fire"
+    },
+    {
+      "Type": "Multiply",
+      "Value": 0.16,
+      "Source": "#superbwarfare:explosion"
+    },
+    {
+      "Type": "Multiply",
+      "Value": 2,
+      "Source": "superbwarfare:vehicle_strike"
+    },
+    {
+      "Type": "Multiply",
+      "Value": 0.9,
+      "Source": "@superbwarfare:cannon_shell"
+    },
+    {
+      "Type": "Multiply",
+      "Value": 1.3,
+      "Source": "@superbwarfare:small_cannon_shell"
+    },
+    {
+      "Type": "Multiply",
+      "Value": 2.2,
+      "Source": "@superbwarfare:gun_grenade"
+    },
+    {
+      "Type": "Multiply",
+      "Value": 6,
+      "Source": "@superbwarfare:rgo_grenade"
+    },
+    {
+      "Type": "Multiply",
+      "Value": 5,
+      "Source": "@superbwarfare:hand_grenade"
+    },
+    {
+      "Type": "Multiply",
+      "Value": 4,
+      "Source": "@superbwarfare:mortar_shell"
+    },
+    {
+      "Type": "Reduce",
+      "Value": 2
+    }
+  ]
 }

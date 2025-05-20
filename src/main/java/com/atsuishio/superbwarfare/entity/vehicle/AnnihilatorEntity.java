@@ -5,9 +5,6 @@ import com.atsuishio.superbwarfare.component.ModDataComponents;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.entity.projectile.AerialBombEntity;
-import com.atsuishio.superbwarfare.entity.projectile.C4Entity;
-import com.atsuishio.superbwarfare.entity.projectile.CannonShellEntity;
-import com.atsuishio.superbwarfare.entity.projectile.GunGrenadeEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.CannonEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.EnergyVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
@@ -17,7 +14,6 @@ import com.atsuishio.superbwarfare.entity.vehicle.weapon.VehicleWeapon;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
-import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage;
 import com.atsuishio.superbwarfare.tools.*;
 import net.minecraft.ChatFormatting;
@@ -35,7 +31,6 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -202,39 +197,13 @@ public class AnnihilatorEntity extends EnergyVehicleEntity implements GeoEntity,
     @Override
     public DamageModifier getDamageModifier() {
         return super.getDamageModifier()
-                .multiply(0.1f)
-                .immuneTo(DamageTypes.ARROW)
-                .immuneTo(DamageTypes.TRIDENT)
-                .immuneTo(DamageTypes.MOB_ATTACK)
-                .immuneTo(DamageTypes.MOB_ATTACK_NO_AGGRO)
-                .immuneTo(DamageTypes.MOB_PROJECTILE)
-                .immuneTo(DamageTypes.PLAYER_ATTACK)
-                .immuneTo(ModTags.DamageTypes.PROJECTILE)
-                .immuneTo(ModDamageTypes.VEHICLE_STRIKE)
-                .multiply(0.7f, DamageTypes.EXPLOSION)
-                .multiply(0.2f, ModDamageTypes.CUSTOM_EXPLOSION)
-                .multiply(0.2f, ModDamageTypes.PROJECTILE_BOOM)
-                .multiply(0.2f, ModDamageTypes.MINE)
-                .multiply(0.24f, ModDamageTypes.LUNGE_MINE)
-                .multiply(0.3f, ModDamageTypes.CANNON_FIRE)
-                .multiply(0.04f, ModTags.DamageTypes.PROJECTILE_ABSOLUTE)
                 .custom((source, damage) -> getSourceAngle(source, 3) * damage)
                 .custom((source, damage) -> {
-                    if (source.getDirectEntity() instanceof C4Entity) {
-                        return 10f * damage;
-                    }
                     if (source.getDirectEntity() instanceof AerialBombEntity) {
                         return 8f * damage;
                     }
-                    if (source.getDirectEntity() instanceof GunGrenadeEntity) {
-                        return 3f * damage;
-                    }
-                    if (source.getDirectEntity() instanceof CannonShellEntity) {
-                        return 3f * damage;
-                    }
                     return damage;
-                })
-                .reduce(12);
+                });
     }
 
     @Override

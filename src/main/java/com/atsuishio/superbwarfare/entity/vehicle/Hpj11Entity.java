@@ -4,7 +4,6 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.entity.TargetEntity;
-import com.atsuishio.superbwarfare.entity.projectile.GunGrenadeEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.AutoAimable;
 import com.atsuishio.superbwarfare.entity.vehicle.base.CannonEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ContainerMobileVehicleEntity;
@@ -14,7 +13,6 @@ import com.atsuishio.superbwarfare.entity.vehicle.weapon.SmallCannonShellWeapon;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.VehicleWeapon;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModItems;
-import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.ContainerBlockItem;
 import com.atsuishio.superbwarfare.tools.*;
 import com.mojang.math.Axis;
@@ -31,7 +29,6 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
@@ -180,30 +177,7 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
     @Override
     public DamageModifier getDamageModifier() {
         return super.getDamageModifier()
-                .multiply(0.6f)
-                .multiply(1.5f, DamageTypes.ARROW)
-                .multiply(1.5f, DamageTypes.TRIDENT)
-                .multiply(2.5f, DamageTypes.MOB_ATTACK)
-                .multiply(2f, DamageTypes.MOB_ATTACK_NO_AGGRO)
-                .multiply(1.5f, DamageTypes.MOB_PROJECTILE)
-                .multiply(12.5f, DamageTypes.LAVA)
-                .multiply(6f, DamageTypes.EXPLOSION)
-                .multiply(6f, DamageTypes.PLAYER_EXPLOSION)
-                .multiply(1.4f, ModDamageTypes.CUSTOM_EXPLOSION)
-                .multiply(1f, ModDamageTypes.PROJECTILE_BOOM)
-                .multiply(0.75f, ModDamageTypes.MINE)
-                .multiply(1.5f, ModDamageTypes.CANNON_FIRE)
-                .multiply(0.25f, ModTags.DamageTypes.PROJECTILE)
-                .multiply(0.85f, ModTags.DamageTypes.PROJECTILE_ABSOLUTE)
-                .multiply(10f, ModDamageTypes.VEHICLE_STRIKE)
-                .custom((source, damage) -> getSourceAngle(source, 1f) * damage)
-                .custom((source, damage) -> {
-                    if (source.getDirectEntity() instanceof GunGrenadeEntity) {
-                        return 1.5f * damage;
-                    }
-                    return damage;
-                })
-                .reduce(8);
+                .custom((source, damage) -> getSourceAngle(source, 1f) * damage);
     }
 
     @Override

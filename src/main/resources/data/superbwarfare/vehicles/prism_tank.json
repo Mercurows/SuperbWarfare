@@ -2,5 +2,100 @@
   "ID": "superbwarfare:prism_tank",
   "MaxHealth": 400,
   "MaxEnergy": 20000000,
-  "UpStep": 2.25
+  "UpStep": 2.25,
+  "DamageModifiers": [
+    {
+      "Type": "Multiply",
+      "Value": 0.2
+    },
+    {
+      "Type": "Multiply",
+      "Value": 1.5,
+      "Source": "minecraft:arrow"
+    },
+    {
+      "Type": "Multiply",
+      "Value": 1.5,
+      "Source": "minecraft:trident"
+    },
+    {
+      "Type": "Multiply",
+      "Value": 2.5,
+      "Source": "minecraft:mob_attack"
+    },
+    {
+      "Type": "Multiply",
+      "Value": 2,
+      "Source": "minecraft:mob_attack_no_aggro"
+    },
+    {
+      "Type": "Multiply",
+      "Value": 1.5,
+      "Source": "minecraft:mob_projectile"
+    },
+    {
+      "Type": "Multiply",
+      "Value": 12.5,
+      "Source": "minecraft:lava"
+    },
+    {
+      "Type": "Multiply",
+      "Value": 6,
+      "Source": "minecraft:explosion"
+    },
+    {
+      "Type": "Multiply",
+      "Value": 6,
+      "Source": "minecraft:player_explosion"
+    },
+    {
+      "Type": "Multiply",
+      "Value": 2,
+      "Source": "superbwarfare:custom_explosion"
+    },
+    {
+      "Type": "Multiply",
+      "Value": 2,
+      "Source": "superbwarfare:projectile_boom"
+    },
+    {
+      "Type": "Multiply",
+      "Value": 0.7,
+      "Source": "superbwarfare:mine"
+    },
+    {
+      "Type": "Multiply",
+      "Value": 0.9,
+      "Source": "superbwarfare:lunge_mine"
+    },
+    {
+      "Type": "Multiply",
+      "Value": 1.5,
+      "Source": "superbwarfare:cannon_fire"
+    },
+    {
+      "Type": "Multiply",
+      "Value": 0.1,
+      "Source": "#superbwarfare:explosion"
+    },
+    {
+      "Type": "Multiply",
+      "Value": 0.7,
+      "Source": "#superbwarfare:projectile_absolute"
+    },
+    {
+      "Type": "Multiply",
+      "Value": 4.5,
+      "Source": "superbwarfare:vehicle_strike"
+    },
+    {
+      "Type": "Multiply",
+      "Value": 1.5,
+      "Source": "@superbwarfare:gun_grenade"
+    },
+    {
+      "Type": "Reduce",
+      "Value": 9
+    }
+  ]
 }

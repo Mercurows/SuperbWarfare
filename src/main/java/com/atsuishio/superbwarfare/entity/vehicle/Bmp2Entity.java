@@ -4,8 +4,6 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.entity.projectile.AerialBombEntity;
-import com.atsuishio.superbwarfare.entity.projectile.GunGrenadeEntity;
-import com.atsuishio.superbwarfare.entity.projectile.MortarShellEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.*;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.ProjectileWeapon;
@@ -15,7 +13,6 @@ import com.atsuishio.superbwarfare.entity.vehicle.weapon.WgMissileWeapon;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
-import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage;
 import com.atsuishio.superbwarfare.tools.Ammo;
 import com.atsuishio.superbwarfare.tools.CustomExplosion;
@@ -36,7 +33,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
-import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
@@ -145,37 +141,13 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
     @Override
     public DamageModifier getDamageModifier() {
         return super.getDamageModifier()
-                .multiply(0.2f)
-                .multiply(1.5f, DamageTypes.ARROW)
-                .multiply(1.5f, DamageTypes.TRIDENT)
-                .multiply(2.5f, DamageTypes.MOB_ATTACK)
-                .multiply(2f, DamageTypes.MOB_ATTACK_NO_AGGRO)
-                .multiply(1.5f, DamageTypes.MOB_PROJECTILE)
-                .multiply(12.5f, DamageTypes.LAVA)
-                .multiply(6f, DamageTypes.EXPLOSION)
-                .multiply(6f, DamageTypes.PLAYER_EXPLOSION)
-                .multiply(2f, ModDamageTypes.CUSTOM_EXPLOSION)
-                .multiply(2f, ModDamageTypes.PROJECTILE_BOOM)
-                .multiply(0.7f, ModDamageTypes.MINE)
-                .multiply(0.9f, ModDamageTypes.LUNGE_MINE)
-                .multiply(1.5f, ModDamageTypes.CANNON_FIRE)
-                .multiply(0.1f, ModTags.DamageTypes.PROJECTILE)
-                .multiply(0.7f, ModTags.DamageTypes.PROJECTILE_ABSOLUTE)
-                .multiply(8.5f, ModDamageTypes.VEHICLE_STRIKE)
                 .custom((source, damage) -> getSourceAngle(source, 0.4f) * damage)
                 .custom((source, damage) -> {
                     if (source.getDirectEntity() instanceof AerialBombEntity) {
                         return 2f * damage;
                     }
-                    if (source.getDirectEntity() instanceof MortarShellEntity) {
-                        return 1.1f * damage;
-                    }
-                    if (source.getDirectEntity() instanceof GunGrenadeEntity) {
-                        return 1.5f * damage;
-                    }
                     return damage;
-                })
-                .reduce(8);
+                });
     }
 
     @Override
