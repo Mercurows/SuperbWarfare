@@ -1,0 +1,27 @@
+{
+  "loader": "neoforge:separate_transforms",
+  "gui_light": "front",
+  "base": {
+    "parent": "superbwarfare:item/aurelia_sceptre_base"
+  },
+  "perspectives": {
+    "gui": {
+      "parent": "superbwarfare:item/aurelia_sceptre_icon"
+    },
+    "thirdperson_righthand": {
+      "parent": "superbwarfare:item/aurelia_sceptre_3d"
+    },
+    "thirdperson_lefthand": {
+      "parent": "superbwarfare:item/aurelia_sceptre_3d"
+    },
+    "ground": {
+      "parent": "superbwarfare:item/aurelia_sceptre_3d"
+    },
+    "fixed": {
+      "parent": "superbwarfare:item/aurelia_sceptre_3d"
+    },
+    "head": {
+      "parent": "superbwarfare:item/aurelia_sceptre_3d"
+    }
+  }
+}

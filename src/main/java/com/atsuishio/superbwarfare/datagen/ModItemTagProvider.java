@@ -75,11 +75,18 @@ public class ModItemTagProvider extends ItemTagsProvider {
         this.tag(cTag("plates")).addTags(cTag("plates/copper"));
         this.tag(cTag("plates/copper")).add(ModItems.COPPER_PLATE.get());
 
+        // TODO 清理枪械Tag
         ModItems.GUNS.getEntries().forEach(registryObject -> this.tag(ModTags.Items.GUN).add(registryObject.get()));
 
         this.tag(ModTags.Items.SMG).add(ModItems.VECTOR.get());
 
-        this.tag(ModTags.Items.HANDGUN).add(ModItems.TRACHELIUM.get(), ModItems.GLOCK_17.get(), ModItems.GLOCK_18.get(), ModItems.M_1911.get(), ModItems.MP_443.get());
+        this.tag(ModTags.Items.HANDGUN).add(ModItems.TRACHELIUM.get(),
+                ModItems.GLOCK_17.get(),
+                ModItems.GLOCK_18.get(),
+                ModItems.M_1911.get(),
+                ModItems.MP_443.get(),
+                ModItems.AURELIA_SCEPTRE.get()
+        );
 
         this.tag(ModTags.Items.RIFLE).add(ModItems.M_4.get(), ModItems.HK_416.get(), ModItems.SKS.get(),
                 ModItems.MK_14.get(), ModItems.MARLIN.get(), ModItems.AK_47.get(), ModItems.AK_12.get(), ModItems.QBZ_95.get());
@@ -97,7 +104,7 @@ public class ModItemTagProvider extends ItemTagsProvider {
                 ModItems.HOMEMADE_SHOTGUN.get(), ModItems.AK_47.get(), ModItems.AK_12.get(), ModItems.SVD.get(), ModItems.M_60.get(), ModItems.MK_14.get(), ModItems.VECTOR.get(),
                 ModItems.SKS.get(), ModItems.RPK.get(), ModItems.HK_416.get(), ModItems.AA_12.get(), ModItems.M_4.get(), ModItems.DEVOTION.get(), ModItems.TRACHELIUM.get(), ModItems.M_79.get(),
                 ModItems.HUNTING_RIFLE.get(), ModItems.NTW_20.get(), ModItems.M_98B.get(), ModItems.SENTINEL.get(), ModItems.M_870.get(), ModItems.MARLIN.get(), ModItems.GLOCK_17.get(), ModItems.RPG.get(),
-                ModItems.GLOCK_18.get(), ModItems.M_1911.get(), ModItems.QBZ_95.get(), ModItems.K_98.get(), ModItems.MOSIN_NAGANT.get(), ModItems.MP_443.get(), ModItems.INSIDIOUS.get(), ModItems.SECONDARY_CATACLYSM.get(),
+                ModItems.GLOCK_18.get(), ModItems.M_1911.get(), ModItems.AURELIA_SCEPTRE.get(), ModItems.QBZ_95.get(), ModItems.K_98.get(), ModItems.MOSIN_NAGANT.get(), ModItems.MP_443.get(), ModItems.INSIDIOUS.get(), ModItems.SECONDARY_CATACLYSM.get(),
                 ModItems.TASER.get(), ModItems.MINIGUN.get());
 
         this.tag(ModTags.Items.LAUNCHER).add(ModItems.RPG.get(), ModItems.JAVELIN.get())

@@ -1,33 +1,33 @@
 package com.atsuishio.superbwarfare.client.model.item;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.item.gun.handgun.Glock17Item;
+import com.atsuishio.superbwarfare.item.gun.handgun.AureliaSceptre;
 import net.minecraft.resources.ResourceLocation;
 import software.bernie.geckolib.animation.AnimationState;
 import software.bernie.geckolib.model.GeoModel;
 
-public class Glock17ItemModel extends GeoModel<Glock17Item> {
+public class AureliaSceptreModel extends GeoModel<AureliaSceptre> {
 
     public static float fireRotY = 0f;
     public static float fireRotZ = 0f;
 
     @Override
-    public ResourceLocation getAnimationResource(Glock17Item animatable) {
+    public ResourceLocation getAnimationResource(AureliaSceptre animatable) {
         return Mod.loc("animations/aurelia_sceptre.animation.json");
     }
 
     @Override
-    public ResourceLocation getModelResource(Glock17Item animatable) {
+    public ResourceLocation getModelResource(AureliaSceptre animatable) {
         return Mod.loc("geo/aurelia_sceptre.geo.json");
     }
 
     @Override
-    public ResourceLocation getTextureResource(Glock17Item animatable) {
+    public ResourceLocation getTextureResource(AureliaSceptre animatable) {
         return Mod.loc("textures/item/aurelia_sceptre.png");
     }
 
     @Override
-    public void setCustomAnimations(Glock17Item animatable, long instanceId, AnimationState animationState) {
+    public void setCustomAnimations(AureliaSceptre animatable, long instanceId, AnimationState animationState) {
         // TODO 动画
 //        GeoBone gun = getAnimationProcessor().getBone("bone");
 //        GeoBone slide = getAnimationProcessor().getBone("huatao");

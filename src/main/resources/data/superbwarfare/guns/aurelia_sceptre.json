@@ -1,0 +1,39 @@
+{
+  "Spread": 0.5,
+  "RecoilX": 0,
+  "RecoilY": 0,
+  "Damage": 26,
+  "Headshot": 1.5,
+  "Velocity": 14,
+  "Magazine": 4,
+  "Weight": 1,
+  "NormalReloadTime": 20,
+  "EmptyReloadTime": 20,
+  "BypassesArmor": 0.44,
+  "SoundRadius": 2,
+  "RPM": 1100,
+  "BurstAmount": 4,
+  "AvailableFireModes": [
+    "Burst"
+  ],
+  "DefaultFireMode": "Burst",
+  "AmmoType": "@HandgunAmmo",
+  "AvailablePerks": [
+    "@Ammo",
+    "superbwarfare:heal_clip",
+    "superbwarfare:field_doctor",
+    "superbwarfare:fourth_times_charm",
+    "superbwarfare:subsistence",
+    "superbwarfare:powerful_attraction",
+    "superbwarfare:intelligent_chip",
+    "superbwarfare:kill_clip",
+    "superbwarfare:gutshot_straight",
+    "superbwarfare:monster_hunter",
+    "superbwarfare:vorpal_weapon",
+    "superbwarfare:firefly",
+    "!superbwarfare:micro_missile",
+    "!superbwarfare:longer_wire",
+    "!superbwarfare:butterfly_bullet",
+    "!superbwarfare:cupid_arrow"
+  ]
+}
