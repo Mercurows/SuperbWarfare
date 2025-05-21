@@ -58,6 +58,7 @@ public class ModItemModelProvider extends ItemModelProvider {
         gunItem(ModItems.RPK);
         gunItem(ModItems.SECONDARY_CATACLYSM);
         gunItem(ModItems.SENTINEL);
+        gunItem(ModItems.SKS);
 
         simpleItem(ModItems.EMPTY_PERK, "perk/");
 
