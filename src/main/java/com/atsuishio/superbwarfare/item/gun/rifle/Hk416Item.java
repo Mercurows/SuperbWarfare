@@ -52,15 +52,15 @@ public class Hk416Item extends GunItem implements GeoItem {
         if (GunData.from(stack).reload.empty()) {
             if (drum) {
                 if (grip) {
-                    return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m4.reload_empty_drum_grip"));
+                    return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m_4.reload_empty_drum_grip"));
                 } else {
-                    return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m4.reload_empty_drum"));
+                    return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m_4.reload_empty_drum"));
                 }
             } else {
                 if (grip) {
-                    return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m4.reload_empty_grip"));
+                    return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m_4.reload_empty_grip"));
                 } else {
-                    return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m4.reload_empty"));
+                    return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m_4.reload_empty"));
                 }
             }
         }
@@ -68,35 +68,35 @@ public class Hk416Item extends GunItem implements GeoItem {
         if (GunData.from(stack).reload.normal()) {
             if (drum) {
                 if (grip) {
-                    return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m4.reload_normal_drum_grip"));
+                    return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m_4.reload_normal_drum_grip"));
                 } else {
-                    return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m4.reload_normal_drum"));
+                    return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m_4.reload_normal_drum"));
                 }
             } else {
                 if (grip) {
-                    return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m4.reload_normal_grip"));
+                    return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m_4.reload_normal_grip"));
                 } else {
-                    return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m4.reload_normal"));
+                    return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m_4.reload_normal"));
                 }
             }
         }
 
         if (player.isSprinting() && player.onGround() && ClientEventHandler.cantSprint == 0 && ClientEventHandler.drawTime < 0.01) {
             if (ClientEventHandler.tacticalSprint) {
-                return event.setAndContinue(RawAnimation.begin().thenLoop("animation.m4.run_fast"));
+                return event.setAndContinue(RawAnimation.begin().thenLoop("animation.m_4.run_fast"));
             } else {
                 if (grip) {
-                    return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m4.run_grip"));
+                    return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m_4.run_grip"));
                 } else {
-                    return event.setAndContinue(RawAnimation.begin().thenLoop("animation.m4.run"));
+                    return event.setAndContinue(RawAnimation.begin().thenLoop("animation.m_4.run"));
                 }
             }
         }
 
         if (grip) {
-            return event.setAndContinue(RawAnimation.begin().thenLoop("animation.m4.idle_grip"));
+            return event.setAndContinue(RawAnimation.begin().thenLoop("animation.m_4.idle_grip"));
         } else {
-            return event.setAndContinue(RawAnimation.begin().thenLoop("animation.m4.idle"));
+            return event.setAndContinue(RawAnimation.begin().thenLoop("animation.m_4.idle"));
         }
     }
 
@@ -107,10 +107,10 @@ public class Hk416Item extends GunItem implements GeoItem {
         if (!(stack.getItem() instanceof GunItem)) return PlayState.STOP;
 
         if (ClickHandler.isEditing) {
-            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m4.edit"));
+            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m_4.edit"));
         }
 
-        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.m4.idle"));
+        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.m_4.idle"));
     }
 
     @Override

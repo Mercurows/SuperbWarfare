@@ -28,7 +28,7 @@ public class Hk416ItemModel extends GeoModel<Hk416Item> {
 
     @Override
     public ResourceLocation getAnimationResource(Hk416Item animatable) {
-        return Mod.loc("animations/m4.animation.json");
+        return Mod.loc("animations/m_4.animation.json");
     }
 
     @Override

@@ -2,8 +2,8 @@
 	"credit": "Made with Blockbench",
 	"texture_size": [32, 32],
 	"textures": {
-		"0": "superbwarfare:item/m43d",
-		"particle": "superbwarfare:item/m43d"
+		"0": "superbwarfare:item/lod/m_4",
+		"particle": "superbwarfare:item/lod/m_4"
 	},
 	"elements": [
 		{

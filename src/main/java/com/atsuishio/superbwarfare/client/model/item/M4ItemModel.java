@@ -32,17 +32,17 @@ public class M4ItemModel extends GeoModel<M4Item> {
 
     @Override
     public ResourceLocation getAnimationResource(M4Item animatable) {
-        return Mod.loc("animations/m4.animation.json");
+        return Mod.loc("animations/m_4.animation.json");
     }
 
     @Override
     public ResourceLocation getModelResource(M4Item animatable) {
-        return Mod.loc("geo/m4.geo.json");
+        return Mod.loc("geo/m_4.geo.json");
     }
 
     @Override
     public ResourceLocation getTextureResource(M4Item animatable) {
-        return Mod.loc("textures/item/m4.png");
+        return Mod.loc("textures/item/m_4.png");
     }
 
     @Override

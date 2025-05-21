@@ -1,11 +1,11 @@
 {
 	"format_version": "1.8.0",
 	"animations": {
-		"animation.m4.idle": {
+		"animation.m_4.idle": {
 			"loop": true,
 			"animation_length": 1
 		},
-		"animation.m4.idle_grip": {
+		"animation.m_4.idle_grip": {
 			"loop": true,
 			"animation_length": 1,
 			"bones": {
@@ -15,7 +15,7 @@
 				}
 			}
 		},
-		"animation.m4.edit": {
+		"animation.m_4.edit": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 0.4083,
 			"bones": {
@@ -85,7 +85,7 @@
 				}
 			}
 		},
-		"animation.m4.run": {
+		"animation.m_4.run": {
 			"loop": true,
 			"animation_length": 0.8,
 			"bones": {
@@ -146,7 +146,7 @@
 				}
 			}
 		},
-		"animation.m4.run_grip": {
+		"animation.m_4.run_grip": {
 			"loop": true,
 			"animation_length": 0.8,
 			"bones": {
@@ -211,7 +211,7 @@
 				}
 			}
 		},
-		"animation.m4.run_fast": {
+		"animation.m_4.run_fast": {
 			"loop": true,
 			"animation_length": 0.7,
 			"bones": {
@@ -246,7 +246,7 @@
 				}
 			}
 		},
-		"animation.m4.reload_empty": {
+		"animation.m_4.reload_empty": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 3.125,
 			"bones": {
@@ -547,7 +547,7 @@
 				}
 			}
 		},
-		"animation.m4.reload_empty_grip": {
+		"animation.m_4.reload_empty_grip": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 3.125,
 			"bones": {
@@ -848,7 +848,7 @@
 				}
 			}
 		},
-		"animation.m4.reload_normal": {
+		"animation.m_4.reload_normal": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 2.75,
 			"bones": {
@@ -1132,7 +1132,7 @@
 				}
 			}
 		},
-		"animation.m4.reload_normal_grip": {
+		"animation.m_4.reload_normal_grip": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 2.75,
 			"bones": {
@@ -1418,7 +1418,7 @@
 				}
 			}
 		},
-		"animation.m4.reload_empty_drum": {
+		"animation.m_4.reload_empty_drum": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 3.125,
 			"bones": {
@@ -1719,7 +1719,7 @@
 				}
 			}
 		},
-		"animation.m4.reload_empty_drum_grip": {
+		"animation.m_4.reload_empty_drum_grip": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 3.125,
 			"bones": {
@@ -2020,7 +2020,7 @@
 				}
 			}
 		},
-		"animation.m4.reload_normal_drum": {
+		"animation.m_4.reload_normal_drum": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 2.75,
 			"bones": {
@@ -2304,7 +2304,7 @@
 				}
 			}
 		},
-		"animation.m4.reload_normal_drum_grip": {
+		"animation.m_4.reload_normal_drum_grip": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 2.75,
 			"bones": {
