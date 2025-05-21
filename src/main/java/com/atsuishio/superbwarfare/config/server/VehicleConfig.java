@@ -18,6 +18,8 @@ public class VehicleConfig {
     public static ModConfigSpec.IntValue REPAIR_COOLDOWN;
     public static ModConfigSpec.DoubleValue REPAIR_AMOUNT;
 
+    @Deprecated(forRemoval = true)
+    public static ModConfigSpec.IntValue MK42_HP;
     public static ModConfigSpec.IntValue MK42_AP_DAMAGE;
     public static ModConfigSpec.IntValue MK42_AP_EXPLOSION_DAMAGE;
     public static ModConfigSpec.IntValue MK42_AP_EXPLOSION_RADIUS;
@@ -25,6 +27,8 @@ public class VehicleConfig {
     public static ModConfigSpec.IntValue MK42_HE_EXPLOSION_DAMAGE;
     public static ModConfigSpec.IntValue MK42_HE_EXPLOSION_RADIUS;
 
+    @Deprecated(forRemoval = true)
+    public static ModConfigSpec.IntValue MLE1934_HP;
     public static ModConfigSpec.IntValue MLE1934_AP_DAMAGE;
     public static ModConfigSpec.IntValue MLE1934_AP_EXPLOSION_DAMAGE;
     public static ModConfigSpec.IntValue MLE1934_AP_EXPLOSION_RADIUS;
@@ -34,17 +38,37 @@ public class VehicleConfig {
 
     public static ModConfigSpec.IntValue HEAVY_MACHINE_GUN_DAMAGE;
 
+    @Deprecated(forRemoval = true)
+    public static ModConfigSpec.IntValue ANNIHILATOR_HP;
+    @Deprecated(forRemoval = true)
+    public static ModConfigSpec.IntValue ANNIHILATOR_MAX_ENERGY;
     public static ModConfigSpec.IntValue ANNIHILATOR_SHOOT_COST;
 
+    @Deprecated(forRemoval = true)
+    public static ModConfigSpec.IntValue LASER_TOWER_HP;
+    @Deprecated(forRemoval = true)
+    public static ModConfigSpec.IntValue LASER_TOWER_MAX_ENERGY;
     public static ModConfigSpec.IntValue LASER_TOWER_COOLDOWN;
     public static ModConfigSpec.IntValue LASER_TOWER_DAMAGE;
     public static ModConfigSpec.IntValue LASER_TOWER_SHOOT_COST;
 
+    @Deprecated(forRemoval = true)
+    public static ModConfigSpec.IntValue SPEEDBOAT_HP;
+    @Deprecated(forRemoval = true)
+    public static ModConfigSpec.IntValue SPEEDBOAT_MAX_ENERGY;
     public static ModConfigSpec.IntValue SPEEDBOAT_ENERGY_COST;
 
+    @Deprecated(forRemoval = true)
+    public static ModConfigSpec.IntValue WHEELCHAIR_HP;
+    @Deprecated(forRemoval = true)
+    public static ModConfigSpec.IntValue WHEELCHAIR_MAX_ENERGY;
     public static ModConfigSpec.IntValue WHEELCHAIR_JUMP_ENERGY_COST;
     public static ModConfigSpec.IntValue WHEELCHAIR_MOVE_ENERGY_COST;
 
+    @Deprecated(forRemoval = true)
+    public static ModConfigSpec.IntValue AH_6_HP;
+    @Deprecated(forRemoval = true)
+    public static ModConfigSpec.IntValue AH_6_MAX_ENERGY;
     public static ModConfigSpec.IntValue AH_6_MIN_ENERGY_COST;
     public static ModConfigSpec.IntValue AH_6_MAX_ENERGY_COST;
     public static ModConfigSpec.IntValue AH_6_CANNON_DAMAGE;
@@ -55,21 +79,37 @@ public class VehicleConfig {
     public static ModConfigSpec.IntValue AH_6_ROCKET_EXPLOSION_RADIUS;
     public static ModConfigSpec.BooleanValue AH_6_CANNON_DESTROY;
 
+    @Deprecated(forRemoval = true)
+    public static ModConfigSpec.IntValue LAV_150_HP;
+    @Deprecated(forRemoval = true)
+    public static ModConfigSpec.IntValue LAV_150_MAX_ENERGY;
     public static ModConfigSpec.IntValue LAV_150_ENERGY_COST;
     public static ModConfigSpec.IntValue LAV_150_CANNON_DAMAGE;
     public static ModConfigSpec.IntValue LAV_150_CANNON_EXPLOSION_DAMAGE;
     public static ModConfigSpec.DoubleValue LAV_150_CANNON_EXPLOSION_RADIUS;
     public static ModConfigSpec.DoubleValue LAV_150_MACHINE_GUN_DAMAGE;
 
+    @Deprecated(forRemoval = true)
+    public static ModConfigSpec.IntValue TOM_6_HP;
+    @Deprecated(forRemoval = true)
+    public static ModConfigSpec.IntValue TOM_6_MAX_ENERGY;
     public static ModConfigSpec.IntValue TOM_6_ENERGY_COST;
     public static ModConfigSpec.IntValue TOM_6_BOMB_EXPLOSION_DAMAGE;
     public static ModConfigSpec.DoubleValue TOM_6_BOMB_EXPLOSION_RADIUS;
 
+    @Deprecated(forRemoval = true)
+    public static ModConfigSpec.IntValue BMP_2_HP;
+    @Deprecated(forRemoval = true)
+    public static ModConfigSpec.IntValue BMP_2_MAX_ENERGY;
     public static ModConfigSpec.IntValue BMP_2_ENERGY_COST;
     public static ModConfigSpec.IntValue BMP_2_CANNON_DAMAGE;
     public static ModConfigSpec.IntValue BMP_2_CANNON_EXPLOSION_DAMAGE;
     public static ModConfigSpec.DoubleValue BMP_2_CANNON_EXPLOSION_RADIUS;
 
+    @Deprecated(forRemoval = true)
+    public static ModConfigSpec.IntValue YX_100_HP;
+    @Deprecated(forRemoval = true)
+    public static ModConfigSpec.IntValue YX_100_MAX_ENERGY;
     public static ModConfigSpec.IntValue YX_100_SHOOT_COST;
     public static ModConfigSpec.IntValue YX_100_ENERGY_COST;
     public static ModConfigSpec.IntValue YX_100_AP_CANNON_DAMAGE;
@@ -81,6 +121,10 @@ public class VehicleConfig {
     public static ModConfigSpec.IntValue YX_100_SWARM_EXPLOSION_DAMAGE;
     public static ModConfigSpec.DoubleValue YX_100_SWARM_EXPLOSION_RADIUS;
 
+    @Deprecated(forRemoval = true)
+    public static ModConfigSpec.IntValue PRISM_TANK_HP;
+    @Deprecated(forRemoval = true)
+    public static ModConfigSpec.IntValue PRISM_TANK_MAX_ENERGY;
     public static ModConfigSpec.IntValue PRISM_TANK_ENERGY_COST;
     public static ModConfigSpec.IntValue PRISM_TANK_DAMAGE_MODE_1;
     public static ModConfigSpec.IntValue PRISM_TANK_SHOOT_COST_MODE_1;
@@ -89,12 +133,20 @@ public class VehicleConfig {
     public static ModConfigSpec.IntValue PRISM_TANK_DAMAGE_MODE_2;
     public static ModConfigSpec.IntValue PRISM_TANK_SHOOT_COST_MODE_2;
 
+    @Deprecated(forRemoval = true)
+    public static ModConfigSpec.IntValue HPJ11_HP;
+    @Deprecated(forRemoval = true)
+    public static ModConfigSpec.IntValue HPJ11_MAX_ENERGY;
     public static ModConfigSpec.DoubleValue HPJ11_DAMAGE;
     public static ModConfigSpec.DoubleValue HPJ11_EXPLOSION_DAMAGE;
     public static ModConfigSpec.DoubleValue HPJ11_EXPLOSION_RADIUS;
     public static ModConfigSpec.IntValue HPJ11_SHOOT_COST;
     public static ModConfigSpec.IntValue HPJ11_SEEK_COST;
 
+    @Deprecated(forRemoval = true)
+    public static ModConfigSpec.IntValue A_10_HP;
+    @Deprecated(forRemoval = true)
+    public static ModConfigSpec.IntValue A_10_MAX_ENERGY;
     public static ModConfigSpec.IntValue A_10_MAX_ENERGY_COST;
     public static ModConfigSpec.IntValue A_10_CANNON_DAMAGE;
     public static ModConfigSpec.IntValue A_10_CANNON_EXPLOSION_DAMAGE;
@@ -135,6 +187,8 @@ public class VehicleConfig {
 
         builder.push("MK-42");
 
+        builder.comment("Deprecated, use datapack to change this value instead");
+        MK42_HP = builder.defineInRange("mk_42_hp", 350, 1, 10000000);
 
         builder.comment("The AP shell damage of MK-42");
         MK42_AP_DAMAGE = builder.defineInRange("mk_42_ap_damage", 450, 1, 10000000);
@@ -158,6 +212,8 @@ public class VehicleConfig {
 
         builder.push("MLE-1934");
 
+        builder.comment("Deprecated, use datapack to change this value instead");
+        MLE1934_HP = builder.defineInRange("mle_1934_hp", 350, 1, 10000000);
 
         builder.comment("The AP shell damage of MLE-1934");
         MLE1934_AP_DAMAGE = builder.defineInRange("mle_1934_ap_damage", 500, 1, 10000000);
@@ -188,15 +244,21 @@ public class VehicleConfig {
 
         builder.push("Annihilator");
 
+        builder.comment("Deprecated, use datapack to change this value instead");
+        ANNIHILATOR_HP = builder.defineInRange("annihilator_hp", 1200, 1, 10000000);
 
         builder.comment("The energy cost of Annihilator per shoot");
         ANNIHILATOR_SHOOT_COST = builder.defineInRange("annihilator_shoot_cost", 2000000, 0, 2147483647);
 
+        builder.comment("Deprecated, use datapack to change this value instead");
+        ANNIHILATOR_MAX_ENERGY = builder.defineInRange("annihilator_max_energy", 20000000, 0, 2147483647);
 
         builder.pop();
 
         builder.push("Laser Tower");
 
+        builder.comment("Deprecated, use datapack to change this value instead");
+        LASER_TOWER_HP = builder.defineInRange("laser_tower_hp", 100, 1, 10000000);
 
         builder.comment("The damage of Laser Tower");
         LASER_TOWER_DAMAGE = builder.defineInRange("laser_tower_damage", 15, 1, 10000000);
@@ -207,20 +269,28 @@ public class VehicleConfig {
         builder.comment("The energy cost of Laser Tower per shoot");
         LASER_TOWER_SHOOT_COST = builder.defineInRange("laser_tower_shoot_cost", 5000, 0, 2147483647);
 
+        builder.comment("Deprecated, use datapack to change this value instead");
+        LASER_TOWER_MAX_ENERGY = builder.defineInRange("laser_tower_max_energy", 500000, 0, 2147483647);
 
         builder.pop();
 
         builder.push("Speedboat");
 
+        builder.comment("Deprecated, use datapack to change this value instead");
+        SPEEDBOAT_HP = builder.defineInRange("speedboat_hp", 200, 1, 10000000);
 
         builder.comment("The energy cost of Speedboat per tick");
         SPEEDBOAT_ENERGY_COST = builder.defineInRange("speedboat_energy_cost", 16, 0, 2147483647);
 
+        builder.comment("Deprecated, use datapack to change this value instead");
+        SPEEDBOAT_MAX_ENERGY = builder.defineInRange("speedboat_max_energy", 500000, 0, 2147483647);
 
         builder.pop();
 
         builder.push("Wheelchair");
 
+        builder.comment("Deprecated, use datapack to change this value instead");
+        WHEELCHAIR_HP = builder.defineInRange("wheelchair_hp", 30, 1, 10000000);
 
         builder.comment("The jump energy cost of the wheelchair");
         WHEELCHAIR_JUMP_ENERGY_COST = builder.defineInRange("wheelchair_jump_energy_cost", 400, 0, 2147483647);
@@ -228,11 +298,15 @@ public class VehicleConfig {
         builder.comment("The move energy cost of the wheelchair");
         WHEELCHAIR_MOVE_ENERGY_COST = builder.defineInRange("wheelchair_move_energy_cost", 1, 0, 2147483647);
 
+        builder.comment("Deprecated, use datapack to change this value instead");
+        WHEELCHAIR_MAX_ENERGY = builder.defineInRange("wheelchair_max_energy", 24000, 0, 2147483647);
 
         builder.pop();
 
         builder.push("AH_6");
 
+        builder.comment("Deprecated, use datapack to change this value instead");
+        AH_6_HP = builder.defineInRange("ah_6_hp", 250, 1, 10000000);
 
         builder.comment("The min energy cost of AH-6 per tick");
         AH_6_MIN_ENERGY_COST = builder.defineInRange("ah_6_min_energy_cost", 64, 0, 2147483647);
@@ -240,6 +314,8 @@ public class VehicleConfig {
         builder.comment("The max energy cost of AH-6 per tick");
         AH_6_MAX_ENERGY_COST = builder.defineInRange("ah_6_max_energy_cost", 128, 0, 2147483647);
 
+        builder.comment("Deprecated, use datapack to change this value instead");
+        AH_6_MAX_ENERGY = builder.defineInRange("ah_6_max_energy", 5000000, 0, 2147483647);
 
         builder.comment("The cannon damage of AH-6");
         AH_6_CANNON_DAMAGE = builder.defineInRange("ah_6_cannon_damage", 25, 1, 10000000);
@@ -266,10 +342,14 @@ public class VehicleConfig {
 
         builder.push("LAV-150");
 
+        builder.comment("Deprecated, use datapack to change this value instead");
+        LAV_150_HP = builder.defineInRange("lav_150_hp", 250, 1, 10000000);
 
         builder.comment("The energy cost of LAV-150 per tick");
         LAV_150_ENERGY_COST = builder.defineInRange("lav_150_energy_cost", 64, 0, 2147483647);
 
+        builder.comment("Deprecated, use datapack to change this value instead");
+        LAV_150_MAX_ENERGY = builder.defineInRange("lav_150_max_energy", 5000000, 0, 2147483647);
 
         builder.comment("The cannon damage of LAV-150");
         LAV_150_CANNON_DAMAGE = builder.defineInRange("lav_150_cannon_damage", 45, 1, 10000000);
@@ -287,10 +367,14 @@ public class VehicleConfig {
 
         builder.push("Tom-6");
 
+        builder.comment("Deprecated, use datapack to change this value instead");
+        TOM_6_HP = builder.defineInRange("tom_6_hp", 40, 1, 10000000);
 
         builder.comment("The energy cost of Tom-6 per tick");
         TOM_6_ENERGY_COST = builder.defineInRange("tom_6_energy_cost", 16, 0, 2147483647);
 
+        builder.comment("Deprecated, use datapack to change this value instead");
+        TOM_6_MAX_ENERGY = builder.defineInRange("tom_6_max_energy", 100000, 0, 2147483647);
 
         builder.comment("The Melon Bomb explosion damage of Tom-6");
         TOM_6_BOMB_EXPLOSION_DAMAGE = builder.defineInRange("tom_6_bomb_explosion_damage", 500, 1, 10000000);
@@ -302,10 +386,14 @@ public class VehicleConfig {
 
         builder.push("BMP-2");
 
+        builder.comment("Deprecated, use datapack to change this value instead");
+        BMP_2_HP = builder.defineInRange("bmp_2_hp", 300, 1, 10000000);
 
         builder.comment("The energy cost of BMP-2 per tick");
         BMP_2_ENERGY_COST = builder.defineInRange("bmp_2_energy_cost", 64, 0, 2147483647);
 
+        builder.comment("Deprecated, use datapack to change this value instead");
+        BMP_2_MAX_ENERGY = builder.defineInRange("bmp_2_max_energy", 5000000, 0, 2147483647);
 
         builder.comment("The cannon damage of BMP-2");
         BMP_2_CANNON_DAMAGE = builder.defineInRange("bmp_2_cannon_damage", 55, 1, 10000000);
@@ -320,6 +408,8 @@ public class VehicleConfig {
 
         builder.push("YX-100");
 
+        builder.comment("Deprecated, use datapack to change this value instead");
+        YX_100_HP = builder.defineInRange("yx_100_hp", 500, 1, 10000000);
 
         builder.comment("The energy cost of YX-100 per tick");
         YX_100_ENERGY_COST = builder.defineInRange("yx_100_energy_cost", 128, 0, 2147483647);
@@ -327,6 +417,8 @@ public class VehicleConfig {
         builder.comment("The energy cost of YX-100 per shoot");
         YX_100_SHOOT_COST = builder.defineInRange("yx_100_shoot_cost", 24000, 0, 2147483647);
 
+        builder.comment("Deprecated, use datapack to change this value instead");
+        YX_100_MAX_ENERGY = builder.defineInRange("yx_100_max_energy", 20000000, 0, 2147483647);
 
         builder.comment("The cannon damage of YX-100");
         YX_100_AP_CANNON_DAMAGE = builder.defineInRange("yx_100_ap_cannon_damage", 500, 1, 10000000);
@@ -356,7 +448,11 @@ public class VehicleConfig {
 
         builder.push("Prism Tank");
 
+        builder.comment("Deprecated, use datapack to change this value instead");
+        PRISM_TANK_HP = builder.defineInRange("prism_tank_hp", 400, 1, 10000000);
 
+        builder.comment("Deprecated, use datapack to change this value instead");
+        PRISM_TANK_MAX_ENERGY = builder.defineInRange("prism_tank_energy", 20000000, 0, 2147483647);
 
         builder.comment("The energy cost of Prism Tank per tick");
         PRISM_TANK_ENERGY_COST = builder.defineInRange("prism_tank_energy_cost", 96, 0, 2147483647);
@@ -383,7 +479,11 @@ public class VehicleConfig {
 
         builder.push("HPJ-11");
 
+        builder.comment("Deprecated, use datapack to change this value instead");
+        HPJ11_HP = builder.defineInRange("hpj_11_hp", 350, 1, 10000000);
 
+        builder.comment("Deprecated, use datapack to change this value instead");
+        HPJ11_MAX_ENERGY = builder.defineInRange("hpj_11_max_energy", 5000000, 0, 2147483647);
 
         builder.comment("The damage of HPJ-11");
         HPJ11_DAMAGE = builder.defineInRange("hpj_11_damage", 20d, 1, 10000000);
@@ -404,10 +504,14 @@ public class VehicleConfig {
 
         builder.push("A-10");
 
+        builder.comment("Deprecated, use datapack to change this value instead");
+        A_10_HP = builder.defineInRange("A_10_hp", 350, 1, 10000000);
 
         builder.comment("The max energy cost of A-10 per tick");
         A_10_MAX_ENERGY_COST = builder.defineInRange("A_10_max_energy_cost", 256, 0, 2147483647);
 
+        builder.comment("Deprecated, use datapack to change this value instead");
+        A_10_MAX_ENERGY = builder.defineInRange("A_10_max_energy", 10000000, 0, 2147483647);
 
         builder.comment("The cannon damage of A-10");
         A_10_CANNON_DAMAGE = builder.defineInRange("A_10_cannon_damage", 30, 1, 10000000);
