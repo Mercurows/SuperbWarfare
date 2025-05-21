@@ -1,6 +1,6 @@
 {
   "parent": "superbwarfare:displaysettings/trachelium.item",
   "textures": {
-    "layer0": "superbwarfare:item/trachelium_texture"
+    "layer0": "superbwarfare:item/trachelium"
   }
 }

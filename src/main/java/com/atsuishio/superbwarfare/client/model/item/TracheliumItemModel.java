@@ -42,7 +42,7 @@ public class TracheliumItemModel extends GeoModel<Trachelium> {
 
     @Override
     public ResourceLocation getTextureResource(Trachelium animatable) {
-        return Mod.loc("textures/item/trachelium_texture.png");
+        return Mod.loc("textures/item/trachelium.png");
     }
 
     @Override
