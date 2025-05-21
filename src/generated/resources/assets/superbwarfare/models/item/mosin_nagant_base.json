@@ -1,5 +1,5 @@
 {
-  "parent": "superbwarfare:displaysettings/k98.item",
+  "parent": "superbwarfare:displaysettings/mosin_nagant.item",
   "textures": {
     "layer0": "superbwarfare:item/mosin_nagant"
   }

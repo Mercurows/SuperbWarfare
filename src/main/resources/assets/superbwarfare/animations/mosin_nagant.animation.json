@@ -1,10 +1,10 @@
 {
 	"format_version": "1.8.0",
 	"animations": {
-		"animation.mosin.idle": {
+		"animation.mosin_nagant.idle": {
 			"animation_length": 1
 		},
-		"animation.mosin.draw": {
+		"animation.mosin_nagant.draw": {
 			"animation_length": 1,
 			"bones": {
 				"0": {
@@ -42,7 +42,7 @@
 				}
 			}
 		},
-		"animation.mosin.run": {
+		"animation.mosin_nagant.run": {
 			"loop": true,
 			"animation_length": 0.8,
 			"bones": {
@@ -117,7 +117,7 @@
 				}
 			}
 		},
-		"animation.mosin.run_fast": {
+		"animation.mosin_nagant.run_fast": {
 			"loop": true,
 			"animation_length": 0.7,
 			"bones": {
@@ -207,7 +207,7 @@
 				}
 			}
 		},
-		"animation.mosin.fire": {
+		"animation.mosin_nagant.fire": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 0.202,
 			"bones": {
@@ -224,7 +224,7 @@
 				}
 			}
 		},
-		"animation.mosin.shift": {
+		"animation.mosin_nagant.shift": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 1.1,
 			"override_previous_animation": true,
@@ -566,7 +566,7 @@
 				}
 			}
 		},
-		"animation.mosin.prepare": {
+		"animation.mosin_nagant.prepare": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 2,
 			"override_previous_animation": true,
@@ -964,7 +964,7 @@
 				}
 			}
 		},
-		"animation.mosin.prepare_empty": {
+		"animation.mosin_nagant.prepare_empty": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 1,
 			"override_previous_animation": true,
@@ -1166,7 +1166,7 @@
 				}
 			}
 		},
-		"animation.mosin.iterativeload": {
+		"animation.mosin_nagant.iterativeload": {
 			"loop": true,
 			"animation_length": 0.75,
 			"override_previous_animation": true,
@@ -1402,7 +1402,7 @@
 				}
 			}
 		},
-		"animation.mosin.iterativeload2": {
+		"animation.mosin_nagant.iterativeload2": {
 			"loop": true,
 			"animation_length": 0.75,
 			"override_previous_animation": true,
@@ -1638,7 +1638,7 @@
 				}
 			}
 		},
-		"animation.mosin.finish": {
+		"animation.mosin_nagant.finish": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 1.25,
 			"override_previous_animation": true,
