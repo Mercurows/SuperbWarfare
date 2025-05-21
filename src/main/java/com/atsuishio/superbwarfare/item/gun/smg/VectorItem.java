@@ -47,29 +47,29 @@ public class VectorItem extends GunItem implements GeoItem {
 
         if (data.reload.empty()) {
             if (drum) {
-                return event.setAndContinue(RawAnimation.begin().thenPlay("animation.vec.reload_empty_drum"));
+                return event.setAndContinue(RawAnimation.begin().thenPlay("animation.vector.reload_empty_drum"));
             } else {
-                return event.setAndContinue(RawAnimation.begin().thenPlay("animation.vec.reload_empty"));
+                return event.setAndContinue(RawAnimation.begin().thenPlay("animation.vector.reload_empty"));
             }
         }
 
         if (data.reload.normal()) {
             if (drum) {
-                return event.setAndContinue(RawAnimation.begin().thenPlay("animation.vec.reload_normal_drum"));
+                return event.setAndContinue(RawAnimation.begin().thenPlay("animation.vector.reload_normal_drum"));
             } else {
-                return event.setAndContinue(RawAnimation.begin().thenPlay("animation.vec.reload_normal"));
+                return event.setAndContinue(RawAnimation.begin().thenPlay("animation.vector.reload_normal"));
             }
         }
 
         if (player.isSprinting() && player.onGround() && ClientEventHandler.cantSprint == 0 && ClientEventHandler.drawTime < 0.01) {
             if (ClientEventHandler.tacticalSprint) {
-                return event.setAndContinue(RawAnimation.begin().thenLoop("animation.vec.run_fast"));
+                return event.setAndContinue(RawAnimation.begin().thenLoop("animation.vector.run_fast"));
             } else {
-                return event.setAndContinue(RawAnimation.begin().thenLoop("animation.vec.run"));
+                return event.setAndContinue(RawAnimation.begin().thenLoop("animation.vector.run"));
             }
         }
 
-        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.vec.idle"));
+        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.vector.idle"));
     }
 
     private PlayState editPredicate(AnimationState<VectorItem> event) {
@@ -82,7 +82,7 @@ public class VectorItem extends GunItem implements GeoItem {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.vector.edit"));
         }
 
-        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.vec.idle"));
+        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.vector.idle"));
     }
 
     @Override

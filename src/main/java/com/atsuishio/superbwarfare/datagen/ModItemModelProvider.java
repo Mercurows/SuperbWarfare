@@ -62,6 +62,7 @@ public class ModItemModelProvider extends ItemModelProvider {
         gunItem(ModItems.SVD);
         gunItem(ModItems.TASER);
         gunItem(ModItems.TRACHELIUM);
+        gunItem(ModItems.VECTOR);
 
         simpleItem(ModItems.EMPTY_PERK, "perk/");
 

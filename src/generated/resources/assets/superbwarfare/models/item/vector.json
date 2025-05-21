@@ -1,0 +1,28 @@
+{
+  "parent": "minecraft:item/generated",
+  "base": {
+    "parent": "superbwarfare:item/vector_base"
+  },
+  "gui_light": "front",
+  "loader": "forge:separate_transforms",
+  "perspectives": {
+    "fixed": {
+      "parent": "superbwarfare:lod/vector"
+    },
+    "ground": {
+      "parent": "superbwarfare:lod/vector"
+    },
+    "gui": {
+      "parent": "superbwarfare:item/vector_icon"
+    },
+    "head": {
+      "parent": "superbwarfare:lod/vector"
+    },
+    "thirdperson_lefthand": {
+      "parent": "superbwarfare:lod/vector"
+    },
+    "thirdperson_righthand": {
+      "parent": "superbwarfare:lod/vector"
+    }
+  }
+}

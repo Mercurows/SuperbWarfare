@@ -1,7 +1,7 @@
 {
 	"format_version": "1.8.0",
 	"animations": {
-		"animation.vec.idle": {
+		"animation.vector.idle": {
 			"animation_length": 1
 		},
 		"animation.vector.edit": {
@@ -38,7 +38,7 @@
 				}
 			}
 		},
-		"animation.vec.run": {
+		"animation.vector.run": {
 			"loop": true,
 			"animation_length": 0.8,
 			"bones": {
@@ -99,7 +99,7 @@
 				}
 			}
 		},
-		"animation.vec.run_fast": {
+		"animation.vector.run_fast": {
 			"loop": true,
 			"animation_length": 0.7,
 			"bones": {
@@ -164,7 +164,7 @@
 				}
 			}
 		},
-		"animation.vec.reload_empty": {
+		"animation.vector.reload_empty": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 3.25,
 			"override_previous_animation": true,
@@ -489,7 +489,7 @@
 				}
 			}
 		},
-		"animation.vec.reload_normal": {
+		"animation.vector.reload_normal": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 2.5,
 			"override_previous_animation": true,
@@ -728,7 +728,7 @@
 				}
 			}
 		},
-		"animation.vec.reload_empty_drum": {
+		"animation.vector.reload_empty_drum": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 3.25,
 			"override_previous_animation": true,
@@ -1059,7 +1059,7 @@
 				}
 			}
 		},
-		"animation.vec.reload_normal_drum": {
+		"animation.vector.reload_normal_drum": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 2.875,
 			"override_previous_animation": true,
