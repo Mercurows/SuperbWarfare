@@ -789,6 +789,11 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
     }
 
     @Override
+    public Float gearRot(float tickDelta) {
+        return Mth.lerp(tickDelta, gearRotO, entityData.get(GEAR_ROT));
+    }
+
+    @Override
     public void vehicleShoot(Player player, int type) {
         Matrix4f transform = getVehicleTransform(1);
 

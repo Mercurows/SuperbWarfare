@@ -64,6 +64,7 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
     private static final ResourceLocation PASSENGER = Mod.loc("textures/screens/passenger.png");
     private static final ResourceLocation SELECTED = Mod.loc("textures/screens/vehicle_weapon/selected.png");
     private static final ResourceLocation NUMBER = Mod.loc("textures/screens/vehicle_weapon/number.png");
+    private static final ResourceLocation GEAR = Mod.loc("textures/screens/aircraft/gear.png");
 
     public static final int ANIMATION_TIME = 300;
     private static final AnimationTimer[] weaponSlotsTimer = AnimationTimer.createTimers(9, ANIMATION_TIME, AnimationCurves.EASE_OUT_CIRC);
@@ -88,8 +89,9 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
         Entity vehicle = player.getVehicle();
 
         PoseStack poseStack = guiGraphics.pose();
-
         poseStack.pushPose();
+        // 渲染地面武装HUD
+        renderLandArmorHud(guiGraphics, deltaTracker, w, h);
 
         RenderSystem.disableDepthTest();
         RenderSystem.depthMask(false);
@@ -97,9 +99,6 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
         RenderSystem.setShaderColor(1, 1, 1, 1);
-
-        // 渲染地面武装HUD
-        renderLandArmorHud(guiGraphics, deltaTracker, w, h);
 
         int compatHeight = getArmorPlateCompatHeight(player);
 
@@ -120,6 +119,21 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
 
             renderWeaponInfo(guiGraphics, pVehicle, w, h);
             renderPassengerInfo(guiGraphics, pVehicle, w, h);
+        }
+
+        if (vehicle instanceof AircraftEntity aircraftEntity) {
+            RenderSystem.disableDepthTest();
+            RenderSystem.depthMask(false);
+            RenderSystem.enableBlend();
+            RenderSystem.setShader(GameRenderer::getPositionTexShader);
+            RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+            RenderSystem.setShaderColor(1, 1, 1, 1);
+            float angle = aircraftEntity.gearRot(deltaTracker.getGameTimeDeltaPartialTick(true));
+            poseStack.pushPose();
+            poseStack.rotateAround(Axis.ZP.rotationDegrees(-90 + angle), 102, h - 20, 0);
+            preciseBlit(guiGraphics, GEAR, 86, h - 36, 0, 0, 32, 32, 32, 32);
+            poseStack.popPose();
+
         }
 
         poseStack.popPose();

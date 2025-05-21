@@ -7,4 +7,6 @@ public interface AircraftEntity extends AirEntity {
     Vec3 shootPos(float tickDelta);
 
     Vec3 shootVec(float tickDelta);
+
+    Float gearRot(float tickDelta);
 }
