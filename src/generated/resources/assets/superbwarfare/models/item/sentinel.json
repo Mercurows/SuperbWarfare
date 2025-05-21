@@ -1,0 +1,28 @@
+{
+  "parent": "minecraft:item/generated",
+  "base": {
+    "parent": "superbwarfare:item/sentinel_base"
+  },
+  "gui_light": "front",
+  "loader": "forge:separate_transforms",
+  "perspectives": {
+    "fixed": {
+      "parent": "superbwarfare:lod/sentinel"
+    },
+    "ground": {
+      "parent": "superbwarfare:lod/sentinel"
+    },
+    "gui": {
+      "parent": "superbwarfare:item/sentinel_icon"
+    },
+    "head": {
+      "parent": "superbwarfare:lod/sentinel"
+    },
+    "thirdperson_lefthand": {
+      "parent": "superbwarfare:lod/sentinel"
+    },
+    "thirdperson_righthand": {
+      "parent": "superbwarfare:lod/sentinel"
+    }
+  }
+}

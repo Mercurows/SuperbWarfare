@@ -2,8 +2,8 @@
 	"credit": "Made with Blockbench",
 	"texture_size": [64, 64],
 	"textures": {
-		"0": "superbwarfare:item/sentinel3d",
-		"particle": "superbwarfare:item/sentinel3d"
+		"0": "superbwarfare:item/lod/sentinel",
+		"particle": "superbwarfare:item/lod/sentinel"
 	},
 	"elements": [
 		{
