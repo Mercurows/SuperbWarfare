@@ -19,17 +19,17 @@ public class K98ItemModel extends GeoModel<K98Item> {
 
     @Override
     public ResourceLocation getAnimationResource(K98Item animatable) {
-        return Mod.loc("animations/k98.animation.json");
+        return Mod.loc("animations/k_98.animation.json");
     }
 
     @Override
     public ResourceLocation getModelResource(K98Item animatable) {
-        return Mod.loc("geo/kar98k.geo.json");
+        return Mod.loc("geo/k_98.geo.json");
     }
 
     @Override
     public ResourceLocation getTextureResource(K98Item animatable) {
-        return Mod.loc("textures/item/k98.png");
+        return Mod.loc("textures/item/k_98.png");
     }
 
     @Override

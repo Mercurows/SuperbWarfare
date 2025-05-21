@@ -44,30 +44,30 @@ public class K98Item extends GunItem implements GeoItem {
         var data = GunData.from(stack);
 
         if (data.bolt.actionTimer.get() > 0) {
-            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.k98.shift"));
+            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.k_98.shift"));
         }
 
         if (data.reload.empty()) {
-            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.k98.reload_empty"));
+            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.k_98.reload_empty"));
         }
 
         if (data.reload.stage() == 1 && data.reload.prepareTimer.get() > 0) {
-            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.k98.prepare"));
+            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.k_98.prepare"));
         }
 
         if (data.loadIndex.get() == 0 && data.reload.stage() == 2) {
-            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.k98.iterativeload"));
+            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.k_98.iterativeload"));
         }
 
         if (data.loadIndex.get() == 1 && data.reload.stage() == 2) {
-            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.k98.iterativeload2"));
+            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.k_98.iterativeload2"));
         }
 
         if (data.reload.stage() == 3) {
-            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.k98.finish"));
+            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.k_98.finish"));
         }
 
-        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.k98.idle"));
+        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.k_98.idle"));
     }
 
     private PlayState idlePredicate(AnimationState<K98Item> event) {
@@ -88,13 +88,13 @@ public class K98Item extends GunItem implements GeoItem {
                 && !data.reloading()
         ) {
             if (ClientEventHandler.tacticalSprint && data.bolt.actionTimer.get() == 0) {
-                return event.setAndContinue(RawAnimation.begin().thenLoop("animation.k98.run_fast"));
+                return event.setAndContinue(RawAnimation.begin().thenLoop("animation.k_98.run_fast"));
             } else {
-                return event.setAndContinue(RawAnimation.begin().thenLoop("animation.k98.run"));
+                return event.setAndContinue(RawAnimation.begin().thenLoop("animation.k_98.run"));
             }
         }
 
-        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.k98.idle"));
+        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.k_98.idle"));
     }
 
     @Override
@@ -123,7 +123,7 @@ public class K98Item extends GunItem implements GeoItem {
 
     @Override
     public ResourceLocation getGunIcon() {
-        return Mod.loc("textures/gun_icon/k98_icon.png");
+        return Mod.loc("textures/gun_icon/k_98_icon.png");
     }
 
     @Override

@@ -1,10 +1,10 @@
 {
 	"format_version": "1.8.0",
 	"animations": {
-		"animation.k98.idle": {
+		"animation.k_98.idle": {
 			"animation_length": 1
 		},
-		"animation.k98.draw": {
+		"animation.k_98.draw": {
 			"animation_length": 1,
 			"bones": {
 				"0": {
@@ -42,7 +42,7 @@
 				}
 			}
 		},
-		"animation.k98.run": {
+		"animation.k_98.run": {
 			"loop": true,
 			"animation_length": 0.8,
 			"bones": {
@@ -117,7 +117,7 @@
 				}
 			}
 		},
-		"animation.k98.run_fast": {
+		"animation.k_98.run_fast": {
 			"loop": true,
 			"animation_length": 0.7,
 			"bones": {
@@ -207,7 +207,7 @@
 				}
 			}
 		},
-		"animation.k98.fire": {
+		"animation.k_98.fire": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 0.202,
 			"bones": {
@@ -224,7 +224,7 @@
 				}
 			}
 		},
-		"animation.k98.shift": {
+		"animation.k_98.shift": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 1.1,
 			"override_previous_animation": true,
@@ -566,7 +566,7 @@
 				}
 			}
 		},
-		"animation.k98.reload_empty": {
+		"animation.k_98.reload_empty": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 3,
 			"override_previous_animation": true,
@@ -1216,7 +1216,7 @@
 				}
 			}
 		},
-		"animation.k98.prepare": {
+		"animation.k_98.prepare": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 2,
 			"override_previous_animation": true,
@@ -1600,7 +1600,7 @@
 				}
 			}
 		},
-		"animation.k98.iterativeload": {
+		"animation.k_98.iterativeload": {
 			"loop": true,
 			"animation_length": 0.75,
 			"override_previous_animation": true,
@@ -1832,11 +1832,11 @@
 			},
 			"sound_effects": {
 				"0.0": {
-					"effect": "k98_loop"
+					"effect": "k_98_loop"
 				}
 			}
 		},
-		"animation.k98.iterativeload2": {
+		"animation.k_98.iterativeload2": {
 			"loop": true,
 			"animation_length": 0.75,
 			"override_previous_animation": true,
@@ -2068,11 +2068,11 @@
 			},
 			"sound_effects": {
 				"0.0": {
-					"effect": "k98_loop"
+					"effect": "k_98_loop"
 				}
 			}
 		},
-		"animation.k98.finish": {
+		"animation.k_98.finish": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 1.25,
 			"override_previous_animation": true,
