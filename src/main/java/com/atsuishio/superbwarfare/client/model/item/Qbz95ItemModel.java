@@ -34,17 +34,17 @@ public class Qbz95ItemModel extends GeoModel<Qbz95Item> {
 
     @Override
     public ResourceLocation getAnimationResource(Qbz95Item animatable) {
-        return Mod.loc("animations/qbz95.animation.json");
+        return Mod.loc("animations/qbz_95.animation.json");
     }
 
     @Override
     public ResourceLocation getModelResource(Qbz95Item animatable) {
-        return Mod.loc("geo/qbz95.geo.json");
+        return Mod.loc("geo/qbz_95.geo.json");
     }
 
     @Override
     public ResourceLocation getTextureResource(Qbz95Item animatable) {
-        return Mod.loc("textures/item/qbz95.png");
+        return Mod.loc("textures/item/qbz_95.png");
     }
 
     @Override

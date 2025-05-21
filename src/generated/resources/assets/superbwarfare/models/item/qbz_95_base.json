@@ -1,0 +1,6 @@
+{
+  "parent": "superbwarfare:displaysettings/qbz_95.item",
+  "textures": {
+    "layer0": "superbwarfare:item/qbz_95"
+  }
+}

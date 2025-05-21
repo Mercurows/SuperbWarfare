@@ -57,15 +57,15 @@ public class Qbz95Item extends GunItem implements GeoItem {
         if (data.reload.empty()) {
             if (drum) {
                 if (grip) {
-                    return event.setAndContinue(RawAnimation.begin().thenPlay("animation.qbz95.reload_empty_drum_grip"));
+                    return event.setAndContinue(RawAnimation.begin().thenPlay("animation.qbz_95.reload_empty_drum_grip"));
                 } else {
-                    return event.setAndContinue(RawAnimation.begin().thenPlay("animation.qbz95.reload_empty_drum"));
+                    return event.setAndContinue(RawAnimation.begin().thenPlay("animation.qbz_95.reload_empty_drum"));
                 }
             } else {
                 if (grip) {
-                    return event.setAndContinue(RawAnimation.begin().thenPlay("animation.qbz95.reload_empty_grip"));
+                    return event.setAndContinue(RawAnimation.begin().thenPlay("animation.qbz_95.reload_empty_grip"));
                 } else {
-                    return event.setAndContinue(RawAnimation.begin().thenPlay("animation.qbz95.reload_empty"));
+                    return event.setAndContinue(RawAnimation.begin().thenPlay("animation.qbz_95.reload_empty"));
                 }
             }
         }
@@ -73,35 +73,35 @@ public class Qbz95Item extends GunItem implements GeoItem {
         if (data.reload.normal()) {
             if (drum) {
                 if (grip) {
-                    return event.setAndContinue(RawAnimation.begin().thenPlay("animation.qbz95.reload_normal_drum_grip"));
+                    return event.setAndContinue(RawAnimation.begin().thenPlay("animation.qbz_95.reload_normal_drum_grip"));
                 } else {
-                    return event.setAndContinue(RawAnimation.begin().thenPlay("animation.qbz95.reload_normal_drum"));
+                    return event.setAndContinue(RawAnimation.begin().thenPlay("animation.qbz_95.reload_normal_drum"));
                 }
             } else {
                 if (grip) {
-                    return event.setAndContinue(RawAnimation.begin().thenPlay("animation.qbz95.reload_normal_grip"));
+                    return event.setAndContinue(RawAnimation.begin().thenPlay("animation.qbz_95.reload_normal_grip"));
                 } else {
-                    return event.setAndContinue(RawAnimation.begin().thenPlay("animation.qbz95.reload_normal"));
+                    return event.setAndContinue(RawAnimation.begin().thenPlay("animation.qbz_95.reload_normal"));
                 }
             }
         }
 
         if (player.isSprinting() && player.onGround() && ClientEventHandler.cantSprint == 0 && ClientEventHandler.drawTime < 0.01) {
             if (ClientEventHandler.tacticalSprint) {
-                return event.setAndContinue(RawAnimation.begin().thenLoop("animation.qbz95.run_fast"));
+                return event.setAndContinue(RawAnimation.begin().thenLoop("animation.qbz_95.run_fast"));
             } else {
                 if (grip) {
-                    return event.setAndContinue(RawAnimation.begin().thenPlay("animation.qbz95.run_grip"));
+                    return event.setAndContinue(RawAnimation.begin().thenPlay("animation.qbz_95.run_grip"));
                 } else {
-                    return event.setAndContinue(RawAnimation.begin().thenLoop("animation.qbz95.run"));
+                    return event.setAndContinue(RawAnimation.begin().thenLoop("animation.qbz_95.run"));
                 }
             }
         }
 
         if (grip) {
-            return event.setAndContinue(RawAnimation.begin().thenLoop("animation.qbz95.idle_grip"));
+            return event.setAndContinue(RawAnimation.begin().thenLoop("animation.qbz_95.idle_grip"));
         } else {
-            return event.setAndContinue(RawAnimation.begin().thenLoop("animation.qbz95.idle"));
+            return event.setAndContinue(RawAnimation.begin().thenLoop("animation.qbz_95.idle"));
         }
     }
 
@@ -112,10 +112,10 @@ public class Qbz95Item extends GunItem implements GeoItem {
         if (!(stack.getItem() instanceof GunItem)) return PlayState.STOP;
 
         if (ClickHandler.isEditing) {
-            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.qbz95.edit"));
+            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.qbz_95.edit"));
         }
 
-        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.qbz95.idle"));
+        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.qbz_95.idle"));
     }
 
     @Override
@@ -173,7 +173,7 @@ public class Qbz95Item extends GunItem implements GeoItem {
 
     @Override
     public ResourceLocation getGunIcon() {
-        return Mod.loc("textures/gun_icon/qbz95_icon.png");
+        return Mod.loc("textures/gun_icon/qbz_95_icon.png");
     }
 
     @Override
