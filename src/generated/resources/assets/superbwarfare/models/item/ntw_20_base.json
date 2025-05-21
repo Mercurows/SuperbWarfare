@@ -1,5 +1,5 @@
 {
-  "parent": "superbwarfare:displaysettings/ntw20.item",
+  "parent": "superbwarfare:displaysettings/ntw_20.item",
   "textures": {
     "layer0": "superbwarfare:item/ntw_20"
   }

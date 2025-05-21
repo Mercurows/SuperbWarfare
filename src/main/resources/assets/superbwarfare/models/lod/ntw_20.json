@@ -2,8 +2,8 @@
 	"credit": "Made with Blockbench",
 	"texture_size": [64, 64],
 	"textures": {
-		"0": "superbwarfare:item/ntw_203d",
-		"particle": "superbwarfare:item/ntw_203d"
+		"0": "superbwarfare:item/lod/ntw_20",
+		"particle": "superbwarfare:item/lod/ntw_20"
 	},
 	"elements": [
 		{
