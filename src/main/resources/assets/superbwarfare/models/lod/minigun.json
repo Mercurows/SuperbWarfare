@@ -3,8 +3,8 @@
 	"ambientocclusion": false,
 	"texture_size": [64, 64],
 	"textures": {
-		"0": "superbwarfare:item/minigun_3d",
-		"particle": "superbwarfare:item/minigun_3d"
+      "0": "superbwarfare:item/lod/minigun",
+      "particle": "superbwarfare:item/lod/minigun"
 	},
 	"elements": [
 		{
