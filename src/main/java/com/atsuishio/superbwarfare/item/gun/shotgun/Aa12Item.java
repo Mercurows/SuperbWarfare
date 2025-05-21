@@ -54,22 +54,22 @@ public class Aa12Item extends GunItem implements GeoItem {
 
         if (this.animationProcedure.equals("empty")) {
             if (GunData.from(stack).reload.empty()) {
-                return event.setAndContinue(RawAnimation.begin().thenPlay("animation.aa12.reload_empty"));
+                return event.setAndContinue(RawAnimation.begin().thenPlay("animation.aa_12.reload_empty"));
             }
 
             if (GunData.from(stack).reload.normal()) {
-                return event.setAndContinue(RawAnimation.begin().thenPlay("animation.aa12.reload_normal"));
+                return event.setAndContinue(RawAnimation.begin().thenPlay("animation.aa_12.reload_normal"));
             }
 
             if (player.isSprinting() && player.onGround() && ClientEventHandler.cantSprint == 0 && ClientEventHandler.drawTime < 0.01) {
                 if (ClientEventHandler.tacticalSprint) {
-                    return event.setAndContinue(RawAnimation.begin().thenLoop("animation.aa12.run_fast"));
+                    return event.setAndContinue(RawAnimation.begin().thenLoop("animation.aa_12.run_fast"));
                 } else {
-                    return event.setAndContinue(RawAnimation.begin().thenLoop("animation.aa12.run"));
+                    return event.setAndContinue(RawAnimation.begin().thenLoop("animation.aa_12.run"));
                 }
             }
 
-            return event.setAndContinue(RawAnimation.begin().thenLoop("animation.aa12.idle"));
+            return event.setAndContinue(RawAnimation.begin().thenLoop("animation.aa_12.idle"));
         }
         return PlayState.STOP;
     }

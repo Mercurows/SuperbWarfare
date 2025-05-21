@@ -3,7 +3,7 @@
 	"minecraft:geometry": [
 		{
 			"description": {
-				"identifier": "geometry.aa12",
+				"identifier": "geometry.aa_12",
 				"texture_width": 256,
 				"texture_height": 256,
 				"visible_bounds_width": 9,

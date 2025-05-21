@@ -1,7 +1,7 @@
 {
 	"format_version": "1.8.0",
 	"animations": {
-		"animation.aa12.idle": {
+		"animation.aa_12.idle": {
 			"loop": true,
 			"animation_length": 0.25,
 			"bones": {
@@ -12,7 +12,7 @@
 				}
 			}
 		},
-		"animation.aa12.run": {
+		"animation.aa_12.run": {
 			"loop": true,
 			"animation_length": 0.7917,
 			"bones": {
@@ -80,7 +80,7 @@
 				}
 			}
 		},
-		"animation.aa12.run_fast": {
+		"animation.aa_12.run_fast": {
 			"loop": true,
 			"animation_length": 0.8,
 			"bones": {
@@ -157,10 +157,10 @@
 				}
 			}
 		},
-		"animation.aa12.fire": {
+		"animation.aa_12.fire": {
 			"animation_length": 0.125
 		},
-		"animation.aa12.reload_empty": {
+		"animation.aa_12.reload_empty": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 4.1167,
 			"bones": {
@@ -593,7 +593,7 @@
 				}
 			}
 		},
-		"animation.aa12.reload_normal": {
+		"animation.aa_12.reload_normal": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 2.9667,
 			"bones": {

@@ -26,7 +26,8 @@ public class ModItemModelProvider extends ItemModelProvider {
 
     @Override
     protected void registerModels() {
-        // test
+        // gun
+        gunItem(ModItems.AA_12);
         gunItem(ModItems.AURELIA_SCEPTRE);
 
         simpleItem(ModItems.EMPTY_PERK, "perk/");
