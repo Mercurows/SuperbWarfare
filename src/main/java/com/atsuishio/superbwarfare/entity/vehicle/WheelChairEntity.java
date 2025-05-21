@@ -183,14 +183,7 @@ public class WheelChairEntity extends MobileVehicleEntity implements GeoEntity {
 
         this.entityData.set(POWER, this.entityData.get(POWER) * 0.87f);
 
-        float angle = (float) calculateAngle(this.getDeltaMovement(), this.getViewVector(1));
-        double s0;
-
-        if (Mth.abs(angle) < 90) {
-            s0 = this.getDeltaMovement().horizontalDistance();
-        } else {
-            s0 = -this.getDeltaMovement().horizontalDistance();
-        }
+        double s0 = getDeltaMovement().dot(this.getViewVector(1));
 
         this.setLeftWheelRot((float) (this.getLeftWheelRot() - 1.25 * s0) - 0.015f * Mth.clamp(0.4f * diffY, -5f, 5f));
         this.setRightWheelRot((float) (this.getRightWheelRot() - 1.25 * s0) + 0.015f * Mth.clamp(0.4f * diffY, -5f, 5f));
