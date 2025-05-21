@@ -1,4 +1,4 @@
-// 1.21.1	2025-05-21T21:36:54.0073684	Item Models: superbwarfare
+// 1.21.1	2025-05-21T21:38:29.0648576	Item Models: superbwarfare
 6c48f5010e7e2b8cd4d3ff85c8de45cf56f53268 assets/superbwarfare/models/item/aa_12.json
 fb3a995587b2c253571c3160ff02c2ad8c73ecf8 assets/superbwarfare/models/item/aa_12_base.json
 13ca8d5676888ff51f3308d88e4bf67691fa34f8 assets/superbwarfare/models/item/aa_12_blueprint.json
@@ -79,7 +79,10 @@ a5cf666a970906ba6ac0af9a4d5d52dd0e093dec assets/superbwarfare/models/item/hpj_11
 9bb0dce4eb911575ecbdfc1522d00112db0af5e7 assets/superbwarfare/models/item/hunting_rifle_base.json
 13ca8d5676888ff51f3308d88e4bf67691fa34f8 assets/superbwarfare/models/item/hunting_rifle_blueprint.json
 44fb3218404452aa2479bde28785fcc4f56ef8b4 assets/superbwarfare/models/item/hunting_rifle_icon.json
+6af52a92a5725ed2419a58a57cd7bb165f18e96a assets/superbwarfare/models/item/insidious.json
+984f211837d1de76f5266f20fe1268c25331e978 assets/superbwarfare/models/item/insidious_base.json
 13ca8d5676888ff51f3308d88e4bf67691fa34f8 assets/superbwarfare/models/item/insidious_blueprint.json
+61f2600761b2088d2ea257295fd52e78222f588e assets/superbwarfare/models/item/insidious_icon.json
 3c9dcc3393e16ca354b01162316f1ddae92338ec assets/superbwarfare/models/item/iron_action.json
 6e7a2bd5ffb78bd218e3a55daba3e9c256470757 assets/superbwarfare/models/item/iron_barrel.json
 e04bbd61e716fc5d53c9425aba508fc3287bfd57 assets/superbwarfare/models/item/iron_powder.json

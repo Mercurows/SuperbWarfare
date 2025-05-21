@@ -38,6 +38,7 @@ public class ModItemModelProvider extends ItemModelProvider {
         gunItem(ModItems.HK_416);
         gunItem(ModItems.HOMEMADE_SHOTGUN);
         gunItem(ModItems.HUNTING_RIFLE);
+        gunItem(ModItems.INSIDIOUS);
 
         simpleItem(ModItems.EMPTY_PERK, "perk/");
 
