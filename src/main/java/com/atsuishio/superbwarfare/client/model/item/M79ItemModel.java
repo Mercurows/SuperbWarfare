@@ -19,7 +19,7 @@ public class M79ItemModel extends GeoModel<M79Item> {
 
     @Override
     public ResourceLocation getAnimationResource(M79Item animatable) {
-        return Mod.loc("animations/m79.animation.json");
+        return Mod.loc("animations/m_79.animation.json");
     }
 
     @Override
@@ -29,7 +29,7 @@ public class M79ItemModel extends GeoModel<M79Item> {
 
     @Override
     public ResourceLocation getTextureResource(M79Item animatable) {
-        return Mod.loc("textures/item/m79.png");
+        return Mod.loc("textures/item/m_79.png");
     }
 
     @Override

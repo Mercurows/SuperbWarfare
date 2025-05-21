@@ -1,0 +1,6 @@
+{
+  "parent": "superbwarfare:displaysettings/m_79.item",
+  "textures": {
+    "layer0": "superbwarfare:item/m_79"
+  }
+}

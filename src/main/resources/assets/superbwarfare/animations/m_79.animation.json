@@ -1,11 +1,11 @@
 {
 	"format_version": "1.8.0",
 	"animations": {
-		"animation.m79.idle": {
+		"animation.m_79.idle": {
 			"loop": true,
 			"animation_length": 2
 		},
-		"animation.m79.draw": {
+		"animation.m_79.draw": {
 			"animation_length": 1,
 			"bones": {
 				"0": {
@@ -61,7 +61,7 @@
 				}
 			}
 		},
-		"animation.m79.run": {
+		"animation.m_79.run": {
 			"loop": true,
 			"animation_length": 0.8,
 			"bones": {
@@ -136,7 +136,7 @@
 				}
 			}
 		},
-		"animation.m79.run_fast": {
+		"animation.m_79.run_fast": {
 			"loop": true,
 			"animation_length": 0.7,
 			"bones": {
@@ -218,7 +218,7 @@
 				}
 			}
 		},
-		"animation.m79.fire": {
+		"animation.m_79.fire": {
 			"animation_length": 0.1,
 			"bones": {
 				"0": {
@@ -231,7 +231,7 @@
 				}
 			}
 		},
-		"animation.m79.reload": {
+		"animation.m_79.reload": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 3.25,
 			"bones": {
