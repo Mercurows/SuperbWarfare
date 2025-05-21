@@ -1,0 +1,6 @@
+{
+  "parent": "superbwarfare:displaysettings/ak_12.item",
+  "textures": {
+    "layer0": "superbwarfare:item/ak_12"
+  }
+}

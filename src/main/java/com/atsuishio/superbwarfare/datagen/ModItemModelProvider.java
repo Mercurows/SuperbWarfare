@@ -28,6 +28,7 @@ public class ModItemModelProvider extends ItemModelProvider {
     protected void registerModels() {
         // gun
         gunItem(ModItems.AA_12);
+        gunItem(ModItems.AK_12);
         gunItem(ModItems.AURELIA_SCEPTRE);
 
         simpleItem(ModItems.EMPTY_PERK, "perk/");
@@ -242,7 +243,7 @@ public class ModItemModelProvider extends ItemModelProvider {
                 .end();
     }
 
-    private void gunItem(DeferredHolder<Item, ? extends Item> item) {
+    public void gunItem(DeferredHolder<Item, ? extends Item> item) {
         this.gunIcon(item);
         this.gunBase(item);
         this.customSeparatedGunModel(item);

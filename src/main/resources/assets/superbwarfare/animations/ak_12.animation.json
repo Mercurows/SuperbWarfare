@@ -1,10 +1,10 @@
 {
 	"format_version": "1.8.0",
 	"animations": {
-		"animation.ak12.idle": {
+		"animation.ak_12.idle": {
 			"animation_length": 1
 		},
-		"animation.ak12.edit": {
+		"animation.ak_12.edit": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 0.4083,
 			"bones": {
@@ -38,7 +38,7 @@
 				}
 			}
 		},
-		"animation.ak12.run": {
+		"animation.ak_12.run": {
 			"loop": true,
 			"animation_length": 0.8,
 			"bones": {
@@ -69,7 +69,7 @@
 				}
 			}
 		},
-		"animation.ak12.run_fast": {
+		"animation.ak_12.run_fast": {
 			"loop": true,
 			"animation_length": 0.7,
 			"bones": {
@@ -104,7 +104,7 @@
 				}
 			}
 		},
-		"animation.ak12.reload_normal": {
+		"animation.ak_12.reload_normal": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 2.6833,
 			"override_previous_animation": true,
@@ -542,7 +542,7 @@
 				}
 			}
 		},
-		"animation.ak12.reload_normal_drum": {
+		"animation.ak_12.reload_normal_drum": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 2.6833,
 			"override_previous_animation": true,
@@ -980,7 +980,7 @@
 				}
 			}
 		},
-		"animation.ak12.reload_empty": {
+		"animation.ak_12.reload_empty": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 2.9,
 			"override_previous_animation": true,
@@ -1325,7 +1325,7 @@
 				}
 			}
 		},
-		"animation.ak12.idle_grip": {
+		"animation.ak_12.idle_grip": {
 			"animation_length": 1,
 			"bones": {
 				"Lefthand": {
@@ -1334,7 +1334,7 @@
 				}
 			}
 		},
-		"animation.ak12.run_grip": {
+		"animation.ak_12.run_grip": {
 			"loop": true,
 			"animation_length": 0.8,
 			"bones": {
@@ -1369,7 +1369,7 @@
 				}
 			}
 		},
-		"animation.ak12.reload_normal_grip": {
+		"animation.ak_12.reload_normal_grip": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 2.75,
 			"override_previous_animation": true,
@@ -1807,7 +1807,7 @@
 				}
 			}
 		},
-		"animation.ak12.reload_normal_drum_grip": {
+		"animation.ak_12.reload_normal_drum_grip": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 2.6833,
 			"override_previous_animation": true,
@@ -2245,7 +2245,7 @@
 				}
 			}
 		},
-		"animation.ak12.reload_empty_grip": {
+		"animation.ak_12.reload_empty_grip": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 2.9,
 			"override_previous_animation": true,

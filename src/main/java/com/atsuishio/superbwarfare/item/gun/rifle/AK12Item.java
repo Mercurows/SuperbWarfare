@@ -62,44 +62,44 @@ public class AK12Item extends GunItem implements GeoItem {
 
         if (GunData.from(stack).reload.empty()) {
             if (grip) {
-                return event.setAndContinue(RawAnimation.begin().thenPlay("animation.ak12.reload_empty_grip"));
+                return event.setAndContinue(RawAnimation.begin().thenPlay("animation.ak_12.reload_empty_grip"));
             } else {
-                return event.setAndContinue(RawAnimation.begin().thenPlay("animation.ak12.reload_empty"));
+                return event.setAndContinue(RawAnimation.begin().thenPlay("animation.ak_12.reload_empty"));
             }
         }
 
         if (GunData.from(stack).reload.normal()) {
             if (drum) {
                 if (grip) {
-                    return event.setAndContinue(RawAnimation.begin().thenPlay("animation.ak12.reload_normal_drum_grip"));
+                    return event.setAndContinue(RawAnimation.begin().thenPlay("animation.ak_12.reload_normal_drum_grip"));
                 } else {
-                    return event.setAndContinue(RawAnimation.begin().thenPlay("animation.ak12.reload_normal_drum"));
+                    return event.setAndContinue(RawAnimation.begin().thenPlay("animation.ak_12.reload_normal_drum"));
                 }
             } else {
                 if (grip) {
-                    return event.setAndContinue(RawAnimation.begin().thenPlay("animation.ak12.reload_normal_grip"));
+                    return event.setAndContinue(RawAnimation.begin().thenPlay("animation.ak_12.reload_normal_grip"));
                 } else {
-                    return event.setAndContinue(RawAnimation.begin().thenPlay("animation.ak12.reload_normal"));
+                    return event.setAndContinue(RawAnimation.begin().thenPlay("animation.ak_12.reload_normal"));
                 }
             }
         }
 
         if (player.isSprinting() && player.onGround() && ClientEventHandler.cantSprint == 0 && ClientEventHandler.drawTime < 0.01) {
             if (ClientEventHandler.tacticalSprint) {
-                return event.setAndContinue(RawAnimation.begin().thenLoop("animation.ak12.run_fast"));
+                return event.setAndContinue(RawAnimation.begin().thenLoop("animation.ak_12.run_fast"));
             } else {
                 if (grip) {
-                    return event.setAndContinue(RawAnimation.begin().thenPlay("animation.ak12.run_grip"));
+                    return event.setAndContinue(RawAnimation.begin().thenPlay("animation.ak_12.run_grip"));
                 } else {
-                    return event.setAndContinue(RawAnimation.begin().thenLoop("animation.ak12.run"));
+                    return event.setAndContinue(RawAnimation.begin().thenLoop("animation.ak_12.run"));
                 }
             }
         }
 
         if (grip) {
-            return event.setAndContinue(RawAnimation.begin().thenLoop("animation.ak12.idle_grip"));
+            return event.setAndContinue(RawAnimation.begin().thenLoop("animation.ak_12.idle_grip"));
         } else {
-            return event.setAndContinue(RawAnimation.begin().thenLoop("animation.ak12.idle"));
+            return event.setAndContinue(RawAnimation.begin().thenLoop("animation.ak_12.idle"));
         }
     }
 
@@ -110,10 +110,10 @@ public class AK12Item extends GunItem implements GeoItem {
         if (!(stack.getItem() instanceof GunItem)) return PlayState.STOP;
 
         if (ClickHandler.isEditing) {
-            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.ak12.edit"));
+            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.ak_12.edit"));
         }
 
-        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.ak12.idle"));
+        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.ak_12.idle"));
     }
 
     @Override
@@ -156,7 +156,7 @@ public class AK12Item extends GunItem implements GeoItem {
 
     @Override
     public ResourceLocation getGunIcon() {
-        return Mod.loc("textures/gun_icon/ak12_icon.png");
+        return Mod.loc("textures/gun_icon/ak_12_icon.png");
     }
 
     @Override
