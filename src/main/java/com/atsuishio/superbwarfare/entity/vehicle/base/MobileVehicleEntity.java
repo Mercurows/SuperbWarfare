@@ -80,6 +80,7 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
     public boolean downInputDown;
     public boolean decoyInputDown;
     public boolean fireInputDown;
+    public boolean sprintInputDown;
     public double lastTickSpeed;
     public double lastTickVerticalSpeed;
     public int collisionCoolDown;
@@ -147,21 +148,23 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
     @Override
     public void processInput(short keys) {
         leftInputDown
-                = (keys & 0b00000001) > 0;
+                = (keys & 0b000000001) > 0;
         rightInputDown
-                = (keys & 0b00000010) > 0;
+                = (keys & 0b000000010) > 0;
         forwardInputDown
-                = (keys & 0b00000100) > 0;
+                = (keys & 0b000000100) > 0;
         backInputDown
-                = (keys & 0b00001000) > 0;
+                = (keys & 0b000001000) > 0;
         upInputDown
-                = (keys & 0b00010000) > 0;
+                = (keys & 0b000010000) > 0;
         downInputDown
-                = (keys & 0b00100000) > 0;
+                = (keys & 0b000100000) > 0;
         decoyInputDown
-                = (keys & 0b01000000) > 0;
+                = (keys & 0b001000000) > 0;
         fireInputDown
-                = (keys & 0b10000000) > 0;
+                = (keys & 0b010000000) > 0;
+        sprintInputDown
+                = (keys & 0b100000000) > 0;
     }
 
     @Override
