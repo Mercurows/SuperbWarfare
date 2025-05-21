@@ -1,4 +1,4 @@
-// 1.21.1	2025-05-13T23:50:15.1356608	Item Models: superbwarfare
+// 1.21.1	2025-05-21T21:13:24.0760608	Item Models: superbwarfare
 13ca8d5676888ff51f3308d88e4bf67691fa34f8 assets/superbwarfare/models/item/aa_12_blueprint.json
 0a9bfb695c2b5668863a2de4770f5bfca663c1dc assets/superbwarfare/models/item/agm.json
 29ad5daadcdf7c10771fc45b649c527d16325cbb assets/superbwarfare/models/item/aircraft_catapult.json
@@ -7,6 +7,9 @@
 c993bddc0db9453ffbefa59f9ac9a74dba909038 assets/superbwarfare/models/item/ancient_cpu.json
 a5cf666a970906ba6ac0af9a4d5d52dd0e093dec assets/superbwarfare/models/item/annihilator_blueprint.json
 4b8fe8fbe5e64c3449ad539317254e4ed7188411 assets/superbwarfare/models/item/ap_head.json
+0d41599d73bef0eefd40b54bb4940fe2e8e03da6 assets/superbwarfare/models/item/aurelia_sceptre.json
+47b117e79990f208022980edf27898c559c715f4 assets/superbwarfare/models/item/aurelia_sceptre_base.json
+a207f0f01b87315d1b85fc3ea69bf52b2bd5c71a assets/superbwarfare/models/item/aurelia_sceptre_icon.json
 984c08ca6f6893a15721a85e30118f9e32c65c7f assets/superbwarfare/models/item/barbed_wire.json
 e8f16946c6f9429989d05e9ec250a72ffc64f9e1 assets/superbwarfare/models/item/beam_test.json
 bda38dd5cb3ca4c3e289a012c0529609ac02ded2 assets/superbwarfare/models/item/beast.json

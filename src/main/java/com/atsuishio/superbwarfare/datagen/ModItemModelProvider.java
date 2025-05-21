@@ -4,13 +4,16 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.init.ModBlocks;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.item.common.BlueprintItem;
+import net.minecraft.client.renderer.block.model.BlockModel;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.client.model.generators.ItemModelBuilder;
 import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
+import net.neoforged.neoforge.client.model.generators.ModelFile;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.registries.DeferredHolder;
 
@@ -23,6 +26,9 @@ public class ModItemModelProvider extends ItemModelProvider {
 
     @Override
     protected void registerModels() {
+        // test
+        gunItem(ModItems.AURELIA_SCEPTRE);
+
         simpleItem(ModItems.EMPTY_PERK, "perk/");
 
         simpleItem(ModItems.MORTAR_SHELL);
@@ -204,5 +210,40 @@ public class ModItemModelProvider extends ItemModelProvider {
     private ItemModelBuilder handheldItem(DeferredHolder<Item, Item> item) {
         return withExistingParent(item.getId().getPath(), ResourceLocation.withDefaultNamespace("item/handheld"))
                 .texture("layer0", Mod.loc("item/" + item.getId().getPath()));
+    }
+
+    private ItemModelBuilder gunIcon(DeferredHolder<Item, ? extends Item> item) {
+        return withExistingParent(item.getId().getPath() + "_icon", ResourceLocation.withDefaultNamespace("item/generated"))
+                .texture("layer0", Mod.loc("item/" + item.getId().getPath() + "_icon"));
+    }
+
+    private ItemModelBuilder gunBase(DeferredHolder<Item, ? extends Item> item) {
+        return getBuilder(item.getId().getPath() + "_base")
+                .parent(new ModelFile.UncheckedModelFile(modLoc("displaysettings/" + item.getId().getPath() + ".item")))
+                .texture("layer0", Mod.loc("item/" + item.getId().getPath()));
+    }
+
+    private ItemModelBuilder customSeparatedGunModel(DeferredHolder<Item, ? extends Item> item) {
+        String lod = modLoc("lod/" + item.getId().getPath()).toString();
+        String base = modLoc("item/" + item.getId().getPath() + "_base").toString();
+        String icon = modLoc("item/" + item.getId().getPath() + "_icon").toString();
+
+        return withExistingParent(item.getId().getPath(), ResourceLocation.withDefaultNamespace("item/generated"))
+                .guiLight(BlockModel.GuiLight.FRONT)
+                .customLoader(CustomSeparateModelBuilder::begin)
+                .base(base)
+                .perspective(ItemDisplayContext.FIXED, lod)
+                .perspective(ItemDisplayContext.HEAD, lod)
+                .perspective(ItemDisplayContext.GROUND, lod)
+                .perspective(ItemDisplayContext.THIRD_PERSON_RIGHT_HAND, lod)
+                .perspective(ItemDisplayContext.THIRD_PERSON_LEFT_HAND, lod)
+                .perspective(ItemDisplayContext.GUI, icon)
+                .end();
+    }
+
+    private void gunItem(DeferredHolder<Item, ? extends Item> item) {
+        this.gunIcon(item);
+        this.gunBase(item);
+        this.customSeparatedGunModel(item);
     }
 }
