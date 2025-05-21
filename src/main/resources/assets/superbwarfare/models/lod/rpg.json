@@ -2,8 +2,8 @@
 	"credit": "Made with Blockbench",
 	"texture_size": [32, 32],
 	"textures": {
-		"2": "superbwarfare:item/rpg3d",
-		"particle": "superbwarfare:item/rpg3d"
+      "2": "superbwarfare:item/lod/rpg",
+      "particle": "superbwarfare:item/lod/rpg"
 	},
 	"elements": [
 		{

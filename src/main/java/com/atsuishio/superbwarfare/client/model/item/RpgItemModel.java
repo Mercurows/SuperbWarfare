@@ -29,7 +29,7 @@ public class RpgItemModel extends CustomGunModel<RpgItem> {
 
     @Override
     public ResourceLocation getTextureResource(RpgItem animatable) {
-        return Mod.loc("textures/item/rpg7.png");
+        return Mod.loc("textures/item/rpg.png");
     }
 
     @Override
