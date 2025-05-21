@@ -48,10 +48,10 @@ public class M60Item extends GunItem implements GeoItem {
         if (!(stack.getItem() instanceof GunItem)) return PlayState.STOP;
 
         if (ClientEventHandler.firePosTimer > 0 && ClientEventHandler.firePosTimer < 0.45) {
-            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m60.fire"));
+            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m_60.fire"));
         }
 
-        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.m60.idle"));
+        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.m_60.idle"));
     }
 
     private PlayState idlePredicate(AnimationState<M60Item> event) {
@@ -61,22 +61,22 @@ public class M60Item extends GunItem implements GeoItem {
         if (!(stack.getItem() instanceof GunItem)) return PlayState.STOP;
 
         if (GunData.from(stack).reload.empty()) {
-            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m60.reload"));
+            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m_60.reload"));
         }
 
         if (GunData.from(stack).reload.normal()) {
-            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m60.reload2"));
+            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m_60.reload2"));
         }
 
         if (player.isSprinting() && player.onGround() && ClientEventHandler.cantSprint == 0 && ClientEventHandler.drawTime < 0.01) {
             if (ClientEventHandler.tacticalSprint) {
-                return event.setAndContinue(RawAnimation.begin().thenLoop("animation.m60.run_fast"));
+                return event.setAndContinue(RawAnimation.begin().thenLoop("animation.m_60.run_fast"));
             } else {
-                return event.setAndContinue(RawAnimation.begin().thenLoop("animation.m60.run"));
+                return event.setAndContinue(RawAnimation.begin().thenLoop("animation.m_60.run"));
             }
         }
 
-        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.m60.idle"));
+        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.m_60.idle"));
     }
 
     @Override
@@ -114,7 +114,7 @@ public class M60Item extends GunItem implements GeoItem {
 
     @Override
     public ResourceLocation getGunIcon() {
-        return Mod.loc("textures/gun_icon/m60_icon.png");
+        return Mod.loc("textures/gun_icon/m_60_icon.png");
     }
 
     @Override
