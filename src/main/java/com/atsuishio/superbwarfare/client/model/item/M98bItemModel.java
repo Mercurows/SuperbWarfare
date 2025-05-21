@@ -19,17 +19,17 @@ public class M98bItemModel extends GeoModel<M98bItem> {
 
     @Override
     public ResourceLocation getAnimationResource(M98bItem animatable) {
-        return Mod.loc("animations/m98b.animation.json");
+        return Mod.loc("animations/m_98b.animation.json");
     }
 
     @Override
     public ResourceLocation getModelResource(M98bItem animatable) {
-        return Mod.loc("geo/m98b.geo.json");
+        return Mod.loc("geo/m_98b.geo.json");
     }
 
     @Override
     public ResourceLocation getTextureResource(M98bItem animatable) {
-        return Mod.loc("textures/item/m98b.png");
+        return Mod.loc("textures/item/m_98b.png");
     }
 
     @Override

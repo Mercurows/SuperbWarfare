@@ -1,11 +1,11 @@
 {
 	"format_version": "1.8.0",
 	"animations": {
-		"animation.m98b.idle": {
+      "animation.m_98b.idle": {
 			"loop": true,
 			"animation_length": 1
 		},
-		"animation.m98b.fire": {
+      "animation.m_98b.fire": {
 			"animation_length": 0.1,
 			"bones": {
 				"0": {
@@ -15,7 +15,7 @@
 				}
 			}
 		},
-		"animation.m98b.run": {
+      "animation.m_98b.run": {
 			"loop": true,
 			"animation_length": 0.8,
 			"bones": {
@@ -86,7 +86,7 @@
 				}
 			}
 		},
-		"animation.m98b.run_fast": {
+      "animation.m_98b.run_fast": {
 			"loop": true,
 			"animation_length": 0.7,
 			"bones": {
@@ -155,7 +155,7 @@
 				}
 			}
 		},
-		"animation.m98b.shift": {
+      "animation.m_98b.shift": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 1.1,
 			"override_previous_animation": true,
@@ -501,7 +501,7 @@
 				}
 			}
 		},
-		"animation.m98b.reload_empty": {
+      "animation.m_98b.reload_empty": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 4.475,
 			"override_previous_animation": true,
@@ -1254,7 +1254,7 @@
 				}
 			}
 		},
-		"animation.m98b.reload_normal": {
+      "animation.m_98b.reload_normal": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 3.3,
 			"override_previous_animation": true,
