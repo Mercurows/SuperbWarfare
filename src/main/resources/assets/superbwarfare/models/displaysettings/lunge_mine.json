@@ -109,6 +109,6 @@
     }
   },
   "textures": {
-    "particle": "item/lunge_mine"
+    "particle": "superbwarfare:item/lunge_mine_icon"
   }
 }
