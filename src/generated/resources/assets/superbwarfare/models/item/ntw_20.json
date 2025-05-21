@@ -4,7 +4,7 @@
     "parent": "superbwarfare:item/ntw_20_base"
   },
   "gui_light": "front",
-  "loader": "forge:separate_transforms",
+  "loader": "neoforge:separate_transforms",
   "perspectives": {
     "fixed": {
       "parent": "superbwarfare:lod/ntw_20"
