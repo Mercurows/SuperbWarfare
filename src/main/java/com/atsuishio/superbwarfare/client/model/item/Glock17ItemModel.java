@@ -23,17 +23,17 @@ public class Glock17ItemModel extends GeoModel<Glock17Item> {
 
     @Override
     public ResourceLocation getAnimationResource(Glock17Item animatable) {
-        return Mod.loc("animations/glock17.animation.json");
+        return Mod.loc("animations/glock_17.animation.json");
     }
 
     @Override
     public ResourceLocation getModelResource(Glock17Item animatable) {
-        return Mod.loc("geo/glock17.geo.json");
+        return Mod.loc("geo/glock_17.geo.json");
     }
 
     @Override
     public ResourceLocation getTextureResource(Glock17Item animatable) {
-        return Mod.loc("textures/item/glock17.png");
+        return Mod.loc("textures/item/glock_17.png");
     }
 
     @Override

@@ -1,4 +1,4 @@
-// 1.21.1	2025-05-21T21:25:03.9313812	Item Models: superbwarfare
+// 1.21.1	2025-05-21T21:28:40.4565326	Item Models: superbwarfare
 6c48f5010e7e2b8cd4d3ff85c8de45cf56f53268 assets/superbwarfare/models/item/aa_12.json
 fb3a995587b2c253571c3160ff02c2ad8c73ecf8 assets/superbwarfare/models/item/aa_12_base.json
 13ca8d5676888ff51f3308d88e4bf67691fa34f8 assets/superbwarfare/models/item/aa_12_blueprint.json
@@ -40,7 +40,10 @@ fc892b610a110980dbc6f8e2c080672b5dc06e99 assets/superbwarfare/models/item/copper
 7e43d8e9c4b8589f7665c46d4b67de645949cc6b assets/superbwarfare/models/item/creative_charging_station.json
 b0296c3d68f3b5ae4945b46384fa20a1ff32cac5 assets/superbwarfare/models/item/crowbar.json
 d81b738e17048945459ff8b59f8f83e872171473 assets/superbwarfare/models/item/defuser.json
+b863c75950f3d5f18b49d829ab05996ceeae24e1 assets/superbwarfare/models/item/devotion.json
+db98560069ace15f83e790a374e0e58eee5ae3c7 assets/superbwarfare/models/item/devotion_base.json
 13ca8d5676888ff51f3308d88e4bf67691fa34f8 assets/superbwarfare/models/item/devotion_blueprint.json
+10273ef8d8767554add02a877f4e2b230ad25a79 assets/superbwarfare/models/item/devotion_icon.json
 6f4a829dc159f1740f52265d01730ecb6a840d81 assets/superbwarfare/models/item/dog_tag.json
 9112aa14b3f057c3b29c932cfaa60a11b37757dc assets/superbwarfare/models/item/dps_generator_deployer.json
 dd455cf29eed0ef5eb5e90ef3d7140cb8de61efe assets/superbwarfare/models/item/drone.json
@@ -50,7 +53,10 @@ b6f96946b54f44fdd2d8b809945b8d1ae5e776e2 assets/superbwarfare/models/item/firing
 c102839d5f7d4bdc1c6cbfbf4c2c907b70f22052 assets/superbwarfare/models/item/fusee.json
 5326409e01ffd1f0a6330299799994e267db2b6b assets/superbwarfare/models/item/galena.json
 4bf506de247afbbec816f6637030f637e68ce0d4 assets/superbwarfare/models/item/ge_helmet_m_35.json
+59322dfc0e0a28d793ed3603ed2084a5ac045206 assets/superbwarfare/models/item/glock_17.json
+d842316fc4b25c17889fca4f89539d9e0829cda1 assets/superbwarfare/models/item/glock_17_base.json
 13ca8d5676888ff51f3308d88e4bf67691fa34f8 assets/superbwarfare/models/item/glock_17_blueprint.json
+eb7c2404c141dde965b8cb13c1e368eab6a8fa16 assets/superbwarfare/models/item/glock_17_icon.json
 13ca8d5676888ff51f3308d88e4bf67691fa34f8 assets/superbwarfare/models/item/glock_18_blueprint.json
 8752c2b2b648ff23d6b93eedcc6c0500c695afd7 assets/superbwarfare/models/item/grain.json
 c256914755344645319528b6abfabb6179f75052 assets/superbwarfare/models/item/handgun_ammo.json

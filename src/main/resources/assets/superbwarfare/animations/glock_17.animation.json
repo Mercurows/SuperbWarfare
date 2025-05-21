@@ -1,11 +1,11 @@
 {
 	"format_version": "1.8.0",
 	"animations": {
-		"animation.glock.idle": {
+		"animation.glock_17.idle": {
 			"loop": true,
 			"animation_length": 2
 		},
-		"animation.glock.run": {
+		"animation.glock_17.run": {
 			"loop": true,
           "animation_length": 0.6,
 			"bones": {
@@ -173,7 +173,7 @@
 				}
 			}
 		},
-		"animation.glock.run_fast": {
+		"animation.glock_17.run_fast": {
 			"loop": true,
           "animation_length": 0.6,
 			"bones": {
@@ -345,7 +345,7 @@
 				}
 			}
 		},
-		"animation.glock.reload_normal": {
+		"animation.glock_17.reload_normal": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 2.25,
 			"bones": {
@@ -709,7 +709,7 @@
 				}
 			}
 		},
-		"animation.glock.reload_empty": {
+		"animation.glock_17.reload_empty": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 2.65,
 			"bones": {

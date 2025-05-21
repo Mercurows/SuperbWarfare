@@ -23,7 +23,7 @@ public class M1911ItemModel extends GeoModel<M1911Item> {
 
     @Override
     public ResourceLocation getAnimationResource(M1911Item animatable) {
-        return Mod.loc("animations/glock17.animation.json");
+        return Mod.loc("animations/glock_17.animation.json");
     }
 
     @Override

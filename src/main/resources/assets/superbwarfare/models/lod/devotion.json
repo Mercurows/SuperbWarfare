@@ -2,8 +2,8 @@
 	"credit": "Made with Blockbench",
 	"texture_size": [64, 64],
 	"textures": {
-		"0": "superbwarfare:item/devotion3d",
-		"particle": "superbwarfare:item/devotion3d"
+		"0": "superbwarfare:item/lod/devotion",
+		"particle": "superbwarfare:item/lod/devotion"
 	},
 	"elements": [
 		{

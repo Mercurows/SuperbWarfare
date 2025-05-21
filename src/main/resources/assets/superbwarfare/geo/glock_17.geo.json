@@ -3,7 +3,7 @@
 	"minecraft:geometry": [
 		{
 			"description": {
-				"identifier": "geometry.glock17",
+				"identifier": "geometry.glock_17",
 				"texture_width": 64,
 				"texture_height": 64,
 				"visible_bounds_width": 126,

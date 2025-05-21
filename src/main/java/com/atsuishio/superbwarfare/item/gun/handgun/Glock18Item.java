@@ -96,7 +96,7 @@ public class Glock18Item extends GunItem implements GeoItem {
 
     @Override
     public ResourceLocation getGunIcon() {
-        return Mod.loc("textures/gun_icon/glock_icon.png");
+        return Mod.loc("textures/gun_icon/glock_17_icon.png");
     }
 
     @Override
