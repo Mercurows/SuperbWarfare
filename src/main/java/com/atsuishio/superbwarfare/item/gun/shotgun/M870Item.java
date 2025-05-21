@@ -47,30 +47,30 @@ public class M870Item extends GunItem implements GeoItem {
         var data = GunData.from(stack);
 
         if (data.bolt.actionTimer.get() > 0) {
-            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m870.shift"));
+            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m_870.shift"));
         }
 
         if (data.reload.stage() == 1 && data.reload.prepareLoadTimer.get() > 0) {
-            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m870.preparealt"));
+            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m_870.preparealt"));
         }
 
         if (data.reload.stage() == 1 && data.reload.prepareTimer.get() > 0) {
-            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m870.prepare"));
+            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m_870.prepare"));
         }
 
         if (data.loadIndex.get() == 0 && data.reload.stage() == 2) {
-            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m870.iterativeload"));
+            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m_870.iterativeload"));
         }
 
         if (data.loadIndex.get() == 1 && data.reload.stage() == 2) {
-            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m870.iterativeload2"));
+            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m_870.iterativeload2"));
         }
 
         if (data.reload.stage() == 3) {
-            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m870.finish"));
+            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m_870.finish"));
         }
 
-        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.m870.idle"));
+        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.m_870.idle"));
     }
 
     private PlayState idlePredicate(AnimationState<M870Item> event) {
@@ -87,13 +87,13 @@ public class M870Item extends GunItem implements GeoItem {
                 && ClientEventHandler.drawTime < 0.01
                 && !data.reloading()) {
             if (ClientEventHandler.tacticalSprint) {
-                return event.setAndContinue(RawAnimation.begin().thenLoop("animation.m870.run_fast"));
+                return event.setAndContinue(RawAnimation.begin().thenLoop("animation.m_870.run_fast"));
             } else {
-                return event.setAndContinue(RawAnimation.begin().thenLoop("animation.m870.run"));
+                return event.setAndContinue(RawAnimation.begin().thenLoop("animation.m_870.run"));
             }
         }
 
-        event.getController().setAnimation(RawAnimation.begin().thenLoop("animation.m870.idle"));
+        event.getController().setAnimation(RawAnimation.begin().thenLoop("animation.m_870.idle"));
         return PlayState.CONTINUE;
     }
 
@@ -119,7 +119,7 @@ public class M870Item extends GunItem implements GeoItem {
 
     @Override
     public ResourceLocation getGunIcon() {
-        return Mod.loc("textures/gun_icon/m870_icon.png");
+        return Mod.loc("textures/gun_icon/m_870_icon.png");
     }
 
     @Override

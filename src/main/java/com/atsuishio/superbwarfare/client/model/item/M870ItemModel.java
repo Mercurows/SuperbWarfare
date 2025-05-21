@@ -19,17 +19,17 @@ public class M870ItemModel extends GeoModel<M870Item> {
 
     @Override
     public ResourceLocation getAnimationResource(M870Item animatable) {
-        return Mod.loc("animations/m870.animation.json");
+        return Mod.loc("animations/m_870.animation.json");
     }
 
     @Override
     public ResourceLocation getModelResource(M870Item animatable) {
-        return Mod.loc("geo/m870.geo.json");
+        return Mod.loc("geo/m_870.geo.json");
     }
 
     @Override
     public ResourceLocation getTextureResource(M870Item animatable) {
-        return Mod.loc("textures/item/m870.png");
+        return Mod.loc("textures/item/m_870.png");
     }
 
     @Override

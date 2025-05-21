@@ -1,11 +1,11 @@
 {
 	"format_version": "1.8.0",
 	"animations": {
-		"animation.m870.idle": {
+		"animation.m_870.idle": {
 			"loop": true,
 			"animation_length": 0.25
 		},
-		"animation.m870.run": {
+		"animation.m_870.run": {
 			"loop": true,
 			"animation_length": 0.8,
 			"bones": {
@@ -72,7 +72,7 @@
 				}
 			}
 		},
-		"animation.m870.run_fast": {
+		"animation.m_870.run_fast": {
 			"loop": true,
 			"animation_length": 0.7,
 			"bones": {
@@ -193,7 +193,7 @@
 				}
 			}
 		},
-		"animation.m870.prepare": {
+		"animation.m_870.prepare": {
 			"animation_length": 0.75,
 			"bones": {
 				"main": {
@@ -291,7 +291,7 @@
 				}
 			}
 		},
-		"animation.m870.preparealt": {
+		"animation.m_870.preparealt": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 2,
 			"bones": {
@@ -756,7 +756,7 @@
 				}
 			}
 		},
-		"animation.m870.iterativeload": {
+		"animation.m_870.iterativeload": {
 			"animation_length": 0.8,
 			"bones": {
 				"main": {
@@ -972,7 +972,7 @@
 				}
 			}
 		},
-		"animation.m870.iterativeload2": {
+		"animation.m_870.iterativeload2": {
 			"animation_length": 0.8,
 			"bones": {
 				"main": {
@@ -1188,7 +1188,7 @@
 				}
 			}
 		},
-		"animation.m870.shift": {
+		"animation.m_870.shift": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 1,
 			"bones": {
@@ -1419,7 +1419,7 @@
 				}
 			}
 		},
-		"animation.m870.finish": {
+		"animation.m_870.finish": {
 			"animation_length": 0.75,
 			"bones": {
 				"main": {
