@@ -74,22 +74,22 @@ public class HomemadeShotgunItem extends GunItem implements GeoItem {
         if (!(stack.getItem() instanceof GunItem)) return PlayState.STOP;
 
         if (GunData.from(stack).reload.empty()) {
-            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.ab.reload_empty"));
+            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.homemade_shotgun.reload_empty"));
         }
 
         if (GunData.from(stack).reload.normal()) {
-            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.ab.reload_normal"));
+            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.homemade_shotgun.reload_normal"));
         }
 
         if (player.isSprinting() && player.onGround() && ClientEventHandler.cantSprint == 0 && ClientEventHandler.drawTime < 0.01) {
             if (ClientEventHandler.tacticalSprint) {
-                return event.setAndContinue(RawAnimation.begin().thenLoop("animation.ab.run_fast"));
+                return event.setAndContinue(RawAnimation.begin().thenLoop("animation.homemade_shotgun.run_fast"));
             } else {
-                return event.setAndContinue(RawAnimation.begin().thenLoop("animation.ab.run"));
+                return event.setAndContinue(RawAnimation.begin().thenLoop("animation.homemade_shotgun.run"));
             }
         }
 
-        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.ab.idle"));
+        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.homemade_shotgun.idle"));
     }
 
     @Override

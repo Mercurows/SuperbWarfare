@@ -2,8 +2,8 @@
 	"credit": "Made with Blockbench",
 	"texture_size": [64, 64],
 	"textures": {
-		"0": "superbwarfare:item/homemade_shotgun",
-		"particle": "superbwarfare:item/homemade_shotgun"
+		"0": "superbwarfare:item/lod/homemade_shotgun",
+		"particle": "superbwarfare:item/lod/homemade_shotgun"
 	},
 	"elements": [
 		{

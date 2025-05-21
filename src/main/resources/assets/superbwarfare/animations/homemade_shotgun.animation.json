@@ -1,7 +1,7 @@
 {
 	"format_version": "1.8.0",
 	"animations": {
-		"animation.ab.idle": {
+		"animation.homemade_shotgun.idle": {
 			"loop": true,
 			"animation_length": 2,
 			"bones": {
@@ -20,7 +20,7 @@
 				}
 			}
 		},
-		"animation.ab.draw": {
+		"animation.homemade_shotgun.draw": {
 			"animation_length": 0.6,
 			"bones": {
 				"0": {
@@ -71,7 +71,7 @@
 				}
 			}
 		},
-		"animation.ab.run": {
+		"animation.homemade_shotgun.run": {
 			"loop": true,
 			"animation_length": 0.8,
 			"bones": {
@@ -154,7 +154,7 @@
 				}
 			}
 		},
-		"animation.ab.run_fast": {
+		"animation.homemade_shotgun.run_fast": {
 			"loop": true,
 			"animation_length": 0.6,
 			"bones": {
@@ -237,7 +237,7 @@
 				}
 			}
 		},
-		"animation.ab.fire": {
+		"animation.homemade_shotgun.fire": {
 			"animation_length": 0.1,
 			"bones": {
 				"0": {
@@ -263,7 +263,7 @@
 				}
 			}
 		},
-		"animation.ab.reload_normal": {
+		"animation.homemade_shotgun.reload_normal": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 3.3,
 			"bones": {
@@ -715,7 +715,7 @@
 				}
 			}
 		},
-		"animation.ab.reload_empty": {
+		"animation.homemade_shotgun.reload_empty": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 4.2,
 			"bones": {
