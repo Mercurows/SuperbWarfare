@@ -1,6 +1,6 @@
 {
   "parent": "superbwarfare:displaysettings/ak_47.item",
   "textures": {
-    "layer0": "superbwarfare:item/rpk"
+    "layer0": "superbwarfare:item/ak_47"
   }
 }

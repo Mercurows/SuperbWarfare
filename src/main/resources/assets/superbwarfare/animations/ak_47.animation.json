@@ -1,10 +1,10 @@
 {
 	"format_version": "1.8.0",
 	"animations": {
-		"animation.ak47.idle": {
+		"animation.ak_47.idle": {
 			"animation_length": 1
 		},
-		"animation.ak47.edit": {
+		"animation.ak_47.edit": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 0.4083,
 			"bones": {
@@ -38,7 +38,7 @@
 				}
 			}
 		},
-		"animation.ak47.run": {
+		"animation.ak_47.run": {
 			"loop": true,
 			"animation_length": 0.8,
 			"bones": {
@@ -69,7 +69,7 @@
 				}
 			}
 		},
-		"animation.ak47.run_fast": {
+		"animation.ak_47.run_fast": {
 			"loop": true,
 			"animation_length": 0.7,
 			"bones": {
@@ -104,7 +104,7 @@
 				}
 			}
 		},
-		"animation.ak47.reload_normal": {
+		"animation.ak_47.reload_normal": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 2.6833,
 			"override_previous_animation": true,
@@ -542,7 +542,7 @@
 				}
 			}
 		},
-		"animation.ak47.reload_normal_drum": {
+		"animation.ak_47.reload_normal_drum": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 2.6833,
 			"override_previous_animation": true,
@@ -980,7 +980,7 @@
 				}
 			}
 		},
-		"animation.ak47.reload_empty": {
+		"animation.ak_47.reload_empty": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 3.4,
 			"override_previous_animation": true,
@@ -1472,7 +1472,7 @@
 				}
 			}
 		},
-		"animation.ak47.reload_empty_drum": {
+		"animation.ak_47.reload_empty_drum": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 3.4,
 			"override_previous_animation": true,
@@ -1972,7 +1972,7 @@
 				}
 			}
 		},
-		"animation.ak47.idle_grip": {
+		"animation.ak_47.idle_grip": {
 			"animation_length": 7.2667,
 			"bones": {
 				"Lefthand": {
@@ -1981,7 +1981,7 @@
 				}
 			}
 		},
-		"animation.ak47.reload_normal_grip": {
+		"animation.ak_47.reload_normal_grip": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 2.75,
 			"override_previous_animation": true,
@@ -2419,7 +2419,7 @@
 				}
 			}
 		},
-		"animation.ak47.reload_normal_drum_grip": {
+		"animation.ak_47.reload_normal_drum_grip": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 2.6833,
 			"override_previous_animation": true,
@@ -2857,7 +2857,7 @@
 				}
 			}
 		},
-		"animation.ak47.run_grip": {
+		"animation.ak_47.run_grip": {
 			"loop": true,
 			"animation_length": 0.8,
 			"bones": {
@@ -2892,7 +2892,7 @@
 				}
 			}
 		},
-		"animation.ak47.reload_empty_grip": {
+		"animation.ak_47.reload_empty_grip": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 3.4,
 			"override_previous_animation": true,
@@ -3384,7 +3384,7 @@
 				}
 			}
 		},
-		"animation.ak47.reload_empty_drum_grip": {
+		"animation.ak_47.reload_empty_drum_grip": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 3.4,
 			"override_previous_animation": true,

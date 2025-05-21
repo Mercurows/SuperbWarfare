@@ -27,7 +27,7 @@ public class AK47ItemModel extends GeoModel<AK47Item> {
 
     @Override
     public ResourceLocation getAnimationResource(AK47Item animatable) {
-        return Mod.loc("animations/ak.animation.json");
+        return Mod.loc("animations/ak_47.animation.json");
     }
 
     @Override
@@ -37,7 +37,7 @@ public class AK47ItemModel extends GeoModel<AK47Item> {
 
     @Override
     public ResourceLocation getTextureResource(AK47Item animatable) {
-        return Mod.loc("textures/item/ak47.png");
+        return Mod.loc("textures/item/ak_47.png");
     }
 
     @Override

@@ -24,7 +24,7 @@ public class RpkItemModel extends GeoModel<RpkItem> {
 
     @Override
     public ResourceLocation getAnimationResource(RpkItem animatable) {
-        return Mod.loc("animations/ak.animation.json");
+        return Mod.loc("animations/ak_47.animation.json");
     }
 
     @Override

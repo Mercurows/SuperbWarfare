@@ -1,4 +1,4 @@
-// 1.21.1	2025-05-21T21:21:58.5575482	Item Models: superbwarfare
+// 1.21.1	2025-05-21T21:23:33.5005638	Item Models: superbwarfare
 6c48f5010e7e2b8cd4d3ff85c8de45cf56f53268 assets/superbwarfare/models/item/aa_12.json
 fb3a995587b2c253571c3160ff02c2ad8c73ecf8 assets/superbwarfare/models/item/aa_12_base.json
 13ca8d5676888ff51f3308d88e4bf67691fa34f8 assets/superbwarfare/models/item/aa_12_blueprint.json
@@ -9,7 +9,10 @@ eee5935baee9a6a78e6576735736512f528eb4db assets/superbwarfare/models/item/aa_12_
 1016f92876debab22fdaa67312d2c2f0683195e1 assets/superbwarfare/models/item/ak_12_base.json
 13ca8d5676888ff51f3308d88e4bf67691fa34f8 assets/superbwarfare/models/item/ak_12_blueprint.json
 0843d7b6ebb6269746e030ddd49c17cc4715c77b assets/superbwarfare/models/item/ak_12_icon.json
+01ac6ff8a9ea2b41375ef94e3106f5938b51a486 assets/superbwarfare/models/item/ak_47.json
+4ef5e4d3bc5841b22d0b9a489a3bffcf89e28370 assets/superbwarfare/models/item/ak_47_base.json
 13ca8d5676888ff51f3308d88e4bf67691fa34f8 assets/superbwarfare/models/item/ak_47_blueprint.json
+cc89259ebe38851498eecddf4448aa13ba7053db assets/superbwarfare/models/item/ak_47_icon.json
 c993bddc0db9453ffbefa59f9ac9a74dba909038 assets/superbwarfare/models/item/ancient_cpu.json
 a5cf666a970906ba6ac0af9a4d5d52dd0e093dec assets/superbwarfare/models/item/annihilator_blueprint.json
 4b8fe8fbe5e64c3449ad539317254e4ed7188411 assets/superbwarfare/models/item/ap_head.json

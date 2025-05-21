@@ -2,8 +2,8 @@
 	"credit": "Made with Blockbench",
 	"texture_size": [64, 64],
 	"textures": {
-		"0": "superbwarfare:item/lod/aurelia_sceptre",
-		"particle": "superbwarfare:item/lod/aurelia_sceptre"
+		"0": "superbwarfare:lod/aurelia_sceptre",
+		"particle": "superbwarfare:lod/aurelia_sceptre"
 	},
 	"elements": [
 		{
