@@ -158,7 +158,7 @@ public class Hk416Item extends GunItem implements GeoItem {
 
     @Override
     public ResourceLocation getGunIcon() {
-        return Mod.loc("textures/gun_icon/hk416_icon.png");
+        return Mod.loc("textures/gun_icon/hk_416_icon.png");
     }
 
     @Override

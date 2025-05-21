@@ -33,12 +33,12 @@ public class Hk416ItemModel extends GeoModel<Hk416Item> {
 
     @Override
     public ResourceLocation getModelResource(Hk416Item animatable) {
-        return Mod.loc("geo/hk416.geo.json");
+        return Mod.loc("geo/hk_416.geo.json");
     }
 
     @Override
     public ResourceLocation getTextureResource(Hk416Item animatable) {
-        return Mod.loc("textures/item/hk416.png");
+        return Mod.loc("textures/item/hk_416.png");
     }
 
     @Override

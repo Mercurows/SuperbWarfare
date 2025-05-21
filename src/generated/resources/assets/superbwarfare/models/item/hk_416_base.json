@@ -1,0 +1,6 @@
+{
+  "parent": "superbwarfare:displaysettings/hk_416.item",
+  "textures": {
+    "layer0": "superbwarfare:item/hk_416"
+  }
+}
