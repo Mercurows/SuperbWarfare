@@ -1,4 +1,4 @@
-// 1.21.1	2025-05-21T23:41:38.5170675	Item Models: superbwarfare
+// 1.21.1	2025-05-21T23:42:55.2463928	Item Models: superbwarfare
 6c48f5010e7e2b8cd4d3ff85c8de45cf56f53268 assets/superbwarfare/models/item/aa_12.json
 fb3a995587b2c253571c3160ff02c2ad8c73ecf8 assets/superbwarfare/models/item/aa_12_base.json
 13ca8d5676888ff51f3308d88e4bf67691fa34f8 assets/superbwarfare/models/item/aa_12_blueprint.json
@@ -104,7 +104,10 @@ ce9e4fd8ea92cfdbdda158776c1b6e1b482a3f2a assets/superbwarfare/models/item/lead_i
 f66c351b4843ad4d4e086ccfb7d4d0221227d196 assets/superbwarfare/models/item/legendary_material_pack.json
 ec76dc1a79f4c0e502fee53be8aa8e04420845fc assets/superbwarfare/models/item/light_armament_module.json
 13ca8d5676888ff51f3308d88e4bf67691fa34f8 assets/superbwarfare/models/item/m2hb_blueprint.json
+1a8874ca579b4fe8aeb3f54c7973df8770f84c80 assets/superbwarfare/models/item/marlin.json
+14b7846679a6b84e3a02811d08476e129edc938c assets/superbwarfare/models/item/marlin_base.json
 13ca8d5676888ff51f3308d88e4bf67691fa34f8 assets/superbwarfare/models/item/marlin_blueprint.json
+c0b07edaf5ead9385390b7d3904bc5196d4b8f32 assets/superbwarfare/models/item/marlin_icon.json
 7a0d27d39eefff5d7f69cc0ae21a2681b0aadfd4 assets/superbwarfare/models/item/medium_aerial_bomb.json
 0033cd03b0203cd3fa071fb5354c74d33bc1afa8 assets/superbwarfare/models/item/medium_armament_module.json
 81699ddddb4270261ae10ff812b00e666649ff7c assets/superbwarfare/models/item/medium_battery_pack.json
