@@ -29,7 +29,7 @@ public class TaserItemModel extends GeoModel<TaserItem> {
 
     @Override
     public ResourceLocation getTextureResource(TaserItem animatable) {
-        return Mod.loc("textures/item/tasergun.png");
+        return Mod.loc("textures/item/taser.png");
     }
 
     @Override
