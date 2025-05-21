@@ -44,6 +44,7 @@ public class ModItemModelProvider extends ItemModelProvider {
         gunItem(ModItems.M_4);
         gunItem(ModItems.M_60);
         gunItem(ModItems.M_79);
+        gunItem(ModItems.M_1911);
 
         simpleItem(ModItems.EMPTY_PERK, "perk/");
 

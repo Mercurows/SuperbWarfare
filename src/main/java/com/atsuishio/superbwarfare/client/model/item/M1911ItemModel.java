@@ -28,12 +28,12 @@ public class M1911ItemModel extends GeoModel<M1911Item> {
 
     @Override
     public ResourceLocation getModelResource(M1911Item animatable) {
-        return Mod.loc("geo/m1911.geo.json");
+        return Mod.loc("geo/m_1911.geo.json");
     }
 
     @Override
     public ResourceLocation getTextureResource(M1911Item animatable) {
-        return Mod.loc("textures/item/m1911.png");
+        return Mod.loc("textures/item/m_1911.png");
     }
 
     @Override

@@ -1,6 +1,0 @@
-{
-  "parent": "superbwarfare:displaysettings/glock17.item",
-  "textures": {
-    "layer0": "superbwarfare:item/m1911"
-  }
-}
