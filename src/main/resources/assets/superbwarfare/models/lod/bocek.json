@@ -2,7 +2,7 @@
 	"credit": "Made with Blockbench",
 	"texture_size": [64, 64],
 	"textures": {
-		"6": "superbwarfare:item/bsk"
+		"6": "superbwarfare:item/lod/bocek"
 	},
 	"elements": [
 		{

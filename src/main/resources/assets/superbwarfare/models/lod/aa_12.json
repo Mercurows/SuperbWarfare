@@ -2,8 +2,8 @@
 	"credit": "Made with Blockbench",
 	"texture_size": [32, 32],
 	"textures": {
-		"0": "superbwarfare:lod/aa_12",
-		"particle": "superbwarfare:lod/aa_12"
+		"0": "superbwarfare:item/lod/aa_12",
+		"particle": "superbwarfare:item/lod/aa_12"
 	},
 	"elements": [
 		{
