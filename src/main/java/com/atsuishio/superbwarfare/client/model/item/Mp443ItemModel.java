@@ -28,12 +28,12 @@ public class Mp443ItemModel extends GeoModel<Mp443Item> {
 
     @Override
     public ResourceLocation getModelResource(Mp443Item animatable) {
-        return Mod.loc("geo/mp443.geo.json");
+        return Mod.loc("geo/mp_443.geo.json");
     }
 
     @Override
     public ResourceLocation getTextureResource(Mp443Item animatable) {
-        return Mod.loc("textures/item/mp443.png");
+        return Mod.loc("textures/item/mp_443.png");
     }
 
     @Override

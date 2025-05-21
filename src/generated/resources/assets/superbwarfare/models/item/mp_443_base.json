@@ -1,0 +1,6 @@
+{
+  "parent": "superbwarfare:displaysettings/mp_443.item",
+  "textures": {
+    "layer0": "superbwarfare:item/mp_443"
+  }
+}

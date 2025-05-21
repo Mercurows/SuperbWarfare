@@ -44,14 +44,14 @@ public class Mp443Item extends GunItem implements GeoItem {
         if (!(stack.getItem() instanceof GunItem)) return PlayState.STOP;
 
         if (GunData.from(stack).reload.empty()) {
-            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.glock.reload_empty"));
+            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.glock17.reload_empty"));
         }
 
         if (GunData.from(stack).reload.normal()) {
-            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.glock.reload_normal"));
+            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.glock17.reload_normal"));
         }
 
-        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.glock.idle"));
+        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.glock17.idle"));
     }
 
     private PlayState idlePredicate(AnimationState<Mp443Item> event) {
@@ -64,13 +64,13 @@ public class Mp443Item extends GunItem implements GeoItem {
                 && ClientEventHandler.cantSprint == 0
                 && !(GunData.from(stack).reload.normal() || GunData.from(stack).reload.empty()) && ClientEventHandler.drawTime < 0.01) {
             if (ClientEventHandler.tacticalSprint) {
-                return event.setAndContinue(RawAnimation.begin().thenLoop("animation.glock.run_fast"));
+                return event.setAndContinue(RawAnimation.begin().thenLoop("animation.glock17.run_fast"));
             } else {
-                return event.setAndContinue(RawAnimation.begin().thenLoop("animation.glock.run"));
+                return event.setAndContinue(RawAnimation.begin().thenLoop("animation.glock17.run"));
             }
         }
 
-        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.glock.idle"));
+        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.glock17.idle"));
     }
 
     @Override
@@ -93,7 +93,7 @@ public class Mp443Item extends GunItem implements GeoItem {
 
     @Override
     public ResourceLocation getGunIcon() {
-        return Mod.loc("textures/gun_icon/mp443_icon.png");
+        return Mod.loc("textures/gun_icon/mp_443_icon.png");
     }
 
     @Override
