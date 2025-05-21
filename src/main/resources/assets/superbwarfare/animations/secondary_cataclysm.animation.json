@@ -1,10 +1,10 @@
 {
 	"format_version": "1.8.0",
 	"animations": {
-		"animation.sc.idle": {
+		"animation.secondary_cataclysm.idle": {
 			"loop": true
 		},
-		"animation.sc.run": {
+		"animation.secondary_cataclysm.run": {
 			"loop": true,
 			"animation_length": 0.8,
 			"bones": {
@@ -56,7 +56,7 @@
 				}
 			}
 		},
-		"animation.sc.run_fast": {
+		"animation.secondary_cataclysm.run_fast": {
 			"loop": true,
 			"animation_length": 0.8,
 			"bones": {
@@ -117,7 +117,7 @@
 				}
 			}
 		},
-		"animation.sc.prepare": {
+		"animation.secondary_cataclysm.prepare": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 1.6,
 			"bones": {
@@ -410,7 +410,7 @@
 				}
 			}
 		},
-		"animation.sc.iterativeload": {
+		"animation.secondary_cataclysm.iterativeload": {
 			"loop": true,
 			"animation_length": 1,
 			"bones": {
@@ -642,7 +642,7 @@
 				}
 			}
 		},
-		"animation.sc.iterativeload2": {
+		"animation.secondary_cataclysm.iterativeload2": {
 			"loop": true,
 			"animation_length": 1,
 			"bones": {
@@ -874,7 +874,7 @@
 				}
 			}
 		},
-		"animation.sc.finish": {
+		"animation.secondary_cataclysm.finish": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 1,
 			"bones": {
@@ -1040,7 +1040,7 @@
 				}
 			}
 		},
-		"animation.sc.hit": {
+		"animation.secondary_cataclysm.hit": {
 			"animation_length": 1,
 			"bones": {
 				"0": {

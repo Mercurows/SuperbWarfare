@@ -79,26 +79,26 @@ public class SecondaryCataclysm extends GunItem implements GeoItem, EnergyStorag
         var data = GunData.from(stack);
 
         if (data.reload.stage() == 1 && data.reload.prepareLoadTimer.get() > 0) {
-            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.sc.prepare"));
+            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.secondary_cataclysm.prepare"));
         }
 
         if (data.loadIndex.get() == 0 && data.reload.stage() == 2) {
-            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.sc.iterativeload"));
+            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.secondary_cataclysm.iterativeload"));
         }
 
         if (data.loadIndex.get() == 1 && data.reload.stage() == 2) {
-            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.sc.iterativeload2"));
+            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.secondary_cataclysm.iterativeload2"));
         }
 
         if (ClientEventHandler.gunMelee > 0) {
-            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.sc.hit"));
+            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.secondary_cataclysm.hit"));
         }
 
         if (data.reload.stage() == 3) {
-            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.sc.finish"));
+            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.secondary_cataclysm.finish"));
         }
 
-        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.sc.idle"));
+        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.secondary_cataclysm.idle"));
     }
 
     private PlayState idlePredicate(AnimationState<SecondaryCataclysm> event) {
@@ -119,13 +119,13 @@ public class SecondaryCataclysm extends GunItem implements GeoItem, EnergyStorag
                 && !data.reloading()
         ) {
             if (ClientEventHandler.tacticalSprint) {
-                return event.setAndContinue(RawAnimation.begin().thenLoop("animation.sc.run_fast"));
+                return event.setAndContinue(RawAnimation.begin().thenLoop("animation.secondary_cataclysm.run_fast"));
             } else {
-                return event.setAndContinue(RawAnimation.begin().thenLoop("animation.sc.run"));
+                return event.setAndContinue(RawAnimation.begin().thenLoop("animation.secondary_cataclysm.run"));
             }
         }
 
-        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.sc.idle"));
+        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.secondary_cataclysm.idle"));
     }
 
     @Override
