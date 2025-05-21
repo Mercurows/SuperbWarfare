@@ -1,7 +1,7 @@
 {
 	"format_version": "1.8.0",
 	"animations": {
-		"animation.m14.idle": {
+      "animation.mk_14.idle": {
 			"animation_length": 4,
 			"bones": {
 				"main": {
@@ -10,7 +10,7 @@
 				}
 			}
 		},
-		"animation.m14.edit": {
+      "animation.mk_14.edit": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 0.4083,
 			"bones": {
@@ -44,7 +44,7 @@
 				}
 			}
 		},
-		"animation.m14.run": {
+      "animation.mk_14.run": {
 			"loop": true,
 			"animation_length": 0.8,
 			"bones": {
@@ -105,7 +105,7 @@
 				}
 			}
 		},
-		"animation.m14.run_fast": {
+      "animation.mk_14.run_fast": {
 			"loop": true,
 			"animation_length": 0.725,
 			"bones": {
@@ -170,7 +170,7 @@
 				}
 			}
 		},
-		"animation.m14.reload_normal": {
+      "animation.mk_14.reload_normal": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 3,
 			"bones": {
@@ -477,7 +477,7 @@
 				}
 			}
 		},
-		"animation.m14.reload_empty": {
+      "animation.mk_14.reload_empty": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 4,
 			"bones": {
@@ -861,7 +861,7 @@
 				}
 			}
 		},
-		"animation.m14.reload_normal_drum": {
+      "animation.mk_14.reload_normal_drum": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 3,
 			"bones": {
@@ -1169,7 +1169,7 @@
 				}
 			}
 		},
-		"animation.m14.reload_empty_drum": {
+      "animation.mk_14.reload_empty_drum": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 4,
 			"bones": {
@@ -1554,7 +1554,7 @@
 				}
 			}
 		},
-		"animation.m14.idle_grip": {
+      "animation.mk_14.idle_grip": {
 			"animation_length": 4,
 			"bones": {
 				"main": {
@@ -1567,7 +1567,7 @@
 				}
 			}
 		},
-		"animation.m14.run_grip": {
+      "animation.mk_14.run_grip": {
 			"loop": true,
 			"animation_length": 0.8,
 			"bones": {
@@ -1632,7 +1632,7 @@
 				}
 			}
 		},
-		"animation.m14.reload_normal_grip": {
+      "animation.mk_14.reload_normal_grip": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 3,
 			"bones": {
@@ -1939,7 +1939,7 @@
 				}
 			}
 		},
-		"animation.m14.reload_empty_grip": {
+      "animation.mk_14.reload_empty_grip": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 4,
 			"bones": {
@@ -2323,7 +2323,7 @@
 				}
 			}
 		},
-		"animation.m14.reload_normal_drum_grip": {
+      "animation.mk_14.reload_normal_drum_grip": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 3,
 			"bones": {
@@ -2631,7 +2631,7 @@
 				}
 			}
 		},
-		"animation.m14.reload_empty_drum_grip": {
+      "animation.mk_14.reload_empty_drum_grip": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 4,
 			"bones": {

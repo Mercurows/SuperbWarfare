@@ -27,17 +27,17 @@ public class Mk14ItemModel extends GeoModel<Mk14Item> {
 
     @Override
     public ResourceLocation getAnimationResource(Mk14Item animatable) {
-        return Mod.loc("animations/mk14ebr.animation.json");
+        return Mod.loc("animations/mk_14.animation.json");
     }
 
     @Override
     public ResourceLocation getModelResource(Mk14Item animatable) {
-        return Mod.loc("geo/mk14ebr.geo.json");
+        return Mod.loc("geo/mk_14.geo.json");
     }
 
     @Override
     public ResourceLocation getTextureResource(Mk14Item animatable) {
-        return Mod.loc("textures/item/mk14.png");
+        return Mod.loc("textures/item/mk_14.png");
     }
 
     @Override
