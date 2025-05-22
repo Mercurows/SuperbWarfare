@@ -129,7 +129,7 @@ public class SenpaiEntity extends Monster implements GeoEntity {
 
     @Override
     protected @NotNull EntityDimensions getDefaultDimensions(@NotNull Pose pose) {
-        return super.getDefaultDimensions(pose).scale(1);
+        return super.getDefaultDimensions(pose);
     }
 
     @Override

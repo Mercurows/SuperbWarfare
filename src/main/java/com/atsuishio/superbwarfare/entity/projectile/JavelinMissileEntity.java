@@ -268,13 +268,13 @@ public class JavelinMissileEntity extends FastThrowableProjectile implements Geo
                         } else {
                             boolean lostTarget = this.getY() < entity.getY();
                             if (!lostTarget) {
-                                setDeltaMovement(getDeltaMovement().add(toVec.scale(1)).scale(0.87));
+                                setDeltaMovement(getDeltaMovement().add(toVec).scale(0.87));
                             }
                         }
                     } else {
                         boolean lostTarget = (VectorTool.calculateAngle(getDeltaMovement(), toVec) > 80);
                         if (!lostTarget) {
-                            setDeltaMovement(getDeltaMovement().add(toVec.scale(1)).scale(0.87));
+                            setDeltaMovement(getDeltaMovement().add(toVec).scale(0.87));
                         }
                     }
                 }
@@ -297,13 +297,13 @@ public class JavelinMissileEntity extends FastThrowableProjectile implements Geo
                     } else {
                         boolean lostTarget = this.getY() < this.entityData.get(TARGET_Y);
                         if (!lostTarget) {
-                            setDeltaMovement(getDeltaMovement().add(toVec.scale(1)).scale(0.87));
+                            setDeltaMovement(getDeltaMovement().add(toVec).scale(0.87));
                         }
                     }
                 } else {
                     boolean lostTarget = (VectorTool.calculateAngle(getDeltaMovement(), toVec) > 80);
                     if (!lostTarget) {
-                        setDeltaMovement(getDeltaMovement().add(toVec.scale(1)).scale(0.87));
+                        setDeltaMovement(getDeltaMovement().add(toVec).scale(0.87));
                     }
                 }
             }
