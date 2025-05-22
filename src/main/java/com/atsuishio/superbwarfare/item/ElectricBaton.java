@@ -26,8 +26,8 @@ import java.util.Optional;
 
 public class ElectricBaton extends SwordItem implements EnergyStorageItem {
 
-    public static final int MAX_ENERGY = 6000;
-    public static final int ENERGY_COST = 1000;
+    public static final int MAX_ENERGY = 30000;
+    public static final int ENERGY_COST = 1500;
     public static final String TAG_OPEN = "Open";
 
     public ElectricBaton() {
@@ -57,7 +57,7 @@ public class ElectricBaton extends SwordItem implements EnergyStorageItem {
     public @NotNull InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand usedHand) {
         ItemStack stack = player.getItemInHand(usedHand);
 
-        if (player.isCrouching()) {
+        if (player.isShiftKeyDown()) {
             var tag = NBTTool.getTag(stack);
             tag.putBoolean(TAG_OPEN, !tag.getBoolean(TAG_OPEN));
             NBTTool.saveTag(stack, tag);
