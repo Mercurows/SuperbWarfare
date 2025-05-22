@@ -1,14 +1,10 @@
 package com.atsuishio.superbwarfare.item;
 
 import com.atsuishio.superbwarfare.init.ModItems;
-import net.minecraft.tags.BlockTags;
-import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.SwordItem;
-import net.minecraft.world.item.Tier;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.level.block.Block;
+import net.minecraft.world.item.Tiers;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
@@ -17,39 +13,11 @@ import org.jetbrains.annotations.NotNull;
 @EventBusSubscriber(bus = EventBusSubscriber.Bus.GAME)
 public class Hammer extends SwordItem {
 
-    public static final Tier TIER = new Tier() {
-        public int getUses() {
-            return 400;
-        }
-
-        public float getSpeed() {
-            return 4f;
-        }
-
-        public float getAttackDamageBonus() {
-            return 8f;
-        }
-
-        @Override
-        public @NotNull TagKey<Block> getIncorrectBlocksForDrops() {
-            return BlockTags.INCORRECT_FOR_IRON_TOOL;
-        }
-
-        public int getLevel() {
-            return 1;
-        }
-
-        public int getEnchantmentValue() {
-            return 9;
-        }
-
-        public @NotNull Ingredient getRepairIngredient() {
-            return Ingredient.of(new ItemStack(Items.IRON_INGOT));
-        }
-    };
-
     public Hammer() {
-        super(TIER, new Properties().attributes(SwordItem.createAttributes(TIER, 3, -3.2f)).stacksTo(1));
+        super(Tiers.IRON, new Item.Properties()
+                .durability(400)
+                .attributes(SwordItem.createAttributes(Tiers.IRON, 9, -3.2f))
+        );
     }
 
     @Override
