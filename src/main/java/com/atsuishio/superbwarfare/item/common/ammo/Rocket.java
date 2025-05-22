@@ -7,13 +7,17 @@ import com.atsuishio.superbwarfare.entity.projectile.RpgRocketEntity;
 import com.atsuishio.superbwarfare.init.ModCriteriaTriggers;
 import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModItems;
+import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Position;
+import net.minecraft.core.dispenser.BlockSource;
+import net.minecraft.core.dispenser.ProjectileDispenseBehavior;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.LivingEntity;
@@ -125,13 +129,23 @@ public class Rocket extends Item implements GeoItem, ProjectileItem {
         return super.hurtEnemy(stack, entity, source);
     }
 
+    public static class RocketDispenseBehavior extends ProjectileDispenseBehavior {
+        public RocketDispenseBehavior() {
+            super(ModItems.ROCKET.get());
+        }
+
+        @Override
+        protected void playSound(BlockSource blockSource) {
+            blockSource.level().playSound(null, blockSource.pos(), ModSounds.RPG_FIRE_3P.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
+        }
+    }
+
     @Override
     @ParametersAreNonnullByDefault
     public @NotNull Projectile asProjectile(Level level, Position pos, ItemStack stack, Direction direction) {
         return new RpgRocketEntity(ModEntities.RPG_ROCKET.get(), pos.x(), pos.y(), pos.z(), level);
     }
 
-    // TODO 发射音效
     @Override
     public @NotNull DispenseConfig createDispenseConfig() {
         return DispenseConfig.builder().power(1.5F).build();

@@ -326,6 +326,12 @@ public class ModItems {
         }
 
         DispenserBlock.registerBehavior(SWARM_DRONE.get(), new SwarmDrone.SwarmDroneDispenseBehavior());
+        DispenserBlock.registerBehavior(C4_BOMB.get(), new C4Bomb.C4DispenseItemBehavior());
+        DispenserBlock.registerBehavior(CLAYMORE_MINE.get(), new ClaymoreMine.ClaymoreDispenseBehavior());
+        DispenserBlock.registerBehavior(ROCKET.get(), new Rocket.RocketDispenseBehavior());
+        DispenserBlock.registerBehavior(ROCKET_70.get(), new Rocket70.Rocket70DispenseBehavior());
+        DispenserBlock.registerBehavior(MEDIUM_AERIAL_BOMB.get(), new MediumAerialBomb.MediumAerialBombDispenseBehavior());
+        DispenserBlock.registerBehavior(RGO_GRENADE.get(), new RgoGrenade.RgoGrenadeDispenserBehavior());
     }
 
     public static void register(IEventBus bus) {

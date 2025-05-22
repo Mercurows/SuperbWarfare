@@ -2,10 +2,15 @@ package com.atsuishio.superbwarfare.item;
 
 import com.atsuishio.superbwarfare.entity.projectile.Mk82Entity;
 import com.atsuishio.superbwarfare.init.ModEntities;
+import com.atsuishio.superbwarfare.init.ModItems;
+import com.atsuishio.superbwarfare.init.ModSounds;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Position;
+import net.minecraft.core.dispenser.BlockSource;
+import net.minecraft.core.dispenser.ProjectileDispenseBehavior;
 import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -29,7 +34,17 @@ public class MediumAerialBomb extends Item implements ProjectileItem {
         tooltipComponents.add(Component.translatable("des.superbwarfare.medium_aerial_bomb").withStyle(ChatFormatting.GRAY));
     }
 
-    // TODO 发射音效
+    public static class MediumAerialBombDispenseBehavior extends ProjectileDispenseBehavior {
+        public MediumAerialBombDispenseBehavior() {
+            super(ModItems.MEDIUM_AERIAL_BOMB.get());
+        }
+
+        @Override
+        protected void playSound(BlockSource blockSource) {
+            blockSource.level().playSound(null, blockSource.pos(), ModSounds.BOMB_RELEASE.get(), SoundSource.BLOCKS, 2.0F, 1.0F);
+        }
+    }
+
     @Override
     public @NotNull DispenseConfig createDispenseConfig() {
         return DispenseConfig.builder()

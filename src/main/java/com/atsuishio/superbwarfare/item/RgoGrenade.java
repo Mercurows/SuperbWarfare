@@ -4,11 +4,14 @@ import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.entity.projectile.RgoGrenadeEntity;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModEntities;
+import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.tools.CustomExplosion;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Position;
+import net.minecraft.core.dispenser.BlockSource;
+import net.minecraft.core.dispenser.ProjectileDispenseBehavior;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -103,7 +106,17 @@ public class RgoGrenade extends Item implements ProjectileItem {
         return 80;
     }
 
-    // TODO 音效播放
+    public static class RgoGrenadeDispenserBehavior extends ProjectileDispenseBehavior {
+        public RgoGrenadeDispenserBehavior() {
+            super(ModItems.RGO_GRENADE.get());
+        }
+
+        @Override
+        protected void playSound(BlockSource blockSource) {
+            blockSource.level().playSound(null, blockSource.pos(), ModSounds.GRENADE_THROW.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
+        }
+    }
+
     @Override
     @ParametersAreNonnullByDefault
     public @NotNull Projectile asProjectile(Level level, Position pos, ItemStack stack, Direction direction) {
