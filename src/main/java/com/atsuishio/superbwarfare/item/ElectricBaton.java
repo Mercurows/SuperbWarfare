@@ -3,10 +3,12 @@ package com.atsuishio.superbwarfare.item;
 import com.atsuishio.superbwarfare.client.tooltip.component.CellImageComponent;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModMobEffects;
+import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.tiers.ModItemTier;
 import com.atsuishio.superbwarfare.tools.NBTTool;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -49,7 +51,7 @@ public class ElectricBaton extends SwordItem implements EnergyStorageItem {
 
     @Override
     public int getMaxEnergy() {
-        return 6000;
+        return MAX_ENERGY;
     }
 
     @Override
@@ -77,7 +79,7 @@ public class ElectricBaton extends SwordItem implements EnergyStorageItem {
         var cap = stack.getCapability(Capabilities.EnergyStorage.ITEM);
         if (cap == null) return 0;
 
-        return Math.round(cap.getEnergyStored() * 13F / MAX_ENERGY);
+        return Math.round((float) cap.getEnergyStored() * 13F / MAX_ENERGY);
     }
 
     @Override
@@ -88,13 +90,15 @@ public class ElectricBaton extends SwordItem implements EnergyStorageItem {
     @Override
     @ParametersAreNonnullByDefault
     public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+        attacker.level().playSound(null, target.getOnPos(), ModSounds.MELEE_HIT.get(), SoundSource.PLAYERS, 1, (float) ((2 * org.joml.Math.random() - 1) * 0.1f + 1));
+
         if (NBTTool.getTag(stack).getBoolean(TAG_OPEN)) {
             var cap = stack.getCapability(Capabilities.EnergyStorage.ITEM);
             if (cap != null && cap.getEnergyStored() >= ENERGY_COST) {
                 cap.extractEnergy(ENERGY_COST, false);
 
                 if (!target.level().isClientSide) {
-                    target.addEffect(new MobEffectInstance(ModMobEffects.SHOCK, 200, 2), attacker);
+                    target.addEffect(new MobEffectInstance(ModMobEffects.SHOCK, 20, 2), attacker);
                 }
             }
         }

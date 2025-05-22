@@ -17,6 +17,7 @@ public class ModSounds {
 
     public static final DeferredHolder<SoundEvent, SoundEvent> SHOCK = REGISTRY.register("shock", () -> SoundEvent.createVariableRangeEvent(Mod.loc("shock")));
     public static final DeferredHolder<SoundEvent, SoundEvent> ELECTRIC = REGISTRY.register("electric", () -> SoundEvent.createVariableRangeEvent(Mod.loc("electric")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> MELEE_HIT = REGISTRY.register("melee_hit", () -> SoundEvent.createVariableRangeEvent(Mod.loc("melee_hit")));
 
     public static final DeferredHolder<SoundEvent, SoundEvent> TRACHELIUM_FIRE_1P = REGISTRY.register("trachelium_fire_1p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("trachelium_fire_1p")));
     public static final DeferredHolder<SoundEvent, SoundEvent> TRACHELIUM_FIRE_3P = REGISTRY.register("trachelium_fire_3p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("trachelium_fire_3p")));

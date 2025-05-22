@@ -9,7 +9,7 @@
         "upswing": 0.5,
         "animation": "bettercombat:one_handed_slam",
         "swing_sound": {
-          "id": "bettercombat:hammer_slam"
+          "id": "bettercombat:staff_stab"
         }
       },
       {
@@ -19,7 +19,7 @@
         "upswing": 0.5,
         "animation": "bettercombat:one_handed_slam",
         "swing_sound": {
-          "id": "bettercombat:hammer_slam"
+          "id": "bettercombat:staff_stab"
         }
       },
       {
