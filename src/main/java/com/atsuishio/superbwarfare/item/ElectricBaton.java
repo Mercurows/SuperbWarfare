@@ -27,7 +27,7 @@ import java.util.Optional;
 public class ElectricBaton extends SwordItem implements EnergyStorageItem {
 
     public static final int MAX_ENERGY = 30000;
-    public static final int ENERGY_COST = 1500;
+    public static final int ENERGY_COST = 2000;
     public static final String TAG_OPEN = "Open";
 
     public ElectricBaton() {
