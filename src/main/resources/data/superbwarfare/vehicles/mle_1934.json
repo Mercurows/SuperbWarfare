@@ -1,6 +1,7 @@
 {
   "ID": "superbwarfare:mle_1934",
   "MaxHealth": 350,
+  "Mass": 100,
   "DamageModifiers": [
     {
       "Type": "Multiply",
@@ -78,7 +79,7 @@
     },
     {
       "Type": "Multiply",
-      "Value": 10,
+      "Value": 5,
       "Source": "superbwarfare:vehicle_strike"
     },
     {

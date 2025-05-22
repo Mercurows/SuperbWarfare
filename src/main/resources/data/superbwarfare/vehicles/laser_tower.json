@@ -2,6 +2,7 @@
   "ID": "superbwarfare:laser_tower",
   "MaxHealth": 100,
   "MaxEnergy": 500000,
+  "Mass": 0.5,
   "DamageModifiers": [
     {
       "Type": "Multiply",
@@ -80,7 +81,7 @@
     },
     {
       "Type": "Multiply",
-      "Value": 2,
+      "Value": 5,
       "Source": "superbwarfare:vehicle_strike"
     },
     {

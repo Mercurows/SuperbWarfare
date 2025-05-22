@@ -56,6 +56,10 @@ public class VehicleData {
         return data.allowFreeCam;
     }
 
+    public float mass() {
+        return data.mass;
+    }
+
     public DamageModifier damageModifier() {
         var modifier = new DamageModifier();
 

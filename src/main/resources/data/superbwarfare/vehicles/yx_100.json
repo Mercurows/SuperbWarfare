@@ -3,6 +3,7 @@
   "MaxHealth": 500,
   "MaxEnergy": 20000000,
   "UpStep": 2.25,
+  "Mass": 70,
   "DamageModifiers": [
     {
       "Type": "Immunity",
@@ -33,12 +34,13 @@
       "Source": "#superbwarfare:projectile"
     },
     {
-      "Type": "Immunity",
-      "Source": "superbwarfare:vehicle_strike"
+      "Type": "Multiply",
+      "Value": 0.2
     },
     {
       "Type": "Multiply",
-      "Value": 0.2
+      "Value": 2.5,
+      "Source": "superbwarfare:vehicle_strike"
     },
     {
       "Type": "Multiply",

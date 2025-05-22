@@ -287,9 +287,9 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
         if (this.onGround()) {
             float f0 = 0.54f + 0.25f * Mth.abs(90 - (float) calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90;
             this.setDeltaMovement(this.getDeltaMovement().add(this.getViewVector(1).normalize().scale(0.05 * getDeltaMovement().dot(getViewVector(1)))));
-            this.setDeltaMovement(this.getDeltaMovement().multiply(f0, 0.85, f0));
+            this.setDeltaMovement(this.getDeltaMovement().multiply(f0, 0.99, f0));
         } else {
-            this.setDeltaMovement(this.getDeltaMovement().multiply(0.98, 0.95, 0.98));
+            this.setDeltaMovement(this.getDeltaMovement().multiply(0.98, 0.99, 0.98));
         }
 
         if (this.isInWater()) {
@@ -729,7 +729,8 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
 
         this.setYRot((float) (this.getYRot() - (isInWater() && !onGround() ? 2.5 : 6) * entityData.get(DELTA_ROT)));
         if (this.isInWater() || onGround()) {
-            this.setDeltaMovement(this.getDeltaMovement().add(getViewVector(1).scale((!isInWater() && !onGround() ? 0.13f : (isInWater() && !onGround() ? 2 : 2.4f)) * this.entityData.get(POWER))));
+            float power = this.entityData.get(POWER) * Mth.clamp(1 + (s0 > 0 ? 1 : -1) * getXRot() / 35, 0, 2);
+            this.setDeltaMovement(this.getDeltaMovement().add(getViewVector(1).scale((!isInWater() && !onGround() ? 0.13f : (isInWater() && !onGround() ? 2 : 2.4f)) * power)));
         }
     }
 

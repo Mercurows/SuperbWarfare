@@ -650,8 +650,7 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
             if (!this.canCrushEntities()) return;
             if (velocity.horizontalDistance() < 0.25) return;
             if (isRemoved()) return;
-            var frontBox = getBoundingBox().move(velocity.scale(0.6));
-            var velAdd = velocity.add(0, 0, 0).scale(0.9);
+            var frontBox = getBoundingBox().move(velocity);
 
             var entities = level().getEntities(EntityTypeTest.forClass(Entity.class), frontBox,
                             entity -> entity != this && entity != getFirstPassenger() && entity.getVehicle() == null)
@@ -668,28 +667,43 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
                     .toList();
 
             for (var entity : entities) {
-                double entitySize = entity.getBbWidth() * entity.getBbHeight();
-                double thisSize = this.getBbWidth() * this.getBbHeight();
-                double f = Math.min(entitySize / thisSize, 2) * 0.5;
-                double f1 = Math.min(thisSize / entitySize, 4) * 2;
+                double entitySize = entity.getBoundingBox().getSize();
+                double thisSize = this.getBoundingBox().getSize();
+                double f;
+                double f1;
 
-                if (velocity.length() > 0.3 && getBoundingBox().distanceToSqr(entity.getBoundingBox().getCenter()) < 1) {
+                // TODO 给非载具实体也设置质量
+
+                if (entity instanceof VehicleEntity vehicle) {
+                    f = Mth.clamp(vehicle.getMass() / getMass(), 0.25, 4);
+                    f1 = Mth.clamp(getMass() / vehicle.getMass(), 0.25, 4);
+                } else {
+                    f = Mth.clamp(entitySize / thisSize, 0.25, 4);
+                    f1 = Mth.clamp(thisSize / entitySize, 0.25, 4);
+
+                }
+
+                float v = (float) velocity.dot(position().vectorTo(entity.position()));
+                var velAdd = position().vectorTo(entity.position()).normalize().scale(0.1 * v);
+
+                if (Mth.abs(v) > 0.1) {
                     if (!this.level().isClientSide) {
                         this.level().playSound(null, this, ModSounds.VEHICLE_STRIKE.get(), this.getSoundSource(), 1, 1);
                     }
+
+                    entity.hurt(ModDamageTypes.causeVehicleStrikeDamage(this.level().registryAccess(), this, this.getFirstPassenger() == null ? this : this.getFirstPassenger()), (float) (f1 * 8 * (Mth.abs(v) - 0.2)));
+                    if (entity instanceof VehicleEntity) {
+                        this.hurt(ModDamageTypes.causeVehicleStrikeDamage(this.level().registryAccess(), entity, entity.getFirstPassenger() == null ? entity : entity.getFirstPassenger()), (float) (f * 8 * (Mth.abs(v) - 0.2)));
+                    }
+
                     if (!(entity instanceof TargetEntity)) {
-                        this.pushNew(-f * velAdd.x, -f * velAdd.y, -f * velAdd.z);
+                        this.pushNew(-0.3f * f * velAdd.x, -0.3f * f * velAdd.y, -0.3f * f * velAdd.z);
                     }
 
                     if (entity instanceof MobileVehicleEntity mobileVehicle) {
                         mobileVehicle.pushNew(f1 * velAdd.x, f1 * velAdd.y, f1 * velAdd.z);
                     } else {
                         entity.push(f1 * velAdd.x, f1 * velAdd.y, f1 * velAdd.z);
-                    }
-
-                    entity.hurt(ModDamageTypes.causeVehicleStrikeDamage(this.level().registryAccess(), this, this.getFirstPassenger() == null ? this : this.getFirstPassenger()), (float) (thisSize * 20 * ((velocity.length() - 0.3) * (velocity.length() - 0.3))));
-                    if (entities instanceof VehicleEntity) {
-                        this.hurt(ModDamageTypes.causeVehicleStrikeDamage(this.level().registryAccess(), entity, entity.getFirstPassenger() == null ? entity : entity.getFirstPassenger()), (float) (entitySize * 10 * ((velocity.length() - 0.3) * (velocity.length() - 0.3))));
                     }
                 } else {
                     entity.push(0.3 * f1 * velAdd.x, 0.3 * f1 * velAdd.y, 0.3 * f1 * velAdd.z);

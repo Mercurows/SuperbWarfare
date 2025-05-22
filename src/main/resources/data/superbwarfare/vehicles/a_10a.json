@@ -3,6 +3,7 @@
   "MaxHealth": 350,
   "MaxEnergy": 10000000,
   "UpStep": 0.5,
+  "Mass": 11.4,
   "AllowFreeCam": true,
   "DamageModifiers": [
     {

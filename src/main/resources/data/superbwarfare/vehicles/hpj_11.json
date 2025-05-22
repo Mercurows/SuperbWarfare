@@ -2,6 +2,7 @@
   "ID": "superbwarfare:hpj_11",
   "MaxHealth": 350,
   "MaxEnergy": 5000000,
+  "Mass": 30,
   "DamageModifiers": [
     {
       "Type": "Multiply",
@@ -79,7 +80,7 @@
     },
     {
       "Type": "Multiply",
-      "Value": 10,
+      "Value": 5,
       "Source": "superbwarfare:vehicle_strike"
     },
     {

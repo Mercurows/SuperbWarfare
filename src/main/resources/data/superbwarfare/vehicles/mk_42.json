@@ -1,6 +1,7 @@
 {
   "ID": "superbwarfare:mk_42",
   "MaxHealth": 350,
+  "Mass": 61.4,
   "DamageModifiers": [
     {
       "Type": "Multiply",
@@ -78,7 +79,7 @@
     },
     {
       "Type": "Multiply",
-      "Value": 10,
+      "Value": 5,
       "Source": "superbwarfare:vehicle_strike"
     },
     {

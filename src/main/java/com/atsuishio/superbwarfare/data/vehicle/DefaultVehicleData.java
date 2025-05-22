@@ -33,4 +33,7 @@ public class DefaultVehicleData {
 
     @SerializedName("DamageModifiers")
     public List<DamageModify> damageModifiers = List.of();
+
+    @SerializedName("Mass")
+    public float mass = 1;
 }

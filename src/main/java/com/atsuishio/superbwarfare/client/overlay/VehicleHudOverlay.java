@@ -178,7 +178,8 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
             RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
             RenderSystem.setShaderColor(1, 1, 1, 1);
 
-            scopeScale = Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), scopeScale, 1F);
+            float partialTick = deltaTracker.getGameTimeDeltaPartialTick(true);
+            scopeScale = Mth.lerp(partialTick, scopeScale, 1F);
             float scale = scopeScale;
 
             if (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON || ClientEventHandler.zoomVehicle) {
@@ -194,12 +195,12 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
 
                 // 炮塔方向
                 poseStack.pushPose();
-                poseStack.rotateAround(Axis.ZP.rotationDegrees(Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), iLand.turretYRotO(), iLand.turretYRot())), w / 2f + 112, h - 56, 0);
+                poseStack.rotateAround(Axis.ZP.rotationDegrees(Mth.lerp(partialTick, iLand.turretYRotO(), iLand.turretYRot())), w / 2f + 112, h - 56, 0);
                 preciseBlit(guiGraphics, Mod.loc("textures/screens/land/body.png"), w / 2f + 96, h - 72, 0, 0.0F, 32, 32, 32, 32);
                 poseStack.popPose();
 
                 // 时速
-                guiGraphics.drawString(mc.font, Component.literal(FormatTool.format0D(mobileVehicle.getDeltaMovement().length() * 72, " km/h")),
+                guiGraphics.drawString(mc.font, Component.literal(FormatTool.format0D(mobileVehicle.getDeltaMovement().dot(mobileVehicle.getViewVector(partialTick)) * 72, " km/h")),
                         w / 2 + 160, h / 2 - 48, 0x66FF00, false);
 
                 // 低电量警告
@@ -253,7 +254,7 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
 
                 renderKillIndicator(guiGraphics, w, h);
             } else if (Minecraft.getInstance().options.getCameraType() == CameraType.THIRD_PERSON_BACK && !ClientEventHandler.zoomVehicle) {
-                Vec3 p = RenderHelper.worldToScreen(new Vec3(Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), player.xo, player.getX()), Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), player.yo + player.getEyeHeight(), player.getEyeY()), Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), player.zo, player.getZ())).add(iLand.getBarrelVec(deltaTracker.getGameTimeDeltaPartialTick(true)).scale(192)), cameraPos);
+                Vec3 p = RenderHelper.worldToScreen(new Vec3(Mth.lerp(partialTick, player.xo, player.getX()), Mth.lerp(partialTick, player.yo + player.getEyeHeight(), player.getEyeY()), Mth.lerp(partialTick, player.zo, player.getZ())).add(iLand.getBarrelVec(partialTick).scale(192)), cameraPos);
                 // 第三人称准星
                 if (p != null) {
                     poseStack.pushPose();

@@ -3,6 +3,7 @@
   "MaxHealth": 30,
   "MaxEnergy": 24000,
   "UpStep": 1.1,
+  "Mass": 0.03,
   "DamageModifiers": [
     {
       "Type": "Multiply",

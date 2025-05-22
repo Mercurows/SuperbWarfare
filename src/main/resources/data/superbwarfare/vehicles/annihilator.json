@@ -2,6 +2,7 @@
   "ID": "superbwarfare:annihilator",
   "MaxHealth": 1200,
   "MaxEnergy": 20000000,
+  "Mass": 2774,
   "DamageModifiers": [
     {
       "Type": "Multiply",

@@ -3,6 +3,7 @@
   "MaxHealth": 300,
   "MaxEnergy": 5000000,
   "UpStep": 2.25,
+  "Mass": 14.6,
   "DamageModifiers": [
     {
       "Type": "Multiply",
@@ -85,7 +86,7 @@
     },
     {
       "Type": "Multiply",
-      "Value": 8.5,
+      "Value": 10,
       "Source": "#superbwarfare:vehicle_strike"
     },
     {
