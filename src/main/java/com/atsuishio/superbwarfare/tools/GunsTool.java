@@ -32,16 +32,16 @@ public class GunsTool {
         gunsData.clear();
         GunData.dataCache.invalidateAll();
 
-        // TODO 将枪械ID挪至JSON数据内
         for (var entry : manager.listResources("guns", file -> file.getPath().endsWith(".json")).entrySet()) {
-            var id = entry.getKey();
             var attribute = entry.getValue();
+
             try {
                 Gson gson = new Gson();
                 var data = gson.fromJson(new InputStreamReader(attribute.open()), DefaultGunData.class);
-                var path = id.getPath();
 
-                gunsData.put(path.substring(5, path.length() - 5), data);
+                if (!gunsData.containsKey(data.id)) {
+                    gunsData.put(data.id, data);
+                }
             } catch (Exception e) {
                 Mod.LOGGER.error(e.getMessage());
             }

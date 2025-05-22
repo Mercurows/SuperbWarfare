@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Set;
 
 public class DefaultGunData {
+    @SerializedName("ID")
+    public String id = "";
 
     @SerializedName("RecoilX")
     public double recoilX;
