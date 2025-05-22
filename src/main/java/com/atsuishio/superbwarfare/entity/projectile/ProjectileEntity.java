@@ -482,6 +482,10 @@ public class ProjectileEntity extends Projectile implements IEntityWithComplexSp
             entity = part.getParent();
         }
 
+        if (entity instanceof LivingEntity living) {
+            living.level().playSound(null, living.getOnPos(), ModSounds.MELEE_HIT.get(), SoundSource.PLAYERS, 1, (float) ((2 * org.joml.Math.random() - 1) * 0.1f + 1.0f));
+        }
+
         if (beast && entity instanceof LivingEntity living) {
             Beast.beastKill(this.shooter, living);
             return;

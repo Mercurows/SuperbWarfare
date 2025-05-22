@@ -147,10 +147,7 @@ public class ModItems {
             .durability(1200)
     ));
     public static final DeferredHolder<Item, Hammer> HAMMER = ITEMS.register("hammer", Hammer::new);
-    public static final DeferredHolder<Item, SwordItem> T_BATON = ITEMS.register("t_baton", () -> new SwordItem(ModItemTier.STEEL, new Item.Properties()
-            .attributes(SwordItem.createAttributes(ModItemTier.STEEL, 3, -2))
-            .durability(1115)
-    ));
+    public static final DeferredHolder<Item, TBaton> T_BATON = ITEMS.register("t_baton", TBaton::new);
     public static final DeferredHolder<Item, ElectricBaton> ELECTRIC_BATON = ITEMS.register("electric_baton", ElectricBaton::new);
     public static final DeferredHolder<Item, Crowbar> CROWBAR = ITEMS.register("crowbar", Crowbar::new);
     public static final DeferredHolder<Item, Defuser> DEFUSER = ITEMS.register("defuser", Defuser::new);

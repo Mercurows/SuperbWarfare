@@ -1,6 +1,9 @@
 package com.atsuishio.superbwarfare.item;
 
 import com.atsuishio.superbwarfare.init.ModItems;
+import com.atsuishio.superbwarfare.init.ModSounds;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SwordItem;
@@ -9,6 +12,8 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import org.jetbrains.annotations.NotNull;
+
+import javax.annotation.ParametersAreNonnullByDefault;
 
 @EventBusSubscriber(bus = EventBusSubscriber.Bus.GAME)
 public class Hammer extends SwordItem {
@@ -38,6 +43,13 @@ public class Hammer extends SwordItem {
     @Override
     public boolean isRepairable(@NotNull ItemStack itemstack) {
         return true;
+    }
+
+    @Override
+    @ParametersAreNonnullByDefault
+    public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+        attacker.level().playSound(null, target.getOnPos(), ModSounds.MELEE_HIT.get(), SoundSource.PLAYERS, 1, (float) ((2 * org.joml.Math.random() - 1) * 0.1f + 1.0f));
+        return super.hurtEnemy(stack, target, attacker);
     }
 
     @SubscribeEvent
