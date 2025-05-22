@@ -99,9 +99,9 @@ public class WheelChairEntity extends MobileVehicleEntity implements GeoEntity {
         super.baseTick();
         if (this.onGround()) {
             float f = (float) Mth.clamp(0.85f + 0.05f * Mth.abs(90 - (float) calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90, 0.01, 0.99);
-            this.setDeltaMovement(this.getDeltaMovement().multiply(f, 0.95, f));
+            this.setDeltaMovement(this.getDeltaMovement().multiply(f, 0.99, f));
         } else {
-            this.setDeltaMovement(this.getDeltaMovement().multiply(0.99, 0.95, 0.99));
+            this.setDeltaMovement(this.getDeltaMovement().multiply(0.99, 0.99, 0.99));
         }
         this.setSprinting(this.getDeltaMovement().horizontalDistance() > 0.15);
         attractEntity();

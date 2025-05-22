@@ -686,14 +686,14 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
                 float v = (float) velocity.dot(position().vectorTo(entity.position()));
                 var velAdd = position().vectorTo(entity.position()).normalize().scale(0.1 * v);
 
-                if (Mth.abs(v) > 0.1) {
+                if (Mth.abs(v) > 0.3) {
                     if (!this.level().isClientSide) {
                         this.level().playSound(null, this, ModSounds.VEHICLE_STRIKE.get(), this.getSoundSource(), 1, 1);
                     }
 
-                    entity.hurt(ModDamageTypes.causeVehicleStrikeDamage(this.level().registryAccess(), this, this.getFirstPassenger() == null ? this : this.getFirstPassenger()), (float) (f1 * 8 * (Mth.abs(v) - 0.2)));
+                    entity.hurt(ModDamageTypes.causeVehicleStrikeDamage(this.level().registryAccess(), this, this.getFirstPassenger() == null ? this : this.getFirstPassenger()), (float) (f1 * 2 * (Mth.abs(v) - 0.3) * (Mth.abs(v) - 0.3)));
                     if (entity instanceof VehicleEntity) {
-                        this.hurt(ModDamageTypes.causeVehicleStrikeDamage(this.level().registryAccess(), entity, entity.getFirstPassenger() == null ? entity : entity.getFirstPassenger()), (float) (f * 8 * (Mth.abs(v) - 0.2)));
+                        this.hurt(ModDamageTypes.causeVehicleStrikeDamage(this.level().registryAccess(), entity, entity.getFirstPassenger() == null ? entity : entity.getFirstPassenger()), (float) (f * (Mth.abs(v) - 0.3) * (Mth.abs(v) - 0.3)));
                     }
 
                     if (!(entity instanceof TargetEntity)) {

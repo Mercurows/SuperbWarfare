@@ -289,7 +289,7 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
             this.setDeltaMovement(this.getDeltaMovement().add(this.getViewVector(1).normalize().scale(0.05 * getDeltaMovement().dot(getViewVector(1)))));
             this.setDeltaMovement(this.getDeltaMovement().multiply(f0, 0.99, f0));
         } else {
-            this.setDeltaMovement(this.getDeltaMovement().multiply(0.98, 0.99, 0.98));
+            this.setDeltaMovement(this.getDeltaMovement().multiply(0.99, 0.99, 0.99));
         }
 
         if (this.isInWater()) {
