@@ -469,7 +469,7 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
         var res = this.level().clip(new ClipContext(pos, pos.add(0, -maxLength, 0),
                 ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this));
 
-        double targetY = 0;
+        double targetY;
 
         BlockState state = level().getBlockState(BlockPos.containing(pos));
         VoxelShape shape = state.getCollisionShape(level(), BlockPos.containing(pos));
@@ -691,7 +691,12 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
                         this.level().playSound(null, this, ModSounds.VEHICLE_STRIKE.get(), this.getSoundSource(), 1, 1);
                     }
 
-                    entity.hurt(ModDamageTypes.causeVehicleStrikeDamage(this.level().registryAccess(), this, this.getFirstPassenger() == null ? this : this.getFirstPassenger()), (float) (f1 * 2 * (Mth.abs(v) - 0.3) * (Mth.abs(v) - 0.3)));
+                    if (entity instanceof LivingEntity) {
+                        entity.hurt(ModDamageTypes.causeVehicleStrikeDamage(this.level().registryAccess(), this, this.getFirstPassenger() == null ? this : this.getFirstPassenger()), (float) (f1 * 5 * (Mth.abs(v) - 0.3) * (Mth.abs(v) - 0.3)));
+                    } else {
+                        entity.hurt(ModDamageTypes.causeVehicleStrikeDamage(this.level().registryAccess(), this, this.getFirstPassenger() == null ? this : this.getFirstPassenger()), (float) (f1 * 2 * (Mth.abs(v) - 0.3) * (Mth.abs(v) - 0.3)));
+                    }
+
                     if (entity instanceof VehicleEntity) {
                         this.hurt(ModDamageTypes.causeVehicleStrikeDamage(this.level().registryAccess(), entity, entity.getFirstPassenger() == null ? entity : entity.getFirstPassenger()), (float) (f * (Mth.abs(v) - 0.3) * (Mth.abs(v) - 0.3)));
                     }
