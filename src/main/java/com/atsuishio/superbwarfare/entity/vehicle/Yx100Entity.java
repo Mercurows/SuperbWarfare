@@ -648,11 +648,9 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
 
             var swarmDroneEntity = ((SwarmDroneWeapon) getWeapon(2)).create(player);
 
-
             Vector4f shootPosition1 = transformPosition(transformT, 0, 0, 0);
             Vector4f shootPosition2 = transformPosition(transformT, 0, 1, 0);
             Vec3 direct = new Vec3(shootPosition1.x, shootPosition1.y, shootPosition1.z).vectorTo(new Vec3(shootPosition2.x, shootPosition2.y, shootPosition2.z));
-
 
             swarmDroneEntity.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
             swarmDroneEntity.shoot(direct.x, direct.y, direct.z, 1.2f, 10);

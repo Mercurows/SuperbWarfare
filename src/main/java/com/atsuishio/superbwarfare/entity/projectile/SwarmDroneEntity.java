@@ -59,11 +59,15 @@ public class SwarmDroneEntity extends FastThrowableProjectile implements GeoEnti
     private float explosionRadius = 5f;
 
     private float randomFloat;
-    private int guide_type = 0;
+    private int guideType = 0;
 
     public SwarmDroneEntity(EntityType<? extends SwarmDroneEntity> type, Level level) {
         super(type, level);
         this.noCulling = true;
+    }
+
+    public SwarmDroneEntity(double x, double y, double z, Level level) {
+        super(ModEntities.SWARM_DRONE.get(), x, y, z, level);
     }
 
     public SwarmDroneEntity(LivingEntity entity, Level level, float explosionDamage, float explosionRadius) {
@@ -87,7 +91,7 @@ public class SwarmDroneEntity extends FastThrowableProjectile implements GeoEnti
     }
 
     public void setGuideType(int guideType) {
-        this.guide_type = guideType;
+        this.guideType = guideType;
     }
 
     public void setTargetVec(Vec3 targetPos) {
@@ -223,7 +227,7 @@ public class SwarmDroneEntity extends FastThrowableProjectile implements GeoEnti
             Entity shooter = this.getOwner();
             Vec3 targetPos;
 
-            if (guide_type == 0 && entity != null) {
+            if (guideType == 0 && entity != null) {
                 targetPos = entity.getEyePosition();
                 this.entityData.set(TARGET_X, (float) targetPos.x);
                 this.entityData.set(TARGET_Y, (float) targetPos.y);
