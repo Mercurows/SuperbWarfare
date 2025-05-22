@@ -25,14 +25,19 @@ public class DefaultGunData {
     public double spread;
     @SerializedName("Damage")
     public double damage;
-    @SerializedName("MeleeDamage")
-    public double meleeDamage;
     @SerializedName("Headshot")
     public double headshot = 1.5;
     @SerializedName("Velocity")
     public double velocity;
     @SerializedName("Magazine")
     public int magazine;
+
+    @SerializedName("MeleeDamage")
+    public double meleeDamage;
+    @SerializedName("MeleeDuration")
+    public int meleeDuration = 26;
+    @SerializedName("MeleeDamageTime")
+    public int meleeDamageTime = 6;
 
     @SerializedName("Projectile")
     public ProjectileInfo projectile = new ProjectileInfo();

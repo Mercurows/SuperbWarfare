@@ -164,6 +164,14 @@ public class GunData {
         return defaultGunData().meleeDamage;
     }
 
+    public int meleeDuration() {
+        return Math.max(0, defaultGunData().meleeDuration);
+    }
+
+    public int meleeDamageTime() {
+        return Math.min(meleeDuration(), defaultGunData().meleeDamageTime);
+    }
+
     public double explosionDamage() {
         return defaultGunData().explosionDamage;
     }

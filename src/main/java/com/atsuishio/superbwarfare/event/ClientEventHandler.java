@@ -419,11 +419,11 @@ public class ClientEventHandler {
                     && !data.reloading()
                     && !data.charging() && !player.getCooldowns().isOnCooldown(stack.getItem())
             ) {
-                gunMelee = 36;
-                cantFireTime = 40;
-                player.playSound(SoundEvents.PLAYER_ATTACK_SWEEP, 1f, 1);
+                gunMelee = data.meleeDuration();
+                cantFireTime = gunMelee + 4;
             }
-            if (gunMelee == 22) {
+            if (gunMelee == data.meleeDuration() - data.meleeDamageTime()) {
+                player.playSound(SoundEvents.PLAYER_ATTACK_SWEEP, 1f, 1);
                 Entity lookingEntity = TraceTool.findMeleeEntity(player, player.entityInteractionRange());
                 if (lookingEntity != null) {
                     PacketDistributor.sendToServer(new MeleeAttackMessage(lookingEntity.getUUID()));

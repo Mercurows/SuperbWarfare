@@ -312,7 +312,7 @@ public abstract class GunItem extends Item implements CustomRendererItem {
      * @param stack 武器物品
      */
     public boolean hasMeleeAttack(ItemStack stack) {
-        return false;
+        return GunData.from(stack).meleeDamage() > 0;
     }
 
     /**
