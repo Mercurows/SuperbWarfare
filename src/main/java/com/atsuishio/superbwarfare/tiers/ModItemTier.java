@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.function.Supplier;
 
 public enum ModItemTier implements Tier {
-    STEEL(400, 6.0f, 5.5f, 15, () -> Ingredient.of(ModItems.STEEL_INGOT.get())),
+    STEEL(400, 6, 5, 15, () -> Ingredient.of(ModItems.STEEL_INGOT.get())),
     ;
 
     private final int uses;

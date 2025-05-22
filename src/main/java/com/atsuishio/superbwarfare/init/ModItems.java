@@ -142,7 +142,10 @@ public class ModItems {
     public static final DeferredHolder<Item, Detonator> DETONATOR = ITEMS.register("detonator", Detonator::new);
     public static final DeferredHolder<Item, TargetDeployer> TARGET_DEPLOYER = ITEMS.register("target_deployer", TargetDeployer::new);
     public static final DeferredHolder<Item, DPSGeneratorDeployer> DPS_GENERATOR_DEPLOYER = ITEMS.register("dps_generator_deployer", DPSGeneratorDeployer::new);
-    public static final DeferredHolder<Item, Item> KNIFE = ITEMS.register("knife", () -> new SwordItem(ModItemTier.STEEL, new Item.Properties().attributes(SwordItem.createAttributes(ModItemTier.STEEL, 0, -1.8f))));
+    public static final DeferredHolder<Item, Item> KNIFE = ITEMS.register("knife", () -> new SwordItem(ModItemTier.STEEL, new Item.Properties()
+            .attributes(SwordItem.createAttributes(ModItemTier.STEEL, 0, -1.8f))
+            .durability(1200)
+    ));
     public static final DeferredHolder<Item, Hammer> HAMMER = ITEMS.register("hammer", Hammer::new);
     public static final DeferredHolder<Item, ElectricBaton> ELECTRIC_BATON = ITEMS.register("electric_baton", ElectricBaton::new);
     public static final DeferredHolder<Item, Crowbar> CROWBAR = ITEMS.register("crowbar", Crowbar::new);

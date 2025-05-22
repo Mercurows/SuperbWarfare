@@ -143,7 +143,9 @@ dependencies {
 //    implementation "curse.maven:cupboard-326652:6078150"
 //    implementation "curse.maven:connectivity-470193:6229173"
 
-//    // 测试用mod
+    // 测试用mod
+    implementation "curse.maven:better-combat-by-daedelus-639842:6532547"
+    implementation "curse.maven:playeranimator-658587:6024462"
 //    implementation fg.deobf("curse.maven:oculus-581495:6020952")
 //    implementation fg.deobf("curse.maven:embeddium-908741:5681725")
 //    implementation fg.deobf("curse.maven:timeless-and-classics-zero-1028108:6069384")

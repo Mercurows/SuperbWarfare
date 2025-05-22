@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.client.tooltip;
 
-import com.atsuishio.superbwarfare.client.tooltip.component.GunImageComponent;
+import com.atsuishio.superbwarfare.client.tooltip.component.CellImageComponent;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -19,7 +19,7 @@ public class ClientCellImageTooltip implements ClientTooltipComponent {
     protected final int height;
     protected final ItemStack stack;
 
-    public ClientCellImageTooltip(GunImageComponent tooltip) {
+    public ClientCellImageTooltip(CellImageComponent tooltip) {
         this.width = tooltip.width;
         this.height = tooltip.height;
         this.stack = tooltip.stack;

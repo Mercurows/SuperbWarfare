@@ -2,10 +2,7 @@ package com.atsuishio.superbwarfare.init;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.api.event.RegisterContainersEvent;
-import com.atsuishio.superbwarfare.item.ArmorPlate;
-import com.atsuishio.superbwarfare.item.BatteryItem;
-import com.atsuishio.superbwarfare.item.C4Bomb;
-import com.atsuishio.superbwarfare.item.SmallContainerBlockItem;
+import com.atsuishio.superbwarfare.item.*;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -93,6 +90,9 @@ public class ModTabs {
                         }
                         if (registryObject.get() instanceof BatteryItem batteryItem) {
                             output.accept(batteryItem.makeFullEnergyStack());
+                        }
+                        if (registryObject.get() == ModItems.ELECTRIC_BATON.get()) {
+                            output.accept(ElectricBaton.makeFullEnergyStack());
                         }
                     }))
                     .build());
