@@ -4,6 +4,7 @@
   "RecoilX": 0.004,
   "RecoilY": 0.023,
   "Damage": 30,
+  "MeleeDamage": 19,
   "ExplosionDamage": 50,
   "ExplosionRadius": 5,
   "Velocity": 3.75,

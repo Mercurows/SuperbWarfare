@@ -25,6 +25,8 @@ public class DefaultGunData {
     public double spread;
     @SerializedName("Damage")
     public double damage;
+    @SerializedName("MeleeDamage")
+    public double meleeDamage;
     @SerializedName("Headshot")
     public double headshot = 1.5;
     @SerializedName("Velocity")

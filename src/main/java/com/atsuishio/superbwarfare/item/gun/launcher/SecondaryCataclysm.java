@@ -20,14 +20,10 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EquipmentSlotGroup;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import org.jetbrains.annotations.NotNull;
@@ -38,7 +34,6 @@ import software.bernie.geckolib.renderer.GeoItemRenderer;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.ArrayList;
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -182,21 +177,6 @@ public class SecondaryCataclysm extends GunItem implements GeoItem, EnergyStorag
     @Override
     public @NotNull Optional<TooltipComponent> getTooltipImage(@NotNull ItemStack pStack) {
         return Optional.of(new SecondaryCataclysmImageComponent(pStack));
-    }
-
-    private static final ResourceLocation DAMAGE_ID = Mod.loc("secondary_cataclysm_attack_damage");
-
-    @Override
-    public @NotNull ItemAttributeModifiers getDefaultAttributeModifiers(@NotNull ItemStack stack) {
-        var list = new ArrayList<>(super.getDefaultAttributeModifiers(stack).modifiers());
-
-        list.add(new ItemAttributeModifiers.Entry(
-                Attributes.ATTACK_DAMAGE,
-                new AttributeModifier(DAMAGE_ID, 19, AttributeModifier.Operation.ADD_VALUE),
-                EquipmentSlotGroup.MAINHAND
-        ));
-
-        return new ItemAttributeModifiers(list, true);
     }
 
     @Override

@@ -160,6 +160,10 @@ public class GunData {
         return (rawDamage() + item.getCustomDamage(stack)) * perkDamageRate();
     }
 
+    public double meleeDamage() {
+        return defaultGunData().meleeDamage;
+    }
+
     public double explosionDamage() {
         return defaultGunData().explosionDamage;
     }
