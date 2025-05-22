@@ -324,6 +324,8 @@ public class ModItems {
                 DispenserBlock.registerProjectileBehavior(item.get());
             }
         }
+
+        DispenserBlock.registerBehavior(SWARM_DRONE.get(), new SwarmDrone.SwarmDroneDispenseBehavior());
     }
 
     public static void register(IEventBus bus) {
