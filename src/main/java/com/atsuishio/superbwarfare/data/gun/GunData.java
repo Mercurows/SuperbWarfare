@@ -151,6 +151,9 @@ public class GunData {
     public double perkDamageRate() {
         var perk = this.perk.get(Perk.Type.AMMO);
         if (perk instanceof AmmoPerk ammoPerk) {
+            if (ammoPerk.slug) {
+                return ammoPerk.damageRate * rawProjectileAmount();
+            }
             return ammoPerk.damageRate;
         }
         return 1;
@@ -207,7 +210,15 @@ public class GunData {
         return projectileInfo().type;
     }
 
+    public int rawProjectileAmount() {
+        return defaultGunData().projectileAmount;
+    }
+
     public int projectileAmount() {
+        var perk = this.perk.get(Perk.Type.AMMO);
+        if (perk instanceof AmmoPerk ammoPerk && ammoPerk.slug) {
+            return 1;
+        }
         return defaultGunData().projectileAmount;
     }
 

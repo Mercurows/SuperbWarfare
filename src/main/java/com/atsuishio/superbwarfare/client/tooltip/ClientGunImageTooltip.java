@@ -103,10 +103,18 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
                 }
             }
         }
+        String dmgStr = FormatTool.format1D(damage) + (extraDamage >= 0 ? " + " + FormatTool.format1D(extraDamage) : "");
+        if (data.projectileAmount() > 1) {
+            if (extraDamage >= 0) {
+                dmgStr = "(" + dmgStr + ") * " + data.projectileAmount();
+            } else {
+                dmgStr = dmgStr + " * " + data.projectileAmount();
+            }
+        }
 
         return Component.translatable("des.superbwarfare.guns.damage").withStyle(ChatFormatting.GRAY)
                 .append(Component.literal("").withStyle(ChatFormatting.RESET))
-                .append(Component.literal(FormatTool.format1D(damage) + (extraDamage >= 0 ? " + " + FormatTool.format1D(extraDamage) : ""))
+                .append(Component.literal(dmgStr)
                         .withStyle(ChatFormatting.GREEN));
     }
 
@@ -114,7 +122,9 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
      * 获取武器射速的文本组件
      */
     protected Component getRpmComponent() {
-        if (this.stack.getItem() instanceof GunItem && GunData.from(this.stack).getAvailableFireModes().contains(FireMode.AUTO)) {
+        if (this.stack.getItem() instanceof GunItem &&
+                (GunData.from(this.stack).getAvailableFireModes().contains(FireMode.AUTO)
+                        || GunData.from(this.stack).getAvailableFireModes().contains(FireMode.BURST))) {
             return Component.translatable("des.superbwarfare.guns.rpm").withStyle(ChatFormatting.GRAY)
                     .append(Component.literal("").withStyle(ChatFormatting.RESET))
                     .append(Component.literal(FormatTool.format0D(data.rpm()))
