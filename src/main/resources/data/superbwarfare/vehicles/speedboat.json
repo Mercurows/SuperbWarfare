@@ -60,7 +60,7 @@
     {
       "Type": "Multiply",
       "Value": 0.16,
-      "Source": "#superbwarfare:explosion"
+      "Source": "#superbwarfare:projectile"
     },
     {
       "Type": "Multiply",

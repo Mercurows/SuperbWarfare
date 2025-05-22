@@ -30,7 +30,7 @@
     },
     {
       "Type": "Immunity",
-      "Source": "#superbwarfare:explosion"
+      "Source": "#superbwarfare:projectile"
     },
     {
       "Type": "Immunity",
