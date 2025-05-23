@@ -181,18 +181,23 @@
         },
         {
           "type": "minecraft:item",
+          "name": "superbwarfare:aurelia_sceptre_blueprint",
+          "weight": 2
+        },
+        {
+          "type": "minecraft:item",
           "name": "superbwarfare:mk_42_blueprint",
           "weight": 3
         },
         {
           "type": "minecraft:item",
           "name": "superbwarfare:mle_1934_blueprint",
-          "weight": 3
+          "weight": 2
         },
         {
           "type": "minecraft:item",
           "name": "superbwarfare:hpj_11_blueprint",
-          "weight": 3
+          "weight": 2
         },
         {
           "type": "minecraft:item",

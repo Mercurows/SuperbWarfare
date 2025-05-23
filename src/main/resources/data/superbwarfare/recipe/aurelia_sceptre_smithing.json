@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": {
+    "item": "superbwarfare:aurelia_sceptre_blueprint"
+  },
+  "base": {
+    "item": "superbwarfare:legendary_material_pack"
+  },
+  "addition": {
+    "item": "minecraft:end_crystal"
+  },
+  "result": {
+    "id": "superbwarfare:aurelia_sceptre"
+  }
+}
