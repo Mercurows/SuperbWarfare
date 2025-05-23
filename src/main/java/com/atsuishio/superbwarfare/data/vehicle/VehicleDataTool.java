@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.data.vehicle;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.network.message.receive.GunsDataMessage;
 import com.atsuishio.superbwarfare.network.message.receive.VehiclesDataMessage;
 import com.google.gson.Gson;
 import net.minecraft.server.level.ServerPlayer;
@@ -33,8 +32,17 @@ public class VehicleDataTool {
                 Gson gson = new Gson();
                 var data = gson.fromJson(new InputStreamReader(attribute.open()), DefaultVehicleData.class);
 
-                if (!vehicleData.containsKey(data.id)) {
-                    vehicleData.put(data.id, data);
+                String id;
+                if (!data.id.isEmpty()) {
+                    id = data.id;
+                } else {
+                    var path = entry.getKey().getPath();
+                    id = Mod.MODID + ":" + path.substring(VEHICLE_DATA_FOLDER.length() + 1, path.length() - VEHICLE_DATA_FOLDER.length() - 1);
+                    Mod.LOGGER.warn("Vehicle ID for {} is empty, try using {} as id", id, path);
+                }
+
+                if (!vehicleData.containsKey(id)) {
+                    vehicleData.put(id, data);
                 }
             } catch (Exception e) {
                 Mod.LOGGER.error(e.getMessage());

@@ -25,6 +25,8 @@ public class GunsTool {
 
     public static HashMap<String, DefaultGunData> gunsData = new HashMap<>();
 
+    public static final String GUN_DATA_FOLDER = "guns";
+
     /**
      * 初始化数据，从data中读取数据json文件
      */
@@ -32,15 +34,24 @@ public class GunsTool {
         gunsData.clear();
         GunData.dataCache.invalidateAll();
 
-        for (var entry : manager.listResources("guns", file -> file.getPath().endsWith(".json")).entrySet()) {
+        for (var entry : manager.listResources(GUN_DATA_FOLDER, file -> file.getPath().endsWith(".json")).entrySet()) {
             var attribute = entry.getValue();
 
             try {
                 Gson gson = new Gson();
                 var data = gson.fromJson(new InputStreamReader(attribute.open()), DefaultGunData.class);
 
-                if (!gunsData.containsKey(data.id)) {
-                    gunsData.put(data.id, data);
+                String id;
+                if (!data.id.trim().isEmpty()) {
+                    id = data.id;
+                } else {
+                    var path = entry.getKey().getPath();
+                    id = Mod.MODID + ":" + path.substring(GUN_DATA_FOLDER.length() + 1, path.length() - GUN_DATA_FOLDER.length() - 1);
+                    Mod.LOGGER.warn("Gun ID for {} is empty, try using {} as id", path, id);
+                }
+
+                if (!gunsData.containsKey(id)) {
+                    gunsData.put(id, data);
                 }
             } catch (Exception e) {
                 Mod.LOGGER.error(e.getMessage());
