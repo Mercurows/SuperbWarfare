@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.data.vehicle;
 
+import com.atsuishio.superbwarfare.annotation.ServerOnly;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModify;
 import com.google.gson.annotations.SerializedName;
@@ -13,9 +14,11 @@ public class DefaultVehicleData {
     @SerializedName("MaxHealth")
     public float maxHealth = 50;
 
+    @ServerOnly
     @SerializedName("RepairCooldown")
     public int repairCooldown = VehicleConfig.REPAIR_COOLDOWN.get();
 
+    @ServerOnly
     @SerializedName("RepairAmount")
     public float repairAmount = VehicleConfig.REPAIR_AMOUNT.get().floatValue();
 
@@ -31,9 +34,11 @@ public class DefaultVehicleData {
     @SerializedName("ApplyDefaultDamageModifiers")
     public boolean applyDefaultDamageModifiers = true;
 
+    @ServerOnly
     @SerializedName("DamageModifiers")
     public List<DamageModify> damageModifiers = List.of();
 
+    @ServerOnly
     @SerializedName("Mass")
     public float mass = 1;
 }
