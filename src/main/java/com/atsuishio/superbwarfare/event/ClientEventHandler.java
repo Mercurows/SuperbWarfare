@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.event;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.ClickHandler;
+import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.config.client.DisplayConfig;
 import com.atsuishio.superbwarfare.config.server.MiscConfig;
 import com.atsuishio.superbwarfare.data.gun.FireMode;
@@ -206,7 +207,7 @@ public class ClientEventHandler {
     static short keysCache = 0;
 
     @SubscribeEvent
-    public static void handleClientTick(ClientTickEvent.Pre event) {
+    public static void handleClientTick(ClientTickEvent.Post event) {
         LocalPlayer player = Minecraft.getInstance().player;
         if (player == null) return;
 
@@ -235,8 +236,6 @@ public class ClientEventHandler {
 
         isProne(player);
         beamShoot(player, stack);
-        handleLungeAttack(player, stack);
-        handleGunMelee(player, stack);
 
         var options = Minecraft.getInstance().options;
         short keys = 0;
@@ -288,8 +287,11 @@ public class ClientEventHandler {
 
         handleVariableDecrease();
         aimAtVillager(player);
+        CrossHairOverlay.handleRenderDamageIndicator();
         staminaSystem();
         handlePlayerSprint();
+        handleLungeAttack(player, stack);
+        handleGunMelee(player, stack);
     }
 
 
@@ -438,12 +440,12 @@ public class ClientEventHandler {
 
     public static void handleLungeAttack(Player player, ItemStack stack) {
         if (stack.is(ModItems.LUNGE_MINE.get()) && lungeAttack == 0 && lungeDraw == 0 && holdFire) {
-            lungeAttack = 36;
+            lungeAttack = 18;
             holdFire = false;
             player.playSound(SoundEvents.PLAYER_ATTACK_SWEEP, 1f, 1);
         }
 
-        if (stack.is(ModItems.LUNGE_MINE.get()) && ((lungeAttack >= 18 && lungeAttack <= 21) || lungeSprint > 0)) {
+        if (stack.is(ModItems.LUNGE_MINE.get()) && ((lungeAttack >= 9 && lungeAttack <= 10.5) || lungeSprint > 0)) {
             Entity lookingEntity = TraceTool.findLookingEntity(player, player.entityInteractionRange() + 1.5);
 
             BlockHitResult result = player.level().clip(new ClipContext(player.getEyePosition(), player.getEyePosition().add(player.getLookAngle().scale(player.entityInteractionRange() + 0.5)),
@@ -456,12 +458,12 @@ public class ClientEventHandler {
                 PacketDistributor.sendToServer(new LungeMineAttackMessage(0, lookingEntity.getUUID(), result.getLocation()));
                 lungeSprint = 0;
                 lungeAttack = 0;
-                lungeDraw = 30;
+                lungeDraw = 15;
             } else if ((blockState.canOcclude() || blockState.getBlock() instanceof DoorBlock || blockState.getBlock() instanceof CrossCollisionBlock || blockState.getBlock() instanceof BellBlock) && lungeSprint == 0) {
                 PacketDistributor.sendToServer(new LungeMineAttackMessage(1, player.getUUID(), result.getLocation()));
                 lungeSprint = 0;
                 lungeAttack = 0;
-                lungeDraw = 30;
+                lungeDraw = 15;
             }
         }
 
