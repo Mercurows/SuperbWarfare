@@ -3186,5 +3186,21 @@
         "stream": false
       }
     ]
+  },
+  "aurelia_sceptre_fire_1p": {
+    "sounds": [
+      {
+        "name": "superbwarfare:aurelia_sceptre/aurelia_sceptre_fire_1p",
+        "stream": false
+      }
+    ]
+  },
+  "aurelia_sceptre_fire_3p": {
+    "sounds": [
+      {
+        "name": "superbwarfare:aurelia_sceptre/aurelia_sceptre_fire_3p",
+        "stream": false
+      }
+    ]
   }
 }

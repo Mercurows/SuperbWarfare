@@ -42,5 +42,20 @@ public class ModEnumExtensions {
         public static HumanoidModel.ArmPose getLungeMinePose() {
             return SUPERBWARFARE_LUNGE_MINE_POSE.getValue();
         }
+
+        public static final EnumProxy<HumanoidModel.ArmPose> SUPERBWARFARE_AURELIA_SCEPTRE_POSE = new EnumProxy<>(
+                HumanoidModel.ArmPose.class,
+                false,
+                (IArmPoseTransformer) (model, entity, arm) -> {
+                    if (arm != HumanoidArm.LEFT) {
+                        model.rightArm.xRot = -67.5f * Mth.DEG_TO_RAD + model.head.xRot;
+                        model.rightArm.yRot = 5f * Mth.DEG_TO_RAD;
+                    }
+                }
+        );
+
+        public static HumanoidModel.ArmPose getAureliaSceptrePose() {
+            return SUPERBWARFARE_AURELIA_SCEPTRE_POSE.getValue();
+        }
     }
 }

@@ -17,6 +17,15 @@
         "class": "com/atsuishio/superbwarfare/init/ModEnumExtensions$Client",
         "field": "SUPERBWARFARE_LUNGE_MINE_POSE"
       }
+    },
+    {
+      "enum": "net/minecraft/client/model/HumanoidModel$ArmPose",
+      "name": "SUPERBWARFARE_AURELIA_SCEPTRE_POSE",
+      "constructor": "(ZLnet/neoforged/neoforge/client/IArmPoseTransformer;)V",
+      "parameters": {
+        "class": "com/atsuishio/superbwarfare/init/ModEnumExtensions$Client",
+        "field": "SUPERBWARFARE_AURELIA_SCEPTRE_POSE"
+      }
     }
   ]
 }

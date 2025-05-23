@@ -1585,7 +1585,7 @@ public class ClientEventHandler {
         burstFireAmount = 0;
         bowPullTimer = 0;
         bowPower = 0;
-        cantSprint = 20;
+        cantSprint = 10;
         ClickHandler.isEditing = false;
     }
 

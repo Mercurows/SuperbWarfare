@@ -44,6 +44,8 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
@@ -688,6 +690,11 @@ public abstract class GunItem extends Item implements CustomRendererItem {
         return true;
     }
 
+    @OnlyIn(Dist.CLIENT)
+    public HumanoidModel.ArmPose getArmPose(LivingEntity entityLiving, InteractionHand hand, ItemStack stack) {
+        return PoseTool.pose(entityLiving, hand, stack);
+    }
+
     @SubscribeEvent
     private static void registerGunExtensions(RegisterClientExtensionsEvent event) {
         for (var item : ModItems.GUNS.getEntries()) {
@@ -703,7 +710,7 @@ public abstract class GunItem extends Item implements CustomRendererItem {
                     @Override
                     @ParametersAreNonnullByDefault
                     public HumanoidModel.ArmPose getArmPose(LivingEntity entityLiving, InteractionHand hand, ItemStack stack) {
-                        return PoseTool.pose(entityLiving, hand, stack);
+                        return gun.getArmPose(entityLiving, hand, stack);
                     }
                 }, item);
             }

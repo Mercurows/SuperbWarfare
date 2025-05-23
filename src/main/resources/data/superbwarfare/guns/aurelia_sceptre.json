@@ -1,23 +1,23 @@
 {
   "ID": "superbwarfare:aurelia_sceptre",
-  "Spread": 0.5,
-  "RecoilX": 0,
-  "RecoilY": 0,
-  "Damage": 26,
+  "Spread": 1.5,
+  "RecoilX": 0.0005,
+  "RecoilY": 0.0001,
+  "Damage": 11,
   "Headshot": 1.5,
-  "Velocity": 14,
-  "Magazine": 4,
+  "Velocity": 8,
   "Weight": 1,
   "NormalReloadTime": 20,
   "EmptyReloadTime": 20,
   "BypassesArmor": 0.44,
   "SoundRadius": 2,
   "RPM": 1100,
-  "BurstAmount": 4,
+  "ShootDelay": 10,
+  "HeatPerShoot": 1,
   "AvailableFireModes": [
-    "Burst"
+    "Auto"
   ],
-  "DefaultFireMode": "Burst",
+  "DefaultFireMode": "Auto",
   "AmmoType": "@HandgunAmmo",
   "AvailablePerks": [
     "@Ammo",

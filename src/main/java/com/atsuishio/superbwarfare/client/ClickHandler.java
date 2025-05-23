@@ -341,7 +341,7 @@ public class ClickHandler {
                 && !notInGame()
         ) {
             var data = GunData.from(stack);
-            if (!stack.is(ModItems.BOCEK.get())) {
+            if (!(stack.is(ModItems.BOCEK.get()) || stack.is(ModItems.AURELIA_SCEPTRE.get()))) {
                 player.playSound(ModSounds.TRIGGER_CLICK.get(), 1, 1);
             } else {
                 bowPower = 0;
