@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.item.gun.launcher;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.client.TooltipTool;
 import com.atsuishio.superbwarfare.client.renderer.gun.SecondaryCataclysmRenderer;
 import com.atsuishio.superbwarfare.client.tooltip.component.SecondaryCataclysmImageComponent;
 import com.atsuishio.superbwarfare.data.gun.GunData;
@@ -14,9 +15,12 @@ import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
@@ -24,6 +28,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import org.jetbrains.annotations.NotNull;
@@ -34,6 +39,7 @@ import software.bernie.geckolib.renderer.GeoItemRenderer;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -54,6 +60,17 @@ public class SecondaryCataclysm extends GunItem implements GeoItem, EnergyStorag
     public int getBarWidth(@NotNull ItemStack stack) {
         var cap = stack.getCapability(Capabilities.EnergyStorage.ITEM);
         return Math.round((float) (cap != null ? cap.getEnergyStored() : 0) * 13.0F / 24000F);
+    }
+
+    @Override
+    @ParametersAreNonnullByDefault
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
+        tooltipComponents.add(Component.empty());
+        tooltipComponents.add(Component.translatable("des.superbwarfare.secondary_cataclysm_1").withStyle(ChatFormatting.GRAY).withStyle(ChatFormatting.ITALIC));
+
+        TooltipTool.addHideText(tooltipComponents, Component.empty());
+        TooltipTool.addHideText(tooltipComponents, Component.translatable("des.superbwarfare.trachelium_3").withStyle(ChatFormatting.WHITE));
+        TooltipTool.addHideText(tooltipComponents, Component.translatable("des.superbwarfare.secondary_cataclysm_2").withStyle(Style.EMPTY.withColor(0x68B9F6)));
     }
 
     @Override

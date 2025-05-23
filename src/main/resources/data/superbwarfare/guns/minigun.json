@@ -13,7 +13,7 @@
   "DefaultFireMode": "Auto",
   "AvailableFireModes": ["Auto"],
   "AmmoType": "@RifleAmmo",
-  "ShootDelay": 20,
+  "ShootDelay": 10,
   "HeatPerShoot": 0.5,
   "AvailablePerks": [
     "@Ammo",

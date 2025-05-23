@@ -14,7 +14,7 @@
   "BypassesArmor": 0.26,
   "SoundRadius": 2,
   "RPM": 1100,
-  "ShootDelay": 10,
+  "ShootDelay": 5,
   "HeatPerShoot": 1,
   "AvailableFireModes": [
     "Auto"
