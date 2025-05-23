@@ -25,6 +25,7 @@ public class ClientRenderHandler {
         event.register(LauncherImageComponent.class, ClientLauncherImageTooltip::new);
         event.register(SecondaryCataclysmImageComponent.class, ClientSecondaryCataclysmImageTooltip::new);
         event.register(ChargingStationImageComponent.class, ClientChargingStationImageTooltip::new);
+        event.register(DogTagImageComponent.class, ClientDogTagImageTooltip::new);
     }
 
     @SubscribeEvent

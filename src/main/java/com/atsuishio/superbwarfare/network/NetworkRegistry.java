@@ -23,6 +23,7 @@ public class NetworkRegistry {
         registrar.playToClient(RadarMenuCloseMessage.TYPE, RadarMenuCloseMessage.STREAM_CODEC, RadarMenuCloseMessage::handler);
         registrar.playToClient(SimulationDistanceMessage.TYPE, SimulationDistanceMessage.STREAM_CODEC, SimulationDistanceMessage::handler);
         registrar.playToClient(ClientTacticalSprintSyncMessage.TYPE, ClientTacticalSprintSyncMessage.STREAM_CODEC, (msg, ctx) -> ClientTacticalSprintSyncMessage.handler(msg));
+        registrar.playToClient(DogTagEditorMessage.TYPE, DogTagEditorMessage.STREAM_CODEC, (msg, ctx) -> DogTagEditorMessage.handler(msg));
 
         registrar.playToServer(LaserShootMessage.TYPE, LaserShootMessage.STREAM_CODEC, LaserShootMessage::handler);
         registrar.playToServer(ShootMessage.TYPE, ShootMessage.STREAM_CODEC, ShootMessage::handler);
@@ -55,5 +56,6 @@ public class NetworkRegistry {
         registrar.playToServer(ChangeVehicleSeatMessage.TYPE, ChangeVehicleSeatMessage.STREAM_CODEC, ChangeVehicleSeatMessage::handler);
         registrar.playToServer(ShowChargingRangeMessage.TYPE, ShowChargingRangeMessage.STREAM_CODEC, ShowChargingRangeMessage::handler);
         registrar.playToServer(TacticalSprintMessage.TYPE, TacticalSprintMessage.STREAM_CODEC, TacticalSprintMessage::handler);
+        registrar.playToServer(DogTagFinishEditMessage.TYPE, DogTagFinishEditMessage.STREAM_CODEC, DogTagFinishEditMessage::handler);
     }
 }

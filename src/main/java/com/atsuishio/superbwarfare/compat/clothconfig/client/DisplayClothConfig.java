@@ -60,6 +60,22 @@ public class DisplayClothConfig {
         );
 
         category.addEntry(entryBuilder
+                .startBooleanToggle(Component.translatable("config.superbwarfare.client.display.dog_tag_name_visible"), DisplayConfig.DOG_TAG_NAME_VISIBLE.get())
+                .setDefaultValue(true)
+                .setSaveConsumer(DisplayConfig.DOG_TAG_NAME_VISIBLE::set)
+                .setTooltip(Component.translatable("config.superbwarfare.client.display.dog_tag_name_visible.des"))
+                .build()
+        );
+
+        category.addEntry(entryBuilder
+                .startBooleanToggle(Component.translatable("config.superbwarfare.client.display.dog_tag_icon_visible"), DisplayConfig.DOG_TAG_ICON_VISIBLE.get())
+                .setDefaultValue(false)
+                .setSaveConsumer(DisplayConfig.DOG_TAG_ICON_VISIBLE::set)
+                .setTooltip(Component.translatable("config.superbwarfare.client.display.dog_tag_icon_visible.des"))
+                .build()
+        );
+
+        category.addEntry(entryBuilder
                 .startIntSlider(Component.translatable("config.superbwarfare.client.display.weapon_screen_shake"), DisplayConfig.WEAPON_SCREEN_SHAKE.get(),
                         0, 100)
                 .setDefaultValue(100)
