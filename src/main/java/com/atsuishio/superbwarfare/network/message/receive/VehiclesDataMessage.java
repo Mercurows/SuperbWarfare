@@ -4,7 +4,6 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.data.vehicle.DefaultVehicleData;
 import com.atsuishio.superbwarfare.data.vehicle.VehicleDataTool;
 import com.atsuishio.superbwarfare.tools.BufferSerializer;
-import com.google.gson.Gson;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -21,7 +20,7 @@ public record VehiclesDataMessage(List<DefaultVehicleData> data) implements Cust
             (obj, buf) -> {
                 buf.writeVarInt(obj.data.size());
                 for (var data : obj.data) {
-                    buf.writeBytes(BufferSerializer.serialize(data).getSource());
+                    buf.writeBytes(BufferSerializer.serialize(data).copy());
                 }
             },
             (buf) -> {
