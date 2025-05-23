@@ -142,6 +142,9 @@ public class DamageModify {
      * @return 计算后的伤害值
      */
     public float compute(float damage) {
+        // 类型出错默认视为免疫
+        if (type == null) return 0;
+
         return switch (type) {
             case IMMUNITY -> 0;
             case REDUCE -> Math.max(damage - value, 0);
