@@ -9,8 +9,8 @@ import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.value.ReloadState;
 import com.atsuishio.superbwarfare.entity.TargetEntity;
 import com.atsuishio.superbwarfare.entity.mixin.ICustomKnockback;
-import com.atsuishio.superbwarfare.entity.vehicle.LaserTowerEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.AutoAimable;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ContainerMobileVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.*;
@@ -633,14 +633,14 @@ public class LivingEventHandler {
 
     @SubscribeEvent
     public static void onPreSendKillMessage(PreKillEvent.SendKillMessage event) {
-        if (event.getSource().getDirectEntity() instanceof LaserTowerEntity && !(event.getTarget() instanceof Player)) {
+        if (event.getSource().getDirectEntity() instanceof AutoAimable && !(event.getTarget() instanceof Player)) {
             event.setCanceled(true);
         }
     }
 
     @SubscribeEvent
     public static void onPreIndicator(PreKillEvent.Indicator event) {
-        if (event.getSource().getDirectEntity() instanceof LaserTowerEntity && !(event.getTarget() instanceof Player)) {
+        if (event.getSource().getDirectEntity() instanceof AutoAimable && !(event.getTarget() instanceof Player)) {
             event.setCanceled(true);
         }
     }
