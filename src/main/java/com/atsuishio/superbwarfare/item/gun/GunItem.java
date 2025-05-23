@@ -156,7 +156,6 @@ public abstract class GunItem extends Item implements CustomRendererItem {
     }
 
     private static final ResourceLocation SPEED_ID = Mod.loc("gun_movement_speed");
-    private static final ResourceLocation DAMAGE_ID = Mod.loc("gun_melee_damage");
 
     @Override
     public @NotNull ItemAttributeModifiers getDefaultAttributeModifiers(@NotNull ItemStack stack) {
@@ -177,7 +176,7 @@ public abstract class GunItem extends Item implements CustomRendererItem {
         if (data.meleeDamage() > 0) {
             list.add(new ItemAttributeModifiers.Entry(
                     Attributes.ATTACK_DAMAGE,
-                    new AttributeModifier(DAMAGE_ID, data.meleeDamage(), AttributeModifier.Operation.ADD_VALUE),
+                    new AttributeModifier(BASE_ATTACK_DAMAGE_ID, data.meleeDamage(), AttributeModifier.Operation.ADD_VALUE),
                     EquipmentSlotGroup.MAINHAND
             ));
         }

@@ -27,7 +27,14 @@ public class FourthTimesCharm extends Perk {
             tag.remove("FourthTimesCharmCount");
 
             int mag = data.magazine();
-            data.ammo.set(Math.min(mag, data.ammo.get() + 2));
+            if (mag > 0) {
+                data.ammo.set(Math.min(mag, data.ammo.get() + 2));
+            } else if (living != null) {
+                var ammoType = data.ammoTypeInfo().playerAmmoType();
+                if (ammoType != null) {
+                    ammoType.add(living, 2);
+                }
+            }
         }
     }
 
