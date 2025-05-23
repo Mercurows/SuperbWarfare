@@ -121,7 +121,7 @@ public class AmmoBox extends Item {
 
         for (var ammo : Ammo.values()) {
             tooltipComponents.add(Component.translatable("des.superbwarfare.ammo_box." + ammo.name).withStyle(ammo.color)
-                    .append(Component.literal("").withStyle(ChatFormatting.RESET))
+                    .append(Component.empty().withStyle(ChatFormatting.RESET))
                     .append(Component.literal(FormatTool.format0D(ammo.get(stack)) + ((type != ammo) ? " " : " ←-")).withStyle(ChatFormatting.BOLD)));
         }
     }

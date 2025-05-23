@@ -203,7 +203,7 @@ public class FuMO25BlockEntity extends BlockEntity implements MenuProvider, GeoB
 
     @Override
     public @NotNull Component getDisplayName() {
-        return Component.literal("");
+        return Component.empty();
     }
 
     @Nullable

@@ -133,7 +133,7 @@ public class DroneHudOverlay implements LayeredDraw.Layer {
                 if (lookAtEntity) {
                     // 实体距离
                     var displayName = lookingEntity.getDisplayName();
-                    if (displayName == null) displayName = Component.literal("");
+                    if (displayName == null) displayName = Component.empty();
 
                     guiGraphics.drawString(mc.font, Component.translatable("tips.superbwarfare.drone.range")
                                     .append(Component.literal(FormatTool.format1D(entityRange, "m ") + displayName.getString())),

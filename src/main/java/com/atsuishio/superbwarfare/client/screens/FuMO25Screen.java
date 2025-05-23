@@ -285,7 +285,7 @@ public class FuMO25Screen extends AbstractContainerScreen<FuMO25Menu> {
     class LockButton extends AbstractButton {
 
         public LockButton(int pX, int pY) {
-            super(pX, pY, 29, 15, Component.literal(""));
+            super(pX, pY, 29, 15, Component.empty());
         }
 
         @Override
@@ -318,7 +318,7 @@ public class FuMO25Screen extends AbstractContainerScreen<FuMO25Menu> {
         private final int mode;
 
         public ModeButton(int pX, int pY, int mode) {
-            super(pX, pY, 29, 15, Component.literal(""));
+            super(pX, pY, 29, 15, Component.empty());
             this.mode = mode;
         }
 

@@ -30,7 +30,7 @@ public class ClientSentinelImageTooltip extends ClientEnergyImageTooltip {
                 }
             }
             return Component.translatable("des.superbwarfare.guns.damage").withStyle(ChatFormatting.GRAY)
-                    .append(Component.literal("").withStyle(ChatFormatting.RESET))
+                    .append(Component.empty().withStyle(ChatFormatting.RESET))
                     .append(Component.literal(FormatTool.format1D(damage) + (extraDamage >= 0 ? " + " + FormatTool.format1D(extraDamage) : ""))
                             .withStyle(ChatFormatting.AQUA).withStyle(ChatFormatting.BOLD));
         } else {

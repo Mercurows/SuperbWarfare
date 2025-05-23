@@ -42,7 +42,7 @@ public class ClientBocekImageTooltip extends ClientGunImageTooltip {
             }
 
             return Component.translatable("des.superbwarfare.guns.damage").withStyle(ChatFormatting.GRAY)
-                    .append(Component.literal("").withStyle(ChatFormatting.RESET))
+                    .append(Component.empty().withStyle(ChatFormatting.RESET))
                     .append(Component.literal(extraDamage >= 0 ? ("(" + FormatTool.format1D(shotDamage) + " + " + FormatTool.format1D(extraDamage) + ") * 10")
                                     : FormatTool.format1D(shotDamage, " * 10"))
                             .withStyle(ChatFormatting.GREEN))

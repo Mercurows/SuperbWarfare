@@ -84,7 +84,7 @@ public class AureliaSceptre extends GunItem implements GeoItem {
         tooltipComponents.add(Component.translatable("des.superbwarfare.aurelia_sceptre_1").withStyle(ChatFormatting.GRAY));
         tooltipComponents.add(Component.translatable("des.superbwarfare.aurelia_sceptre_2").withStyle(ChatFormatting.GRAY).withStyle(ChatFormatting.ITALIC));
 
-        TooltipTool.addHideText(tooltipComponents, Component.literal(""));
+        TooltipTool.addHideText(tooltipComponents, Component.empty());
         TooltipTool.addHideText(tooltipComponents, Component.translatable("des.superbwarfare.trachelium_3").withStyle(ChatFormatting.WHITE));
         TooltipTool.addHideText(tooltipComponents, Component.translatable("des.superbwarfare.aurelia_sceptre_3").withStyle(Style.EMPTY.withColor(0xABCDEF)));
     }

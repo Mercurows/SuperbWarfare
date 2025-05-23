@@ -66,7 +66,7 @@ public class ClientEnergyImageTooltip extends ClientGunImageTooltip {
         int energy = storage.getEnergyStored();
         int maxEnergy = storage.getMaxEnergyStored();
         float percentage = Mth.clamp((float) energy / maxEnergy, 0, 1);
-        MutableComponent component = Component.literal("");
+        MutableComponent component = Component.empty();
 
         ChatFormatting format;
         if (percentage <= .2f) {
@@ -81,7 +81,7 @@ public class ClientEnergyImageTooltip extends ClientGunImageTooltip {
         for (int i = 0; i < count; i++) {
             component.append(Component.literal("|").withStyle(format));
         }
-        component.append(Component.literal("").withStyle(ChatFormatting.RESET));
+        component.append(Component.empty().withStyle(ChatFormatting.RESET));
         for (int i = 0; i < 50 - count; i++) {
             component.append(Component.literal("|").withStyle(ChatFormatting.GRAY));
         }

@@ -110,7 +110,7 @@ public class ReforgingTableScreen extends AbstractContainerScreen<ReforgingTable
         }
 
         public ReforgeButton(int pX, int pY) {
-            super(pX, pY, 40, 16, Component.literal(""));
+            super(pX, pY, 40, 16, Component.empty());
         }
 
 
@@ -129,7 +129,7 @@ public class ReforgingTableScreen extends AbstractContainerScreen<ReforgingTable
         public Perk.Type type;
 
         public UpgradeButton(int pX, int pY, Perk.Type type) {
-            super(pX, pY, 9, 9, Component.literal(""));
+            super(pX, pY, 9, 9, Component.empty());
             this.type = type;
         }
 
@@ -181,7 +181,7 @@ public class ReforgingTableScreen extends AbstractContainerScreen<ReforgingTable
         }
 
         public DowngradeButton(int pX, int pY, Perk.Type type) {
-            super(pX, pY, 12, 12, Component.literal(""));
+            super(pX, pY, 12, 12, Component.empty());
             this.type = type;
         }
 

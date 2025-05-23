@@ -40,7 +40,7 @@ public class PerkItem<T extends Perk> extends Item {
         };
 
         tooltipComponents.add(Component.translatable("des.superbwarfare." + this.getPerk().descriptionId).withStyle(ChatFormatting.GRAY));
-        tooltipComponents.add(Component.literal(""));
+        tooltipComponents.add(Component.empty());
         tooltipComponents.add(Component.translatable("perk.superbwarfare.slot").withStyle(ChatFormatting.GOLD)
                 .append(Component.translatable("perk.superbwarfare.slot_" + this.getPerk().type.getName()).withStyle(chatFormatting)));
         if (this.getPerk() instanceof AmmoPerk ammoPerk) {

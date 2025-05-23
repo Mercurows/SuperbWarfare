@@ -45,7 +45,7 @@ public class DogTag extends Item implements ICurioItem {
             return InteractionResultHolder.success(stack);
         } else {
             player.openMenu(new SimpleMenuProvider((i, inventory, p) ->
-                    new DogTagEditorMenu(i, ContainerLevelAccess.create(level, p.getOnPos()), stack), Component.literal("")));
+                    new DogTagEditorMenu(i, ContainerLevelAccess.create(level, p.getOnPos()), stack), Component.empty()));
             return InteractionResultHolder.consume(stack);
         }
     }

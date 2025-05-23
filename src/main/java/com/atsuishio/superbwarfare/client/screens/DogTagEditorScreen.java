@@ -145,7 +145,7 @@ public class DogTagEditorScreen extends AbstractContainerScreen<DogTagEditorMenu
     protected void subInit() {
         int i = (this.width - this.imageWidth) / 2;
         int j = (this.height - this.imageHeight) / 2;
-        this.name = new EditBox(this.font, i + 9, j + 11, 180, 12, Component.literal(""));
+        this.name = new EditBox(this.font, i + 9, j + 11, 180, 12, Component.empty());
         this.name.setCanLoseFocus(false);
         this.name.setTextColor(-1);
         this.name.setTextColorUneditable(-1);
@@ -189,7 +189,7 @@ public class DogTagEditorScreen extends AbstractContainerScreen<DogTagEditorMenu
         short color;
 
         public ColorButton(short color, int pX, int pY, int pWidth, int pHeight) {
-            super(pX, pY, pWidth, pHeight, Component.literal(""));
+            super(pX, pY, pWidth, pHeight, Component.empty());
             this.color = color;
         }
 
@@ -223,7 +223,7 @@ public class DogTagEditorScreen extends AbstractContainerScreen<DogTagEditorMenu
     class FinishButton extends AbstractButton {
 
         public FinishButton(int pX, int pY, int pWidth, int pHeight) {
-            super(pX, pY, pWidth, pHeight, Component.literal(""));
+            super(pX, pY, pWidth, pHeight, Component.empty());
         }
 
         @Override
