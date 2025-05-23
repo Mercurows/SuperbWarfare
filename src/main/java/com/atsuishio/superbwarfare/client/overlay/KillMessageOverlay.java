@@ -37,7 +37,6 @@ import org.jetbrains.annotations.Nullable;
 import top.theillusivec4.curios.api.CuriosApi;
 
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.concurrent.atomic.AtomicReference;
 
 import static com.atsuishio.superbwarfare.client.RenderHelper.preciseBlit;
 
@@ -368,13 +367,18 @@ public class KillMessageOverlay implements LayeredDraw.Layer {
     }
 
     public static String getEntityName(Entity entity) {
-        AtomicReference<String> targetName = new AtomicReference<>(entity.getDisplayName().getString());
+        if (entity.getDisplayName() == null) return "";
+
+        var name = entity.getDisplayName().getString();
+        if (!DisplayConfig.DOG_TAG_NAME_VISIBLE.get()) return name;
+
         if (entity instanceof Player targetPlayer) {
-            CuriosApi.getCuriosInventory(targetPlayer)
+            return CuriosApi.getCuriosInventory(targetPlayer)
                     .flatMap(c -> c.findFirstCurio(ModItems.DOG_TAG.get()))
-                    .ifPresent(s -> targetName.set(s.stack().getHoverName().getString()));
+                    .map(s -> s.stack().getHoverName().getString())
+                    .orElse(name);
         }
-        return targetName.get();
+        return name;
     }
 
     @Nullable
