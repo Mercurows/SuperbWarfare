@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.event;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.ClickHandler;
-import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.config.client.DisplayConfig;
 import com.atsuishio.superbwarfare.config.server.MiscConfig;
 import com.atsuishio.superbwarfare.data.gun.FireMode;
@@ -287,7 +286,6 @@ public class ClientEventHandler {
 
         handleVariableDecrease();
         aimAtVillager(player);
-        CrossHairOverlay.handleRenderDamageIndicator();
         staminaSystem();
         handlePlayerSprint();
         handleLungeAttack(player, stack);
