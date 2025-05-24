@@ -16,7 +16,8 @@ public class SeekConfig {
             "superbwarfare:claymore",
             "superbwarfare:c4",
             "touhou_little_maid:power_point",
-            "evilcraft:vengeance_spirit"
+            "evilcraft:vengeance_spirit",
+            "mts:builder_rendering"
     );
 
     public static void init(ModConfigSpec.Builder builder) {
