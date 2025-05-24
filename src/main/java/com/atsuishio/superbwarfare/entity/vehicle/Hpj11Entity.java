@@ -460,7 +460,7 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
 
         boolean hasCreativeAmmo = (getFirstPassenger() instanceof Player pPlayer && InventoryTool.hasCreativeAmmoBox(pPlayer)) || hasItem(ModItems.CREATIVE_AMMO_BOX.get());
 
-        entityData.set(FIRE_TIME, Math.min(entityData.get(FIRE_TIME) + 3, 3));
+        entityData.set(FIRE_TIME, Math.min(entityData.get(FIRE_TIME) + 3, 5));
 
         var entityToSpawn = ((SmallCannonShellWeapon) getWeapon(0)).create(player);
 
