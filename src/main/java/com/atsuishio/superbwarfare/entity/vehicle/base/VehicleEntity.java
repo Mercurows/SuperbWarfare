@@ -403,7 +403,7 @@ public abstract class VehicleEntity extends Entity {
         if (source.is(DamageTypes.CACTUS) || source.is(DamageTypes.SWEET_BERRY_BUSH) || source.is(DamageTypes.IN_WALL))
             return false;
         // 计算减伤后的伤害
-        float computedAmount = damageModifier.compute(source, amount);
+        float computedAmount = getDamageModifier().compute(source, amount);
         this.crash = source.is(ModDamageTypes.VEHICLE_STRIKE);
 
         if (source.getEntity() != null) {
@@ -443,8 +443,6 @@ public abstract class VehicleEntity extends Entity {
     public boolean playHitSoundOnHurt() {
         return true;
     }
-
-    protected final DamageModifier damageModifier = this.getDamageModifier();
 
     /**
      * 控制载具伤害免疫

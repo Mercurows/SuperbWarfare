@@ -218,8 +218,6 @@ public class DamageModifier {
         return this;
     }
 
-    private final List<DamageModify> combinedList = new ArrayList<>();
-
     /**
      * 计算减伤后的伤害值
      *
@@ -228,14 +226,14 @@ public class DamageModifier {
      * @return 减伤后的伤害值
      */
     public float compute(DamageSource source, float damage) {
-        if (combinedList.isEmpty()) {
-            // 计算优先级 免疫 > 固定减伤 > 乘
-            combinedList.addAll(immuneList);
-            combinedList.addAll(reduceList);
-            combinedList.addAll(multiplyList);
-        }
+        var list = new ArrayList<DamageModify>();
 
-        for (DamageModify damageModify : combinedList) {
+        // 计算优先级 免疫 > 固定减伤 > 乘
+        list.addAll(immuneList);
+        list.addAll(reduceList);
+        list.addAll(multiplyList);
+
+        for (DamageModify damageModify : list) {
             if (damageModify.match(source)) {
                 damage = damageModify.compute(damage);
 

@@ -24,6 +24,7 @@ public class VehicleDataTool {
     public static void initJsonData(ResourceManager manager) {
         vehicleData.clear();
         VehicleData.dataCache.invalidateAll();
+        VehicleData.damageModifiers.invalidateAll();
 
         for (var entry : manager.listResources(VEHICLE_DATA_FOLDER, file -> file.getPath().endsWith(".json")).entrySet()) {
             var attribute = entry.getValue();
@@ -53,6 +54,11 @@ public class VehicleDataTool {
     @SubscribeEvent
     public static void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
+            var server = player.getServer();
+            if (server != null && server.isSingleplayer()) {
+                return;
+            }
+
             PacketDistributor.sendToPlayer(player, VehiclesDataMessage.create());
         }
     }
@@ -65,6 +71,10 @@ public class VehicleDataTool {
     @SubscribeEvent
     public static void onDataPackSync(OnDatapackSyncEvent event) {
         initJsonData(event.getPlayerList().getServer().getResourceManager());
+
+        if (event.getPlayerList().getServer().isSingleplayer()) {
+            return;
+        }
 
         event.getRelevantPlayers().forEach(player -> PacketDistributor.sendToPlayer(player, VehiclesDataMessage.create()));
     }
