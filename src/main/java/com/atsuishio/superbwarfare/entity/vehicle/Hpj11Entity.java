@@ -4,10 +4,7 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.entity.TargetEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.AutoAimable;
-import com.atsuishio.superbwarfare.entity.vehicle.base.CannonEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.ContainerMobileVehicleEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
+import com.atsuishio.superbwarfare.entity.vehicle.base.*;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.SmallCannonShellWeapon;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.VehicleWeapon;
@@ -54,10 +51,14 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 import java.util.Comparator;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 import static com.atsuishio.superbwarfare.tools.SeekTool.smokeFilter;
 
 public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEntity, CannonEntity, OwnableEntity, AutoAimable {
+
+    public static Consumer<MobileVehicleEntity> fireSound = vehicle -> {
+    };
 
     public static final EntityDataAccessor<Integer> ANIM_TIME = SynchedEntityData.defineId(Hpj11Entity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Float> GUN_ROTATE = SynchedEntityData.defineId(Hpj11Entity.class, EntityDataSerializers.FLOAT);
@@ -67,14 +68,16 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
     public static final EntityDataAccessor<Integer> FIRE_TIME = SynchedEntityData.defineId(Hpj11Entity.class, EntityDataSerializers.INT);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
-    public Hpj11Entity(EntityType<Hpj11Entity> type, Level world) {
-        super(type, world);
-    }
+    private boolean wasFiring = false;
 
     public int changeTargetTimer = 60;
 
     public float gunRot;
     public float gunRotO;
+
+    public Hpj11Entity(EntityType<Hpj11Entity> type, Level world) {
+        super(type, world);
+    }
 
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
@@ -187,7 +190,12 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
 
     @Override
     public void baseTick() {
-        gunRotO = this.getGunRot();
+        if (!this.wasFiring && this.isFiring() && this.level().isClientSide()) {
+            fireSound.accept(this);
+        }
+        this.wasFiring = this.isFiring();
+
+        this.gunRotO = this.getGunRot();
         super.baseTick();
 
         if (this.entityData.get(ANIM_TIME) > 0) {
@@ -229,6 +237,10 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
         } else {
             entityData.set(AMMO, countItem(ModItems.SMALL_SHELL.get()));
         }
+    }
+
+    public boolean isFiring() {
+        return this.entityData.get(FIRE_TIME) > 0;
     }
 
     public void autoAim() {

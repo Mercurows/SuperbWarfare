@@ -59,10 +59,14 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.Consumer;
 
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 
 public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity, WeaponVehicleEntity, AircraftEntity {
+
+    public static Consumer<MobileVehicleEntity> fireSound = vehicle -> {
+    };
 
     public static final EntityDataAccessor<Integer> LOADED_ROCKET = SynchedEntityData.defineId(A10Entity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> LOADED_BOMB = SynchedEntityData.defineId(A10Entity.class, EntityDataSerializers.INT);
@@ -79,6 +83,8 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
     public float destroyRot;
     public int lockTime;
     public boolean locked;
+
+    private boolean wasFiring = false;
 
     public A10Entity(EntityType<A10Entity> type, Level world) {
         super(type, world);
@@ -189,7 +195,12 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
 
     @Override
     public void baseTick() {
-        lockingTargetO = getTargetUuid();
+        if (!this.wasFiring && this.isFiring() && this.level().isClientSide()) {
+            fireSound.accept(this);
+        }
+        this.wasFiring = this.isFiring();
+
+        this.lockingTargetO = getTargetUuid();
 
         super.baseTick();
         float f = (float) Mth.clamp(Math.max((onGround() ? 0.819f : 0.82f) - 0.0035 * getDeltaMovement().length(), 0.5) + 0.001f * Mth.abs(90 - (float) calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90, 0.01, 0.99);
@@ -954,6 +965,10 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
             return 120;
         }
         return 0;
+    }
+
+    public boolean isFiring() {
+        return this.entityData.get(FIRE_TIME) > 0;
     }
 
     @Override
