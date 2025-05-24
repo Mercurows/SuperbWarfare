@@ -98,7 +98,7 @@ public class ElectricBaton extends SwordItem implements EnergyStorageItem {
                 cap.extractEnergy(ENERGY_COST, false);
 
                 if (!target.level().isClientSide) {
-                    target.addEffect(new MobEffectInstance(ModMobEffects.SHOCK, 20, 2), attacker);
+                    target.addEffect(new MobEffectInstance(ModMobEffects.SHOCK, 30, 2), attacker);
                 }
             }
         }
