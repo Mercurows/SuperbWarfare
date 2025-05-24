@@ -71,7 +71,6 @@ import static com.atsuishio.superbwarfare.client.RenderHelper.preciseBlit;
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 import static com.atsuishio.superbwarfare.tools.SeekTool.baseFilter;
 
-// TODO 添加正确的履带音效播放条件
 public class PrismTankEntity extends ContainerMobileVehicleEntity implements GeoEntity, LandArmorEntity, WeaponVehicleEntity {
 
     public static final EntityDataAccessor<Integer> CANNON_FIRE_TIME = SynchedEntityData.defineId(PrismTankEntity.class, EntityDataSerializers.INT);
@@ -736,6 +735,11 @@ public class PrismTankEntity extends ContainerMobileVehicleEntity implements Geo
     @Override
     public int getWeaponHeat(Player player) {
         return entityData.get(HEAT);
+    }
+
+    @Override
+    public boolean hasTracks() {
+        return true;
     }
 
     @Override

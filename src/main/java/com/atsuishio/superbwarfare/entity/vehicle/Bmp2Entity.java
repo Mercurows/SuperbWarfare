@@ -199,11 +199,6 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
             float f0 = 0.54f + 0.25f * Mth.abs(90 - (float) calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90;
             this.setDeltaMovement(this.getDeltaMovement().add(this.getViewVector(1).normalize().scale(0.05 * getDeltaMovement().dot(getViewVector(1)))));
             this.setDeltaMovement(this.getDeltaMovement().multiply(f0, 0.99, f0));
-
-            // TODO 替换成正确的履带音效播放条件
-            if (this.level().isClientSide) {
-                trackSound.accept(this);
-            }
         } else {
             this.setDeltaMovement(this.getDeltaMovement().multiply(0.99, 0.99, 0.99));
         }
@@ -728,6 +723,11 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
         } else {
             guiGraphics.drawString(font, Component.literal("9M113 " + this.getEntityData().get(LOADED_MISSILE) + " " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getEntityData().get(MISSILE_COUNT))), 30, -9, -1, false);
         }
+    }
+
+    @Override
+    public boolean hasTracks() {
+        return true;
     }
 
     @Override

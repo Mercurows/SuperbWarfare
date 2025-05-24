@@ -104,13 +104,14 @@ public abstract class VehicleSoundInstance extends AbstractTickableSoundInstance
     }
 
     public static class TrackSound extends VehicleSoundInstance {
+
         public TrackSound(MobileVehicleEntity mobileVehicle) {
             super(ModSounds.TRACK_MOVE.get(), Minecraft.getInstance(), mobileVehicle);
         }
 
         @Override
         protected boolean canPlay(MobileVehicleEntity mobileVehicle) {
-            return true;
+            return mobileVehicle.engineRunning() && mobileVehicle.onGround();
         }
 
         @Override
@@ -125,13 +126,14 @@ public abstract class VehicleSoundInstance extends AbstractTickableSoundInstance
     }
 
     public static class SwimSound extends VehicleSoundInstance {
+
         public SwimSound(MobileVehicleEntity mobileVehicle) {
             super(ModSounds.VEHICLE_SWIM.get(), Minecraft.getInstance(), mobileVehicle);
         }
 
         @Override
         protected boolean canPlay(MobileVehicleEntity mobileVehicle) {
-            return true;
+            return mobileVehicle.engineRunning() && mobileVehicle.isInWater();
         }
 
         @Override
