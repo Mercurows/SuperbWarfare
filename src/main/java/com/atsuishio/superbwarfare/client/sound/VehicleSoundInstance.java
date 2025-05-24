@@ -82,13 +82,14 @@ public abstract class VehicleSoundInstance extends AbstractTickableSoundInstance
     }
 
     public static class EngineSound extends VehicleSoundInstance {
-        public EngineSound(MobileVehicleEntity mobileVehicle, SoundEvent soundEvent) {
-            super(soundEvent, Minecraft.getInstance(), mobileVehicle);
+
+        public EngineSound(MobileVehicleEntity mobileVehicle) {
+            super(mobileVehicle.getEngineSound(), Minecraft.getInstance(), mobileVehicle);
         }
 
         @Override
         protected boolean canPlay(MobileVehicleEntity mobileVehicle) {
-            return true;
+            return mobileVehicle.engineRunning();
         }
 
         @Override
