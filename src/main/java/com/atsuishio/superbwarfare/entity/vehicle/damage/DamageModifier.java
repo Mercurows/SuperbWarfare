@@ -58,6 +58,7 @@ public class DamageModifier {
 
     /**
      * 免疫指定类型的伤害
+     *
      * @param entityId 伤害来源实体ID
      */
     public DamageModifier immuneTo(String entityId) {
@@ -67,6 +68,7 @@ public class DamageModifier {
 
     /**
      * 免疫指定类型的伤害
+     *
      * @param type 伤害来源实体类型
      */
     public DamageModifier immuneTo(EntityType<?> type) {
@@ -118,7 +120,8 @@ public class DamageModifier {
 
     /**
      * 固定减少指定类型的伤害一定数值
-     * @param value 要减少的数值
+     *
+     * @param value    要减少的数值
      * @param entityId 伤害来源实体ID
      */
     public DamageModifier reduce(float value, String entityId) {
@@ -128,8 +131,9 @@ public class DamageModifier {
 
     /**
      * 固定减少指定类型的伤害一定数值
+     *
      * @param value 要减少的数值
-     * @param type 伤害来源实体类型
+     * @param type  伤害来源实体类型
      */
     public DamageModifier reduce(float value, EntityType<?> type) {
         return reduce(value, EntityType.getKey(type).toString());
@@ -180,7 +184,8 @@ public class DamageModifier {
 
     /**
      * 将指定类型的伤害值乘以指定数值
-     * @param value 要乘以的数值
+     *
+     * @param value    要乘以的数值
      * @param entityId 伤害来源实体ID
      */
     public DamageModifier multiply(float value, String entityId) {
@@ -190,8 +195,9 @@ public class DamageModifier {
 
     /**
      * 将指定类型的伤害值乘以指定数值
+     *
      * @param value 要乘以的数值
-     * @param type 伤害来源实体类型
+     * @param type  伤害来源实体类型
      */
     public DamageModifier multiply(float value, EntityType<?> type) {
         return multiply(value, EntityType.getKey(type).toString());

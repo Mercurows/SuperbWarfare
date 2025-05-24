@@ -62,29 +62,20 @@ public class VehicleData {
         return data.mass;
     }
 
-    public static final LoadingCache<String, DamageModifier> damageModifiers = CacheBuilder.newBuilder()
-            .build(new CacheLoader<>() {
-                public @NotNull DamageModifier load(@NotNull String id) {
-                    var data = VehicleDataTool.vehicleData.getOrDefault(id, new DefaultVehicleData());
-                    var modifier = new DamageModifier();
-
-                    if (data.applyDefaultDamageModifiers) {
-                        modifier.immuneTo(EntityType.POTION)
-                                .immuneTo(EntityType.AREA_EFFECT_CLOUD)
-                                .immuneTo(DamageTypes.FALL)
-                                .immuneTo(DamageTypes.DROWN)
-                                .immuneTo(DamageTypes.DRAGON_BREATH)
-                                .immuneTo(DamageTypes.WITHER)
-                                .immuneTo(DamageTypes.WITHER_SKULL)
-                                .reduce(5, ModDamageTypes.VEHICLE_STRIKE);
-                    }
-
-                    return modifier.addAll(data.damageModifiers);
-                }
-            });
-
     public DamageModifier damageModifier() {
-        return damageModifiers.getUnchecked(id);
-    }
+        var modifier = new DamageModifier();
 
+        if (data.applyDefaultDamageModifiers) {
+            modifier.immuneTo(EntityType.POTION)
+                    .immuneTo(EntityType.AREA_EFFECT_CLOUD)
+                    .immuneTo(DamageTypes.FALL)
+                    .immuneTo(DamageTypes.DROWN)
+                    .immuneTo(DamageTypes.DRAGON_BREATH)
+                    .immuneTo(DamageTypes.WITHER)
+                    .immuneTo(DamageTypes.WITHER_SKULL)
+                    .reduce(5, ModDamageTypes.VEHICLE_STRIKE);
+        }
+
+        return modifier.addAll(data.damageModifiers);
+    }
 }
