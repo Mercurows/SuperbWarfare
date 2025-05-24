@@ -35,7 +35,7 @@ public class DefaultGunData {
     @SerializedName("MeleeDamage")
     public double meleeDamage;
     @SerializedName("MeleeDuration")
-    public int meleeDuration = 26;
+    public int meleeDuration = 16;
     @SerializedName("MeleeDamageTime")
     public int meleeDamageTime = 6;
 

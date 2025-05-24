@@ -48,7 +48,7 @@ public class ModEnumExtensions {
                 false,
                 (IArmPoseTransformer) (model, entity, arm) -> {
                     if (arm != HumanoidArm.LEFT) {
-                        model.rightArm.xRot = -67.5f * Mth.DEG_TO_RAD + model.head.xRot;
+                        model.rightArm.xRot = -67.5f * Mth.DEG_TO_RAD + model.head.xRot + 0.2f * model.rightArm.xRot;
                         model.rightArm.yRot = 5f * Mth.DEG_TO_RAD;
                     }
                 }
