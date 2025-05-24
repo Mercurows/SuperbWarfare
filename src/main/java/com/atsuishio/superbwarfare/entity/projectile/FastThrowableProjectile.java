@@ -80,7 +80,7 @@ public abstract class FastThrowableProjectile extends ThrowableItemProjectile im
     }
 
     public boolean isFastMoving() {
-        return this.getDeltaMovement().lengthSqr() >= 2500;
+        return this.getDeltaMovement().lengthSqr() >= 6.25;
     }
 
     public boolean shouldSyncMotion() {
