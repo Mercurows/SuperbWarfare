@@ -3,14 +3,17 @@ package com.atsuishio.superbwarfare;
 import com.atsuishio.superbwarfare.api.event.RegisterContainersEvent;
 import com.atsuishio.superbwarfare.client.MouseMovementHandler;
 import com.atsuishio.superbwarfare.client.renderer.molang.MolangVariable;
+import com.atsuishio.superbwarfare.client.sound.VehicleSoundInstance;
 import com.atsuishio.superbwarfare.compat.CompatHolder;
 import com.atsuishio.superbwarfare.compat.clothconfig.ClothConfigHelper;
 import com.atsuishio.superbwarfare.component.ModDataComponents;
 import com.atsuishio.superbwarfare.config.ClientConfig;
 import com.atsuishio.superbwarfare.config.CommonConfig;
 import com.atsuishio.superbwarfare.config.ServerConfig;
+import com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity;
 import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.network.NetworkRegistry;
+import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
@@ -122,6 +125,9 @@ public class Mod {
     public void onClientSetup(final FMLClientSetupEvent event) {
         MouseMovementHandler.init();
         MolangVariable.register();
+
+        MobileVehicleEntity.trackSound = vehicle -> Minecraft.getInstance().getSoundManager().play(new VehicleSoundInstance.TrackSound(vehicle));
+        MobileVehicleEntity.engineSound = vehicle -> Minecraft.getInstance().getSoundManager().play(new VehicleSoundInstance.EngineSound(vehicle, vehicle.getEngineSound()));
     }
 
 }

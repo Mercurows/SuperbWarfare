@@ -51,8 +51,11 @@ import java.util.function.Consumer;
 import java.util.stream.StreamSupport;
 
 public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements ControllableVehicle {
-    public static Consumer<MobileVehicleEntity> engineSound = e -> {
+    public static Consumer<MobileVehicleEntity> trackSound = vehicle -> {
     };
+    public static Consumer<MobileVehicleEntity> engineSound = vehicle -> {
+    };
+
     public static final EntityDataAccessor<Integer> CANNON_RECOIL_TIME = SynchedEntityData.defineId(MobileVehicleEntity.class, EntityDataSerializers.INT);
 
     public static final EntityDataAccessor<Float> POWER = SynchedEntityData.defineId(MobileVehicleEntity.class, EntityDataSerializers.FLOAT);

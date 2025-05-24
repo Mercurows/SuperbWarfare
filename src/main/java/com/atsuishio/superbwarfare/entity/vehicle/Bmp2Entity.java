@@ -4,7 +4,10 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.entity.projectile.AerialBombEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.*;
+import com.atsuishio.superbwarfare.entity.vehicle.base.ContainerMobileVehicleEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.LandArmorEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
+import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.ProjectileWeapon;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.SmallCannonShellWeapon;
@@ -65,7 +68,7 @@ import java.util.List;
 
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 
-public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntity, LandArmorEntity, WeaponVehicleEntity, TrackEntity {
+public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntity, LandArmorEntity, WeaponVehicleEntity {
 
     public static final EntityDataAccessor<Integer> CANNON_FIRE_TIME = SynchedEntityData.defineId(Bmp2Entity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> LOADED_MISSILE = SynchedEntityData.defineId(Bmp2Entity.class, EntityDataSerializers.INT);
@@ -189,14 +192,18 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
             this.handleAmmo();
         }
 
-        double fluidFloat;
-        fluidFloat = 0.052 * getSubmergedHeight(this);
+        double fluidFloat = 0.052 * getSubmergedHeight(this);
         this.setDeltaMovement(this.getDeltaMovement().add(0.0, fluidFloat, 0.0));
 
         if (this.onGround()) {
             float f0 = 0.54f + 0.25f * Mth.abs(90 - (float) calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90;
             this.setDeltaMovement(this.getDeltaMovement().add(this.getViewVector(1).normalize().scale(0.05 * getDeltaMovement().dot(getViewVector(1)))));
             this.setDeltaMovement(this.getDeltaMovement().multiply(f0, 0.99, f0));
+
+            // TODO 替换成正确的履带音效播放条件
+            if (this.level().isClientSide) {
+                trackSound.accept(this);
+            }
         } else {
             this.setDeltaMovement(this.getDeltaMovement().multiply(0.99, 0.99, 0.99));
         }

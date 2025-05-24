@@ -5,7 +5,10 @@ import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.entity.projectile.AerialBombEntity;
 import com.atsuishio.superbwarfare.entity.projectile.SwarmDroneEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.*;
+import com.atsuishio.superbwarfare.entity.vehicle.base.ContainerMobileVehicleEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.LandArmorEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
+import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.CannonShellWeapon;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.ProjectileWeapon;
@@ -74,7 +77,9 @@ import java.util.List;
 import static com.atsuishio.superbwarfare.client.RenderHelper.preciseBlit;
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 
-public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEntity, LandArmorEntity, WeaponVehicleEntity, TrackEntity {
+// TODO 添加正确的履带音效播放条件
+public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEntity, LandArmorEntity, WeaponVehicleEntity {
+
     public static final EntityDataAccessor<Integer> MG_AMMO = SynchedEntityData.defineId(Yx100Entity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> LOADED_AP = SynchedEntityData.defineId(Yx100Entity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> LOADED_HE = SynchedEntityData.defineId(Yx100Entity.class, EntityDataSerializers.INT);
