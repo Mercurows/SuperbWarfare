@@ -81,10 +81,16 @@ public class GunEventHandler {
                         ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, player)).getBlockPos())));
 
                 Mod.queueServerWork((int) (data.bolt.actionTimer.get() / 2 + 1.5 * shooterHeight), () -> {
-                    if (stack.is(ModTags.Items.SHOTGUN)) {
-                        SoundTool.playLocalSound(serverPlayer, ModSounds.SHELL_CASING_SHOTGUN.get(), (float) Math.max(0.75 - 0.12 * shooterHeight, 0), 1);
-                    } else if (stack.is(ModTags.Items.SNIPER_RIFLE)) {
-                        SoundTool.playLocalSound(serverPlayer, ModSounds.SHELL_CASING_50CAL.get(), (float) Math.max(1 - 0.15 * shooterHeight, 0), 1);
+                    var ammoType = data.ammoTypeInfo().playerAmmoType();
+                    if (ammoType != null) {
+                        switch (ammoType) {
+                            case SHOTGUN ->
+                                    SoundTool.playLocalSound(serverPlayer, ModSounds.SHELL_CASING_SHOTGUN.get(), (float) Math.max(0.75 - 0.12 * shooterHeight, 0), 1);
+                            case SNIPER, HEAVY ->
+                                    SoundTool.playLocalSound(serverPlayer, ModSounds.SHELL_CASING_50CAL.get(), (float) Math.max(1 - 0.15 * shooterHeight, 0), 1);
+                            default ->
+                                    SoundTool.playLocalSound(serverPlayer, ModSounds.SHELL_CASING_NORMAL.get(), (float) Math.max(1.5 - 0.2 * shooterHeight, 0), 1);
+                        }
                     } else {
                         SoundTool.playLocalSound(serverPlayer, ModSounds.SHELL_CASING_NORMAL.get(), (float) Math.max(1.5 - 0.2 * shooterHeight, 0), 1);
                     }
@@ -378,10 +384,16 @@ public class GunEventHandler {
                         ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, player)).getBlockPos())));
 
                 Mod.queueServerWork((int) (data.defaultPrepareEmptyTime() / 2 + 3 + 1.5 * shooterHeight), () -> {
-                    if (stack.is(ModTags.Items.SHOTGUN)) {
-                        SoundTool.playLocalSound(serverPlayer, ModSounds.SHELL_CASING_SHOTGUN.get(), (float) Math.max(0.75 - 0.12 * shooterHeight, 0), 1);
-                    } else if (stack.is(ModTags.Items.SNIPER_RIFLE) || stack.is(ModTags.Items.HEAVY_WEAPON)) {
-                        SoundTool.playLocalSound(serverPlayer, ModSounds.SHELL_CASING_50CAL.get(), (float) Math.max(1 - 0.15 * shooterHeight, 0), 1);
+                    var ammoType = data.ammoTypeInfo().playerAmmoType();
+                    if (ammoType != null) {
+                        switch (ammoType) {
+                            case SHOTGUN ->
+                                    SoundTool.playLocalSound(serverPlayer, ModSounds.SHELL_CASING_SHOTGUN.get(), (float) Math.max(0.75 - 0.12 * shooterHeight, 0), 1);
+                            case SNIPER, HEAVY ->
+                                    SoundTool.playLocalSound(serverPlayer, ModSounds.SHELL_CASING_50CAL.get(), (float) Math.max(1 - 0.15 * shooterHeight, 0), 1);
+                            default ->
+                                    SoundTool.playLocalSound(serverPlayer, ModSounds.SHELL_CASING_NORMAL.get(), (float) Math.max(1.5 - 0.2 * shooterHeight, 0), 1);
+                        }
                     } else {
                         SoundTool.playLocalSound(serverPlayer, ModSounds.SHELL_CASING_NORMAL.get(), (float) Math.max(1.5 - 0.2 * shooterHeight, 0), 1);
                     }
@@ -393,6 +405,7 @@ public class GunEventHandler {
     public static void playGunPrepareLoadReloadSounds(Player player) {
         ItemStack stack = player.getMainHandItem();
         if (!(stack.getItem() instanceof GunItem)) return;
+        var data = GunData.from(stack);
 
         if (!player.level().isClientSide) {
             String origin = stack.getItem().getDescriptionId();
@@ -406,10 +419,16 @@ public class GunEventHandler {
                         ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, player)).getBlockPos())));
 
                 Mod.queueServerWork((int) (8 + 1.5 * shooterHeight), () -> {
-                    if (stack.is(ModTags.Items.SHOTGUN)) {
-                        SoundTool.playLocalSound(serverPlayer, ModSounds.SHELL_CASING_SHOTGUN.get(), (float) Math.max(0.75 - 0.12 * shooterHeight, 0), 1);
-                    } else if (stack.is(ModTags.Items.SNIPER_RIFLE) || stack.is(ModTags.Items.HEAVY_WEAPON)) {
-                        SoundTool.playLocalSound(serverPlayer, ModSounds.SHELL_CASING_50CAL.get(), (float) Math.max(1 - 0.15 * shooterHeight, 0), 1);
+                    var ammoType = data.ammoTypeInfo().playerAmmoType();
+                    if (ammoType != null) {
+                        switch (ammoType) {
+                            case SHOTGUN ->
+                                    SoundTool.playLocalSound(serverPlayer, ModSounds.SHELL_CASING_SHOTGUN.get(), (float) Math.max(0.75 - 0.12 * shooterHeight, 0), 1);
+                            case SNIPER, HEAVY ->
+                                    SoundTool.playLocalSound(serverPlayer, ModSounds.SHELL_CASING_50CAL.get(), (float) Math.max(1 - 0.15 * shooterHeight, 0), 1);
+                            default ->
+                                    SoundTool.playLocalSound(serverPlayer, ModSounds.SHELL_CASING_NORMAL.get(), (float) Math.max(1.5 - 0.2 * shooterHeight, 0), 1);
+                        }
                     } else {
                         SoundTool.playLocalSound(serverPlayer, ModSounds.SHELL_CASING_NORMAL.get(), (float) Math.max(1.5 - 0.2 * shooterHeight, 0), 1);
                     }
