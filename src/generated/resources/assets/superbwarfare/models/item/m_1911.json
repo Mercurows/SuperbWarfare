@@ -1,5 +1,4 @@
 {
-  "parent": "minecraft:item/generated",
   "base": {
     "parent": "superbwarfare:item/m_1911_base"
   },
