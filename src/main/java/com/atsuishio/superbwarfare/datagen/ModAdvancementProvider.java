@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.datagen;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.advancement.criteria.OttoSprintTrigger;
 import com.atsuishio.superbwarfare.advancement.criteria.RPGMeleeExplosionTrigger;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModTags;
@@ -107,6 +108,11 @@ public class ModAdvancementProvider implements DataProvider {
     // 哑弹棒（？）
     BOOMSTICK_MELEE = advancement("boomstick_melee", builder -> builder.icon(ModItems.ROCKET.get())
             .externalTrigger(RPGMeleeExplosionTrigger.TriggerInstance.get())
+            .type(ModAdvancement.Type.SECRET_CHALLENGE)
+            .parent(MAIN_ROOT)),
+
+    RUSH_RUSH_RUN = advancement("rush_rush_run", builder -> builder.icon(ModItems.ELECTRIC_BATON.get())
+            .externalTrigger(OttoSprintTrigger.TriggerInstance.get())
             .type(ModAdvancement.Type.SECRET_CHALLENGE)
             .parent(MAIN_ROOT)),
 

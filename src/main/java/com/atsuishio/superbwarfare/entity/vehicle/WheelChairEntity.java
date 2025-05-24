@@ -4,7 +4,9 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity;
+import com.atsuishio.superbwarfare.init.ModCriteriaTriggers;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
+import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.tools.CustomExplosion;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
@@ -125,6 +127,18 @@ public class WheelChairEntity extends MobileVehicleEntity implements GeoEntity {
                     entity.startRiding(this);
                 }
             }
+        }
+    }
+
+    @Override
+    protected void addPassenger(@NotNull Entity newPassenger) {
+        super.addPassenger(newPassenger);
+
+        if (newPassenger instanceof ServerPlayer player
+                && (player.getMainHandItem().getItem() == ModItems.ELECTRIC_BATON.get()
+                || player.getOffhandItem().getItem() == ModItems.ELECTRIC_BATON.get())
+        ) {
+            ModCriteriaTriggers.OTTO_SPRINT.get().trigger(player);
         }
     }
 

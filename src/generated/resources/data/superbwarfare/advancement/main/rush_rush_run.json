@@ -1,0 +1,28 @@
+{
+  "parent": "superbwarfare:main/root",
+  "criteria": {
+    "0": {
+      "trigger": "superbwarfare:otto_sprint"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "superbwarfare.advancement.main.rush_rush_run.des"
+    },
+    "frame": "challenge",
+    "hidden": true,
+    "icon": {
+      "count": 1,
+      "id": "superbwarfare:electric_baton"
+    },
+    "title": {
+      "translate": "superbwarfare.advancement.main.rush_rush_run"
+    }
+  },
+  "requirements": [
+    [
+      "0"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

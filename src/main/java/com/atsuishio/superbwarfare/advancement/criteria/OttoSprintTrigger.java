@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 
-public class RPGMeleeExplosionTrigger extends SimpleCriterionTrigger<RPGMeleeExplosionTrigger.TriggerInstance> {
+public class OttoSprintTrigger extends SimpleCriterionTrigger<OttoSprintTrigger.TriggerInstance> {
 
     public void trigger(ServerPlayer pPlayer) {
         this.trigger(pPlayer, instance -> true);
@@ -23,15 +23,14 @@ public class RPGMeleeExplosionTrigger extends SimpleCriterionTrigger<RPGMeleeExp
         return TriggerInstance.CODEC;
     }
 
-    public record TriggerInstance(
-            Optional<ContextAwarePredicate> player) implements SimpleCriterionTrigger.SimpleInstance {
+    public record TriggerInstance(Optional<ContextAwarePredicate> player) implements SimpleInstance {
 
-        public static final Codec<RPGMeleeExplosionTrigger.TriggerInstance> CODEC = RecordCodecBuilder.create((instance) ->
+        public static final Codec<OttoSprintTrigger.TriggerInstance> CODEC = RecordCodecBuilder.create((instance) ->
                 instance.group(EntityPredicate.ADVANCEMENT_CODEC.optionalFieldOf("player")
-                        .forGetter(RPGMeleeExplosionTrigger.TriggerInstance::player)).apply(instance, TriggerInstance::new));
+                        .forGetter(OttoSprintTrigger.TriggerInstance::player)).apply(instance, TriggerInstance::new));
 
-        public static Criterion<RPGMeleeExplosionTrigger.TriggerInstance> get() {
-            return ModCriteriaTriggers.RPG_MELEE_EXPLOSION.get().createCriterion(new TriggerInstance(Optional.empty()));
+        public static Criterion<OttoSprintTrigger.TriggerInstance> get() {
+            return ModCriteriaTriggers.OTTO_SPRINT.get().createCriterion(new TriggerInstance(Optional.empty()));
         }
 
         @Override
