@@ -55,6 +55,8 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
     };
     public static Consumer<MobileVehicleEntity> engineSound = vehicle -> {
     };
+    public static Consumer<MobileVehicleEntity> swimSound = vehicle -> {
+    };
 
     public static final EntityDataAccessor<Integer> CANNON_RECOIL_TIME = SynchedEntityData.defineId(MobileVehicleEntity.class, EntityDataSerializers.INT);
 
@@ -176,6 +178,7 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
     public void baseTick() {
         if (!this.wasEngineRunning && this.engineRunning() && this.level().isClientSide()) {
             engineSound.accept(this);
+            swimSound.accept(this);
             if (this.hasTracks()) {
                 trackSound.accept(this);
             }
@@ -365,9 +368,9 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
             Vec3 p3 = new Vec3(positionLB.x, positionLB.y, positionLB.z);
             Vec3 p4 = new Vec3(positionRB.x, positionRB.y, positionRB.z);
 
-            if (mainSupportingBlockPos.isPresent()) {
-                BlockPos blockpos = this.mainSupportingBlockPos.get();
-            }
+//            if (mainSupportingBlockPos.isPresent()) {
+//                BlockPos blockpos = this.mainSupportingBlockPos.get();
+//            }
 
             // 确定点位是否在墙里来调整点位高度
             float p1y = (float) this.traceBlockY(p1, 3);

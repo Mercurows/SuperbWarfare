@@ -25,8 +25,6 @@ public class ClientSoundHandler {
 //                    if (mobileVehicle instanceof Hpj11Entity) {
 //                        Minecraft.getInstance().getSoundManager().play(new VehicleFireSoundInstance.HPJ11CloseFireSound(mobileVehicle));
 //                    }
-//                    Minecraft.getInstance().getSoundManager().play(new VehicleSoundInstance.EngineSound(mobileVehicle, mobileVehicle.getEngineSound()));
-//                    Minecraft.getInstance().getSoundManager().play(new VehicleSoundInstance.SwimSound(mobileVehicle));
 //                }
 //            });
         }
