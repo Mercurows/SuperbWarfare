@@ -8,7 +8,6 @@ import net.minecraft.core.UUIDUtil;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
@@ -32,7 +31,6 @@ public record MeleeAttackMessage(UUID uuid) implements CustomPacketPayload {
         if (lookingEntity != null) {
             player.level().playSound(null, lookingEntity.getOnPos(), ModSounds.MELEE_HIT.get(), SoundSource.PLAYERS, 1, (float) ((2 * org.joml.Math.random() - 1) * 0.1f + 1.0f));
             player.attack(lookingEntity);
-            player.swing(InteractionHand.MAIN_HAND, true);
         }
     }
 
