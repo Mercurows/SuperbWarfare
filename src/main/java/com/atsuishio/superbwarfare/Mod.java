@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare;
 import com.atsuishio.superbwarfare.api.event.RegisterContainersEvent;
 import com.atsuishio.superbwarfare.client.MouseMovementHandler;
 import com.atsuishio.superbwarfare.client.renderer.molang.MolangVariable;
+import com.atsuishio.superbwarfare.client.sound.FastProjectileSoundInstance;
 import com.atsuishio.superbwarfare.client.sound.VehicleFireSoundInstance;
 import com.atsuishio.superbwarfare.client.sound.VehicleSoundInstance;
 import com.atsuishio.superbwarfare.compat.CompatHolder;
@@ -11,6 +12,7 @@ import com.atsuishio.superbwarfare.component.ModDataComponents;
 import com.atsuishio.superbwarfare.config.ClientConfig;
 import com.atsuishio.superbwarfare.config.CommonConfig;
 import com.atsuishio.superbwarfare.config.ServerConfig;
+import com.atsuishio.superbwarfare.entity.projectile.FastThrowableProjectile;
 import com.atsuishio.superbwarfare.entity.vehicle.A10Entity;
 import com.atsuishio.superbwarfare.entity.vehicle.Hpj11Entity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity;
@@ -135,6 +137,9 @@ public class Mod {
 
         A10Entity.fireSound = vehicle -> Minecraft.getInstance().getSoundManager().play(new VehicleFireSoundInstance.A10FireSound(vehicle));
         Hpj11Entity.fireSound = vehicle -> Minecraft.getInstance().getSoundManager().play(new VehicleFireSoundInstance.HPJ11CloseFireSound(vehicle));
+
+        FastThrowableProjectile.flySound = entity -> Minecraft.getInstance().getSoundManager().play(new FastProjectileSoundInstance.FlySound(entity));
+        FastThrowableProjectile.nearFlySound = entity -> Minecraft.getInstance().getSoundManager().play(new FastProjectileSoundInstance.NearFlySound(entity));
     }
 
 }

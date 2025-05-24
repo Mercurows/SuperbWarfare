@@ -1,21 +1,23 @@
 package com.atsuishio.superbwarfare.client.sound;
 
-import com.atsuishio.superbwarfare.entity.LoudlyEntity;
+import com.atsuishio.superbwarfare.entity.projectile.FastThrowableProjectile;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.entity.Entity;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
-public abstract class LoudlyEntitySoundInstance extends AbstractTickableSoundInstance {
+@OnlyIn(Dist.CLIENT)
+public abstract class FastProjectileSoundInstance extends AbstractTickableSoundInstance {
 
     private final Minecraft client;
-    private final Entity entity;
+    private final FastThrowableProjectile entity;
     private double lastDistance;
     private int fade = 0;
     private boolean die = false;
 
-    public LoudlyEntitySoundInstance(SoundEvent sound, Minecraft client, Entity entity) {
+    public FastProjectileSoundInstance(SoundEvent sound, Minecraft client, FastThrowableProjectile entity) {
         super(sound, SoundSource.AMBIENT, entity.getCommandSenderWorld().getRandom());
         this.client = client;
         this.entity = entity;
@@ -23,11 +25,11 @@ public abstract class LoudlyEntitySoundInstance extends AbstractTickableSoundIns
         this.delay = 0;
     }
 
-    protected abstract boolean canPlay(Entity entity);
+    protected abstract boolean canPlay(FastThrowableProjectile entity);
 
-    protected abstract float getPitch(Entity entity);
+    protected abstract float getPitch(FastThrowableProjectile entity);
 
-    protected abstract float getVolume(Entity entity);
+    protected abstract float getVolume(FastThrowableProjectile entity);
 
     @Override
     public void tick() {
@@ -67,51 +69,49 @@ public abstract class LoudlyEntitySoundInstance extends AbstractTickableSoundIns
         }
     }
 
-    public static class EntitySound extends LoudlyEntitySoundInstance {
-        public EntitySound(Entity entity) {
-            super(entity instanceof LoudlyEntity loudlyEntity ? loudlyEntity.getSound() : null, Minecraft.getInstance(), entity);
+    @OnlyIn(Dist.CLIENT)
+    public static class FlySound extends FastProjectileSoundInstance {
+
+        public FlySound(FastThrowableProjectile entity) {
+            super(entity.getSound(), Minecraft.getInstance(), entity);
         }
 
         @Override
-        protected boolean canPlay(Entity entity) {
-            return true;
+        protected boolean canPlay(FastThrowableProjectile entity) {
+            return entity.isFastMoving();
         }
 
         @Override
-        protected float getPitch(Entity entity) {
+        protected float getPitch(FastThrowableProjectile entity) {
             return 1;
         }
 
         @Override
-        protected float getVolume(Entity entity) {
-            if (entity instanceof LoudlyEntity loudlyEntity) {
-                return (float) Math.min(loudlyEntity.getVolume() * 0.1 * entity.getDeltaMovement().length(), 1.5);
-            }
-            return 0;
+        protected float getVolume(FastThrowableProjectile entity) {
+            return (float) Math.min(entity.getVolume() * 0.1 * entity.getDeltaMovement().length(), 1.5);
         }
     }
 
-    public static class EntitySoundClose extends LoudlyEntitySoundInstance {
-        public EntitySoundClose(Entity entity) {
-            super(entity instanceof LoudlyEntity loudlyEntity ? loudlyEntity.getCloseSound() : null, Minecraft.getInstance(), entity);
+    @OnlyIn(Dist.CLIENT)
+    public static class NearFlySound extends FastProjectileSoundInstance {
+
+        public NearFlySound(FastThrowableProjectile entity) {
+            super(entity.getCloseSound(), Minecraft.getInstance(), entity);
         }
 
         @Override
-        protected boolean canPlay(Entity entity) {
-            return true;
+        protected boolean canPlay(FastThrowableProjectile entity) {
+            return entity.isFastMoving();
         }
 
         @Override
-        protected float getPitch(Entity entity) {
+        protected float getPitch(FastThrowableProjectile entity) {
             return 1;
         }
 
         @Override
-        protected float getVolume(Entity entity) {
-            if (entity instanceof LoudlyEntity loudlyEntity) {
-                return (float) Math.min(loudlyEntity.getVolume() * 0.1 * entity.getDeltaMovement().length(), 1.5);
-            }
-            return 0;
+        protected float getVolume(FastThrowableProjectile entity) {
+            return (float) Math.min(entity.getVolume() * 0.1 * entity.getDeltaMovement().length(), 1.5);
         }
     }
 }
