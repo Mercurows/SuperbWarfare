@@ -36,7 +36,6 @@ public class AureliaSceptreRenderer extends CustomGunRenderer<AureliaSceptre> {
         ItemStack itemStack = player.getMainHandItem();
         if (!(itemStack.getItem() instanceof GunItem)) return;
 
-        // TODO 准心？
         AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn, 0, 0, 0.3022, 0.3);
 
         if (renderingArms) {
