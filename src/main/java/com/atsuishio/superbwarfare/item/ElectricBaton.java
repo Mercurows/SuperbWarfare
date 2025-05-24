@@ -71,20 +71,24 @@ public class ElectricBaton extends SwordItem implements EnergyStorageItem {
 
     @Override
     public boolean isBarVisible(@NotNull ItemStack stack) {
-        return NBTTool.getTag(stack).getBoolean(TAG_OPEN);
+        return NBTTool.getTag(stack).getBoolean(TAG_OPEN) || super.isBarVisible(stack);
     }
 
     @Override
-    public int getBarWidth(ItemStack stack) {
-        var cap = stack.getCapability(Capabilities.EnergyStorage.ITEM);
-        if (cap == null) return 0;
+    public int getBarWidth(@NotNull ItemStack stack) {
+        if (NBTTool.getTag(stack).getBoolean(TAG_OPEN)) {
+            var cap = stack.getCapability(Capabilities.EnergyStorage.ITEM);
+            if (cap == null) return 0;
 
-        return Math.round((float) cap.getEnergyStored() * 13F / MAX_ENERGY);
+            return Math.round((float) cap.getEnergyStored() * 13F / MAX_ENERGY);
+        } else {
+            return super.getBarWidth(stack);
+        }
     }
 
     @Override
-    public int getBarColor(@NotNull ItemStack pStack) {
-        return 0xFFFF00;
+    public int getBarColor(@NotNull ItemStack stack) {
+        return NBTTool.getTag(stack).getBoolean(TAG_OPEN) ? 0xFFFF00 : super.getBarColor(stack);
     }
 
     @Override
