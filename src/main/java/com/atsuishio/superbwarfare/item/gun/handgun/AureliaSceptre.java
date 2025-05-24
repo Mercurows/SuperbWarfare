@@ -63,15 +63,27 @@ public class AureliaSceptre extends GunItem implements GeoItem {
         ItemStack stack = player.getMainHandItem();
         if (!(stack.getItem() instanceof GunItem)) return PlayState.STOP;
 
-        if (ClientEventHandler.firePosTimer > 0) {
-            return event.setAndContinue(RawAnimation.begin().thenLoop("animation.aurelia_sceptre.fire"));
-        }
 
         if (player.isSprinting() && player.onGround()
                 && ClientEventHandler.cantSprint == 0
                 && !(GunData.from(stack).reload.normal() || GunData.from(stack).reload.empty()) && ClientEventHandler.drawTime < 0.01 && ClientEventHandler.gunMelee == 0) {
             return event.setAndContinue(RawAnimation.begin().thenLoop("animation.aurelia_sceptre.run"));
         }
+
+        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.aurelia_sceptre.idle"));
+    }
+
+    private PlayState firePredicate(AnimationState<AureliaSceptre> event) {
+        LocalPlayer player = Minecraft.getInstance().player;
+        if (player == null) return PlayState.STOP;
+        ItemStack stack = player.getMainHandItem();
+        if (!(stack.getItem() instanceof GunItem gunItem)) return PlayState.STOP;
+        var data = GunData.from(stack);
+
+        if (ClientEventHandler.holdFire && gunItem.canShoot(data) && !data.overHeat.get()) {
+            return event.setAndContinue(RawAnimation.begin().thenLoop("animation.aurelia_sceptre.fire"));
+        }
+
 
         return event.setAndContinue(RawAnimation.begin().thenLoop("animation.aurelia_sceptre.idle"));
     }
@@ -100,6 +112,8 @@ public class AureliaSceptre extends GunItem implements GeoItem {
     public void registerControllers(AnimatableManager.ControllerRegistrar data) {
         var idleController = new AnimationController<>(this, "idleController", 6, this::idlePredicate);
         data.add(idleController);
+        var fireController = new AnimationController<>(this, "fireController", 3, this::firePredicate);
+        data.add(fireController);
         var meleeController = new AnimationController<>(this, "meleeController", 0, this::meleePredicate);
         data.add(meleeController);
     }
