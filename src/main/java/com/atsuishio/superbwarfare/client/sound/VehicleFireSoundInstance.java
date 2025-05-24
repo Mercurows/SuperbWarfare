@@ -100,7 +100,10 @@ public abstract class VehicleFireSoundInstance extends AbstractTickableSoundInst
 
         @Override
         protected boolean canPlay(MobileVehicleEntity mobileVehicle) {
-            return true;
+            if (mobileVehicle instanceof Hpj11Entity hpj11Entity) {
+                return hpj11Entity.isFiring();
+            }
+            return false;
         }
 
         @Override
