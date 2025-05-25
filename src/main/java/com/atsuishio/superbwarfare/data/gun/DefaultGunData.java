@@ -119,4 +119,7 @@ public class DefaultGunData {
             "!superbwarfare:longer_wire",
             "!superbwarfare:cupid_arrow"
     );
+
+    @SerializedName("DamageReduce")
+    public DamageReduce damageReduce = new DamageReduce();
 }

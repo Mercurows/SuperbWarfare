@@ -14,7 +14,13 @@
   "BypassesArmor": 0.15,
   "SoundRadius": 8,
   "RPM": 1300,
-  "AvailableFireModes": ["Semi", "Auto"],
+  "AvailableFireModes": [
+    "Semi",
+    "Auto"
+  ],
+  "DamageReduce": {
+    "Type": "Handgun"
+  },
   "AmmoType": "@HandgunAmmo",
   "AvailablePerks": [
     "@Ammo",

@@ -20,6 +20,9 @@
     "Semi",
     "Auto"
   ],
+  "DamageReduce": {
+    "Type": "Rifle"
+  },
   "AmmoType": "@RifleAmmo",
   "AvailablePerks": [
     "@Ammo",

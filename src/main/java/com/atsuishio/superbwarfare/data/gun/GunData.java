@@ -558,6 +558,38 @@ public class GunData {
         return defaultGunData().availableFireModes;
     }
 
+    public DamageReduce getRawDamageReduce() {
+        return defaultGunData().damageReduce;
+    }
+
+    public double getRawDamageReduceRate() {
+        return getRawDamageReduce().getRate();
+    }
+
+    public double getDamageReduceRate() {
+        for (Perk.Type type : Perk.Type.values()) {
+            var instance = this.perk.getInstance(type);
+            if (instance != null) {
+                return instance.perk().getModifiedDamageReduceRate(getRawDamageReduce());
+            }
+        }
+        return getRawDamageReduce().getRate();
+    }
+
+    public double getRawDamageReduceMinDistance() {
+        return getRawDamageReduce().getMinDistance();
+    }
+
+    public double getDamageReduceMinDistance() {
+        for (Perk.Type type : Perk.Type.values()) {
+            var instance = this.perk.getInstance(type);
+            if (instance != null) {
+                return instance.perk().getModifiedDamageReduceMinDistance(getRawDamageReduce());
+            }
+        }
+        return getRawDamageReduce().getMinDistance();
+    }
+
     // 可持久化属性开始
     public final IntValue ammo;
     public final StringEnumValue<FireMode> fireMode;

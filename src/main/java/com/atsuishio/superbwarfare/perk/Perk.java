@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.perk;
 
+import com.atsuishio.superbwarfare.data.gun.DamageReduce;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.item.PerkItem;
@@ -107,6 +108,20 @@ public class Perk {
      */
     public double getExtraDisplayDamage(double damage, GunData data, PerkInstance instance) {
         return -1;
+    }
+
+    /**
+     * 用于处理武器伤害衰减比率
+     */
+    public double getModifiedDamageReduceRate(DamageReduce reduce) {
+        return reduce.getRate();
+    }
+
+    /**
+     * 用于处理武器伤害衰减最小距离
+     */
+    public double getModifiedDamageReduceMinDistance(DamageReduce reduce) {
+        return reduce.getMinDistance();
     }
 
     public enum Type {

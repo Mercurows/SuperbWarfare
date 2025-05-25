@@ -16,6 +16,9 @@
   "SoundRadius": 18,
   "RPM": 360,
   "AvailableFireModes": ["Semi", "Auto"],
+  "DamageReduce": {
+    "Type": "Shotgun"
+  },
   "AmmoType": "@ShotgunAmmo",
   "AvailablePerks": [
     "@Ammo",

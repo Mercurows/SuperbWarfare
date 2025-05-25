@@ -7,6 +7,10 @@
   "BypassesArmor": 0.25,
   "Magazine": 1,
   "EmptyReloadTime": 6,
+  "DamageReduce": {
+    "Rate": 0.007,
+    "MinDistance": 100
+  },
   "AmmoType": "minecraft:arrow",
   "AvailablePerks": [
     "@Ammo",

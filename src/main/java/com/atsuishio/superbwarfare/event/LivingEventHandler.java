@@ -19,7 +19,6 @@ import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
 import com.atsuishio.superbwarfare.network.message.receive.DrawClientMessage;
 import com.atsuishio.superbwarfare.network.message.receive.PlayerGunKillMessage;
-import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.tools.*;
 import net.minecraft.network.chat.Component;
@@ -140,33 +139,7 @@ public class LivingEventHandler {
         if (DamageTypeTool.isGunDamage(source) && stack.getItem() instanceof GunItem) {
             var data = GunData.from(stack);
             double distance = entity.position().distanceTo(sourceEntity.position());
-
-            var ammoType = data.ammoTypeInfo().playerAmmoType();
-            if (ammoType != null) {
-                switch (ammoType) {
-                    case SHOTGUN -> {
-                        var perk = data.perk.get(Perk.Type.AMMO);
-
-                        if (perk instanceof AmmoPerk ammoPerk && ammoPerk.slug) {
-                            damage = reduceDamageByDistance(amount, distance, 0.015, 30);
-                        } else {
-                            damage = reduceDamageByDistance(amount, distance, 0.05, 15);
-                        }
-                    }
-
-                    case SNIPER -> damage = reduceDamageByDistance(amount, distance, 0.001, 150);
-                    case HEAVY -> damage = reduceDamageByDistance(amount, distance, 0.0007, 250);
-                    case HANDGUN -> damage = reduceDamageByDistance(amount, distance, 0.03, 40);
-                    case RIFLE -> damage = reduceDamageByDistance(amount, distance, 0.007, 100);
-                }
-            }
-
-            // TODO 正确计算距离衰减
-            if (stack.is(ModTags.Items.SMG)) {
-                damage = reduceDamageByDistance(amount, distance, 0.02, 50);
-            } else if (stack.getItem() == ModItems.BOCEK.get()) {
-                damage = reduceDamageByDistance(amount, distance, 0.007, 100);
-            }
+            damage = reduceDamageByDistance(amount, distance, data.getDamageReduceRate(), data.getDamageReduceMinDistance());
         }
 
         // 计算防弹插板减伤

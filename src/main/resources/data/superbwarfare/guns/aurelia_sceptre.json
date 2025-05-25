@@ -19,6 +19,9 @@
   "AvailableFireModes": [
     "Auto"
   ],
+  "DamageReduce": {
+    "Type": "Handgun"
+  },
   "DefaultFireMode": "Auto",
   "AmmoType": "@HandgunAmmo",
   "AvailablePerks": [

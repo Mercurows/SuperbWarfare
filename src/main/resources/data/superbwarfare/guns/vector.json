@@ -16,6 +16,9 @@
   "SoundRadius": 11,
   "RPM": 1200,
   "AvailableFireModes": ["Semi", "Burst", "Auto"],
+  "DamageReduce": {
+    "Type": "Smg"
+  },
   "AmmoType": "@HandgunAmmo",
   "AvailablePerks": [
     "@Ammo",

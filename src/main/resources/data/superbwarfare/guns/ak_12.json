@@ -17,6 +17,9 @@
   "SoundRadius": 12,
   "RPM": 700,
   "AvailableFireModes": ["Semi", "Auto"],
+  "DamageReduce": {
+    "Type": "Rifle"
+  },
   "AmmoType": "@RifleAmmo",
   "AvailablePerks": [
     "@Ammo",

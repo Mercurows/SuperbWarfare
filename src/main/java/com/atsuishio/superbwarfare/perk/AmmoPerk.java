@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.perk;
 
+import com.atsuishio.superbwarfare.data.gun.DamageReduce;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity;
 import net.minecraft.core.Holder;
@@ -60,6 +61,22 @@ public class AmmoPerk extends Perk {
 
     public double getModifiedVelocity(GunData data, PerkInstance instance) {
         return data.velocity() * this.speedRate;
+    }
+
+    @Override
+    public double getModifiedDamageReduceRate(DamageReduce reduce) {
+        if (this.slug && reduce.type == DamageReduce.ReduceType.SHOTGUN) {
+            return 0.015;
+        }
+        return super.getModifiedDamageReduceRate(reduce);
+    }
+
+    @Override
+    public double getModifiedDamageReduceMinDistance(DamageReduce reduce) {
+        if (this.slug && reduce.type == DamageReduce.ReduceType.SHOTGUN) {
+            return super.getModifiedDamageReduceMinDistance(reduce) * 2;
+        }
+        return super.getModifiedDamageReduceMinDistance(reduce);
     }
 
     public static class Builder {
