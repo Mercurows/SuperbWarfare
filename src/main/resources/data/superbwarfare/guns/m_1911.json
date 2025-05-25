@@ -13,6 +13,9 @@
   "BypassesArmor": 0.2,
   "SoundRadius": 10,
   "RPM": 400,
+  "DamageReduce": {
+    "Type": "Handgun"
+  },
   "AmmoType": "@HandgunAmmo",
   "AvailablePerks": [
     "@Ammo",

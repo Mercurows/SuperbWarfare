@@ -13,6 +13,9 @@
   "SoundRadius": 10,
   "RPM": 240,
   "AmmoType": "@RifleAmmo",
+  "DamageReduce": {
+    "Type": "Rifle"
+  },
   "ShootDelay": 6,
   "AvailablePerks": [
     "@Ammo",

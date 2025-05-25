@@ -18,6 +18,9 @@
   "BypassesArmor": 0.3,
   "SoundRadius": 15,
   "BoltActionTime": 12,
+  "DamageReduce": {
+    "Type": "Rifle"
+  },
   "AmmoType": "@RifleAmmo",
   "AvailablePerks": [
     "@Ammo",

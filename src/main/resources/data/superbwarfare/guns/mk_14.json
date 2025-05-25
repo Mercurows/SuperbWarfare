@@ -16,7 +16,13 @@
   "BypassesArmor": 0.4,
   "SoundRadius": 16,
   "RPM": 700,
-  "AvailableFireModes": ["Semi", "Auto"],
+  "AvailableFireModes": [
+    "Semi",
+    "Auto"
+  ],
+  "DamageReduce": {
+    "Type": "Rifle"
+  },
   "AmmoType": "@RifleAmmo",
   "AvailablePerks": [
     "@Ammo",

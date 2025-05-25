@@ -15,6 +15,9 @@
   "EmptyReloadTime": 80,
   "BypassesArmor": 0.6,
   "SoundRadius": 18,
+  "DamageReduce": {
+    "Type": "Rifle"
+  },
   "AmmoType": "@SniperAmmo",
   "AvailablePerks": [
     "@Ammo",

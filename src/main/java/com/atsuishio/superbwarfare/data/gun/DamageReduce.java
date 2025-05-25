@@ -8,12 +8,13 @@ public class DamageReduce {
     public ReduceType type = null;
 
     @SerializedName("Rate")
-    private double rate = 0.007;
+    private double rate;
 
     @SerializedName("MinDistance")
-    private double minDistance = 100;
+    private double minDistance;
 
     public DamageReduce() {
+        this(ReduceType.EMPTY);
     }
 
     public DamageReduce(ReduceType type) {
@@ -56,6 +57,8 @@ public class DamageReduce {
         RIFLE("Rifle", 0.007, 100),
         @SerializedName("Smg")
         SMG("Smg", 0.02, 50),
+        @SerializedName("Empty")
+        EMPTY("Empty", 0, 0),
         ;
 
         public final double rate;

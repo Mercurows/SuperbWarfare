@@ -14,6 +14,9 @@
   "BypassesArmor": 0.01,
   "SoundRadius": 16,
   "RPM": 600,
+  "DamageReduce": {
+    "Type": "Shotgun"
+  },
   "AmmoType": "@ShotgunAmmo",
   "AvailablePerks": [
     "@Ammo",

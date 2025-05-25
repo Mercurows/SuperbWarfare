@@ -15,6 +15,9 @@
   "AmmoType": "@RifleAmmo",
   "ShootDelay": 10,
   "HeatPerShoot": 0.5,
+  "DamageReduce": {
+    "Type": "Rifle"
+  },
   "AvailablePerks": [
     "@Ammo",
     "superbwarfare:field_doctor",

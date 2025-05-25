@@ -19,6 +19,9 @@
   "FinishTime": 18,
   "BypassesArmor": 0.54,
   "SoundRadius": 18,
+  "DamageReduce": {
+    "Type": "Sniper"
+  },
   "AmmoType": "@SniperAmmo",
   "AvailablePerks": [
     "@Ammo",

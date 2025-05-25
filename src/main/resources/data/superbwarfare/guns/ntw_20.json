@@ -15,6 +15,9 @@
   "EmptyReloadTime": 112,
   "BypassesArmor": 1,
   "SoundRadius": 22,
+  "DamageReduce": {
+    "Type": "Heavy"
+  },
   "AmmoType": "@HeavyAmmo",
   "AvailablePerks": [
     "@Ammo",
