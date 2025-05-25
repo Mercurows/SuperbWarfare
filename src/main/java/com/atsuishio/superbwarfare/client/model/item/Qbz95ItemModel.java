@@ -155,11 +155,7 @@ public class Qbz95ItemModel extends GeoModel<Qbz95Item> {
         }
 
         GeoBone flare = getAnimationProcessor().getBone("flare");
-        int BarrelType = data.attachment.get(AttachmentType.BARREL);
-
-        if (BarrelType == 1) {
-            flare.setPosZ(-2);
-        }
+        flare.setPosZ(-2);
 
         ClientEventHandler.gunRootMove(getAnimationProcessor());
 

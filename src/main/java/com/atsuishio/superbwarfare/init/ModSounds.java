@@ -234,6 +234,8 @@ public class ModSounds {
 
     public static final DeferredHolder<SoundEvent, SoundEvent> M_98B_FIRE_1P = REGISTRY.register("m_98b_fire_1p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("m_98b_fire_1p")));
     public static final DeferredHolder<SoundEvent, SoundEvent> M_98B_FIRE_3P = REGISTRY.register("m_98b_fire_3p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("m_98b_fire_3p")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> M_98B_FIRE_1P_S = REGISTRY.register("m_98b_fire_1p_s", () -> SoundEvent.createVariableRangeEvent(Mod.loc("m_98b_fire_1p_s")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> M_98B_FIRE_3P_S = REGISTRY.register("m_98b_fire_3p_s", () -> SoundEvent.createVariableRangeEvent(Mod.loc("m_98b_fire_3p_s")));
     public static final DeferredHolder<SoundEvent, SoundEvent> M_98B_FAR = REGISTRY.register("m_98b_far", () -> SoundEvent.createVariableRangeEvent(Mod.loc("m_98b_far")));
     public static final DeferredHolder<SoundEvent, SoundEvent> M_98B_VERYFAR = REGISTRY.register("m_98b_veryfar", () -> SoundEvent.createVariableRangeEvent(Mod.loc("m_98b_veryfar")));
     public static final DeferredHolder<SoundEvent, SoundEvent> M_98B_RELOAD_NORMAL = REGISTRY.register("m_98b_reload_normal", () -> SoundEvent.createVariableRangeEvent(Mod.loc("m_98b_reload_normal")));

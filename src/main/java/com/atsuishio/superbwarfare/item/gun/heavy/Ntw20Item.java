@@ -88,15 +88,9 @@ public class Ntw20Item extends GunItem implements GeoItem {
     }
 
     private PlayState editPredicate(AnimationState<Ntw20Item> event) {
-        LocalPlayer player = Minecraft.getInstance().player;
-        if (player == null) return PlayState.STOP;
-        ItemStack stack = player.getMainHandItem();
-        if (!(stack.getItem() instanceof GunItem)) return PlayState.STOP;
-
         if (ClickHandler.isEditing) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.ntw_20.edit"));
         }
-
         return event.setAndContinue(RawAnimation.begin().thenLoop("animation.ntw_20.idle"));
     }
 

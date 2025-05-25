@@ -2,10 +2,10 @@
   "type": "patchouli:shapeless_book_recipe",
   "ingredients": [
     {
-      "item": "minecraft:book"
+      "id": "minecraft:book"
     },
     {
-      "item": "superbwarfare:empty_perk"
+      "id": "superbwarfare:empty_perk"
     }
   ],
   "book": "superbwarfare:superb_warfare_manual"

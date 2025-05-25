@@ -58,7 +58,7 @@ public class SvdItemRenderer extends CustomGunRenderer<SvdItem> {
             case 2 ->
                     AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, -0.01, 0.24, 18, 1, 255, 0, 0, 255, "pso_1", true);
             case 3 ->
-                    AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.2525, -0.1, 0.08f, 255, 0, 0, 255, "sniper", true);
+                    AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.2525, -0.1, 0.1f, 255, 0, 0, 255, "sniper", true);
         }
 
 

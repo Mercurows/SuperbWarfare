@@ -1191,6 +1191,22 @@
       }
     ]
   },
+  "m_98b_fire_1p_s": {
+    "sounds": [
+      {
+        "name": "superbwarfare:m_98b/m_98b_fire_1p_s",
+        "stream": false
+      }
+    ]
+  },
+  "m_98b_fire_3p_s": {
+    "sounds": [
+      {
+        "name": "superbwarfare:m_98b/m_98b_fire_3p_s",
+        "stream": false
+      }
+    ]
+  },
   "m_98b_far": {
     "sounds": [
       {

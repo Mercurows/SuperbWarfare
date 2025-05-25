@@ -1,8 +1,11 @@
 package com.atsuishio.superbwarfare.client.renderer.gun;
 
 import com.atsuishio.superbwarfare.client.AnimationHelper;
+import com.atsuishio.superbwarfare.client.ItemModelHelper;
 import com.atsuishio.superbwarfare.client.model.item.M98bItemModel;
 import com.atsuishio.superbwarfare.client.renderer.CustomGunRenderer;
+import com.atsuishio.superbwarfare.data.gun.GunData;
+import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.sniper.M98bItem;
@@ -37,15 +40,37 @@ public class M98bItemRenderer extends CustomGunRenderer<M98bItem> {
         ItemStack itemStack = player.getMainHandItem();
         if (!(itemStack.getItem() instanceof GunItem)) return;
 
+        var data = GunData.from(itemStack);
+        int scopeType = data.attachment.get(AttachmentType.SCOPE);
+
+        if (data.attachment.get(AttachmentType.SCOPE) == 2 && !data.tag.getBoolean("ScopeAlt") && (bone.getName().endsWith("_hide"))) {
+            bone.setHidden(ClientEventHandler.zoomPos > 0.7 && ClientEventHandler.zoom);
+        }
+
+        if (data.attachment.get(AttachmentType.SCOPE) == 3 && (bone.getName().endsWith("_hide3"))) {
+            bone.setHidden(ClientEventHandler.zoomPos > 0.7 && ClientEventHandler.zoom);
+        }
+
+        switch (scopeType) {
+            case 1 ->
+                    AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.275, 30, 1.2f, 255, 0, 0, 255, "dot", false);
+            case 2 -> {
+                if (data.tag.getBoolean("ScopeAlt")) {
+                    AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.34, 30, 0.18f, 255, 0, 0, 255, "delta", false);
+                } else {
+                    AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.294, 13, 0.75f, 255, 0, 0, 255, "hamr", true);
+                }
+            }
+            case 3 ->
+                    AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.29, 27, 5f, 255, 0, 0, 255, "sniper", true);
+        }
+
         AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn, 0, 0, 2.15625, 0.6);
+        ItemModelHelper.handleGunAttachments(bone, itemStack, name);
 
-        if (name.equals("scope2")) {
-            bone.setHidden(ClientEventHandler.zoomPos < 0.7 || !ClientEventHandler.zoom);
-        }
-
-        if (name.equals("qiang")) {
-            bone.setHidden(ClientEventHandler.zoomPos > 0.7);
-        }
+//        if (name.equals("ironSight")) {
+//            bone.setHidden(GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) != 0);
+//        }
 
         if (renderingArms) {
             AnimationHelper.renderArms(player, this.transformType, stack, name, bone, this.currentBuffer, type, packedLightIn, true);

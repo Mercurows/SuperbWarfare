@@ -1,8 +1,8 @@
 package com.atsuishio.superbwarfare.client.model.item;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.data.gun.GunData;
+import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.sniper.M98bItem;
@@ -15,7 +15,18 @@ import software.bernie.geckolib.animation.AnimationState;
 import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.model.GeoModel;
 
+import static com.atsuishio.superbwarfare.event.ClientEventHandler.isProne;
+
 public class M98bItemModel extends GeoModel<M98bItem> {
+
+    public static float fireRotY = 0f;
+    public static float fireRotZ = 0f;
+    public static float rotXBipod = 0f;
+    public static float rotXSight = 0f;
+
+    public static float posYAlt = 0.5625f;
+    public static float scaleZAlt = 0.88f;
+    public static float posZAlt = 7.6f;
 
     @Override
     public ResourceLocation getAnimationResource(M98bItem animatable) {
@@ -35,56 +46,105 @@ public class M98bItemModel extends GeoModel<M98bItem> {
     @Override
     public void setCustomAnimations(M98bItem animatable, long instanceId, AnimationState animationState) {
         GeoBone gun = getAnimationProcessor().getBone("bone");
-        GeoBone shen = getAnimationProcessor().getBone("shen");
         GeoBone camera = getAnimationProcessor().getBone("camera");
         GeoBone main = getAnimationProcessor().getBone("0");
-        GeoBone scope = getAnimationProcessor().getBone("scope2");
+        GeoBone scope = getAnimationProcessor().getBone("Scope1");
+        GeoBone scope2 = getAnimationProcessor().getBone("Scope2");
+        GeoBone scope3 = getAnimationProcessor().getBone("Scope3");
+        GeoBone button = getAnimationProcessor().getBone("button");
+        GeoBone button6 = getAnimationProcessor().getBone("button6");
+        GeoBone button7 = getAnimationProcessor().getBone("button7");
 
         Player player = Minecraft.getInstance().player;
         if (player == null) return;
         ItemStack stack = player.getMainHandItem();
         if (!(stack.getItem() instanceof GunItem)) return;
 
+        var data = GunData.from(stack);
+        int type = data.attachment.get(AttachmentType.SCOPE);
+
         float times = 0.6f * (float) Math.min(Minecraft.getInstance().getTimer().getRealtimeDeltaTicks(), 0.8);
         double zt = ClientEventHandler.zoomTime;
         double zp = ClientEventHandler.zoomPos;
         double zpz = ClientEventHandler.zoomPosZ;
-
         double fpz = ClientEventHandler.firePosZ * 7 * times;
         double fp = ClientEventHandler.firePos;
         double fr = ClientEventHandler.fireRot;
 
-        shen.setPosX((float) (0.95f * ClientEventHandler.recoilHorizon * fpz * fp));
-        shen.setPosY((float) (0.4f * fp + 0.44f * fr));
-        shen.setPosZ((float) (3.325 * fp + 0.34f * fr + 2.35 * fpz));
-        shen.setRotX((float) (0.01f * fp + 0.15f * fr + 0.01f * fpz));
-        shen.setRotY((float) (0.1f * ClientEventHandler.recoilHorizon * fpz));
-        shen.setRotZ((float) ((0.08f + 0.1 * fr) * ClientEventHandler.recoilHorizon));
+        boolean scopeAlt = data.tag.getBoolean("ScopeAlt");
+        posYAlt = Mth.lerp(times, posYAlt, scopeAlt ? -0.9f : 0.05f);
+        scaleZAlt = Mth.lerp(times, scaleZAlt, scopeAlt ? 0.5f : 0.92f);
+        posZAlt = Mth.lerp(times, posZAlt, scopeAlt ? 2.5f : 5.5f);
 
-        shen.setPosX((float) (shen.getPosX() * (1 - 0.4 * zt)));
-        shen.setPosY((float) (shen.getPosY() * (1 - 0.5 * zt)));
-        shen.setPosZ((float) (shen.getPosZ() * (1 - 0.6 * zt)));
-        shen.setRotX((float) (shen.getRotX() * (1 - 0.87 * zt)));
-        shen.setRotY((float) (shen.getRotY() * (1 - 0.7 * zt)));
-        shen.setRotZ((float) (shen.getRotZ() * (1 - 0.65 * zt)));
+        float posY = switch (type) {
+            case 0 -> 0.07f;
+            case 1 -> 0.008f;
+            case 2 -> posYAlt;
+            case 3 -> -0.2f;
+            default -> 0f;
+        };
+        float scaleZ = switch (type) {
+            case 0, 1 -> 0.5f;
+            case 2 -> scaleZAlt;
+            case 3 -> 0.891f;
+            default -> 0f;
+        };
+        float posZ = switch (type) {
+            case 0, 1 -> 2.5f;
+            case 2 -> posZAlt;
+            case 3 -> 6f;
+            default -> 0f;
+        };
 
-        CrossHairOverlay.gunRot = shen.getRotZ();
-
-        scope.setPosZ(75.2f * (float) (fp + 0.54f * fr));
-        shen.setPosX(0.2f * (float) (ClientEventHandler.recoilHorizon * (0.5 + 0.4 * ClientEventHandler.fireSpread)));
-
-        gun.setPosX(2.245f * (float) zp);
-        gun.setPosY(0.3f * (float) zp - (float) (0.2f * zpz));
-        gun.setPosZ(4.2f * (float) zp + (float) (0.3f * zpz));
+        gun.setPosX(2.3f * (float) zp);
+        gun.setPosY(posY * (float) zp - (float) (0.2f * zpz));
+        gun.setPosZ(posZ * (float) zp + (float) (0.3f * zpz));
+        gun.setScaleZ(1f - (scaleZ * (float) zp));
         gun.setRotZ((float) (0.02f * zpz));
+        scope.setScaleZ(1f - (0.6f * (float) zp));
+        scope2.setScaleZ(1f - ((scaleZAlt - 0.3f) * (float) zp));
+        scope3.setScaleZ(1f - (0.2f * (float) zp));
+        button.setScaleY(1f - (0.85f * (float) zp));
+        button6.setScaleX(1f - (0.8f * (float) zp));
+        button7.setScaleX(1f - (0.8f * (float) zp));
 
         ClientEventHandler.gunRootMove(getAnimationProcessor());
 
-        float numR = (float) (1 - 0.88 * zt);
+        GeoBone shen = getAnimationProcessor().getBone("fire");
+
+        fireRotY = (float) Mth.lerp(0.3f * times, fireRotY, 0.2f * ClientEventHandler.recoilHorizon * fpz);
+        fireRotZ = (float) Mth.lerp(2f * times, fireRotZ, (0.4f + 0.5 * fpz) * ClientEventHandler.recoilHorizon);
+
+        shen.setPosX(-0.4f * (float) (ClientEventHandler.recoilHorizon * (0.5 + 0.4 * ClientEventHandler.fireSpread)));
+        shen.setPosY((float) (0.4f * fp + 0.44f * fr));
+        shen.setPosZ((float) (2.825 * fp + 0.24f * fr + 1.25 * fpz));
+        shen.setRotX((float) (0.01f * fp + 0.08f * fr + 0.01f * fpz));
+        shen.setRotY(fireRotY);
+        shen.setRotZ(fireRotZ);
+
+        shen.setPosX((float) (shen.getPosX() * (1 - 0.4 * zt)));
+        shen.setPosY((float) (shen.getPosY() * (-1 + 0.8 * zt)));
+        shen.setPosZ((float) (shen.getPosZ() * (1 - 0.2 * zt)));
+        shen.setRotX((float) (shen.getRotX() * (1 - 0.8 * zt)));
+        shen.setRotY((float) (shen.getRotY() * (1 - 0.85 * zt)));
+        shen.setRotZ((float) (shen.getRotZ() * (1 - 0.4 * zt)));
+
+        GeoBone l = getAnimationProcessor().getBone("l");
+        GeoBone r = getAnimationProcessor().getBone("r");
+        rotXBipod = Mth.lerp(1.5f * times, rotXBipod, isProne(player) ? -90 : 0);
+        l.setRotX(rotXBipod * Mth.DEG_TO_RAD);
+        r.setRotX(rotXBipod * Mth.DEG_TO_RAD);
+
+        GeoBone sight1fold = getAnimationProcessor().getBone("SightFold1");
+        GeoBone sight2fold = getAnimationProcessor().getBone("SightFold2");
+        rotXSight = Mth.lerp(1.5f * times, rotXSight, type == 0 ? 0 : 90);
+        sight1fold.setRotX(rotXSight * Mth.DEG_TO_RAD);
+        sight2fold.setRotX(rotXSight * Mth.DEG_TO_RAD);
+
+        float numR = (float) (1 - 0.9 * zt);
         float numP = (float) (1 - 0.68 * zt);
 
-        var data = GunData.from(stack);
-        if (data.reload.time() > 0) {
+        if (data.reload.time() > 0 || data.bolt.actionTimer.get() > 0) {
             main.setRotX(numR * main.getRotX());
             main.setRotY(numR * main.getRotY());
             main.setRotZ(numR * main.getRotZ());
@@ -94,13 +154,6 @@ public class M98bItemModel extends GeoModel<M98bItem> {
             camera.setRotX(numR * camera.getRotX());
             camera.setRotY(numR * camera.getRotY());
             camera.setRotZ(numR * camera.getRotZ());
-
-            scope.setRotX(numR * scope.getRotX());
-            scope.setRotY(numR * scope.getRotY());
-            scope.setRotZ(numR * scope.getRotZ());
-            scope.setPosX(numP * scope.getPosX());
-            scope.setPosY(numP * scope.getPosY());
-            scope.setPosZ(numP * scope.getPosZ());
         }
         ClientEventHandler.handleReloadShake(Mth.RAD_TO_DEG * camera.getRotX(), Mth.RAD_TO_DEG * camera.getRotY(), Mth.RAD_TO_DEG * camera.getRotZ());
     }
