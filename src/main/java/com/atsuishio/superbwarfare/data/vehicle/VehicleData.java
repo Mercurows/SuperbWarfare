@@ -6,8 +6,12 @@ import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 public class VehicleData {
@@ -44,6 +48,41 @@ public class VehicleData {
 
     public float repairAmount() {
         return data.repairAmount;
+    }
+
+    public String repairMaterial() {
+        return data.repairMaterial;
+    }
+
+    public float repairMaterialHealAmount() {
+        return data.repairMaterialHealAmount;
+    }
+
+    public boolean canRepairManually() {
+        var material = repairMaterial();
+        if (material == null) return false;
+
+        if (material.startsWith("#")) {
+            material = material.substring(1);
+        }
+        return ResourceLocation.tryParse(material) != null;
+    }
+
+    public boolean isRepairMaterial(ItemStack stack) {
+        var material = repairMaterial();
+        var useTag = false;
+
+        if (material.startsWith("#")) {
+            material = material.substring(1);
+            useTag = true;
+        }
+
+        var location = ResourceLocation.parse(material);
+        if (!useTag) {
+            return stack.getItem() == BuiltInRegistries.ITEM.get(location);
+        } else {
+            return stack.is(ItemTags.create(location));
+        }
     }
 
     public int maxEnergy() {

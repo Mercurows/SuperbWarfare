@@ -22,6 +22,14 @@ public class DefaultVehicleData {
     @SerializedName("RepairAmount")
     public float repairAmount = VehicleConfig.REPAIR_AMOUNT.get().floatValue();
 
+    @ServerOnly
+    @SerializedName("RepairMaterial")
+    public String repairMaterial = "minecraft:iron_ingot";
+
+    @ServerOnly
+    @SerializedName("RepairMaterialHealAmount")
+    public float repairMaterialHealAmount = 50;
+
     @SerializedName("MaxEnergy")
     public int maxEnergy = 100000;
 

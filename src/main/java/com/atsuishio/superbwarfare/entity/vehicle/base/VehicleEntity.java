@@ -50,7 +50,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.entity.vehicle.DismountHelper;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.material.Fluid;
@@ -334,6 +333,7 @@ public abstract class VehicleEntity extends Entity {
     @Override
     public @NotNull InteractionResult interact(Player player, @NotNull InteractionHand hand) {
         if (player.getVehicle() == this) return InteractionResult.PASS;
+        var data = data();
 
         ItemStack stack = player.getMainHandItem();
         if (player.isShiftKeyDown() && stack.is(ModItems.CROWBAR.get()) && this.getPassengers().isEmpty()) {
@@ -344,8 +344,11 @@ public abstract class VehicleEntity extends Entity {
             this.remove(RemovalReason.DISCARDED);
             this.discard();
             return InteractionResult.SUCCESS;
-        } else if (this.getHealth() < this.getMaxHealth() && stack.is(Items.IRON_INGOT)) {
-            this.heal(Math.min(50, this.getMaxHealth()));
+        } else if (this.getHealth() < this.getMaxHealth()
+                && data.canRepairManually()
+                && data.isRepairMaterial(stack)
+        ) {
+            this.heal(Math.min(data.repairMaterialHealAmount(), this.getMaxHealth()));
             stack.shrink(1);
             if (!this.level().isClientSide) {
                 this.level().playSound(null, this, SoundEvents.IRON_GOLEM_REPAIR, this.getSoundSource(), 0.5f, 1);
