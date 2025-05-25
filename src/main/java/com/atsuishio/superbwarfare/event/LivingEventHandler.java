@@ -173,7 +173,7 @@ public class LivingEventHandler {
         if (entity instanceof TargetEntity && sourceEntity instanceof Player player) {
             player.displayClientMessage(Component.translatable("tips.superbwarfare.target.damage",
                     FormatTool.format2D(damage),
-                    FormatTool.format1D(entity.position().distanceTo(sourceEntity.position())), "m"), false);
+                    FormatTool.format1D(entity.position().distanceTo(sourceEntity.position()), "m")), false);
         }
     }
 
