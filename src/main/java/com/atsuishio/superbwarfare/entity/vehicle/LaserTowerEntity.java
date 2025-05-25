@@ -220,7 +220,7 @@ public class LaserTowerEntity extends EnergyVehicleEntity implements GeoEntity, 
 
         Vec3 barrelRootPos = new Vec3(this.getX(), this.getY() + 1.390625f, this.getZ());
 
-        if (entityData.get(TARGET_UUID).equals("none") && tickCount % 5 == 0) {
+        if (entityData.get(TARGET_UUID).equals("none") && tickCount % 10 == 0 && entityData.get(COOL_DOWN) == 0) {
             Entity naerestEntity = seekNearLivingEntity(this, barrelRootPos, -40, 90, 1, 72, 0.01);
             if (naerestEntity != null) {
                 entityData.set(TARGET_UUID, naerestEntity.getStringUUID());
@@ -345,7 +345,7 @@ public class LaserTowerEntity extends EnergyVehicleEntity implements GeoEntity, 
 
     private PlayState movementPredicate(AnimationState<LaserTowerEntity> event) {
         if (this.entityData.get(COOL_DOWN) > 10) {
-            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.lt.fire"));
+            return event.setAndContinue(RawAnimation.begin().thenPlayAndHold("animation.lt.fire"));
         }
         return event.setAndContinue(RawAnimation.begin().thenLoop("animation.lt.idle"));
     }

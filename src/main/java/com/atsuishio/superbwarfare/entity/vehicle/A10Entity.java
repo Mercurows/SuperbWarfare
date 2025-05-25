@@ -485,7 +485,7 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
                     }
 
                     if (backInputDown) {
-                        this.entityData.set(POWER, Math.max(this.entityData.get(POWER) - 0.004f, -0.6f));
+                        this.entityData.set(POWER, Math.max(this.entityData.get(POWER) - 0.002f, -0.2f));
                     }
                 }
 

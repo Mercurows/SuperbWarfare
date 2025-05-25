@@ -1002,14 +1002,14 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
 
     private PlayState cannonShootPredicate(AnimationState<Yx100Entity> event) {
         if (this.entityData.get(CANNON_RECOIL_TIME) > 0) {
-            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.yx100.fire"));
+            return event.setAndContinue(RawAnimation.begin().thenPlayAndHold("animation.yx100.fire"));
         }
         return event.setAndContinue(RawAnimation.begin().thenLoop("animation.yx100.idle"));
     }
 
     private PlayState coaxShootPredicate(AnimationState<Yx100Entity> event) {
         if (this.entityData.get(FIRE_ANIM) > 0) {
-            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.yx100.fire_coax"));
+            return event.setAndContinue(RawAnimation.begin().thenPlayAndHold("animation.yx100.fire_coax"));
         }
         return event.setAndContinue(RawAnimation.begin().thenLoop("animation.yx100.idle_coax"));
     }
@@ -1017,7 +1017,7 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
 
     private PlayState gunShootPredicate(AnimationState<Yx100Entity> event) {
         if (this.entityData.get(GUN_FIRE_TIME) > 0) {
-            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.yx100.fire2"));
+            return event.setAndContinue(RawAnimation.begin().thenPlayAndHold("animation.yx100.fire2"));
         }
         return event.setAndContinue(RawAnimation.begin().thenLoop("animation.yx100.idle2"));
     }

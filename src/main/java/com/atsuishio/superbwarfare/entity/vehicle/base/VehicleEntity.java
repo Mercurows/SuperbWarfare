@@ -460,8 +460,9 @@ public abstract class VehicleEntity extends Entity {
         }
 
         if (attacker != null) {
+            Vec3 toVec = new Vec3(getX(), getY() + getBbHeight() / 2, getZ()).vectorTo(attacker.position()).normalize();
             float angle = (float) java.lang.Math.abs(VectorTool.calculateAngle(this.position().vectorTo(attacker.position()), this.getViewVector(1)));
-            return java.lang.Math.max(1f + multiply * ((angle - 90) / 90), 0.5f);
+            return (float) java.lang.Math.max(1f - multiply * toVec.dot(getViewVector(1)), 0.5f);
         }
 
         return 1;

@@ -86,7 +86,7 @@
     },
     {
       "Type": "Multiply",
-      "Value": 5,
+      "Value": 3,
       "Source": "superbwarfare:vehicle_strike"
     },
     {
