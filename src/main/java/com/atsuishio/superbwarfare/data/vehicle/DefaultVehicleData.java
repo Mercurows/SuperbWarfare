@@ -30,6 +30,21 @@ public class DefaultVehicleData {
     @SerializedName("RepairMaterialHealAmount")
     public float repairMaterialHealAmount = 50;
 
+    /**
+     * 开始自动扣血时的血量比例
+     */
+    @ServerOnly
+    @SerializedName("SelfHurtPercent")
+    public float selfHurtPercent = 0.1F;
+
+    /**
+     * 自动扣血每tick扣血量
+     */
+    @ServerOnly
+    @SerializedName("SelfHurtAmount")
+    public float selfHurtAmount = 0.1F;
+
+
     @SerializedName("MaxEnergy")
     public int maxEnergy = 100000;
 

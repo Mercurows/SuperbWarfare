@@ -9,6 +9,7 @@ import com.google.common.cache.LoadingCache;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
+import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
@@ -83,6 +84,14 @@ public class VehicleData {
         } else {
             return stack.is(ItemTags.create(location));
         }
+    }
+
+    public float selfHurtPercent() {
+        return Mth.clamp(data.selfHurtPercent, 0, 1);
+    }
+
+    public float selfHurtAmount() {
+        return data.selfHurtAmount;
     }
 
     public int maxEnergy() {

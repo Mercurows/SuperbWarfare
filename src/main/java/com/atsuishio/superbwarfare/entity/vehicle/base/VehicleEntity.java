@@ -617,9 +617,10 @@ public abstract class VehicleEntity extends Entity {
 
         Entity attacker = EntityFindUtil.findEntity(this.level(), this.entityData.get(LAST_ATTACKER_UUID));
 
-        if (this.getHealth() <= 0.1 * this.getMaxHealth()) {
+        var data = data();
+        if (this.getHealth() <= data.selfHurtPercent() * this.getMaxHealth()) {
             // 血量过低时自动扣血
-            this.onHurt(0.1f, attacker, false);
+            this.onHurt(data.selfHurtAmount(), attacker, false);
         } else {
             // 呼吸回血
             if (repairCoolDown == 0) {
