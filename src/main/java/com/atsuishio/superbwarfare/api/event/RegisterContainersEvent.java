@@ -20,26 +20,14 @@ public class RegisterContainersEvent extends Event implements IModBusEvent {
     public static final List<ItemStack> containers = new ArrayList<>();
 
     public <T extends Entity> void add(DeferredHolder<EntityType<?>, EntityType<T>> type) {
-        add(type.get(), false);
-    }
-
-    public <T extends Entity> void add(DeferredHolder<EntityType<?>, EntityType<T>> type, boolean canBePlacedAboveWater) {
-        add(type.get(), canBePlacedAboveWater);
+        add(type.get());
     }
 
     public <T extends Entity> void add(EntityType<T> type) {
-        add(type, false);
-    }
-
-    public <T extends Entity> void add(EntityType<T> type, boolean canBePlacedAboveWater) {
-        containers.add(ContainerBlockItem.createInstance(type, canBePlacedAboveWater));
+        containers.add(ContainerBlockItem.createInstance(type));
     }
 
     public void add(Entity entity) {
-        add(entity, false);
-    }
-
-    public void add(Entity entity, boolean canBePlacedAboveWater) {
-        containers.add(ContainerBlockItem.createInstance(entity, canBePlacedAboveWater));
+        containers.add(ContainerBlockItem.createInstance(entity));
     }
 }
