@@ -13,7 +13,6 @@ public class ClientConfig {
         DisplayConfig.init(builder);
         VehicleControlConfig.init(builder);
         EnvironmentChecksumConfig.init(builder);
-        SeekConfig.init(builder);
 
         return builder.build();
     }

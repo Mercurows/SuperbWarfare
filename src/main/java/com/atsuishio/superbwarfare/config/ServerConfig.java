@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.config;
 
+import com.atsuishio.superbwarfare.config.client.SeekConfig;
 import com.atsuishio.superbwarfare.config.server.*;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
@@ -13,6 +14,7 @@ public class ServerConfig {
         ExplosionConfig.init(builder);
         VehicleConfig.init(builder);
         MiscConfig.init(builder);
+        SeekConfig.init(builder);
 
         return builder.build();
     }
