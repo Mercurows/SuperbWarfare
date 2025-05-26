@@ -291,9 +291,8 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
     public void releaseSmokeDecoy(Vec3 vec3) {
         if (decoyInputDown) {
             if (this.entityData.get(DECOY_COUNT) > 0 && this.level() instanceof ServerLevel) {
-                Entity passenger = getFirstPassenger();
                 for (int i = 0; i < 8; i++) {
-                    SmokeDecoyEntity smokeDecoyEntity = new SmokeDecoyEntity((LivingEntity) passenger, this.level());
+                    SmokeDecoyEntity smokeDecoyEntity = new SmokeDecoyEntity(this.level());
                     smokeDecoyEntity.setPos(this.getX(), this.getY() + getBbHeight(), this.getZ());
                     smokeDecoyEntity.decoyShoot(this, vec3.yRot((-78.75f + 22.5F * i) * Mth.DEG_TO_RAD), 4f, 8);
                     this.level().addFreshEntity(smokeDecoyEntity);
