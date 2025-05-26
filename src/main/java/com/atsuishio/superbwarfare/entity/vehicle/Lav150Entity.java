@@ -171,7 +171,7 @@ public class Lav150Entity extends ContainerMobileVehicleEntity implements GeoEnt
         this.terrainCompact(2.7f, 3.61f);
         inertiaRotate(1.25f);
 
-        releaseSmokeDecoy();
+        releaseSmokeDecoy(getTurretVector(1));
 
         this.refreshDimensions();
     }
@@ -427,6 +427,13 @@ public class Lav150Entity extends ContainerMobileVehicleEntity implements GeoEnt
 
         transformT.rotate(Axis.XP.rotationDegrees(x + r * xV + r2 * z));
         return transformT;
+    }
+
+    public Vec3 getTurretVector(float pPartialTicks) {
+        Matrix4f transform = getTurretTransform(pPartialTicks);
+        Vector4f rootPosition = transformPosition(transform, 0, 0, 0);
+        Vector4f targetPosition = transformPosition(transform, 0, 0, 1);
+        return new Vec3(rootPosition.x, rootPosition.y, rootPosition.z).vectorTo(new Vec3(targetPosition.x, targetPosition.y, targetPosition.z));
     }
 
     public Matrix4f getTurretTransform(float ticks) {

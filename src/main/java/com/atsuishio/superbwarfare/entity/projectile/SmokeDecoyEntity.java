@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModParticleTypes;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
@@ -55,7 +56,9 @@ public class SmokeDecoyEntity extends Entity implements DecoyEntity {
         if (tickCount == this.igniteTime) {
             if (this.level() instanceof ServerLevel serverLevel) {
                 ParticleTool.sendParticle(serverLevel, ModParticleTypes.CUSTOM_SMOKE.get(), this.xo, this.yo, this.zo,
-                        100, 0, 0, 0, 0.07, true);
+                        50, 0, 0, 0, 0.07, true);
+                ParticleTool.sendParticle(serverLevel, ParticleTypes.LARGE_SMOKE, this.xo, this.yo, this.zo, 10, 1, 1, 1, 0.1, true);
+                ParticleTool.sendParticle(serverLevel, ModParticleTypes.FIRE_STAR.get(), this.xo, this.yo, this.zo, 30, 0, 0, 0, 0.2, true);
             }
             this.level().playSound(null, this, ModSounds.SMOKE_FIRE.get(), this.getSoundSource(), 1, random.nextFloat() * 0.05f + 1);
             this.setDeltaMovement(Vec3.ZERO);

@@ -195,7 +195,7 @@ public class PrismTankEntity extends ContainerMobileVehicleEntity implements Geo
         this.terrainCompact(4.6375f, 5.171875f);
         inertiaRotate(1);
 
-        releaseSmokeDecoy();
+        releaseSmokeDecoy(getTurretVector(1));
 
         if (this.getFirstPassenger() instanceof Player player && fireInputDown && getWeaponIndex(0) == 1 && getEnergy() > VehicleConfig.PRISM_TANK_SHOOT_COST_MODE_2.get() && !cannotFire) {
             vehicleShoot(player, 0);
@@ -607,6 +607,13 @@ public class PrismTankEntity extends ContainerMobileVehicleEntity implements Geo
 
         transformT.rotate(Axis.XP.rotationDegrees(x + r * xV + r2 * z));
         return transformT;
+    }
+
+    public Vec3 getTurretVector(float pPartialTicks) {
+        Matrix4f transform = getTurretTransform(pPartialTicks);
+        Vector4f rootPosition = transformPosition(transform, 0, 0, 0);
+        Vector4f targetPosition = transformPosition(transform, 0, 0, 1);
+        return new Vec3(rootPosition.x, rootPosition.y, rootPosition.z).vectorTo(new Vec3(targetPosition.x, targetPosition.y, targetPosition.z));
     }
 
     public Matrix4f getTurretTransform(float ticks) {

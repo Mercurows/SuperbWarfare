@@ -288,17 +288,18 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
     }
 
     //烟雾诱饵
-    public void releaseSmokeDecoy() {
+    public void releaseSmokeDecoy(Vec3 vec3) {
         if (decoyInputDown) {
             if (this.entityData.get(DECOY_COUNT) > 0 && this.level() instanceof ServerLevel) {
-                for (int i = 0; i < 16; i++) {
-                    SmokeDecoyEntity smokeDecoyEntity = new SmokeDecoyEntity(this.level());
-                    smokeDecoyEntity.setPos(this.getX(), this.getY() + 2, this.getZ());
-                    smokeDecoyEntity.decoyShoot(this, this.getViewVector(1).yRot((11.25F + 22.5F * i) * Mth.DEG_TO_RAD), 3.2f, 8);
+                Entity passenger = getFirstPassenger();
+                for (int i = 0; i < 8; i++) {
+                    SmokeDecoyEntity smokeDecoyEntity = new SmokeDecoyEntity((LivingEntity) passenger, this.level());
+                    smokeDecoyEntity.setPos(this.getX(), this.getY() + getBbHeight(), this.getZ());
+                    smokeDecoyEntity.decoyShoot(this, vec3.yRot((-78.75f + 22.5F * i) * Mth.DEG_TO_RAD), 4f, 8);
                     this.level().addFreshEntity(smokeDecoyEntity);
                 }
                 this.level().playSound(null, this, ModSounds.DECOY_FIRE.get(), this.getSoundSource(), 1, 1);
-                decoyReloadCoolDown = 400;
+                decoyReloadCoolDown = 500;
                 this.getEntityData().set(DECOY_COUNT, this.getEntityData().get(DECOY_COUNT) - 1);
             }
             decoyInputDown = false;
@@ -306,7 +307,7 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
         if (this.entityData.get(DECOY_COUNT) < 1 && decoyReloadCoolDown == 0 && this.level() instanceof ServerLevel) {
             this.entityData.set(DECOY_COUNT, this.entityData.get(DECOY_COUNT) + 1);
             this.level().playSound(null, this, ModSounds.DECOY_RELOAD.get(), this.getSoundSource(), 1, 1);
-            decoyReloadCoolDown = 400;
+            decoyReloadCoolDown = 500;
         }
     }
 
