@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.config;
 
-import com.atsuishio.superbwarfare.config.client.SeekConfig;
 import com.atsuishio.superbwarfare.config.server.*;
 import net.neoforged.neoforge.common.ModConfigSpec;
 

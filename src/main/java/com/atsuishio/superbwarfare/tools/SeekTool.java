@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.tools;
 
-import com.atsuishio.superbwarfare.config.client.SeekConfig;
+import com.atsuishio.superbwarfare.config.server.SeekConfig;
 import com.atsuishio.superbwarfare.entity.projectile.DecoyEntity;
 import com.atsuishio.superbwarfare.entity.projectile.DestroyableProjectileEntity;
 import com.atsuishio.superbwarfare.entity.projectile.SmokeDecoyEntity;

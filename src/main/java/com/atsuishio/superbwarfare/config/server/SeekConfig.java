@@ -1,4 +1,4 @@
-package com.atsuishio.superbwarfare.config.client;
+package com.atsuishio.superbwarfare.config.server;
 
 import net.neoforged.neoforge.common.ModConfigSpec;
 
