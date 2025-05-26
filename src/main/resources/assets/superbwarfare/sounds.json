@@ -3218,5 +3218,13 @@
         "stream": false
       }
     ]
+  },
+  "fly_loop": {
+    "sounds": [
+      {
+        "name": "superbwarfare:fly_loop",
+        "stream": false
+      }
+    ]
   }
 }

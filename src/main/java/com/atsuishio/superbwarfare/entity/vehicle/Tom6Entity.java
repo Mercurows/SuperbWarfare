@@ -208,8 +208,7 @@ public class Tom6Entity extends MobileVehicleEntity implements GeoEntity {
         this.entityData.set(POWER, this.entityData.get(POWER) * 0.995f);
         this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) * 0.95f);
 
-
-        this.setDeltaMovement(this.getDeltaMovement().add(getViewVector(1).scale(0.03 * this.entityData.get(POWER))));
+        this.setDeltaMovement(this.getDeltaMovement().add(getViewVector(1).scale(0.04 * this.entityData.get(POWER))));
 
         setDeltaMovement(getDeltaMovement().add(0.0f, Mth.clamp(Math.sin((onGround() ? 45 : -(getXRot() - 20)) * Mth.DEG_TO_RAD) * Math.sin((90 - this.getXRot()) * Mth.DEG_TO_RAD) * getDeltaMovement().dot(getViewVector(1)) * 0.04, -0.04, 0.09), 0.0f));
 
@@ -224,13 +223,18 @@ public class Tom6Entity extends MobileVehicleEntity implements GeoEntity {
     }
 
     @Override
+    public boolean engineRunning() {
+        return (getFirstPassenger() != null && Math.abs(getDeltaMovement().length()) > 0);
+    }
+
+    @Override
     public SoundEvent getEngineSound() {
-        return super.getEngineSound();
+        return ModSounds.FLY_LOOP.get();
     }
 
     @Override
     public float getEngineSoundVolume() {
-        return entityData.get(POWER);
+        return (float) getDeltaMovement().length();
     }
 
     protected void clampRotation(Entity entity) {

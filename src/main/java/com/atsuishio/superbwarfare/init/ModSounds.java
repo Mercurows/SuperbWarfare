@@ -464,6 +464,7 @@ public class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> MISSILE_START = REGISTRY.register("missile_start", () -> SoundEvent.createVariableRangeEvent(Mod.loc("missile_start")));
     public static final DeferredHolder<SoundEvent, SoundEvent> JET_LOCK = REGISTRY.register("jet_lock", () -> SoundEvent.createVariableRangeEvent(Mod.loc("jet_lock")));
     public static final DeferredHolder<SoundEvent, SoundEvent> JET_LOCKON = REGISTRY.register("jet_lockon", () -> SoundEvent.createVariableRangeEvent(Mod.loc("jet_lockon")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> FLY_LOOP = REGISTRY.register("fly_loop", () -> SoundEvent.createVariableRangeEvent(Mod.loc("fly_loop")));
 
     public static final DeferredHolder<SoundEvent, SoundEvent> AURELIA_SCEPTRE_FIRE_1P = REGISTRY.register("aurelia_sceptre_fire_1p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("aurelia_sceptre_fire_1p")));
     public static final DeferredHolder<SoundEvent, SoundEvent> AURELIA_SCEPTRE_FIRE_3P = REGISTRY.register("aurelia_sceptre_fire_3p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("aurelia_sceptre_fire_3p")));
