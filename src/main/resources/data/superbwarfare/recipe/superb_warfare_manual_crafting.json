@@ -1,12 +1,25 @@
 {
-  "type": "patchouli:shapeless_book_recipe",
-  "ingredients": [
+  "type": "minecraft:crafting_shapeless",
+  "conditions": [
     {
-      "id": "minecraft:book"
-    },
-    {
-      "id": "superbwarfare:empty_perk"
+      "type": "neoforge:mod_loaded",
+      "modid": "patchouli"
     }
   ],
-  "book": "superbwarfare:superb_warfare_manual"
+  "group": "something",
+  "ingredients": [
+    {
+      "item": "minecraft:book"
+    },
+    {
+      "item": "superbwarfare:empty_perk"
+    }
+  ],
+  "result": {
+    "id": "patchouli:guide_book",
+    "count": 1,
+    "components": {
+      "patchouli:book": "superbwarfare:superb_warfare_manual"
+    }
+  }
 }
