@@ -1,0 +1,29 @@
+{
+  "name": "superbwarfare.entry.vehicle.a_10a",
+  "icon": "superbwarfare:container",
+  "category": "superbwarfare:vehicle",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "superbwarfare.page.vehicle.a_10a1"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "superbwarfare:a_10a_crafting",
+      "text": "superbwarfare.page.vehicle.a_10a2"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "superbwarfare.page.vehicle.a_10a3"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "superbwarfare.page.vehicle.a_10a4"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "superbwarfare.page.vehicle.a_10a5"
+    }
+  ],
+  "sortnum": 20302
+}
