@@ -23,7 +23,7 @@ public class Mp443ItemModel extends GeoModel<Mp443Item> {
 
     @Override
     public ResourceLocation getAnimationResource(Mp443Item animatable) {
-        return Mod.loc("animations/glock_17.animation.json");
+        return Mod.loc("animations/mp_443.animation.json");
     }
 
     @Override

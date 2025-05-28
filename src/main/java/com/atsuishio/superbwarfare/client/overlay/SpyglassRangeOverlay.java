@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.client.overlay;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.tools.FormatTool;
 import com.atsuishio.superbwarfare.tools.TraceTool;
 import net.minecraft.client.DeltaTracker;
@@ -42,6 +43,8 @@ public class SpyglassRangeOverlay implements LayeredDraw.Layer {
 
             double entityRange = 0;
             Entity lookingEntity = TraceTool.findLookingEntity(player, 520);
+
+            if (lookingEntity instanceof VehicleEntity) return;
 
             if (lookingEntity != null) {
                 lookAtEntity = true;

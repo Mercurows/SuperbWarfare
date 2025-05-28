@@ -58,7 +58,7 @@ public class M1911ItemModel extends GeoModel<M1911Item> {
 
         gun.setPosX(1.23f * (float) zp);
 
-        gun.setPosY(1.53f * (float) zp - (float) (0.2f * zpz));
+        gun.setPosY(1.3f * (float) zp - (float) (0.2f * zpz));
 
         gun.setPosZ(7f * (float) zp + (float) (0.3f * zpz));
 
