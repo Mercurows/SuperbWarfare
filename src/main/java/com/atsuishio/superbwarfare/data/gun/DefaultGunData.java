@@ -73,6 +73,10 @@ public class DefaultGunData {
     public int prepareTime;
     @SerializedName("PrepareLoadTime")
     public int prepareLoadTime;
+
+    // 单发装填时的上弹时间
+    @SerializedName("PrepareAmmoLoadTime")
+    public int prepareAmmoLoadTime = 1;
     @SerializedName("PrepareEmptyTime")
     public int prepareEmptyTime;
 

@@ -14,6 +14,7 @@
   ],
   "PrepareTime": 7,
   "PrepareLoadTime": 36,
+  "PrepareAmmoLoadTime": 10,
   "IterativeTime": 16,
   "IterativeAmmoLoadTime": 3,
   "FinishTime": 12,

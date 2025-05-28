@@ -14,8 +14,9 @@
     "Iterative"
   ],
   "PrepareLoadTime": 31,
+  "PrepareAmmoLoadTime": 3,
   "IterativeTime": 20,
-  "FinishTime": 19,
+  "FinishTime": 22,
   "SoundRadius": 8,
   "RPM": 300,
   "AmmoType": "superbwarfare:grenade_40mm",
