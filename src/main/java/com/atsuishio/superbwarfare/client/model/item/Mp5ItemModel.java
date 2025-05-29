@@ -94,7 +94,7 @@ public class Mp5ItemModel extends GeoModel<Mp5Item> {
         }
 
         fireRotY = (float) Mth.lerp(0.5f * times, fireRotY, 0.2f * ClientEventHandler.recoilHorizon * fpz);
-        fireRotZ = (float) Mth.lerp(2f * times, fireRotZ, (0.2f + 0.3 * fpz) * ClientEventHandler.recoilHorizon);
+        fireRotZ = (float) Mth.lerp(0.3f * times, fireRotZ, (0.2f + 0.3 * fpz) * ClientEventHandler.recoilHorizon);
 
         shen.setPosX(-0.4f * (float) (ClientEventHandler.recoilHorizon * (0.5 + 0.4 * ClientEventHandler.fireSpread)));
         shen.setPosY((float) (0.15f * fp + 0.18f * fr));
