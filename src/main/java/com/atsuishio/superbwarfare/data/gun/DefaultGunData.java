@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.data.gun;
 
+import com.atsuishio.superbwarfare.annotation.ServerOnly;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
@@ -39,6 +40,7 @@ public class DefaultGunData {
     @SerializedName("MeleeDamageTime")
     public int meleeDamageTime = 6;
 
+    @ServerOnly
     @SerializedName("Projectile")
     public ProjectileInfo projectile = new ProjectileInfo();
 
@@ -124,6 +126,7 @@ public class DefaultGunData {
             "!superbwarfare:cupid_arrow"
     );
 
+    @ServerOnly
     @SerializedName("DamageReduce")
     public DamageReduce damageReduce = new DamageReduce();
 }

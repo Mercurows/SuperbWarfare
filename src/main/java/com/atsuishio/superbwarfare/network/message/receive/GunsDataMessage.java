@@ -2,46 +2,48 @@ package com.atsuishio.superbwarfare.network.message.receive;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.data.gun.DefaultGunData;
+import com.atsuishio.superbwarfare.tools.BufferSerializer;
 import com.atsuishio.superbwarfare.tools.GunsTool;
-import com.google.gson.Gson;
-import io.netty.buffer.ByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
-public record GunsDataMessage(Map<String, String> gunsData) implements CustomPacketPayload {
+public record GunsDataMessage(List<DefaultGunData> data) implements CustomPacketPayload {
     public static final Type<GunsDataMessage> TYPE = new Type<>(Mod.loc("set_guns_data"));
 
 
-    public static final StreamCodec<ByteBuf, GunsDataMessage> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.map(
-                    HashMap::new,
-                    ByteBufCodecs.STRING_UTF8,
-                    ByteBufCodecs.STRING_UTF8
-            ),
-            GunsDataMessage::gunsData,
-            GunsDataMessage::new
+    public static final StreamCodec<FriendlyByteBuf, GunsDataMessage> STREAM_CODEC = StreamCodec.ofMember(
+            (obj, buf) -> {
+                buf.writeVarInt(obj.data.size());
+                for (var data : obj.data) {
+                    buf.writeBytes(BufferSerializer.serialize(data).copy());
+                }
+            },
+            (buf) -> {
+                var size = buf.readVarInt();
+                var list = new ArrayList<DefaultGunData>();
+                for (var i = 0; i < size; i++) {
+                    list.add(BufferSerializer.deserialize(buf, new DefaultGunData()));
+                }
+                return new GunsDataMessage(list);
+            }
     );
 
-    private static final Gson GSON = new Gson();
-
     public static GunsDataMessage create() {
-        var map = new HashMap<String, String>();
-        for (var entry : GunsTool.gunsData.entrySet()) {
-            map.put(entry.getKey(), GSON.toJson(entry.getValue()));
-        }
-        return new GunsDataMessage(map);
+        return new GunsDataMessage(GunsTool.gunsData.values().stream().toList());
     }
 
     public static void handler(final GunsDataMessage message, final IPayloadContext context) {
         GunsTool.gunsData.clear();
-        for (var entry : message.gunsData.entrySet()) {
-            GunsTool.gunsData.put(entry.getKey(), GSON.fromJson(entry.getValue(), DefaultGunData.class));
+
+        for (var entry : message.data) {
+            if (GunsTool.gunsData.containsKey(entry.id)) continue;
+            GunsTool.gunsData.put(entry.id, entry);
         }
     }
 

@@ -48,6 +48,7 @@ public class GunsTool {
                     var path = entry.getKey().getPath();
                     id = Mod.MODID + ":" + path.substring(GUN_DATA_FOLDER.length() + 1, path.length() - GUN_DATA_FOLDER.length() - 1);
                     Mod.LOGGER.warn("Gun ID for {} is empty, try using {} as id", path, id);
+                    data.id = id;
                 }
 
                 if (!gunsData.containsKey(id)) {

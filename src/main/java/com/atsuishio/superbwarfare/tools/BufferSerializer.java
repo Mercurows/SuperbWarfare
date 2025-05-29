@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.tools;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.annotation.ServerOnly;
+import com.google.gson.Gson;
 import io.netty.buffer.Unpooled;
 import net.minecraft.network.FriendlyByteBuf;
 
@@ -12,9 +13,6 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
-
-// 屎
-// TODO 优化这一坨（至少得支持数组和嵌套对象序列化）
 public class BufferSerializer {
     public static List<Field> sortedFields(Class<?> clazz) {
         return Arrays.stream(clazz.getDeclaredFields())
@@ -42,6 +40,8 @@ public class BufferSerializer {
         return fields;
     }
 
+    private static final Gson gson = new Gson();
+
     public static FriendlyByteBuf serialize(Object object) {
         var buffer = new FriendlyByteBuf(Unpooled.buffer());
         var fields = fieldValuesList(object);
@@ -55,12 +55,8 @@ public class BufferSerializer {
                 case Double d -> buffer.writeDouble(d);
                 case String s -> buffer.writeUtf(s);
                 case Boolean b -> buffer.writeBoolean(b);
-//                case List<?> l -> {
-//                    buffer.writeVarInt(l.size());
-//                    l.forEach(o -> serialize(o, buffer));
-//                }
 
-                default -> serialize(value);
+                default -> buffer.writeUtf(gson.toJson(value));
             }
         });
 
@@ -83,49 +79,12 @@ public class BufferSerializer {
                 setField(object, field, buffer.readUtf());
             } else if (field.getType().isAssignableFrom(Boolean.class) || field.getType().getName().equals("boolean")) {
                 setField(object, field, buffer.readBoolean());
-//            } else if (field.getType().isAssignableFrom(List.class)) {
-//                var size = buffer.readVarInt();
-//                var list = new ArrayList<>();
-//                for (int i = 0; i < size; i++) {
-//                    list.add(readFieldByClass(object, field.getGenericType().getClass(), buffer));
-//                }
-//                setField(object, field, list);
             } else {
-                throw new IllegalArgumentException("Non-primary Object not supported");
-//                setField(object, field, deserialize(buffer, getField(object, field)));
+                setField(object, field, gson.fromJson(buffer.readUtf(), field.getType()));
             }
         });
 
         return object;
-    }
-
-    public static Object readFieldByClass(Object object, Class<?> clazz, FriendlyByteBuf buffer) {
-        if (clazz.isAssignableFrom(Byte.class) || clazz.getName().equals("byte")) {
-            return buffer.readByte();
-        } else if (clazz.isAssignableFrom(Integer.class) || clazz.getName().equals("int")) {
-            return buffer.readVarInt();
-        } else if (clazz.isAssignableFrom(Long.class) || clazz.getName().equals("long")) {
-            return buffer.readLong();
-        } else if (clazz.isAssignableFrom(Float.class) || clazz.getName().equals("float")) {
-            return buffer.readFloat();
-        } else if (clazz.isAssignableFrom(Double.class) || clazz.getName().equals("double")) {
-            return buffer.readDouble();
-        } else if (clazz.isAssignableFrom(String.class)) {
-            return buffer.readUtf();
-        } else if (clazz.isAssignableFrom(Boolean.class) || clazz.getName().equals("boolean")) {
-            return buffer.readByte();
-//        } else if (clazz.isAssignableFrom(List.class)) {
-//            var size = buffer.readVarInt();
-//            var list = new ArrayList<>();
-//            for (int i = 0; i < size; i++) {
-//                clazz.getDeclaredConstructors()[0].newInstance()
-//                list.add(deserialize(field));
-//            }
-//            setField(object, field, list);
-        } else {
-            throw new IllegalArgumentException("Non-primary Object not supported");
-//            deserialize(buffer, getField(object, field));
-        }
     }
 
     public static void setField(Object object, Field field, Object value) {

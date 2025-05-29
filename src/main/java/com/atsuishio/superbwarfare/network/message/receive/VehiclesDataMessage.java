@@ -41,6 +41,7 @@ public record VehiclesDataMessage(List<DefaultVehicleData> data) implements Cust
         VehicleDataTool.vehicleData.clear();
 
         for (var entry : message.data) {
+            if (VehicleDataTool.vehicleData.containsKey(entry.id)) continue;
             VehicleDataTool.vehicleData.put(entry.id, entry);
         }
     }
