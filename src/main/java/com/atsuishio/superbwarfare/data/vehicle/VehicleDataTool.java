@@ -39,6 +39,7 @@ public class VehicleDataTool {
                     var path = entry.getKey().getPath();
                     id = Mod.MODID + ":" + path.substring(VEHICLE_DATA_FOLDER.length() + 1, path.length() - VEHICLE_DATA_FOLDER.length() - 1);
                     Mod.LOGGER.warn("Vehicle ID for {} is empty, try using {} as id", id, path);
+                    data.id = id;
                 }
 
                 if (!vehicleData.containsKey(id)) {
