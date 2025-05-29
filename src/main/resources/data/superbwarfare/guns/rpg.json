@@ -12,7 +12,7 @@
   "Velocity": 4,
   "Magazine": 1,
   "Weight": 7,
-  "EmptyReloadTime": 103,
+  "EmptyReloadTime": 107,
   "RPM": 120,
   "AmmoType": "superbwarfare:rocket",
   "AvailablePerks": [

@@ -61,7 +61,7 @@ public class RpgItem extends GunItem implements GeoItem {
         var data = GunData.from(stack);
 
         if (data.reload.empty()) {
-            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.rpg.reload"));
+            return event.setAndContinue(RawAnimation.begin().thenPlayAndHold("animation.rpg.reload"));
         }
 
         if (player.isSprinting() && player.onGround() && ClientEventHandler.cantSprint == 0 && ClientEventHandler.drawTime < 0.01) {

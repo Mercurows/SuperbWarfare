@@ -46,13 +46,22 @@ public class Mp5Item extends GunItem implements GeoItem {
         if (player == null) return PlayState.STOP;
         ItemStack stack = player.getMainHandItem();
         if (!(stack.getItem() instanceof GunItem)) return PlayState.STOP;
+        boolean drum = GunData.from(stack).attachment.get(AttachmentType.MAGAZINE) == 2;
 
         if (GunData.from(stack).reload.empty()) {
-            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.mp5.reload_empty"));
+            if (drum) {
+                return event.setAndContinue(RawAnimation.begin().thenPlay("animation.mp5.reload_empty_drum"));
+            } else {
+                return event.setAndContinue(RawAnimation.begin().thenPlay("animation.mp5.reload_empty"));
+            }
         }
 
         if (GunData.from(stack).reload.normal()) {
-            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.mp5.reload_normal"));
+            if (drum) {
+                return event.setAndContinue(RawAnimation.begin().thenPlay("animation.mp5.reload_normal_drum"));
+            } else {
+                return event.setAndContinue(RawAnimation.begin().thenPlay("animation.mp5.reload_normal"));
+            }
         }
 
         if (player.isSprinting() && player.onGround() && ClientEventHandler.cantSprint == 0 && ClientEventHandler.drawTime < 0.01) {

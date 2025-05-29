@@ -165,7 +165,7 @@ public class RpgRocketEntity extends FastThrowableProjectile implements GeoEntit
 
             if (ExplosionConfig.EXPLOSION_DESTROY.get()) {
                 float hardness = this.level().getBlockState(BlockPos.containing(x, y, z)).getBlock().defaultDestroyTime();
-                if (hardness <= 50 && hardness != -1) {
+                if (hardness <= 10 && hardness != -1) {
                     BlockPos blockPos = BlockPos.containing(x, y, z);
                     Block.dropResources(this.level().getBlockState(blockPos), this.level(), BlockPos.containing(x, y, z), null);
                     this.level().destroyBlock(blockPos, true);
