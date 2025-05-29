@@ -21,11 +21,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import software.bernie.geckolib.animatable.GeoItem;
-import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.*;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
-import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
@@ -33,9 +30,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public class AureliaSceptre extends GunItem implements GeoItem {
-
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+public class AureliaSceptre extends GunItem {
 
     public AureliaSceptre() {
         super(new Properties().stacksTo(1).rarity(ModEnumExtensions.getLegendary()));
@@ -116,11 +111,6 @@ public class AureliaSceptre extends GunItem implements GeoItem {
         data.add(fireController);
         var meleeController = new AnimationController<>(this, "meleeController", 0, this::meleePredicate);
         data.add(meleeController);
-    }
-
-    @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return this.cache;
     }
 
     @Override

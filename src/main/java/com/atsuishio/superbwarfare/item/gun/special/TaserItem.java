@@ -26,22 +26,17 @@ import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import org.jetbrains.annotations.NotNull;
-import software.bernie.geckolib.animatable.GeoItem;
-import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.*;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
-import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
 
-public class TaserItem extends GunItem implements GeoItem, EnergyStorageItem {
+public class TaserItem extends GunItem implements EnergyStorageItem {
 
     public static final int MAX_ENERGY = 6000;
-
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     public TaserItem() {
         super(new Properties().stacksTo(1).rarity(Rarity.COMMON));
@@ -99,11 +94,6 @@ public class TaserItem extends GunItem implements GeoItem, EnergyStorageItem {
     public void registerControllers(AnimatableManager.ControllerRegistrar data) {
         AnimationController<TaserItem> idleController = new AnimationController<>(this, "idleController", 3, this::idlePredicate);
         data.add(idleController);
-    }
-
-    @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return this.cache;
     }
 
     @Override

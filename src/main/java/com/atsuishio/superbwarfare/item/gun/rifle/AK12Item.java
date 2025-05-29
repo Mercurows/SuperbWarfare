@@ -15,39 +15,28 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
-import software.bernie.geckolib.animatable.GeoItem;
-import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.*;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
-import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.Set;
 import java.util.function.Supplier;
 
-public class AK12Item extends GunItem implements GeoItem {
-
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-    public static ItemDisplayContext transformType;
-
-    @Override
-    public Set<SoundEvent> getReloadSound() {
-        return Set.of(ModSounds.AK_12_RELOAD_EMPTY.get(), ModSounds.AK_12_RELOAD_NORMAL.get());
-    }
+public class AK12Item extends GunItem {
 
     public AK12Item() {
         super(new Properties().stacksTo(1).rarity(Rarity.RARE));
     }
 
     @Override
-    public Supplier<GeoItemRenderer<? extends Item>> getRenderer() {
-        return AK12ItemRenderer::new;
+    public Set<SoundEvent> getReloadSound() {
+        return Set.of(ModSounds.AK_12_RELOAD_EMPTY.get(), ModSounds.AK_12_RELOAD_NORMAL.get());
     }
 
-    public void getTransformType(ItemDisplayContext type) {
-        transformType = type;
+    @Override
+    public Supplier<GeoItemRenderer<? extends Item>> getRenderer() {
+        return AK12ItemRenderer::new;
     }
 
     private PlayState idlePredicate(AnimationState<AK12Item> event) {
@@ -122,11 +111,6 @@ public class AK12Item extends GunItem implements GeoItem {
         data.add(idleController);
         var editController = new AnimationController<>(this, "editController", 1, this::editPredicate);
         data.add(editController);
-    }
-
-    @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return this.cache;
     }
 
     @Override

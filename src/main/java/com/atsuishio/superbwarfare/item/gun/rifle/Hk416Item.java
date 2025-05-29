@@ -17,18 +17,13 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
-import software.bernie.geckolib.animatable.GeoItem;
-import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.*;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
-import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.Set;
 import java.util.function.Supplier;
 
-public class Hk416Item extends GunItem implements GeoItem {
-
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+public class Hk416Item extends GunItem {
 
     public Hk416Item() {
         super(new Properties().stacksTo(1).rarity(Rarity.RARE));
@@ -144,11 +139,6 @@ public class Hk416Item extends GunItem implements GeoItem {
     @Override
     public boolean canAdjustZoom(ItemStack stack) {
         return GunData.from(stack).attachment.get(AttachmentType.SCOPE) == 3;
-    }
-
-    @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return this.cache;
     }
 
     @Override

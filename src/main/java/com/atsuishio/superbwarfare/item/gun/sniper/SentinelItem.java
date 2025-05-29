@@ -21,19 +21,14 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import org.jetbrains.annotations.NotNull;
-import software.bernie.geckolib.animatable.GeoItem;
-import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.*;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
-import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
 
-public class SentinelItem extends GunItem implements GeoItem, EnergyStorageItem {
-
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+public class SentinelItem extends GunItem implements EnergyStorageItem {
 
     public SentinelItem() {
         super(new Properties().stacksTo(1).rarity(ModEnumExtensions.getLegendary()));
@@ -136,11 +131,6 @@ public class SentinelItem extends GunItem implements GeoItem, EnergyStorageItem 
         if (cap != null && cap.getEnergyStored() > 0) {
             cap.extractEnergy(1, false);
         }
-    }
-
-    @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return this.cache;
     }
 
     @Override

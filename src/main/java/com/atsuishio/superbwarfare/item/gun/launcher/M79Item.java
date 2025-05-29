@@ -20,27 +20,22 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import org.jetbrains.annotations.NotNull;
-import software.bernie.geckolib.animatable.GeoItem;
-import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.*;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
-import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
 
-public class M79Item extends GunItem implements GeoItem {
+public class M79Item extends GunItem {
 
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+    public M79Item() {
+        super(new Item.Properties().stacksTo(1).fireResistant().rarity(Rarity.RARE));
+    }
 
     @Override
     public Set<SoundEvent> getReloadSound() {
         return Set.of(ModSounds.M_79_RELOAD_EMPTY.get());
-    }
-
-    public M79Item() {
-        super(new Properties().stacksTo(1).fireResistant().rarity(Rarity.RARE));
     }
 
     @Override
@@ -68,11 +63,6 @@ public class M79Item extends GunItem implements GeoItem {
         }
 
         return event.setAndContinue(RawAnimation.begin().thenLoop("animation.m_79.idle"));
-    }
-
-    @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return this.cache;
     }
 
     @Override

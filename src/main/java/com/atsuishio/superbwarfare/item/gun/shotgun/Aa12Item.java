@@ -14,18 +14,14 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import software.bernie.geckolib.animatable.GeoItem;
-import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.*;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
-import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.Set;
 import java.util.function.Supplier;
 
-public class Aa12Item extends GunItem implements GeoItem {
+public class Aa12Item extends GunItem {
 
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     public String animationProcedure = "empty";
     public static ItemDisplayContext transformType;
 
@@ -36,10 +32,6 @@ public class Aa12Item extends GunItem implements GeoItem {
     @Override
     public Supplier<GeoItemRenderer<? extends Item>> getRenderer() {
         return Aa12ItemRenderer::new;
-    }
-
-    public void getTransformType(ItemDisplayContext type) {
-        transformType = type;
     }
 
     private PlayState idlePredicate(AnimationState<Aa12Item> event) {
@@ -91,11 +83,6 @@ public class Aa12Item extends GunItem implements GeoItem {
         data.add(procedureController);
         var idleController = new AnimationController<>(this, "idleController", 4, this::idlePredicate);
         data.add(idleController);
-    }
-
-    @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return this.cache;
     }
 
     @Override

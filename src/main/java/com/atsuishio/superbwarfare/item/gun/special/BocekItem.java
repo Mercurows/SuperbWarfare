@@ -28,19 +28,14 @@ import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
-import software.bernie.geckolib.animatable.GeoItem;
-import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.*;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
-import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-public class BocekItem extends GunItem implements GeoItem {
-
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+public class BocekItem extends GunItem {
 
     public BocekItem() {
         super(new Properties().stacksTo(1).rarity(Rarity.EPIC));
@@ -108,12 +103,6 @@ public class BocekItem extends GunItem implements GeoItem {
         var reloadController = new AnimationController<>(this, "reloadController", 0, this::reloadPredicate);
         data.add(reloadController);
     }
-
-    @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return this.cache;
-    }
-
 
     @Override
     @ParametersAreNonnullByDefault
