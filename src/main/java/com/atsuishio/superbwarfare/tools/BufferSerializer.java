@@ -80,7 +80,7 @@ public class BufferSerializer {
             } else if (field.getType().isAssignableFrom(Boolean.class) || field.getType().getName().equals("boolean")) {
                 setField(object, field, buffer.readBoolean());
             } else {
-                setField(object, field, gson.fromJson(buffer.readUtf(), field.getType()));
+                setField(object, field, gson.fromJson(buffer.readUtf(), field.getGenericType()));
             }
         });
 
