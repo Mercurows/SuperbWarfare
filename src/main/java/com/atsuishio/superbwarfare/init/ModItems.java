@@ -21,6 +21,7 @@ import com.atsuishio.superbwarfare.item.gun.rifle.*;
 import com.atsuishio.superbwarfare.item.gun.shotgun.Aa12Item;
 import com.atsuishio.superbwarfare.item.gun.shotgun.HomemadeShotgunItem;
 import com.atsuishio.superbwarfare.item.gun.shotgun.M870Item;
+import com.atsuishio.superbwarfare.item.gun.smg.Mp5Item;
 import com.atsuishio.superbwarfare.item.gun.smg.VectorItem;
 import com.atsuishio.superbwarfare.item.gun.sniper.*;
 import com.atsuishio.superbwarfare.item.gun.special.BocekItem;
@@ -55,6 +56,7 @@ public class ModItems {
     public static final DeferredHolder<Item, M1911Item> M_1911 = GUNS.register("m_1911", M1911Item::new);
     public static final DeferredHolder<Item, HomemadeShotgunItem> HOMEMADE_SHOTGUN = GUNS.register("homemade_shotgun", HomemadeShotgunItem::new);
     public static final DeferredHolder<Item, Trachelium> TRACHELIUM = GUNS.register("trachelium", Trachelium::new);
+    public static final DeferredHolder<Item, Mp5Item> MP_5 = GUNS.register("mp_5", Mp5Item::new);
     public static final DeferredHolder<Item, VectorItem> VECTOR = GUNS.register("vector", VectorItem::new);
     public static final DeferredHolder<Item, AK47Item> AK_47 = GUNS.register("ak_47", AK47Item::new);
     public static final DeferredHolder<Item, AK12Item> AK_12 = GUNS.register("ak_12", AK12Item::new);
@@ -232,6 +234,7 @@ public class ModItems {
     public static final DeferredHolder<Item, BlueprintItem> RPK_BLUEPRINT = ITEMS.register("rpk_blueprint", () -> new BlueprintItem(Rarity.EPIC));
     public static final DeferredHolder<Item, BlueprintItem> SKS_BLUEPRINT = ITEMS.register("sks_blueprint", () -> new BlueprintItem(Rarity.RARE));
     public static final DeferredHolder<Item, BlueprintItem> NTW_20_BLUEPRINT = ITEMS.register("ntw_20_blueprint", () -> new BlueprintItem(ModEnumExtensions.getLegendary()));
+    public static final DeferredHolder<Item, BlueprintItem> MP_5_BLUEPRINT = ITEMS.register("mp_5_blueprint", () -> new BlueprintItem(Rarity.RARE));
     public static final DeferredHolder<Item, BlueprintItem> VECTOR_BLUEPRINT = ITEMS.register("vector_blueprint", () -> new BlueprintItem(Rarity.EPIC));
     public static final DeferredHolder<Item, BlueprintItem> MINIGUN_BLUEPRINT = ITEMS.register("minigun_blueprint", () -> new BlueprintItem(ModEnumExtensions.getLegendary()));
     public static final DeferredHolder<Item, BlueprintItem> MK_14_BLUEPRINT = ITEMS.register("mk_14_blueprint", () -> new BlueprintItem(Rarity.EPIC));

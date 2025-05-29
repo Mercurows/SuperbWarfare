@@ -121,7 +121,7 @@ public class MortarEntity extends VehicleEntity implements GeoEntity {
                 if (level instanceof ServerLevel server) {
                     MortarShellEntity entityToSpawn = shell.createShell(player, level, stack);
                     entityToSpawn.setPos(this.getX(), this.getY() + this.getEyeY(), this.getZ());
-                    entityToSpawn.shoot(this.getLookAngle().x, this.getLookAngle().y, this.getLookAngle().z, 11.4f, (float) 0.1);
+                    entityToSpawn.shoot(this.getLookAngle().x, this.getLookAngle().y, this.getLookAngle().z, 11.4f, 0.1f);
                     level.addFreshEntity(entityToSpawn);
                     server.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, (this.getX() + 3 * this.getLookAngle().x), (this.getY() + 0.1 + 3 * this.getLookAngle().y), (this.getZ() + 3 * this.getLookAngle().z), 8, 0.4, 0.4, 0.4,
                             0.007);

@@ -63,6 +63,7 @@ public class ModItemModelProvider extends ItemModelProvider {
         gunItem(ModItems.TASER);
         gunItem(ModItems.TRACHELIUM);
         gunItem(ModItems.VECTOR);
+        gunItem(ModItems.MP_5);
 
         simpleItem(ModItems.EMPTY_PERK, "perk/");
 
@@ -203,6 +204,7 @@ public class ModItemModelProvider extends ItemModelProvider {
         gunBlueprintItem(ModItems.M_2_HB_BLUEPRINT);
         gunBlueprintItem(ModItems.SECONDARY_CATACLYSM_BLUEPRINT);
         gunBlueprintItem(ModItems.INSIDIOUS_BLUEPRINT);
+        gunBlueprintItem(ModItems.MP_5_BLUEPRINT);
 
         // blocks
         evenSimplerBlockItem(ModBlocks.BARBED_WIRE);

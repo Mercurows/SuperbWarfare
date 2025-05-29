@@ -1,0 +1,42 @@
+{
+  "ID": "superbwarfare:mp_5",
+  "Spread": 2.1,
+  "RecoilX": 0.002,
+  "RecoilY": 0.018,
+  "Damage": 6.5,
+  "Headshot": 1.5,
+  "Velocity": 20,
+  "Magazine": 30,
+  "Weight": 3.2,
+  "DefaultFireMode": "Auto",
+  "BurstAmount": 3,
+  "NormalReloadTime": 45,
+  "EmptyReloadTime": 68,
+  "BypassesArmor": 0.12,
+  "SoundRadius": 11,
+  "RPM": 900,
+  "AvailableFireModes": ["Semi", "Burst", "Auto"],
+  "DamageReduce": {
+    "Type": "Smg"
+  },
+  "AmmoType": "@HandgunAmmo",
+  "AvailablePerks": [
+    "@Ammo",
+    "superbwarfare:heal_clip",
+    "superbwarfare:field_doctor",
+    "superbwarfare:fourth_times_charm",
+    "superbwarfare:subsistence",
+    "superbwarfare:powerful_attraction",
+    "superbwarfare:intelligent_chip",
+    "superbwarfare:kill_clip",
+    "superbwarfare:gutshot_straight",
+    "superbwarfare:monster_hunter",
+    "superbwarfare:head_seeker",
+    "superbwarfare:desperado",
+    "superbwarfare:vorpal_weapon",
+    "superbwarfare:firefly",
+    "!superbwarfare:micro_missile",
+    "!superbwarfare:longer_wire",
+    "!superbwarfare:cupid_arrow"
+  ]
+}

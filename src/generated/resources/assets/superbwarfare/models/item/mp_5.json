@@ -1,0 +1,27 @@
+{
+  "base": {
+    "parent": "superbwarfare:item/mp_5_base"
+  },
+  "gui_light": "front",
+  "loader": "neoforge:separate_transforms",
+  "perspectives": {
+    "fixed": {
+      "parent": "superbwarfare:lod/mp_5"
+    },
+    "ground": {
+      "parent": "superbwarfare:lod/mp_5"
+    },
+    "gui": {
+      "parent": "superbwarfare:item/mp_5_icon"
+    },
+    "head": {
+      "parent": "superbwarfare:lod/mp_5"
+    },
+    "thirdperson_lefthand": {
+      "parent": "superbwarfare:lod/mp_5"
+    },
+    "thirdperson_righthand": {
+      "parent": "superbwarfare:lod/mp_5"
+    }
+  }
+}

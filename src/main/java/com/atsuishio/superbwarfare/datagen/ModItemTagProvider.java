@@ -94,7 +94,7 @@ public class ModItemTagProvider extends ItemTagsProvider {
                 ModItems.SKS.get(), ModItems.RPK.get(), ModItems.HK_416.get(), ModItems.AA_12.get(), ModItems.M_4.get(), ModItems.DEVOTION.get(), ModItems.TRACHELIUM.get(), ModItems.M_79.get(),
                 ModItems.HUNTING_RIFLE.get(), ModItems.NTW_20.get(), ModItems.M_98B.get(), ModItems.SENTINEL.get(), ModItems.M_870.get(), ModItems.MARLIN.get(), ModItems.GLOCK_17.get(), ModItems.RPG.get(),
                 ModItems.GLOCK_18.get(), ModItems.M_1911.get(), ModItems.AURELIA_SCEPTRE.get(), ModItems.QBZ_95.get(), ModItems.K_98.get(), ModItems.MOSIN_NAGANT.get(), ModItems.MP_443.get(), ModItems.INSIDIOUS.get(), ModItems.SECONDARY_CATACLYSM.get(),
-                ModItems.TASER.get(), ModItems.MINIGUN.get());
+                ModItems.TASER.get(), ModItems.MINIGUN.get(), ModItems.MP_5.get());
 
         this.tag(ModTags.Items.LAUNCHER).add(ModItems.RPG.get(), ModItems.JAVELIN.get())
                 .addTag(ModTags.Items.LAUNCHER_GRENADE);

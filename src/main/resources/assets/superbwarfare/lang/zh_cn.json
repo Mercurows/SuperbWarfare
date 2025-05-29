@@ -19,6 +19,7 @@
   "item.superbwarfare.mk_14": "MK-14EBR射手步枪",
   "item.superbwarfare.m_79": "M79榴弹发射器",
   "item.superbwarfare.vector": "短剑冲锋枪",
+  "item.superbwarfare.mp_5": "MP5冲锋枪",
   "item.superbwarfare.bocek": "BOCEK复合弓",
   "item.superbwarfare.ak_47": "AK-47突击步枪",
   "item.superbwarfare.ak_12": "AK-12突击步枪",
@@ -118,6 +119,7 @@
   "item.superbwarfare.insidious_blueprint": "阴险蓝图",
   "item.superbwarfare.hpj_11_blueprint": "H/PJ-11近防炮蓝图",
   "item.superbwarfare.aurelia_sceptre_blueprint": "海月权杖蓝图",
+  "item.superbwarfare.mp_5_blueprint": "MP5冲锋枪蓝图",
 
   "item.superbwarfare.common_material_pack": "普通材料包",
   "item.superbwarfare.rare_material_pack": "稀有材料包",

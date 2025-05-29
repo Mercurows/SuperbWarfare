@@ -3226,5 +3226,69 @@
         "stream": false
       }
     ]
+  },
+  "mp_5_fire_1p": {
+    "sounds": [
+      {
+        "name": "superbwarfare:mp_5/mp_5_fire_1p",
+        "stream": false
+      }
+    ]
+  },
+  "mp_5_fire_3p": {
+    "sounds": [
+      {
+        "name": "superbwarfare:mp_5/mp_5_fire_3p",
+        "stream": false
+      }
+    ]
+  },
+  "mp_5_far": {
+    "sounds": [
+      {
+        "name": "superbwarfare:mp_5/mp_5_far",
+        "stream": false
+      }
+    ]
+  },
+  "mp_5_veryfar": {
+    "sounds": [
+      {
+        "name": "superbwarfare:mp_5/mp_5_veryfar",
+        "stream": false
+      }
+    ]
+  },
+  "mp_5_fire_1p_s": {
+    "sounds": [
+      {
+        "name": "superbwarfare:mp_5/mp_5_fire_1p_s",
+        "stream": false
+      }
+    ]
+  },
+  "mp_5_fire_3p_s": {
+    "sounds": [
+      {
+        "name": "superbwarfare:mp_5/mp_5_fire_3p_s",
+        "stream": false
+      }
+    ]
+  },
+  "mp_5_reload_normal": {
+    "sounds": [
+      {
+        "name": "superbwarfare:mp_5/mp_5_reload_normal",
+        "stream": false
+      }
+    ]
+  },
+  "mp_5_reload_empty": {
+    "sounds": [
+      {
+        "name": "superbwarfare:mp_5/mp_5_reload_empty",
+        "stream": false
+      }
+    ]
   }
 }

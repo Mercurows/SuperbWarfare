@@ -96,6 +96,11 @@
         },
         {
           "type": "minecraft:item",
+          "name": "superbwarfare:mp_5_blueprint",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
           "name": "superbwarfare:trachelium_blueprint"
         },
         {

@@ -68,6 +68,7 @@ public class ModCustomLootProvider implements LootTableSubProvider {
                                 new ItemEntry(ModItems.QBZ_95_BLUEPRINT.get(), 15),
                                 new ItemEntry(ModItems.RPG_BLUEPRINT.get(), 15),
                                 new ItemEntry(ModItems.M_2_HB_BLUEPRINT.get(), 15),
+                                new ItemEntry(ModItems.MP_5_BLUEPRINT.get(), 15),
 
                                 new ItemEntry(ModItems.TRACHELIUM_BLUEPRINT.get(), 1),
                                 new ItemEntry(ModItems.HUNTING_RIFLE_BLUEPRINT.get(), 1),
