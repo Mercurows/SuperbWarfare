@@ -6,9 +6,6 @@
 
 A "Superb" military-themed Minecraft Mod.
 
-(Currently in development. Weapon stats may change. If encountering issues like inability to fire, drop the weapon on
-ground and pick it up again to reset data)
-
 ## Installation Guide
 
 1. Ensure using Minecraft version 1.20.1
