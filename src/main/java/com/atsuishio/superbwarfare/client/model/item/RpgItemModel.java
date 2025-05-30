@@ -5,7 +5,6 @@ import com.atsuishio.superbwarfare.client.AnimationHelper;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
-import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.launcher.RpgItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
@@ -33,15 +32,15 @@ public class RpgItemModel extends CustomGunModel<RpgItem> {
     }
 
     @Override
-    public void setCustomAnimations(RpgItem animatable, long instanceId, AnimationState animationState) {
-        CoreGeoBone gun = getAnimationProcessor().getBone("bone");
-        CoreGeoBone shen = getAnimationProcessor().getBone("rpg");
-        CoreGeoBone hammer = getAnimationProcessor().getBone("hammer");
-
+    public void setCustomAnimations(RpgItem animatable, long instanceId, AnimationState<RpgItem> animationState) {
         Player player = Minecraft.getInstance().player;
         if (player == null) return;
         ItemStack stack = player.getMainHandItem();
-        if (!(stack.getItem() instanceof GunItem)) return;
+        if (shouldCancelRender(stack, animationState)) return;
+
+        CoreGeoBone gun = getAnimationProcessor().getBone("bone");
+        CoreGeoBone shen = getAnimationProcessor().getBone("rpg");
+        CoreGeoBone hammer = getAnimationProcessor().getBone("hammer");
 
         if (GunData.from(stack).closeHammer.get()) {
             hammer.setRotX(-90 * Mth.DEG_TO_RAD);
