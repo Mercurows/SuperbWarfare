@@ -4,8 +4,12 @@ import com.atsuishio.superbwarfare.client.molang.MolangVariable;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import net.minecraft.client.Minecraft;
+import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.world.item.ItemStack;
 import software.bernie.geckolib.animatable.GeoAnimatable;
+import software.bernie.geckolib.animatable.GeoItem;
 import software.bernie.geckolib.animation.AnimationState;
+import software.bernie.geckolib.constant.DataTickets;
 import software.bernie.geckolib.loading.math.MathParser;
 import software.bernie.geckolib.loading.math.MolangQueries;
 import software.bernie.geckolib.model.GeoModel;
@@ -38,10 +42,18 @@ public abstract class CustomGunModel<T extends GunItem & GeoAnimatable> extends 
 
         var data = GunData.from(stack);
 
+        // TODO 实现正确的空判断，需要分离stack
         set(MolangVariable.SBW_IS_EMPTY, () -> data.isEmpty.get() ? 1 : 0);
     }
 
     private static void set(String key, DoubleSupplier value) {
         MathParser.setVariable(key, value);
+    }
+
+    public boolean shouldCancelRender(ItemStack stack, AnimationState<T> animationState) {
+        if (!(stack.getItem() instanceof GunItem)) return true;
+        var item = animationState.getData(DataTickets.ITEMSTACK);
+        if (item == null || GeoItem.getId(item) != GeoItem.getId(stack)) return true;
+        return animationState.getData(DataTickets.ITEM_RENDER_PERSPECTIVE) != ItemDisplayContext.FIRST_PERSON_RIGHT_HAND;
     }
 }
