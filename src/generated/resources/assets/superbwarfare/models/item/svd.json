@@ -5,23 +5,8 @@
   "gui_light": "front",
   "loader": "forge:separate_transforms",
   "perspectives": {
-    "fixed": {
-      "parent": "superbwarfare:lod/svd"
-    },
-    "ground": {
-      "parent": "superbwarfare:lod/svd"
-    },
     "gui": {
       "parent": "superbwarfare:item/svd_icon"
-    },
-    "head": {
-      "parent": "superbwarfare:lod/svd"
-    },
-    "thirdperson_lefthand": {
-      "parent": "superbwarfare:lod/svd"
-    },
-    "thirdperson_righthand": {
-      "parent": "superbwarfare:lod/svd"
     }
   }
 }

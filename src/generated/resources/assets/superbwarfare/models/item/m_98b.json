@@ -5,23 +5,8 @@
   "gui_light": "front",
   "loader": "forge:separate_transforms",
   "perspectives": {
-    "fixed": {
-      "parent": "superbwarfare:lod/m_98b"
-    },
-    "ground": {
-      "parent": "superbwarfare:lod/m_98b"
-    },
     "gui": {
       "parent": "superbwarfare:item/m_98b_icon"
-    },
-    "head": {
-      "parent": "superbwarfare:lod/m_98b"
-    },
-    "thirdperson_lefthand": {
-      "parent": "superbwarfare:lod/m_98b"
-    },
-    "thirdperson_righthand": {
-      "parent": "superbwarfare:lod/m_98b"
     }
   }
 }

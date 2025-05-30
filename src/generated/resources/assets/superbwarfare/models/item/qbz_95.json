@@ -5,23 +5,8 @@
   "gui_light": "front",
   "loader": "forge:separate_transforms",
   "perspectives": {
-    "fixed": {
-      "parent": "superbwarfare:lod/qbz_95"
-    },
-    "ground": {
-      "parent": "superbwarfare:lod/qbz_95"
-    },
     "gui": {
       "parent": "superbwarfare:item/qbz_95_icon"
-    },
-    "head": {
-      "parent": "superbwarfare:lod/qbz_95"
-    },
-    "thirdperson_lefthand": {
-      "parent": "superbwarfare:lod/qbz_95"
-    },
-    "thirdperson_righthand": {
-      "parent": "superbwarfare:lod/qbz_95"
     }
   }
 }

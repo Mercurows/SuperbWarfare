@@ -5,23 +5,8 @@
   "gui_light": "front",
   "loader": "forge:separate_transforms",
   "perspectives": {
-    "fixed": {
-      "parent": "superbwarfare:lod/marlin"
-    },
-    "ground": {
-      "parent": "superbwarfare:lod/marlin"
-    },
     "gui": {
       "parent": "superbwarfare:item/marlin_icon"
-    },
-    "head": {
-      "parent": "superbwarfare:lod/marlin"
-    },
-    "thirdperson_lefthand": {
-      "parent": "superbwarfare:lod/marlin"
-    },
-    "thirdperson_righthand": {
-      "parent": "superbwarfare:lod/marlin"
     }
   }
 }

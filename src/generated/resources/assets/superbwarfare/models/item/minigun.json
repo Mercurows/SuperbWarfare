@@ -5,23 +5,8 @@
   "gui_light": "front",
   "loader": "forge:separate_transforms",
   "perspectives": {
-    "fixed": {
-      "parent": "superbwarfare:lod/minigun"
-    },
-    "ground": {
-      "parent": "superbwarfare:lod/minigun"
-    },
     "gui": {
       "parent": "superbwarfare:item/minigun_icon"
-    },
-    "head": {
-      "parent": "superbwarfare:lod/minigun"
-    },
-    "thirdperson_lefthand": {
-      "parent": "superbwarfare:lod/minigun"
-    },
-    "thirdperson_righthand": {
-      "parent": "superbwarfare:lod/minigun"
     }
   }
 }

@@ -5,23 +5,8 @@
   "gui_light": "front",
   "loader": "forge:separate_transforms",
   "perspectives": {
-    "fixed": {
-      "parent": "superbwarfare:lod/ak_12"
-    },
-    "ground": {
-      "parent": "superbwarfare:lod/ak_12"
-    },
     "gui": {
       "parent": "superbwarfare:item/ak_12_icon"
-    },
-    "head": {
-      "parent": "superbwarfare:lod/ak_12"
-    },
-    "thirdperson_lefthand": {
-      "parent": "superbwarfare:lod/ak_12"
-    },
-    "thirdperson_righthand": {
-      "parent": "superbwarfare:lod/ak_12"
     }
   }
 }

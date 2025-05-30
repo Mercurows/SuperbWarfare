@@ -5,23 +5,8 @@
   "gui_light": "front",
   "loader": "forge:separate_transforms",
   "perspectives": {
-    "fixed": {
-      "parent": "superbwarfare:lod/sks"
-    },
-    "ground": {
-      "parent": "superbwarfare:lod/sks"
-    },
     "gui": {
       "parent": "superbwarfare:item/sks_icon"
-    },
-    "head": {
-      "parent": "superbwarfare:lod/sks"
-    },
-    "thirdperson_lefthand": {
-      "parent": "superbwarfare:lod/sks"
-    },
-    "thirdperson_righthand": {
-      "parent": "superbwarfare:lod/sks"
     }
   }
 }

@@ -5,23 +5,8 @@
   "gui_light": "front",
   "loader": "forge:separate_transforms",
   "perspectives": {
-    "fixed": {
-      "parent": "superbwarfare:lod/javelin"
-    },
-    "ground": {
-      "parent": "superbwarfare:lod/javelin"
-    },
     "gui": {
       "parent": "superbwarfare:item/javelin_icon"
-    },
-    "head": {
-      "parent": "superbwarfare:lod/javelin"
-    },
-    "thirdperson_lefthand": {
-      "parent": "superbwarfare:lod/javelin"
-    },
-    "thirdperson_righthand": {
-      "parent": "superbwarfare:lod/javelin"
     }
   }
 }

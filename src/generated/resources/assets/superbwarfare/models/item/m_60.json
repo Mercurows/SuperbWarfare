@@ -5,23 +5,8 @@
   "gui_light": "front",
   "loader": "forge:separate_transforms",
   "perspectives": {
-    "fixed": {
-      "parent": "superbwarfare:lod/m_60"
-    },
-    "ground": {
-      "parent": "superbwarfare:lod/m_60"
-    },
     "gui": {
       "parent": "superbwarfare:item/m_60_icon"
-    },
-    "head": {
-      "parent": "superbwarfare:lod/m_60"
-    },
-    "thirdperson_lefthand": {
-      "parent": "superbwarfare:lod/m_60"
-    },
-    "thirdperson_righthand": {
-      "parent": "superbwarfare:lod/m_60"
     }
   }
 }

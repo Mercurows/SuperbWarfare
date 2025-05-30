@@ -5,23 +5,8 @@
   "gui_light": "front",
   "loader": "forge:separate_transforms",
   "perspectives": {
-    "fixed": {
-      "parent": "superbwarfare:lod/m_1911"
-    },
-    "ground": {
-      "parent": "superbwarfare:lod/m_1911"
-    },
     "gui": {
       "parent": "superbwarfare:item/m_1911_icon"
-    },
-    "head": {
-      "parent": "superbwarfare:lod/m_1911"
-    },
-    "thirdperson_lefthand": {
-      "parent": "superbwarfare:lod/m_1911"
-    },
-    "thirdperson_righthand": {
-      "parent": "superbwarfare:lod/m_1911"
     }
   }
 }

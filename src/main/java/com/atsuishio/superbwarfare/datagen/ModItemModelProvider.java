@@ -270,11 +270,11 @@ public class ModItemModelProvider extends ItemModelProvider {
                 .guiLight(BlockModel.GuiLight.FRONT)
                 .customLoader(CustomSeparateModelBuilder::begin)
                 .base(base)
-                .perspective(ItemDisplayContext.FIXED, lod)
-                .perspective(ItemDisplayContext.HEAD, lod)
-                .perspective(ItemDisplayContext.GROUND, lod)
-                .perspective(ItemDisplayContext.THIRD_PERSON_RIGHT_HAND, lod)
-                .perspective(ItemDisplayContext.THIRD_PERSON_LEFT_HAND, lod)
+//                .perspective(ItemDisplayContext.FIXED, lod)
+//                .perspective(ItemDisplayContext.HEAD, lod)
+//                .perspective(ItemDisplayContext.GROUND, lod)
+//                .perspective(ItemDisplayContext.THIRD_PERSON_RIGHT_HAND, lod)
+//                .perspective(ItemDisplayContext.THIRD_PERSON_LEFT_HAND, lod)
                 .perspective(ItemDisplayContext.GUI, icon)
                 .end();
     }

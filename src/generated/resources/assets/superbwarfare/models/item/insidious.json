@@ -5,23 +5,8 @@
   "gui_light": "front",
   "loader": "forge:separate_transforms",
   "perspectives": {
-    "fixed": {
-      "parent": "superbwarfare:lod/insidious"
-    },
-    "ground": {
-      "parent": "superbwarfare:lod/insidious"
-    },
     "gui": {
       "parent": "superbwarfare:item/insidious_icon"
-    },
-    "head": {
-      "parent": "superbwarfare:lod/insidious"
-    },
-    "thirdperson_lefthand": {
-      "parent": "superbwarfare:lod/insidious"
-    },
-    "thirdperson_righthand": {
-      "parent": "superbwarfare:lod/insidious"
     }
   }
 }

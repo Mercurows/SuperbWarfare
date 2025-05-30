@@ -5,23 +5,8 @@
   "gui_light": "front",
   "loader": "forge:separate_transforms",
   "perspectives": {
-    "fixed": {
-      "parent": "superbwarfare:lod/homemade_shotgun"
-    },
-    "ground": {
-      "parent": "superbwarfare:lod/homemade_shotgun"
-    },
     "gui": {
       "parent": "superbwarfare:item/homemade_shotgun_icon"
-    },
-    "head": {
-      "parent": "superbwarfare:lod/homemade_shotgun"
-    },
-    "thirdperson_lefthand": {
-      "parent": "superbwarfare:lod/homemade_shotgun"
-    },
-    "thirdperson_righthand": {
-      "parent": "superbwarfare:lod/homemade_shotgun"
     }
   }
 }
