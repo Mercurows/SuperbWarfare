@@ -15,9 +15,11 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
+import software.bernie.geckolib.constant.DataTickets;
 import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.core.animation.AnimationController;
 import software.bernie.geckolib.core.animation.AnimationState;
@@ -38,11 +40,14 @@ public class Glock17Item extends GunItem {
     public void initializeClient(Consumer<IClientItemExtensions> consumer) {
         super.initializeClient(consumer);
         consumer.accept(new IClientItemExtensions() {
-            private final BlockEntityWithoutLevelRenderer renderer = new Glock17ItemRenderer();
+            private BlockEntityWithoutLevelRenderer renderer;
 
             @Override
             public BlockEntityWithoutLevelRenderer getCustomRenderer() {
-                return renderer;
+                if (this.renderer == null) {
+                    this.renderer = new Glock17ItemRenderer();
+                }
+                return this.renderer;
             }
 
             @Override
@@ -57,6 +62,8 @@ public class Glock17Item extends GunItem {
         if (player == null) return PlayState.STOP;
         ItemStack stack = player.getMainHandItem();
         if (!(stack.getItem() instanceof GunItem)) return PlayState.STOP;
+        if (event.getData(DataTickets.ITEM_RENDER_PERSPECTIVE) != ItemDisplayContext.FIRST_PERSON_RIGHT_HAND)
+            return event.setAndContinue(RawAnimation.begin().thenLoop("animation.glock_17.idle"));
 
         if (GunData.from(stack).reload.empty()) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.glock_17.reload_empty"));
@@ -66,7 +73,6 @@ public class Glock17Item extends GunItem {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.glock_17.reload_normal"));
         }
 
-
         return event.setAndContinue(RawAnimation.begin().thenLoop("animation.glock_17.idle"));
     }
 
@@ -75,6 +81,8 @@ public class Glock17Item extends GunItem {
         if (player == null) return PlayState.STOP;
         ItemStack stack = player.getMainHandItem();
         if (!(stack.getItem() instanceof GunItem)) return PlayState.STOP;
+        if (event.getData(DataTickets.ITEM_RENDER_PERSPECTIVE) != ItemDisplayContext.FIRST_PERSON_RIGHT_HAND)
+            return event.setAndContinue(RawAnimation.begin().thenLoop("animation.glock_17.idle"));
 
         if (player.isSprinting() && player.onGround() && ClientEventHandler.cantSprint == 0 && !(GunData.from(stack).reload.normal() || GunData.from(stack).reload.empty()) && ClientEventHandler.drawTime < 0.01) {
             if (ClientEventHandler.tacticalSprint) {
@@ -86,7 +94,6 @@ public class Glock17Item extends GunItem {
 
         return event.setAndContinue(RawAnimation.begin().thenLoop("animation.glock_17.idle"));
     }
-
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar data) {

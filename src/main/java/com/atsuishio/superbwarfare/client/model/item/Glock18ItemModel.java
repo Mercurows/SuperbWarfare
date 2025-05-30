@@ -6,7 +6,6 @@ import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.data.gun.FireMode;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
-import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.handgun.Glock18Item;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
@@ -15,9 +14,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import software.bernie.geckolib.core.animatable.model.CoreGeoBone;
 import software.bernie.geckolib.core.animation.AnimationState;
-import software.bernie.geckolib.model.GeoModel;
 
-public class Glock18ItemModel extends GeoModel<Glock18Item> {
+public class Glock18ItemModel extends CustomGunModel<Glock18Item> {
 
     public static float fireRotY = 0f;
     public static float fireRotZ = 0f;
@@ -38,16 +36,16 @@ public class Glock18ItemModel extends GeoModel<Glock18Item> {
     }
 
     @Override
-    public void setCustomAnimations(Glock18Item animatable, long instanceId, AnimationState animationState) {
+    public void setCustomAnimations(Glock18Item animatable, long instanceId, AnimationState<Glock18Item> animationState) {
+        Player player = Minecraft.getInstance().player;
+        if (player == null) return;
+        ItemStack stack = player.getMainHandItem();
+        if (shouldCancelRender(stack, animationState)) return;
+
         CoreGeoBone gun = getAnimationProcessor().getBone("bone");
         CoreGeoBone slide = getAnimationProcessor().getBone("huatao");
         CoreGeoBone bullet = getAnimationProcessor().getBone("bullet");
         CoreGeoBone switch_ = getAnimationProcessor().getBone("kuaimanji");
-
-        Player player = Minecraft.getInstance().player;
-        if (player == null) return;
-        ItemStack stack = player.getMainHandItem();
-        if (!(stack.getItem() instanceof GunItem)) return;
 
         var data = GunData.from(stack);
         var mode = data.fireMode.get();
@@ -101,7 +99,6 @@ public class Glock18ItemModel extends GeoModel<Glock18Item> {
 
         CoreGeoBone camera = getAnimationProcessor().getBone("camera");
         CoreGeoBone main = getAnimationProcessor().getBone("0");
-
 
         float numR = (float) (1 - 0.12 * zt);
         float numP = (float) (1 - 0.68 * zt);
