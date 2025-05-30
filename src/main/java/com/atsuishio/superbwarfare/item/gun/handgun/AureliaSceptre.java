@@ -17,11 +17,13 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import software.bernie.geckolib.animation.*;
+import software.bernie.geckolib.constant.DataTickets;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -57,7 +59,8 @@ public class AureliaSceptre extends GunItem {
         if (player == null) return PlayState.STOP;
         ItemStack stack = player.getMainHandItem();
         if (!(stack.getItem() instanceof GunItem)) return PlayState.STOP;
-
+        if (event.getData(DataTickets.ITEM_RENDER_PERSPECTIVE) != ItemDisplayContext.FIRST_PERSON_RIGHT_HAND)
+            return event.setAndContinue(RawAnimation.begin().thenLoop("animation.aurelia_sceptre.idle"));
 
         if (player.isSprinting() && player.onGround()
                 && ClientEventHandler.cantSprint == 0
@@ -73,17 +76,22 @@ public class AureliaSceptre extends GunItem {
         if (player == null) return PlayState.STOP;
         ItemStack stack = player.getMainHandItem();
         if (!(stack.getItem() instanceof GunItem gunItem)) return PlayState.STOP;
+        if (event.getData(DataTickets.ITEM_RENDER_PERSPECTIVE) != ItemDisplayContext.FIRST_PERSON_RIGHT_HAND)
+            return event.setAndContinue(RawAnimation.begin().thenLoop("animation.aurelia_sceptre.idle"));
+
         var data = GunData.from(stack);
 
         if (ClientEventHandler.holdFire && gunItem.canShoot(data) && !data.overHeat.get()) {
             return event.setAndContinue(RawAnimation.begin().thenLoop("animation.aurelia_sceptre.fire"));
         }
 
-
         return event.setAndContinue(RawAnimation.begin().thenLoop("animation.aurelia_sceptre.idle"));
     }
 
     private PlayState meleePredicate(AnimationState<AureliaSceptre> event) {
+        if (event.getData(DataTickets.ITEM_RENDER_PERSPECTIVE) != ItemDisplayContext.FIRST_PERSON_RIGHT_HAND)
+            return event.setAndContinue(RawAnimation.begin().thenLoop("animation.aurelia_sceptre.idle"));
+
         if (ClientEventHandler.gunMelee > 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.aurelia_sceptre.hit"));
         }
