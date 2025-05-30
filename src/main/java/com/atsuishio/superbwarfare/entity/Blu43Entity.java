@@ -22,6 +22,7 @@ import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.decoration.HangingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ThrownPotion;
+import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
@@ -204,8 +205,28 @@ public class Blu43Entity extends Entity implements GeoEntity, OwnableEntity {
                 if (entity != null) {
                     trigger = true;
                     if (!entity.level().isClientSide() && entity instanceof LivingEntity living) {
-                        living.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 200, 3, false, false), this.getOwner());
-                        living.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 200, 3, false, false), this.getOwner());
+                        int baseAmplifier = 3;
+                        int baseDuration = 600;
+
+                        var boot = living.getItemBySlot(EquipmentSlot.FEET);
+                        var leggings = living.getItemBySlot(EquipmentSlot.LEGS);
+                        if (!boot.isEmpty()) {
+                            baseAmplifier--;
+                            baseDuration -= 100;
+                            if (boot.getItem() instanceof ArmorItem armorItem) {
+                                baseDuration -= armorItem.getDefense() * 10;
+                            }
+                        }
+                        if (!leggings.isEmpty()) {
+                            baseAmplifier--;
+                            baseDuration -= 100;
+                            if (leggings.getItem() instanceof ArmorItem armorItem) {
+                                baseDuration -= armorItem.getDefense() * 10;
+                            }
+                        }
+
+                        living.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, Math.max(baseDuration, 20), baseAmplifier, false, false), this.getOwner());
+                        living.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, Math.max(baseDuration, 20), baseAmplifier, false, false), this.getOwner());
                         living.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 30, 0, false, false), this.getOwner());
                     }
                     break;
@@ -215,7 +236,6 @@ public class Blu43Entity extends Entity implements GeoEntity, OwnableEntity {
             if (trigger) {
                 triggerExplode();
             }
-
         }
     }
 
