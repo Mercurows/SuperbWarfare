@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.client.model.item;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
-import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.handgun.AureliaSceptre;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
@@ -11,11 +10,10 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import software.bernie.geckolib.core.animatable.model.CoreGeoBone;
 import software.bernie.geckolib.core.animation.AnimationState;
-import software.bernie.geckolib.model.GeoModel;
 
 import static com.atsuishio.superbwarfare.event.ClientEventHandler.*;
 
-public class AureliaSceptreModel extends GeoModel<AureliaSceptre> {
+public class AureliaSceptreModel extends CustomGunModel<AureliaSceptre> {
 
     public static float fireRotY = 0f;
     public static float fireRotZ = 0f;
@@ -37,11 +35,11 @@ public class AureliaSceptreModel extends GeoModel<AureliaSceptre> {
     }
 
     @Override
-    public void setCustomAnimations(AureliaSceptre animatable, long instanceId, AnimationState animationState) {
+    public void setCustomAnimations(AureliaSceptre animatable, long instanceId, AnimationState<AureliaSceptre> animationState) {
         Player player = Minecraft.getInstance().player;
         if (player == null) return;
         ItemStack stack = player.getMainHandItem();
-        if (!(stack.getItem() instanceof GunItem)) return;
+        if (shouldCancelRender(stack, animationState)) return;
 
         float times = 0.2f * (float) Math.min(Minecraft.getInstance().getDeltaFrameTime(), 0.8);
 
@@ -50,7 +48,6 @@ public class AureliaSceptreModel extends GeoModel<AureliaSceptre> {
         CoreGeoBone rootLeftHand = getAnimationProcessor().getBone("rootLeftHand");
 
         firePosMove = Mth.lerp((holdFire ? 5 : 2) * times, firePosMove, holdFire ? 1 : 0);
-
 
         rootLeftHand.setPosX((float) (-movePosX + 20 * drawTime + 9.3f * movePosHorizon));
         rootLeftHand.setPosY((float) (swayY - movePosY - 40 * drawTime - 2f * velocityY + 1 * firePosMove));
