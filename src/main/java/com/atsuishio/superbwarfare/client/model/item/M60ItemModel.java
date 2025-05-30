@@ -5,7 +5,6 @@ import com.atsuishio.superbwarfare.client.AnimationHelper;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
-import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.machinegun.M60Item;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
@@ -14,11 +13,10 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import software.bernie.geckolib.core.animatable.model.CoreGeoBone;
 import software.bernie.geckolib.core.animation.AnimationState;
-import software.bernie.geckolib.model.GeoModel;
 
 import static com.atsuishio.superbwarfare.event.ClientEventHandler.isProne;
 
-public class M60ItemModel extends GeoModel<M60Item> {
+public class M60ItemModel extends CustomGunModel<M60Item> {
 
     @Override
     public ResourceLocation getAnimationResource(M60Item animatable) {
@@ -36,7 +34,12 @@ public class M60ItemModel extends GeoModel<M60Item> {
     }
 
     @Override
-    public void setCustomAnimations(M60Item animatable, long instanceId, AnimationState animationState) {
+    public void setCustomAnimations(M60Item animatable, long instanceId, AnimationState<M60Item> animationState) {
+        Player player = Minecraft.getInstance().player;
+        if (player == null) return;
+        ItemStack stack = player.getMainHandItem();
+        if (shouldCancelRender(stack, animationState)) return;
+
         CoreGeoBone gun = getAnimationProcessor().getBone("bone");
         CoreGeoBone shen = getAnimationProcessor().getBone("shen");
         CoreGeoBone tiba = getAnimationProcessor().getBone("tiba");
@@ -47,11 +50,6 @@ public class M60ItemModel extends GeoModel<M60Item> {
         CoreGeoBone b5 = getAnimationProcessor().getBone("b5");
         CoreGeoBone l = getAnimationProcessor().getBone("l");
         CoreGeoBone r = getAnimationProcessor().getBone("r");
-
-        Player player = Minecraft.getInstance().player;
-        if (player == null) return;
-        ItemStack stack = player.getMainHandItem();
-        if (!(stack.getItem() instanceof GunItem)) return;
 
         if (isProne(player)) {
             l.setRotX(1.5f);
