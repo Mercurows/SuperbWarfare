@@ -70,10 +70,16 @@ public class FuMO25Block extends Block implements EntityBlock {
 
     @Override
     public @Nullable <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level pLevel, @NotNull BlockState pState, @NotNull BlockEntityType<T> pBlockEntityType) {
-        if (!pLevel.isClientSide && pBlockEntityType == ModBlockEntities.FUMO_25.get()) {
-            return FuMO25BlockEntity::serverTick;
+        if (!pLevel.isClientSide) {
+            return createTickerHelper(pBlockEntityType, ModBlockEntities.FUMO_25.get(), FuMO25BlockEntity::serverTick);
         }
         return null;
+    }
+
+    @Nullable
+    @SuppressWarnings("unchecked")
+    protected static <E extends BlockEntity, A extends BlockEntity> BlockEntityTicker<A> createTickerHelper(BlockEntityType<A> pServerType, BlockEntityType<E> pClientType, BlockEntityTicker<? super E> pTicker) {
+        return pClientType == pServerType ? (BlockEntityTicker<A>) pTicker : null;
     }
 
     @Override
