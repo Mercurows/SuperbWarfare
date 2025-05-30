@@ -132,6 +132,6 @@ public class Mod {
     }
 
     private void registerDataTickets() {
-        FuMO25BlockEntity.FUMO25_TICK = GeckoLibUtil.addDataTicket(SerializableDataTicket.ofDouble(loc("fumo25_tick")));
+        FuMO25BlockEntity.FUMO25_TICK = GeckoLibUtil.addDataTicket(SerializableDataTicket.ofInt(loc("fumo25_tick")));
     }
 }

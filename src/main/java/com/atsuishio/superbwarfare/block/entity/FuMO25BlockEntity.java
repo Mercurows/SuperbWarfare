@@ -32,7 +32,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoBlockEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.animation.*;
+import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.constant.dataticket.SerializableDataTicket;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
@@ -42,7 +42,7 @@ import java.util.List;
 
 public class FuMO25BlockEntity extends BlockEntity implements MenuProvider, GeoBlockEntity {
 
-    public static SerializableDataTicket<Double> FUMO25_TICK;
+    public static SerializableDataTicket<Integer> FUMO25_TICK;
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
@@ -66,6 +66,7 @@ public class FuMO25BlockEntity extends BlockEntity implements MenuProvider, GeoB
     public int time = 0;
     public boolean powered = false;
     public int tick = 0;
+    public float yRot0 = 0;
 
     protected final ContainerEnergyData dataAccess = new ContainerEnergyData() {
         @Override
@@ -106,14 +107,17 @@ public class FuMO25BlockEntity extends BlockEntity implements MenuProvider, GeoB
         return this.energyStorage;
     }
 
-    public static <T extends BlockEntity> void serverTick(Level pLevel, BlockPos pPos, BlockState pState, T blockEntity) {
-        var radar = (FuMO25BlockEntity) blockEntity;
+    public static void serverTick(Level pLevel, BlockPos pPos, BlockState pState, FuMO25BlockEntity blockEntity) {
+        if (pState.getValue(FuMO25Block.POWERED)) {
+            blockEntity.tick++;
+            blockEntity.setAnimData(FUMO25_TICK, blockEntity.tick);
+        }
 
-        var energyStorage = ((FuMO25BlockEntity) blockEntity).getEnergyStorage(null);
+        var energyStorage = blockEntity.getEnergyStorage(null);
         var energy = energyStorage.getEnergyStored();
-        radar.tick++;
+        blockEntity.tick++;
 
-        FuncType funcType = radar.type;
+        FuncType funcType = blockEntity.type;
         int energyCost;
         if (funcType == FuncType.WIDER) {
             energyCost = MAX_ENERGY_COST;
@@ -125,45 +129,44 @@ public class FuMO25BlockEntity extends BlockEntity implements MenuProvider, GeoB
             if (pState.getValue(FuMO25Block.POWERED)) {
                 pLevel.setBlockAndUpdate(pPos, pState.setValue(FuMO25Block.POWERED, false));
                 pLevel.playSound(null, pPos, ModSounds.RADAR_SEARCH_END.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
-                radar.powered = false;
+                blockEntity.powered = false;
                 setChanged(pLevel, pPos, pState);
             }
-            if (radar.time > 0) {
-                radar.time = 0;
-                radar.setChanged();
+            if (blockEntity.time > 0) {
+                blockEntity.time = 0;
+                blockEntity.setChanged();
             }
         } else {
             if (!pState.getValue(FuMO25Block.POWERED)) {
                 if (energy >= DEFAULT_MIN_ENERGY) {
                     pLevel.setBlockAndUpdate(pPos, pState.setValue(FuMO25Block.POWERED, true));
                     pLevel.playSound(null, pPos, ModSounds.RADAR_SEARCH_START.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
-                    radar.powered = true;
+                    blockEntity.powered = true;
                     setChanged(pLevel, pPos, pState);
                 }
             } else {
                 energyStorage.extractEnergy(energyCost, false);
-                if (radar.tick == 200) {
+                if (blockEntity.tick == 200) {
                     pLevel.playSound(null, pPos, ModSounds.RADAR_SEARCH_IDLE.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
                 }
 
-                if (radar.time > 0) {
-                    if (radar.time % 100 == 0) {
-                        radar.setGlowEffect();
+                if (blockEntity.time > 0) {
+                    if (blockEntity.time % 100 == 0) {
+                        blockEntity.setGlowEffect();
                     }
-                    radar.time--;
-                    radar.setChanged();
+                    blockEntity.time--;
+                    blockEntity.setChanged();
                 }
             }
         }
 
-        if (radar.tick >= 200) {
-            radar.tick = 0;
-            radar.setAnimData(FUMO25_TICK, (double) radar.tick);
+        if (blockEntity.tick >= 200) {
+            blockEntity.tick = 0;
         }
 
-        if (radar.time <= 0 && radar.type != FuncType.NORMAL) {
-            radar.type = FuncType.NORMAL;
-            radar.setChanged();
+        if (blockEntity.time <= 0 && blockEntity.type != FuncType.NORMAL) {
+            blockEntity.type = FuncType.NORMAL;
+            blockEntity.setChanged();
         }
     }
 
@@ -222,16 +225,8 @@ public class FuMO25BlockEntity extends BlockEntity implements MenuProvider, GeoB
         return ClientboundBlockEntityDataPacket.create(this);
     }
 
-    private PlayState predicate(AnimationState<FuMO25BlockEntity> event) {
-        if (this.getBlockState().getValue(FuMO25Block.POWERED)) {
-            return event.setAndContinue(RawAnimation.begin().thenLoop("animation.fumo_25.rot"));
-        }
-        return PlayState.STOP;
-    }
-
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar data) {
-        data.add(new AnimationController<>(this, "controller", 0, this::predicate));
     }
 
     @Override
