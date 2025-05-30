@@ -6,7 +6,6 @@ import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
-import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.handgun.Trachelium;
 import com.atsuishio.superbwarfare.tools.NBTTool;
 import net.minecraft.client.Minecraft;
@@ -16,11 +15,10 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import software.bernie.geckolib.animation.AnimationState;
 import software.bernie.geckolib.cache.object.GeoBone;
-import software.bernie.geckolib.model.GeoModel;
 
 import static com.atsuishio.superbwarfare.event.ClientEventHandler.isProne;
 
-public class TracheliumItemModel extends GeoModel<Trachelium> {
+public class TracheliumItemModel extends CustomGunModel<Trachelium> {
 
     public static float posYAlt = -0.83f;
     public static float scaleZAlt = 0.8f;
@@ -46,7 +44,12 @@ public class TracheliumItemModel extends GeoModel<Trachelium> {
     }
 
     @Override
-    public void setCustomAnimations(Trachelium animatable, long instanceId, AnimationState animationState) {
+    public void setCustomAnimations(Trachelium animatable, long instanceId, AnimationState<Trachelium> animationState) {
+        Player player = Minecraft.getInstance().player;
+        if (player == null) return;
+        ItemStack stack = player.getMainHandItem();
+        if (shouldCancelRender(stack, animationState)) return;
+
         GeoBone gun = getAnimationProcessor().getBone("bone");
         GeoBone hammer = getAnimationProcessor().getBone("jichui");
         GeoBone lun = getAnimationProcessor().getBone("lun");
@@ -56,11 +59,6 @@ public class TracheliumItemModel extends GeoModel<Trachelium> {
         GeoBone camera = getAnimationProcessor().getBone("camera");
         GeoBone main = getAnimationProcessor().getBone("0");
         GeoBone scope2 = getAnimationProcessor().getBone("Scope2");
-
-        Player player = Minecraft.getInstance().player;
-        if (player == null) return;
-        ItemStack stack = player.getMainHandItem();
-        if (!(stack.getItem() instanceof GunItem)) return;
 
         float times = 0.4f * (float) Math.min(Minecraft.getInstance().getTimer().getRealtimeDeltaTicks(), 0.8);
         double zt = ClientEventHandler.zoomTime;
@@ -81,27 +79,23 @@ public class TracheliumItemModel extends GeoModel<Trachelium> {
         posZAlt = Mth.lerp(times, posZAlt, NBTTool.getTag(stack).getBoolean("ScopeAlt") ? 7.5f : 13.7f);
 
         float posY = switch (scopeType) {
-            case 0 -> 1.1f;
+            case 0, 3 -> 1.1f;
             case 1 -> -0.18f;
             case 2 -> posYAlt;
-            case 3 -> 1.1f;
             default -> 0f;
         };
         float scaleZ = switch (scopeType) {
-            case 0 -> 0.2f;
+            case 0, 3 -> 0.2f;
             case 1 -> 0.6f;
             case 2 -> scaleZAlt;
-            case 3 -> 0.2f;
             default -> 0f;
         };
         float posZ = switch (scopeType) {
-            case 0 -> 1f;
+            case 0, 3 -> 1f;
             case 1 -> 6f;
             case 2 -> posZAlt;
-            case 3 -> 1f;
             default -> 0f;
         };
-
 
         float posZAlt = stockType == 2 ? 1 : 0;
 
