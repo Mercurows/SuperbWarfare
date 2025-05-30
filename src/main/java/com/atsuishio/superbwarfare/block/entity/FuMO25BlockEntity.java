@@ -33,6 +33,7 @@ import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoBlockEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.*;
+import software.bernie.geckolib.constant.dataticket.SerializableDataTicket;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -40,6 +41,8 @@ import java.util.List;
 
 
 public class FuMO25BlockEntity extends BlockEntity implements MenuProvider, GeoBlockEntity {
+
+    public static SerializableDataTicket<Double> FUMO25_TICK;
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
@@ -155,6 +158,7 @@ public class FuMO25BlockEntity extends BlockEntity implements MenuProvider, GeoB
 
         if (radar.tick >= 200) {
             radar.tick = 0;
+            radar.setAnimData(FUMO25_TICK, (double) radar.tick);
         }
 
         if (radar.time <= 0 && radar.type != FuncType.NORMAL) {

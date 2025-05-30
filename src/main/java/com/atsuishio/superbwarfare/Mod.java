@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare;
 
 import com.atsuishio.superbwarfare.api.event.RegisterContainersEvent;
+import com.atsuishio.superbwarfare.block.entity.FuMO25BlockEntity;
 import com.atsuishio.superbwarfare.client.MouseMovementHandler;
 import com.atsuishio.superbwarfare.client.renderer.molang.MolangVariable;
 import com.atsuishio.superbwarfare.client.sound.ModSoundInstances;
@@ -26,6 +27,8 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import software.bernie.geckolib.constant.dataticket.SerializableDataTicket;
+import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;
@@ -71,6 +74,8 @@ public class Mod {
         bus.addListener(ModItems::registerDispenserBehavior);
 
         bus.addListener(NetworkRegistry::register);
+
+        registerDataTickets();
 
         if (FMLEnvironment.dist == Dist.CLIENT) {
             CompatHolder.hasMod(CompatHolder.CLOTH_CONFIG, ClothConfigHelper::registerScreen);
@@ -126,4 +131,7 @@ public class Mod {
         event.enqueueWork(ModSoundInstances::init);
     }
 
+    private void registerDataTickets() {
+        FuMO25BlockEntity.FUMO25_TICK = GeckoLibUtil.addDataTicket(SerializableDataTicket.ofDouble(loc("fumo25_tick")));
+    }
 }
