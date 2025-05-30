@@ -14,7 +14,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.DispenserBlock;
-import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Math;
 
@@ -62,15 +61,11 @@ public class Blu43Mine extends Item {
             float randomRot = (float) Mth.clamp((2 * Math.random() - 1) * 180, -180, 180);
 
             var pX = direction.getStepX();
-            var pY = direction.getStepY() + 0.1F;
+            var pY = direction.getStepY();
             var pZ = direction.getStepZ();
-            Vec3 vec3 = (new Vec3(pX, pY, pZ)).normalize().scale(0.05);
-            blu43.setDeltaMovement(vec3);
-            double d0 = vec3.horizontalDistance();
+            blu43.shoot(pX, pY, pZ, 0.4f, 10);
             blu43.setYRot(randomRot);
-            blu43.setXRot((float) (Mth.atan2(vec3.y, d0) * (double) (180F / (float) Math.PI)));
             blu43.yRotO = blu43.getYRot();
-            blu43.xRotO = blu43.getXRot();
 
             level.addFreshEntity(blu43);
             stack.shrink(1);
