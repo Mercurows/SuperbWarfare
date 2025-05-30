@@ -91,6 +91,11 @@ public abstract class GunItem extends Item implements GeoItem {
     }
 
     @Override
+    public boolean isPerspectiveAware() {
+        return true;
+    }
+
+    @Override
     @ParametersAreNonnullByDefault
     public boolean canAttackBlock(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer) {
         return false;
