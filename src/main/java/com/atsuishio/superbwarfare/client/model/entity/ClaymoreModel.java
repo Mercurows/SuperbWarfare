@@ -11,7 +11,7 @@ public class ClaymoreModel extends GeoModel<ClaymoreEntity> {
 
     @Override
     public ResourceLocation getAnimationResource(ClaymoreEntity entity) {
-        return Mod.loc("animations/claymore.animation.json");
+        return null;
     }
 
     @Override

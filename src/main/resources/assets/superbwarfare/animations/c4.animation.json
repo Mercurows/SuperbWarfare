@@ -1,8 +1,0 @@
-{
-	"format_version": "1.8.0",
-	"animations": {
-		"animation.c4.idle": {
-			"animation_length": 0.5
-		}
-	}
-}

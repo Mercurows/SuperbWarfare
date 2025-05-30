@@ -92,6 +92,7 @@ public class ModItemModelProvider extends ItemModelProvider {
         simpleItem(ModItems.MISSILE_ENGINE);
         simpleItem(ModItems.FUSEE);
         simpleItem(ModItems.PRIMER);
+        simpleItem(ModItems.BLU_43_MINE);
         simpleItem(ModItems.AP_HEAD);
         simpleItem(ModItems.HE_HEAD);
         simpleItem(ModItems.CANNON_CORE);

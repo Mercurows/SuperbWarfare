@@ -1,4 +1,4 @@
-// 1.21.1	2025-05-29T14:19:09.6790507	Item Models: superbwarfare
+// 1.21.1	2025-05-30T19:50:17.18005	Item Models: superbwarfare
 06b82c2eb3d0312eaa6085814e1497e61139fc9c assets/superbwarfare/models/item/aa_12.json
 fb3a995587b2c253571c3160ff02c2ad8c73ecf8 assets/superbwarfare/models/item/aa_12_base.json
 13ca8d5676888ff51f3308d88e4bf67691fa34f8 assets/superbwarfare/models/item/aa_12_blueprint.json
@@ -23,6 +23,7 @@ a207f0f01b87315d1b85fc3ea69bf52b2bd5c71a assets/superbwarfare/models/item/aureli
 984c08ca6f6893a15721a85e30118f9e32c65c7f assets/superbwarfare/models/item/barbed_wire.json
 e8f16946c6f9429989d05e9ec250a72ffc64f9e1 assets/superbwarfare/models/item/beam_test.json
 bda38dd5cb3ca4c3e289a012c0529609ac02ded2 assets/superbwarfare/models/item/beast.json
+e73a45b6a96cb3c8901fea9365261501d87f85a7 assets/superbwarfare/models/item/blu_43_mine.json
 10964037bbbf9325114b0d05c63fb3a8513e05ca assets/superbwarfare/models/item/bocek.json
 55698528f99669ec9f28ae9915c26e1a686f642a assets/superbwarfare/models/item/bocek_base.json
 13ca8d5676888ff51f3308d88e4bf67691fa34f8 assets/superbwarfare/models/item/bocek_blueprint.json

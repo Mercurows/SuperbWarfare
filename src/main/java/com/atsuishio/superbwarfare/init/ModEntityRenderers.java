@@ -53,5 +53,6 @@ public class ModEntityRenderers {
         event.registerEntityRenderer(ModEntities.A_10A.get(), A10Renderer::new);
         event.registerEntityRenderer(ModEntities.MK_82.get(), Mk82Renderer::new);
         event.registerEntityRenderer(ModEntities.AGM_65.get(), Agm65Renderer::new);
+        event.registerEntityRenderer(ModEntities.BLU_43.get(), Blu43Renderer::new);
     }
 }

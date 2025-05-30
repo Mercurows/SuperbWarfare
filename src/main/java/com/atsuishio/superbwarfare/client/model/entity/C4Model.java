@@ -11,7 +11,7 @@ public class C4Model extends GeoModel<C4Entity> {
 
     @Override
     public ResourceLocation getAnimationResource(C4Entity entity) {
-        return Mod.loc("animations/c4.animation.json");
+        return null;
     }
 
     @Override

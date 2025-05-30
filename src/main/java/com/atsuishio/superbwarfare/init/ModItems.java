@@ -116,6 +116,7 @@ public class ModItems {
     public static final DeferredHolder<Item, RgoGrenade> RGO_GRENADE = AMMO.register("rgo_grenade", RgoGrenade::new);
     public static final DeferredHolder<Item, ClaymoreMine> CLAYMORE_MINE = AMMO.register("claymore_mine", ClaymoreMine::new);
     public static final DeferredHolder<Item, C4Bomb> C4_BOMB = AMMO.register("c4_bomb", C4Bomb::new);
+    public static final DeferredHolder<Item, Blu43Mine> BLU_43_MINE = AMMO.register("blu_43_mine", Blu43Mine::new);
     public static final DeferredHolder<Item, Item> SMALL_SHELL = AMMO.register("small_shell", SmallShellItem::new);
     public static final DeferredHolder<Item, Item> ROCKET_70 = AMMO.register("rocket_70", Rocket70::new);
     public static final DeferredHolder<Item, WireGuideMissile> WIRE_GUIDE_MISSILE = AMMO.register("wire_guide_missile", WireGuideMissile::new);
@@ -332,6 +333,7 @@ public class ModItems {
         DispenserBlock.registerBehavior(SWARM_DRONE.get(), new SwarmDrone.SwarmDroneDispenseBehavior());
         DispenserBlock.registerBehavior(C4_BOMB.get(), new C4Bomb.C4DispenseItemBehavior());
         DispenserBlock.registerBehavior(CLAYMORE_MINE.get(), new ClaymoreMine.ClaymoreDispenseBehavior());
+        DispenserBlock.registerBehavior(BLU_43_MINE.get(), new Blu43Mine.Blu43MineDispenseBehavior());
         DispenserBlock.registerBehavior(ROCKET.get(), new Rocket.RocketDispenseBehavior());
         DispenserBlock.registerBehavior(ROCKET_70.get(), new Rocket70.Rocket70DispenseBehavior());
         DispenserBlock.registerBehavior(MEDIUM_AERIAL_BOMB.get(), new MediumAerialBomb.MediumAerialBombDispenseBehavior());
