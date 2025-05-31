@@ -4,7 +4,6 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
-import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.sniper.K98Item;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
@@ -13,9 +12,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import software.bernie.geckolib.core.animatable.model.CoreGeoBone;
 import software.bernie.geckolib.core.animation.AnimationState;
-import software.bernie.geckolib.model.GeoModel;
 
-public class K98ItemModel extends GeoModel<K98Item> {
+public class K98ItemModel extends CustomGunModel<K98Item> {
 
     @Override
     public ResourceLocation getAnimationResource(K98Item animatable) {
@@ -33,16 +31,15 @@ public class K98ItemModel extends GeoModel<K98Item> {
     }
 
     @Override
-    public void setCustomAnimations(K98Item animatable, long instanceId, AnimationState animationState) {
-        CoreGeoBone gun = getAnimationProcessor().getBone("bone");
-        CoreGeoBone shen = getAnimationProcessor().getBone("shen");
-        CoreGeoBone clip = getAnimationProcessor().getBone("mag");
-
+    public void setCustomAnimations(K98Item animatable, long instanceId, AnimationState<K98Item> animationState) {
         Player player = Minecraft.getInstance().player;
         if (player == null) return;
         ItemStack stack = player.getMainHandItem();
-        if (!(stack.getItem() instanceof GunItem)) return;
+        if (shouldCancelRender(stack, animationState)) return;
 
+        CoreGeoBone gun = getAnimationProcessor().getBone("bone");
+        CoreGeoBone shen = getAnimationProcessor().getBone("shen");
+        CoreGeoBone clip = getAnimationProcessor().getBone("mag");
 
         if (GunData.from(stack).reload.prepareTimer.get() > 11 && GunData.from(stack).ammo.get() == 1) {
             clip.setScaleX(0);
