@@ -27,12 +27,14 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animation.*;
+import software.bernie.geckolib.constant.DataTickets;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -84,6 +86,9 @@ public class SecondaryCataclysm extends GunItem implements EnergyStorageItem {
         if (player == null) return PlayState.STOP;
         ItemStack stack = player.getMainHandItem();
         if (!(stack.getItem() instanceof GunItem)) return PlayState.STOP;
+        if (event.getData(DataTickets.ITEM_RENDER_PERSPECTIVE) != ItemDisplayContext.FIRST_PERSON_RIGHT_HAND)
+            return event.setAndContinue(RawAnimation.begin().thenLoop("animation.secondary_cataclysm.idle"));
+
         var data = GunData.from(stack);
 
         if (data.reload.stage() == 1 && data.reload.prepareLoadTimer.get() > 0) {
@@ -110,6 +115,9 @@ public class SecondaryCataclysm extends GunItem implements EnergyStorageItem {
         if (player == null) return PlayState.STOP;
         ItemStack stack = player.getMainHandItem();
         if (!(stack.getItem() instanceof GunItem)) return PlayState.STOP;
+        if (event.getData(DataTickets.ITEM_RENDER_PERSPECTIVE) != ItemDisplayContext.FIRST_PERSON_RIGHT_HAND)
+            return event.setAndContinue(RawAnimation.begin().thenLoop("animation.secondary_cataclysm.idle"));
+
         var data = GunData.from(stack);
 
         if (player.isSprinting() && player.onGround()
@@ -133,6 +141,9 @@ public class SecondaryCataclysm extends GunItem implements EnergyStorageItem {
     }
 
     private PlayState meleePredicate(AnimationState<SecondaryCataclysm> event) {
+        if (event.getData(DataTickets.ITEM_RENDER_PERSPECTIVE) != ItemDisplayContext.FIRST_PERSON_RIGHT_HAND)
+            return event.setAndContinue(RawAnimation.begin().thenLoop("animation.secondary_cataclysm.idle"));
+
         if (ClientEventHandler.gunMelee > 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.secondary_cataclysm.hit"));
         }
