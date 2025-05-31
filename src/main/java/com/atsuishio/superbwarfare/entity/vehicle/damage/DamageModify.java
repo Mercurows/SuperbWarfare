@@ -118,6 +118,8 @@ public class DamageModify {
      * @return 伤害来源是否符合条件
      */
     public boolean match(DamageSource source) {
+        if (source == null) return false;
+
         if (sourceType == null) {
             generateSourceType();
         }
