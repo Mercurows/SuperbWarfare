@@ -4,11 +4,13 @@
   "compatibilityLevel": "JAVA_17",
   "refmap": "mixins.superbwarfare.refmap.json",
   "mixins": [
+    "AnimationProcessorAccessor",
     "BeastMixin",
     "ClientboundSetPassengersPacketMixin",
     "EntityMixin",
     "ExplosionMixin",
     "FishingHookMixin",
+    "GeoModelAccessor",
     "LivingEntityMixin",
     "PlayerMixin",
     "VillagerMixin"
