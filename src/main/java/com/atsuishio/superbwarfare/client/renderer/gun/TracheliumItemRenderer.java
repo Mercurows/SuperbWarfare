@@ -14,6 +14,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import software.bernie.geckolib.animatable.GeoItem;
 import software.bernie.geckolib.cache.object.GeoBone;
@@ -59,24 +60,26 @@ public class TracheliumItemRenderer extends CustomGunRenderer<Trachelium> {
                 }
             }
 
-            if (name.equals("humu")) {
-                bone.setHidden(GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 0 && GunData.from(itemStack).attachment.get(AttachmentType.GRIP) == 0);
-            }
+            if (this.renderPerspective == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND) {
+                if (name.equals("humu")) {
+                    bone.setHidden(GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 0 && GunData.from(itemStack).attachment.get(AttachmentType.GRIP) == 0);
+                }
 
-            if (name.equals("qianzhunxing1")) {
-                bone.setHidden(GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) > 0 || GunData.from(itemStack).attachment.get(AttachmentType.GRIP) > 0);
-            }
+                if (name.equals("qianzhunxing1")) {
+                    bone.setHidden(GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) > 0 || GunData.from(itemStack).attachment.get(AttachmentType.GRIP) > 0);
+                }
 
-            if (name.equals("railup")) {
-                bone.setHidden(GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 0);
-            }
+                if (name.equals("railup")) {
+                    bone.setHidden(GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 0);
+                }
 
-            if (name.equals("raildown")) {
-                bone.setHidden(GunData.from(itemStack).attachment.get(AttachmentType.GRIP) == 0);
-            }
+                if (name.equals("raildown")) {
+                    bone.setHidden(GunData.from(itemStack).attachment.get(AttachmentType.GRIP) == 0);
+                }
 
-            if (GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 2 && !itemStack.getOrCreateTag().getBoolean("ScopeAlt") && (name.equals("hidden"))) {
-                bone.setHidden(ClientEventHandler.zoomPos > 0.7 && ClientEventHandler.zoom);
+                if (GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 2 && !itemStack.getOrCreateTag().getBoolean("ScopeAlt") && (name.equals("hidden"))) {
+                    bone.setHidden(ClientEventHandler.zoomPos > 0.7 && ClientEventHandler.zoom);
+                }
             }
         } else {
             ItemModelHelper.hideAllAttachments(bone, name);
