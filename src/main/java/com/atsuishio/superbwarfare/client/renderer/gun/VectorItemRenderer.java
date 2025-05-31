@@ -13,8 +13,9 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import software.bernie.geckolib.animatable.GeoItem;
 import software.bernie.geckolib.cache.object.GeoBone;
 
 public class VectorItemRenderer extends CustomGunRenderer<VectorItem> {
@@ -38,33 +39,33 @@ public class VectorItemRenderer extends CustomGunRenderer<VectorItem> {
         var player = mc.player;
         if (player == null) return;
         ItemStack itemStack = player.getMainHandItem();
-        if (!(itemStack.getItem() instanceof GunItem)) return;
+        if (itemStack.getItem() instanceof GunItem && GeoItem.getId(itemStack) == this.getInstanceId(animatable)) {
+            if (this.renderPerspective == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND) {
+                if (name.equals("tuoxin")) {
+                    bone.setHidden(GunData.from(itemStack).attachment.get(AttachmentType.STOCK) == 0);
+                }
+            }
 
-        if (name.equals("tuoxin")) {
-            bone.setHidden(GunData.from(itemStack).attachment.get(AttachmentType.STOCK) == 0);
+            int scopeType = GunData.from(itemStack).attachment.get(AttachmentType.SCOPE);
+            switch (scopeType) {
+                case 1 ->
+                        AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.27, 18, 1, 255, 0, 0, 255, "dot", false);
+                case 2 ->
+                        AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.27, 16, 1, 255, 0, 0, 255, "apex_2x", true);
+            }
+
+            AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn, 0, 0, 1.453125, 0.35);
+            ItemModelHelper.handleGunAttachments(bone, itemStack, name);
+        } else {
+            ItemModelHelper.hideAllAttachments(bone, name);
+            if (name.equals("tuoxin")) {
+                bone.setHidden(true);
+            }
         }
-
-        int scopeType = GunData.from(itemStack).attachment.get(AttachmentType.SCOPE);
-        switch (scopeType) {
-            case 1 ->
-                    AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.27, 18, 1, 255, 0, 0, 255, "dot", false);
-            case 2 ->
-                    AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.27, 16, 1, 255, 0, 0, 255, "apex_2x", true);
-        }
-
-        AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn, 0, 0, 1.453125, 0.35);
-
-        ItemModelHelper.handleGunAttachments(bone, itemStack, name);
-
 
         if (renderingArms) {
-            AnimationHelper.renderArms(player, this.transformType, stack, name, bone, this.currentBuffer, type, packedLightIn, true);
+            AnimationHelper.renderArms(player, this.renderPerspective, stack, name, bone, buffer, type, packedLightIn, true);
         }
         super.renderRecursively(stack, animatable, bone, type, buffer, bufferIn, isReRender, partialTick, packedLightIn, packedOverlayIn, color);
-    }
-
-    @Override
-    public ResourceLocation getTextureLocation(VectorItem instance) {
-        return super.getTextureLocation(instance);
     }
 }

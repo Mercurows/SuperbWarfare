@@ -6,7 +6,6 @@ import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
-import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.smg.VectorItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
@@ -15,11 +14,10 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import software.bernie.geckolib.animation.AnimationState;
 import software.bernie.geckolib.cache.object.GeoBone;
-import software.bernie.geckolib.model.GeoModel;
 
 import static com.atsuishio.superbwarfare.event.ClientEventHandler.isProne;
 
-public class VectorItemModel extends GeoModel<VectorItem> {
+public class VectorItemModel extends CustomGunModel<VectorItem> {
 
     public static float fireRotY = 0f;
     public static float fireRotZ = 0f;
@@ -42,17 +40,17 @@ public class VectorItemModel extends GeoModel<VectorItem> {
     }
 
     @Override
-    public void setCustomAnimations(VectorItem animatable, long instanceId, AnimationState animationState) {
+    public void setCustomAnimations(VectorItem animatable, long instanceId, AnimationState<VectorItem> animationState) {
+        Player player = Minecraft.getInstance().player;
+        if (player == null) return;
+        ItemStack stack = player.getMainHandItem();
+        if (shouldCancelRender(stack, animationState)) return;
+
         GeoBone gun = getAnimationProcessor().getBone("bone");
         GeoBone scope = getAnimationProcessor().getBone("Scope1");
         GeoBone kmj = getAnimationProcessor().getBone("kuaimanji");
         GeoBone sight1fold = getAnimationProcessor().getBone("SightFold1");
         GeoBone sight2fold = getAnimationProcessor().getBone("SightFold2");
-
-        Player player = Minecraft.getInstance().player;
-        if (player == null) return;
-        ItemStack stack = player.getMainHandItem();
-        if (!(stack.getItem() instanceof GunItem)) return;
 
         var data = GunData.from(stack);
 
