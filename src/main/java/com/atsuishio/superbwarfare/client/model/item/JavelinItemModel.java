@@ -3,7 +3,6 @@ package com.atsuishio.superbwarfare.client.model.item;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
-import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.launcher.JavelinItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
@@ -12,9 +11,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import software.bernie.geckolib.core.animatable.model.CoreGeoBone;
 import software.bernie.geckolib.core.animation.AnimationState;
-import software.bernie.geckolib.model.GeoModel;
 
-public class JavelinItemModel extends GeoModel<JavelinItem> {
+public class JavelinItemModel extends CustomGunModel<JavelinItem> {
 
     @Override
     public ResourceLocation getAnimationResource(JavelinItem animatable) {
@@ -32,15 +30,15 @@ public class JavelinItemModel extends GeoModel<JavelinItem> {
     }
 
     @Override
-    public void setCustomAnimations(JavelinItem animatable, long instanceId, AnimationState animationState) {
-        CoreGeoBone gun = getAnimationProcessor().getBone("bone");
-        CoreGeoBone shen = getAnimationProcessor().getBone("shen");
-        CoreGeoBone javelin = getAnimationProcessor().getBone("javelin");
-
+    public void setCustomAnimations(JavelinItem animatable, long instanceId, AnimationState<JavelinItem> animationState) {
         Player player = Minecraft.getInstance().player;
         if (player == null) return;
         ItemStack stack = player.getMainHandItem();
-        if (!(stack.getItem() instanceof GunItem)) return;
+        if (shouldCancelRender(stack, animationState)) return;
+
+        CoreGeoBone gun = getAnimationProcessor().getBone("bone");
+        CoreGeoBone shen = getAnimationProcessor().getBone("shen");
+        CoreGeoBone javelin = getAnimationProcessor().getBone("javelin");
 
         float times = 0.6f * (float) Math.min(Minecraft.getInstance().getDeltaFrameTime(), 0.8);
         double zp = ClientEventHandler.zoomPos;
