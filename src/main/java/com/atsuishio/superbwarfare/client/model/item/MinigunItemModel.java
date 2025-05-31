@@ -4,7 +4,6 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
-import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.machinegun.MinigunItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
@@ -13,9 +12,10 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import software.bernie.geckolib.core.animatable.model.CoreGeoBone;
 import software.bernie.geckolib.core.animation.AnimationState;
-import software.bernie.geckolib.model.GeoModel;
 
-public class MinigunItemModel extends GeoModel<MinigunItem> {
+public class MinigunItemModel extends CustomGunModel<MinigunItem> {
+
+    private static float rotZ = 0.0f;
 
     @Override
     public ResourceLocation getAnimationResource(MinigunItem animatable) {
@@ -33,17 +33,16 @@ public class MinigunItemModel extends GeoModel<MinigunItem> {
     }
 
     @Override
-    public void setCustomAnimations(MinigunItem animatable, long instanceId, AnimationState animationState) {
-        CoreGeoBone gun = getAnimationProcessor().getBone("barrel");
-        CoreGeoBone shen = getAnimationProcessor().getBone("shen");
-
+    public void setCustomAnimations(MinigunItem animatable, long instanceId, AnimationState<MinigunItem> animationState) {
         Player player = Minecraft.getInstance().player;
         if (player == null) return;
         ItemStack stack = player.getMainHandItem();
-        if (!(stack.getItem() instanceof GunItem)) return;
+        if (shouldCancelRender(stack, animationState)) return;
+
+        CoreGeoBone gun = getAnimationProcessor().getBone("barrel");
+        CoreGeoBone shen = getAnimationProcessor().getBone("shen");
 
         float times = 0.6f * (float) Math.min(Minecraft.getInstance().getDeltaFrameTime(), 0.8);
-
 
         double fpz = ClientEventHandler.firePosZ * 13 * times;
         double fp = ClientEventHandler.firePos;
@@ -52,7 +51,15 @@ public class MinigunItemModel extends GeoModel<MinigunItem> {
         var data = GunData.from(stack);
         int rpm = data.rpm();
 
-        gun.setRotZ(gun.getRotZ() + times * -0.14f * ((float) rpm / 1200) * ClientEventHandler.shootDelay);
+        float heat = (float) data.heat.get();
+
+        for (int i = 1; i <= 6; i++) {
+            CoreGeoBone bone = getAnimationProcessor().getBone("barrel" + i + "_illuminated");
+            bone.setScaleZ(heat / 2);
+        }
+
+        rotZ += times * -0.14f * ((float) rpm / 1200) * ClientEventHandler.shootDelay;
+        gun.setRotZ(rotZ);
 
         shen.setPosX((float) (0.75f * ClientEventHandler.recoilHorizon * fpz * fp));
         shen.setPosY((float) (-0.03f * fp - 0.06f * fr));
