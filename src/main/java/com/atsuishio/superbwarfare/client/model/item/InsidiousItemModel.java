@@ -4,7 +4,6 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.AnimationHelper;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
-import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.rifle.InsidiousItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
@@ -35,13 +34,13 @@ public class InsidiousItemModel extends CustomGunModel<InsidiousItem> {
     }
 
     @Override
-    public void setCustomAnimations(InsidiousItem animatable, long instanceId, AnimationState animationState) {
-        CoreGeoBone gun = getAnimationProcessor().getBone("bone");
-
+    public void setCustomAnimations(InsidiousItem animatable, long instanceId, AnimationState<InsidiousItem> animationState) {
         Player player = Minecraft.getInstance().player;
         if (player == null) return;
         ItemStack stack = player.getMainHandItem();
-        if (!(stack.getItem() instanceof GunItem)) return;
+        if (shouldCancelRender(stack, animationState)) return;
+
+        CoreGeoBone gun = getAnimationProcessor().getBone("bone");
 
         float times = 0.6f * (float) Math.min(Minecraft.getInstance().getDeltaFrameTime(), 0.8);
         double zt = ClientEventHandler.zoomTime;

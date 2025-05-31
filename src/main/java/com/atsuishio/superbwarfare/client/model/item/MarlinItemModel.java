@@ -4,7 +4,6 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
-import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.rifle.MarlinItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
@@ -13,9 +12,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import software.bernie.geckolib.core.animatable.model.CoreGeoBone;
 import software.bernie.geckolib.core.animation.AnimationState;
-import software.bernie.geckolib.model.GeoModel;
 
-public class MarlinItemModel extends GeoModel<MarlinItem> {
+public class MarlinItemModel extends CustomGunModel<MarlinItem> {
 
     @Override
     public ResourceLocation getAnimationResource(MarlinItem animatable) {
@@ -33,15 +31,15 @@ public class MarlinItemModel extends GeoModel<MarlinItem> {
     }
 
     @Override
-    public void setCustomAnimations(MarlinItem animatable, long instanceId, AnimationState animationState) {
-        CoreGeoBone gun = getAnimationProcessor().getBone("bone");
-        CoreGeoBone shen = getAnimationProcessor().getBone("shen");
-        CoreGeoBone jichui = getAnimationProcessor().getBone("jichui");
-
+    public void setCustomAnimations(MarlinItem animatable, long instanceId, AnimationState<MarlinItem> animationState) {
         Player player = Minecraft.getInstance().player;
         if (player == null) return;
         ItemStack stack = player.getMainHandItem();
-        if (!(stack.getItem() instanceof GunItem)) return;
+        if (shouldCancelRender(stack, animationState)) return;
+
+        CoreGeoBone gun = getAnimationProcessor().getBone("bone");
+        CoreGeoBone shen = getAnimationProcessor().getBone("shen");
+        CoreGeoBone jichui = getAnimationProcessor().getBone("jichui");
 
         float times = 0.6f * (float) Math.min(Minecraft.getInstance().getDeltaFrameTime(), 0.8);
         double zt = ClientEventHandler.zoomTime;
