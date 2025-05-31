@@ -15,9 +15,11 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import software.bernie.geckolib.animation.*;
+import software.bernie.geckolib.constant.DataTickets;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
 
 import java.util.Map;
@@ -41,6 +43,8 @@ public class SvdItem extends GunItem {
         if (player == null) return PlayState.STOP;
         ItemStack stack = player.getMainHandItem();
         if (!(stack.getItem() instanceof GunItem)) return PlayState.STOP;
+        if (event.getData(DataTickets.ITEM_RENDER_PERSPECTIVE) != ItemDisplayContext.FIRST_PERSON_RIGHT_HAND)
+            return event.setAndContinue(RawAnimation.begin().thenLoop("animation.svd.idle"));
 
         if (GunData.from(stack).reload.empty()) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.svd.reload_empty"));
@@ -66,6 +70,8 @@ public class SvdItem extends GunItem {
         if (player == null) return PlayState.STOP;
         ItemStack stack = player.getMainHandItem();
         if (!(stack.getItem() instanceof GunItem)) return PlayState.STOP;
+        if (event.getData(DataTickets.ITEM_RENDER_PERSPECTIVE) != ItemDisplayContext.FIRST_PERSON_RIGHT_HAND)
+            return event.setAndContinue(RawAnimation.begin().thenLoop("animation.svd.idle"));
 
         if (ClickHandler.isEditing) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.svd.edit"));

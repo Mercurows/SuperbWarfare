@@ -4,7 +4,6 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
-import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.sniper.SentinelItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
@@ -13,9 +12,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import software.bernie.geckolib.animation.AnimationState;
 import software.bernie.geckolib.cache.object.GeoBone;
-import software.bernie.geckolib.model.GeoModel;
 
-public class SentinelItemModel extends GeoModel<SentinelItem> {
+// TODO 这个模型后面还有电线，记得渲染时候清除掉
+public class SentinelItemModel extends CustomGunModel<SentinelItem> {
 
     @Override
     public ResourceLocation getAnimationResource(SentinelItem animatable) {
@@ -33,17 +32,17 @@ public class SentinelItemModel extends GeoModel<SentinelItem> {
     }
 
     @Override
-    public void setCustomAnimations(SentinelItem animatable, long instanceId, AnimationState animationState) {
+    public void setCustomAnimations(SentinelItem animatable, long instanceId, AnimationState<SentinelItem> animationState) {
+        Player player = Minecraft.getInstance().player;
+        if (player == null) return;
+        ItemStack stack = player.getMainHandItem();
+        if (shouldCancelRender(stack, animationState)) return;
+
         GeoBone gun = getAnimationProcessor().getBone("bone");
         GeoBone shen = getAnimationProcessor().getBone("shen");
         GeoBone scope = getAnimationProcessor().getBone("scope2");
         GeoBone ammo = getAnimationProcessor().getBone("ammobar");
         GeoBone cb = getAnimationProcessor().getBone("chamber2");
-
-        Player player = Minecraft.getInstance().player;
-        if (player == null) return;
-        ItemStack stack = player.getMainHandItem();
-        if (!(stack.getItem() instanceof GunItem)) return;
 
         float times = 0.6f * (float) Math.min(Minecraft.getInstance().getTimer().getRealtimeDeltaTicks(), 0.8);
         double zt = ClientEventHandler.zoomTime;

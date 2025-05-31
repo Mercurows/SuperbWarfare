@@ -4,7 +4,6 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
-import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.sniper.M98bItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
@@ -13,11 +12,10 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import software.bernie.geckolib.animation.AnimationState;
 import software.bernie.geckolib.cache.object.GeoBone;
-import software.bernie.geckolib.model.GeoModel;
 
 import static com.atsuishio.superbwarfare.event.ClientEventHandler.isProne;
 
-public class M98bItemModel extends GeoModel<M98bItem> {
+public class M98bItemModel extends CustomGunModel<M98bItem> {
 
     public static float fireRotY = 0f;
     public static float fireRotZ = 0f;
@@ -44,7 +42,12 @@ public class M98bItemModel extends GeoModel<M98bItem> {
     }
 
     @Override
-    public void setCustomAnimations(M98bItem animatable, long instanceId, AnimationState animationState) {
+    public void setCustomAnimations(M98bItem animatable, long instanceId, AnimationState<M98bItem> animationState) {
+        Player player = Minecraft.getInstance().player;
+        if (player == null) return;
+        ItemStack stack = player.getMainHandItem();
+        if (shouldCancelRender(stack, animationState)) return;
+
         GeoBone gun = getAnimationProcessor().getBone("bone");
         GeoBone camera = getAnimationProcessor().getBone("camera");
         GeoBone main = getAnimationProcessor().getBone("0");
@@ -54,11 +57,6 @@ public class M98bItemModel extends GeoModel<M98bItem> {
         GeoBone button = getAnimationProcessor().getBone("button");
         GeoBone button6 = getAnimationProcessor().getBone("button6");
         GeoBone button7 = getAnimationProcessor().getBone("button7");
-
-        Player player = Minecraft.getInstance().player;
-        if (player == null) return;
-        ItemStack stack = player.getMainHandItem();
-        if (!(stack.getItem() instanceof GunItem)) return;
 
         var data = GunData.from(stack);
         int type = data.attachment.get(AttachmentType.SCOPE);

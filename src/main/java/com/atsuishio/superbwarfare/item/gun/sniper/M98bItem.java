@@ -16,10 +16,12 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.Level;
 import software.bernie.geckolib.animation.*;
+import software.bernie.geckolib.constant.DataTickets;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -42,8 +44,10 @@ public class M98bItem extends GunItem {
         if (player == null) return PlayState.STOP;
         ItemStack stack = player.getMainHandItem();
         if (!(stack.getItem() instanceof GunItem)) return PlayState.STOP;
-        var data = GunData.from(stack);
+        if (event.getData(DataTickets.ITEM_RENDER_PERSPECTIVE) != ItemDisplayContext.FIRST_PERSON_RIGHT_HAND)
+            return event.setAndContinue(RawAnimation.begin().thenLoop("animation.m_98b.idle"));
 
+        var data = GunData.from(stack);
         if (data.bolt.actionTimer.get() > 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m_98b.shift"));
         }
@@ -64,8 +68,10 @@ public class M98bItem extends GunItem {
         if (player == null) return PlayState.STOP;
         ItemStack stack = player.getMainHandItem();
         if (!(stack.getItem() instanceof GunItem)) return PlayState.STOP;
-        var data = GunData.from(stack);
+        if (event.getData(DataTickets.ITEM_RENDER_PERSPECTIVE) != ItemDisplayContext.FIRST_PERSON_RIGHT_HAND)
+            return event.setAndContinue(RawAnimation.begin().thenLoop("animation.m_98b.idle"));
 
+        var data = GunData.from(stack);
         if (player.isSprinting() && player.onGround()
                 && ClientEventHandler.cantSprint == 0
                 && !(data.reload.normal() || GunData.from(stack).reload.empty()) && ClientEventHandler.drawTime < 0.01) {
@@ -80,6 +86,9 @@ public class M98bItem extends GunItem {
     }
 
     private PlayState editPredicate(AnimationState<M98bItem> event) {
+        if (event.getData(DataTickets.ITEM_RENDER_PERSPECTIVE) != ItemDisplayContext.FIRST_PERSON_RIGHT_HAND)
+            return event.setAndContinue(RawAnimation.begin().thenLoop("animation.m_98b.idle"));
+
         if (ClickHandler.isEditing) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m_98b.edit"));
         }

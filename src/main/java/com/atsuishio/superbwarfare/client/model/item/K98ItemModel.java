@@ -4,7 +4,6 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
-import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.sniper.K98Item;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
@@ -13,9 +12,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import software.bernie.geckolib.animation.AnimationState;
 import software.bernie.geckolib.cache.object.GeoBone;
-import software.bernie.geckolib.model.GeoModel;
 
-public class K98ItemModel extends GeoModel<K98Item> {
+public class K98ItemModel extends CustomGunModel<K98Item> {
 
     @Override
     public ResourceLocation getAnimationResource(K98Item animatable) {
@@ -33,18 +31,17 @@ public class K98ItemModel extends GeoModel<K98Item> {
     }
 
     @Override
-    public void setCustomAnimations(K98Item animatable, long instanceId, AnimationState animationState) {
+    public void setCustomAnimations(K98Item animatable, long instanceId, AnimationState<K98Item> animationState) {
+        Player player = Minecraft.getInstance().player;
+        if (player == null) return;
+        ItemStack stack = player.getMainHandItem();
+        if (shouldCancelRender(stack, animationState)) return;
+
         GeoBone gun = getAnimationProcessor().getBone("bone");
         GeoBone shen = getAnimationProcessor().getBone("shen");
         GeoBone clip = getAnimationProcessor().getBone("mag");
 
-        Player player = Minecraft.getInstance().player;
-        if (player == null) return;
-        ItemStack stack = player.getMainHandItem();
-        if (!(stack.getItem() instanceof GunItem)) return;
-
-        var data = GunData.from(stack);
-        if (data.reload.prepareTimer.get() > 11 && data.ammo.get() == 1) {
+        if (GunData.from(stack).reload.prepareTimer.get() > 11 && GunData.from(stack).ammo.get() == 1) {
             clip.setScaleX(0);
             clip.setScaleY(0);
             clip.setScaleZ(0);
@@ -93,6 +90,7 @@ public class K98ItemModel extends GeoModel<K98Item> {
         float numR = (float) (1 - 0.52 * zt);
         float numP = (float) (1 - 0.58 * zt);
 
+        var data = GunData.from(stack);
         if (data.reload.time() > 0 || data.reloading()) {
             main.setRotX(numR * main.getRotX());
             main.setRotY(numR * main.getRotY());

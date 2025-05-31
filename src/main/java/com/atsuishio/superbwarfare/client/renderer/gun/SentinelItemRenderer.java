@@ -12,6 +12,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.capabilities.Capabilities;
+import software.bernie.geckolib.animatable.GeoItem;
 import software.bernie.geckolib.cache.object.GeoBone;
 
 public class SentinelItemRenderer extends CustomGunRenderer<SentinelItem> {
@@ -35,22 +36,23 @@ public class SentinelItemRenderer extends CustomGunRenderer<SentinelItem> {
         var player = mc.player;
         if (player == null) return;
         ItemStack itemStack = player.getMainHandItem();
-        if (!(itemStack.getItem() instanceof GunItem)) return;
+        if (itemStack.getItem() instanceof GunItem && GeoItem.getId(itemStack) == this.getInstanceId(animatable)) {
+            var cap = itemStack.getCapability(Capabilities.EnergyStorage.ITEM);
+            var flag = cap != null && cap.getEnergyStored() > 0;
 
-        var cap = itemStack.getCapability(Capabilities.EnergyStorage.ITEM);
-        var flag = cap != null && cap.getEnergyStored() > 0;
+            if (name.equals("charge_illuminated")) {
+                bone.setHidden(!flag);
+                bone.setRotZ((System.currentTimeMillis() % 36000000) / 200f);
+            }
 
-        if (name.equals("charge_illuminated")) {
-            bone.setHidden(!flag);
-            bone.setRotZ((System.currentTimeMillis() % 36000000) / 200f);
+            AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.265, -0.05, 0.075f, 255, 0, 0, 255, "apex_3x", false);
+            AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn, 0, 0, 1.53125, 0.6);
+        } else if (name.equals("charge_illuminated")) {
+            bone.setHidden(true);
         }
 
-        AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.265, -0.05, 0.075f, 255, 0, 0, 255, "apex_3x", false);
-
-        AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn, 0, 0, 1.53125, 0.6);
-
         if (renderingArms) {
-            AnimationHelper.renderArms(player, this.transformType, stack, name, bone, this.currentBuffer, type, packedLightIn, true);
+            AnimationHelper.renderArms(player, this.renderPerspective, stack, name, bone, buffer, type, packedLightIn, true);
         }
         super.renderRecursively(stack, animatable, bone, type, buffer, bufferIn, isReRender, partialTick, packedLightIn, packedOverlayIn, color);
     }
