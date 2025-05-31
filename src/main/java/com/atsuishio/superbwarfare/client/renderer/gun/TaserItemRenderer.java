@@ -3,22 +3,13 @@ package com.atsuishio.superbwarfare.client.renderer.gun;
 import com.atsuishio.superbwarfare.client.AnimationHelper;
 import com.atsuishio.superbwarfare.client.model.item.TaserItemModel;
 import com.atsuishio.superbwarfare.client.renderer.CustomGunRenderer;
-import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.special.TaserItem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.model.PlayerModel;
-import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.entity.player.PlayerRenderer;
-import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import software.bernie.geckolib.cache.object.GeoBone;
-import software.bernie.geckolib.util.RenderUtils;
 
 public class TaserItemRenderer extends CustomGunRenderer<TaserItem> {
 
@@ -39,41 +30,11 @@ public class TaserItemRenderer extends CustomGunRenderer<TaserItem> {
             bone.setHidden(false);
         }
 
-        Player player = mc.player;
+        var player = mc.player;
         if (player == null) return;
-        ItemStack itemStack = player.getMainHandItem();
-        if (!(itemStack.getItem() instanceof GunItem)) return;
 
-        if (this.renderPerspective.firstPerson() && renderingArms) {
-            AbstractClientPlayer localPlayer = mc.player;
-
-            if (localPlayer == null) {
-                return;
-            }
-
-            PlayerRenderer playerRenderer = (PlayerRenderer) mc.getEntityRenderDispatcher().getRenderer(localPlayer);
-            PlayerModel<AbstractClientPlayer> model = playerRenderer.getModel();
-            stack.pushPose();
-            RenderUtils.translateMatrixToBone(stack, bone);
-            RenderUtils.translateToPivotPoint(stack, bone);
-            RenderUtils.rotateMatrixAroundBone(stack, bone);
-            RenderUtils.scaleMatrixForBone(stack, bone);
-            RenderUtils.translateAwayFromPivotPoint(stack, bone);
-            ResourceLocation loc = localPlayer.getSkinTextureLocation();
-            VertexConsumer armBuilder = this.currentBuffer.getBuffer(RenderType.entitySolid(loc));
-            VertexConsumer sleeveBuilder = this.currentBuffer.getBuffer(RenderType.entityTranslucent(loc));
-            if (name.equals("Lefthand")) {
-                stack.translate(-1.0f * SCALE_RECIPROCAL, 2.0f * SCALE_RECIPROCAL, 0.0f);
-                AnimationHelper.renderPartOverBone2(model.leftArm, bone, stack, armBuilder, packedLightIn, OverlayTexture.NO_OVERLAY, 1);
-                AnimationHelper.renderPartOverBone2(model.leftSleeve, bone, stack, sleeveBuilder, packedLightIn, OverlayTexture.NO_OVERLAY, 1);
-            } else {
-                stack.translate(SCALE_RECIPROCAL, 2.0f * SCALE_RECIPROCAL, 0.0f);
-                AnimationHelper.renderPartOverBone2(model.rightArm, bone, stack, armBuilder, packedLightIn, OverlayTexture.NO_OVERLAY, 1);
-                AnimationHelper.renderPartOverBone2(model.rightSleeve, bone, stack, sleeveBuilder, packedLightIn, OverlayTexture.NO_OVERLAY, 1);
-            }
-
-            this.currentBuffer.getBuffer(this.renderType);
-            stack.popPose();
+        if (renderingArms) {
+            AnimationHelper.renderArms(player, this.renderPerspective, stack, name, bone, buffer, type, packedLightIn, false);
         }
         super.renderRecursively(stack, animatable, bone, type, buffer, bufferIn, isReRender, partialTick, packedLightIn, packedOverlayIn, red, green, blue, alpha);
     }

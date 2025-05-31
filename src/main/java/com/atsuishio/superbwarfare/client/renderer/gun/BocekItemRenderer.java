@@ -16,6 +16,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.world.item.ItemStack;
 import org.joml.Matrix4f;
+import software.bernie.geckolib.animatable.GeoItem;
 import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.util.RenderUtils;
 
@@ -68,19 +69,18 @@ public class BocekItemRenderer extends CustomGunRenderer<BocekItem> {
         if (player == null) return;
 
         ItemStack itemStack = player.getMainHandItem();
-        if (!(itemStack.getItem() instanceof GunItem)) return;
+        if (itemStack.getItem() instanceof GunItem && GeoItem.getId(itemStack) == this.getInstanceId(animatable)) {
+            if (name.equals("arrow")) {
+                var data = GunData.from(itemStack);
+                bone.setHidden(data.ammo.get() == 0);
+            }
+            if (name.equals("arrow2")) {
+                var data = GunData.from(itemStack);
+                bone.setHidden(data.ammo.get() != 0);
+            }
 
-        if (name.equals("arrow")) {
-            var data = GunData.from(itemStack);
-            bone.setHidden(data.ammo.get() == 0);
+            AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0.002, 0.1790625, 0.13, 0.08f, 255, 0, 0, 255, "dot", false);
         }
-
-        if (name.equals("arrow2")) {
-            var data = GunData.from(itemStack);
-            bone.setHidden(data.ammo.get() != 0);
-        }
-
-        AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0.002, 0.1790625, 0.13, 0.08f, 255, 0, 0, 255, "dot", false);
 
         if (renderingArms) {
             AnimationHelper.renderArms(player, this.renderPerspective, stack, name, bone, buffer, type, packedLightIn, false);
