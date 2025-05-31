@@ -76,8 +76,6 @@ public abstract class CustomGunModel<T extends GunItem & GeoAnimatable> extends 
             set(MolangQueries.TIME_OF_DAY, () -> mc.level.getDayTime() / 24000f);
             set(MolangQueries.MOON_PHASE, mc.level::getMoonPhase);
         }
-
-        set(MolangVariable.SBW_SYSTEM_TIME, System::currentTimeMillis);
     }
 
     public void applyCustomMolangQueries(AnimationState<T> animationState, double animTime) {
@@ -111,9 +109,8 @@ public abstract class CustomGunModel<T extends GunItem & GeoAnimatable> extends 
         }
 
         var data = GunData.from(stack);
-
-        // TODO 实现正确的空判断，需要分离stack
         set(MolangVariable.SBW_IS_EMPTY, () -> data.isEmpty.get() ? 1 : 0);
+        set(MolangVariable.SBW_IS_EMPTY, System::currentTimeMillis);
     }
 
     private static void set(String key, DoubleSupplier value) {
@@ -121,7 +118,8 @@ public abstract class CustomGunModel<T extends GunItem & GeoAnimatable> extends 
     }
 
     private void resetQueryValue() {
-        MathParser.setVariable(MolangVariable.SBW_IS_EMPTY, () -> 0);
+        set(MolangVariable.SBW_IS_EMPTY, () -> 0);
+        set(MolangVariable.SBW_IS_EMPTY, () -> 0);
     }
 
     public boolean shouldCancelRender(ItemStack stack, AnimationState<T> animationState) {
