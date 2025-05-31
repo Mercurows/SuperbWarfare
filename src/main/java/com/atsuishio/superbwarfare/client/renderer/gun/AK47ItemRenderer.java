@@ -14,7 +14,9 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import software.bernie.geckolib.animatable.GeoItem;
 import software.bernie.geckolib.cache.object.GeoBone;
 
 public class AK47ItemRenderer extends CustomGunRenderer<AK47Item> {
@@ -37,27 +39,25 @@ public class AK47ItemRenderer extends CustomGunRenderer<AK47Item> {
         }
 
         var player = mc.player;
-        if (player != null) {
-            ItemStack itemStack = player.getMainHandItem();
-            if (!(itemStack.getItem() instanceof GunItem)) return;
-
-            if (name.equals("humu1")) {
-                bone.setHidden(GunData.from(itemStack).attachment.get(AttachmentType.GRIP) != 0);
-            }
-
-            if (name.equals("humu2")) {
-                bone.setHidden(GunData.from(itemStack).attachment.get(AttachmentType.GRIP) == 0);
-            }
-
-            if (GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 2
-                    && (name.equals("Hidden") || name.equals("gun") || name.equals("Lefthand")) && ClientEventHandler.zoom && ClientEventHandler.zoomPos > 0.7) {
-                bone.setHidden(true);
-                renderingArms = false;
-            }
-
-            if (GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 3
-                    && (name.equals("jing") || name.equals("Barrel") || name.equals("humu") || name.equals("qiangguan") || name.equals("houzhunxing"))) {
-                bone.setHidden(ClientEventHandler.zoomPos > 0.7 && ClientEventHandler.zoom);
+        if (player == null) return;
+        ItemStack itemStack = player.getMainHandItem();
+        if (itemStack.getItem() instanceof GunItem && GeoItem.getId(itemStack) == this.getInstanceId(animatable)) {
+            if (this.renderPerspective == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND) {
+                if (name.equals("humu1")) {
+                    bone.setHidden(GunData.from(itemStack).attachment.get(AttachmentType.GRIP) != 0);
+                }
+                if (name.equals("humu2")) {
+                    bone.setHidden(GunData.from(itemStack).attachment.get(AttachmentType.GRIP) == 0);
+                }
+                if (GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 2
+                        && (name.equals("Hidden") || name.equals("gun") || name.equals("Lefthand")) && ClientEventHandler.zoom && ClientEventHandler.zoomPos > 0.7) {
+                    bone.setHidden(true);
+                    renderingArms = false;
+                }
+                if (GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 3
+                        && (name.equals("jing") || name.equals("Barrel") || name.equals("humu") || name.equals("qiangguan") || name.equals("houzhunxing"))) {
+                    bone.setHidden(ClientEventHandler.zoomPos > 0.7 && ClientEventHandler.zoom);
+                }
             }
 
             int scopeType = GunData.from(itemStack).attachment.get(AttachmentType.SCOPE);
@@ -73,6 +73,11 @@ public class AK47ItemRenderer extends CustomGunRenderer<AK47Item> {
 
             AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn, 0, 0, 1.06875, 0.3);
             ItemModelHelper.handleGunAttachments(bone, itemStack, name);
+        } else {
+            ItemModelHelper.hideAllAttachments(bone, name);
+            if (name.equals("humu2")) {
+                bone.setHidden(true);
+            }
         }
 
         if (renderingArms) {
