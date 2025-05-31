@@ -6,7 +6,6 @@ import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
-import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.rifle.Mk14Item;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
@@ -15,11 +14,10 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import software.bernie.geckolib.core.animatable.model.CoreGeoBone;
 import software.bernie.geckolib.core.animation.AnimationState;
-import software.bernie.geckolib.model.GeoModel;
 
 import static com.atsuishio.superbwarfare.event.ClientEventHandler.isProne;
 
-public class Mk14ItemModel extends GeoModel<Mk14Item> {
+public class Mk14ItemModel extends CustomGunModel<Mk14Item> {
 
     public static float fireRotY = 0f;
     public static float fireRotZ = 0f;
@@ -41,16 +39,16 @@ public class Mk14ItemModel extends GeoModel<Mk14Item> {
     }
 
     @Override
-    public void setCustomAnimations(Mk14Item animatable, long instanceId, AnimationState animationState) {
+    public void setCustomAnimations(Mk14Item animatable, long instanceId, AnimationState<Mk14Item> animationState) {
+        Player player = Minecraft.getInstance().player;
+        if (player == null) return;
+        ItemStack stack = player.getMainHandItem();
+        if (shouldCancelRender(stack, animationState)) return;
+
         CoreGeoBone gun = getAnimationProcessor().getBone("bones");
         CoreGeoBone action = getAnimationProcessor().getBone("action");
         CoreGeoBone scope2 = getAnimationProcessor().getBone("Scope2");
         CoreGeoBone scope3 = getAnimationProcessor().getBone("Scope3");
-
-        Player player = Minecraft.getInstance().player;
-        if (player == null) return;
-        ItemStack stack = player.getMainHandItem();
-        if (!(stack.getItem() instanceof GunItem)) return;
 
         float times = 0.6f * (float) Math.min(Minecraft.getInstance().getDeltaFrameTime(), 0.8);
         double zt = ClientEventHandler.zoomTime;

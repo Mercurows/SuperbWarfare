@@ -6,7 +6,6 @@ import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
-import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.rifle.Qbz95Item;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
@@ -15,22 +14,22 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import software.bernie.geckolib.core.animatable.model.CoreGeoBone;
 import software.bernie.geckolib.core.animation.AnimationState;
-import software.bernie.geckolib.model.GeoModel;
 
 import static com.atsuishio.superbwarfare.event.ClientEventHandler.isProne;
 
-public class Qbz95ItemModel extends GeoModel<Qbz95Item> {
+public class Qbz95ItemModel extends CustomGunModel<Qbz95Item> {
 
     public static float fireRotY = 0f;
     public static float fireRotZ = 0f;
     public static float rotXBipod = 0f;
 
     public static float lHandPosX = 0f;
-    public static float lHandPosY= 0f;
+    public static float lHandPosY = 0f;
     public static float lHandPosZ = 0f;
     public static float lHandRotX = 0f;
-    public static float lHandRotY= 0f;
+    public static float lHandRotY = 0f;
     public static float lHandRotZ = 0f;
+
     @Override
     public ResourceLocation getAnimationResource(Qbz95Item animatable) {
         return Mod.loc("animations/qbz_95.animation.json");
@@ -47,7 +46,12 @@ public class Qbz95ItemModel extends GeoModel<Qbz95Item> {
     }
 
     @Override
-    public void setCustomAnimations(Qbz95Item animatable, long instanceId, AnimationState animationState) {
+    public void setCustomAnimations(Qbz95Item animatable, long instanceId, AnimationState<Qbz95Item> animationState) {
+        Player player = Minecraft.getInstance().player;
+        if (player == null) return;
+        ItemStack stack = player.getMainHandItem();
+        if (shouldCancelRender(stack, animationState)) return;
+
         CoreGeoBone gun = getAnimationProcessor().getBone("bone");
         CoreGeoBone bolt = getAnimationProcessor().getBone("bolt2");
         CoreGeoBone button = getAnimationProcessor().getBone("button");
@@ -55,11 +59,6 @@ public class Qbz95ItemModel extends GeoModel<Qbz95Item> {
         CoreGeoBone button6 = getAnimationProcessor().getBone("button6");
         CoreGeoBone camera = getAnimationProcessor().getBone("camera");
         CoreGeoBone main = getAnimationProcessor().getBone("0");
-
-        Player player = Minecraft.getInstance().player;
-        if (player == null) return;
-        ItemStack stack = player.getMainHandItem();
-        if (!(stack.getItem() instanceof GunItem)) return;
 
         float times = 0.6f * (float) Math.min(Minecraft.getInstance().getDeltaFrameTime(), 0.8);
         double zt = ClientEventHandler.zoomTime;
@@ -101,7 +100,7 @@ public class Qbz95ItemModel extends GeoModel<Qbz95Item> {
 
         gun.setPosX(3.71f * (float) zp);
         gun.setPosY(posY * (float) zp - (float) (0.2f * zpz) - posYAlt);
-        gun.setPosZ(posZ  * (float) zp + (float) (0.3f * zpz));
+        gun.setPosZ(posZ * (float) zp + (float) (0.3f * zpz));
         gun.setRotZ((float) (0.05f * zpz));
         gun.setScaleZ(1f - (scaleZ * (float) zp));
 
@@ -163,7 +162,7 @@ public class Qbz95ItemModel extends GeoModel<Qbz95Item> {
         CoreGeoBone leftHand = getAnimationProcessor().getBone("Lefthand");
         CoreGeoBone anim = getAnimationProcessor().getBone("anim");
 
-        boolean isZooming = zt > 0 && anim.getPosZ() == 0 ;
+        boolean isZooming = zt > 0 && anim.getPosZ() == 0;
 
         lHandPosX = Mth.lerp(1.5f * times, lHandPosX, isZooming ? 0 : leftHand.getPosX());
         lHandPosY = Mth.lerp(1.5f * times, lHandPosY, isZooming ? 0 : leftHand.getPosY());
