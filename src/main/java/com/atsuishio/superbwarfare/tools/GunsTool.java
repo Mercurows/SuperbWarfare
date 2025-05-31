@@ -64,12 +64,8 @@ public class GunsTool {
     public static void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
             var server = player.getServer();
-            if (server != null && server.isSingleplayer()) {
-                if (!server.isPublished()) {
-                    return;
-                } else if (server.isSingleplayerOwner(player.getGameProfile())) {
-                    return;
-                }
+            if (server != null && server.isSingleplayerOwner(player.getGameProfile())) {
+                return;
             }
 
             Mod.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> player), GunsDataMessage.create());
@@ -83,18 +79,18 @@ public class GunsTool {
 
     @SubscribeEvent
     public static void onDataPackSync(OnDatapackSyncEvent event) {
-        var server = event.getPlayerList().getServer();
+        var players = event.getPlayerList();
+        var server = players.getServer();
         initJsonData(server.getResourceManager());
 
-        if (server.isSingleplayer()) {
-            if (!server.isPublished()) {
-                return;
-            } else if (event.getPlayer() != null && server.isSingleplayerOwner(event.getPlayer().getGameProfile())) {
-                return;
+        var message = GunsDataMessage.create();
+        for (var player : players.getPlayers()) {
+            if (server.isSingleplayerOwner(player.getGameProfile())) {
+                continue;
             }
-        }
 
-        event.getPlayerList().getPlayers().forEach(player -> Mod.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> player), GunsDataMessage.create()));
+            Mod.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> player), message);
+        }
     }
 
     public static void setGunIntTag(ItemStack stack, String name, int num) {
