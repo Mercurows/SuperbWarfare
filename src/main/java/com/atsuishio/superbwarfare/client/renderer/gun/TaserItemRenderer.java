@@ -3,14 +3,12 @@ package com.atsuishio.superbwarfare.client.renderer.gun;
 import com.atsuishio.superbwarfare.client.AnimationHelper;
 import com.atsuishio.superbwarfare.client.model.item.TaserItemModel;
 import com.atsuishio.superbwarfare.client.renderer.CustomGunRenderer;
-import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.special.TaserItem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.world.item.ItemStack;
 import software.bernie.geckolib.cache.object.GeoBone;
 
 public class TaserItemRenderer extends CustomGunRenderer<TaserItem> {
@@ -33,11 +31,9 @@ public class TaserItemRenderer extends CustomGunRenderer<TaserItem> {
 
         var player = mc.player;
         if (player == null) return;
-        ItemStack itemStack = player.getMainHandItem();
-        if (!(itemStack.getItem() instanceof GunItem)) return;
 
         if (renderingArms) {
-            AnimationHelper.renderArms(player, this.transformType, stack, name, bone, this.currentBuffer, type, packedLightIn, false);
+            AnimationHelper.renderArms(player, this.renderPerspective, stack, name, bone, buffer, type, packedLightIn, false);
         }
         super.renderRecursively(stack, animatable, bone, type, buffer, bufferIn, isReRender, partialTick, packedLightIn, packedOverlayIn, color);
     }

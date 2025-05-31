@@ -3,7 +3,6 @@ package com.atsuishio.superbwarfare.client.model.item;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
-import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.special.BocekItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
@@ -12,9 +11,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import software.bernie.geckolib.animation.AnimationState;
 import software.bernie.geckolib.cache.object.GeoBone;
-import software.bernie.geckolib.model.GeoModel;
 
-public class BocekItemModel extends GeoModel<BocekItem> {
+public class BocekItemModel extends CustomGunModel<BocekItem> {
+
     public static float rightHandPosZ;
 
     @Override
@@ -33,19 +32,19 @@ public class BocekItemModel extends GeoModel<BocekItem> {
     }
 
     @Override
-    public void setCustomAnimations(BocekItem animatable, long instanceId, AnimationState animationState) {
+    public void setCustomAnimations(BocekItem animatable, long instanceId, AnimationState<BocekItem> animationState) {
+        Player player = Minecraft.getInstance().player;
+        if (player == null) return;
+        ItemStack stack = player.getMainHandItem();
+        if (shouldCancelRender(stack, animationState)) return;
+
         GeoBone gun = getAnimationProcessor().getBone("bone");
         GeoBone shen = getAnimationProcessor().getBone("shen");
         GeoBone dRing = getAnimationProcessor().getBone("D_ring");
         GeoBone rightHand = getAnimationProcessor().getBone("safang");
         GeoBone leftHand = getAnimationProcessor().getBone("lh");
 
-        Player player = Minecraft.getInstance().player;
-        if (player == null) return;
-        ItemStack stack = player.getMainHandItem();
-        if (!(stack.getItem() instanceof GunItem)) return;
-
-        float times = Minecraft.getInstance().getTimer().getRealtimeDeltaTicks();
+        float times = 0.6f * (float) Math.min(Minecraft.getInstance().getTimer().getRealtimeDeltaTicks(), 0.8);
 
         double pp = ClientEventHandler.bowPullPos;
         double pp2 = 1 - ClientEventHandler.bowPullPos;
@@ -100,5 +99,4 @@ public class BocekItemModel extends GeoModel<BocekItem> {
         GeoBone.setRotY(GeoBone.getRotY() * m);
         GeoBone.setRotZ(GeoBone.getRotZ() * m);
     }
-
 }
