@@ -406,7 +406,12 @@ public abstract class VehicleEntity extends Entity {
         if (source.is(DamageTypes.CACTUS) || source.is(DamageTypes.SWEET_BERRY_BUSH) || source.is(DamageTypes.IN_WALL))
             return false;
         // 计算减伤后的伤害
-        float computedAmount = getDamageModifier().compute(source, amount);
+        float computedAmount;
+        if (this.level().isClientSide) {
+            computedAmount = amount;
+        } else {
+            computedAmount = getDamageModifier().compute(source, amount);
+        }
         this.crash = source.is(ModDamageTypes.VEHICLE_STRIKE);
 
         if (source.getEntity() != null) {
@@ -1053,7 +1058,8 @@ public abstract class VehicleEntity extends Entity {
 
     /**
      * 获取视角位置
-     * @param zoom 是否在载具上瞄准
+     *
+     * @param zoom          是否在载具上瞄准
      * @param isFirstPerson 是否是第一人称视角
      */
     @OnlyIn(Dist.CLIENT)
