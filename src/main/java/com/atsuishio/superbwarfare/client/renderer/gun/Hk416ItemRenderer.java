@@ -14,7 +14,9 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import software.bernie.geckolib.animatable.GeoItem;
 import software.bernie.geckolib.cache.object.GeoBone;
 
 public class Hk416ItemRenderer extends CustomGunRenderer<Hk416Item> {
@@ -38,35 +40,38 @@ public class Hk416ItemRenderer extends CustomGunRenderer<Hk416Item> {
         var player = mc.player;
         if (player == null) return;
         ItemStack itemStack = player.getMainHandItem();
-        if (!(itemStack.getItem() instanceof GunItem)) return;
 
-        if (GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 2
-                && (name.equals("hidden"))) {
-            bone.setHidden(ClientEventHandler.zoomPos > 0.7 && ClientEventHandler.zoom);
+        if (itemStack.getItem() instanceof GunItem && GeoItem.getId(itemStack) == this.getInstanceId(animatable)) {
+            if (this.renderPerspective == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND) {
+                if (GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 2
+                        && (name.equals("hidden"))) {
+                    bone.setHidden(ClientEventHandler.zoomPos > 0.7 && ClientEventHandler.zoom);
+                }
+                if (GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 3
+                        && (name.equals("jing") || name.equals("Barrel") || name.equals("yugu") || name.equals("qiangguan"))) {
+                    bone.setHidden(ClientEventHandler.zoomPos > 0.7 && ClientEventHandler.zoom);
+                }
+            }
+
+            int scopeType = GunData.from(itemStack).attachment.get(AttachmentType.SCOPE);
+
+            switch (scopeType) {
+                case 1 ->
+                        AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.25, 30, 1, 0, 255, 0, 255, "eotech", false);
+                case 2 ->
+                        AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.313, 9, 1, 255, 0, 0, 255, "acog", true);
+                case 3 ->
+                        AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.29, 65, (float) ClientEventHandler.customZoom, 255, 0, 0, 255, "lpvo", true);
+            }
+
+            AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn, 0, 0, 1.440625, 0.3);
+            ItemModelHelper.handleGunAttachments(bone, itemStack, name);
+        } else {
+            ItemModelHelper.hideAllAttachments(bone, name);
         }
-
-        if (GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 3
-                && (name.equals("jing") || name.equals("Barrel") || name.equals("yugu") || name.equals("qiangguan"))) {
-            bone.setHidden(ClientEventHandler.zoomPos > 0.7 && ClientEventHandler.zoom);
-        }
-
-        int scopeType = GunData.from(itemStack).attachment.get(AttachmentType.SCOPE);
-
-        switch (scopeType) {
-            case 1 ->
-                    AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.25, 30, 1, 0, 255, 0, 255, "eotech", false);
-            case 2 ->
-                    AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.313, 9, 1, 255, 0, 0, 255, "acog", true);
-            case 3 ->
-                    AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.29, 65, (float) ClientEventHandler.customZoom, 255, 0, 0, 255, "lpvo", true);
-        }
-
-        AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn, 0, 0, 1.440625, 0.3);
-
-        ItemModelHelper.handleGunAttachments(bone, itemStack, name);
 
         if (renderingArms) {
-            AnimationHelper.renderArms(player, this.transformType, stack, name, bone, this.currentBuffer, type, packedLightIn, false);
+            AnimationHelper.renderArms(player, this.renderPerspective, stack, name, bone, buffer, type, packedLightIn, false);
         }
         super.renderRecursively(stack, animatable, bone, type, buffer, bufferIn, isReRender, partialTick, packedLightIn, packedOverlayIn, color);
     }
