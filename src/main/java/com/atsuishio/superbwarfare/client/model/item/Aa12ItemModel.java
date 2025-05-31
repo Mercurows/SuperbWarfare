@@ -4,7 +4,6 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.AnimationHelper;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
-import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.shotgun.Aa12Item;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
@@ -13,9 +12,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import software.bernie.geckolib.animation.AnimationState;
 import software.bernie.geckolib.cache.object.GeoBone;
-import software.bernie.geckolib.model.GeoModel;
 
-public class Aa12ItemModel extends GeoModel<Aa12Item> {
+public class Aa12ItemModel extends CustomGunModel<Aa12Item> {
 
     @Override
     public ResourceLocation getAnimationResource(Aa12Item animatable) {
@@ -33,20 +31,20 @@ public class Aa12ItemModel extends GeoModel<Aa12Item> {
     }
 
     @Override
-    public void setCustomAnimations(Aa12Item animatable, long instanceId, AnimationState animationState) {
-        GeoBone gun = getAnimationProcessor().getBone("bone");
-        GeoBone shen = getAnimationProcessor().getBone("shen");
-
+    public void setCustomAnimations(Aa12Item animatable, long instanceId, AnimationState<Aa12Item> animationState) {
         Player player = Minecraft.getInstance().player;
         if (player == null) return;
         ItemStack stack = player.getMainHandItem();
-        if (!(stack.getItem() instanceof GunItem)) return;
+        if (shouldCancelRender(stack, animationState)) return;
 
-        float times = 0.6f * (float) Math.min(Minecraft.getInstance().getTimer().getRealtimeDeltaTicks(), 0.8);
+        GeoBone gun = getAnimationProcessor().getBone("bone");
+        GeoBone shen = getAnimationProcessor().getBone("shen");
+
+        float GeoBone = 0.6f * (float) Math.min(Minecraft.getInstance().getTimer().getRealtimeDeltaTicks(), 0.8);
         double zt = ClientEventHandler.zoomTime;
         double zp = ClientEventHandler.zoomPos;
         double zpz = ClientEventHandler.zoomPosZ;
-        double fpz = ClientEventHandler.firePosZ * 13 * times;
+        double fpz = ClientEventHandler.firePosZ * 13 * GeoBone;
         double fp = ClientEventHandler.firePos;
         double fr = ClientEventHandler.fireRot;
 
