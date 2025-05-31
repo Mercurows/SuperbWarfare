@@ -16,10 +16,12 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.Level;
 import software.bernie.geckolib.animation.*;
+import software.bernie.geckolib.constant.DataTickets;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -42,8 +44,10 @@ public class RpkItem extends GunItem {
         if (player == null) return PlayState.STOP;
         ItemStack stack = player.getMainHandItem();
         if (!(stack.getItem() instanceof GunItem)) return PlayState.STOP;
-        var data = GunData.from(stack);
+        if (event.getData(DataTickets.ITEM_RENDER_PERSPECTIVE) != ItemDisplayContext.FIRST_PERSON_RIGHT_HAND)
+            return event.setAndContinue(RawAnimation.begin().thenLoop("animation.ak_47.idle"));
 
+        var data = GunData.from(stack);
         boolean drum = data.attachment.get(AttachmentType.MAGAZINE) == 2;
         boolean grip = data.attachment.get(AttachmentType.GRIP) == 1 || GunData.from(stack).attachment.get(AttachmentType.GRIP) == 2;
 
@@ -103,6 +107,8 @@ public class RpkItem extends GunItem {
         if (player == null) return PlayState.STOP;
         ItemStack stack = player.getMainHandItem();
         if (!(stack.getItem() instanceof GunItem)) return PlayState.STOP;
+        if (event.getData(DataTickets.ITEM_RENDER_PERSPECTIVE) != ItemDisplayContext.FIRST_PERSON_RIGHT_HAND)
+            return event.setAndContinue(RawAnimation.begin().thenLoop("animation.ak_47.idle"));
 
         if (ClickHandler.isEditing) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.ak_47.edit"));
