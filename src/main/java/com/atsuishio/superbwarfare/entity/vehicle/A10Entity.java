@@ -61,6 +61,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.function.Consumer;
 
+import static com.atsuishio.superbwarfare.event.ClientMouseHandler.freeCameraPitch;
+import static com.atsuishio.superbwarfare.event.ClientMouseHandler.freeCameraYaw;
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 
 public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity, WeaponVehicleEntity, AircraftEntity {
@@ -79,12 +81,16 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
     public int reloadCoolDownMissile;
     public String lockingTargetO = "none";
     public String lockingTarget = "none";
-    private float yRotSync;
     public float destroyRot;
     public int lockTime;
     public boolean locked;
-
     private boolean wasFiring = false;
+
+    public float delta_xo;
+    public float delta_yo;
+
+    public float delta_x;
+    public float delta_y;
 
     public A10Entity(EntityType<A10Entity> type, Level world) {
         super(type, world);
@@ -201,6 +207,9 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
         this.wasFiring = this.isFiring();
 
         this.lockingTargetO = getTargetUuid();
+
+        delta_xo = delta_x;
+        delta_yo = delta_y;
 
         super.baseTick();
         float f = (float) Mth.clamp(Math.max((onGround() ? 0.819f : 0.82f) - 0.0035 * getDeltaMovement().length(), 0.5) + 0.001f * Mth.abs(90 - (float) calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90, 0.01, 0.99);
@@ -463,8 +472,6 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
     @Override
     public void travel() {
         Entity passenger = this.getFirstPassenger();
-        float diffX = 0;
-        float diffY = 0;
 
         if (getHealth() > 0.1f * getMaxHealth()) {
             if (passenger == null || isInWater()) {
@@ -508,9 +515,6 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
                     }
                     this.entityData.set(PLANE_BREAK, Math.min(this.entityData.get(PLANE_BREAK) + 10, 60f));
                 }
-
-                diffY = Mth.clamp(Mth.wrapDegrees(passenger.getYHeadRot() - this.getYRot()), -90f, 90f);
-                diffX = Mth.clamp(Mth.wrapDegrees(passenger.getXRot() - this.getXRot()), -90f, 90f);
             }
 
             if (getEnergy() > 0 && !this.level().isClientSide) {
@@ -519,17 +523,18 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
 
             float rotSpeed = 1.5f + 2 * Mth.abs(VectorTool.calculateY(getRoll()));
 
-            float addY = Mth.clamp(Math.max((this.onGround() ? 0.1f : 0.2f) * (float) getDeltaMovement().length(), 0f) * diffY, -rotSpeed, rotSpeed);
-            float addX = Mth.clamp(Math.min((float) Math.max(getDeltaMovement().dot(getViewVector(1)) - 0.17, 0.04), 0.7f) * diffX, -3.5f, 3.5f);
-            float addZ = this.entityData.get(DELTA_ROT) - (this.onGround() ? 0 : 0.004f) * diffY * (float) getDeltaMovement().dot(getViewVector(1));
+            float addY = Mth.clamp(Math.max((this.onGround() ? 0.1f : 0.2f) * (float) getDeltaMovement().length(), 0f) * entityData.get(MOUSE_SPEED_X), -rotSpeed, rotSpeed);
+            float addX = Mth.clamp(Math.min((float) Math.max(getDeltaMovement().dot(getViewVector(1)) - 0.24, 0.03), 0.4f) * entityData.get(MOUSE_SPEED_Y), -3.5f, 3.5f);
+            float addZ = this.entityData.get(DELTA_ROT) - (this.onGround() ? 0 : 0.004f) * entityData.get(MOUSE_SPEED_X) * (float) getDeltaMovement().dot(getViewVector(1));
 
             float i = getXRot() / 80;
 
-            yRotSync = addY - VectorTool.calculateY(getXRot()) * addZ;
+            delta_x = addX;
+            delta_y = addY - VectorTool.calculateY(getXRot()) * addZ;
 
-            this.setYRot(this.getYRot() + yRotSync);
+            this.setYRot(this.getYRot() + delta_y);
             if (!onGround()) {
-                this.setXRot(Mth.clamp(this.getXRot() + addX, -80, 80));
+                this.setXRot(this.getXRot() + delta_x);
                 this.setZRot(this.getRoll() - addZ * (1 - Mth.abs(i)));
             }
 
@@ -559,7 +564,7 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
                 entityData.set(GEAR_ROT, Math.max(entityData.get(GEAR_ROT) - 5, 0));
             }
 
-            float flapX = (1 - (Mth.abs(getRoll())) / 90) * Mth.clamp(diffX, -22.5f, 22.5f) - VectorTool.calculateY(getRoll()) * Mth.clamp(diffY, -22.5f, 22.5f);
+            float flapX = (1 - (Mth.abs(getRoll())) / 90) * Mth.clamp(entityData.get(MOUSE_SPEED_Y), -22.5f, 22.5f) - VectorTool.calculateY(getRoll()) * Mth.clamp(entityData.get(MOUSE_SPEED_X), -22.5f, 22.5f);
 
             setFlap1LRot(Mth.clamp(-flapX - 4 * addZ - this.entityData.get(PLANE_BREAK), -22.5f, 22.5f));
             setFlap1RRot(Mth.clamp(-flapX + 4 * addZ - this.entityData.get(PLANE_BREAK), -22.5f, 22.5f));
@@ -569,11 +574,12 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
             setFlap2LRot(Mth.clamp(flapX - 4 * addZ, -22.5f, 22.5f));
             setFlap2RRot(Mth.clamp(flapX + 4 * addZ, -22.5f, 22.5f));
 
-            float flapY = (1 - (Mth.abs(getRoll())) / 90) * Mth.clamp(diffY, -22.5f, 22.5f) + VectorTool.calculateY(getRoll()) * Mth.clamp(diffX, -22.5f, 22.5f);
+            float flapY = (1 - (Mth.abs(getRoll())) / 90) * Mth.clamp(entityData.get(MOUSE_SPEED_X), -22.5f, 22.5f) + VectorTool.calculateY(getRoll()) * Mth.clamp(entityData.get(MOUSE_SPEED_Y), -22.5f, 22.5f);
 
             setFlap3Rot(flapY * 5);
 
         } else if (!onGround()) {
+            float diffX;
             this.entityData.set(POWER, Math.max(this.entityData.get(POWER) - 0.0003f, 0.02f));
             destroyRot += 0.1f;
             diffX = 90 - this.getXRot();
@@ -662,25 +668,6 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
         return entityData.get(POWER) * (sprintInputDown ? 5.5f : 3f);
     }
 
-    protected void clampRotation(Entity entity) {
-        float f = Mth.wrapDegrees(entity.getXRot() - this.getXRot());
-        float f1 = Mth.clamp(f, -85.0F, 60F);
-        entity.xRotO += f1 - f;
-        entity.setXRot(entity.getXRot() + f1 - f);
-
-        entity.setYBodyRot(this.getYRot());
-        float f2 = Mth.wrapDegrees(entity.getYRot() - this.getYRot());
-        float f3 = Mth.clamp(f2, -90.0F, 90.0F);
-        entity.yRotO += f3 - f2;
-        entity.setYRot(entity.getYRot() + f3 - f2);
-        entity.setYBodyRot(this.getYRot());
-    }
-
-    @Override
-    public void onPassengerTurned(@NotNull Entity entity) {
-        this.clampRotation(entity);
-    }
-
     @Override
     public void positionRider(@NotNull Entity passenger, @NotNull MoveFunction callback) {
         // From Immersive_Aircraft
@@ -702,10 +689,6 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
             callback.accept(passenger, worldPosition.x, worldPosition.y, worldPosition.z);
         }
 
-        if (passenger != this.getFirstPassenger()) {
-            passenger.setXRot(passenger.getXRot() + (getXRot() - xRotO));
-        }
-
         copyEntityData(passenger);
     }
 
@@ -723,12 +706,10 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
     }
 
     public void copyEntityData(Entity entity) {
-        float f = Mth.wrapDegrees(entity.getYRot() - getYRot());
-        float g = Mth.clamp(f, -105.0f, 105.0f);
-        entity.yRotO += g - f;
-        entity.setYRot(entity.getYRot() + g - f - yRotSync * VectorTool.calculateY(getXRot()));
-        entity.setYHeadRot(entity.getYRot());
-        entity.setYBodyRot(getYRot());
+        entity.setXRot(this.getXRot());
+        entity.setYHeadRot(this.getYRot());
+        entity.setYRot(this.getYRot());
+        entity.setYBodyRot(this.getYRot());
     }
 
     @Override
@@ -1031,39 +1012,67 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
 
     @Override
     public double getSensitivity(double original, boolean zoom, int seatIndex, boolean isOnGround) {
-        return 0.25;
+        return 0;
     }
 
-    @OnlyIn(Dist.CLIENT)
     @Override
-    public @Nullable Vec2 getCameraRotation(float partialTicks, Player player, boolean zoom, boolean isFirstPerson) {
-        if (isFirstPerson) {
-            return new Vec2(Mth.lerp(partialTicks, player.yRotO, player.getYRot()), Mth.lerp(partialTicks, player.xRotO, player.getXRot()));
-        }
-        return super.getCameraRotation(partialTicks, player, false, false);
+    public double getMouseSensitivity() {
+        return 0.07;
     }
 
-    @OnlyIn(Dist.CLIENT)
     @Override
-    public Vec3 getCameraPosition(float partialTicks, Player player, boolean zoom, boolean isFirstPerson) {
-        if (isFirstPerson) {
-            if (zoom) {
-                return new Vec3(this.driverZoomPos(partialTicks).x, this.driverZoomPos(partialTicks).y, this.driverZoomPos(partialTicks).z);
-            } else {
-                return new Vec3(this.driverPos(partialTicks).x, this.driverPos(partialTicks).y, this.driverPos(partialTicks).z);
-            }
-        }
-        return super.getCameraPosition(partialTicks, player, false, false);
+    public double getMouseSpeedX() {
+        return 0.3;
     }
 
-    @OnlyIn(Dist.CLIENT)
-    public boolean useFixedCameraPos(Entity entity) {
-        return true;
+    @Override
+    public double getMouseSpeedY() {
+        return 0.3;
     }
 
     @OnlyIn(Dist.CLIENT)
     @Nullable
     public Pair<Quaternionf, Quaternionf> getPassengerRotation(Entity entity, float tickDelta) {
         return Pair.of(Axis.XP.rotationDegrees(-this.getViewXRot(tickDelta)), Axis.ZP.rotationDegrees(-this.getRoll(tickDelta)));
+    }
+
+    public Matrix4f getClientVehicleTransform(float ticks) {
+        Matrix4f transform = new Matrix4f();
+        transform.translate((float) Mth.lerp(ticks, xo, getX()), (float) Mth.lerp(ticks, yo + 2.375f, getY() + 2.375f), (float) Mth.lerp(ticks, zo, getZ()));
+        transform.rotate(Axis.YP.rotationDegrees((float) (-Mth.lerp(ticks, yRotO, getYRot()) + freeCameraYaw)));
+        transform.rotate(Axis.XP.rotationDegrees((float) (Mth.lerp(ticks, xRotO, getXRot()) + freeCameraPitch)));
+        transform.rotate(Axis.ZP.rotationDegrees(Mth.lerp(ticks, prevRoll, getRoll())));
+        return transform;
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    @Override
+    public @Nullable Vec2 getCameraRotation(float partialTicks, Player player, boolean zoom, boolean isFirstPerson) {
+        Vec3 vec3 = shootVec(partialTicks);
+        float rotX = (float) -VehicleEntity.getXRotFromVector(vec3);
+        float rotY = (float) -VehicleEntity.getYRotFromVector(vec3);
+        if (this.getSeatIndex(player) == 0) {
+            return new Vec2((float) (rotY - 0.5f * Mth.lerp(partialTicks, delta_yo, delta_y) - freeCameraYaw), (float) (rotX - 0.5f * Mth.lerp(partialTicks, delta_xo, delta_x) + freeCameraPitch));
+        }
+
+        return super.getCameraRotation(partialTicks, player, false, false);
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    @Override
+    public Vec3 getCameraPosition(float partialTicks, Player player, boolean zoom, boolean isFirstPerson) {
+        if (this.getSeatIndex(player) == 0) {
+            Matrix4f transform = getClientVehicleTransform(partialTicks);
+
+
+            Vector4f worldPosition = transformPosition(transform, 0f, 4, -13);
+
+            if (isFirstPerson) {
+                return new Vec3(Mth.lerp(partialTicks, player.xo, player.getX()), Mth.lerp(partialTicks, player.yo + player.getEyeHeight(), player.getEyeY()), Mth.lerp(partialTicks, player.zo, player.getZ()));
+            } else {
+                return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
+            }
+        }
+        return super.getCameraPosition(partialTicks, player, false, false);
     }
 }

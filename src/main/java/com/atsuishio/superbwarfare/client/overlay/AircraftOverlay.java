@@ -8,6 +8,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.AircraftEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
+import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.tools.EntityFindUtil;
 import com.atsuishio.superbwarfare.tools.FormatTool;
 import com.atsuishio.superbwarfare.tools.InventoryTool;
@@ -82,16 +83,17 @@ public class AircraftOverlay implements LayeredDraw.Layer {
             RenderSystem.setShaderColor(1, 1, 1, 1);
 
             lerpVy = (float) Mth.lerp(0.021f * partialTick, lerpVy, mobileVehicle.getDeltaMovement().y());
-            float diffY = Mth.wrapDegrees(Mth.lerp(partialTick, player.yHeadRotO, player.getYHeadRot()) - Mth.lerp(partialTick, mobileVehicle.yRotO, mobileVehicle.getYRot())) * 0.5f;
-            float diffX = Mth.wrapDegrees(Mth.lerp(partialTick, player.xRotO, player.getXRot()) - Mth.lerp(partialTick, mobileVehicle.xRotO, mobileVehicle.getXRot())) * 0.5f;
+            float diffY = (float) ClientMouseHandler.lerpSpeedX;
+            float diffX = (float) ClientMouseHandler.lerpSpeedY;
 
             float fovAdjust2 = (float) (Minecraft.getInstance().options.fov().get() / 30) - 1;
             double zoom = 3 + 0.06 * fovAdjust2;
 
             Vec3 pos = aircraftEntity.shootPos(partialTick).add(mobileVehicle.getViewVector(partialTick).scale(192));
+            Vec3 lookAngle = mobileVehicle.getViewVector(partialTick).normalize().scale(pos.distanceTo(cameraPos) * (1 - 1.0 / zoom));
+
             Vec3 posCross = aircraftEntity.shootPos(partialTick).add(aircraftEntity.shootVec(partialTick).scale(192));
-            Vec3 lookAngle = player.getViewVector(partialTick).normalize().scale(pos.distanceTo(cameraPos) * (1 - 1.0 / zoom));
-            Vec3 lookAngle2 = player.getViewVector(partialTick).normalize().scale(posCross.distanceTo(cameraPos) * (1 - 1.0 / zoom));
+            Vec3 lookAngle2 = aircraftEntity.shootVec(partialTick).normalize().scale(posCross.distanceTo(cameraPos) * (1 - 1.0 / zoom));
 
             var cPos = cameraPos.add(lookAngle);
             var cPos2 = cameraPos.add(lookAngle2);
