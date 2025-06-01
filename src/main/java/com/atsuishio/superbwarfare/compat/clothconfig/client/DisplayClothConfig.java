@@ -12,6 +12,14 @@ public class DisplayClothConfig {
         ConfigCategory category = root.getOrCreateCategory(Component.translatable("config.superbwarfare.client.display"));
 
         category.addEntry(entryBuilder
+                .startBooleanToggle(Component.translatable("config.superbwarfare.client.display.enable_gun_lod"), DisplayConfig.ENABLE_GUN_LOD.get())
+                .setDefaultValue(false)
+                .setSaveConsumer(DisplayConfig.ENABLE_GUN_LOD::set)
+                .setTooltip(Component.translatable("config.superbwarfare.client.display.enable_gun_lod.des"))
+                .build()
+        );
+
+        category.addEntry(entryBuilder
                 .startBooleanToggle(Component.translatable("config.superbwarfare.client.display.kill_indication"), DisplayConfig.KILL_INDICATION.get())
                 .setDefaultValue(true)
                 .setSaveConsumer(DisplayConfig.KILL_INDICATION::set)

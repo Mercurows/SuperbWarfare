@@ -483,7 +483,7 @@
   "entity.superbwarfare.mk_82": "MK-82 航空炸弹",
   "entity.superbwarfare.agm_65": "AGM-65 “小牛”空对地导弹",
   "entity.superbwarfare.dps_generator": "DPS发电机",
-  "entity.superbwarfare.blu_43": "BLU-43蝴蝶雷",
+  "entity.superbwarfare.blu_43_mine": "BLU-43蝴蝶雷",
 
   "key.categories.superbwarfare": "卓越前线",
   "key.superbwarfare.hold_zoom": "瞄准(按住)",
@@ -607,6 +607,8 @@
   "config.superbwarfare.client.display.dog_tag_name_visible.des": "是否在击杀提示中显示狗牌的名称",
   "config.superbwarfare.client.display.dog_tag_icon_visible": "狗牌图标可见性",
   "config.superbwarfare.client.display.dog_tag_icon_visible.des": "是否在击杀提示中显示狗牌的图标",
+  "config.superbwarfare.client.display.enable_gun_lod": "启用枪械LOD",
+  "config.superbwarfare.client.display.enable_gun_lod.des": "是否在第三人称视角下显示枪械的低模（节省性能）",
   "config.superbwarfare.client.vehicle": "载具控制",
   "config.superbwarfare.client.vehicle.invert_aircraft_control": "飞行器鼠标反转",
   "config.superbwarfare.client.vehicle.left_click_reload.des": "开启飞行器鼠标反转",

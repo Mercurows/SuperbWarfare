@@ -20,7 +20,6 @@ public class DisplayConfig {
     public static void init(ModConfigSpec.Builder builder) {
         builder.push("display");
 
-        // TODO 实现低模切换
         builder.comment("Set true to enable gun lod");
         ENABLE_GUN_LOD = builder.define("enable_gun_lod", false);
 
