@@ -156,7 +156,7 @@ public class HelicopterHudOverlay implements IGuiOverlay {
             double zoom = 0.96 * 3 + 0.06 * fovAdjust2;
 
             Vec3 pos = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z).add(mobileVehicle.getViewVector(partialTick).scale(192));
-            Vec3 lookAngle = player.getLookAngle().normalize().scale(pos.distanceTo(cameraPos) * (1 - 1.0 / zoom));
+            Vec3 lookAngle = mobileVehicle.getViewVector(partialTick).normalize().scale(pos.distanceTo(cameraPos) * (1 - 1.0 / zoom));
 
             var cPos = cameraPos.add(lookAngle);
 
@@ -170,7 +170,7 @@ public class HelicopterHudOverlay implements IGuiOverlay {
                 if (mc.options.getCameraType() == CameraType.FIRST_PERSON) {
                     preciseBlit(guiGraphics, Mod.loc("textures/screens/helicopter/crosshair_ind.png"), x - 8, y - 8, 0, 0, 16, 16, 16, 16);
                     renderKillIndicator(guiGraphics, x - 7.5f + (float) (2 * (Math.random() - 0.5f)), y - 7.5f + (float) (2 * (Math.random() - 0.5f)));
-                } else if (mc.options.getCameraType() == CameraType.THIRD_PERSON_BACK) {
+                } else if (mc.options.getCameraType() != CameraType.FIRST_PERSON) {
                     poseStack.pushPose();
                     poseStack.rotateAround(Axis.ZP.rotationDegrees(iHelicopterEntity.getRotZ(partialTick)), x, y, 0);
                     preciseBlit(guiGraphics, Mod.loc("textures/screens/drone.png"), x - 8, y - 8, 0, 0, 16, 16, 16, 16);

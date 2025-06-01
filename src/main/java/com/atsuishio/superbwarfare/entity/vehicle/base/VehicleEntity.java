@@ -83,6 +83,8 @@ public abstract class VehicleEntity extends Entity {
     public static final EntityDataAccessor<String> LAST_ATTACKER_UUID = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.STRING);
     public static final EntityDataAccessor<String> LAST_DRIVER_UUID = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.STRING);
     public static final EntityDataAccessor<Float> DELTA_ROT = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.FLOAT);
+    public static final EntityDataAccessor<Float> MOUSE_SPEED_X = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.FLOAT);
+    public static final EntityDataAccessor<Float> MOUSE_SPEED_Y = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<IntList> SELECTED_WEAPON = SynchedEntityData.defineId(VehicleEntity.class, ModSerializers.INT_LIST_SERIALIZER.get());
     public static final EntityDataAccessor<Integer> HEAT = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.INT);
 
@@ -112,6 +114,12 @@ public abstract class VehicleEntity extends Entity {
     public float gunXRotO;
 
     public boolean cannotFire;
+
+
+    public void mouseInput(double x, double y) {
+        entityData.set(MOUSE_SPEED_X, (float) x);
+        entityData.set(MOUSE_SPEED_Y, (float) y);
+    }
 
     // 自定义骑乘
     private final List<Entity> orderedPassengers = generatePassengersList();
@@ -284,6 +292,8 @@ public abstract class VehicleEntity extends Entity {
         this.entityData.define(LAST_ATTACKER_UUID, "undefined");
         this.entityData.define(LAST_DRIVER_UUID, "undefined");
         this.entityData.define(DELTA_ROT, 0f);
+        this.entityData.define(MOUSE_SPEED_X, 0f);
+        this.entityData.define(MOUSE_SPEED_Y, 0f);
         this.entityData.define(HEAT, 0);
 
         if (this instanceof WeaponVehicleEntity weaponVehicle && weaponVehicle.getAllWeapons().length > 0) {
@@ -596,6 +606,16 @@ public abstract class VehicleEntity extends Entity {
         while (getYRot() <= -180F) {
             setYRot(getYRot() + 360F);
             yRotO = delta + getYRot();
+        }
+
+        float deltaX = Math.abs(getXRot() - xRotO);
+        while (getXRot() > 180F) {
+            setXRot(getXRot() - 360F);
+            xRotO = getXRot() - deltaX;
+        }
+        while (getXRot() <= -180F) {
+            setXRot(getXRot() + 360F);
+            xRotO = deltaX + getXRot();
         }
 
         float deltaZ = Math.abs(getRoll() - prevRoll);

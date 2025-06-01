@@ -195,6 +195,7 @@ public class Mod {
         addNetworkMessage(DogTagEditorMessage.class, DogTagEditorMessage::encode, DogTagEditorMessage::decode, DogTagEditorMessage::handler, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
         addNetworkMessage(DogTagFinishEditMessage.class, DogTagFinishEditMessage::encode, DogTagFinishEditMessage::decode, DogTagFinishEditMessage::handler);
         addNetworkMessage(VehiclesDataMessage.class, VehiclesDataMessage::encode, VehiclesDataMessage::decode, (msg, ctx) -> VehiclesDataMessage.handler(msg), Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+        addNetworkMessage(MouseMoveMessage.class, MouseMoveMessage::encode, MouseMoveMessage::decode, MouseMoveMessage::handler);
 
         event.enqueueWork(() -> BrewingRecipeRegistry.addRecipe(Ingredient.of(PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.WATER)),
                 Ingredient.of(Items.LIGHTNING_ROD), PotionUtils.setPotion(new ItemStack(Items.POTION), ModPotion.SHOCK.get())));

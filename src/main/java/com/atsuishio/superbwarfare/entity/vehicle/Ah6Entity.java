@@ -39,6 +39,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -70,6 +71,12 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
     public int holdTick;
     public int holdPowerTick;
     public float destroyRot;
+
+    public float delta_xo;
+    public float delta_yo;
+
+    public float delta_x;
+    public float delta_y;
 
     public Ah6Entity(PlayMessages.SpawnEntity packet, Level world) {
         this(ModEntities.AH_6.get(), world);
@@ -160,6 +167,8 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
 
     @Override
     public void baseTick() {
+        delta_xo = delta_x;
+        delta_yo = delta_y;
         super.baseTick();
 
         if (this.level() instanceof ServerLevel) {
@@ -240,8 +249,6 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
                     this.entityData.set(POWER, this.entityData.get(POWER) * 0.99f);
                 }
             } else if (passenger instanceof Player) {
-                diffY = Math.clamp(-90f, 90f, Mth.wrapDegrees(passenger.getYHeadRot() - this.getYRot()));
-                diffX = Math.clamp(-60f, 60f, Mth.wrapDegrees(passenger.getXRot() - this.getXRot()));
 
                 if (rightInputDown) {
                     holdTick++;
@@ -253,9 +260,12 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
                     holdTick = 0;
                 }
 
-                this.setYRot(this.getYRot() + Mth.clamp((this.onGround() ? 0.1f : 2f) * diffY * this.entityData.get(PROPELLER_ROT), -10f, 10f));
-                this.setXRot(Mth.clamp(this.getXRot() + ((this.onGround()) ? 0 : 1.5f) * diffX * this.entityData.get(PROPELLER_ROT), -80, 80));
-                this.setZRot(this.getRoll() - this.entityData.get(DELTA_ROT) + (this.onGround() ? 0 : 0.25f) * diffY * this.entityData.get(PROPELLER_ROT));
+                delta_x = ((this.onGround()) ? 0 : 1.5f) * entityData.get(MOUSE_SPEED_Y) * this.entityData.get(PROPELLER_ROT);
+                delta_y = Mth.clamp((this.onGround() ? 0.1f : 2f) * entityData.get(MOUSE_SPEED_X) * this.entityData.get(PROPELLER_ROT), -10f, 10f);
+
+                this.setYRot(this.getYRot() + delta_y);
+                this.setXRot(this.getXRot() + delta_x);
+                this.setZRot(this.getRoll() - this.entityData.get(DELTA_ROT) + (this.onGround() ? 0 : 0.25f) * entityData.get(MOUSE_SPEED_X) * this.entityData.get(PROPELLER_ROT));
             }
 
             if (this.level() instanceof ServerLevel) {
@@ -358,7 +368,13 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
     }
 
     protected void clampRotation(Entity entity) {
-        if (entity == getNthEntity(0) || entity == getNthEntity(1)) {
+        if (entity == getNthEntity(1)) {
+            float f2 = Mth.wrapDegrees(entity.getYRot() - this.getYRot());
+            float f3 = Mth.clamp(f2, -80.0F, 80.0F);
+            entity.yRotO += f3 - f2;
+            entity.setYRot(entity.getYRot() + f3 - f2);
+            entity.setYBodyRot(this.getYRot());
+        } else if (entity == getNthEntity(1)) {
             float f = Mth.wrapDegrees(entity.getXRot());
             float f1 = Mth.clamp(f, -80.0F, 80F);
             entity.xRotO += f1 - f;
@@ -431,7 +447,12 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
     }
 
     public void copyEntityData(Entity entity) {
-        if (entity == getNthEntity(0) || entity == getNthEntity(1)) {
+        if (entity == getNthEntity(0)) {
+            entity.setXRot(entity.getXRot() + delta_x);
+            entity.setYHeadRot(entity.getYHeadRot() + delta_y);
+            entity.setYRot(entity.getYRot() + delta_y);
+            entity.setYBodyRot(this.getYRot());
+        } else if (entity == getNthEntity(1)) {
             float f = Mth.wrapDegrees(entity.getYRot() - getYRot());
             float g = Mth.clamp(f, -105.0f, 105.0f);
             entity.yRotO += g - f;
@@ -658,7 +679,7 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
 
     @Override
     public double getSensitivity(double original, boolean zoom, int seatIndex, boolean isOnGround) {
-        return seatIndex == 0 && !isOnGround ? 0.33 : original;
+        return seatIndex == 0 ? 0 : original;
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -670,5 +691,33 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
             return Pair.of(Axis.XP.rotationDegrees(this.getRoll(tickDelta)), Axis.ZP.rotationDegrees(-this.getViewXRot(tickDelta)));
         }
         return Pair.of(Axis.XP.rotationDegrees(-this.getViewXRot(tickDelta)), Axis.ZP.rotationDegrees(-this.getRoll(tickDelta)));
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    @Override
+    public @Nullable Vec2 getCameraRotation(float partialTicks, Player player, boolean zoom, boolean isFirstPerson) {
+        if (this.getSeatIndex(player) == 0) {
+            return new Vec2(getRotY(partialTicks) + 0.4f * Mth.lerp(partialTicks, delta_yo, delta_y), getRotX(partialTicks) + 0.4f * Mth.lerp(partialTicks, delta_xo, delta_x));
+        }
+
+        return super.getCameraRotation(partialTicks, player, false, false);
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    @Override
+    public Vec3 getCameraPosition(float partialTicks, Player player, boolean zoom, boolean isFirstPerson) {
+        if (this.getSeatIndex(player) == 0) {
+            Matrix4f transform = getVehicleTransform(partialTicks);
+
+
+            Vector4f worldPosition = transformPosition(transform, -2.1f, 1, -10);
+
+            if (isFirstPerson) {
+                return new Vec3(Mth.lerp(partialTicks, player.xo, player.getX()), Mth.lerp(partialTicks, player.yo + player.getEyeHeight(), player.getEyeY()), Mth.lerp(partialTicks, player.zo, player.getZ()));
+            } else {
+                return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
+            }
+        }
+        return super.getCameraPosition(partialTicks, player, false, false);
     }
 }
