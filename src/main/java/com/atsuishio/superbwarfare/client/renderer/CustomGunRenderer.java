@@ -1,12 +1,14 @@
 package com.atsuishio.superbwarfare.client.renderer;
 
+import com.atsuishio.superbwarfare.client.model.item.CustomGunModel;
+import com.atsuishio.superbwarfare.config.client.DisplayConfig;
+import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -19,7 +21,7 @@ import software.bernie.geckolib.renderer.GeoItemRenderer;
 import software.bernie.geckolib.util.Color;
 import software.bernie.geckolib.util.RenderUtil;
 
-public class CustomGunRenderer<T extends Item & GeoAnimatable> extends GeoItemRenderer<T> {
+public class CustomGunRenderer<T extends GunItem & GeoAnimatable> extends GeoItemRenderer<T> {
 
     public static final float SCALE_RECIPROCAL = 1.0f / 16.0f;
 
@@ -57,12 +59,38 @@ public class CustomGunRenderer<T extends Item & GeoAnimatable> extends GeoItemRe
     }
 
     @Override
+    public ResourceLocation getTextureLocation(T animatable) {
+        var geoModel = getGeoModel();
+
+        if (renderPerspective != ItemDisplayContext.FIRST_PERSON_RIGHT_HAND
+                && DisplayConfig.ENABLE_GUN_LOD.get()
+                && geoModel instanceof CustomGunModel<T> gunModel
+        ) {
+            return gunModel.getLODTextureResource(animatable);
+        }
+
+        return geoModel.getTextureResource(animatable);
+    }
+
+    @Override
     public void defaultRender(PoseStack poseStack, T animatable, MultiBufferSource bufferSource, @Nullable RenderType renderType, @Nullable VertexConsumer buffer, float yaw, float partialTick, int packedLight) {
         poseStack.pushPose();
 
         Color renderColor = getRenderColor(animatable, partialTick, packedLight);
         int packedOverlay = getPackedOverlay(animatable, 0, partialTick);
-        BakedGeoModel model = getGeoModel().getBakedModel(getGeoModel().getModelResource(animatable));
+
+        ResourceLocation modelLocation;
+        var geoModel = getGeoModel();
+        if (renderPerspective != ItemDisplayContext.FIRST_PERSON_RIGHT_HAND
+                && DisplayConfig.ENABLE_GUN_LOD.get()
+                && geoModel instanceof CustomGunModel<T> gunModel
+        ) {
+            modelLocation = gunModel.getLODModelResource(animatable);
+        } else {
+            modelLocation = geoModel.getModelResource(animatable);
+        }
+
+        BakedGeoModel model = geoModel.getBakedModel(modelLocation);
 
         if (renderType == null)
             renderType = getRenderType(animatable, getTextureLocation(animatable), bufferSource, partialTick);

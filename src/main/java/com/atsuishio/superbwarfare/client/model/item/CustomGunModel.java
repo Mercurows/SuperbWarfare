@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.client.molang.MolangVariable;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import net.minecraft.client.Minecraft;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import software.bernie.geckolib.animatable.GeoAnimatable;
@@ -17,6 +18,14 @@ import software.bernie.geckolib.model.GeoModel;
 import java.util.function.DoubleSupplier;
 
 public abstract class CustomGunModel<T extends GunItem & GeoAnimatable> extends GeoModel<T> {
+
+    public ResourceLocation getLODModelResource(T animatable) {
+        return this.getModelResource(animatable);
+    }
+
+    public ResourceLocation getLODTextureResource(T animatable) {
+        return this.getTextureResource(animatable);
+    }
 
     @Override
     public void applyMolangQueries(AnimationState<T> animationState, double animTime) {

@@ -31,8 +31,18 @@ public class Mp5ItemModel extends CustomGunModel<Mp5Item> {
     }
 
     @Override
+    public ResourceLocation getLODModelResource(Mp5Item animatable) {
+        return Mod.loc("geo/lod/mp_5.geo.json");
+    }
+
+    @Override
     public ResourceLocation getTextureResource(Mp5Item animatable) {
         return Mod.loc("textures/item/mp_5.png");
+    }
+
+    @Override
+    public ResourceLocation getLODTextureResource(Mp5Item animatable) {
+        return Mod.loc("textures/item/lod/mp_5.png");
     }
 
     @Override
