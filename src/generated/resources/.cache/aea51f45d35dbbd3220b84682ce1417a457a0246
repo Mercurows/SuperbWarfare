@@ -1,4 +1,10 @@
-// 1.20.1	2025-05-12T22:09:07.8467393	Tags for minecraft:block mod id superbwarfare
+// 1.20.1	2025-06-01T19:00:07.4008601	Tags for minecraft:block mod id superbwarfare
+de439a73e17071f118f37d948be6768fd4b237fd data/forge/tags/blocks/ores.json
+af38bb7460b2d1c0b07f5ac3a4cb1af53a41a456 data/forge/tags/blocks/ores/lead.json
+6b4ec9b667b534e868b5463f06acf89fe114be9a data/forge/tags/blocks/ores/silver.json
+65265b2e95bae5071f132b1aa92d3c90fd8199d8 data/forge/tags/blocks/ores/tungsten.json
+91ca1b4d467e94a2f407f7465b3cadade7ff661b data/forge/tags/blocks/ores_in_ground/deepslate.json
+2227e4cdbfc8a9c9af4975fa5ed1360146623768 data/forge/tags/blocks/ores_in_ground/stone.json
 0acfd31854bf15f2c108138b3df7206bd2593e6b data/minecraft/tags/blocks/mineable/axe.json
 cd3701aa4a886404eb31c2e2e9d8342673710960 data/minecraft/tags/blocks/mineable/pickaxe.json
 3da7f021790388a122717f16f51c7ec5232eebcb data/minecraft/tags/blocks/mineable/shovel.json
