@@ -10,6 +10,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import software.bernie.geckolib.animatable.GeoItem;
@@ -37,6 +38,12 @@ public class SentinelItemRenderer extends CustomGunRenderer<SentinelItem> {
         if (player == null) return;
         ItemStack itemStack = player.getMainHandItem();
         if (itemStack.getItem() instanceof GunItem && GeoItem.getId(itemStack) == this.getInstanceId(animatable)) {
+            if (this.renderPerspective != ItemDisplayContext.FIRST_PERSON_RIGHT_HAND) {
+                if (name.equals("wires")) {
+                    bone.setHidden(true);
+                }
+            }
+
             var cap = itemStack.getCapability(Capabilities.EnergyStorage.ITEM);
             var flag = cap != null && cap.getEnergyStored() > 0;
 
@@ -47,7 +54,7 @@ public class SentinelItemRenderer extends CustomGunRenderer<SentinelItem> {
 
             AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.265, -0.05, 0.075f, 255, 0, 0, 255, "apex_3x", false);
             AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn, 0, 0, 1.53125, 0.6);
-        } else if (name.equals("charge_illuminated")) {
+        } else if (name.equals("charge_illuminated") || name.equals("wires")) {
             bone.setHidden(true);
         }
 

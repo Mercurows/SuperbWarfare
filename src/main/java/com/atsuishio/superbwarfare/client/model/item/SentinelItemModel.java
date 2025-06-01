@@ -13,7 +13,6 @@ import net.minecraft.world.item.ItemStack;
 import software.bernie.geckolib.animation.AnimationState;
 import software.bernie.geckolib.cache.object.GeoBone;
 
-// TODO 这个模型后面还有电线，记得渲染时候清除掉
 public class SentinelItemModel extends CustomGunModel<SentinelItem> {
 
     @Override
