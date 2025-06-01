@@ -196,7 +196,7 @@ public class ClientEventHandler {
     }
 
     public static boolean isFreeCam(Player player) {
-        return player.getVehicle() instanceof VehicleEntity vehicle && vehicle.allowFreeCam() && Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON && ModKeyMappings.FREE_CAMERA.isDown();
+        return player.getVehicle() instanceof VehicleEntity vehicle && vehicle.allowFreeCam() && ModKeyMappings.FREE_CAMERA.isDown();
     }
 
     private static boolean isMoving() {
