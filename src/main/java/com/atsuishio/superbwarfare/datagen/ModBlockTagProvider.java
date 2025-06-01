@@ -5,7 +5,10 @@ import com.atsuishio.superbwarfare.init.ModBlocks;
 import com.atsuishio.superbwarfare.init.ModTags;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.data.BlockTagsProvider;
@@ -46,5 +49,17 @@ public class ModBlockTagProvider extends BlockTagsProvider {
         this.tag(ModTags.Blocks.HARD_COLLISION)
                 .addTags(BlockTags.LOGS, BlockTags.PLANKS, Tags.Blocks.GLASS_BLOCKS)
                 .add(Blocks.ICE, Blocks.FROSTED_ICE, Blocks.PACKED_ICE, Blocks.BLUE_ICE);
+
+        this.tag(Tags.Blocks.ORES).addTags(cTag("ores/lead"), cTag("ores/tungsten"), cTag("ores/silver"));
+        this.tag(cTag("ores/lead")).add(ModBlocks.GALENA_ORE.get(), ModBlocks.DEEPSLATE_GALENA_ORE.get());
+        this.tag(cTag("ores/tungsten")).add(ModBlocks.SCHEELITE_ORE.get(), ModBlocks.DEEPSLATE_SCHEELITE_ORE.get());
+        this.tag(cTag("ores/silver")).add(ModBlocks.SILVER_ORE.get(), ModBlocks.DEEPSLATE_SILVER_ORE.get());
+
+        this.tag(Tags.Blocks.ORES_IN_GROUND_STONE).add(ModBlocks.GALENA_ORE.get(), ModBlocks.SCHEELITE_ORE.get(), ModBlocks.SILVER_ORE.get());
+        this.tag(Tags.Blocks.ORES_IN_GROUND_DEEPSLATE).add(ModBlocks.DEEPSLATE_GALENA_ORE.get(), ModBlocks.DEEPSLATE_SCHEELITE_ORE.get(), ModBlocks.DEEPSLATE_SILVER_ORE.get());
+    }
+
+    public static TagKey<Block> cTag(String name) {
+        return BlockTags.create(ResourceLocation.fromNamespaceAndPath("c", name));
     }
 }
