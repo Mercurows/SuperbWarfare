@@ -22,6 +22,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.CalculatePlayerTurnEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.event.ViewportEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import static com.atsuishio.superbwarfare.event.ClientEventHandler.droneFovLerp;
@@ -31,10 +32,7 @@ import static com.atsuishio.superbwarfare.event.ClientEventHandler.isFreeCam;
 public class ClientMouseHandler {
     public static Vec2 posO = new Vec2(0, 0);
     public static Vec2 posN = new Vec2(0, 0);
-    public static Vec2 mousePos = new Vec2(0, 0);
-    public static double PosX = 0;
     public static double lerpPosX = 0;
-    public static double PosY = 0;
     public static double lerpPosY = 0;
 
 
@@ -80,35 +78,48 @@ public class ClientMouseHandler {
                 i *= (1 - (Mth.abs(vehicle.getRoll()) - 90) / 90);
             }
 
-            if (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON) {
-                PacketDistributor.sendToServer(new MouseMoveMessage(
-                        (1 - (Mth.abs(vehicle.getRoll()) / 90)) * lerpPosX + ((Mth.abs(vehicle.getRoll()) / 90)) * lerpPosY * i,
-                        (1 - (Mth.abs(vehicle.getRoll()) / 90)) * lerpPosY + ((Mth.abs(vehicle.getRoll()) / 90)) * lerpPosX * (vehicle.getRoll() < 0 ? -1 : 1))
-                );
+            if (!isFreeCam(player)) {
+                if (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON) {
+                    PacketDistributor.sendToServer(new MouseMoveMessage(
+                            (1 - (Mth.abs(vehicle.getRoll()) / 90)) * lerpPosX + ((Mth.abs(vehicle.getRoll()) / 90)) * lerpPosY * i,
+                            (1 - (Mth.abs(vehicle.getRoll()) / 90)) * lerpPosY + ((Mth.abs(vehicle.getRoll()) / 90)) * lerpPosX * (vehicle.getRoll() < 0 ? -1 : 1))
+                    );
+                } else {
+                    PacketDistributor.sendToServer(new MouseMoveMessage(lerpPosX, lerpPosY));
+                }
             } else {
-                PacketDistributor.sendToServer(new MouseMoveMessage(lerpPosX, lerpPosY));
+                PacketDistributor.sendToServer(new MouseMoveMessage(0, 0));
             }
         }
+    }
 
-//        lerpPosX = Mth.clamp(Mth.lerp(event.getPartialTick(), lerpPosX, 0), -1, 1);
-//        lerpPosY = Mth.clamp(Mth.lerp(event.getPartialTick(), lerpPosY, 0), -1, 1);
-//
-//
-//        if (isFreeCam(player)) {
-//            freeCameraYaw = Mth.clamp(freeCameraYaw + 4 * lerpPosX, -100, 100);
-//            freeCameraPitch = Mth.clamp(freeCameraPitch + 4 * lerpPosY, -90, 90);
-//        }
-//
-//        float yaw = event.getYaw();
-//        float pitch = event.getPitch();
-//
-//        event.setYaw((float) (yaw + freeCameraYaw));
-//        event.setPitch((float) (pitch + freeCameraPitch));
-//
-//        if (!isFreeCam(player)) {
-//            freeCameraYaw *= 0.8;
-//            freeCameraPitch *= 0.8;
-//        }
+    @SubscribeEvent
+    public static void handleClientTick(ViewportEvent.ComputeCameraAngles event) {
+        LocalPlayer player = Minecraft.getInstance().player;
+        if (player == null) return;
+
+        float times = 0.6f * (float) Math.min(Minecraft.getInstance().getTimer().getRealtimeDeltaTicks(), 0.8);
+
+        if (isFreeCam(player)) {
+            freeCameraYaw -= 0.4f * times * lerpPosX;
+            freeCameraPitch += 0.2f * times * lerpPosY;
+        } else {
+            freeCameraYaw = Mth.lerp(0.075 * event.getPartialTick(), freeCameraYaw, 0);
+            freeCameraPitch = Mth.lerp(0.075 * event.getPartialTick(), freeCameraPitch, 0);
+        }
+
+        while (freeCameraYaw > 180F) {
+            freeCameraYaw -= 360;
+        }
+        while (freeCameraYaw <= -180F) {
+            freeCameraYaw += 360;
+        }
+        while (freeCameraPitch > 180F) {
+            freeCameraPitch -= 360;
+        }
+        while (freeCameraPitch <= -180F) {
+            freeCameraPitch += 360;
+        }
     }
 
     @SubscribeEvent
