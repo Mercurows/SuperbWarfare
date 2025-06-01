@@ -8,6 +8,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModMobEffects;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
+import com.atsuishio.superbwarfare.network.message.send.MouseMoveMessage;
 import com.atsuishio.superbwarfare.tools.NBTTool;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
@@ -20,7 +21,8 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.CalculatePlayerTurnEvent;
-import net.neoforged.neoforge.client.event.ViewportEvent;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import static com.atsuishio.superbwarfare.event.ClientEventHandler.droneFovLerp;
 import static com.atsuishio.superbwarfare.event.ClientEventHandler.isFreeCam;
@@ -35,6 +37,10 @@ public class ClientMouseHandler {
     public static double PosY = 0;
     public static double lerpPosY = 0;
 
+
+    public static double speedX = 0;
+    public static double speedY = 0;
+
     public static double freeCameraPitch = 0;
     public static double freeCameraYaw = 0;
 
@@ -48,43 +54,61 @@ public class ClientMouseHandler {
     }
 
     @SubscribeEvent
-    public static void handleClientTick(ViewportEvent.ComputeCameraAngles event) {
+    public static void handleClientTick(ClientTickEvent.Post event) {
         LocalPlayer player = Minecraft.getInstance().player;
         if (player == null) return;
 
         posO = posN;
         posN = MouseMovementHandler.getMousePos();
 
-        if (!notInGame()) {
-            mousePos = posN.add(posO.scale(-1));
+        if (!notInGame() && player.getVehicle() instanceof VehicleEntity vehicle) {
+            speedX = 0.1 * (posN.x - posO.x);
+            speedY = 0.1 * (posN.y - posO.y);
 
-            if (mousePos.x != 0) {
-                lerpPosX = Mth.lerp(0.1, PosX, mousePos.x);
+            lerpPosX = Mth.lerp(0.4, lerpPosX, speedX);
+            lerpPosY = Mth.lerp(0.4, lerpPosY, speedY);
+
+            double i = 0;
+
+            if (vehicle.getRoll() < 0) {
+                i = 1;
+            } else if (vehicle.getRoll() > 0) {
+                i = -1;
             }
-            if (mousePos.y != 0) {
-                lerpPosY = Mth.lerp(0.1, PosY, mousePos.y);
+
+            if (Mth.abs(vehicle.getRoll()) > 90) {
+                i *= (1 - (Mth.abs(vehicle.getRoll()) - 90) / 90);
+            }
+
+            if (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON) {
+                PacketDistributor.sendToServer(new MouseMoveMessage(
+                        (1 - (Mth.abs(vehicle.getRoll()) / 90)) * lerpPosX + ((Mth.abs(vehicle.getRoll()) / 90)) * lerpPosY * i,
+                        (1 - (Mth.abs(vehicle.getRoll()) / 90)) * lerpPosY + ((Mth.abs(vehicle.getRoll()) / 90)) * lerpPosX * (vehicle.getRoll() < 0 ? -1 : 1))
+                );
+            } else {
+                PacketDistributor.sendToServer(new MouseMoveMessage(lerpPosX, lerpPosY));
             }
         }
 
-        lerpPosX = Mth.clamp(Mth.lerp(event.getPartialTick(), lerpPosX, 0), -1, 1);
-        lerpPosY = Mth.clamp(Mth.lerp(event.getPartialTick(), lerpPosY, 0), -1, 1);
-
-
-        if (isFreeCam(player)) {
-            freeCameraYaw = Mth.clamp(freeCameraYaw + 4 * lerpPosX, -100, 100);
-            freeCameraPitch = Mth.clamp(freeCameraPitch + 4 * lerpPosY, -90, 90);
-        }
-
-        float yaw = event.getYaw();
-        float pitch = event.getPitch();
-
-        event.setYaw((float) (yaw + freeCameraYaw));
-        event.setPitch((float) (pitch + freeCameraPitch));
-
-        if (!isFreeCam(player)) {
-            freeCameraYaw *= 0.8;
-            freeCameraPitch *= 0.8;
-        }
+//        lerpPosX = Mth.clamp(Mth.lerp(event.getPartialTick(), lerpPosX, 0), -1, 1);
+//        lerpPosY = Mth.clamp(Mth.lerp(event.getPartialTick(), lerpPosY, 0), -1, 1);
+//
+//
+//        if (isFreeCam(player)) {
+//            freeCameraYaw = Mth.clamp(freeCameraYaw + 4 * lerpPosX, -100, 100);
+//            freeCameraPitch = Mth.clamp(freeCameraPitch + 4 * lerpPosY, -90, 90);
+//        }
+//
+//        float yaw = event.getYaw();
+//        float pitch = event.getPitch();
+//
+//        event.setYaw((float) (yaw + freeCameraYaw));
+//        event.setPitch((float) (pitch + freeCameraPitch));
+//
+//        if (!isFreeCam(player)) {
+//            freeCameraYaw *= 0.8;
+//            freeCameraPitch *= 0.8;
+//        }
     }
 
     @SubscribeEvent
