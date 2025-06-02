@@ -7,7 +7,6 @@ import com.atsuishio.superbwarfare.entity.vehicle.A10Entity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.AircraftEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
-import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.tools.EntityFindUtil;
 import com.atsuishio.superbwarfare.tools.FormatTool;
@@ -39,6 +38,7 @@ import java.util.List;
 
 import static com.atsuishio.superbwarfare.client.RenderHelper.preciseBlit;
 import static com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.HEAT;
+import static com.atsuishio.superbwarfare.event.ClientEventHandler.zoomVehicle;
 
 @OnlyIn(Dist.CLIENT)
 public class AircraftOverlay implements LayeredDraw.Layer {
@@ -64,6 +64,7 @@ public class AircraftOverlay implements LayeredDraw.Layer {
         Camera camera = mc.gameRenderer.getMainCamera();
         Vec3 cameraPos = camera.getPosition();
         PoseStack poseStack = guiGraphics.pose();
+        Vec3 lookVec = new Vec3(camera.getLookVector());
 
         var partialTick = deltaTracker.getGameTimeDeltaPartialTick(true);
 
@@ -89,17 +90,17 @@ public class AircraftOverlay implements LayeredDraw.Layer {
             float fovAdjust2 = (float) (Minecraft.getInstance().options.fov().get() / 30) - 1;
             double zoom = 3 + 0.06 * fovAdjust2;
 
-            Vec3 pos = aircraftEntity.shootPos(partialTick).add(mobileVehicle.getViewVector(partialTick).scale(192));
-            Vec3 lookAngle = mobileVehicle.getViewVector(partialTick).normalize().scale(pos.distanceTo(cameraPos) * (1 - 1.0 / zoom));
+            Vec3 pos = cameraPos.add(mobileVehicle.getViewVector(partialTick).scale(192));
+            Vec3 lookAngle = lookVec.normalize().scale(pos.distanceTo(cameraPos) * (1 - 1.0 / zoom));
 
-            Vec3 posCross = aircraftEntity.shootPos(partialTick).add(aircraftEntity.shootVec(partialTick).scale(192));
-            Vec3 lookAngle2 = aircraftEntity.shootVec(partialTick).normalize().scale(posCross.distanceTo(cameraPos) * (1 - 1.0 / zoom));
+            Vec3 posCross = cameraPos.add(aircraftEntity.shootVec(partialTick).scale(192));
+            Vec3 lookAngle2 = lookVec.normalize().scale(posCross.distanceTo(cameraPos) * (1 - 1.0 / zoom));
 
             var cPos = cameraPos.add(lookAngle);
             var cPos2 = cameraPos.add(lookAngle2);
 
-            Vec3 p = RenderHelper.worldToScreen(pos, ClientEventHandler.zoomVehicle ? cPos : cameraPos);
-            Vec3 pCross = RenderHelper.worldToScreen(posCross, ClientEventHandler.zoomVehicle ? cPos2 : cameraPos);
+            Vec3 p = RenderHelper.worldToScreen(pos, zoomVehicle ? cPos : cameraPos);
+            Vec3 pCross = RenderHelper.worldToScreen(posCross, zoomVehicle ? cPos2 : cameraPos);
 
             if (p != null) {
                 poseStack.pushPose();
@@ -220,8 +221,8 @@ public class AircraftOverlay implements LayeredDraw.Layer {
             // 准星
             if (pCross != null) {
                 poseStack.pushPose();
-                float x = (float) pCross.x;
-                float y = (float) pCross.y;
+                float x = (float) pCross.x + (zoomVehicle ? 6 : 2);
+                float y = (float) pCross.y + (zoomVehicle ? 15 : 5);
 
                 if (mc.options.getCameraType() == CameraType.FIRST_PERSON && !(mobileVehicle instanceof A10Entity a10Entity && a10Entity.getWeaponIndex(0) == 3)) {
                     RenderSystem.disableDepthTest();
@@ -273,9 +274,9 @@ public class AircraftOverlay implements LayeredDraw.Layer {
 
                 for (var e : entities) {
                     Vec3 pos3 = new Vec3(Mth.lerp(partialTick, e.xo, e.getX()), Mth.lerp(partialTick, e.yo + e.getEyeHeight(), e.getEyeY()), Mth.lerp(partialTick, e.zo, e.getZ()));
-                    Vec3 lookAngle3 = player.getViewVector(partialTick).normalize().scale(pos3.distanceTo(cameraPos) * (1 - 1.0 / zoom));
+                    Vec3 lookAngle3 = lookVec.normalize().scale(pos3.distanceTo(cameraPos) * (1 - 1.0 / zoom));
                     var cPos3 = cameraPos.add(lookAngle3);
-                    Vec3 point = RenderHelper.worldToScreen(pos3, ClientEventHandler.zoomVehicle ? cPos3 : cameraPos);
+                    Vec3 point = RenderHelper.worldToScreen(pos3, zoomVehicle ? cPos3 : cameraPos);
                     if (point != null) {
                         boolean nearest = e == targetEntity;
                         boolean lockOn = a10Entity.locked && nearest;

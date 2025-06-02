@@ -63,7 +63,7 @@ public class ClientMouseHandler {
         ItemStack stack = player.getMainHandItem();
         var tag = NBTTool.getTag(stack);
 
-        if (stack.is(ModItems.MONITOR.get()) && tag.getBoolean("Using") && tag.getBoolean("Linked")) {
+        if (!notInGame() && stack.is(ModItems.MONITOR.get()) && tag.getBoolean("Using") && tag.getBoolean("Linked")) {
             DroneEntity drone = EntityFindUtil.findDrone(player.level(), tag.getString("LinkedDrone"));
             if (drone != null) {
                 speedX = drone.getMouseSensitivity() * (posN.x - posO.x);
@@ -137,6 +137,11 @@ public class ClientMouseHandler {
         }
         while (freeCameraPitch <= -180F) {
             freeCameraPitch += 360;
+        }
+
+        if (player.getVehicle() instanceof AirEntity) {
+            player.setYRot(player.getVehicle().getYRot());
+            player.setYHeadRot(player.getYRot());
         }
     }
 

@@ -768,11 +768,17 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
 
     @Override
     public Vec3 shootVec(float tickDelta) {
+        Matrix4f transform = getVehicleTransform(tickDelta);
+        Vector4f worldPosition;
+        Vector4f worldPosition2;
         if (getWeaponIndex(0) == 3) {
-            return getViewVector(tickDelta);
+            worldPosition = transformPosition(transform, 0, 0, 0);
+            worldPosition2 = transformPosition(transform, 0, 0f, 1);
         } else {
-            return new Vec3(getViewVector(tickDelta).x, getViewVector(tickDelta).y - 0.08, getViewVector(tickDelta).z);
+            worldPosition = transformPosition(transform, 0, 0, 0);
+            worldPosition2 = transformPosition(transform, 0.007f, -0.03f, 1);
         }
+        return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z).vectorTo(new Vec3(worldPosition2.x, worldPosition2.y, worldPosition2.z)).normalize();
     }
 
     @Override
@@ -797,7 +803,7 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
                 var entityToSpawn = ((SmallCannonShellWeapon) getWeapon(0)).create(player);
 
                 entityToSpawn.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
-                entityToSpawn.shoot(getLookAngle().x, getLookAngle().y - 0.07, getLookAngle().z, 30, 0.5f);
+                entityToSpawn.shoot(shootVec(1).x, shootVec(1).y, shootVec(1).z, 30, 0.5f);
                 level().addFreshEntity(entityToSpawn);
 
                 sendParticle((ServerLevel) this.level(), ParticleTypes.LARGE_SMOKE, worldPosition.x, worldPosition.y, worldPosition.z, 1, 0.2, 0.2, 0.2, 0.001, true);
@@ -844,10 +850,8 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
                 fireIndex = 0;
             }
 
-            shootAngle = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z).vectorTo(new Vec3(worldPosition2.x, worldPosition2.y, worldPosition2.z)).normalize();
-
             heliRocketEntity.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
-            heliRocketEntity.shoot(shootAngle.x, shootAngle.y - 0.075, shootAngle.z, 8, 0.5f);
+            heliRocketEntity.shoot(shootVec(1).x, shootVec(1).y, shootVec(1).z, 8, 0.5f);
             player.level().addFreshEntity(heliRocketEntity);
 
             BlockPos pos = BlockPos.containing(new Vec3(worldPosition.x, worldPosition.y, worldPosition.z));
@@ -910,7 +914,7 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
                 Agm65Entity.setTargetUuid(getTargetUuid());
             }
             Agm65Entity.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
-            Agm65Entity.shoot(getLookAngle().x, getLookAngle().y, getLookAngle().z, (float) getDeltaMovement().length() + 1, 1);
+            Agm65Entity.shoot(shootVec(1).x, shootVec(1).y, shootVec(1).z, (float) getDeltaMovement().length() + 1, 1);
             player.level().addFreshEntity(Agm65Entity);
 
             BlockPos pos = BlockPos.containing(new Vec3(worldPosition.x, worldPosition.y, worldPosition.z));
@@ -1045,7 +1049,7 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
     @Override
     public @Nullable Vec2 getCameraRotation(float partialTicks, Player player, boolean zoom, boolean isFirstPerson) {
         if (this.getSeatIndex(player) == 0) {
-            return new Vec2((float) (getRotY(partialTicks) - 0.5f * Mth.lerp(partialTicks, delta_yo, delta_y) - freeCameraYaw), (float) (getRotX(partialTicks) + (isFirstPerson ? 0 : 4) - 0.5f * Mth.lerp(partialTicks, delta_xo, delta_x) + freeCameraPitch));
+            return new Vec2((float) (getRotY(partialTicks) - 0.5f * Mth.lerp(partialTicks, delta_yo, delta_y) - freeCameraYaw), (float) (getRotX(partialTicks) - 0.5f * Mth.lerp(partialTicks, delta_xo, delta_x) + freeCameraPitch));
         }
 
         return super.getCameraRotation(partialTicks, player, false, false);
@@ -1058,7 +1062,7 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
             Matrix4f transform = getClientVehicleTransform(partialTicks);
 
 
-            Vector4f worldPosition = transformPosition(transform, 0f, 5, -14);
+            Vector4f worldPosition = transformPosition(transform, 0f, 4, -14);
 
             if (isFirstPerson) {
                 return new Vec3(Mth.lerp(partialTicks, player.xo, player.getX()), Mth.lerp(partialTicks, player.yo + player.getEyeHeight(), player.getEyeY()), Mth.lerp(partialTicks, player.zo, player.getZ()));

@@ -242,11 +242,11 @@ public class Blu43Entity extends Entity implements GeoEntity, OwnableEntity {
     private void triggerExplode() {
         CustomExplosion explosion = new CustomExplosion(this.level(), this,
                 ModDamageTypes.causeCustomExplosionDamage(this.level().registryAccess(), this, this.getOwner()), 10f,
-                this.getX(), this.getEyeY(), this.getZ(), 2f, Explosion.BlockInteraction.KEEP, true);
+                this.getX(), this.getEyeY(), this.getZ(), 2f, Explosion.BlockInteraction.KEEP, false);
         explosion.explode();
         EventHooks.onExplosionStart(this.level(), explosion);
         explosion.finalizeExplosion(false);
-        ParticleTool.spawnMiniExplosionParticles(this.level(), this.position());
+        ParticleTool.spawnSmallExplosionParticles(this.level(), this.position());
         this.discard();
     }
 

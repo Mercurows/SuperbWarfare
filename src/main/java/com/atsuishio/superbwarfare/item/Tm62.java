@@ -67,7 +67,7 @@ public class Tm62 extends Item implements GeoItem {
 
         if (!level.isClientSide) {
             float randomRot = (float) Mth.clamp((2 * Math.random() - 1) * 180, -180, 180);
-            Tm62Entity entity = new Tm62Entity(player, level, player.isCrouching());
+            Tm62Entity entity = new Tm62Entity(player, level, player.isShiftKeyDown());
             entity.moveTo(player.getX(), player.getY() + 1.1, player.getZ(), randomRot, 0);
             entity.setYBodyRot(randomRot);
             entity.setYHeadRot(randomRot);
