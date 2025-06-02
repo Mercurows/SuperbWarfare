@@ -28,7 +28,7 @@ public class NetworkRegistry {
 
         registrar.playToServer(LaserShootMessage.TYPE, LaserShootMessage.STREAM_CODEC, LaserShootMessage::handler);
         registrar.playToServer(ShootMessage.TYPE, ShootMessage.STREAM_CODEC, ShootMessage::handler);
-        registrar.playToServer(DoubleJumpMessage.TYPE, DoubleJumpMessage.STREAM_CODEC, DoubleJumpMessage::handler);
+        registrar.playToServer(DoubleJumpMessage.TYPE, DoubleJumpMessage.STREAM_CODEC, (message, context) -> DoubleJumpMessage.handler(context));
         registrar.playToServer(VehicleMovementMessage.TYPE, VehicleMovementMessage.STREAM_CODEC, VehicleMovementMessage::handler);
         registrar.playToServer(MeleeAttackMessage.TYPE, MeleeAttackMessage.STREAM_CODEC, MeleeAttackMessage::handler);
         registrar.playToServer(LungeMineAttackMessage.TYPE, LungeMineAttackMessage.STREAM_CODEC, LungeMineAttackMessage::handler);

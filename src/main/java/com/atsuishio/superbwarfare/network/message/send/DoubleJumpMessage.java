@@ -9,7 +9,9 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.NotNull;
 
@@ -22,7 +24,7 @@ public record DoubleJumpMessage(int empty) implements CustomPacketPayload {
             DoubleJumpMessage::new
     );
 
-    public static void handler(final DoubleJumpMessage message, final IPayloadContext context) {
+    public static void handler(final IPayloadContext context) {
         ServerPlayer player = (ServerPlayer) context.player();
 
         Level level = player.level();
@@ -31,6 +33,15 @@ public record DoubleJumpMessage(int empty) implements CustomPacketPayload {
         double z = player.getZ();
 
         level.playSound(null, BlockPos.containing(x, y, z), ModSounds.DOUBLE_JUMP.get(), SoundSource.BLOCKS, 1, 1);
+
+        Entity vehicle = player;
+        while (vehicle.getVehicle() != null) {
+            vehicle = vehicle.getVehicle();
+        }
+
+        if (vehicle != player) {
+            vehicle.setDeltaMovement(new Vec3(vehicle.getLookAngle().x, 0.8, vehicle.getLookAngle().z));
+        }
     }
 
     @Override
