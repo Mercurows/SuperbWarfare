@@ -42,14 +42,22 @@ public class Mp5ItemRenderer extends CustomGunRenderer<Mp5Item> {
         ItemStack itemStack = player.getMainHandItem();
         if (itemStack.getItem() instanceof GunItem && GeoItem.getId(itemStack) == this.getInstanceId(animatable)) {
             if (this.renderPerspective == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND) {
+                boolean flag = GunData.from(itemStack).attachment.get(AttachmentType.GRIP) == 0;
                 if (name.equals("yugu")) {
-                    bone.setHidden(GunData.from(itemStack).attachment.get(AttachmentType.GRIP) == 0);
+                    bone.setHidden(flag);
                 }
                 if (name.equals("bashou")) {
-                    bone.setHidden(GunData.from(itemStack).attachment.get(AttachmentType.GRIP) != 0);
+                    bone.setHidden(!flag);
                 }
                 if (GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 2 && (bone.getName().endsWith("_hide2"))) {
                     bone.setHidden(ClientEventHandler.zoomPos > 0.7 && ClientEventHandler.zoom);
+                }
+                AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn, 0, 0.05, 1, 0.35);
+                ItemModelHelper.handleGunAttachments(bone, itemStack, name);
+            } else if (this.renderPerspective == ItemDisplayContext.FIXED) {
+                ItemModelHelper.hideAllAttachments(bone, name);
+                if (name.equals("yugu")) {
+                    bone.setHidden(true);
                 }
             }
 
@@ -60,9 +68,6 @@ public class Mp5ItemRenderer extends CustomGunRenderer<Mp5Item> {
                 case 2 ->
                         AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.52, 14, 1.4f, 255, 0, 0, 255, "acog", true);
             }
-
-            AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn, 0, 0.05, 1, 0.35);
-            ItemModelHelper.handleGunAttachments(bone, itemStack, name);
         } else {
             ItemModelHelper.hideAllAttachments(bone, name);
             if (name.equals("yugu")) {
