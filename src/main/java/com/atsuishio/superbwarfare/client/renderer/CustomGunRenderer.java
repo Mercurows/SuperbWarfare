@@ -1,12 +1,10 @@
 package com.atsuishio.superbwarfare.client.renderer;
 
-import com.atsuishio.superbwarfare.client.ItemModelHelper;
 import com.atsuishio.superbwarfare.client.model.item.CustomGunModel;
 import com.atsuishio.superbwarfare.config.client.DisplayConfig;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -16,15 +14,12 @@ import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import software.bernie.geckolib.animatable.GeoAnimatable;
-import software.bernie.geckolib.animatable.GeoItem;
 import software.bernie.geckolib.cache.object.BakedGeoModel;
 import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.model.GeoModel;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
 import software.bernie.geckolib.util.Color;
 import software.bernie.geckolib.util.RenderUtil;
-
-import java.util.Set;
 
 public class CustomGunRenderer<T extends GunItem & GeoAnimatable> extends GeoItemRenderer<T> {
 
@@ -40,36 +35,10 @@ public class CustomGunRenderer<T extends GunItem & GeoAnimatable> extends GeoIte
         super(model);
     }
 
-    /**
-     * 在其他视角下会隐藏的骨骼名称，例如配件的骨骼名
-     */
-    public Set<String> getHiddenBonesInOtherPerspective() {
-        return Set.of();
-    }
-
     @Override
-    public void renderRecursively(PoseStack poseStack, T animatable, GeoBone bone, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, int color) {
-        Minecraft mc = Minecraft.getInstance();
-        String name = bone.getName();
-
-        var player = mc.player;
-        if (player == null) return;
-        ItemStack itemStack = player.getMainHandItem();
-        if (itemStack.getItem() instanceof GunItem && GeoItem.getId(itemStack) == this.getInstanceId(animatable)) {
-            if (this.renderPerspective == ItemDisplayContext.FIXED) {
-                ItemModelHelper.hideAllAttachments(bone, name);
-                if (this.getHiddenBonesInOtherPerspective().contains(name)) {
-                    bone.setHidden(true);
-                }
-            }
-        } else {
-            ItemModelHelper.hideAllAttachments(bone, name);
-            if (this.getHiddenBonesInOtherPerspective().contains(name)) {
-                bone.setHidden(true);
-            }
-        }
-
-        super.renderRecursively(poseStack, animatable, bone, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, color);
+    public void renderByItem(ItemStack stack, ItemDisplayContext transformType, PoseStack matrixStack, MultiBufferSource bufferIn, int combinedLightIn, int p_239207_6_) {
+        this.transformType = transformType;
+        super.renderByItem(stack, transformType, matrixStack, bufferIn, combinedLightIn, p_239207_6_);
     }
 
     @Override
