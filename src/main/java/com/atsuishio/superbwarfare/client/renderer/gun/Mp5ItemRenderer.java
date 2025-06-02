@@ -41,7 +41,7 @@ public class Mp5ItemRenderer extends CustomGunRenderer<Mp5Item> {
         if (player == null) return;
         ItemStack itemStack = player.getMainHandItem();
         if (itemStack.getItem() instanceof GunItem && GeoItem.getId(itemStack) == this.getInstanceId(animatable)) {
-            if (this.renderPerspective == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND) {
+            if (this.renderPerspective == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND || this.renderPerspective == ItemDisplayContext.THIRD_PERSON_RIGHT_HAND) {
                 boolean flag = GunData.from(itemStack).attachment.get(AttachmentType.GRIP) == 0;
                 if (name.equals("yugu")) {
                     bone.setHidden(flag);
@@ -54,7 +54,7 @@ public class Mp5ItemRenderer extends CustomGunRenderer<Mp5Item> {
                 }
                 AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn, 0, 0.05, 1, 0.35);
                 ItemModelHelper.handleGunAttachments(bone, itemStack, name);
-            } else if (this.renderPerspective == ItemDisplayContext.FIXED) {
+            } else {
                 ItemModelHelper.hideAllAttachments(bone, name);
                 if (name.equals("yugu")) {
                     bone.setHidden(true);

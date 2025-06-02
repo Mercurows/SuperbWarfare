@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.client.renderer.gun;
 
 import com.atsuishio.superbwarfare.client.AnimationHelper;
-import com.atsuishio.superbwarfare.client.ItemModelHelper;
 import com.atsuishio.superbwarfare.client.model.item.Aa12ItemModel;
 import com.atsuishio.superbwarfare.client.renderer.CustomGunRenderer;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
@@ -39,7 +38,6 @@ public class Aa12ItemRenderer extends CustomGunRenderer<Aa12Item> {
 
         if (itemStack.getItem() instanceof GunItem && GeoItem.getId(itemStack) == this.getInstanceId(animatable)) {
             AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn, 0, 0, 1.31465, 0.5);
-            ItemModelHelper.handleGunAttachments(bone, itemStack, name);
         }
 
         if (renderingArms) {

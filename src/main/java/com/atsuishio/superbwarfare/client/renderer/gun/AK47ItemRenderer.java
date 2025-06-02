@@ -40,7 +40,7 @@ public class AK47ItemRenderer extends CustomGunRenderer<AK47Item> {
         if (player == null) return;
         ItemStack itemStack = player.getMainHandItem();
         if (itemStack.getItem() instanceof GunItem && GeoItem.getId(itemStack) == this.getInstanceId(animatable)) {
-            if (this.renderPerspective == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND) {
+            if (this.renderPerspective == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND || this.renderPerspective == ItemDisplayContext.THIRD_PERSON_RIGHT_HAND) {
                 if (name.equals("humu1")) {
                     bone.setHidden(GunData.from(itemStack).attachment.get(AttachmentType.GRIP) != 0);
                 }
@@ -55,6 +55,11 @@ public class AK47ItemRenderer extends CustomGunRenderer<AK47Item> {
                 if (GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 3
                         && (name.equals("jing") || name.equals("Barrel") || name.equals("humu") || name.equals("qiangguan") || name.equals("houzhunxing"))) {
                     bone.setHidden(ClientEventHandler.zoomPos > 0.7 && ClientEventHandler.zoom);
+                }
+            } else {
+                ItemModelHelper.hideAllAttachments(bone, name);
+                if (name.equals("humu2")) {
+                    bone.setHidden(true);
                 }
             }
 

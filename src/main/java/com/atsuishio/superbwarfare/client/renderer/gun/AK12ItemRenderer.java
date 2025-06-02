@@ -42,7 +42,7 @@ public class AK12ItemRenderer extends CustomGunRenderer<AK12Item> {
         ItemStack itemStack = player.getMainHandItem();
 
         if (itemStack.getItem() instanceof GunItem && GeoItem.getId(itemStack) == this.getInstanceId(animatable)) {
-            if (this.renderPerspective == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND) {
+            if (this.renderPerspective == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND || this.renderPerspective == ItemDisplayContext.THIRD_PERSON_RIGHT_HAND) {
                 if (GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 2
                         && (name.equals("hidden2"))) {
                     bone.setHidden(ClientEventHandler.zoomPos > 0.7 && ClientEventHandler.zoom);
@@ -52,6 +52,8 @@ public class AK12ItemRenderer extends CustomGunRenderer<AK12Item> {
                         && (name.equals("jing") || name.equals("Barrel") || name.equals("humu") || name.equals("qiangguan") || name.equals("houzhunxing"))) {
                     bone.setHidden(ClientEventHandler.zoomPos > 0.7 && ClientEventHandler.zoom);
                 }
+            } else {
+                ItemModelHelper.hideAllAttachments(bone, name);
             }
 
             int scopeType = GunData.from(itemStack).attachment.get(AttachmentType.SCOPE);
