@@ -103,6 +103,11 @@
       "Source": "@superbwarfare:mortar_shell"
     },
     {
+      "Type": "Multiply",
+      "Value": 2.5,
+      "Source": "@superbwarfare:tm_62"
+    },
+    {
       "Type": "Reduce",
       "Value": 9
     }

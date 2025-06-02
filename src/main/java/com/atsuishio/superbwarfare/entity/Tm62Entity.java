@@ -1,11 +1,13 @@
 package com.atsuishio.superbwarfare.entity;
 
+import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.tools.CustomExplosion;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -16,13 +18,10 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.decoration.HangingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ThrownPotion;
-import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
@@ -41,27 +40,31 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Optional;
 import java.util.UUID;
 
-public class Blu43Entity extends Entity implements GeoEntity, OwnableEntity {
+public class Tm62Entity extends Entity implements GeoEntity, OwnableEntity {
 
-    protected static final EntityDataAccessor<Optional<UUID>> OWNER_UUID = SynchedEntityData.defineId(Blu43Entity.class, EntityDataSerializers.OPTIONAL_UUID);
-    protected static final EntityDataAccessor<String> LAST_ATTACKER_UUID = SynchedEntityData.defineId(Blu43Entity.class, EntityDataSerializers.STRING);
-    public static final EntityDataAccessor<Float> HEALTH = SynchedEntityData.defineId(Blu43Entity.class, EntityDataSerializers.FLOAT);
+    protected static final EntityDataAccessor<Optional<UUID>> OWNER_UUID = SynchedEntityData.defineId(Tm62Entity.class, EntityDataSerializers.OPTIONAL_UUID);
+    protected static final EntityDataAccessor<String> LAST_ATTACKER_UUID = SynchedEntityData.defineId(Tm62Entity.class, EntityDataSerializers.STRING);
+    public static final EntityDataAccessor<Float> HEALTH = SynchedEntityData.defineId(Tm62Entity.class, EntityDataSerializers.FLOAT);
+
+    public static final EntityDataAccessor<Boolean> FUSE = SynchedEntityData.defineId(Tm62Entity.class, EntityDataSerializers.BOOLEAN);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
-    public Blu43Entity(EntityType<Blu43Entity> type, Level world) {
+    public Tm62Entity(EntityType<Tm62Entity> type, Level world) {
         super(type, world);
     }
 
-    public Blu43Entity(LivingEntity owner, Level level) {
-        super(ModEntities.BLU_43.get(), level);
+    public Tm62Entity(LivingEntity owner, Level level, boolean fuse) {
+        super(ModEntities.TM_62.get(), level);
         this.setOwnerUUID(owner.getUUID());
+        this.entityData.set(FUSE, fuse);
     }
 
     @Override
-    protected void defineSynchedData(SynchedEntityData.@NotNull Builder builder) {
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
         builder.define(OWNER_UUID, Optional.empty())
                 .define(LAST_ATTACKER_UUID, "undefined")
-                .define(HEALTH, 5f);
+                .define(FUSE, false)
+                .define(HEALTH, 100f);
     }
 
     @Override
@@ -112,6 +115,7 @@ public class Blu43Entity extends Entity implements GeoEntity, OwnableEntity {
     public void addAdditionalSaveData(CompoundTag compound) {
         compound.putFloat("Health", this.entityData.get(HEALTH));
         compound.putString("LastAttacker", this.entityData.get(LAST_ATTACKER_UUID));
+        compound.putBoolean("Fuse", this.entityData.get(FUSE));
         if (this.getOwnerUUID() != null) {
             compound.putUUID("Owner", this.getOwnerUUID());
         }
@@ -125,6 +129,10 @@ public class Blu43Entity extends Entity implements GeoEntity, OwnableEntity {
 
         if (compound.contains("LastAttacker")) {
             this.entityData.set(LAST_ATTACKER_UUID, compound.getString("LastAttacker"));
+        }
+
+        if (compound.contains("Fuse")) {
+            this.entityData.set(FUSE, compound.getBoolean("Fuse"));
         }
 
         UUID uuid;
@@ -154,7 +162,7 @@ public class Blu43Entity extends Entity implements GeoEntity, OwnableEntity {
             }
 
             if (!player.getAbilities().instabuild) {
-                ItemHandlerHelper.giveItemToPlayer(player, new ItemStack(ModItems.BLU_43_MINE.get()));
+                ItemHandlerHelper.giveItemToPlayer(player, new ItemStack(ModItems.TM_62.get()));
             }
         }
 
@@ -165,7 +173,7 @@ public class Blu43Entity extends Entity implements GeoEntity, OwnableEntity {
     public void tick() {
         super.tick();
 
-        if (this.tickCount >= 20 && onGround()) {
+        if (this.tickCount >= 20 && onGround() && !entityData.get(FUSE)) {
             touchEntity();
         }
 
@@ -187,7 +195,12 @@ public class Blu43Entity extends Entity implements GeoEntity, OwnableEntity {
             this.setDeltaMovement(this.getDeltaMovement().multiply(1.0, -0.9, 1.0));
         }
 
-        if (this.entityData.get(HEALTH) <= 0) {
+        if (entityData.get(FUSE) && this.level() instanceof ServerLevel serverLevel) {
+            ParticleTool.sendParticle(serverLevel, ParticleTypes.SMOKE, this.xo, this.yo, this.zo,
+                    1, 0, 0, 0, 0.01, true);
+        }
+
+        if (this.entityData.get(HEALTH) <= 0 || (entityData.get(FUSE) && tickCount >= 100)) {
             triggerExplode();
         }
 
@@ -199,36 +212,11 @@ public class Blu43Entity extends Entity implements GeoEntity, OwnableEntity {
             var frontBox = getBoundingBox().inflate(0.2);
             boolean trigger = false;
 
-            var entities = level().getEntities(EntityTypeTest.forClass(Entity.class), frontBox, entity -> entity != this && !(entity instanceof HangingEntity) && entity.getBoundingBox().getSize() > 0.4).stream().toList();
+            var entities = level().getEntities(EntityTypeTest.forClass(Entity.class), frontBox, entity -> entity != this && !(entity instanceof HangingEntity) && (entity.getBoundingBox().getSize() > 1.2 || (entity.getBoundingBox().getSize() > 0.9 && entity.getDeltaMovement().y() < -0.35))).stream().toList();
 
             for (var entity : entities) {
                 if (entity != null) {
                     trigger = true;
-                    if (!entity.level().isClientSide() && entity instanceof LivingEntity living) {
-                        int baseAmplifier = 3;
-                        int baseDuration = 600;
-
-                        var boot = living.getItemBySlot(EquipmentSlot.FEET);
-                        var leggings = living.getItemBySlot(EquipmentSlot.LEGS);
-                        if (!boot.isEmpty()) {
-                            baseAmplifier--;
-                            baseDuration -= 100;
-                            if (boot.getItem() instanceof ArmorItem armorItem) {
-                                baseDuration -= armorItem.getDefense() * 10;
-                            }
-                        }
-                        if (!leggings.isEmpty()) {
-                            baseAmplifier--;
-                            baseDuration -= 100;
-                            if (leggings.getItem() instanceof ArmorItem armorItem) {
-                                baseDuration -= armorItem.getDefense() * 10;
-                            }
-                        }
-
-                        living.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, Math.max(baseDuration, 20), baseAmplifier, false, false), this.getOwner());
-                        living.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, Math.max(baseDuration, 20), baseAmplifier, false, false), this.getOwner());
-                        living.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 30, 0, false, false), this.getOwner());
-                    }
                     break;
                 }
             }
@@ -241,18 +229,18 @@ public class Blu43Entity extends Entity implements GeoEntity, OwnableEntity {
 
     private void triggerExplode() {
         CustomExplosion explosion = new CustomExplosion(this.level(), this,
-                ModDamageTypes.causeCustomExplosionDamage(this.level().registryAccess(), this, this.getOwner()), 10f,
-                this.getX(), this.getEyeY(), this.getZ(), 2f, Explosion.BlockInteraction.KEEP, true);
+                ModDamageTypes.causeCustomExplosionDamage(this.level().registryAccess(), this, this.getOwner()), 450f,
+                this.getX(), this.getEyeY(), this.getZ(), 13f, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true);
         explosion.explode();
         EventHooks.onExplosionStart(this.level(), explosion);
         explosion.finalizeExplosion(false);
-        ParticleTool.spawnMiniExplosionParticles(this.level(), this.position());
+        ParticleTool.spawnHugeExplosionParticles(this.level(), this.position());
         this.discard();
     }
 
     @Override
     public boolean isPushable() {
-        return true;
+        return super.isPushable();
     }
 
     @Override

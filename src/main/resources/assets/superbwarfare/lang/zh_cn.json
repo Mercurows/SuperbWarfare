@@ -172,6 +172,7 @@
   "item.superbwarfare.javelin_missile": "标枪导弹",
   "item.superbwarfare.lunge_mine": "突刺爆雷",
   "item.superbwarfare.blu_43_mine": "BLU-43蝴蝶雷",
+  "item.superbwarfare.tm_62": "TM-62反坦克地雷",
   "item.superbwarfare.rocket_70": "70mm火箭弹",
   "item.superbwarfare.small_shell": "小口径炮弹",
   "des.superbwarfare.small_shell": "适配20mm ~ 40mm口径武器",
@@ -484,6 +485,7 @@
   "entity.superbwarfare.agm_65": "AGM-65 “小牛”空对地导弹",
   "entity.superbwarfare.dps_generator": "DPS发电机",
   "entity.superbwarfare.blu_43_mine": "BLU-43蝴蝶雷",
+  "entity.superbwarfare.tm_62": "TM-62反坦克地雷",
 
   "key.categories.superbwarfare": "卓越前线",
   "key.superbwarfare.hold_zoom": "瞄准(按住)",

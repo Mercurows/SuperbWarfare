@@ -62,9 +62,9 @@ public class PrismTankRenderer extends GeoEntityRenderer<PrismTankEntity> {
         Minecraft minecraft = Minecraft.getInstance();
         Frustum pCamera = minecraft.levelRenderer.getFrustum();
 
-        AABB aabb = animatable.getBoundingBoxForCulling().inflate(0.5);
+        AABB aabb = animatable.getBoundingBoxForCulling().inflate(3);
         if (aabb.hasNaN() || aabb.getSize() == 0.0) {
-            aabb = new AABB(animatable.getX() - 4.0, animatable.getY() - 3.0, animatable.getZ() - 4.0, animatable.getX() + 4.0, animatable.getY() + 3.0, animatable.getZ() + 4.0);
+            aabb = new AABB(animatable.getX() - 5.0, animatable.getY() - 4.0, animatable.getZ() - 5.0, animatable.getX() + 5.0, animatable.getY() + 4.0, animatable.getZ() + 5.0);
         }
 
         if (name.equals("root")) {

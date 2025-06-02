@@ -115,6 +115,7 @@ public class ModItems {
     public static final DeferredHolder<Item, HandGrenade> HAND_GRENADE = AMMO.register("hand_grenade", HandGrenade::new);
     public static final DeferredHolder<Item, RgoGrenade> RGO_GRENADE = AMMO.register("rgo_grenade", RgoGrenade::new);
     public static final DeferredHolder<Item, ClaymoreMine> CLAYMORE_MINE = AMMO.register("claymore_mine", ClaymoreMine::new);
+    public static final DeferredHolder<Item, Tm62> TM_62 = AMMO.register("tm_62", Tm62::new);
     public static final DeferredHolder<Item, C4Bomb> C4_BOMB = AMMO.register("c4_bomb", C4Bomb::new);
     public static final DeferredHolder<Item, Blu43Mine> BLU_43_MINE = AMMO.register("blu_43_mine", Blu43Mine::new);
     public static final DeferredHolder<Item, Item> SMALL_SHELL = AMMO.register("small_shell", SmallShellItem::new);
@@ -338,6 +339,7 @@ public class ModItems {
         DispenserBlock.registerBehavior(ROCKET_70.get(), new Rocket70.Rocket70DispenseBehavior());
         DispenserBlock.registerBehavior(MEDIUM_AERIAL_BOMB.get(), new MediumAerialBomb.MediumAerialBombDispenseBehavior());
         DispenserBlock.registerBehavior(RGO_GRENADE.get(), new RgoGrenade.RgoGrenadeDispenserBehavior());
+        DispenserBlock.registerBehavior(TM_62.get(), new Tm62.Tm62DispenseBehavior());
     }
 
     public static void register(IEventBus bus) {

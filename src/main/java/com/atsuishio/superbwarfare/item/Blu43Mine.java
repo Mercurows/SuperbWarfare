@@ -45,7 +45,7 @@ public class Blu43Mine extends Item {
             stack.shrink(1);
         }
 
-        return InteractionResultHolder.consume(stack);
+        return InteractionResultHolder.success(stack);
     }
 
     public static class Blu43MineDispenseBehavior extends DefaultDispenseItemBehavior {

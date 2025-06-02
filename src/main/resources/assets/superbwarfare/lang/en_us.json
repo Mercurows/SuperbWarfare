@@ -172,6 +172,7 @@
   "item.superbwarfare.javelin_missile": "Javelin Missile",
   "item.superbwarfare.lunge_mine": "Lunge Mine",
   "item.superbwarfare.blu_43_mine": "BLU-43B DragonTooth",
+  "item.superbwarfare.tm_62": "TM-62 Anti-tank Mine",
   "item.superbwarfare.rocket_70": "70mm Rocket",
   "item.superbwarfare.small_shell": "Small Caliber Shells",
   "des.superbwarfare.small_shell": "Suitable for 20mm ~ 40mm caliber weapons",
@@ -484,6 +485,7 @@
   "entity.superbwarfare.agm_65": "AGM-65 Maverick",
   "entity.superbwarfare.dps_generator": "DPS Generator",
   "entity.superbwarfare.blu_43_mine": "BLU-43B DragonTooth",
+  "entity.superbwarfare.tm_62": "TM-62 Anti-tank Mine",
 
   "key.categories.superbwarfare": "Superb Warfare",
   "key.superbwarfare.hold_zoom": "Zoom (Hold)",
