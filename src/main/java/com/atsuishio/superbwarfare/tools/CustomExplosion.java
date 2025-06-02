@@ -81,7 +81,7 @@ public class CustomExplosion extends Explosion {
         final Vec3 center = new Vec3(pToBlowX, pToBlowY, pToBlowZ);
 
         if (pLevel instanceof ServerLevel && vanillaExplode) {
-            pLevel.explode(source == null ? null : source.getEntity(), pToBlowX, pToBlowY, pToBlowZ, 0.5f * pRadius, ExplosionConfig.EXPLOSION_DESTROY.get() ? Level.ExplosionInteraction.BLOCK : Level.ExplosionInteraction.NONE);
+            pLevel.explode(source == null ? null : source.getEntity(), pToBlowX, pToBlowY, pToBlowZ, 0.4f * pRadius, ExplosionConfig.EXPLOSION_DESTROY.get() ? Level.ExplosionInteraction.BLOCK : Level.ExplosionInteraction.NONE);
         }
 
         for (Entity target : level.getEntitiesOfClass(Entity.class, new AABB(center, center).inflate(4 * radius), e -> true).stream().sorted(Comparator.comparingDouble(e -> e.distanceToSqr(center))).toList()) {
@@ -142,7 +142,7 @@ public class CustomExplosion extends Explosion {
                         d0 /= d3;
                         d1 /= d3;
                         d2 /= d3;
-                        float f = this.radius * (0.4F + this.level.random.nextFloat() * 0.3F);
+                        float f = this.radius * (0.2F + this.level.random.nextFloat() * 0.15F);
                         double d4 = this.x;
                         double d6 = this.y;
                         double d8 = this.z;
