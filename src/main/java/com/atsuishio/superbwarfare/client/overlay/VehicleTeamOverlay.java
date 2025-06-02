@@ -2,7 +2,9 @@ package com.atsuishio.superbwarfare.client.overlay;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
+import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.tools.FormatTool;
+import com.atsuishio.superbwarfare.tools.NBTTool;
 import com.atsuishio.superbwarfare.tools.TraceTool;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Camera;
@@ -14,6 +16,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -36,6 +39,10 @@ public class VehicleTeamOverlay implements LayeredDraw.Layer {
         Vec3 cameraPos = camera.getPosition();
         PoseStack poseStack = guiGraphics.pose();
         if (player == null) return;
+
+        ItemStack stack = player.getMainHandItem();
+        var tag = NBTTool.getTag(stack);
+        if (stack.is(ModItems.MONITOR.get()) && tag.getBoolean("Using") && tag.getBoolean("Linked")) return;
 
         boolean lookAtEntity = false;
 

@@ -107,6 +107,7 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
     public boolean playHitSoundOnHurt() {
         return false;
     }
+
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
@@ -175,15 +176,12 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
 
         Player controller = EntityFindUtil.findPlayer(this.level(), this.entityData.get(CONTROLLER));
 
+
         if (!this.onGround()) {
             if (controller != null) {
                 ItemStack stack = controller.getMainHandItem();
                 var tag = NBTTool.getTag(stack);
-                if (stack.is(ModItems.MONITOR.get()) && tag.getBoolean("Using")) {
-//                    if (controller.level().isClientSide) {
-//                        controller.playSound(ModSounds.DRONE_SOUND.get(), 114, 1);
-//                    }
-                } else {
+                if (!stack.is(ModItems.MONITOR.get()) || !tag.getBoolean("Using")) {
                     upInputDown = false;
                     downInputDown = false;
                     forwardInputDown = false;
@@ -363,8 +361,6 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
 
     @Override
     public void travel() {
-        float diffX;
-        float diffY;
         if (!this.onGround()) {
             // left and right
             if (rightInputDown) {
@@ -406,7 +402,7 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
 
         if (up) {
             holdTickY++;
-            this.entityData.set(POWER, Math.min(this.entityData.get(POWER) + 0.02f * Math.min(holdTickY, 5), 0.4f));
+            this.entityData.set(POWER, Math.min(this.entityData.get(POWER) + 0.01f * Math.min(holdTickY, 5), 0.2f));
         } else if (down) {
             holdTickY++;
             this.entityData.set(POWER, Math.max(this.entityData.get(POWER) - 0.02f * Math.min(holdTickY, 5), this.onGround() ? 0 : 0.01f));
@@ -418,7 +414,7 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
             if (this.getDeltaMovement().y() < 0) {
                 this.entityData.set(POWER, Math.min(this.entityData.get(POWER) + 0.01f, 0.4f));
             } else {
-                this.entityData.set(POWER, Math.max(this.entityData.get(POWER) - 0.01f, 0f));
+                this.entityData.set(POWER, Math.max(this.entityData.get(POWER) - 0.01f, this.onGround() ? 0 : 0.01f));
             }
         }
 
@@ -440,11 +436,10 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
         Player controller = EntityFindUtil.findPlayer(this.level(), this.entityData.get(CONTROLLER));
         if (controller != null) {
             ItemStack stack = controller.getMainHandItem();
-            if (stack.is(ModItems.MONITOR.get()) && NBTTool.getTag(stack).getBoolean("Using")) {
-                diffY = Math.clamp(-90f, 90f, Mth.wrapDegrees(controller.getYHeadRot() - this.getYRot()));
-                diffX = Math.clamp(-60f, 60f, Mth.wrapDegrees(controller.getXRot() - this.getXRot()));
-                this.setYRot(this.getYRot() + 0.5f * diffY);
-                this.setXRot(Mth.clamp(this.getXRot() + 0.5f * diffX, -10, 90));
+            var tag = NBTTool.getTag(stack);
+            if (stack.is(ModItems.MONITOR.get()) && tag.getBoolean("Using")) {
+                this.setYRot(this.getYRot() + 0.5f * entityData.get(MOUSE_SPEED_X));
+                this.setXRot(Mth.clamp(this.getXRot() + 0.5f * entityData.get(MOUSE_SPEED_Y), -10, 90));
             }
         }
 
@@ -491,13 +486,18 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
     }
 
     @Override
+    public boolean engineRunning() {
+        return !onGround();
+    }
+
+    @Override
     public SoundEvent getEngineSound() {
         return ModSounds.DRONE_SOUND.get();
     }
 
     @Override
     public float getEngineSoundVolume() {
-        return onGround() ? 0 : 0.1f;
+        return entityData.get(POWER) * 2f;
     }
 
     @Override

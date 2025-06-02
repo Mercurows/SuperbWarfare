@@ -3,12 +3,14 @@ package com.atsuishio.superbwarfare.event;
 import com.atsuishio.superbwarfare.client.MouseMovementHandler;
 import com.atsuishio.superbwarfare.config.client.VehicleControlConfig;
 import com.atsuishio.superbwarfare.data.gun.GunData;
+import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.AirEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModMobEffects;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.network.message.send.MouseMoveMessage;
+import com.atsuishio.superbwarfare.tools.EntityFindUtil;
 import com.atsuishio.superbwarfare.tools.NBTTool;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
@@ -25,7 +27,6 @@ import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.ViewportEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 
-import static com.atsuishio.superbwarfare.event.ClientEventHandler.droneFovLerp;
 import static com.atsuishio.superbwarfare.event.ClientEventHandler.isFreeCam;
 
 @EventBusSubscriber(bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
@@ -59,7 +60,24 @@ public class ClientMouseHandler {
         posO = posN;
         posN = MouseMovementHandler.getMousePos();
 
-        if (!notInGame() && player.getVehicle() instanceof VehicleEntity vehicle) {
+        ItemStack stack = player.getMainHandItem();
+        var tag = NBTTool.getTag(stack);
+
+        if (stack.is(ModItems.MONITOR.get()) && tag.getBoolean("Using") && tag.getBoolean("Linked")) {
+            DroneEntity drone = EntityFindUtil.findDrone(player.level(), tag.getString("LinkedDrone"));
+            if (drone != null) {
+                speedX = drone.getMouseSensitivity() * (posN.x - posO.x);
+                speedY = drone.getMouseSensitivity() * (posN.y - posO.y);
+
+                lerpSpeedX = Mth.lerp(drone.getMouseSpeedX(), lerpSpeedX, speedX);
+                lerpSpeedY = Mth.lerp(drone.getMouseSpeedY(), lerpSpeedY, speedY);
+
+                PacketDistributor.sendToServer(new MouseMoveMessage(lerpSpeedX, lerpSpeedY));
+            }
+            return;
+        }
+
+        if (!notInGame() && player.getVehicle() instanceof VehicleEntity vehicle && player == vehicle.getFirstPassenger()) {
             speedX = vehicle.getMouseSensitivity() * (posN.x - posO.x);
             speedY = vehicle.getMouseSensitivity() * (posN.y - posO.y);
 
@@ -164,7 +182,7 @@ public class ClientMouseHandler {
         }
 
         if (stack.is(ModItems.MONITOR.get()) && NBTTool.getTag(stack).getBoolean("Using") && NBTTool.getTag(stack).getBoolean("Linked")) {
-            return 0.33 / (1 + 0.08 * (droneFovLerp - 1));
+            return 0;
         }
 
         if (isFreeCam(player)) {

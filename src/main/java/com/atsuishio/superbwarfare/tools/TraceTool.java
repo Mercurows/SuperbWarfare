@@ -120,6 +120,30 @@ public class TraceTool {
         return null;
     }
 
+    public static Entity droneFindLookingEntity(Entity entity, Vec3 pos, double entityReach, float ticks) {
+        double distance = entityReach * entityReach;
+        HitResult hitResult = entity.pick(entityReach, 1.0f, false);
+
+        Vec3 viewVec = entity.getViewVector(ticks);
+        Vec3 toVec = pos.add(viewVec.x * entityReach, viewVec.y * entityReach, viewVec.z * entityReach);
+        AABB aabb = entity.getBoundingBox().expandTowards(viewVec.scale(entityReach)).inflate(1.0D, 1.0D, 1.0D);
+        EntityHitResult entityhitresult = ProjectileUtil.getEntityHitResult(entity, pos, toVec, aabb, p -> !p.isSpectator()
+                && p.isAlive()
+                && !(p instanceof Projectile)
+                && SeekTool.baseFilter(p)
+                && !(p instanceof DecoyEntity) && smokeFilter(p)
+                && p != entity
+                && p != entity.getVehicle(), distance);
+        if (entityhitresult != null) {
+            hitResult = entityhitresult;
+
+        }
+        if (hitResult.getType() == HitResult.Type.ENTITY) {
+            return ((EntityHitResult) hitResult).getEntity();
+        }
+        return null;
+    }
+
     public static Entity camerafFindLookingEntity(Player player, Vec3 pos, double entityReach, float ticks) {
         double distance = entityReach * entityReach;
         HitResult hitResult = player.pick(entityReach, 1.0f, false);
