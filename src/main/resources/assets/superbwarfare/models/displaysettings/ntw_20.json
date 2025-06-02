@@ -2,34 +2,10 @@
   "credit": "Made with Blockbench",
   "parent": "builtin/entity",
   "texture_size": [
-    128,
-    128
+    64,
+    64
   ],
   "display": {
-    "firstperson_righthand": {
-      "translation": [
-        9.25,
-        -21.25,
-        -28
-      ],
-      "scale": [
-        4,
-        4,
-        4
-      ]
-    },
-    "firstperson_lefthand": {
-      "translation": [
-        9.25,
-        -21.25,
-        -28
-      ],
-      "scale": [
-        0,
-        0,
-        0
-      ]
-    },
     "thirdperson_righthand": {
       "translation": [
         -0.75,
@@ -47,6 +23,18 @@
         0,
         0,
         0
+      ]
+    },
+    "ground": {
+      "translation": [
+        0,
+        5.25,
+        8
+      ],
+      "scale": [
+        0.6,
+        0.6,
+        0.6
       ]
     },
     "gui": {
@@ -85,15 +73,18 @@
         0
       ],
       "translation": [
-        -16,
-        -3,
+        -28.25,
+        -4.75,
         -1.5
       ],
       "scale": [
-        1.1,
-        1.1,
-        1.1
+        1.5,
+        1.5,
+        1.5
       ]
     }
+  },
+  "textures": {
+    "particle": "item/ntw_20"
   }
 }

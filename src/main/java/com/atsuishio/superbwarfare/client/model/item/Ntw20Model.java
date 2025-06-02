@@ -38,6 +38,16 @@ public class Ntw20Model extends CustomGunModel<Ntw20Item> {
     }
 
     @Override
+    public ResourceLocation getLODModelResource(Ntw20Item animatable) {
+        return Mod.loc("geo/lod/ntw_20.geo.json");
+    }
+
+    @Override
+    public ResourceLocation getLODTextureResource(Ntw20Item animatable) {
+        return Mod.loc("textures/item/lod/ntw_20.png");
+    }
+
+    @Override
     public void setCustomAnimations(Ntw20Item animatable, long instanceId, AnimationState<Ntw20Item> animationState) {
         Player player = Minecraft.getInstance().player;
         if (player == null) return;

@@ -681,13 +681,10 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
         float y = -0.2f;
         float z = 3.95f;
 
-        int i = this.getSeatIndex(passenger);
 
-        if (i == 0) {
-            Vector4f worldPosition = transformPosition(transform, x, y, z);
-            passenger.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
-            callback.accept(passenger, worldPosition.x, worldPosition.y, worldPosition.z);
-        }
+        Vector4f worldPosition = transformPosition(transform, x, y, z);
+        passenger.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
+        callback.accept(passenger, worldPosition.x, worldPosition.y, worldPosition.z);
 
         copyEntityData(passenger);
     }
@@ -706,9 +703,8 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
     }
 
     public void copyEntityData(Entity entity) {
-        entity.setXRot(this.getXRot());
-        entity.setYHeadRot(this.getYRot());
-        entity.setYRot(this.getYRot());
+        entity.setYHeadRot(entity.getYHeadRot() + delta_y);
+        entity.setYRot(entity.getYRot() + delta_y);
         entity.setYBodyRot(this.getYRot());
     }
 
@@ -1048,11 +1044,8 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
     @OnlyIn(Dist.CLIENT)
     @Override
     public @Nullable Vec2 getCameraRotation(float partialTicks, Player player, boolean zoom, boolean isFirstPerson) {
-        Vec3 vec3 = shootVec(partialTicks);
-        float rotX = (float) -VehicleEntity.getXRotFromVector(vec3);
-        float rotY = (float) -VehicleEntity.getYRotFromVector(vec3);
         if (this.getSeatIndex(player) == 0) {
-            return new Vec2((float) (rotY - 0.5f * Mth.lerp(partialTicks, delta_yo, delta_y) - freeCameraYaw), (float) (rotX - 0.5f * Mth.lerp(partialTicks, delta_xo, delta_x) + freeCameraPitch));
+            return new Vec2((float) (getRotY(partialTicks) - 0.5f * Mth.lerp(partialTicks, delta_yo, delta_y) - freeCameraYaw), (float) (getRotX(partialTicks) + (isFirstPerson ? 0 : 4) - 0.5f * Mth.lerp(partialTicks, delta_xo, delta_x) + freeCameraPitch));
         }
 
         return super.getCameraRotation(partialTicks, player, false, false);
@@ -1065,7 +1058,7 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
             Matrix4f transform = getClientVehicleTransform(partialTicks);
 
 
-            Vector4f worldPosition = transformPosition(transform, 0f, 4, -13);
+            Vector4f worldPosition = transformPosition(transform, 0f, 5, -14);
 
             if (isFirstPerson) {
                 return new Vec3(Mth.lerp(partialTicks, player.xo, player.getX()), Mth.lerp(partialTicks, player.yo + player.getEyeHeight(), player.getEyeY()), Mth.lerp(partialTicks, player.zo, player.getZ()));
