@@ -60,7 +60,7 @@ public class TracheliumItemRenderer extends CustomGunRenderer<Trachelium> {
                 }
             }
 
-            if (this.renderPerspective == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND) {
+            if (this.renderPerspective == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND || this.renderPerspective == ItemDisplayContext.THIRD_PERSON_RIGHT_HAND) {
                 if (name.equals("humu")) {
                     bone.setHidden(GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 0 && GunData.from(itemStack).attachment.get(AttachmentType.GRIP) == 0);
                 }
@@ -79,6 +79,11 @@ public class TracheliumItemRenderer extends CustomGunRenderer<Trachelium> {
 
                 if (GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 2 && !NBTTool.getTag(itemStack).getBoolean("ScopeAlt") && (name.equals("hidden"))) {
                     bone.setHidden(ClientEventHandler.zoomPos > 0.7 && ClientEventHandler.zoom);
+                }
+            } else {
+                ItemModelHelper.hideAllAttachments(bone, name);
+                if (name.equals("humu") || name.equals("qianzhunxing1") || name.equals("railup") || name.equals("raildown")) {
+                    bone.setHidden(true);
                 }
             }
         } else {
