@@ -108,27 +108,6 @@ public abstract class GunItem extends Item implements CustomRendererItem, GeoIte
         return false;
     }
 
-    private void checkCopyGuns(ItemStack stack, Player player) {
-        var data = GunData.from(stack);
-        if (!data.initialized()) return;
-        if (data.data == null) return;
-        var uuid = data.data.getUUID("UUID");
-
-        for (var item : player.getInventory().items) {
-            if (item.equals(stack)) continue;
-            if (item.getItem() instanceof GunItem) {
-                var itemData = GunData.from(item);
-                var dataTag = itemData.data;
-                if (dataTag == null) continue;
-                if (!dataTag.hasUUID("UUID")) continue;
-                if (dataTag.getUUID("UUID").equals(uuid)) {
-                    data.data.putUUID("UUID", UUID.randomUUID());
-                    return;
-                }
-            }
-        }
-    }
-
     @Override
     @ParametersAreNonnullByDefault
     public void inventoryTick(ItemStack stack, Level level, Entity entity, int slot, boolean selected) {
@@ -139,10 +118,6 @@ public abstract class GunItem extends Item implements CustomRendererItem, GeoIte
         }
 
         var data = GunData.from(stack);
-
-        if (living instanceof Player player && selected) {
-            checkCopyGuns(stack, player);
-        }
 
         if (!data.initialized()) {
             data.initialize();

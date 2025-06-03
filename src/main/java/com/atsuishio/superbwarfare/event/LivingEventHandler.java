@@ -50,6 +50,7 @@ import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 @EventBusSubscriber
@@ -324,81 +325,105 @@ public class LivingEventHandler {
             var laserCap = player.getCapability(ModCapabilities.LASER_CAPABILITY);
             if (laserCap != null) laserCap.stop();
 
-            var oldTag = NBTTool.getTag(oldStack);
-            var newTag = NBTTool.getTag(newStack);
-            if (player instanceof ServerPlayer serverPlayer
-                    && (newStack.getItem() != oldStack.getItem()
-                    || (newStack.getItem() instanceof GunItem && !GunData.from(newStack).initialized())
-                    || (oldStack.getItem() instanceof GunItem && !GunData.from(oldStack).initialized())
-                    || (newStack.getItem() instanceof GunItem && oldStack.getItem() instanceof GunItem && !Objects.equals(GunsTool.getGunUUID(newTag), GunsTool.getGunUUID(oldTag)))
-            )) {
-                if (oldStack.getItem() instanceof GunItem oldGun) {
-                    stopGunReloadSound(serverPlayer, oldGun);
-
-                    var oldData = GunData.from(oldStack);
-
-                    if (oldData.defaultActionTime() > 0) {
-                        oldData.bolt.actionTimer.reset();
-                    }
-
-                    oldData.reload.setTime(0);
-
-                    oldData.reload.setState(ReloadState.NOT_RELOADING);
-
-                    if (oldData.defaultIterativeTime() != 0) {
-                        oldData.stopped.set(false);
-                        oldData.forceStop.set(false);
-                        oldData.reload.setStage(0);
-                        oldData.reload.prepareTimer.reset();
-                        oldData.reload.prepareLoadTimer.reset();
-                        oldData.reload.iterativeLoadTimer.reset();
-                        oldData.reload.finishTimer.reset();
-                    }
-
-                    if (oldStack.is(ModItems.SENTINEL.get())) {
-                        oldData.charge.timer.reset();
-                    }
-
-                    oldData.save();
+            if (player instanceof ServerPlayer serverPlayer) {
+                if (newStack.getItem() instanceof GunItem) {
+                    checkCopyGuns(newStack, player);
                 }
 
-                if (newStack.getItem() instanceof GunItem) {
-                    var newData = GunData.from(newStack);
-                    newData.draw.set(true);
+                if (newStack.getItem() != oldStack.getItem()
+                        || (newStack.getItem() instanceof GunItem && !GunData.from(newStack).initialized())
+                        || (oldStack.getItem() instanceof GunItem && !GunData.from(newStack).initialized())
+                        || (newStack.getItem() instanceof GunItem && oldStack.getItem() instanceof GunItem && !Objects.equals(GunsTool.getGunUUID(NBTTool.getTag(newStack)), GunsTool.getGunUUID(NBTTool.getTag(oldStack))))
+                ) {
+                    if (oldStack.getItem() instanceof GunItem oldGun) {
+                        stopGunReloadSound(serverPlayer, oldGun);
 
-                    if (newData.defaultActionTime() > 0) {
-                        newData.bolt.actionTimer.reset();
-                    }
+                        var oldData = GunData.from(oldStack);
 
-                    newData.reload.setState(ReloadState.NOT_RELOADING);
-                    newData.reload.reloadTimer.reset();
-
-                    if (newData.defaultIterativeTime() != 0) {
-                        newData.forceStop.set(false);
-                        newData.stopped.set(false);
-                        newData.reload.setStage(0);
-                        newData.reload.prepareTimer.reset();
-                        newData.reload.prepareLoadTimer.reset();
-                        newData.reload.iterativeLoadTimer.reset();
-                        newData.reload.finishTimer.reset();
-                    }
-
-                    if (newStack.is(ModItems.SENTINEL.get())) {
-                        newData.charge.timer.reset();
-                    }
-
-                    for (Perk.Type type : Perk.Type.values()) {
-                        var instance = newData.perk.getInstance(type);
-                        if (instance != null) {
-                            instance.perk().onChangeSlot(newData, instance, player);
+                        if (oldData.defaultActionTime() > 0) {
+                            oldData.bolt.actionTimer.reset();
                         }
+
+                        oldData.reload.setTime(0);
+
+                        oldData.reload.setState(ReloadState.NOT_RELOADING);
+
+                        if (oldData.defaultIterativeTime() != 0) {
+                            oldData.stopped.set(false);
+                            oldData.forceStop.set(false);
+                            oldData.reload.setStage(0);
+                            oldData.reload.prepareTimer.reset();
+                            oldData.reload.prepareLoadTimer.reset();
+                            oldData.reload.iterativeLoadTimer.reset();
+                            oldData.reload.finishTimer.reset();
+                        }
+
+                        if (oldStack.is(ModItems.SENTINEL.get())) {
+                            oldData.charge.timer.reset();
+                        }
+
+                        oldData.save();
                     }
 
-                    if (player.level() instanceof ServerLevel) {
-                        PacketDistributor.sendToPlayer(serverPlayer, new DrawClientMessage(true));
-                    }
+                    if (newStack.getItem() instanceof GunItem) {
+                        var newData = GunData.from(newStack);
+                        newData.draw.set(true);
 
-                    newData.save();
+                        if (newData.defaultActionTime() > 0) {
+                            newData.bolt.actionTimer.reset();
+                        }
+
+                        newData.reload.setState(ReloadState.NOT_RELOADING);
+                        newData.reload.reloadTimer.reset();
+
+                        if (newData.defaultIterativeTime() != 0) {
+                            newData.forceStop.set(false);
+                            newData.stopped.set(false);
+                            newData.reload.setStage(0);
+                            newData.reload.prepareTimer.reset();
+                            newData.reload.prepareLoadTimer.reset();
+                            newData.reload.iterativeLoadTimer.reset();
+                            newData.reload.finishTimer.reset();
+                        }
+
+                        if (newStack.is(ModItems.SENTINEL.get())) {
+                            newData.charge.timer.reset();
+                        }
+
+                        for (Perk.Type type : Perk.Type.values()) {
+                            var instance = newData.perk.getInstance(type);
+                            if (instance != null) {
+                                instance.perk().onChangeSlot(newData, instance, player);
+                            }
+                        }
+
+                        if (player.level() instanceof ServerLevel) {
+                            PacketDistributor.sendToPlayer(serverPlayer, new DrawClientMessage(true));
+                        }
+
+                        newData.save();
+                    }
+                }
+            }
+        }
+    }
+
+    private static void checkCopyGuns(ItemStack stack, Player player) {
+        var data = GunData.from(stack);
+        if (!data.initialized()) return;
+        if (data.data == null) return;
+        var uuid = data.data.getUUID("UUID");
+
+        for (var item : player.getInventory().items) {
+            if (item.equals(stack)) continue;
+            if (item.getItem() instanceof GunItem) {
+                var itemData = GunData.from(item);
+                var dataTag = itemData.data;
+                if (dataTag == null) continue;
+                if (!dataTag.hasUUID("UUID")) continue;
+                if (dataTag.getUUID("UUID").equals(uuid)) {
+                    data.data.putUUID("UUID", UUID.randomUUID());
+                    return;
                 }
             }
         }
