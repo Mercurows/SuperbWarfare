@@ -47,6 +47,9 @@ public class AK47ItemRenderer extends CustomGunRenderer<AK47Item> {
                 if (name.equals("humu2")) {
                     bone.setHidden(GunData.from(itemStack).attachment.get(AttachmentType.GRIP) == 0);
                 }
+                if (name.equals("shuan")) {
+                    bone.setPosZ(2.4f * (float) ClientEventHandler.firePos);
+                }
                 if (GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 2
                         && (name.equals("Hidden") || name.equals("gun") || name.equals("Lefthand")) && ClientEventHandler.zoom && ClientEventHandler.zoomPos > 0.7) {
                     bone.setHidden(true);

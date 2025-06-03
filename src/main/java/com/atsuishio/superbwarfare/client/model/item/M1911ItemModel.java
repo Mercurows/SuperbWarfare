@@ -35,6 +35,16 @@ public class M1911ItemModel extends CustomGunModel<M1911Item> {
     }
 
     @Override
+    public ResourceLocation getLODModelResource(M1911Item animatable) {
+        return Mod.loc("geo/lod/m_1911.geo.json");
+    }
+
+    @Override
+    public ResourceLocation getLODTextureResource(M1911Item animatable) {
+        return Mod.loc("textures/item/lod/m_1911.png");
+    }
+
+    @Override
     public void setCustomAnimations(M1911Item animatable, long instanceId, AnimationState<M1911Item> animationState) {
         Player player = Minecraft.getInstance().player;
         if (player == null) return;
@@ -42,7 +52,6 @@ public class M1911ItemModel extends CustomGunModel<M1911Item> {
         if (shouldCancelRender(stack, animationState)) return;
 
         GeoBone gun = getAnimationProcessor().getBone("bone");
-        GeoBone slide = getAnimationProcessor().getBone("huatao");
         GeoBone bullet = getAnimationProcessor().getBone("bullet");
         GeoBone hammer = getAnimationProcessor().getBone("hammer");
 
@@ -82,8 +91,6 @@ public class M1911ItemModel extends CustomGunModel<M1911Item> {
         body.setRotZ((float) (body.getRotZ() * (1 - 0.65 * zt)));
 
         CrossHairOverlay.gunRot = body.getRotZ();
-
-        slide.setPosZ(2.75f * (float) fp);
         hammer.setRotX(60 * Mth.DEG_TO_RAD + (120 * Mth.DEG_TO_RAD * (float) fp));
 
         ClientEventHandler.gunRootMove(getAnimationProcessor());
@@ -111,8 +118,7 @@ public class M1911ItemModel extends CustomGunModel<M1911Item> {
         AnimationHelper.handleShellsAnimation(getAnimationProcessor(), 0.7f, 1f);
         GeoBone shell = getAnimationProcessor().getBone("shell");
 
-        if (data.holdOpen.get()) {
-            slide.setPosZ(1.5f);
+        if (GunData.from(stack).holdOpen.get()) {
             bullet.setScaleX(0);
             bullet.setScaleY(0);
             bullet.setScaleZ(0);

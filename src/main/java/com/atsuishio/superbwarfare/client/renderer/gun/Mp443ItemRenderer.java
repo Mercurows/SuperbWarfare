@@ -3,6 +3,8 @@ package com.atsuishio.superbwarfare.client.renderer.gun;
 import com.atsuishio.superbwarfare.client.AnimationHelper;
 import com.atsuishio.superbwarfare.client.model.item.Mp443ItemModel;
 import com.atsuishio.superbwarfare.client.renderer.CustomGunRenderer;
+import com.atsuishio.superbwarfare.data.gun.GunData;
+import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.handgun.Mp443Item;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -10,6 +12,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import software.bernie.geckolib.animatable.GeoItem;
 import software.bernie.geckolib.cache.object.GeoBone;
@@ -36,7 +39,15 @@ public class Mp443ItemRenderer extends CustomGunRenderer<Mp443Item> {
         if (player == null) return;
         ItemStack itemStack = player.getMainHandItem();
         if (itemStack.getItem() instanceof GunItem && GeoItem.getId(itemStack) == this.getInstanceId(animatable)) {
-            AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn, 0, 0, 0.33345, 0.3);
+            if (this.renderPerspective == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND || this.renderPerspective == ItemDisplayContext.THIRD_PERSON_RIGHT_HAND) {
+                if (name.equals("huatao")) {
+                    bone.setPosZ(1.5f * (float) ClientEventHandler.firePos);
+                    if (GunData.from(itemStack).holdOpen.get()) {
+                        bone.setPosZ(1.5f);
+                    }
+                }
+                AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn, 0, 0, 0.33345, 0.3);
+            }
         }
 
         if (renderingArms) {
