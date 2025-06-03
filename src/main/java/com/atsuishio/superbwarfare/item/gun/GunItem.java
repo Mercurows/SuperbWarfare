@@ -119,7 +119,8 @@ public abstract class GunItem extends Item implements CustomRendererItem, GeoIte
             if (item.getItem() instanceof GunItem) {
                 var itemData = GunData.from(item);
                 var dataTag = itemData.data;
-                if (dataTag == null) return;
+                if (dataTag == null) continue;
+                if (!dataTag.hasUUID("UUID")) continue;
                 if (dataTag.getUUID("UUID").equals(uuid)) {
                     data.data.putUUID("UUID", UUID.randomUUID());
                     return;
