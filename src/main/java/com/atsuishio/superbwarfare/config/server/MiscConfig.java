@@ -10,6 +10,13 @@ public class MiscConfig {
     public static ModConfigSpec.IntValue MILITARY_ARMOR_LEVEL;
     public static ModConfigSpec.IntValue HEAVY_MILITARY_ARMOR_LEVEL;
     public static ModConfigSpec.IntValue ARMOR_PONT_PER_LEVEL;
+    public static ModConfigSpec.IntValue CHARGING_STATION_MAX_ENERGY;
+    public static ModConfigSpec.IntValue CHARGING_STATION_GENERATE_SPEED;
+    public static ModConfigSpec.IntValue CHARGING_STATION_TRANSFER_SPEED;
+    public static ModConfigSpec.IntValue CHARGING_STATION_CHARGE_RADIUS;
+
+    // TODO 这玩意是个啥
+    public static ModConfigSpec.IntValue CHARGING_STATION_DEFAULT_FUEL_TIME;
 
     public static void init(ModConfigSpec.Builder builder) {
         builder.push("misc");
@@ -31,6 +38,21 @@ public class MiscConfig {
 
         builder.comment("The points per level for armor plate");
         ARMOR_PONT_PER_LEVEL = builder.defineInRange("armor_point_per_level", 15, 0, 10000000);
+
+        builder.comment("Max energy storage of charging station");
+        CHARGING_STATION_MAX_ENERGY = builder.defineInRange("charging_station_max_energy", 4000000, 1, Integer.MAX_VALUE);
+
+        builder.comment("How much FE energy can charging station generate per tick");
+        CHARGING_STATION_GENERATE_SPEED = builder.defineInRange("charging_station_generate_speed", 128, 1, Integer.MAX_VALUE);
+
+        builder.comment("How much FE energy can charging station transfer per tick");
+        CHARGING_STATION_TRANSFER_SPEED = builder.defineInRange("charging_station_transfer_speed", 100000, 1, Integer.MAX_VALUE);
+
+        builder.comment("The charging radius of the charging station");
+        CHARGING_STATION_CHARGE_RADIUS = builder.defineInRange("charging_station_charge_radius", 8, 0, 128);
+
+        builder.comment("What is this?");
+        CHARGING_STATION_DEFAULT_FUEL_TIME = builder.defineInRange("charging_station_default_fuel_time", 1600, 1, Integer.MAX_VALUE);
 
         builder.pop();
     }
