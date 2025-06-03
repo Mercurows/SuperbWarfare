@@ -781,6 +781,6 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
 
     @Override
     public @Nullable ResourceLocation getVehicleItemIcon() {
-        return Mod.loc("textures/gui/vehicle/land.png");
+        return Mod.loc("textures/gui/vehicle/type/land.png");
     }
 }

@@ -1075,6 +1075,6 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
 
     @Override
     public @Nullable ResourceLocation getVehicleItemIcon() {
-        return Mod.loc("textures/gui/vehicle/aircraft.png");
+        return Mod.loc("textures/gui/vehicle/type/aircraft.png");
     }
 }

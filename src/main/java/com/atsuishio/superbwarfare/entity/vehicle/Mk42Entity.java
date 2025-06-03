@@ -460,6 +460,6 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
 
     @Override
     public @Nullable ResourceLocation getVehicleItemIcon() {
-        return Mod.loc("textures/gui/vehicle/defense.png");
+        return Mod.loc("textures/gui/vehicle/type/defense.png");
     }
 }

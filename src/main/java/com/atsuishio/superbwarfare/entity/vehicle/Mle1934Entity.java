@@ -529,6 +529,6 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
 
     @Override
     public @Nullable ResourceLocation getVehicleItemIcon() {
-        return Mod.loc("textures/gui/vehicle/defense.png");
+        return Mod.loc("textures/gui/vehicle/type/defense.png");
     }
 }

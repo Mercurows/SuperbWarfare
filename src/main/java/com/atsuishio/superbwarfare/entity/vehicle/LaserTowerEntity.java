@@ -364,6 +364,6 @@ public class LaserTowerEntity extends EnergyVehicleEntity implements GeoEntity, 
 
     @Override
     public @Nullable ResourceLocation getVehicleItemIcon() {
-        return Mod.loc("textures/gui/vehicle/defense.png");
+        return Mod.loc("textures/gui/vehicle/type/defense.png");
     }
 }

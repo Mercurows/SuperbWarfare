@@ -315,6 +315,6 @@ public class WheelChairEntity extends MobileVehicleEntity implements GeoEntity {
 
     @Override
     public @Nullable ResourceLocation getVehicleItemIcon() {
-        return Mod.loc("textures/gui/vehicle/otto.png");
+        return Mod.loc("textures/gui/vehicle/type/otto.png");
     }
 }
