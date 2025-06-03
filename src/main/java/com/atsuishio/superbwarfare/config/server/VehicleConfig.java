@@ -177,11 +177,11 @@ public class VehicleConfig {
 
         builder.push("repair");
 
-        builder.comment("The cooldown of vehicle repair. Set a negative value to disable vehicle repair");
-        REPAIR_COOLDOWN = builder.defineInRange("repair_cooldown", 200, -1, 10000000);
+        builder.comment("The default cooldown of vehicle repair. Set a negative value to disable vehicle repair");
+        REPAIR_COOLDOWN = builder.defineInRange("repair_cooldown", 200, -1, 100000000);
 
-        builder.comment("The amount of health restored per tick when a vehicle is self-repairing");
-        REPAIR_AMOUNT = builder.defineInRange("repair_amount", 0.05d, 0, 10000000);
+        builder.comment("The default amount of health restored per tick when a vehicle is self-repairing");
+        REPAIR_AMOUNT = builder.defineInRange("repair_amount", 0.05d, -100000000, 100000000);
 
         builder.pop();
 
