@@ -1072,4 +1072,9 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
         }
         return super.getCameraPosition(partialTicks, player, false, false);
     }
+
+    @Override
+    public @Nullable ResourceLocation getVehicleItemIcon() {
+        return Mod.loc("textures/gui/vehicle/aircraft.png");
+    }
 }

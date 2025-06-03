@@ -641,4 +641,9 @@ public class Lav150Entity extends ContainerMobileVehicleEntity implements GeoEnt
         }
         return super.getCameraPosition(partialTicks, player, false, false);
     }
+
+    @Override
+    public @Nullable ResourceLocation getVehicleItemIcon() {
+        return Mod.loc("textures/gui/vehicle/land.png");
+    }
 }

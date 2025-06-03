@@ -595,4 +595,9 @@ public class AnnihilatorEntity extends EnergyVehicleEntity implements GeoEntity,
     public boolean useFixedCameraPos(Entity entity) {
         return true;
     }
+
+    @Override
+    public @Nullable ResourceLocation getVehicleItemIcon() {
+        return Mod.loc("textures/gui/vehicle/defense.png");
+    }
 }

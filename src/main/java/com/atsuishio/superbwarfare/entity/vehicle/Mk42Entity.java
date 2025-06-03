@@ -457,4 +457,9 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
     public boolean useFixedCameraPos(Entity entity) {
         return true;
     }
+
+    @Override
+    public @Nullable ResourceLocation getVehicleItemIcon() {
+        return Mod.loc("textures/gui/vehicle/defense.png");
+    }
 }

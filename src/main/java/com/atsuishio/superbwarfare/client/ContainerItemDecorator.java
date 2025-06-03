@@ -38,7 +38,6 @@ public class ContainerItemDecorator implements IItemDecorator {
         var entity = entityType.create(level);
         if (!(entity instanceof VehicleEntity vehicle)) return false;
 
-        // TODO 给每一个载具加上item icon
         ResourceLocation icon = vehicle.getVehicleItemIcon();
         if (icon == null) return false;
 

@@ -526,4 +526,9 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
     public boolean useFixedCameraPos(Entity entity) {
         return true;
     }
+
+    @Override
+    public @Nullable ResourceLocation getVehicleItemIcon() {
+        return Mod.loc("textures/gui/vehicle/defense.png");
+    }
 }

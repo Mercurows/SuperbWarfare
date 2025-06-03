@@ -778,4 +778,9 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
         }
         return super.getCameraPosition(partialTicks, player, false, false);
     }
+
+    @Override
+    public @Nullable ResourceLocation getVehicleItemIcon() {
+        return Mod.loc("textures/gui/vehicle/land.png");
+    }
 }

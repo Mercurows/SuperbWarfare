@@ -1282,4 +1282,9 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
         }
         return super.getCameraPosition(partialTicks, player, false, false);
     }
+
+    @Override
+    public @Nullable ResourceLocation getVehicleItemIcon() {
+        return Mod.loc("textures/gui/vehicle/land.png");
+    }
 }
