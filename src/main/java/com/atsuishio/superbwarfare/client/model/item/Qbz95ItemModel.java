@@ -46,6 +46,16 @@ public class Qbz95ItemModel extends CustomGunModel<Qbz95Item> {
     }
 
     @Override
+    public ResourceLocation getLODModelResource(Qbz95Item animatable) {
+        return Mod.loc("geo/lod/qbz_95.geo.json");
+    }
+
+    @Override
+    public ResourceLocation getLODTextureResource(Qbz95Item animatable) {
+        return Mod.loc("textures/item/lod/qbz_95.png");
+    }
+
+    @Override
     public void setCustomAnimations(Qbz95Item animatable, long instanceId, AnimationState<Qbz95Item> animationState) {
         Player player = Minecraft.getInstance().player;
         if (player == null) return;

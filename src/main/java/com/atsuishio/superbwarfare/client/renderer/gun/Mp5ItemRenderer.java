@@ -49,11 +49,23 @@ public class Mp5ItemRenderer extends CustomGunRenderer<Mp5Item> {
                 if (name.equals("bashou")) {
                     bone.setHidden(!flag);
                 }
-                if (GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 2 && (bone.getName().endsWith("_hide2"))) {
-                    bone.setHidden(ClientEventHandler.zoomPos > 0.7 && ClientEventHandler.zoom);
-                }
+
                 AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn, 0, 0.05, 1, 0.35);
                 ItemModelHelper.handleGunAttachments(bone, itemStack, name);
+
+                if (this.renderPerspective == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND) {
+                    if (GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 2 && (bone.getName().endsWith("_hide2"))) {
+                        bone.setHidden(ClientEventHandler.zoomPos > 0.7 && ClientEventHandler.zoom);
+                    }
+
+                    int scopeType = GunData.from(itemStack).attachment.get(AttachmentType.SCOPE);
+                    switch (scopeType) {
+                        case 1 ->
+                                AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.42, 14, 1, 255, 0, 0, 255, "dot", false);
+                        case 2 ->
+                                AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.52, 14, 1.4f, 255, 0, 0, 255, "acog", true);
+                    }
+                }
             } else {
                 ItemModelHelper.hideAllAttachments(bone, name);
                 if (name.equals("yugu")) {
@@ -61,13 +73,6 @@ public class Mp5ItemRenderer extends CustomGunRenderer<Mp5Item> {
                 }
             }
 
-            int scopeType = GunData.from(itemStack).attachment.get(AttachmentType.SCOPE);
-            switch (scopeType) {
-                case 1 ->
-                        AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.42, 14, 1, 255, 0, 0, 255, "dot", false);
-                case 2 ->
-                        AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.52, 14, 1.4f, 255, 0, 0, 255, "acog", true);
-            }
         } else {
             ItemModelHelper.hideAllAttachments(bone, name);
             if (name.equals("yugu")) {
