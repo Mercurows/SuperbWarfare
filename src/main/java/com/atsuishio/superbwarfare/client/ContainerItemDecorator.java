@@ -1,7 +1,5 @@
 package com.atsuishio.superbwarfare.client;
 
-import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.entity.vehicle.WheelChairEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.item.ContainerBlockItem;
 import net.minecraft.client.Minecraft;
@@ -40,13 +38,8 @@ public class ContainerItemDecorator implements IItemDecorator {
         var entity = entityType.create(level);
         if (!(entity instanceof VehicleEntity vehicle)) return false;
 
-        ResourceLocation icon = null;
-
         // TODO 给每一个载具加上item icon
-        if (vehicle instanceof WheelChairEntity) {
-            icon = Mod.loc("textures/item/perk/beast_bullet.png");
-        }
-
+        ResourceLocation icon = vehicle.getVehicleItemIcon();
         if (icon == null) return false;
 
         var pose = guiGraphics.pose();
