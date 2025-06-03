@@ -111,13 +111,16 @@ public abstract class GunItem extends Item implements CustomRendererItem, GeoIte
     private void checkCopyGuns(ItemStack stack, Player player) {
         var data = GunData.from(stack);
         if (!data.initialized()) return;
+        if (data.data == null) return;
         var uuid = data.data.getUUID("UUID");
 
         for (var item : player.getInventory().items) {
             if (item.equals(stack)) continue;
             if (item.getItem() instanceof GunItem) {
                 var itemData = GunData.from(item);
-                if (itemData.data.getUUID("UUID").equals(uuid)) {
+                var dataTag = itemData.data;
+                if (dataTag == null) return;
+                if (dataTag.getUUID("UUID").equals(uuid)) {
                     data.data.putUUID("UUID", UUID.randomUUID());
                     return;
                 }
