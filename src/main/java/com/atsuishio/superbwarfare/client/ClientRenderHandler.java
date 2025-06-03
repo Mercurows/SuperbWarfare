@@ -8,12 +8,14 @@ import com.atsuishio.superbwarfare.client.renderer.block.SmallContainerBlockEnti
 import com.atsuishio.superbwarfare.client.tooltip.*;
 import com.atsuishio.superbwarfare.client.tooltip.component.*;
 import com.atsuishio.superbwarfare.init.ModBlockEntities;
+import com.atsuishio.superbwarfare.init.ModItems;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterClientTooltipComponentFactoriesEvent;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
+import net.neoforged.neoforge.client.event.RegisterItemDecorationsEvent;
 
 @EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class ClientRenderHandler {
@@ -62,5 +64,10 @@ public class ClientRenderHandler {
         event.registerBelowAll(HelicopterHudOverlay.ID, new HelicopterHudOverlay());
         event.registerBelowAll(AircraftOverlay.ID, new AircraftOverlay());
         event.registerBelowAll(MortarInfoOverlay.ID, new MortarInfoOverlay());
+    }
+
+    @SubscribeEvent
+    public static void registerItemDecorations(RegisterItemDecorationsEvent event) {
+        event.register(ModItems.CONTAINER.get(), new ContainerItemDecorator());
     }
 }
