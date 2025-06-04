@@ -102,6 +102,12 @@ public class Glock18ItemModel extends CustomGunModel<Glock18Item> {
 
         CrossHairOverlay.gunRot = body.getRotZ();
 
+        GeoBone huatao = getAnimationProcessor().getBone("huatao");
+        huatao.setPosZ(1.5f * (float) ClientEventHandler.firePos);
+        if (GunData.from(stack).holdOpen.get()) {
+            huatao.setPosZ(1.5f);
+        }
+
         ClientEventHandler.gunRootMove(getAnimationProcessor());
 
         GeoBone camera = getAnimationProcessor().getBone("camera");

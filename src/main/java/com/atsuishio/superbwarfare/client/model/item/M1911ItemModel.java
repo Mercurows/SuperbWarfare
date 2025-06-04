@@ -93,6 +93,12 @@ public class M1911ItemModel extends CustomGunModel<M1911Item> {
         CrossHairOverlay.gunRot = body.getRotZ();
         hammer.setRotX(60 * Mth.DEG_TO_RAD + (120 * Mth.DEG_TO_RAD * (float) fp));
 
+        GeoBone huatao = getAnimationProcessor().getBone("huatao");
+        huatao.setPosZ(2.75f * (float) ClientEventHandler.firePos);
+        if (GunData.from(stack).holdOpen.get()) {
+            huatao.setPosZ(1.5f);
+        }
+
         ClientEventHandler.gunRootMove(getAnimationProcessor());
 
         GeoBone camera = getAnimationProcessor().getBone("camera");

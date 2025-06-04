@@ -3,8 +3,6 @@ package com.atsuishio.superbwarfare.client.renderer.gun;
 import com.atsuishio.superbwarfare.client.AnimationHelper;
 import com.atsuishio.superbwarfare.client.model.item.M1911ItemModel;
 import com.atsuishio.superbwarfare.client.renderer.CustomGunRenderer;
-import com.atsuishio.superbwarfare.data.gun.GunData;
-import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.handgun.M1911Item;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -40,12 +38,6 @@ public class M1911ItemRenderer extends CustomGunRenderer<M1911Item> {
 
         if (itemStack.getItem() instanceof GunItem && GeoItem.getId(itemStack) == this.getInstanceId(animatable)) {
             if (this.renderPerspective == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND || this.renderPerspective == ItemDisplayContext.THIRD_PERSON_RIGHT_HAND) {
-                if (name.equals("huatao")) {
-                    bone.setPosZ(2.75f * (float) ClientEventHandler.firePos);
-                    if (GunData.from(itemStack).holdOpen.get()) {
-                        bone.setPosZ(1.5f);
-                    }
-                }
                 AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn, 0, 0, 0.442825, 0.35);
             }
         }

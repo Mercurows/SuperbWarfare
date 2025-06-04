@@ -45,18 +45,18 @@ public class ContainerBlockItem extends BlockItem implements GeoItem {
 
     @SubscribeEvent(priority = EventPriority.HIGH)
     public static void registerContainers(RegisterContainersEvent event) {
+        event.add(ModEntities.WHEEL_CHAIR);
         event.add(ModEntities.MK_42);
         event.add(ModEntities.MLE_1934);
         event.add(ModEntities.HPJ_11);
         event.add(ModEntities.ANNIHILATOR);
         event.add(ModEntities.LASER_TOWER);
         event.add(ModEntities.SPEEDBOAT);
-        event.add(ModEntities.AH_6);
         event.add(ModEntities.LAV_150);
         event.add(ModEntities.BMP_2);
         event.add(ModEntities.PRISM_TANK);
         event.add(ModEntities.YX_100);
-        event.add(ModEntities.WHEEL_CHAIR);
+        event.add(ModEntities.AH_6);
         event.add(ModEntities.TOM_6);
         event.add(ModEntities.A_10A);
     }

@@ -31,6 +31,16 @@ public class HomemadeShotgunItemModel extends CustomGunModel<HomemadeShotgunItem
     }
 
     @Override
+    public ResourceLocation getLODModelResource(HomemadeShotgunItem animatable) {
+        return Mod.loc("geo/lod/homemade_shotgun.geo.json");
+    }
+
+    @Override
+    public ResourceLocation getLODTextureResource(HomemadeShotgunItem animatable) {
+        return Mod.loc("textures/item/homemade_shotgun.png");
+    }
+
+    @Override
     public void setCustomAnimations(HomemadeShotgunItem animatable, long instanceId, AnimationState<HomemadeShotgunItem> animationState) {
         Player player = Minecraft.getInstance().player;
         if (player == null) return;
@@ -38,7 +48,7 @@ public class HomemadeShotgunItemModel extends CustomGunModel<HomemadeShotgunItem
         if (shouldCancelRender(stack, animationState)) return;
 
         GeoBone gun = getAnimationProcessor().getBone("bone");
-        GeoBone shen = getAnimationProcessor().getBone("shen");
+        GeoBone fireRoot = getAnimationProcessor().getBone("fireRoot");
 
         float times = 0.6f * (float) Math.min(Minecraft.getInstance().getTimer().getRealtimeDeltaTicks(), 0.8);
         double zt = ClientEventHandler.zoomTime;
@@ -49,22 +59,19 @@ public class HomemadeShotgunItemModel extends CustomGunModel<HomemadeShotgunItem
         double fp = ClientEventHandler.firePos;
         double fr = ClientEventHandler.fireRot;
 
-        gun.setPosX(2.45f * (float) zp);
-
-        gun.setPosY(1.7f * (float) zp - (float) (0.4f * zpz));
-
-        gun.setPosZ(2f * (float) zp + (float) (0.3f * zpz));
-
+        gun.setPosX(3.725f * (float) zp);
+        gun.setPosY(1.5f * (float) zp - (float) (0.4f * zpz));
+        gun.setPosZ(1.2f * (float) zp + (float) (0.3f * zpz));
         gun.setRotZ((float) (0.05f * zpz));
 
-        shen.setPosX((float) (0.95f * ClientEventHandler.recoilHorizon * fpz * fp));
-        shen.setPosY((float) (0.4f * fp + 0.44f * fr));
-        shen.setPosZ((float) (5.825 * fp + 0.34f * fr + 2.35 * fpz));
-        shen.setRotX((float) (0.01f * fp + 0.15f * fr + 0.01f * fpz));
-        shen.setRotY((float) (0.1f * ClientEventHandler.recoilHorizon * fpz));
-        shen.setRotZ((float) ((0.08f + 0.1 * fr) * ClientEventHandler.recoilHorizon));
+        fireRoot.setPosX((float) (0.95f * ClientEventHandler.recoilHorizon * fpz * fp));
+        fireRoot.setPosY((float) (0.4f * fp + 0.44f * fr));
+        fireRoot.setPosZ((float) (5.825 * fp + 0.34f * fr + 2.35 * fpz));
+        fireRoot.setRotX((float) (0.01f * fp + 0.15f * fr + 0.01f * fpz));
+        fireRoot.setRotY((float) (0.1f * ClientEventHandler.recoilHorizon * fpz));
+        fireRoot.setRotZ((float) ((0.08f + 0.1 * fr) * ClientEventHandler.recoilHorizon));
 
-        CrossHairOverlay.gunRot = shen.getRotZ();
+        CrossHairOverlay.gunRot = fireRoot.getRotZ();
 
         ClientEventHandler.gunRootMove(getAnimationProcessor());
 

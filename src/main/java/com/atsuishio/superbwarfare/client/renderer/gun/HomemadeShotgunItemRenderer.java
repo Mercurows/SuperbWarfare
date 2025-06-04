@@ -37,19 +37,13 @@ public class HomemadeShotgunItemRenderer extends CustomGunRenderer<HomemadeShotg
         if (player == null) return;
         ItemStack itemStack = player.getMainHandItem();
         if (itemStack.getItem() instanceof GunItem && GeoItem.getId(itemStack) == this.getInstanceId(animatable)) {
-            if (this.renderPerspective != ItemDisplayContext.FIRST_PERSON_RIGHT_HAND) {
-                if (bone.getName().equals("ammo1") || bone.getName().equals("ammo2")) {
-                    bone.setHidden(true);
-                }
+            if (this.renderPerspective == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND || this.renderPerspective == ItemDisplayContext.THIRD_PERSON_RIGHT_HAND) {
+                AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn, 0, 0.05, 0.25, 1.2);
             }
-
-            AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn, 0, 0, 0.25, 0.6);
-        } else if (bone.getName().equals("ammo1") || bone.getName().equals("ammo2")) {
-            bone.setHidden(true);
         }
 
         if (renderingArms) {
-            AnimationHelper.renderArms(player, this.renderPerspective, stack, name, bone, buffer, type, packedLightIn, true);
+            AnimationHelper.renderArms(player, this.renderPerspective, stack, name, bone, buffer, type, packedLightIn, false);
         }
         super.renderRecursively(stack, animatable, bone, type, buffer, bufferIn, isReRender, partialTick, packedLightIn, packedOverlayIn, color);
     }

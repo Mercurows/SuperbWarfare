@@ -90,7 +90,7 @@ public class HomemadeShotgunItem extends GunItem {
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar data) {
-        var idleController = new AnimationController<>(this, "idleController", 3, this::idlePredicate);
+        var idleController = new AnimationController<>(this, "idleController", 2, this::idlePredicate);
         data.add(idleController);
     }
 
