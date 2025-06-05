@@ -16,7 +16,7 @@
   "DamageReduce": {
     "Type": "Rifle"
   },
-  "ShootDelay": 6,
+  "ShootDelay": 2,
   "AvailablePerks": [
     "@Ammo",
     "superbwarfare:heal_clip",

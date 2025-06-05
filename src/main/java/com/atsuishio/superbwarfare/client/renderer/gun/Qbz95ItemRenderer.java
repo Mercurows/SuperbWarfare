@@ -41,6 +41,8 @@ public class Qbz95ItemRenderer extends CustomGunRenderer<Qbz95Item> {
         if (player == null) return;
         ItemStack itemStack = player.getMainHandItem();
 
+        boolean needHide = name.equals("under_rail") || name.equals("longbow");
+
         if (itemStack.getItem() instanceof GunItem && GeoItem.getId(itemStack) == this.getInstanceId(animatable)) {
             if (this.renderPerspective == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND || this.renderPerspective == ItemDisplayContext.THIRD_PERSON_RIGHT_HAND) {
                 if (name.equals("tiba")) {
@@ -79,13 +81,13 @@ public class Qbz95ItemRenderer extends CustomGunRenderer<Qbz95Item> {
 
             } else {
                 ItemModelHelper.hideAllAttachments(bone, name);
-                if (name.equals("under_rail") || name.equals("longbow")) {
+                if (needHide) {
                     bone.setHidden(true);
                 }
             }
         } else {
             ItemModelHelper.hideAllAttachments(bone, name);
-            if (name.equals("under_rail") || name.equals("longbow")) {
+            if (needHide) {
                 bone.setHidden(true);
             }
         }

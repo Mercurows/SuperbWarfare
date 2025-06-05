@@ -44,6 +44,16 @@ public class TracheliumItemModel extends CustomGunModel<Trachelium> {
     }
 
     @Override
+    public ResourceLocation getLODModelResource(Trachelium animatable) {
+        return Mod.loc("geo/lod/trachelium.geo.json");
+    }
+
+    @Override
+    public ResourceLocation getLODTextureResource(Trachelium animatable) {
+        return Mod.loc("textures/item/lod/trachelium.png");
+    }
+
+    @Override
     public void setCustomAnimations(Trachelium animatable, long instanceId, AnimationState<Trachelium> animationState) {
         Player player = Minecraft.getInstance().player;
         if (player == null) return;
