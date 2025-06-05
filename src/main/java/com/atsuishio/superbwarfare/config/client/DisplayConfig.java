@@ -5,6 +5,8 @@ import net.neoforged.neoforge.common.ModConfigSpec;
 public class DisplayConfig {
 
     public static ModConfigSpec.BooleanValue ENABLE_GUN_LOD;
+    public static ModConfigSpec.IntValue WEAPON_HUD_X_OFFSET;
+    public static ModConfigSpec.IntValue WEAPON_HUD_Y_OFFSET;
     public static ModConfigSpec.BooleanValue KILL_INDICATION;
     public static ModConfigSpec.BooleanValue AMMO_HUD;
     public static ModConfigSpec.BooleanValue FLOAT_CROSS_HAIR;
@@ -22,6 +24,12 @@ public class DisplayConfig {
 
         builder.comment("Set true to enable gun lod");
         ENABLE_GUN_LOD = builder.define("enable_gun_lod", false);
+
+        builder.comment("The x offset of weapon hud");
+        WEAPON_HUD_X_OFFSET = builder.defineInRange("weapon_hud_x_offset", 0, -1000, 1000);
+
+        builder.comment("The y offset of weapon hud");
+        WEAPON_HUD_Y_OFFSET = builder.defineInRange("weapon_hud_y_offset", 0, -1000, 1000);
 
         builder.comment("Set true if you want to show kill indication while killing an entity");
         KILL_INDICATION = builder.define("kill_indication", true);

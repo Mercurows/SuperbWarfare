@@ -20,6 +20,24 @@ public class DisplayClothConfig {
         );
 
         category.addEntry(entryBuilder
+                .startIntSlider(Component.translatable("config.superbwarfare.client.display.weapon_hud_x_offset"), DisplayConfig.WEAPON_HUD_X_OFFSET.get(),
+                        -1000, 1000)
+                .setDefaultValue(0)
+                .setSaveConsumer(DisplayConfig.WEAPON_HUD_X_OFFSET::set)
+                .setTooltip(Component.translatable("config.superbwarfare.client.display.weapon_hud_x_offset.des"))
+                .build()
+        );
+
+        category.addEntry(entryBuilder
+                .startIntSlider(Component.translatable("config.superbwarfare.client.display.weapon_hud_y_offset"), DisplayConfig.WEAPON_HUD_Y_OFFSET.get(),
+                        -1000, 1000)
+                .setDefaultValue(0)
+                .setSaveConsumer(DisplayConfig.WEAPON_HUD_Y_OFFSET::set)
+                .setTooltip(Component.translatable("config.superbwarfare.client.display.weapon_hud_y_offset.des"))
+                .build()
+        );
+
+        category.addEntry(entryBuilder
                 .startBooleanToggle(Component.translatable("config.superbwarfare.client.display.kill_indication"), DisplayConfig.KILL_INDICATION.get())
                 .setDefaultValue(true)
                 .setSaveConsumer(DisplayConfig.KILL_INDICATION::set)

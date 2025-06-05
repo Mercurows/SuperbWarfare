@@ -66,13 +66,16 @@ public class AmmoBarOverlay implements LayeredDraw.Layer {
         ItemStack stack = player.getMainHandItem();
         if (stack.getItem() instanceof GunItem gunItem && !(player.getVehicle() instanceof ArmedVehicleEntity vehicle && vehicle.banHand(player))) {
             final var tag = NBTTool.getTag(stack);
+            int x = w + DisplayConfig.WEAPON_HUD_X_OFFSET.get();
+            int y = h + DisplayConfig.WEAPON_HUD_Y_OFFSET.get();
+
             PoseStack poseStack = guiGraphics.pose();
             var data = GunData.from(stack);
 
             // 渲染图标
             guiGraphics.blit(gunItem.getGunIcon(),
-                    w - 135,
-                    h - 40,
+                    x - 135,
+                    y - 40,
                     0,
                     0,
                     64,
@@ -85,8 +88,8 @@ public class AmmoBarOverlay implements LayeredDraw.Layer {
                 guiGraphics.drawString(
                         Minecraft.getInstance().font,
                         "[" + ModKeyMappings.FIRE_MODE.getKey().getDisplayName().getString() + "]",
-                        w - 111.5f,
-                        h - 20,
+                        x - 111.5f,
+                        y - 20,
                         0xFFFFFF,
                         false
                 );
@@ -105,15 +108,15 @@ public class AmmoBarOverlay implements LayeredDraw.Layer {
                 guiGraphics.drawString(
                         Minecraft.getInstance().font,
                         data.rpm() + " RPM",
-                        w - 111f,
-                        h - 20,
+                        x - 111f,
+                        y - 20,
                         0xFFFFFF,
                         false
                 );
 
                 guiGraphics.blit(fireMode,
-                        w - 126,
-                        h - 22,
+                        x - 126,
+                        y - 22,
                         0,
                         0,
                         12,
@@ -122,8 +125,8 @@ public class AmmoBarOverlay implements LayeredDraw.Layer {
                         12);
             } else {
                 guiGraphics.blit(fireMode,
-                        w - 95,
-                        h - 21,
+                        x - 95,
+                        y - 21,
                         0,
                         0,
                         8,
@@ -134,8 +137,8 @@ public class AmmoBarOverlay implements LayeredDraw.Layer {
 
             if (stack.getItem() != ModItems.MINIGUN.get() && stack.getItem() != ModItems.TRACHELIUM.get()) {
                 guiGraphics.blit(LINE,
-                        w - 95,
-                        h - 16,
+                        x - 95,
+                        y - 16,
                         0,
                         0,
                         8,
@@ -151,8 +154,8 @@ public class AmmoBarOverlay implements LayeredDraw.Layer {
             guiGraphics.drawString(
                     Minecraft.getInstance().font,
                     getGunAmmoString(data, player),
-                    w / 1.5f - 64 / 1.5f,
-                    h / 1.5f - 48 / 1.5f,
+                    x / 1.5f - 64 / 1.5f,
+                    y / 1.5f - 48 / 1.5f,
                     0xFFFFFF,
                     true
             );
@@ -163,8 +166,8 @@ public class AmmoBarOverlay implements LayeredDraw.Layer {
             guiGraphics.drawString(
                     Minecraft.getInstance().font,
                     getBackupAmmoString(data, player),
-                    w - 64,
-                    h - 35,
+                    x - 64,
+                    y - 35,
                     0xCCCCCC,
                     true
             );
@@ -177,8 +180,8 @@ public class AmmoBarOverlay implements LayeredDraw.Layer {
             guiGraphics.drawString(
                     Minecraft.getInstance().font,
                     gunName,
-                    w / 0.9f - (100 + Minecraft.getInstance().font.width(gunName) / 2f) / 0.9f,
-                    h / 0.9f - 60 / 0.9f,
+                    x / 0.9f - (100 + Minecraft.getInstance().font.width(gunName) / 2f) / 0.9f,
+                    y / 0.9f - 60 / 0.9f,
                     0xFFFFFF,
                     true
             );
@@ -188,8 +191,8 @@ public class AmmoBarOverlay implements LayeredDraw.Layer {
             guiGraphics.drawString(
                     Minecraft.getInstance().font,
                     ammoName,
-                    w / 0.9f - (100 + Minecraft.getInstance().font.width(ammoName) / 2f) / 0.9f,
-                    h / 0.9f - 51 / 0.9f,
+                    x / 0.9f - (100 + Minecraft.getInstance().font.width(ammoName) / 2f) / 0.9f,
+                    y / 0.9f - 51 / 0.9f,
                     0xC8A679,
                     true
             );
