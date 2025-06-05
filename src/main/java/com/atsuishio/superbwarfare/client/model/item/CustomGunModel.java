@@ -20,11 +20,11 @@ import java.util.function.DoubleSupplier;
 public abstract class CustomGunModel<T extends GunItem & GeoAnimatable> extends GeoModel<T> {
 
     public ResourceLocation getLODModelResource(T animatable) {
-        return this.getModelResource(animatable);
+        return this.getModelResource(animatable, null);
     }
 
     public ResourceLocation getLODTextureResource(T animatable) {
-        return this.getTextureResource(animatable);
+        return this.getTextureResource(animatable, null);
     }
 
     @Override
@@ -65,7 +65,7 @@ public abstract class CustomGunModel<T extends GunItem & GeoAnimatable> extends 
 
         var data = GunData.from(stack);
         set(MolangVariable.SBW_IS_EMPTY, () -> data.isEmpty.get() ? 1 : 0);
-        set(MolangVariable.SBW_IS_EMPTY, System::currentTimeMillis);
+        set(MolangVariable.SBW_SYSTEM_TIME, System::currentTimeMillis);
     }
 
     private static void set(String key, DoubleSupplier value) {
@@ -74,7 +74,7 @@ public abstract class CustomGunModel<T extends GunItem & GeoAnimatable> extends 
 
     private void resetQueryValue() {
         set(MolangVariable.SBW_IS_EMPTY, () -> 0);
-        set(MolangVariable.SBW_IS_EMPTY, () -> 0);
+        set(MolangVariable.SBW_SYSTEM_TIME, () -> 0);
     }
 
     public boolean shouldCancelRender(ItemStack stack, AnimationState<T> animationState) {
