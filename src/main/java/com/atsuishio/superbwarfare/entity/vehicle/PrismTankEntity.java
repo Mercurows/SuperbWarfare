@@ -11,6 +11,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.LaserWeapon;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.VehicleWeapon;
+import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
@@ -100,7 +101,7 @@ public class PrismTankEntity extends ContainerMobileVehicleEntity implements Geo
 
     @Override
     public ThirdPersonCameraPosition getThirdPersonCameraPosition(int index) {
-        return new ThirdPersonCameraPosition(4, 1, 1);
+        return new ThirdPersonCameraPosition(4 + ClientMouseHandler.custom3pDistanceLerp, 1, 1);
     }
 
     @Override

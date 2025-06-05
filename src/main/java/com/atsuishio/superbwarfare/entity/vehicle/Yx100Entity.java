@@ -14,6 +14,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.weapon.CannonShellWeapon;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.ProjectileWeapon;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.SwarmDroneWeapon;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.VehicleWeapon;
+import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
@@ -171,8 +172,8 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
     @Override
     public ThirdPersonCameraPosition getThirdPersonCameraPosition(int index) {
         return switch (index) {
-            case 0 -> new ThirdPersonCameraPosition(5, 1.5, -0.8669625);
-            case 1 -> new ThirdPersonCameraPosition(-1, 0.5, 0);
+            case 0 -> new ThirdPersonCameraPosition(5 + ClientMouseHandler.custom3pDistanceLerp, 1.5, -0.8669625);
+            case 1 -> new ThirdPersonCameraPosition(-1 + 0.5 * ClientMouseHandler.custom3pDistanceLerp, 0.5, 0);
             default -> null;
         };
     }

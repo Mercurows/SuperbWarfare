@@ -8,6 +8,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.*;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.SmallCannonShellWeapon;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.VehicleWeapon;
+import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.item.ContainerBlockItem;
@@ -106,7 +107,7 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
 
     @Override
     public ThirdPersonCameraPosition getThirdPersonCameraPosition(int index) {
-        return new ThirdPersonCameraPosition(2, 0.75, 0);
+        return new ThirdPersonCameraPosition(2 + 0.75 * ClientMouseHandler.custom3pDistanceLerp, 0.75, 0);
     }
 
     @Override

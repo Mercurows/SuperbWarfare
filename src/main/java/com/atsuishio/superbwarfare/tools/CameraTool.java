@@ -19,9 +19,9 @@ public class CameraTool {
         Vec3 toVec = vehiclePosVec3.vectorTo(maxCameraPosVec3);
 
         if (player != null) {
-            HitResult hitresult = player.level().clip(new ClipContext(vehiclePosVec3, vehiclePosVec3.add(toVec), ClipContext.Block.VISUAL, ClipContext.Fluid.NONE, player));
+            HitResult hitresult = player.level().clip(new ClipContext(vehiclePosVec3, vehiclePosVec3.add(toVec).add(toVec.normalize().scale(1)), ClipContext.Block.VISUAL, ClipContext.Fluid.NONE, player));
             if (hitresult.getType() == HitResult.Type.BLOCK) {
-                return hitresult.getLocation().add(toVec.normalize().scale(-0.25));
+                return hitresult.getLocation().add(toVec.normalize().scale(-1));
             }
         }
         return maxCameraPosVec3;

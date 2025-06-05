@@ -8,6 +8,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.*;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.ProjectileWeapon;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.VehicleWeapon;
+import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
@@ -80,7 +81,7 @@ public class SpeedboatEntity extends ContainerMobileVehicleEntity implements Geo
 
     @Override
     public ThirdPersonCameraPosition getThirdPersonCameraPosition(int index) {
-        return new ThirdPersonCameraPosition(3, 1, 0);
+        return new ThirdPersonCameraPosition(3 + ClientMouseHandler.custom3pDistanceLerp, 1, 0);
     }
 
     @Override

@@ -11,6 +11,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.LaserWeapon;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.VehicleWeapon;
+import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
@@ -90,7 +91,7 @@ public class AnnihilatorEntity extends EnergyVehicleEntity implements GeoEntity,
 
     @Override
     public ThirdPersonCameraPosition getThirdPersonCameraPosition(int index) {
-        return new ThirdPersonCameraPosition(16, 1.3, 0);
+        return new ThirdPersonCameraPosition(16 + 2 * ClientMouseHandler.custom3pDistanceLerp, 1.3, 0);
     }
 
     @Override

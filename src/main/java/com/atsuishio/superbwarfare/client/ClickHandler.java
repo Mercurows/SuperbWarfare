@@ -152,8 +152,8 @@ public class ClickHandler {
 
         double scroll = event.getScrollDeltaY();
 
-        // 按下自由视角键时，为具有自由视角功能的载具调整相机距离
-        if (player.getVehicle() instanceof VehicleEntity vehicle && vehicle.allowFreeCam() && player == vehicle.getFirstPassenger() && ModKeyMappings.FREE_CAMERA.isDown()) {
+        // 按下自由视角键时，为载具调整相机距离
+        if (player.getVehicle() instanceof VehicleEntity vehicle && player == vehicle.getFirstPassenger() && ModKeyMappings.FREE_CAMERA.isDown()) {
             ClientMouseHandler.custom3pDistance = Mth.clamp(ClientMouseHandler.custom3pDistance - event.getScrollDeltaY(), -3, 8);
             event.setCanceled(true);
             return;
