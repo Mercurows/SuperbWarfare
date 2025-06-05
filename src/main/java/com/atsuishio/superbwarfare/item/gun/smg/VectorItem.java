@@ -106,9 +106,14 @@ public class VectorItem extends GunItem {
 
         var data = GunData.from(stack);
         int scopeType = data.attachment.get(AttachmentType.SCOPE);
+        int gripType = data.attachment.get(AttachmentType.GRIP);
 
         if (scopeType == 3) {
             data.attachment.set(AttachmentType.SCOPE, 0);
+            data.save();
+        }
+        if (gripType == 3) {
+            data.attachment.set(AttachmentType.GRIP, 0);
             data.save();
         }
     }

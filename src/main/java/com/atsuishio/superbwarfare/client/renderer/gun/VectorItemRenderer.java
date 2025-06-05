@@ -39,32 +39,36 @@ public class VectorItemRenderer extends CustomGunRenderer<VectorItem> {
         var player = mc.player;
         if (player == null) return;
         ItemStack itemStack = player.getMainHandItem();
+
+        boolean needHide = name.equals("tuoxin");
+
         if (itemStack.getItem() instanceof GunItem && GeoItem.getId(itemStack) == this.getInstanceId(animatable)) {
-            if (this.renderPerspective == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND) {
-                if (name.equals("tuoxin")) {
-                    bone.setHidden(GunData.from(itemStack).attachment.get(AttachmentType.STOCK) == 0);
+            if (this.renderPerspective == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND || this.renderPerspective == ItemDisplayContext.THIRD_PERSON_RIGHT_HAND) {
+                int scopeType = GunData.from(itemStack).attachment.get(AttachmentType.SCOPE);
+                switch (scopeType) {
+                    case 1 ->
+                            AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.29, 18, 1, 255, 0, 0, 255, "dot", false);
+                    case 2 ->
+                            AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.3, 16, 1, 255, 0, 0, 255, "apex_2x", true);
+                }
+
+                AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn, 0, 0, 1.453125, 0.35);
+                ItemModelHelper.handleGunAttachments(bone, itemStack, name);
+            } else {
+                ItemModelHelper.hideAllAttachments(bone, name);
+                if (needHide) {
+                    bone.setHidden(true);
                 }
             }
-
-            int scopeType = GunData.from(itemStack).attachment.get(AttachmentType.SCOPE);
-            switch (scopeType) {
-                case 1 ->
-                        AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.27, 18, 1, 255, 0, 0, 255, "dot", false);
-                case 2 ->
-                        AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.27, 16, 1, 255, 0, 0, 255, "apex_2x", true);
-            }
-
-            AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn, 0, 0, 1.453125, 0.35);
-            ItemModelHelper.handleGunAttachments(bone, itemStack, name);
         } else {
             ItemModelHelper.hideAllAttachments(bone, name);
-            if (name.equals("tuoxin")) {
+            if (needHide) {
                 bone.setHidden(true);
             }
         }
 
         if (renderingArms) {
-            AnimationHelper.renderArms(player, this.renderPerspective, stack, name, bone, buffer, type, packedLightIn, true);
+            AnimationHelper.renderArms(player, this.renderPerspective, stack, name, bone, buffer, type, packedLightIn, false);
         }
         super.renderRecursively(stack, animatable, bone, type, buffer, bufferIn, isReRender, partialTick, packedLightIn, packedOverlayIn, color);
     }

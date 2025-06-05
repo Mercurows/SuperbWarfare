@@ -15,13 +15,10 @@ import net.minecraft.world.item.ItemStack;
 import software.bernie.geckolib.animation.AnimationState;
 import software.bernie.geckolib.cache.object.GeoBone;
 
-import static com.atsuishio.superbwarfare.event.ClientEventHandler.isProne;
-
 public class VectorItemModel extends CustomGunModel<VectorItem> {
 
     public static float fireRotY = 0f;
     public static float fireRotZ = 0f;
-    public static float rotXBipod = 0f;
     public static float rotXSight = 0f;
 
     @Override
@@ -37,6 +34,16 @@ public class VectorItemModel extends CustomGunModel<VectorItem> {
     @Override
     public ResourceLocation getTextureResource(VectorItem animatable) {
         return Mod.loc("textures/item/vector.png");
+    }
+
+    @Override
+    public ResourceLocation getLODModelResource(VectorItem animatable) {
+        return Mod.loc("geo/lod/vector.geo.json");
+    }
+
+    @Override
+    public ResourceLocation getLODTextureResource(VectorItem animatable) {
+        return Mod.loc("textures/item/lod/vector.png");
     }
 
     @Override
@@ -117,12 +124,6 @@ public class VectorItemModel extends CustomGunModel<VectorItem> {
         rotXSight = Mth.lerp(1.5f * times, rotXSight, type == 0 ? 0 : 90);
         sight1fold.setRotX(rotXSight * Mth.DEG_TO_RAD);
         sight2fold.setRotX(rotXSight * Mth.DEG_TO_RAD);
-
-        GeoBone l = getAnimationProcessor().getBone("l");
-        GeoBone r = getAnimationProcessor().getBone("r");
-        rotXBipod = Mth.lerp(1.5f * times, rotXBipod, isProne(player) ? -90 : 0);
-        l.setRotX(rotXBipod * Mth.DEG_TO_RAD);
-        r.setRotX(rotXBipod * Mth.DEG_TO_RAD);
 
         ClientEventHandler.gunRootMove(getAnimationProcessor());
 
