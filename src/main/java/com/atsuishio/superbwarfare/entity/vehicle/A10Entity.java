@@ -830,24 +830,18 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
             var heliRocketEntity = ((HeliRocketWeapon) getWeapon(0)).create(player);
 
             Vector4f worldPosition;
-            Vector4f worldPosition2;
-            Vec3 shootAngle;
 
             if (fireIndex == 0) {
                 worldPosition = transformPosition(transform, -6.63f, -0.55f, 1.83f);
-                worldPosition2 = transformPosition(transform, -6.61f, -0.55f, 2.83f);
                 fireIndex = 1;
             } else if (fireIndex == 1) {
                 worldPosition = transformPosition(transform, -5.28f, -1.76f, 1.87f);
-                worldPosition2 = transformPosition(transform, -5.27f, -1.76f, 2.87f);
                 fireIndex = 2;
             } else if (fireIndex == 2) {
                 worldPosition = transformPosition(transform, 5.28f, -1.76f, 1.87f);
-                worldPosition2 = transformPosition(transform, 5.27f, -1.76f, 2.87f);
                 fireIndex = 3;
             } else {
                 worldPosition = transformPosition(transform, 6.63f, -0.55f, 1.83f);
-                worldPosition2 = transformPosition(transform, 6.61f, -0.55f, 2.83f);
                 fireIndex = 0;
             }
 

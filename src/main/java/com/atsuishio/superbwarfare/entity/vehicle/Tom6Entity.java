@@ -6,8 +6,10 @@ import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.entity.projectile.MelonBombEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
+import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModSounds;
+import com.atsuishio.superbwarfare.tools.CameraTool;
 import com.atsuishio.superbwarfare.tools.CustomExplosion;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
 import com.mojang.math.Axis;
@@ -32,6 +34,8 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec2;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.event.EventHooks;
@@ -48,11 +52,19 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
+import static com.atsuishio.superbwarfare.event.ClientMouseHandler.freeCameraPitch;
+import static com.atsuishio.superbwarfare.event.ClientMouseHandler.freeCameraYaw;
+
 public class Tom6Entity extends MobileVehicleEntity implements GeoEntity {
     public static final EntityDataAccessor<Boolean> MELON = SynchedEntityData.defineId(Tom6Entity.class, EntityDataSerializers.BOOLEAN);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private float yRotSync;
 
+    public float delta_xo;
+    public float delta_yo;
+
+    public float delta_x;
+    public float delta_y;
 
     public Tom6Entity(EntityType<Tom6Entity> type, Level world) {
         super(type, world);
@@ -105,7 +117,13 @@ public class Tom6Entity extends MobileVehicleEntity implements GeoEntity {
 
     @Override
     public void baseTick() {
+        delta_xo = delta_x;
+        delta_yo = delta_y;
         super.baseTick();
+
+        delta_x = entityData.get(MOUSE_SPEED_Y);
+        delta_y = entityData.get(MOUSE_SPEED_X);
+
         float f;
 
         f = (float) Mth.clamp(0.69f + 0.101f * Mth.abs(90 - (float) calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90, 0.01, 0.99);
@@ -364,5 +382,42 @@ public class Tom6Entity extends MobileVehicleEntity implements GeoEntity {
     @Override
     public @Nullable ResourceLocation getVehicleItemIcon() {
         return Mod.loc("textures/gui/vehicle/type/aircraft.png");
+    }
+
+    public Matrix4f getClientVehicleTransform(float ticks) {
+        Matrix4f transform = new Matrix4f();
+        transform.translate((float) Mth.lerp(ticks, xo, getX()), (float) Mth.lerp(ticks, yo + 0.5f, getY() + 0.5f), (float) Mth.lerp(ticks, zo, getZ()));
+        transform.rotate(Axis.YP.rotationDegrees((float) (-Mth.lerp(ticks, yRotO, getYRot()) + freeCameraYaw)));
+        transform.rotate(Axis.XP.rotationDegrees((float) (Mth.lerp(ticks, xRotO, getXRot()) + freeCameraPitch)));
+        transform.rotate(Axis.ZP.rotationDegrees(Mth.lerp(ticks, prevRoll, getRoll())));
+        return transform;
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    @Override
+    public @Nullable Vec2 getCameraRotation(float partialTicks, Player player, boolean zoom, boolean isFirstPerson) {
+        if (this.getSeatIndex(player) == 0 && Mth.abs((float) (freeCameraYaw * freeCameraPitch)) > 0.01) {
+            return new Vec2((float) (getYaw(partialTicks) - 0.5f * Mth.lerp(partialTicks, delta_yo, delta_y) - freeCameraYaw), (float) (getPitch(partialTicks) - 0.5f * Mth.lerp(partialTicks, delta_xo, delta_x) + freeCameraPitch));
+        }
+
+        return super.getCameraRotation(partialTicks, player, false, false);
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    @Override
+    public Vec3 getCameraPosition(float partialTicks, Player player, boolean zoom, boolean isFirstPerson) {
+        if (this.getSeatIndex(player) == 0 && Mth.abs((float) (freeCameraYaw * freeCameraPitch)) > 0.01) {
+            Matrix4f transform = getClientVehicleTransform(partialTicks);
+
+            Vector4f maxCameraPosition = transformPosition(transform, 0, 2.5f, -6 - (float) ClientMouseHandler.custom3pDistanceLerp);
+            Vec3 finalPos = CameraTool.getMaxZoom(transform, maxCameraPosition);
+
+            if (isFirstPerson) {
+                return new Vec3(Mth.lerp(partialTicks, player.xo, player.getX()), Mth.lerp(partialTicks, player.yo + player.getEyeHeight(), player.getEyeY()), Mth.lerp(partialTicks, player.zo, player.getZ()));
+            } else {
+                return finalPos;
+            }
+        }
+        return super.getCameraPosition(partialTicks, player, false, false);
     }
 }
