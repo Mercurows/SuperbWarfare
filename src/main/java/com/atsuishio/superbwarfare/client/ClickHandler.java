@@ -11,6 +11,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.CannonEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
+import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.network.message.send.*;
@@ -150,6 +151,13 @@ public class ClickHandler {
         if (player.hasEffect(ModMobEffects.SHOCK)) return;
 
         double scroll = event.getScrollDeltaY();
+
+        // 按下自由视角键时，为具有自由视角功能的载具调整相机距离
+        if (player.getVehicle() instanceof VehicleEntity vehicle && vehicle.allowFreeCam() && player == vehicle.getFirstPassenger() && ModKeyMappings.FREE_CAMERA.isDown()) {
+            ClientMouseHandler.custom3pDistance = Mth.clamp(ClientMouseHandler.custom3pDistance - event.getScrollDeltaY(), -3, 8);
+            event.setCanceled(true);
+            return;
+        }
 
         // 未按下shift时，为有武器的载具切换武器
         if (!Screen.hasShiftDown()

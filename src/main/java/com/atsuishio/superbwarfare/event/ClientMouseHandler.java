@@ -43,6 +43,9 @@ public class ClientMouseHandler {
     public static double freeCameraPitch = 0;
     public static double freeCameraYaw = 0;
 
+    public static double custom3pDistance = 0;
+    public static double custom3pDistanceLerp = 0;
+
     private static boolean notInGame() {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null) return true;
@@ -78,8 +81,15 @@ public class ClientMouseHandler {
         }
 
         if (!notInGame() && player.getVehicle() instanceof VehicleEntity vehicle && player == vehicle.getFirstPassenger()) {
+
+            int y = 1;
+
+            if (vehicle instanceof AirEntity && VehicleControlConfig.INVERT_AIRCRAFT_CONTROL.get()) {
+                y = -1;
+            }
+
             speedX = vehicle.getMouseSensitivity() * (posN.x - posO.x);
-            speedY = vehicle.getMouseSensitivity() * (posN.y - posO.y);
+            speedY = y * vehicle.getMouseSensitivity() * (posN.y - posO.y);
 
             lerpSpeedX = Mth.lerp(vehicle.getMouseSpeedX(), lerpSpeedX, speedX);
             lerpSpeedY = Mth.lerp(vehicle.getMouseSpeedY(), lerpSpeedY, speedY);
@@ -120,10 +130,10 @@ public class ClientMouseHandler {
 
         if (isFreeCam(player)) {
             freeCameraYaw -= 0.4f * times * lerpSpeedX;
-            freeCameraPitch += 0.2f * times * lerpSpeedY;
+            freeCameraPitch += 0.3f * times * lerpSpeedY;
         } else {
-            freeCameraYaw = Mth.lerp(0.075 * event.getPartialTick(), freeCameraYaw, 0);
-            freeCameraPitch = Mth.lerp(0.075 * event.getPartialTick(), freeCameraPitch, 0);
+            freeCameraYaw = Mth.lerp(0.2 * times, freeCameraYaw, 0);
+            freeCameraPitch = Mth.lerp(0.2 * times, freeCameraPitch, 0);
         }
 
         while (freeCameraYaw > 180F) {
@@ -139,10 +149,12 @@ public class ClientMouseHandler {
             freeCameraPitch += 360;
         }
 
-        if (player.getVehicle() instanceof AirEntity) {
+        if (player.getVehicle() instanceof VehicleEntity vehicle && player == vehicle.getFirstPassenger() && vehicle instanceof AirEntity) {
             player.setYRot(player.getVehicle().getYRot());
             player.setYHeadRot(player.getYRot());
         }
+
+        custom3pDistanceLerp = Mth.lerp(times, custom3pDistanceLerp, custom3pDistance);
     }
 
     @SubscribeEvent
