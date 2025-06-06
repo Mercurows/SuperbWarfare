@@ -44,6 +44,16 @@ public class M4ItemModel extends CustomGunModel<M4Item> {
     }
 
     @Override
+    public ResourceLocation getLODModelResource(M4Item animatable) {
+        return Mod.loc("geo/lod/m_4.geo.json");
+    }
+
+    @Override
+    public ResourceLocation getLODTextureResource(M4Item animatable) {
+        return Mod.loc("textures/item/lod/m_4.png");
+    }
+
+    @Override
     public void setCustomAnimations(M4Item animatable, long instanceId, AnimationState<M4Item> animationState) {
         Player player = Minecraft.getInstance().player;
         if (player == null) return;

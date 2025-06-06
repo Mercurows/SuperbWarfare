@@ -40,6 +40,16 @@ public class Hk416ItemModel extends CustomGunModel<Hk416Item> {
     }
 
     @Override
+    public ResourceLocation getLODModelResource(Hk416Item animatable) {
+        return Mod.loc("geo/lod/hk_416.geo.json");
+    }
+
+    @Override
+    public ResourceLocation getLODTextureResource(Hk416Item animatable) {
+        return Mod.loc("textures/item/lod/hk_416.png");
+    }
+
+    @Override
     public void setCustomAnimations(Hk416Item animatable, long instanceId, AnimationState<Hk416Item> animationState) {
         Player player = Minecraft.getInstance().player;
         if (player == null) return;
