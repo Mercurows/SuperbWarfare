@@ -8,6 +8,7 @@ import net.minecraft.network.FriendlyByteBuf;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -16,7 +17,10 @@ import java.util.List;
 public class BufferSerializer {
     public static List<Field> sortedFields(Class<?> clazz) {
         return Arrays.stream(clazz.getDeclaredFields())
-                .filter(f -> !f.isAnnotationPresent(ServerOnly.class) && !f.getType().isAssignableFrom(Annotation.class))
+                .filter(f -> !f.isAnnotationPresent(ServerOnly.class)
+                        && !Modifier.isTransient(f.getModifiers())
+                        && !f.getType().isAssignableFrom(Annotation.class)
+                )
                 .sorted(Comparator.comparing(Field::getName))
                 .toList();
     }

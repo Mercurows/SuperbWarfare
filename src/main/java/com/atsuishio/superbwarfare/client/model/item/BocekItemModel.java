@@ -32,6 +32,16 @@ public class BocekItemModel extends CustomGunModel<BocekItem> {
     }
 
     @Override
+    public ResourceLocation getLODModelResource(BocekItem animatable) {
+        return Mod.loc("geo/lod/bocek.geo.json");
+    }
+
+    @Override
+    public ResourceLocation getLODTextureResource(BocekItem animatable) {
+        return Mod.loc("textures/item/lod/bocek.png");
+    }
+
+    @Override
     public void setCustomAnimations(BocekItem animatable, long instanceId, AnimationState<BocekItem> animationState) {
         Player player = Minecraft.getInstance().player;
         if (player == null) return;

@@ -69,6 +69,7 @@ public class DroneRenderer extends GeoEntityRenderer<DroneEntity> {
 
                 if (entityIn.getEntityData().get(KAMIKAZE_MODE) == 3) {
                     Entity entity = new RpgRocketEntity(ModEntities.RPG_ROCKET.get(), entityIn.level());
+
                     entityRenderDispatcher.render(entity, 0, -0.03, -1.8, entityYaw, partialTicks, poseStack, bufferIn, packedLightIn);
                 }
 

@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.client.renderer.gun;
 
 import com.atsuishio.superbwarfare.client.AnimationHelper;
+import com.atsuishio.superbwarfare.client.ItemModelHelper;
 import com.atsuishio.superbwarfare.client.model.item.BocekItemModel;
 import com.atsuishio.superbwarfare.client.renderer.CustomGunRenderer;
 import com.atsuishio.superbwarfare.client.renderer.ModRenderTypes;
@@ -15,6 +16,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.util.FastColor;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import org.joml.Matrix4f;
 import software.bernie.geckolib.animatable.GeoItem;
@@ -71,17 +73,39 @@ public class BocekItemRenderer extends CustomGunRenderer<BocekItem> {
         if (player == null) return;
 
         ItemStack itemStack = player.getMainHandItem();
-        if (itemStack.getItem() instanceof GunItem && GeoItem.getId(itemStack) == this.getInstanceId(animatable)) {
-            if (name.equals("arrow")) {
-                var data = GunData.from(itemStack);
-                bone.setHidden(data.ammo.get() == 0);
-            }
-            if (name.equals("arrow2")) {
-                var data = GunData.from(itemStack);
-                bone.setHidden(data.ammo.get() != 0);
-            }
 
-            AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0.002, 0.1790625, 0.13, 0.08f, 255, 0, 0, 255, "dot", false);
+        boolean needHide = name.equals("safang");
+
+        if (itemStack.getItem() instanceof GunItem && GeoItem.getId(itemStack) == this.getInstanceId(animatable)) {
+            if (this.renderPerspective == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND || this.renderPerspective == ItemDisplayContext.THIRD_PERSON_RIGHT_HAND) {
+                ItemModelHelper.handleGunAttachments(bone, itemStack, name);
+
+                if (this.renderPerspective == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND) {
+                    if (name.equals("arrow")) {
+                        var data = GunData.from(itemStack);
+                        bone.setHidden(data.ammo.get() == 0);
+                    }
+                    if (name.equals("arrow2")) {
+                        var data = GunData.from(itemStack);
+                        bone.setHidden(data.ammo.get() != 0);
+                    }
+
+                    AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0.002, 0.1790625, 0.13, 0.08f, 255, 0, 0, 255, "dot", false);
+                } else if (needHide) {
+                    bone.setHidden(true);
+                }
+
+            } else {
+                ItemModelHelper.hideAllAttachments(bone, name);
+                if (needHide) {
+                    bone.setHidden(true);
+                }
+            }
+        } else {
+            ItemModelHelper.hideAllAttachments(bone, name);
+            if (needHide) {
+                bone.setHidden(true);
+            }
         }
 
         if (renderingArms) {
