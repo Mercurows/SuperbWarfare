@@ -31,21 +31,54 @@
         0
       ]
     },
-    "gui": {
+    "thirdperson_righthand": {
+      "translation": [
+        0,
+        -7.25,
+        -1.5
+      ]
+    },
+    "thirdperson_lefthand": {
+      "scale": [
+        0,
+        0,
+        0
+      ]
+    },
+    "ground": {
       "rotation": [
-        136.09,
-        21.93,
-        -113.41
+        33.33,
+        -2.12,
+        -7.07
       ],
       "translation": [
-        -2.25,
-        -1,
+        0,
+        11.75,
         0
+      ]
+    },
+    "head": {
+      "translation": [
+        0,
+        21.5,
+        0
+      ]
+    },
+    "fixed": {
+      "rotation": [
+        90,
+        0,
+        -90
+      ],
+      "translation": [
+        -5.25,
+        0,
+        -1
       ],
       "scale": [
-        0.45,
-        0.45,
-        0.45
+        1.5,
+        1.5,
+        1.5
       ]
     }
   }
