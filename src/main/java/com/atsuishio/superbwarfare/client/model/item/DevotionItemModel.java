@@ -33,6 +33,16 @@ public class DevotionItemModel extends CustomGunModel<DevotionItem> {
     }
 
     @Override
+    public ResourceLocation getLODModelResource(DevotionItem animatable) {
+        return Mod.loc("geo/lod/devotion.geo.json");
+    }
+
+    @Override
+    public ResourceLocation getLODTextureResource(DevotionItem animatable) {
+        return Mod.loc("textures/item/lod/devotion.png");
+    }
+
+    @Override
     public void setCustomAnimations(DevotionItem animatable, long instanceId, AnimationState<DevotionItem> animationState) {
         Player player = Minecraft.getInstance().player;
         if (player == null) return;
