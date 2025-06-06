@@ -31,6 +31,16 @@ public class TaserItemModel extends CustomGunModel<TaserItem> {
     }
 
     @Override
+    public ResourceLocation getLODModelResource(TaserItem animatable) {
+        return Mod.loc("geo/lod/taser.geo.json");
+    }
+
+    @Override
+    public ResourceLocation getLODTextureResource(TaserItem animatable) {
+        return Mod.loc("textures/item/taser.png");
+    }
+
+    @Override
     public void setCustomAnimations(TaserItem animatable, long instanceId, AnimationState<TaserItem> animationState) {
         Player player = Minecraft.getInstance().player;
         if (player == null) return;
