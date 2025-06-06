@@ -142,9 +142,13 @@ public class LaserTowerEntity extends EnergyVehicleEntity implements GeoEntity, 
                 this.remove(RemovalReason.DISCARDED);
                 this.discard();
                 return InteractionResult.SUCCESS;
-            } else if (!entityData.get(ACTIVE)) {
-                entityData.set(ACTIVE, true);
-                this.setOwnerUUID(player.getUUID());
+            } else {
+                if (this.getOwnerUUID() == null) {
+                    this.setOwnerUUID(player.getUUID());
+                }
+
+                entityData.set(ACTIVE, !entityData.get(ACTIVE));
+
                 if (player instanceof ServerPlayer serverPlayer) {
                     serverPlayer.level().playSound(null, serverPlayer.getOnPos(), SoundEvents.ARROW_HIT_PLAYER, SoundSource.PLAYERS, 0.5F, 1);
                 }
