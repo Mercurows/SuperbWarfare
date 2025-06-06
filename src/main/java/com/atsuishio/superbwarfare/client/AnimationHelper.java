@@ -177,7 +177,7 @@ public class AnimationHelper {
 
     public static void renderArms(LocalPlayer localPlayer, ItemDisplayContext transformType, PoseStack stack, String name, GeoBone bone,
                                   MultiBufferSource currentBuffer, RenderType renderType, int packedLightIn, boolean useOldHandRender) {
-        if (transformType.firstPerson()) {
+        if (transformType != null && transformType.firstPerson()) {
             var mc = Minecraft.getInstance();
             PlayerRenderer playerRenderer = (PlayerRenderer) mc.getEntityRenderDispatcher().getRenderer(localPlayer);
             PlayerModel<AbstractClientPlayer> model = playerRenderer.getModel();
