@@ -27,7 +27,6 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
-@SuppressWarnings("deprecation")
 public class VehicleDeployerBlock extends BaseEntityBlock {
 
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
@@ -53,6 +52,8 @@ public class VehicleDeployerBlock extends BaseEntityBlock {
         if (level.isClientSide
                 || !(level.getBlockEntity(pos) instanceof VehicleDeployerBlockEntity blockEntity)
         ) return ItemInteractionResult.SUCCESS;
+
+        if (!player.isCreative()) return ItemInteractionResult.FAIL;
 
         if (stack.getItem() != ModItems.CONTAINER.get()) {
             player.displayClientMessage(Component.translatable("des.superbwarfare.vehicle_deployer.fail").withStyle(ChatFormatting.RED), true);
