@@ -39,6 +39,16 @@ public class SvdItemModel extends CustomGunModel<SvdItem> {
     }
 
     @Override
+    public ResourceLocation getLODModelResource(SvdItem animatable) {
+        return Mod.loc("geo/lod/svd.geo.json");
+    }
+
+    @Override
+    public ResourceLocation getLODTextureResource(SvdItem animatable) {
+        return Mod.loc("textures/item/lod/svd.png");
+    }
+
+    @Override
     public void setCustomAnimations(SvdItem animatable, long instanceId, AnimationState<SvdItem> animationState) {
         Player player = Minecraft.getInstance().player;
         if (player == null) return;

@@ -39,6 +39,16 @@ public class AK47ItemModel extends CustomGunModel<AK47Item> {
     }
 
     @Override
+    public ResourceLocation getLODModelResource(AK47Item animatable) {
+        return Mod.loc("geo/lod/ak_47.geo.json");
+    }
+
+    @Override
+    public ResourceLocation getLODTextureResource(AK47Item animatable) {
+        return Mod.loc("textures/item/lod/ak_47.png");
+    }
+
+    @Override
     public void setCustomAnimations(AK47Item animatable, long instanceId, AnimationState<AK47Item> animationState) {
         Player player = Minecraft.getInstance().player;
         if (player == null) return;

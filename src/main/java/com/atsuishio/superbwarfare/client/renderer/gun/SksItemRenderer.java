@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.client.renderer.gun;
 
 import com.atsuishio.superbwarfare.client.AnimationHelper;
+import com.atsuishio.superbwarfare.client.ItemModelHelper;
 import com.atsuishio.superbwarfare.client.model.item.SksItemModel;
 import com.atsuishio.superbwarfare.client.renderer.CustomGunRenderer;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
@@ -36,17 +37,32 @@ public class SksItemRenderer extends CustomGunRenderer<SksItem> {
         var player = mc.player;
         if (player == null) return;
         ItemStack itemStack = player.getMainHandItem();
+
+        boolean needHide = name.equals("magazine2");
+
         if (itemStack.getItem() instanceof GunItem && GeoItem.getId(itemStack) == this.getInstanceId(animatable)) {
-            if (this.renderPerspective != ItemDisplayContext.FIRST_PERSON_RIGHT_HAND) {
-                if (bone.getName().equals("magazine2")) {
+            if (this.renderPerspective == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND || this.renderPerspective == ItemDisplayContext.THIRD_PERSON_RIGHT_HAND) {
+                ItemModelHelper.handleGunAttachments(bone, itemStack, name);
+                AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn, 0, 0, 1.4375, 0.35);
+
+                if (this.renderPerspective == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND) {
+                    AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.25654375, 20, 2f, 0, 255, 0, 255, "okp_7", false);
+                } else {
+                    if (bone.getName().equals("magazine2")) {
+                        bone.setHidden(true);
+                    }
+                }
+            } else {
+                ItemModelHelper.hideAllAttachments(bone, name);
+                if (needHide) {
                     bone.setHidden(true);
                 }
             }
-
-            AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.25654375, 20, 2f, 0, 255, 0, 255, "okp_7", false);
-            AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn, 0, 0, 1.4375, 0.35);
-        } else if (bone.getName().equals("magazine2")) {
-            bone.setHidden(true);
+        } else {
+            ItemModelHelper.hideAllAttachments(bone, name);
+            if (needHide) {
+                bone.setHidden(true);
+            }
         }
 
         if (renderingArms) {

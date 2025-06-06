@@ -24,6 +24,66 @@
         0,
         0
       ]
+    },
+    "thirdperson_righthand": {
+      "translation": [
+        -0.75,
+        -0.75,
+        0
+      ],
+      "scale": [
+        0.7,
+        0.7,
+        0.7
+      ]
+    },
+    "thirdperson_lefthand": {
+      "translation": [
+        -1.5,
+        4.25,
+        -2.75
+      ],
+      "scale": [
+        0,
+        0,
+        0
+      ]
+    },
+    "ground": {
+      "translation": [
+        0,
+        1.25,
+        0
+      ],
+      "scale": [
+        0.65,
+        0.65,
+        0.65
+      ]
+    },
+    "head": {
+      "translation": [
+        0,
+        10.5,
+        0
+      ]
+    },
+    "fixed": {
+      "rotation": [
+        0,
+        -90,
+        0
+      ],
+      "translation": [
+        -2,
+        -1,
+        0
+      ],
+      "scale": [
+        1.3,
+        1.3,
+        1.3
+      ]
     }
   }
 }

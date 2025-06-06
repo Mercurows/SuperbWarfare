@@ -40,35 +40,46 @@ public class SvdItemRenderer extends CustomGunRenderer<SvdItem> {
         var player = mc.player;
         if (player == null) return;
         ItemStack itemStack = player.getMainHandItem();
+        boolean needHide = name.equals("mount");
+
         if (itemStack.getItem() instanceof GunItem && GeoItem.getId(itemStack) == this.getInstanceId(animatable)) {
-            if (this.renderPerspective == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND) {
+            if (this.renderPerspective == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND || this.renderPerspective == ItemDisplayContext.THIRD_PERSON_RIGHT_HAND) {
+
                 if (name.equals("mount")) {
                     bone.setHidden(GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 0 || GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 2);
                 }
 
-                if ((GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 2 || GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 3)
-                        && (name.equals("Hidden2") || name.equals("Hidden") || name.equals("gun") || name.equals("bolt") || name.equals("Lefthand") || name.equals("Barrel") || name.equals("bipod") || name.equals("mount")) && ClientEventHandler.zoom && ClientEventHandler.zoomPos > 0.7) {
+                AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn, 0, 0, 1.76479375, 0.35);
+                ItemModelHelper.handleGunAttachments(bone, itemStack, name);
+
+                if (this.renderPerspective == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND) {
+                    if ((GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 2 || GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 3)
+                            && (name.equals("Hidden2") || name.equals("Hidden") || name.equals("gun") || name.equals("bolt") || name.equals("Lefthand") || name.equals("Barrel") || name.equals("bipod") || name.equals("mount")) && ClientEventHandler.zoom && ClientEventHandler.zoomPos > 0.7) {
+                        bone.setHidden(true);
+                        renderingArms = false;
+                    }
+
+                    int scopeType = GunData.from(itemStack).attachment.get(AttachmentType.SCOPE);
+
+                    switch (scopeType) {
+                        case 1 ->
+                                AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.24, 20, 1, 255, 0, 0, 255, "dot", false);
+                        case 2 ->
+                                AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, -0.01, 0.24, 18, 1, 255, 0, 0, 255, "pso_1", true);
+                        case 3 ->
+                                AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.2525, -0.1, 0.1f, 255, 0, 0, 255, "sniper", true);
+                    }
+                }
+
+            } else {
+                ItemModelHelper.hideAllAttachments(bone, name);
+                if (needHide) {
                     bone.setHidden(true);
-                    renderingArms = false;
                 }
             }
-
-            int scopeType = GunData.from(itemStack).attachment.get(AttachmentType.SCOPE);
-
-            switch (scopeType) {
-                case 1 ->
-                        AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.24, 20, 1, 255, 0, 0, 255, "dot", false);
-                case 2 ->
-                        AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, -0.01, 0.24, 18, 1, 255, 0, 0, 255, "pso_1", true);
-                case 3 ->
-                        AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.2525, -0.1, 0.1f, 255, 0, 0, 255, "sniper", true);
-            }
-
-            AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn, 0, 0, 1.76479375, 0.35);
-            ItemModelHelper.handleGunAttachments(bone, itemStack, name);
         } else {
             ItemModelHelper.hideAllAttachments(bone, name);
-            if (name.equals("mount")) {
+            if (needHide) {
                 bone.setHidden(true);
             }
         }

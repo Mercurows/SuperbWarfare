@@ -36,6 +36,16 @@ public class RpkItemModel extends CustomGunModel<RpkItem> {
     }
 
     @Override
+    public ResourceLocation getLODModelResource(RpkItem animatable) {
+        return Mod.loc("geo/lod/rpk.geo.json");
+    }
+
+    @Override
+    public ResourceLocation getLODTextureResource(RpkItem animatable) {
+        return Mod.loc("textures/item/lod/rpk.png");
+    }
+
+    @Override
     public void setCustomAnimations(RpkItem animatable, long instanceId, AnimationState<RpkItem> animationState) {
         Player player = Minecraft.getInstance().player;
         if (player == null) return;
