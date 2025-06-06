@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.client.overlay;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.config.client.DisplayConfig;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.tools.FormatTool;
@@ -31,6 +32,8 @@ public class VehicleTeamOverlay implements LayeredDraw.Layer {
     @Override
     @ParametersAreNonnullByDefault
     public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
+        if (!DisplayConfig.VEHICLE_INFO.get()) return;
+
         int w = guiGraphics.guiWidth();
         int h = guiGraphics.guiHeight();
         Minecraft mc = Minecraft.getInstance();

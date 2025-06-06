@@ -54,6 +54,14 @@ public class DisplayClothConfig {
         );
 
         category.addEntry(entryBuilder
+                .startBooleanToggle(Component.translatable("config.superbwarfare.client.display.vehicle_info"), DisplayConfig.VEHICLE_INFO.get())
+                .setDefaultValue(true)
+                .setSaveConsumer(DisplayConfig.VEHICLE_INFO::set)
+                .setTooltip(Component.translatable("config.superbwarfare.client.display.vehicle_info.des"))
+                .build()
+        );
+
+        category.addEntry(entryBuilder
                 .startBooleanToggle(Component.translatable("config.superbwarfare.client.display.float_cross_hair"), DisplayConfig.FLOAT_CROSS_HAIR.get())
                 .setDefaultValue(true)
                 .setSaveConsumer(DisplayConfig.FLOAT_CROSS_HAIR::set)

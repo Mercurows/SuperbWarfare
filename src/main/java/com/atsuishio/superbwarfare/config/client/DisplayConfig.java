@@ -9,6 +9,7 @@ public class DisplayConfig {
     public static ModConfigSpec.IntValue WEAPON_HUD_Y_OFFSET;
     public static ModConfigSpec.BooleanValue KILL_INDICATION;
     public static ModConfigSpec.BooleanValue AMMO_HUD;
+    public static ModConfigSpec.BooleanValue VEHICLE_INFO;
     public static ModConfigSpec.BooleanValue FLOAT_CROSS_HAIR;
     public static ModConfigSpec.BooleanValue CAMERA_ROTATE;
     public static ModConfigSpec.BooleanValue ARMOR_PLATE_HUD;
@@ -36,6 +37,9 @@ public class DisplayConfig {
 
         builder.comment("Set true to show ammo and gun info on HUD");
         AMMO_HUD = builder.define("ammo_hud", true);
+
+        builder.comment("Set true to display vehicle info when aiming at a vehicle");
+        VEHICLE_INFO = builder.define("vehicle_info", true);
 
         builder.comment("Set true to enable float cross hair");
         FLOAT_CROSS_HAIR = builder.define("float_cross_hair", true);

@@ -615,6 +615,8 @@
   "config.superbwarfare.client.display.weapon_hud_x_offset.des": "武器HUD位置的水平方向偏移量",
   "config.superbwarfare.client.display.weapon_hud_y_offset": "武器HUD竖直偏移",
   "config.superbwarfare.client.display.weapon_hud_y_offset.des": "武器HUD位置的竖直方向偏移量",
+  "config.superbwarfare.client.display.vehicle_info": "载具信息显示",
+  "config.superbwarfare.client.display.vehicle_info.des": "是否在看向载具的时候，显示该载具的信息",
   "config.superbwarfare.client.vehicle": "载具控制",
   "config.superbwarfare.client.vehicle.invert_aircraft_control": "飞行器鼠标反转",
   "config.superbwarfare.client.vehicle.left_click_reload.des": "开启飞行器鼠标反转",

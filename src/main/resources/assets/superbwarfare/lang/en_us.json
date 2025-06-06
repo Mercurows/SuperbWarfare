@@ -615,6 +615,8 @@
   "config.superbwarfare.client.display.weapon_hud_x_offset.des": "The horizontal offset of weapon HUD",
   "config.superbwarfare.client.display.weapon_hud_y_offset": "Weapon HUD Y Offset",
   "config.superbwarfare.client.display.weapon_hud_y_offset.des": "The vertical offset of weapon HUD",
+  "config.superbwarfare.client.display.vehicle_info": "Vehicle Info",
+  "config.superbwarfare.client.display.vehicle_info.des": "Whether to display vehicle info when aiming at a vehicle",
   "config.superbwarfare.client.vehicle": "Control Vehicle",
   "config.superbwarfare.client.vehicle.invert_aircraft_control": "Invert Aircraft Control",
   "config.superbwarfare.client.vehicle.left_click_reload.des": "Set TRUE to invert aircraft control",
