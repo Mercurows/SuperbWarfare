@@ -1254,6 +1254,11 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
         } else return original;
     }
 
+    @Override
+    public boolean isEnclosed(int index) {
+        return index != 2;
+    }
+
     @OnlyIn(Dist.CLIENT)
     @Override
     public @Nullable Vec2 getCameraRotation(float partialTicks, Player player, boolean zoom, boolean isFirstPerson) {

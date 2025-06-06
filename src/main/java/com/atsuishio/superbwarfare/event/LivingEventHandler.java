@@ -650,8 +650,8 @@ public class LivingEventHandler {
         if (effectInstance == null) return;
 
         if (effectInstance.getEffect().value().getCategory() == MobEffectCategory.HARMFUL
-                && event.getEntity().getVehicle() instanceof ArmedVehicleEntity vehicle
-                && vehicle.hidePassenger(event.getEntity())
+                && event.getEntity().getVehicle() instanceof VehicleEntity vehicle
+                && vehicle.isEnclosed(vehicle.getSeatIndex(event.getEntity()))
         ) {
             event.setResult(MobEffectEvent.Applicable.Result.DO_NOT_APPLY);
         }

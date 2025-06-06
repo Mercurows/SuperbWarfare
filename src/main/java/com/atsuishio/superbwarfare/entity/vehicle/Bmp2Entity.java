@@ -748,6 +748,11 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
         return zoom ? 0.22 : 0.27;
     }
 
+    @Override
+    public boolean isEnclosed(int index) {
+        return true;
+    }
+
     @OnlyIn(Dist.CLIENT)
     @Override
     public @Nullable Vec2 getCameraRotation(float partialTicks, Player player, boolean zoom, boolean isFirstPerson) {

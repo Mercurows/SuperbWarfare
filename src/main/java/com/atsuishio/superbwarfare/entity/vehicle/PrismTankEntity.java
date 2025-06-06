@@ -792,6 +792,11 @@ public class PrismTankEntity extends ContainerMobileVehicleEntity implements Geo
         return zoom ? 0.26 : 0.33;
     }
 
+    @Override
+    public boolean isEnclosed(int index) {
+        return index == 0;
+    }
+
     @OnlyIn(Dist.CLIENT)
     @Override
     public @Nullable Vec2 getCameraRotation(float partialTicks, Player player, boolean zoom, boolean isFirstPerson) {

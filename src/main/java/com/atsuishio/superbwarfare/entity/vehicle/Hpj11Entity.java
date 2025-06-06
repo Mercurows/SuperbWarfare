@@ -591,6 +591,11 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
         return zoom ? 0.25 : 0.3;
     }
 
+    @Override
+    public boolean isEnclosed(int index) {
+        return true;
+    }
+
     @OnlyIn(Dist.CLIENT)
     @Override
     public @Nullable Vec2 getCameraRotation(float partialTicks, Player player, boolean zoom, boolean isFirstPerson) {

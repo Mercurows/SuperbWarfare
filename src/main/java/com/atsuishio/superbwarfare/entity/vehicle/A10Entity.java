@@ -1025,6 +1025,11 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
         return 0.3;
     }
 
+    @Override
+    public boolean isEnclosed(int index) {
+        return true;
+    }
+
     @OnlyIn(Dist.CLIENT)
     @Nullable
     public Pair<Quaternionf, Quaternionf> getPassengerRotation(Entity entity, float tickDelta) {

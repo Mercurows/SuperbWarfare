@@ -574,6 +574,11 @@ public class AnnihilatorEntity extends EnergyVehicleEntity implements GeoEntity,
         return zoom ? 0.15 : 0.3;
     }
 
+    @Override
+    public boolean isEnclosed(int index) {
+        return true;
+    }
+
     @OnlyIn(Dist.CLIENT)
     @Override
     public @Nullable Vec2 getCameraRotation(float partialTicks, Player player, boolean zoom, boolean isFirstPerson) {

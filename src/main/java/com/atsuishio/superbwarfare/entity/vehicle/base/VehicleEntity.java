@@ -1039,6 +1039,15 @@ public abstract class VehicleEntity extends Entity {
     }
 
     /**
+     * 判断每个位置上是否是封闭载具（封闭载具座位具有免疫负面效果等功能）
+     *
+     * @param index 位置
+     */
+    public boolean isEnclosed(int index) {
+        return false;
+    }
+
+    /**
      * 渲染载具的第一人称UI
      * 务必标记 @OnlyIn(Dist.CLIENT) !
      */
