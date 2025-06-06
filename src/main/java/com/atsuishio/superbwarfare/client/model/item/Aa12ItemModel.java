@@ -31,6 +31,16 @@ public class Aa12ItemModel extends CustomGunModel<Aa12Item> {
     }
 
     @Override
+    public ResourceLocation getLODModelResource(Aa12Item animatable) {
+        return Mod.loc("geo/lod/aa_12.geo.json");
+    }
+
+    @Override
+    public ResourceLocation getLODTextureResource(Aa12Item animatable) {
+        return Mod.loc("textures/item/lod/aa_12.png");
+    }
+
+    @Override
     public void setCustomAnimations(Aa12Item animatable, long instanceId, AnimationState<Aa12Item> animationState) {
         Player player = Minecraft.getInstance().player;
         if (player == null) return;
