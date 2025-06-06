@@ -7,6 +7,7 @@ public class CompatHolder {
     public static final String DMV = "dreamaticvoyage";
     public static final String VRC = "virtuarealcraft";
     public static final String CLOTH_CONFIG = "cloth_config";
+    public static final String COLD_SWEAT = "cold_sweat";
 
 //    @ObjectHolder(registryName = "minecraft:mob_effect", value = DMV + ":bleeding")
 //    public static final MobEffect DMV_BLEEDING = null;

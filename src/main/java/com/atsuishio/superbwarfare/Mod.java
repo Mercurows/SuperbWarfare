@@ -7,6 +7,7 @@ import com.atsuishio.superbwarfare.client.renderer.molang.MolangVariable;
 import com.atsuishio.superbwarfare.client.sound.ModSoundInstances;
 import com.atsuishio.superbwarfare.compat.CompatHolder;
 import com.atsuishio.superbwarfare.compat.clothconfig.ClothConfigHelper;
+import com.atsuishio.superbwarfare.compat.coldsweat.ColdSweatCompatHandler;
 import com.atsuishio.superbwarfare.component.ModDataComponents;
 import com.atsuishio.superbwarfare.config.ClientConfig;
 import com.atsuishio.superbwarfare.config.CommonConfig;
@@ -79,6 +80,9 @@ public class Mod {
 
         if (FMLEnvironment.dist == Dist.CLIENT) {
             CompatHolder.hasMod(CompatHolder.CLOTH_CONFIG, ClothConfigHelper::registerScreen);
+        }
+        if (ColdSweatCompatHandler.hasMod()) {
+            NeoForge.EVENT_BUS.addListener(ColdSweatCompatHandler::onPlayerInVehicle);
         }
 
         NeoForge.EVENT_BUS.register(this);
