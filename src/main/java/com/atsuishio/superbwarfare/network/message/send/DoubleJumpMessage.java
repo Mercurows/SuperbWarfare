@@ -34,11 +34,7 @@ public record DoubleJumpMessage(int empty) implements CustomPacketPayload {
 
         level.playSound(null, BlockPos.containing(x, y, z), ModSounds.DOUBLE_JUMP.get(), SoundSource.BLOCKS, 1, 1);
 
-        Entity vehicle = player;
-        while (vehicle.getVehicle() != null) {
-            vehicle = vehicle.getVehicle();
-        }
-
+        Entity vehicle = player.getRootVehicle();
         if (vehicle != player) {
             vehicle.setDeltaMovement(new Vec3(vehicle.getLookAngle().x, 0.8, vehicle.getLookAngle().z));
         }
