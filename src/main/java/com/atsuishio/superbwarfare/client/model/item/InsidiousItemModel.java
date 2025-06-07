@@ -34,6 +34,16 @@ public class InsidiousItemModel extends CustomGunModel<InsidiousItem> {
     }
 
     @Override
+    public ResourceLocation getLODModelResource(InsidiousItem animatable) {
+        return Mod.loc("geo/lod/insidious.geo.json");
+    }
+
+    @Override
+    public ResourceLocation getLODTextureResource(InsidiousItem animatable) {
+        return Mod.loc("textures/item/lod/insidious.png");
+    }
+
+    @Override
     public void setCustomAnimations(InsidiousItem animatable, long instanceId, AnimationState<InsidiousItem> animationState) {
         Player player = Minecraft.getInstance().player;
         if (player == null) return;
