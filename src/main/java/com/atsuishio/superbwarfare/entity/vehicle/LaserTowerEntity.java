@@ -70,7 +70,9 @@ public class LaserTowerEntity extends EnergyVehicleEntity implements GeoEntity, 
 
     public LaserTowerEntity(LivingEntity owner, Level level) {
         super(ModEntities.LASER_TOWER.get(), level);
-        this.setOwnerUUID(owner.getUUID());
+        if (owner != null) {
+            this.setOwnerUUID(owner.getUUID());
+        }
     }
 
     public boolean isOwnedBy(LivingEntity pEntity) {

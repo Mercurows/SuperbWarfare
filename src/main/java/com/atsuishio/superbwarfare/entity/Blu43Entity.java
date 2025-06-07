@@ -54,7 +54,9 @@ public class Blu43Entity extends Entity implements GeoEntity, OwnableEntity {
 
     public Blu43Entity(LivingEntity owner, Level level) {
         super(ModEntities.BLU_43.get(), level);
-        this.setOwnerUUID(owner.getUUID());
+        if (owner != null) {
+            this.setOwnerUUID(owner.getUUID());
+        }
     }
 
     @Override
