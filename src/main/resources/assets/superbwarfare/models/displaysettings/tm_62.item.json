@@ -109,6 +109,6 @@
     }
   },
   "textures": {
-    "particle": "item/tm_62"
+    "particle": "superbwarfare:item/tm_62"
   }
 }

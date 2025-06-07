@@ -70,6 +70,6 @@
     }
   },
   "textures": {
-    "particle": "item/homemade_shotgun"
+    "particle": "superbwarfare:item/homemade_shotgun"
   }
 }
