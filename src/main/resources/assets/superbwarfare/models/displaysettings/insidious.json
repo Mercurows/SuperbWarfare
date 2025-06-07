@@ -1,31 +1,10 @@
 {
   "credit": "Made with Blockbench",
-  "parent": "builtin/entity",
   "texture_size": [
-    256,
-    256
+    64,
+    64
   ],
-  "gui_light": "front",
   "display": {
-    "firstperson_righthand": {
-      "translation": [
-        -6.75,
-        3,
-        3
-      ],
-      "scale": [
-        1.05,
-        1.05,
-        1.25
-      ]
-    },
-    "firstperson_lefthand": {
-      "scale": [
-        0,
-        0,
-        0
-      ]
-    },
     "thirdperson_righthand": {
       "translation": [
         -0.75,
@@ -81,5 +60,8 @@
         1.1
       ]
     }
+  },
+  "textures": {
+    "particle": "item/k_98"
   }
 }

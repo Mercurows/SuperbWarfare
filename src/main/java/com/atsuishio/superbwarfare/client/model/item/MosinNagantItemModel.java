@@ -31,6 +31,16 @@ public class MosinNagantItemModel extends CustomGunModel<MosinNagantItem> {
     }
 
     @Override
+    public ResourceLocation getLODModelResource(MosinNagantItem animatable) {
+        return Mod.loc("geo/lod/mosin_nagant.geo.json");
+    }
+
+    @Override
+    public ResourceLocation getLODTextureResource(MosinNagantItem animatable) {
+        return Mod.loc("textures/item/lod/mosin_nagant.png");
+    }
+
+    @Override
     public void setCustomAnimations(MosinNagantItem animatable, long instanceId, AnimationState<MosinNagantItem> animationState) {
         Player player = Minecraft.getInstance().player;
         if (player == null) return;

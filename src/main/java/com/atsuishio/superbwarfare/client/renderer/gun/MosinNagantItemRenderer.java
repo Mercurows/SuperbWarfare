@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.client.renderer.gun;
 
 import com.atsuishio.superbwarfare.client.AnimationHelper;
+import com.atsuishio.superbwarfare.client.ItemModelHelper;
 import com.atsuishio.superbwarfare.client.model.item.MosinNagantItemModel;
 import com.atsuishio.superbwarfare.client.renderer.CustomGunRenderer;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
@@ -41,15 +42,25 @@ public class MosinNagantItemRenderer extends CustomGunRenderer<MosinNagantItem> 
         boolean flag = name.equals("jia") || name.equals("b1") || name.equals("b2");
 
         if (itemStack.getItem() instanceof GunItem && GeoItem.getId(itemStack) == this.getInstanceId(animatable)) {
-            if (this.renderPerspective == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND) {
+            if (this.renderPerspective == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND || this.renderPerspective == ItemDisplayContext.THIRD_PERSON_RIGHT_HAND) {
+
                 if (flag) {
                     bone.setHidden(ClientEventHandler.zoomPos > 0.7);
                 }
+
+                ItemModelHelper.handleGunAttachments(bone, itemStack, name);
+                AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn, 0, 0, 2.38345, 0.6);
+
+                if (this.renderPerspective == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND) {
+                    AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.259025, -0.05, 0.08f, 0, 0, 0, 255, "pu", true);
+                } else if (flag) {
+                    bone.setHidden(false);
+                }
+            } else {
+                ItemModelHelper.hideAllAttachments(bone, name);
             }
-            AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.259025, -0.05, 0.08f, 0, 0, 0, 255, "pu", true);
-            AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn, 0, 0, 2.38345, 0.6);
-        } else if (flag) {
-            bone.setHidden(false);
+        } else {
+            ItemModelHelper.hideAllAttachments(bone, name);
         }
 
         if (renderingArms) {

@@ -38,6 +38,13 @@
         0.75
       ]
     },
+    "thirdperson_lefthand": {
+      "scale": [
+        0,
+        0,
+        0
+      ]
+    },
     "ground": {
       "translation": [
         0,

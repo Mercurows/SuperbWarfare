@@ -31,6 +31,16 @@ public class K98ItemModel extends CustomGunModel<K98Item> {
     }
 
     @Override
+    public ResourceLocation getLODModelResource(K98Item animatable) {
+        return Mod.loc("geo/lod/k_98.geo.json");
+    }
+
+    @Override
+    public ResourceLocation getLODTextureResource(K98Item animatable) {
+        return Mod.loc("textures/item/lod/k_98.png");
+    }
+
+    @Override
     public void setCustomAnimations(K98Item animatable, long instanceId, AnimationState<K98Item> animationState) {
         Player player = Minecraft.getInstance().player;
         if (player == null) return;
