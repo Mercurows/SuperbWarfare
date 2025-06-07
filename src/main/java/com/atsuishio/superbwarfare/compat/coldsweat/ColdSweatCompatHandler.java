@@ -14,7 +14,7 @@ public class ColdSweatCompatHandler {
                 && vehicle.isEnclosed(vehicle.getSeatIndex(player))
                 && vehicle.getEnergy() > 0
         ) {
-            Temperature.set(player, Temperature.Trait.WORLD, 1);
+            Temperature.set(player, Temperature.Trait.CORE, 1);
         }
     }
 
