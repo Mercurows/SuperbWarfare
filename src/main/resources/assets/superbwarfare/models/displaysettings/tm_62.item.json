@@ -107,8 +107,5 @@
         2
       ]
     }
-  },
-  "textures": {
-    "particle": "superbwarfare:item/tm_62"
   }
 }
