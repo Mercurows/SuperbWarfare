@@ -536,6 +536,8 @@
   "commands.config.collision_destroy.beastly": "Enabled vehicle collision destroy blocks (Beastly Mode)",
   "commands.config.tactical_sprint.enabled": "Enabled tactical sprint",
   "commands.config.tactical_sprint.disabled": "Disabled tactical sprint",
+  "commands.config.glass_destroy.enabled": "Enabled bullet glass breaking",
+  "commands.config.glass_destroy.disabled": "Disabled bullet glass breaking",
 
   "tips.superbwarfare.sensitivity": "Current Sensitivity of This Gun: %1$s",
   "tips.superbwarfare.monitor.linked": "Connect!",

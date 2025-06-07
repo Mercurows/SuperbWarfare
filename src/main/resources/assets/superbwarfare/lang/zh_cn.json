@@ -536,6 +536,8 @@
   "commands.config.collision_destroy.beastly": "已开启载具碰撞破坏方块（野兽模式）",
   "commands.config.tactical_sprint.enabled": "已启用战术冲刺",
   "commands.config.tactical_sprint.disabled": "已禁用战术冲刺",
+  "commands.config.glass_destroy.enabled": "已开启子弹破坏玻璃",
+  "commands.config.glass_destroy.disabled": "已关闭子弹破坏玻璃",
 
   "tips.superbwarfare.sensitivity": "当前枪械的灵敏度为：%1$s",
   "tips.superbwarfare.monitor.linked": "连接成功！",

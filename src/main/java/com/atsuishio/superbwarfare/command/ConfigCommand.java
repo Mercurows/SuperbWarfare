@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.command;
 
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.config.server.MiscConfig;
+import com.atsuishio.superbwarfare.config.server.ProjectileConfig;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.network.message.receive.ClientTacticalSprintSyncMessage;
 import com.mojang.brigadier.arguments.BoolArgumentType;
@@ -81,6 +82,14 @@ public class ConfigCommand {
                     PacketDistributor.sendToAllPlayers(new ClientTacticalSprintSyncMessage(value));
 
                     context.getSource().sendSuccess(() -> Component.translatable(value ? "commands.config.tactical_sprint.enabled" : "commands.config.tactical_sprint.disabled"), true);
+                    return 0;
+                })))
+                .then(Commands.literal("glassDestroy").requires(s -> s.hasPermission(2)).then(Commands.argument("value", BoolArgumentType.bool()).executes(context -> {
+                    var value = BoolArgumentType.getBool(context, "value");
+                    ProjectileConfig.ALLOW_PROJECTILE_DESTROY_GLASS.set(value);
+                    ProjectileConfig.ALLOW_PROJECTILE_DESTROY_GLASS.save();
+
+                    context.getSource().sendSuccess(() -> Component.translatable(value ? "commands.config.glass_destroy.enabled" : "commands.config.glass_destroy.disabled"), true);
                     return 0;
                 })));
     }
