@@ -30,6 +30,16 @@ public class JavelinItemModel extends CustomGunModel<JavelinItem> {
     }
 
     @Override
+    public ResourceLocation getLODModelResource(JavelinItem animatable) {
+        return Mod.loc("geo/lod/javelin.geo.json");
+    }
+
+    @Override
+    public ResourceLocation getLODTextureResource(JavelinItem animatable) {
+        return Mod.loc("textures/item/lod/javelin.png");
+    }
+
+    @Override
     public void setCustomAnimations(JavelinItem animatable, long instanceId, AnimationState<JavelinItem> animationState) {
         Player player = Minecraft.getInstance().player;
         if (player == null) return;
