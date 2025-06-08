@@ -116,14 +116,12 @@ public class JavelinItem extends GunItem {
                 }
 
                 Entity targetEntity = EntityFindUtil.findEntity(player.level(), tag.getString("TargetEntity"));
-                Entity seekingEntity = SeekTool.seekEntity(player, player.level(), 512, 8);
-
 
                 if (tag.getInt("GuideType") == 0) {
-                    if (seekingEntity != null && seekingEntity == targetEntity) {
+                    if (targetEntity != null && VectorTool.calculateAngle(player.getViewVector(1), player.getEyePosition().vectorTo(targetEntity.getBoundingBox().getCenter())) < 8) {
                         tag.putInt("SeekTime", tag.getInt("SeekTime") + 1);
-                        if (tag.getInt("SeekTime") > 0 && (!seekingEntity.getPassengers().isEmpty() || seekingEntity instanceof VehicleEntity) && seekingEntity.tickCount % 3 == 0) {
-                            seekingEntity.level().playSound(null, seekingEntity.getOnPos(), seekingEntity instanceof Pig ? SoundEvents.PIG_HURT : ModSounds.LOCKING_WARNING.get(), SoundSource.PLAYERS, 1, 1f);
+                        if (tag.getInt("SeekTime") > 0 && (!targetEntity.getPassengers().isEmpty() || targetEntity instanceof VehicleEntity) && targetEntity.tickCount % 3 == 0) {
+                            targetEntity.level().playSound(null, targetEntity.getOnPos(), targetEntity instanceof Pig ? SoundEvents.PIG_HURT : ModSounds.LOCKING_WARNING.get(), SoundSource.PLAYERS, 1, 1f);
                         }
                     } else {
                         tag.putInt("SeekTime", 0);
@@ -133,12 +131,12 @@ public class JavelinItem extends GunItem {
                         SoundTool.playLocalSound(serverPlayer, ModSounds.JAVELIN_LOCK.get(), 1, 1);
                     }
 
-                    if (seekingEntity != null && tag.getInt("SeekTime") > 20) {
+                    if (targetEntity != null && tag.getInt("SeekTime") > 20) {
                         if (player instanceof ServerPlayer serverPlayer) {
                             SoundTool.playLocalSound(serverPlayer, ModSounds.JAVELIN_LOCKON.get(), 1, 1);
                         }
-                        if ((!seekingEntity.getPassengers().isEmpty() || seekingEntity instanceof VehicleEntity) && seekingEntity.tickCount % 2 == 0) {
-                            seekingEntity.level().playSound(null, seekingEntity.getOnPos(), seekingEntity instanceof Pig ? SoundEvents.PIG_HURT : ModSounds.LOCKED_WARNING.get(), SoundSource.PLAYERS, 1, 0.95f);
+                        if ((!targetEntity.getPassengers().isEmpty() || targetEntity instanceof VehicleEntity) && targetEntity.tickCount % 2 == 0) {
+                            targetEntity.level().playSound(null, targetEntity.getOnPos(), targetEntity instanceof Pig ? SoundEvents.PIG_HURT : ModSounds.LOCKED_WARNING.get(), SoundSource.PLAYERS, 1, 0.95f);
                         }
                     }
 
@@ -160,6 +158,12 @@ public class JavelinItem extends GunItem {
                             SoundTool.playLocalSound(serverPlayer, ModSounds.JAVELIN_LOCKON.get(), 1, 1);
                         }
                     }
+                }
+
+                Entity seekingEntity = SeekTool.seekEntity(player, player.level(), 512, 8);
+
+                if (seekingEntity instanceof DecoyEntity) {
+                    tag.putInt("SeekTime", 0);
                 }
             }
         } else {
