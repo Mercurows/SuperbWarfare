@@ -30,6 +30,18 @@ public class MarlinItemModel extends CustomGunModel<MarlinItem> {
         return Mod.loc("textures/item/marlin.png");
     }
 
+
+    @Override
+    public ResourceLocation getLODModelResource(MarlinItem animatable) {
+        return Mod.loc("geo/lod/marlin.geo.json");
+    }
+
+    @Override
+    public ResourceLocation getLODTextureResource(MarlinItem animatable) {
+        return Mod.loc("textures/item/lod/marlin.png");
+    }
+
+
     @Override
     public void setCustomAnimations(MarlinItem animatable, long instanceId, AnimationState<MarlinItem> animationState) {
         Player player = Minecraft.getInstance().player;
