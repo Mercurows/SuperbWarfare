@@ -31,6 +31,16 @@ public class M870ItemModel extends CustomGunModel<M870Item> {
     }
 
     @Override
+    public ResourceLocation getLODModelResource(M870Item animatable) {
+        return Mod.loc("geo/lod/m_870.geo.json");
+    }
+
+    @Override
+    public ResourceLocation getLODTextureResource(M870Item animatable) {
+        return Mod.loc("textures/item/lod/m_870.png");
+    }
+
+    @Override
     public void setCustomAnimations(M870Item animatable, long instanceId, AnimationState<M870Item> animationState) {
         Player player = Minecraft.getInstance().player;
         if (player == null) return;
