@@ -2,7 +2,7 @@
   "ID": "superbwarfare:a_10a",
   "MaxHealth": 350,
   "MaxEnergy": 10000000,
-  "UpStep": 0.5,
+  "UpStep": 1.1,
   "Mass": 20,
   "AllowFreeCam": true,
   "DamageModifiers": [

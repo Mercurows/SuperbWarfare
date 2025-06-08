@@ -32,6 +32,16 @@ public class RpgItemModel extends CustomGunModel<RpgItem> {
     }
 
     @Override
+    public ResourceLocation getLODModelResource(RpgItem animatable) {
+        return Mod.loc("geo/lod/rpg.geo.json");
+    }
+
+    @Override
+    public ResourceLocation getLODTextureResource(RpgItem animatable) {
+        return Mod.loc("textures/item/lod/rpg.png");
+    }
+
+    @Override
     public void setCustomAnimations(RpgItem animatable, long instanceId, AnimationState<RpgItem> animationState) {
         Player player = Minecraft.getInstance().player;
         if (player == null) return;

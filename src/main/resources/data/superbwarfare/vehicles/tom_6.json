@@ -2,7 +2,7 @@
   "ID": "superbwarfare:tom_6",
   "MaxHealth": 40,
   "MaxEnergy": 100000,
-  "UpStep": 0.5,
+  "UpStep": 1.1,
   "Mass": 0.02,
   "AllowFreeCam": true,
   "DamageModifiers": [

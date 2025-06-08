@@ -31,6 +31,16 @@ public class SecondaryCataclysmModel extends CustomGunModel<SecondaryCataclysm> 
     }
 
     @Override
+    public ResourceLocation getLODModelResource(SecondaryCataclysm animatable) {
+        return Mod.loc("geo/lod/secondary_cataclysm.geo.json");
+    }
+
+    @Override
+    public ResourceLocation getLODTextureResource(SecondaryCataclysm animatable) {
+        return Mod.loc("textures/item/lod/secondary_cataclysm.png");
+    }
+
+    @Override
     public void setCustomAnimations(SecondaryCataclysm animatable, long instanceId, AnimationState<SecondaryCataclysm> animationState) {
         Player player = Minecraft.getInstance().player;
         if (player == null) return;

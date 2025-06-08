@@ -31,6 +31,16 @@ public class SentinelItemModel extends CustomGunModel<SentinelItem> {
     }
 
     @Override
+    public ResourceLocation getLODModelResource(SentinelItem animatable) {
+        return Mod.loc("geo/lod/sentinel.geo.json");
+    }
+
+    @Override
+    public ResourceLocation getLODTextureResource(SentinelItem animatable) {
+        return Mod.loc("textures/item/lod/sentinel.png");
+    }
+
+    @Override
     public void setCustomAnimations(SentinelItem animatable, long instanceId, AnimationState<SentinelItem> animationState) {
         Player player = Minecraft.getInstance().player;
         if (player == null) return;
