@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.client.renderer.gun;
 
 import com.atsuishio.superbwarfare.client.AnimationHelper;
+import com.atsuishio.superbwarfare.client.ItemModelHelper;
 import com.atsuishio.superbwarfare.client.model.item.MinigunItemModel;
 import com.atsuishio.superbwarfare.client.renderer.CustomGunRenderer;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
@@ -37,9 +38,26 @@ public class MinigunItemRenderer extends CustomGunRenderer<MinigunItem> {
         if (player == null) return;
         ItemStack itemStack = player.getMainHandItem();
 
+        boolean needHide = bone.getName().equals("barrel1_illuminated") || bone.getName().equals("barrel2_illuminated") || bone.getName().equals("barrel3_illuminated")
+                || bone.getName().equals("barrel4_illuminated") || bone.getName().equals("barrel5_illuminated") || bone.getName().equals("barrel6_illuminated");
+
         if (itemStack.getItem() instanceof GunItem && GeoItem.getId(itemStack) == this.getInstanceId(animatable)) {
             if (this.renderPerspective == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND || this.renderPerspective == ItemDisplayContext.THIRD_PERSON_RIGHT_HAND) {
                 AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn, 0, 0.1, 1.45, 0.9);
+                if (this.renderPerspective != ItemDisplayContext.FIRST_PERSON_RIGHT_HAND) {
+                    if (needHide) {
+                        bone.setHidden(true);
+                    }
+                }
+            } else {
+                if (needHide) {
+                    bone.setHidden(true);
+                }
+            }
+        } else {
+            ItemModelHelper.hideAllAttachments(bone, name);
+            if (needHide) {
+                bone.setHidden(true);
             }
         }
 

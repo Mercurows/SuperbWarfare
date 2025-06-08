@@ -33,6 +33,16 @@ public class MinigunItemModel extends CustomGunModel<MinigunItem> {
     }
 
     @Override
+    public ResourceLocation getLODModelResource(MinigunItem animatable) {
+        return Mod.loc("geo/lod/minigun.geo.json");
+    }
+
+    @Override
+    public ResourceLocation getLODTextureResource(MinigunItem animatable) {
+        return Mod.loc("textures/item/lod/minigun.png");
+    }
+
+    @Override
     public void setCustomAnimations(MinigunItem animatable, long instanceId, AnimationState<MinigunItem> animationState) {
         Player player = Minecraft.getInstance().player;
         if (player == null) return;
