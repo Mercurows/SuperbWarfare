@@ -40,37 +40,50 @@ public class Mk14ItemRenderer extends CustomGunRenderer<Mk14Item> {
         var player = mc.player;
         if (player == null) return;
         ItemStack itemStack = player.getMainHandItem();
+
+        boolean needHide = name.equals("qiaojia");
+
         if (itemStack.getItem() instanceof GunItem && GeoItem.getId(itemStack) == this.getInstanceId(animatable)) {
-            if (this.renderPerspective == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND) {
-                if (name.equals("qiaojia")) {
+            if (this.renderPerspective == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND || this.renderPerspective == ItemDisplayContext.THIRD_PERSON_RIGHT_HAND) {
+
+                if (needHide) {
                     bone.setHidden(GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 0);
                 }
-                if (GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 2
-                        && (name.equals("hidden"))) {
-                    bone.setHidden(ClientEventHandler.zoomPos > 0.7 && ClientEventHandler.zoom);
+
+                AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn, 0, 0, 1.475, 0.33);
+                ItemModelHelper.handleGunAttachments(bone, itemStack, name);
+
+                if (this.renderPerspective == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND) {
+                    if (GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 2
+                            && (name.equals("hidden"))) {
+                        bone.setHidden(ClientEventHandler.zoomPos > 0.7 && ClientEventHandler.zoom);
+                    }
+                    if (GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 3
+                            && (name.equals("jing") || name.equals("yugu") || name.equals("qiangguan") || name.equals("Barrel"))) {
+                        bone.setHidden(ClientEventHandler.zoomPos > 0.7 && ClientEventHandler.zoom);
+                    }
+
+                    int scopeType = GunData.from(itemStack).attachment.get(AttachmentType.SCOPE);
+
+                    switch (scopeType) {
+                        case 1 ->
+                                AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.25, 30, 0.8f, 255, 0, 0, 255, "eotech", false);
+                        case 2 ->
+                                AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.313, 9, 1, 255, 0, 0, 255, "acog", true);
+                        case 3 ->
+                                AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.29, 45, (float) ClientEventHandler.customZoom, 255, 0, 0, 255, "lpvo", true);
+                    }
                 }
-                if (GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 3
-                        && (name.equals("jing") || name.equals("yugu") || name.equals("qiangguan") || name.equals("Barrel"))) {
-                    bone.setHidden(ClientEventHandler.zoomPos > 0.7 && ClientEventHandler.zoom);
+
+            } else {
+                ItemModelHelper.hideAllAttachments(bone, name);
+                if (needHide) {
+                    bone.setHidden(true);
                 }
             }
-
-            int scopeType = GunData.from(itemStack).attachment.get(AttachmentType.SCOPE);
-
-            switch (scopeType) {
-                case 1 ->
-                        AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.25, 30, 0.8f, 255, 0, 0, 255, "eotech", false);
-                case 2 ->
-                        AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.313, 9, 1, 255, 0, 0, 255, "acog", true);
-                case 3 ->
-                        AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.29, 45, (float) ClientEventHandler.customZoom, 255, 0, 0, 255, "lpvo", true);
-            }
-
-            AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn, 0, 0, 1.475, 0.33);
-            ItemModelHelper.handleGunAttachments(bone, itemStack, name);
         } else {
             ItemModelHelper.hideAllAttachments(bone, name);
-            if (name.equals("qiaojia")) {
+            if (needHide) {
                 bone.setHidden(true);
             }
         }

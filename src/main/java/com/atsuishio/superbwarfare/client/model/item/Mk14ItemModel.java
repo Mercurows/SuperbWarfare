@@ -39,6 +39,16 @@ public class Mk14ItemModel extends CustomGunModel<Mk14Item> {
     }
 
     @Override
+    public ResourceLocation getLODModelResource(Mk14Item animatable) {
+        return Mod.loc("geo/lod/mk_14.geo.json");
+    }
+
+    @Override
+    public ResourceLocation getLODTextureResource(Mk14Item animatable) {
+        return Mod.loc("textures/item/lod/mk_14.png");
+    }
+
+    @Override
     public void setCustomAnimations(Mk14Item animatable, long instanceId, AnimationState<Mk14Item> animationState) {
         Player player = Minecraft.getInstance().player;
         if (player == null) return;

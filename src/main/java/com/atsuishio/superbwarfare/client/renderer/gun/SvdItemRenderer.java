@@ -45,7 +45,7 @@ public class SvdItemRenderer extends CustomGunRenderer<SvdItem> {
         if (itemStack.getItem() instanceof GunItem && GeoItem.getId(itemStack) == this.getInstanceId(animatable)) {
             if (this.renderPerspective == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND || this.renderPerspective == ItemDisplayContext.THIRD_PERSON_RIGHT_HAND) {
 
-                if (name.equals("mount")) {
+                if (needHide) {
                     bone.setHidden(GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 0 || GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 2);
                 }
 
