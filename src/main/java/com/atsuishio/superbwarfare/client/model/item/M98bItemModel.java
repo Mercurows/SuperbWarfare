@@ -42,6 +42,16 @@ public class M98bItemModel extends CustomGunModel<M98bItem> {
     }
 
     @Override
+    public ResourceLocation getLODModelResource(M98bItem animatable) {
+        return Mod.loc("geo/lod/m_98b.geo.json");
+    }
+
+    @Override
+    public ResourceLocation getLODTextureResource(M98bItem animatable) {
+        return Mod.loc("textures/item/lod/m_98b.png");
+    }
+
+    @Override
     public void setCustomAnimations(M98bItem animatable, long instanceId, AnimationState<M98bItem> animationState) {
         Player player = Minecraft.getInstance().player;
         if (player == null) return;
