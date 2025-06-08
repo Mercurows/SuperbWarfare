@@ -508,6 +508,21 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
     }
 
     @Override
+    public Vec3 shootPos(float tickDelta) {
+        Matrix4f transform = getVehicleTransform(tickDelta);
+        Vector4f worldPosition = transformPosition(transform, 0f, -0.83f, 0.8f);
+        return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
+    }
+
+    @Override
+    public Vec3 shootVec(float tickDelta) {
+        Matrix4f transform = getVehicleTransform(tickDelta);
+        Vector4f worldPosition = transformPosition(transform, 0, 0, 0);
+        Vector4f worldPosition2 = transformPosition(transform, 0, 0.01f, 1);
+        return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z).vectorTo(new Vec3(worldPosition2.x, worldPosition2.y, worldPosition2.z)).normalize();
+    }
+
+    @Override
     public void vehicleShoot(Player player, int type) {
         boolean hasCreativeAmmo = false;
         for (int i = 0; i < getMaxPassengers() - 1; i++) {
@@ -524,25 +539,26 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
         if (getWeaponIndex(0) == 0) {
             if (this.cannotFire) return;
 
-            x = 1.15f;
-            y = 0.62f - 1.45f;
-            z = 0.8f;
-
             Vector4f worldPosition;
+            Vector4f worldPosition2;
 
             if (fireIndex == 0) {
-                worldPosition = transformPosition(transform, -x, y, z);
+                worldPosition = transformPosition(transform, 1.15f, -0.83f, 0.8f);
+                worldPosition2 = transformPosition(transform, 1.15f + 0.009f - 0.002f, -0.83f + 0.012f, 1.8f);
                 fireIndex = 1;
             } else {
-                worldPosition = transformPosition(transform, x, y, z);
+                worldPosition = transformPosition(transform, -1.15f, -0.83f, 0.8f);
+                worldPosition2 = transformPosition(transform, -1.15f + 0.009f + 0.002f, -0.83f + 0.012f, 1.8f);
                 fireIndex = 0;
             }
+
+            Vec3 shootVec = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z).vectorTo(new Vec3(worldPosition2.x, worldPosition2.y, worldPosition2.z)).normalize();
 
             if (this.entityData.get(AMMO) > 0 || hasCreativeAmmo) {
                 var entityToSpawn = ((SmallCannonShellWeapon) getWeapon(0)).create(player);
 
                 entityToSpawn.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
-                entityToSpawn.shoot(getLookAngle().x, getLookAngle().y + 0.008, getLookAngle().z, 20, 0.15f);
+                entityToSpawn.shoot(shootVec.x, shootVec.y, shootVec.z, 20, 0.15f);
                 level().addFreshEntity(entityToSpawn);
 
                 sendParticle((ServerLevel) this.level(), ParticleTypes.LARGE_SMOKE, worldPosition.x, worldPosition.y, worldPosition.z, 1, 0, 0, 0, 0, false);
@@ -571,24 +587,26 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
             }
 
         } else if (getWeaponIndex(0) == 1 && this.getEntityData().get(LOADED_ROCKET) > 0) {
-            x = 1.7f;
-            y = 0.62f - 1.45f;
-            z = 0.8f;
 
             var heliRocketEntity = ((HeliRocketWeapon) getWeapon(0)).create(player);
 
             Vector4f worldPosition;
+            Vector4f worldPosition2;
 
             if (fireIndex == 0) {
-                worldPosition = transformPosition(transform, -x, y, z);
+                worldPosition = transformPosition(transform, 1.7f, -0.83f, 0.8f);
+                worldPosition2 = transformPosition(transform, 1.7f + 0.009f - 0.0025f, -0.83f + 0.012f, 1.8f);
                 fireIndex = 1;
             } else {
-                worldPosition = transformPosition(transform, x, y, z);
+                worldPosition = transformPosition(transform, -1.7f, -0.83f, 0.8f);
+                worldPosition2 = transformPosition(transform, -1.7f + 0.009f + 0.0025f, -0.83f + 0.012f, 1.8f);
                 fireIndex = 0;
             }
 
+            Vec3 shootVec = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z).vectorTo(new Vec3(worldPosition2.x, worldPosition2.y, worldPosition2.z)).normalize();
+
             heliRocketEntity.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
-            heliRocketEntity.shoot(this.getLookAngle().x, this.getLookAngle().y + 0.008, this.getLookAngle().z, 7, 0.25f);
+            heliRocketEntity.shoot(shootVec.x, shootVec.y, shootVec.z, 7, 0.25f);
             player.level().addFreshEntity(heliRocketEntity);
 
             if (!player.level().isClientSide) {

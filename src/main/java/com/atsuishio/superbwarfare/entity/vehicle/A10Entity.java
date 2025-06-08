@@ -766,7 +766,7 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
         if (getWeaponIndex(0) == 0) {
             worldPosition = transformPosition(transform, 0.1321625f, -0.56446875f, 7.85210625f);
         } else if (getWeaponIndex(0) == 1) {
-            worldPosition = transformPosition(transform, 0f, -1.76f, 1.87f);
+            worldPosition = transformPosition(transform, 0f, -1.443f, 0.13f);
         } else {
             worldPosition = transformPosition(transform, 0f, -1.203125f, 0.0625f);
         }
@@ -783,7 +783,7 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
             worldPosition2 = transformPosition(transform, 0, 0f, 1);
         } else {
             worldPosition = transformPosition(transform, 0, 0, 0);
-            worldPosition2 = transformPosition(transform, 0.007f, -0.03f, 1);
+            worldPosition2 = transformPosition(transform, 0, -0.03f, 1);
         }
         return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z).vectorTo(new Vec3(worldPosition2.x, worldPosition2.y, worldPosition2.z)).normalize();
     }
@@ -802,7 +802,12 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
 
             boolean hasCreativeAmmo = getFirstPassenger() instanceof Player pPlayer && InventoryTool.hasCreativeAmmoBox(pPlayer);
 
+
             Vector4f worldPosition = transformPosition(transform, 0.1321625f, -0.56446875f, 7.85210625f);
+            Vector4f worldPosition2 = transformPosition(transform, 0.1321625f + 0.01f, -0.56446875f - 0.03f, 8.85210625f);
+
+            Vec3 shootVec = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z).vectorTo(new Vec3(worldPosition2.x, worldPosition2.y, worldPosition2.z)).normalize();
+
 
             if (this.entityData.get(AMMO) > 0 || hasCreativeAmmo) {
                 entityData.set(FIRE_TIME, Math.min(entityData.get(FIRE_TIME) + 6, 6));
@@ -810,7 +815,7 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
                 var entityToSpawn = ((SmallCannonShellWeapon) getWeapon(0)).create(player);
 
                 entityToSpawn.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
-                entityToSpawn.shoot(shootVec(1).x, shootVec(1).y, shootVec(1).z, 30, 0.5f);
+                entityToSpawn.shoot(shootVec.x, shootVec.y, shootVec.z, 30, 0.5f);
                 level().addFreshEntity(entityToSpawn);
 
                 sendParticle((ServerLevel) this.level(), ParticleTypes.LARGE_SMOKE, worldPosition.x, worldPosition.y, worldPosition.z, 1, 0.2, 0.2, 0.2, 0.001, true);
@@ -836,23 +841,30 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
             var heliRocketEntity = ((HeliRocketWeapon) getWeapon(0)).create(player);
 
             Vector4f worldPosition;
+            Vector4f worldPosition2;
 
             if (fireIndex == 0) {
                 worldPosition = transformPosition(transform, -3.9321875f, -1.38680625f, 0.12965f);
+                worldPosition2 = transformPosition(transform, -3.9321875f + 0.01f + 0.005f, -1.38680625f - 0.03f, 1.12965f);
                 fireIndex = 1;
             } else if (fireIndex == 1) {
                 worldPosition = transformPosition(transform, -1.56875f, -1.443f, 0.1272f);
+                worldPosition2 = transformPosition(transform, -1.56875f + 0.01f + 0.005f, -1.443f - 0.03f, 1.1272f);
                 fireIndex = 2;
             } else if (fireIndex == 2) {
                 worldPosition = transformPosition(transform, 1.56875f, -1.443f, 0.1272f);
+                worldPosition2 = transformPosition(transform, 1.56875f + 0.01f - 0.002f, -1.443f - 0.03f, 1.1272f);
                 fireIndex = 3;
             } else {
                 worldPosition = transformPosition(transform, 3.9321875f, -1.38680625f, 0.12965f);
+                worldPosition2 = transformPosition(transform, 3.9321875f + 0.01f - 0.002f, -1.38680625f - 0.03f, 1.12965f);
                 fireIndex = 0;
             }
 
+            Vec3 shootVec = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z).vectorTo(new Vec3(worldPosition2.x, worldPosition2.y, worldPosition2.z)).normalize();
+
             heliRocketEntity.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
-            heliRocketEntity.shoot(shootVec(1).x, shootVec(1).y, shootVec(1).z, 8, 0.5f);
+            heliRocketEntity.shoot(shootVec.x, shootVec.y, shootVec.z, 8, 0.5f);
             player.level().addFreshEntity(heliRocketEntity);
 
             BlockPos pos = BlockPos.containing(new Vec3(worldPosition.x, worldPosition.y, worldPosition.z));
@@ -906,9 +918,9 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
             } else if (this.getEntityData().get(LOADED_MISSILE) == 3) {
                 worldPosition = transformPosition(transform, -5.28f, -1.76f, 1.87f);
             } else if (this.getEntityData().get(LOADED_MISSILE) == 2) {
-                worldPosition = transformPosition(transform, 6.63f, -0.55f, 1.83f);
+                worldPosition = transformPosition(transform, 6.63f, -1.55f, 1.83f);
             } else {
-                worldPosition = transformPosition(transform, -6.63f, -0.55f, 1.83f);
+                worldPosition = transformPosition(transform, -6.63f, -1.55f, 1.83f);
             }
 
             if (locked) {
