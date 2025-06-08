@@ -540,7 +540,12 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
             }
 
             if (!onGround()) {
-                this.setZRot(this.roll * 0.98f);
+                float speed = Mth.clamp(Mth.abs(roll) / 90, 0, 1);
+                if (this.roll > 0) {
+                    setZRot(roll - Math.min(speed, roll));
+                } else if (this.roll < 0){
+                    setZRot(roll + Math.min(speed, -roll));
+                }
             }
 
             this.setPropellerRot(this.getPropellerRot() + 30 * this.entityData.get(POWER));
@@ -832,16 +837,16 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
             Vector4f worldPosition;
 
             if (fireIndex == 0) {
-                worldPosition = transformPosition(transform, -6.63f, -0.55f, 1.83f);
+                worldPosition = transformPosition(transform, -3.9321875f, -1.38680625f, 0.12965f);
                 fireIndex = 1;
             } else if (fireIndex == 1) {
-                worldPosition = transformPosition(transform, -5.28f, -1.76f, 1.87f);
+                worldPosition = transformPosition(transform, -1.56875f, -1.443f, 0.1272f);
                 fireIndex = 2;
             } else if (fireIndex == 2) {
-                worldPosition = transformPosition(transform, 5.28f, -1.76f, 1.87f);
+                worldPosition = transformPosition(transform, 1.56875f, -1.443f, 0.1272f);
                 fireIndex = 3;
             } else {
-                worldPosition = transformPosition(transform, 6.63f, -0.55f, 1.83f);
+                worldPosition = transformPosition(transform, 3.9321875f, -1.38680625f, 0.12965f);
                 fireIndex = 0;
             }
 
@@ -896,13 +901,13 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
             Vector4f worldPosition;
 
             if (this.getEntityData().get(LOADED_MISSILE) == 4) {
-                worldPosition = transformPosition(transform, 1.56875f, -0.943f - 0.5f, 0.1272f);
+                worldPosition = transformPosition(transform, 5.28f, -1.76f, 1.87f);
             } else if (this.getEntityData().get(LOADED_MISSILE) == 3) {
-                worldPosition = transformPosition(transform, -1.56875f, -0.943f - 0.5f, 0.1272f);
+                worldPosition = transformPosition(transform, -5.28f, -1.76f, 1.87f);
             } else if (this.getEntityData().get(LOADED_MISSILE) == 2) {
-                worldPosition = transformPosition(transform, 3.9321875f, -0.88680625f - 0.5f, 0.12965f);
+                worldPosition = transformPosition(transform, 6.63f, -0.55f, 1.83f);
             } else {
-                worldPosition = transformPosition(transform, -3.9321875f, -0.88680625f - 0.5f, 0.12965f);
+                worldPosition = transformPosition(transform, -6.63f, -0.55f, 1.83f);
             }
 
             if (locked) {

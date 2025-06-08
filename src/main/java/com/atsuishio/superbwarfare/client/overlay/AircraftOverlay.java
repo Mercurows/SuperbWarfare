@@ -221,8 +221,8 @@ public class AircraftOverlay implements LayeredDraw.Layer {
             // 准星
             if (pCross != null) {
                 poseStack.pushPose();
-                float x = (float) pCross.x + (zoomVehicle ? 6 : 2);
-                float y = (float) pCross.y + (zoomVehicle ? 15 : 5);
+                float x = (float) pCross.x + (zoomVehicle ? 8 * (float) (Minecraft.getInstance().options.fov().get() / 70) : 3);
+                float y = (float) pCross.y + (zoomVehicle ? 25 * (float) (Minecraft.getInstance().options.fov().get() / 70) : 5);
 
                 if (mc.options.getCameraType() == CameraType.FIRST_PERSON && !(mobileVehicle instanceof A10Entity a10Entity && a10Entity.getWeaponIndex(0) == 3)) {
                     RenderSystem.disableDepthTest();
