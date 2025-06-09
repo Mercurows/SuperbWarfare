@@ -69,16 +69,17 @@ public class TracheliumItemRenderer extends CustomGunRenderer<Trachelium> {
                 AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn, 0, 0, 0.734375, 0.5);
                 ItemModelHelper.handleGunAttachments(bone, itemStack, name);
 
-                int scopeType = GunData.from(itemStack).attachment.get(AttachmentType.SCOPE);
-
-                switch (scopeType) {
-                    case 1 ->
-                            AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.3, 30, 1.2f, 255, 0, 0, 255, "dot", false);
-                    case 2 -> {
-                        if (NBTTool.getTag(itemStack).getBoolean("ScopeAlt")) {
-                            AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.36, 30, 0.18f, 255, 0, 0, 255, "delta", false);
-                        } else {
-                            AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.294, 13, 0.87f, 255, 0, 0, 255, "hamr", true);
+                if (this.renderPerspective == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND) {
+                    int scopeType = GunData.from(itemStack).attachment.get(AttachmentType.SCOPE);
+                    switch (scopeType) {
+                        case 1 ->
+                                AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.3, 30, 1.2f, 255, 0, 0, 255, "dot", false);
+                        case 2 -> {
+                            if (NBTTool.getTag(itemStack).getBoolean("ScopeAlt")) {
+                                AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.36, 30, 0.18f, 255, 0, 0, 255, "delta", false);
+                            } else {
+                                AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.294, 13, 0.87f, 255, 0, 0, 255, "hamr", true);
+                            }
                         }
                     }
                 }
