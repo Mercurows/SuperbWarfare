@@ -1,15 +1,16 @@
 {
   "type": "minecraft:smithing_transform",
-  "template": {
-    "item": "superbwarfare:glock_17_blueprint"
+  "addition": {
+    "item": "minecraft:iron_ingot"
   },
   "base": {
     "item": "superbwarfare:common_material_pack"
   },
-  "addition": {
-    "item": "minecraft:iron_ingot"
-  },
   "result": {
+    "count": 1,
     "id": "superbwarfare:glock_17"
+  },
+  "template": {
+    "item": "superbwarfare:glock_17_blueprint"
   }
 }

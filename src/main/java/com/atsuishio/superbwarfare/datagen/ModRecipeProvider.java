@@ -1,15 +1,18 @@
 package com.atsuishio.superbwarfare.datagen;
 
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.init.ModItems;
+import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.recipe.AmmoBoxAddAmmoRecipe;
 import com.atsuishio.superbwarfare.recipe.AmmoBoxExtractAmmoRecipe;
 import com.atsuishio.superbwarfare.recipe.PotionMortarShellRecipe;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
-import net.minecraft.data.recipes.RecipeOutput;
-import net.minecraft.data.recipes.RecipeProvider;
-import net.minecraft.data.recipes.SpecialRecipeBuilder;
+import net.minecraft.data.recipes.*;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
 import org.jetbrains.annotations.NotNull;
 
@@ -26,6 +29,12 @@ public class ModRecipeProvider extends RecipeProvider {
         SpecialRecipeBuilder.special(PotionMortarShellRecipe::new).save(output, "potion_mortar_shell");
         SpecialRecipeBuilder.special(AmmoBoxAddAmmoRecipe::new).save(output, "ammo_box_add_ammo");
         SpecialRecipeBuilder.special(AmmoBoxExtractAmmoRecipe::new).save(output, "ammo_box_extract_ammo");
+
+        gunSmithing(output, ModItems.TRACHELIUM_BLUEPRINT.get(), GunRarity.EPIC, ModTags.Items.INGOTS_CEMENTED_CARBIDE, ModItems.TRACHELIUM.get());
+        gunSmithing(output, ModItems.GLOCK_17_BLUEPRINT.get(), GunRarity.COMMON, Items.IRON_INGOT, ModItems.GLOCK_17.get());
+        gunSmithing(output, ModItems.MP_443_BLUEPRINT.get(), GunRarity.COMMON, Items.IRON_INGOT, ModItems.MP_443.get());
+        gunSmithing(output, ModItems.GLOCK_18_BLUEPRINT.get(), GunRarity.RARE, Items.GOLD_INGOT, ModItems.GLOCK_18.get());
+//        gunSmithing(writer, ModItems.HUNTING_RIFLE_BLUEPRINT.get(), GunRarity.COMMON, Items.IRON_INGOT, ModItems.HUNTING_RIFLE.get());
 
         copyBlueprint(output, ModItems.TRACHELIUM_BLUEPRINT.get());
         copyBlueprint(output, ModItems.GLOCK_17_BLUEPRINT.get());
@@ -72,5 +81,39 @@ public class ModRecipeProvider extends RecipeProvider {
 
     private static void copyBlueprint(RecipeOutput output, ItemLike result) {
         copySmithingTemplate(output, result, Items.LAPIS_LAZULI);
+    }
+
+    public static void gunSmithing(RecipeOutput output, ItemLike blueprint, GunRarity rarity, TagKey<Item> tagKey, Item pResultItem) {
+        gunSmithing(output, blueprint, rarity, Ingredient.of(tagKey), pResultItem);
+    }
+
+    public static void gunSmithing(RecipeOutput output, ItemLike blueprint, GunRarity rarity, ItemLike ingredient, Item pResultItem) {
+        gunSmithing(output, blueprint, rarity, Ingredient.of(ingredient), pResultItem);
+    }
+
+    public static void gunSmithing(RecipeOutput output, ItemLike blueprint, GunRarity rarity, Ingredient ingredient, Item pResultItem) {
+        ItemLike pack = switch (rarity) {
+            case COMMON -> ModItems.COMMON_MATERIAL_PACK.get();
+            case RARE -> ModItems.RARE_MATERIAL_PACK.get();
+            case EPIC -> ModItems.EPIC_MATERIAL_PACK.get();
+            case LEGENDARY -> ModItems.LEGENDARY_MATERIAL_PACK.get();
+        };
+
+        SmithingTransformRecipeBuilder.smithing(
+                        Ingredient.of(blueprint),
+                        Ingredient.of(pack),
+                        ingredient,
+                        RecipeCategory.COMBAT,
+                        pResultItem
+                )
+                .unlocks(getHasName(blueprint), has(blueprint))
+                .save(output, Mod.loc(getItemName(pResultItem) + "_smithing"));
+    }
+
+    public enum GunRarity {
+        COMMON,
+        RARE,
+        EPIC,
+        LEGENDARY,
     }
 }
