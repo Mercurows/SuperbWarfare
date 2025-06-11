@@ -246,7 +246,7 @@ public class Trachelium extends GunItem {
     @Override
     public double getCustomDamage(ItemStack stack) {
         if (useSpecialAttributes(stack)) {
-            return 2;
+            return 3;
         }
         return super.getCustomDamage(stack);
     }
