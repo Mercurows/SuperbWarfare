@@ -751,6 +751,6 @@
   "superbwarfare.page.vehicle.a_10a1": "$(thing)A-10“雷电II”攻击机$()是一款单座攻击机，装甲防护一般。携带4发可干扰制导锁定的热诱弹，每隔一段时间自动逐发补充。$(p)按下$(thing)$(k:key.jump)$()收放起落架，$(thing)$(k:key.sneak)$()打开减速板，$(thing)$(k:key.sprint)$()开启加速。",
   "superbwarfare.page.vehicle.a_10a2": "需要至少 7 x 7 x 4 的空间放置。",
   "superbwarfare.page.vehicle.a_10a3": "$(l)基础属性：$()$(p)耐久值 - 350$(br)最大乘员数 - 1$(br)爬坡高度 - 0.5m$(br)最大能量 - 1,000,000FE$(br)能耗 - 256FE/tick$(br)最大速度 - 180km/h（未开启加速） / 300km/h（开启加速）",
-  "superbwarfare.page.vehicle.a_10a4": "$(l)武器属性：$()$(p)1号位：$(p)(1) 30mm机炮$(br)射速 - 600RPM$(br)直击伤害 - 30$(br)爆炸伤害 - 10$(br)爆炸半径 - 4m$(br)弹药 - $(item)小口径炮弹$()$(br)(2) 70mm火箭弹$(br)射速 - 120RPM$(br)直击伤害 - 90$(br)爆炸伤害 - 50$(br)爆炸半径 - 6m$(br)弹药 - $(item)70mm火箭弹$()",
+  "superbwarfare.page.vehicle.a_10a4": "$(l)武器属性：$()$(p)1号位：$(p)(1) 30mm机炮$(br)射速 - 1200RPM$(br)直击伤害 - 30$(br)爆炸伤害 - 10$(br)爆炸半径 - 4m$(br)弹药 - $(item)小口径炮弹$()$(br)(2) 70mm火箭弹$(br)射速 - 120RPM$(br)直击伤害 - 90$(br)爆炸伤害 - 50$(br)爆炸半径 - 6m$(br)弹药 - $(item)70mm火箭弹$()",
   "superbwarfare.page.vehicle.a_10a5": "(3) MK-82航空炸弹$(br)爆炸伤害 - 650$(br)爆炸半径 - 11m$(br)弹药 - $(item)中型航空炸弹$()$(br)(4) AGM-65空对地导弹$(br)直击伤害 - 1100$(br)爆炸伤害 - 150$(br)爆炸半径 - 9m$(br)弹药 - $(item)空对地导弹$()"
 }
