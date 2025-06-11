@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:smithing_transform",
+  "addition": {
+    "tag": "minecraft:logs"
+  },
+  "base": {
+    "item": "superbwarfare:rare_material_pack"
+  },
+  "result": {
+    "count": 1,
+    "id": "superbwarfare:hunting_rifle"
+  },
+  "template": {
+    "item": "superbwarfare:hunting_rifle_blueprint"
+  }
+}

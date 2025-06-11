@@ -101,11 +101,16 @@
         },
         {
           "type": "minecraft:item",
+          "name": "superbwarfare:hunting_rifle_blueprint",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
           "name": "superbwarfare:trachelium_blueprint"
         },
         {
           "type": "minecraft:item",
-          "name": "superbwarfare:hunting_rifle_blueprint"
+          "name": "superbwarfare:sentinel_blueprint"
         },
         {
           "type": "minecraft:item",

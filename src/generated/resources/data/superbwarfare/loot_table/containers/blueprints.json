@@ -91,12 +91,17 @@
         },
         {
           "type": "minecraft:item",
+          "name": "superbwarfare:hunting_rifle_blueprint",
+          "weight": 42
+        },
+        {
+          "type": "minecraft:item",
           "name": "superbwarfare:trachelium_blueprint",
           "weight": 15
         },
         {
           "type": "minecraft:item",
-          "name": "superbwarfare:hunting_rifle_blueprint",
+          "name": "superbwarfare:sentinel_blueprint",
           "weight": 15
         },
         {
@@ -161,17 +166,17 @@
         },
         {
           "type": "minecraft:item",
-          "name": "superbwarfare:sentinel_blueprint",
-          "weight": 5
-        },
-        {
-          "type": "minecraft:item",
           "name": "superbwarfare:javelin_blueprint",
           "weight": 5
         },
         {
           "type": "minecraft:item",
           "name": "superbwarfare:secondary_cataclysm_blueprint",
+          "weight": 5
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:aurelia_sceptre_blueprint",
           "weight": 5
         }
       ],
