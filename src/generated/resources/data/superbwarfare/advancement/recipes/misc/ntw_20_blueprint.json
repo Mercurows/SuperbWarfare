@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_ntw_20_blueprint": {
+      "conditions": {
+        "items": [
+          {
+            "items": "superbwarfare:ntw_20_blueprint"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "superbwarfare:ntw_20_blueprint"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_ntw_20_blueprint"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "superbwarfare:ntw_20_blueprint"
+    ]
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_svd_blueprint": {
+      "conditions": {
+        "items": [
+          {
+            "items": "superbwarfare:svd_blueprint"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "superbwarfare:svd_blueprint"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_svd_blueprint"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "superbwarfare:svd_blueprint"
+    ]
+  }
+}

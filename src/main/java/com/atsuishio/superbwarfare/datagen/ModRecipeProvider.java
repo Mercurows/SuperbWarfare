@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.datagen;
 
+import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.recipe.AmmoBoxAddAmmoRecipe;
 import com.atsuishio.superbwarfare.recipe.AmmoBoxExtractAmmoRecipe;
 import com.atsuishio.superbwarfare.recipe.PotionMortarShellRecipe;
@@ -8,21 +9,68 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.recipes.SpecialRecipeBuilder;
-import net.neoforged.neoforge.common.conditions.IConditionBuilder;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.ItemLike;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.CompletableFuture;
 
-public class ModRecipeProvider extends RecipeProvider implements IConditionBuilder {
+public class ModRecipeProvider extends RecipeProvider {
 
     public ModRecipeProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
         super(output, registries);
     }
 
     @Override
-    protected void buildRecipes(@NotNull RecipeOutput recipeOutput) {
-        SpecialRecipeBuilder.special(PotionMortarShellRecipe::new).save(recipeOutput, "potion_mortar_shell");
-        SpecialRecipeBuilder.special(AmmoBoxAddAmmoRecipe::new).save(recipeOutput, "ammo_box_add_ammo");
-        SpecialRecipeBuilder.special(AmmoBoxExtractAmmoRecipe::new).save(recipeOutput, "ammo_box_extract_ammo");
+    protected void buildRecipes(@NotNull RecipeOutput output) {
+        SpecialRecipeBuilder.special(PotionMortarShellRecipe::new).save(output, "potion_mortar_shell");
+        SpecialRecipeBuilder.special(AmmoBoxAddAmmoRecipe::new).save(output, "ammo_box_add_ammo");
+        SpecialRecipeBuilder.special(AmmoBoxExtractAmmoRecipe::new).save(output, "ammo_box_extract_ammo");
+
+        copyBlueprint(output, ModItems.TRACHELIUM_BLUEPRINT.get());
+        copyBlueprint(output, ModItems.GLOCK_17_BLUEPRINT.get());
+        copyBlueprint(output, ModItems.MP_443_BLUEPRINT.get());
+        copyBlueprint(output, ModItems.GLOCK_18_BLUEPRINT.get());
+        copyBlueprint(output, ModItems.HUNTING_RIFLE_BLUEPRINT.get());
+        copyBlueprint(output, ModItems.M_79_BLUEPRINT.get());
+        copyBlueprint(output, ModItems.RPG_BLUEPRINT.get());
+        copyBlueprint(output, ModItems.BOCEK_BLUEPRINT.get());
+        copyBlueprint(output, ModItems.M_4_BLUEPRINT.get());
+        copyBlueprint(output, ModItems.AA_12_BLUEPRINT.get());
+        copyBlueprint(output, ModItems.HK_416_BLUEPRINT.get());
+        copyBlueprint(output, ModItems.RPK_BLUEPRINT.get());
+        copyBlueprint(output, ModItems.SKS_BLUEPRINT.get());
+        copyBlueprint(output, ModItems.NTW_20_BLUEPRINT.get());
+        copyBlueprint(output, ModItems.MP_5_BLUEPRINT.get());
+        copyBlueprint(output, ModItems.VECTOR_BLUEPRINT.get());
+        copyBlueprint(output, ModItems.MINIGUN_BLUEPRINT.get());
+        copyBlueprint(output, ModItems.MK_14_BLUEPRINT.get());
+        copyBlueprint(output, ModItems.SENTINEL_BLUEPRINT.get());
+        copyBlueprint(output, ModItems.M_60_BLUEPRINT.get());
+        copyBlueprint(output, ModItems.SVD_BLUEPRINT.get());
+        copyBlueprint(output, ModItems.MARLIN_BLUEPRINT.get());
+        copyBlueprint(output, ModItems.M_870_BLUEPRINT.get());
+        copyBlueprint(output, ModItems.M_98B_BLUEPRINT.get());
+        copyBlueprint(output, ModItems.AK_47_BLUEPRINT.get());
+        copyBlueprint(output, ModItems.AK_12_BLUEPRINT.get());
+        copyBlueprint(output, ModItems.DEVOTION_BLUEPRINT.get());
+        copyBlueprint(output, ModItems.TASER_BLUEPRINT.get());
+        copyBlueprint(output, ModItems.M_1911_BLUEPRINT.get());
+        copyBlueprint(output, ModItems.QBZ_95_BLUEPRINT.get());
+        copyBlueprint(output, ModItems.K_98_BLUEPRINT.get());
+        copyBlueprint(output, ModItems.MOSIN_NAGANT_BLUEPRINT.get());
+        copyBlueprint(output, ModItems.JAVELIN_BLUEPRINT.get());
+        copyBlueprint(output, ModItems.M_2_HB_BLUEPRINT.get());
+        copyBlueprint(output, ModItems.SECONDARY_CATACLYSM_BLUEPRINT.get());
+        copyBlueprint(output, ModItems.INSIDIOUS_BLUEPRINT.get());
+        copyBlueprint(output, ModItems.AURELIA_SCEPTRE_BLUEPRINT.get());
+        copyBlueprint(output, ModItems.MK_42_BLUEPRINT.get());
+        copyBlueprint(output, ModItems.MLE_1934_BLUEPRINT.get());
+        copyBlueprint(output, ModItems.HPJ_11_BLUEPRINT.get());
+        copyBlueprint(output, ModItems.ANNIHILATOR_BLUEPRINT.get());
+    }
+
+    private static void copyBlueprint(RecipeOutput output, ItemLike result) {
+        copySmithingTemplate(output, result, Items.LAPIS_LAZULI);
     }
 }
