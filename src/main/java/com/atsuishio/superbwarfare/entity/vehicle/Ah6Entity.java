@@ -70,9 +70,6 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
     public int holdPowerTick;
     public float destroyRot;
 
-    public float delta_xo;
-    public float delta_yo;
-
     public float delta_x;
     public float delta_y;
 
@@ -162,8 +159,6 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
 
     @Override
     public void baseTick() {
-        delta_xo = delta_x;
-        delta_yo = delta_y;
         super.baseTick();
 
         if (this.level() instanceof ServerLevel) {
@@ -732,7 +727,7 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
     @Override
     public @Nullable Vec2 getCameraRotation(float partialTicks, Player player, boolean zoom, boolean isFirstPerson) {
         if (this.getSeatIndex(player) == 0) {
-            return new Vec2((float) (getRotY(partialTicks) - 0.5f * Mth.lerp(partialTicks, delta_yo, delta_y) - freeCameraYaw), (float) (getRotX(partialTicks) - 0.5f * Mth.lerp(partialTicks, delta_xo, delta_x) + freeCameraPitch));
+            return new Vec2((float) (getRotY(partialTicks) - freeCameraYaw), (float) (getRotX(partialTicks) + freeCameraPitch));
         }
 
         return super.getCameraRotation(partialTicks, player, false, false);

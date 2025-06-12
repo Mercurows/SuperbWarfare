@@ -128,12 +128,11 @@ public class ClientMouseHandler {
 
         float times = 0.6f * (float) Math.min(Minecraft.getInstance().getTimer().getRealtimeDeltaTicks(), 0.8);
 
-        if (isFreeCam(player)) {
-            freeCameraYaw -= 0.4f * times * lerpSpeedX;
-            freeCameraPitch += 0.3f * times * lerpSpeedY;
-        } else {
-            freeCameraYaw = Mth.lerp(0.2 * times, freeCameraYaw, 0);
-            freeCameraPitch = Mth.lerp(0.2 * times, freeCameraPitch, 0);
+        freeCameraYaw -= 0.4f * times * lerpSpeedX;
+        freeCameraPitch += 0.3f * times * lerpSpeedY;
+        if (!isFreeCam(player)) {
+            freeCameraYaw = Mth.lerp(0.4 * times, freeCameraYaw, 0);
+            freeCameraPitch = Mth.lerp(0.4 * times, freeCameraPitch, 0);
         }
 
         while (freeCameraYaw > 180F) {
