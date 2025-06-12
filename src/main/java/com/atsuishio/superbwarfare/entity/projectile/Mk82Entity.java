@@ -26,7 +26,7 @@ import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.*;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-public class Mk82Entity extends FastThrowableProjectile implements GeoEntity, DestroyableProjectileEntity, AerialBombEntity {
+public class Mk82Entity extends FastThrowableProjectile implements GeoEntity, ExplosiveProjectile {
 
     public static final EntityDataAccessor<Float> HEALTH = SynchedEntityData.defineId(Mk82Entity.class, EntityDataSerializers.FLOAT);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);

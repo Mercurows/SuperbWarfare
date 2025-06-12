@@ -48,7 +48,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.List;
 
-public class Agm65Entity extends FastThrowableProjectile implements GeoEntity, DestroyableProjectileEntity, ExplosiveProjectile {
+public class Agm65Entity extends FastThrowableProjectile implements GeoEntity, ExplosiveProjectile {
 
     public static final EntityDataAccessor<Float> HEALTH = SynchedEntityData.defineId(Agm65Entity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<String> TARGET_UUID = SynchedEntityData.defineId(Agm65Entity.class, EntityDataSerializers.STRING);
@@ -58,8 +58,6 @@ public class Agm65Entity extends FastThrowableProjectile implements GeoEntity, D
     private float explosionDamage = ExplosionConfig.AGM_65_EXPLOSION_DAMAGE.get();
     private float explosionRadius = ExplosionConfig.AGM_65_EXPLOSION_RADIUS.get().floatValue();
     private boolean distracted = false;
-    private int durability = 40;
-    private boolean firstHit = true;
 
     public Agm65Entity(EntityType<? extends Agm65Entity> type, Level world) {
         super(type, world);

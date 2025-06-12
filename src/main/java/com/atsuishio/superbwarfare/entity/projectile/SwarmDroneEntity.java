@@ -44,7 +44,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class SwarmDroneEntity extends FastThrowableProjectile implements GeoEntity, DestroyableProjectileEntity, ExplosiveProjectile {
+public class SwarmDroneEntity extends FastThrowableProjectile implements GeoEntity, ExplosiveProjectile {
 
     public static final EntityDataAccessor<String> TARGET_UUID = SynchedEntityData.defineId(SwarmDroneEntity.class, EntityDataSerializers.STRING);
     public static final EntityDataAccessor<Float> TARGET_X = SynchedEntityData.defineId(SwarmDroneEntity.class, EntityDataSerializers.FLOAT);

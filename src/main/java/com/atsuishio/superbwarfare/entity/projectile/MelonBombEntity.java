@@ -18,7 +18,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.NotNull;
 
-public class MelonBombEntity extends FastThrowableProjectile implements DestroyableProjectileEntity, AerialBombEntity {
+public class MelonBombEntity extends FastThrowableProjectile implements ExplosiveProjectile {
 
     public static final EntityDataAccessor<Float> HEALTH = SynchedEntityData.defineId(MelonBombEntity.class, EntityDataSerializers.FLOAT);
 

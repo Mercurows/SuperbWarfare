@@ -49,7 +49,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.List;
 
-public class JavelinMissileEntity extends FastThrowableProjectile implements GeoEntity, DestroyableProjectileEntity, ExplosiveProjectile {
+public class JavelinMissileEntity extends FastThrowableProjectile implements GeoEntity, ExplosiveProjectile {
 
     public static final EntityDataAccessor<Float> HEALTH = SynchedEntityData.defineId(JavelinMissileEntity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<String> TARGET_UUID = SynchedEntityData.defineId(JavelinMissileEntity.class, EntityDataSerializers.STRING);

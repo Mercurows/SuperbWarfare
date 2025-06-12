@@ -43,7 +43,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.Nullable;
 
-public class WgMissileEntity extends FastThrowableProjectile implements GeoEntity, DestroyableProjectileEntity, ExplosiveProjectile {
+public class WgMissileEntity extends FastThrowableProjectile implements GeoEntity, ExplosiveProjectile {
 
     public static final EntityDataAccessor<Float> HEALTH = SynchedEntityData.defineId(WgMissileEntity.class, EntityDataSerializers.FLOAT);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);

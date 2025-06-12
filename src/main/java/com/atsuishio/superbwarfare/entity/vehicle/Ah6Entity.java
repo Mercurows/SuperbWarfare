@@ -3,7 +3,6 @@ package com.atsuishio.superbwarfare.entity.vehicle;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
-import com.atsuishio.superbwarfare.entity.projectile.AerialBombEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ContainerMobileVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.HelicopterEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
@@ -16,6 +15,7 @@ import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
+import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.tools.*;
 import com.mojang.math.Axis;
 import it.unimi.dsi.fastutil.Pair;
@@ -136,7 +136,8 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
     public DamageModifier getDamageModifier() {
         return super.getDamageModifier()
                 .custom((source, damage) -> {
-                    if (source.getDirectEntity() instanceof AerialBombEntity) {
+                    var entity = source.getDirectEntity();
+                    if (entity != null && entity.getType().is(ModTags.EntityTypes.AERIAL_BOMB)) {
                         damage *= 2;
                     }
                     damage *= getHealth() > 0.1f ? 0.7f : 0.05f;
