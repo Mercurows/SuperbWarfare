@@ -1,15 +1,16 @@
 {
   "type": "minecraft:smithing_transform",
-  "template": {
-    "item": "superbwarfare:mp_5_blueprint"
+  "addition": {
+    "item": "minecraft:iron_ingot"
   },
   "base": {
     "item": "superbwarfare:rare_material_pack"
   },
-  "addition": {
-    "item": "minecraft:iron_ingot"
-  },
   "result": {
+    "count": 1,
     "id": "superbwarfare:mp_5"
+  },
+  "template": {
+    "item": "superbwarfare:mp_5_blueprint"
   }
 }

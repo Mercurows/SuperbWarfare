@@ -1,15 +1,16 @@
 {
   "type": "minecraft:smithing_transform",
-  "template": {
-    "item": "superbwarfare:rpg_blueprint"
+  "addition": {
+    "item": "minecraft:dispenser"
   },
   "base": {
     "item": "superbwarfare:rare_material_pack"
   },
-  "addition": {
-    "item": "minecraft:dispenser"
-  },
   "result": {
+    "count": 1,
     "id": "superbwarfare:rpg"
+  },
+  "template": {
+    "item": "superbwarfare:rpg_blueprint"
   }
 }

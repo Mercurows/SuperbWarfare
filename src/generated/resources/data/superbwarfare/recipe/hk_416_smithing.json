@@ -1,15 +1,16 @@
 {
   "type": "minecraft:smithing_transform",
-  "template": {
-    "item": "superbwarfare:hk_416_blueprint"
+  "addition": {
+    "tag": "superbwarfare:ingots/steel"
   },
   "base": {
     "item": "superbwarfare:rare_material_pack"
   },
-  "addition": {
-    "tag": "superbwarfare:ingots/steel"
-  },
   "result": {
+    "count": 1,
     "id": "superbwarfare:hk_416"
+  },
+  "template": {
+    "item": "superbwarfare:hk_416_blueprint"
   }
 }

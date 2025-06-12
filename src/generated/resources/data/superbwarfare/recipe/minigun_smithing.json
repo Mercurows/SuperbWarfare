@@ -1,15 +1,16 @@
 {
   "type": "minecraft:smithing_transform",
-  "template": {
-    "item": "superbwarfare:minigun_blueprint"
+  "addition": {
+    "item": "superbwarfare:motor"
   },
   "base": {
     "item": "superbwarfare:legendary_material_pack"
   },
-  "addition": {
-    "item": "superbwarfare:motor"
-  },
   "result": {
+    "count": 1,
     "id": "superbwarfare:minigun"
+  },
+  "template": {
+    "item": "superbwarfare:minigun_blueprint"
   }
 }
