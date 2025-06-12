@@ -60,6 +60,11 @@
     },
     {
       "Type": "Multiply",
+      "Value": 2,
+      "Source": "#superbwarfare:aerial_bomb"
+    },
+    {
+      "Type": "Multiply",
       "Value": 0.16,
       "Source": "#superbwarfare:projectile"
     },

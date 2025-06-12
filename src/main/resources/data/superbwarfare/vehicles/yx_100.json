@@ -30,6 +30,11 @@
       "Source": "minecraft:player_attack"
     },
     {
+      "Type": "Multiply",
+      "Value": 3,
+      "Source": "#superbwarfare:aerial_bomb"
+    },
+    {
       "Type": "Immunity",
       "Source": "#superbwarfare:projectile"
     },
