@@ -2,11 +2,11 @@ package com.atsuishio.superbwarfare.tools;
 
 import com.atsuishio.superbwarfare.config.server.SeekConfig;
 import com.atsuishio.superbwarfare.entity.projectile.DecoyEntity;
-import com.atsuishio.superbwarfare.entity.projectile.DestroyableProjectileEntity;
 import com.atsuishio.superbwarfare.entity.projectile.SmokeDecoyEntity;
 import com.atsuishio.superbwarfare.entity.projectile.SwarmDroneEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
+import com.atsuishio.superbwarfare.init.ModTags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.Entity;
@@ -197,7 +197,7 @@ public class SeekTool {
 
     public static boolean baseFilter(Entity entity) {
         return entity.isAlive()
-                && !(entity instanceof HangingEntity || (entity instanceof Projectile && !(entity instanceof DestroyableProjectileEntity)))
+                && !(entity instanceof HangingEntity || (entity instanceof Projectile && !entity.getType().is(ModTags.EntityTypes.DESTROYABLE_PROJECTILE)))
                 && !(entity instanceof Player player && player.isSpectator())
                 && !isInBlackList(entity);
     }
