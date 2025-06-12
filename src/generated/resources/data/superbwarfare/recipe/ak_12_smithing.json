@@ -1,15 +1,16 @@
 {
   "type": "minecraft:smithing_transform",
-  "template": {
-    "item": "superbwarfare:ak_12_blueprint"
+  "addition": {
+    "tag": "superbwarfare:ingots/steel"
   },
   "base": {
     "item": "superbwarfare:rare_material_pack"
   },
-  "addition": {
-    "tag": "superbwarfare:ingots/steel"
-  },
   "result": {
+    "count": 1,
     "id": "superbwarfare:ak_12"
+  },
+  "template": {
+    "item": "superbwarfare:ak_12_blueprint"
   }
 }

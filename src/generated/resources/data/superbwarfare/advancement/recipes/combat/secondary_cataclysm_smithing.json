@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_secondary_cataclysm_blueprint": {
+      "conditions": {
+        "items": [
+          {
+            "items": "superbwarfare:secondary_cataclysm_blueprint"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "superbwarfare:secondary_cataclysm_smithing"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_secondary_cataclysm_blueprint"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "superbwarfare:secondary_cataclysm_smithing"
+    ]
+  }
+}

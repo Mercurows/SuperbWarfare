@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_mosin_nagant_blueprint": {
+      "conditions": {
+        "items": [
+          {
+            "items": "superbwarfare:mosin_nagant_blueprint"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "superbwarfare:mosin_nagant_smithing"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_mosin_nagant_blueprint"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "superbwarfare:mosin_nagant_smithing"
+    ]
+  }
+}

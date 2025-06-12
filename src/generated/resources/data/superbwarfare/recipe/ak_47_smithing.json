@@ -1,15 +1,16 @@
 {
   "type": "minecraft:smithing_transform",
-  "template": {
-    "item": "superbwarfare:ak_47_blueprint"
+  "addition": {
+    "tag": "minecraft:logs"
   },
   "base": {
     "item": "superbwarfare:rare_material_pack"
   },
-  "addition": {
-    "tag": "minecraft:logs"
-  },
   "result": {
+    "count": 1,
     "id": "superbwarfare:ak_47"
+  },
+  "template": {
+    "item": "superbwarfare:ak_47_blueprint"
   }
 }

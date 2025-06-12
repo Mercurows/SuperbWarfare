@@ -1,15 +1,16 @@
 {
   "type": "minecraft:smithing_transform",
-  "template": {
-    "item": "superbwarfare:secondary_cataclysm_blueprint"
+  "addition": {
+    "item": "superbwarfare:knife"
   },
   "base": {
     "item": "superbwarfare:legendary_material_pack"
   },
-  "addition": {
-    "item": "superbwarfare:knife"
-  },
   "result": {
+    "count": 1,
     "id": "superbwarfare:secondary_cataclysm"
+  },
+  "template": {
+    "item": "superbwarfare:secondary_cataclysm_blueprint"
   }
 }

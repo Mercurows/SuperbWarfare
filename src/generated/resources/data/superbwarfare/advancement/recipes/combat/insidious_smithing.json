@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_insidious_blueprint": {
+      "conditions": {
+        "items": [
+          {
+            "items": "superbwarfare:insidious_blueprint"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "superbwarfare:insidious_smithing"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_insidious_blueprint"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "superbwarfare:insidious_smithing"
+    ]
+  }
+}
