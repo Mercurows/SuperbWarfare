@@ -32,7 +32,7 @@
     {
       "Type": "Multiply",
       "Value": 3,
-      "Source": "#superbwarfare:aerial_bomb"
+      "Source": "@#superbwarfare:aerial_bomb"
     },
     {
       "Type": "Immunity",

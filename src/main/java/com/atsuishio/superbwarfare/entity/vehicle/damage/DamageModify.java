@@ -43,11 +43,13 @@ public class DamageModify {
         RESOURCE_KEY,
         FUNCTION,
         ENTITY_ID,
+        ENTITY_TAG,
         ALL,
     }
 
     private transient TagKey<DamageType> sourceTagKey = null;
     private transient ResourceKey<DamageType> sourceKey = null;
+    private transient TagKey<EntityType<?>> entityTag = null;
     private transient Function<DamageSource, Boolean> condition = null;
 
     public DamageModify() {
@@ -92,6 +94,9 @@ public class DamageModify {
         if (source.startsWith("#")) {
             sourceType = SourceType.TAG_KEY;
             this.sourceTagKey = TagKey.create(Registries.DAMAGE_TYPE, ResourceLocation.parse(source.substring(1)));
+        } else if (source.startsWith("@#")) {
+            sourceType = SourceType.ENTITY_TAG;
+            this.entityTag = TagKey.create(Registries.ENTITY_TYPE, ResourceLocation.parse(source.substring(2)));
         } else if (source.startsWith("@")) {
             sourceType = SourceType.ENTITY_ID;
             this.entityId = source.substring(1);
@@ -132,6 +137,12 @@ public class DamageModify {
                 } else {
                     yield false;
                 }
+            }
+            case ENTITY_TAG -> {
+                var directEntity = source.getDirectEntity();
+                if (directEntity == null) yield false;
+
+                yield directEntity.getType().is(entityTag);
             }
             case ALL -> true;
         };
