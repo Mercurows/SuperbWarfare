@@ -816,6 +816,23 @@ public abstract class VehicleEntity extends Entity {
         return transform.transform(new Vector4f(x, y, z, 1));
     }
 
+    public static Quaternionf eulerToQuaternion(float yaw, float pitch, float roll) {
+        double cy = Math.cos(yaw * 0.5 * Mth.DEG_TO_RAD);
+        double sy = Math.sin(yaw * 0.5 * Mth.DEG_TO_RAD);
+        double cp = Math.cos(pitch * 0.5 * Mth.DEG_TO_RAD);
+        double sp = Math.sin(pitch * 0.5 * Mth.DEG_TO_RAD);
+        double cr = Math.cos(roll * 0.5 * Mth.DEG_TO_RAD);
+        double sr = Math.sin(roll * 0.5 * Mth.DEG_TO_RAD);
+
+        Quaternionf q = new Quaternionf();
+        q.w = (float) (cy * cp * cr + sy * sp * sr);
+        q.x = (float) (cy * cp * sr - sy * sp * cr);
+        q.y = (float) (sy * cp * sr + cy * sp * cr);
+        q.z = (float) (sy * cp * cr - cy * sp * sr);
+
+        return q;
+    }
+
     public void handleClientSync() {
         if (isControlledByLocalInstance()) {
             interpolationSteps = 0;

@@ -16,6 +16,7 @@
     "CameraMixin",
     "ClientPacketListenerMixin",
     "ClientPlayerEntityMixin",
+    "EntityRenderDispatcherMixin",
     "GameRendererMixin",
     "ItemInHandLayerMixin",
     "KeyboardInputMixin",

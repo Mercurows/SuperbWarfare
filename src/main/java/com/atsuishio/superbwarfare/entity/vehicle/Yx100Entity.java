@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.entity.vehicle;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
+import com.atsuishio.superbwarfare.entity.OBBEntity;
 import com.atsuishio.superbwarfare.entity.projectile.SwarmDroneEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ContainerMobileVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.LandArmorEntity;
@@ -62,8 +63,7 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Math;
-import org.joml.Matrix4f;
-import org.joml.Vector4f;
+import org.joml.*;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.*;
@@ -77,7 +77,7 @@ import java.util.List;
 import static com.atsuishio.superbwarfare.client.RenderHelper.preciseBlit;
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 
-public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEntity, LandArmorEntity, WeaponVehicleEntity {
+public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEntity, LandArmorEntity, WeaponVehicleEntity, OBBEntity {
 
     public static final EntityDataAccessor<Integer> MG_AMMO = SynchedEntityData.defineId(Yx100Entity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> LOADED_AP = SynchedEntityData.defineId(Yx100Entity.class, EntityDataSerializers.INT);
@@ -88,8 +88,11 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     public int droneReloadCoolDown;
 
+    public OBB obb;
+
     public Yx100Entity(EntityType<Yx100Entity> type, Level world) {
         super(type, world);
+        this.obb = new OBB(this.position().toVector3f(), new Vector3f(3.5f, 3.0f, 5.0f), new Quaternionf());
     }
 
     @Override
@@ -226,6 +229,8 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
     @Override
     public void baseTick() {
         super.baseTick();
+
+        this.updateOBB();
 
         if (getLeftTrack() < 0) {
             setLeftTrack(80);
@@ -1285,5 +1290,18 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
     @Override
     public @Nullable ResourceLocation getVehicleItemIcon() {
         return Mod.loc("textures/gui/vehicle/type/land.png");
+    }
+
+    @Override
+    public OBB getOBB() {
+        return this.obb;
+    }
+
+    // TODO 实现正确的旋转设置
+    @Override
+    public void updateOBB() {
+        Quaternionf rotation = eulerToQuaternion(-getRoll(), -getYRot(), getXRot());
+        this.obb.setRotation(rotation);
+        this.obb.center().set(this.position().toVector3f());
     }
 }
