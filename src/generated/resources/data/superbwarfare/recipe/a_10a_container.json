@@ -1,11 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
   "category": "misc",
-  "pattern": [
-    "dad",
-    "ece",
-    "fbf"
-  ],
   "key": {
     "a": {
       "item": "superbwarfare:medium_armament_module"
@@ -26,13 +21,19 @@
       "item": "superbwarfare:medium_battery_pack"
     }
   },
+  "pattern": [
+    "dad",
+    "ece",
+    "fbf"
+  ],
   "result": {
-    "id": "superbwarfare:container",
     "components": {
       "minecraft:block_entity_data": {
-        "id": "superbwarfare:container",
-        "EntityType": "superbwarfare:a_10a"
+        "EntityType": "superbwarfare:a_10a",
+        "id": "superbwarfare:container"
       }
-    }
+    },
+    "count": 1,
+    "id": "superbwarfare:container"
   }
 }
