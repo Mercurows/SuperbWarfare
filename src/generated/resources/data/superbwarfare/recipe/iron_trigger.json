@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "A": {
+      "item": "minecraft:iron_ingot"
+    },
+    "B": {
+      "item": "minecraft:tripwire_hook"
+    }
+  },
+  "pattern": [
+    "BA",
+    " A"
+  ],
+  "result": {
+    "count": 1,
+    "id": "superbwarfare:iron_trigger"
+  }
+}

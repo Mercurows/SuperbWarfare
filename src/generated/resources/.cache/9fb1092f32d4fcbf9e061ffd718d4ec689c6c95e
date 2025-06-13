@@ -1,4 +1,4 @@
-// 1.21.1	2025-06-14T09:59:35.2332371	Recipes
+// 1.21.1	2025-06-14T10:09:06.1391868	Recipes
 9775e550332c69f1ee2ac4a09834a35db6f6a2ed data/minecraft/recipe/ammo_box_add_ammo.json
 9775e550332c69f1ee2ac4a09834a35db6f6a2ed data/minecraft/recipe/ammo_box_extract_ammo.json
 2e1d1bbf32801f3d355c0d3f78ebbb1122cebd4c data/minecraft/recipe/potion_mortar_shell.json
@@ -51,6 +51,10 @@ cae0bca9d87ad212a3155135433ffe88f289c04c data/superbwarfare/advancement/recipes/
 33a9d76154596be2ba7f9148323777a79b28006f data/superbwarfare/advancement/recipes/misc/hpj_11_blueprint.json
 1d3b9163bb66cea057ba2fa6353746ffee6ef96d data/superbwarfare/advancement/recipes/misc/hunting_rifle_blueprint.json
 65feefcd9f7b16e4e92f4f3c08abdc02e160ca1d data/superbwarfare/advancement/recipes/misc/insidious_blueprint.json
+b02f31a3873ab6f7e5671cb96efee3d45b2551ea data/superbwarfare/advancement/recipes/misc/iron_action.json
+9fbc930c1c30a8698b3fc539b81a868096ec07ff data/superbwarfare/advancement/recipes/misc/iron_barrel.json
+fc44de15ff247fa3485514fe9243884a2abcff64 data/superbwarfare/advancement/recipes/misc/iron_spring.json
+4762eab2a4224f4c31fff38f72d2a7c28fb05cbf data/superbwarfare/advancement/recipes/misc/iron_trigger.json
 652b83a7987f1fa42d174f923e0905c53a20cda7 data/superbwarfare/advancement/recipes/misc/javelin_blueprint.json
 899c04e1a22a41365129a5ca24348194f7dd4d88 data/superbwarfare/advancement/recipes/misc/k_98_blueprint.json
 d481715aad2fc1fc01357103cb11ed201fc92dde data/superbwarfare/advancement/recipes/misc/m2hb_blueprint.json
@@ -105,6 +109,10 @@ c591aecdf4b5bab7b206160c0c255470fb3d5684 data/superbwarfare/recipe/hunting_rifle
 b725b8a8c4e4c1514df7a44610c4f03335561b01 data/superbwarfare/recipe/hunting_rifle_smithing.json
 aff87a5a66e7aef395b08067339685954a0f4de2 data/superbwarfare/recipe/insidious_blueprint.json
 576853e322953d229f056148612517e13e9784d0 data/superbwarfare/recipe/insidious_smithing.json
+74c814ff68f4922c42dd4a96709efe2fb3d412ce data/superbwarfare/recipe/iron_action.json
+5c23621c020772e896109526b8393306d2baa0bd data/superbwarfare/recipe/iron_barrel.json
+edb663a08bf42112eb4663d4b51113d6ccb793bb data/superbwarfare/recipe/iron_spring.json
+89545d43b69b24db587c98d4f673c35885ea1ee3 data/superbwarfare/recipe/iron_trigger.json
 1fc1080eb1328b7a91445d083a5ea4bd6e0fdcb4 data/superbwarfare/recipe/javelin_blueprint.json
 90d1f438dc8cc0dc26c49a943b84819607488585 data/superbwarfare/recipe/javelin_smithing.json
 9ced791c2f2eeb19bab3b7826e05c936953974cc data/superbwarfare/recipe/k_98_blueprint.json

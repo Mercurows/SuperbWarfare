@@ -1,16 +1,16 @@
 {
   "type": "minecraft:crafting_shaped",
   "category": "misc",
-  "pattern": [
-    "aaa"
-  ],
   "key": {
-    "a": {
+    "A": {
       "item": "minecraft:iron_ingot"
     }
   },
+  "pattern": [
+    "AAA"
+  ],
   "result": {
-    "id": "superbwarfare:iron_barrel",
-    "count": 1
+    "count": 1,
+    "id": "superbwarfare:iron_barrel"
   }
 }

@@ -1,18 +1,18 @@
 {
   "type": "minecraft:crafting_shaped",
   "category": "misc",
-  "pattern": [
-    "a",
-    "a",
-    "a"
-  ],
   "key": {
-    "a": {
+    "A": {
       "item": "minecraft:iron_ingot"
     }
   },
+  "pattern": [
+    "A",
+    "A",
+    "A"
+  ],
   "result": {
-    "id": "superbwarfare:iron_spring",
-    "count": 1
+    "count": 1,
+    "id": "superbwarfare:iron_spring"
   }
 }
