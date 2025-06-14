@@ -294,6 +294,7 @@
   "des.superbwarfare.vehicle_deployer.success": "成功设置载具信息！",
   "des.superbwarfare.vehicle_deployer.fail": "请使用集装箱点击！",
   "block.superbwarfare.aircraft_catapult": "飞行器弹射装置",
+  "block.superbwarfare.superb_item_interface": "卓越物品接口",
 
   "item.superbwarfare.high_energy_explosives": "高能炸药",
   "item.superbwarfare.grain": "推进药柱",
@@ -568,6 +569,7 @@
   "container.superbwarfare.charging_station": "充电站",
   "container.superbwarfare.charging_station.show_range": "显示范围",
   "container.superbwarfare.charging_station.hide_range": "隐藏范围",
+  "container.superbwarfare.superb_item_interface": "卓越物品接口",
 
   "config.superbwarfare.title": "卓越前线",
   "config.superbwarfare.client.reload": "换弹配置",

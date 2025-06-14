@@ -294,6 +294,7 @@
   "des.superbwarfare.vehicle_deployer.success": "Vehicle info set successfully!",
   "des.superbwarfare.vehicle_deployer.fail": "Please click with a container!",
   "block.superbwarfare.aircraft_catapult": "Aircraft Catapult",
+  "block.superbwarfare.superb_item_interface": "Superb Item Interface",
 
   "item.superbwarfare.high_energy_explosives": "High Energy Explosives",
   "item.superbwarfare.grain": "Grain",
@@ -568,6 +569,7 @@
   "container.superbwarfare.charging_station": "Charging Station",
   "container.superbwarfare.charging_station.show_range": "Show Range",
   "container.superbwarfare.charging_station.hide_range": "Hide Range",
+  "container.superbwarfare.superb_item_interface": "Superb Item Interface",
 
   "config.superbwarfare.title": "SuperbWarfare: Config",
   "config.superbwarfare.client.reload": "Reload Config",

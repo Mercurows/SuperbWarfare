@@ -1,21 +1,21 @@
 package com.atsuishio.superbwarfare.block;
 
+import com.atsuishio.superbwarfare.block.entity.SuperbItemInterfaceBlockEntity;
+import com.atsuishio.superbwarfare.init.ModBlockEntities;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.component.DataComponents;
-import net.minecraft.stats.Stats;
+import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.HopperBlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
@@ -29,7 +29,6 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
-@SuppressWarnings("deprecation")
 public class SuperbItemInterfaceBlock extends BaseEntityBlock {
 
     public static final BooleanProperty ENABLED = BlockStateProperties.ENABLED;
@@ -47,18 +46,24 @@ public class SuperbItemInterfaceBlock extends BaseEntityBlock {
     @Override
     @ParametersAreNonnullByDefault
     public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
-        return null;
+        return new SuperbItemInterfaceBlockEntity(pPos, pState);
     }
 
-    @Override
-    public void setPlacedBy(@NotNull Level pLevel, @NotNull BlockPos pPos, @NotNull BlockState pState, LivingEntity pPlacer, ItemStack pStack) {
-        if (pStack.get(DataComponents.CUSTOM_NAME) != null) {
-            BlockEntity blockentity = pLevel.getBlockEntity(pPos);
-//            if (blockentity instanceof HopperBlockEntity) {
-//                ((HopperBlockEntity) blockentity).setCustomName(pStack.getHoverName());
-//            }
-        }
+    @Nullable
+    @ParametersAreNonnullByDefault
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level pLevel, BlockState pState, BlockEntityType<T> pBlockEntityType) {
+        return pLevel.isClientSide ? null : createTickerHelper(pBlockEntityType, ModBlockEntities.SUPERB_ITEM_INTERFACE.get(), SuperbItemInterfaceBlockEntity::serverTick);
     }
+
+//    @Override
+//    public void setPlacedBy(@NotNull Level pLevel, @NotNull BlockPos pPos, @NotNull BlockState pState, LivingEntity pPlacer, ItemStack pStack) {
+//        if (pStack.get(DataComponents.CUSTOM_NAME) != null) {
+//            BlockEntity blockentity = pLevel.getBlockEntity(pPos);
+//            if (blockentity instanceof SuperbItemInterfaceBlockEntity entity) {
+//                entity.setCustomName(pStack.getHoverName());
+//            }
+//        }
+//    }
 
     @Override
     public void onPlace(BlockState pState, @NotNull Level pLevel, @NotNull BlockPos pPos, BlockState pOldState, boolean pIsMoving) {
@@ -74,9 +79,8 @@ public class SuperbItemInterfaceBlock extends BaseEntityBlock {
             return InteractionResult.SUCCESS;
         } else {
             BlockEntity blockentity = level.getBlockEntity(pos);
-            if (blockentity instanceof HopperBlockEntity) {
-                player.openMenu((HopperBlockEntity) blockentity);
-                player.awardStat(Stats.INSPECT_HOPPER);
+            if (blockentity instanceof SuperbItemInterfaceBlockEntity entity) {
+                player.openMenu(entity);
             }
 
             return InteractionResult.CONSUME;
@@ -100,10 +104,10 @@ public class SuperbItemInterfaceBlock extends BaseEntityBlock {
     public void onRemove(BlockState pState, @NotNull Level pLevel, @NotNull BlockPos pPos, BlockState pNewState, boolean pIsMoving) {
         if (!pState.is(pNewState.getBlock())) {
             BlockEntity blockentity = pLevel.getBlockEntity(pPos);
-//            if (blockentity instanceof HopperBlockEntity) {
-//                Containers.dropContents(pLevel, pPos, (HopperBlockEntity)blockentity);
-//                pLevel.updateNeighbourForOutputSignal(pPos, this);
-//            }
+            if (blockentity instanceof SuperbItemInterfaceBlockEntity entity) {
+                Containers.dropContents(pLevel, pPos, entity);
+                pLevel.updateNeighbourForOutputSignal(pPos, this);
+            }
 
             super.onRemove(pState, pLevel, pPos, pNewState, pIsMoving);
         }
