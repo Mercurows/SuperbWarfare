@@ -28,4 +28,6 @@ public class ModBlockEntities {
 
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<VehicleDeployerBlockEntity>> VEHICLE_DEPLOYER = REGISTRY.register("vehicle_deployer",
             () -> BlockEntityType.Builder.of(VehicleDeployerBlockEntity::new, ModBlocks.VEHICLE_DEPLOYER.get()).build(null));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<SuperbItemInterfaceBlockEntity>> SUPERB_ITEM_INTERFACE = REGISTRY.register("superb_item_interface",
+            () -> BlockEntityType.Builder.of(SuperbItemInterfaceBlockEntity::new, ModBlocks.SUPERB_ITEM_INTERFACE.get()).build(null));
 }

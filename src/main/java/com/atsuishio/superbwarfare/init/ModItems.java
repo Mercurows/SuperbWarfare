@@ -285,6 +285,7 @@ public class ModItems {
     public static final DeferredHolder<Item, SmallContainerBlockItem> SMALL_CONTAINER = BLOCKS.register("small_container", SmallContainerBlockItem::new);
     public static final DeferredHolder<Item, VehicleDeployerBlockItem> VEHICLE_DEPLOYER = BLOCKS.register("vehicle_deployer", VehicleDeployerBlockItem::new);
     public static final DeferredHolder<Item, BlockItem> AIRCRAFT_CATAPULT = block(ModBlocks.AIRCRAFT_CATAPULT);
+    public static final DeferredHolder<Item, BlockItem> SUPERB_ITEM_INTERFACE = block(ModBlocks.SUPERB_ITEM_INTERFACE);
 
     public record Materials(
             String name,
@@ -324,7 +325,7 @@ public class ModItems {
      */
     public static final DeferredHolder<Item, Item> AP_BULLET = PERKS.register("ap_bullet", () -> new PerkItem<>(ModPerks.AP_BULLET));
 
-    private static DeferredHolder<Item, BlockItem> block(DeferredHolder<Block, Block> block) {
+    private static <T extends Block> DeferredHolder<Item, BlockItem> block(DeferredHolder<Block, T> block) {
         return BLOCKS.register(block.getId().getPath(), () -> new BlockItem(block.get(), new Item.Properties()));
     }
 

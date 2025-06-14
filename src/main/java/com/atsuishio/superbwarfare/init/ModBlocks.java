@@ -43,11 +43,12 @@ public class ModBlocks {
             () -> new Block(BlockBehaviour.Properties.of().instrument(NoteBlockInstrument.BASEDRUM).sound(SoundType.METAL).strength(5f, 6f).requiresCorrectToolForDrops()));
     public static final DeferredHolder<Block, Block> CEMENTED_CARBIDE_BLOCK = REGISTRY.register("cemented_carbide_block",
             () -> new Block(BlockBehaviour.Properties.of().instrument(NoteBlockInstrument.BASEDRUM).sound(SoundType.METAL).strength(5f, 6f).requiresCorrectToolForDrops()));
-    public static final DeferredHolder<Block, Block> CONTAINER = REGISTRY.register("container", () -> new ContainerBlock());
-    public static final DeferredHolder<Block, Block> SMALL_CONTAINER = REGISTRY.register("small_container", () -> new SmallContainerBlock());
-    public static final DeferredHolder<Block, Block> CHARGING_STATION = REGISTRY.register("charging_station", ChargingStationBlock::new);
-    public static final DeferredHolder<Block, Block> CREATIVE_CHARGING_STATION = REGISTRY.register("creative_charging_station", () -> new CreativeChargingStationBlock());
-    public static final DeferredHolder<Block, Block> FUMO_25 = REGISTRY.register("fumo_25", FuMO25Block::new);
-    public static final DeferredHolder<Block, Block> VEHICLE_DEPLOYER = REGISTRY.register("vehicle_deployer", VehicleDeployerBlock::new);
-    public static final DeferredHolder<Block, Block> AIRCRAFT_CATAPULT = REGISTRY.register("aircraft_catapult", AircraftCatapultBlock::new);
+    public static final DeferredHolder<Block, ContainerBlock> CONTAINER = REGISTRY.register("container", () -> new ContainerBlock());
+    public static final DeferredHolder<Block, ChargingStationBlock> CHARGING_STATION = REGISTRY.register("charging_station", ChargingStationBlock::new);
+    public static final DeferredHolder<Block, CreativeChargingStationBlock> CREATIVE_CHARGING_STATION = REGISTRY.register("creative_charging_station", () -> new CreativeChargingStationBlock());
+    public static final DeferredHolder<Block, FuMO25Block> FUMO_25 = REGISTRY.register("fumo_25", FuMO25Block::new);
+    public static final DeferredHolder<Block, SmallContainerBlock> SMALL_CONTAINER = REGISTRY.register("small_container", () -> new SmallContainerBlock());
+    public static final DeferredHolder<Block, VehicleDeployerBlock> VEHICLE_DEPLOYER = REGISTRY.register("vehicle_deployer", VehicleDeployerBlock::new);
+    public static final DeferredHolder<Block, AircraftCatapultBlock> AIRCRAFT_CATAPULT = REGISTRY.register("aircraft_catapult", AircraftCatapultBlock::new);
+    public static final DeferredHolder<Block, SuperbItemInterfaceBlock> SUPERB_ITEM_INTERFACE = REGISTRY.register("superb_item_interface", () -> new SuperbItemInterfaceBlock());
 }

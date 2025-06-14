@@ -227,7 +227,7 @@ public class ModItemModelProvider extends ItemModelProvider {
                 .texture("layer0", Mod.loc("item/" + location + item.getId().getPath())).renderType(renderType);
     }
 
-    public void evenSimplerBlockItem(DeferredHolder<Block, Block> block) {
+    public <T extends Block> void evenSimplerBlockItem(DeferredHolder<Block, T> block) {
         this.withExistingParent(Mod.MODID + ":" + BuiltInRegistries.BLOCK.getKey(block.get()).getPath(),
                 modLoc("block/" + BuiltInRegistries.BLOCK.getKey(block.get()).getPath()));
     }
