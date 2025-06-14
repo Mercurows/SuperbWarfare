@@ -1,0 +1,65 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_iron_action": {
+      "conditions": {
+        "items": [
+          {
+            "items": "superbwarfare:iron_action"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_iron_barrel": {
+      "conditions": {
+        "items": [
+          {
+            "items": "superbwarfare:iron_barrel"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_iron_spring": {
+      "conditions": {
+        "items": [
+          {
+            "items": "superbwarfare:iron_spring"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_iron_trigger": {
+      "conditions": {
+        "items": [
+          {
+            "items": "superbwarfare:iron_trigger"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "superbwarfare:common_material_pack"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_iron_barrel",
+      "has_iron_action",
+      "has_iron_spring",
+      "has_iron_trigger"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "superbwarfare:common_material_pack"
+    ]
+  }
+}

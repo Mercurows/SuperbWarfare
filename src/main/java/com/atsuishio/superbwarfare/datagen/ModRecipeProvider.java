@@ -37,10 +37,17 @@ public class ModRecipeProvider extends RecipeProvider {
         SpecialRecipeBuilder.special(AmmoBoxExtractAmmoRecipe::new).save(output, "ammo_box_extract_ammo");
 
         // items
+        // 材料
         generateMaterialRecipes(output, ModItems.IRON_MATERIALS, Items.IRON_INGOT);
         generateMaterialRecipes(output, ModItems.STEEL_MATERIALS, ModItems.STEEL_INGOT.get());
         generateMaterialRecipes(output, ModItems.CEMENTED_CARBIDE_MATERIALS, ModItems.CEMENTED_CARBIDE_INGOT.get());
         // TODO 下界合金材料
+
+        // 材料包
+        generateMaterialPackRecipe(output, ModItems.IRON_MATERIALS, ModItems.COMMON_MATERIAL_PACK.get());
+        generateMaterialPackRecipe(output, ModItems.STEEL_MATERIALS, ModItems.RARE_MATERIAL_PACK.get());
+        generateMaterialPackRecipe(output, ModItems.CEMENTED_CARBIDE_MATERIALS, ModItems.EPIC_MATERIAL_PACK.get());
+        generateMaterialPackRecipe(output, ModItems.NETHERITE_MATERIALS, ModItems.LEGENDARY_MATERIAL_PACK.get());
 
         // vehicles
         containerRecipe(ModEntities.A_10A.get())
@@ -219,5 +226,18 @@ public class ModRecipeProvider extends RecipeProvider {
                 .define('B', Items.TRIPWIRE_HOOK)
                 .unlockedBy(getHasName(ingredient), has(ingredient))
                 .save(output, Mod.loc(getItemName(material.trigger().get())));
+    }
+
+    public static void generateMaterialPackRecipe(@NotNull RecipeOutput output, ModItems.Materials material, Item pack) {
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, pack)
+                .requires(material.barrel().get())
+                .requires(material.action().get())
+                .requires(material.spring().get())
+                .requires(material.trigger().get())
+                .unlockedBy(getHasName(material.barrel().get()), has(material.barrel().get()))
+                .unlockedBy(getHasName(material.action().get()), has(material.action().get()))
+                .unlockedBy(getHasName(material.spring().get()), has(material.spring().get()))
+                .unlockedBy(getHasName(material.trigger().get()), has(material.trigger().get()))
+                .save(output, Mod.loc(getItemName(pack)));
     }
 }

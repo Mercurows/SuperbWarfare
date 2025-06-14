@@ -1,0 +1,65 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_steel_action": {
+      "conditions": {
+        "items": [
+          {
+            "items": "superbwarfare:steel_action"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_steel_barrel": {
+      "conditions": {
+        "items": [
+          {
+            "items": "superbwarfare:steel_barrel"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_steel_spring": {
+      "conditions": {
+        "items": [
+          {
+            "items": "superbwarfare:steel_spring"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_steel_trigger": {
+      "conditions": {
+        "items": [
+          {
+            "items": "superbwarfare:steel_trigger"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "superbwarfare:rare_material_pack"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_steel_barrel",
+      "has_steel_action",
+      "has_steel_spring",
+      "has_steel_trigger"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "superbwarfare:rare_material_pack"
+    ]
+  }
+}

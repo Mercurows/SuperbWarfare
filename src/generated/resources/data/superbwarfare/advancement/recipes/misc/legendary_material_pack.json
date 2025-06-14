@@ -1,0 +1,65 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_netherite_action": {
+      "conditions": {
+        "items": [
+          {
+            "items": "superbwarfare:netherite_action"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_netherite_barrel": {
+      "conditions": {
+        "items": [
+          {
+            "items": "superbwarfare:netherite_barrel"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_netherite_spring": {
+      "conditions": {
+        "items": [
+          {
+            "items": "superbwarfare:netherite_spring"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_netherite_trigger": {
+      "conditions": {
+        "items": [
+          {
+            "items": "superbwarfare:netherite_trigger"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "superbwarfare:legendary_material_pack"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_netherite_barrel",
+      "has_netherite_action",
+      "has_netherite_spring",
+      "has_netherite_trigger"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "superbwarfare:legendary_material_pack"
+    ]
+  }
+}
