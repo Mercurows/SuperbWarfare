@@ -135,22 +135,11 @@ public class ModItemModelProvider extends ItemModelProvider {
         simpleItem(ModItems.LARGE_BATTERY_PACK);
 
         simpleItem(ModItems.TUNGSTEN_ROD);
-        simpleItem(ModItems.IRON_BARREL);
-        simpleItem(ModItems.IRON_ACTION);
-        simpleItem(ModItems.IRON_TRIGGER);
-        simpleItem(ModItems.IRON_SPRING);
-        simpleItem(ModItems.STEEL_BARREL);
-        simpleItem(ModItems.STEEL_ACTION);
-        simpleItem(ModItems.STEEL_TRIGGER);
-        simpleItem(ModItems.STEEL_SPRING);
-        simpleItem(ModItems.CEMENTED_CARBIDE_BARREL);
-        simpleItem(ModItems.CEMENTED_CARBIDE_ACTION);
-        simpleItem(ModItems.CEMENTED_CARBIDE_TRIGGER);
-        simpleItem(ModItems.CEMENTED_CARBIDE_SPRING);
-        simpleItem(ModItems.NETHERITE_BARREL);
-        simpleItem(ModItems.NETHERITE_ACTION);
-        simpleItem(ModItems.NETHERITE_TRIGGER);
-        simpleItem(ModItems.NETHERITE_SPRING);
+
+        simpleMaterials(ModItems.IRON_MATERIALS);
+        simpleMaterials(ModItems.STEEL_MATERIALS);
+        simpleMaterials(ModItems.CEMENTED_CARBIDE_MATERIALS);
+        simpleMaterials(ModItems.NETHERITE_MATERIALS);
 
         simpleItem(ModItems.COMMON_MATERIAL_PACK);
         simpleItem(ModItems.RARE_MATERIAL_PACK);
@@ -215,6 +204,13 @@ public class ModItemModelProvider extends ItemModelProvider {
         evenSimplerBlockItem(ModBlocks.CREATIVE_CHARGING_STATION);
         evenSimplerBlockItem(ModBlocks.VEHICLE_DEPLOYER);
         evenSimplerBlockItem(ModBlocks.AIRCRAFT_CATAPULT);
+    }
+
+    private void simpleMaterials(ModItems.Materials materials) {
+        simpleItem(materials.action());
+        simpleItem(materials.barrel());
+        simpleItem(materials.trigger());
+        simpleItem(materials.spring());
     }
 
     private ItemModelBuilder simpleItem(DeferredHolder<Item, ? extends Item> item) {

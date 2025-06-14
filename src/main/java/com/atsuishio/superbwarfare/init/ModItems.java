@@ -200,22 +200,11 @@ public class ModItems {
     public static final DeferredHolder<Item, FiringParameters> FIRING_PARAMETERS = ITEMS.register("firing_parameters", FiringParameters::new);
 
     public static final DeferredHolder<Item, Item> TUNGSTEN_ROD = ITEMS.register("tungsten_rod", () -> new Item(new Item.Properties()));
-    public static final DeferredHolder<Item, Item> IRON_BARREL = ITEMS.register("iron_barrel", () -> new Item(new Item.Properties()));
-    public static final DeferredHolder<Item, Item> IRON_ACTION = ITEMS.register("iron_action", () -> new Item(new Item.Properties()));
-    public static final DeferredHolder<Item, Item> IRON_TRIGGER = ITEMS.register("iron_trigger", () -> new Item(new Item.Properties()));
-    public static final DeferredHolder<Item, Item> IRON_SPRING = ITEMS.register("iron_spring", () -> new Item(new Item.Properties()));
-    public static final DeferredHolder<Item, Item> STEEL_BARREL = ITEMS.register("steel_barrel", () -> new Item(new Item.Properties().rarity(Rarity.RARE)));
-    public static final DeferredHolder<Item, Item> STEEL_ACTION = ITEMS.register("steel_action", () -> new Item(new Item.Properties().rarity(Rarity.RARE)));
-    public static final DeferredHolder<Item, Item> STEEL_TRIGGER = ITEMS.register("steel_trigger", () -> new Item(new Item.Properties().rarity(Rarity.RARE)));
-    public static final DeferredHolder<Item, Item> STEEL_SPRING = ITEMS.register("steel_spring", () -> new Item(new Item.Properties().rarity(Rarity.RARE)));
-    public static final DeferredHolder<Item, Item> CEMENTED_CARBIDE_BARREL = ITEMS.register("cemented_carbide_barrel", () -> new Item(new Item.Properties().rarity(Rarity.EPIC)));
-    public static final DeferredHolder<Item, Item> CEMENTED_CARBIDE_ACTION = ITEMS.register("cemented_carbide_action", () -> new Item(new Item.Properties().rarity(Rarity.EPIC)));
-    public static final DeferredHolder<Item, Item> CEMENTED_CARBIDE_TRIGGER = ITEMS.register("cemented_carbide_trigger", () -> new Item(new Item.Properties().rarity(Rarity.EPIC)));
-    public static final DeferredHolder<Item, Item> CEMENTED_CARBIDE_SPRING = ITEMS.register("cemented_carbide_spring", () -> new Item(new Item.Properties().rarity(Rarity.EPIC)));
-    public static final DeferredHolder<Item, Item> NETHERITE_BARREL = ITEMS.register("netherite_barrel", () -> new Item(new Item.Properties().rarity(ModEnumExtensions.getLegendary())));
-    public static final DeferredHolder<Item, Item> NETHERITE_ACTION = ITEMS.register("netherite_action", () -> new Item(new Item.Properties().rarity(ModEnumExtensions.getLegendary())));
-    public static final DeferredHolder<Item, Item> NETHERITE_TRIGGER = ITEMS.register("netherite_trigger", () -> new Item(new Item.Properties().rarity(ModEnumExtensions.getLegendary())));
-    public static final DeferredHolder<Item, Item> NETHERITE_SPRING = ITEMS.register("netherite_spring", () -> new Item(new Item.Properties().rarity(ModEnumExtensions.getLegendary())));
+
+    public static final Materials IRON_MATERIALS = registerMaterials("iron");
+    public static final Materials STEEL_MATERIALS = registerMaterials("steel");
+    public static final Materials CEMENTED_CARBIDE_MATERIALS = registerMaterials("cemented_carbide");
+    public static final Materials NETHERITE_MATERIALS = registerMaterials("netherite");
 
     public static final DeferredHolder<Item, MaterialPack> COMMON_MATERIAL_PACK = ITEMS.register("common_material_pack", () -> new MaterialPack(Rarity.COMMON));
     public static final DeferredHolder<Item, MaterialPack> RARE_MATERIAL_PACK = ITEMS.register("rare_material_pack", () -> new MaterialPack(Rarity.RARE));
@@ -296,6 +285,25 @@ public class ModItems {
     public static final DeferredHolder<Item, SmallContainerBlockItem> SMALL_CONTAINER = BLOCKS.register("small_container", SmallContainerBlockItem::new);
     public static final DeferredHolder<Item, VehicleDeployerBlockItem> VEHICLE_DEPLOYER = BLOCKS.register("vehicle_deployer", VehicleDeployerBlockItem::new);
     public static final DeferredHolder<Item, BlockItem> AIRCRAFT_CATAPULT = block(ModBlocks.AIRCRAFT_CATAPULT);
+
+    public record Materials(
+            String name,
+            DeferredHolder<Item, Item> barrel,
+            DeferredHolder<Item, Item> action,
+            DeferredHolder<Item, Item> spring,
+            DeferredHolder<Item, Item> trigger
+    ) {
+    }
+
+    public static Materials registerMaterials(String name) {
+        return new Materials(
+                name,
+                ITEMS.register(name + "_barrel", () -> new Item(new Item.Properties())),
+                ITEMS.register(name + "_action", () -> new Item(new Item.Properties())),
+                ITEMS.register(name + "_spring", () -> new Item(new Item.Properties())),
+                ITEMS.register(name + "_trigger", () -> new Item(new Item.Properties()))
+        );
+    }
 
     /**
      * Perk Items

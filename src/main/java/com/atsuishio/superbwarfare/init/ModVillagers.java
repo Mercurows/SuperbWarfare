@@ -78,13 +78,13 @@ public class ModVillagers {
 
             // 等级 2 交易
             trades.get(2).add(new BasicItemListing(new ItemStack(Items.EMERALD, 10),
-                    new ItemStack(ModItems.STEEL_ACTION.get()), 12, 5, 0.05f));
+                    new ItemStack(ModItems.STEEL_MATERIALS.action().get()), 12, 5, 0.05f));
             trades.get(2).add(new BasicItemListing(new ItemStack(Items.EMERALD, 8),
-                    new ItemStack(ModItems.STEEL_BARREL.get()), 12, 5, 0.05f));
+                    new ItemStack(ModItems.STEEL_MATERIALS.barrel().get()), 12, 5, 0.05f));
             trades.get(2).add(new BasicItemListing(new ItemStack(Items.EMERALD, 6),
-                    new ItemStack(ModItems.STEEL_TRIGGER.get()), 12, 5, 0.05f));
+                    new ItemStack(ModItems.STEEL_MATERIALS.trigger().get()), 12, 5, 0.05f));
             trades.get(2).add(new BasicItemListing(new ItemStack(Items.EMERALD, 8),
-                    new ItemStack(ModItems.STEEL_SPRING.get()), 12, 5, 0.05f));
+                    new ItemStack(ModItems.STEEL_MATERIALS.spring().get()), 12, 5, 0.05f));
 
             trades.get(2).add(new BasicItemListing(new ItemStack(Items.EMERALD, 16),
                     new ItemStack(ModItems.MARLIN_BLUEPRINT.get()), 8, 25, 0.05f));
@@ -117,13 +117,13 @@ public class ModVillagers {
                     new ItemStack(Items.EMERALD, 3), 16, 5, 0.05f));
 
             trades.get(3).add(new BasicItemListing(new ItemStack(Items.EMERALD, 16),
-                    new ItemStack(ModItems.CEMENTED_CARBIDE_BARREL.get()), 12, 10, 0.05f));
+                    new ItemStack(ModItems.CEMENTED_CARBIDE_MATERIALS.barrel().get()), 12, 10, 0.05f));
             trades.get(3).add(new BasicItemListing(new ItemStack(Items.EMERALD, 20),
-                    new ItemStack(ModItems.CEMENTED_CARBIDE_ACTION.get()), 10, 10, 0.05f));
+                    new ItemStack(ModItems.CEMENTED_CARBIDE_MATERIALS.action().get()), 10, 10, 0.05f));
             trades.get(3).add(new BasicItemListing(new ItemStack(Items.EMERALD, 16),
-                    new ItemStack(ModItems.CEMENTED_CARBIDE_SPRING.get()), 10, 10, 0.05f));
+                    new ItemStack(ModItems.CEMENTED_CARBIDE_MATERIALS.spring().get()), 10, 10, 0.05f));
             trades.get(3).add(new BasicItemListing(new ItemStack(Items.EMERALD, 12),
-                    new ItemStack(ModItems.CEMENTED_CARBIDE_TRIGGER.get()), 10, 10, 0.05f));
+                    new ItemStack(ModItems.CEMENTED_CARBIDE_MATERIALS.trigger().get()), 10, 10, 0.05f));
 
             trades.get(3).add(new BasicItemListing(new ItemStack(Items.EMERALD, 32),
                     new ItemStack(ModItems.M_4_BLUEPRINT.get()), 10, 25, 0.05f));

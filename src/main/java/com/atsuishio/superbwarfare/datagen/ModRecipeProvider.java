@@ -37,31 +37,10 @@ public class ModRecipeProvider extends RecipeProvider {
         SpecialRecipeBuilder.special(AmmoBoxExtractAmmoRecipe::new).save(output, "ammo_box_extract_ammo");
 
         // items
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.IRON_BARREL.get())
-                .pattern("AAA")
-                .define('A', Items.IRON_INGOT)
-                .unlockedBy(getHasName(Items.IRON_INGOT), has(Items.IRON_INGOT))
-                .save(output, Mod.loc(getItemName(ModItems.IRON_BARREL.get())));
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.IRON_ACTION.get())
-                .pattern("AAA")
-                .pattern("  A")
-                .define('A', Items.IRON_INGOT)
-                .unlockedBy(getHasName(Items.IRON_INGOT), has(Items.IRON_INGOT))
-                .save(output, Mod.loc(getItemName(ModItems.IRON_ACTION.get())));
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.IRON_SPRING.get())
-                .pattern("A")
-                .pattern("A")
-                .pattern("A")
-                .define('A', Items.IRON_INGOT)
-                .unlockedBy(getHasName(Items.IRON_INGOT), has(Items.IRON_INGOT))
-                .save(output, Mod.loc(getItemName(ModItems.IRON_SPRING.get())));
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.IRON_TRIGGER.get())
-                .pattern("BA")
-                .pattern(" A")
-                .define('A', Items.IRON_INGOT)
-                .define('B', Items.TRIPWIRE_HOOK)
-                .unlockedBy(getHasName(Items.IRON_INGOT), has(Items.IRON_INGOT))
-                .save(output, Mod.loc(getItemName(ModItems.IRON_TRIGGER.get())));
+        generateMaterialRecipes(output, ModItems.IRON_MATERIALS, Items.IRON_INGOT);
+        generateMaterialRecipes(output, ModItems.STEEL_MATERIALS, ModItems.STEEL_INGOT.get());
+        generateMaterialRecipes(output, ModItems.CEMENTED_CARBIDE_MATERIALS, ModItems.CEMENTED_CARBIDE_INGOT.get());
+        // TODO 下界合金材料
 
         // vehicles
         containerRecipe(ModEntities.A_10A.get())
@@ -208,5 +187,37 @@ public class ModRecipeProvider extends RecipeProvider {
 
     public static String getContainerRecipeName(EntityType<?> entityType) {
         return getEntityTypeName(entityType) + "_container";
+    }
+
+    // 生成材料包所有材料的配方
+    public static void generateMaterialRecipes(@NotNull RecipeOutput output, ModItems.Materials material, Item ingredient) {
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, material.barrel().get())
+                .pattern("AAA")
+                .define('A', ingredient)
+                .unlockedBy(getHasName(ingredient), has(ingredient))
+                .save(output, Mod.loc(getItemName(material.barrel().get())));
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, material.action().get())
+                .pattern("AAA")
+                .pattern("  A")
+                .define('A', ingredient)
+                .unlockedBy(getHasName(ingredient), has(ingredient))
+                .save(output, Mod.loc(getItemName(material.action().get())));
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, material.spring().get())
+                .pattern("A")
+                .pattern("A")
+                .pattern("A")
+                .define('A', ingredient)
+                .unlockedBy(getHasName(ingredient), has(ingredient))
+                .save(output, Mod.loc(getItemName(material.spring().get())));
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, material.trigger().get())
+                .pattern("BA")
+                .pattern(" A")
+                .define('A', ingredient)
+                .define('B', Items.TRIPWIRE_HOOK)
+                .unlockedBy(getHasName(ingredient), has(ingredient))
+                .save(output, Mod.loc(getItemName(material.trigger().get())));
     }
 }
