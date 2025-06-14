@@ -1,4 +1,4 @@
-// 1.21.1	2025-06-14T11:22:09.7701308	Recipes
+// 1.21.1	2025-06-14T14:38:08.3653122	Recipes
 9775e550332c69f1ee2ac4a09834a35db6f6a2ed data/minecraft/recipe/ammo_box_add_ammo.json
 9775e550332c69f1ee2ac4a09834a35db6f6a2ed data/minecraft/recipe/ammo_box_extract_ammo.json
 2e1d1bbf32801f3d355c0d3f78ebbb1122cebd4c data/minecraft/recipe/potion_mortar_shell.json
@@ -79,6 +79,10 @@ db50b385f5bd6239b720fc2519f5667ece7b8cd5 data/superbwarfare/advancement/recipes/
 1e770e3d6c899bc0fd9805be81a1900fe6f3e322 data/superbwarfare/advancement/recipes/misc/m_79_blueprint.json
 ab91251a4ad27c9153eec06d6a781aa59fc61785 data/superbwarfare/advancement/recipes/misc/m_870_blueprint.json
 dd88128230882947ff1f7e46ca413e571374cf88 data/superbwarfare/advancement/recipes/misc/m_98b_blueprint.json
+140d1c9847fd1f6b1f30182be8717a8508430f7e data/superbwarfare/advancement/recipes/misc/netherite_action.json
+5edd1a8ee225dbe39442c3d37ab97420ec59524c data/superbwarfare/advancement/recipes/misc/netherite_barrel.json
+26a84fa86fe9debbe8a9a09904a2f4ad46957aca data/superbwarfare/advancement/recipes/misc/netherite_spring.json
+5a92a015ae01117d99fa9c7e6a9b716e4f1b3472 data/superbwarfare/advancement/recipes/misc/netherite_trigger.json
 46fc6cc865986b08322c48a583c5d26b148797e5 data/superbwarfare/advancement/recipes/misc/ntw_20_blueprint.json
 358b34abec2942bed33a221b8897ff33daf0bbdb data/superbwarfare/advancement/recipes/misc/qbz_95_blueprint.json
 1a60ccfaa5e95aaa2d75a5cf0f32dbc840d07d17 data/superbwarfare/advancement/recipes/misc/rare_material_pack.json
@@ -163,6 +167,10 @@ a22cb7c546460b175643385a500b2af9d24c6cd7 data/superbwarfare/recipe/m_870_bluepri
 9fed6cd8d1d6a6f2bcbf2811c1856084751ee5e4 data/superbwarfare/recipe/m_870_smithing.json
 0a1c4303027bf22643302f7b325e4bffd1329ba2 data/superbwarfare/recipe/m_98b_blueprint.json
 7e5143b5c465bfa269eaabcc986c9a394115bd4d data/superbwarfare/recipe/m_98b_smithing.json
+9a3633b79de495923177fd790a1348c38f8050f9 data/superbwarfare/recipe/netherite_action.json
+b62f7c2a7309696e4cd5f06de1b289b3e52758d3 data/superbwarfare/recipe/netherite_barrel.json
+14f8a47719896d39061c02c4ef330ccc6a9a17e3 data/superbwarfare/recipe/netherite_spring.json
+96dbc018274702cccb64c35a89e4217f6b8019fe data/superbwarfare/recipe/netherite_trigger.json
 33560f69a554b45e66dd10b07e4c8f08c1647b43 data/superbwarfare/recipe/ntw_20_blueprint.json
 ff117c48405a73e49d29d737132d1c249b0fc3b5 data/superbwarfare/recipe/ntw_20_smithing.json
 f99ef54062417a7da9882662880469ec1c054d05 data/superbwarfare/recipe/qbz_95_blueprint.json

@@ -1,0 +1,43 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_cemented_carbide_trigger": {
+      "conditions": {
+        "items": [
+          {
+            "items": "superbwarfare:cemented_carbide_trigger"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_netherite_upgrade_smithing_template": {
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:netherite_upgrade_smithing_template"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "superbwarfare:netherite_trigger"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_netherite_upgrade_smithing_template",
+      "has_cemented_carbide_trigger"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "superbwarfare:netherite_trigger"
+    ]
+  }
+}
