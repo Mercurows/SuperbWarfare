@@ -37,7 +37,8 @@ public class ModBlockTagProvider extends BlockTagsProvider {
                 ModBlocks.REFORGING_TABLE.get(), ModBlocks.LEAD_BLOCK.get(), ModBlocks.STEEL_BLOCK.get(), ModBlocks.TUNGSTEN_BLOCK.get(),
                 ModBlocks.CEMENTED_CARBIDE_BLOCK.get(), ModBlocks.SILVER_ORE.get(), ModBlocks.DEEPSLATE_SILVER_ORE.get(),
                 ModBlocks.SILVER_BLOCK.get(), ModBlocks.JUMP_PAD.get(), ModBlocks.CONTAINER.get(), ModBlocks.CHARGING_STATION.get(),
-                ModBlocks.FUMO_25.get(), ModBlocks.SMALL_CONTAINER.get(), ModBlocks.VEHICLE_DEPLOYER.get(), ModBlocks.AIRCRAFT_CATAPULT.get());
+                ModBlocks.FUMO_25.get(), ModBlocks.SMALL_CONTAINER.get(), ModBlocks.VEHICLE_DEPLOYER.get(), ModBlocks.AIRCRAFT_CATAPULT.get(),
+                ModBlocks.SUPERB_ITEM_INTERFACE.get());
         this.tag(BlockTags.MINEABLE_WITH_SHOVEL).add(ModBlocks.SANDBAG.get());
 
         this.tag(ModTags.Blocks.SOFT_COLLISION)

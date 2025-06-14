@@ -19,6 +19,7 @@
     "superbwarfare:fumo_25",
     "superbwarfare:small_container",
     "superbwarfare:vehicle_deployer",
-    "superbwarfare:aircraft_catapult"
+    "superbwarfare:aircraft_catapult",
+    "superbwarfare:superb_item_interface"
   ]
 }
