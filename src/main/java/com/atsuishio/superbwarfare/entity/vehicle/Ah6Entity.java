@@ -690,17 +690,17 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
 
     @Override
     public double getMouseSensitivity() {
-        return 0.15;
+        return 0.25;
     }
 
     @Override
     public double getMouseSpeedX() {
-        return 0.35;
+        return 0.4;
     }
 
     @Override
     public double getMouseSpeedY() {
-        return 0.2;
+        return 0.25;
     }
 
     @OnlyIn(Dist.CLIENT)
