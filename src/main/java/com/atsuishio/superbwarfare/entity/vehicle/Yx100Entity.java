@@ -1304,7 +1304,7 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
         Matrix4f transform = getVehicleTransform(1);
         Vector4f worldPosition = transformPosition(transform, 0, 1.125f, 0.25f);
         this.obb.center().set(new Vector3f(worldPosition.x, worldPosition.y, worldPosition.z));
-        this.obb.setRotation(VectorTool.combineRotationsTurret(1, this));
+        this.obb.setRotation(VectorTool.combineRotations(1, this));
 
         Matrix4f transformT = getTurretTransform(1);
         Vector4f worldPositionT = transformPosition(transformT, 0, 1, 0);
