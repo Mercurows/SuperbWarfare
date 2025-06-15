@@ -7,7 +7,9 @@ import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -15,6 +17,7 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -36,10 +39,13 @@ public class JumpPadBlock extends Block {
 
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
+    private static final BooleanProperty ACTIVATED = BooleanProperty.create("activated");
+
+    private static final int ACTIVATION_TICKS = 4;
 
     public JumpPadBlock() {
-        super(Properties.of().instrument(NoteBlockInstrument.BASEDRUM).sound(SoundType.STONE).strength(3f, 8f).noCollission().noOcclusion().isRedstoneConductor((bs, br, bp) -> false));
-        this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(WATERLOGGED, false));
+        super(BlockBehaviour.Properties.of().instrument(NoteBlockInstrument.BASEDRUM).sound(SoundType.STONE).strength(3f, 8f).noCollission().noOcclusion().isRedstoneConductor((bs, br, bp) -> false));
+        this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(WATERLOGGED, false).setValue(ACTIVATED, false));
     }
 
     @Override
@@ -71,13 +77,13 @@ public class JumpPadBlock extends Block {
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(FACING, WATERLOGGED);
+        builder.add(FACING, WATERLOGGED, ACTIVATED);
     }
 
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         boolean flag = context.getLevel().getFluidState(context.getClickedPos()).getType() == Fluids.WATER;
-        return this.defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite()).setValue(WATERLOGGED, flag);
+        return this.defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite()).setValue(WATERLOGGED, flag).setValue(ACTIVATED, false);
     }
 
     @Override
@@ -104,8 +110,8 @@ public class JumpPadBlock extends Block {
 
     @Override
     @ParametersAreNonnullByDefault
-    public void entityInside(BlockState blockstate, Level level, BlockPos pos, Entity entity) {
-        super.entityInside(blockstate, level, pos, entity);
+    public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
+        super.entityInside(state, level, pos, entity);
 
         // 禁止套娃
         if (entity instanceof TargetEntity || entity instanceof CannonEntity) return;
@@ -118,6 +124,10 @@ public class JumpPadBlock extends Block {
             }
         } else {
             entity.setDeltaMovement(new Vec3(0.7 * entity.getDeltaMovement().x(), 1.7, 0.7 * entity.getDeltaMovement().z()));
+        }
+
+        if (!level.getBlockTicks().hasScheduledTick(pos, state.getBlock())) {
+            setOutputPower(level, state, pos, ACTIVATION_TICKS);
         }
 
         if (!level.isClientSide()) {
@@ -134,6 +144,30 @@ public class JumpPadBlock extends Block {
 
         if (entity instanceof Player player && player.level().isClientSide) {
             Mod.queueClientWork(2, () -> ClientEventHandler.canDoubleJump = true);
+        }
+    }
+
+    private static void setOutputPower(LevelAccessor pLevel, BlockState pState, BlockPos pPos, int pWaitTime) {
+        pLevel.setBlock(pPos, pState.setValue(ACTIVATED, true), 3);
+        pLevel.scheduleTick(pPos, pState.getBlock(), pWaitTime);
+    }
+
+    @Override
+    public boolean isSignalSource(@NotNull BlockState pState) {
+        return true;
+    }
+
+    @Override
+    @ParametersAreNonnullByDefault
+    public int getSignal(BlockState pState, BlockGetter pLevel, BlockPos pPos, Direction pDirection) {
+        return pState.getValue(ACTIVATED) ? 15 : 0;
+    }
+
+    @Override
+    @ParametersAreNonnullByDefault
+    public void tick(BlockState pState, ServerLevel pLevel, BlockPos pPos, RandomSource pRandom) {
+        if (pState.getValue(ACTIVATED)) {
+            pLevel.setBlock(pPos, pState.setValue(ACTIVATED, false), 3);
         }
     }
 }

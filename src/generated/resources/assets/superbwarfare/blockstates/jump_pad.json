@@ -1,32 +1,62 @@
 {
   "variants": {
-    "facing=east,waterlogged=false": {
+    "activated=false,facing=east,waterlogged=false": {
       "model": "superbwarfare:block/jump_pad",
       "y": 90
     },
-    "facing=east,waterlogged=true": {
+    "activated=false,facing=east,waterlogged=true": {
       "model": "superbwarfare:block/jump_pad",
       "y": 90
     },
-    "facing=north,waterlogged=false": {
+    "activated=false,facing=north,waterlogged=false": {
       "model": "superbwarfare:block/jump_pad"
     },
-    "facing=north,waterlogged=true": {
+    "activated=false,facing=north,waterlogged=true": {
       "model": "superbwarfare:block/jump_pad"
     },
-    "facing=south,waterlogged=false": {
+    "activated=false,facing=south,waterlogged=false": {
       "model": "superbwarfare:block/jump_pad",
       "y": 180
     },
-    "facing=south,waterlogged=true": {
+    "activated=false,facing=south,waterlogged=true": {
       "model": "superbwarfare:block/jump_pad",
       "y": 180
     },
-    "facing=west,waterlogged=false": {
+    "activated=false,facing=west,waterlogged=false": {
       "model": "superbwarfare:block/jump_pad",
       "y": 270
     },
-    "facing=west,waterlogged=true": {
+    "activated=false,facing=west,waterlogged=true": {
+      "model": "superbwarfare:block/jump_pad",
+      "y": 270
+    },
+    "activated=true,facing=east,waterlogged=false": {
+      "model": "superbwarfare:block/jump_pad",
+      "y": 90
+    },
+    "activated=true,facing=east,waterlogged=true": {
+      "model": "superbwarfare:block/jump_pad",
+      "y": 90
+    },
+    "activated=true,facing=north,waterlogged=false": {
+      "model": "superbwarfare:block/jump_pad"
+    },
+    "activated=true,facing=north,waterlogged=true": {
+      "model": "superbwarfare:block/jump_pad"
+    },
+    "activated=true,facing=south,waterlogged=false": {
+      "model": "superbwarfare:block/jump_pad",
+      "y": 180
+    },
+    "activated=true,facing=south,waterlogged=true": {
+      "model": "superbwarfare:block/jump_pad",
+      "y": 180
+    },
+    "activated=true,facing=west,waterlogged=false": {
+      "model": "superbwarfare:block/jump_pad",
+      "y": 270
+    },
+    "activated=true,facing=west,waterlogged=true": {
       "model": "superbwarfare:block/jump_pad",
       "y": 270
     }
