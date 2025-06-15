@@ -28,7 +28,9 @@ public abstract class LevelMixin {
             if (entity instanceof OBBEntity obbEntity) {
                 for (OBB obb : obbEntity.getOBBs()) {
                     if (OBB.isColliding(obb, pBoundingBox)) {
-                        cir.getReturnValue().add(entity);
+                        if (!cir.getReturnValue().contains(entity)) {
+                            cir.getReturnValue().add(entity);
+                        }
                     }
                 }
             }
