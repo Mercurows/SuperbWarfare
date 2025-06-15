@@ -93,8 +93,8 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
 
     public Yx100Entity(EntityType<Yx100Entity> type, Level world) {
         super(type, world);
-        this.obb = new OBB(this.position().toVector3f(), new Vector3f(2.53125f, 1.0625f, 4.75f), new Quaternionf());
-        this.obbTurret = new OBB(this.position().toVector3f(), new Vector3f(2, 1, 2), new Quaternionf());
+        this.obb = new OBB(this.position().toVector3f(), new Vector3f(2.53125f, 1.0625f, 4.75f), new Quaternionf(), false);
+        this.obbTurret = new OBB(this.position().toVector3f(), new Vector3f(2.375f, 0.5625f, 3f), new Quaternionf(), true);
     }
 
     @Override
@@ -1307,7 +1307,7 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
         this.obb.setRotation(VectorTool.combineRotations(1, this));
 
         Matrix4f transformT = getTurretTransform(1);
-        Vector4f worldPositionT = transformPosition(transformT, 0, 1, 0);
+        Vector4f worldPositionT = transformPosition(transformT, 0, 0.5625f, -0.1875f);
         this.obbTurret.center().set(new Vector3f(worldPositionT.x, worldPositionT.y, worldPositionT.z));
         this.obbTurret.setRotation(VectorTool.combineRotationsTurret(1, this));
     }
