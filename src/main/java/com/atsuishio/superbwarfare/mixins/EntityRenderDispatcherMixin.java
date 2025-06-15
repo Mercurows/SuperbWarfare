@@ -20,7 +20,7 @@ public class EntityRenderDispatcherMixin {
             at = @At("RETURN"))
     private static void renderHitbox(PoseStack poseStack, VertexConsumer buffer, Entity p_entity, float red, float green, float blue, float alpha, CallbackInfo ci) {
         if (p_entity instanceof OBBEntity obbEntity && p_entity instanceof VehicleEntity vehicle) {
-            OBBRenderer.INSTANCE.render(vehicle, obbEntity.getOBB(), poseStack, buffer, 1, 1, 1, 1, Minecraft.getInstance().getTimer().getRealtimeDeltaTicks());
+            OBBRenderer.INSTANCE.render(vehicle, obbEntity.getOBB(), poseStack, buffer, 0, 1, 0, 1, Minecraft.getInstance().getTimer().getRealtimeDeltaTicks());
         }
     }
 }

@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.block.BarbedWireBlock;
 import com.atsuishio.superbwarfare.component.ModDataComponents;
 import com.atsuishio.superbwarfare.config.server.ProjectileConfig;
 import com.atsuishio.superbwarfare.entity.DPSGeneratorEntity;
+import com.atsuishio.superbwarfare.entity.OBBEntity;
 import com.atsuishio.superbwarfare.entity.TargetEntity;
 import com.atsuishio.superbwarfare.entity.mixin.ICustomKnockback;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
@@ -155,6 +156,7 @@ public class ProjectileEntity extends Projectile implements IEntityWithComplexSp
     @Nullable
     protected List<EntityResult> findEntitiesOnPath(Vec3 startVec, Vec3 endVec) {
         List<EntityResult> hitEntities = new ArrayList<>();
+        // TODO 换一个允许检测obb的方法
         List<Entity> entities = this.level().getEntities(
                 this,
                 this.getBoundingBox()
@@ -179,36 +181,44 @@ public class ProjectileEntity extends Projectile implements IEntityWithComplexSp
     @Nullable
     private EntityResult getHitResult(Entity entity, Vec3 startVec, Vec3 endVec) {
         double expandHeight = entity instanceof Player && !entity.isCrouching() ? 0.0625 : 0.0;
-        AABB boundingBox = entity.getBoundingBox();
-        Vec3 velocity = new Vec3(entity.getX() - entity.xOld, entity.getY() - entity.yOld, entity.getZ() - entity.zOld);
 
-        if (entity instanceof ServerPlayer player && this.shooter instanceof ServerPlayer serverPlayerOwner) {
-            int ping = Mth.floor((serverPlayerOwner.connection.latency() / 1000.0) * 20.0 + 0.5);
-            boundingBox = HitboxHelper.getBoundingBox(player, ping);
-            velocity = HitboxHelper.getVelocity(player, ping);
-        }
-        boundingBox = boundingBox.expandTowards(0, expandHeight, 0);
+        Vec3 hitPos;
+        if (entity instanceof OBBEntity obbEntity) {
+            OBB obb = obbEntity.getOBB();
+            var obbVec = obb.clip(startVec.toVector3f(), endVec.toVector3f()).orElse(null);
+            if (obbVec == null) return null;
+            hitPos = new Vec3(obbVec);
+        } else {
+            AABB boundingBox = entity.getBoundingBox();
+            Vec3 velocity = new Vec3(entity.getX() - entity.xOld, entity.getY() - entity.yOld, entity.getZ() - entity.zOld);
 
-        boundingBox = boundingBox.expandTowards(velocity.x, velocity.y, velocity.z);
-
-        double playerHitboxOffset = 3;
-        if (entity instanceof ServerPlayer) {
-            if (entity.getVehicle() != null) {
-                boundingBox = boundingBox.move(velocity.multiply(playerHitboxOffset / 2, playerHitboxOffset / 2, playerHitboxOffset / 2));
+            if (entity instanceof ServerPlayer player && this.shooter instanceof ServerPlayer serverPlayerOwner) {
+                int ping = Mth.floor((serverPlayerOwner.connection.latency() / 1000.0) * 20.0 + 0.5);
+                boundingBox = HitboxHelper.getBoundingBox(player, ping);
+                velocity = HitboxHelper.getVelocity(player, ping);
             }
-            boundingBox = boundingBox.move(velocity.multiply(playerHitboxOffset, playerHitboxOffset, playerHitboxOffset));
-        }
+            boundingBox = boundingBox.expandTowards(0, expandHeight, 0);
+            boundingBox = boundingBox.expandTowards(velocity.x, velocity.y, velocity.z);
 
-        if (entity.getVehicle() != null) {
-            boundingBox = boundingBox.move(velocity.multiply(-2.5, -2.5, -2.5));
-        }
-        boundingBox = boundingBox.move(velocity.multiply(-5, -5, -5));
+            double playerHitboxOffset = 3;
+            if (entity instanceof ServerPlayer) {
+                if (entity.getVehicle() != null) {
+                    boundingBox = boundingBox.move(velocity.multiply(playerHitboxOffset / 2, playerHitboxOffset / 2, playerHitboxOffset / 2));
+                }
+                boundingBox = boundingBox.move(velocity.multiply(playerHitboxOffset, playerHitboxOffset, playerHitboxOffset));
+            }
 
-        if (this.beast) {
-            boundingBox = boundingBox.inflate(3);
-        }
+            if (entity.getVehicle() != null) {
+                boundingBox = boundingBox.move(velocity.multiply(-2.5, -2.5, -2.5));
+            }
+            boundingBox = boundingBox.move(velocity.multiply(-5, -5, -5));
 
-        Vec3 hitPos = boundingBox.clip(startVec, endVec).orElse(null);
+            if (this.beast) {
+                boundingBox = boundingBox.inflate(3);
+            }
+
+            hitPos = boundingBox.clip(startVec, endVec).orElse(null);
+        }
 
         if (hitPos == null) {
             return null;

@@ -6,6 +6,8 @@ import org.joml.Math;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
+import java.util.Optional;
+
 /**
  * Codes based on @AnECanSaiTin's <a href="https://github.com/AnECanSaiTin/HitboxAPI">HitboxAPI</a>
  *
@@ -129,5 +131,86 @@ public record OBB(Vector3f center, Vector3f extents, Quaternionf rotation) {
         }
 
         return nearP;
+    }
+
+    public Optional<Vector3f> clip(Vector3f pFrom, Vector3f pTo) {
+        // 计算OBB的局部坐标系基向量（世界坐标系中的方向）
+        Vector3f[] axes = new Vector3f[3];
+        axes[0] = rotation.transform(new Vector3f(1, 0, 0));
+        axes[1] = rotation.transform(new Vector3f(0, 1, 0));
+        axes[2] = rotation.transform(new Vector3f(0, 0, 1));
+
+        // 将点转换到OBB局部坐标系
+        Vector3f localFrom = worldToLocal(pFrom, axes);
+        Vector3f localTo = worldToLocal(pTo, axes);
+
+        // 射线方向（局部坐标系）
+        Vector3f dir = new Vector3f(localTo).sub(localFrom);
+
+        // Slab算法参数
+        double tEnter = 0.0;      // 进入时间
+        double tExit = 1.0;       // 离开时间
+
+        // 在三个轴上执行Slab算法
+        for (int i = 0; i < 3; i++) {
+            double min = -extents.get(i);
+            double max = extents.get(i);
+            double origin = localFrom.get(i);
+            double direction = dir.get(i);
+
+            // 处理射线平行于轴的情况
+            if (Math.abs(direction) < 1e-7f) {
+                if (origin < min || origin > max) {
+                    return Optional.empty();
+                }
+                continue;
+            }
+
+            // 计算与两个平面的交点参数
+            double t1 = (min - origin) / direction;
+            double t2 = (max - origin) / direction;
+
+            // 确保tNear是近平面，tFar是远平面
+            double tNear = Math.min(t1, t2);
+            double tFar = Math.max(t1, t2);
+
+            // 更新进入/离开时间
+            if (tNear > tEnter) tEnter = tNear;
+            if (tFar < tExit) tExit = tFar;
+
+            // 检查是否提前退出（无交点）
+            if (tEnter > tExit) {
+                return Optional.empty();
+            }
+        }
+
+        // 检查是否有有效交点
+        if (tEnter >= 0 && tEnter <= 1) {
+            // 计算局部坐标系中的交点
+            Vector3f localHit = new Vector3f(dir).mul((float) tEnter).add(localFrom);
+            // 转换回世界坐标系
+            return Optional.of(localToWorld(localHit, axes));
+        }
+
+        return Optional.empty();
+    }
+
+    // 世界坐标转局部坐标
+    private Vector3f worldToLocal(Vector3f worldPoint, Vector3f[] axes) {
+        Vector3f rel = new Vector3f(worldPoint).sub(center);
+        return new Vector3f(
+                rel.dot(axes[0]),
+                rel.dot(axes[1]),
+                rel.dot(axes[2])
+        );
+    }
+
+    // 局部坐标转世界坐标
+    private Vector3f localToWorld(Vector3f localPoint, Vector3f[] axes) {
+        Vector3f result = new Vector3f(center);
+        result.add(axes[0].mul(localPoint.x, new Vector3f()));
+        result.add(axes[1].mul(localPoint.y, new Vector3f()));
+        result.add(axes[2].mul(localPoint.z, new Vector3f()));
+        return result;
     }
 }
