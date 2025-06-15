@@ -184,7 +184,6 @@ public class SmallCannonShellEntity extends FastThrowableProjectile implements G
                     .toList();
             for (var entity : entities) {
                 causeExplode(entity.position(), false);
-
                 entity.discard();
                 this.discard();
             }

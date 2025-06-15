@@ -384,7 +384,7 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
                 holdTickZ = 0;
             }
 
-            this.setDeltaMovement(this.getDeltaMovement().multiply(0.97, 0.94, 0.97));
+            this.setDeltaMovement(this.getDeltaMovement().multiply(0.965, 0.935, 0.965));
         } else {
             this.setDeltaMovement(this.getDeltaMovement().multiply(0.8, 1, 0.8));
             this.setZRot(this.roll * 0.7f);
@@ -497,6 +497,14 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
 
     @Override
     public float getEngineSoundVolume() {
+        Player player = EntityFindUtil.findPlayer(this.level(), this.entityData.get(CONTROLLER));
+
+        if (player == null) return entityData.get(POWER);
+        ItemStack stack = player.getMainHandItem();
+
+        if (stack.is(ModItems.MONITOR.get()) && stack.getOrCreateTag().getBoolean("Using") && stack.getOrCreateTag().getBoolean("Linked")) {
+            return entityData.get(POWER) * 0.25f;
+        }
         return entityData.get(POWER) * 2f;
     }
 

@@ -32,7 +32,7 @@ public class ProjectileUtilMixin {
                         (projectile.getOwner() == entity || entity.getPassengers().contains(projectile.getOwner()))) {
                     continue;
                 }
-                OBB obb = obbEntity.getOBB().inflate(pInflationAmount * 2);
+                OBB obb = obbEntity.getOBB().inflate(6);
 
                 Optional<Vector3f> optional = obb.clip(pStartVec.toVector3f(), pEndVec.toVector3f());
                 if (optional.isPresent()) {
