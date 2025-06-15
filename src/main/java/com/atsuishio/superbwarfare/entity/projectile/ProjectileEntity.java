@@ -156,7 +156,6 @@ public class ProjectileEntity extends Projectile implements IEntityWithComplexSp
     @Nullable
     protected List<EntityResult> findEntitiesOnPath(Vec3 startVec, Vec3 endVec) {
         List<EntityResult> hitEntities = new ArrayList<>();
-        // TODO 换一个允许检测obb的方法
         List<Entity> entities = this.level().getEntities(
                 this,
                 this.getBoundingBox()

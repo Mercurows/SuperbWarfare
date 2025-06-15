@@ -8,6 +8,7 @@
     "ClientboundSetPassengersPacketMixin",
     "EntityMixin",
     "FishingHookMixin",
+    "LevelMixin",
     "LivingEntityMixin",
     "PlayerMixin",
     "VillagerMixin"
