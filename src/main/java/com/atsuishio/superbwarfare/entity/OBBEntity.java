@@ -2,9 +2,11 @@ package com.atsuishio.superbwarfare.entity;
 
 import com.atsuishio.superbwarfare.tools.OBB;
 
+import java.util.List;
+
 public interface OBBEntity {
 
-    OBB getOBB();
+    List<OBB> getOBBs();
 
     void updateOBB();
 }

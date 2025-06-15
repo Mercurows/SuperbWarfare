@@ -181,12 +181,14 @@ public class ProjectileEntity extends Projectile implements IEntityWithComplexSp
     private EntityResult getHitResult(Entity entity, Vec3 startVec, Vec3 endVec) {
         double expandHeight = entity instanceof Player && !entity.isCrouching() ? 0.0625 : 0.0;
 
-        Vec3 hitPos;
+        Vec3 hitPos = null;
         if (entity instanceof OBBEntity obbEntity) {
-            OBB obb = obbEntity.getOBB();
-            var obbVec = obb.clip(startVec.toVector3f(), endVec.toVector3f()).orElse(null);
-            if (obbVec == null) return null;
-            hitPos = new Vec3(obbVec);
+            for (OBB obb : obbEntity.getOBBs()) {
+                var obbVec = obb.clip(startVec.toVector3f(), endVec.toVector3f()).orElse(null);
+                if (obbVec != null) {
+                    hitPos = new Vec3(obbVec);
+                }
+            }
         } else {
             AABB boundingBox = entity.getBoundingBox();
             Vec3 velocity = new Vec3(entity.getX() - entity.xOld, entity.getY() - entity.yOld, entity.getZ() - entity.zOld);

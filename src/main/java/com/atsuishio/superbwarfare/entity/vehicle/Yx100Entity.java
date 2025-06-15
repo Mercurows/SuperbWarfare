@@ -1295,8 +1295,8 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
     }
 
     @Override
-    public OBB getOBB() {
-        return this.obb;
+    public List<OBB> getOBBs() {
+        return List.of(this.obb, this.obbTurret);
     }
 
     @Override

@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.mixins;
 
 import com.atsuishio.superbwarfare.entity.OBBEntity;
-import com.atsuishio.superbwarfare.tools.OBB;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
@@ -30,13 +29,15 @@ public class ProjectileUtilMixin {
                         (projectile.getOwner() == entity || entity.getPassengers().contains(projectile.getOwner()))) {
                     continue;
                 }
-                OBB obb = obbEntity.getOBB().inflate(6);
-
-                Optional<Vector3f> optional = obb.clip(pStartVec.toVector3f(), pEndVec.toVector3f());
-                if (optional.isPresent()) {
-                    double d1 = pStartVec.distanceToSqr(new Vec3(optional.get()));
-                    if (d1 < Double.MAX_VALUE) {
-                        cir.setReturnValue(new EntityHitResult(entity, new Vec3(optional.get())));
+                var obbList = obbEntity.getOBBs();
+                for (var obb : obbList) {
+                    obb = obb.inflate(6);
+                    Optional<Vector3f> optional = obb.clip(pStartVec.toVector3f(), pEndVec.toVector3f());
+                    if (optional.isPresent()) {
+                        double d1 = pStartVec.distanceToSqr(new Vec3(optional.get()));
+                        if (d1 < Double.MAX_VALUE) {
+                            cir.setReturnValue(new EntityHitResult(entity, new Vec3(optional.get())));
+                        }
                     }
                 }
             }
@@ -54,25 +55,28 @@ public class ProjectileUtilMixin {
                     continue;
                 }
 
-                OBB obb = obbEntity.getOBB().inflate(entity.getPickRadius() * 2);
-                Optional<Vector3f> optional = obb.clip(pStartVec.toVector3f(), pEndVec.toVector3f());
-                if (obb.contains(pStartVec)) {
-                    if (pDistance >= 0D) {
-                        cir.setReturnValue(new EntityHitResult(entity, new Vec3(optional.orElse(pStartVec.toVector3f()))));
-                        return;
-                    }
-                } else if (optional.isPresent()) {
-                    var vec = new Vec3(optional.get());
-                    double d1 = pStartVec.distanceToSqr(vec);
-                    if (d1 < pDistance || pDistance == 0.0D) {
-                        if (entity.getRootVehicle() == pShooter.getRootVehicle() && !entity.canRiderInteract()) {
-                            if (pDistance == 0.0D) {
+                var obbList = obbEntity.getOBBs();
+                for (var obb : obbList) {
+                    obb = obb.inflate(entity.getPickRadius() * 2);
+                    Optional<Vector3f> optional = obb.clip(pStartVec.toVector3f(), pEndVec.toVector3f());
+                    if (obb.contains(pStartVec)) {
+                        if (pDistance >= 0D) {
+                            cir.setReturnValue(new EntityHitResult(entity, new Vec3(optional.orElse(pStartVec.toVector3f()))));
+                            return;
+                        }
+                    } else if (optional.isPresent()) {
+                        var vec = new Vec3(optional.get());
+                        double d1 = pStartVec.distanceToSqr(vec);
+                        if (d1 < pDistance || pDistance == 0.0D) {
+                            if (entity.getRootVehicle() == pShooter.getRootVehicle() && !entity.canRiderInteract()) {
+                                if (pDistance == 0.0D) {
+                                    cir.setReturnValue(new EntityHitResult(entity, vec));
+                                    return;
+                                }
+                            } else {
                                 cir.setReturnValue(new EntityHitResult(entity, vec));
                                 return;
                             }
-                        } else {
-                            cir.setReturnValue(new EntityHitResult(entity, vec));
-                            return;
                         }
                     }
                 }
