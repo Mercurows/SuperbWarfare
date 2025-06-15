@@ -41,4 +41,12 @@ public class VectorTool {
 
         return combined;
     }
+
+    public static Quaternionf combineRotationsTurret(float partialTicks, VehicleEntity entity) {
+        Quaternionf turretYawRot = Axis.YP.rotationDegrees(Mth.lerp(partialTicks, entity.turretYRotO, entity.getTurretYRot()));
+        Quaternionf combined = combineRotations(partialTicks, entity);
+        combined.mul(turretYawRot);
+
+        return combined;
+    }
 }

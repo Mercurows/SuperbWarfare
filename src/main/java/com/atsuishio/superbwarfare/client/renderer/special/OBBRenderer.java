@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.client.renderer.special;
 
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.tools.OBB;
-import com.atsuishio.superbwarfare.tools.VectorTool;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.LevelRenderer;
@@ -21,7 +20,7 @@ public class OBBRenderer {
         Vec3 position = entity.position();
         Vector3f center = obb.center();
         Vector3f halfExtents = obb.extents();
-        Quaternionf rotation = VectorTool.combineRotations(pPartialTicks, entity);
+        Quaternionf rotation = obb.rotation();
         renderOBB(
                 poseStack, buffer,
                 (float) (center.x() - position.x()), (float) (center.y() - position.y()), (float) (center.z() - position.z()),

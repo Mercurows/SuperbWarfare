@@ -89,10 +89,12 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
     public int droneReloadCoolDown;
 
     public OBB obb;
+    public OBB obbTurret;
 
     public Yx100Entity(EntityType<Yx100Entity> type, Level world) {
         super(type, world);
         this.obb = new OBB(this.position().toVector3f(), new Vector3f(2.53125f, 1.0625f, 4.75f), new Quaternionf());
+        this.obbTurret = new OBB(this.position().toVector3f(), new Vector3f(2, 1, 2), new Quaternionf());
     }
 
     @Override
@@ -1302,6 +1304,11 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
         Matrix4f transform = getVehicleTransform(1);
         Vector4f worldPosition = transformPosition(transform, 0, 1.125f, 0.25f);
         this.obb.center().set(new Vector3f(worldPosition.x, worldPosition.y, worldPosition.z));
-        this.obb.setRotation(VectorTool.combineRotations(1, this));
+        this.obb.setRotation(VectorTool.combineRotationsTurret(1, this));
+
+        Matrix4f transformT = getTurretTransform(1);
+        Vector4f worldPositionT = transformPosition(transformT, 0, 1, 0);
+        this.obbTurret.center().set(new Vector3f(worldPositionT.x, worldPositionT.y, worldPositionT.z));
+        this.obbTurret.setRotation(VectorTool.combineRotationsTurret(1, this));
     }
 }
