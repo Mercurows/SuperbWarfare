@@ -14,8 +14,6 @@ public class MiscConfig {
     public static ModConfigSpec.IntValue CHARGING_STATION_GENERATE_SPEED;
     public static ModConfigSpec.IntValue CHARGING_STATION_TRANSFER_SPEED;
     public static ModConfigSpec.IntValue CHARGING_STATION_CHARGE_RADIUS;
-
-    // TODO 这玩意是个啥
     public static ModConfigSpec.IntValue CHARGING_STATION_DEFAULT_FUEL_TIME;
 
     public static void init(ModConfigSpec.Builder builder) {
@@ -51,7 +49,7 @@ public class MiscConfig {
         builder.comment("The charging radius of the charging station");
         CHARGING_STATION_CHARGE_RADIUS = builder.defineInRange("charging_station_charge_radius", 8, 0, 128);
 
-        builder.comment("What is this?");
+        builder.comment("The default fuel time of the charging station");
         CHARGING_STATION_DEFAULT_FUEL_TIME = builder.defineInRange("charging_station_default_fuel_time", 1600, 1, Integer.MAX_VALUE);
 
         builder.pop();
