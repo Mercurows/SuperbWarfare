@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.tools;
 
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 import org.joml.Intersectionf;
 import org.joml.Math;
 import org.joml.Quaternionf;
@@ -219,5 +220,30 @@ public record OBB(Vector3f center, Vector3f extents, Quaternionf rotation) {
     public OBB inflate(float x, float y, float z) {
         Vector3f newExtents = new Vector3f(extents).add(x, y, z);
         return new OBB(center, newExtents, rotation);
+    }
+
+    /**
+     * 检查点是否在OBB内部
+     *
+     * @return 如果点在OBB内部则返回true，否则返回false
+     */
+    public boolean contains(Vec3 vec3) {
+        // 计算点到OBB中心的向量
+        Vector3f rel = new Vector3f(vec3.toVector3f()).sub(center);
+
+        Vector3f[] axes = new Vector3f[3];
+        axes[0] = rotation.transform(new Vector3f(1, 0, 0));
+        axes[1] = rotation.transform(new Vector3f(0, 1, 0));
+        axes[2] = rotation.transform(new Vector3f(0, 0, 1));
+
+        // 将相对向量投影到OBB的三个轴上
+        float projX = Math.abs(rel.dot(axes[0]));
+        float projY = Math.abs(rel.dot(axes[1]));
+        float projZ = Math.abs(rel.dot(axes[2]));
+
+        // 检查投影值是否小于对应轴上的半长
+        return projX <= extents.x &&
+                projY <= extents.y &&
+                projZ <= extents.z;
     }
 }
