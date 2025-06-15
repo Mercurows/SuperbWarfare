@@ -321,10 +321,10 @@ public class VehicleConfig {
         AH_6_CANNON_DAMAGE = builder.defineInRange("ah_6_cannon_damage", 25, 1, 10000000);
 
         builder.comment("The cannon explosion damage of AH-6");
-        AH_6_CANNON_EXPLOSION_DAMAGE = builder.defineInRange("ah_6_cannon_explosion_damage", 13, 1, 10000000);
+        AH_6_CANNON_EXPLOSION_DAMAGE = builder.defineInRange("ah_6_cannon_explosion_damage", 20, 1, 10000000);
 
         builder.comment("The cannon explosion damage of AH-6");
-        AH_6_CANNON_EXPLOSION_RADIUS = builder.defineInRange("ah_6_cannon_explosion_damage", 4d, 1, 10000000);
+        AH_6_CANNON_EXPLOSION_RADIUS = builder.defineInRange("ah_6_cannon_explosion_damage", 8d, 1, 10000000);
 
         builder.comment("The rocket damage of AH-6");
         AH_6_ROCKET_DAMAGE = builder.defineInRange("ah_6_rocket_damage", 80, 1, 10000000);

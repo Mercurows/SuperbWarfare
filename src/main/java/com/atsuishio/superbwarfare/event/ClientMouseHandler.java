@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.AirEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModMobEffects;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
@@ -61,8 +62,10 @@ public class ClientMouseHandler {
         if (player == null) return;
 
         if (notInGame()) {
-            PacketDistributor.sendToServer(new MouseMoveMessage(0, 0));
-            return;
+            speedX = 0;
+            speedY = 0;
+            lerpSpeedX = 0;
+            lerpSpeedY = 0;
         }
 
         posO = posN;
@@ -90,7 +93,6 @@ public class ClientMouseHandler {
         }
 
         if (player.getVehicle() instanceof VehicleEntity vehicle && player == vehicle.getFirstPassenger()) {
-
             if (notInGame()) {
                 PacketDistributor.sendToServer(new MouseMoveMessage(0, 0));
                 return;
@@ -140,6 +142,12 @@ public class ClientMouseHandler {
         LocalPlayer player = Minecraft.getInstance().player;
         if (player == null) return;
 
+        if (notInGame()) {
+            freeCameraYaw = 0;
+            freeCameraPitch = 0;
+            return;
+        }
+
         float times = 0.6f * (float) Math.min(Minecraft.getInstance().getTimer().getRealtimeDeltaTicks(), 0.8);
 
         freeCameraYaw -= 0.4f * times * lerpSpeedX;
@@ -160,11 +168,6 @@ public class ClientMouseHandler {
         }
         while (freeCameraPitch <= -180F) {
             freeCameraPitch += 360;
-        }
-
-        if (player.getVehicle() instanceof VehicleEntity vehicle && player == vehicle.getFirstPassenger() && vehicle instanceof AirEntity) {
-            player.setYRot(player.getVehicle().getYRot());
-            player.setYHeadRot(player.getYRot());
         }
 
         custom3pDistanceLerp = Mth.lerp(times, custom3pDistanceLerp, custom3pDistance);
@@ -219,8 +222,17 @@ public class ClientMouseHandler {
             return 0;
         }
 
-        if (player.getVehicle() instanceof VehicleEntity vehicle) {
+        if (player.getVehicle() instanceof VehicleEntity vehicle && vehicle instanceof WeaponVehicleEntity weaponVehicle && weaponVehicle.banHand(player)) {
             return vehicle.getSensitivity(original, ClientEventHandler.zoomVehicle, vehicle.getSeatIndex(player), vehicle.onGround());
+        }
+
+        if (stack.getItem() instanceof GunItem) {
+            var data = GunData.from(stack);
+            float customSens = data.sensitivity.get();
+
+            if (!player.getMainHandItem().isEmpty() && mc.options.getCameraType() == CameraType.FIRST_PERSON) {
+                return original / Math.max((1 + (0.2 * (data.zoom() - (0.3 * customSens)) * ClientEventHandler.zoomTime)), 0.1);
+            }
         }
 
         return original;
