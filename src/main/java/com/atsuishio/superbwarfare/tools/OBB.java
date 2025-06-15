@@ -15,8 +15,9 @@ import java.util.Optional;
  * @param center   旋转中心
  * @param extents  三个轴向上的半长
  * @param rotation 旋转
+ * @param isPart   是否为子部件，一般用于炮塔
  */
-public record OBB(Vector3f center, Vector3f extents, Quaternionf rotation, boolean turret) {
+public record OBB(Vector3f center, Vector3f extents, Quaternionf rotation, boolean isPart) {
 
     public void setCenter(Vector3f center) {
         this.center.set(center);

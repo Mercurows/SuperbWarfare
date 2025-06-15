@@ -26,7 +26,7 @@ public class OBBRenderer {
             Vector3f halfExtents = obb.extents();
             Quaternionf rotation;
 
-            if (obb.turret()) {
+            if (obb.isPart()) {
                 rotation = VectorTool.combineRotationsTurret(pPartialTicks, entity);
             } else {
                 rotation = VectorTool.combineRotations(pPartialTicks, entity);

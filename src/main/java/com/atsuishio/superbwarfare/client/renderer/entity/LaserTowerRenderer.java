@@ -63,7 +63,7 @@ public class LaserTowerRenderer extends GeoEntityRenderer<LaserTowerEntity> {
             bone.setHidden(!pCamera.isVisible(aabb));
         }
 
-        if (name.equals("turret") || name.equals("turret2")) {
+        if (name.equals("isPart") || name.equals("turret2")) {
             bone.setRotY(-Mth.lerp(partialTick, animatable.yRotO, animatable.getYRot()) * Mth.DEG_TO_RAD);
         }
 
