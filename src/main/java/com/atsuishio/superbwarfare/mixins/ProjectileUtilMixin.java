@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.mixins;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
 import com.atsuishio.superbwarfare.tools.OBB;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
@@ -27,6 +28,10 @@ public class ProjectileUtilMixin {
 
         for (var entity : pLevel.getEntities(pProjectile, pBoundingBox, pFilter)) {
             if (entity instanceof OBBEntity obbEntity) {
+                if (pProjectile instanceof Projectile projectile &&
+                        (projectile.getOwner() == entity || entity.getPassengers().contains(projectile.getOwner()))) {
+                    continue;
+                }
                 OBB obb = obbEntity.getOBB().inflate(pInflationAmount * 2);
 
                 Optional<Vector3f> optional = obb.clip(pStartVec.toVector3f(), pEndVec.toVector3f());
