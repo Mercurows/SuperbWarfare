@@ -11,6 +11,7 @@
     "LevelMixin",
     "LivingEntityMixin",
     "PlayerMixin",
+    "ProjectileUtilMixin",
     "VillagerMixin"
   ],
   "client": [

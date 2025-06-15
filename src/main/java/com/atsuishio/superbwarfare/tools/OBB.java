@@ -185,14 +185,11 @@ public record OBB(Vector3f center, Vector3f extents, Quaternionf rotation) {
         }
 
         // 检查是否有有效交点
-        if (tEnter >= 0 && tEnter <= 1) {
-            // 计算局部坐标系中的交点
-            Vector3f localHit = new Vector3f(dir).mul((float) tEnter).add(localFrom);
-            // 转换回世界坐标系
-            return Optional.of(localToWorld(localHit, axes));
-        }
+        // 计算局部坐标系中的交点
+        Vector3f localHit = new Vector3f(dir).mul((float) tEnter).add(localFrom);
+        // 转换回世界坐标系
+        return Optional.of(localToWorld(localHit, axes));
 
-        return Optional.empty();
     }
 
     // 世界坐标转局部坐标
@@ -212,5 +209,15 @@ public record OBB(Vector3f center, Vector3f extents, Quaternionf rotation) {
         result.add(axes[1].mul(localPoint.y, new Vector3f()));
         result.add(axes[2].mul(localPoint.z, new Vector3f()));
         return result;
+    }
+
+    public OBB inflate(float amount) {
+        Vector3f newExtents = new Vector3f(extents).add(amount, amount, amount);
+        return new OBB(center, newExtents, rotation);
+    }
+
+    public OBB inflate(float x, float y, float z) {
+        Vector3f newExtents = new Vector3f(extents).add(x, y, z);
+        return new OBB(center, newExtents, rotation);
     }
 }
