@@ -1,7 +1,10 @@
 package com.atsuishio.superbwarfare.tools;
 
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
+import com.mojang.math.Axis;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Quaternionf;
 
 public class VectorTool {
     public static double calculateAngle(Vec3 start, Vec3 end) {
@@ -22,5 +25,20 @@ public class VectorTool {
         } else {
             return ((180.0f - x) / 90.0f);   // x ∈ (90, 180]
         }
+    }
+
+    // 合并三个旋转（Yaw -> Pitch -> Roll）
+    public static Quaternionf combineRotations(float partialTicks, VehicleEntity entity) {
+        // 1. 获取三个独立的旋转四元数
+        Quaternionf yawRot = Axis.YP.rotationDegrees(-Mth.lerp(partialTicks, entity.yRotO, entity.getYRot()));
+        Quaternionf pitchRot = Axis.XP.rotationDegrees(Mth.lerp(partialTicks, entity.xRotO, entity.getXRot()));
+        Quaternionf rollRot = Axis.ZP.rotationDegrees(Mth.lerp(partialTicks, entity.prevRoll, entity.getRoll()));
+
+        // 2. 按照正确顺序合并：先Yaw，再Pitch，最后Roll
+        Quaternionf combined = new Quaternionf(yawRot);   // 初始化为Yaw旋转
+        combined.mul(pitchRot);  // 应用Pitch旋转
+        combined.mul(rollRot);   // 应用Roll旋转
+
+        return combined;
     }
 }
