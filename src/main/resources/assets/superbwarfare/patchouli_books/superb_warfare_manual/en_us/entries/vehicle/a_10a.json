@@ -9,7 +9,7 @@
     },
     {
       "type": "patchouli:crafting",
-      "recipe": "superbwarfare:a_10a_crafting",
+      "recipe": "superbwarfare:a_10a_container",
       "text": "superbwarfare.page.vehicle.a_10a2"
     },
     {
