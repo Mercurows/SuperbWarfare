@@ -502,7 +502,7 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
         if (player == null) return entityData.get(POWER);
         ItemStack stack = player.getMainHandItem();
 
-        if (stack.is(ModItems.MONITOR.get()) && stack.getOrCreateTag().getBoolean("Using") && stack.getOrCreateTag().getBoolean("Linked")) {
+        if (stack.is(ModItems.MONITOR.get()) && NBTTool.getTag(stack).getBoolean("Using") && NBTTool.getTag(stack).getBoolean("Linked")) {
             return entityData.get(POWER) * 0.25f;
         }
         return entityData.get(POWER) * 2f;
