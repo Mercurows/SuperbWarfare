@@ -1246,9 +1246,9 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
     @Override
     public double getSensitivity(double original, boolean zoom, int seatIndex, boolean isOnGround) {
         if (seatIndex == 0) {
-            return zoom ? 0.17 : 0.22;
+            return zoom ? 0.17 : Minecraft.getInstance().options.getCameraType().isFirstPerson() ? 0.22 : 0.35;
         } else if (seatIndex == 1) {
-            return zoom ? 0.25 : 0.35;
+            return zoom ? 0.25 : Minecraft.getInstance().options.getCameraType().isFirstPerson() ? 0.35 : 0.4;
         } else return original;
     }
 
@@ -1302,7 +1302,6 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
         Matrix4f transform = getVehicleTransform(1);
         Vector4f worldPosition = transformPosition(transform, 0, 1.125f, 0.25f);
         this.obb.center().set(new Vector3f(worldPosition.x, worldPosition.y, worldPosition.z));
-
         this.obb.setRotation(VectorTool.combineRotations(1, this));
     }
 }

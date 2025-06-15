@@ -238,7 +238,7 @@ public class VehicleConfig {
         builder.push("Heavy Machine Gun");
 
         builder.comment("The gun damage of 12.7mm HMG");
-        HEAVY_MACHINE_GUN_DAMAGE = builder.defineInRange("heavy_machine_gun_damage", 25, 1, 10000000);
+        HEAVY_MACHINE_GUN_DAMAGE = builder.defineInRange("heavy_machine_gun_damage", 40, 1, 10000000);
 
         builder.pop();
 
