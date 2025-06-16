@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.entity.vehicle;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
+import com.atsuishio.superbwarfare.entity.OBBEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ContainerMobileVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.LandArmorEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
@@ -16,10 +17,7 @@ import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage;
-import com.atsuishio.superbwarfare.tools.Ammo;
-import com.atsuishio.superbwarfare.tools.CustomExplosion;
-import com.atsuishio.superbwarfare.tools.InventoryTool;
-import com.atsuishio.superbwarfare.tools.ParticleTool;
+import com.atsuishio.superbwarfare.tools.*;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -50,8 +48,7 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Math;
-import org.joml.Matrix4f;
-import org.joml.Vector4f;
+import org.joml.*;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.*;
@@ -59,15 +56,32 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Comparator;
+import java.util.List;
 
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 
-public class Lav150Entity extends ContainerMobileVehicleEntity implements GeoEntity, LandArmorEntity, WeaponVehicleEntity {
+public class Lav150Entity extends ContainerMobileVehicleEntity implements GeoEntity, LandArmorEntity, WeaponVehicleEntity, OBBEntity {
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+    public OBB obb;
+    public OBB obb2;
+    public OBB obb3;
+    public OBB obb4;
+    public OBB obb5;
+    public OBB obb6;
+    public OBB obb7;
+    public OBB obbTurret;
 
     public Lav150Entity(EntityType<Lav150Entity> type, Level world) {
         super(type, world);
+        this.obb = new OBB(this.position().toVector3f(), new Vector3f(0.25f, 0.75f, 0.75f), new Quaternionf(), false);
+        this.obb2 = new OBB(this.position().toVector3f(), new Vector3f(0.25f, 0.75f, 0.75f), new Quaternionf(), false);
+        this.obb3 = new OBB(this.position().toVector3f(), new Vector3f(0.25f, 0.75f, 0.75f), new Quaternionf(), false);
+        this.obb4 = new OBB(this.position().toVector3f(), new Vector3f(0.25f, 0.75f, 0.75f), new Quaternionf(), false);
+        this.obb5 = new OBB(this.position().toVector3f(), new Vector3f(1.3125f, 0.90625f, 2.4375f), new Quaternionf(), false);
+        this.obb6 = new OBB(this.position().toVector3f(), new Vector3f(1.3125f, 0.53125f, 0.34375f), new Quaternionf(), false);
+        this.obb7 = new OBB(this.position().toVector3f(), new Vector3f(1.3125f, 0.625f, 0.53125f), new Quaternionf(), false);
+        this.obbTurret = new OBB(this.position().toVector3f(), new Vector3f(0.875f, 0.3625f, 1.25f), new Quaternionf(), true);
     }
 
     @Override
@@ -134,6 +148,7 @@ public class Lav150Entity extends ContainerMobileVehicleEntity implements GeoEnt
         rightWheelRotO = this.getRightWheelRot();
 
         super.baseTick();
+        updateOBB();
 
         if (this.level() instanceof ServerLevel) {
             this.handleAmmo();
@@ -645,5 +660,48 @@ public class Lav150Entity extends ContainerMobileVehicleEntity implements GeoEnt
     @Override
     public @Nullable ResourceLocation getVehicleItemIcon() {
         return Mod.loc("textures/gui/vehicle/type/land.png");
+    }
+
+    @Override
+    public List<OBB> getOBBs() {
+        return List.of(this.obb, this.obb2, this.obb3, this.obb4, this.obb5, this.obb6, this.obb7, this.obbTurret);
+    }
+
+    @Override
+    public void updateOBB() {
+        Matrix4f transform = getVehicleTransform(1);
+
+        Vector4f worldPosition = transformPosition(transform, -1.140625f, 0.75f, 1.584375f);
+        this.obb.center().set(new Vector3f(worldPosition.x, worldPosition.y, worldPosition.z));
+        this.obb.setRotation(VectorTool.combineRotations(1, this));
+
+        Vector4f worldPosition2 = transformPosition(transform, 1.140625f, 0.75f, 1.584375f);
+        this.obb2.center().set(new Vector3f(worldPosition2.x, worldPosition2.y, worldPosition2.z));
+        this.obb2.setRotation(VectorTool.combineRotations(1, this));
+
+        Vector4f worldPosition3 = transformPosition(transform, 1.140625f, 0.75f, -1.571875f);
+        this.obb3.center().set(new Vector3f(worldPosition3.x, worldPosition3.y, worldPosition3.z));
+        this.obb3.setRotation(VectorTool.combineRotations(1, this));
+
+        Vector4f worldPosition4 = transformPosition(transform, -1.140625f, 0.75f, -1.571875f);
+        this.obb4.center().set(new Vector3f(worldPosition4.x, worldPosition4.y, worldPosition4.z));
+        this.obb4.setRotation(VectorTool.combineRotations(1, this));
+
+        Vector4f worldPosition5 = transformPosition(transform, 0, 1.53125f, -0.4375f);
+        this.obb5.center().set(new Vector3f(worldPosition5.x, worldPosition5.y, worldPosition5.z));
+        this.obb5.setRotation(VectorTool.combineRotations(1, this));
+
+        Vector4f worldPosition6 = transformPosition(transform, 0, 1.90625f, -3.21875f);
+        this.obb6.center().set(new Vector3f(worldPosition6.x, worldPosition6.y, worldPosition6.z));
+        this.obb6.setRotation(VectorTool.combineRotations(1, this));
+
+        Vector4f worldPosition7 = transformPosition(transform, 0, 1.4375f, 2.53125f);
+        this.obb7.center().set(new Vector3f(worldPosition7.x, worldPosition7.y, worldPosition7.z));
+        this.obb7.setRotation(VectorTool.combineRotations(1, this));
+
+        Matrix4f transformT = getTurretTransform(1);
+        Vector4f worldPositionT = transformPosition(transformT, 0, 0.3625f, 0f);
+        this.obbTurret.center().set(new Vector3f(worldPositionT.x, worldPositionT.y, worldPositionT.z));
+        this.obbTurret.setRotation(VectorTool.combineRotationsTurret(1, this));
     }
 }

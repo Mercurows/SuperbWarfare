@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.entity.vehicle;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
+import com.atsuishio.superbwarfare.entity.OBBEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ContainerMobileVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.LandArmorEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
@@ -55,8 +56,7 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Math;
-import org.joml.Matrix4f;
-import org.joml.Vector4f;
+import org.joml.*;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.AnimatableManager;
@@ -72,7 +72,7 @@ import static com.atsuishio.superbwarfare.client.RenderHelper.preciseBlit;
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 import static com.atsuishio.superbwarfare.tools.SeekTool.baseFilter;
 
-public class PrismTankEntity extends ContainerMobileVehicleEntity implements GeoEntity, LandArmorEntity, WeaponVehicleEntity {
+public class PrismTankEntity extends ContainerMobileVehicleEntity implements GeoEntity, LandArmorEntity, WeaponVehicleEntity, OBBEntity {
 
     public static final EntityDataAccessor<Integer> CANNON_FIRE_TIME = SynchedEntityData.defineId(PrismTankEntity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Float> LASER_LENGTH = SynchedEntityData.defineId(PrismTankEntity.class, EntityDataSerializers.FLOAT);
@@ -80,9 +80,22 @@ public class PrismTankEntity extends ContainerMobileVehicleEntity implements Geo
     public static final EntityDataAccessor<Float> LASER_SCALE_O = SynchedEntityData.defineId(PrismTankEntity.class, EntityDataSerializers.FLOAT);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
+    public OBB obb;
+    public OBB obb2;
+    public OBB obb3;
+    public OBB obb4;
+    public OBB obb5;
+    public OBB obbTurret;
+
     public PrismTankEntity(EntityType<PrismTankEntity> type, Level world) {
         super(type, world);
         this.noCulling = true;
+        this.obb = new OBB(this.position().toVector3f(), new Vector3f(2.5f, 0.8125f, 3.96875f), new Quaternionf(), false);
+        this.obb2 = new OBB(this.position().toVector3f(), new Vector3f(2.5f, 0.5f, 0.375f), new Quaternionf(), false);
+        this.obb3 = new OBB(this.position().toVector3f(), new Vector3f(0.46875f, 0.78125f, 3.3125f), new Quaternionf(), false);
+        this.obb4 = new OBB(this.position().toVector3f(), new Vector3f(0.46875f, 0.78125f, 3.3125f), new Quaternionf(), false);
+        this.obb5 = new OBB(this.position().toVector3f(), new Vector3f(1.375f, 0.28125f, 1.375f), new Quaternionf(), false);
+        this.obbTurret = new OBB(this.position().toVector3f(), new Vector3f(0.4375f, 0.90625f, 1.21875f), new Quaternionf(), true);
     }
 
     @Override
@@ -143,6 +156,7 @@ public class PrismTankEntity extends ContainerMobileVehicleEntity implements Geo
     public void baseTick() {
         this.entityData.set(LASER_SCALE_O, this.entityData.get(LASER_SCALE));
         super.baseTick();
+        updateOBB();
 
         if (getLeftTrack() < 0) {
             setLeftTrack(100);
@@ -825,5 +839,41 @@ public class PrismTankEntity extends ContainerMobileVehicleEntity implements Geo
     @Override
     public @Nullable ResourceLocation getVehicleItemIcon() {
         return Mod.loc("textures/gui/vehicle/type/land.png");
+    }
+
+    @Override
+    public List<OBB> getOBBs() {
+        return List.of(this.obb, this.obb2, this.obb3, this.obb4, this.obb5, this.obbTurret);
+    }
+
+    @Override
+    public void updateOBB() {
+        Matrix4f transform = getVehicleTransform(1);
+
+        Vector4f worldPosition = transformPosition(transform, 0, 1.4375f, -0.21875f);
+        this.obb.center().set(new Vector3f(worldPosition.x, worldPosition.y, worldPosition.z));
+        this.obb.setRotation(VectorTool.combineRotations(1, this));
+
+        Vector4f worldPosition2 = transformPosition(transform, 0, 1.4375f, 4.125f);
+        this.obb2.center().set(new Vector3f(worldPosition2.x, worldPosition2.y, worldPosition2.z));
+        this.obb2.setRotation(VectorTool.combineRotations(1, this));
+
+        Vector4f worldPosition3 = transformPosition(transform, 2.09375f, 0.84375f, 0f);
+        this.obb3.center().set(new Vector3f(worldPosition3.x, worldPosition3.y, worldPosition3.z));
+        this.obb3.setRotation(VectorTool.combineRotations(1, this));
+
+        Vector4f worldPosition4 = transformPosition(transform, -2.09375f, 0.84375f, 0f);
+        this.obb4.center().set(new Vector3f(worldPosition4.x, worldPosition4.y, worldPosition4.z));
+        this.obb4.setRotation(VectorTool.combineRotations(1, this));
+
+        Vector4f worldPosition5 = transformPosition(transform, 0, 2.53125f, 0.765625f);
+        this.obb5.center().set(new Vector3f(worldPosition5.x, worldPosition5.y, worldPosition5.z));
+        this.obb5.setRotation(VectorTool.combineRotations(1, this));
+
+        Matrix4f transformT = getTurretTransform(1);
+
+        Vector4f worldPositionT = transformPosition(transformT, 0, 1.59375f, -0.390625f);
+        this.obbTurret.center().set(new Vector3f(worldPositionT.x, worldPositionT.y, worldPositionT.z));
+        this.obbTurret.setRotation(VectorTool.combineRotationsTurret(1, this));
     }
 }

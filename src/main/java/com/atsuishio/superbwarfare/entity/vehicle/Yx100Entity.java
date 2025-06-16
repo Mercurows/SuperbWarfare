@@ -89,12 +89,20 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
     public int droneReloadCoolDown;
 
     public OBB obb;
+    public OBB obb2;
+    public OBB obb3;
+    public OBB obb4;
     public OBB obbTurret;
+    public OBB obbTurret2;
 
     public Yx100Entity(EntityType<Yx100Entity> type, Level world) {
         super(type, world);
-        this.obb = new OBB(this.position().toVector3f(), new Vector3f(2.53125f, 1.0625f, 4.75f), new Quaternionf(), false);
-        this.obbTurret = new OBB(this.position().toVector3f(), new Vector3f(2.375f, 0.5625f, 3f), new Quaternionf(), true);
+        this.obb = new OBB(this.position().toVector3f(), new Vector3f(2.375f, 0.71875f, 4f), new Quaternionf(), false);
+        this.obb2 = new OBB(this.position().toVector3f(), new Vector3f(2.375f, 0.59375f, 0.65625f), new Quaternionf(), false);
+        this.obb3 = new OBB(this.position().toVector3f(), new Vector3f(0.625f, 0.84375f, 3.875f), new Quaternionf(), false);
+        this.obb4 = new OBB(this.position().toVector3f(), new Vector3f(0.625f, 0.84375f, 3.875f), new Quaternionf(), false);
+        this.obbTurret = new OBB(this.position().toVector3f(), new Vector3f(2.375f, 0.5625f, 2.1875f), new Quaternionf(), true);
+        this.obbTurret2 = new OBB(this.position().toVector3f(), new Vector3f(1.625f, 0.40625f, 0.59375f), new Quaternionf(), true);
     }
 
     @Override
@@ -1295,19 +1303,37 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
 
     @Override
     public List<OBB> getOBBs() {
-        return List.of(this.obb, this.obbTurret);
+        return List.of(this.obb, this.obb2, this.obb3, this.obb4, this.obbTurret, this.obbTurret2);
     }
 
     @Override
     public void updateOBB() {
         Matrix4f transform = getVehicleTransform(1);
-        Vector4f worldPosition = transformPosition(transform, 0, 1.125f, 0.25f);
+
+        Vector4f worldPosition = transformPosition(transform, 0, 1.40625f, -0.375f);
         this.obb.center().set(new Vector3f(worldPosition.x, worldPosition.y, worldPosition.z));
         this.obb.setRotation(VectorTool.combineRotations(1, this));
 
+        Vector4f worldPosition2 = transformPosition(transform, 0, 1.28125f, 4.28125f);
+        this.obb2.center().set(new Vector3f(worldPosition2.x, worldPosition2.y, worldPosition2.z));
+        this.obb2.setRotation(VectorTool.combineRotations(1, this));
+
+        Vector4f worldPosition3 = transformPosition(transform, 1.8125f, 0.84375f, 0.0625f);
+        this.obb3.center().set(new Vector3f(worldPosition3.x, worldPosition3.y, worldPosition3.z));
+        this.obb3.setRotation(VectorTool.combineRotations(1, this));
+
+        Vector4f worldPosition4 = transformPosition(transform, -1.8125f, 0.84375f, 0.0625f);
+        this.obb4.center().set(new Vector3f(worldPosition4.x, worldPosition4.y, worldPosition4.z));
+        this.obb4.setRotation(VectorTool.combineRotations(1, this));
+
         Matrix4f transformT = getTurretTransform(1);
-        Vector4f worldPositionT = transformPosition(transformT, 0, 0.5625f, -0.1875f);
+
+        Vector4f worldPositionT = transformPosition(transformT, 0, 0.5625f, -1.125f);
         this.obbTurret.center().set(new Vector3f(worldPositionT.x, worldPositionT.y, worldPositionT.z));
         this.obbTurret.setRotation(VectorTool.combineRotationsTurret(1, this));
+
+        Vector4f worldPositionT2 = transformPosition(transformT, 0, 0.40625f, 1.65625f);
+        this.obbTurret2.center().set(new Vector3f(worldPositionT2.x, worldPositionT2.y, worldPositionT2.z));
+        this.obbTurret2.setRotation(VectorTool.combineRotationsTurret(1, this));
     }
 }
