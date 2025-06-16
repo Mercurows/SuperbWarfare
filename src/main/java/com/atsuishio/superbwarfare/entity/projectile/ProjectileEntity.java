@@ -65,7 +65,9 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-@SuppressWarnings({"unused", "UnusedReturnValue"})
+import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
+
+@SuppressWarnings({"unused", "UnusedReturnValue", "SuspiciousNameCombination"})
 public class ProjectileEntity extends Projectile implements IEntityWithComplexSpawn, GeoEntity, CustomSyncMotionEntity {
 
     public static final EntityDataAccessor<Float> COLOR_R = SynchedEntityData.defineId(ProjectileEntity.class, EntityDataSerializers.FLOAT);
@@ -187,6 +189,10 @@ public class ProjectileEntity extends Projectile implements IEntityWithComplexSp
                 var obbVec = obb.clip(startVec.toVector3f(), endVec.toVector3f()).orElse(null);
                 if (obbVec != null) {
                     hitPos = new Vec3(obbVec);
+                    if (this.level() instanceof ServerLevel serverLevel) {
+                        sendParticle(serverLevel, ModParticleTypes.FIRE_STAR.get(), hitPos.x, hitPos.y, hitPos.z, 2, 0, 0, 0, 0.2, false);
+                        sendParticle(serverLevel, ParticleTypes.SMOKE, hitPos.x, hitPos.y, hitPos.z, 3, 0, 0, 0, 0.01, false);
+                    }
                 }
             }
         } else {

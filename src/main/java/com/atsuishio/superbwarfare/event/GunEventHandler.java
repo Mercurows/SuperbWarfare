@@ -229,7 +229,7 @@ public class GunEventHandler {
         if (reload.singleReloadStarter.start()) {
             NeoForge.EVENT_BUS.post(new ReloadEvent.Pre(player, data));
 
-            if (data.defaultPrepareLoadTime() != 0 && data.ammo.get() == 0) {
+            if (data.defaultPrepareLoadTime() != 0 && (data.ammo.get() == 0 || stack.is(ModItems.SECONDARY_CATACLYSM.get()))) {
                 // 此处判断空仓换弹的时候，是否在准备阶段就需要装填一发，如M870
                 playGunPrepareLoadReloadSounds(player);
                 int prepareLoadTime = data.defaultPrepareLoadTime();

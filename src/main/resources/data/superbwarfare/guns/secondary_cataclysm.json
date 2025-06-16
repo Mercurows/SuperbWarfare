@@ -13,6 +13,7 @@
   "ReloadTypes": [
     "Iterative"
   ],
+  "PrepareTime": 31,
   "PrepareLoadTime": 31,
   "PrepareAmmoLoadTime": 3,
   "IterativeTime": 20,
