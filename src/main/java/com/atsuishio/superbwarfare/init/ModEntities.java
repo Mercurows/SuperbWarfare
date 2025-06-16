@@ -106,7 +106,7 @@ public class ModEntities {
     public static final DeferredHolder<EntityType<?>, EntityType<WheelChairEntity>> WHEEL_CHAIR = register("wheel_chair",
             EntityType.Builder.of(WheelChairEntity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).fireImmune().sized(1.0f, 1.0f));
     public static final DeferredHolder<EntityType<?>, EntityType<Ah6Entity>> AH_6 = register("ah_6",
-            EntityType.Builder.of(Ah6Entity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).fireImmune().sized(2.8f, 2.9f));
+            EntityType.Builder.of(Ah6Entity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).fireImmune().sized(3.6f, 2.9f));
     public static final DeferredHolder<EntityType<?>, EntityType<Lav150Entity>> LAV_150 = register("lav_150",
             EntityType.Builder.of(Lav150Entity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).fireImmune().sized(2.8f, 3.1f));
     public static final DeferredHolder<EntityType<?>, EntityType<Tom6Entity>> TOM_6 = register("tom_6",
@@ -123,7 +123,7 @@ public class ModEntities {
     public static final DeferredHolder<EntityType<?>, EntityType<PrismTankEntity>> PRISM_TANK = register("prism_tank",
             EntityType.Builder.of(PrismTankEntity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).fireImmune().sized(5f, 2.6f));
     public static final DeferredHolder<EntityType<?>, EntityType<A10Entity>> A_10A = register("a_10a",
-            EntityType.Builder.of(A10Entity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).fireImmune().sized(6, 3.5f));
+            EntityType.Builder.of(A10Entity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).fireImmune().sized(9f, 3.5f));
 
     private static <T extends Entity> DeferredHolder<EntityType<?>, EntityType<T>> register(String name, EntityType.Builder<T> entityTypeBuilder) {
         return REGISTRY.register(name, () -> entityTypeBuilder.build(name));

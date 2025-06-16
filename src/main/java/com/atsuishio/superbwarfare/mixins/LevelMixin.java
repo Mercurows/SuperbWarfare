@@ -26,7 +26,7 @@ public abstract class LevelMixin {
             at = @At("RETURN"))
     public void getEntities(Entity pEntity, AABB pBoundingBox, Predicate<? super Entity> pPredicate, CallbackInfoReturnable<List<Entity>> cir) {
         if (pEntity instanceof ProjectileEntity) {
-            this.getEntities().get(pBoundingBox.inflate(2), entity -> {
+            this.getEntities().get(pBoundingBox.inflate(3), entity -> {
                 if (entity instanceof OBBEntity obbEntity) {
                     for (OBB obb : obbEntity.getOBBs()) {
                         if (OBB.isColliding(obb, pBoundingBox)) {

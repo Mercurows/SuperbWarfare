@@ -160,7 +160,7 @@ public class ProjectileEntity extends Projectile implements IEntityWithComplexSp
                 this,
                 this.getBoundingBox()
                         .expandTowards(this.getDeltaMovement())
-                        .inflate(this.beast ? 3 : 1),
+                        .inflate(1),
                 PROJECTILE_TARGETS
         );
         for (Entity entity : entities) {

@@ -48,7 +48,7 @@ public class ProjectileUtilMixin {
     private static void getEntityHitResult(Entity pShooter, Vec3 pStartVec, Vec3 pEndVec, AABB pBoundingBox, Predicate<Entity> pFilter, double pDistance, CallbackInfoReturnable<EntityHitResult> cir) {
         Level level = pShooter.level();
 
-        for (Entity entity : level.getEntities(pShooter, pBoundingBox, pFilter)) {
+        for (Entity entity : level.getEntities(pShooter, pBoundingBox.inflate(2), pFilter)) {
             if (entity instanceof OBBEntity obbEntity) {
                 if (entity.getPassengers().contains(pShooter)) {
                     continue;
