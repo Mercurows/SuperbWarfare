@@ -23,7 +23,7 @@ public class ProjectileUtilMixin {
     @Inject(method = "getEntityHitResult(Lnet/minecraft/world/level/Level;Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/world/phys/AABB;Ljava/util/function/Predicate;F)Lnet/minecraft/world/phys/EntityHitResult;",
             at = @At("HEAD"), cancellable = true)
     private static void getEntityHitResult(Level pLevel, Entity pProjectile, Vec3 pStartVec, Vec3 pEndVec, AABB pBoundingBox, Predicate<Entity> pFilter, float pInflationAmount, CallbackInfoReturnable<EntityHitResult> cir) {
-        for (var entity : pLevel.getEntities(pProjectile, pBoundingBox, pFilter)) {
+        for (var entity : pLevel.getEntities(pProjectile, pBoundingBox.inflate(2), pFilter)) {
             if (entity instanceof OBBEntity obbEntity) {
                 if (pProjectile instanceof Projectile projectile &&
                         (projectile.getOwner() == entity || entity.getPassengers().contains(projectile.getOwner()))) {
@@ -31,7 +31,6 @@ public class ProjectileUtilMixin {
                 }
                 var obbList = obbEntity.getOBBs();
                 for (var obb : obbList) {
-                    obb = obb.inflate(6);
                     Optional<Vector3f> optional = obb.clip(pStartVec.toVector3f(), pEndVec.toVector3f());
                     if (optional.isPresent()) {
                         double d1 = pStartVec.distanceToSqr(new Vec3(optional.get()));
