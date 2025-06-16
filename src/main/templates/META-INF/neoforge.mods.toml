@@ -46,5 +46,9 @@ side = "BOTH"
 modId = "optifine"
 type = "discouraged"
 
+[[dependencies.superbwarfare]]
+modId = "geckoanimfix"
+type = "incompatible"
+
 [features.superbwarfare]
 openGLVersion = "[3.2,)"
