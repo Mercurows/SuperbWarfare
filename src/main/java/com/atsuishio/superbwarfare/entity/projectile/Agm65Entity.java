@@ -145,6 +145,8 @@ public class Agm65Entity extends FastThrowableProjectile implements GeoEntity, E
     @Override
     protected void onHitEntity(EntityHitResult result) {
         Entity entity = result.getEntity();
+        if (this.getOwner() != null && this.getOwner().getVehicle() != null && entity == this.getOwner().getVehicle())
+            return;
         if (this.level() instanceof ServerLevel && tickCount > 8) {
             if (entity == this.getOwner() || (this.getOwner() != null && entity == this.getOwner().getVehicle()))
                 return;

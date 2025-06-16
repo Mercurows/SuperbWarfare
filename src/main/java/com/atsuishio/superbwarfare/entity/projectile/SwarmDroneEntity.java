@@ -179,9 +179,12 @@ public class SwarmDroneEntity extends FastThrowableProjectile implements GeoEnti
 
     @Override
     protected void onHitEntity(@NotNull EntityHitResult result) {
-        if (result.getEntity() instanceof SwarmDroneEntity) {
+        Entity entity = result.getEntity();
+        if (entity instanceof SwarmDroneEntity) {
             return;
         }
+        if (this.getOwner() != null && this.getOwner().getVehicle() != null && entity == this.getOwner().getVehicle())
+            return;
         if (this.getOwner() instanceof LivingEntity living) {
             if (!living.level().isClientSide() && living instanceof ServerPlayer player) {
                 living.level().playSound(null, living.blockPosition(), ModSounds.INDICATION.get(), SoundSource.VOICE, 1, 1);

@@ -173,7 +173,8 @@ public class JavelinMissileEntity extends FastThrowableProjectile implements Geo
     protected void onHitEntity(EntityHitResult result) {
         float damageMultiplier = 1 + this.monsterMultiplier;
         Entity entity = result.getEntity();
-        if (entity == this.getOwner() || entity == this.getVehicle()) return;
+        if (this.getOwner() != null && this.getOwner().getVehicle() != null && entity == this.getOwner().getVehicle())
+            return;
         if (this.getOwner() instanceof LivingEntity living) {
             if (!living.level().isClientSide() && living instanceof ServerPlayer player) {
                 living.level().playSound(null, living.blockPosition(), ModSounds.INDICATION.get(), SoundSource.VOICE, 1, 1);

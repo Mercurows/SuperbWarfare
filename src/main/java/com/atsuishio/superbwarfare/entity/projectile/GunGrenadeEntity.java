@@ -114,6 +114,8 @@ public class GunGrenadeEntity extends FastThrowableProjectile implements GeoEnti
     protected void onHitEntity(EntityHitResult result) {
         float damageMultiplier = 1 + this.monsterMultiplier;
         Entity entity = result.getEntity();
+        if (this.getOwner() != null && this.getOwner().getVehicle() != null && entity == this.getOwner().getVehicle())
+            return;
 
         if (this.getOwner() instanceof LivingEntity living) {
             if (!living.level().isClientSide() && living instanceof ServerPlayer player) {

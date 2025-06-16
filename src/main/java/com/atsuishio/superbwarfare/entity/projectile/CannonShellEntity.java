@@ -146,6 +146,8 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
     public void onHitEntity(@NotNull EntityHitResult entityHitResult) {
         if (this.level() instanceof ServerLevel) {
             Entity entity = entityHitResult.getEntity();
+            if (this.getOwner() != null && this.getOwner().getVehicle() != null && entity == this.getOwner().getVehicle())
+                return;
             entity.hurt(ModDamageTypes.causeCannonFireDamage(this.level().registryAccess(), this, this.getOwner()), this.damage);
 
             if (entity instanceof LivingEntity) {

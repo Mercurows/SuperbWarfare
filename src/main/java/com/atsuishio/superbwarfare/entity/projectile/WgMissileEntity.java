@@ -136,7 +136,8 @@ public class WgMissileEntity extends FastThrowableProjectile implements GeoEntit
     protected void onHitEntity(EntityHitResult result) {
         Entity entity = result.getEntity();
         if (this.tickCount < 1) return;
-        if (entity == this.getOwner() || entity == this.getVehicle()) return;
+        if (this.getOwner() != null && this.getOwner().getVehicle() != null && entity == this.getOwner().getVehicle())
+            return;
 
         if (this.getOwner() instanceof LivingEntity living) {
             if (!living.level().isClientSide() && living instanceof ServerPlayer player) {
