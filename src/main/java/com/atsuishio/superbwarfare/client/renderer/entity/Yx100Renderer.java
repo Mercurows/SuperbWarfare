@@ -62,7 +62,7 @@ public class Yx100Renderer extends GeoEntityRenderer<Yx100Entity> {
             }
         }
 
-        if (name.equals("isPart")) {
+        if (name.equals("turret")) {
             bone.setRotY(Mth.lerp(partialTick, animatable.turretYRotO, animatable.getTurretYRot()) * Mth.DEG_TO_RAD);
         }
 
