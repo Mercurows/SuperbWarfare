@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.mixins;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
 import com.atsuishio.superbwarfare.tools.OBB;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.entity.LevelEntityGetter;
 import net.minecraft.world.phys.AABB;
@@ -25,6 +26,8 @@ public abstract class LevelMixin {
     @Inject(method = "getEntities(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/phys/AABB;Ljava/util/function/Predicate;)Ljava/util/List;",
             at = @At("RETURN"))
     public void getEntities(Entity pEntity, AABB pBoundingBox, Predicate<? super Entity> pPredicate, CallbackInfoReturnable<List<Entity>> cir) {
+        if (!(pEntity instanceof Projectile)) return;
+
         StreamSupport.stream(this.getEntities().getAll().spliterator(), false).filter(e -> e instanceof OBBEntity && pPredicate.test(e))
                 .forEach(entity -> {
                             for (OBB obb : ((OBBEntity) entity).getOBBs()) {
