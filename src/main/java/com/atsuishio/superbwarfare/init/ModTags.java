@@ -68,6 +68,7 @@ public class ModTags {
     public static class EntityTypes {
         public static final TagKey<EntityType<?>> AERIAL_BOMB = tag("aerial_bomb");
         public static final TagKey<EntityType<?>> DESTROYABLE_PROJECTILE = tag("destroyable_projectile");
+        public static final TagKey<EntityType<?>> DECOY = tag("decoy");
 
         private static TagKey<EntityType<?>> tag(String name) {
             return TagKey.create(Registries.ENTITY_TYPE, Mod.loc(name));

@@ -4,12 +4,12 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.renderer.gun.JavelinItemRenderer;
 import com.atsuishio.superbwarfare.client.tooltip.component.LauncherImageComponent;
 import com.atsuishio.superbwarfare.data.gun.GunData;
-import com.atsuishio.superbwarfare.entity.projectile.DecoyEntity;
 import com.atsuishio.superbwarfare.entity.projectile.JavelinMissileEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModEnumExtensions;
 import com.atsuishio.superbwarfare.init.ModSounds;
+import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.network.message.receive.ShootClientMessage;
 import com.atsuishio.superbwarfare.perk.Perk;
@@ -104,14 +104,13 @@ public class JavelinItem extends GunItem {
 
         if (entity instanceof Player player && selected) {
             if (tag.getBoolean("Seeking")) {
-
                 List<Entity> decoy = SeekTool.seekLivingEntities(player, player.level(), 512, 8);
                 for (var e : decoy) {
-                    if (e instanceof DecoyEntity decoyEntity) {
-                        tag.putString("TargetEntity", decoyEntity.getDecoyUUID());
-                        tag.putDouble("TargetPosX", decoyEntity.getPosition().x);
-                        tag.putDouble("TargetPosY", decoyEntity.getPosition().y);
-                        tag.putDouble("TargetPosZ", decoyEntity.getPosition().z);
+                    if (e.getType().is(ModTags.EntityTypes.DECOY)) {
+                        tag.putString("TargetEntity", e.getStringUUID());
+                        tag.putDouble("TargetPosX", e.position().x);
+                        tag.putDouble("TargetPosY", e.position().y);
+                        tag.putDouble("TargetPosZ", e.position().z);
                     }
                 }
 
@@ -139,9 +138,7 @@ public class JavelinItem extends GunItem {
                             targetEntity.level().playSound(null, targetEntity.getOnPos(), targetEntity instanceof Pig ? SoundEvents.PIG_HURT : ModSounds.LOCKED_WARNING.get(), SoundSource.PLAYERS, 1, 0.95f);
                         }
                     }
-
                 } else if (tag.getInt("GuideType") == 1) {
-
                     Vec3 toVec = player.getEyePosition().vectorTo(new Vec3(tag.getDouble("TargetPosX"), tag.getDouble("TargetPosY"), tag.getDouble("TargetPosZ"))).normalize();
                     if (VectorTool.calculateAngle(player.getViewVector(1), toVec) < 8) {
                         tag.putInt("SeekTime", tag.getInt("SeekTime") + 1);
@@ -162,7 +159,7 @@ public class JavelinItem extends GunItem {
 
                 Entity seekingEntity = SeekTool.seekEntity(player, player.level(), 512, 8);
 
-                if (seekingEntity instanceof DecoyEntity) {
+                if (seekingEntity.getType().is(ModTags.EntityTypes.DECOY)) {
                     tag.putInt("SeekTime", 0);
                 }
             }

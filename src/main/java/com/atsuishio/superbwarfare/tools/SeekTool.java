@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.tools;
 
 import com.atsuishio.superbwarfare.config.server.SeekConfig;
-import com.atsuishio.superbwarfare.entity.projectile.DecoyEntity;
 import com.atsuishio.superbwarfare.entity.projectile.SmokeDecoyEntity;
 import com.atsuishio.superbwarfare.entity.projectile.SwarmDroneEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity;
@@ -178,7 +177,7 @@ public class SeekTool {
     public static List<Entity> getEntitiesWithinRange(BlockPos pos, Level level, double range) {
         return StreamSupport.stream(EntityFindUtil.getEntities(level).getAll().spliterator(), false)
                 .filter(e -> e.distanceToSqr(pos.getX(), pos.getY(), pos.getZ()) <= range * range
-                        && baseFilter(e) && smokeFilter(e) && !(e instanceof DecoyEntity))
+                        && baseFilter(e) && smokeFilter(e) && !e.getType().is(ModTags.EntityTypes.DECOY))
                 .toList();
     }
 

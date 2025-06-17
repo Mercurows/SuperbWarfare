@@ -1,10 +1,7 @@
 package com.atsuishio.superbwarfare.entity.projectile;
 
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
-import com.atsuishio.superbwarfare.init.ModDamageTypes;
-import com.atsuishio.superbwarfare.init.ModEntities;
-import com.atsuishio.superbwarfare.init.ModItems;
-import com.atsuishio.superbwarfare.init.ModSounds;
+import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
 import com.atsuishio.superbwarfare.tools.CustomExplosion;
 import com.atsuishio.superbwarfare.tools.EntityFindUtil;
@@ -212,9 +209,10 @@ public class SwarmDroneEntity extends FastThrowableProjectile implements GeoEnti
         List<Entity> decoy = SeekTool.seekLivingEntities(this, this.level(), 32, 90);
 
         for (var e : decoy) {
-            if (e instanceof DecoyEntity decoyEntity && !distracted) {
-                this.entityData.set(TARGET_UUID, decoyEntity.getDecoyUUID());
-                distracted = true;
+            if (e.getType().is(ModTags.EntityTypes.DECOY) && !this.distracted) {
+                this.entityData.set(TARGET_UUID, e.getStringUUID());
+                this.distracted = true;
+                break;
             }
         }
 

@@ -1,3 +1,4 @@
-// 1.21.1	2025-06-12T21:56:29.8001208	Tags for minecraft:entity_type mod id superbwarfare
+// 1.21.1	2025-06-17T18:58:56.229726	Tags for minecraft:entity_type mod id superbwarfare
 4b66f399cf351dc05891ad11d0e94889962a4327 data/superbwarfare/tags/entity_type/aerial_bomb.json
+831bbb12a31a9fd9a731e812b690d09d70ade7e9 data/superbwarfare/tags/entity_type/decoy.json
 dab439adf745fde8ee3ecf56a40c617dfedc9c47 data/superbwarfare/tags/entity_type/destroyable_projectile.json

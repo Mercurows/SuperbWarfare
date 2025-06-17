@@ -16,7 +16,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 
-public class SmokeDecoyEntity extends Entity implements DecoyEntity {
+public class SmokeDecoyEntity extends Entity {
 
     public SmokeDecoyEntity(EntityType<? extends SmokeDecoyEntity> type, Level world) {
         super(type, world);
@@ -77,15 +77,5 @@ public class SmokeDecoyEntity extends Entity implements DecoyEntity {
         this.setXRot((float) (Mth.atan2(vec3.y, d0) * 57.2957763671875));
         this.yRotO = this.getYRot();
         this.xRotO = this.getXRot();
-    }
-
-    @Override
-    public Vec3 getPosition() {
-        return position();
-    }
-
-    @Override
-    public String getDecoyUUID() {
-        return this.getStringUUID();
     }
 }

@@ -37,6 +37,11 @@ public class ModEntityTypeTagProvider extends EntityTypeTagsProvider {
                 ModEntities.SWARM_DRONE.get(),
                 ModEntities.WG_MISSILE.get()
         );
+
+        this.tag(ModTags.EntityTypes.DECOY).add(
+                ModEntities.SMOKE_DECOY.get(),
+                ModEntities.FLARE_DECOY.get()
+        );
     }
 
     public static TagKey<EntityType<?>> cTag(String name) {
