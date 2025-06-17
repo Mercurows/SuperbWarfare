@@ -90,12 +90,12 @@ public class PrismTankEntity extends ContainerMobileVehicleEntity implements Geo
     public PrismTankEntity(EntityType<PrismTankEntity> type, Level world) {
         super(type, world);
         this.noCulling = true;
-        this.obb = new OBB(this.position().toVector3f(), new Vector3f(2.5f, 0.8125f, 3.96875f), new Quaternionf(), false , false);
-        this.obb2 = new OBB(this.position().toVector3f(), new Vector3f(2.5f, 0.5f, 0.375f), new Quaternionf(), false , false);
-        this.obb3 = new OBB(this.position().toVector3f(), new Vector3f(0.46875f, 0.78125f, 3.3125f), new Quaternionf(), false , false);
-        this.obb4 = new OBB(this.position().toVector3f(), new Vector3f(0.46875f, 0.78125f, 3.3125f), new Quaternionf(), false , false);
-        this.obb5 = new OBB(this.position().toVector3f(), new Vector3f(1.375f, 0.28125f, 1.375f), new Quaternionf(), false , false);
-        this.obbTurret = new OBB(this.position().toVector3f(), new Vector3f(0.4375f, 0.90625f, 1.21875f), new Quaternionf(), true , false);
+        this.obb = new OBB(this.position().toVector3f(), new Vector3f(2.5f, 0.8125f, 3.96875f), new Quaternionf(), false, false);
+        this.obb2 = new OBB(this.position().toVector3f(), new Vector3f(2.5f, 0.5f, 0.375f), new Quaternionf(), false, false);
+        this.obb3 = new OBB(this.position().toVector3f(), new Vector3f(0.46875f, 0.78125f, 3.3125f), new Quaternionf(), false, false);
+        this.obb4 = new OBB(this.position().toVector3f(), new Vector3f(0.46875f, 0.78125f, 3.3125f), new Quaternionf(), false, false);
+        this.obb5 = new OBB(this.position().toVector3f(), new Vector3f(1.375f, 0.28125f, 1.375f), new Quaternionf(), false, false);
+        this.obbTurret = new OBB(this.position().toVector3f(), new Vector3f(0.4375f, 0.90625f, 1.21875f), new Quaternionf(), true, false);
     }
 
     @Override

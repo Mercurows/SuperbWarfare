@@ -58,8 +58,8 @@ public class SpeedboatEntity extends ContainerMobileVehicleEntity implements Geo
 
     public SpeedboatEntity(EntityType<SpeedboatEntity> type, Level world) {
         super(type, world);
-        this.obb = new OBB(this.position().toVector3f(), new Vector3f(1.5625f, 0.75f, 3.1875f), new Quaternionf(), false , false);
-        this.obb2 = new OBB(this.position().toVector3f(), new Vector3f(1.0625f, 0.5f, 1.90625f), new Quaternionf(), false , false);
+        this.obb = new OBB(this.position().toVector3f(), new Vector3f(1.5625f, 0.75f, 3.1875f), new Quaternionf(), false, false);
+        this.obb2 = new OBB(this.position().toVector3f(), new Vector3f(1.0625f, 0.5f, 1.90625f), new Quaternionf(), false, false);
     }
 
     @Override
@@ -102,10 +102,9 @@ public class SpeedboatEntity extends ContainerMobileVehicleEntity implements Geo
     @Override
     public void baseTick() {
         super.baseTick();
-        updateOBB();
+        this.updateOBB();
 
-        double fluidFloat;
-        fluidFloat = 0.12 * getSubmergedHeight(this);
+        double fluidFloat = 0.12 * getSubmergedHeight(this);
         this.setDeltaMovement(this.getDeltaMovement().add(0.0, fluidFloat, 0.0));
 
         if (this.onGround()) {
@@ -128,9 +127,9 @@ public class SpeedboatEntity extends ContainerMobileVehicleEntity implements Geo
             this.handleAmmo();
         }
 
-        turretAngle(40, 40);
-        lowHealthWarning();
-        inertiaRotate(2);
+        this.turretAngle(40, 40);
+        this.lowHealthWarning();
+        this.inertiaRotate(2);
         this.terrainCompact(2f, 3f);
 
         this.refreshDimensions();
@@ -151,14 +150,12 @@ public class SpeedboatEntity extends ContainerMobileVehicleEntity implements Geo
             return false;
         }).mapToInt(Ammo.HEAVY::get).sum() + countItem(ModItems.HEAVY_AMMO.get());
 
-
         this.entityData.set(AMMO, ammoCount);
     }
 
     /**
      * 机枪塔开火
      */
-
     @Override
     public void vehicleShoot(Player player, int type) {
         if (this.cannotFire) return;
@@ -178,8 +175,6 @@ public class SpeedboatEntity extends ContainerMobileVehicleEntity implements Geo
         projectile.shoot(player, getBarrelVector(1).x, getBarrelVector(1).y + 0.005f, getBarrelVector(1).z, 20,
                 (float) 0.4);
         this.level().addFreshEntity(projectile);
-
-        float pitch = this.entityData.get(HEAT) <= 60 ? 1 : (float) (1 - 0.011 * Math.abs(60 - this.entityData.get(HEAT)));
 
         if (!player.level().isClientSide) {
             playShootSound3p(player, 0, 4, 12, 24);
@@ -302,24 +297,16 @@ public class SpeedboatEntity extends ContainerMobileVehicleEntity implements Geo
 
         float y = -0.65f;
 
-        if (i == 0) {
-            Vector4f worldPosition = transformPosition(transform, 0, y + 0.25f, -0.2f);
-            passenger.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
-            callback.accept(passenger, worldPosition.x, worldPosition.y, worldPosition.z);
-        } else if (i == 1) {
-            Vector4f worldPosition = transformPosition(transform, -0.8f, y, -1.2f);
-            passenger.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
-            callback.accept(passenger, worldPosition.x, worldPosition.y, worldPosition.z);
-        } else if (i == 2) {
-            Vector4f worldPosition = transformPosition(transform, 0.8f, y, -1.2f);
-            passenger.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
-            callback.accept(passenger, worldPosition.x, worldPosition.y, worldPosition.z);
-        } else if (i == 3) {
-            Vector4f worldPosition = transformPosition(transform, -0.8f, y, -2.2f);
-            passenger.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
-            callback.accept(passenger, worldPosition.x, worldPosition.y, worldPosition.z);
-        } else if (i == 4) {
-            Vector4f worldPosition = transformPosition(transform, 0.8f, y, -2.2f);
+        Vector4f worldPosition = switch (i) {
+            case 0 -> transformPosition(transform, 0, y + 0.25f, -0.2f);
+            case 1 -> transformPosition(transform, -0.8f, y, -1.2f);
+            case 2 -> transformPosition(transform, 0.8f, y, -1.2f);
+            case 3 -> transformPosition(transform, -0.8f, y, -2.2f);
+            case 4 -> transformPosition(transform, 0.8f, y, -2.2f);
+            default -> null;
+        };
+
+        if (worldPosition != null) {
             passenger.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
             callback.accept(passenger, worldPosition.x, worldPosition.y, worldPosition.z);
         }

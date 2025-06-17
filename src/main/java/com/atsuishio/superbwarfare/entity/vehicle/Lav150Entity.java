@@ -24,7 +24,6 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -74,14 +73,14 @@ public class Lav150Entity extends ContainerMobileVehicleEntity implements GeoEnt
 
     public Lav150Entity(EntityType<Lav150Entity> type, Level world) {
         super(type, world);
-        this.obb = new OBB(this.position().toVector3f(), new Vector3f(0.25f, 0.75f, 0.75f), new Quaternionf(), false , false);
-        this.obb2 = new OBB(this.position().toVector3f(), new Vector3f(0.25f, 0.75f, 0.75f), new Quaternionf(), false , false);
-        this.obb3 = new OBB(this.position().toVector3f(), new Vector3f(0.25f, 0.75f, 0.75f), new Quaternionf(), false , false);
-        this.obb4 = new OBB(this.position().toVector3f(), new Vector3f(0.25f, 0.75f, 0.75f), new Quaternionf(), false , false);
-        this.obb5 = new OBB(this.position().toVector3f(), new Vector3f(1.3125f, 0.90625f, 2.4375f), new Quaternionf(), false , false);
-        this.obb6 = new OBB(this.position().toVector3f(), new Vector3f(1.3125f, 0.53125f, 0.34375f), new Quaternionf(), false , false);
-        this.obb7 = new OBB(this.position().toVector3f(), new Vector3f(1.3125f, 0.625f, 0.53125f), new Quaternionf(), false , false);
-        this.obbTurret = new OBB(this.position().toVector3f(), new Vector3f(0.875f, 0.3625f, 1.25f), new Quaternionf(), true , false);
+        this.obb = new OBB(this.position().toVector3f(), new Vector3f(0.25f, 0.75f, 0.75f), new Quaternionf(), false, false);
+        this.obb2 = new OBB(this.position().toVector3f(), new Vector3f(0.25f, 0.75f, 0.75f), new Quaternionf(), false, false);
+        this.obb3 = new OBB(this.position().toVector3f(), new Vector3f(0.25f, 0.75f, 0.75f), new Quaternionf(), false, false);
+        this.obb4 = new OBB(this.position().toVector3f(), new Vector3f(0.25f, 0.75f, 0.75f), new Quaternionf(), false, false);
+        this.obb5 = new OBB(this.position().toVector3f(), new Vector3f(1.3125f, 0.90625f, 2.4375f), new Quaternionf(), false, false);
+        this.obb6 = new OBB(this.position().toVector3f(), new Vector3f(1.3125f, 0.53125f, 0.34375f), new Quaternionf(), false, false);
+        this.obb7 = new OBB(this.position().toVector3f(), new Vector3f(1.3125f, 0.625f, 0.53125f), new Quaternionf(), false, false);
+        this.obbTurret = new OBB(this.position().toVector3f(), new Vector3f(0.875f, 0.3625f, 1.25f), new Quaternionf(), true, false);
     }
 
     @Override
@@ -118,16 +117,6 @@ public class Lav150Entity extends ContainerMobileVehicleEntity implements GeoEnt
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundTag compound) {
-        super.addAdditionalSaveData(compound);
-    }
-
-    @Override
-    public void readAdditionalSaveData(CompoundTag compound) {
-        super.readAdditionalSaveData(compound);
-    }
-
-    @Override
     @ParametersAreNonnullByDefault
     protected void playStepSound(BlockPos pPos, BlockState pState) {
         this.playSound(ModSounds.WHEEL_STEP.get(), (float) (getDeltaMovement().length() * 0.3), random.nextFloat() * 0.15f + 1.05f);
@@ -154,8 +143,7 @@ public class Lav150Entity extends ContainerMobileVehicleEntity implements GeoEnt
             this.handleAmmo();
         }
 
-        double fluidFloat;
-        fluidFloat = 0.052 * getSubmergedHeight(this);
+        double fluidFloat = 0.052 * getSubmergedHeight(this);
         this.setDeltaMovement(this.getDeltaMovement().add(0.0, fluidFloat, 0.0));
 
         if (this.onGround()) {
@@ -396,6 +384,7 @@ public class Lav150Entity extends ContainerMobileVehicleEntity implements GeoEnt
         }
     }
 
+    @Override
     public int getMaxPassengers() {
         return 5;
     }

@@ -61,11 +61,11 @@ public class Tom6Entity extends MobileVehicleEntity implements GeoEntity {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private float yRotSync;
 
-    public float delta_xo;
-    public float delta_yo;
+    public float deltaXo;
+    public float deltaYo;
 
-    public float delta_x;
-    public float delta_y;
+    public float deltaX;
+    public float deltaY;
 
     public Tom6Entity(EntityType<Tom6Entity> type, Level world) {
         super(type, world);
@@ -113,16 +113,14 @@ public class Tom6Entity extends MobileVehicleEntity implements GeoEntity {
 
     @Override
     public void baseTick() {
-        delta_xo = delta_x;
-        delta_yo = delta_y;
+        deltaXo = deltaX;
+        deltaYo = deltaY;
         super.baseTick();
 
-        delta_x = entityData.get(MOUSE_SPEED_Y);
-        delta_y = entityData.get(MOUSE_SPEED_X);
+        deltaX = entityData.get(MOUSE_SPEED_Y);
+        deltaY = entityData.get(MOUSE_SPEED_X);
 
-        float f;
-
-        f = (float) Mth.clamp(0.69f + 0.101f * Mth.abs(90 - (float) calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90, 0.01, 0.99);
+        float f = (float) Mth.clamp(0.69f + 0.101f * Mth.abs(90 - (float) calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90, 0.01, 0.99);
 
         boolean forward = Mth.abs((float) calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) < 90;
 
@@ -143,11 +141,6 @@ public class Tom6Entity extends MobileVehicleEntity implements GeoEntity {
     @Override
     public void travel() {
         Entity passenger = this.getFirstPassenger();
-
-//        if (this.getEnergy() <= 0) return;
-
-        float diffX;
-        float diffY;
 
         if (passenger == null || isInWater()) {
             this.leftInputDown = false;
@@ -182,8 +175,8 @@ public class Tom6Entity extends MobileVehicleEntity implements GeoEntity {
                 }
             }
 
-            diffY = Math.clamp(-90f, 90f, Mth.wrapDegrees(passenger.getYHeadRot() - this.getYRot()));
-            diffX = Math.clamp(-60f, 60f, Mth.wrapDegrees(passenger.getXRot() - this.getXRot()));
+            float diffY = Math.clamp(-90f, 90f, Mth.wrapDegrees(passenger.getYHeadRot() - this.getYRot()));
+            float diffX = Math.clamp(-60f, 60f, Mth.wrapDegrees(passenger.getXRot() - this.getXRot()));
 
             float roll = Mth.abs(Mth.clamp(getRoll() / 60, -1.5f, 1.5f));
 
@@ -280,7 +273,7 @@ public class Tom6Entity extends MobileVehicleEntity implements GeoEntity {
         Matrix4f transform = getVehicleTransform(1);
 
         float x = 0f;
-        float y = 0.05f;
+        float y = 0.45f + (float) passenger.getVehicleAttachmentPoint(this).y;
         float z = -0.4f;
 
         int i = this.getSeatIndex(passenger);
@@ -300,9 +293,9 @@ public class Tom6Entity extends MobileVehicleEntity implements GeoEntity {
 
     public void copyEntityData(Entity entity) {
         float i = getXRot() / 90;
-
         float f = Mth.wrapDegrees(entity.getYRot() - getYRot());
         float g = Mth.clamp(f, -105.0f, 105.0f);
+
         entity.yRotO += g - f;
         entity.setYRot(entity.getYRot() + g - f + yRotSync * Mth.abs(i));
         entity.setYHeadRot(entity.getYRot());
@@ -393,7 +386,7 @@ public class Tom6Entity extends MobileVehicleEntity implements GeoEntity {
     @Override
     public @Nullable Vec2 getCameraRotation(float partialTicks, Player player, boolean zoom, boolean isFirstPerson) {
         if (isFreeCam(player) && this.getSeatIndex(player) == 0 && Mth.abs((float) (freeCameraYaw * freeCameraPitch)) > 0.01) {
-            return new Vec2((float) (getYaw(partialTicks) - 0.5f * Mth.lerp(partialTicks, delta_yo, delta_y) - freeCameraYaw), (float) (getPitch(partialTicks) - 0.5f * Mth.lerp(partialTicks, delta_xo, delta_x) + freeCameraPitch));
+            return new Vec2((float) (getYaw(partialTicks) - 0.5f * Mth.lerp(partialTicks, deltaYo, deltaY) - freeCameraYaw), (float) (getPitch(partialTicks) - 0.5f * Mth.lerp(partialTicks, deltaXo, deltaX) + freeCameraPitch));
         }
 
         return super.getCameraRotation(partialTicks, player, false, false);

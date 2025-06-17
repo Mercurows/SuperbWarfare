@@ -187,7 +187,6 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
         return 2.16F;
     }
 
-
     public void positionRider(@NotNull Entity passenger, @NotNull MoveFunction callback) {
         if (!this.hasPassenger(passenger)) {
             return;

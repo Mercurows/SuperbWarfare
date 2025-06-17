@@ -102,17 +102,17 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
 
     public A10Entity(EntityType<A10Entity> type, Level world) {
         super(type, world);
-        this.obb = new OBB(this.position().toVector3f(), new Vector3f(0.6875f, 1.09375f, 3.65625f), new Quaternionf(), false , false);
-        this.obb2 = new OBB(this.position().toVector3f(), new Vector3f(8.8125f, 0.3125f, 1.40625f), new Quaternionf(), false , false);
-        this.obb3 = new OBB(this.position().toVector3f(), new Vector3f(3.1875f, 0.125f, 0.96875f), new Quaternionf(), false , false);
-        this.obb4 = new OBB(this.position().toVector3f(), new Vector3f(0.0625f, 1.09375f, 0.84375f), new Quaternionf(), false , false);
-        this.obb5 = new OBB(this.position().toVector3f(), new Vector3f(0.0625f, 1.09375f, 0.84375f), new Quaternionf(), false , false);
-        this.obb6 = new OBB(this.position().toVector3f(), new Vector3f(0.625f, 0.78125f, 1.09375f), new Quaternionf(), false , false);
-        this.obb7 = new OBB(this.position().toVector3f(), new Vector3f(0.6875f, 0.75f, 2.9375f), new Quaternionf(), false , false);
-        this.obb8 = new OBB(this.position().toVector3f(), new Vector3f(0.75f, 0.75f, 1.5625f), new Quaternionf(), false , false);
-        this.obb9 = new OBB(this.position().toVector3f(), new Vector3f(0.75f, 0.75f, 1.5625f), new Quaternionf(), false , false);
-        this.obb10 = new OBB(this.position().toVector3f(), new Vector3f(0.34375f, 0.359375f, 1.78125f), new Quaternionf(), false , false);
-        this.obb11 = new OBB(this.position().toVector3f(), new Vector3f(0.34375f, 0.359375f, 1.78125f), new Quaternionf(), false , false);
+        this.obb = new OBB(this.position().toVector3f(), new Vector3f(0.6875f, 1.09375f, 3.65625f), new Quaternionf(), false, false);
+        this.obb2 = new OBB(this.position().toVector3f(), new Vector3f(8.8125f, 0.3125f, 1.40625f), new Quaternionf(), false, false);
+        this.obb3 = new OBB(this.position().toVector3f(), new Vector3f(3.1875f, 0.125f, 0.96875f), new Quaternionf(), false, false);
+        this.obb4 = new OBB(this.position().toVector3f(), new Vector3f(0.0625f, 1.09375f, 0.84375f), new Quaternionf(), false, false);
+        this.obb5 = new OBB(this.position().toVector3f(), new Vector3f(0.0625f, 1.09375f, 0.84375f), new Quaternionf(), false, false);
+        this.obb6 = new OBB(this.position().toVector3f(), new Vector3f(0.625f, 0.78125f, 1.09375f), new Quaternionf(), false, false);
+        this.obb7 = new OBB(this.position().toVector3f(), new Vector3f(0.6875f, 0.75f, 2.9375f), new Quaternionf(), false, false);
+        this.obb8 = new OBB(this.position().toVector3f(), new Vector3f(0.75f, 0.75f, 1.5625f), new Quaternionf(), false, false);
+        this.obb9 = new OBB(this.position().toVector3f(), new Vector3f(0.75f, 0.75f, 1.5625f), new Quaternionf(), false, false);
+        this.obb10 = new OBB(this.position().toVector3f(), new Vector3f(0.34375f, 0.359375f, 1.78125f), new Quaternionf(), false, false);
+        this.obb11 = new OBB(this.position().toVector3f(), new Vector3f(0.34375f, 0.359375f, 1.78125f), new Quaternionf(), false, false);
     }
 
     @Override
@@ -554,7 +554,7 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
                 float speed = Mth.clamp(Mth.abs(roll) / 90, 0, 1);
                 if (this.roll > 0) {
                     setZRot(roll - Math.min(speed, roll));
-                } else if (this.roll < 0){
+                } else if (this.roll < 0) {
                     setZRot(roll + Math.min(speed, -roll));
                 }
             }
@@ -594,7 +594,6 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
             float flapY = (1 - (Mth.abs(getRoll())) / 90) * Mth.clamp(entityData.get(MOUSE_SPEED_X), -22.5f, 22.5f) + VectorTool.calculateY(getRoll()) * Mth.clamp(entityData.get(MOUSE_SPEED_Y), -22.5f, 22.5f);
 
             setFlap3Rot(flapY * 5);
-
         } else if (!onGround()) {
             float diffX;
             this.entityData.set(POWER, Math.max(this.entityData.get(POWER) - 0.0003f, 0.02f));
@@ -695,21 +694,14 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
         Matrix4f transform = getVehicleTransform(1);
 
         float x = 0f;
-        float y = -0.2f;
+        float y = 0.1f + (float) passenger.getVehicleAttachmentPoint(this).y;
         float z = 3.95f;
-
 
         Vector4f worldPosition = transformPosition(transform, x, y, z);
         passenger.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
         callback.accept(passenger, worldPosition.x, worldPosition.y, worldPosition.z);
 
         copyEntityData(passenger);
-    }
-
-    public Vec3 driverPos(float ticks) {
-        Matrix4f transform = getVehicleTransform(ticks);
-        Vector4f worldPosition = transformPosition(transform, 0, 1.35f, 4f);
-        return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
     }
 
     @Override
@@ -811,7 +803,6 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
             if (this.cannotFire) return;
 
             boolean hasCreativeAmmo = getFirstPassenger() instanceof Player pPlayer && InventoryTool.hasCreativeAmmoBox(pPlayer);
-
 
             Vector4f worldPosition = transformPosition(transform, 0.1321625f, -0.56446875f, 7.85210625f);
             Vector4f worldPosition2 = transformPosition(transform, 0.1321625f + 0.01f, -0.56446875f - 0.03f, 8.85210625f);
