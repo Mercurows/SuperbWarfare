@@ -17,6 +17,7 @@ import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.players.OldUsersConverter;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
@@ -410,6 +411,17 @@ public class C4Entity extends Entity implements GeoEntity, OwnableEntity {
             if (target != null) {
                 pos = target.position();
             }
+        }
+
+        if (this.level() instanceof ServerLevel) {
+            AABB aabb = new AABB(pos, pos).inflate(3);
+            BlockPos.betweenClosedStream(aabb).forEach((blockPos) -> {
+                float hard = this.level().getBlockState(blockPos).getBlock().defaultDestroyTime();
+                if (ExplosionConfig.EXPLOSION_DESTROY.get() && hard != -1 && new Vec3(blockPos.getX(), blockPos.getY(), blockPos.getZ()).distanceTo(position()) < 2) {
+                    this.level().destroyBlock(blockPos, true);
+                }
+
+            });
         }
 
         CustomExplosion explosion = new CustomExplosion(level(), this,

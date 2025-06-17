@@ -1,11 +1,14 @@
 package com.atsuishio.superbwarfare.entity.projectile;
 
+import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.tools.ProjectileTool;
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.AreaEffectCloud;
@@ -15,7 +18,9 @@ import net.minecraft.world.entity.projectile.ThrownPotion;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 
 public class MelonBombEntity extends FastThrowableProjectile implements ExplosiveProjectile {
@@ -99,9 +104,18 @@ public class MelonBombEntity extends FastThrowableProjectile implements Explosiv
 
     @Override
     public void onHitBlock(@NotNull BlockHitResult blockHitResult) {
-        super.onHitBlock(blockHitResult);
-        ProjectileTool.causeCustomExplode(this, this.explosionDamage, this.explosionRadius, 1.5f);
-        this.discard();
+        if (this.level() instanceof ServerLevel) {
+            AABB aabb = new AABB(blockHitResult.getLocation(), blockHitResult.getLocation()).inflate(5);
+            BlockPos.betweenClosedStream(aabb).forEach((pos) -> {
+                float hard = this.level().getBlockState(pos).getBlock().defaultDestroyTime();
+                if (ExplosionConfig.EXPLOSION_DESTROY.get() && hard != -1 && new Vec3(pos.getX(), pos.getY(), pos.getZ()).distanceTo(blockHitResult.getLocation()) < 3) {
+                    this.level().destroyBlock(pos, true);
+                }
+
+            });
+            ProjectileTool.causeCustomExplode(this, this.explosionDamage, this.explosionRadius, 1.5f);
+            this.discard();
+        }
     }
 
     @Override

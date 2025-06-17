@@ -2,7 +2,10 @@ package com.atsuishio.superbwarfare.entity.projectile;
 
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
-import com.atsuishio.superbwarfare.init.*;
+import com.atsuishio.superbwarfare.init.ModDamageTypes;
+import com.atsuishio.superbwarfare.init.ModEntities;
+import com.atsuishio.superbwarfare.init.ModItems;
+import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
 import com.atsuishio.superbwarfare.network.message.receive.ClientMotionSyncMessage;
 import com.atsuishio.superbwarfare.tools.ChunkLoadTool;
@@ -23,12 +26,9 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
-import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -51,7 +51,6 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
     private float fireProbability = 0;
     private int fireTime = 0;
     private int durability = 40;
-    private boolean firstHit = true;
     public Set<Long> loadedChunks = new HashSet<>();
     private float gravity = 0.1f;
 
@@ -174,55 +173,38 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
     @Override
     public void onHitBlock(@NotNull BlockHitResult blockHitResult) {
         if (this.level() instanceof ServerLevel) {
-            double x = blockHitResult.getLocation().x;
-            double y = blockHitResult.getLocation().y;
-            double z = blockHitResult.getLocation().z;
+            BlockPos resultPos = blockHitResult.getBlockPos();
 
-            if (ExplosionConfig.EXPLOSION_DESTROY.get()) {
-                float hardness = this.level().getBlockState(BlockPos.containing(x, y, z)).getBlock().defaultDestroyTime();
-                BlockState blockState = this.level().getBlockState(BlockPos.containing(x, y, z));
+            float hardness = this.level().getBlockState(resultPos).getBlock().defaultDestroyTime();
 
-                if (hardness == -1) {
-                    this.discard();
-                    causeExplode(blockHitResult.getLocation());
-                    return;
-                }
-
-                this.durability -= (int) hardness;
-
-                if (hardness <= 50) {
-                    BlockPos blockPos = BlockPos.containing(x, y, z);
-                    Block.dropResources(this.level().getBlockState(blockPos), this.level(), BlockPos.containing(x, y, z), null);
-                    this.level().destroyBlock(blockPos, true);
-                }
-
-                if (blockState.is(ModBlocks.SANDBAG.get()) || blockState.is(Blocks.NETHERITE_BLOCK)) {
-                    this.durability -= 10;
-                }
-
-                if (blockState.is(Blocks.IRON_BLOCK) || blockState.is(Blocks.COPPER_BLOCK)) {
-                    this.durability -= 5;
-                }
-
-                if (blockState.is(Blocks.GOLD_BLOCK)) {
-                    this.durability -= 3;
-                }
-
-                if (this.durability <= 0) {
-                    causeExplode(blockHitResult.getLocation());
-                } else {
-                    if (this.firstHit) {
-                        ParticleTool.cannonHitParticles(this.level(), this.position(), this);
-                        causeExplode(blockHitResult.getLocation());
-                        this.firstHit = false;
-                    }
-                    apExplode(blockHitResult);
-                }
-            } else {
-                if (this.durability > 0) {
-                    apExplode(blockHitResult);
-                }
+            if (hardness == -1) {
+                this.discard();
                 causeExplode(blockHitResult.getLocation());
+                return;
+            } else {
+                if (ExplosionConfig.EXPLOSION_DESTROY.get()) {
+                    this.level().destroyBlock(resultPos, true);
+                }
+            }
+
+            causeExplode(blockHitResult.getLocation());
+
+            for (int i = 0; i < 5; i++) {
+                Vec3 hitPos = blockHitResult.getLocation().add(getDeltaMovement().normalize().scale(i));
+                AABB aabb = new AABB(hitPos, hitPos).inflate(0.25);
+                if (durability > 0) {
+                    BlockPos.betweenClosedStream(aabb).forEach((pos) -> {
+                        float hard = this.level().getBlockState(pos).getBlock().defaultDestroyTime();
+                        durability -= (int) hard;
+                        if (ExplosionConfig.EXPLOSION_DESTROY.get()) {
+                            this.level().destroyBlock(pos, true);
+                        }
+                        apExplode(hitPos);
+                    });
+                }
+            }
+            if (durability <= 0) {
+                discard();
             }
         }
     }
@@ -279,10 +261,9 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
         } else {
             ParticleTool.spawnMediumExplosionParticles(this.level(), vec);
         }
-        this.discard();
     }
 
-    private void apExplode(HitResult result) {
+    private void apExplode(Vec3 vec3) {
         if (Math.random() > fireProbability) {
             fireTime = 0;
         }
@@ -292,22 +273,15 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
                         this,
                         this.getOwner()),
                 explosionDamage,
-                result.getLocation().x + 5 * getDeltaMovement().normalize().x,
-                result.getLocation().y + 5 * getDeltaMovement().normalize().y,
-                result.getLocation().z + 5 * getDeltaMovement().normalize().z,
-                radius,
+                vec3.x,
+                vec3.y,
+                vec3.z,
+                radius * 0.5f,
                 ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).
                 setDamageMultiplier(1).setFireTime(fireTime);
         explosion.explode();
         EventHooks.onExplosionStart(this.level(), explosion);
         explosion.finalizeExplosion(false);
-
-        if (radius > 7) {
-            ParticleTool.spawnHugeExplosionParticles(this.level(), result.getLocation());
-        } else {
-            ParticleTool.spawnMediumExplosionParticles(this.level(), result.getLocation());
-        }
-        this.discard();
     }
 
     private PlayState movementPredicate(AnimationState<CannonShellEntity> event) {

@@ -24,10 +24,10 @@ import net.minecraft.world.entity.projectile.ThrowableItemProjectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
-import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
@@ -45,6 +45,8 @@ public class RpgRocketEntity extends FastThrowableProjectile implements GeoEntit
 
     private float explosionDamage = 200f;
     private float explosionRadius = 10;
+
+    private int durability = 50;
 
     public RpgRocketEntity(EntityType<? extends RpgRocketEntity> type, Level world) {
         super(type, world);
@@ -130,76 +132,109 @@ public class RpgRocketEntity extends FastThrowableProjectile implements GeoEntit
         Entity entity = result.getEntity();
         if (this.getOwner() != null && this.getOwner().getVehicle() != null && entity == this.getOwner().getVehicle())
             return;
-        if (this.getOwner() instanceof LivingEntity living) {
-            if (!living.level().isClientSide() && living instanceof ServerPlayer player) {
-                living.level().playSound(null, living.blockPosition(), ModSounds.INDICATION.get(), SoundSource.VOICE, 1, 1);
+        if (this.level() instanceof ServerLevel) {
+            if (entity == this.getOwner() || (this.getOwner() != null && entity == this.getOwner().getVehicle()))
+                return;
+            if (this.getOwner() instanceof LivingEntity living) {
+                if (!living.level().isClientSide() && living instanceof ServerPlayer player) {
+                    living.level().playSound(null, living.blockPosition(), ModSounds.INDICATION.get(), SoundSource.VOICE, 1, 1);
 
-                PacketDistributor.sendToPlayer(player, new ClientIndicatorMessage(0, 5));
+                    PacketDistributor.sendToPlayer(player, new ClientIndicatorMessage(0, 5));
+                }
             }
-        }
 
-        if (entity instanceof Monster monster) {
-            monster.hurt(ModDamageTypes.causeCannonFireDamage(this.level().registryAccess(), this, this.getOwner()), 1.2f * this.damage * damageMultiplier);
-        } else {
-            entity.hurt(ModDamageTypes.causeCannonFireDamage(this.level().registryAccess(), this, this.getOwner()), this.damage);
-        }
-
-        if (entity instanceof LivingEntity) {
-            entity.invulnerableTime = 0;
-        }
-
-        if (this.tickCount > 1) {
-            if (this.level() instanceof ServerLevel) {
-                ProjectileTool.causeCustomExplode(this, this.explosionDamage, this.explosionRadius, this.monsterMultiplier);
+            if (entity instanceof Monster monster) {
+                monster.hurt(ModDamageTypes.causeCannonFireDamage(this.level().registryAccess(), this, this.getOwner()), 1.2f * this.damage * damageMultiplier);
+            } else {
+                entity.hurt(ModDamageTypes.causeCannonFireDamage(this.level().registryAccess(), this, this.getOwner()), this.damage);
             }
-        }
 
-        this.discard();
+            if (entity instanceof LivingEntity) {
+                entity.invulnerableTime = 0;
+            }
+
+            for (int i = 0; i < 5; i++) {
+                apExplode(result.getLocation().add(getDeltaMovement().normalize().scale(i)));
+            }
+
+            causeExplode(result.getLocation());
+            this.discard();
+        }
     }
 
     @Override
     public void onHitBlock(@NotNull BlockHitResult blockHitResult) {
         if (this.level() instanceof ServerLevel) {
-            double x = blockHitResult.getLocation().x;
-            double y = blockHitResult.getLocation().y;
-            double z = blockHitResult.getLocation().z;
+            BlockPos resultPos = blockHitResult.getBlockPos();
 
-            if (ExplosionConfig.EXPLOSION_DESTROY.get()) {
-                float hardness = this.level().getBlockState(BlockPos.containing(x, y, z)).getBlock().defaultDestroyTime();
-                if (hardness <= 10 && hardness != -1) {
-                    BlockPos blockPos = BlockPos.containing(x, y, z);
-                    Block.dropResources(this.level().getBlockState(blockPos), this.level(), BlockPos.containing(x, y, z), null);
-                    this.level().destroyBlock(blockPos, true);
+            float hardness = this.level().getBlockState(resultPos).getBlock().defaultDestroyTime();
+
+            if (hardness == -1) {
+                this.discard();
+                causeExplode(blockHitResult.getLocation());
+                return;
+            } else {
+                if (ExplosionConfig.EXPLOSION_DESTROY.get()) {
+                    this.level().destroyBlock(resultPos, true);
                 }
             }
 
-            if (this.tickCount > 1) {
-                for (int i = 1; i < 3; i++) {
-                    apExplode(blockHitResult, i);
-                }
+            causeExplode(blockHitResult.getLocation());
 
-                if (this.level() instanceof ServerLevel) {
-                    ProjectileTool.causeCustomExplode(this, this.explosionDamage, this.explosionRadius, this.monsterMultiplier);
+            for (int i = 0; i < 5; i++) {
+                Vec3 hitPos = blockHitResult.getLocation().add(getDeltaMovement().normalize().scale(i));
+                AABB aabb = new AABB(hitPos, hitPos).inflate(0.25);
+                if (durability > 0) {
+                    BlockPos.betweenClosedStream(aabb).forEach((pos) -> {
+                        float hard = this.level().getBlockState(pos).getBlock().defaultDestroyTime();
+                        durability -= (int) hard;
+                        if (ExplosionConfig.EXPLOSION_DESTROY.get()) {
+                            this.level().destroyBlock(pos, true);
+                        }
+                        apExplode(hitPos);
+                    });
                 }
+            }
+            if (durability <= 0) {
+                discard();
             }
         }
     }
 
-    private void apExplode(HitResult result, int index) {
+    private void causeExplode(Vec3 vec3) {
         CustomExplosion explosion = new CustomExplosion(this.level(), this,
                 ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(),
                         this,
                         this.getOwner()),
                 explosionDamage,
-                result.getLocation().x + index * getDeltaMovement().normalize().x,
-                result.getLocation().y + index * getDeltaMovement().normalize().y,
-                result.getLocation().z + index * getDeltaMovement().normalize().z,
-                0.5f * explosionRadius,
+                vec3.x,
+                vec3.y,
+                vec3.z,
+                explosionRadius,
                 ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).
                 setDamageMultiplier(this.monsterMultiplier);
         explosion.explode();
         EventHooks.onExplosionStart(this.level(), explosion);
         explosion.finalizeExplosion(false);
+        ParticleTool.spawnHugeExplosionParticles(this.level(), vec3);
+    }
+
+    private void apExplode(Vec3 vec3) {
+        CustomExplosion explosion = new CustomExplosion(this.level(), this,
+                ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(),
+                        this,
+                        this.getOwner()),
+                explosionDamage,
+                vec3.x,
+                vec3.y,
+                vec3.z,
+                explosionRadius * 0.5f,
+                ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).
+                setDamageMultiplier(this.monsterMultiplier);
+        explosion.explode();
+        EventHooks.onExplosionStart(this.level(), explosion);
+        explosion.finalizeExplosion(false);
+        ParticleTool.spawnMediumExplosionParticles(this.level(), vec3);
     }
 
     @Override

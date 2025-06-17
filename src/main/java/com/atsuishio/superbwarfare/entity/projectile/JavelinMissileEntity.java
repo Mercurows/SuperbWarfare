@@ -33,11 +33,9 @@ import net.minecraft.world.entity.projectile.ThrownPotion;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.BellBlock;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
-import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -63,19 +61,21 @@ public class JavelinMissileEntity extends FastThrowableProjectile implements Geo
     private float explosionDamage = 140f;
     private float explosionRadius = 6f;
     private boolean distracted = false;
-    private int guide_type = 0;
+    private int guideType = 0;
+
+    private int durability = 70;
 
     public JavelinMissileEntity(EntityType<? extends JavelinMissileEntity> type, Level world) {
         super(type, world);
         this.noCulling = true;
     }
 
-    public JavelinMissileEntity(LivingEntity entity, Level level, float damage, float explosionDamage, float explosionRadius, int guide_type, Vec3 targetPos) {
+    public JavelinMissileEntity(LivingEntity entity, Level level, float damage, float explosionDamage, float explosionRadius, int guideType, Vec3 targetPos) {
         super(ModEntities.JAVELIN_MISSILE.get(), entity, level);
         this.damage = damage;
         this.explosionDamage = explosionDamage;
         this.explosionRadius = explosionRadius;
-        this.guide_type = guide_type;
+        this.guideType = guideType;
         this.entityData.set(TARGET_X, (float) targetPos.x);
         this.entityData.set(TARGET_Y, (float) targetPos.y);
         this.entityData.set(TARGET_Z, (float) targetPos.z);
@@ -170,60 +170,119 @@ public class JavelinMissileEntity extends FastThrowableProjectile implements Geo
     }
 
     @Override
-    protected void onHitEntity(EntityHitResult result) {
-        float damageMultiplier = 1 + this.monsterMultiplier;
-        Entity entity = result.getEntity();
-        if (this.getOwner() != null && this.getOwner().getVehicle() != null && entity == this.getOwner().getVehicle())
-            return;
-        if (this.getOwner() instanceof LivingEntity living) {
-            if (!living.level().isClientSide() && living instanceof ServerPlayer player) {
-                living.level().playSound(null, living.blockPosition(), ModSounds.INDICATION.get(), SoundSource.VOICE, 1, 1);
-
-                PacketDistributor.sendToPlayer(player, new ClientIndicatorMessage(0, 5));
-            }
-        }
-
-        if (entity instanceof Monster monster) {
-            monster.hurt(ModDamageTypes.causeCannonFireDamage(this.level().registryAccess(), this, this.getOwner()), (entityData.get(TOP) ? 1.3f : 1f) * this.damage * damageMultiplier);
-        } else {
-            entity.hurt(ModDamageTypes.causeCannonFireDamage(this.level().registryAccess(), this, this.getOwner()), (entityData.get(TOP) ? 1.3f : 1f) * this.damage);
-        }
-
-        if (entity instanceof LivingEntity) {
-            entity.invulnerableTime = 0;
-        }
-
-        if (this.tickCount > 1) {
-            if (this.level() instanceof ServerLevel) {
-                causeExplode(result);
-            }
-        }
-
-        this.discard();
-    }
-
-    @Override
     public boolean isNoGravity() {
         return true;
     }
 
     @Override
-    public void onHitBlock(@NotNull BlockHitResult blockHitResult) {
-        super.onHitBlock(blockHitResult);
-        BlockPos resultPos = blockHitResult.getBlockPos();
-        BlockState state = this.level().getBlockState(resultPos);
+    protected void onHitEntity(EntityHitResult result) {
+        float damageMultiplier = 1 + this.monsterMultiplier;
+        Entity entity = result.getEntity();
+        if (this.getOwner() != null && this.getOwner().getVehicle() != null && entity == this.getOwner().getVehicle())
+            return;
+        if (this.level() instanceof ServerLevel) {
+            if (entity == this.getOwner() || (this.getOwner() != null && entity == this.getOwner().getVehicle()))
+                return;
+            if (this.getOwner() instanceof LivingEntity living) {
+                if (!living.level().isClientSide() && living instanceof ServerPlayer player) {
+                    living.level().playSound(null, living.blockPosition(), ModSounds.INDICATION.get(), SoundSource.VOICE, 1, 1);
 
-        if (state.getBlock() instanceof BellBlock bell) {
-            bell.attemptToRing(this.level(), resultPos, blockHitResult.getDirection());
+                    PacketDistributor.sendToPlayer(player, new ClientIndicatorMessage(0, 5));
+                }
+            }
+
+            if (entity instanceof Monster monster) {
+                monster.hurt(ModDamageTypes.causeCannonFireDamage(this.level().registryAccess(), this, this.getOwner()), (entityData.get(TOP) ? 1.3f : 1f) * this.damage * damageMultiplier);
+            } else {
+                entity.hurt(ModDamageTypes.causeCannonFireDamage(this.level().registryAccess(), this, this.getOwner()), (entityData.get(TOP) ? 1.3f : 1f) * this.damage);
+            }
+
+            if (entity instanceof LivingEntity) {
+                entity.invulnerableTime = 0;
+            }
+
+            for (int i = 0; i < 3; i++) {
+                apExplode(result.getLocation().add(getDeltaMovement().normalize().scale(i)));
+            }
+
+            causeExplode(result.getLocation());
+            this.discard();
         }
+    }
 
-        if (this.tickCount > 1) {
-            if (this.level() instanceof ServerLevel) {
-                causeExplode(blockHitResult);
+    @Override
+    public void onHitBlock(BlockHitResult blockHitResult) {
+        if (this.level() instanceof ServerLevel) {
+            BlockPos resultPos = blockHitResult.getBlockPos();
+
+            float hardness = this.level().getBlockState(resultPos).getBlock().defaultDestroyTime();
+
+            if (hardness == -1) {
+                this.discard();
+                causeExplode(blockHitResult.getLocation());
+                return;
+            } else {
+                if (ExplosionConfig.EXPLOSION_DESTROY.get()) {
+                    this.level().destroyBlock(resultPos, true);
+                }
+            }
+
+            causeExplode(blockHitResult.getLocation());
+
+            for (int i = 0; i < 3; i++) {
+                Vec3 hitPos = blockHitResult.getLocation().add(getDeltaMovement().normalize().scale(i));
+                AABB aabb = new AABB(hitPos, hitPos).inflate(0.25);
+                if (durability > 0) {
+                    BlockPos.betweenClosedStream(aabb).forEach((pos) -> {
+                        float hard = this.level().getBlockState(pos).getBlock().defaultDestroyTime();
+                        durability -= (int) hard;
+                        if (ExplosionConfig.EXPLOSION_DESTROY.get()) {
+                            this.level().destroyBlock(pos, true);
+                        }
+                        apExplode(hitPos);
+                    });
+                }
+            }
+            if (durability <= 0) {
+                discard();
             }
         }
+    }
 
-        this.discard();
+    private void causeExplode(Vec3 vec3) {
+        CustomExplosion explosion = new CustomExplosion(this.level(), this,
+                ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(),
+                        this,
+                        this.getOwner()),
+                explosionDamage,
+                vec3.x,
+                vec3.y,
+                vec3.z,
+                explosionRadius,
+                ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).
+                setDamageMultiplier(this.monsterMultiplier);
+        explosion.explode();
+        EventHooks.onExplosionStart(this.level(), explosion);
+        explosion.finalizeExplosion(false);
+        ParticleTool.spawnHugeExplosionParticles(this.level(), vec3);
+    }
+
+    private void apExplode(Vec3 vec3) {
+        CustomExplosion explosion = new CustomExplosion(this.level(), this,
+                ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(),
+                        this,
+                        this.getOwner()),
+                explosionDamage,
+                vec3.x,
+                vec3.y,
+                vec3.z,
+                explosionRadius * 0.5f,
+                ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).
+                setDamageMultiplier(this.monsterMultiplier);
+        explosion.explode();
+        EventHooks.onExplosionStart(this.level(), explosion);
+        explosion.finalizeExplosion(false);
+        ParticleTool.spawnMediumExplosionParticles(this.level(), vec3);
     }
 
     @Override
@@ -239,7 +298,7 @@ public class JavelinMissileEntity extends FastThrowableProjectile implements Geo
             }
         }
 
-        if (guide_type == 0 || !entityData.get(TARGET_UUID).equals("none")) {
+        if (guideType == 0 || !entityData.get(TARGET_UUID).equals("none")) {
             if (entity != null) {
                 if (entity.level() instanceof ServerLevel) {
                     this.entityData.set(TARGET_X, (float) entity.getX());
@@ -280,7 +339,7 @@ public class JavelinMissileEntity extends FastThrowableProjectile implements Geo
                     }
                 }
             }
-        } else if (guide_type == 1) {
+        } else if (guideType == 1) {
             double px = this.getX();
             double ex = this.entityData.get(TARGET_X);
             double pz = this.getZ();
@@ -343,24 +402,6 @@ public class JavelinMissileEntity extends FastThrowableProjectile implements Geo
         }
 
         this.setDeltaMovement(this.getDeltaMovement().multiply(0.96, 0.96, 0.96));
-    }
-
-    private void causeExplode(HitResult result) {
-        CustomExplosion explosion = new CustomExplosion(this.level(), this,
-                ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(),
-                        this,
-                        this.getOwner()),
-                explosionDamage,
-                this.getX(),
-                this.getEyeY(),
-                this.getZ(),
-                explosionRadius,
-                ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).
-                setDamageMultiplier(this.monsterMultiplier);
-        explosion.explode();
-        EventHooks.onExplosionStart(this.level(), explosion);
-        explosion.finalizeExplosion(false);
-        ParticleTool.spawnMediumExplosionParticles(this.level(), result.getLocation());
     }
 
     private PlayState movementPredicate(AnimationState<JavelinMissileEntity> event) {
