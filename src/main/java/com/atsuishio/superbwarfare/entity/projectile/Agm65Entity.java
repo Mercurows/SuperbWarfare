@@ -127,6 +127,9 @@ public class Agm65Entity extends FastThrowableProjectile implements GeoEntity, E
         if (compound.contains("Radius")) {
             this.explosionRadius = compound.getFloat("Radius");
         }
+        if (compound.contains("Durability")) {
+            this.durability = compound.getInt("Durability");
+        }
     }
 
     @Override
@@ -136,6 +139,7 @@ public class Agm65Entity extends FastThrowableProjectile implements GeoEntity, E
         compound.putFloat("Damage", this.damage);
         compound.putFloat("ExplosionDamage", this.explosionDamage);
         compound.putFloat("Radius", this.explosionRadius);
+        compound.putInt("Durability", this.durability);
     }
 
     @Override
@@ -146,11 +150,9 @@ public class Agm65Entity extends FastThrowableProjectile implements GeoEntity, E
     @Override
     protected void onHitEntity(EntityHitResult result) {
         Entity entity = result.getEntity();
-        if (this.getOwner() != null && this.getOwner().getVehicle() != null && entity == this.getOwner().getVehicle())
+        if (entity == this.getOwner() || (this.getOwner() != null && entity == this.getOwner().getVehicle()))
             return;
         if (this.level() instanceof ServerLevel) {
-            if (entity == this.getOwner() || (this.getOwner() != null && entity == this.getOwner().getVehicle()))
-                return;
             if (this.getOwner() instanceof LivingEntity living) {
                 if (!living.level().isClientSide() && living instanceof ServerPlayer player) {
                     living.level().playSound(null, living.blockPosition(), ModSounds.INDICATION.get(), SoundSource.VOICE, 1, 1);
@@ -166,10 +168,10 @@ public class Agm65Entity extends FastThrowableProjectile implements GeoEntity, E
             }
 
             for (int i = 0; i < 5; i++) {
-                apExplode(result.getLocation().add(getDeltaMovement().normalize().scale(i)));
+                causeExplode(result.getLocation().add(getDeltaMovement().normalize().scale(i)), this.explosionRadius * 0.5f, false);
             }
 
-            causeExplode(result.getLocation());
+            causeExplode(result.getLocation(), this.explosionRadius, true);
             this.discard();
         }
     }
@@ -183,7 +185,7 @@ public class Agm65Entity extends FastThrowableProjectile implements GeoEntity, E
 
             if (hardness == -1) {
                 this.discard();
-                causeExplode(blockHitResult.getLocation());
+                causeExplode(blockHitResult.getLocation(), this.explosionRadius, true);
                 return;
             } else {
                 if (ExplosionConfig.EXPLOSION_DESTROY.get()) {
@@ -191,7 +193,7 @@ public class Agm65Entity extends FastThrowableProjectile implements GeoEntity, E
                 }
             }
 
-            causeExplode(blockHitResult.getLocation());
+            causeExplode(blockHitResult.getLocation(), this.explosionRadius, true);
 
             for (int i = 0; i < 8; i++) {
                 Vec3 hitPos = blockHitResult.getLocation().add(getDeltaMovement().normalize().scale(i));
@@ -203,7 +205,7 @@ public class Agm65Entity extends FastThrowableProjectile implements GeoEntity, E
                         if (ExplosionConfig.EXPLOSION_DESTROY.get()) {
                             this.level().destroyBlock(pos, true);
                         }
-                        apExplode(hitPos);
+                        causeExplode(hitPos, this.explosionRadius * 0.5f, false);
                     });
                 }
             }
@@ -213,7 +215,7 @@ public class Agm65Entity extends FastThrowableProjectile implements GeoEntity, E
         }
     }
 
-    private void causeExplode(Vec3 vec3) {
+    private void causeExplode(Vec3 vec3, float radius, boolean isHuge) {
         CustomExplosion explosion = new CustomExplosion(this.level(), this,
                 ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(),
                         this,
@@ -222,31 +224,17 @@ public class Agm65Entity extends FastThrowableProjectile implements GeoEntity, E
                 vec3.x,
                 vec3.y,
                 vec3.z,
-                explosionRadius,
+                radius,
                 ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).
                 setDamageMultiplier(1);
         explosion.explode();
         EventHooks.onExplosionStart(this.level(), explosion);
         explosion.finalizeExplosion(false);
-        ParticleTool.spawnHugeExplosionParticles(this.level(), vec3);
-    }
-
-    private void apExplode(Vec3 vec3) {
-        CustomExplosion explosion = new CustomExplosion(this.level(), this,
-                ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(),
-                        this,
-                        this.getOwner()),
-                explosionDamage,
-                vec3.x,
-                vec3.y,
-                vec3.z,
-                explosionRadius * 0.5f,
-                ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).
-                setDamageMultiplier(1);
-        explosion.explode();
-        EventHooks.onExplosionStart(this.level(), explosion);
-        explosion.finalizeExplosion(false);
-        ParticleTool.spawnMediumExplosionParticles(this.level(), vec3);
+        if (isHuge) {
+            ParticleTool.spawnHugeExplosionParticles(this.level(), vec3);
+        } else {
+            ParticleTool.spawnMediumExplosionParticles(this.level(), vec3);
+        }
     }
 
     @Override
