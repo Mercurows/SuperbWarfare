@@ -11,7 +11,6 @@ import com.atsuishio.superbwarfare.network.message.receive.ClientMotionSyncMessa
 import com.atsuishio.superbwarfare.tools.ChunkLoadTool;
 import com.atsuishio.superbwarfare.tools.CustomExplosion;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
-import com.atsuishio.superbwarfare.tools.ProjectileTool;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -145,7 +144,7 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
     public void onHitEntity(@NotNull EntityHitResult entityHitResult) {
         if (this.level() instanceof ServerLevel) {
             Entity entity = entityHitResult.getEntity();
-            if (this.getOwner() != null && this.getOwner().getVehicle() != null && entity == this.getOwner().getVehicle())
+            if (this.getOwner() != null && entity == this.getOwner().getVehicle())
                 return;
             entity.hurt(ModDamageTypes.causeCannonFireDamage(this.level().registryAccess(), this, this.getOwner()), this.damage);
 
@@ -162,7 +161,7 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
             }
 
             ParticleTool.cannonHitParticles(this.level(), this.position(), this);
-            causeExplode(entityHitResult.getLocation());
+            causeExplode(entityHitResult.getLocation(), this.radius, true);
             if (entity instanceof VehicleEntity) {
                 this.discard();
             }
@@ -179,7 +178,7 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
 
             if (hardness == -1) {
                 this.discard();
-                causeExplode(blockHitResult.getLocation());
+                causeExplode(blockHitResult.getLocation(), this.radius, true);
                 return;
             } else {
                 if (ExplosionConfig.EXPLOSION_DESTROY.get()) {
@@ -187,7 +186,7 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
                 }
             }
 
-            causeExplode(blockHitResult.getLocation());
+            causeExplode(blockHitResult.getLocation(), this.radius, true);
 
             for (int i = 0; i < 5; i++) {
                 Vec3 hitPos = blockHitResult.getLocation().add(getDeltaMovement().normalize().scale(i));
@@ -199,7 +198,7 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
                         if (ExplosionConfig.EXPLOSION_DESTROY.get()) {
                             this.level().destroyBlock(pos, true);
                         }
-                        apExplode(hitPos);
+                        causeExplode(hitPos, this.radius * 0.5f, false);
                     });
                 }
             }
@@ -221,9 +220,7 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
         }
         if (this.tickCount > 600 || this.isInWater()) {
             if (this.level() instanceof ServerLevel) {
-                ProjectileTool.causeCustomExplode(this,
-                        ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(), this, this.getOwner()),
-                        this, this.explosionDamage, this.radius, 1.25f);
+                causeExplode(position(), this.radius, true);
             }
             this.discard();
         }
@@ -236,52 +233,26 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
         }
     }
 
-    private void causeExplode(Vec3 vec) {
-        if (Math.random() > fireProbability) {
-            fireTime = 0;
-        }
-
+    private void causeExplode(Vec3 vec3, float radius, boolean isHuge) {
         CustomExplosion explosion = new CustomExplosion(this.level(), this,
                 ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(),
                         this,
                         this.getOwner()),
                 explosionDamage,
-                vec.x(),
-                vec.y(),
-                vec.z(),
+                vec3.x(),
+                vec3.y(),
+                vec3.z(),
                 radius,
                 ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).
-                setDamageMultiplier(1).setFireTime(fireTime);
+                setDamageMultiplier(1);
         explosion.explode();
         EventHooks.onExplosionStart(this.level(), explosion);
         explosion.finalizeExplosion(false);
-
-        if (radius > 7) {
-            ParticleTool.spawnHugeExplosionParticles(this.level(), vec);
+        if (isHuge) {
+            ParticleTool.spawnHugeExplosionParticles(this.level(), vec3);
         } else {
-            ParticleTool.spawnMediumExplosionParticles(this.level(), vec);
+            ParticleTool.spawnMediumExplosionParticles(this.level(), vec3);
         }
-    }
-
-    private void apExplode(Vec3 vec3) {
-        if (Math.random() > fireProbability) {
-            fireTime = 0;
-        }
-
-        CustomExplosion explosion = new CustomExplosion(this.level(), this,
-                ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(),
-                        this,
-                        this.getOwner()),
-                explosionDamage,
-                vec3.x,
-                vec3.y,
-                vec3.z,
-                radius * 0.5f,
-                ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).
-                setDamageMultiplier(1).setFireTime(fireTime);
-        explosion.explode();
-        EventHooks.onExplosionStart(this.level(), explosion);
-        explosion.finalizeExplosion(false);
     }
 
     private PlayState movementPredicate(AnimationState<CannonShellEntity> event) {
