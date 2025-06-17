@@ -97,12 +97,12 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
 
     public Yx100Entity(EntityType<Yx100Entity> type, Level world) {
         super(type, world);
-        this.obb = new OBB(this.position().toVector3f(), new Vector3f(2.375f, 0.71875f, 4f), new Quaternionf(), false);
-        this.obb2 = new OBB(this.position().toVector3f(), new Vector3f(2.375f, 0.59375f, 0.65625f), new Quaternionf(), false);
-        this.obb3 = new OBB(this.position().toVector3f(), new Vector3f(0.625f, 0.84375f, 3.875f), new Quaternionf(), false);
-        this.obb4 = new OBB(this.position().toVector3f(), new Vector3f(0.625f, 0.84375f, 3.875f), new Quaternionf(), false);
-        this.obbTurret = new OBB(this.position().toVector3f(), new Vector3f(2.375f, 0.5625f, 2.1875f), new Quaternionf(), true);
-        this.obbTurret2 = new OBB(this.position().toVector3f(), new Vector3f(1.625f, 0.40625f, 0.59375f), new Quaternionf(), true);
+        this.obb = new OBB(this.position().toVector3f(), new Vector3f(2.375f, 0.71875f, 4f), new Quaternionf(), false , false);
+        this.obb2 = new OBB(this.position().toVector3f(), new Vector3f(2.375f, 0.59375f, 0.65625f), new Quaternionf(), false , false);
+        this.obb3 = new OBB(this.position().toVector3f(), new Vector3f(0.625f, 0.84375f, 3.875f), new Quaternionf(), false , false);
+        this.obb4 = new OBB(this.position().toVector3f(), new Vector3f(0.625f, 0.84375f, 3.875f), new Quaternionf(), false , false);
+        this.obbTurret = new OBB(this.position().toVector3f(), new Vector3f(2.375f, 0.5625f, 2.1875f), new Quaternionf(), true , false);
+        this.obbTurret2 = new OBB(this.position().toVector3f(), new Vector3f(1.625f, 0.40625f, 0.59375f), new Quaternionf(), true , false);
     }
 
     @Override

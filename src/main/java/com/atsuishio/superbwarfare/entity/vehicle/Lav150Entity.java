@@ -74,14 +74,14 @@ public class Lav150Entity extends ContainerMobileVehicleEntity implements GeoEnt
 
     public Lav150Entity(EntityType<Lav150Entity> type, Level world) {
         super(type, world);
-        this.obb = new OBB(this.position().toVector3f(), new Vector3f(0.25f, 0.75f, 0.75f), new Quaternionf(), false);
-        this.obb2 = new OBB(this.position().toVector3f(), new Vector3f(0.25f, 0.75f, 0.75f), new Quaternionf(), false);
-        this.obb3 = new OBB(this.position().toVector3f(), new Vector3f(0.25f, 0.75f, 0.75f), new Quaternionf(), false);
-        this.obb4 = new OBB(this.position().toVector3f(), new Vector3f(0.25f, 0.75f, 0.75f), new Quaternionf(), false);
-        this.obb5 = new OBB(this.position().toVector3f(), new Vector3f(1.3125f, 0.90625f, 2.4375f), new Quaternionf(), false);
-        this.obb6 = new OBB(this.position().toVector3f(), new Vector3f(1.3125f, 0.53125f, 0.34375f), new Quaternionf(), false);
-        this.obb7 = new OBB(this.position().toVector3f(), new Vector3f(1.3125f, 0.625f, 0.53125f), new Quaternionf(), false);
-        this.obbTurret = new OBB(this.position().toVector3f(), new Vector3f(0.875f, 0.3625f, 1.25f), new Quaternionf(), true);
+        this.obb = new OBB(this.position().toVector3f(), new Vector3f(0.25f, 0.75f, 0.75f), new Quaternionf(), false , false);
+        this.obb2 = new OBB(this.position().toVector3f(), new Vector3f(0.25f, 0.75f, 0.75f), new Quaternionf(), false , false);
+        this.obb3 = new OBB(this.position().toVector3f(), new Vector3f(0.25f, 0.75f, 0.75f), new Quaternionf(), false , false);
+        this.obb4 = new OBB(this.position().toVector3f(), new Vector3f(0.25f, 0.75f, 0.75f), new Quaternionf(), false , false);
+        this.obb5 = new OBB(this.position().toVector3f(), new Vector3f(1.3125f, 0.90625f, 2.4375f), new Quaternionf(), false , false);
+        this.obb6 = new OBB(this.position().toVector3f(), new Vector3f(1.3125f, 0.53125f, 0.34375f), new Quaternionf(), false , false);
+        this.obb7 = new OBB(this.position().toVector3f(), new Vector3f(1.3125f, 0.625f, 0.53125f), new Quaternionf(), false , false);
+        this.obbTurret = new OBB(this.position().toVector3f(), new Vector3f(0.875f, 0.3625f, 1.25f), new Quaternionf(), true , false);
     }
 
     @Override

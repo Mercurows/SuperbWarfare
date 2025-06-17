@@ -42,6 +42,12 @@ public class VectorTool {
         return combined;
     }
 
+    // 仅水平旋转
+    public static Quaternionf combineRotationsYaw(float partialTicks, VehicleEntity entity) {
+        Quaternionf yawRot = Axis.YP.rotationDegrees(-Mth.lerp(partialTicks, entity.yRotO, entity.getYRot()));
+        return new Quaternionf(yawRot);
+    }
+
     public static Quaternionf combineRotationsTurret(float partialTicks, VehicleEntity entity) {
         Quaternionf turretYawRot = Axis.YP.rotationDegrees(Mth.lerp(partialTicks, entity.turretYRotO, entity.getTurretYRot()));
         Quaternionf combined = combineRotations(partialTicks, entity);

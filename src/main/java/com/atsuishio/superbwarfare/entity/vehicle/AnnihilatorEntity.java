@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.component.ModDataComponents;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
+import com.atsuishio.superbwarfare.entity.OBBEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.CannonEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.EnergyVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
@@ -51,17 +52,16 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Math;
-import org.joml.Matrix4f;
-import org.joml.Vector3d;
-import org.joml.Vector4f;
+import org.joml.*;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.*;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.Comparator;
+import java.util.List;
 
-public class AnnihilatorEntity extends EnergyVehicleEntity implements GeoEntity, CannonEntity {
+public class AnnihilatorEntity extends EnergyVehicleEntity implements GeoEntity, CannonEntity, OBBEntity {
 
     public static final EntityDataAccessor<Integer> COOL_DOWN = SynchedEntityData.defineId(AnnihilatorEntity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Float> LASER_LEFT_LENGTH = SynchedEntityData.defineId(AnnihilatorEntity.class, EntityDataSerializers.FLOAT);
@@ -72,10 +72,18 @@ public class AnnihilatorEntity extends EnergyVehicleEntity implements GeoEntity,
     public static final EntityDataAccessor<String> SHOOTER_UUID = SynchedEntityData.defineId(AnnihilatorEntity.class, EntityDataSerializers.STRING);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
+    public OBB obb;
+    public OBB obb2;
+    public OBB obb3;
+    public OBB obb4;
     public Vec3 barrelLookAt;
 
     public AnnihilatorEntity(EntityType<AnnihilatorEntity> type, Level world) {
         super(type, world);
+        this.obb = new OBB(this.position().toVector3f(), new Vector3f(6.4375f, 1.84375f, 4.125f), new Quaternionf(), false , true);
+        this.obb2 = new OBB(this.position().toVector3f(), new Vector3f(5.0625f, 1.40625f, 1.5f), new Quaternionf(), false , true);
+        this.obb3 = new OBB(this.position().toVector3f(), new Vector3f(5.1875f, 1.84375f, 1.96875f), new Quaternionf(), false , true);
+        this.obb4 = new OBB(this.position().toVector3f(), new Vector3f(4.125f, 1.84375f, 0.75f), new Quaternionf(), false , true);
         this.noCulling = true;
     }
 
@@ -208,6 +216,8 @@ public class AnnihilatorEntity extends EnergyVehicleEntity implements GeoEntity,
     @Override
     public void baseTick() {
         super.baseTick();
+
+        updateOBB();
 
         if (this.entityData.get(COOL_DOWN) > 0) {
             this.entityData.set(COOL_DOWN, this.entityData.get(COOL_DOWN) - 1);
@@ -598,5 +608,31 @@ public class AnnihilatorEntity extends EnergyVehicleEntity implements GeoEntity,
     @Override
     public @Nullable ResourceLocation getVehicleItemIcon() {
         return Mod.loc("textures/gui/vehicle/type/defense.png");
+    }
+
+    @Override
+    public List<OBB> getOBBs() {
+        return List.of(this.obb, this.obb2, this.obb3, this.obb4);
+    }
+
+    @Override
+    public void updateOBB() {
+        Matrix4f transform = getVehicleHorizontalTransform(1);
+
+        Vector4f worldPosition = transformPosition(transform, 0, 2.28125f, 0.875f);
+        this.obb.center().set(new Vector3f(worldPosition.x, worldPosition.y, worldPosition.z));
+        this.obb.setRotation(VectorTool.combineRotationsYaw(1, this));
+
+        Vector4f worldPosition2 = transformPosition(transform, 0, 1.84375f, 6.5f);
+        this.obb2.center().set(new Vector3f(worldPosition2.x, worldPosition2.y, worldPosition2.z));
+        this.obb2.setRotation(VectorTool.combineRotationsYaw(1, this));
+
+        Vector4f worldPosition3 = transformPosition(transform, 0, 2.28125f, -5.21875f);
+        this.obb3.center().set(new Vector3f(worldPosition3.x, worldPosition3.y, worldPosition3.z));
+        this.obb3.setRotation(VectorTool.combineRotationsYaw(1, this));
+
+        Vector4f worldPosition4 = transformPosition(transform, 0, 2.28125f, -7.9375f);
+        this.obb4.center().set(new Vector3f(worldPosition4.x, worldPosition4.y, worldPosition4.z));
+        this.obb4.setRotation(VectorTool.combineRotationsYaw(1, this));
     }
 }

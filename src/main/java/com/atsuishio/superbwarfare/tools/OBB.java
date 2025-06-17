@@ -17,7 +17,7 @@ import java.util.Optional;
  * @param rotation 旋转
  * @param isPart   是否为子部件，一般用于炮塔
  */
-public record OBB(Vector3f center, Vector3f extents, Quaternionf rotation, boolean isPart) {
+public record OBB(Vector3f center, Vector3f extents, Quaternionf rotation, boolean isPart, boolean onlyHorizontal) {
 
     public void setCenter(Vector3f center) {
         this.center.set(center);
@@ -215,12 +215,12 @@ public record OBB(Vector3f center, Vector3f extents, Quaternionf rotation, boole
 
     public OBB inflate(float amount) {
         Vector3f newExtents = new Vector3f(extents).add(amount, amount, amount);
-        return new OBB(center, newExtents, rotation, false);
+        return new OBB(center, newExtents, rotation, false, false);
     }
 
     public OBB inflate(float x, float y, float z) {
         Vector3f newExtents = new Vector3f(extents).add(x, y, z);
-        return new OBB(center, newExtents, rotation, false);
+        return new OBB(center, newExtents, rotation, false, false);
     }
 
     /**
