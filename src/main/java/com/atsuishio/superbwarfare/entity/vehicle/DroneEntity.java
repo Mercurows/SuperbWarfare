@@ -98,14 +98,8 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
         return Mth.lerp(0.6f * tickDelta, pitchO, getBodyPitch());
     }
 
-    @Override
-    public boolean sendFireStarParticleOnHurt() {
-        return false;
-    }
-
-    @Override
-    public boolean playHitSoundOnHurt() {
-        return false;
+    public DroneEntity(EntityType<? extends DroneEntity> type, Level world, float moveX, float moveY, float moveZ) {
+        super(type, world);
     }
 
     @Override

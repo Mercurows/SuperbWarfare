@@ -91,11 +91,6 @@ public class WheelChairEntity extends MobileVehicleEntity implements GeoEntity {
     }
 
     @Override
-    public boolean sendFireStarParticleOnHurt() {
-        return false;
-    }
-
-    @Override
     public void baseTick() {
         if (jumpCoolDown > 0 && onGround()) {
             jumpCoolDown--;

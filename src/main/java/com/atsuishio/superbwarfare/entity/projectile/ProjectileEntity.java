@@ -190,8 +190,9 @@ public class ProjectileEntity extends Projectile implements IEntityWithComplexSp
                 if (obbVec != null) {
                     hitPos = new Vec3(obbVec);
                     if (this.level() instanceof ServerLevel serverLevel) {
+                        this.level().playSound(null, BlockPos.containing(hitPos), ModSounds.HIT.get(), SoundSource.PLAYERS, 1, 1);
                         sendParticle(serverLevel, ModParticleTypes.FIRE_STAR.get(), hitPos.x, hitPos.y, hitPos.z, 2, 0, 0, 0, 0.2, false);
-                        sendParticle(serverLevel, ParticleTypes.SMOKE, hitPos.x, hitPos.y, hitPos.z, 3, 0, 0, 0, 0.01, false);
+                        sendParticle(serverLevel, ParticleTypes.SMOKE, hitPos.x, hitPos.y, hitPos.z, 2, 0, 0, 0, 0.01, false);
                     }
                 }
             }

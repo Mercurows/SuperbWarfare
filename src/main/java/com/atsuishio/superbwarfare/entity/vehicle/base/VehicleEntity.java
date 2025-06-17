@@ -72,7 +72,6 @@ import java.util.Objects;
 import java.util.function.Function;
 
 import static com.atsuishio.superbwarfare.client.RenderHelper.preciseBlit;
-import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 
 public abstract class VehicleEntity extends Entity {
 
@@ -430,31 +429,7 @@ public abstract class VehicleEntity extends Entity {
         }
 
         this.onHurt(computedAmount, source.getEntity(), true);
-
-        // 显示火花粒子效果
-        if (this.sendFireStarParticleOnHurt() && this.level() instanceof ServerLevel serverLevel) {
-            sendParticle(serverLevel, ModParticleTypes.FIRE_STAR.get(), this.getX(), this.getY() + 0.5 * getBbHeight(), this.getZ(), 2, 0.4, 0.4, 0.4, 0.2, false);
-        }
-        // 播放受击音效
-        if (this.playHitSoundOnHurt()) {
-            this.level().playSound(null, this.getOnPos(), ModSounds.HIT.get(), SoundSource.PLAYERS, 1, 1);
-        }
-
         return super.hurt(source, computedAmount);
-    }
-
-    /**
-     * 受击时是否显示火花粒子效果
-     */
-    public boolean sendFireStarParticleOnHurt() {
-        return true;
-    }
-
-    /**
-     * 受击时是否播放受击音效
-     */
-    public boolean playHitSoundOnHurt() {
-        return true;
     }
 
     /**

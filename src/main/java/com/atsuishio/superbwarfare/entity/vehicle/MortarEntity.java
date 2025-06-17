@@ -78,10 +78,6 @@ public class MortarEntity extends VehicleEntity implements GeoEntity {
         return 0.2F;
     }
 
-    @Override
-    public boolean sendFireStarParticleOnHurt() {
-        return false;
-    }
 
     @Override
     public void addAdditionalSaveData(CompoundTag compound) {

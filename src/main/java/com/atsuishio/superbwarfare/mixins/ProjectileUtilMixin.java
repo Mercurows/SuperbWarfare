@@ -1,6 +1,12 @@
 package com.atsuishio.superbwarfare.mixins;
 
 import com.atsuishio.superbwarfare.entity.OBBEntity;
+import com.atsuishio.superbwarfare.init.ModParticleTypes;
+import com.atsuishio.superbwarfare.init.ModSounds;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
@@ -16,6 +22,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.Optional;
 import java.util.function.Predicate;
+
+import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 
 @Mixin(ProjectileUtil.class)
 public class ProjectileUtilMixin {
@@ -35,7 +43,14 @@ public class ProjectileUtilMixin {
                     if (optional.isPresent()) {
                         double d1 = pStartVec.distanceToSqr(new Vec3(optional.get()));
                         if (d1 < Double.MAX_VALUE) {
-                            cir.setReturnValue(new EntityHitResult(entity, new Vec3(optional.get())));
+                            EntityHitResult hitResult = new EntityHitResult(entity, new Vec3(optional.get()));
+                            cir.setReturnValue(hitResult);
+                            if (pLevel instanceof ServerLevel serverLevel && pProjectile.getDeltaMovement().lengthSqr() > 0.01) {
+                                Vec3 hitPos = hitResult.getLocation();
+                                pLevel.playSound(null, BlockPos.containing(hitPos), ModSounds.HIT.get(), SoundSource.PLAYERS, 1, 1);
+                                sendParticle(serverLevel, ModParticleTypes.FIRE_STAR.get(), hitPos.x, hitPos.y, hitPos.z, 2, 0, 0, 0, 0.2, false);
+                                sendParticle(serverLevel, ParticleTypes.SMOKE, hitPos.x, hitPos.y, hitPos.z, 2, 0, 0, 0, 0.01, false);
+                            }
                         }
                     }
                 }

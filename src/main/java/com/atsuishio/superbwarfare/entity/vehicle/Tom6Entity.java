@@ -101,11 +101,6 @@ public class Tom6Entity extends MobileVehicleEntity implements GeoEntity {
     }
 
     @Override
-    public boolean sendFireStarParticleOnHurt() {
-        return false;
-    }
-
-    @Override
     public @NotNull InteractionResult interact(Player player, @NotNull InteractionHand hand) {
         if (player.getMainHandItem().is(Items.MELON) && !entityData.get(MELON)) {
             entityData.set(MELON, true);
