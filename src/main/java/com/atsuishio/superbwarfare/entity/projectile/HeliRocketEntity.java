@@ -23,7 +23,6 @@ import net.minecraft.world.entity.projectile.ThrowableItemProjectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
@@ -44,8 +43,6 @@ public class HeliRocketEntity extends FastThrowableProjectile implements GeoEnti
     private float explosionDamage = 60f;
     private float explosionRadius = 5f;
 
-    private int durability = 50;
-
     public HeliRocketEntity(EntityType<? extends HeliRocketEntity> type, Level world) {
         super(type, world);
         this.noCulling = true;
@@ -54,6 +51,7 @@ public class HeliRocketEntity extends FastThrowableProjectile implements GeoEnti
     public HeliRocketEntity(EntityType<? extends ThrowableItemProjectile> pEntityType, double pX, double pY, double pZ, Level pLevel) {
         super(pEntityType, pX, pY, pZ, pLevel);
         this.noCulling = true;
+        this.durability = 20;
     }
 
     public HeliRocketEntity(LivingEntity entity, Level level, float damage, float explosionDamage, float explosionRadius) {
@@ -61,6 +59,7 @@ public class HeliRocketEntity extends FastThrowableProjectile implements GeoEnti
         this.damage = damage;
         this.explosionDamage = explosionDamage;
         this.explosionRadius = explosionRadius;
+        this.durability = 20;
     }
 
     @Override
@@ -117,10 +116,6 @@ public class HeliRocketEntity extends FastThrowableProjectile implements GeoEnti
                 entity.invulnerableTime = 0;
             }
 
-            for (int i = 0; i < 3; i++) {
-                apExplode(result.getLocation().add(getDeltaMovement().normalize().scale(i)));
-            }
-
             causeExplode(result.getLocation());
             this.discard();
         }
@@ -130,37 +125,15 @@ public class HeliRocketEntity extends FastThrowableProjectile implements GeoEnti
     public void onHitBlock(@NotNull BlockHitResult blockHitResult) {
         if (this.level() instanceof ServerLevel) {
             BlockPos resultPos = blockHitResult.getBlockPos();
-
             float hardness = this.level().getBlockState(resultPos).getBlock().defaultDestroyTime();
-
-            if (hardness == -1) {
-                this.discard();
-                causeExplode(blockHitResult.getLocation());
-                return;
-            } else {
+            if (hardness != -1) {
                 if (ExplosionConfig.EXPLOSION_DESTROY.get()) {
                     this.level().destroyBlock(resultPos, true);
                 }
             }
-
-            causeExplode(blockHitResult.getLocation());
-
-            for (int i = 0; i < 3; i++) {
-                Vec3 hitPos = blockHitResult.getLocation().add(getDeltaMovement().normalize().scale(i));
-                AABB aabb = new AABB(hitPos, hitPos).inflate(0.25);
-                if (durability > 0) {
-                    BlockPos.betweenClosedStream(aabb).forEach((pos) -> {
-                        float hard = this.level().getBlockState(pos).getBlock().defaultDestroyTime();
-                        durability -= (int) hard;
-                        if (ExplosionConfig.EXPLOSION_DESTROY.get()) {
-                            this.level().destroyBlock(pos, true);
-                        }
-                        apExplode(hitPos);
-                    });
-                }
-            }
-            if (durability <= 0) {
-                discard();
+            if (!ExplosionConfig.EXPLOSION_DESTROY.get()) {
+                causeExplode(blockHitResult.getLocation());
+                this.discard();
             }
         }
     }
@@ -181,25 +154,9 @@ public class HeliRocketEntity extends FastThrowableProjectile implements GeoEnti
         EventHooks.onExplosionStart(this.level(), explosion);
         explosion.finalizeExplosion(false);
         ParticleTool.spawnHugeExplosionParticles(this.level(), vec3);
+        discard();
     }
 
-    private void apExplode(Vec3 vec3) {
-        CustomExplosion explosion = new CustomExplosion(this.level(), this,
-                ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(),
-                        this,
-                        this.getOwner()),
-                explosionDamage,
-                vec3.x,
-                vec3.y,
-                vec3.z,
-                explosionRadius * 0.5f,
-                ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).
-                setDamageMultiplier(1);
-        explosion.explode();
-        EventHooks.onExplosionStart(this.level(), explosion);
-        explosion.finalizeExplosion(false);
-        ParticleTool.spawnMediumExplosionParticles(this.level(), vec3);
-    }
 
     @Override
     public void tick() {
@@ -224,6 +181,12 @@ public class HeliRocketEntity extends FastThrowableProjectile implements GeoEnti
             }
             this.discard();
         }
+        destroyBlock();
+    }
+
+    @Override
+    public void destroy(Vec3 pos) {
+        causeExplode(pos);
     }
 
     public static void causeRocketExplode(ThrowableItemProjectile projectile, @Nullable DamageSource source, Entity target, float damage, float radius, float damageMultiplier) {

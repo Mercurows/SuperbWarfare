@@ -24,7 +24,6 @@ import net.minecraft.world.entity.projectile.ThrowableItemProjectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
@@ -46,31 +45,22 @@ public class RpgRocketEntity extends FastThrowableProjectile implements GeoEntit
     private float explosionDamage = 200f;
     private float explosionRadius = 10;
 
-    private int durability = 50;
 
     public RpgRocketEntity(EntityType<? extends RpgRocketEntity> type, Level world) {
         super(type, world);
         this.noCulling = true;
+        this.durability = 20;
     }
 
     public RpgRocketEntity(EntityType<? extends ThrowableItemProjectile> pEntityType, double pX, double pY, double pZ, Level pLevel) {
         super(pEntityType, pX, pY, pZ, pLevel);
         this.noCulling = true;
+        this.durability = 20;
     }
 
     public RpgRocketEntity(LivingEntity entity, Level level) {
         super(ModEntities.RPG_ROCKET.get(), entity, level);
-    }
-
-    public RpgRocketEntity(LivingEntity entity, Level level, float damage) {
-        this(entity, level);
-        this.damage = damage;
-    }
-
-    public RpgRocketEntity(LivingEntity entity, Level level, float damage, float explosionDamage, float explosionRadius) {
-        this(entity, level, damage);
-        this.explosionDamage = explosionDamage;
-        this.explosionRadius = explosionRadius;
+        this.durability = 2;
     }
 
 
@@ -127,6 +117,23 @@ public class RpgRocketEntity extends FastThrowableProjectile implements GeoEntit
     }
 
     @Override
+    public void onHitBlock(@NotNull BlockHitResult blockHitResult) {
+        if (this.level() instanceof ServerLevel) {
+            BlockPos resultPos = blockHitResult.getBlockPos();
+            float hardness = this.level().getBlockState(resultPos).getBlock().defaultDestroyTime();
+            if (hardness != -1) {
+                if (ExplosionConfig.EXPLOSION_DESTROY.get()) {
+                    this.level().destroyBlock(resultPos, true);
+                }
+            }
+            if (!ExplosionConfig.EXPLOSION_DESTROY.get()) {
+                causeExplode(blockHitResult.getLocation());
+                this.discard();
+            }
+        }
+    }
+
+    @Override
     protected void onHitEntity(EntityHitResult result) {
         float damageMultiplier = 1 + this.monsterMultiplier;
         Entity entity = result.getEntity();
@@ -153,51 +160,8 @@ public class RpgRocketEntity extends FastThrowableProjectile implements GeoEntit
                 entity.invulnerableTime = 0;
             }
 
-            for (int i = 0; i < 5; i++) {
-                apExplode(result.getLocation().add(getDeltaMovement().normalize().scale(i)));
-            }
-
             causeExplode(result.getLocation());
             this.discard();
-        }
-    }
-
-    @Override
-    public void onHitBlock(@NotNull BlockHitResult blockHitResult) {
-        if (this.level() instanceof ServerLevel) {
-            BlockPos resultPos = blockHitResult.getBlockPos();
-
-            float hardness = this.level().getBlockState(resultPos).getBlock().defaultDestroyTime();
-
-            if (hardness == -1) {
-                this.discard();
-                causeExplode(blockHitResult.getLocation());
-                return;
-            } else {
-                if (ExplosionConfig.EXPLOSION_DESTROY.get()) {
-                    this.level().destroyBlock(resultPos, true);
-                }
-            }
-
-            causeExplode(blockHitResult.getLocation());
-
-            for (int i = 0; i < 5; i++) {
-                Vec3 hitPos = blockHitResult.getLocation().add(getDeltaMovement().normalize().scale(i));
-                AABB aabb = new AABB(hitPos, hitPos).inflate(0.25);
-                if (durability > 0) {
-                    BlockPos.betweenClosedStream(aabb).forEach((pos) -> {
-                        float hard = this.level().getBlockState(pos).getBlock().defaultDestroyTime();
-                        durability -= (int) hard;
-                        if (ExplosionConfig.EXPLOSION_DESTROY.get()) {
-                            this.level().destroyBlock(pos, true);
-                        }
-                        apExplode(hitPos);
-                    });
-                }
-            }
-            if (durability <= 0) {
-                discard();
-            }
         }
     }
 
@@ -217,24 +181,7 @@ public class RpgRocketEntity extends FastThrowableProjectile implements GeoEntit
         EventHooks.onExplosionStart(this.level(), explosion);
         explosion.finalizeExplosion(false);
         ParticleTool.spawnHugeExplosionParticles(this.level(), vec3);
-    }
-
-    private void apExplode(Vec3 vec3) {
-        CustomExplosion explosion = new CustomExplosion(this.level(), this,
-                ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(),
-                        this,
-                        this.getOwner()),
-                explosionDamage,
-                vec3.x,
-                vec3.y,
-                vec3.z,
-                explosionRadius * 0.5f,
-                ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).
-                setDamageMultiplier(this.monsterMultiplier);
-        explosion.explode();
-        EventHooks.onExplosionStart(this.level(), explosion);
-        explosion.finalizeExplosion(false);
-        ParticleTool.spawnMediumExplosionParticles(this.level(), vec3);
+        discard();
     }
 
     @Override
@@ -261,6 +208,12 @@ public class RpgRocketEntity extends FastThrowableProjectile implements GeoEntit
             }
             this.discard();
         }
+        destroyBlock();
+    }
+
+    @Override
+    public void destroy(Vec3 pos) {
+        causeExplode(pos);
     }
 
     private PlayState movementPredicate(AnimationState<RpgRocketEntity> event) {

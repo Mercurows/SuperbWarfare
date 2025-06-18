@@ -414,13 +414,12 @@ public class C4Entity extends Entity implements GeoEntity, OwnableEntity {
         }
 
         if (this.level() instanceof ServerLevel) {
-            AABB aabb = new AABB(pos, pos).inflate(3);
+            AABB aabb = new AABB(pos, pos).inflate(2);
             BlockPos.betweenClosedStream(aabb).forEach((blockPos) -> {
                 float hard = this.level().getBlockState(blockPos).getBlock().defaultDestroyTime();
-                if (ExplosionConfig.EXPLOSION_DESTROY.get() && hard != -1 && new Vec3(blockPos.getX(), blockPos.getY(), blockPos.getZ()).distanceTo(position()) < 2) {
+                if (ExplosionConfig.EXPLOSION_DESTROY.get() && hard != -1) {
                     this.level().destroyBlock(blockPos, true);
                 }
-
             });
         }
 

@@ -14,6 +14,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -62,7 +63,7 @@ public class SmallCannonShellEntity extends FastThrowableProjectile implements G
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundTag pCompound) {
+    public void addAdditionalSaveData(@NotNull CompoundTag pCompound) {
         super.addAdditionalSaveData(pCompound);
         pCompound.putFloat("Damage", this.damage);
         pCompound.putFloat("ExplosionDamage", this.explosionDamage);
@@ -70,7 +71,7 @@ public class SmallCannonShellEntity extends FastThrowableProjectile implements G
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundTag pCompound) {
+    public void readAdditionalSaveData(@NotNull CompoundTag pCompound) {
         super.readAdditionalSaveData(pCompound);
         if (pCompound.contains("Damage")) {
             this.damage = pCompound.getFloat("Damage");
@@ -129,7 +130,10 @@ public class SmallCannonShellEntity extends FastThrowableProjectile implements G
             float hardness = this.level().getBlockState(resultPos).getBlock().defaultDestroyTime();
             if (hardness != -1) {
                 if (ExplosionConfig.EXPLOSION_DESTROY.get() && this.blockInteraction == null) {
-                    this.level().destroyBlock(resultPos, true);
+                    boolean destroy = Math.random() < Mth.clamp(1 - (hardness / 50), 0.1, 1);
+                    if (destroy) {
+                        this.level().destroyBlock(resultPos, true);
+                    }
                 }
             }
         }

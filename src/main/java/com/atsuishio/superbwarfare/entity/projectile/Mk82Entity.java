@@ -5,7 +5,6 @@ import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.tools.ProjectileTool;
-import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -21,9 +20,7 @@ import net.minecraft.world.entity.projectile.ThrowableItemProjectile;
 import net.minecraft.world.entity.projectile.ThrownPotion;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
@@ -37,6 +34,8 @@ public class Mk82Entity extends FastThrowableProjectile implements GeoEntity, Ex
 
     private float explosionDamage = ExplosionConfig.MK_82_EXPLOSION_DAMAGE.get();
     private float explosionRadius = ExplosionConfig.MK_82_EXPLOSION_RADIUS.get().floatValue();
+
+    public int durability = 1;
 
     public Mk82Entity(EntityType<? extends Mk82Entity> type, Level world) {
         super(type, world);
@@ -114,24 +113,16 @@ public class Mk82Entity extends FastThrowableProjectile implements GeoEntity, Ex
     }
 
     @Override
-    public boolean shouldRenderAtSqrDistance(double pDistance) {
-        return true;
+    public void onHitBlock(@NotNull BlockHitResult blockHitResult) {
+        if (this.level() instanceof ServerLevel) {
+            ProjectileTool.causeCustomExplode(this, this.explosionDamage, this.explosionRadius, 1.2f);
+        }
+        this.discard();
     }
 
     @Override
-    public void onHitBlock(@NotNull BlockHitResult blockHitResult) {
-        if (this.level() instanceof ServerLevel) {
-            AABB aabb = new AABB(blockHitResult.getLocation(), blockHitResult.getLocation()).inflate(5);
-            BlockPos.betweenClosedStream(aabb).forEach((pos) -> {
-                float hard = this.level().getBlockState(pos).getBlock().defaultDestroyTime();
-                if (ExplosionConfig.EXPLOSION_DESTROY.get() && hard != -1 && new Vec3(pos.getX(), pos.getY(), pos.getZ()).distanceTo(blockHitResult.getLocation()) < 3) {
-                    this.level().destroyBlock(pos, true);
-                }
-
-            });
-            ProjectileTool.causeCustomExplode(this, this.explosionDamage, this.explosionRadius, 1.2f);
-            this.discard();
-        }
+    public boolean shouldRenderAtSqrDistance(double pDistance) {
+        return true;
     }
 
     @Override

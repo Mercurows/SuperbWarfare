@@ -92,7 +92,7 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
                                 .hitDamage(VehicleConfig.MK42_HE_DAMAGE.get())
                                 .explosionDamage(VehicleConfig.MK42_HE_EXPLOSION_DAMAGE.get())
                                 .explosionRadius(VehicleConfig.MK42_HE_EXPLOSION_RADIUS.get().floatValue())
-                                .durability(0)
+                                .durability(1)
                                 .fireProbability(0.18F)
                                 .fireTime(2)
                                 .gravity(shellGravity)

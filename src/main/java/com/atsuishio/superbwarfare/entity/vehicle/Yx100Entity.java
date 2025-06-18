@@ -133,7 +133,7 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
                                 .explosionDamage(VehicleConfig.YX_100_HE_CANNON_EXPLOSION_DAMAGE.get())
                                 .fireProbability(0.18F)
                                 .fireTime(2)
-                                .durability(0)
+                                .durability(1)
                                 .velocity(25)
                                 .gravity(0.1f)
                                 .sound(ModSounds.INTO_CANNON.get())

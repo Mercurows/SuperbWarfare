@@ -29,7 +29,6 @@ import net.minecraft.world.entity.projectile.ThrownPotion;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
@@ -54,15 +53,17 @@ public class Agm65Entity extends FastThrowableProjectile implements GeoEntity, E
     private float explosionDamage = ExplosionConfig.AGM_65_EXPLOSION_DAMAGE.get();
     private float explosionRadius = ExplosionConfig.AGM_65_EXPLOSION_RADIUS.get().floatValue();
     private boolean distracted = false;
-    private int durability = 100;
+    private int durability = 50;
 
     public Agm65Entity(EntityType<? extends Agm65Entity> type, Level world) {
         super(type, world);
         this.noCulling = true;
+        this.durability = 25;
     }
 
     public Agm65Entity(LivingEntity entity, Level level) {
         super(ModEntities.AGM_65.get(), entity, level);
+        this.durability = 25;
     }
 
     public void setTargetUuid(String uuid) {
@@ -163,12 +164,7 @@ public class Agm65Entity extends FastThrowableProjectile implements GeoEntity, E
                 entity.invulnerableTime = 0;
             }
 
-            for (int i = 0; i < 5; i++) {
-                causeExplode(result.getLocation().add(getDeltaMovement().normalize().scale(i)), this.explosionRadius * 0.5f, false);
-            }
-
-            causeExplode(result.getLocation(), this.explosionRadius, true);
-            this.discard();
+            causeExplode(result.getLocation());
         }
     }
 
@@ -176,42 +172,20 @@ public class Agm65Entity extends FastThrowableProjectile implements GeoEntity, E
     public void onHitBlock(@NotNull BlockHitResult blockHitResult) {
         if (this.level() instanceof ServerLevel) {
             BlockPos resultPos = blockHitResult.getBlockPos();
-
             float hardness = this.level().getBlockState(resultPos).getBlock().defaultDestroyTime();
-
-            if (hardness == -1) {
-                this.discard();
-                causeExplode(blockHitResult.getLocation(), this.explosionRadius, true);
-                return;
-            } else {
+            if (hardness != -1) {
                 if (ExplosionConfig.EXPLOSION_DESTROY.get()) {
                     this.level().destroyBlock(resultPos, true);
                 }
             }
-
-            causeExplode(blockHitResult.getLocation(), this.explosionRadius, true);
-
-            for (int i = 0; i < 8; i++) {
-                Vec3 hitPos = blockHitResult.getLocation().add(getDeltaMovement().normalize().scale(i));
-                AABB aabb = new AABB(hitPos, hitPos).inflate(0.25);
-                if (durability > 0) {
-                    BlockPos.betweenClosedStream(aabb).forEach((pos) -> {
-                        float hard = this.level().getBlockState(pos).getBlock().defaultDestroyTime();
-                        durability -= (int) hard;
-                        if (ExplosionConfig.EXPLOSION_DESTROY.get()) {
-                            this.level().destroyBlock(pos, true);
-                        }
-                        causeExplode(hitPos, this.explosionRadius * 0.5f, false);
-                    });
-                }
-            }
-            if (durability <= 0) {
-                discard();
+            if (!ExplosionConfig.EXPLOSION_DESTROY.get()) {
+                causeExplode(blockHitResult.getLocation());
+                this.discard();
             }
         }
     }
 
-    private void causeExplode(Vec3 vec3, float radius, boolean isHuge) {
+    private void causeExplode(Vec3 vec3) {
         CustomExplosion explosion = new CustomExplosion(this.level(), this,
                 ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(),
                         this,
@@ -220,17 +194,18 @@ public class Agm65Entity extends FastThrowableProjectile implements GeoEntity, E
                 vec3.x,
                 vec3.y,
                 vec3.z,
-                radius,
+                explosionRadius,
                 ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).
                 setDamageMultiplier(1);
         explosion.explode();
         EventHooks.onExplosionStart(this.level(), explosion);
         explosion.finalizeExplosion(false);
-        if (isHuge) {
+        if (explosionRadius > 9) {
             ParticleTool.spawnHugeExplosionParticles(this.level(), vec3);
         } else {
             ParticleTool.spawnMediumExplosionParticles(this.level(), vec3);
         }
+        discard();
     }
 
     @Override
@@ -294,6 +269,13 @@ public class Agm65Entity extends FastThrowableProjectile implements GeoEntity, E
         float f = (float) Mth.clamp(1 - 0.005 * getDeltaMovement().length(), 0.001, 1);
 
         this.setDeltaMovement(this.getDeltaMovement().multiply(f, f, f));
+        destroyBlock();
+    }
+
+    @Override
+    public void destroy(Vec3 pos) {
+        causeExplode(pos);
+
     }
 
     @Override

@@ -6,8 +6,8 @@
   "Weight": 10,
   "EmptyReloadTime": 78,
   "Damage": 700,
-  "ExplosionDamage": 60,
-  "ExplosionRadius": 5,
+  "ExplosionDamage": 120,
+  "ExplosionRadius": 9,
   "AmmoType": "superbwarfare:javelin_missile",
   "AvailablePerks": [
     "superbwarfare:powerful_attraction",

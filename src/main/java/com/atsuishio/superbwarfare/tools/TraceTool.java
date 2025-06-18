@@ -12,6 +12,9 @@ import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static com.atsuishio.superbwarfare.tools.SeekTool.smokeFilter;
 
 public class TraceTool {
@@ -174,5 +177,37 @@ public class TraceTool {
         Vec3 vec31 = vehicle.getBarrelVector(1);
         Vec3 vec32 = pos.add(vec31.x * pHitDistance, vec31.y * pHitDistance, vec31.z * pHitDistance);
         return vehicle.level().clip(new ClipContext(pos, vec32, ClipContext.Block.COLLIDER, ClipContext.Fluid.ANY, vehicle));
+    }
+
+    public static List<BlockPos> getBlocksAlongRay(Vec3 start, Vec3 direction, double maxDistance) {
+        List<BlockPos> blocks = new ArrayList<>();
+
+        // 标准化方向向量
+        Vec3 normalizedDir = direction.normalize();
+        Vec3 end = start.add(normalizedDir.scale(maxDistance));
+
+        // DDA算法参数
+        double step = 0.1; // 步长（越小精度越高）
+        double distance = 0;
+        BlockPos lastPos = null;
+
+        while (distance <= maxDistance) {
+            Vec3 currentPos = start.add(normalizedDir.scale(distance));
+            BlockPos blockPos = new BlockPos(
+                    (int) Math.floor(currentPos.x),
+                    (int) Math.floor(currentPos.y),
+                    (int) Math.floor(currentPos.z)
+            );
+
+            // 避免重复添加同一方块
+            if (lastPos == null || !lastPos.equals(blockPos)) {
+                blocks.add(blockPos);
+                lastPos = blockPos;
+            }
+
+            distance += step;
+        }
+
+        return blocks;
     }
 }

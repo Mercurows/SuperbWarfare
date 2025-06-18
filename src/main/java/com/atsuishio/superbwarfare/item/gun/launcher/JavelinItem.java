@@ -159,7 +159,7 @@ public class JavelinItem extends GunItem {
 
                 Entity seekingEntity = SeekTool.seekEntity(player, player.level(), 512, 8);
 
-                if (seekingEntity.getType().is(ModTags.EntityTypes.DECOY)) {
+                if (seekingEntity != null && seekingEntity.getType().is(ModTags.EntityTypes.DECOY)) {
                     tag.putInt("SeekTime", 0);
                 }
             }

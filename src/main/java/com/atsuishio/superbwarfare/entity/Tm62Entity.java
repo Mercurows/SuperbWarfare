@@ -26,6 +26,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.entity.EntityTypeTest;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
@@ -225,6 +226,15 @@ public class Tm62Entity extends Entity implements GeoEntity, OwnableEntity {
 
             if (trigger) {
                 triggerExplode();
+                if (this.level() instanceof ServerLevel) {
+                    AABB aabb = new AABB(position(), position()).inflate(2);
+                    BlockPos.betweenClosedStream(aabb).forEach((blockPos) -> {
+                        float hard = this.level().getBlockState(blockPos).getBlock().defaultDestroyTime();
+                        if (ExplosionConfig.EXPLOSION_DESTROY.get() && hard != -1) {
+                            this.level().destroyBlock(blockPos, true);
+                        }
+                    });
+                }
             }
         }
     }
