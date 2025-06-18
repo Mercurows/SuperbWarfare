@@ -19,6 +19,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
+import net.neoforged.neoforge.common.Tags;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.CompletableFuture;
@@ -62,6 +63,20 @@ public class ModRecipeProvider extends RecipeProvider {
                 .define('f', ModItems.MEDIUM_BATTERY_PACK.get())
                 .unlockedBy(getHasName(ModItems.HEAVY_ARMAMENT_MODULE.get()), has(ModItems.HEAVY_ARMAMENT_MODULE.get()))
                 .save(output, Mod.loc(getContainerRecipeName(ModEntities.A_10A.get())));
+        containerRecipe(ModEntities.AH_6.get())
+                .pattern("abc")
+                .pattern("def")
+                .pattern("hgh")
+                .define('a', ModItems.LARGE_PROPELLER.get())
+                .define('b', ModItems.LARGE_MOTOR.get())
+                .define('c', ModItems.PROPELLER.get())
+                .define('d', Items.COMPASS)
+                .define('e', ModTags.Items.STORAGE_BLOCK_STEEL)
+                .define('f', Tags.Items.CHESTS)
+                .define('g', ModItems.MEDIUM_BATTERY_PACK.get())
+                .define('h', ModItems.LIGHT_ARMAMENT_MODULE.get())
+                .unlockedBy(getHasName(ModItems.LIGHT_ARMAMENT_MODULE.get()), has(ModItems.LIGHT_ARMAMENT_MODULE.get()))
+                .save(output, Mod.loc(getContainerRecipeName(ModEntities.AH_6.get())));
 
         // guns
         gunSmithing(output, ModItems.TRACHELIUM_BLUEPRINT.get(), GunRarity.EPIC, ModTags.Items.INGOTS_CEMENTED_CARBIDE, ModItems.TRACHELIUM.get());

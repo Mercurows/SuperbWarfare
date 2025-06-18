@@ -1,11 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
   "category": "misc",
-  "pattern": [
-    "abc",
-    "def",
-    "hgh"
-  ],
   "key": {
     "a": {
       "item": "superbwarfare:large_propeller"
@@ -23,7 +18,7 @@
       "tag": "superbwarfare:storage_blocks/steel"
     },
     "f": {
-      "item": "minecraft:chest"
+      "tag": "c:chests"
     },
     "g": {
       "item": "superbwarfare:medium_battery_pack"
@@ -32,13 +27,19 @@
       "item": "superbwarfare:light_armament_module"
     }
   },
+  "pattern": [
+    "abc",
+    "def",
+    "hgh"
+  ],
   "result": {
-    "id": "superbwarfare:container",
     "components": {
       "minecraft:block_entity_data": {
-        "id": "superbwarfare:container",
-        "EntityType": "superbwarfare:ah_6"
+        "EntityType": "superbwarfare:ah_6",
+        "id": "superbwarfare:container"
       }
-    }
+    },
+    "count": 1,
+    "id": "superbwarfare:container"
   }
 }
