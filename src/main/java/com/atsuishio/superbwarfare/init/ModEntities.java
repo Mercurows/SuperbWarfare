@@ -28,10 +28,9 @@ public class ModEntities {
     public static final DeferredHolder<EntityType<?>, EntityType<DPSGeneratorEntity>> DPS_GENERATOR = register("dps_generator",
             EntityType.Builder.of(DPSGeneratorEntity::new, MobCategory.CREATURE).setTrackingRange(64).setUpdateInterval(3).fireImmune().sized(0.875f, 2f));
     public static final DeferredHolder<EntityType<?>, EntityType<SenpaiEntity>> SENPAI = register("senpai",
-            EntityType.Builder.of(SenpaiEntity::new, MobCategory.MONSTER).setTrackingRange(64).setUpdateInterval(3)
-                    .sized(0.6f, 2f));
+            EntityType.Builder.of(SenpaiEntity::new, MobCategory.MONSTER).setTrackingRange(64).setUpdateInterval(3).eyeHeight(1.75f).sized(0.6f, 2f));
 
-    //    // Misc Entities
+    // Misc Entities
     public static final DeferredHolder<EntityType<?>, EntityType<MortarEntity>> MORTAR = register("mortar",
             EntityType.Builder.<MortarEntity>of(MortarEntity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(3).fireImmune().sized(0.8f, 1.4f));
     public static final DeferredHolder<EntityType<?>, EntityType<LaserEntity>> LASER = register("laser",
@@ -52,7 +51,6 @@ public class ModEntities {
             EntityType.Builder.<C4Entity>of(C4Entity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).sized(0.5f, 0.5f));
     public static final DeferredHolder<EntityType<?>, EntityType<WaterMaskEntity>> WATER_MASK = register("water_mask",
             EntityType.Builder.of(WaterMaskEntity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(3).sized(1f, 1f));
-
 
     // Projectiles
     public static final DeferredHolder<EntityType<?>, EntityType<TaserBulletEntity>> TASER_BULLET = register("taser_bullet",

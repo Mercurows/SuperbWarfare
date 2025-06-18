@@ -70,11 +70,6 @@ public class SenpaiEntity extends Monster implements GeoEntity {
     }
 
     @Override
-    public double getEyeY() {
-        return 1.75F;
-    }
-
-    @Override
     protected void registerGoals() {
         super.registerGoals();
         this.goalSelector.addGoal(1, new MeleeAttackGoal(this, 1.4, false));
