@@ -33,6 +33,8 @@ public abstract class FastThrowableProjectile extends ThrowableItemProjectile im
 
     public int durability = 50;
 
+    public boolean firstHit = true;
+
     private boolean isFastMoving = false;
 
     public FastThrowableProjectile(EntityType<? extends ThrowableItemProjectile> pEntityType, Level pLevel) {
@@ -97,16 +99,13 @@ public abstract class FastThrowableProjectile extends ThrowableItemProjectile im
                         this.level().destroyBlock(pos, true);
                     }
                     if (hardness == -1 || hardness > durability || durability <= 0) {
-                        destroy(pos.getCenter());
-                        break;
+                        discard();
                     }
                 }
             }
         }
     }
 
-    public void destroy(Vec3 pos) {
-    }
 
     @Override
     public void syncMotion() {

@@ -576,10 +576,10 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
         Entity attacker = EntityFindUtil.findEntity(this.level(), this.entityData.get(LAST_ATTACKER_UUID));
         Player controller = EntityFindUtil.findPlayer(this.level(), this.entityData.get(CONTROLLER));
 
-        Entity mortarShell = new MortarShellEntity(controller, level());
         assert controller != null;
+        Entity mortarShell = new MortarShellEntity(controller, level());
         Entity c4 = new C4Entity(controller, level());
-        Entity rpg = new RpgRocketEntity(controller, level(), ExplosionConfig.RPG_EXPLOSION_DAMAGE.get());
+        Entity rpg = new RpgRocketEntity(controller, level());
 
         CustomExplosion explosion = switch (mode) {
             case 1 -> new CustomExplosion(this.level(), this,

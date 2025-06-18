@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.entity.projectile;
 
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModEntities;
@@ -128,6 +129,11 @@ public class HeliRocketEntity extends FastThrowableProjectile implements GeoEnti
             float hardness = this.level().getBlockState(resultPos).getBlock().defaultDestroyTime();
             if (hardness != -1) {
                 if (ExplosionConfig.EXPLOSION_DESTROY.get()) {
+                    if (firstHit) {
+                        causeExplode(blockHitResult.getLocation());
+                        firstHit = false;
+                        Mod.queueServerWork(3, this::discard);
+                    }
                     this.level().destroyBlock(resultPos, true);
                 }
             }
@@ -154,7 +160,6 @@ public class HeliRocketEntity extends FastThrowableProjectile implements GeoEnti
         EventHooks.onExplosionStart(this.level(), explosion);
         explosion.finalizeExplosion(false);
         ParticleTool.spawnHugeExplosionParticles(this.level(), vec3);
-        discard();
     }
 
 
@@ -182,11 +187,6 @@ public class HeliRocketEntity extends FastThrowableProjectile implements GeoEnti
             this.discard();
         }
         destroyBlock();
-    }
-
-    @Override
-    public void destroy(Vec3 pos) {
-        causeExplode(pos);
     }
 
     public static void causeRocketExplode(ThrowableItemProjectile projectile, @Nullable DamageSource source, Entity target, float damage, float radius, float damageMultiplier) {

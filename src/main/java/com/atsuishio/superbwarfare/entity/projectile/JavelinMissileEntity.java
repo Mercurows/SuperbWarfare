@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.entity.projectile;
 
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.*;
@@ -73,7 +74,7 @@ public class JavelinMissileEntity extends FastThrowableProjectile implements Geo
         this.entityData.set(TARGET_X, (float) targetPos.x);
         this.entityData.set(TARGET_Y, (float) targetPos.y);
         this.entityData.set(TARGET_Z, (float) targetPos.z);
-        this.durability = 35;
+        this.durability = 50;
     }
 
     public void setMonsterMultiplier(float monsterMultiplier) {
@@ -208,6 +209,11 @@ public class JavelinMissileEntity extends FastThrowableProjectile implements Geo
             float hardness = this.level().getBlockState(resultPos).getBlock().defaultDestroyTime();
             if (hardness != -1) {
                 if (ExplosionConfig.EXPLOSION_DESTROY.get()) {
+                    if (firstHit) {
+                        causeExplode(blockHitResult.getLocation());
+                        firstHit = false;
+                        Mod.queueServerWork(3, this::discard);
+                    }
                     this.level().destroyBlock(resultPos, true);
                 }
             }
@@ -234,7 +240,6 @@ public class JavelinMissileEntity extends FastThrowableProjectile implements Geo
         EventHooks.onExplosionStart(this.level(), explosion);
         explosion.finalizeExplosion(false);
         ParticleTool.spawnHugeExplosionParticles(this.level(), vec3);
-        discard();
     }
 
     @Override
@@ -357,12 +362,7 @@ public class JavelinMissileEntity extends FastThrowableProjectile implements Geo
         this.setDeltaMovement(this.getDeltaMovement().multiply(0.96, 0.96, 0.96));
         destroyBlock();
     }
-
-    @Override
-    public void destroy(Vec3 pos) {
-        causeExplode(pos);
-    }
-
+    
     private PlayState movementPredicate(AnimationState<JavelinMissileEntity> event) {
         return event.setAndContinue(RawAnimation.begin().thenLoop("animation.jvm.idle"));
     }

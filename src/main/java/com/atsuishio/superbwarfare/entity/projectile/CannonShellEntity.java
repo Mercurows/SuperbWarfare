@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.entity.projectile;
 
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
@@ -153,6 +154,11 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
             float hardness = this.level().getBlockState(resultPos).getBlock().defaultDestroyTime();
             if (hardness != -1) {
                 if (ExplosionConfig.EXPLOSION_DESTROY.get()) {
+                    if (firstHit) {
+                        causeExplode(blockHitResult.getLocation());
+                        firstHit = false;
+                        Mod.queueServerWork(3, this::discard);
+                    }
                     this.level().destroyBlock(resultPos, true);
                 }
             }
@@ -218,11 +224,6 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
         if (!this.level().isClientSide) {
             PacketDistributor.sendToAllPlayers(new ClientMotionSyncMessage(this));
         }
-    }
-
-    @Override
-    public void destroy(Vec3 pos) {
-        causeExplode(pos);
     }
 
     private void causeExplode(Vec3 vec3) {
