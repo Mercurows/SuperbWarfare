@@ -41,7 +41,7 @@ public class Aa12ItemRenderer extends CustomGunRenderer<Aa12Item> {
         }
 
         if (renderingArms) {
-            AnimationHelper.renderArms(player, this.transformType, stack, name, bone, buffer, type, packedLightIn, true);
+            AnimationHelper.renderArms(player, this.renderPerspective, stack, name, bone, buffer, type, packedLightIn, true);
         }
         super.renderRecursively(stack, animatable, bone, type, buffer, bufferIn, isReRender, partialTick, packedLightIn, packedOverlayIn, color);
     }

@@ -40,7 +40,7 @@ public class AureliaSceptreRenderer extends CustomGunRenderer<AureliaSceptre> {
         }
 
         if (renderingArms) {
-            AnimationHelper.renderArms(player, this.transformType, stack, name, bone, this.currentBuffer, type, packedLightIn, false);
+            AnimationHelper.renderArms(player, this.renderPerspective, stack, name, bone, this.currentBuffer, type, packedLightIn, false);
         }
         super.renderRecursively(stack, animatable, bone, type, buffer, bufferIn, isReRender, partialTick, packedLightIn, packedOverlayIn, color);
     }

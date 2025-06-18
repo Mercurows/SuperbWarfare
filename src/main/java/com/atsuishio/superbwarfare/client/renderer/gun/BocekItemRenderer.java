@@ -109,7 +109,7 @@ public class BocekItemRenderer extends CustomGunRenderer<BocekItem> {
         }
 
         if (renderingArms) {
-            AnimationHelper.renderArms(player, this.transformType, stack, name, bone, buffer, type, packedLightIn, false);
+            AnimationHelper.renderArms(player, this.renderPerspective, stack, name, bone, buffer, type, packedLightIn, false);
         }
         super.renderRecursively(stack, animatable, bone, type, buffer, bufferIn, isReRender, partialTick, packedLightIn, packedOverlayIn, color);
     }

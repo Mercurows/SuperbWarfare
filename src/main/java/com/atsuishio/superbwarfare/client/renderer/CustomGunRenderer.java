@@ -30,7 +30,6 @@ public class CustomGunRenderer<T extends GunItem & GeoAnimatable> extends GeoIte
     protected boolean renderArms = false;
     protected MultiBufferSource currentBuffer;
     protected RenderType renderType;
-    public ItemDisplayContext transformType;
 
     public CustomGunRenderer(GeoModel<T> model) {
         super(model);
