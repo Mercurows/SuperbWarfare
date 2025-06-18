@@ -62,7 +62,6 @@ public class LaserTowerEntity extends EnergyVehicleEntity implements GeoEntity, 
 
     public int changeTargetTimer = 60;
 
-
     public LaserTowerEntity(EntityType<LaserTowerEntity> type, Level world) {
         super(type, world);
         this.noCulling = true;

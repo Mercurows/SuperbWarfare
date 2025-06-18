@@ -69,17 +69,6 @@ public class MortarEntity extends VehicleEntity implements GeoEntity {
     }
 
     @Override
-    public boolean isPickable() {
-        return super.isPickable();
-    }
-
-    @Override
-    public double getEyeY() {
-        return 0.2F;
-    }
-
-
-    @Override
     public void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
         compound.putFloat("Pitch", this.entityData.get(PITCH));
