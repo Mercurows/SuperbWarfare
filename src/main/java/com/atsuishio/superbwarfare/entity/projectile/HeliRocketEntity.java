@@ -159,7 +159,7 @@ public class HeliRocketEntity extends FastThrowableProjectile implements GeoEnti
         explosion.explode();
         EventHooks.onExplosionStart(this.level(), explosion);
         explosion.finalizeExplosion(false);
-        ParticleTool.spawnHugeExplosionParticles(this.level(), vec3);
+        ParticleTool.spawnMediumExplosionParticles(this.level(), vec3);
     }
 
 
