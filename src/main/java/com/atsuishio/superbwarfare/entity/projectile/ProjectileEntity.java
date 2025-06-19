@@ -38,6 +38,8 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.entity.monster.Ravager;
+import net.minecraft.world.entity.monster.Vex;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
@@ -94,6 +96,8 @@ public class ProjectileEntity extends Projectile implements IEntityWithComplexSp
     private boolean zoom = false;
     private float bypassArmorRate = 0.0f;
     private float undeadMultiple = 1.0f;
+    private float illagerMultiple = 1.0f;
+    private int riotLevel = 0;
     private int jhpLevel = 0;
     private int heLevel = 0;
     private int fireLevel = 0;
@@ -339,6 +343,7 @@ public class ProjectileEntity extends Projectile implements IEntityWithComplexSp
         this.legShot = tag.getFloat("LegShot");
         this.bypassArmorRate = tag.getFloat("BypassArmorRate");
         this.undeadMultiple = tag.getFloat("UndeadMultiple");
+        this.illagerMultiple = tag.getFloat("illagerMultiple");
         this.knockback = tag.getFloat("Knockback");
 
         this.beast = tag.getBoolean("Beast");
@@ -357,6 +362,7 @@ public class ProjectileEntity extends Projectile implements IEntityWithComplexSp
         tag.putFloat("LegShot", this.legShot);
         tag.putFloat("BypassArmorRate", this.bypassArmorRate);
         tag.putFloat("UndeadMultiple", this.undeadMultiple);
+        tag.putFloat("illagerMultiple", this.illagerMultiple);
         tag.putFloat("Knockback", this.knockback);
 
         tag.putBoolean("Beast", this.beast);
@@ -515,6 +521,15 @@ public class ProjectileEntity extends Projectile implements IEntityWithComplexSp
 
         if (entity instanceof LivingEntity living && living.getType().is(EntityTypeTags.UNDEAD)) {
             this.damage *= this.undeadMultiple;
+        }
+
+        if (entity instanceof LivingEntity living && (living.getType().is(EntityTypeTags.ILLAGER) || living instanceof Vex || living instanceof Ravager)) {
+            this.damage *= this.illagerMultiple;
+        }
+
+        if (entity instanceof LivingEntity living && riotLevel > 0 && !entity.level().isClientSide()) {
+            living.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20 + riotLevel * 10, (int) (riotLevel * 0.25), false, false), this.shooter);
+            living.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 20 + riotLevel * 10, (int) (riotLevel * 0.25), false, false), this.shooter);
         }
 
         if (entity instanceof LivingEntity living && jhpLevel > 0) {
@@ -850,6 +865,11 @@ public class ProjectileEntity extends Projectile implements IEntityWithComplexSp
         return this;
     }
 
+    public ProjectileEntity riotBullet(int riotLevel) {
+        this.riotLevel = riotLevel;
+        return this;
+    }
+
     public ProjectileEntity jhpBullet(int jhpLevel) {
         this.jhpLevel = jhpLevel;
         return this;
@@ -878,6 +898,11 @@ public class ProjectileEntity extends Projectile implements IEntityWithComplexSp
 
     public ProjectileEntity undeadMultiple(float undeadMultiple) {
         this.undeadMultiple = undeadMultiple;
+        return this;
+    }
+
+    public ProjectileEntity illagerMultiple(float illagerMultiple) {
+        this.illagerMultiple = illagerMultiple;
         return this;
     }
 
