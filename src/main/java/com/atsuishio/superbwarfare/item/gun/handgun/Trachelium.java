@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.item.gun.handgun;
 
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.ClickHandler;
 import com.atsuishio.superbwarfare.client.TooltipTool;
 import com.atsuishio.superbwarfare.client.renderer.gun.TracheliumItemRenderer;
@@ -14,6 +15,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.*;
@@ -309,5 +311,10 @@ public class Trachelium extends GunItem {
     @Override
     public boolean hasCustomStock(ItemStack stack) {
         return true;
+    }
+
+    @Override
+    public ResourceLocation getGunIcon() {
+        return Mod.loc("textures/gun_icon/trachelium_icon.png");
     }
 }
