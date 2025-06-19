@@ -27,7 +27,6 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
@@ -37,13 +36,11 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.event.EventHooks;
-import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Math;
@@ -54,7 +51,6 @@ import software.bernie.geckolib.animation.*;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.Comparator;
 import java.util.List;
 
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
@@ -234,14 +230,7 @@ public class Lav150Entity extends ContainerMobileVehicleEntity implements GeoEnt
                 playShootSound3p(player, 0, 4, 12, 24);
             }
 
-            Level level = player.level();
-            final Vec3 center = new Vec3(this.getX(), this.getEyeY(), this.getZ());
-
-            for (Entity target : level.getEntitiesOfClass(Entity.class, new AABB(center, center).inflate(4), e -> true).stream().sorted(Comparator.comparingDouble(e -> e.distanceToSqr(center))).toList()) {
-                if (target instanceof ServerPlayer serverPlayer) {
-                    PacketDistributor.sendToPlayer(serverPlayer, new ShakeClientMessage(6, 5, 9, this.getX(), this.getEyeY(), this.getZ()));
-                }
-            }
+            ShakeClientMessage.sendToNearbyPlayers(this, 5, 6, 5, 9);
 
             this.entityData.set(CANNON_RECOIL_TIME, 40);
             this.entityData.set(YAW, getTurretYRot());

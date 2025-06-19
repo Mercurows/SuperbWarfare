@@ -37,7 +37,6 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.Comparator;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -185,7 +184,7 @@ public class ClaymoreEntity extends Entity implements GeoEntity, OwnableEntity {
 
         if (this.tickCount >= 40) {
             final Vec3 center = new Vec3(x + 1.5 * this.getLookAngle().x, y + 1.5 * this.getLookAngle().y, z + 1.5 * this.getLookAngle().z);
-            for (Entity target : level.getEntitiesOfClass(Entity.class, new AABB(center, center).inflate(2.5 / 2d), e -> true).stream().sorted(Comparator.comparingDouble(e -> e.distanceToSqr(center))).toList()) {
+            for (var target : level.getEntitiesOfClass(Entity.class, new AABB(center, center).inflate(2.5 / 2d), e -> true)) {
                 var condition = this.getOwner() != target
                         && (target instanceof LivingEntity || target instanceof VehicleEntity)
                         && !(target instanceof TargetEntity)

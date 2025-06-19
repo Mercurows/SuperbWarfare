@@ -64,7 +64,6 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.StreamSupport;
 
@@ -287,12 +286,8 @@ public class PrismTankEntity extends ContainerMobileVehicleEntity implements Geo
 
                 this.entityData.set(HEAT, entityData.get(HEAT) + 55);
                 this.consumeEnergy(VehicleConfig.PRISM_TANK_SHOOT_COST_MODE_1.get());
-                final Vec3 center = new Vec3(this.getX(), this.getEyeY(), this.getZ());
-                for (Entity target : level.getEntitiesOfClass(Entity.class, new AABB(center, center).inflate(5), e -> true).stream().sorted(Comparator.comparingDouble(e -> e.distanceToSqr(center))).toList()) {
-                    if (target instanceof ServerPlayer serverPlayer) {
-                        PacketDistributor.sendToPlayer(serverPlayer, new ShakeClientMessage(8, 4, 7, this.getX(), this.getEyeY(), this.getZ()));
-                    }
-                }
+
+                ShakeClientMessage.sendToNearbyPlayers(this, 5, 8, 4, 7);
             }
 
             float dis = laserLengthEntity(root);

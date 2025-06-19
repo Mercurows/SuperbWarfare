@@ -57,7 +57,6 @@ import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -437,8 +436,7 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
         float f = 0.7f;
         AABB aabb = AABB.ofSize(this.getEyePosition(), f, 0.3, f);
         var level = this.level();
-        final Vec3 center = new Vec3(this.getX(), this.getY(), this.getZ());
-        for (Entity target : level.getEntitiesOfClass(Entity.class, aabb, e -> true).stream().sorted(Comparator.comparingDouble(e -> e.distanceToSqr(center))).toList()) {
+        for (var target : level.getEntitiesOfClass(Entity.class, aabb, e -> true)) {
             if (this != target && target != null
                     && !(target instanceof ItemEntity || target instanceof Projectile || target instanceof ProjectileEntity || target instanceof LaserEntity
                     || target.getType().is(ModTags.EntityTypes.DECOY) || target instanceof AreaEffectCloud || target instanceof C4Entity)) {

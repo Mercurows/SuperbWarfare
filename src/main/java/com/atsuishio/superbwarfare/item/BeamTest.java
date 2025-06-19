@@ -28,7 +28,6 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
@@ -86,8 +85,8 @@ public class BeamTest extends Item {
         beamTest.getChargeSound().forEach(sound -> {
             var clientboundstopsoundpacket = new ClientboundStopSoundPacket(sound.getLocation(), SoundSource.PLAYERS);
             final Vec3 center = new Vec3(player.getX(), player.getY(), player.getZ());
-            for (ServerPlayer player1 : player.level().getEntitiesOfClass(ServerPlayer.class, new AABB(center, center).inflate(48), e -> true).stream().sorted(Comparator.comparingDouble(e -> e.distanceToSqr(center))).toList()) {
-                player1.connection.send(clientboundstopsoundpacket);
+            for (ServerPlayer serverPlayer : player.level().getEntitiesOfClass(ServerPlayer.class, new AABB(center, center).inflate(48), e -> true)) {
+                serverPlayer.connection.send(clientboundstopsoundpacket);
             }
         });
     }

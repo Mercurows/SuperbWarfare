@@ -48,7 +48,6 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.event.EventHooks;
-import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Math;
@@ -58,7 +57,6 @@ import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.*;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-import java.util.Comparator;
 import java.util.List;
 
 public class AnnihilatorEntity extends EnergyVehicleEntity implements GeoEntity, CannonEntity, OBBEntity {
@@ -453,12 +451,8 @@ public class AnnihilatorEntity extends EnergyVehicleEntity implements GeoEntity,
 
             this.entityData.set(COOL_DOWN, 100);
             this.consumeEnergy(VehicleConfig.ANNIHILATOR_SHOOT_COST.get());
-            final Vec3 center = new Vec3(this.getX(), this.getEyeY(), this.getZ());
-            for (Entity target : level.getEntitiesOfClass(Entity.class, new AABB(center, center).inflate(20), e -> true).stream().sorted(Comparator.comparingDouble(e -> e.distanceToSqr(center))).toList()) {
-                if (target instanceof ServerPlayer serverPlayer) {
-                    PacketDistributor.sendToPlayer(serverPlayer, new ShakeClientMessage(15, 15, 25, this.getX(), this.getEyeY(), this.getZ()));
-                }
-            }
+
+            ShakeClientMessage.sendToNearbyPlayers(this, 20, 15, 15, 25);
         }
     }
 
