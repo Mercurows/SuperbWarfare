@@ -1,6 +1,8 @@
 package com.atsuishio.superbwarfare.mixins;
 
+import com.atsuishio.superbwarfare.entity.mixin.OBBHitter;
 import com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity;
+import com.atsuishio.superbwarfare.tools.OBB;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
@@ -11,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(Entity.class)
-public class EntityMixin {
+public class EntityMixin implements OBBHitter {
 
     /**
      * From Automobility
@@ -36,6 +38,19 @@ public class EntityMixin {
             this.onGround = this.sbw$cacheOnGround;
             MobileVehicleEntity.IGNORE_ENTITY_GROUND_CHECK_STEPPING = false;
         }
+    }
+
+    @Unique
+    public OBB.Part sbw$currentHitPart;
+
+    @Override
+    public OBB.Part sbw$getCurrentHitPart() {
+        return this.sbw$currentHitPart;
+    }
+
+    @Override
+    public void sbw$setCurrentHitPart(OBB.Part part) {
+        this.sbw$currentHitPart = part;
     }
 
     // TODO 优化后续逻辑

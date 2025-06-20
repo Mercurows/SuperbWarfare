@@ -15,6 +15,7 @@ import java.util.Optional;
  * @param center   旋转中心
  * @param extents  三个轴向上的半长
  * @param rotation 旋转
+ * @param part     部件
  */
 public record OBB(Vector3f center, Vector3f extents, Quaternionf rotation, Part part) {
 
@@ -257,10 +258,11 @@ public record OBB(Vector3f center, Vector3f extents, Quaternionf rotation, Part 
     }
 
     public enum Part {
-        WHEEL_LEFT(),
-        WHEEL_RIGHT(),
-        TURRET(),
-        ENGINE(),
-        BODY();
+        EMPTY,
+        WHEEL_LEFT,
+        WHEEL_RIGHT,
+        TURRET,
+        ENGINE,
+        BODY
     }
 }

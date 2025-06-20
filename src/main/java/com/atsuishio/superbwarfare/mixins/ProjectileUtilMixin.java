@@ -1,10 +1,9 @@
 package com.atsuishio.superbwarfare.mixins;
 
 import com.atsuishio.superbwarfare.entity.OBBEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.Bmp2Entity;
+import com.atsuishio.superbwarfare.entity.mixin.OBBHitter;
 import com.atsuishio.superbwarfare.init.ModParticleTypes;
 import com.atsuishio.superbwarfare.init.ModSounds;
-import com.atsuishio.superbwarfare.tools.OBB;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
@@ -25,7 +24,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.Optional;
 import java.util.function.Predicate;
 
-import static com.atsuishio.superbwarfare.entity.vehicle.Bmp2Entity.TURRET_DAMAGED;
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 
 @Mixin(ProjectileUtil.class)
@@ -47,6 +45,9 @@ public class ProjectileUtilMixin {
                         double d1 = pStartVec.distanceToSqr(new Vec3(optional.get()));
                         if (d1 < Double.MAX_VALUE) {
                             EntityHitResult hitResult = new EntityHitResult(entity, new Vec3(optional.get()));
+                            var acc = OBBHitter.getInstance(pProjectile);
+                            acc.sbw$setCurrentHitPart(obb.part());
+
                             cir.setReturnValue(hitResult);
                             if (pLevel instanceof ServerLevel serverLevel && pProjectile.getDeltaMovement().lengthSqr() > 0.01) {
                                 Vec3 hitPos = hitResult.getLocation();
@@ -54,9 +55,6 @@ public class ProjectileUtilMixin {
                                 sendParticle(serverLevel, ModParticleTypes.FIRE_STAR.get(), hitPos.x, hitPos.y, hitPos.z, 2, 0, 0, 0, 0.2, false);
                                 sendParticle(serverLevel, ParticleTypes.SMOKE, hitPos.x, hitPos.y, hitPos.z, 2, 0, 0, 0, 0.01, false);
                             }
-                        }
-                        if (obbEntity instanceof Bmp2Entity bmp2 && obb.part() == OBB.Part.TURRET) {
-                            bmp2.getEntityData().set(TURRET_DAMAGED, true);
                         }
                     }
                 }

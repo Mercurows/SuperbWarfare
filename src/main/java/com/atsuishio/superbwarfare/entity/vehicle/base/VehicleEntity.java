@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.entity.vehicle.base;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.data.vehicle.VehicleData;
+import com.atsuishio.superbwarfare.entity.mixin.OBBHitter;
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.VehicleWeapon;
@@ -48,6 +49,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.vehicle.DismountHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -428,6 +430,12 @@ public abstract class VehicleEntity extends Entity {
             repairCoolDown = maxRepairCoolDown();
         }
 
+        // TODO 这里可以获取击中的部位，给需要的载具加一个部位受伤方法
+        if (source.getDirectEntity() instanceof Projectile projectile) {
+            OBBHitter accessor = OBBHitter.getInstance(projectile);
+//            System.out.println(accessor.sbw$getCurrentHitPart());
+        }
+
         this.onHurt(computedAmount, source.getEntity(), true);
         return super.hurt(source, computedAmount);
     }
@@ -449,10 +457,8 @@ public abstract class VehicleEntity extends Entity {
 
         if (attacker != null) {
             Vec3 toVec = new Vec3(getX(), getY() + getBbHeight() / 2, getZ()).vectorTo(attacker.position()).normalize();
-            float angle = (float) java.lang.Math.abs(VectorTool.calculateAngle(this.position().vectorTo(attacker.position()), this.getViewVector(1)));
-            return (float) java.lang.Math.max(1f - multiply * toVec.dot(getViewVector(1)), 0.5f);
+            return (float) Math.max(1f - multiply * toVec.dot(getViewVector(1)), 0.5f);
         }
-
         return 1;
     }
 
