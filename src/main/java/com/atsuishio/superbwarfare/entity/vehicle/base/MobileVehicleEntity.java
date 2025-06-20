@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.entity.vehicle.base;
 
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
+import com.atsuishio.superbwarfare.entity.OBBEntity;
 import com.atsuishio.superbwarfare.entity.TargetEntity;
 import com.atsuishio.superbwarfare.entity.projectile.FlareDecoyEntity;
 import com.atsuishio.superbwarfare.entity.projectile.SmokeDecoyEntity;
@@ -9,6 +10,7 @@ import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.tools.EntityFindUtil;
+import com.atsuishio.superbwarfare.tools.OBB;
 import com.mojang.math.Axis;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -661,23 +663,41 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
     public void crushEntities(Vec3 velocity) {
         if (level() instanceof ServerLevel) {
             if (!this.canCrushEntities()) return;
-            if (velocity.horizontalDistance() < 0.25) return;
+//            if (velocity.horizontalDistance() < 0.25) return;
             if (isRemoved()) return;
-            var frontBox = getBoundingBox().move(velocity);
 
-            var entities = level().getEntities(EntityTypeTest.forClass(Entity.class), frontBox,
-                            entity -> entity != this && entity != getFirstPassenger() && entity.getVehicle() == null)
-                    .stream().filter(entity -> {
-                                if (entity.isAlive()) {
-                                    var type = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType());
-                                    return (entity instanceof VehicleEntity || entity instanceof Boat || entity instanceof Minecart
-                                            || (entity instanceof LivingEntity living && !(living instanceof Player player && player.isSpectator())))
-                                            || VehicleConfig.COLLISION_ENTITY_WHITELIST.get().contains(type.toString());
+            List<Entity> entities;
+
+            if (this instanceof OBBEntity obbEntity) {
+                var frontBox = getBoundingBox().move(velocity).inflate(4);
+                entities = level().getEntities(EntityTypeTest.forClass(Entity.class), frontBox,
+                                entity -> entity != this && entity != getFirstPassenger() && entity.getVehicle() == null)
+                        .stream().filter(entity -> {
+                                    if (entity.isAlive() && isInObb(obbEntity, entity, velocity)) {
+                                        var type = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType());
+                                        return (entity instanceof VehicleEntity || entity instanceof Boat || entity instanceof Minecart || (entity instanceof LivingEntity living && !(living instanceof Player player && player.isSpectator()))) || VehicleConfig.COLLISION_ENTITY_WHITELIST.get().contains(type.toString());
+                                    }
+                                    return false;
                                 }
-                                return false;
-                            }
-                    )
-                    .toList();
+                        )
+                        .toList();
+
+            } else {
+                var frontBox = getBoundingBox().move(velocity);
+                entities = level().getEntities(EntityTypeTest.forClass(Entity.class), frontBox,
+                                entity -> entity != this && entity != getFirstPassenger() && entity.getVehicle() == null)
+                        .stream().filter(entity -> {
+                                    if (entity.isAlive()) {
+                                        var type = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType());
+                                        return (entity instanceof VehicleEntity || entity instanceof Boat || entity instanceof Minecart
+                                                || (entity instanceof LivingEntity living && !(living instanceof Player player && player.isSpectator())))
+                                                || VehicleConfig.COLLISION_ENTITY_WHITELIST.get().contains(type.toString());
+                                    }
+                                    return false;
+                                }
+                        )
+                        .toList();
+            }
 
             for (var entity : entities) {
                 double entitySize = entity.getBoundingBox().getSize();
@@ -728,6 +748,22 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
                 }
             }
         }
+    }
+
+    public boolean isInObb(OBBEntity obbEntity, Entity entity, Vec3 velocity) {
+        var obbList = obbEntity.getOBBs();
+        for (var obb : obbList) {
+            obb = obb.move(velocity);
+            if (entity instanceof OBBEntity obbEntity2) {
+                var obbList2 = obbEntity2.getOBBs();
+                for (var obb2 : obbList2) {
+                    return OBB.isColliding(obb, obb2);
+                }
+            } else {
+                return OBB.isColliding(obb, entity.getBoundingBox());
+            }
+        }
+        return false;
     }
 
     public Vector3f getForwardDirection() {

@@ -222,6 +222,11 @@ public record OBB(Vector3f center, Vector3f extents, Quaternionf rotation) {
         return new OBB(center, newExtents, rotation);
     }
 
+    public OBB move(Vec3 vec3) {
+        Vector3f newCenter = new Vector3f((float) (center.x + vec3.x), (float) (center.y + vec3.y), (float) (center.z + vec3.z));
+        return new OBB(newCenter, extents, rotation);
+    }
+
     /**
      * 检查点是否在OBB内部
      *
