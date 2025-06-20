@@ -227,6 +227,10 @@ public record OBB(Vector3f center, Vector3f extents, Quaternionf rotation, Part 
         return new OBB(newCenter, extents, rotation, part);
     }
 
+    public Part getPart(OBB obb) {
+        return obb.part;
+    }
+
     /**
      * 检查点是否在OBB内部
      *
@@ -253,7 +257,8 @@ public record OBB(Vector3f center, Vector3f extents, Quaternionf rotation, Part 
     }
 
     public enum Part {
-        WHEEL(),
+        WHEEL_LEFT(),
+        WHEEL_RIGHT(),
         TURRET(),
         ENGINE(),
         BODY();
