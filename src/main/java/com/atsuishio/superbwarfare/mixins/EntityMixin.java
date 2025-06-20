@@ -1,9 +1,13 @@
 package com.atsuishio.superbwarfare.mixins;
 
+import com.atsuishio.superbwarfare.entity.OBBEntity;
 import com.atsuishio.superbwarfare.entity.mixin.OBBHitter;
 import com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity;
 import com.atsuishio.superbwarfare.tools.OBB;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -13,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(Entity.class)
-public class EntityMixin implements OBBHitter {
+public abstract class EntityMixin implements OBBHitter {
 
     /**
      * From Automobility
@@ -23,6 +27,18 @@ public class EntityMixin implements OBBHitter {
 
     @Shadow
     private boolean onGround;
+
+    @Shadow
+    public abstract Level level();
+
+    @Shadow
+    public abstract AABB getBoundingBox();
+
+    @Shadow
+    public abstract Vec3 position();
+
+    @Shadow
+    public abstract Vec3 getEyePosition();
 
     @Inject(method = "collide", at = @At("HEAD"))
     private void sbw$spoofGroundStart(Vec3 movement, CallbackInfoReturnable<Vec3> cir) {
@@ -51,6 +67,27 @@ public class EntityMixin implements OBBHitter {
     @Override
     public void sbw$setCurrentHitPart(OBB.Part part) {
         this.sbw$currentHitPart = part;
+    }
+
+    // TODO 优化OBB面算法并排除AABB影响，现在下车就动不了了
+    @Inject(method = "collide", at = @At("HEAD"), cancellable = true)
+    private void onHitOBB(Vec3 movement, CallbackInfoReturnable<Vec3> cir) {
+        AABB boundingBox = this.getBoundingBox();
+        Entity self = (Entity) (Object) this;
+        if (self instanceof Player player) {
+            boundingBox = player.getLocalBoundsForPose(player.getPose());
+        }
+        var list = this.level().getEntities(self, boundingBox.expandTowards(movement));
+        var entity = list.stream().filter(e -> e instanceof OBBEntity).findFirst().orElse(null);
+        if (entity == null || entity == self) return;
+        OBBEntity obbEntity = (OBBEntity) entity;
+        Vec3 feetPos = this.position().subtract(this.getEyePosition());
+        // 第一版实现
+        var faceInfo = OBB.findClosestFace(obbEntity.getOBBs(), feetPos);
+        if (faceInfo == null) return;
+        double dot = movement.dot(new Vec3(faceInfo.faceNormal()));
+        var vec = new Vec3(faceInfo.faceNormal()).multiply(dot, dot, dot);
+        cir.setReturnValue(movement.subtract(vec));
     }
 
     // TODO 优化后续逻辑

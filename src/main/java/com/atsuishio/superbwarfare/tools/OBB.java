@@ -2,11 +2,13 @@ package com.atsuishio.superbwarfare.tools;
 
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Intersectionf;
 import org.joml.Math;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -255,6 +257,189 @@ public record OBB(Vector3f center, Vector3f extents, Quaternionf rotation, Part 
         return projX <= extents.x &&
                 projY <= extents.y &&
                 projZ <= extents.z;
+    }
+
+    // 获取最近面的全局法向量
+    public Vector3f getClosestFaceNormal(Vec3 vec3) {
+        // 转换玩家位置到Vector3f
+        Vector3f pos = new Vector3f((float) vec3.x, (float) vec3.y, (float) vec3.z);
+
+        // 1. 转换到局部坐标系
+        Vector3f localPos = new Vector3f(pos).sub(center); // 减去中心
+        Quaternionf invRotation = new Quaternionf(rotation).invert(); // 旋转的逆
+        invRotation.transform(localPos); // 应用逆旋转
+
+        // 2. 计算到六个面的距离
+        float[] distances = new float[6];
+        distances[0] = Math.abs(localPos.x - extents.x); // +X 面
+        distances[1] = Math.abs(localPos.x + extents.x); // -X 面
+        distances[2] = Math.abs(localPos.y - extents.y); // +Y 面
+        distances[3] = Math.abs(localPos.y + extents.y); // -Y 面
+        distances[4] = Math.abs(localPos.z - extents.z); // +Z 面
+        distances[5] = Math.abs(localPos.z + extents.z); // -Z 面
+
+        // 3. 找到最近面的索引
+        int minIndex = 0;
+        for (int i = 1; i < distances.length; i++) {
+            if (distances[i] < distances[minIndex]) {
+                minIndex = i;
+            }
+        }
+
+        // 4. 获取局部法向量并转换到全局坐标系
+        Vector3f localNormal = getLocalNormalByIndex(minIndex);
+        Vector3f globalNormal = new Vector3f(localNormal);
+        rotation.transform(globalNormal);
+        globalNormal.normalize(); // 确保单位长度
+
+        return globalNormal;
+    }
+
+    // 根据索引返回局部法向量
+    private Vector3f getLocalNormalByIndex(int index) {
+        return switch (index) {
+            case 0 -> new Vector3f(1, 0, 0);  // +X
+            case 1 -> new Vector3f(-1, 0, 0); // -X
+            case 2 -> new Vector3f(0, 1, 0);  // +Y
+            case 3 -> new Vector3f(0, -1, 0); // -Y
+            case 4 -> new Vector3f(0, 0, 1);  // +Z
+            case 5 -> new Vector3f(0, 0, -1); // -Z
+            default -> throw new IllegalArgumentException("Invalid face index");
+        };
+    }
+
+    // 计算OBB的包围球（中心点相同，半径为对角线长度）
+    public float getBoundingSphereRadius() {
+        return extents.length();
+    }
+
+    // 获取面的信息（全局中心点和法向量）
+    public FaceInfo getFaceInfo(int faceIndex) {
+        // 局部坐标系的面法向量
+        Vector3f localNormal = getLocalNormalByIndex(faceIndex);
+
+        // 局部中心点：从OBB中心指向该面中心
+        Vector3f localCenter = new Vector3f(localNormal).mul(extents);
+
+        // 转换到全局坐标系
+        Vector3f globalCenter = new Vector3f(localCenter);
+        rotation.transform(globalCenter);
+        globalCenter.add(center);
+
+        Vector3f globalNormal = new Vector3f(localNormal);
+        rotation.transform(globalNormal);
+        globalNormal.normalize(); // 确保单位向量
+
+        return new FaceInfo(globalCenter, globalNormal);
+    }
+
+    // 计算玩家位置到指定面的距离
+    public float distanceToFace(int faceIndex, Vector3f playerPos) {
+        FaceInfo faceInfo = getFaceInfo(faceIndex);
+        Vector3f diff = new Vector3f(playerPos).sub(faceInfo.center());
+        return Math.abs(diff.dot(faceInfo.normal()));
+    }
+
+    // 存储面信息
+    public record FaceInfo(Vector3f center, Vector3f normal) {
+    }
+
+    // 计算点到OBB的距离（平方）
+    public float distanceSquaredToPoint(Vector3f point) {
+        Vector3f localPoint = new Vector3f(point).sub(center);
+        Quaternionf invRotation = new Quaternionf(rotation).invert();
+        invRotation.transform(localPoint);
+
+        Vector3f closestPoint = new Vector3f();
+
+        closestPoint.x = Math.max(-extents.x, Math.min(localPoint.x, extents.x));
+        closestPoint.y = Math.max(-extents.y, Math.min(localPoint.y, extents.y));
+        closestPoint.z = Math.max(-extents.z, Math.min(localPoint.z, extents.z));
+
+        return localPoint.distanceSquared(closestPoint);
+    }
+
+    /**
+     * 寻找距离某一个位置最近的OBB
+     */
+    @Nullable
+    public static OBB findClosestOBB(List<OBB> obbList, Vec3 vec3) {
+        if (obbList == null || obbList.isEmpty()) {
+            return null;
+        }
+
+        Vector3f pos = vec3.toVector3f();
+        OBB closestOBB = null;
+        float minDistanceSq = Float.MAX_VALUE;
+
+        for (OBB obb : obbList) {
+            float distToCenterSq = pos.distanceSquared(obb.center());
+            float boundingRadiusSq = obb.getBoundingSphereRadius() * obb.getBoundingSphereRadius();
+
+            if (distToCenterSq - boundingRadiusSq > minDistanceSq) {
+                continue;
+            }
+
+            float distSq = obb.distanceSquaredToPoint(pos);
+
+            if (distSq < minDistanceSq) {
+                minDistanceSq = distSq;
+                closestOBB = obb;
+            }
+        }
+        return closestOBB;
+    }
+
+    // 查找最近的面
+    @Nullable
+    public static ClosestFaceResult findClosestFace(List<OBB> obbList, Vec3 playerPos) {
+        if (obbList == null || obbList.isEmpty()) {
+            return null;
+        }
+
+        Vector3f pos = new Vector3f((float) playerPos.x, (float) playerPos.y, (float) playerPos.z);
+        OBB closestOBB = null;
+        int closestFaceIndex = -1;
+        float minDistance = Float.MAX_VALUE;
+        Vector3f closestFaceNormal = null;
+        Vector3f closestFaceCenter = null;
+
+        // 第一阶段：使用包围球快速筛选候选OBB
+        for (OBB obb : obbList) {
+            // 计算玩家到OBB中心的距离
+            float distToCenter = pos.distance(obb.center());
+
+            // 如果距离大于包围球半径，不可能比当前最小值更近
+            if (distToCenter - obb.getBoundingSphereRadius() > minDistance) {
+                continue;
+            }
+
+            // 第二阶段：检查该OBB的所有面
+            for (int faceIndex = 0; faceIndex < 6; faceIndex++) {
+                float dist = obb.distanceToFace(faceIndex, pos);
+
+                // 更新最小距离
+                if (dist < minDistance) {
+                    minDistance = dist;
+                    closestOBB = obb;
+                    closestFaceIndex = faceIndex;
+                    OBB.FaceInfo faceInfo = obb.getFaceInfo(faceIndex);
+                    closestFaceNormal = faceInfo.normal();
+                    closestFaceCenter = faceInfo.center();
+                }
+            }
+        }
+
+        if (closestOBB == null) {
+            return null;
+        }
+
+        return new ClosestFaceResult(closestOBB, closestFaceIndex, minDistance,
+                closestFaceCenter, closestFaceNormal);
+    }
+
+    // 存储最近面结果
+    public record ClosestFaceResult(OBB obb, int faceIndex, float distance, Vector3f faceCenter, Vector3f faceNormal) {
     }
 
     public enum Part {

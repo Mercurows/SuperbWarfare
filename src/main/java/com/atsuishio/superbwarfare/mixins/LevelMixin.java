@@ -26,6 +26,7 @@ public abstract class LevelMixin {
     @Inject(method = "getEntities(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/phys/AABB;Ljava/util/function/Predicate;)Ljava/util/List;",
             at = @At("RETURN"))
     public void getEntities(Entity pEntity, AABB pBoundingBox, Predicate<? super Entity> pPredicate, CallbackInfoReturnable<List<Entity>> cir) {
+        // TODO 研究OBB碰撞的时候把这个删了
         if (!(pEntity instanceof Projectile)) return;
 
         StreamSupport.stream(this.getEntities().getAll().spliterator(), false).filter(e -> e instanceof OBBEntity && pPredicate.test(e))
