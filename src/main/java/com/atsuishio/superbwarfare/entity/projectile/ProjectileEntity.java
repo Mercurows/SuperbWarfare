@@ -7,6 +7,7 @@ import com.atsuishio.superbwarfare.entity.DPSGeneratorEntity;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
 import com.atsuishio.superbwarfare.entity.TargetEntity;
 import com.atsuishio.superbwarfare.entity.mixin.ICustomKnockback;
+import com.atsuishio.superbwarfare.entity.mixin.OBBHitter;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.item.Beast;
@@ -199,6 +200,9 @@ public class ProjectileEntity extends Projectile implements IEntityWithComplexSp
                         sendParticle(serverLevel, ModParticleTypes.FIRE_STAR.get(), hitPos.x, hitPos.y, hitPos.z, 2, 0, 0, 0, 0.2, false);
                         sendParticle(serverLevel, ParticleTypes.SMOKE, hitPos.x, hitPos.y, hitPos.z, 2, 0, 0, 0, 0.01, false);
                     }
+
+                    var acc = OBBHitter.getInstance(this);
+                    acc.sbw$setCurrentHitPart(obb.part());
                 }
             }
         } else {
