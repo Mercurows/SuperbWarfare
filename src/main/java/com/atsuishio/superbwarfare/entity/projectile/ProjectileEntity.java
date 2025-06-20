@@ -231,6 +231,7 @@ public class ProjectileEntity extends Projectile implements IEntityWithComplexSp
             }
 
             hitPos = boundingBox.clip(startVec, endVec).orElse(null);
+
         }
 
         if (hitPos == null) {
@@ -246,6 +247,10 @@ public class ProjectileEntity extends Projectile implements IEntityWithComplexSp
         }
         if (hitBoxPos.y < (0.33 * bodyHeight) && entity instanceof LivingEntity) {
             legShot = true;
+        }
+
+        if (heLevel > 0) {
+            explosionBullet(this, this.damage, heLevel, monsterMultiplier + 1, hitPos);
         }
 
         return new EntityResult(entity, hitPos, headshot, legShot);
@@ -406,7 +411,7 @@ public class ProjectileEntity extends Projectile implements IEntityWithComplexSp
 
             this.onHitBlock(hitVec);
             if (heLevel > 0) {
-                explosionBulletBlock(this, this.damage, heLevel, monsterMultiplier + 1, hitVec);
+                explosionBullet(this, this.damage, heLevel, monsterMultiplier + 1, hitVec);
             }
             if (fireLevel > 0 && this.level() instanceof ServerLevel serverLevel) {
                 ParticleTool.sendParticle(serverLevel, ParticleTypes.LAVA, hitVec.x, hitVec.y, hitVec.z,
@@ -537,10 +542,6 @@ public class ProjectileEntity extends Projectile implements IEntityWithComplexSp
             this.damage *= (1.0f + 0.12f * jhpLevel) * ((float) (10 / (living.getAttributeValue(Attributes.ARMOR) + 10)) + 0.25f);
         }
 
-        if (heLevel > 0) {
-            explosionBulletEntity(this, entity, this.damage, heLevel, mMultiple);
-        }
-
         if (fireLevel > 0) {
             if (!entity.level().isClientSide() && entity instanceof LivingEntity living) {
                 living.addEffect(new MobEffectInstance(ModMobEffects.BURN, 60 + fireLevel * 20, fireLevel, false, false), this.shooter);
@@ -602,7 +603,7 @@ public class ProjectileEntity extends Projectile implements IEntityWithComplexSp
         }
     }
 
-    protected void explosionBulletBlock(Entity projectile, float damage, int heLevel, float monsterMultiple, Vec3 hitVec) {
+    protected void explosionBullet(Entity projectile, float damage, int heLevel, float monsterMultiple, Vec3 hitVec) {
         CustomExplosion explosion = new CustomExplosion(projectile.level(), projectile,
                 ModDamageTypes.causeProjectileBoomDamage(projectile.level().registryAccess(), projectile, this.getShooter()), (float) ((0.9 * damage) * (1 + 0.1 * heLevel)),
                 hitVec.x, hitVec.y, hitVec.z, (float) ((1.5 + 0.02 * damage) * (1 + 0.05 * heLevel))).setDamageMultiplier(monsterMultiple).bulletExplode();
@@ -610,16 +611,6 @@ public class ProjectileEntity extends Projectile implements IEntityWithComplexSp
         EventHooks.onExplosionStart(projectile.level(), explosion);
         explosion.finalizeExplosion(false);
         ParticleTool.spawnMiniExplosionParticles(this.level(), hitVec);
-    }
-
-    protected void explosionBulletEntity(Entity projectile, Entity target, float damage, int heLevel, float monsterMultiple) {
-        CustomExplosion explosion = new CustomExplosion(projectile.level(), projectile,
-                ModDamageTypes.causeProjectileBoomDamage(projectile.level().registryAccess(), projectile, this.getShooter()), (float) ((0.8 * damage) * (1 + 0.1 * heLevel)),
-                target.getX(), target.getY(), target.getZ(), (float) ((1.5 + 0.02 * damage) * (1 + 0.05 * heLevel))).setDamageMultiplier(monsterMultiple).bulletExplode();
-        explosion.explode();
-        EventHooks.onExplosionStart(projectile.level(), explosion);
-        explosion.finalizeExplosion(false);
-        ParticleTool.spawnMiniExplosionParticles(target.level(), target.position());
     }
 
     public void setDamage(float damage) {

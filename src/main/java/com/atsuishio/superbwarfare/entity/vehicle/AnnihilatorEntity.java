@@ -74,14 +74,16 @@ public class AnnihilatorEntity extends EnergyVehicleEntity implements GeoEntity,
     public OBB obb2;
     public OBB obb3;
     public OBB obb4;
+    public OBB obb5;
     public Vec3 barrelLookAt;
 
     public AnnihilatorEntity(EntityType<AnnihilatorEntity> type, Level world) {
         super(type, world);
-        this.obb = new OBB(this.position().toVector3f(), new Vector3f(6.4375f, 1.84375f, 4.125f), new Quaternionf(), false, true);
-        this.obb2 = new OBB(this.position().toVector3f(), new Vector3f(5.0625f, 1.40625f, 1.5f), new Quaternionf(), false, true);
-        this.obb3 = new OBB(this.position().toVector3f(), new Vector3f(5.1875f, 1.84375f, 1.96875f), new Quaternionf(), false, true);
-        this.obb4 = new OBB(this.position().toVector3f(), new Vector3f(4.125f, 1.84375f, 0.75f), new Quaternionf(), false, true);
+        this.obb = new OBB(this.position().toVector3f(), new Vector3f(6.4375f, 1.84375f, 4.125f), new Quaternionf());
+        this.obb2 = new OBB(this.position().toVector3f(), new Vector3f(5.0625f, 1.40625f, 1.5f), new Quaternionf());
+        this.obb3 = new OBB(this.position().toVector3f(), new Vector3f(5.1875f, 1.84375f, 1.96875f), new Quaternionf());
+        this.obb4 = new OBB(this.position().toVector3f(), new Vector3f(4.125f, 1.84375f, 0.75f), new Quaternionf());
+        this.obb5 = new OBB(this.position().toVector3f(), new Vector3f(7.75f, 0.71875f, 1.46875f), new Quaternionf());
         this.noCulling = true;
     }
 
@@ -606,7 +608,7 @@ public class AnnihilatorEntity extends EnergyVehicleEntity implements GeoEntity,
 
     @Override
     public List<OBB> getOBBs() {
-        return List.of(this.obb, this.obb2, this.obb3, this.obb4);
+        return List.of(this.obb, this.obb2, this.obb3, this.obb4, this.obb5);
     }
 
     @Override
@@ -628,5 +630,9 @@ public class AnnihilatorEntity extends EnergyVehicleEntity implements GeoEntity,
         Vector4f worldPosition4 = transformPosition(transform, 0, 2.28125f, -7.9375f);
         this.obb4.center().set(new Vector3f(worldPosition4.x, worldPosition4.y, worldPosition4.z));
         this.obb4.setRotation(VectorTool.combineRotationsYaw(1, this));
+
+        Vector4f worldPosition5 = transformPosition(transform, 0, 2.46875f, -5.28125f);
+        this.obb5.center().set(new Vector3f(worldPosition5.x, worldPosition5.y, worldPosition5.z));
+        this.obb5.setRotation(VectorTool.combineRotationsYaw(1, this));
     }
 }

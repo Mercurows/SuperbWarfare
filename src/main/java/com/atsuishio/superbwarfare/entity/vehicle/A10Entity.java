@@ -99,17 +99,17 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
 
     public A10Entity(EntityType<A10Entity> type, Level world) {
         super(type, world);
-        this.obb = new OBB(this.position().toVector3f(), new Vector3f(0.6875f, 1.09375f, 3.65625f), new Quaternionf(), false, false);
-        this.obb2 = new OBB(this.position().toVector3f(), new Vector3f(8.8125f, 0.3125f, 1.40625f), new Quaternionf(), false, false);
-        this.obb3 = new OBB(this.position().toVector3f(), new Vector3f(3.1875f, 0.125f, 0.96875f), new Quaternionf(), false, false);
-        this.obb4 = new OBB(this.position().toVector3f(), new Vector3f(0.0625f, 1.09375f, 0.84375f), new Quaternionf(), false, false);
-        this.obb5 = new OBB(this.position().toVector3f(), new Vector3f(0.0625f, 1.09375f, 0.84375f), new Quaternionf(), false, false);
-        this.obb6 = new OBB(this.position().toVector3f(), new Vector3f(0.625f, 0.78125f, 1.09375f), new Quaternionf(), false, false);
-        this.obb7 = new OBB(this.position().toVector3f(), new Vector3f(0.6875f, 0.75f, 2.9375f), new Quaternionf(), false, false);
-        this.obb8 = new OBB(this.position().toVector3f(), new Vector3f(0.75f, 0.75f, 1.5625f), new Quaternionf(), false, false);
-        this.obb9 = new OBB(this.position().toVector3f(), new Vector3f(0.75f, 0.75f, 1.5625f), new Quaternionf(), false, false);
-        this.obb10 = new OBB(this.position().toVector3f(), new Vector3f(0.34375f, 0.359375f, 1.78125f), new Quaternionf(), false, false);
-        this.obb11 = new OBB(this.position().toVector3f(), new Vector3f(0.34375f, 0.359375f, 1.78125f), new Quaternionf(), false, false);
+        this.obb = new OBB(this.position().toVector3f(), new Vector3f(0.6875f, 1.09375f, 3.65625f), new Quaternionf());
+        this.obb2 = new OBB(this.position().toVector3f(), new Vector3f(8.8125f, 0.3125f, 1.40625f), new Quaternionf());
+        this.obb3 = new OBB(this.position().toVector3f(), new Vector3f(3.1875f, 0.125f, 0.96875f), new Quaternionf());
+        this.obb4 = new OBB(this.position().toVector3f(), new Vector3f(0.0625f, 1.09375f, 0.84375f), new Quaternionf());
+        this.obb5 = new OBB(this.position().toVector3f(), new Vector3f(0.0625f, 1.09375f, 0.84375f), new Quaternionf());
+        this.obb6 = new OBB(this.position().toVector3f(), new Vector3f(0.625f, 0.78125f, 1.09375f), new Quaternionf());
+        this.obb7 = new OBB(this.position().toVector3f(), new Vector3f(0.6875f, 0.75f, 2.9375f), new Quaternionf());
+        this.obb8 = new OBB(this.position().toVector3f(), new Vector3f(0.75f, 0.75f, 1.5625f), new Quaternionf());
+        this.obb9 = new OBB(this.position().toVector3f(), new Vector3f(0.75f, 0.75f, 1.5625f), new Quaternionf());
+        this.obb10 = new OBB(this.position().toVector3f(), new Vector3f(0.34375f, 0.359375f, 1.78125f), new Quaternionf());
+        this.obb11 = new OBB(this.position().toVector3f(), new Vector3f(0.34375f, 0.359375f, 1.78125f), new Quaternionf());
     }
 
     @Override
