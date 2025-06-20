@@ -806,7 +806,7 @@ public abstract class VehicleEntity extends Entity {
         double cr = Math.cos(roll * 0.5 * Mth.DEG_TO_RAD);
         double sr = Math.sin(roll * 0.5 * Mth.DEG_TO_RAD);
 
-        Quaternionf q = new Quaternionf();
+        Quaternionf q = new Quaternionf(), OBB.Part.BODY;
         q.w = (float) (cy * cp * cr + sy * sp * sr);
         q.x = (float) (cy * cp * sr - sy * sp * cr);
         q.y = (float) (sy * cp * sr + cy * sp * cr);

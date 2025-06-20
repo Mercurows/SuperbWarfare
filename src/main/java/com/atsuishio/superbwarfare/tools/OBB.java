@@ -16,7 +16,7 @@ import java.util.Optional;
  * @param extents  三个轴向上的半长
  * @param rotation 旋转
  */
-public record OBB(Vector3f center, Vector3f extents, Quaternionf rotation) {
+public record OBB(Vector3f center, Vector3f extents, Quaternionf rotation, Part part) {
 
     public void setCenter(Vector3f center) {
         this.center.set(center);
@@ -214,17 +214,17 @@ public record OBB(Vector3f center, Vector3f extents, Quaternionf rotation) {
 
     public OBB inflate(float amount) {
         Vector3f newExtents = new Vector3f(extents).add(amount, amount, amount);
-        return new OBB(center, newExtents, rotation);
+        return new OBB(center, newExtents, rotation, part);
     }
 
     public OBB inflate(float x, float y, float z) {
         Vector3f newExtents = new Vector3f(extents).add(x, y, z);
-        return new OBB(center, newExtents, rotation);
+        return new OBB(center, newExtents, rotation, part);
     }
 
     public OBB move(Vec3 vec3) {
         Vector3f newCenter = new Vector3f((float) (center.x + vec3.x), (float) (center.y + vec3.y), (float) (center.z + vec3.z));
-        return new OBB(newCenter, extents, rotation);
+        return new OBB(newCenter, extents, rotation, part);
     }
 
     /**
@@ -250,5 +250,12 @@ public record OBB(Vector3f center, Vector3f extents, Quaternionf rotation) {
         return projX <= extents.x &&
                 projY <= extents.y &&
                 projZ <= extents.z;
+    }
+
+    public enum Part {
+        WHEEL(),
+        TURRET(),
+        ENGINE(),
+        BODY();
     }
 }
