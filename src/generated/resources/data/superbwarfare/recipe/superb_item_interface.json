@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "key": {
+    "a": {
+      "item": "minecraft:hopper"
+    },
+    "b": {
+      "item": "minecraft:dropper"
+    }
+  },
+  "pattern": [
+    " aa",
+    "aba",
+    "aa "
+  ],
+  "result": {
+    "count": 1,
+    "id": "superbwarfare:superb_item_interface"
+  }
+}
