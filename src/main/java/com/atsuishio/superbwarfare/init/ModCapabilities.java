@@ -102,5 +102,11 @@ public class ModCapabilities {
                 (obj, ctx) -> obj.getEnergyStorage()
         );
 
+        // 卓越物品接口
+        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK,
+                ModBlockEntities.SUPERB_ITEM_INTERFACE.get(),
+                (object, context) -> new InvWrapper(object)
+        );
+
     }
 }

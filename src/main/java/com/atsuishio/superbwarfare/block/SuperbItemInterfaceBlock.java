@@ -4,10 +4,12 @@ import com.atsuishio.superbwarfare.block.entity.SuperbItemInterfaceBlockEntity;
 import com.atsuishio.superbwarfare.init.ModBlockEntities;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
@@ -21,6 +23,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.BlockHitResult;
@@ -33,13 +36,17 @@ public class SuperbItemInterfaceBlock extends BaseEntityBlock {
 
     public static final BooleanProperty ENABLED = BlockStateProperties.ENABLED;
 
+    public static final DirectionProperty FACING = DirectionProperty.create("facing");
+
     public SuperbItemInterfaceBlock() {
         this(BlockBehaviour.Properties.of().mapColor(MapColor.STONE).requiresCorrectToolForDrops().strength(3.0F, 4.8F).sound(SoundType.METAL));
     }
 
     public SuperbItemInterfaceBlock(BlockBehaviour.Properties properties) {
         super(properties);
+
         this.registerDefaultState(this.stateDefinition.any().setValue(ENABLED, true));
+        this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.DOWN));
     }
 
     @Nullable
@@ -55,15 +62,14 @@ public class SuperbItemInterfaceBlock extends BaseEntityBlock {
         return pLevel.isClientSide ? null : createTickerHelper(pBlockEntityType, ModBlockEntities.SUPERB_ITEM_INTERFACE.get(), SuperbItemInterfaceBlockEntity::serverTick);
     }
 
-//    @Override
-//    public void setPlacedBy(@NotNull Level pLevel, @NotNull BlockPos pPos, @NotNull BlockState pState, LivingEntity pPlacer, ItemStack pStack) {
-//        if (pStack.get(DataComponents.CUSTOM_NAME) != null) {
-//            BlockEntity blockentity = pLevel.getBlockEntity(pPos);
-//            if (blockentity instanceof SuperbItemInterfaceBlockEntity entity) {
-//                entity.setCustomName(pStack.getHoverName());
-//            }
-//        }
-//    }
+    @Nullable
+    @Override
+    public BlockState getStateForPlacement(@NotNull BlockPlaceContext context) {
+        Direction direction = context.getClickedFace().getOpposite();
+        return this.defaultBlockState()
+                .setValue(FACING, direction)
+                .setValue(ENABLED, true);
+    }
 
     @Override
     public void onPlace(BlockState pState, @NotNull Level pLevel, @NotNull BlockPos pPos, BlockState pOldState, boolean pIsMoving) {
@@ -137,7 +143,7 @@ public class SuperbItemInterfaceBlock extends BaseEntityBlock {
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> pBuilder) {
-        pBuilder.add(ENABLED);
+        pBuilder.add(ENABLED).add(FACING);
     }
 
     @Override
