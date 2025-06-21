@@ -89,6 +89,7 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
     public OBB obb2;
     public OBB obb3;
     public OBB obb4;
+    public OBB obb5;
     public OBB obbTurret;
     public OBB obbTurret2;
 
@@ -98,6 +99,7 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
         this.obb2 = new OBB(this.position().toVector3f(), new Vector3f(2.375f, 0.59375f, 0.65625f), new Quaternionf(), OBB.Part.BODY);
         this.obb3 = new OBB(this.position().toVector3f(), new Vector3f(0.625f, 0.84375f, 3.875f), new Quaternionf(), OBB.Part.WHEEL_LEFT);
         this.obb4 = new OBB(this.position().toVector3f(), new Vector3f(0.625f, 0.84375f, 3.875f), new Quaternionf(), OBB.Part.WHEEL_RIGHT);
+        this.obb5 = new OBB(this.position().toVector3f(), new Vector3f(2.0625f, 0.59375f, 0.625f), new Quaternionf(), OBB.Part.ENGINE);
         this.obbTurret = new OBB(this.position().toVector3f(), new Vector3f(2.375f, 0.5625f, 2.1875f), new Quaternionf(), OBB.Part.TURRET);
         this.obbTurret2 = new OBB(this.position().toVector3f(), new Vector3f(1.625f, 0.40625f, 0.59375f), new Quaternionf(), OBB.Part.TURRET);
     }
@@ -329,34 +331,6 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
         releaseSmokeDecoy(getTurretVector(1));
 
         this.refreshDimensions();
-    }
-
-    @Override
-    public void partDamaged() {
-        if (entityData.get(TURRET_HEALTH) < 0) {
-            entityData.set(TURRET_DAMAGED, true);
-        }
-        if (entityData.get(TURRET_HEALTH) > 80) {
-            entityData.set(TURRET_DAMAGED, false);
-        }
-
-        if (entityData.get(L_WHEEL_HEALTH) < 0) {
-            entityData.set(L_WHEEL_DAMAGED, true);
-        }
-        if (entityData.get(L_WHEEL_HEALTH) > 80) {
-            entityData.set(L_WHEEL_DAMAGED, false);
-        }
-
-        if (entityData.get(R_WHEEL_HEALTH) < 0) {
-            entityData.set(R_WHEEL_DAMAGED, true);
-        }
-        if (entityData.get(R_WHEEL_HEALTH) > 80) {
-            entityData.set(R_WHEEL_DAMAGED, false);
-        }
-
-        entityData.set(TURRET_HEALTH, Math.min(entityData.get(TURRET_HEALTH) + 0.5f, 100));
-        entityData.set(L_WHEEL_HEALTH, Math.min(entityData.get(L_WHEEL_HEALTH) + 0.5f, 100));
-        entityData.set(R_WHEEL_HEALTH, Math.min(entityData.get(R_WHEEL_HEALTH) + 0.5f, 100));
     }
 
     @Override
@@ -762,6 +736,10 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
             i = -3;
         } else {
             i = 0;
+        }
+
+        if (entityData.get(ENGINE_DAMAGED)) {
+            this.entityData.set(POWER, this.entityData.get(POWER) * 0.875f);
         }
 
         this.setYRot((float) (this.getYRot() - (isInWater() && !onGround() ? 2.5 : 6) * entityData.get(DELTA_ROT) - i * s0));
@@ -1328,21 +1306,24 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
         return Mod.loc("textures/gui/vehicle/type/land.png");
     }
 
+    @Override
     public float getTurretMaxHealth() {
         return 100;
     }
 
-    public float getLeftWheelMaxHealth() {
+    @Override
+    public float getWheelMaxHealth() {
         return 100;
     }
 
-    public float getRightWheelMaxHealth() {
+    @Override
+    public float getEngineMaxHealth() {
         return 100;
     }
 
     @Override
     public List<OBB> getOBBs() {
-        return List.of(this.obb, this.obb2, this.obb3, this.obb4, this.obbTurret, this.obbTurret2);
+        return List.of(this.obb, this.obb2, this.obb3, this.obb4, this.obb5, this.obbTurret, this.obbTurret2);
     }
 
     @Override
@@ -1364,6 +1345,10 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
         Vector4f worldPosition4 = transformPosition(transform, -1.8125f, 0.84375f, 0.0625f);
         this.obb4.center().set(new Vector3f(worldPosition4.x, worldPosition4.y, worldPosition4.z));
         this.obb4.setRotation(VectorTool.combineRotations(1, this));
+
+        Vector4f worldPosition5 = transformPosition(transform, 0, 1.65625f, -3.9375f);
+        this.obb5.center().set(new Vector3f(worldPosition5.x, worldPosition5.y, worldPosition5.z));
+        this.obb5.setRotation(VectorTool.combineRotations(1, this));
 
         Matrix4f transformT = getTurretTransform(1);
 

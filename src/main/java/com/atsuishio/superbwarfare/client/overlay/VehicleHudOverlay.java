@@ -223,7 +223,12 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
 
                 //引擎
                 ResourceLocation engine;
-                engine = Mod.loc("textures/screens/land/engine.png");
+
+                if (mobileVehicle.getEntityData().get(ENGINE_DAMAGED)) {
+                    engine = Mod.loc("textures/screens/land/engine_damaged.png");
+                } else {
+                    engine = Mod.loc("textures/screens/land/engine.png");
+                }
 
                 poseStack.rotateAround(Axis.ZP.rotationDegrees(Mth.lerp(partialTick, iLand.turretYRotO(), iLand.turretYRot())), w / 2f + 112, h - 56, 0);
 
