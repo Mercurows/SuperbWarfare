@@ -1141,13 +1141,34 @@ public abstract class VehicleEntity extends Entity {
 
     @Override
     public void setDeltaMovement(Vec3 pDeltaMovement) {
-        if (pDeltaMovement.length() > 8) return;
+        Vec3 currentMomentum = this.getDeltaMovement();
+
+        // 计算当前速度和新速度的标量大小
+        double currentSpeedSq = currentMomentum.lengthSqr();
+        double newSpeedSq = pDeltaMovement.lengthSqr();
+
+        // 只在新速度大于当前速度时（加速过程）进行检查
+        if (newSpeedSq > currentSpeedSq) {
+            // 计算加速度向量
+            Vec3 acceleration = pDeltaMovement.subtract(currentMomentum);
+
+            // 检查加速度大小是否超过阈值
+            if (acceleration.lengthSqr() > 8) {
+                // 限制加速度不超过阈值
+                Vec3 limitedAcceleration = acceleration.normalize().scale(0.125);
+                Vec3 finalMomentum = currentMomentum.add(limitedAcceleration);
+
+                super.setDeltaMovement(finalMomentum);
+                return;
+            }
+        }
+        // 对于减速或允许的加速，直接设置新动量
         super.setDeltaMovement(pDeltaMovement);
     }
 
     @Override
     public void addDeltaMovement(Vec3 pAddend) {
-        if (pAddend.length() > 0.1) return;
+        if (pAddend.length() > 0.1) pAddend = pAddend.scale(0);
         super.addDeltaMovement(pAddend);
     }
 
