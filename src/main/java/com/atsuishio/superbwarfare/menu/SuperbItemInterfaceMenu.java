@@ -1,11 +1,11 @@
 package com.atsuishio.superbwarfare.menu;
 
+import com.atsuishio.superbwarfare.init.ModMenuTypes;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -20,7 +20,7 @@ public class SuperbItemInterfaceMenu extends AbstractContainerMenu {
     }
 
     public SuperbItemInterfaceMenu(int containerId, Inventory playerInventory, Container container) {
-        super(MenuType.HOPPER, containerId);
+        super(ModMenuTypes.SUPERB_ITEM_INTERFACE_MENU.get(), containerId);
         this.container = container;
         checkContainerSize(container, CONTAINER_SIZE);
         container.startOpen(playerInventory.player);
