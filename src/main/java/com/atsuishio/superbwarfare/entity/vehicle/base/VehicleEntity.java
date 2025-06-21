@@ -1168,7 +1168,9 @@ public abstract class VehicleEntity extends Entity {
 
     @Override
     public void addDeltaMovement(Vec3 pAddend) {
-        if (pAddend.length() > 0.1) pAddend = pAddend.scale(0);
+        var length = pAddend.length();
+        if (length > 0.1) pAddend = pAddend.scale(0.1 / length);
+        
         super.addDeltaMovement(pAddend);
     }
 
