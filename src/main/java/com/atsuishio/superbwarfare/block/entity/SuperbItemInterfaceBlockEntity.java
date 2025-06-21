@@ -4,7 +4,6 @@ import com.atsuishio.superbwarfare.block.SuperbItemInterfaceBlock;
 import com.atsuishio.superbwarfare.init.ModBlockEntities;
 import com.atsuishio.superbwarfare.menu.SuperbItemInterfaceMenu;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
@@ -32,13 +31,8 @@ public class SuperbItemInterfaceBlockEntity extends BaseContainerBlockEntity {
     private NonNullList<ItemStack> items = NonNullList.withSize(CONTAINER_SIZE, ItemStack.EMPTY);
     private int cooldownTime = -1;
 
-    private final Direction facing;
-
-
     public SuperbItemInterfaceBlockEntity(BlockPos pPos, BlockState pBlockState) {
         super(ModBlockEntities.SUPERB_ITEM_INTERFACE.get(), pPos, pBlockState);
-
-        this.facing = pBlockState.getValue(SuperbItemInterfaceBlock.FACING);
     }
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, SuperbItemInterfaceBlockEntity blockEntity) {
@@ -48,10 +42,12 @@ public class SuperbItemInterfaceBlockEntity extends BaseContainerBlockEntity {
 
         if (blockEntity.isEmpty()) return;
 
+        var facing = state.getValue(SuperbItemInterfaceBlock.FACING);
+
         // find entities
-        var x = pos.getX() + blockEntity.facing.getStepX();
-        var y = pos.getY() + blockEntity.facing.getStepY();
-        var z = pos.getZ() + blockEntity.facing.getStepZ();
+        var x = pos.getX() + facing.getStepX();
+        var y = pos.getY() + facing.getStepY();
+        var z = pos.getZ() + facing.getStepZ();
 
         var list = level.getEntities(
                 (Entity) null,
@@ -113,7 +109,7 @@ public class SuperbItemInterfaceBlockEntity extends BaseContainerBlockEntity {
 
     @Override
     protected @NotNull AbstractContainerMenu createMenu(int pContainerId, @NotNull Inventory pInventory) {
-        return new SuperbItemInterfaceMenu(pContainerId, pInventory);
+        return new SuperbItemInterfaceMenu(pContainerId, pInventory, this);
     }
 
     @Override

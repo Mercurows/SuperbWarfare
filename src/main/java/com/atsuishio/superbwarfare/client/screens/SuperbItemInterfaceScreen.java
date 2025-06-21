@@ -12,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 
 @OnlyIn(Dist.CLIENT)
 public class SuperbItemInterfaceScreen extends AbstractContainerScreen<SuperbItemInterfaceMenu> {
+
     private static final ResourceLocation HOPPER_LOCATION = ResourceLocation.withDefaultNamespace("textures/gui/container/hopper.png");
 
     public SuperbItemInterfaceScreen(SuperbItemInterfaceMenu menu, Inventory playerInventory, Component title) {
@@ -22,6 +23,7 @@ public class SuperbItemInterfaceScreen extends AbstractContainerScreen<SuperbIte
 
     @Override
     public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+        this.renderBackground(guiGraphics, mouseX, mouseY, partialTick);
         super.render(guiGraphics, mouseX, mouseY, partialTick);
         this.renderTooltip(guiGraphics, mouseX, mouseY);
     }

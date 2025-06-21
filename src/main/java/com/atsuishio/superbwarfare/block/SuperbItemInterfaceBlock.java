@@ -35,18 +35,11 @@ import javax.annotation.ParametersAreNonnullByDefault;
 public class SuperbItemInterfaceBlock extends BaseEntityBlock {
 
     public static final BooleanProperty ENABLED = BlockStateProperties.ENABLED;
-
     public static final DirectionProperty FACING = DirectionProperty.create("facing");
 
     public SuperbItemInterfaceBlock() {
-        this(BlockBehaviour.Properties.of().mapColor(MapColor.STONE).requiresCorrectToolForDrops().strength(3.0F, 4.8F).sound(SoundType.METAL));
-    }
-
-    public SuperbItemInterfaceBlock(BlockBehaviour.Properties properties) {
-        super(properties);
-
-        this.registerDefaultState(this.stateDefinition.any().setValue(ENABLED, true));
-        this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.DOWN));
+        super(BlockBehaviour.Properties.of().mapColor(MapColor.STONE).requiresCorrectToolForDrops().strength(3.0F, 4.8F).sound(SoundType.METAL));
+        this.registerDefaultState(this.stateDefinition.any().setValue(ENABLED, true).setValue(FACING, Direction.DOWN));
     }
 
     @Nullable
@@ -66,9 +59,7 @@ public class SuperbItemInterfaceBlock extends BaseEntityBlock {
     @Override
     public BlockState getStateForPlacement(@NotNull BlockPlaceContext context) {
         Direction direction = context.getClickedFace().getOpposite();
-        return this.defaultBlockState()
-                .setValue(FACING, direction)
-                .setValue(ENABLED, true);
+        return this.defaultBlockState().setValue(FACING, direction).setValue(ENABLED, true);
     }
 
     @Override
@@ -119,7 +110,7 @@ public class SuperbItemInterfaceBlock extends BaseEntityBlock {
         }
     }
 
-    private static final MapCodec<SuperbItemInterfaceBlock> CODEC = BlockBehaviour.simpleCodec(SuperbItemInterfaceBlock::new);
+    private static final MapCodec<SuperbItemInterfaceBlock> CODEC = BlockBehaviour.simpleCodec(prop -> new SuperbItemInterfaceBlock());
 
     @Override
     protected @NotNull MapCodec<? extends BaseEntityBlock> codec() {
