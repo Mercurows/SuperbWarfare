@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.entity.OBBEntity;
 import com.atsuishio.superbwarfare.entity.mixin.OBBHitter;
 import com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity;
 import com.atsuishio.superbwarfare.tools.OBB;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -33,12 +34,6 @@ public abstract class EntityMixin implements OBBHitter {
 
     @Shadow
     public abstract AABB getBoundingBox();
-
-    @Shadow
-    public abstract Vec3 position();
-
-    @Shadow
-    public abstract Vec3 getEyePosition();
 
     @Inject(method = "collide", at = @At("HEAD"))
     private void sbw$spoofGroundStart(Vec3 movement, CallbackInfoReturnable<Vec3> cir) {
@@ -74,19 +69,23 @@ public abstract class EntityMixin implements OBBHitter {
     private void onHitOBB(Vec3 movement, CallbackInfoReturnable<Vec3> cir) {
         AABB boundingBox = this.getBoundingBox();
         Entity self = (Entity) (Object) this;
-        if (self instanceof Player player) {
-            boundingBox = player.getLocalBoundsForPose(player.getPose());
-        }
-        var list = this.level().getEntities(self, boundingBox.expandTowards(movement));
-        var entity = list.stream().filter(e -> e instanceof OBBEntity).findFirst().orElse(null);
+        var list = this.level().getEntities(self, boundingBox.expandTowards(movement).inflate(1), e -> true);
+        var entity = list.stream().filter(e -> e instanceof OBBEntity).min((e1, e2) -> (int) (e1.position().distanceTo(self.position()) - e2.position().distanceTo(self.position()))).orElse(null);
         if (entity == null || entity == self) return;
+
         OBBEntity obbEntity = (OBBEntity) entity;
-        Vec3 feetPos = this.position().subtract(this.getEyePosition());
+        Vec3 position = self.position();
         // 第一版实现
-        var faceInfo = OBB.findClosestFace(obbEntity.getOBBs(), feetPos);
+        var faceInfo = OBB.findClosestFace(obbEntity.getOBBs(), position);
         if (faceInfo == null) return;
         double dot = movement.dot(new Vec3(faceInfo.faceNormal()));
         var vec = new Vec3(faceInfo.faceNormal()).multiply(dot, dot, dot);
+
+        if (self instanceof Player player) {
+            player.displayClientMessage(Component.literal("Vec: [" + vec.x + ", " + vec.y + ", " + vec.z + "]," +
+                    " Face: [" + faceInfo.faceNormal().x + ", " + faceInfo.faceNormal().y + ", " + faceInfo.faceNormal().z + "]"), true);
+        }
+
         cir.setReturnValue(movement.subtract(vec));
     }
 

@@ -29,11 +29,13 @@ public abstract class LevelMixin {
         // TODO 研究OBB碰撞的时候把这个删了
         if (!(pEntity instanceof Projectile)) return;
 
-        StreamSupport.stream(this.getEntities().getAll().spliterator(), false).filter(e -> e instanceof OBBEntity && pPredicate.test(e))
+        StreamSupport.stream(this.getEntities().getAll().spliterator(), false).filter(e -> pPredicate.test(e) && e != pEntity)
                 .forEach(entity -> {
-                            for (OBB obb : ((OBBEntity) entity).getOBBs()) {
-                                if (OBB.isColliding(obb, pBoundingBox) && !cir.getReturnValue().contains(entity)) {
-                                    cir.getReturnValue().add(entity);
+                            if (entity instanceof OBBEntity obbEntity) {
+                                for (OBB obb : obbEntity.getOBBs()) {
+                                    if (OBB.isColliding(obb, pBoundingBox) && !cir.getReturnValue().contains(entity)) {
+                                        cir.getReturnValue().add(entity);
+                                    }
                                 }
                             }
                         }

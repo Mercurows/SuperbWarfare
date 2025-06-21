@@ -397,7 +397,7 @@ public record OBB(Vector3f center, Vector3f extents, Quaternionf rotation, Part 
             return null;
         }
 
-        Vector3f pos = new Vector3f((float) playerPos.x, (float) playerPos.y, (float) playerPos.z);
+        Vector3f pos = playerPos.toVector3f();
         OBB closestOBB = null;
         int closestFaceIndex = -1;
         float minDistance = Float.MAX_VALUE;
@@ -410,7 +410,7 @@ public record OBB(Vector3f center, Vector3f extents, Quaternionf rotation, Part 
             float distToCenter = pos.distance(obb.center());
 
             // 如果距离大于包围球半径，不可能比当前最小值更近
-            if (distToCenter - obb.getBoundingSphereRadius() > minDistance) {
+            if (distToCenter > obb.getBoundingSphereRadius()) {
                 continue;
             }
 
