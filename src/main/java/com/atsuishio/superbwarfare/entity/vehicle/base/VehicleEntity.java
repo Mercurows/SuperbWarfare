@@ -1022,6 +1022,18 @@ public abstract class VehicleEntity extends Entity {
         return data().mass();
     }
 
+    @Override
+    public void setDeltaMovement(Vec3 pDeltaMovement) {
+        if (pDeltaMovement.length() > 8) return;
+        super.setDeltaMovement(pDeltaMovement);
+    }
+
+    @Override
+    public void addDeltaMovement(Vec3 pAddend) {
+        if (pAddend.length() > 0.1) return;
+        super.addDeltaMovement(pAddend);
+    }
+
     /**
      * 玩家在载具上的灵敏度调整
      *
