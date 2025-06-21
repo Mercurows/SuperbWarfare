@@ -16,7 +16,6 @@ import com.atsuishio.superbwarfare.entity.vehicle.weapon.WgMissileWeapon;
 import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModItems;
-import com.atsuishio.superbwarfare.init.ModParticleTypes;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage;
 import com.atsuishio.superbwarfare.tools.*;
@@ -33,7 +32,6 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
@@ -70,7 +68,6 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
     public static final EntityDataAccessor<Integer> LOADED_MISSILE = SynchedEntityData.defineId(Bmp2Entity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> MISSILE_COUNT = SynchedEntityData.defineId(Bmp2Entity.class, EntityDataSerializers.INT);
 
-    public static final EntityDataAccessor<Boolean> TURRET_DAMAGED = SynchedEntityData.defineId(Bmp2Entity.class, EntityDataSerializers.BOOLEAN);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     public int reloadCoolDown;
@@ -135,8 +132,7 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
         super.defineSynchedData(builder);
         builder.define(CANNON_FIRE_TIME, 0)
                 .define(LOADED_MISSILE, 0)
-                .define(MISSILE_COUNT, 0)
-                .define(TURRET_DAMAGED, false);
+                .define(MISSILE_COUNT, 0);
     }
 
     @Override
@@ -217,22 +213,7 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
             sendParticle(serverLevel, ParticleTypes.BUBBLE_COLUMN_UP, this.getX() + 0.5 * this.getDeltaMovement().x, this.getY() + getSubmergedHeight(this) - 0.2, this.getZ() + 0.5 * this.getDeltaMovement().z, (int) (2 + 10 * this.getDeltaMovement().length()), 0.65, 0, 0.65, 0, true);
         }
 
-        if (entityData.get(TURRET_DAMAGED)) {
-            List<Entity> entities = getPlayer(level());
-            for (var e : entities) {
-                if (e instanceof ServerPlayer player) {
-                    if (player.level() instanceof ServerLevel serverLevel) {
-                        Matrix4f transformT = getTurretTransform(1);
-                        Vector4f worldPositionT = transformPosition(transformT, 0, 0.56875f, 0f);
-                        sendParticle(serverLevel, ModParticleTypes.FIRE_STAR.get(), worldPositionT.x, worldPositionT.y, worldPositionT.z, 5, 0.25, 0.25, 0.25, 0.2, true);
-                    }
-                }
-            }
-            turretAngle(1, 1.25f);
-        } else {
-            turretAngle(10, 12.5f);
-        }
-
+        turretAngle(10, 12.5f);
         this.terrainCompact(4f, 5f);
         inertiaRotate(1);
 
@@ -575,6 +556,7 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
         return new Vec3(rootPosition.x, rootPosition.y, rootPosition.z).vectorTo(new Vec3(targetPosition.x, targetPosition.y, targetPosition.z));
     }
 
+    @Override
     public Matrix4f getTurretTransform(float ticks) {
         Matrix4f transformV = getVehicleTransform(ticks);
 

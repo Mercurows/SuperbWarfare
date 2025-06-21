@@ -94,7 +94,7 @@ public class PrismTankEntity extends ContainerMobileVehicleEntity implements Geo
         this.obb3 = new OBB(this.position().toVector3f(), new Vector3f(0.46875f, 0.78125f, 3.3125f), new Quaternionf(), OBB.Part.BODY);
         this.obb4 = new OBB(this.position().toVector3f(), new Vector3f(0.46875f, 0.78125f, 3.3125f), new Quaternionf(), OBB.Part.BODY);
         this.obb5 = new OBB(this.position().toVector3f(), new Vector3f(1.375f, 0.28125f, 1.375f), new Quaternionf(), OBB.Part.BODY);
-        this.obbTurret = new OBB(this.position().toVector3f(), new Vector3f(0.4375f, 0.90625f, 1.21875f), new Quaternionf(), OBB.Part.BODY);
+        this.obbTurret = new OBB(this.position().toVector3f(), new Vector3f(0.4375f, 0.90625f, 1.21875f), new Quaternionf(), OBB.Part.TURRET);
     }
 
     @Override
@@ -622,6 +622,7 @@ public class PrismTankEntity extends ContainerMobileVehicleEntity implements Geo
         return new Vec3(rootPosition.x, rootPosition.y, rootPosition.z).vectorTo(new Vec3(targetPosition.x, targetPosition.y, targetPosition.z));
     }
 
+    @Override
     public Matrix4f getTurretTransform(float ticks) {
         Matrix4f transformV = getVehicleTransform(ticks);
 

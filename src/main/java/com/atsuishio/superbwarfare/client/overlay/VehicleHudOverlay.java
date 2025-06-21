@@ -48,6 +48,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import static com.atsuishio.superbwarfare.client.RenderHelper.preciseBlit;
 import static com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay.*;
 import static com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity.DECOY_COUNT;
+import static com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.TURRET_DAMAGED_TIME;
 
 @OnlyIn(Dist.CLIENT)
 public class VehicleHudOverlay implements LayeredDraw.Layer {
@@ -187,7 +188,6 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
                 int addH = (w / h) * 27;
                 preciseBlit(guiGraphics, FRAME, (float) -addW / 2, (float) -addH / 2, 10, 0, 0.0F, w + addW, h + addH, w + addW, h + addH);
                 preciseBlit(guiGraphics, Mod.loc("textures/screens/land/line.png"), w / 2f - 64, h - 56, 0, 0.0F, 128, 1, 128, 1);
-                preciseBlit(guiGraphics, Mod.loc("textures/screens/land/line.png"), w / 2f + 112, h - 71, 0, 0.0F, 1, 16, 1, 16);
 
                 // 指南针
                 preciseBlit(guiGraphics, Mod.loc("textures/screens/compass.png"), (float) w / 2 - 128, (float) 10, 128 + ((float) 64 / 45 * player.getYRot()), 0, 256, 16, 512, 16);
@@ -195,9 +195,44 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
 
                 // 炮塔方向
                 poseStack.pushPose();
+
+                //车身
+                ResourceLocation body;
+                if (mobileVehicle.getHealth() > 0.4 * mobileVehicle.getMaxHealth()) {
+                    body = Mod.loc("textures/screens/land/body.png");
+                } else if (mobileVehicle.getHealth() > 0.1 * mobileVehicle.getMaxHealth()) {
+                    body = Mod.loc("textures/screens/land/body_warning.png");
+                } else {
+                    body = Mod.loc("textures/screens/land/body_damaged.png");
+                }
+                //左轮
+                ResourceLocation left_wheel;
+                left_wheel = Mod.loc("textures/screens/land/left_wheel.png");
+                //右轮
+                ResourceLocation right_wheel;
+                right_wheel = Mod.loc("textures/screens/land/right_wheel.png");
+                //引擎
+                ResourceLocation engine;
+                engine = Mod.loc("textures/screens/land/engine.png");
+
                 poseStack.rotateAround(Axis.ZP.rotationDegrees(Mth.lerp(partialTick, iLand.turretYRotO(), iLand.turretYRot())), w / 2f + 112, h - 56, 0);
-                preciseBlit(guiGraphics, Mod.loc("textures/screens/land/body.png"), w / 2f + 96, h - 72, 0, 0.0F, 32, 32, 32, 32);
+
+                preciseBlit(guiGraphics, body, w / 2f + 96, h - 72, 0, 0.0F, 32, 32, 32, 32);
+                preciseBlit(guiGraphics, left_wheel, w / 2f + 96, h - 72, 0, 0.0F, 32, 32, 32, 32);
+                preciseBlit(guiGraphics, right_wheel, w / 2f + 96, h - 72, 0, 0.0F, 32, 32, 32, 32);
+                preciseBlit(guiGraphics, engine, w / 2f + 96, h - 72, 0, 0.0F, 32, 32, 32, 32);
+
                 poseStack.popPose();
+
+                // 炮塔损伤
+                ResourceLocation barrel;
+                if (mobileVehicle.getEntityData().get(TURRET_DAMAGED_TIME) > 0) {
+                    barrel = Mod.loc("textures/screens/land/line_damaged.png");
+                } else {
+                    barrel = Mod.loc("textures/screens/land/line.png");
+                }
+
+                preciseBlit(guiGraphics, barrel, w / 2f + 112, h - 71, 0, 0.0F, 1, 16, 1, 16);
 
                 // 时速
                 guiGraphics.drawString(mc.font, Component.literal(FormatTool.format0D(mobileVehicle.getDeltaMovement().dot(mobileVehicle.getViewVector(partialTick)) * 72, " km/h")),

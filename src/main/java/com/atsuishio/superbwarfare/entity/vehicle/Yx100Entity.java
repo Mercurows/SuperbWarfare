@@ -98,8 +98,8 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
         this.obb2 = new OBB(this.position().toVector3f(), new Vector3f(2.375f, 0.59375f, 0.65625f), new Quaternionf(), OBB.Part.BODY);
         this.obb3 = new OBB(this.position().toVector3f(), new Vector3f(0.625f, 0.84375f, 3.875f), new Quaternionf(), OBB.Part.BODY);
         this.obb4 = new OBB(this.position().toVector3f(), new Vector3f(0.625f, 0.84375f, 3.875f), new Quaternionf(), OBB.Part.BODY);
-        this.obbTurret = new OBB(this.position().toVector3f(), new Vector3f(2.375f, 0.5625f, 2.1875f), new Quaternionf(), OBB.Part.BODY);
-        this.obbTurret2 = new OBB(this.position().toVector3f(), new Vector3f(1.625f, 0.40625f, 0.59375f), new Quaternionf(), OBB.Part.BODY);
+        this.obbTurret = new OBB(this.position().toVector3f(), new Vector3f(2.375f, 0.5625f, 2.1875f), new Quaternionf(), OBB.Part.TURRET);
+        this.obbTurret2 = new OBB(this.position().toVector3f(), new Vector3f(1.625f, 0.40625f, 0.59375f), new Quaternionf(), OBB.Part.TURRET);
     }
 
     @Override
@@ -833,6 +833,7 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
         return transformT;
     }
 
+    @Override
     public Matrix4f getTurretTransform(float ticks) {
         Matrix4f transformV = getVehicleTransform(ticks);
 
@@ -1282,6 +1283,16 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
     @Override
     public @Nullable ResourceLocation getVehicleItemIcon() {
         return Mod.loc("textures/gui/vehicle/type/land.png");
+    }
+
+    @Override
+    public float turretDamagedMin() {
+        return 75;
+    }
+
+    @Override
+    public float turretDamagedMultiply() {
+        return 2;
     }
 
     @Override
