@@ -48,7 +48,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import static com.atsuishio.superbwarfare.client.RenderHelper.preciseBlit;
 import static com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay.*;
 import static com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity.DECOY_COUNT;
-import static com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.TURRET_DAMAGED_TIME;
+import static com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.*;
 
 @OnlyIn(Dist.CLIENT)
 public class VehicleHudOverlay implements LayeredDraw.Layer {
@@ -207,10 +207,20 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
                 }
                 //左轮
                 ResourceLocation left_wheel;
-                left_wheel = Mod.loc("textures/screens/land/left_wheel.png");
+                if (mobileVehicle.getEntityData().get(L_WHEEL_DAMAGED)) {
+                    left_wheel = Mod.loc("textures/screens/land/left_wheel_damaged.png");
+                } else {
+                    left_wheel = Mod.loc("textures/screens/land/left_wheel.png");
+                }
+
                 //右轮
                 ResourceLocation right_wheel;
-                right_wheel = Mod.loc("textures/screens/land/right_wheel.png");
+                if (mobileVehicle.getEntityData().get(R_WHEEL_DAMAGED)) {
+                    right_wheel = Mod.loc("textures/screens/land/right_wheel_damaged.png");
+                } else {
+                    right_wheel = Mod.loc("textures/screens/land/right_wheel.png");
+                }
+
                 //引擎
                 ResourceLocation engine;
                 engine = Mod.loc("textures/screens/land/engine.png");
@@ -226,7 +236,7 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
 
                 // 炮塔损伤
                 ResourceLocation barrel;
-                if (mobileVehicle.getEntityData().get(TURRET_DAMAGED_TIME) > 0) {
+                if (mobileVehicle.getEntityData().get(TURRET_DAMAGED)) {
                     barrel = Mod.loc("textures/screens/land/line_damaged.png");
                 } else {
                     barrel = Mod.loc("textures/screens/land/line.png");

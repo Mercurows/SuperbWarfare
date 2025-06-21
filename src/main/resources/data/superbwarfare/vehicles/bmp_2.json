@@ -71,7 +71,7 @@
     },
     {
       "Type": "Multiply",
-      "Value": 1.5,
+      "Value": 1.35,
       "Source": "superbwarfare:cannon_fire"
     },
     {

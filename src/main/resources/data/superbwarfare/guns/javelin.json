@@ -5,7 +5,7 @@
   "Magazine": 1,
   "Weight": 10,
   "EmptyReloadTime": 78,
-  "Damage": 700,
+  "Damage": 500,
   "ExplosionDamage": 120,
   "ExplosionRadius": 9,
   "AmmoType": "superbwarfare:javelin_missile",

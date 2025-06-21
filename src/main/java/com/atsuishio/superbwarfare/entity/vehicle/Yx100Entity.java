@@ -96,8 +96,8 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
         super(type, world);
         this.obb = new OBB(this.position().toVector3f(), new Vector3f(2.375f, 0.71875f, 4f), new Quaternionf(), OBB.Part.BODY);
         this.obb2 = new OBB(this.position().toVector3f(), new Vector3f(2.375f, 0.59375f, 0.65625f), new Quaternionf(), OBB.Part.BODY);
-        this.obb3 = new OBB(this.position().toVector3f(), new Vector3f(0.625f, 0.84375f, 3.875f), new Quaternionf(), OBB.Part.BODY);
-        this.obb4 = new OBB(this.position().toVector3f(), new Vector3f(0.625f, 0.84375f, 3.875f), new Quaternionf(), OBB.Part.BODY);
+        this.obb3 = new OBB(this.position().toVector3f(), new Vector3f(0.625f, 0.84375f, 3.875f), new Quaternionf(), OBB.Part.WHEEL_LEFT);
+        this.obb4 = new OBB(this.position().toVector3f(), new Vector3f(0.625f, 0.84375f, 3.875f), new Quaternionf(), OBB.Part.WHEEL_RIGHT);
         this.obbTurret = new OBB(this.position().toVector3f(), new Vector3f(2.375f, 0.5625f, 2.1875f), new Quaternionf(), OBB.Part.TURRET);
         this.obbTurret2 = new OBB(this.position().toVector3f(), new Vector3f(1.625f, 0.40625f, 0.59375f), new Quaternionf(), OBB.Part.TURRET);
     }
@@ -329,6 +329,34 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
         releaseSmokeDecoy(getTurretVector(1));
 
         this.refreshDimensions();
+    }
+
+    @Override
+    public void partDamaged() {
+        if (entityData.get(TURRET_HEALTH) < 0) {
+            entityData.set(TURRET_DAMAGED, true);
+        }
+        if (entityData.get(TURRET_HEALTH) > 80) {
+            entityData.set(TURRET_DAMAGED, false);
+        }
+
+        if (entityData.get(L_WHEEL_HEALTH) < 0) {
+            entityData.set(L_WHEEL_DAMAGED, true);
+        }
+        if (entityData.get(L_WHEEL_HEALTH) > 80) {
+            entityData.set(L_WHEEL_DAMAGED, false);
+        }
+
+        if (entityData.get(R_WHEEL_HEALTH) < 0) {
+            entityData.set(R_WHEEL_DAMAGED, true);
+        }
+        if (entityData.get(R_WHEEL_HEALTH) > 80) {
+            entityData.set(R_WHEEL_DAMAGED, false);
+        }
+
+        entityData.set(TURRET_HEALTH, Math.min(entityData.get(TURRET_HEALTH) + 0.5f, 100));
+        entityData.set(L_WHEEL_HEALTH, Math.min(entityData.get(L_WHEEL_HEALTH) + 0.5f, 100));
+        entityData.set(R_WHEEL_HEALTH, Math.min(entityData.get(R_WHEEL_HEALTH) + 0.5f, 100));
     }
 
     @Override
@@ -721,7 +749,22 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
         setLeftTrack((float) ((getLeftTrack() - 1.5 * Math.PI * s0) + Mth.clamp(0.4f * Math.PI * this.entityData.get(DELTA_ROT), -5f, 5f)));
         setRightTrack((float) ((getRightTrack() - 1.5 * Math.PI * s0) - Mth.clamp(0.4f * Math.PI * this.entityData.get(DELTA_ROT), -5f, 5f)));
 
-        this.setYRot((float) (this.getYRot() - (isInWater() && !onGround() ? 2.5 : 6) * entityData.get(DELTA_ROT)));
+        int i;
+
+        if (entityData.get(L_WHEEL_DAMAGED) && entityData.get(R_WHEEL_DAMAGED)) {
+            this.entityData.set(POWER, this.entityData.get(POWER) * 0.93f);
+            i = 0;
+        } else if (entityData.get(L_WHEEL_DAMAGED)) {
+            this.entityData.set(POWER, this.entityData.get(POWER) * 0.975f);
+            i = 3;
+        } else if (entityData.get(R_WHEEL_DAMAGED)) {
+            this.entityData.set(POWER, this.entityData.get(POWER) * 0.975f);
+            i = -3;
+        } else {
+            i = 0;
+        }
+
+        this.setYRot((float) (this.getYRot() - (isInWater() && !onGround() ? 2.5 : 6) * entityData.get(DELTA_ROT) - i * s0));
         if (this.isInWater() || onGround()) {
             float power = this.entityData.get(POWER) * Mth.clamp(1 + (s0 > 0 ? 1 : -1) * getXRot() / 35, 0, 2);
             this.setDeltaMovement(this.getDeltaMovement().add(getViewVector(1).scale((!isInWater() && !onGround() ? 0.13f : (isInWater() && !onGround() ? 2 : 2.4f)) * power)));
@@ -1285,14 +1328,16 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
         return Mod.loc("textures/gui/vehicle/type/land.png");
     }
 
-    @Override
-    public float turretDamagedMin() {
-        return 75;
+    public float getTurretMaxHealth() {
+        return 100;
     }
 
-    @Override
-    public float turretDamagedMultiply() {
-        return 2;
+    public float getLeftWheelMaxHealth() {
+        return 100;
+    }
+
+    public float getRightWheelMaxHealth() {
+        return 100;
     }
 
     @Override

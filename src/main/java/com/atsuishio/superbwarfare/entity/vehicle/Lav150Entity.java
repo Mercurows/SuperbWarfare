@@ -69,10 +69,10 @@ public class Lav150Entity extends ContainerMobileVehicleEntity implements GeoEnt
 
     public Lav150Entity(EntityType<Lav150Entity> type, Level world) {
         super(type, world);
-        this.obb = new OBB(this.position().toVector3f(), new Vector3f(0.25f, 0.75f, 0.75f), new Quaternionf(), OBB.Part.BODY);
-        this.obb2 = new OBB(this.position().toVector3f(), new Vector3f(0.25f, 0.75f, 0.75f), new Quaternionf(), OBB.Part.BODY);
-        this.obb3 = new OBB(this.position().toVector3f(), new Vector3f(0.25f, 0.75f, 0.75f), new Quaternionf(), OBB.Part.BODY);
-        this.obb4 = new OBB(this.position().toVector3f(), new Vector3f(0.25f, 0.75f, 0.75f), new Quaternionf(), OBB.Part.BODY);
+        this.obb = new OBB(this.position().toVector3f(), new Vector3f(0.3f, 0.75f, 0.75f), new Quaternionf(), OBB.Part.WHEEL_RIGHT);
+        this.obb2 = new OBB(this.position().toVector3f(), new Vector3f(0.3f, 0.75f, 0.75f), new Quaternionf(), OBB.Part.WHEEL_LEFT);
+        this.obb3 = new OBB(this.position().toVector3f(), new Vector3f(0.3f, 0.75f, 0.75f), new Quaternionf(), OBB.Part.WHEEL_LEFT);
+        this.obb4 = new OBB(this.position().toVector3f(), new Vector3f(0.3f, 0.75f, 0.75f), new Quaternionf(), OBB.Part.WHEEL_RIGHT);
         this.obb5 = new OBB(this.position().toVector3f(), new Vector3f(1.3125f, 0.90625f, 2.4375f), new Quaternionf(), OBB.Part.BODY);
         this.obb6 = new OBB(this.position().toVector3f(), new Vector3f(1.3125f, 0.53125f, 0.34375f), new Quaternionf(), OBB.Part.BODY);
         this.obb7 = new OBB(this.position().toVector3f(), new Vector3f(1.3125f, 0.625f, 0.53125f), new Quaternionf(), OBB.Part.BODY);
@@ -326,7 +326,22 @@ public class Lav150Entity extends ContainerMobileVehicleEntity implements GeoEnt
 
         this.setRudderRot(Mth.clamp(this.getRudderRot() - this.entityData.get(DELTA_ROT), -0.8f, 0.8f) * 0.75f);
 
-        this.setYRot((float) (this.getYRot() - Math.max((isInWater() && !onGround() ? 5 : 10) * this.getDeltaMovement().horizontalDistance(), 0) * this.getRudderRot() * (this.entityData.get(POWER) > 0 ? 1 : -1)));
+        int i;
+
+        if (entityData.get(L_WHEEL_DAMAGED) && entityData.get(R_WHEEL_DAMAGED)) {
+            this.entityData.set(POWER, this.entityData.get(POWER) * 0.93f);
+            i = 0;
+        } else if (entityData.get(L_WHEEL_DAMAGED)) {
+            this.entityData.set(POWER, this.entityData.get(POWER) * 0.975f);
+            i = 3;
+        } else if (entityData.get(R_WHEEL_DAMAGED)) {
+            this.entityData.set(POWER, this.entityData.get(POWER) * 0.975f);
+            i = -3;
+        } else {
+            i = 0;
+        }
+
+        this.setYRot((float) (this.getYRot() - Math.max((isInWater() && !onGround() ? 5 : 10) * this.getDeltaMovement().horizontalDistance(), 0) * this.getRudderRot() * (this.entityData.get(POWER) > 0 ? 1 : -1) - i * s0));
         if (this.isInWater() || onGround()) {
             float power = this.entityData.get(POWER) * Mth.clamp(1 + (s0 > 0 ? 1 : -1) * getXRot() / 35, 0, 2);
             this.setDeltaMovement(this.getDeltaMovement().add(getViewVector(1).scale((!isInWater() && !onGround() ? 0.05f : (isInWater() && !onGround() ? 0.3f : 1)) * power)));
