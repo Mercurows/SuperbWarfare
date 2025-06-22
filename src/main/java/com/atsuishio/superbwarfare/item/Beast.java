@@ -104,7 +104,13 @@ public class Beast extends SwordItem {
                 living.setHealth(0);
             }
             target.level().broadcastEntityEvent(target, (byte) 60);
-            target.remove(Entity.RemovalReason.KILLED);
+
+            target.removalReason = Entity.RemovalReason.KILLED;
+            target.getPassengers().forEach(Entity::stopRiding);
+            target.stopRiding();
+
+            target.levelCallback.onRemove(Entity.RemovalReason.KILLED);
+
             target.gameEvent(GameEvent.ENTITY_DIE);
         }
 
