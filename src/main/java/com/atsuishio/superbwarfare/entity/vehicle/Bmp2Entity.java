@@ -85,7 +85,7 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
         this.obb2 = new OBB(this.position().toVector3f(), new Vector3f(2.1875f, 0.5f, 0.65625f), new Quaternionf(), OBB.Part.BODY);
         this.obb3 = new OBB(this.position().toVector3f(), new Vector3f(0.375f, 0.78125f, 3.46875f), new Quaternionf(), OBB.Part.WHEEL_LEFT);
         this.obb4 = new OBB(this.position().toVector3f(), new Vector3f(0.375f, 0.78125f, 3.46875f), new Quaternionf(), OBB.Part.WHEEL_RIGHT);
-        this.obb5 = new OBB(this.position().toVector3f(), new Vector3f(1.15625f, 0.375f, 1.125f), new Quaternionf(), OBB.Part.ENGINE);
+        this.obb5 = new OBB(this.position().toVector3f(), new Vector3f(1.15625f, 0.375f, 1.125f), new Quaternionf(), OBB.Part.ENGINE1);
         this.obbTurret = new OBB(this.position().toVector3f(), new Vector3f(1.5f, 0.34375f, 1.5f), new Quaternionf(), OBB.Part.TURRET);
     }
 
@@ -461,7 +461,7 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
             i = 0;
         }
 
-        if (entityData.get(ENGINE_DAMAGED)) {
+        if (entityData.get(ENGINE1_DAMAGED)) {
             this.entityData.set(POWER, this.entityData.get(POWER) * 0.85f);
         }
 

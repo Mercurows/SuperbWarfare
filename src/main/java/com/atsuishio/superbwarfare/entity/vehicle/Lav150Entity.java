@@ -77,7 +77,7 @@ public class Lav150Entity extends ContainerMobileVehicleEntity implements GeoEnt
         this.obb5 = new OBB(this.position().toVector3f(), new Vector3f(1.3125f, 0.90625f, 2.4375f), new Quaternionf(), OBB.Part.BODY);
         this.obb6 = new OBB(this.position().toVector3f(), new Vector3f(1.3125f, 0.53125f, 0.34375f), new Quaternionf(), OBB.Part.BODY);
         this.obb7 = new OBB(this.position().toVector3f(), new Vector3f(1.3125f, 0.625f, 0.53125f), new Quaternionf(), OBB.Part.BODY);
-        this.obb8 = new OBB(this.position().toVector3f(), new Vector3f(0.71875f, 0.46875f, 0.875f), new Quaternionf(), OBB.Part.ENGINE);
+        this.obb8 = new OBB(this.position().toVector3f(), new Vector3f(0.71875f, 0.46875f, 0.875f), new Quaternionf(), OBB.Part.ENGINE1);
         this.obbTurret = new OBB(this.position().toVector3f(), new Vector3f(0.875f, 0.3625f, 1.25f), new Quaternionf(), OBB.Part.TURRET);
     }
 
@@ -343,7 +343,7 @@ public class Lav150Entity extends ContainerMobileVehicleEntity implements GeoEnt
             i = 0;
         }
 
-        if (entityData.get(ENGINE_DAMAGED)) {
+        if (entityData.get(ENGINE1_DAMAGED)) {
             this.entityData.set(POWER, this.entityData.get(POWER) * 0.875f);
         }
 

@@ -99,7 +99,7 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
         this.obb2 = new OBB(this.position().toVector3f(), new Vector3f(2.375f, 0.59375f, 0.65625f), new Quaternionf(), OBB.Part.BODY);
         this.obb3 = new OBB(this.position().toVector3f(), new Vector3f(0.625f, 0.84375f, 3.875f), new Quaternionf(), OBB.Part.WHEEL_LEFT);
         this.obb4 = new OBB(this.position().toVector3f(), new Vector3f(0.625f, 0.84375f, 3.875f), new Quaternionf(), OBB.Part.WHEEL_RIGHT);
-        this.obb5 = new OBB(this.position().toVector3f(), new Vector3f(2.0625f, 0.59375f, 0.625f), new Quaternionf(), OBB.Part.ENGINE);
+        this.obb5 = new OBB(this.position().toVector3f(), new Vector3f(2.0625f, 0.59375f, 0.625f), new Quaternionf(), OBB.Part.ENGINE1);
         this.obbTurret = new OBB(this.position().toVector3f(), new Vector3f(2.375f, 0.5625f, 2.1875f), new Quaternionf(), OBB.Part.TURRET);
         this.obbTurret2 = new OBB(this.position().toVector3f(), new Vector3f(1.625f, 0.40625f, 0.59375f), new Quaternionf(), OBB.Part.TURRET);
     }
@@ -738,7 +738,7 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
             i = 0;
         }
 
-        if (entityData.get(ENGINE_DAMAGED)) {
+        if (entityData.get(ENGINE1_DAMAGED)) {
             this.entityData.set(POWER, this.entityData.get(POWER) * 0.85f);
         }
 

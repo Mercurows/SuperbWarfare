@@ -105,8 +105,8 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
         this.obb5 = new OBB(this.position().toVector3f(), new Vector3f(0.0625f, 1.09375f, 0.84375f), new Quaternionf(), OBB.Part.BODY);
         this.obb6 = new OBB(this.position().toVector3f(), new Vector3f(0.625f, 0.78125f, 1.09375f), new Quaternionf(), OBB.Part.BODY);
         this.obb7 = new OBB(this.position().toVector3f(), new Vector3f(0.6875f, 0.75f, 2.9375f), new Quaternionf(), OBB.Part.BODY);
-        this.obb8 = new OBB(this.position().toVector3f(), new Vector3f(0.75f, 0.75f, 1.5625f), new Quaternionf(), OBB.Part.ENGINE);
-        this.obb9 = new OBB(this.position().toVector3f(), new Vector3f(0.75f, 0.75f, 1.5625f), new Quaternionf(), OBB.Part.ENGINE_LEFT);
+        this.obb8 = new OBB(this.position().toVector3f(), new Vector3f(0.75f, 0.75f, 1.5625f), new Quaternionf(), OBB.Part.ENGINE1);
+        this.obb9 = new OBB(this.position().toVector3f(), new Vector3f(0.75f, 0.75f, 1.5625f), new Quaternionf(), OBB.Part.ENGINE2);
         this.obb10 = new OBB(this.position().toVector3f(), new Vector3f(0.34375f, 0.359375f, 1.78125f), new Quaternionf(), OBB.Part.BODY);
         this.obb11 = new OBB(this.position().toVector3f(), new Vector3f(0.34375f, 0.359375f, 1.78125f), new Quaternionf(), OBB.Part.BODY);
     }
@@ -274,36 +274,21 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
         releaseDecoy();
         this.refreshDimensions();
     }
+
     @Override
-    public void engineDamagedEffect() {
-        if (entityData.get(ENGINE_DAMAGED) && level() instanceof ServerLevel serverLevel) {
-            var obbList = this.getOBBs();
-            for (var obb : obbList) {
-                if (obb.part() == OBB.Part.ENGINE) {
-                    Vec3 position = new Vec3(obb.center());
-                    sendParticle(serverLevel, ParticleTypes.LARGE_SMOKE, position.x, position.y, position.z, 5, 0.25, 0.25, 0.25, 0, true);
-                    sendParticle(serverLevel, ParticleTypes.CAMPFIRE_COSY_SMOKE, position.x, position.y, position.z, 5, 0.25, 0.25, 0.25, 0, true);
-                    sendParticle(serverLevel, ParticleTypes.FLAME, position.x, position.y, position.z, 5, 0.25, 0.25, 0.25, 0, true);
-                    sendParticle(serverLevel, ModParticleTypes.FIRE_STAR.get(), position.x, position.y, position.z, 5, 0.25, 0.25, 0.25, 0.25, true);
-                }
-            }
-        }
+    public void onEngine1Damaged(Vec3 pos, ServerLevel serverLevel) {
+        sendParticle(serverLevel, ParticleTypes.LARGE_SMOKE, pos.x, pos.y, pos.z, 5, 0.25, 0.25, 0.25, 0, true);
+        sendParticle(serverLevel, ParticleTypes.CAMPFIRE_COSY_SMOKE, pos.x, pos.y, pos.z, 5, 0.25, 0.25, 0.25, 0, true);
+        sendParticle(serverLevel, ParticleTypes.FLAME, pos.x, pos.y, pos.z, 5, 0.25, 0.25, 0.25, 0, true);
+        sendParticle(serverLevel, ModParticleTypes.FIRE_STAR.get(), pos.x, pos.y, pos.z, 5, 0.25, 0.25, 0.25, 0.25, true);
     }
 
     @Override
-    public void leftEngineDamagedEffect() {
-        if (entityData.get(L_ENGINE_DAMAGED) && level() instanceof ServerLevel serverLevel) {
-            var obbList = this.getOBBs();
-            for (var obb : obbList) {
-                if (obb.part() == OBB.Part.ENGINE_LEFT) {
-                    Vec3 position = new Vec3(obb.center());
-                    sendParticle(serverLevel, ParticleTypes.LARGE_SMOKE, position.x, position.y, position.z, 5, 0.25, 0.25, 0.25, 0, true);
-                    sendParticle(serverLevel, ParticleTypes.CAMPFIRE_COSY_SMOKE, position.x, position.y, position.z, 5, 0.25, 0.25, 0.25, 0, true);
-                    sendParticle(serverLevel, ParticleTypes.FLAME, position.x, position.y, position.z, 5, 0.25, 0.25, 0.25, 0, true);
-                    sendParticle(serverLevel, ModParticleTypes.FIRE_STAR.get(), position.x, position.y, position.z, 5, 0.25, 0.25, 0.25, 0.25, true);
-                }
-            }
-        }
+    public void onEngine2Damaged(Vec3 pos, ServerLevel serverLevel) {
+        sendParticle(serverLevel, ParticleTypes.LARGE_SMOKE, pos.x, pos.y, pos.z, 5, 0.25, 0.25, 0.25, 0, true);
+        sendParticle(serverLevel, ParticleTypes.CAMPFIRE_COSY_SMOKE, pos.x, pos.y, pos.z, 5, 0.25, 0.25, 0.25, 0, true);
+        sendParticle(serverLevel, ParticleTypes.FLAME, pos.x, pos.y, pos.z, 5, 0.25, 0.25, 0.25, 0, true);
+        sendParticle(serverLevel, ModParticleTypes.FIRE_STAR.get(), pos.x, pos.y, pos.z, 5, 0.25, 0.25, 0.25, 0.25, true);
     }
 
     public void terrainCompactA10() {
@@ -576,11 +561,11 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
         this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) * 0.85f);
         this.entityData.set(PLANE_BREAK, this.entityData.get(PLANE_BREAK) * 0.8f);
 
-        if (entityData.get(ENGINE_DAMAGED)) {
+        if (entityData.get(ENGINE1_DAMAGED)) {
             this.entityData.set(POWER, this.entityData.get(POWER) * 0.96f);
         }
 
-        if (entityData.get(L_ENGINE_DAMAGED)) {
+        if (entityData.get(ENGINE2_DAMAGED)) {
             this.entityData.set(POWER, this.entityData.get(POWER) * 0.96f);
         }
 

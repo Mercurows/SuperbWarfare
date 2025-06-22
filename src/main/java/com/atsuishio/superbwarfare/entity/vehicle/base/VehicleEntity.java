@@ -11,7 +11,6 @@ import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.item.ContainerBlockItem;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
 import com.atsuishio.superbwarfare.tools.EntityFindUtil;
-import com.atsuishio.superbwarfare.tools.OBB;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
 import com.atsuishio.superbwarfare.tools.VectorTool;
 import com.google.common.collect.ImmutableList;
@@ -98,8 +97,8 @@ public abstract class VehicleEntity extends Entity {
     public static final EntityDataAccessor<Boolean> TURRET_DAMAGED = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Boolean> L_WHEEL_DAMAGED = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Boolean> R_WHEEL_DAMAGED = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.BOOLEAN);
-    public static final EntityDataAccessor<Boolean> ENGINE_DAMAGED = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.BOOLEAN);
-    public static final EntityDataAccessor<Boolean> L_ENGINE_DAMAGED = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.BOOLEAN);
+    public static final EntityDataAccessor<Boolean> ENGINE1_DAMAGED = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.BOOLEAN);
+    public static final EntityDataAccessor<Boolean> ENGINE2_DAMAGED = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.BOOLEAN);
 
     public VehicleWeapon[][] availableWeapons;
 
@@ -127,7 +126,6 @@ public abstract class VehicleEntity extends Entity {
     public float gunXRotO;
 
     public boolean cannotFire;
-
 
     public void mouseInput(double x, double y) {
         entityData.set(MOUSE_SPEED_X, (float) x);
@@ -311,16 +309,19 @@ public abstract class VehicleEntity extends Entity {
                 .define(MOUSE_SPEED_X, 0f)
                 .define(MOUSE_SPEED_Y, 0f)
                 .define(HEAT, 0)
+
                 .define(TURRET_HEALTH, getTurretMaxHealth())
                 .define(L_WHEEL_HEALTH, getWheelMaxHealth())
                 .define(R_WHEEL_HEALTH, getWheelMaxHealth())
                 .define(ENGINE_HEALTH, getEngineMaxHealth())
                 .define(L_ENGINE_HEALTH, getEngineMaxHealth())
+
                 .define(TURRET_DAMAGED, false)
                 .define(L_WHEEL_DAMAGED, false)
                 .define(R_WHEEL_DAMAGED, false)
-                .define(ENGINE_DAMAGED, false)
-                .define(L_ENGINE_DAMAGED, false)
+                .define(ENGINE1_DAMAGED, false)
+                .define(ENGINE2_DAMAGED, false)
+
                 // 怎么还不给玩动态注册了（恼）
                 .define(SELECTED_WEAPON, IntList.of(new int[this.getMaxPassengers()]));
     }
@@ -352,8 +353,8 @@ public abstract class VehicleEntity extends Entity {
         this.entityData.set(TURRET_DAMAGED, compound.getBoolean("TurretDamaged"));
         this.entityData.set(L_WHEEL_DAMAGED, compound.getBoolean("LeftDamaged"));
         this.entityData.set(R_WHEEL_DAMAGED, compound.getBoolean("RightDamaged"));
-        this.entityData.set(ENGINE_DAMAGED, compound.getBoolean("EngineDamaged"));
-        this.entityData.set(L_ENGINE_DAMAGED, compound.getBoolean("LeftEngineDamaged"));
+        this.entityData.set(ENGINE1_DAMAGED, compound.getBoolean("Engine1Damaged"));
+        this.entityData.set(ENGINE2_DAMAGED, compound.getBoolean("Engine2Damaged"));
 
         if (this instanceof WeaponVehicleEntity weaponVehicle && weaponVehicle.getAllWeapons().length > 0) {
             var selected = compound.getIntArray("SelectedWeapon");
@@ -382,8 +383,8 @@ public abstract class VehicleEntity extends Entity {
         compound.putBoolean("TurretDamaged", this.entityData.get(TURRET_DAMAGED));
         compound.putBoolean("LeftWheelDamaged", this.entityData.get(L_WHEEL_DAMAGED));
         compound.putBoolean("RightWheelDamaged", this.entityData.get(R_WHEEL_DAMAGED));
-        compound.putBoolean("EngineDamaged", this.entityData.get(ENGINE_DAMAGED));
-        compound.putBoolean("LeftEngineDamaged", this.entityData.get(L_ENGINE_DAMAGED));
+        compound.putBoolean("Engine1Damaged", this.entityData.get(ENGINE1_DAMAGED));
+        compound.putBoolean("Engine2Damaged", this.entityData.get(ENGINE2_DAMAGED));
 
         if (this instanceof WeaponVehicleEntity weaponVehicle && weaponVehicle.getAllWeapons().length > 0) {
             compound.putIntArray("SelectedWeapon", this.entityData.get(SELECTED_WEAPON));
@@ -479,30 +480,16 @@ public abstract class VehicleEntity extends Entity {
             repairCoolDown = maxRepairCoolDown();
         }
 
-        // TODO 这里可以获取击中的部位，给需要的载具加一个部位受伤方法
-        if (source.getDirectEntity() instanceof Projectile projectile) {
+        if (source.getDirectEntity() instanceof Projectile projectile && this instanceof OBBEntity) {
             OBBHitter accessor = OBBHitter.getInstance(projectile);
-            //炮塔损伤
-            if (this instanceof OBBEntity && accessor.sbw$getCurrentHitPart() == OBB.Part.TURRET) {
-                entityData.set(TURRET_HEALTH, entityData.get(TURRET_HEALTH) - computedAmount);
+            var part = accessor.sbw$getCurrentHitPart();
+            switch (part) {
+                case TURRET -> entityData.set(TURRET_HEALTH, entityData.get(TURRET_HEALTH) - computedAmount);
+                case WHEEL_LEFT -> entityData.set(L_WHEEL_HEALTH, entityData.get(L_WHEEL_HEALTH) - computedAmount);
+                case WHEEL_RIGHT -> entityData.set(R_WHEEL_HEALTH, entityData.get(R_WHEEL_HEALTH) - computedAmount);
+                case ENGINE1 -> entityData.set(ENGINE_HEALTH, entityData.get(ENGINE_HEALTH) - computedAmount);
+                case ENGINE2 -> entityData.set(L_ENGINE_HEALTH, entityData.get(L_ENGINE_HEALTH) - computedAmount);
             }
-            //左轮损伤
-            if (this instanceof OBBEntity && accessor.sbw$getCurrentHitPart() == OBB.Part.WHEEL_LEFT) {
-                entityData.set(L_WHEEL_HEALTH, entityData.get(L_WHEEL_HEALTH) - computedAmount);
-            }
-            //右轮损伤
-            if (this instanceof OBBEntity && accessor.sbw$getCurrentHitPart() == OBB.Part.WHEEL_RIGHT) {
-                entityData.set(R_WHEEL_HEALTH, entityData.get(R_WHEEL_HEALTH) - computedAmount);
-            }
-            //引擎损伤
-            if (this instanceof OBBEntity && accessor.sbw$getCurrentHitPart() == OBB.Part.ENGINE) {
-                entityData.set(ENGINE_HEALTH, entityData.get(ENGINE_HEALTH) - computedAmount);
-            }
-
-            if (this instanceof OBBEntity && accessor.sbw$getCurrentHitPart() == OBB.Part.ENGINE_LEFT) {
-                entityData.set(L_ENGINE_HEALTH, entityData.get(L_ENGINE_HEALTH) - computedAmount);
-            }
-//            System.out.println(accessor.sbw$getCurrentHitPart());
         }
 
         this.onHurt(computedAmount, source.getEntity(), true);
@@ -577,7 +564,6 @@ public abstract class VehicleEntity extends Entity {
     public float getWheelMaxHealth() {
         return 50;
     }
-
 
     public float getEngineMaxHealth() {
         return 50;
@@ -690,13 +676,13 @@ public abstract class VehicleEntity extends Entity {
             prevRoll = deltaZ + getRoll();
         }
 
-        handleClientSync();
+        this.handleClientSync();
 
         if (this.level() instanceof ServerLevel && this.getHealth() <= 0) {
             destroy();
         }
 
-        travel();
+        this.travel();
 
         Entity attacker = EntityFindUtil.findEntity(this.level(), this.entityData.get(LAST_ATTACKER_UUID));
 
@@ -715,61 +701,83 @@ public abstract class VehicleEntity extends Entity {
             this.entityData.set(LAST_DRIVER_UUID, getFirstPassenger().getStringUUID());
         }
 
-        clearArrow();
+        this.clearArrow();
 
-        // 炮塔损毁特效
-        turretDamagedEffect();
+        if (this instanceof OBBEntity obbEntity) {
+            if (this.level() instanceof ServerLevel serverLevel) {
+                this.handlePartDamaged(obbEntity, serverLevel);
+            }
 
-        // 引擎损毁特效
-        engineDamagedEffect();
-        leftEngineDamagedEffect();
-
-        // 左轮损毁特效
-        leftWheelDamagedEffect();
-
-        // 右轮损毁特效
-        rightWheelDamagedEffect();
-
-        //部件血量
-        partDamaged();
+            // 处理部件血量
+            this.handlePartHealth();
+        }
 
         this.refreshDimensions();
     }
 
-    public void partDamaged() {
+    public void handlePartDamaged(OBBEntity obbEntity, ServerLevel serverLevel) {
+        var obbList = obbEntity.getOBBs();
+        for (var obb : obbList) {
+            Vec3 pos = new Vec3(obb.center());
+            switch (obb.part()) {
+                case TURRET -> {
+                    if (entityData.get(TURRET_DAMAGED)) {
+                        this.onTurretDamaged(pos, serverLevel);
+                    }
+                }
+                case WHEEL_LEFT -> {
+                    if (entityData.get(L_WHEEL_DAMAGED)) {
+                        this.onLeftWheelDamaged(pos, serverLevel);
+                    }
+                }
+                case WHEEL_RIGHT -> {
+                    if (entityData.get(R_WHEEL_DAMAGED)) {
+                        this.onRightWheelDamaged(pos, serverLevel);
+                    }
+                }
+                case ENGINE1 -> {
+                    if (entityData.get(ENGINE1_DAMAGED)) {
+                        this.onEngine1Damaged(pos, serverLevel);
+                    }
+                }
+                case ENGINE2 -> {
+                    if (entityData.get(ENGINE2_DAMAGED)) {
+                        this.onEngine2Damaged(pos, serverLevel);
+                    }
+                }
+            }
+        }
+    }
+
+    public void handlePartHealth() {
         if (entityData.get(TURRET_HEALTH) < 0) {
             entityData.set(TURRET_DAMAGED, true);
-        }
-        if (entityData.get(TURRET_HEALTH) > 0.95 * getTurretMaxHealth()) {
+        } else if (entityData.get(TURRET_HEALTH) > 0.95 * getTurretMaxHealth()) {
             entityData.set(TURRET_DAMAGED, false);
         }
 
         if (entityData.get(L_WHEEL_HEALTH) < 0) {
             entityData.set(L_WHEEL_DAMAGED, true);
-        }
-        if (entityData.get(L_WHEEL_HEALTH) > 0.95 * getWheelMaxHealth()) {
+        } else if (entityData.get(L_WHEEL_HEALTH) > 0.95 * getWheelMaxHealth()) {
             entityData.set(L_WHEEL_DAMAGED, false);
         }
 
         if (entityData.get(R_WHEEL_HEALTH) < 0) {
             entityData.set(R_WHEEL_DAMAGED, true);
-        }
-        if (entityData.get(R_WHEEL_HEALTH) > 0.95 * getWheelMaxHealth()) {
+        } else if (entityData.get(R_WHEEL_HEALTH) > 0.95 * getWheelMaxHealth()) {
             entityData.set(R_WHEEL_DAMAGED, false);
         }
 
         if (entityData.get(ENGINE_HEALTH) < 0) {
-            entityData.set(ENGINE_DAMAGED, true);
-        }
-        if (entityData.get(ENGINE_HEALTH) > 0.95 * getEngineMaxHealth()) {
-            entityData.set(ENGINE_DAMAGED, false);
+            entityData.set(ENGINE1_DAMAGED, true);
+        } else if (entityData.get(ENGINE_HEALTH) > 0.95 * getEngineMaxHealth()) {
+            entityData.set(ENGINE1_DAMAGED, false);
         }
 
         if (entityData.get(L_ENGINE_HEALTH) < 0) {
-            entityData.set(L_ENGINE_DAMAGED, true);
-        }
-        if (entityData.get(L_ENGINE_HEALTH) > 0.95 * getEngineMaxHealth()) {
-            entityData.set(L_ENGINE_DAMAGED, false);
+            entityData.set(ENGINE2_DAMAGED, true);
+        } else if (entityData.get(L_ENGINE_HEALTH) > 0.95 * getEngineMaxHealth()) {
+            entityData.set(ENGINE2_DAMAGED, false);
         }
 
         entityData.set(TURRET_HEALTH, Math.min(entityData.get(TURRET_HEALTH) + 0.0025f * getTurretMaxHealth(), getTurretMaxHealth()));
@@ -779,69 +787,29 @@ public abstract class VehicleEntity extends Entity {
         entityData.set(L_ENGINE_HEALTH, Math.min(entityData.get(L_ENGINE_HEALTH) + 0.0025f * getEngineMaxHealth(), getEngineMaxHealth()));
     }
 
-    public void turretDamagedEffect() {
-        if (entityData.get(TURRET_DAMAGED) && this instanceof OBBEntity obbEntity && level() instanceof ServerLevel serverLevel) {
-            var obbList = obbEntity.getOBBs();
-            for (var obb : obbList) {
-                if (obb.part() == OBB.Part.TURRET) {
-                    Vec3 pos = new Vec3(obb.center());
-                    sendParticle(serverLevel, ModParticleTypes.FIRE_STAR.get(), pos.x, pos.y, pos.z, 5, 0.25, 0.25, 0.25, 0.25, true);
-                    sendParticle(serverLevel, ParticleTypes.LARGE_SMOKE, pos.x, pos.y, pos.z, 1, 1, 0.5, 1, 0.01, true);
-                }
-            }
-        }
+    public void defaultPartDamageEffect(Vec3 pos, ServerLevel serverLevel) {
+        sendParticle(serverLevel, ModParticleTypes.FIRE_STAR.get(), pos.x, pos.y, pos.z, 5, 0.25, 0.25, 0.25, 0.25, true);
+        sendParticle(serverLevel, ParticleTypes.LARGE_SMOKE, pos.x, pos.y, pos.z, 1, 1, 0.5, 1, 0.01, true);
     }
 
-    public void engineDamagedEffect() {
-        if (entityData.get(ENGINE_DAMAGED) && this instanceof OBBEntity obbEntity && level() instanceof ServerLevel serverLevel) {
-            var obbList = obbEntity.getOBBs();
-            for (var obb : obbList) {
-                if (obb.part() == OBB.Part.ENGINE) {
-                    Vec3 pos = new Vec3(obb.center());
-                    sendParticle(serverLevel, ModParticleTypes.FIRE_STAR.get(), pos.x, pos.y, pos.z, 5, 0.25, 0.25, 0.25, 0.25, true);
-                    sendParticle(serverLevel, ParticleTypes.LARGE_SMOKE, pos.x, pos.y, pos.z, 1, 1, 0.5, 1, 0.01, true);
-                }
-            }
-        }
+    public void onTurretDamaged(Vec3 pos, ServerLevel serverLevel) {
+        this.defaultPartDamageEffect(pos, serverLevel);
     }
 
-    public void leftEngineDamagedEffect() {
-        if (entityData.get(L_ENGINE_DAMAGED) && this instanceof OBBEntity obbEntity && level() instanceof ServerLevel serverLevel) {
-            var obbList = obbEntity.getOBBs();
-            for (var obb : obbList) {
-                if (obb.part() == OBB.Part.ENGINE_LEFT) {
-                    Vec3 pos = new Vec3(obb.center());
-                    sendParticle(serverLevel, ModParticleTypes.FIRE_STAR.get(), pos.x, pos.y, pos.z, 5, 0.25, 0.25, 0.25, 0.25, true);
-                    sendParticle(serverLevel, ParticleTypes.LARGE_SMOKE, pos.x, pos.y, pos.z, 1, 1, 0.5, 1, 0.01, true);
-                }
-            }
-        }
+    public void onLeftWheelDamaged(Vec3 pos, ServerLevel serverLevel) {
+        this.defaultPartDamageEffect(pos, serverLevel);
     }
 
-    public void leftWheelDamagedEffect() {
-        if (entityData.get(L_WHEEL_DAMAGED) && this instanceof OBBEntity obbEntity && level() instanceof ServerLevel serverLevel) {
-            var obbList = obbEntity.getOBBs();
-            for (var obb : obbList) {
-                if (obb.part() == OBB.Part.WHEEL_LEFT) {
-                    Vec3 pos = new Vec3(obb.center());
-                    sendParticle(serverLevel, ModParticleTypes.FIRE_STAR.get(), pos.x, pos.y, pos.z, 5, 0.25, 0.25, 0.25, 0.25, true);
-                    sendParticle(serverLevel, ParticleTypes.LARGE_SMOKE, pos.x, pos.y, pos.z, 1, 1, 0.5, 1, 0.01, true);
-                }
-            }
-        }
+    public void onRightWheelDamaged(Vec3 pos, ServerLevel serverLevel) {
+        this.defaultPartDamageEffect(pos, serverLevel);
     }
 
-    public void rightWheelDamagedEffect() {
-        if (entityData.get(R_WHEEL_DAMAGED) && this instanceof OBBEntity obbEntity && level() instanceof ServerLevel serverLevel) {
-            var obbList = obbEntity.getOBBs();
-            for (var obb : obbList) {
-                if (obb.part() == OBB.Part.WHEEL_RIGHT) {
-                    Vec3 pos = new Vec3(obb.center());
-                    sendParticle(serverLevel, ModParticleTypes.FIRE_STAR.get(), pos.x, pos.y, pos.z, 5, 0.25, 0.25, 0.25, 0.25, true);
-                    sendParticle(serverLevel, ParticleTypes.LARGE_SMOKE, pos.x, pos.y, pos.z, 1, 1, 0.5, 1, 0.01, true);
-                }
-            }
-        }
+    public void onEngine1Damaged(Vec3 pos, ServerLevel serverLevel) {
+        this.defaultPartDamageEffect(pos, serverLevel);
+    }
+
+    public void onEngine2Damaged(Vec3 pos, ServerLevel serverLevel) {
+        this.defaultPartDamageEffect(pos, serverLevel);
     }
 
     public void clearArrow() {

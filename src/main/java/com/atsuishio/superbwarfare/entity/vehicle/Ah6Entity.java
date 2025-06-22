@@ -88,8 +88,8 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
         this.obb3 = new OBB(this.position().toVector3f(), new Vector3f(0.25f, 0.3125f, 2.25f), new Quaternionf(), OBB.Part.BODY);
         this.obb4 = new OBB(this.position().toVector3f(), new Vector3f(0.0625f, 1.15625f, 0.40625f), new Quaternionf(), OBB.Part.BODY);
         this.obb5 = new OBB(this.position().toVector3f(), new Vector3f(1f, 0.25f, 0.21875f), new Quaternionf(), OBB.Part.BODY);
-        this.obb6 = new OBB(this.position().toVector3f(), new Vector3f(0.3125f, 0.40625f, 0.84375f), new Quaternionf(), OBB.Part.ENGINE);
-        this.obb7 = new OBB(this.position().toVector3f(), new Vector3f(0.3125f, 0.40625f, 0.40625f), new Quaternionf(), OBB.Part.ENGINE_LEFT);
+        this.obb6 = new OBB(this.position().toVector3f(), new Vector3f(0.3125f, 0.40625f, 0.84375f), new Quaternionf(), OBB.Part.ENGINE1);
+        this.obb7 = new OBB(this.position().toVector3f(), new Vector3f(0.3125f, 0.40625f, 0.40625f), new Quaternionf(), OBB.Part.ENGINE2);
     }
 
     @Override
@@ -267,7 +267,7 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
                 }
 
                 delta_x = ((this.onGround()) ? 0 : 1.5f) * entityData.get(MOUSE_SPEED_Y) * this.entityData.get(PROPELLER_ROT);
-                delta_y = Mth.clamp((this.onGround() ? 0.1f : 2f) * entityData.get(MOUSE_SPEED_X) * this.entityData.get(PROPELLER_ROT) + (this.entityData.get(L_ENGINE_DAMAGED) ? 25 : 0) * this.entityData.get(PROPELLER_ROT), -10f, 10f);
+                delta_y = Mth.clamp((this.onGround() ? 0.1f : 2f) * entityData.get(MOUSE_SPEED_X) * this.entityData.get(PROPELLER_ROT) + (this.entityData.get(ENGINE2_DAMAGED) ? 25 : 0) * this.entityData.get(PROPELLER_ROT), -10f, 10f);
 
                 this.setYRot(this.getYRot() + delta_y);
                 this.setXRot(this.getXRot() + delta_x);
@@ -335,7 +335,7 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
             setDeltaMovement(getDeltaMovement().add(0, -destroyRot * 0.004, 0));
         }
 
-        if (entityData.get(ENGINE_DAMAGED)) {
+        if (entityData.get(ENGINE1_DAMAGED)) {
             this.entityData.set(POWER, this.entityData.get(POWER) * 0.98f);
         }
 
