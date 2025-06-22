@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.entity;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.tools.FormatTool;
@@ -21,7 +22,6 @@ import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.ThrownPotion;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
@@ -77,21 +77,15 @@ public class TargetEntity extends LivingEntity implements GeoEntity {
         return true;
     }
 
+    private static final DamageModifier DAMAGE_MODIFIER = DamageModifier.createDefaultModifier()
+            .immuneTo(DamageTypes.LIGHTNING_BOLT)
+            .immuneTo(DamageTypes.FALLING_ANVIL)
+            .immuneTo(DamageTypes.MAGIC);
+
     @Override
-    public boolean hurt(DamageSource source, float amount) {
-        if (source.is(DamageTypes.IN_FIRE)
-                || source.getDirectEntity() instanceof ThrownPotion
-                || source.getDirectEntity() instanceof AreaEffectCloud
-                || source.is(DamageTypes.FALL)
-                || source.is(DamageTypes.CACTUS)
-                || source.is(DamageTypes.DROWN)
-                || source.is(DamageTypes.LIGHTNING_BOLT)
-                || source.is(DamageTypes.FALLING_ANVIL)
-                || source.is(DamageTypes.DRAGON_BREATH)
-                || source.is(DamageTypes.WITHER)
-                || source.is(DamageTypes.WITHER_SKULL)
-                || source.is(DamageTypes.MAGIC)
-                || this.entityData.get(DOWN_TIME) > 0) {
+    public boolean hurt(@NotNull DamageSource source, float amount) {
+        amount = DAMAGE_MODIFIER.compute(source, amount);
+        if (amount <= 0 || this.entityData.get(DOWN_TIME) > 0) {
             return false;
         }
 

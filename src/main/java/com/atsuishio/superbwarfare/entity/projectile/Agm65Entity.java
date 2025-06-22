@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.entity.projectile;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
 import com.atsuishio.superbwarfare.tools.*;
@@ -19,14 +20,11 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.DamageTypes;
-import net.minecraft.world.entity.AreaEffectCloud;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.Pig;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
-import net.minecraft.world.entity.projectile.ThrownPotion;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
@@ -54,7 +52,7 @@ public class Agm65Entity extends FastThrowableProjectile implements GeoEntity, E
     private float explosionDamage = ExplosionConfig.AGM_65_EXPLOSION_DAMAGE.get();
     private float explosionRadius = ExplosionConfig.AGM_65_EXPLOSION_RADIUS.get().floatValue();
     private boolean distracted = false;
-    private int durability = 50;
+    private int durability;
 
     public Agm65Entity(EntityType<? extends Agm65Entity> type, Level world) {
         super(type, world);
@@ -76,22 +74,12 @@ public class Agm65Entity extends FastThrowableProjectile implements GeoEntity, E
         return ModItems.AGM.get();
     }
 
+
+    private static final DamageModifier DAMAGE_MODIFIER = DamageModifier.createDefaultModifier();
+
     @Override
-    public boolean hurt(DamageSource source, float amount) {
-        if (source.getDirectEntity() instanceof ThrownPotion || source.getDirectEntity() instanceof AreaEffectCloud)
-            return false;
-        if (source.is(DamageTypes.FALL))
-            return false;
-        if (source.is(DamageTypes.CACTUS))
-            return false;
-        if (source.is(DamageTypes.DROWN))
-            return false;
-        if (source.is(DamageTypes.DRAGON_BREATH))
-            return false;
-        if (source.is(DamageTypes.WITHER))
-            return false;
-        if (source.is(DamageTypes.WITHER_SKULL))
-            return false;
+    public boolean hurt(@NotNull DamageSource source, float amount) {
+        amount = DAMAGE_MODIFIER.compute(source, amount);
         this.entityData.set(HEALTH, this.entityData.get(HEALTH) - amount);
 
         return super.hurt(source, amount);
@@ -278,7 +266,7 @@ public class Agm65Entity extends FastThrowableProjectile implements GeoEntity, E
         this.setDeltaMovement(this.getDeltaMovement().multiply(f, f, f));
         destroyBlock();
     }
-    
+
     @Override
     public boolean isNoGravity() {
         return true;

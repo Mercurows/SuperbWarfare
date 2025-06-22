@@ -4,6 +4,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.EntityType;
 
 import java.util.ArrayList;
@@ -17,6 +18,18 @@ public class DamageModifier {
     private final List<DamageModify> reduceList = new ArrayList<>();
     private final List<DamageModify> multiplyList = new ArrayList<>();
     private final List<BiFunction<DamageSource, Float, Float>> customList = new ArrayList<>();
+
+    public static DamageModifier createDefaultModifier() {
+        return new DamageModifier()
+                .immuneTo(EntityType.POTION)
+                .immuneTo(EntityType.AREA_EFFECT_CLOUD)
+                .immuneTo(DamageTypes.FALL)
+                .immuneTo(DamageTypes.CACTUS)
+                .immuneTo(DamageTypes.DROWN)
+                .immuneTo(DamageTypes.DRAGON_BREATH)
+                .immuneTo(DamageTypes.WITHER)
+                .immuneTo(DamageTypes.WITHER_SKULL);
+    }
 
     /**
      * 免疫所有伤害
@@ -224,6 +237,17 @@ public class DamageModifier {
         return this;
     }
 
+    public List<DamageModify> toList() {
+        var list = new ArrayList<DamageModify>();
+
+        // 计算优先级 免疫 > 固定减伤 > 乘
+        list.addAll(immuneList);
+        list.addAll(reduceList);
+        list.addAll(multiplyList);
+
+        return list;
+    }
+
     /**
      * 计算减伤后的伤害值
      *
@@ -232,14 +256,7 @@ public class DamageModifier {
      * @return 减伤后的伤害值
      */
     public float compute(DamageSource source, float damage) {
-        var list = new ArrayList<DamageModify>();
-
-        // 计算优先级 免疫 > 固定减伤 > 乘
-        list.addAll(immuneList);
-        list.addAll(reduceList);
-        list.addAll(multiplyList);
-
-        for (DamageModify damageModify : list) {
+        for (DamageModify damageModify : toList()) {
             if (damageModify.match(source)) {
                 damage = damageModify.compute(damage);
 
