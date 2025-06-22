@@ -889,6 +889,25 @@ public abstract class VehicleEntity extends Entity {
         }
     }
 
+    public void autoAimFormVector(float ySpeed, float xSpeed, float minXAngle, float maxXAngle, Vec3 shootVec, Vec3 targetVec) {
+        float diffY = (float) Mth.wrapDegrees(-getYRotFromVector(targetVec) + getYRotFromVector(shootVec));
+        float diffX = (float) Mth.wrapDegrees(-getXRotFromVector(targetVec) + getXRotFromVector(shootVec));
+
+        this.turretTurnSound(diffX, diffY, 0.95f);
+
+        if (entityData.get(TURRET_DAMAGED)) {
+            ySpeed *= 0.2f;
+            xSpeed *= 0.2f;
+        }
+
+        float min = -ySpeed + (float) (isInWater() && !onGround() ? 2.5 : 6) * entityData.get(DELTA_ROT);
+        float max = ySpeed + (float) (isInWater() && !onGround() ? 2.5 : 6) * entityData.get(DELTA_ROT);
+
+        this.setTurretXRot(Mth.clamp(this.getTurretXRot() + Mth.clamp(0.5f * diffX, -xSpeed, xSpeed), -maxXAngle, -minXAngle));
+        this.setTurretYRot(this.getTurretYRot() - Mth.clamp(0.5f * diffY, min, max));
+        turretYRotLock = Mth.clamp(0.9f * diffY, min, max);
+    }
+
     public void gunnerAngle(float ySpeed, float xSpeed) {
         Entity gunner = this.getNthEntity(1);
 
