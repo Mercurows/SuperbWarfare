@@ -65,6 +65,7 @@ public class Lav150Entity extends ContainerMobileVehicleEntity implements GeoEnt
     public OBB obb5;
     public OBB obb6;
     public OBB obb7;
+    public OBB obb8;
     public OBB obbTurret;
 
     public Lav150Entity(EntityType<Lav150Entity> type, Level world) {
@@ -76,6 +77,7 @@ public class Lav150Entity extends ContainerMobileVehicleEntity implements GeoEnt
         this.obb5 = new OBB(this.position().toVector3f(), new Vector3f(1.3125f, 0.90625f, 2.4375f), new Quaternionf(), OBB.Part.BODY);
         this.obb6 = new OBB(this.position().toVector3f(), new Vector3f(1.3125f, 0.53125f, 0.34375f), new Quaternionf(), OBB.Part.BODY);
         this.obb7 = new OBB(this.position().toVector3f(), new Vector3f(1.3125f, 0.625f, 0.53125f), new Quaternionf(), OBB.Part.BODY);
+        this.obb8 = new OBB(this.position().toVector3f(), new Vector3f(0.71875f, 0.46875f, 0.875f), new Quaternionf(), OBB.Part.ENGINE);
         this.obbTurret = new OBB(this.position().toVector3f(), new Vector3f(0.875f, 0.3625f, 1.25f), new Quaternionf(), OBB.Part.TURRET);
     }
 
@@ -339,6 +341,10 @@ public class Lav150Entity extends ContainerMobileVehicleEntity implements GeoEnt
             i = -3;
         } else {
             i = 0;
+        }
+
+        if (entityData.get(ENGINE_DAMAGED)) {
+            this.entityData.set(POWER, this.entityData.get(POWER) * 0.875f);
         }
 
         this.setYRot((float) (this.getYRot() - Math.max((isInWater() && !onGround() ? 5 : 10) * this.getDeltaMovement().horizontalDistance(), 0) * this.getRudderRot() * (this.entityData.get(POWER) > 0 ? 1 : -1) - i * s0));
@@ -658,7 +664,7 @@ public class Lav150Entity extends ContainerMobileVehicleEntity implements GeoEnt
 
     @Override
     public List<OBB> getOBBs() {
-        return List.of(this.obb, this.obb2, this.obb3, this.obb4, this.obb5, this.obb6, this.obb7, this.obbTurret);
+        return List.of(this.obb, this.obb2, this.obb3, this.obb4, this.obb5, this.obb6, this.obb7, this.obb8, this.obbTurret);
     }
 
     @Override
@@ -692,6 +698,10 @@ public class Lav150Entity extends ContainerMobileVehicleEntity implements GeoEnt
         Vector4f worldPosition7 = transformPosition(transform, 0, 1.4375f, 2.53125f);
         this.obb7.center().set(new Vector3f(worldPosition7.x, worldPosition7.y, worldPosition7.z));
         this.obb7.setRotation(VectorTool.combineRotations(1, this));
+
+        Vector4f worldPosition8 = transformPosition(transform, 0.65625f, 2.03125f, -2.0625f);
+        this.obb8.center().set(new Vector3f(worldPosition8.x, worldPosition8.y, worldPosition8.z));
+        this.obb8.setRotation(VectorTool.combineRotations(1, this));
 
         Matrix4f transformT = getTurretTransform(1);
         Vector4f worldPositionT = transformPosition(transformT, 0, 0.3625f, 0f);

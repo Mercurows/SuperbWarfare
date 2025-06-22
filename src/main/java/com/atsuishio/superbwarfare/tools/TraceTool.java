@@ -104,7 +104,7 @@ public class TraceTool {
         return entity.level().clip(new ClipContext(entity.getEyePosition(), target, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, entity)).getType() != HitResult.Type.BLOCK;
     }
 
-    public static Entity vehiclefFindLookingEntity(VehicleEntity vehicle, Vec3 eye, double entityReach) {
+    public static Vec3 vehicleFindLookingPos(Projectile projectile, VehicleEntity vehicle, Vec3 eye, double entityReach) {
         double distance = entityReach * entityReach;
         HitResult hitResult = pickNew(eye, 512, vehicle);
 
@@ -112,13 +112,13 @@ public class TraceTool {
         Vec3 toVec = eye.add(viewVec.x * entityReach, viewVec.y * entityReach, viewVec.z * entityReach);
         AABB aabb = vehicle.getBoundingBox().expandTowards(viewVec.scale(entityReach)).inflate(1.0D, 1.0D, 1.0D);
         EntityHitResult entityhitresult = ProjectileUtil.getEntityHitResult(vehicle, eye, toVec, aabb,
-                p -> !p.isSpectator() && p.isAlive() && SeekTool.baseFilter(p) && !p.getType().is(ModTags.EntityTypes.DECOY) && smokeFilter(p), distance);
+                p -> !p.isSpectator() && p.isAlive() && SeekTool.baseFilter(p) && !p.getType().is(ModTags.EntityTypes.DECOY) && smokeFilter(p) && p != projectile, distance);
         if (entityhitresult != null) {
             hitResult = entityhitresult;
 
         }
         if (hitResult.getType() == HitResult.Type.ENTITY) {
-            return ((EntityHitResult) hitResult).getEntity();
+            return hitResult.getLocation();
         }
         return null;
     }

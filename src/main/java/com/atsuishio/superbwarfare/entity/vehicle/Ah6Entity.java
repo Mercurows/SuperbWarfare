@@ -78,14 +78,18 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
     public OBB obb3;
     public OBB obb4;
     public OBB obb5;
+    public OBB obb6;
+    public OBB obb7;
 
     public Ah6Entity(EntityType<Ah6Entity> type, Level world) {
         super(type, world);
-        this.obb = new OBB(this.position().toVector3f(), new Vector3f(1.0625f, 1.28125f, 1.625f), new Quaternionf(), OBB.Part.BODY);
+        this.obb = new OBB(this.position().toVector3f(), new Vector3f(1.0625f, 1.18125f, 1.625f), new Quaternionf(), OBB.Part.BODY);
         this.obb2 = new OBB(this.position().toVector3f(), new Vector3f(0.875f, 0.6875f, 0.59375f), new Quaternionf(), OBB.Part.BODY);
         this.obb3 = new OBB(this.position().toVector3f(), new Vector3f(0.25f, 0.3125f, 2.25f), new Quaternionf(), OBB.Part.BODY);
         this.obb4 = new OBB(this.position().toVector3f(), new Vector3f(0.0625f, 1.15625f, 0.40625f), new Quaternionf(), OBB.Part.BODY);
         this.obb5 = new OBB(this.position().toVector3f(), new Vector3f(1f, 0.25f, 0.21875f), new Quaternionf(), OBB.Part.BODY);
+        this.obb6 = new OBB(this.position().toVector3f(), new Vector3f(0.3125f, 0.40625f, 0.84375f), new Quaternionf(), OBB.Part.ENGINE);
+        this.obb7 = new OBB(this.position().toVector3f(), new Vector3f(0.3125f, 0.40625f, 0.40625f), new Quaternionf(), OBB.Part.ENGINE_LEFT);
     }
 
     @Override
@@ -263,7 +267,7 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
                 }
 
                 delta_x = ((this.onGround()) ? 0 : 1.5f) * entityData.get(MOUSE_SPEED_Y) * this.entityData.get(PROPELLER_ROT);
-                delta_y = Mth.clamp((this.onGround() ? 0.1f : 2f) * entityData.get(MOUSE_SPEED_X) * this.entityData.get(PROPELLER_ROT), -10f, 10f);
+                delta_y = Mth.clamp((this.onGround() ? 0.1f : 2f) * entityData.get(MOUSE_SPEED_X) * this.entityData.get(PROPELLER_ROT) + (this.entityData.get(L_ENGINE_DAMAGED) ? 25 : 0) * this.entityData.get(PROPELLER_ROT), -10f, 10f);
 
                 this.setYRot(this.getYRot() + delta_y);
                 this.setXRot(this.getXRot() + delta_x);
@@ -331,6 +335,10 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
             setDeltaMovement(getDeltaMovement().add(0, -destroyRot * 0.004, 0));
         }
 
+        if (entityData.get(ENGINE_DAMAGED)) {
+            this.entityData.set(POWER, this.entityData.get(POWER) * 0.98f);
+        }
+
         this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) * 0.9f);
         this.entityData.set(PROPELLER_ROT, Mth.lerp(0.18f, this.entityData.get(PROPELLER_ROT), this.entityData.get(POWER)));
         this.setPropellerRot(this.getPropellerRot() + 30 * this.entityData.get(PROPELLER_ROT));
@@ -347,7 +355,7 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
 
         Vec3 force = new Vec3(force0.x, force0.y, force0.z).vectorTo(new Vec3(force1.x, force1.y, force1.z));
 
-        setDeltaMovement(getDeltaMovement().add(force.scale(this.entityData.get(POWER))));
+        setDeltaMovement(getDeltaMovement().add(force.scale(this.entityData.get(PROPELLER_ROT))));
 
         if (this.entityData.get(POWER) > 0.04f) {
             engineStartOver = true;
@@ -769,14 +777,14 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
 
     @Override
     public List<OBB> getOBBs() {
-        return List.of(this.obb, this.obb2, this.obb3, this.obb4, this.obb5);
+        return List.of(this.obb, this.obb2, this.obb3, this.obb4, this.obb5, this.obb6, this.obb7);
     }
 
     @Override
     public void updateOBB() {
         Matrix4f transform = getVehicleTransform(1);
 
-        Vector4f worldPosition = transformPosition(transform, 0, 1.96875f - 1.45f, -0.15625f);
+        Vector4f worldPosition = transformPosition(transform, 0, 1.86875f - 1.45f, -0.15625f);
         this.obb.center().set(new Vector3f(worldPosition.x, worldPosition.y, worldPosition.z));
         this.obb.setRotation(VectorTool.combineRotations(1, this));
 
@@ -795,5 +803,13 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
         Vector4f worldPosition5 = transformPosition(transform, -0.125f, 3.5625f - 1.45f, -6.65625f);
         this.obb5.center().set(new Vector3f(worldPosition5.x, worldPosition5.y, worldPosition5.z));
         this.obb5.setRotation(VectorTool.combineRotations(1, this));
+
+        Vector4f worldPosition6 = transformPosition(transform, 0, 3.28125f - 1.45f, -0.53125f);
+        this.obb6.center().set(new Vector3f(worldPosition6.x, worldPosition6.y, worldPosition6.z));
+        this.obb6.setRotation(VectorTool.combineRotations(1, this));
+
+        Vector4f worldPosition7 = transformPosition(transform, 0.1875f, 2.09375f - 1.45f, -6.15625f);
+        this.obb7.center().set(new Vector3f(worldPosition7.x, worldPosition7.y, worldPosition7.z));
+        this.obb7.setRotation(VectorTool.combineRotations(1, this));
     }
 }

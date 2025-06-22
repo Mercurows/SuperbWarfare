@@ -93,11 +93,13 @@ public abstract class VehicleEntity extends Entity {
     public static final EntityDataAccessor<Float> L_WHEEL_HEALTH = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Float> R_WHEEL_HEALTH = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Float> ENGINE_HEALTH = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.FLOAT);
+    public static final EntityDataAccessor<Float> L_ENGINE_HEALTH = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.FLOAT);
 
     public static final EntityDataAccessor<Boolean> TURRET_DAMAGED = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Boolean> L_WHEEL_DAMAGED = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Boolean> R_WHEEL_DAMAGED = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Boolean> ENGINE_DAMAGED = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.BOOLEAN);
+    public static final EntityDataAccessor<Boolean> L_ENGINE_DAMAGED = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.BOOLEAN);
 
     public VehicleWeapon[][] availableWeapons;
 
@@ -313,12 +315,14 @@ public abstract class VehicleEntity extends Entity {
                 .define(L_WHEEL_HEALTH, getWheelMaxHealth())
                 .define(R_WHEEL_HEALTH, getWheelMaxHealth())
                 .define(ENGINE_HEALTH, getEngineMaxHealth())
+                .define(L_ENGINE_HEALTH, getEngineMaxHealth())
                 .define(TURRET_DAMAGED, false)
                 .define(L_WHEEL_DAMAGED, false)
                 .define(R_WHEEL_DAMAGED, false)
                 .define(ENGINE_DAMAGED, false)
+                .define(L_ENGINE_DAMAGED, false)
+                // 怎么还不给玩动态注册了（恼）
                 .define(SELECTED_WEAPON, IntList.of(new int[this.getMaxPassengers()]));
-        // 怎么还不给玩动态注册了（恼）
     }
 
     private int[] initSelectedWeaponArray(WeaponVehicleEntity weaponVehicle) {
@@ -343,11 +347,13 @@ public abstract class VehicleEntity extends Entity {
         this.entityData.set(L_WHEEL_HEALTH, compound.getFloat("LeftWheelHealth"));
         this.entityData.set(R_WHEEL_HEALTH, compound.getFloat("RightWheelHealth"));
         this.entityData.set(ENGINE_HEALTH, compound.getFloat("EngineHealth"));
+        this.entityData.set(L_ENGINE_HEALTH, compound.getFloat("LeftEngineHealth"));
 
         this.entityData.set(TURRET_DAMAGED, compound.getBoolean("TurretDamaged"));
         this.entityData.set(L_WHEEL_DAMAGED, compound.getBoolean("LeftDamaged"));
         this.entityData.set(R_WHEEL_DAMAGED, compound.getBoolean("RightDamaged"));
         this.entityData.set(ENGINE_DAMAGED, compound.getBoolean("EngineDamaged"));
+        this.entityData.set(L_ENGINE_DAMAGED, compound.getBoolean("LeftEngineDamaged"));
 
         if (this instanceof WeaponVehicleEntity weaponVehicle && weaponVehicle.getAllWeapons().length > 0) {
             var selected = compound.getIntArray("SelectedWeapon");
@@ -371,11 +377,13 @@ public abstract class VehicleEntity extends Entity {
         compound.putFloat("LeftWheelHealth", this.entityData.get(L_WHEEL_HEALTH));
         compound.putFloat("RightWheelHealth", this.entityData.get(R_WHEEL_HEALTH));
         compound.putFloat("EngineHealth", this.entityData.get(ENGINE_HEALTH));
+        compound.putFloat("LeftEngineHealth", this.entityData.get(L_ENGINE_HEALTH));
 
         compound.putBoolean("TurretDamaged", this.entityData.get(TURRET_DAMAGED));
         compound.putBoolean("LeftWheelDamaged", this.entityData.get(L_WHEEL_DAMAGED));
         compound.putBoolean("RightWheelDamaged", this.entityData.get(R_WHEEL_DAMAGED));
         compound.putBoolean("EngineDamaged", this.entityData.get(ENGINE_DAMAGED));
+        compound.putBoolean("LeftEngineDamaged", this.entityData.get(L_ENGINE_DAMAGED));
 
         if (this instanceof WeaponVehicleEntity weaponVehicle && weaponVehicle.getAllWeapons().length > 0) {
             compound.putIntArray("SelectedWeapon", this.entityData.get(SELECTED_WEAPON));
@@ -489,6 +497,10 @@ public abstract class VehicleEntity extends Entity {
             //引擎损伤
             if (this instanceof OBBEntity && accessor.sbw$getCurrentHitPart() == OBB.Part.ENGINE) {
                 entityData.set(ENGINE_HEALTH, entityData.get(ENGINE_HEALTH) - computedAmount);
+            }
+
+            if (this instanceof OBBEntity && accessor.sbw$getCurrentHitPart() == OBB.Part.ENGINE_LEFT) {
+                entityData.set(L_ENGINE_HEALTH, entityData.get(L_ENGINE_HEALTH) - computedAmount);
             }
 //            System.out.println(accessor.sbw$getCurrentHitPart());
         }
@@ -710,6 +722,7 @@ public abstract class VehicleEntity extends Entity {
 
         // 引擎损毁特效
         engineDamagedEffect();
+        leftEngineDamagedEffect();
 
         // 左轮损毁特效
         leftWheelDamagedEffect();
@@ -727,35 +740,43 @@ public abstract class VehicleEntity extends Entity {
         if (entityData.get(TURRET_HEALTH) < 0) {
             entityData.set(TURRET_DAMAGED, true);
         }
-        if (entityData.get(TURRET_HEALTH) > 0.8 * getTurretMaxHealth()) {
+        if (entityData.get(TURRET_HEALTH) > 0.95 * getTurretMaxHealth()) {
             entityData.set(TURRET_DAMAGED, false);
         }
 
         if (entityData.get(L_WHEEL_HEALTH) < 0) {
             entityData.set(L_WHEEL_DAMAGED, true);
         }
-        if (entityData.get(L_WHEEL_HEALTH) > 0.8 * getWheelMaxHealth()) {
+        if (entityData.get(L_WHEEL_HEALTH) > 0.95 * getWheelMaxHealth()) {
             entityData.set(L_WHEEL_DAMAGED, false);
         }
 
         if (entityData.get(R_WHEEL_HEALTH) < 0) {
             entityData.set(R_WHEEL_DAMAGED, true);
         }
-        if (entityData.get(R_WHEEL_HEALTH) > 0.8 * getWheelMaxHealth()) {
+        if (entityData.get(R_WHEEL_HEALTH) > 0.95 * getWheelMaxHealth()) {
             entityData.set(R_WHEEL_DAMAGED, false);
         }
 
         if (entityData.get(ENGINE_HEALTH) < 0) {
             entityData.set(ENGINE_DAMAGED, true);
         }
-        if (entityData.get(ENGINE_HEALTH) > 0.8 * getEngineMaxHealth()) {
+        if (entityData.get(ENGINE_HEALTH) > 0.95 * getEngineMaxHealth()) {
             entityData.set(ENGINE_DAMAGED, false);
         }
 
-        entityData.set(TURRET_HEALTH, Math.min(entityData.get(TURRET_HEALTH) + 0.003f * getTurretMaxHealth(), getTurretMaxHealth()));
-        entityData.set(L_WHEEL_HEALTH, Math.min(entityData.get(L_WHEEL_HEALTH) + 0.003f * getWheelMaxHealth(), getWheelMaxHealth()));
-        entityData.set(R_WHEEL_HEALTH, Math.min(entityData.get(R_WHEEL_HEALTH) + 0.003f * getWheelMaxHealth(), getWheelMaxHealth()));
-        entityData.set(ENGINE_HEALTH, Math.min(entityData.get(ENGINE_HEALTH) + 0.003f * getEngineMaxHealth(), getEngineMaxHealth()));
+        if (entityData.get(L_ENGINE_HEALTH) < 0) {
+            entityData.set(L_ENGINE_DAMAGED, true);
+        }
+        if (entityData.get(L_ENGINE_HEALTH) > 0.95 * getEngineMaxHealth()) {
+            entityData.set(L_ENGINE_DAMAGED, false);
+        }
+
+        entityData.set(TURRET_HEALTH, Math.min(entityData.get(TURRET_HEALTH) + 0.0025f * getTurretMaxHealth(), getTurretMaxHealth()));
+        entityData.set(L_WHEEL_HEALTH, Math.min(entityData.get(L_WHEEL_HEALTH) + 0.0025f * getWheelMaxHealth(), getWheelMaxHealth()));
+        entityData.set(R_WHEEL_HEALTH, Math.min(entityData.get(R_WHEEL_HEALTH) + 0.0025f * getWheelMaxHealth(), getWheelMaxHealth()));
+        entityData.set(ENGINE_HEALTH, Math.min(entityData.get(ENGINE_HEALTH) + 0.0025f * getEngineMaxHealth(), getEngineMaxHealth()));
+        entityData.set(L_ENGINE_HEALTH, Math.min(entityData.get(L_ENGINE_HEALTH) + 0.0025f * getEngineMaxHealth(), getEngineMaxHealth()));
     }
 
     public void turretDamagedEffect() {
@@ -776,6 +797,19 @@ public abstract class VehicleEntity extends Entity {
             var obbList = obbEntity.getOBBs();
             for (var obb : obbList) {
                 if (obb.part() == OBB.Part.ENGINE) {
+                    Vec3 pos = new Vec3(obb.center());
+                    sendParticle(serverLevel, ModParticleTypes.FIRE_STAR.get(), pos.x, pos.y, pos.z, 5, 0.25, 0.25, 0.25, 0.25, true);
+                    sendParticle(serverLevel, ParticleTypes.LARGE_SMOKE, pos.x, pos.y, pos.z, 1, 1, 0.5, 1, 0.01, true);
+                }
+            }
+        }
+    }
+
+    public void leftEngineDamagedEffect() {
+        if (entityData.get(L_ENGINE_DAMAGED) && this instanceof OBBEntity obbEntity && level() instanceof ServerLevel serverLevel) {
+            var obbList = obbEntity.getOBBs();
+            for (var obb : obbList) {
+                if (obb.part() == OBB.Part.ENGINE_LEFT) {
                     Vec3 pos = new Vec3(obb.center());
                     sendParticle(serverLevel, ModParticleTypes.FIRE_STAR.get(), pos.x, pos.y, pos.z, 5, 0.25, 0.25, 0.25, 0.25, true);
                     sendParticle(serverLevel, ParticleTypes.LARGE_SMOKE, pos.x, pos.y, pos.z, 1, 1, 0.5, 1, 0.01, true);

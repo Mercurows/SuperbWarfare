@@ -222,11 +222,11 @@ public class WgMissileEntity extends FastThrowableProjectile implements GeoEntit
             Entity shooter = this.getOwner();
 
             Vec3 lookVec = vehicle.getBarrelVec(1).normalize();
-            Entity lookingEntity = TraceTool.vehiclefFindLookingEntity(vehicle, vehicle.getNewEyePos(1), 512);
+            Vec3 vec3 = TraceTool.vehicleFindLookingPos(this, vehicle, vehicle.getNewEyePos(1), 512);
             Vec3 toVec;
 
-            if (lookingEntity != null && lookingEntity != this) {
-                toVec = this.position().vectorTo(lookingEntity.getEyePosition()).normalize();
+            if (vec3 != null) {
+                toVec = this.position().vectorTo(vec3).normalize();
             } else {
                 BlockHitResult result = level().clip(new ClipContext(vehicle.getNewEyePos(1), vehicle.getNewEyePos(1).add(lookVec.scale(512)),
                         ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, shooter));

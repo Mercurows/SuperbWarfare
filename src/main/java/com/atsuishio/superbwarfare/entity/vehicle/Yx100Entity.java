@@ -739,7 +739,7 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
         }
 
         if (entityData.get(ENGINE_DAMAGED)) {
-            this.entityData.set(POWER, this.entityData.get(POWER) * 0.875f);
+            this.entityData.set(POWER, this.entityData.get(POWER) * 0.85f);
         }
 
         this.setYRot((float) (this.getYRot() - (isInWater() && !onGround() ? 2.5 : 6) * entityData.get(DELTA_ROT) - i * s0));
@@ -1318,7 +1318,7 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
 
     @Override
     public float getEngineMaxHealth() {
-        return 100;
+        return 150;
     }
 
     @Override

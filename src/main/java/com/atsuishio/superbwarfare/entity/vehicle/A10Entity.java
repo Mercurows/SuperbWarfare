@@ -29,7 +29,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
@@ -106,8 +105,8 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
         this.obb5 = new OBB(this.position().toVector3f(), new Vector3f(0.0625f, 1.09375f, 0.84375f), new Quaternionf(), OBB.Part.BODY);
         this.obb6 = new OBB(this.position().toVector3f(), new Vector3f(0.625f, 0.78125f, 1.09375f), new Quaternionf(), OBB.Part.BODY);
         this.obb7 = new OBB(this.position().toVector3f(), new Vector3f(0.6875f, 0.75f, 2.9375f), new Quaternionf(), OBB.Part.BODY);
-        this.obb8 = new OBB(this.position().toVector3f(), new Vector3f(0.75f, 0.75f, 1.5625f), new Quaternionf(), OBB.Part.BODY);
-        this.obb9 = new OBB(this.position().toVector3f(), new Vector3f(0.75f, 0.75f, 1.5625f), new Quaternionf(), OBB.Part.BODY);
+        this.obb8 = new OBB(this.position().toVector3f(), new Vector3f(0.75f, 0.75f, 1.5625f), new Quaternionf(), OBB.Part.ENGINE);
+        this.obb9 = new OBB(this.position().toVector3f(), new Vector3f(0.75f, 0.75f, 1.5625f), new Quaternionf(), OBB.Part.ENGINE_LEFT);
         this.obb10 = new OBB(this.position().toVector3f(), new Vector3f(0.34375f, 0.359375f, 1.78125f), new Quaternionf(), OBB.Part.BODY);
         this.obb11 = new OBB(this.position().toVector3f(), new Vector3f(0.34375f, 0.359375f, 1.78125f), new Quaternionf(), OBB.Part.BODY);
     }
@@ -275,64 +274,35 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
         releaseDecoy();
         this.refreshDimensions();
     }
+    @Override
+    public void engineDamagedEffect() {
+        if (entityData.get(ENGINE_DAMAGED) && level() instanceof ServerLevel serverLevel) {
+            var obbList = this.getOBBs();
+            for (var obb : obbList) {
+                if (obb.part() == OBB.Part.ENGINE) {
+                    Vec3 position = new Vec3(obb.center());
+                    sendParticle(serverLevel, ParticleTypes.LARGE_SMOKE, position.x, position.y, position.z, 5, 0.25, 0.25, 0.25, 0, true);
+                    sendParticle(serverLevel, ParticleTypes.CAMPFIRE_COSY_SMOKE, position.x, position.y, position.z, 5, 0.25, 0.25, 0.25, 0, true);
+                    sendParticle(serverLevel, ParticleTypes.FLAME, position.x, position.y, position.z, 5, 0.25, 0.25, 0.25, 0, true);
+                    sendParticle(serverLevel, ModParticleTypes.FIRE_STAR.get(), position.x, position.y, position.z, 5, 0.25, 0.25, 0.25, 0.25, true);
+                }
+            }
+        }
+    }
 
     @Override
-    public void lowHealthWarning() {
-        Matrix4f transform = this.getVehicleTransform(1);
-        if (this.getHealth() <= 0.4 * this.getMaxHealth()) {
-            List<Entity> entities = getPlayer(level());
-            for (var e : entities) {
-                if (e instanceof ServerPlayer player) {
-                    if (player.level() instanceof ServerLevel serverLevel) {
-                        Vector4f position = transformPosition(transform, -1.603125f, 0.875f, -5.0625f);
-                        sendParticle(serverLevel, ParticleTypes.LARGE_SMOKE, position.x, position.y, position.z, 5, 0.25, 0.25, 0.25, 0, true);
-                    }
+    public void leftEngineDamagedEffect() {
+        if (entityData.get(L_ENGINE_DAMAGED) && level() instanceof ServerLevel serverLevel) {
+            var obbList = this.getOBBs();
+            for (var obb : obbList) {
+                if (obb.part() == OBB.Part.ENGINE_LEFT) {
+                    Vec3 position = new Vec3(obb.center());
+                    sendParticle(serverLevel, ParticleTypes.LARGE_SMOKE, position.x, position.y, position.z, 5, 0.25, 0.25, 0.25, 0, true);
+                    sendParticle(serverLevel, ParticleTypes.CAMPFIRE_COSY_SMOKE, position.x, position.y, position.z, 5, 0.25, 0.25, 0.25, 0, true);
+                    sendParticle(serverLevel, ParticleTypes.FLAME, position.x, position.y, position.z, 5, 0.25, 0.25, 0.25, 0, true);
+                    sendParticle(serverLevel, ModParticleTypes.FIRE_STAR.get(), position.x, position.y, position.z, 5, 0.25, 0.25, 0.25, 0.25, true);
                 }
             }
-        }
-
-        if (this.level() instanceof ServerLevel serverLevel) {
-            if (this.getHealth() <= 0.25 * this.getMaxHealth()) {
-                playLowHealthParticle(serverLevel);
-            }
-            if (this.getHealth() <= 0.15 * this.getMaxHealth()) {
-                playLowHealthParticle(serverLevel);
-            }
-        }
-
-        if (this.getHealth() <= 0.1 * this.getMaxHealth()) {
-            List<Entity> entities = getPlayer(level());
-            for (var e : entities) {
-                if (e instanceof ServerPlayer player) {
-                    if (player.level() instanceof ServerLevel serverLevel) {
-                        Vector4f position = transformPosition(transform, -1.603125f, 0.875f, -5.0625f);
-                        sendParticle(serverLevel, ParticleTypes.LARGE_SMOKE, position.x, position.y, position.z, 5, 0.25, 0.25, 0.25, 0, true);
-                        sendParticle(serverLevel, ParticleTypes.CAMPFIRE_COSY_SMOKE, position.x, position.y, position.z, 5, 0.25, 0.25, 0.25, 0, true);
-                        sendParticle(serverLevel, ParticleTypes.FLAME, position.x, position.y, position.z, 5, 0.25, 0.25, 0.25, 0, true);
-                        sendParticle(serverLevel, ModParticleTypes.FIRE_STAR.get(), position.x, position.y, position.z, 5, 0.25, 0.25, 0.25, 0, true);
-                        Vector4f position2 = transformPosition(transform, 1.603125f, 0.875f, -5.0625f);
-                        sendParticle(serverLevel, ParticleTypes.LARGE_SMOKE, position2.x, position2.y, position2.z, 5, 0.25, 0.25, 0.25, 0, true);
-                        sendParticle(serverLevel, ParticleTypes.CAMPFIRE_COSY_SMOKE, position2.x, position2.y, position2.z, 5, 0.25, 0.25, 0.25, 0, true);
-                        sendParticle(serverLevel, ParticleTypes.FLAME, position2.x, position2.y, position2.z, 5, 0.25, 0.25, 0.25, 0, true);
-                        sendParticle(serverLevel, ModParticleTypes.FIRE_STAR.get(), position2.x, position2.y, position2.z, 5, 0.25, 0.25, 0.25, 0, true);
-                    }
-                }
-            }
-            if (this.level() instanceof ServerLevel serverLevel) {
-                sendParticle(serverLevel, ParticleTypes.LARGE_SMOKE, this.getX(), this.getY() + 0.7f * getBbHeight(), this.getZ(), 2, 0.35 * this.getBbWidth(), 0.15 * this.getBbHeight(), 0.35 * this.getBbWidth(), 0.01, true);
-                sendParticle(serverLevel, ParticleTypes.CAMPFIRE_COSY_SMOKE, this.getX(), this.getY() + 0.7f * getBbHeight(), this.getZ(), 2, 0.35 * this.getBbWidth(), 0.15 * this.getBbHeight(), 0.35 * this.getBbWidth(), 0.01, true);
-                sendParticle(serverLevel, ParticleTypes.FLAME, this.getX(), this.getY() + 0.85f * getBbHeight(), this.getZ(), 4, 0.35 * this.getBbWidth(), 0.12 * this.getBbHeight(), 0.35 * this.getBbWidth(), 0.05, true);
-                sendParticle(serverLevel, ModParticleTypes.FIRE_STAR.get(), this.getX(), this.getY() + 0.85f * getBbHeight(), this.getZ(), 4, 0.1 * this.getBbWidth(), 0.05 * this.getBbHeight(), 0.1 * this.getBbWidth(), 0.4, true);
-            }
-            if (this.tickCount % 15 == 0) {
-                this.level().playSound(null, this.getOnPos(), SoundEvents.FIRE_AMBIENT, SoundSource.PLAYERS, 1, 1);
-            }
-        }
-
-        if (this.getHealth() < 0.1f * this.getMaxHealth() && tickCount % 13 == 0) {
-            this.level().playSound(null, this.getOnPos(), ModSounds.NO_HEALTH.get(), SoundSource.PLAYERS, 1, 1);
-        } else if (this.getHealth() >= 0.1f && this.getHealth() < 0.4f * this.getMaxHealth() && tickCount % 10 == 0) {
-            this.level().playSound(null, this.getOnPos(), ModSounds.LOW_HEALTH.get(), SoundSource.PLAYERS, 1, 1);
         }
     }
 
@@ -605,6 +575,14 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
         this.entityData.set(POWER, this.entityData.get(POWER) * 0.99f);
         this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) * 0.85f);
         this.entityData.set(PLANE_BREAK, this.entityData.get(PLANE_BREAK) * 0.8f);
+
+        if (entityData.get(ENGINE_DAMAGED)) {
+            this.entityData.set(POWER, this.entityData.get(POWER) * 0.96f);
+        }
+
+        if (entityData.get(L_ENGINE_DAMAGED)) {
+            this.entityData.set(POWER, this.entityData.get(POWER) * 0.96f);
+        }
 
         Matrix4f transform = getVehicleTransform(1);
         double flapAngle = (getFlap1LRot() + getFlap1RRot() + getFlap1L2Rot() + getFlap1R2Rot()) / 4;
