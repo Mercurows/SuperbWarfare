@@ -483,12 +483,15 @@ public abstract class VehicleEntity extends Entity {
         if (source.getDirectEntity() instanceof Projectile projectile && this instanceof OBBEntity) {
             OBBHitter accessor = OBBHitter.getInstance(projectile);
             var part = accessor.sbw$getCurrentHitPart();
-            switch (part) {
-                case TURRET -> entityData.set(TURRET_HEALTH, entityData.get(TURRET_HEALTH) - computedAmount);
-                case WHEEL_LEFT -> entityData.set(L_WHEEL_HEALTH, entityData.get(L_WHEEL_HEALTH) - computedAmount);
-                case WHEEL_RIGHT -> entityData.set(R_WHEEL_HEALTH, entityData.get(R_WHEEL_HEALTH) - computedAmount);
-                case ENGINE1 -> entityData.set(ENGINE_HEALTH, entityData.get(ENGINE_HEALTH) - computedAmount);
-                case ENGINE2 -> entityData.set(L_ENGINE_HEALTH, entityData.get(L_ENGINE_HEALTH) - computedAmount);
+
+            if (part != null) {
+                switch (part) {
+                    case TURRET -> entityData.set(TURRET_HEALTH, entityData.get(TURRET_HEALTH) - computedAmount);
+                    case WHEEL_LEFT -> entityData.set(L_WHEEL_HEALTH, entityData.get(L_WHEEL_HEALTH) - computedAmount);
+                    case WHEEL_RIGHT -> entityData.set(R_WHEEL_HEALTH, entityData.get(R_WHEEL_HEALTH) - computedAmount);
+                    case ENGINE1 -> entityData.set(ENGINE_HEALTH, entityData.get(ENGINE_HEALTH) - computedAmount);
+                    case ENGINE2 -> entityData.set(L_ENGINE_HEALTH, entityData.get(L_ENGINE_HEALTH) - computedAmount);
+                }
             }
         }
 
