@@ -1,0 +1,14 @@
+{
+  "values": [
+    "superbwarfare:target",
+    "superbwarfare:dps_generator",
+    {
+      "id": "dummmmmmy:target_dummy",
+      "required": false
+    },
+    {
+      "id": "powerful_dummy:test_dummy",
+      "required": false
+    }
+  ]
+}

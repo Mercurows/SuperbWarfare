@@ -42,6 +42,10 @@ public class ModEntityTypeTagProvider extends EntityTypeTagsProvider {
                 ModEntities.SMOKE_DECOY.get(),
                 ModEntities.FLARE_DECOY.get()
         );
+
+        this.tag(ModTags.EntityTypes.NO_EXPERIENCE).add(ModEntities.TARGET.get(), ModEntities.DPS_GENERATOR.get())
+                .addOptional(ResourceLocation.fromNamespaceAndPath("dummmmmmy", "target_dummy"))
+                .addOptional(ResourceLocation.fromNamespaceAndPath("powerful_dummy", "test_dummy"));
     }
 
     public static TagKey<EntityType<?>> cTag(String name) {
