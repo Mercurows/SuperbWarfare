@@ -913,7 +913,7 @@ public abstract class VehicleEntity extends Entity {
     }
 
     public void passengerWeaponAutoAimFormVector(float ySpeed, float xSpeed, float minXAngle, float maxXAngle, Vec3 shootVec) {
-        //shootVec是需要让炮武器站以这个角度发射的向量
+        //shootVec是需要让武器站以这个角度发射的向量
         float diffY = (float) Mth.wrapDegrees(-getYRotFromVector(shootVec) + getYRotFromVector(getGunnerVector(1)));
         float diffX = (float) Mth.wrapDegrees(-getXRotFromVector(shootVec) + getXRotFromVector(getGunnerVector(1)));
 
