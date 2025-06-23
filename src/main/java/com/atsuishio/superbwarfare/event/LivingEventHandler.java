@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.event;
 
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.api.event.PreKillEvent;
 import com.atsuishio.superbwarfare.component.ModDataComponents;
 import com.atsuishio.superbwarfare.config.common.GameplayConfig;
@@ -45,6 +46,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.util.TriState;
+import net.neoforged.neoforge.event.entity.item.ItemTossEvent;
 import net.neoforged.neoforge.event.entity.living.*;
 import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -654,6 +656,14 @@ public class LivingEventHandler {
                 && vehicle.isEnclosed(vehicle.getSeatIndex(event.getEntity()))
         ) {
             event.setResult(MobEffectEvent.Applicable.Result.DO_NOT_APPLY);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onItemSpawned(ItemTossEvent event) {
+        if (event.getEntity().getItem().getItem() == ModItems.STEEL_PIPE.get()) {
+            Mod.queueServerWork(5, () ->
+                    event.getEntity().level().playSound(null, event.getEntity().getOnPos(), ModSounds.STEEL_PIPE_DROP.get(), SoundSource.PLAYERS, 2, 1));
         }
     }
 }

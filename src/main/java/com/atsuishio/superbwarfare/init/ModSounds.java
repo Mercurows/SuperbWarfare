@@ -479,5 +479,8 @@ public class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> AURELIA_SCEPTRE_FIRE_3P = REGISTRY.register("aurelia_sceptre_fire_3p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("aurelia_sceptre_fire_3p")));
 
     public static final DeferredHolder<SoundEvent, SoundEvent> DPS_GENERATOR_EVOLVE = REGISTRY.register("dps_generator_evolve", () -> SoundEvent.createVariableRangeEvent(Mod.loc("dps_generator_evolve")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> STEEL_PIPE_HIT = REGISTRY.register("steel_pipe_hit", () -> SoundEvent.createVariableRangeEvent(Mod.loc("steel_pipe_hit")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> STEEL_PIPE_DROP = REGISTRY.register("steel_pipe_drop", () -> SoundEvent.createVariableRangeEvent(Mod.loc("steel_pipe_drop")));
+
 }
 

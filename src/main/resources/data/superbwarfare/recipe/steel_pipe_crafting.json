@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    " a",
+    "a "
+  ],
+  "key": {
+    "a": {
+      "item": "superbwarfare:steel_barrel"
+    }
+  },
+  "result": {
+    "id": "superbwarfare:steel_pipe",
+    "count": 1
+  }
+}

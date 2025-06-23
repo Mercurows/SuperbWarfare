@@ -153,6 +153,7 @@ public class ModItems {
     public static final DeferredHolder<Item, Hammer> HAMMER = ITEMS.register("hammer", Hammer::new);
     public static final DeferredHolder<Item, TBaton> T_BATON = ITEMS.register("t_baton", TBaton::new);
     public static final DeferredHolder<Item, ElectricBaton> ELECTRIC_BATON = ITEMS.register("electric_baton", ElectricBaton::new);
+    public static final DeferredHolder<Item, SteelPipe> STEEL_PIPE = ITEMS.register("steel_pipe", SteelPipe::new);
     public static final DeferredHolder<Item, Crowbar> CROWBAR = ITEMS.register("crowbar", Crowbar::new);
     public static final DeferredHolder<Item, Defuser> DEFUSER = ITEMS.register("defuser", Defuser::new);
     public static final DeferredHolder<Item, ArmorPlate> ARMOR_PLATE = ITEMS.register("armor_plate", ArmorPlate::new);

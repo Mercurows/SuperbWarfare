@@ -3290,5 +3290,21 @@
         "stream": false
       }
     ]
+  },
+  "steel_pipe_hit": {
+    "sounds": [
+      {
+        "name": "superbwarfare:steel_pipe_hit",
+        "stream": false
+      }
+    ]
+  },
+  "steel_pipe_drop": {
+    "sounds": [
+      {
+        "name": "superbwarfare:steel_pipe_drop",
+        "stream": false
+      }
+    ]
   }
 }

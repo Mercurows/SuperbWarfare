@@ -21,7 +21,7 @@ public class Hammer extends SwordItem {
     public Hammer() {
         super(Tiers.IRON, new Item.Properties()
                 .durability(400)
-                .attributes(SwordItem.createAttributes(Tiers.IRON, 9, -3.2f))
+                .attributes(SwordItem.createAttributes(Tiers.IRON, 11, -3.2f))
         );
     }
 
