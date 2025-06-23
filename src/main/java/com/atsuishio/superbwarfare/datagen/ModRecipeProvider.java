@@ -50,6 +50,14 @@ public class ModRecipeProvider extends RecipeProvider {
         generateMaterialPackRecipe(writer, ModItems.CEMENTED_CARBIDE_MATERIALS, ModItems.EPIC_MATERIAL_PACK.get());
         generateMaterialPackRecipe(writer, ModItems.NETHERITE_MATERIALS, ModItems.LEGENDARY_MATERIAL_PACK.get());
 
+        // 钢管
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.STEEL_PIPE.get())
+                .pattern(" a")
+                .pattern("a ")
+                .define('a', ModItems.STEEL_MATERIALS.barrel().get())
+                .unlockedBy(getHasName(ModItems.STEEL_MATERIALS.barrel().get()), has(ModItems.STEEL_MATERIALS.barrel().get()))
+                .save(writer, Mod.loc(getItemName(ModItems.STEEL_PIPE.get())));
+
         // 方块
         ShapedRecipeBuilder.shaped(RecipeCategory.REDSTONE, ModItems.SUPERB_ITEM_INTERFACE.get())
                 .pattern(" aa")

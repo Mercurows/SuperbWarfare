@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_steel_barrel": {
+      "conditions": {
+        "items": [
+          {
+            "items": "superbwarfare:steel_barrel"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "superbwarfare:steel_pipe"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_steel_barrel"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "superbwarfare:steel_pipe"
+    ]
+  }
+}
