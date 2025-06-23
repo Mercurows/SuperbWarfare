@@ -61,12 +61,8 @@ public class LivingEventHandler {
     public static void onEntityAttacked(LivingIncomingDamageEvent event) {
         if (!event.getSource().is(ModDamageTypes.VEHICLE_EXPLOSION) && event.getEntity().getVehicle() instanceof VehicleEntity vehicle) {
             if (event.getEntity().getVehicle() instanceof ArmedVehicleEntity iArmedVehicle && iArmedVehicle.hidePassenger(event.getEntity())) {
-                if (!(event.getSource().is(DamageTypes.EXPLOSION)
-                        || event.getSource().is(DamageTypes.PLAYER_EXPLOSION)
-                        || event.getSource().is(ModDamageTypes.CUSTOM_EXPLOSION)
-                        || event.getSource().is(ModDamageTypes.MINE)
-                        || event.getSource().is(ModDamageTypes.PROJECTILE_BOOM))) {
-                    vehicle.hurt(event.getSource(), event.getContainer().getOriginalDamage());
+                if (!event.getSource().is(ModTags.DamageTypes.VEHICLE_NOT_ABSORB)) {
+                    vehicle.hurt(event.getSource(), event.getAmount());
                 }
                 event.setCanceled(true);
             }
@@ -146,10 +142,8 @@ public class LivingEventHandler {
 
         var tag = NBTTool.getTag(armor);
         if (armor != ItemStack.EMPTY && tag.contains("ArmorPlate")) {
-            double armorValue;
-            armorValue = tag.getDouble("ArmorPlate");
+            double armorValue = tag.getDouble("ArmorPlate");
             tag.putDouble("ArmorPlate", Math.max(armorValue - damage, 0));
-            NBTTool.saveTag(armor, tag);
             damage = Math.max(damage - armorValue, 0);
         }
 
@@ -428,10 +422,7 @@ public class LivingEventHandler {
     }
 
     private static void stopGunReloadSound(ServerPlayer player, GunItem gun) {
-        gun.getReloadSound().forEach(sound -> {
-            var clientboundstopsoundpacket = new ClientboundStopSoundPacket(sound.getLocation(), SoundSource.PLAYERS);
-            player.connection.send(clientboundstopsoundpacket);
-        });
+        gun.getReloadSound().forEach(sound -> player.connection.send(new ClientboundStopSoundPacket(sound.getLocation(), SoundSource.PLAYERS)));
     }
 
     /**
