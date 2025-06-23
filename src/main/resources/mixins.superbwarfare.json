@@ -12,6 +12,7 @@
     "LivingEntityMixin",
     "PlayerMixin",
     "ProjectileUtilMixin",
+    "SteelPipeFallMixin",
     "VillagerMixin"
   ],
   "client": [
