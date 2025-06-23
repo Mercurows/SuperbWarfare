@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.init.ModTags;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.DamageTypeTagsProvider;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import org.jetbrains.annotations.NotNull;
@@ -22,18 +23,21 @@ public class ModDamageTypeTagProvider extends DamageTypeTagsProvider {
     @Override
     protected void addTags(HolderLookup.@NotNull Provider pProvider) {
         this.tag(ModTags.DamageTypes.PROJECTILE).add(ModDamageTypes.GUN_FIRE, ModDamageTypes.GUN_FIRE_HEADSHOT,
-                DamageTypes.ARROW, DamageTypes.TRIDENT, DamageTypes.THROWN);
-//                .addOptional(new ResourceLocation("tacz", "bullet"))
-//                .addOptional(new ResourceLocation("tacz", "bullet_void"))
-//                .addOptional(new ResourceLocation("virtuarealcraft", "rain_crystal"))
-//                .addOptional(new ResourceLocation("virtuarealcraft", "rain_shower_butterfly"))
-//                .addOptional(new ResourceLocation("virtuarealcraft", "sparkle_butterfly"))
-//                .addOptional(new ResourceLocation("dreamaticvoyage", "blood_crystal"))
-//                .addOptional(new ResourceLocation("dreamaticvoyage", "leviy_beam"));
-        this.tag(ModTags.DamageTypes.PROJECTILE_ABSOLUTE).add(ModDamageTypes.GUN_FIRE_ABSOLUTE, ModDamageTypes.GUN_FIRE_HEADSHOT_ABSOLUTE);
-//                .addOptional(new ResourceLocation("tacz", "bullet_ignore_armor"))
-//                .addOptional(new ResourceLocation("tacz", "bullet_void_ignore_armor"))
-//                .addOptional(new ResourceLocation("dreamaticvoyage", "leviy_beam_absolute"));
+                        DamageTypes.ARROW, DamageTypes.TRIDENT, DamageTypes.THROWN)
+                .addOptional(ResourceLocation.fromNamespaceAndPath("tacz", "bullet"))
+                .addOptional(ResourceLocation.fromNamespaceAndPath("tacz", "bullet_void"))
+                .addOptional(ResourceLocation.fromNamespaceAndPath("virtuarealcraft", "rain_crystal"))
+                .addOptional(ResourceLocation.fromNamespaceAndPath("virtuarealcraft", "rain_shower_butterfly"))
+                .addOptional(ResourceLocation.fromNamespaceAndPath("virtuarealcraft", "sparkle_butterfly"))
+                .addOptional(ResourceLocation.fromNamespaceAndPath("dreamaticvoyage", "blood_crystal"))
+                .addOptional(ResourceLocation.fromNamespaceAndPath("dreamaticvoyage", "leviy_beam"));
+        this.tag(ModTags.DamageTypes.PROJECTILE_ABSOLUTE).add(ModDamageTypes.GUN_FIRE_ABSOLUTE, ModDamageTypes.GUN_FIRE_HEADSHOT_ABSOLUTE)
+                .addOptional(ResourceLocation.fromNamespaceAndPath("tacz", "bullet_ignore_armor"))
+                .addOptional(ResourceLocation.fromNamespaceAndPath("tacz", "bullet_void_ignore_armor"))
+                .addOptional(ResourceLocation.fromNamespaceAndPath("dreamaticvoyage", "leviy_beam_absolute"));
+        this.tag(ModTags.DamageTypes.VEHICLE_IGNORE)
+                .addOptional(ResourceLocation.fromNamespaceAndPath("sona", "injury"));
+        this.tag(ModTags.DamageTypes.VEHICLE_NOT_ABSORB)
+                .add(DamageTypes.EXPLOSION, DamageTypes.PLAYER_EXPLOSION, ModDamageTypes.CUSTOM_EXPLOSION, ModDamageTypes.MINE, ModDamageTypes.PROJECTILE_BOOM);
     }
-
 }

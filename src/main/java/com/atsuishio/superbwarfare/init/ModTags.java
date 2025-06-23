@@ -60,6 +60,11 @@ public class ModTags {
         public static final TagKey<DamageType> PROJECTILE = tag("projectile");
         public static final TagKey<DamageType> PROJECTILE_ABSOLUTE = tag("projectile_absolute");
 
+        // 在载具上的实体受到带有此标签的伤害类型的伤害时，不会将伤害转移到载具上
+        public static final TagKey<DamageType> VEHICLE_IGNORE = tag("vehicle_ignore");
+        // 在载具上的实体受到带有此标签的伤害类型的伤害时，只会受到伤害减免，而不会转移到载具上
+        public static final TagKey<DamageType> VEHICLE_NOT_ABSORB = tag("vehicle_not_absorb");
+
         private static TagKey<DamageType> tag(String name) {
             return TagKey.create(Registries.DAMAGE_TYPE, Mod.loc(name));
         }
