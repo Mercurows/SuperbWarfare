@@ -892,9 +892,10 @@ public abstract class VehicleEntity extends Entity {
         }
     }
 
-    public void turretAutoAimFormVector(float ySpeed, float xSpeed, float minXAngle, float maxXAngle, Vec3 shootVec, Vec3 targetVec) {
-        float diffY = (float) Mth.wrapDegrees(-getYRotFromVector(targetVec) + getYRotFromVector(shootVec));
-        float diffX = (float) Mth.wrapDegrees(-getXRotFromVector(targetVec) + getXRotFromVector(shootVec));
+    public void turretAutoAimFormVector(float ySpeed, float xSpeed, float minXAngle, float maxXAngle, Vec3 shootVec) {
+        //shootVec是需要让炮塔以这个角度发射的向量
+        float diffY = (float) Mth.wrapDegrees(-getYRotFromVector(shootVec) + getYRotFromVector(getBarrelVec(1)));
+        float diffX = (float) Mth.wrapDegrees(-getXRotFromVector(shootVec) + getXRotFromVector(getBarrelVec(1)));
 
         this.turretTurnSound(diffX, diffY, 0.95f);
 
@@ -911,9 +912,10 @@ public abstract class VehicleEntity extends Entity {
         turretYRotLock = Mth.clamp(0.9f * diffY, min, max);
     }
 
-    public void passengerWeaponAutoAimFormVector(float ySpeed, float xSpeed, float minXAngle, float maxXAngle, Vec3 shootVec, Vec3 targetVec) {
-        float diffY = (float) Mth.wrapDegrees(-getYRotFromVector(targetVec) + getYRotFromVector(shootVec));
-        float diffX = (float) Mth.wrapDegrees(-getXRotFromVector(targetVec) + getXRotFromVector(shootVec));
+    public void passengerWeaponAutoAimFormVector(float ySpeed, float xSpeed, float minXAngle, float maxXAngle, Vec3 shootVec) {
+        //shootVec是需要让炮武器站以这个角度发射的向量
+        float diffY = (float) Mth.wrapDegrees(-getYRotFromVector(shootVec) + getYRotFromVector(getGunnerVector(1)));
+        float diffX = (float) Mth.wrapDegrees(-getXRotFromVector(shootVec) + getXRotFromVector(getGunnerVector(1)));
 
         turretTurnSound(diffX, diffY, 0.95f);
 
@@ -1132,6 +1134,10 @@ public abstract class VehicleEntity extends Entity {
 
     public Vec3 getBarrelVector(float pPartialTicks) {
         return this.calculateViewVector(this.getBarrelXRot(pPartialTicks), this.getBarrelYRot(pPartialTicks));
+    }
+
+    public Vec3 getGunnerVector(float pPartialTicks) {
+        return this.getViewVector(pPartialTicks);
     }
 
     public float getBarrelXRot(float pPartialTicks) {
