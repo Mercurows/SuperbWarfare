@@ -333,6 +333,18 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
         this.refreshDimensions();
     }
 
+//    public void autoAimTest() {
+//        Entity target = EntityFindUtil.findEntity(level(), entityData.get(LAST_ATTACKER_UUID));
+//        if (target != null) {
+//            Matrix4f transform = getGunTransform(1);
+//            Vector4f worldPosition = transformPosition(transform, 0, -0.25f, 0);
+//            Vec3 shootVec = new Vec3(getGunnerVector(1).x, getGunnerVector(1).y + 0.01f, getGunnerVector(1).z);
+//            Vec3 shootPos = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
+//            Vec3 targetVec = shootPos.vectorTo(target.getBoundingBox().getCenter());
+//            passengerWeaponAutoAimFormVector(15, 15 , -10, 45, shootVec, targetVec);
+//        }
+//    }
+
     @Override
     public void terrainCompact(float w, float l) {
         if (onGround()) {

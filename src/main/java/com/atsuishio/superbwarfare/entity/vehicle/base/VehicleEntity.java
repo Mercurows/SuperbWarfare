@@ -889,7 +889,7 @@ public abstract class VehicleEntity extends Entity {
         }
     }
 
-    public void autoAimFormVector(float ySpeed, float xSpeed, float minXAngle, float maxXAngle, Vec3 shootVec, Vec3 targetVec) {
+    public void turretAutoAimFormVector(float ySpeed, float xSpeed, float minXAngle, float maxXAngle, Vec3 shootVec, Vec3 targetVec) {
         float diffY = (float) Mth.wrapDegrees(-getYRotFromVector(targetVec) + getYRotFromVector(shootVec));
         float diffX = (float) Mth.wrapDegrees(-getXRotFromVector(targetVec) + getXRotFromVector(shootVec));
 
@@ -906,6 +906,16 @@ public abstract class VehicleEntity extends Entity {
         this.setTurretXRot(Mth.clamp(this.getTurretXRot() + Mth.clamp(0.5f * diffX, -xSpeed, xSpeed), -maxXAngle, -minXAngle));
         this.setTurretYRot(this.getTurretYRot() - Mth.clamp(0.5f * diffY, min, max));
         turretYRotLock = Mth.clamp(0.9f * diffY, min, max);
+    }
+
+    public void passengerWeaponAutoAimFormVector(float ySpeed, float xSpeed, float minXAngle, float maxXAngle, Vec3 shootVec, Vec3 targetVec) {
+        float diffY = (float) Mth.wrapDegrees(-getYRotFromVector(targetVec) + getYRotFromVector(shootVec));
+        float diffX = (float) Mth.wrapDegrees(-getXRotFromVector(targetVec) + getXRotFromVector(shootVec));
+
+        turretTurnSound(diffX, diffY, 0.95f);
+
+        this.setGunXRot(Mth.clamp(this.getGunXRot() + Mth.clamp(0.5f * diffX, -xSpeed, xSpeed), -maxXAngle, -minXAngle));
+        this.setGunYRot(this.getGunYRot() - Mth.clamp(0.5f * diffY, -ySpeed, ySpeed));
     }
 
     public void gunnerAngle(float ySpeed, float xSpeed) {
