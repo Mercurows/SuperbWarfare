@@ -43,6 +43,7 @@ public class SuperbItemInterfaceBlockEntity extends BaseContainerBlockEntity {
         blockEntity.setCooldown(TRANSFER_COOLDOWN);
 
         if (blockEntity.isEmpty()) return;
+        if (!state.getValue(SuperbItemInterfaceBlock.ENABLED)) return;
 
         var facing = state.getValue(SuperbItemInterfaceBlock.FACING);
 
