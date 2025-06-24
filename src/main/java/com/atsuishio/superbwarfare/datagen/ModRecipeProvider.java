@@ -58,11 +58,12 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
 
         // 方块
         ShapedRecipeBuilder.shaped(RecipeCategory.REDSTONE, ModItems.SUPERB_ITEM_INTERFACE.get())
-                .pattern(" aa")
+                .pattern("cac")
                 .pattern("aba")
-                .pattern("aa ")
+                .pattern("cac")
                 .define('a', Items.HOPPER)
                 .define('b', Items.DROPPER)
+                .define('c', ModTags.Items.INGOTS_STEEL)
                 .unlockedBy(getHasName(Items.HOPPER), has(Items.DROPPER))
                 .save(writer, Mod.loc(getItemName(ModItems.SUPERB_ITEM_INTERFACE.get())));
 

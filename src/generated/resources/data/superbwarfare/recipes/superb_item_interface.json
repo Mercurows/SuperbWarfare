@@ -7,12 +7,15 @@
     },
     "b": {
       "item": "minecraft:dropper"
+    },
+    "c": {
+      "tag": "superbwarfare:ingots/steel"
     }
   },
   "pattern": [
-    " aa",
+    "cac",
     "aba",
-    "aa "
+    "cac"
   ],
   "result": {
     "item": "superbwarfare:superb_item_interface"

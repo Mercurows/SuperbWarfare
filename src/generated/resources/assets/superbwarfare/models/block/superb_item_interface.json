@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "bottom": "superbwarfare:block/superb_item_interface_bottom",
+    "particle": "superbwarfare:block/superb_item_interface_bottom",
+    "side": "superbwarfare:block/superb_item_interface_side",
+    "top": "superbwarfare:block/superb_item_interface_top"
+  }
+}

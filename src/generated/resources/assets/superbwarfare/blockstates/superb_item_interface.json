@@ -1,0 +1,56 @@
+{
+  "variants": {
+    "enabled=false,facing=down": {
+      "model": "superbwarfare:block/superb_item_interface",
+      "x": 180
+    },
+    "enabled=false,facing=east": {
+      "model": "superbwarfare:block/superb_item_interface",
+      "x": 90,
+      "y": 90
+    },
+    "enabled=false,facing=north": {
+      "model": "superbwarfare:block/superb_item_interface",
+      "x": 90
+    },
+    "enabled=false,facing=south": {
+      "model": "superbwarfare:block/superb_item_interface",
+      "x": 90,
+      "y": 180
+    },
+    "enabled=false,facing=up": {
+      "model": "superbwarfare:block/superb_item_interface"
+    },
+    "enabled=false,facing=west": {
+      "model": "superbwarfare:block/superb_item_interface",
+      "x": 90,
+      "y": 270
+    },
+    "enabled=true,facing=down": {
+      "model": "superbwarfare:block/superb_item_interface",
+      "x": 180
+    },
+    "enabled=true,facing=east": {
+      "model": "superbwarfare:block/superb_item_interface",
+      "x": 90,
+      "y": 90
+    },
+    "enabled=true,facing=north": {
+      "model": "superbwarfare:block/superb_item_interface",
+      "x": 90
+    },
+    "enabled=true,facing=south": {
+      "model": "superbwarfare:block/superb_item_interface",
+      "x": 90,
+      "y": 180
+    },
+    "enabled=true,facing=up": {
+      "model": "superbwarfare:block/superb_item_interface"
+    },
+    "enabled=true,facing=west": {
+      "model": "superbwarfare:block/superb_item_interface",
+      "x": 90,
+      "y": 270
+    }
+  }
+}

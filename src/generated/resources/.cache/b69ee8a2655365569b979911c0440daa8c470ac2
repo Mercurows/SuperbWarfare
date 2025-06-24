@@ -1,4 +1,4 @@
-// 1.20.1	2025-05-31T01:35:17.7727363	Item Models: superbwarfare
+// 1.20.1	2025-06-25T00:41:30.336966	Item Models: superbwarfare
 0f47ef51a4e028de18be11b9bda9e6a6d2d9decd assets/superbwarfare/models/item/aa_12.json
 fb3a995587b2c253571c3160ff02c2ad8c73ecf8 assets/superbwarfare/models/item/aa_12_base.json
 13ca8d5676888ff51f3308d88e4bf67691fa34f8 assets/superbwarfare/models/item/aa_12_blueprint.json
@@ -220,6 +220,7 @@ b06878332d05a1b61e9eb323e4d7079f7dcd4e18 assets/superbwarfare/models/item/sniper
 b4e009177af3af6ad6dda54e3e2fed43dc243ff2 assets/superbwarfare/models/item/steel_ingot.json
 28e5cc26e694d0cded97b343de94764b28f1651f assets/superbwarfare/models/item/steel_spring.json
 7d3c98a32815191ef716a8595dda392a8dfea6ec assets/superbwarfare/models/item/steel_trigger.json
+ecb4f21db226a0db9db975d285c5f67d2acca316 assets/superbwarfare/models/item/superb_item_interface.json
 31d80e7fc0489f519a3f6f1e053209d057eca1ec assets/superbwarfare/models/item/svd.json
 674f667820b8ae1ab71782c72208e6891152ae87 assets/superbwarfare/models/item/svd_base.json
 13ca8d5676888ff51f3308d88e4bf67691fa34f8 assets/superbwarfare/models/item/svd_blueprint.json

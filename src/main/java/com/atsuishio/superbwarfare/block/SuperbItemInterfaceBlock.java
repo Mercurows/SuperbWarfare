@@ -63,6 +63,9 @@ public class SuperbItemInterfaceBlock extends BaseEntityBlock {
     @Override
     public BlockState getStateForPlacement(@NotNull BlockPlaceContext context) {
         Direction direction = context.getClickedFace().getOpposite();
+        if (context.getPlayer() != null && context.getPlayer().isShiftKeyDown()) {
+            direction = direction.getOpposite();
+        }
         return this.defaultBlockState().setValue(FACING, direction).setValue(ENABLED, true);
     }
 
