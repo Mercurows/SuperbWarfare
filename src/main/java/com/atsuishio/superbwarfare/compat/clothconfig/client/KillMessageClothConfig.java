@@ -6,6 +6,8 @@ import me.shedaniel.clothconfig2.api.ConfigCategory;
 import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
 import net.minecraft.network.chat.Component;
 
+import static com.atsuishio.superbwarfare.compat.clothconfig.ClothConfigHelper.save;
+
 public class KillMessageClothConfig {
 
     public static void init(ConfigBuilder root, ConfigEntryBuilder entryBuilder) {
@@ -14,7 +16,7 @@ public class KillMessageClothConfig {
         category.addEntry(entryBuilder
                 .startBooleanToggle(Component.translatable("config.superbwarfare.client.kill_message.show_kill_message"), KillMessageConfig.SHOW_KILL_MESSAGE.get())
                 .setDefaultValue(false)
-                .setSaveConsumer(KillMessageConfig.SHOW_KILL_MESSAGE::set)
+                .setSaveConsumer(save(KillMessageConfig.SHOW_KILL_MESSAGE))
                 .setTooltip(Component.translatable("config.superbwarfare.client.kill_message.show_kill_message.des"))
                 .build()
         );
@@ -24,7 +26,7 @@ public class KillMessageClothConfig {
                 .setDefaultValue(10)
                 .setMin(1)
                 .setMax(20)
-                .setSaveConsumer(KillMessageConfig.KILL_MESSAGE_COUNT::set)
+                .setSaveConsumer(save(KillMessageConfig.KILL_MESSAGE_COUNT))
                 .setTooltip(Component.translatable("config.superbwarfare.client.kill_message.kill_message_count.des"))
                 .build()
         );
@@ -44,7 +46,7 @@ public class KillMessageClothConfig {
                     default ->
                             Component.translatable("config.superbwarfare.client.kill_message.kill_message_position.left_top");
                 })
-                .setSaveConsumer(KillMessageConfig.KILL_MESSAGE_POSITION::set)
+                .setSaveConsumer(save(KillMessageConfig.KILL_MESSAGE_POSITION))
                 .setTooltip(Component.translatable("config.superbwarfare.client.kill_message.kill_message_position.des"))
                 .build()
         );
@@ -54,7 +56,7 @@ public class KillMessageClothConfig {
                 .setDefaultValue(0)
                 .setMin(-1000)
                 .setMax(1000)
-                .setSaveConsumer(KillMessageConfig.KILL_MESSAGE_MARGIN_X::set)
+                .setSaveConsumer(save(KillMessageConfig.KILL_MESSAGE_MARGIN_X))
                 .setTooltip(Component.translatable("config.superbwarfare.client.kill_message.kill_message_margin_x.des"))
                 .build()
         );
@@ -64,7 +66,7 @@ public class KillMessageClothConfig {
                 .setDefaultValue(5)
                 .setMin(-1000)
                 .setMax(1000)
-                .setSaveConsumer(KillMessageConfig.KILL_MESSAGE_MARGIN_Y::set)
+                .setSaveConsumer(save(KillMessageConfig.KILL_MESSAGE_MARGIN_Y))
                 .setTooltip(Component.translatable("config.superbwarfare.client.kill_message.kill_message_margin_y.des"))
                 .build()
         );

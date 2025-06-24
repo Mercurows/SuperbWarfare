@@ -11,7 +11,10 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
+import net.neoforged.neoforge.common.ModConfigSpec;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.function.Consumer;
 
 public class ClothConfigHelper {
 
@@ -38,5 +41,14 @@ public class ClothConfigHelper {
 
     public static Screen getConfigScreen(@Nullable Screen parent) {
         return ClothConfigHelper.getConfigBuilder().setParentScreen(parent).build();
+    }
+
+    public static <T> void setAndSave(ModConfigSpec.ConfigValue<T> spec, T value) {
+        spec.set(value);
+        spec.save();
+    }
+
+    public static <T> Consumer<T> save(ModConfigSpec.ConfigValue<T> spec) {
+        return value -> setAndSave(spec, value);
     }
 }

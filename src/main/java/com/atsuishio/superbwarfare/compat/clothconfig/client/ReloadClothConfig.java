@@ -6,6 +6,8 @@ import me.shedaniel.clothconfig2.api.ConfigCategory;
 import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
 import net.minecraft.network.chat.Component;
 
+import static com.atsuishio.superbwarfare.compat.clothconfig.ClothConfigHelper.save;
+
 public class ReloadClothConfig {
 
     public static void init(ConfigBuilder root, ConfigEntryBuilder entryBuilder) {
@@ -14,7 +16,7 @@ public class ReloadClothConfig {
         category.addEntry(entryBuilder
                 .startBooleanToggle(Component.translatable("config.superbwarfare.client.reload.left_click_reload"), ReloadConfig.LEFT_CLICK_RELOAD.get())
                 .setDefaultValue(true)
-                .setSaveConsumer(ReloadConfig.LEFT_CLICK_RELOAD::set)
+                .setSaveConsumer(save(ReloadConfig.LEFT_CLICK_RELOAD))
                 .setTooltip(Component.translatable("config.superbwarfare.client.reload.left_click_reload.des")).build()
         );
     }
