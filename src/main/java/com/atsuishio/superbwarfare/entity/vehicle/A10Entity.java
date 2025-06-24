@@ -654,7 +654,7 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
         Matrix4f transform = getVehicleTransform(1);
 
         float x = 0f;
-        float y = 0.1f + (float) passenger.getVehicleAttachmentPoint(this).y;
+        float y = -1.0f + (float) passenger.getVehicleAttachmentPoint(this).y;
         float z = 3.95f;
 
         Vector4f worldPosition = transformPosition(transform, x, y, z);
