@@ -573,6 +573,7 @@
   "container.superbwarfare.charging_station.show_range": "显示范围",
   "container.superbwarfare.charging_station.hide_range": "隐藏范围",
   "container.superbwarfare.superb_item_interface": "卓越物品接口",
+  "des.superbwarfare.superb_item_interface": "可快速给指向实体传输物品的全方向漏斗",
 
   "config.superbwarfare.title": "卓越前线",
   "config.superbwarfare.client.reload": "换弹配置",
