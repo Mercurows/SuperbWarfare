@@ -266,6 +266,7 @@
   "block.superbwarfare.silver_block": "银块",
   "block.superbwarfare.cemented_carbide_block": "硬质合金块",
   "block.superbwarfare.charging_station": "充电站",
+  "des.superbwarfare.charging_station": "充能附近的实体和相邻方块",
   "des.superbwarfare.charging_station.energy": "能量：%1$s / %2$s FE",
   "block.superbwarfare.creative_charging_station": "创造模式充电站",
   "des.superbwarfare.creative_charging_station": "充能附近的实体和相邻方块，也可以作为电源物品使用",
