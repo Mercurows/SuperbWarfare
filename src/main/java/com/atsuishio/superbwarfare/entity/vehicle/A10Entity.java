@@ -166,6 +166,11 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
     }
 
     @Override
+    public boolean shouldSendHitParticles() {
+        return false;
+    }
+
+    @Override
     protected void playStepSound(@NotNull BlockPos pPos, @NotNull BlockState pState) {
         this.playSound(ModSounds.WHEEL_STEP.get(), (float) (getDeltaMovement().length() * 0.2), random.nextFloat() * 0.1f + 1f);
     }

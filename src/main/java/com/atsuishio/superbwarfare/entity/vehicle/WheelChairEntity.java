@@ -86,6 +86,11 @@ public class WheelChairEntity extends MobileVehicleEntity implements GeoEntity {
     }
 
     @Override
+    public boolean shouldSendHitParticles() {
+        return false;
+    }
+
+    @Override
     protected void playStepSound(@NotNull BlockPos pPos, @NotNull BlockState pState) {
         this.playSound(ModSounds.WHEEL_STEP.get(), (float) (getDeltaMovement().length() * 0.3), random.nextFloat() * 0.15f + 1);
     }

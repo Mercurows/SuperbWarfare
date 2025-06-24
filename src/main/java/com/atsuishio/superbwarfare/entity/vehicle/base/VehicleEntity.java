@@ -291,6 +291,20 @@ public abstract class VehicleEntity extends Entity {
         }
     }
 
+    /**
+     * 受击时是否出现粒子效果
+     */
+    public boolean shouldSendHitParticles() {
+        return true;
+    }
+
+    /**
+     * 受击时是否出现音效
+     */
+    public boolean shouldSendHitSounds() {
+        return true;
+    }
+
     public VehicleEntity(EntityType<?> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
         this.setHealth(this.getMaxHealth());

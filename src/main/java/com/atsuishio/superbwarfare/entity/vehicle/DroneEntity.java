@@ -113,6 +113,16 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
     }
 
     @Override
+    public boolean shouldSendHitParticles() {
+        return false;
+    }
+
+    @Override
+    public boolean shouldSendHitSounds() {
+        return false;
+    }
+
+    @Override
     public void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
         compound.putBoolean("Linked", this.entityData.get(LINKED));
