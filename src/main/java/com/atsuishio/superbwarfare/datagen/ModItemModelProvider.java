@@ -204,6 +204,7 @@ public class ModItemModelProvider extends ItemModelProvider {
         evenSimplerBlockItem(ModBlocks.CREATIVE_CHARGING_STATION);
         evenSimplerBlockItem(ModBlocks.VEHICLE_DEPLOYER);
         evenSimplerBlockItem(ModBlocks.AIRCRAFT_CATAPULT);
+        evenSimplerBlockItem(ModBlocks.SUPERB_ITEM_INTERFACE);
     }
 
     private void simpleMaterials(ModItems.Materials materials) {

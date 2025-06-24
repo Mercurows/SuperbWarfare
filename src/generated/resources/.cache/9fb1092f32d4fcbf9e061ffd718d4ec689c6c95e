@@ -1,4 +1,4 @@
-// 1.21.1	2025-06-23T22:10:47.8046106	Recipes
+// 1.21.1	2025-06-25T01:13:00.7389797	Recipes
 9775e550332c69f1ee2ac4a09834a35db6f6a2ed data/minecraft/recipe/ammo_box_add_ammo.json
 9775e550332c69f1ee2ac4a09834a35db6f6a2ed data/minecraft/recipe/ammo_box_extract_ammo.json
 2e1d1bbf32801f3d355c0d3f78ebbb1122cebd4c data/minecraft/recipe/potion_mortar_shell.json
@@ -195,7 +195,7 @@ f2777c054b27e9fb44deeb72ddb6325e0385a270 data/superbwarfare/recipe/steel_action.
 7b363808065613de9eddce4331e667ac2956f08c data/superbwarfare/recipe/steel_pipe.json
 e6f83a418c7ee3b596206deaf86a46a2a4b34fe8 data/superbwarfare/recipe/steel_spring.json
 21d12a61558a3bf820796be67bd7b58047d929dc data/superbwarfare/recipe/steel_trigger.json
-ed037f70d05cc2e410045d812dccd3a33da10eaf data/superbwarfare/recipe/superb_item_interface.json
+3b402dd93baca56ce6a34b3b13ccee1a011ea99d data/superbwarfare/recipe/superb_item_interface.json
 940339216a1dc73e8e9f090af1b5a638db81581a data/superbwarfare/recipe/svd_blueprint.json
 a25453be786b0f279d622dd69e4ad85d7a2dae0e data/superbwarfare/recipe/svd_smithing.json
 74f766c560a92652471e00af24019caec23cf85c data/superbwarfare/recipe/taser_blueprint.json
