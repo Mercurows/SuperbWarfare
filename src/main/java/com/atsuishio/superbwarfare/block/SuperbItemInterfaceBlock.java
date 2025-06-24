@@ -39,7 +39,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 public class SuperbItemInterfaceBlock extends BaseEntityBlock {
 
     public static final BooleanProperty ENABLED = BlockStateProperties.ENABLED;
-    public static final DirectionProperty FACING = DirectionProperty.create("facing");
+    public static final DirectionProperty FACING = BlockStateProperties.FACING;
 
     public SuperbItemInterfaceBlock() {
         super(BlockBehaviour.Properties.of().mapColor(MapColor.STONE).requiresCorrectToolForDrops().strength(3.0F, 4.8F).sound(SoundType.METAL));
