@@ -17,10 +17,11 @@ import org.jetbrains.annotations.NotNull;
 
 @EventBusSubscriber(modid = Mod.MODID, bus = EventBusSubscriber.Bus.MOD)
 public class SteelPipe extends SwordItem {
+
     public SteelPipe() {
         super(ModItemTier.STEEL, new Item.Properties()
-                .durability(1919)
-                .attributes(SwordItem.createAttributes(ModItemTier.STEEL, 6, -2.5f))
+                .durability(810)
+                .attributes(SwordItem.createAttributes(ModItemTier.STEEL, 4, -3))
         );
     }
 
