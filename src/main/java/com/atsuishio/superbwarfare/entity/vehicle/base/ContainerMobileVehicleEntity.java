@@ -251,6 +251,11 @@ public abstract class ContainerMobileVehicleEntity extends MobileVehicleEntity i
     }
 
     @Override
+    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap) {
+        return this.getCapability(cap, null);
+    }
+
+    @Override
     public void invalidateCaps() {
         super.invalidateCaps();
         itemHandler.invalidate();

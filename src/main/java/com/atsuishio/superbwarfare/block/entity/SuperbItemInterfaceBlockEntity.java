@@ -60,7 +60,6 @@ public class SuperbItemInterfaceBlockEntity extends BaseContainerBlockEntity {
         var target = list.get(level.random.nextInt(list.size()));
 
         // item transfer
-
         var index = -1;
         for (int i = 0; i < blockEntity.items.size(); i++) {
             var stack = blockEntity.items.get(i);
