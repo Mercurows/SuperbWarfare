@@ -8,8 +8,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SwordItem;
 
 public class SteelPipe extends SwordItem {
+
     public SteelPipe() {
-        super(ModItemTier.STEEL, 6, -2.5f, new Properties().durability(1919));
+        super(ModItemTier.STEEL, 4, -3.0f, new Properties().durability(810));
     }
 
     @Override
