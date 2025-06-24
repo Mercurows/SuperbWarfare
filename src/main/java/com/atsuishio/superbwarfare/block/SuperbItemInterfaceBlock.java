@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.block;
 import com.atsuishio.superbwarfare.block.entity.SuperbItemInterfaceBlockEntity;
 import com.atsuishio.superbwarfare.init.ModBlockEntities;
 import com.mojang.serialization.MapCodec;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -151,6 +152,6 @@ public class SuperbItemInterfaceBlock extends BaseEntityBlock {
     @Override
     @ParametersAreNonnullByDefault
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
-        tooltipComponents.add(Component.translatable("des.superbwarfare.superb_item_interface"));
+        tooltipComponents.add(Component.translatable("des.superbwarfare.superb_item_interface").withStyle(ChatFormatting.GRAY));
     }
 }
