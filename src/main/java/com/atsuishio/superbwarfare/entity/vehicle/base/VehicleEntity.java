@@ -130,6 +130,11 @@ public abstract class VehicleEntity extends Entity {
 
     public boolean cannotFire;
 
+    public VehicleEntity(EntityType<?> pEntityType, Level pLevel) {
+        super(pEntityType, pLevel);
+        this.setHealth(this.getMaxHealth());
+    }
+
     public void mouseInput(double x, double y) {
         entityData.set(MOUSE_SPEED_X, (float) x);
         entityData.set(MOUSE_SPEED_Y, (float) y);
@@ -295,9 +300,18 @@ public abstract class VehicleEntity extends Entity {
         }
     }
 
-    public VehicleEntity(EntityType<?> pEntityType, Level pLevel) {
-        super(pEntityType, pLevel);
-        this.setHealth(this.getMaxHealth());
+    /**
+     * 受击时是否出现粒子效果
+     */
+    public boolean shouldSendHitParticles() {
+        return true;
+    }
+
+    /**
+     * 受击时是否出现音效
+     */
+    public boolean shouldSendHitSounds() {
+        return true;
     }
 
     @Override

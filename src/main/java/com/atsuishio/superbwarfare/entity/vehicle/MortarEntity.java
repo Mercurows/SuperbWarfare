@@ -66,6 +66,11 @@ public class MortarEntity extends VehicleEntity implements GeoEntity {
     }
 
     @Override
+    public boolean shouldSendHitParticles() {
+        return false;
+    }
+
+    @Override
     protected void defineSynchedData() {
         super.defineSynchedData();
         this.entityData.define(FIRE_TIME, 0);
@@ -79,15 +84,9 @@ public class MortarEntity extends VehicleEntity implements GeoEntity {
     }
 
     @Override
-    public boolean isPickable() {
-        return !this.isRemoved();
-    }
-
-    @Override
     protected float getEyeHeight(Pose pPose, EntityDimensions pSize) {
         return 0.2F;
     }
-
 
     @Override
     public void addAdditionalSaveData(CompoundTag compound) {
