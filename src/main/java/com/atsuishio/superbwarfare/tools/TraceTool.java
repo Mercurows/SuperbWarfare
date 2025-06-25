@@ -123,13 +123,13 @@ public class TraceTool {
         return null;
     }
 
-    public static Vec3 playerFindLookingPos(Player player, VehicleEntity vehicle, double entityReach) {
+    public static Vec3 playerFindLookingPos(Player player, Entity entity, double entityReach) {
         double distance = entityReach * entityReach;
         HitResult hitResult = player.pick(entityReach, 1.0f, false);
 
         Vec3 viewVec = player.getViewVector(1);
         Vec3 toVec = player.getEyePosition().add(viewVec.x * entityReach, viewVec.y * entityReach, viewVec.z * entityReach);
-        AABB aabb = vehicle.getBoundingBox().expandTowards(viewVec.scale(entityReach)).inflate(1.0D, 1.0D, 1.0D);
+        AABB aabb = entity.getBoundingBox().expandTowards(viewVec.scale(entityReach)).inflate(1.0D, 1.0D, 1.0D);
         EntityHitResult entityhitresult = ProjectileUtil.getEntityHitResult(player, player.getEyePosition(), toVec, aabb, p -> true, distance);
         if (entityhitresult != null) {
             hitResult = entityhitresult;
