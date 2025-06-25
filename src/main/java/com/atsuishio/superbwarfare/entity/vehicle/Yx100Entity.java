@@ -816,8 +816,8 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
     }
 
     @Override
-    public Vec3 getBarrelVec(float ticks) {
-        Matrix4f transform = getGunnerBarrelTransform(ticks);
+    public Vec3 getGunnerVector(float pPartialTicks) {
+        Matrix4f transform = getGunnerBarrelTransform(pPartialTicks);
         Vector4f rootPosition = transformPosition(transform, 0, 0, 0);
         Vector4f targetPosition = transformPosition(transform, 0, 0, 1);
         return new Vec3(rootPosition.x, rootPosition.y, rootPosition.z).vectorTo(new Vec3(targetPosition.x, targetPosition.y, targetPosition.z));
