@@ -14,6 +14,8 @@ import com.atsuishio.superbwarfare.network.ModVariables;
 import com.atsuishio.superbwarfare.network.PlayerVariable;
 import com.atsuishio.superbwarfare.network.message.receive.SimulationDistanceMessage;
 import com.atsuishio.superbwarfare.tools.InventoryTool;
+import com.atsuishio.superbwarfare.tools.TraceTool;
+import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -23,6 +25,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.AnvilUpdateEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
@@ -201,13 +204,19 @@ public class PlayerEventHandler {
     public static void onAttackEntity(AttackEntityEvent event) {
         var target = event.getTarget();
         if (target instanceof VehicleEntity vehicle) {
-            if (vehicle.shouldSendHitSounds()) {
-                vehicle.level().playSound(null, vehicle.getOnPos(), ModSounds.HIT.get(), SoundSource.PLAYERS, 1, 1);
-            }
+            Vec3 position;
 
-            if (vehicle.shouldSendHitParticles() && vehicle.level() instanceof ServerLevel serverLevel) {
-                sendParticle(serverLevel, ModParticleTypes.FIRE_STAR.get(), vehicle.getX(), vehicle.getY() + 0.5 * vehicle.getBbHeight(), vehicle.getZ(),
-                        2, 0.4, 0.4, 0.4, 0.2, false);
+            position = TraceTool.playerFindLookingPos(event.getEntity(), vehicle, event.getEntity().getEntityReach());
+
+            if (position != null) {
+                if (vehicle.shouldSendHitSounds()) {
+                    vehicle.level().playSound(null, BlockPos.containing(position), ModSounds.HIT.get(), SoundSource.PLAYERS, 1, 1);
+                }
+
+                if (vehicle.shouldSendHitParticles() && vehicle.level() instanceof ServerLevel serverLevel) {
+                    sendParticle(serverLevel, ModParticleTypes.FIRE_STAR.get(), position.x, position.y, position.z,
+                            2, 0, 0, 0, 0.2, false);
+                }
             }
         }
     }
