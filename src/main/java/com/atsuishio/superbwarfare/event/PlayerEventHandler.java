@@ -204,9 +204,7 @@ public class PlayerEventHandler {
     public static void onAttackEntity(AttackEntityEvent event) {
         var target = event.getTarget();
         if (target instanceof VehicleEntity vehicle) {
-            Vec3 position;
-
-            position = TraceTool.playerFindLookingPos(event.getEntity(), vehicle, event.getEntity().getEntityReach());
+            Vec3 position = TraceTool.playerFindLookingPos(event.getEntity(), vehicle, event.getEntity().getEntityReach());
 
             if (position != null) {
                 if (vehicle.shouldSendHitSounds()) {
