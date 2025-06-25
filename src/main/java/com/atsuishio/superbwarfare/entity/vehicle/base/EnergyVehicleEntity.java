@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.entity.vehicle.base;
 
 import com.atsuishio.superbwarfare.capability.energy.SyncedEntityEnergyStorage;
 import com.atsuishio.superbwarfare.capability.energy.VehicleEnergyStorage;
+import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.IntTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -15,6 +16,7 @@ import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.IEnergyStorage;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public abstract class EnergyVehicleEntity extends VehicleEntity {
 
@@ -90,7 +92,15 @@ public abstract class EnergyVehicleEntity extends VehicleEntity {
     }
 
     @Override
+    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
+        if (cap == ForgeCapabilities.ENERGY) {
+            return energy.cast();
+        }
+        return super.getCapability(cap, side);
+    }
+
+    @Override
     public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap) {
-        return ForgeCapabilities.ENERGY.orEmpty(cap, energy);
+        return this.getCapability(cap, null);
     }
 }
