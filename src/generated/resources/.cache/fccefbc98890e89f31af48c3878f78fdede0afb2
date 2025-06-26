@@ -1,5 +1,0 @@
-// 1.21.1	2025-06-24T02:18:26.2390652	Tags for minecraft:damage_type mod id superbwarfare
-ddb620a872e399a1733001853474cf0b7eb9dc88 data/superbwarfare/tags/damage_type/projectile.json
-a14ba1399ece410382dce60dda85902fdd87bf23 data/superbwarfare/tags/damage_type/projectile_absolute.json
-49e069125ecef20d6b00fd22e219bfdee5b90b9b data/superbwarfare/tags/damage_type/vehicle_ignore.json
-146a85f38dd9a68950693b6493db746c1c1b7918 data/superbwarfare/tags/damage_type/vehicle_not_absorb.json
