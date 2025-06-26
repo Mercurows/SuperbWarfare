@@ -356,7 +356,12 @@ public abstract class VehicleEntity extends Entity {
     protected void readAdditionalSaveData(CompoundTag compound) {
         this.entityData.set(LAST_ATTACKER_UUID, compound.getString("LastAttacker"));
         this.entityData.set(LAST_DRIVER_UUID, compound.getString("LastDriver"));
-        this.entityData.set(HEALTH, compound.getFloat("Health"));
+
+        if (compound.contains("Health")) {
+            this.entityData.set(HEALTH, compound.getFloat("Health"));
+        } else {
+            this.entityData.set(HEALTH, this.getMaxHealth());
+        }
 
         this.entityData.set(TURRET_HEALTH, compound.getFloat("TurretHealth"));
         this.entityData.set(L_WHEEL_HEALTH, compound.getFloat("LeftWheelHealth"));
