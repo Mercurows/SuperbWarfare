@@ -122,3 +122,5 @@ run/
 
 .mcreator
 *.bbmodel
+
+.cache
