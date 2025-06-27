@@ -12,6 +12,8 @@ import net.minecraft.world.item.Item;
 import net.minecraftforge.registries.RegistryObject;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Locale;
+
 public class Perk {
 
     public final String descriptionId;
@@ -28,7 +30,7 @@ public class Perk {
         boolean isFirst = true;
         for (char c : descriptionId.toCharArray()) {
             if (isFirst || useUpperCase) {
-                builder.append(Character.toUpperCase(c));
+                builder.append(String.valueOf(c).toUpperCase(Locale.ENGLISH));
                 isFirst = false;
                 useUpperCase = false;
             } else if (c == '_') {

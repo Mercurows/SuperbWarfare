@@ -7,6 +7,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
+import java.util.Locale;
+
 public enum Ammo {
     HANDGUN(ChatFormatting.GREEN),
     RIFLE(ChatFormatting.AQUA),
@@ -37,7 +39,7 @@ public enum Ammo {
     Ammo(ChatFormatting color) {
         this.color = color;
 
-        var name = name().toLowerCase();
+        var name = name().toLowerCase(Locale.ENGLISH);
         this.name = name;
         this.translationKey = "item.superbwarfare.ammo." + name;
 
@@ -48,7 +50,7 @@ public enum Ammo {
             if (c == '_') {
                 useUpperCase = true;
             } else if (useUpperCase) {
-                builder.append(Character.toUpperCase(c));
+                builder.append(String.valueOf(c).toUpperCase(Locale.ENGLISH));
                 useUpperCase = false;
             } else {
                 builder.append(c);
