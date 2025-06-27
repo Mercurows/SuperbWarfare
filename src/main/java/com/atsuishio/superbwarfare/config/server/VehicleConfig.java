@@ -47,12 +47,12 @@ public class VehicleConfig {
 
     public static ModConfigSpec.IntValue AH_6_MIN_ENERGY_COST;
     public static ModConfigSpec.IntValue AH_6_MAX_ENERGY_COST;
-    public static ModConfigSpec.IntValue AH_6_CANNON_DAMAGE;
-    public static ModConfigSpec.IntValue AH_6_CANNON_EXPLOSION_DAMAGE;
+    public static ModConfigSpec.DoubleValue AH_6_CANNON_DAMAGE;
+    public static ModConfigSpec.DoubleValue AH_6_CANNON_EXPLOSION_DAMAGE;
     public static ModConfigSpec.DoubleValue AH_6_CANNON_EXPLOSION_RADIUS;
-    public static ModConfigSpec.IntValue AH_6_ROCKET_DAMAGE;
-    public static ModConfigSpec.IntValue AH_6_ROCKET_EXPLOSION_DAMAGE;
-    public static ModConfigSpec.IntValue AH_6_ROCKET_EXPLOSION_RADIUS;
+    public static ModConfigSpec.DoubleValue AH_6_ROCKET_DAMAGE;
+    public static ModConfigSpec.DoubleValue AH_6_ROCKET_EXPLOSION_DAMAGE;
+    public static ModConfigSpec.DoubleValue AH_6_ROCKET_EXPLOSION_RADIUS;
     public static ModConfigSpec.BooleanValue AH_6_CANNON_DESTROY;
 
     public static ModConfigSpec.IntValue LAV_150_ENERGY_COST;
@@ -230,22 +230,22 @@ public class VehicleConfig {
         AH_6_MAX_ENERGY_COST = builder.defineInRange("ah_6_max_energy_cost", 128, 0, 2147483647);
 
         builder.comment("The cannon damage of AH-6");
-        AH_6_CANNON_DAMAGE = builder.defineInRange("ah_6_cannon_damage", 25, 1, 10000000);
+        AH_6_CANNON_DAMAGE = builder.defineInRange("ah_6_cannon_damage", 25d, 1, 10000000);
 
         builder.comment("The cannon explosion damage of AH-6");
-        AH_6_CANNON_EXPLOSION_DAMAGE = builder.defineInRange("ah_6_cannon_explosion_damage", 20, 1, 10000000);
+        AH_6_CANNON_EXPLOSION_DAMAGE = builder.defineInRange("ah_6_cannon_explosion_damage", 12d, 1, 10000000);
 
-        builder.comment("The cannon explosion damage of AH-6");
-        AH_6_CANNON_EXPLOSION_RADIUS = builder.defineInRange("ah_6_cannon_explosion_damage", 8d, 1, 10000000);
+        builder.comment("The cannon explosion radius of AH-6");
+        AH_6_CANNON_EXPLOSION_RADIUS = builder.defineInRange("ah_6_cannon_explosion_radius", 3.5d, 1, 10000000);
 
         builder.comment("The rocket damage of AH-6");
-        AH_6_ROCKET_DAMAGE = builder.defineInRange("ah_6_rocket_damage", 80, 1, 10000000);
+        AH_6_ROCKET_DAMAGE = builder.defineInRange("ah_6_rocket_damage", 80d, 1, 10000000);
 
         builder.comment("The rocket explosion damage of AH-6");
-        AH_6_ROCKET_EXPLOSION_DAMAGE = builder.defineInRange("ah_6_rocket_explosion_damage", 40, 1, 10000000);
+        AH_6_ROCKET_EXPLOSION_DAMAGE = builder.defineInRange("ah_6_rocket_explosion_damage", 40d, 1, 10000000);
 
         builder.comment("The rocket explosion radius of AH-6");
-        AH_6_ROCKET_EXPLOSION_RADIUS = builder.defineInRange("ah_6_rocket_explosion_radius", 5, 1, 10000000);
+        AH_6_ROCKET_EXPLOSION_RADIUS = builder.defineInRange("ah_6_rocket_explosion_radius", 5d, 1, 10000000);
 
         builder.comment("Whether to destroy the block when cannon of AH-6 hits a block");
         AH_6_CANNON_DESTROY = builder.define("ah_6_cannon_destroy", true);

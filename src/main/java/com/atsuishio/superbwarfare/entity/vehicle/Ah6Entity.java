@@ -98,7 +98,7 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
                 new VehicleWeapon[]{
                         new SmallCannonShellWeapon()
                                 .blockInteraction(VehicleConfig.AH_6_CANNON_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP)
-                                .damage(VehicleConfig.AH_6_CANNON_DAMAGE.get())
+                                .damage(VehicleConfig.AH_6_CANNON_DAMAGE.get().floatValue())
                                 .explosionDamage(VehicleConfig.AH_6_CANNON_EXPLOSION_DAMAGE.get().floatValue())
                                 .explosionRadius(VehicleConfig.AH_6_CANNON_EXPLOSION_RADIUS.get().floatValue())
                                 .sound(ModSounds.INTO_CANNON.get())
@@ -108,9 +108,9 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
                                 .sound3pFar(ModSounds.HELICOPTER_CANNON_FAR.get())
                                 .sound3pVeryFar(ModSounds.HELICOPTER_CANNON_VERYFAR.get()),
                         new HeliRocketWeapon()
-                                .damage(VehicleConfig.AH_6_ROCKET_DAMAGE.get())
-                                .explosionDamage(VehicleConfig.AH_6_ROCKET_EXPLOSION_DAMAGE.get())
-                                .explosionRadius(VehicleConfig.AH_6_ROCKET_EXPLOSION_RADIUS.get())
+                                .damage(VehicleConfig.AH_6_ROCKET_DAMAGE.get().floatValue())
+                                .explosionDamage(VehicleConfig.AH_6_ROCKET_EXPLOSION_DAMAGE.get().floatValue())
+                                .explosionRadius(VehicleConfig.AH_6_ROCKET_EXPLOSION_RADIUS.get().floatValue())
                                 .sound(ModSounds.INTO_MISSILE.get())
                                 .sound1p(ModSounds.HELICOPTER_ROCKET_FIRE_1P.get())
                                 .sound3p(ModSounds.HELICOPTER_ROCKET_FIRE_3P.get()),
