@@ -1,0 +1,12 @@
+{
+  "base": {
+    "parent": "superbwarfare:item/m_2_base"
+  },
+  "gui_light": "front",
+  "loader": "forge:separate_transforms",
+  "perspectives": {
+    "gui": {
+      "parent": "superbwarfare:item/m_2_icon"
+    }
+  }
+}

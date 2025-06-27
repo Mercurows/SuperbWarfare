@@ -2489,6 +2489,22 @@
       }
     ]
   },
+  "m2_reload_normal": {
+    "sounds": [
+      {
+        "name": "superbwarfare:m2/m2_reload_normal",
+        "stream": false
+      }
+    ]
+  },
+  "m2_reload_empty": {
+    "sounds": [
+      {
+        "name": "superbwarfare:m2/m2_reload_empty",
+        "stream": false
+      }
+    ]
+  },
   "wheel_chair_engine": {
     "sounds": [
       {

@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:smithing_transform",
+  "addition": {
+    "tag": "superbwarfare:storage_blocks/steel"
+  },
+  "base": {
+    "item": "superbwarfare:rare_material_pack"
+  },
+  "result": {
+    "item": "superbwarfare:m_2"
+  },
+  "template": {
+    "item": "superbwarfare:m2hb_blueprint"
+  }
+}

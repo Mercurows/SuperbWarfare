@@ -2,19 +2,13 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "pattern": [
-    "abc",
+    " b ",
     "def",
     "ghi"
   ],
   "key": {
-    "a": {
-      "item": "superbwarfare:m2hb_blueprint"
-    },
     "b": {
-      "item": "superbwarfare:rare_material_pack"
-    },
-    "c": {
-      "tag": "superbwarfare:ingots/steel"
+      "item": "superbwarfare:m_2"
     },
     "d": {
       "item": "minecraft:comparator"

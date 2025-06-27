@@ -1,0 +1,40 @@
+{
+  "ID": "superbwarfare:m_2",
+  "Spread": 5,
+  "RecoilX": 0.012,
+  "RecoilY": 0.02,
+  "Damage": 40,
+  "Headshot": 2.5,
+  "Velocity": 43,
+  "Magazine": 100,
+  "Weight": 15,
+  "DefaultFireMode": "Auto",
+  "NormalReloadTime": 100,
+  "EmptyReloadTime": 124,
+  "BypassesArmor": 0.4,
+  "SoundRadius": 15,
+  "RPM": 400,
+  "HeatPerShoot": 2,
+  "AvailableFireModes": [
+    "Semi",
+    "Auto"
+  ],
+  "DamageReduce": {
+    "Type": "Heavy"
+  },
+  "AmmoType": "@HeavyAmmo",
+  "AvailablePerks": [
+    "@Ammo",
+    "superbwarfare:fourth_times_charm",
+    "superbwarfare:subsistence",
+    "superbwarfare:powerful_attraction",
+    "superbwarfare:intelligent_chip",
+    "superbwarfare:killing_tally",
+    "superbwarfare:desperado",
+    "superbwarfare:monster_hunter",
+    "superbwarfare:vorpal_weapon",
+    "!superbwarfare:micro_missile",
+    "!superbwarfare:longer_wire",
+    "!superbwarfare:cupid_arrow"
+  ]
+}
