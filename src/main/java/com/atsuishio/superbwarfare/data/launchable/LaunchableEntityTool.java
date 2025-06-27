@@ -15,6 +15,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.InputStreamReader;
 import java.util.HashMap;
+import java.util.Locale;
 
 @EventBusSubscriber(modid = Mod.MODID)
 public class LaunchableEntityTool {
@@ -94,9 +95,9 @@ public class LaunchableEntityTool {
             case "@sbw:damage" -> DoubleTag.valueOf(data.damage());
             case "@sbw:owner" -> NbtUtils.createUUID(data.shooter());
             case "@sbw:owner_string_lower" ->
-                    StringTag.valueOf(data.shooter().toString().replace("-", "").toLowerCase());
+                    StringTag.valueOf(data.shooter().toString().replace("-", "").toLowerCase(Locale.ENGLISH));
             case "@sbw:owner_string_upper" ->
-                    StringTag.valueOf(data.shooter().toString().replace("-", "").toUpperCase());
+                    StringTag.valueOf(data.shooter().toString().replace("-", "").toUpperCase(Locale.ENGLISH));
             case "@sbw:explosion_damage" -> DoubleTag.valueOf(data.explosionDamage());
             case "@sbw:explosion_radius" -> DoubleTag.valueOf(data.explosionRadius());
             case "@sbw:spread" -> DoubleTag.valueOf(data.spread());
