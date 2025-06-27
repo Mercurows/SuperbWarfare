@@ -9,7 +9,7 @@
       "item": "minecraft:lapis_lazuli"
     },
     "S": {
-      "item": "superbwarfare:m2hb_blueprint"
+      "item": "superbwarfare:m_2_hb_blueprint"
     }
   },
   "pattern": [
@@ -19,7 +19,7 @@
   ],
   "result": {
     "count": 2,
-    "item": "superbwarfare:m2hb_blueprint"
+    "item": "superbwarfare:m_2_hb_blueprint"
   },
   "show_notification": true
 }

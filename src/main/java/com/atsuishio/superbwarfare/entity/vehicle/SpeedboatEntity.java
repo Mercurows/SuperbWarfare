@@ -78,10 +78,10 @@ public class SpeedboatEntity extends ContainerMobileVehicleEntity implements Geo
                                 .headShot(2)
                                 .zoom(false)
                                 .icon(Mod.loc("textures/screens/vehicle_weapon/gun_12_7mm.png"))
-                                .sound1p(ModSounds.M_2_FIRE_1P.get())
-                                .sound3p(ModSounds.M_2_FIRE_3P.get())
-                                .sound3pFar(ModSounds.M_2_FAR.get())
-                                .sound3pVeryFar(ModSounds.M_2_VERYFAR.get())
+                                .sound1p(ModSounds.M_2_HB_FIRE_1P.get())
+                                .sound3p(ModSounds.M_2_HB_FIRE_3P.get())
+                                .sound3pFar(ModSounds.M_2_HB_FAR.get())
+                                .sound3pVeryFar(ModSounds.M_2_HB_VERYFAR.get())
                 }
         };
     }

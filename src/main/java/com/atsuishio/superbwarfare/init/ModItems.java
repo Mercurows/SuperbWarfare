@@ -78,7 +78,7 @@ public class ModItems {
     public static final RegistryObject<Item> DEVOTION = GUNS.register("devotion", DevotionItem::new);
     public static final RegistryObject<Item> RPK = GUNS.register("rpk", RpkItem::new);
     public static final RegistryObject<Item> M_60 = GUNS.register("m_60", M60Item::new);
-    public static final RegistryObject<Item> M_2 = GUNS.register("m_2", M2Item::new);
+    public static final RegistryObject<Item> M_2_HB = GUNS.register("m_2_hb", M2HBItem::new);
     public static final RegistryObject<Item> MINIGUN = GUNS.register("minigun", MinigunItem::new);
     public static final RegistryObject<Item> M_79 = GUNS.register("m_79", M79Item::new);
     public static final RegistryObject<Item> SECONDARY_CATACLYSM = GUNS.register("secondary_cataclysm", SecondaryCataclysm::new);
@@ -242,7 +242,7 @@ public class ModItems {
     public static final RegistryObject<Item> K_98_BLUEPRINT = ITEMS.register("k_98_blueprint", () -> new BlueprintItem(Rarity.RARE));
     public static final RegistryObject<Item> MOSIN_NAGANT_BLUEPRINT = ITEMS.register("mosin_nagant_blueprint", () -> new BlueprintItem(Rarity.RARE));
     public static final RegistryObject<Item> JAVELIN_BLUEPRINT = ITEMS.register("javelin_blueprint", () -> new BlueprintItem(RarityTool.LEGENDARY));
-    public static final RegistryObject<Item> M_2_HB_BLUEPRINT = ITEMS.register("m2hb_blueprint", () -> new BlueprintItem(Rarity.RARE));
+    public static final RegistryObject<Item> M_2_HB_BLUEPRINT = ITEMS.register("m_2_hb_blueprint", () -> new BlueprintItem(Rarity.RARE));
     public static final RegistryObject<Item> SECONDARY_CATACLYSM_BLUEPRINT = ITEMS.register("secondary_cataclysm_blueprint", () -> new BlueprintItem(RarityTool.LEGENDARY));
     public static final RegistryObject<Item> INSIDIOUS_BLUEPRINT = ITEMS.register("insidious_blueprint", () -> new BlueprintItem(Rarity.EPIC));
     public static final RegistryObject<Item> AURELIA_SCEPTRE_BLUEPRINT = ITEMS.register("aurelia_sceptre_blueprint", () -> new BlueprintItem(RarityTool.LEGENDARY));

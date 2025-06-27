@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.item.gun.machinegun;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.client.renderer.gun.M2ItemRenderer;
+import com.atsuishio.superbwarfare.client.renderer.gun.M2HBItemRenderer;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModSounds;
@@ -36,9 +36,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 
-public class M2Item extends GunItem {
+public class M2HBItem extends GunItem {
 
-    public M2Item() {
+    public M2HBItem() {
         super(new Properties().stacksTo(1).rarity(Rarity.RARE));
     }
 
@@ -51,12 +51,12 @@ public class M2Item extends GunItem {
             @Override
             public BlockEntityWithoutLevelRenderer getCustomRenderer() {
                 if (renderer == null) {
-                    renderer = new M2ItemRenderer();
+                    renderer = new M2HBItemRenderer();
                 }
                 return renderer;
             }
 
-            private static final HumanoidModel.ArmPose MinigunPose = HumanoidModel.ArmPose.create("M2", false, (model, entity, arm) -> {
+            private static final HumanoidModel.ArmPose POSE = HumanoidModel.ArmPose.create("M2HB", false, (model, entity, arm) -> {
                 if (arm != HumanoidArm.LEFT) {
                     model.rightArm.xRot = 45f * Mth.DEG_TO_RAD + model.head.xRot;
                     model.rightArm.yRot = -10f * Mth.DEG_TO_RAD;
@@ -69,7 +69,7 @@ public class M2Item extends GunItem {
             public HumanoidModel.ArmPose getArmPose(LivingEntity entityLiving, InteractionHand hand, ItemStack itemStack) {
                 if (!itemStack.isEmpty()) {
                     if (entityLiving.getUsedItemHand() == hand) {
-                        return MinigunPose;
+                        return POSE;
                     }
                 }
                 return HumanoidModel.ArmPose.EMPTY;
@@ -77,46 +77,46 @@ public class M2Item extends GunItem {
         });
     }
 
-    private PlayState fireAnimPredicate(AnimationState<M2Item> event) {
+    private PlayState fireAnimPredicate(AnimationState<M2HBItem> event) {
         LocalPlayer player = Minecraft.getInstance().player;
         if (player == null) return PlayState.STOP;
         ItemStack stack = player.getMainHandItem();
         if (!(stack.getItem() instanceof GunItem)) return PlayState.STOP;
         if (event.getData(DataTickets.ITEM_RENDER_PERSPECTIVE) != ItemDisplayContext.FIRST_PERSON_RIGHT_HAND)
-            return event.setAndContinue(RawAnimation.begin().thenLoop("animation.m_2.idle"));
+            return event.setAndContinue(RawAnimation.begin().thenLoop("animation.m2hb.idle"));
 
         if (ClientEventHandler.firePosTimer > 0 && ClientEventHandler.firePosTimer < 0.45) {
-            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m_2.fire"));
+            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m2hb.fire"));
         }
 
-        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.m_2.idle"));
+        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.m2hb.idle"));
     }
 
-    private PlayState idlePredicate(AnimationState<M2Item> event) {
+    private PlayState idlePredicate(AnimationState<M2HBItem> event) {
         LocalPlayer player = Minecraft.getInstance().player;
         if (player == null) return PlayState.STOP;
         ItemStack stack = player.getMainHandItem();
         if (!(stack.getItem() instanceof GunItem)) return PlayState.STOP;
         if (event.getData(DataTickets.ITEM_RENDER_PERSPECTIVE) != ItemDisplayContext.FIRST_PERSON_RIGHT_HAND)
-            return event.setAndContinue(RawAnimation.begin().thenLoop("animation.m_2.idle"));
+            return event.setAndContinue(RawAnimation.begin().thenLoop("animation.m2hb.idle"));
 
         if (GunData.from(stack).reload.empty()) {
-            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m_2.reload_empty"));
+            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m2hb.reload_empty"));
         }
 
         if (GunData.from(stack).reload.normal()) {
-            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m_2.reload_normal"));
+            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m2hb.reload_normal"));
         }
 
         if (player.isSprinting() && player.onGround() && ClientEventHandler.cantSprint == 0 && ClientEventHandler.drawTime < 0.01) {
             if (ClientEventHandler.tacticalSprint) {
-                return event.setAndContinue(RawAnimation.begin().thenLoop("animation.m_2.run_fast"));
+                return event.setAndContinue(RawAnimation.begin().thenLoop("animation.m2hb.run_fast"));
             } else {
-                return event.setAndContinue(RawAnimation.begin().thenLoop("animation.m_2.run"));
+                return event.setAndContinue(RawAnimation.begin().thenLoop("animation.m2hb.run"));
             }
         }
 
-        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.m_2.idle"));
+        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.m2hb.idle"));
     }
 
     @Override
@@ -129,7 +129,7 @@ public class M2Item extends GunItem {
 
     @Override
     public Set<SoundEvent> getReloadSound() {
-        return Set.of(ModSounds.M_2_RELOAD_EMPTY.get(), ModSounds.M_2_RELOAD_NORMAL.get());
+        return Set.of(ModSounds.M_2_HB_RELOAD_EMPTY.get(), ModSounds.M_2_HB_RELOAD_NORMAL.get());
     }
 
     @Override
@@ -147,7 +147,7 @@ public class M2Item extends GunItem {
 
     @Override
     public ResourceLocation getGunIcon() {
-        return Mod.loc("textures/gun_icon/m2_icon.png");
+        return Mod.loc("textures/gun_icon/m_2_hb_icon.png");
     }
 
     @Override
