@@ -76,7 +76,7 @@ public class ModItems {
     public static final DeferredHolder<Item, DevotionItem> DEVOTION = GUNS.register("devotion", DevotionItem::new);
     public static final DeferredHolder<Item, RpkItem> RPK = GUNS.register("rpk", RpkItem::new);
     public static final DeferredHolder<Item, M60Item> M_60 = GUNS.register("m_60", M60Item::new);
-    public static final DeferredHolder<Item, M2Item> M_2 = GUNS.register("m_2", M2Item::new);
+    public static final DeferredHolder<Item, M2HBItem> M_2_HB = GUNS.register("m_2_hb", M2HBItem::new);
     public static final DeferredHolder<Item, MinigunItem> MINIGUN = GUNS.register("minigun", MinigunItem::new);
     public static final DeferredHolder<Item, M79Item> M_79 = GUNS.register("m_79", M79Item::new);
     public static final DeferredHolder<Item, SecondaryCataclysm> SECONDARY_CATACLYSM = GUNS.register("secondary_cataclysm", SecondaryCataclysm::new);
@@ -243,7 +243,7 @@ public class ModItems {
     public static final DeferredHolder<Item, BlueprintItem> K_98_BLUEPRINT = ITEMS.register("k_98_blueprint", () -> new BlueprintItem(Rarity.RARE));
     public static final DeferredHolder<Item, BlueprintItem> MOSIN_NAGANT_BLUEPRINT = ITEMS.register("mosin_nagant_blueprint", () -> new BlueprintItem(Rarity.RARE));
     public static final DeferredHolder<Item, BlueprintItem> JAVELIN_BLUEPRINT = ITEMS.register("javelin_blueprint", () -> new BlueprintItem(ModEnumExtensions.getLegendary()));
-    public static final DeferredHolder<Item, BlueprintItem> M_2_HB_BLUEPRINT = ITEMS.register("m2hb_blueprint", () -> new BlueprintItem(Rarity.RARE));
+    public static final DeferredHolder<Item, BlueprintItem> M_2_HB_BLUEPRINT = ITEMS.register("m_2_hb_blueprint", () -> new BlueprintItem(Rarity.RARE));
     public static final DeferredHolder<Item, BlueprintItem> SECONDARY_CATACLYSM_BLUEPRINT = ITEMS.register("secondary_cataclysm_blueprint", () -> new BlueprintItem(ModEnumExtensions.getLegendary()));
     public static final DeferredHolder<Item, BlueprintItem> INSIDIOUS_BLUEPRINT = ITEMS.register("insidious_blueprint", () -> new BlueprintItem(Rarity.EPIC));
     public static final DeferredHolder<Item, BlueprintItem> AURELIA_SCEPTRE_BLUEPRINT = ITEMS.register("aurelia_sceptre_blueprint", () -> new BlueprintItem(ModEnumExtensions.getLegendary()));

@@ -4,7 +4,7 @@ import com.atsuishio.superbwarfare.client.AnimationHelper;
 import com.atsuishio.superbwarfare.client.model.item.M2ItemModel;
 import com.atsuishio.superbwarfare.client.renderer.CustomGunRenderer;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
-import com.atsuishio.superbwarfare.item.gun.machinegun.M2Item;
+import com.atsuishio.superbwarfare.item.gun.machinegun.M2HBItem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
@@ -15,14 +15,14 @@ import net.minecraft.world.item.ItemStack;
 import software.bernie.geckolib.animatable.GeoItem;
 import software.bernie.geckolib.cache.object.GeoBone;
 
-public class M2ItemRenderer extends CustomGunRenderer<M2Item> {
+public class M2HBItemRenderer extends CustomGunRenderer<M2HBItem> {
 
-    public M2ItemRenderer() {
+    public M2HBItemRenderer() {
         super(new M2ItemModel());
     }
 
     @Override
-    public void renderRecursively(PoseStack stack, M2Item animatable, GeoBone bone, RenderType type, MultiBufferSource buffer, VertexConsumer bufferIn, boolean isReRender, float partialTick, int packedLightIn, int packedOverlayIn, int color) {
+    public void renderRecursively(PoseStack stack, M2HBItem animatable, GeoBone bone, RenderType type, MultiBufferSource buffer, VertexConsumer bufferIn, boolean isReRender, float partialTick, int packedLightIn, int packedOverlayIn, int color) {
         Minecraft mc = Minecraft.getInstance();
         String name = bone.getName();
         boolean renderingArms = false;

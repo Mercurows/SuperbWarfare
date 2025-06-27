@@ -5,7 +5,7 @@ import com.atsuishio.superbwarfare.client.AnimationHelper;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
-import com.atsuishio.superbwarfare.item.gun.machinegun.M2Item;
+import com.atsuishio.superbwarfare.item.gun.machinegun.M2HBItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -14,38 +14,38 @@ import net.minecraft.world.item.ItemStack;
 import software.bernie.geckolib.animation.AnimationState;
 import software.bernie.geckolib.cache.object.GeoBone;
 
-public class M2ItemModel extends CustomGunModel<M2Item> {
+public class M2ItemModel extends CustomGunModel<M2HBItem> {
 
     public static float fireRotY = 0f;
     public static float fireRotZ = 0f;
 
     @Override
-    public ResourceLocation getAnimationResource(M2Item animatable) {
+    public ResourceLocation getAnimationResource(M2HBItem animatable) {
         return Mod.loc("animations/m_2.animation.json");
     }
 
     @Override
-    public ResourceLocation getModelResource(M2Item animatable) {
-        return Mod.loc("geo/m_2.geo.json");
+    public ResourceLocation getModelResource(M2HBItem animatable) {
+        return Mod.loc("geo/m_2_hb.geo.json");
     }
 
     @Override
-    public ResourceLocation getTextureResource(M2Item animatable) {
-        return Mod.loc("textures/item/m_2.png");
+    public ResourceLocation getTextureResource(M2HBItem animatable) {
+        return Mod.loc("textures/item/m_2_hb.png");
     }
 
     @Override
-    public ResourceLocation getLODModelResource(M2Item animatable) {
-        return Mod.loc("geo/lod/m_2.geo.json");
+    public ResourceLocation getLODModelResource(M2HBItem animatable) {
+        return Mod.loc("geo/lod/m_2_hb.geo.json");
     }
 
     @Override
-    public ResourceLocation getLODTextureResource(M2Item animatable) {
-        return Mod.loc("textures/item/lod/m_2.png");
+    public ResourceLocation getLODTextureResource(M2HBItem animatable) {
+        return Mod.loc("textures/item/lod/m_2_hb.png");
     }
 
     @Override
-    public void setCustomAnimations(M2Item animatable, long instanceId, AnimationState<M2Item> animationState) {
+    public void setCustomAnimations(M2HBItem animatable, long instanceId, AnimationState<M2HBItem> animationState) {
         Player player = Minecraft.getInstance().player;
         if (player == null) return;
         ItemStack stack = player.getMainHandItem();

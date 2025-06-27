@@ -95,7 +95,7 @@ public class CrossHairOverlay implements LayeredDraw.Layer {
         float finPosX = ((w - finLength) / 2) + moveX;
         float finPosY = ((h - finLength) / 2) + moveY;
 
-        if (shouldRenderCrossHair(player) || (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON && (stack.is(ModItems.MINIGUN.get()) || stack.is(ModItems.AURELIA_SCEPTRE.get()) || stack.is(ModItems.M_2.get()))) || (Minecraft.getInstance().options.getCameraType() == CameraType.THIRD_PERSON_BACK && (ClientEventHandler.zoomTime > 0 || ClientEventHandler.bowPullPos > 0))) {
+        if (shouldRenderCrossHair(player) || (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON && (stack.is(ModItems.MINIGUN.get()) || stack.is(ModItems.AURELIA_SCEPTRE.get()) || stack.is(ModItems.M_2_HB.get()))) || (Minecraft.getInstance().options.getCameraType() == CameraType.THIRD_PERSON_BACK && (ClientEventHandler.zoomTime > 0 || ClientEventHandler.bowPullPos > 0))) {
             preciseBlit(guiGraphics, Mod.loc("textures/screens/point.png"), w / 2f - 7.5f + moveX, h / 2f - 7.5f + moveY, 0, 0, 16, 16, 16, 16);
             if (!player.isSprinting() || ClientEventHandler.cantSprint > 0) {
                 if (data.projectileAmount() > 1) {

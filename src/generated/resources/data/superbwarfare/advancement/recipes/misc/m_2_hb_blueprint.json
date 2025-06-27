@@ -1,11 +1,11 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_m2hb_blueprint": {
+    "has_m_2_hb_blueprint": {
       "conditions": {
         "items": [
           {
-            "items": "superbwarfare:m2hb_blueprint"
+            "items": "superbwarfare:m_2_hb_blueprint"
           }
         ]
       },
@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "superbwarfare:m_2_smithing"
+        "recipe": "superbwarfare:m_2_hb_blueprint"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -21,12 +21,12 @@
   "requirements": [
     [
       "has_the_recipe",
-      "has_m2hb_blueprint"
+      "has_m_2_hb_blueprint"
     ]
   ],
   "rewards": {
     "recipes": [
-      "superbwarfare:m_2_smithing"
+      "superbwarfare:m_2_hb_blueprint"
     ]
   }
 }

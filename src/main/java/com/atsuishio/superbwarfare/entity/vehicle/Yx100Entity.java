@@ -151,10 +151,10 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
                                 .ammo(ModItems.HEAVY_AMMO.get())
                                 .sound(ModSounds.INTO_CANNON.get())
                                 .icon(Mod.loc("textures/screens/vehicle_weapon/gun_12_7mm.png"))
-                                .sound1p(ModSounds.M_2_FIRE_1P.get())
-                                .sound3p(ModSounds.M_2_FIRE_3P.get())
-                                .sound3pFar(ModSounds.M_2_FAR.get())
-                                .sound3pVeryFar(ModSounds.M_2_VERYFAR.get()),
+                                .sound1p(ModSounds.M_2_HB_FIRE_1P.get())
+                                .sound3p(ModSounds.M_2_HB_FIRE_3P.get())
+                                .sound3pFar(ModSounds.M_2_HB_FAR.get())
+                                .sound3pVeryFar(ModSounds.M_2_HB_VERYFAR.get()),
                 },
                 new VehicleWeapon[]{
                         // 机枪
@@ -165,10 +165,10 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
                                 .bypassArmorRate(0.4f)
                                 .ammo(ModItems.HEAVY_AMMO.get())
                                 .icon(Mod.loc("textures/screens/vehicle_weapon/gun_12_7mm.png"))
-                                .sound1p(ModSounds.M_2_FIRE_1P.get())
-                                .sound3p(ModSounds.M_2_FIRE_3P.get())
-                                .sound3pFar(ModSounds.M_2_FAR.get())
-                                .sound3pVeryFar(ModSounds.M_2_VERYFAR.get()),
+                                .sound1p(ModSounds.M_2_HB_FIRE_1P.get())
+                                .sound3p(ModSounds.M_2_HB_FIRE_3P.get())
+                                .sound3pFar(ModSounds.M_2_HB_FAR.get())
+                                .sound3pVeryFar(ModSounds.M_2_HB_VERYFAR.get()),
                 },
                 new VehicleWeapon[]{
                         // 蜂群无人机
