@@ -14,13 +14,14 @@ import net.minecraft.world.item.ItemStack;
 import software.bernie.geckolib.core.animatable.model.CoreGeoBone;
 import software.bernie.geckolib.core.animation.AnimationState;
 
-public class M2ItemModel extends CustomGunModel<M2HBItem> {
+public class M2HBItemModel extends CustomGunModel<M2HBItem> {
 
     public static float fireRotY = 0f;
     public static float fireRotZ = 0f;
+
     @Override
     public ResourceLocation getAnimationResource(M2HBItem animatable) {
-        return Mod.loc("animations/m_2.animation.json");
+        return Mod.loc("animations/m_2_hb.animation.json");
     }
 
     @Override

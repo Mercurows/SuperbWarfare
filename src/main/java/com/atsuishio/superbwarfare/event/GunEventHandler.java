@@ -524,8 +524,14 @@ public class GunEventHandler {
     @SubscribeEvent
     public static void onMissingMappings(MissingMappingsEvent event) {
         for (MissingMappingsEvent.Mapping<Item> mapping : event.getAllMappings(Registries.ITEM)) {
-            if (Mod.MODID.equals(mapping.getKey().getNamespace()) && mapping.getKey().getPath().equals("abekiri")) {
-                mapping.remap(ModItems.HOMEMADE_SHOTGUN.get());
+            if (Mod.MODID.equals(mapping.getKey().getNamespace())) {
+                var item = mapping.getKey().getPath();
+                if (item.equals("abekiri")) {
+                    mapping.remap(ModItems.HOMEMADE_SHOTGUN.get());
+                }
+                if (item.equals("m2hb_blueprint")) {
+                    mapping.remap(ModItems.M_2_HB_BLUEPRINT.get());
+                }
             }
         }
     }

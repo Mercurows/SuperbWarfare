@@ -1,11 +1,11 @@
 {
 	"format_version": "1.8.0",
 	"animations": {
-		"animation.m_2.idle": {
+		"animation.m_2_hb.idle": {
 			"loop": true,
 			"animation_length": 1
 		},
-		"animation.m_2.run_fast": {
+		"animation.m_2_hb.run_fast": {
 			"loop": true,
 			"animation_length": 0.6,
 			"bones": {
@@ -135,7 +135,7 @@
 				}
 			}
 		},
-		"animation.m_2.run": {
+		"animation.m_2_hb.run": {
 			"loop": true,
 			"animation_length": 0.8,
 			"bones": {
@@ -265,7 +265,7 @@
 				}
 			}
 		},
-		"animation.m_2.reload_normal": {
+		"animation.m_2_hb.reload_normal": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 5.5,
 			"bones": {
@@ -1107,7 +1107,7 @@
 				}
 			}
 		},
-		"animation.m_2.reload_empty": {
+		"animation.m_2_hb.reload_empty": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 6.25,
 			"bones": {
@@ -2146,7 +2146,7 @@
 				}
 			}
 		},
-		"animation.m_2.fire": {
+		"animation.m_2_hb.fire": {
 			"animation_length": 0.0833,
 			"bones": {
 				"bullet_chain": {
