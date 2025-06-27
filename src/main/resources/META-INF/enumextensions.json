@@ -35,6 +35,15 @@
         "class": "com/atsuishio/superbwarfare/init/ModEnumExtensions$Client",
         "field": "SUPERBWARFARE_MINIGUN_POSE"
       }
+    },
+    {
+      "enum": "net/minecraft/client/model/HumanoidModel$ArmPose",
+      "name": "SUPERBWARFARE_M2_POSE",
+      "constructor": "(ZLnet/neoforged/neoforge/client/IArmPoseTransformer;)V",
+      "parameters": {
+        "class": "com/atsuishio/superbwarfare/init/ModEnumExtensions$Client",
+        "field": "SUPERBWARFARE_M2_POSE"
+      }
     }
   ]
 }

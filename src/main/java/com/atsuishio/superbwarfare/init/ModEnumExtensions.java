@@ -74,5 +74,22 @@ public class ModEnumExtensions {
         public static HumanoidModel.ArmPose getMinigunPose() {
             return SUPERBWARFARE_MINIGUN_POSE.getValue();
         }
+
+        public static final EnumProxy<HumanoidModel.ArmPose> SUPERBWARFARE_M2_POSE = new EnumProxy<>(
+                HumanoidModel.ArmPose.class,
+                false,
+                (IArmPoseTransformer) (model, entity, arm) -> {
+                    if (arm != HumanoidArm.LEFT) {
+                        model.rightArm.xRot = 45f * Mth.DEG_TO_RAD + model.head.xRot;
+                        model.rightArm.yRot = -10f * Mth.DEG_TO_RAD;
+                        model.leftArm.xRot = -45f * Mth.DEG_TO_RAD + model.head.xRot;
+                        model.leftArm.yRot = 40f * Mth.DEG_TO_RAD;
+                    }
+                }
+        );
+
+        public static HumanoidModel.ArmPose getM2Pose() {
+            return SUPERBWARFARE_M2_POSE.getValue();
+        }
     }
 }

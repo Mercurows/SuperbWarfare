@@ -48,7 +48,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Optional;
 import java.util.UUID;
 
-import static com.atsuishio.superbwarfare.item.C4Bomb.TAG_CONTROL;
+import static com.atsuishio.superbwarfare.item.C4BombItem.TAG_CONTROL;
 
 public class C4Entity extends Entity implements GeoEntity, OwnableEntity {
 
