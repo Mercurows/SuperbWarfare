@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.item;
 
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
+import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.network.message.receive.ResetCameraTypeMessage;
 import com.atsuishio.superbwarfare.tools.EntityFindUtil;
 import com.atsuishio.superbwarfare.tools.FormatTool;
@@ -29,15 +30,18 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class Monitor extends Item {
 
     public static final String LINKED = "Linked";
     public static final String LINKED_DRONE = "LinkedDrone";
+    public static final String DRONE_UUID = "DroneUUID";
 
     public Monitor() {
         super(new Properties().stacksTo(1));
@@ -69,24 +73,24 @@ public class Monitor extends Item {
 
     @Override
     @ParametersAreNonnullByDefault
-    public @NotNull InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand) {
+    public @NotNull InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getMainHandItem();
         var tag = NBTTool.getTag(stack);
 
         if (!tag.getBoolean(LINKED)) {
-            return super.use(world, player, hand);
+            return super.use(level, player, hand);
         }
 
         if (tag.getBoolean("Using")) {
             tag.putBoolean("Using", false);
-            if (world.isClientSide) {
+            if (level.isClientSide) {
                 if (ClientEventHandler.lastCameraType != null) {
                     Minecraft.getInstance().options.setCameraType(ClientEventHandler.lastCameraType);
                 }
             }
         } else {
             tag.putBoolean("Using", true);
-            if (world.isClientSide) {
+            if (level.isClientSide) {
                 ClientEventHandler.lastCameraType = Minecraft.getInstance().options.getCameraType();
                 Minecraft.getInstance().options.setCameraType(CameraType.THIRD_PERSON_BACK);
             }
@@ -96,7 +100,15 @@ public class Monitor extends Item {
         DroneEntity drone = EntityFindUtil.findDrone(player.level(), tag.getString(LINKED_DRONE));
         this.resetDroneData(drone);
 
-        return super.use(world, player, hand);
+        return super.use(level, player, hand);
+//        ItemStack stack = player.getItemInHand(hand);
+//        if (!player.isShiftKeyDown()) {
+//            CompoundTag tag = stack.getOrCreateTag();
+//            if (DronesTool.hasInstanceOf(player)) return InteractionResultHolder.fail(stack);
+//            if (!tag.contains(DRONE_UUID)) return InteractionResultHolder.fail(stack);
+//            player.startUsingItem(hand);
+//        }
+//        return InteractionResultHolder.fail(stack);
     }
 
     @Override
@@ -185,5 +197,17 @@ public class Monitor extends Item {
                 }
             }
         }
+    }
+
+    @Nullable
+    public static UUID getDroneUUID(Player player) {
+        if (player == null) return null;
+        if (player.getMainHandItem().is(ModItems.MONITOR.get())) {
+            var tag = NBTTool.getTag(player.getMainHandItem());
+            if (tag.contains(DRONE_UUID)) {
+                return tag.getUUID(DRONE_UUID);
+            }
+        }
+        return null;
     }
 }
