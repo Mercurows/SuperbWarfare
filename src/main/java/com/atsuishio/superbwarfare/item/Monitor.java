@@ -3,7 +3,6 @@ package com.atsuishio.superbwarfare.item;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
-import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.network.message.receive.ResetCameraTypeMessage;
 import com.atsuishio.superbwarfare.tools.EntityFindUtil;
 import com.atsuishio.superbwarfare.tools.FormatTool;
@@ -13,7 +12,6 @@ import com.google.common.collect.Multimap;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -32,16 +30,14 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.network.PacketDistributor;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.UUID;
 
 public class Monitor extends Item {
 
     public static final String LINKED = "Linked";
     public static final String LINKED_DRONE = "LinkedDrone";
-    public static final String DRONE_UUID = "DroneUUID";
+//    public static final String DRONE_UUID = "DroneUUID";
 
     public Monitor() {
         super(new Properties().stacksTo(1));
@@ -186,15 +182,15 @@ public class Monitor extends Item {
         }
     }
 
-    @Nullable
-    public static UUID getDroneUUID(Player player) {
-        if (player == null) return null;
-        if (player.getMainHandItem().is(ModItems.MONITOR.get())) {
-            CompoundTag tag = player.getMainHandItem().getOrCreateTag();
-            if (tag.contains(DRONE_UUID)) {
-                return tag.getUUID(DRONE_UUID);
-            }
-        }
-        return null;
-    }
+//    @Nullable
+//    public static UUID getDroneUUID(Player player) {
+//        if (player == null) return null;
+//        if (player.getMainHandItem().is(ModItems.MONITOR.get())) {
+//            CompoundTag tag = player.getMainHandItem().getOrCreateTag();
+//            if (tag.contains(DRONE_UUID)) {
+//                return tag.getUUID(DRONE_UUID);
+//            }
+//        }
+//        return null;
+//    }
 }
