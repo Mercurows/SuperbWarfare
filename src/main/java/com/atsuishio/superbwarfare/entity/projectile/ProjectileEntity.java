@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.entity.projectile;
 
 import com.atsuishio.superbwarfare.block.BarbedWireBlock;
 import com.atsuishio.superbwarfare.component.ModDataComponents;
+import com.atsuishio.superbwarfare.client.particle.BulletDecalOption;
 import com.atsuishio.superbwarfare.config.server.ProjectileConfig;
 import com.atsuishio.superbwarfare.entity.DPSGeneratorEntity;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
@@ -18,6 +19,7 @@ import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
+import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -413,7 +415,7 @@ public class ProjectileEntity extends Projectile implements IEntityWithComplexSp
                 recordHitScore(rings, dis);
             }
 
-            this.onHitBlock(hitVec);
+            this.onHitBlock(hitVec, blockHitResult);
             if (heLevel > 0) {
                 explosionBullet(this, this.damage, heLevel, monsterMultiplier + 1, hitVec);
             }
@@ -492,13 +494,27 @@ public class ProjectileEntity extends Projectile implements IEntityWithComplexSp
         }
     }
 
-    protected void onHitBlock(Vec3 location) {
+    protected void onHitBlock(Vec3 location, BlockHitResult result) {
         if (this.level() instanceof ServerLevel serverLevel) {
+            BlockPos pos = result.getBlockPos();
+            Direction face = result.getDirection();
+            BlockState state = level().getBlockState(pos);
+
+            BlockParticleOption particleData = new BlockParticleOption(ParticleTypes.BLOCK, state);
+
+            double speed = 0.05;
+            double vx = face.getStepX() * speed;
+            double vy = face.getStepY() * speed;
+            double vz = face.getStepZ() * speed;
+
             if (this.beast) {
                 ParticleTool.sendParticle(serverLevel, ParticleTypes.END_ROD, location.x, location.y, location.z, 15, 0.1, 0.1, 0.1, 0.05, true);
             } else {
-                ParticleTool.sendParticle(serverLevel, ModParticleTypes.BULLET_HOLE.get(), location.x, location.y, location.z, 1, 0, 0, 0, 0, true);
-                ParticleTool.sendParticle(serverLevel, ParticleTypes.SMOKE, location.x, location.y, location.z, 3, 0, 0.1, 0, 0.01, true);
+                BulletDecalOption bulletDecalOption = new BulletDecalOption(result.getDirection(), result.getBlockPos());
+                serverLevel.sendParticles(bulletDecalOption, location.x, location.y, location.z, 1, 0, 0, 0, 0);
+
+                ParticleTool.sendParticle(serverLevel, ParticleTypes.SMOKE, location.x, location.y, location.z, 3, vx, vy, vz, 0.01, true);
+                ParticleTool.sendParticle(serverLevel, particleData, location.x, location.y, location.z, 5, vx, vy, vz, 0.1, true);
                 this.discard();
             }
             serverLevel.playSound(null, new BlockPos((int) location.x, (int) location.y, (int) location.z), ModSounds.LAND.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
