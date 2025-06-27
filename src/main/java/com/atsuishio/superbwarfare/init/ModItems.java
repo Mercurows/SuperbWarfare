@@ -108,22 +108,22 @@ public class ModItems {
     public static final DeferredHolder<Item, Item> JAVELIN_MISSILE = AMMO.register("javelin_missile", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, MortarShell> MORTAR_SHELL = AMMO.register("mortar_shell", MortarShell::new);
     public static final DeferredHolder<Item, PotionMortarShell> POTION_MORTAR_SHELL = AMMO.register("potion_mortar_shell", PotionMortarShell::new);
-    public static final DeferredHolder<Item, Rocket> ROCKET = AMMO.register("rocket", Rocket::new);
+    public static final DeferredHolder<Item, RocketItem> ROCKET = AMMO.register("rocket", RocketItem::new);
     public static final DeferredHolder<Item, LungeMine> LUNGE_MINE = AMMO.register("lunge_mine", LungeMine::new);
     public static final DeferredHolder<Item, Item> HE_5_INCHES = AMMO.register("he_5_inches", () -> new CannonShellItem(new Item.Properties().rarity(Rarity.RARE)));
     public static final DeferredHolder<Item, Item> AP_5_INCHES = AMMO.register("ap_5_inches", () -> new CannonShellItem(new Item.Properties().rarity(Rarity.RARE)));
     public static final DeferredHolder<Item, HandGrenade> HAND_GRENADE = AMMO.register("hand_grenade", HandGrenade::new);
     public static final DeferredHolder<Item, RgoGrenade> RGO_GRENADE = AMMO.register("rgo_grenade", RgoGrenade::new);
     public static final DeferredHolder<Item, ClaymoreMine> CLAYMORE_MINE = AMMO.register("claymore_mine", ClaymoreMine::new);
-    public static final DeferredHolder<Item, Tm62> TM_62 = AMMO.register("tm_62", Tm62::new);
-    public static final DeferredHolder<Item, C4Bomb> C4_BOMB = AMMO.register("c4_bomb", C4Bomb::new);
-    public static final DeferredHolder<Item, Blu43Mine> BLU_43_MINE = AMMO.register("blu_43_mine", Blu43Mine::new);
+    public static final DeferredHolder<Item, Tm62Item> TM_62 = AMMO.register("tm_62", Tm62Item::new);
+    public static final DeferredHolder<Item, C4BombItem> C4_BOMB = AMMO.register("c4_bomb", C4BombItem::new);
+    public static final DeferredHolder<Item, Blu43MineItem> BLU_43_MINE = AMMO.register("blu_43_mine", Blu43MineItem::new);
     public static final DeferredHolder<Item, Item> SMALL_SHELL = AMMO.register("small_shell", SmallShellItem::new);
-    public static final DeferredHolder<Item, Item> ROCKET_70 = AMMO.register("rocket_70", Rocket70::new);
-    public static final DeferredHolder<Item, WireGuideMissile> WIRE_GUIDE_MISSILE = AMMO.register("wire_guide_missile", WireGuideMissile::new);
-    public static final DeferredHolder<Item, Agm> AGM = AMMO.register("agm", Agm::new);
-    public static final DeferredHolder<Item, SwarmDrone> SWARM_DRONE = AMMO.register("swarm_drone", SwarmDrone::new);
-    public static final DeferredHolder<Item, MediumAerialBomb> MEDIUM_AERIAL_BOMB = AMMO.register("medium_aerial_bomb", MediumAerialBomb::new);
+    public static final DeferredHolder<Item, Rocket70Item> ROCKET_70 = AMMO.register("rocket_70", Rocket70Item::new);
+    public static final DeferredHolder<Item, WireGuideMissileItem> WIRE_GUIDE_MISSILE = AMMO.register("wire_guide_missile", WireGuideMissileItem::new);
+    public static final DeferredHolder<Item, AgmItem> AGM = AMMO.register("agm", AgmItem::new);
+    public static final DeferredHolder<Item, SwarmDroneItem> SWARM_DRONE = AMMO.register("swarm_drone", SwarmDroneItem::new);
+    public static final DeferredHolder<Item, MediumAerialBombItem> MEDIUM_AERIAL_BOMB = AMMO.register("medium_aerial_bomb", MediumAerialBombItem::new);
     public static final DeferredHolder<Item, BeamTest> BEAM_TEST = AMMO.register("beam_test", BeamTest::new);
 
     /**
@@ -341,15 +341,15 @@ public class ModItems {
             }
         }
 
-        DispenserBlock.registerBehavior(SWARM_DRONE.get(), new SwarmDrone.SwarmDroneDispenseBehavior());
-        DispenserBlock.registerBehavior(C4_BOMB.get(), new C4Bomb.C4DispenseItemBehavior());
+        DispenserBlock.registerBehavior(SWARM_DRONE.get(), new SwarmDroneItem.SwarmDroneDispenseBehavior());
+        DispenserBlock.registerBehavior(C4_BOMB.get(), new C4BombItem.C4DispenseItemBehavior());
         DispenserBlock.registerBehavior(CLAYMORE_MINE.get(), new ClaymoreMine.ClaymoreDispenseBehavior());
-        DispenserBlock.registerBehavior(BLU_43_MINE.get(), new Blu43Mine.Blu43MineDispenseBehavior());
-        DispenserBlock.registerBehavior(ROCKET.get(), new Rocket.RocketDispenseBehavior());
-        DispenserBlock.registerBehavior(ROCKET_70.get(), new Rocket70.Rocket70DispenseBehavior());
-        DispenserBlock.registerBehavior(MEDIUM_AERIAL_BOMB.get(), new MediumAerialBomb.MediumAerialBombDispenseBehavior());
+        DispenserBlock.registerBehavior(BLU_43_MINE.get(), new Blu43MineItem.Blu43MineDispenseBehavior());
+        DispenserBlock.registerBehavior(ROCKET.get(), new RocketItem.RocketDispenseBehavior());
+        DispenserBlock.registerBehavior(ROCKET_70.get(), new Rocket70Item.Rocket70DispenseBehavior());
+        DispenserBlock.registerBehavior(MEDIUM_AERIAL_BOMB.get(), new MediumAerialBombItem.MediumAerialBombDispenseBehavior());
         DispenserBlock.registerBehavior(RGO_GRENADE.get(), new RgoGrenade.RgoGrenadeDispenserBehavior());
-        DispenserBlock.registerBehavior(TM_62.get(), new Tm62.Tm62DispenseBehavior());
+        DispenserBlock.registerBehavior(TM_62.get(), new Tm62Item.Tm62DispenseBehavior());
     }
 
     public static void register(IEventBus bus) {

@@ -1,4 +1,4 @@
-package com.atsuishio.superbwarfare.item;
+package com.atsuishio.superbwarfare.item.common.ammo;
 
 import com.atsuishio.superbwarfare.entity.projectile.Mk82Entity;
 import com.atsuishio.superbwarfare.init.ModEntities;
@@ -22,9 +22,9 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 
-public class MediumAerialBomb extends Item implements ProjectileItem {
+public class MediumAerialBombItem extends Item implements ProjectileItem {
 
-    public MediumAerialBomb() {
+    public MediumAerialBombItem() {
         super(new Properties().stacksTo(2));
     }
 

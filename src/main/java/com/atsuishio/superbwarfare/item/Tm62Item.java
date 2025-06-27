@@ -32,10 +32,11 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @EventBusSubscriber(modid = Mod.MODID, bus = EventBusSubscriber.Bus.MOD)
-public class Tm62 extends Item implements GeoItem {
+public class Tm62Item extends Item implements GeoItem {
+
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
-    public Tm62() {
+    public Tm62Item() {
         super(new Properties().stacksTo(8));
     }
 

@@ -1,4 +1,4 @@
-package com.atsuishio.superbwarfare.item;
+package com.atsuishio.superbwarfare.item.common.ammo;
 
 import com.atsuishio.superbwarfare.entity.projectile.SwarmDroneEntity;
 import com.atsuishio.superbwarfare.init.ModItems;
@@ -25,9 +25,9 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 
-public class SwarmDrone extends Item implements ProjectileItem {
+public class SwarmDroneItem extends Item implements ProjectileItem {
 
-    public SwarmDrone() {
+    public SwarmDroneItem() {
         super(new Properties());
     }
 

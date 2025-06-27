@@ -1,4 +1,4 @@
-package com.atsuishio.superbwarfare.item;
+package com.atsuishio.superbwarfare.item.common.ammo;
 
 import com.atsuishio.superbwarfare.entity.projectile.HeliRocketEntity;
 import com.atsuishio.superbwarfare.init.ModEntities;
@@ -18,9 +18,9 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
-public class Rocket70 extends Item implements ProjectileItem {
+public class Rocket70Item extends Item implements ProjectileItem {
 
-    public Rocket70() {
+    public Rocket70Item() {
         super(new Properties());
     }
 

@@ -19,8 +19,9 @@ import org.joml.Math;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
-public class Blu43Mine extends Item {
-    public Blu43Mine() {
+public class Blu43MineItem extends Item {
+
+    public Blu43MineItem() {
         super(new Properties());
     }
 

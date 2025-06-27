@@ -28,12 +28,12 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 
-public class C4Bomb extends Item {
+public class C4BombItem extends Item {
 
     public static final String TAG_CONTROL = "Control";
 
-    public C4Bomb() {
-        super(new Properties());
+    public C4BombItem() {
+        super(new Item.Properties());
     }
 
     @Override

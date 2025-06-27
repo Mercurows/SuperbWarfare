@@ -45,12 +45,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 @EventBusSubscriber(modid = Mod.MODID, bus = EventBusSubscriber.Bus.MOD)
-public class Rocket extends Item implements GeoItem, ProjectileItem {
+public class RocketItem extends Item implements GeoItem, ProjectileItem {
+
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     public static ItemDisplayContext transformType;
 
-    public Rocket() {
-        super(new Properties().stacksTo(16));
+    public RocketItem() {
+        super(new Item.Properties().stacksTo(16));
     }
 
     @SubscribeEvent
