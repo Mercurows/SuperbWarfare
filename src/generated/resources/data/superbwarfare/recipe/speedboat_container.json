@@ -1,0 +1,42 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "a": {
+      "item": "superbwarfare:large_propeller"
+    },
+    "b": {
+      "item": "superbwarfare:m_2_hb"
+    },
+    "c": {
+      "item": "superbwarfare:large_motor"
+    },
+    "d": {
+      "item": "minecraft:comparator"
+    },
+    "e": {
+      "tag": "minecraft:boats"
+    },
+    "f": {
+      "tag": "c:chests"
+    },
+    "g": {
+      "item": "superbwarfare:small_battery_pack"
+    }
+  },
+  "pattern": [
+    " b ",
+    "def",
+    "gca"
+  ],
+  "result": {
+    "components": {
+      "minecraft:block_entity_data": {
+        "EntityType": "superbwarfare:speedboat",
+        "id": "superbwarfare:container"
+      }
+    },
+    "count": 1,
+    "id": "superbwarfare:container"
+  }
+}

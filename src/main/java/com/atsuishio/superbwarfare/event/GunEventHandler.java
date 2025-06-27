@@ -511,4 +511,17 @@ public class GunEventHandler {
             }
         }
     }
+
+    // TODO 正确实现更新注册名
+//    @SubscribeEvent
+//    public static void onMissingMappings(MissingMappingsEvent event) {
+//        for (MissingMappingsEvent.Mapping<Item> mapping : event.getAllMappings(Registries.ITEM)) {
+//            if (Mod.MODID.equals(mapping.getKey().getNamespace())) {
+//                var item = mapping.getKey().getPath();
+//                if (item.equals("m2hb_blueprint")) {
+//                    mapping.remap(ModItems.M_2_HB_BLUEPRINT.get());
+//                }
+//            }
+//        }
+//    }
 }

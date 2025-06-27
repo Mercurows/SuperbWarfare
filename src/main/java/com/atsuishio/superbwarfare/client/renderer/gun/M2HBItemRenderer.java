@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.client.renderer.gun;
 
 import com.atsuishio.superbwarfare.client.AnimationHelper;
-import com.atsuishio.superbwarfare.client.model.item.M2ItemModel;
+import com.atsuishio.superbwarfare.client.model.item.M2HBItemModel;
 import com.atsuishio.superbwarfare.client.renderer.CustomGunRenderer;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.machinegun.M2HBItem;
@@ -18,7 +18,7 @@ import software.bernie.geckolib.cache.object.GeoBone;
 public class M2HBItemRenderer extends CustomGunRenderer<M2HBItem> {
 
     public M2HBItemRenderer() {
-        super(new M2ItemModel());
+        super(new M2HBItemModel());
     }
 
     @Override

@@ -96,6 +96,19 @@ public class ModRecipeProvider extends RecipeProvider {
                 .define('h', ModItems.LIGHT_ARMAMENT_MODULE.get())
                 .unlockedBy(getHasName(ModItems.LIGHT_ARMAMENT_MODULE.get()), has(ModItems.LIGHT_ARMAMENT_MODULE.get()))
                 .save(writer, Mod.loc(getContainerRecipeName(ModEntities.AH_6.get())));
+        containerRecipe(ModEntities.SPEEDBOAT.get())
+                .pattern(" b ")
+                .pattern("def")
+                .pattern("gca")
+                .define('a', ModItems.LARGE_PROPELLER.get())
+                .define('b', ModItems.M_2_HB.get())
+                .define('c', ModItems.LARGE_MOTOR.get())
+                .define('d', Items.COMPARATOR)
+                .define('e', ItemTags.BOATS)
+                .define('f', Tags.Items.CHESTS)
+                .define('g', ModItems.SMALL_BATTERY_PACK.get())
+                .unlockedBy(getHasName(ModItems.M_2_HB.get()), has(ModItems.M_2_HB.get()))
+                .save(writer, Mod.loc(getContainerRecipeName(ModEntities.SPEEDBOAT.get())));
 
         // guns
         gunSmithing(writer, ModItems.TRACHELIUM_BLUEPRINT.get(), GunRarity.EPIC, ModTags.Items.INGOTS_CEMENTED_CARBIDE, ModItems.TRACHELIUM.get());

@@ -58,13 +58,13 @@ public class M2HBItem extends GunItem {
         ItemStack stack = player.getMainHandItem();
         if (!(stack.getItem() instanceof GunItem)) return PlayState.STOP;
         if (event.getData(DataTickets.ITEM_RENDER_PERSPECTIVE) != ItemDisplayContext.FIRST_PERSON_RIGHT_HAND)
-            return event.setAndContinue(RawAnimation.begin().thenLoop("animation.m2hb.idle"));
+            return event.setAndContinue(RawAnimation.begin().thenLoop("animation.m_2_hb.idle"));
 
         if (ClientEventHandler.firePosTimer > 0 && ClientEventHandler.firePosTimer < 0.45) {
-            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m2hb.fire"));
+            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m_2_hb.fire"));
         }
 
-        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.m2hb.idle"));
+        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.m_2_hb.idle"));
     }
 
     private PlayState idlePredicate(AnimationState<M2HBItem> event) {
@@ -73,25 +73,25 @@ public class M2HBItem extends GunItem {
         ItemStack stack = player.getMainHandItem();
         if (!(stack.getItem() instanceof GunItem)) return PlayState.STOP;
         if (event.getData(DataTickets.ITEM_RENDER_PERSPECTIVE) != ItemDisplayContext.FIRST_PERSON_RIGHT_HAND)
-            return event.setAndContinue(RawAnimation.begin().thenLoop("animation.m2hb.idle"));
+            return event.setAndContinue(RawAnimation.begin().thenLoop("animation.m_2_hb.idle"));
 
         if (GunData.from(stack).reload.empty()) {
-            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m2hb.reload_empty"));
+            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m_2_hb.reload_empty"));
         }
 
         if (GunData.from(stack).reload.normal()) {
-            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m2hb.reload_normal"));
+            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m_2_hb.reload_normal"));
         }
 
         if (player.isSprinting() && player.onGround() && ClientEventHandler.cantSprint == 0 && ClientEventHandler.drawTime < 0.01) {
             if (ClientEventHandler.tacticalSprint) {
-                return event.setAndContinue(RawAnimation.begin().thenLoop("animation.m2hb.run_fast"));
+                return event.setAndContinue(RawAnimation.begin().thenLoop("animation.m_2_hb.run_fast"));
             } else {
-                return event.setAndContinue(RawAnimation.begin().thenLoop("animation.m2hb.run"));
+                return event.setAndContinue(RawAnimation.begin().thenLoop("animation.m_2_hb.run"));
             }
         }
 
-        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.m2hb.idle"));
+        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.m_2_hb.idle"));
     }
 
     @Override
