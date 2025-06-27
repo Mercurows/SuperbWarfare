@@ -28,10 +28,11 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.function.Consumer;
 
-public class Tm62 extends Item implements GeoItem, DispenserLaunchable {
+public class Tm62Item extends Item implements GeoItem, DispenserLaunchable {
+
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
-    public Tm62() {
+    public Tm62Item() {
         super(new Properties().stacksTo(8));
     }
 
@@ -62,7 +63,7 @@ public class Tm62 extends Item implements GeoItem, DispenserLaunchable {
         ItemStack stack = player.getItemInHand(hand);
 
         if (!level.isClientSide) {
-            float randomRot = (float) Mth.clamp((2 * Math.random() - 1) * 180 , -180, 180);
+            float randomRot = (float) Mth.clamp((2 * Math.random() - 1) * 180, -180, 180);
             Tm62Entity entity = new Tm62Entity(player, level, player.isShiftKeyDown());
             entity.moveTo(player.getX(), player.getY() + 1.1, player.getZ(), randomRot, 0);
             entity.setYBodyRot(randomRot);
@@ -93,7 +94,7 @@ public class Tm62 extends Item implements GeoItem, DispenserLaunchable {
 
                 var tm62 = new Tm62Entity(ModEntities.TM_62.get(), level);
                 tm62.setPos(position.x(), position.y(), position.z());
-                float randomRot = (float) Mth.clamp((2 * Math.random() - 1) * 180 , -180, 180);
+                float randomRot = (float) Mth.clamp((2 * Math.random() - 1) * 180, -180, 180);
 
                 var pX = direction.getStepX();
                 var pY = direction.getStepY();

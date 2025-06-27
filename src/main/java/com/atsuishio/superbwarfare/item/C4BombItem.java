@@ -29,11 +29,11 @@ import org.jetbrains.annotations.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 
-public class C4Bomb extends Item implements DispenserLaunchable {
+public class C4BombItem extends Item implements DispenserLaunchable {
 
     public static final String TAG_CONTROL = "Control";
 
-    public C4Bomb() {
+    public C4BombItem() {
         super(new Item.Properties());
     }
 

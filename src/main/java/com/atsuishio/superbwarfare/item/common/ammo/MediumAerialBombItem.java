@@ -1,8 +1,9 @@
-package com.atsuishio.superbwarfare.item;
+package com.atsuishio.superbwarfare.item.common.ammo;
 
 import com.atsuishio.superbwarfare.entity.projectile.Mk82Entity;
 import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModSounds;
+import com.atsuishio.superbwarfare.item.DispenserLaunchable;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockSource;
 import net.minecraft.core.Direction;
@@ -22,9 +23,9 @@ import org.jetbrains.annotations.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 
-public class MediumAerialBomb extends Item implements DispenserLaunchable {
+public class MediumAerialBombItem extends Item implements DispenserLaunchable {
 
-    public MediumAerialBomb() {
+    public MediumAerialBombItem() {
         super(new Properties().stacksTo(2));
     }
 

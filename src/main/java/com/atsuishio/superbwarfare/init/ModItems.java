@@ -110,22 +110,22 @@ public class ModItems {
     public static final RegistryObject<Item> JAVELIN_MISSILE = AMMO.register("javelin_missile", () -> new Item(new Item.Properties()));
     public static final RegistryObject<Item> MORTAR_SHELL = AMMO.register("mortar_shell", MortarShell::new);
     public static final RegistryObject<Item> POTION_MORTAR_SHELL = AMMO.register("potion_mortar_shell", PotionMortarShell::new);
-    public static final RegistryObject<Item> ROCKET = AMMO.register("rocket", Rocket::new);
+    public static final RegistryObject<Item> ROCKET = AMMO.register("rocket", RocketItem::new);
     public static final RegistryObject<Item> LUNGE_MINE = AMMO.register("lunge_mine", LungeMine::new);
     public static final RegistryObject<Item> HE_5_INCHES = AMMO.register("he_5_inches", () -> new CannonShellItem(new Item.Properties().rarity(Rarity.RARE)));
     public static final RegistryObject<Item> AP_5_INCHES = AMMO.register("ap_5_inches", () -> new CannonShellItem(new Item.Properties().rarity(Rarity.RARE)));
     public static final RegistryObject<Item> HAND_GRENADE = AMMO.register("hand_grenade", HandGrenade::new);
     public static final RegistryObject<Item> RGO_GRENADE = AMMO.register("rgo_grenade", RgoGrenade::new);
     public static final RegistryObject<Item> CLAYMORE_MINE = AMMO.register("claymore_mine", ClaymoreMine::new);
-    public static final RegistryObject<Item> TM_62 = AMMO.register("tm_62", Tm62::new);
-    public static final RegistryObject<Item> C4_BOMB = AMMO.register("c4_bomb", C4Bomb::new);
-    public static final RegistryObject<Item> BLU_43_MINE = AMMO.register("blu_43_mine", Blu43Mine::new);
+    public static final RegistryObject<Item> TM_62 = AMMO.register("tm_62", Tm62Item::new);
+    public static final RegistryObject<Item> C4_BOMB = AMMO.register("c4_bomb", C4BombItem::new);
+    public static final RegistryObject<Item> BLU_43_MINE = AMMO.register("blu_43_mine", Blu43MineItem::new);
     public static final RegistryObject<Item> SMALL_SHELL = AMMO.register("small_shell", SmallShellItem::new);
-    public static final RegistryObject<Item> ROCKET_70 = AMMO.register("rocket_70", Rocket70::new);
-    public static final RegistryObject<Item> WIRE_GUIDE_MISSILE = AMMO.register("wire_guide_missile", WireGuideMissile::new);
-    public static final RegistryObject<Item> AGM = AMMO.register("agm", Agm::new);
-    public static final RegistryObject<Item> SWARM_DRONE = AMMO.register("swarm_drone", SwarmDrone::new);
-    public static final RegistryObject<Item> MEDIUM_AERIAL_BOMB = AMMO.register("medium_aerial_bomb", MediumAerialBomb::new);
+    public static final RegistryObject<Item> ROCKET_70 = AMMO.register("rocket_70", Rocket70Item::new);
+    public static final RegistryObject<Item> WIRE_GUIDE_MISSILE = AMMO.register("wire_guide_missile", WireGuideMissileItem::new);
+    public static final RegistryObject<Item> AGM = AMMO.register("agm", AgmItem::new);
+    public static final RegistryObject<Item> SWARM_DRONE = AMMO.register("swarm_drone", SwarmDroneItem::new);
+    public static final RegistryObject<Item> MEDIUM_AERIAL_BOMB = AMMO.register("medium_aerial_bomb", MediumAerialBombItem::new);
     public static final RegistryObject<Item> BEAM_TEST = AMMO.register("beam_test", BeamTest::new);
 
     /**

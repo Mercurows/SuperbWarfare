@@ -1,7 +1,8 @@
-package com.atsuishio.superbwarfare.item;
+package com.atsuishio.superbwarfare.item.common.ammo;
 
 import com.atsuishio.superbwarfare.entity.projectile.SwarmDroneEntity;
 import com.atsuishio.superbwarfare.init.ModSounds;
+import com.atsuishio.superbwarfare.item.DispenserLaunchable;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockSource;
 import net.minecraft.core.Direction;
@@ -24,9 +25,9 @@ import org.jetbrains.annotations.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 
-public class SwarmDrone extends Item implements DispenserLaunchable {
+public class SwarmDroneItem extends Item implements DispenserLaunchable {
 
-    public SwarmDrone() {
+    public SwarmDroneItem() {
         super(new Properties());
     }
 

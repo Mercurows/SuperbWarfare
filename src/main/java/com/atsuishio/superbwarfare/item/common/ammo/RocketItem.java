@@ -36,12 +36,12 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.function.Consumer;
 
-public class Rocket extends Item implements GeoItem, DispenserLaunchable {
+public class RocketItem extends Item implements GeoItem, DispenserLaunchable {
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     public static ItemDisplayContext transformType;
 
-    public Rocket() {
+    public RocketItem() {
         super(new Item.Properties().stacksTo(16));
     }
 

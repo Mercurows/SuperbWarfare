@@ -1,4 +1,4 @@
-package com.atsuishio.superbwarfare.item;
+package com.atsuishio.superbwarfare.item.common.ammo;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -12,14 +12,15 @@ import org.jetbrains.annotations.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 
-public class Agm extends Item {
-    public Agm() {
-        super(new Properties().stacksTo(2));
+public class WireGuideMissileItem extends Item {
+
+    public WireGuideMissileItem() {
+        super(new Properties().stacksTo(4));
     }
 
     @Override
     @ParametersAreNonnullByDefault
     public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, @NotNull List<Component> pTooltipComponents, @NotNull TooltipFlag pIsAdvanced) {
-        pTooltipComponents.add(Component.translatable("des.superbwarfare.agm").withStyle(ChatFormatting.GRAY));
+        pTooltipComponents.add(Component.translatable("des.superbwarfare.wire_guide_missile").withStyle(ChatFormatting.GRAY));
     }
 }

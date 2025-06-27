@@ -1,8 +1,9 @@
-package com.atsuishio.superbwarfare.item;
+package com.atsuishio.superbwarfare.item.common.ammo;
 
 import com.atsuishio.superbwarfare.entity.projectile.HeliRocketEntity;
 import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModSounds;
+import com.atsuishio.superbwarfare.item.DispenserLaunchable;
 import net.minecraft.core.BlockSource;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Position;
@@ -17,9 +18,9 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
-public class Rocket70 extends Item implements DispenserLaunchable {
+public class Rocket70Item extends Item implements DispenserLaunchable {
 
-    public Rocket70() {
+    public Rocket70Item() {
         super(new Properties());
     }
 

@@ -61,7 +61,7 @@ public class ModTabs {
                                 output.accept(registryObject.get());
 
                                 if (registryObject.get() == ModItems.C4_BOMB.get()) {
-                                    output.accept(C4Bomb.makeInstance());
+                                    output.accept(C4BombItem.makeInstance());
                                 }
                             }
                         });
