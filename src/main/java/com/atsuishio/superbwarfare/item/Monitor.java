@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.item;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
+import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.network.message.receive.ResetCameraTypeMessage;
 import com.atsuishio.superbwarfare.tools.EntityFindUtil;
 import com.atsuishio.superbwarfare.tools.FormatTool;
@@ -12,6 +13,7 @@ import com.google.common.collect.Multimap;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -30,13 +32,16 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.network.PacketDistributor;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.UUID;
 
 public class Monitor extends Item {
 
     public static final String LINKED = "Linked";
     public static final String LINKED_DRONE = "LinkedDrone";
+    public static final String DRONE_UUID = "DroneUUID";
 
     public Monitor() {
         super(new Properties().stacksTo(1));
@@ -67,23 +72,23 @@ public class Monitor extends Item {
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand) {
+    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getMainHandItem();
 
         if (!ItemNBTTool.getBoolean(stack, LINKED, false)) {
-            return super.use(world, player, hand);
+            return super.use(level, player, hand);
         }
 
         if (stack.getOrCreateTag().getBoolean("Using")) {
             stack.getOrCreateTag().putBoolean("Using", false);
-            if (world.isClientSide) {
+            if (level.isClientSide) {
                 if (ClientEventHandler.lastCameraType != null) {
                     Minecraft.getInstance().options.setCameraType(ClientEventHandler.lastCameraType);
                 }
             }
         } else {
             stack.getOrCreateTag().putBoolean("Using", true);
-            if (world.isClientSide) {
+            if (level.isClientSide) {
                 ClientEventHandler.lastCameraType = Minecraft.getInstance().options.getCameraType();
                 Minecraft.getInstance().options.setCameraType(CameraType.THIRD_PERSON_BACK);
             }
@@ -92,7 +97,15 @@ public class Monitor extends Item {
         DroneEntity drone = EntityFindUtil.findDrone(player.level(), stack.getOrCreateTag().getString(LINKED_DRONE));
         this.resetDroneData(drone);
 
-        return super.use(world, player, hand);
+        return super.use(level, player, hand);
+//        ItemStack stack = player.getItemInHand(hand);
+//        if (!player.isShiftKeyDown()) {
+//            CompoundTag tag = stack.getOrCreateTag();
+//            if (DronesTool.hasInstanceOf(player)) return InteractionResultHolder.fail(stack);
+//            if (!tag.contains(DRONE_UUID)) return InteractionResultHolder.fail(stack);
+//            player.startUsingItem(hand);
+//        }
+//        return InteractionResultHolder.fail(stack);
     }
 
     @Override
@@ -107,6 +120,11 @@ public class Monitor extends Item {
 
         return super.getAttributeModifiers(slot, stack);
     }
+
+//    @Override
+//    public int getUseDuration(ItemStack stack) {
+//        return 72000;
+//    }
 
     public static void getDronePos(ItemStack itemstack, Vec3 vec3) {
         itemstack.getOrCreateTag().putDouble("PosX", vec3.x);
@@ -166,5 +184,17 @@ public class Monitor extends Item {
                 }
             }
         }
+    }
+
+    @Nullable
+    public static UUID getDroneUUID(Player player) {
+        if (player == null) return null;
+        if (player.getMainHandItem().is(ModItems.MONITOR.get())) {
+            CompoundTag tag = player.getMainHandItem().getOrCreateTag();
+            if (tag.contains(DRONE_UUID)) {
+                return tag.getUUID(DRONE_UUID);
+            }
+        }
+        return null;
     }
 }

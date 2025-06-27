@@ -1,5 +1,7 @@
 package com.atsuishio.superbwarfare.tools;
 
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -44,11 +46,14 @@ public class DronesTool {
 
     public static DronesTool connect(Player player, Entity stalker) {
         if (player == null || stalker == null) return null;
+        // 这边可能需要修改一下逻辑，不知道原代码部分是否允许1玩家对n无人机
         if (hasInstanceOf(player) || hasInstanceOf(stalker)) return null;
 
         if (player.level().isClientSide) {
             // TODO 向客户端发送连接的网络包
         }
+
+        player.displayClientMessage(Component.translatable("tips.superbwarfare.monitor.linked").withStyle(ChatFormatting.GREEN), true);
 
         INSTANCE_MAP.put(player.getUUID(), stalker.getId());
         DRONE_TO_PLAYER.put(stalker.getId(), player.getUUID());
