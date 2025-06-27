@@ -102,8 +102,5 @@
         1.25
       ]
     }
-  },
-  "textures": {
-    "particle": "item/m_2"
   }
 }
