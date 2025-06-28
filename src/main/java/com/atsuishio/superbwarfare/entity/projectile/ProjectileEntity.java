@@ -523,7 +523,8 @@ public class ProjectileEntity extends Projectile implements IEntityAdditionalSpa
             if (this.beast) {
                 ParticleTool.sendParticle(serverLevel, ParticleTypes.END_ROD, location.x, location.y, location.z, 15, 0.1, 0.1, 0.1, 0.05, true);
             } else {
-                BulletDecalOption bulletDecalOption = new BulletDecalOption(result.getDirection(), result.getBlockPos());
+                BulletDecalOption bulletDecalOption = new BulletDecalOption(result.getDirection(), result.getBlockPos(),
+                        this.entityData.get(COLOR_R), this.entityData.get(COLOR_G), this.entityData.get(COLOR_B));
                 serverLevel.sendParticles(bulletDecalOption, location.x, location.y, location.z, 1, 0, 0, 0, 0);
 
                 ParticleTool.sendParticle(serverLevel, ParticleTypes.SMOKE, location.x, location.y, location.z, 3, vx, vy, vz, 0.01, true);
