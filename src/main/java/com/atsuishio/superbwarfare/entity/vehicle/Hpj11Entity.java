@@ -298,19 +298,22 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
                 this.entityData.set(TARGET_UUID, target.getVehicle().getStringUUID());
             }
 
-            Vec3 targetPos = new Vec3(target.getX(), target.getY() + target.getBbHeight() / 4, target.getZ()).add(target.getDeltaMovement().scale(1.0 + 0.04 * target.distanceTo(this)));
-            Vec3 targetVec = barrelRootPos.vectorTo(targetPos).normalize();
+            Vec3 targetPos = target.getBoundingBox().getCenter();
+            Vec3 targetVel = target.getDeltaMovement();
+
+            Vec3 targetVec = RangeTool.calculateFiringSolution(barrelRootPos, targetPos, targetVel, 30, 0.03);
 
             double d0 = targetVec.x;
             double d1 = targetVec.y;
             double d2 = targetVec.z;
             double d3 = Math.sqrt(d0 * d0 + d2 * d2);
-            this.setXRot(Mth.clamp(Mth.wrapDegrees((float) (-(Mth.atan2(d1, d3) * 57.2957763671875))), -90, 40));
-            float targetY = Mth.wrapDegrees((float) (Mth.atan2(d2, d0) * 57.2957763671875) - 90.0F);
 
+            float targetY = Mth.wrapDegrees((float) (Mth.atan2(d2, d0) * 57.2957763671875) - 90.0F);
             float diffY = Math.clamp(-90f, 90f, Mth.wrapDegrees(targetY - this.getYRot()));
 
             turretTurnSound(0, diffY, 1.1f);
+
+            this.setXRot(Mth.clamp(Mth.wrapDegrees((float) (-(Mth.atan2(d1, d3) * 57.2957763671875))), -90, 40));
             this.setYRot(this.getYRot() + Mth.clamp(0.9f * diffY, -20f, 20f));
 
             if (target.distanceTo(this) <= 144 && VectorTool.calculateAngle(getViewVector(1), targetVec) < 10) {
@@ -473,10 +476,10 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
         var entityToSpawn = ((SmallCannonShellWeapon) getWeapon(0)).create(player);
 
         Matrix4f transform = getBarrelTransform(1);
-        Vector4f worldPosition = transformPosition(transform, 0f, 0.4f, 2.6875f);
+        Vector4f worldPosition = transformPosition(transform, 0f, 0.4f, 0);
 
         entityToSpawn.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
-        entityToSpawn.shoot(getLookAngle().x, getLookAngle().y + 0.001, getLookAngle().z, 30, 0.75f);
+        entityToSpawn.shoot(getLookAngle().x, getLookAngle().y, getLookAngle().z, 30, 0.75f);
         level().addFreshEntity(entityToSpawn);
 
         this.entityData.set(GUN_ROTATE, entityData.get(GUN_ROTATE) + 0.5f);

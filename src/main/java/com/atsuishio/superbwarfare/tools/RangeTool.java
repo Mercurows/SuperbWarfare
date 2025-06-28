@@ -69,5 +69,84 @@ public class RangeTool {
         }
         return validT;
     }
+    private static final double TOLERANCE = 1e-3; // 牛顿迭代法的容差
+    private static final int MAX_ITERATIONS = 50; // 最大迭代次数
+
+    /**
+     * 计算炮弹发射向量
+     * @param launchPos 炮弹发射位置 (Vec3)
+     * @param targetPos 目标当前位置 (Vec3)
+     * @param targetVel 目标速度向量 (Vec3，单位：方块/tick)
+     * @param muzzleVelocity 炮弹出膛速度 (标量，单位：方块/tick)
+     * @return 炮弹的发射向量 (Vec3)，若无法击中则返回预测值
+     */
+    public static Vec3 calculateFiringSolution(Vec3 launchPos, Vec3 targetPos, Vec3 targetVel, double muzzleVelocity, double gravity) {
+        Vec3 d0 = targetPos.subtract(launchPos); // 位置差向量
+        double D = d0.lengthSqr(); // |d0|²
+        double E = d0.dot(targetVel); // d0 · u
+        double F = targetVel.lengthSqr(); // |u|²
+
+        // 计算四次方程的系数
+        double a = 0.25 * gravity * gravity;
+        double b = gravity * targetVel.y;
+        double c = F + gravity * d0.y - muzzleVelocity * muzzleVelocity;
+        double d = 2 * E;
+        double e = D;
+
+        // 牛顿迭代法求解时间 t
+        double t = estimateInitialTime(d0, muzzleVelocity); // 初始估计值
+        double prevT = t;
+
+        for (int i = 0; i < MAX_ITERATIONS; i++) {
+            double t2 = t * t;
+            double t3 = t2 * t;
+            double t4 = t3 * t;
+
+            // 计算函数值 f(t) = a*t⁴ + b*t³ + c*t² + d*t + e
+            double f = a * t4 + b * t3 + c * t2 + d * t + e;
+            if (Math.abs(f) < TOLERANCE) break;
+
+            // 计算导数值 f'(t) = 4a*t³ + 3b*t² + 2c*t + d
+            double df = 4 * a * t3 + 3 * b * t2 + 2 * c * t + d;
+            if (Math.abs(df) < 1e-10) {
+                t = prevT + 0.1; // 避免除零，调整t
+                continue;
+            }
+
+            prevT = t;
+            t -= f / df; // 牛顿迭代
+
+            // 确保t为正数
+            if (t < 0) t = 0.1;
+        }
+
+        // 检查解的有效性
+        if (t > 0 && !Double.isNaN(t)) {
+            double invT = 1.0 / t;
+            // 计算速度分量
+            double vx = d0.x * invT + targetVel.x;
+            double vz = d0.z * invT + targetVel.z;
+            double vy = d0.y * invT + targetVel.y + 0.5 * gravity * t;
+            return new Vec3(vx, vy, vz);
+        } else {
+            // 备选方案：线性预测目标位置
+            double fallbackT = Math.sqrt(D) / muzzleVelocity;
+            Vec3 predictedPos = targetPos.add(targetVel.scale(fallbackT));
+            Vec3 toPredicted = predictedPos.subtract(launchPos);
+            double vy = (toPredicted.y + 0.5 * gravity * fallbackT * fallbackT) / fallbackT;
+            Vec3 horizontal = new Vec3(toPredicted.x, 0, toPredicted.z).normalize();
+            double horizontalSpeed = Math.sqrt(muzzleVelocity * muzzleVelocity - vy * vy);
+            return new Vec3(
+                    horizontal.x * horizontalSpeed,
+                    vy,
+                    horizontal.z * horizontalSpeed
+            );
+        }
+    }
+
+    // 初始时间估计（无重力无移动的飞行时间）
+    private static double estimateInitialTime(Vec3 d0, double velocity) {
+        return d0.length() / velocity;
+    }
 
 }
