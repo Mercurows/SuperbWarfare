@@ -31,6 +31,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -119,8 +120,9 @@ public class RpgItem extends GunItem {
     }
 
     @Override
-    public boolean shootBullet(Player player, GunData data, double spread, boolean zoom) {
-        if (!super.shootBullet(player, data, spread, zoom)) return false;
+    public boolean shootBullet(Player player, GunData data, double spread, boolean zoom, UUID uuid) {
+        if (data.reloading()) return false;
+        if (!super.shootBullet(player, data, spread, zoom, uuid)) return false;
 
         ParticleTool.sendParticle((ServerLevel) player.level(), ParticleTypes.CLOUD, player.getX() + 1.8 * player.getLookAngle().x,
                 player.getY() + player.getBbHeight() - 0.1 + 1.8 * player.getLookAngle().y,

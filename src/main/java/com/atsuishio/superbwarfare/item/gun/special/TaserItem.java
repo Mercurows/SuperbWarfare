@@ -34,6 +34,7 @@ import software.bernie.geckolib.renderer.GeoItemRenderer;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.function.Supplier;
 
 public class TaserItem extends GunItem implements EnergyStorageItem {
@@ -149,7 +150,7 @@ public class TaserItem extends GunItem implements EnergyStorageItem {
     }
 
     @Override
-    public boolean shootBullet(Player player, GunData data, double spread, boolean zoom) {
+    public boolean shootBullet(Player player, GunData data, double spread, boolean zoom, UUID uuid) {
         var stack = data.stack;
         player.getCooldowns().addCooldown(stack.getItem(), 5);
 

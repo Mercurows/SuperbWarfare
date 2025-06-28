@@ -1,8 +1,8 @@
 package com.atsuishio.superbwarfare.entity.projectile;
 
 import com.atsuishio.superbwarfare.block.BarbedWireBlock;
-import com.atsuishio.superbwarfare.component.ModDataComponents;
 import com.atsuishio.superbwarfare.client.particle.BulletDecalOption;
+import com.atsuishio.superbwarfare.component.ModDataComponents;
 import com.atsuishio.superbwarfare.config.server.ProjectileConfig;
 import com.atsuishio.superbwarfare.entity.DPSGeneratorEntity;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
@@ -321,7 +321,7 @@ public class ProjectileEntity extends Projectile implements IEntityWithComplexSp
             this.setPosRaw(this.getX() + vec.x, this.getY() + vec.y, this.getZ() + vec.z);
         }
 
-        this.setDeltaMovement(vec.x, vec.y - 0.02, vec.z);
+        this.setDeltaMovement(this.getDeltaMovement().add(0, -0.05, 0));
 
         if (this.tickCount > (fireLevel > 0 ? 10 : 40)) {
             this.discard();

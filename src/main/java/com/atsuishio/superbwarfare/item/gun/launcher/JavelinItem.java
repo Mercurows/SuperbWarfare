@@ -48,6 +48,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.function.Supplier;
 
 public class JavelinItem extends GunItem {
@@ -247,7 +248,7 @@ public class JavelinItem extends GunItem {
     }
 
     @Override
-    public void onShoot(GunData data, Player player, double spread, boolean zoom) {
+    public void onShoot(GunData data, Player player, double spread, boolean zoom, UUID uuid) {
     }
 
     @Override

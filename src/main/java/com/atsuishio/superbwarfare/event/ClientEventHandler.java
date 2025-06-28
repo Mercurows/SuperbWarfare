@@ -60,6 +60,7 @@ import software.bernie.geckolib.animation.AnimationProcessor;
 import software.bernie.geckolib.cache.object.GeoBone;
 
 import java.util.List;
+import java.util.UUID;
 
 @EventBusSubscriber(modid = Mod.MODID, bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
 public class ClientEventHandler {
@@ -724,7 +725,7 @@ public class ClientEventHandler {
         if (!(stack.getItem() instanceof GunItem)) return;
         var data = GunData.from(stack);
 
-        PacketDistributor.sendToServer(new ShootMessage(gunSpread, zoom));
+        PacketDistributor.sendToServer(new ShootMessage(gunSpread, zoom, entity != null ? entity.getUUID() : UUID.randomUUID()));
         fireRecoilTime = 10;
 
         var gunRecoilY = data.recoilY() * 10;
@@ -1491,14 +1492,17 @@ public class ClientEventHandler {
                             ClientEventHandler.entity = SeekTool.seekLivingEntity(player, player.level(), 32 + 8 * (intelligentChipLevel - 1), 16 / customZoom);
                         }
                         if (entity != null && entity.isAlive()) {
-                            Vec3 toVec = getVec3(event, player);
+                            Vec3 targetVec = new Vec3(Mth.lerp(event.getPartialTick(), entity.xo, entity.getX()), Mth.lerp(event.getPartialTick(), entity.yo + entity.getEyeHeight(), entity.getEyeY()), Mth.lerp(event.getPartialTick(), entity.zo, entity.getZ()));
+                            Vec3 playerVec = new Vec3(Mth.lerp(event.getPartialTick(), player.xo - 0.1 * player.getViewVector(1).x, player.getX() - 0.1 * player.getViewVector(1).x),
+                                    Mth.lerp(event.getPartialTick(), player.yo + player.getEyeHeight() - 0.1 * player.getViewVector(1).y, player.getEyeY() - 0.1 * player.getViewVector(1).y),
+                                    Mth.lerp(event.getPartialTick(), player.zo - 0.1 * player.getViewVector(1).z, player.getZ() - 0.1 * player.getViewVector(1).z));
+                            Vec3 toVec = RangeTool.calculateFiringSolution(playerVec, targetVec, entity.getDeltaMovement(), data.velocity(), 0.03);
                             look(player, toVec);
                         }
                     }
                 } else {
                     entity = null;
                 }
-
             }
         }
 
@@ -1509,12 +1513,6 @@ public class ClientEventHandler {
         }
     }
 
-    private static Vec3 getVec3(ViewportEvent.ComputeFov event, Player player) {
-        Vec3 targetVec = new Vec3(Mth.lerp(event.getPartialTick(), entity.xo, entity.getX()), Mth.lerp(event.getPartialTick(), entity.yo + entity.getEyeHeight(), entity.getEyeY()), Mth.lerp(event.getPartialTick(), entity.zo, entity.getZ()));
-        Vec3 playerVec = new Vec3(Mth.lerp(event.getPartialTick(), player.xo, player.getX()), Mth.lerp(event.getPartialTick(), player.yo + player.getEyeHeight(), player.getEyeY()), Mth.lerp(event.getPartialTick(), player.zo, player.getZ()));
-        return playerVec.vectorTo(targetVec);
-    }
-
     public static void look(Player player, Vec3 pTarget) {
         double d0 = pTarget.x;
         double d1 = pTarget.y;
@@ -1522,9 +1520,6 @@ public class ClientEventHandler {
         double d3 = Math.sqrt(d0 * d0 + d2 * d2);
         player.setXRot(Mth.wrapDegrees((float) (-(Mth.atan2(d1, d3) * 57.2957763671875))));
         player.setYRot(Mth.wrapDegrees((float) (Mth.atan2(d2, d0) * 57.2957763671875) - 90.0F));
-        player.setYHeadRot(player.getYRot());
-        player.xRotO = player.getXRot();
-        player.yRotO = player.getYRot();
     }
 
     @SubscribeEvent

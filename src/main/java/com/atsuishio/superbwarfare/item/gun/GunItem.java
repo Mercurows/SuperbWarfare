@@ -17,6 +17,7 @@ import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.CustomRendererItem;
 import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
+import com.atsuishio.superbwarfare.tools.RangeTool;
 import com.atsuishio.superbwarfare.tools.SoundTool;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
@@ -61,6 +62,8 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
+
+import static com.atsuishio.superbwarfare.tools.EntityFindUtil.findEntity;
 
 @EventBusSubscriber(modid = Mod.MODID, bus = EventBusSubscriber.Bus.MOD)
 public abstract class GunItem extends Item implements CustomRendererItem, GeoItem {
@@ -510,7 +513,7 @@ public abstract class GunItem extends Item implements CustomRendererItem, GeoIte
     /**
      * 服务端处理开火
      */
-    public void onShoot(GunData data, Player player, double spread, boolean zoom) {
+    public void onShoot(GunData data, Player player, double spread, boolean zoom, UUID uuid) {
         if (!data.hasEnoughAmmoToShoot(player)) return;
 
         // 开火前事件
@@ -521,7 +524,7 @@ public abstract class GunItem extends Item implements CustomRendererItem, GeoIte
 
         // 生成所有子弹
         for (int index0 = 0; index0 < (perk instanceof AmmoPerk ammoPerk && ammoPerk.slug ? 1 : projectileAmount); index0++) {
-            if (!shootBullet(player, data, spread, zoom)) return;
+            if (!shootBullet(player, data, spread, zoom, uuid)) return;
         }
 
         // 添加热量
@@ -603,7 +606,7 @@ public abstract class GunItem extends Item implements CustomRendererItem, GeoIte
      *
      * @return 是否发射成功
      */
-    public boolean shootBullet(Player player, GunData data, double spread, boolean zoom) {
+    public boolean shootBullet(Player player, GunData data, double spread, boolean zoom, UUID uuid) {
         var stack = data.stack;
         var level = player.level();
 
@@ -685,6 +688,19 @@ public abstract class GunItem extends Item implements CustomRendererItem, GeoIte
         var x = player.getLookAngle().x;
         var y = player.getLookAngle().y + 0.001f;
         var z = player.getLookAngle().z;
+
+        if (zoom && !player.isShiftKeyDown()) {
+            Entity target = findEntity(player.level(), String.valueOf(uuid));
+            int intelligentChipLevel = GunData.from(stack).perk.getLevel(ModPerks.INTELLIGENT_CHIP);
+            if (intelligentChipLevel > 0 && target != null) {
+                Vec3 targetVec = target.getEyePosition();
+                Vec3 playerVec = player.getEyePosition();
+                Vec3 toVec = RangeTool.calculateFiringSolution(playerVec, targetVec, Vec3.ZERO, data.velocity(), 0.03);
+                x = toVec.x;
+                y = toVec.y;
+                z = toVec.z;
+            }
+        }
 
         if (entity instanceof Projectile projectile) {
             projectile.shoot(x, y, z, velocity, (float) spread);
