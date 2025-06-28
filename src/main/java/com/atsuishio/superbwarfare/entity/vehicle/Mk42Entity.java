@@ -16,9 +16,14 @@ import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.common.ammo.CannonShellItem;
 import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage;
-import com.atsuishio.superbwarfare.tools.*;
+import com.atsuishio.superbwarfare.tools.CustomExplosion;
+import com.atsuishio.superbwarfare.tools.InventoryTool;
+import com.atsuishio.superbwarfare.tools.ParticleTool;
+import com.atsuishio.superbwarfare.tools.SoundTool;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -54,6 +59,8 @@ import software.bernie.geckolib.core.animation.AnimationState;
 import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
+
+import static com.atsuishio.superbwarfare.tools.RangeTool.calculateLaunchVector;
 
 public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity {
 
@@ -131,15 +138,6 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
     public @NotNull InteractionResult interact(Player player, @NotNull InteractionHand hand) {
         ItemStack stack = player.getMainHandItem();
 
-        if (player.getMainHandItem().getItem() == ModItems.FIRING_PARAMETERS.get() && player.isCrouching()) {
-            setTarget(player.getMainHandItem());
-            return InteractionResult.SUCCESS;
-        }
-        if (player.getOffhandItem().getItem() == ModItems.FIRING_PARAMETERS.get() && player.isCrouching()) {
-            setTarget(player.getOffhandItem());
-            return InteractionResult.SUCCESS;
-        }
-
         if (stack.getItem() instanceof CannonShellItem) {
             if (this.entityData.get(COOL_DOWN) == 0) {
                 var weaponType = stack.is(ModItems.AP_5_INCHES.get()) ? 0 : 1;
@@ -148,10 +146,29 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
             }
             return InteractionResult.SUCCESS;
         }
+
+        if (player.getMainHandItem().getItem() == ModItems.FIRING_PARAMETERS.get()) {
+            if (setTarget(player.getMainHandItem())) {
+                player.swing(InteractionHand.MAIN_HAND);
+                return InteractionResult.SUCCESS;
+            } else {
+                player.displayClientMessage(Component.translatable("tips.superbwarfare.mortar.warn").withStyle(ChatFormatting.RED), true);
+                return InteractionResult.FAIL;
+            }
+        }
+        if (player.getOffhandItem().getItem() == ModItems.FIRING_PARAMETERS.get()) {
+            if (setTarget(player.getOffhandItem())) {
+                player.swing(InteractionHand.OFF_HAND);
+                return InteractionResult.SUCCESS;
+            } else {
+                player.displayClientMessage(Component.translatable("tips.superbwarfare.mortar.warn").withStyle(ChatFormatting.RED), true);
+                return InteractionResult.FAIL;
+            }
+        }
         return super.interact(player, hand);
     }
 
-    public void setTarget(ItemStack stack) {
+    public boolean setTarget(ItemStack stack) {
         int targetX = stack.getOrCreateTag().getInt("TargetX");
         int targetY = stack.getOrCreateTag().getInt("TargetY");
         int targetZ = stack.getOrCreateTag().getInt("TargetZ");
@@ -161,11 +178,19 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
         Vector4f worldPosition = transformPosition(transform, 0f, 2.16f, 0.5175f);
         Vec3 shootPos = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
 
-        if (!RangeTool.canReach(15, shellGravity, shootPos, new Vec3(targetX, targetY, targetZ), -14.9, 85, isDepressed))
-            return;
+        try {
+            Vec3 launchVector = calculateLaunchVector(shootPos, new Vec3(targetX, targetY, targetZ), 15, -shellGravity, isDepressed);
+            this.look(new Vec3(targetX, targetY, targetZ));
+            float angle = (float)-getXRotFromVector(launchVector);
+            if (angle < -85 || angle > 14.9) {
+                return false;
+            }
+            entityData.set(PITCH, angle);
+        } catch (Exception e) {
+            return false;
+        }
 
-        this.look(new Vec3(targetX, targetY, targetZ));
-        entityData.set(PITCH, (float) -RangeTool.calculateAngle(15, shellGravity, shootPos, new Vec3(targetX, targetY, targetZ), isDepressed));
+        return true;
     }
 
     private void look(Vec3 pTarget) {
