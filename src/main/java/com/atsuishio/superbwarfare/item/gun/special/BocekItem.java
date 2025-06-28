@@ -43,6 +43,7 @@ import software.bernie.geckolib.core.object.PlayState;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 public class BocekItem extends GunItem {
@@ -166,7 +167,7 @@ public class BocekItem extends GunItem {
     }
 
     @Override
-    public void onShoot(GunData data, Player player, double spread, boolean zoom) {
+    public void onShoot(GunData data, Player player, double spread, boolean zoom, UUID uuid) {
     }
 
     @Override

@@ -326,7 +326,7 @@ public class ProjectileEntity extends Projectile implements IEntityAdditionalSpa
             this.setPosRaw(this.getX() + vec.x, this.getY() + vec.y, this.getZ() + vec.z);
         }
 
-        this.setDeltaMovement(vec.x, vec.y - 0.02, vec.z);
+        this.setDeltaMovement(this.getDeltaMovement().add(0, -0.05, 0));
 
         if (this.tickCount > (fireLevel > 0 ? 10 : 40)) {
             this.discard();

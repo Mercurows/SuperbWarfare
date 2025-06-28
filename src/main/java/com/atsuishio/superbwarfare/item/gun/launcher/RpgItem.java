@@ -39,6 +39,7 @@ import software.bernie.geckolib.core.object.PlayState;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 public class RpgItem extends GunItem {
@@ -138,9 +139,9 @@ public class RpgItem extends GunItem {
     }
 
     @Override
-    public boolean shootBullet(Player player, GunData data, double spread, boolean zoom) {
+    public boolean shootBullet(Player player, GunData data, double spread, boolean zoom, UUID uuid) {
         if (data.reloading()) return false;
-        if (!super.shootBullet(player, data, spread, zoom)) return false;
+        if (!super.shootBullet(player, data, spread, zoom, uuid)) return false;
 
         if (player.level() instanceof ServerLevel serverLevel) {
             ParticleTool.sendParticle(serverLevel, ParticleTypes.CLOUD, player.getX() + 1.8 * player.getLookAngle().x,

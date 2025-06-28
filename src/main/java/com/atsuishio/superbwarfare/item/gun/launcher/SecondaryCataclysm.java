@@ -10,11 +10,13 @@ import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.entity.projectile.GunGrenadeEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModItems;
+import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
+import com.atsuishio.superbwarfare.tools.RangeTool;
 import com.atsuishio.superbwarfare.tools.RarityTool;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -36,6 +38,7 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
@@ -51,9 +54,12 @@ import software.bernie.geckolib.core.object.PlayState;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+
+import static com.atsuishio.superbwarfare.tools.EntityFindUtil.findEntity;
 
 public class SecondaryCataclysm extends GunItem {
 
@@ -261,7 +267,7 @@ public class SecondaryCataclysm extends GunItem {
 
     // TODO 这玩意能提取吗
     @Override
-    public boolean shootBullet(Player player, GunData data, double spread, boolean zoom) {
+    public boolean shootBullet(Player player, GunData data, double spread, boolean zoom, UUID uuid) {
         if (data.reloading()) return false;
         var stack = data.stack;
 
@@ -292,8 +298,25 @@ public class SecondaryCataclysm extends GunItem {
 
             gunGrenadeEntity.charged(isChargedFire);
 
+            var x = player.getLookAngle().x;
+            var y = player.getLookAngle().y + 0.001f;
+            var z = player.getLookAngle().z;
+
+            if (zoom && !player.isShiftKeyDown()) {
+                Entity target = findEntity(player.level(), String.valueOf(uuid));
+                int intelligentChipLevel = GunData.from(stack).perk.getLevel(ModPerks.INTELLIGENT_CHIP);
+                if (intelligentChipLevel > 0 && target != null) {
+                    Vec3 targetVec = target.getEyePosition();
+                    Vec3 playerVec = player.getEyePosition();
+                    Vec3 toVec = RangeTool.calculateFiringSolution(playerVec, targetVec, Vec3.ZERO, (isChargedFire ? 4 : 1) * velocity, 0.05);
+                    x = toVec.x;
+                    y = toVec.y;
+                    z = toVec.z;
+                }
+            }
+
             gunGrenadeEntity.setPos(player.getX(), player.getEyeY() - 0.1, player.getZ());
-            gunGrenadeEntity.shoot(player.getLookAngle().x, player.getLookAngle().y, player.getLookAngle().z, (isChargedFire ? 4 : 1) * velocity,
+            gunGrenadeEntity.shoot(x, y, z, (isChargedFire ? 4 : 1) * velocity,
                     (float) (zoom ? 0.1 : spread));
             serverLevel.addFreshEntity(gunGrenadeEntity);
 

@@ -45,6 +45,7 @@ import software.bernie.geckolib.core.object.PlayState;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -202,7 +203,7 @@ public class TaserItem extends GunItem {
     }
 
     @Override
-    public boolean shootBullet(Player player, GunData data, double spread, boolean zoom) {
+    public boolean shootBullet(Player player, GunData data, double spread, boolean zoom, UUID uuid) {
         var stack = data.stack;
         player.getCooldowns().addCooldown(stack.getItem(), 5);
 

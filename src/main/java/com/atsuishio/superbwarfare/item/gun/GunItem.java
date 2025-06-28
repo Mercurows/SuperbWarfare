@@ -15,6 +15,7 @@ import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.network.PlayerVariable;
 import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
+import com.atsuishio.superbwarfare.tools.RangeTool;
 import com.atsuishio.superbwarfare.tools.SoundTool;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
@@ -55,6 +56,8 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
+
+import static com.atsuishio.superbwarfare.tools.EntityFindUtil.findEntity;
 
 @net.minecraftforge.fml.common.Mod.EventBusSubscriber
 public abstract class GunItem extends Item implements GeoItem {
@@ -502,7 +505,7 @@ public abstract class GunItem extends Item implements GeoItem {
     /**
      * 服务端处理开火
      */
-    public void onShoot(GunData data, Player player, double spread, boolean zoom) {
+    public void onShoot(GunData data, Player player, double spread, boolean zoom, UUID uuid) {
         if (!data.hasEnoughAmmoToShoot(player)) return;
 
         // 开火前事件
@@ -513,7 +516,7 @@ public abstract class GunItem extends Item implements GeoItem {
 
         // 生成所有子弹
         for (int index0 = 0; index0 < (perk instanceof AmmoPerk ammoPerk && ammoPerk.slug ? 1 : projectileAmount); index0++) {
-            if (!shootBullet(player, data, spread, zoom)) return;
+            if (!shootBullet(player, data, spread, zoom, uuid)) return;
         }
 
         // 添加热量
@@ -595,7 +598,7 @@ public abstract class GunItem extends Item implements GeoItem {
      *
      * @return 是否发射成功
      */
-    public boolean shootBullet(Player player, GunData data, double spread, boolean zoom) {
+    public boolean shootBullet(Player player, GunData data, double spread, boolean zoom, UUID uuid) {
         var stack = data.stack;
         var level = player.level();
 
@@ -677,6 +680,19 @@ public abstract class GunItem extends Item implements GeoItem {
         var x = player.getLookAngle().x;
         var y = player.getLookAngle().y + 0.001f;
         var z = player.getLookAngle().z;
+
+        if (zoom && !player.isShiftKeyDown()) {
+            Entity target = findEntity(player.level(), String.valueOf(uuid));
+            int intelligentChipLevel = GunData.from(stack).perk.getLevel(ModPerks.INTELLIGENT_CHIP);
+            if (intelligentChipLevel > 0 && target != null) {
+                Vec3 targetVec = target.getEyePosition();
+                Vec3 playerVec = player.getEyePosition();
+                Vec3 toVec = RangeTool.calculateFiringSolution(playerVec, targetVec, Vec3.ZERO, data.velocity(), 0.03);
+                x = toVec.x;
+                y = toVec.y;
+                z = toVec.z;
+            }
+        }
 
         if (entity instanceof Projectile projectile) {
             projectile.shoot(x, y, z, velocity, (float) spread);
