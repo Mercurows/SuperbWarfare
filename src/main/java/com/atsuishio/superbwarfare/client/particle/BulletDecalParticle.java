@@ -37,8 +37,12 @@ public class BulletDecalParticle extends TextureSheetParticle {
     private int vOffset;
     private float textureDensity;
 
-    public BulletDecalParticle(ClientLevel world, double x, double y, double z, Direction direction, BlockPos pos) {
-        super(world, x, y, z);
+    public BulletDecalParticle(ClientLevel level, double x, double y, double z, Direction direction, BlockPos pos) {
+        this(level, x, y, z, direction, pos, 0f, 0f, 0f);
+    }
+
+    public BulletDecalParticle(ClientLevel level, double x, double y, double z, Direction direction, BlockPos pos, float rCol, float gCol, float bCol) {
+        super(level, x, y, z);
         this.setSprite(this.getSprite(pos));
         this.direction = direction;
         this.pos = pos;
@@ -51,9 +55,9 @@ public class BulletDecalParticle extends TextureSheetParticle {
             this.remove();
         }
 
-        this.rCol = 0;
-        this.gCol = 0;
-        this.bCol = 0;
+        this.rCol = rCol;
+        this.gCol = gCol;
+        this.bCol = bCol;
 
         this.alpha = 0.9F;
     }
@@ -184,7 +188,7 @@ public class BulletDecalParticle extends TextureSheetParticle {
 
         @Override
         public BulletDecalParticle createParticle(@NotNull BulletDecalOption option, @NotNull ClientLevel world, double x, double y, double z, double pXSpeed, double pYSpeed, double pZSpeed) {
-            return new BulletDecalParticle(world, x, y, z, option.getDirection(), option.getPos());
+            return new BulletDecalParticle(world, x, y, z, option.getDirection(), option.getPos(), option.getRed(), option.getGreen(), option.getBlue());
         }
     }
 }
