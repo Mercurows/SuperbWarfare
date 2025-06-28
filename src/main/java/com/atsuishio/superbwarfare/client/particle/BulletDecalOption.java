@@ -1,10 +1,10 @@
 package com.atsuishio.superbwarfare.client.particle;
 
+import com.atsuishio.superbwarfare.init.ModParticleTypes;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import com.tacz.guns.init.ModParticles;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleOptions;
@@ -13,8 +13,10 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.registries.ForgeRegistries;
 
 public class BulletDecalOption implements ParticleOptions {
+
     public static final Codec<BulletDecalOption> CODEC = RecordCodecBuilder.create(builder ->
-            builder.group(Codec.INT.fieldOf("dir").forGetter(option -> option.direction.ordinal()),
+            builder.group(
+                    Codec.INT.fieldOf("dir").forGetter(option -> option.direction.ordinal()),
                     Codec.LONG.fieldOf("pos").forGetter(option -> option.pos.asLong())
             ).apply(builder, BulletDecalOption::new));
 
@@ -41,7 +43,6 @@ public class BulletDecalOption implements ParticleOptions {
     public BulletDecalOption(int dir, long pos) {
         this.direction = Direction.values()[dir];
         this.pos = BlockPos.of(pos);
-
     }
 
     public BulletDecalOption(Direction dir, BlockPos pos) {
@@ -59,7 +60,7 @@ public class BulletDecalOption implements ParticleOptions {
 
     @Override
     public ParticleType<?> getType() {
-        return ModParticles.BULLET_HOLE.get();
+        return ModParticleTypes.BULLET_DECAL.get();
     }
 
     @Override

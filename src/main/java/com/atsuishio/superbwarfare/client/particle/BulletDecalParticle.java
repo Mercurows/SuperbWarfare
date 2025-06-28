@@ -16,7 +16,9 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
@@ -24,9 +26,11 @@ import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 /**
- * Author: Forked from MrCrayfish, continued by Timeless devs
+ * @author Forked from MrCrayfish, continued by Timeless devs
+ * Code based on TaC-Z
  */
 public class BulletDecalParticle extends TextureSheetParticle {
+
     private final Direction direction;
     private final BlockPos pos;
     private int uOffset;
@@ -43,8 +47,7 @@ public class BulletDecalParticle extends TextureSheetParticle {
         this.gravity = 0.0F;
         this.quadSize = 0.05F;
 
-        // 如果方块是空气，则立即移除粒子
-        if (world.getBlockState(pos).isAir()) {
+        if (shouldRemove()) {
             this.remove();
         }
 
@@ -60,16 +63,15 @@ public class BulletDecalParticle extends TextureSheetParticle {
         super.setSprite(sprite);
         this.uOffset = this.random.nextInt(16);
         this.vOffset = this.random.nextInt(16);
-        // 材质应该都是方形
         this.textureDensity = (sprite.getU1() - sprite.getU0()) / 16.0F;
     }
 
     private TextureAtlasSprite getSprite(BlockPos pos) {
         Minecraft minecraft = Minecraft.getInstance();
-        Level world = minecraft.level;
-        if (world != null) {
-            BlockState state = world.getBlockState(pos);
-            return Minecraft.getInstance().getBlockRenderer().getBlockModelShaper().getTexture(state, world, pos);
+        Level clientLevel = minecraft.level;
+        if (clientLevel != null) {
+            BlockState state = clientLevel.getBlockState(pos);
+            return Minecraft.getInstance().getBlockRenderer().getBlockModelShaper().getTexture(state, clientLevel, pos);
         }
         return Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(MissingTextureAtlasSprite.getLocation());
     }
@@ -97,7 +99,7 @@ public class BulletDecalParticle extends TextureSheetParticle {
     @Override
     public void tick() {
         super.tick();
-        if (this.level.getBlockState(this.pos).isAir()) {
+        if (shouldRemove()) {
             this.remove();
         }
     }
@@ -152,6 +154,24 @@ public class BulletDecalParticle extends TextureSheetParticle {
         buffer.vertex(points[3].x(), points[3].y(), points[3].z()).uv(u0, v1).color(red, green, blue, alphaFade).uv2(lightColor).endVertex();
     }
 
+    private boolean shouldRemove() {
+        final BlockState blockState = this.level.getBlockState(this.pos);
+        if (blockState.isAir()) {
+            return true;
+        } else {
+            // 阻止弹孔在与方块不构成有效附着时继续渲染
+            VoxelShape shape = blockState.getCollisionShape(this.level, this.pos);
+            if (shape.isEmpty()) {
+                return true;
+            }
+            AABB baseBlockBoundingBox = shape.bounds();
+            AABB blockBoundingBox = baseBlockBoundingBox.move(this.pos);
+            return !blockBoundingBox.intersects(
+                    this.x - 0.1, this.y - 0.1, this.z - 0.1,
+                    this.x + 0.1, this.y + 0.1, this.z + 0.1);
+        }
+    }
+
     @Override
     public ParticleRenderType getRenderType() {
         return ParticleRenderType.TERRAIN_SHEET;
@@ -164,8 +184,7 @@ public class BulletDecalParticle extends TextureSheetParticle {
 
         @Override
         public BulletDecalParticle createParticle(@NotNull BulletDecalOption option, @NotNull ClientLevel world, double x, double y, double z, double pXSpeed, double pYSpeed, double pZSpeed) {
-            BulletDecalParticle particle = new BulletDecalParticle(world, x, y, z, option.getDirection(), option.getPos());
-            return particle;
+            return new BulletDecalParticle(world, x, y, z, option.getDirection(), option.getPos());
         }
     }
 }

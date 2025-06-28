@@ -12,11 +12,12 @@ import net.minecraftforge.registries.RegistryObject;
 import org.jetbrains.annotations.NotNull;
 
 public class ModParticleTypes {
+
     public static final DeferredRegister<ParticleType<?>> REGISTRY = DeferredRegister.create(ForgeRegistries.PARTICLE_TYPES, Mod.MODID);
 
-
     public static final RegistryObject<SimpleParticleType> FIRE_STAR = REGISTRY.register("fire_star", () -> new SimpleParticleType(false));
-    public static final RegistryObject<ParticleType<BulletDecalOption>> BULLET_DECAL = REGISTRY.register("bullet_decal", () -> new ModParticleType<>(false, BulletDecalOption.DESERIALIZER, BulletDecalOption.CODEC));
+    public static final RegistryObject<ParticleType<BulletDecalOption>> BULLET_DECAL = REGISTRY.register("bullet_decal",
+            () -> new ModParticleType<>(false, BulletDecalOption.DESERIALIZER, BulletDecalOption.CODEC));
     public static final RegistryObject<SimpleParticleType> CUSTOM_CLOUD = REGISTRY.register("custom_cloud", () -> new SimpleParticleType(false));
     public static final RegistryObject<SimpleParticleType> CUSTOM_SMOKE = REGISTRY.register("custom_smoke", () -> new SimpleParticleType(false));
 
