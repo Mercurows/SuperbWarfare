@@ -3,6 +3,10 @@ package com.atsuishio.superbwarfare.tools;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 public class RangeTool {
 
     /**
@@ -19,48 +23,51 @@ public class RangeTool {
 
     // 谢谢DeepSeek
 
-    /**
-     * 判断按指定参数发射是否可以击中目标
-     *
-     * @param v                     初始速度
-     * @param g                     重力加速度
-     * @param startPos              起始位置
-     * @param endPos                目标位置
-     * @param minAngle              最小仰角
-     * @param maxAngle              最大仰角
-     * @param isDepressedTrajectory 是否使用低伸弹道
-     */
-    public static boolean canReach(double v, double g, Vec3 startPos, Vec3 endPos, double minAngle, double maxAngle, boolean isDepressedTrajectory) {
-        if (getD(v, g, startPos, endPos) < 0) return false;
+    public static Vec3 calculateLaunchVector(Vec3 pos, Vec3 pos2, double velocity, double g, boolean isDepressed) {
+        double dx = pos2.x - pos.x;
+        double dy = pos2.y - pos.y;
+        double dz = pos2.z - pos.z;
+        double horizontalDistSq = dx * dx + dz * dz;
 
-        var targetAngle = calculateAngle(v, g, startPos, endPos, isDepressedTrajectory);
-        return targetAngle >= minAngle && targetAngle <= maxAngle;
+        double a = 0.25 * g * g;
+        double b = -velocity * velocity - g * dy;
+        double c = horizontalDistSq + dy * dy;
+
+        List<Double> validT = getDoubles(b, a, c);
+
+        double t;
+
+        if (isDepressed) {
+            t = Collections.min(validT);
+        } else {
+            t = Collections.max(validT);
+        }
+
+        double vx = dx / t;
+        double vz = dz / t;
+        double vy = (dy - 0.5 * g * t * t) / t;
+
+        return new Vec3(vx, vy, vz);
     }
 
-    /**
-     * 计算按指定参数发射所需的仰角
-     *
-     * @param v                     初始速度
-     * @param g                     重力加速度
-     * @param startPos              起始位置
-     * @param endPos                目标位置
-     * @param isDepressedTrajectory 是否使用低伸弹道
-     */
-    public static double calculateAngle(double v, double g, Vec3 startPos, Vec3 endPos, boolean isDepressedTrajectory) {
-        var xDiff = startPos.x - endPos.x;
-        var zDiff = startPos.z - endPos.z;
-        var x = Math.sqrt(Math.pow(xDiff, 2) + Math.pow(zDiff, 2));
-        double d = getD(v, g, startPos, endPos);
-        return Math.atan((v * v + (isDepressedTrajectory ? -d : d)) / (g * x)) * Mth.RAD_TO_DEG;
-    }
+    private static List<Double> getDoubles(double b, double a, double c) {
+        double discriminant = b * b - 4 * a * c;
+        if (discriminant < 0) {
+            throw new IllegalStateException("No valid trajectory: Increase velocity or adjust target");
+        }
 
-    private static double getD(double v, double g, Vec3 startPos, Vec3 endPos) {
-        var xDiff = startPos.x - endPos.x;
-        var zDiff = startPos.z - endPos.z;
-        var x = Math.sqrt(Math.pow(xDiff, 2) + Math.pow(zDiff, 2));
-        var y = startPos.y - endPos.y;
+        double sqrtDisc = Math.sqrt(discriminant);
+        double u1 = (-b + sqrtDisc) / (2 * a);
+        double u2 = (-b - sqrtDisc) / (2 * a);
 
-        return Math.sqrt(Math.pow(v, 4) - g * g * x * x - 2 * g * y * v * v);
+        List<Double> validT = new ArrayList<>();
+        if (u1 > 0) validT.add(Math.sqrt(u1));
+        if (u2 > 0) validT.add(Math.sqrt(u2));
+
+        if (validT.isEmpty()) {
+            throw new IllegalStateException("No positive real solution for flight time");
+        }
+        return validT;
     }
 
 }

@@ -8,7 +8,6 @@ import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.common.ammo.MortarShell;
-import com.atsuishio.superbwarfare.tools.RangeTool;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.particles.ParticleTypes;
@@ -36,6 +35,8 @@ import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.*;
 import software.bernie.geckolib.util.GeckoLibUtil;
+
+import static com.atsuishio.superbwarfare.tools.RangeTool.calculateLaunchVector;
 
 public class MortarEntity extends VehicleEntity implements GeoEntity {
 
@@ -110,8 +111,8 @@ public class MortarEntity extends VehicleEntity implements GeoEntity {
                 Level level = this.level();
                 if (level instanceof ServerLevel server) {
                     MortarShellEntity entityToSpawn = shell.createShell(player, level, stack);
-                    entityToSpawn.setPos(this.getX(), this.getY() + this.getEyeY(), this.getZ());
-                    entityToSpawn.shoot(this.getLookAngle().x, this.getLookAngle().y, this.getLookAngle().z, 11.4f, 0.1f);
+                    entityToSpawn.setPos(this.getX(), this.getEyeY(), this.getZ());
+                    entityToSpawn.shoot(this.getLookAngle().x, this.getLookAngle().y, this.getLookAngle().z, 11.4f, (float) 0.5);
                     level.addFreshEntity(entityToSpawn);
                     server.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, (this.getX() + 3 * this.getLookAngle().x), (this.getY() + 0.1 + 3 * this.getLookAngle().y), (this.getZ() + 3 * this.getLookAngle().z), 8, 0.4, 0.4, 0.4,
                             0.007);
@@ -161,18 +162,17 @@ public class MortarEntity extends VehicleEntity implements GeoEntity {
         double targetZ = pos.getZ();
         var isDepressed = parameters.isDepressed();
 
-        if (!RangeTool.canReach(11.4, 0.146, this.getEyePosition(), new Vec3(targetX, targetY, targetZ), 20, 89, isDepressed)) {
+        try {
+            Vec3 launchVector = calculateLaunchVector(getEyePosition(), new Vec3(targetX, targetY, targetZ), 11.4, -0.146, isDepressed);
+            this.look(new Vec3(targetX, targetY, targetZ));
+            float angle = (float) -getXRotFromVector(launchVector);
+            if (angle < -89 || angle > -20) {
+                return false;
+            }
+            entityData.set(PITCH, angle);
+        } catch (Exception e) {
             return false;
         }
-
-        this.look(new Vec3(targetX, targetY, targetZ));
-
-        entityData.set(PITCH, (float) -RangeTool.calculateAngle(
-                11.4, 0.146,
-                this.getEyePosition(),
-                new Vec3(targetX, targetY, targetZ),
-                parameters.isDepressed()
-        ));
 
         return true;
     }
