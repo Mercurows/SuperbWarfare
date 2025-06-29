@@ -43,7 +43,7 @@ public class CapabilityHandler {
         if (event.getEntity().level().isClientSide()) return;
 
         var player = event.getEntity();
-        player.getCapability(ModCapabilities.PLAYER_VARIABLE, null).orElse(new PlayerVariable()).sync(player);
+        player.getCapability(ModCapabilities.PLAYER_VARIABLE, null).orElse(new PlayerVariable()).forceSync(player);
     }
 
     @SubscribeEvent

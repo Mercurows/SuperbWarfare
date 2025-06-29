@@ -56,6 +56,13 @@ public class PlayerVariable {
         }
     }
 
+    public void forceSync(Entity entity) {
+        if (!entity.getCapability(ModCapabilities.PLAYER_VARIABLE).isPresent()) return;
+        if (entity instanceof ServerPlayer player) {
+            Mod.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> player), new PlayerVariablesSyncMessage(entity.getId(), copyMap()));
+        }
+    }
+
     public Map<Byte, Integer> compareAndUpdate() {
         var map = new HashMap<Byte, Integer>();
         var old = this.old == null ? new PlayerVariable() : this.old;
@@ -73,6 +80,14 @@ public class PlayerVariable {
             map.put((byte) -1, this.tacticalSprint ? 1 : 0);
         }
 
+        return map;
+    }
+
+    public Map<Byte, Integer> copyMap() {
+        var map = new HashMap<Byte, Integer>();
+        for (var type : Ammo.values()) {
+            map.put((byte) type.ordinal(), type.get(this));
+        }
         return map;
     }
 
