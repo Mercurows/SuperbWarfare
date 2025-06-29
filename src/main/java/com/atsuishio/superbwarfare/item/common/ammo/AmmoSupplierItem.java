@@ -1,8 +1,8 @@
 package com.atsuishio.superbwarfare.item.common.ammo;
 
+import com.atsuishio.superbwarfare.capability.PlayerVariable;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
-import com.atsuishio.superbwarfare.network.PlayerVariable;
 import com.atsuishio.superbwarfare.tools.Ammo;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;

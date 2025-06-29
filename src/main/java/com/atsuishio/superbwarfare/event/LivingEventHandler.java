@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.api.event.PreKillEvent;
 import com.atsuishio.superbwarfare.capability.LaserCapability;
 import com.atsuishio.superbwarfare.capability.ModCapabilities;
+import com.atsuishio.superbwarfare.capability.PlayerVariable;
 import com.atsuishio.superbwarfare.config.common.GameplayConfig;
 import com.atsuishio.superbwarfare.config.server.MiscConfig;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
@@ -17,8 +18,6 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.ContainerMobileVehicleEnt
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
-import com.atsuishio.superbwarfare.network.ModVariables;
-import com.atsuishio.superbwarfare.network.PlayerVariable;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
 import com.atsuishio.superbwarfare.network.message.receive.DrawClientMessage;
 import com.atsuishio.superbwarfare.network.message.receive.PlayerGunKillMessage;
@@ -548,7 +547,7 @@ public class LivingEventHandler {
     public static void onLivingDrops(LivingDropsEvent event) {
         // 死亡掉落弹药盒
         if (event.getEntity() instanceof Player player && !player.level().getLevelData().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY)) {
-            var cap = player.getCapability(ModVariables.PLAYER_VARIABLE).orElse(new PlayerVariable());
+            var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE).orElse(new PlayerVariable());
             cap.watch();
 
             boolean drop = Stream.of(Ammo.values())

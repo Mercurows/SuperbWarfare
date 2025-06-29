@@ -1,8 +1,8 @@
 package com.atsuishio.superbwarfare.perk.functional;
 
-import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.capability.PlayerVariable;
 import com.atsuishio.superbwarfare.data.gun.GunData;
-import com.atsuishio.superbwarfare.network.PlayerVariable;
+import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkInstance;
 import com.atsuishio.superbwarfare.tools.DamageTypeTool;

@@ -1,6 +1,8 @@
 package com.atsuishio.superbwarfare.event;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.capability.ModCapabilities;
+import com.atsuishio.superbwarfare.capability.PlayerVariable;
 import com.atsuishio.superbwarfare.config.common.GameplayConfig;
 import com.atsuishio.superbwarfare.config.server.MiscConfig;
 import com.atsuishio.superbwarfare.data.gun.GunData;
@@ -10,8 +12,6 @@ import com.atsuishio.superbwarfare.init.ModParticleTypes;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
-import com.atsuishio.superbwarfare.network.ModVariables;
-import com.atsuishio.superbwarfare.network.PlayerVariable;
 import com.atsuishio.superbwarfare.network.message.receive.SimulationDistanceMessage;
 import com.atsuishio.superbwarfare.tools.InventoryTool;
 import com.atsuishio.superbwarfare.tools.TraceTool;
@@ -176,7 +176,7 @@ public class PlayerEventHandler {
             attr.removeModifier(TACTICAL_SPRINT_UUID);
         }
 
-        if (MiscConfig.ALLOW_TACTICAL_SPRINT.get() && player.getCapability(ModVariables.PLAYER_VARIABLE, null).orElse(new PlayerVariable()).tacticalSprint) {
+        if (MiscConfig.ALLOW_TACTICAL_SPRINT.get() && player.getCapability(ModCapabilities.PLAYER_VARIABLE, null).orElse(new PlayerVariable()).tacticalSprint) {
             player.setSprinting(true);
             attr.addTransientModifier(new AttributeModifier(TACTICAL_SPRINT_UUID, Mod.ATTRIBUTE_MODIFIER,
                     0.25, AttributeModifier.Operation.MULTIPLY_BASE));

@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.tools;
 
-import com.atsuishio.superbwarfare.network.ModVariables;
-import com.atsuishio.superbwarfare.network.PlayerVariable;
+import com.atsuishio.superbwarfare.capability.ModCapabilities;
+import com.atsuishio.superbwarfare.capability.PlayerVariable;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
@@ -98,7 +98,7 @@ public enum Ammo {
     }
 
     public int get(Player player) {
-        return player.getCapability(ModVariables.PLAYER_VARIABLE)
+        return player.getCapability(ModCapabilities.PLAYER_VARIABLE)
                 .map(this::get)
                 .orElse(0);
     }

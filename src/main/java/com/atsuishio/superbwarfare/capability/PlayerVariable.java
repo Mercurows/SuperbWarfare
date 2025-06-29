@@ -1,19 +1,29 @@
-package com.atsuishio.superbwarfare.network;
+package com.atsuishio.superbwarfare.capability;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.network.message.receive.PlayerVariablesSyncMessage;
 import com.atsuishio.superbwarfare.tools.Ammo;
+import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
+import net.minecraftforge.common.capabilities.AutoRegisterCapability;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ICapabilitySerializable;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.network.PacketDistributor;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
+@AutoRegisterCapability
 public class PlayerVariable {
+
+    public static ResourceLocation ID = Mod.loc("player_variables");
 
     private PlayerVariable old = null;
 
@@ -28,7 +38,7 @@ public class PlayerVariable {
      * 编辑并自动同步玩家变量
      */
     public static void modify(Entity entity, Consumer<PlayerVariable> consumer) {
-        var cap = entity.getCapability(ModVariables.PLAYER_VARIABLE).orElse(new PlayerVariable());
+        var cap = entity.getCapability(ModCapabilities.PLAYER_VARIABLE).orElse(new PlayerVariable());
 
         cap.watch();
         consumer.accept(cap);
@@ -36,9 +46,9 @@ public class PlayerVariable {
     }
 
     public void sync(Entity entity) {
-        if (!entity.getCapability(ModVariables.PLAYER_VARIABLE).isPresent()) return;
+        if (!entity.getCapability(ModCapabilities.PLAYER_VARIABLE).isPresent()) return;
 
-        var newVariable = entity.getCapability(ModVariables.PLAYER_VARIABLE).resolve().get();
+        var newVariable = entity.getCapability(ModCapabilities.PLAYER_VARIABLE).resolve().get();
         if (old != null && old.equals(newVariable)) return;
 
         if (entity instanceof ServerPlayer player) {
@@ -106,5 +116,26 @@ public class PlayerVariable {
         }
 
         tacticalSprint = nbt.getBoolean("TacticalSprint");
+    }
+
+    public static class PlayerVariablesProvider implements ICapabilitySerializable<Tag> {
+
+        private final PlayerVariable playerVariable = new PlayerVariable();
+        private final LazyOptional<PlayerVariable> instance = LazyOptional.of(() -> playerVariable);
+
+        @Override
+        public <T> @NotNull LazyOptional<T> getCapability(@NotNull Capability<T> cap, Direction side) {
+            return cap == ModCapabilities.PLAYER_VARIABLE ? instance.cast() : LazyOptional.empty();
+        }
+
+        @Override
+        public Tag serializeNBT() {
+            return playerVariable.writeNBT();
+        }
+
+        @Override
+        public void deserializeNBT(Tag nbt) {
+            playerVariable.readNBT(nbt);
+        }
     }
 }

@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.network.message.send;
 
+import com.atsuishio.superbwarfare.capability.PlayerVariable;
 import com.atsuishio.superbwarfare.config.server.MiscConfig;
-import com.atsuishio.superbwarfare.network.PlayerVariable;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkEvent;
