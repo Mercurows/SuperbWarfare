@@ -19,6 +19,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -115,6 +116,12 @@ public class DPSGeneratorEntity extends LivingEntity implements GeoEntity {
 
     @Override
     public boolean hurt(@NotNull DamageSource source, float amount) {
+        // 不处理/kill伤害
+        if (source.is(DamageTypes.GENERIC_KILL)) {
+            this.remove(RemovalReason.KILLED);
+            return super.hurt(source, amount);
+        }
+
         damageDealt += amount;
 
         if (this.getHealth() < 0.01) {
@@ -132,6 +139,8 @@ public class DPSGeneratorEntity extends LivingEntity implements GeoEntity {
     @SubscribeEvent
     public static void onTargetDown(LivingDeathEvent event) {
         var entity = event.getEntity();
+        // 不处理/kill伤害
+        if (event.getSource().is(DamageTypes.GENERIC_KILL)) return;
         var sourceEntity = event.getSource().getEntity();
 
         if (entity instanceof DPSGeneratorEntity generatorEntity) {

@@ -84,6 +84,12 @@ public class TargetEntity extends LivingEntity implements GeoEntity {
 
     @Override
     public boolean hurt(@NotNull DamageSource source, float amount) {
+        // 不处理/kill伤害
+        if (source.is(DamageTypes.GENERIC_KILL)) {
+            this.remove(RemovalReason.KILLED);
+            return super.hurt(source, amount);
+        }
+
         amount = DAMAGE_MODIFIER.compute(source, amount);
         if (amount <= 0 || this.entityData.get(DOWN_TIME) > 0) {
             return false;
@@ -100,6 +106,8 @@ public class TargetEntity extends LivingEntity implements GeoEntity {
     @SubscribeEvent
     public static void onTargetDown(LivingDeathEvent event) {
         var entity = event.getEntity();
+        // 不处理/kill伤害
+        if (event.getSource().is(DamageTypes.GENERIC_KILL)) return;
         var sourceEntity = event.getSource().getEntity();
 
         if (entity instanceof TargetEntity targetEntity) {
