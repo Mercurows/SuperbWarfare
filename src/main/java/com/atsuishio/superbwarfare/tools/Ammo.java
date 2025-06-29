@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.tools;
 
 import com.atsuishio.superbwarfare.capability.ModCapabilities;
-import com.atsuishio.superbwarfare.capability.PlayerVariable;
+import com.atsuishio.superbwarfare.capability.player.PlayerVariable;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;

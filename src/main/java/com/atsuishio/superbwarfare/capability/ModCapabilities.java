@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.capability;
 
+import com.atsuishio.superbwarfare.capability.player.PlayerVariable;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.CapabilityToken;

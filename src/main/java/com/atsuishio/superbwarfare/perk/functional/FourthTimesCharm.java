@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.perk.functional;
 
-import com.atsuishio.superbwarfare.capability.PlayerVariable;
+import com.atsuishio.superbwarfare.capability.player.PlayerVariable;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
