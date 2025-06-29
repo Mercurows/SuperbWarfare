@@ -1,21 +1,21 @@
 package com.atsuishio.superbwarfare.client.particle;
 
 import com.atsuishio.superbwarfare.init.ModParticleTypes;
-import com.mojang.brigadier.StringReader;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import org.jetbrains.annotations.NotNull;
 
 public class BulletDecalOption implements ParticleOptions {
 
-    public static final Codec<BulletDecalOption> CODEC = RecordCodecBuilder.create(builder ->
+    public static final MapCodec<BulletDecalOption> CODEC = RecordCodecBuilder.mapCodec(builder ->
             builder.group(
                     Codec.INT.fieldOf("dir").forGetter(option -> option.direction.ordinal()),
                     Codec.LONG.fieldOf("pos").forGetter(option -> option.pos.asLong()),
@@ -24,28 +24,19 @@ public class BulletDecalOption implements ParticleOptions {
                     Codec.FLOAT.fieldOf("b").forGetter(option -> option.blue)
             ).apply(builder, BulletDecalOption::new));
 
-    @SuppressWarnings("deprecation")
-    public static final ParticleOptions.Deserializer<BulletDecalOption> DESERIALIZER = new ParticleOptions.Deserializer<>() {
-        @Override
-        public BulletDecalOption fromCommand(ParticleType<BulletDecalOption> particleType, StringReader reader) throws CommandSyntaxException {
-            reader.expect(' ');
-            int dir = reader.readInt();
-            reader.expect(' ');
-            long pos = reader.readLong();
-            reader.expect(' ');
-            float r = reader.readFloat();
-            reader.expect(' ');
-            float g = reader.readFloat();
-            reader.expect(' ');
-            float b = reader.readFloat();
-            return new BulletDecalOption(dir, pos, r, g, b);
-        }
-
-        @Override
-        public BulletDecalOption fromNetwork(ParticleType<BulletDecalOption> particleType, FriendlyByteBuf buffer) {
-            return new BulletDecalOption(buffer.readVarInt(), buffer.readLong(), buffer.readFloat(), buffer.readFloat(), buffer.readFloat());
-        }
-    };
+    public static final StreamCodec<ByteBuf, BulletDecalOption> STREAM_CODEC = StreamCodec.composite(
+            Direction.STREAM_CODEC,
+            BulletDecalOption::getDirection,
+            BlockPos.STREAM_CODEC,
+            BulletDecalOption::getPos,
+            ByteBufCodecs.FLOAT,
+            BulletDecalOption::getRed,
+            ByteBufCodecs.FLOAT,
+            BulletDecalOption::getGreen,
+            ByteBufCodecs.FLOAT,
+            BulletDecalOption::getBlue,
+            BulletDecalOption::new
+    );
 
     private final Direction direction;
     private final BlockPos pos;
@@ -96,19 +87,5 @@ public class BulletDecalOption implements ParticleOptions {
     @Override
     public @NotNull ParticleType<?> getType() {
         return ModParticleTypes.BULLET_DECAL.get();
-    }
-
-    @Override
-    public void writeToNetwork(FriendlyByteBuf buffer) {
-        buffer.writeEnum(this.direction);
-        buffer.writeBlockPos(this.pos);
-        buffer.writeFloat(this.red);
-        buffer.writeFloat(this.green);
-        buffer.writeFloat(this.blue);
-    }
-
-    @Override
-    public String writeToString() {
-        return BuiltInRegistries.PARTICLE_TYPE.getKey(this.getType()) + " " + this.direction.getName();
     }
 }
