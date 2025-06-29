@@ -17,23 +17,17 @@ public class ModParticleTypes {
 
     public static final RegistryObject<SimpleParticleType> FIRE_STAR = REGISTRY.register("fire_star", () -> new SimpleParticleType(false));
     public static final RegistryObject<ParticleType<BulletDecalOption>> BULLET_DECAL = REGISTRY.register("bullet_decal",
-            () -> new ModParticleType<>(false, BulletDecalOption.DESERIALIZER, BulletDecalOption.CODEC));
+            () -> createOptions(BulletDecalOption.CODEC, BulletDecalOption.DESERIALIZER));
     public static final RegistryObject<SimpleParticleType> CUSTOM_CLOUD = REGISTRY.register("custom_cloud", () -> new SimpleParticleType(false));
     public static final RegistryObject<SimpleParticleType> CUSTOM_SMOKE = REGISTRY.register("custom_smoke", () -> new SimpleParticleType(false));
 
     @SuppressWarnings("deprecation")
-    private static class ModParticleType<T extends ParticleOptions> extends ParticleType<T> {
-        private final Codec<T> codec;
-
-        public ModParticleType(boolean overrideLimiter, ParticleOptions.Deserializer<T> deserializer, Codec<T> codec) {
-            super(overrideLimiter, deserializer);
-            this.codec = codec;
-        }
-
-        @Override
-        public @NotNull Codec<T> codec() {
-            return this.codec;
-        }
+    public static <T extends ParticleOptions> ParticleType<T> createOptions(Codec<T> codec, ParticleOptions.Deserializer<T> deserializer) {
+        return new ParticleType<>(false, deserializer) {
+            public @NotNull Codec<T> codec() {
+                return codec;
+            }
+        };
     }
 }
 
