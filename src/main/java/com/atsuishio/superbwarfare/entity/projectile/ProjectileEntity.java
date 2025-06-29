@@ -355,7 +355,7 @@ public class ProjectileEntity extends Projectile implements IEntityWithComplexSp
         this.legShot = tag.getFloat("LegShot");
         this.bypassArmorRate = tag.getFloat("BypassArmorRate");
         this.undeadMultiple = tag.getFloat("UndeadMultiple");
-        this.illagerMultiple = tag.getFloat("illagerMultiple");
+        this.illagerMultiple = tag.getFloat("IllagerMultiple");
         this.knockback = tag.getFloat("Knockback");
 
         this.beast = tag.getBoolean("Beast");
@@ -374,7 +374,7 @@ public class ProjectileEntity extends Projectile implements IEntityWithComplexSp
         tag.putFloat("LegShot", this.legShot);
         tag.putFloat("BypassArmorRate", this.bypassArmorRate);
         tag.putFloat("UndeadMultiple", this.undeadMultiple);
-        tag.putFloat("illagerMultiple", this.illagerMultiple);
+        tag.putFloat("IllagerMultiple", this.illagerMultiple);
         tag.putFloat("Knockback", this.knockback);
 
         tag.putBoolean("Beast", this.beast);
@@ -386,7 +386,7 @@ public class ProjectileEntity extends Projectile implements IEntityWithComplexSp
     }
 
     @Override
-    protected void onHit(@NotNull HitResult result) {
+    protected void onHit(@Nullable HitResult result) {
         if (result instanceof BlockHitResult blockHitResult) {
             if (blockHitResult.getType() == HitResult.Type.MISS) {
                 return;
