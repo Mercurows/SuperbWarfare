@@ -9,8 +9,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.registries.ForgeRegistries;
+import org.jetbrains.annotations.NotNull;
 
 public class BulletDecalOption implements ParticleOptions {
 
@@ -53,7 +54,7 @@ public class BulletDecalOption implements ParticleOptions {
     private final float blue;
 
     public BulletDecalOption(int dir, long pos) {
-        this(Direction.values()[dir], BlockPos.of(pos), 0f, 0f, 0f);
+        this(Direction.values()[dir], BlockPos.of(pos), 0.9f, 0f, 0f);
     }
 
     public BulletDecalOption(int dir, long pos, float r, float g, float b) {
@@ -61,7 +62,7 @@ public class BulletDecalOption implements ParticleOptions {
     }
 
     public BulletDecalOption(Direction dir, BlockPos pos) {
-        this(dir, pos, 0f, 0f, 0f);
+        this(dir, pos, 0.9f, 0f, 0f);
     }
 
     public BulletDecalOption(Direction dir, BlockPos pos, float r, float g, float b) {
@@ -93,7 +94,7 @@ public class BulletDecalOption implements ParticleOptions {
     }
 
     @Override
-    public ParticleType<?> getType() {
+    public @NotNull ParticleType<?> getType() {
         return ModParticleTypes.BULLET_DECAL.get();
     }
 
@@ -108,6 +109,6 @@ public class BulletDecalOption implements ParticleOptions {
 
     @Override
     public String writeToString() {
-        return ForgeRegistries.PARTICLE_TYPES.getKey(this.getType()) + " " + this.direction.getName();
+        return BuiltInRegistries.PARTICLE_TYPE.getKey(this.getType()) + " " + this.direction.getName();
     }
 }

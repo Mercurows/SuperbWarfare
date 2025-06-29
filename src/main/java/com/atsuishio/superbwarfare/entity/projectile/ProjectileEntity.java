@@ -89,6 +89,10 @@ public class ProjectileEntity extends Projectile implements IEntityWithComplexSp
             || input.getBlock() instanceof TrapDoorBlock
             || input.getBlock() instanceof BarbedWireBlock);
 
+    public static final float DEFAULT_R = 1.0f;
+    public static final float DEFAULT_G = 222 / 255f;
+    public static final float DEFAULT_B = 39 / 255f;
+
     @Nullable
     protected LivingEntity shooter;
     protected int shooterId;
@@ -264,10 +268,9 @@ public class ProjectileEntity extends Projectile implements IEntityWithComplexSp
 
     @Override
     protected void defineSynchedData(SynchedEntityData.@NotNull Builder builder) {
-        builder.define(COLOR_R, 1.0f)
-                .define(COLOR_G, 222 / 255f)
-                .define(COLOR_B, 39 / 255f);
-
+        builder.define(COLOR_R, DEFAULT_R)
+                .define(COLOR_G, DEFAULT_G)
+                .define(COLOR_B, DEFAULT_B);
     }
 
     @Override
@@ -510,8 +513,13 @@ public class ProjectileEntity extends Projectile implements IEntityWithComplexSp
             if (this.beast) {
                 ParticleTool.sendParticle(serverLevel, ParticleTypes.END_ROD, location.x, location.y, location.z, 15, 0.1, 0.1, 0.1, 0.05, true);
             } else {
-                BulletDecalOption bulletDecalOption = new BulletDecalOption(result.getDirection(), result.getBlockPos(),
-                        this.entityData.get(COLOR_R), this.entityData.get(COLOR_G), this.entityData.get(COLOR_B));
+                BulletDecalOption bulletDecalOption;
+                if (this.entityData.get(COLOR_R) == DEFAULT_R && this.entityData.get(COLOR_G) == DEFAULT_G && this.entityData.get(COLOR_B) == DEFAULT_B) {
+                    bulletDecalOption = new BulletDecalOption(result.getDirection(), result.getBlockPos());
+                } else {
+                    bulletDecalOption = new BulletDecalOption(result.getDirection(), result.getBlockPos(),
+                            this.entityData.get(COLOR_R), this.entityData.get(COLOR_G), this.entityData.get(COLOR_B));
+                }
                 serverLevel.sendParticles(bulletDecalOption, location.x, location.y, location.z, 1, 0, 0, 0, 0);
 
                 ParticleTool.sendParticle(serverLevel, ParticleTypes.SMOKE, location.x, location.y, location.z, 3, vx, vy, vz, 0.01, true);
