@@ -53,7 +53,7 @@ public class BulletDecalOption implements ParticleOptions {
     private final float blue;
 
     public BulletDecalOption(int dir, long pos) {
-        this(Direction.values()[dir], BlockPos.of(pos), 0f, 0f, 0f);
+        this(Direction.values()[dir], BlockPos.of(pos), 0.9f, 0f, 0f);
     }
 
     public BulletDecalOption(int dir, long pos, float r, float g, float b) {
@@ -61,7 +61,7 @@ public class BulletDecalOption implements ParticleOptions {
     }
 
     public BulletDecalOption(Direction dir, BlockPos pos) {
-        this(dir, pos, 0f, 0f, 0f);
+        this(dir, pos, 0.9f, 0f, 0f);
     }
 
     public BulletDecalOption(Direction dir, BlockPos pos, float r, float g, float b) {
