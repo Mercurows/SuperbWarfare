@@ -38,25 +38,30 @@ public class PlayerVariable implements INBTSerializable<CompoundTag> {
         }
     }
 
+
+    public static PlayerVariable getOrDefault(Entity entity) {
+        return entity.getData(ModAttachments.PLAYER_VARIABLE);
+    }
+
     @SubscribeEvent
     public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
 
-        PacketDistributor.sendToPlayer(player, new PlayerVariablesSyncMessage(player.getId(), player.getData(ModAttachments.PLAYER_VARIABLE).compareAndUpdate()));
+        PacketDistributor.sendToPlayer(player, new PlayerVariablesSyncMessage(player.getId(), getOrDefault(player).compareAndUpdate()));
     }
 
     @SubscribeEvent
     public static void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
 
-        PacketDistributor.sendToPlayer(player, new PlayerVariablesSyncMessage(player.getId(), player.getData(ModAttachments.PLAYER_VARIABLE).compareAndUpdate()));
+        PacketDistributor.sendToPlayer(player, new PlayerVariablesSyncMessage(player.getId(), getOrDefault(player).compareAndUpdate()));
     }
 
     @SubscribeEvent
     public static void onPlayerChangeDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
 
-        PacketDistributor.sendToPlayer(player, new PlayerVariablesSyncMessage(player.getId(), player.getData(ModAttachments.PLAYER_VARIABLE).forceUpdate()));
+        PacketDistributor.sendToPlayer(player, new PlayerVariablesSyncMessage(player.getId(), getOrDefault(player).forceUpdate()));
     }
 
     public PlayerVariable watch() {
