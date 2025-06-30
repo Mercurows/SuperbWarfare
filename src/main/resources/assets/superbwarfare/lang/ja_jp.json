@@ -542,9 +542,9 @@
   "config.superbwarfare.client.display.armor_plate_hud.des": "オンにすると、胸部アーマーに装備されている防弾インサートの耐久性を左下隅に表示します",
   "config.superbwarfare.client.display.stamina_hud": "スタミナHUD",
   "config.superbwarfare.client.display.stamina_hud.des": "タクティカルスプリントや息止めの際にスタミナHUDを表示する",
-  "config.superbwarfare.client.vehicle": "車両制御",
-  "config.superbwarfare.client.vehicle.invert_aircraft_control": "航空機制御の反転",
-  "config.superbwarfare.client.vehicle.left_click_reload.des": "航空機の制御を反転するにはTRUEを設定します",
+  "config.superbwarfare.client.control": "車両制御",
+  "config.superbwarfare.client.control.invert_aircraft_control": "航空機制御の反転",
+  "config.superbwarfare.client.control.invert_aircraft_control.des": "航空機の制御を反転するにはTRUEを設定します",
 
   "config.superbwarfare.common.gameplay": "ゲームプレイ設定",
   "config.superbwarfare.common.gameplay.respawn_reload": "リスポーンリロード",
