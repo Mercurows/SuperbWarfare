@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.entity.vehicle;
 
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
+import com.atsuishio.superbwarfare.data.CustomData;
 import com.atsuishio.superbwarfare.entity.C4Entity;
 import com.atsuishio.superbwarfare.entity.projectile.*;
 import com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity;
@@ -64,6 +65,7 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
     public static final EntityDataAccessor<Boolean> LINKED = SynchedEntityData.defineId(DroneEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<String> CONTROLLER = SynchedEntityData.defineId(DroneEntity.class, EntityDataSerializers.STRING);
     public static final EntityDataAccessor<Integer> KAMIKAZE_MODE = SynchedEntityData.defineId(DroneEntity.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<String> ATTACHED = SynchedEntityData.defineId(DroneEntity.class, EntityDataSerializers.STRING);
     public static final EntityDataAccessor<Float> DELTA_X_ROT = SynchedEntityData.defineId(DroneEntity.class, EntityDataSerializers.FLOAT);
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
@@ -112,6 +114,7 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
         this.entityData.define(CONTROLLER, "undefined");
         this.entityData.define(LINKED, false);
         this.entityData.define(KAMIKAZE_MODE, 0);
+        this.entityData.define(ATTACHED, "");
     }
 
     @Override
@@ -355,6 +358,20 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
             if (player instanceof ServerPlayer serverPlayer) {
                 serverPlayer.level().playSound(null, serverPlayer.getOnPos(), ModSounds.BULLET_SUPPLY.get(), SoundSource.PLAYERS, 0.5F, 1);
             }
+        } else {
+            // 自定义挂载
+            var itemID = stack.getItem().toString();
+            var attachmentData = CustomData.DRONE_ATTACHMENT.get(itemID);
+
+            if (attachmentData != null && !this.entityData.get(ATTACHED).equals(itemID)) {
+                if (!player.isCreative()) {
+                    stack.shrink(1);
+                }
+
+                this.entityData.set(ATTACHED, attachmentData.itemID);
+                // TODO 设置其他挂载数据
+            }
+
         }
 
         return InteractionResult.sidedSuccess(this.level().isClientSide());

@@ -2,6 +2,7 @@
 package com.atsuishio.superbwarfare.client.renderer.entity;
 
 import com.atsuishio.superbwarfare.client.model.entity.DroneModel;
+import com.atsuishio.superbwarfare.data.CustomData;
 import com.atsuishio.superbwarfare.entity.projectile.MortarShellEntity;
 import com.atsuishio.superbwarfare.entity.projectile.RgoGrenadeEntity;
 import com.atsuishio.superbwarfare.entity.projectile.RpgRocketEntity;
@@ -18,12 +19,14 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import software.bernie.geckolib.cache.object.BakedGeoModel;
 import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
 
+import static com.atsuishio.superbwarfare.entity.vehicle.DroneEntity.ATTACHED;
 import static com.atsuishio.superbwarfare.entity.vehicle.DroneEntity.KAMIKAZE_MODE;
 import static com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity.AMMO;
 
@@ -40,7 +43,7 @@ public class DroneRenderer extends GeoEntityRenderer<DroneEntity> {
 
 	@Override
 	public void preRender(PoseStack poseStack, DroneEntity entity, BakedGeoModel model, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, float red, float green,
-			float blue, float alpha) {
+						  float blue, float alpha) {
 		float scale = 1f;
 		this.scaleHeight = scale;
 		this.scaleWidth = scale;
@@ -108,10 +111,37 @@ public class DroneRenderer extends GeoEntityRenderer<DroneEntity> {
 					entityRenderDispatcher.render(entity, xOffset, yOffset, 0, entityYaw, partialTicks, poseStack, bufferIn, packedLightIn);
 					poseStack.popPose();
 				}
+
+				renderAttachments(entityIn, player, entityYaw, partialTicks, poseStack, bufferIn, packedLightIn);
             }
         }
 
 		poseStack.popPose();
+	}
+
+	// 统一渲染挂载实体
+	private void renderAttachments(DroneEntity entity, Player player, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
+		var attached = entity.getEntityData().get(ATTACHED);
+		if (attached.isEmpty()) return;
+
+		var attachmentData = CustomData.DRONE_ATTACHMENT.get(attached);
+		if (attachmentData == null) return;
+
+		var entityID = attachmentData.EntityID;
+		EntityType.byString(entityID).ifPresent(entityType -> {
+			var renderEntity = entityType.create(entity.level());
+			if (renderEntity == null) return;
+
+			var offset = (attachmentData.scale != null && attachmentData.offset.length < 3) ? new float[]{0, 0, 0} : attachmentData.offset;
+			var scale = (attachmentData.scale != null && attachmentData.scale.length < 3) ? new float[]{1, 1, 1} : attachmentData.scale;
+
+			poseStack.pushPose();
+			poseStack.scale(scale[0], scale[1], scale[2]);
+
+			entityRenderDispatcher.render(renderEntity, offset[0], offset[1], offset[2], entityYaw, partialTicks, poseStack, buffer, packedLight);
+
+			poseStack.popPose();
+		});
 	}
 
 	@Override
