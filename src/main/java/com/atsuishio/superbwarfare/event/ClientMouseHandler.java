@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.event;
 
 import com.atsuishio.superbwarfare.client.MouseMovementHandler;
-import com.atsuishio.superbwarfare.config.client.VehicleControlConfig;
+import com.atsuishio.superbwarfare.config.client.ControlConfig;
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.AirEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
@@ -99,7 +99,7 @@ public class ClientMouseHandler {
 
             int y = 1;
 
-            if (vehicle instanceof AirEntity && VehicleControlConfig.INVERT_AIRCRAFT_CONTROL.get()) {
+            if (vehicle instanceof AirEntity && ControlConfig.INVERT_AIRCRAFT_CONTROL.get()) {
                 y = -1;
             }
 

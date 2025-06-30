@@ -522,9 +522,9 @@
   "config.superbwarfare.client.display.camera_rotate.des": "Visión ligeramente inestable al sostener un arma de fuego en la mano",
   "config.superbwarfare.client.display.armor_plate_hud": "HUD de placas de blindaje",
   "config.superbwarfare.client.display.armor_plate_hud.des": "Muestra la durabilidad del inserto antibalas equipado actualmente en la armadura pectoral en la esquina inferior izquierda cuando está activado.",
-  "config.superbwarfare.client.vehicle": "Vehículos de control",
-  "config.superbwarfare.client.vehicle.invert_aircraft_control": "Invertir el control del avión",
-  "config.superbwarfare.client.vehicle.left_click_reload.des": "Establece TRUE para invertir el control de la aeronave",
+  "config.superbwarfare.client.control": "Vehículos de control",
+  "config.superbwarfare.client.control.invert_aircraft_control": "Invertir el control del avión",
+  "config.superbwarfare.client.control.invert_aircraft_control.des": "Establece TRUE para invertir el control de la aeronave",
 
   "config.superbwarfare.common.gameplay": "Configuración del juego",
   "config.superbwarfare.common.gameplay.respawn_reload": "Recarga de Reinicio",

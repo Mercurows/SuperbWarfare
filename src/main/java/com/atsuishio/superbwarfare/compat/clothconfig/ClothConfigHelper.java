@@ -1,9 +1,9 @@
 package com.atsuishio.superbwarfare.compat.clothconfig;
 
+import com.atsuishio.superbwarfare.compat.clothconfig.client.ControlClothConfig;
 import com.atsuishio.superbwarfare.compat.clothconfig.client.DisplayClothConfig;
 import com.atsuishio.superbwarfare.compat.clothconfig.client.KillMessageClothConfig;
 import com.atsuishio.superbwarfare.compat.clothconfig.client.ReloadClothConfig;
-import com.atsuishio.superbwarfare.compat.clothconfig.client.VehicleControlClothConfig;
 import com.atsuishio.superbwarfare.compat.clothconfig.common.GameplayClothConfig;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
@@ -24,7 +24,7 @@ public class ClothConfigHelper {
         ReloadClothConfig.init(root, entryBuilder);
         KillMessageClothConfig.init(root, entryBuilder);
         DisplayClothConfig.init(root, entryBuilder);
-        VehicleControlClothConfig.init(root, entryBuilder);
+        ControlClothConfig.init(root, entryBuilder);
 
         GameplayClothConfig.init(root, entryBuilder);
 

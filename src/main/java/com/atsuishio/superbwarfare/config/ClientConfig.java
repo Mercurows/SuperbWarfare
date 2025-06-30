@@ -11,7 +11,7 @@ public class ClientConfig {
         ReloadConfig.init(builder);
         KillMessageConfig.init(builder);
         DisplayConfig.init(builder);
-        VehicleControlConfig.init(builder);
+        ControlConfig.init(builder);
         EnvironmentChecksumConfig.init(builder);
 
         return builder.build();

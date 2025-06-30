@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.mixins;
 
-import com.atsuishio.superbwarfare.config.client.VehicleControlConfig;
+import com.atsuishio.superbwarfare.config.client.ControlConfig;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.entity.vehicle.base.AirEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
@@ -64,7 +64,7 @@ public class MouseHandlerMixin {
             float customSens = data.sensitivity.get();
 
             if (!player.getMainHandItem().isEmpty() && mc.options.getCameraType() == CameraType.FIRST_PERSON) {
-                return original / Math.max((1 + (0.2 * (data.zoom() - (0.3 * customSens)) * ClientEventHandler.zoomTime)), 0.1);
+                return original / Math.max((1 + (0.2 * (data.zoom() - (0.3 * customSens)) * ClientEventHandler.zoomTime)), 0.1) * (ControlConfig.MOUSE_SENSITIVITY.get() / 100f);
             }
         }
 
@@ -77,11 +77,10 @@ public class MouseHandlerMixin {
         Player player = mc.player;
 
         // 反转鼠标
-
         if (player == null) return i;
 
         if (player.getVehicle() instanceof VehicleEntity vehicle && vehicle instanceof AirEntity && vehicle.getFirstPassenger() == player) {
-            return VehicleControlConfig.INVERT_AIRCRAFT_CONTROL.get() ? -i : i;
+            return ControlConfig.INVERT_AIRCRAFT_CONTROL.get() ? -i : i;
         }
         return i;
     }
@@ -129,5 +128,4 @@ public class MouseHandlerMixin {
 
         return d;
     }
-
 }
