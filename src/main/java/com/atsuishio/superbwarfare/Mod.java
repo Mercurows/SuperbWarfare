@@ -12,6 +12,7 @@ import com.atsuishio.superbwarfare.component.ModDataComponents;
 import com.atsuishio.superbwarfare.config.ClientConfig;
 import com.atsuishio.superbwarfare.config.CommonConfig;
 import com.atsuishio.superbwarfare.config.ServerConfig;
+import com.atsuishio.superbwarfare.data.CustomData;
 import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.network.NetworkRegistry;
 import net.minecraft.resources.ResourceLocation;
@@ -86,6 +87,8 @@ public class Mod {
         }
 
         NeoForge.EVENT_BUS.register(this);
+
+        CustomData.load();
     }
 
     public static ResourceLocation loc(String path) {

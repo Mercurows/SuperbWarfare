@@ -1,64 +1,25 @@
 package com.atsuishio.superbwarfare.tools;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.data.CustomData;
 import com.atsuishio.superbwarfare.data.gun.DefaultGunData;
-import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.network.message.receive.GunsDataMessage;
-import com.google.gson.Gson;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.packs.resources.ResourceManager;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
-import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import javax.annotation.Nullable;
-import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.UUID;
 
 @EventBusSubscriber(modid = Mod.MODID)
 public class GunsTool {
 
-    public static HashMap<String, DefaultGunData> gunsData = new HashMap<>();
-
-    public static final String GUN_DATA_FOLDER = "guns";
-
-    /**
-     * 初始化数据，从data中读取数据json文件
-     */
-    public static void initJsonData(ResourceManager manager) {
-        gunsData.clear();
-        GunData.dataCache.invalidateAll();
-
-        for (var entry : manager.listResources(GUN_DATA_FOLDER, file -> file.getPath().endsWith(".json")).entrySet()) {
-            var attribute = entry.getValue();
-
-            try {
-                Gson gson = new Gson();
-                var data = gson.fromJson(new InputStreamReader(attribute.open()), DefaultGunData.class);
-
-                String id;
-                if (!data.id.trim().isEmpty()) {
-                    id = data.id;
-                } else {
-                    var path = entry.getKey().getPath();
-                    id = Mod.MODID + ":" + path.substring(GUN_DATA_FOLDER.length() + 1, path.length() - GUN_DATA_FOLDER.length() - 1);
-                    Mod.LOGGER.warn("Gun ID for {} is empty, try using {} as id", path, id);
-                    data.id = id;
-                }
-
-                if (!gunsData.containsKey(id)) {
-                    gunsData.put(id, data);
-                }
-            } catch (Exception e) {
-                Mod.LOGGER.error(e.getMessage());
-            }
-        }
-    }
+    public static HashMap<String, DefaultGunData> gunsData = CustomData.GUN;
 
     @SubscribeEvent
     public static void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
@@ -73,14 +34,8 @@ public class GunsTool {
     }
 
     @SubscribeEvent
-    public static void serverStarted(ServerStartedEvent event) {
-        initJsonData(event.getServer().getResourceManager());
-    }
-
-    @SubscribeEvent
     public static void onDataPackSync(OnDatapackSyncEvent event) {
         var server = event.getPlayerList().getServer();
-        initJsonData(server.getResourceManager());
 
         var message = GunsDataMessage.create();
         for (var player : event.getRelevantPlayers().toList()) {

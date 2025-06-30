@@ -1,51 +1,24 @@
 package com.atsuishio.superbwarfare.data.launchable;
 
-import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.data.CustomData;
 import com.atsuishio.superbwarfare.data.gun.ProjectileInfo;
-import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.nbt.*;
-import net.minecraft.server.packs.resources.ResourceManager;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.OnDatapackSyncEvent;
-import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.InputStreamReader;
-import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
-@EventBusSubscriber(modid = Mod.MODID)
 public class LaunchableEntityTool {
-    public static HashMap<String, JsonObject> launchableEntitiesData = new HashMap<>();
-
-    /**
-     * 初始化数据，从data中读取数据json文件
-     */
-    public static void initJsonData(ResourceManager manager) {
-        launchableEntitiesData.clear();
-
-        for (var entry : manager.listResources("launchable", file -> file.getPath().endsWith(".json")).entrySet()) {
-            var attribute = entry.getValue();
-            try {
-                Gson gson = new Gson();
-                var data = gson.fromJson(new InputStreamReader(attribute.open()), JsonObject.class);
-
-                launchableEntitiesData.put(data.get("Type").getAsString(), data.get("Data").getAsJsonObject());
-            } catch (Exception e) {
-                Mod.LOGGER.error(e.getMessage());
-            }
-        }
-    }
+    public static Map<String, ProjectileInfo> launchableEntitiesData = CustomData.LAUNCHABLE_ENTITY;
 
     public static @Nullable CompoundTag getModifiedTag(ProjectileInfo projectileInfo, ShootData data) {
         JsonObject launchableData;
         if (projectileInfo.data != null) {
             launchableData = projectileInfo.data;
         } else if (launchableEntitiesData.containsKey(projectileInfo.type)) {
-            launchableData = launchableEntitiesData.get(projectileInfo.type);
+            launchableData = launchableEntitiesData.get(projectileInfo.type).data;
         } else {
             return null;
         }
@@ -103,15 +76,5 @@ public class LaunchableEntityTool {
             case "@sbw:spread" -> DoubleTag.valueOf(data.spread());
             default -> StringTag.valueOf(value);
         };
-    }
-
-    @SubscribeEvent
-    public static void serverStarted(ServerStartedEvent event) {
-        initJsonData(event.getServer().getResourceManager());
-    }
-
-    @SubscribeEvent
-    public static void onDataPackSync(OnDatapackSyncEvent event) {
-        initJsonData(event.getPlayerList().getServer().getResourceManager());
     }
 }
