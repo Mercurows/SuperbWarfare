@@ -17,9 +17,9 @@ public class MonsterHunter extends Perk {
 
     @Override
     public void modifyProjectile(GunData data, PerkInstance instance, Entity entity) {
-        float multiplier = 0.1f + 0.1f * instance.level();
+        float multiplier = 1.1f + 0.1f * instance.level();
         if (entity instanceof ProjectileEntity projectile) {
-            projectile.setMonsterMultiplier(multiplier);
+            projectile.getDamageModifiers().put(ProjectileEntity.MONSTER_PREDICATE, multiplier);
         } else if (entity instanceof JavelinMissileEntity projectile) {
             projectile.setMonsterMultiplier(multiplier);
         } else if (entity instanceof GunGrenadeEntity projectile) {

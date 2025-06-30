@@ -47,9 +47,10 @@ public class AmmoPerk extends Perk {
         }
         if (!this.mobEffects.get().isEmpty()) {
             int amplifier = this.getEffectAmplifier(instance);
+            int duration = this.getEffectDuration(instance);
             ArrayList<MobEffectInstance> mobEffectInstances = new ArrayList<>();
             for (MobEffect effect : this.mobEffects.get()) {
-                mobEffectInstances.add(new MobEffectInstance(Holder.direct(effect), 70 + 30 * level, amplifier));
+                mobEffectInstances.add(new MobEffectInstance(Holder.direct(effect), duration, amplifier));
             }
             projectile.effect(mobEffectInstances);
         }
@@ -57,6 +58,10 @@ public class AmmoPerk extends Perk {
 
     public int getEffectAmplifier(PerkInstance instance) {
         return instance.level() - 1;
+    }
+
+    public int getEffectDuration(PerkInstance instance) {
+        return 70 + 30 * instance.level();
     }
 
     public double getModifiedVelocity(GunData data, PerkInstance instance) {
