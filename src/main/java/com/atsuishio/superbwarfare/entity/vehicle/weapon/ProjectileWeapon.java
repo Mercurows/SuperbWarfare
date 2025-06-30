@@ -7,7 +7,6 @@ public class ProjectileWeapon extends VehicleWeapon {
 
     public float headShot, damage, bypassArmorRate;
     public boolean zoom;
-    public int jhpLevel, heLevel;
 
     public ProjectileWeapon headShot(float headShot) {
         this.headShot = headShot;
@@ -34,24 +33,12 @@ public class ProjectileWeapon extends VehicleWeapon {
         return this;
     }
 
-    public ProjectileWeapon jhpBullet(int jhpLevel) {
-        this.jhpLevel = jhpLevel;
-        return this;
-    }
-
-    public ProjectileWeapon heBullet(int heLevel) {
-        this.heLevel = heLevel;
-        return this;
-    }
-
     public ProjectileEntity create(LivingEntity shooter) {
         return new ProjectileEntity(shooter.level())
                 .shooter(shooter)
                 .headShot(headShot)
                 .damage(damage)
                 .bypassArmorRate(bypassArmorRate)
-                .zoom(zoom)
-                .jhpBullet(jhpLevel)
-                .heBullet(heLevel);
+                .zoom(zoom);
     }
 }
