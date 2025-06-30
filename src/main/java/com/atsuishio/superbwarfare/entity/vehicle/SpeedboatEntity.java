@@ -49,7 +49,6 @@ import java.util.List;
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 
 public class SpeedboatEntity extends ContainerMobileVehicleEntity implements GeoEntity, ArmedVehicleEntity, WeaponVehicleEntity, LandArmorEntity, OBBEntity {
-
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     public OBB obb;
     public OBB obb2;
@@ -192,7 +191,7 @@ public class SpeedboatEntity extends ContainerMobileVehicleEntity implements Geo
 
         projectile.bypassArmorRate(0.4f);
         projectile.setPos(worldPosition.x + 0.5 * this.getDeltaMovement().x, worldPosition.y, worldPosition.z + 0.5 * this.getDeltaMovement().z);
-        projectile.shoot(player, getBarrelVector(1).x, getBarrelVector(1).y + 0.005f, getBarrelVector(1).z, 20,
+        projectile.shoot(player, getBarrelVector(1).x, getBarrelVector(1).y, getBarrelVector(1).z, 20,
                 (float) 0.4);
         this.level().addFreshEntity(projectile);
 
@@ -308,7 +307,7 @@ public class SpeedboatEntity extends ContainerMobileVehicleEntity implements Geo
         Matrix4f transform = getVehicleTransform(1);
         int i = this.getOrderedPassengers().indexOf(passenger);
 
-        float y = -0.65f;
+        float y = 0.35f;
 
         Vector4f worldPosition = switch (i) {
             case 0 -> transformPosition(transform, 0, y + 0.25f, -0.2f);
@@ -450,7 +449,7 @@ public class SpeedboatEntity extends ContainerMobileVehicleEntity implements Geo
         Matrix4f transformV = getVehicleTransform(ticks);
 
         Matrix4f transform = new Matrix4f();
-        Vector4f worldPosition = transformPosition(transform, 0, 1.5616625f, -0.565625f);
+        Vector4f worldPosition = transformPosition(transform, 0, 2.5616625f, -0.565625f);
 
         transformV.translate(worldPosition.x, worldPosition.y, worldPosition.z);
         transformV.rotate(Axis.YP.rotationDegrees(Mth.lerp(ticks, turretYRotO, getTurretYRot())));
@@ -458,13 +457,8 @@ public class SpeedboatEntity extends ContainerMobileVehicleEntity implements Geo
     }
 
     @Override
-    public Matrix4f getVehicleTransform(float ticks) {
-        Matrix4f transform = new Matrix4f();
-        transform.translate((float) Mth.lerp(ticks, xo, getX()), (float) Mth.lerp(ticks, yo + 0.9f, getY() + 0.9f), (float) Mth.lerp(ticks, zo, getZ()));
-        transform.rotate(Axis.YP.rotationDegrees(-Mth.lerp(ticks, yRotO, getYRot())));
-        transform.rotate(Axis.XP.rotationDegrees(Mth.lerp(ticks, xRotO, getXRot())));
-        transform.rotate(Axis.ZP.rotationDegrees(Mth.lerp(ticks, prevRoll, getRoll())));
-        return transform;
+    public float rotateYOffset() {
+        return 1f;
     }
 
     private PlayState firePredicate(AnimationState<SpeedboatEntity> event) {
@@ -574,11 +568,11 @@ public class SpeedboatEntity extends ContainerMobileVehicleEntity implements Geo
     public void updateOBB() {
         Matrix4f transform = getVehicleTransform(1);
 
-        Vector4f worldPosition = transformPosition(transform, 0, 0.875f - 0.9f, 0.375f);
+        Vector4f worldPosition = transformPosition(transform, 0, 0.875f, 0.375f);
         this.obb.center().set(new Vector3f(worldPosition.x, worldPosition.y, worldPosition.z));
         this.obb.setRotation(VectorTool.combineRotations(1, this));
 
-        Vector4f worldPosition2 = transformPosition(transform, 0, 2.0625f - 0.9f, -0.71875f);
+        Vector4f worldPosition2 = transformPosition(transform, 0, 2.0625f, -0.71875f);
         this.obb2.center().set(new Vector3f(worldPosition2.x, worldPosition2.y, worldPosition2.z));
         this.obb2.setRotation(VectorTool.combineRotations(1, this));
     }

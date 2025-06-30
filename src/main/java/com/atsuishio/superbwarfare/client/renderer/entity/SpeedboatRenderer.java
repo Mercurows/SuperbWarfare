@@ -48,7 +48,7 @@ public class SpeedboatRenderer extends GeoEntityRenderer<SpeedboatEntity> {
     @Override
     public void render(SpeedboatEntity entityIn, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource bufferIn, int packedLightIn) {
         poseStack.pushPose();
-        Vec3 root = new Vec3(0, 0.9, 0);
+        Vec3 root = new Vec3(0, entityIn.rotateYOffset(), 0);
         poseStack.rotateAround(Axis.YP.rotationDegrees(-entityYaw), (float) root.x, (float) root.y, (float) root.z);
         poseStack.rotateAround(Axis.XP.rotationDegrees(Mth.lerp(partialTicks, entityIn.xRotO, entityIn.getXRot())), (float) root.x, (float) root.y, (float) root.z);
         poseStack.rotateAround(Axis.ZP.rotationDegrees(Mth.lerp(partialTicks, entityIn.prevRoll, entityIn.getRoll())), (float) root.x, (float) root.y, (float) root.z);
