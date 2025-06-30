@@ -28,6 +28,6 @@ public class RiotBullet extends AmmoPerk {
     public void modifyProjectile(GunData data, PerkInstance instance, Entity entity) {
         super.modifyProjectile(data, instance, entity);
         if (!(entity instanceof ProjectileEntity projectile)) return;
-        projectile.getDamageModifiers().put(ProjectileEntity.ILLAGER_PREDICATE, 1.0f + 0.5f * instance.level());
+        projectile.getDamageModifiers().put(ProjectileEntity.RAIDERS_PREDICATE, 1.0f + 0.5f * instance.level());
     }
 }

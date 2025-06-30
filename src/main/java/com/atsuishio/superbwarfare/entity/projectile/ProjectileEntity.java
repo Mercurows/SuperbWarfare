@@ -33,6 +33,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -41,9 +42,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobType;
 import net.minecraft.world.entity.monster.Monster;
-import net.minecraft.world.entity.monster.Ravager;
 import net.minecraft.world.entity.monster.Vex;
-import net.minecraft.world.entity.monster.Witch;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
@@ -111,8 +110,7 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
 
     public static final Predicate<Entity> MONSTER_PREDICATE = entity -> entity instanceof Monster;
     public static final Predicate<Entity> UNDEAD_PREDICATE = entity -> entity instanceof LivingEntity living && living.getMobType() == MobType.UNDEAD;
-    public static final Predicate<Entity> ILLAGER_PREDICATE = entity -> entity instanceof LivingEntity living &&
-            (living.getMobType() == MobType.ILLAGER || living instanceof Vex || living instanceof Ravager || living instanceof Witch);
+    public static final Predicate<Entity> RAIDERS_PREDICATE = entity -> entity.getType().is(EntityTypeTags.RAIDERS) || entity instanceof Vex;
 
     private final Map<Predicate<Entity>, Float> damageModifiers = new HashMap<>(Map.of(MONSTER_PREDICATE, 1.0f));
 
