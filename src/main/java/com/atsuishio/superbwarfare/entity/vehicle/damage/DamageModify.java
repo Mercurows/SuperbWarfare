@@ -134,8 +134,14 @@ public class DamageModify {
         }
 
         return switch (sourceType) {
-            case TAG_KEY -> source.is(sourceTagKey);
-            case RESOURCE_KEY -> source.is(sourceKey);
+            case TAG_KEY -> {
+                if (sourceTagKey == null) yield false;
+                yield source.is(sourceTagKey);
+            }
+            case RESOURCE_KEY -> {
+                if (sourceKey == null) yield false;
+                yield source.is(sourceKey);
+            }
             case FUNCTION -> condition.apply(source);
             case ENTITY_ID -> {
                 var directEntity = source.getDirectEntity();
@@ -153,7 +159,7 @@ public class DamageModify {
             case ENTITY_TAG -> {
                 var directEntity = source.getDirectEntity();
                 if (directEntity == null) yield false;
-
+                if (entityTag == null) yield false;
                 yield directEntity.getType().is(entityTag);
             }
             case ALL -> true;
