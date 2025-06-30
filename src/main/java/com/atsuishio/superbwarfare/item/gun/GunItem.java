@@ -646,7 +646,7 @@ public abstract class GunItem extends Item implements GeoItem {
 
             } else if (LaunchableEntityTool.launchableEntitiesData.containsKey(projectileType)) {
                 var newInfo = new ProjectileInfo();
-                newInfo.data = LaunchableEntityTool.launchableEntitiesData.get(projectileType);
+                newInfo.data = LaunchableEntityTool.launchableEntitiesData.get(projectileType).data;
                 newInfo.type = projectileType;
 
                 var tag = LaunchableEntityTool.getModifiedTag(

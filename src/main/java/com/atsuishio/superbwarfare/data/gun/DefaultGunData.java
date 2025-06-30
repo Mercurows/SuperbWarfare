@@ -1,14 +1,20 @@
 package com.atsuishio.superbwarfare.data.gun;
 
 import com.atsuishio.superbwarfare.annotation.ServerOnly;
+import com.atsuishio.superbwarfare.data.IDBasedData;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 import java.util.Set;
 
-public class DefaultGunData {
+public class DefaultGunData implements IDBasedData {
     @SerializedName("ID")
     public String id = "";
+
+    @Override
+    public String getId() {
+        return this.id;
+    }
 
     @SerializedName("RecoilX")
     public double recoilX;

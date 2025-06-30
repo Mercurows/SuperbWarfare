@@ -2,14 +2,20 @@ package com.atsuishio.superbwarfare.data.vehicle;
 
 import com.atsuishio.superbwarfare.annotation.ServerOnly;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
+import com.atsuishio.superbwarfare.data.IDBasedData;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModify;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public class DefaultVehicleData {
+public class DefaultVehicleData implements IDBasedData {
     @SerializedName("ID")
     public String id = "";
+
+    @Override
+    public String getId() {
+        return this.id;
+    }
 
     @SerializedName("MaxHealth")
     public float maxHealth = 50;
