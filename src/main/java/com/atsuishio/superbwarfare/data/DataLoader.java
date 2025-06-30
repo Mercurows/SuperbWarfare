@@ -29,7 +29,7 @@ public class DataLoader {
     ) {
     }
 
-    public static <T extends IDBasedData> HashMap<String, T> createData(String name, Class<T> clazz) {
+    public static <T extends IDBasedData> DataMap<T> createData(String name, Class<T> clazz) {
         return createData(name, clazz, null);
     }
 
