@@ -1,11 +1,13 @@
 package com.atsuishio.superbwarfare.perk.ammo;
 
 import com.atsuishio.superbwarfare.data.gun.GunData;
-import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity;
 import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkInstance;
-import net.minecraft.world.entity.Entity;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import org.jetbrains.annotations.Nullable;
 
 public class JHPBullet extends AmmoPerk {
 
@@ -14,9 +16,10 @@ public class JHPBullet extends AmmoPerk {
     }
 
     @Override
-    public void modifyProjectile(GunData data, PerkInstance instance, Entity entity) {
-        super.modifyProjectile(data, instance, entity);
-        if (!(entity instanceof ProjectileEntity projectile)) return;
-        projectile.jhpBullet(instance.level());
+    public float getModifiedDamage(float damage, GunData data, PerkInstance instance, @Nullable LivingEntity target, DamageSource source) {
+        if (target != null) {
+            return damage * (1.0f + 0.12f * instance.level()) * ((float) (10 / (target.getAttributeValue(Attributes.ARMOR) + 10)) + 0.25f);
+        }
+        return super.getModifiedDamage(damage, data, instance, null, source);
     }
 }

@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.perk.ammo;
 
-import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity;
 import com.atsuishio.superbwarfare.data.gun.GunData;
+import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity;
 import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkInstance;
@@ -17,6 +17,6 @@ public class SilverBullet extends AmmoPerk {
     public void modifyProjectile(GunData data, PerkInstance instance, Entity entity) {
         super.modifyProjectile(data, instance, entity);
         if (!(entity instanceof ProjectileEntity projectile)) return;
-        projectile.undeadMultiple(1.0f + 0.5f * instance.level());
+        projectile.getDamageModifiers().put(ProjectileEntity.UNDEAD_PREDICATE, 1.0f + 0.5f * instance.level());
     }
 }

@@ -24,7 +24,6 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSoundPacket;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -41,7 +40,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobType;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.monster.Ravager;
 import net.minecraft.world.entity.monster.Vex;
@@ -57,7 +55,6 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.*;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.common.Tags;
-import net.minecraftforge.entity.IEntityAdditionalSpawnData;
 import net.minecraftforge.entity.PartEntity;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.PlayMessages;
@@ -76,7 +73,7 @@ import java.util.function.Predicate;
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 
 @SuppressWarnings({"unused", "UnusedReturnValue", "SuspiciousNameCombination"})
-public class ProjectileEntity extends Projectile implements IEntityAdditionalSpawnData, GeoEntity, CustomSyncMotionEntity {
+public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyncMotionEntity {
 
     public static final EntityDataAccessor<Float> COLOR_R = SynchedEntityData.defineId(ProjectileEntity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Float> COLOR_G = SynchedEntityData.defineId(ProjectileEntity.class, EntityDataSerializers.FLOAT);
@@ -100,15 +97,10 @@ public class ProjectileEntity extends Projectile implements IEntityAdditionalSpa
     protected int shooterId;
     private float damage = 1f;
     private float headShot = 1f;
-    private float monsterMultiplier = 0.0f;
     private float legShot = 0.5f;
     private boolean beast = false;
     private boolean zoom = false;
     private float bypassArmorRate = 0.0f;
-    private float undeadMultiple = 1.0f;
-    private float illagerMultiple = 1.0f;
-    private int riotLevel = 0;
-    private int jhpLevel = 0;
     private int heLevel = 0;
     private int fireLevel = 0;
     private boolean dragonBreath = false;
@@ -116,6 +108,13 @@ public class ProjectileEntity extends Projectile implements IEntityAdditionalSpa
     private boolean forceKnockback = false;
     private final ArrayList<MobEffectInstance> mobEffects = new ArrayList<>();
     private String gunItemId;
+
+    public static final Predicate<Entity> MONSTER_PREDICATE = entity -> entity instanceof Monster;
+    public static final Predicate<Entity> UNDEAD_PREDICATE = entity -> entity instanceof LivingEntity living && living.getMobType() == MobType.UNDEAD;
+    public static final Predicate<Entity> ILLAGER_PREDICATE = entity -> entity instanceof LivingEntity living &&
+            (living.getMobType() == MobType.ILLAGER || living instanceof Vex || living instanceof Ravager || living instanceof Witch);
+
+    private final Map<Predicate<Entity>, Float> damageModifiers = new HashMap<>(Map.of(MONSTER_PREDICATE, 1.0f));
 
     public ProjectileEntity(EntityType<? extends ProjectileEntity> entityType, Level level) {
         super(entityType, level);
@@ -266,7 +265,7 @@ public class ProjectileEntity extends Projectile implements IEntityAdditionalSpa
         }
 
         if (heLevel > 0) {
-            explosionBullet(this, this.damage, heLevel, monsterMultiplier + 1, hitPos);
+            explosionBullet(this, this.damage, heLevel, this.damageModifiers.get(MONSTER_PREDICATE), hitPos);
         }
 
         return new EntityResult(entity, hitPos, headshot, legShot);
@@ -357,44 +356,6 @@ public class ProjectileEntity extends Projectile implements IEntityAdditionalSpa
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundTag tag) {
-        this.damage = tag.getFloat("Damage");
-        this.headShot = tag.getFloat("HeadShot");
-        this.monsterMultiplier = tag.getFloat("MonsterMultiplier");
-        this.legShot = tag.getFloat("LegShot");
-        this.bypassArmorRate = tag.getFloat("BypassArmorRate");
-        this.undeadMultiple = tag.getFloat("UndeadMultiple");
-        this.illagerMultiple = tag.getFloat("IllagerMultiple");
-        this.knockback = tag.getFloat("Knockback");
-
-        this.beast = tag.getBoolean("Beast");
-        this.forceKnockback = tag.getBoolean("ForceKnockback");
-
-        if (tag.contains("GunId")) {
-            this.gunItemId = tag.getString("GunId");
-        }
-    }
-
-    @Override
-    protected void addAdditionalSaveData(CompoundTag tag) {
-        tag.putFloat("Damage", this.damage);
-        tag.putFloat("HeadShot", this.headShot);
-        tag.putFloat("MonsterMultiplier", this.monsterMultiplier);
-        tag.putFloat("LegShot", this.legShot);
-        tag.putFloat("BypassArmorRate", this.bypassArmorRate);
-        tag.putFloat("UndeadMultiple", this.undeadMultiple);
-        tag.putFloat("IllagerMultiple", this.illagerMultiple);
-        tag.putFloat("Knockback", this.knockback);
-
-        tag.putBoolean("Beast", this.beast);
-        tag.putBoolean("ForceKnockback", this.forceKnockback);
-
-        if (this.gunItemId != null) {
-            tag.putString("GunId", this.gunItemId);
-        }
-    }
-
-    @Override
     protected void onHit(@Nullable HitResult result) {
         if (result instanceof BlockHitResult blockHitResult) {
             if (blockHitResult.getType() == HitResult.Type.MISS) {
@@ -426,7 +387,7 @@ public class ProjectileEntity extends Projectile implements IEntityAdditionalSpa
 
             this.onHitBlock(hitVec, blockHitResult);
             if (heLevel > 0) {
-                explosionBullet(this, this.damage, heLevel, monsterMultiplier + 1, hitVec);
+                explosionBullet(this, this.damage, heLevel, this.damageModifiers.get(MONSTER_PREDICATE), hitVec);
             }
             if (fireLevel > 0 && this.level() instanceof ServerLevel serverLevel) {
                 ParticleTool.sendParticle(serverLevel, ParticleTypes.LAVA, hitVec.x, hitVec.y, hitVec.z,
@@ -547,8 +508,6 @@ public class ProjectileEntity extends Projectile implements IEntityAdditionalSpa
     protected void onHitEntity(Entity entity, boolean headshot, boolean legShot) {
         if (this.shooter == null) return;
 
-        float mMultiple = 1 + this.monsterMultiplier;
-
         if (entity == null) return;
 
         if (entity instanceof PartEntity<?> part) {
@@ -556,38 +515,17 @@ public class ProjectileEntity extends Projectile implements IEntityAdditionalSpa
         }
 
         if (entity instanceof LivingEntity living) {
-            living.level().playSound(null, living.getOnPos(), ModSounds.MELEE_HIT.get(), SoundSource.PLAYERS, 1, (float) ((2 * org.joml.Math.random() - 1) * 0.1f + 1.0f));
+            living.level().playSound(null, living.getOnPos(), ModSounds.MELEE_HIT.get(), SoundSource.PLAYERS, 1, (float) (2 * Math.random() - 1) * 0.1f + 1.0f);
+
+            if (beast) {
+                Beast.beastKill(this.shooter, living);
+                return;
+            }
         }
 
-        if (beast && entity instanceof LivingEntity living) {
-            Beast.beastKill(this.shooter, living);
-            return;
-        }
-
-        if (entity instanceof Monster) {
-            this.damage *= mMultiple;
-        }
-
-        if (entity instanceof LivingEntity living && living.getMobType() == MobType.UNDEAD) {
-            this.damage *= this.undeadMultiple;
-        }
-
-        if (entity instanceof LivingEntity living && (living.getMobType() == MobType.ILLAGER || living instanceof Vex || living instanceof Ravager || living instanceof Witch)) {
-            this.damage *= this.illagerMultiple;
-        }
-
-        if (entity instanceof LivingEntity living && riotLevel > 0 && !entity.level().isClientSide()) {
-            living.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20 + riotLevel * 10, (int) (riotLevel * 0.25), false, false), this.shooter);
-            living.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 20 + riotLevel * 10, (int) (riotLevel * 0.25), false, false), this.shooter);
-        }
-
-        if (entity instanceof LivingEntity living && jhpLevel > 0) {
-            this.damage *= (1.0f + 0.12f * jhpLevel) * ((float) (10 / (living.getAttributeValue(Attributes.ARMOR) + 10)) + 0.25f);
-        }
-
-        if (fireLevel > 0) {
-            if (!entity.level().isClientSide() && entity instanceof LivingEntity living) {
-                living.addEffect(new MobEffectInstance(ModMobEffects.BURN.get(), 60 + fireLevel * 20, fireLevel, false, false), this.shooter);
+        for (var entry : this.damageModifiers.entrySet()) {
+            if (entry.getKey().test(entity)) {
+                this.damage *= entry.getValue();
             }
         }
 
@@ -802,14 +740,6 @@ public class ProjectileEntity extends Projectile implements IEntityAdditionalSpa
         }
     }
 
-    @Override
-    public void writeSpawnData(FriendlyByteBuf buffer) {
-    }
-
-    @Override
-    public void readSpawnData(FriendlyByteBuf additionalData) {
-    }
-
     public static class EntityResult {
         private final Entity entity;
         private final Vec3 hitVec;
@@ -867,6 +797,10 @@ public class ProjectileEntity extends Projectile implements IEntityAdditionalSpa
         return this.gunItemId;
     }
 
+    public Map<Predicate<Entity>, Float> getDamageModifiers() {
+        return damageModifiers;
+    }
+
     /**
      * Builders
      */
@@ -885,11 +819,6 @@ public class ProjectileEntity extends Projectile implements IEntityAdditionalSpa
         return this;
     }
 
-    public ProjectileEntity setMonsterMultiplier(float monsterMultiplier) {
-        this.monsterMultiplier = monsterMultiplier;
-        return this;
-    }
-
     public ProjectileEntity legShot(float legShot) {
         this.legShot = legShot;
         return this;
@@ -897,16 +826,6 @@ public class ProjectileEntity extends Projectile implements IEntityAdditionalSpa
 
     public ProjectileEntity beast() {
         this.beast = true;
-        return this;
-    }
-
-    public ProjectileEntity riotBullet(int riotLevel) {
-        this.riotLevel = riotLevel;
-        return this;
-    }
-
-    public ProjectileEntity jhpBullet(int jhpLevel) {
-        this.jhpLevel = jhpLevel;
         return this;
     }
 
@@ -928,16 +847,6 @@ public class ProjectileEntity extends Projectile implements IEntityAdditionalSpa
 
     public ProjectileEntity bypassArmorRate(float bypassArmorRate) {
         this.bypassArmorRate = bypassArmorRate;
-        return this;
-    }
-
-    public ProjectileEntity undeadMultiple(float undeadMultiple) {
-        this.undeadMultiple = undeadMultiple;
-        return this;
-    }
-
-    public ProjectileEntity illagerMultiple(float illagerMultiple) {
-        this.illagerMultiple = illagerMultiple;
         return this;
     }
 
