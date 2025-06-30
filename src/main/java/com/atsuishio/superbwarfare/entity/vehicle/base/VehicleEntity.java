@@ -1009,13 +1009,25 @@ public abstract class VehicleEntity extends Entity {
     }
 
     // From Immersive_Aircraft
-    public Matrix4f getVehicleTransform(float ticks) {
+    public Matrix4f getVehicleYOffsetTransform(float ticks) {
         Matrix4f transform = new Matrix4f();
-        transform.translate((float) Mth.lerp(ticks, xo, getX()), (float) Mth.lerp(ticks, yo, getY()), (float) Mth.lerp(ticks, zo, getZ()));
+        transform.translate((float) Mth.lerp(ticks, xo, getX()), (float) Mth.lerp(ticks, yo + rotateYOffset(), getY() + rotateYOffset()), (float) Mth.lerp(ticks, zo, getZ()));
         transform.rotate(Axis.YP.rotationDegrees(-Mth.lerp(ticks, yRotO, getYRot())));
         transform.rotate(Axis.XP.rotationDegrees(Mth.lerp(ticks, xRotO, getXRot())));
         transform.rotate(Axis.ZP.rotationDegrees(Mth.lerp(ticks, prevRoll, getRoll())));
         return transform;
+    }
+
+    public Matrix4f getVehicleTransform(float ticks) {
+        Matrix4f transformV = getVehicleYOffsetTransform(ticks);
+        Matrix4f transform = new Matrix4f();
+        Vector4f worldPosition = transformPosition(transform, 0, - rotateYOffset(), 0);
+        transformV.translate(worldPosition.x, worldPosition.y, worldPosition.z);
+        return transformV;
+    }
+
+    public float rotateYOffset() {
+        return 0;
     }
 
     public Matrix4f getVehicleFlatTransform(float ticks) {

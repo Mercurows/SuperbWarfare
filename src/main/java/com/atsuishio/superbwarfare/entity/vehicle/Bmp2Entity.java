@@ -61,8 +61,6 @@ import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
@@ -235,42 +233,6 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
     }
 
     @Override
-    public void terrainCompact(float w, float l) {
-        if (onGround()) {
-            float x1 = terrainCompactTrackValue(w, l)[0];
-            float x2 = terrainCompactTrackValue(w, l - 1)[0];
-            float x3 = terrainCompactTrackValue(w, l - 2)[0];
-            float x4 = terrainCompactTrackValue(w, l - 3)[0];
-            float x5 = terrainCompactTrackValue(w, l - 4)[0];
-            float x6 = terrainCompactTrackValue(w, l - 5)[0];
-
-            List<Float> numbersX = Arrays.asList(x1, x2, x3, x4, x5, x6);
-            float maxX = Collections.max(numbersX);
-            float minX = Collections.min(numbersX);
-
-            float z1 = terrainCompactTrackValue(w, l)[1];
-            float z2 = terrainCompactTrackValue(w, l - 1)[1];
-            float z3 = terrainCompactTrackValue(w, l - 2)[1];
-            float z4 = terrainCompactTrackValue(w, l - 3)[1];
-            float z5 = terrainCompactTrackValue(w, l - 4)[1];
-            float z6 = terrainCompactTrackValue(w, l - 5)[1];
-
-            List<Float> numbersZ = Arrays.asList(z1, z2, z3, z4, z5, z6);
-            float maxZ = Collections.max(numbersZ);
-            float minZ = Collections.min(numbersZ);
-
-            float diffX = Math.clamp(-15f, 15f, (minX + maxX) / 2);
-            setXRot(Mth.clamp(getXRot() + 0.15f * diffX, -45f, 45f));
-
-            float diffZ = Math.clamp(-15f, 15f, minZ + maxZ);
-            setZRot(Mth.clamp(getRoll() + 0.15f * diffZ, -45f, 45f));
-        } else if (isInWater()) {
-            setXRot(getXRot() * 0.9f);
-            setZRot(getRoll() * 0.9f);
-        }
-    }
-
-    @Override
     public boolean canCollideHardBlock() {
         return getDeltaMovement().horizontalDistance() > 0.07 || Mth.abs(this.entityData.get(POWER)) > 0.12;
     }
@@ -421,11 +383,11 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
         }
 
         if (forwardInputDown) {
-            this.entityData.set(POWER, Math.min(this.entityData.get(POWER) + (this.entityData.get(POWER) < 0 ? 0.004f : 0.0024f), 0.21f));
+            this.entityData.set(POWER, Math.min(this.entityData.get(POWER) + (this.entityData.get(POWER) < 0 ? 0.004f : 0.0024f) * (1 + getXRot() / 55), 0.21f));
         }
 
         if (backInputDown) {
-            this.entityData.set(POWER, Math.max(this.entityData.get(POWER) - (this.entityData.get(POWER) > 0 ? 0.004f : 0.0024f), -0.16f));
+            this.entityData.set(POWER, Math.max(this.entityData.get(POWER) - (this.entityData.get(POWER) > 0 ? 0.004f : 0.0024f) * (1 - getXRot() / 55), -0.16f));
             if (rightInputDown) {
                 this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) + 0.1f);
             } else if (this.leftInputDown) {
@@ -475,8 +437,7 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
 
         this.setYRot((float) (this.getYRot() - (isInWater() && !onGround() ? 2.5 : 6) * entityData.get(DELTA_ROT) - i * s0));
         if (this.isInWater() || onGround()) {
-            float power = this.entityData.get(POWER) * Mth.clamp(1 + (s0 > 0 ? 1 : -1) * getXRot() / 35, 0, 2);
-            this.setDeltaMovement(this.getDeltaMovement().add(getViewVector(1).scale((!isInWater() && !onGround() ? 0.13f : (isInWater() && !onGround() ? 2 : 2.4f)) * power)));
+            this.setDeltaMovement(this.getDeltaMovement().add(getViewVector(1).scale((!isInWater() && !onGround() ? 0.13f : (isInWater() && !onGround() ? 2 : 2.4f)) * this.entityData.get(POWER))));
         }
     }
 
@@ -595,6 +556,10 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
         transformV.translate(worldPosition.x, worldPosition.y, worldPosition.z);
         transformV.rotate(Axis.YP.rotationDegrees(Mth.lerp(ticks, turretYRotO, getTurretYRot())));
         return transformV;
+    }
+    @Override
+    public float rotateYOffset() {
+        return 2.7f;
     }
 
     @Override
