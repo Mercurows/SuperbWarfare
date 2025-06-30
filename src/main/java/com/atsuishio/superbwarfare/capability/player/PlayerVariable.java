@@ -10,8 +10,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraftforge.common.capabilities.AutoRegisterCapability;
 import net.minecraftforge.common.util.INBTSerializable;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.network.PacketDistributor;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -20,7 +18,6 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 @AutoRegisterCapability
-@net.minecraftforge.fml.common.Mod.EventBusSubscriber(modid = Mod.MODID)
 public class PlayerVariable implements INBTSerializable<CompoundTag> {
 
     public static ResourceLocation ID = Mod.loc("player_variables");
@@ -42,27 +39,6 @@ public class PlayerVariable implements INBTSerializable<CompoundTag> {
 
     public static PlayerVariable getOrDefault(Entity entity) {
         return entity.getCapability(ModCapabilities.PLAYER_VARIABLE).orElse(new PlayerVariable());
-    }
-
-    @SubscribeEvent
-    public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
-        if (!(event.getEntity() instanceof ServerPlayer player)) return;
-
-        Mod.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> player), new PlayerVariablesSyncMessage(player.getId(), getOrDefault(player).compareAndUpdate()));
-    }
-
-    @SubscribeEvent
-    public static void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
-        if (!(event.getEntity() instanceof ServerPlayer player)) return;
-
-        Mod.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> player), new PlayerVariablesSyncMessage(player.getId(), getOrDefault(player).compareAndUpdate()));
-    }
-
-    @SubscribeEvent
-    public static void onPlayerChangeDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
-        if (!(event.getEntity() instanceof ServerPlayer player)) return;
-
-        Mod.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> player), new PlayerVariablesSyncMessage(player.getId(), getOrDefault(player).forceUpdate()));
     }
 
     /**
@@ -113,7 +89,6 @@ public class PlayerVariable implements INBTSerializable<CompoundTag> {
         return map;
     }
 
-
     public CompoundTag writeToNBT() {
         CompoundTag nbt = new CompoundTag();
 
@@ -132,7 +107,6 @@ public class PlayerVariable implements INBTSerializable<CompoundTag> {
         }
 
         tacticalSprint = tag.getBoolean("TacticalSprint");
-
     }
 
     public PlayerVariable copy() {
@@ -156,25 +130,6 @@ public class PlayerVariable implements INBTSerializable<CompoundTag> {
         }
 
         return tacticalSprint == other.tacticalSprint;
-    }
-
-    @SubscribeEvent
-    public static void clonePlayer(PlayerEvent.Clone event) {
-        event.getOriginal().revive();
-        if (event.getEntity().level().isClientSide()) return;
-        var original = getOrDefault(event.getOriginal());
-        var clone = event.getEntity().getCapability(ModCapabilities.PLAYER_VARIABLE, null).orElse(new PlayerVariable());
-
-        for (var type : Ammo.values()) {
-            type.set(clone, type.get(original));
-        }
-
-        clone.tacticalSprint = original.tacticalSprint;
-
-        if (event.getEntity().level().isClientSide()) return;
-
-        var player = event.getEntity();
-        player.getCapability(ModCapabilities.PLAYER_VARIABLE, null).orElse(new PlayerVariable()).sync(player);
     }
 
     @Override
