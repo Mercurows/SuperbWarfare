@@ -507,7 +507,6 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
 
     public void hitEntityCrash(Player player, Entity target) {
         if (lastTickSpeed > 0.12) {
-
             var attachedEntity = this.entityData.get(ATTACHED_ENTITY);
             if (!attachedEntity.isEmpty() && 20 * lastTickSpeed > this.getHealth()) {
                 var data = CustomData.DRONE_ATTACHMENT.values().stream().filter(d -> attachedEntity.equals(d.entityID))
@@ -521,34 +520,14 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
                             target.invulnerableTime = 0;
                         });
                     } else {
-                        // TODO 非神风模式？
+                        target.hurt(ModDamageTypes.causeDroneHitDamage(this.level().registryAccess(), this, player), (float) (5 * lastTickSpeed));
                     }
                 }
-            }
-
-            // TODO 清理这一坨
-            if (this.entityData.get(KAMIKAZE_MODE) != 0 && 20 * lastTickSpeed > this.getHealth()) {
-                if (this.entityData.get(KAMIKAZE_MODE) == 1) {
-                    var mortarShell = new MortarShellEntity(player, this.level());
-                    target.hurt(ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(), mortarShell, player), ExplosionConfig.DRONE_KAMIKAZE_HIT_DAMAGE.get());
-                    target.invulnerableTime = 0;
-                }
-//                } else if (this.entityData.get(KAMIKAZE_MODE) == 2) {
-//                    var c4 = new C4Entity(player, this.level());
-//                    target.hurt(ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(), c4, player), ExplosionConfig.DRONE_KAMIKAZE_HIT_DAMAGE_C4.get());
-//                    target.invulnerableTime = 0;
-//                else if (this.entityData.get(KAMIKAZE_MODE) == 3) {
-//                    var rpg = new RpgRocketEntity(player, this.level());
-//                    target.hurt(ModDamageTypes.causeCannonFireDamage(this.level().registryAccess(), rpg, player), ExplosionConfig.DRONE_KAMIKAZE_HIT_DAMAGE_RPG.get());
-//                    target.invulnerableTime = 0;
-//                }
 
                 if (player != null && player.getMainHandItem().is(ModItems.MONITOR.get())) {
                     Monitor.disLink(player.getMainHandItem(), player);
                 }
             }
-            target.hurt(ModDamageTypes.causeDroneHitDamage(this.level().registryAccess(), this, player), (float) (5 * lastTickSpeed));
-
             this.hurt(new DamageSource(level().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(DamageTypes.EXPLOSION), Objects.requireNonNullElse(player, this)), (float) (((this.entityData.get(KAMIKAZE_MODE) != 0) ? 20 : 4) * lastTickSpeed));
         }
     }
