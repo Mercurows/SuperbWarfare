@@ -733,6 +733,11 @@ public class ClientEventHandler {
         Mod.PACKET_HANDLER.sendToServer(new ShootMessage(gunSpread, zoom, entity != null ? entity.getUUID() : UUID.randomUUID()));
         fireRecoilTime = 10;
 
+        // 真实后座（
+        if (data.recoil() != 0) {
+            player.setDeltaMovement(player.getDeltaMovement().add(player.getViewVector(1).scale(-data.recoil())));
+        }
+
         var gunRecoilY = data.recoilY() * 10;
 
         recoilY = (float) (2 * Math.random() - 1) * gunRecoilY;
