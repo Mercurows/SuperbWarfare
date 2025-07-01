@@ -301,6 +301,9 @@ public class GunData {
     public double recoilY() {
         return defaultGunData().recoilY;
     }
+    public double recoil() {
+        return defaultGunData().recoil;
+    }
 
     public double weight() {
         return defaultGunData().weight + customWeight();

@@ -20,6 +20,8 @@ public class DefaultGunData implements IDBasedData {
     public double recoilX;
     @SerializedName("RecoilY")
     public double recoilY;
+    @SerializedName("Recoil")
+    public double recoil;
 
     @SerializedName("DefaultZoom")
     public double defaultZoom = 1.25;
