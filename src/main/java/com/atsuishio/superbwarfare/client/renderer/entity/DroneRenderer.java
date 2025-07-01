@@ -68,12 +68,6 @@ public class DroneRenderer extends GeoEntityRenderer<DroneEntity> {
                     entityRenderDispatcher.render(entity, 0, 0.03, 0.25, entityYaw, partialTicks, poseStack, bufferIn, packedLightIn);
                 }
 
-//                if (entityIn.getEntityData().get(KAMIKAZE_MODE) == 3) {
-//                    Entity entity = new RpgRocketEntity(ModEntities.RPG_ROCKET.get(), entityIn.level());
-//
-//                    entityRenderDispatcher.render(entity, 0, -0.03, -1.8, entityYaw, partialTicks, poseStack, bufferIn, packedLightIn);
-//                }
-
                 for (int i = 0; i < entityIn.getEntityData().get(AMMO); i++) {
                     double yOffset = 0;
                     double xOffset = 0;
@@ -176,24 +170,6 @@ public class DroneRenderer extends GeoEntityRenderer<DroneEntity> {
                 bone.setRotY((System.currentTimeMillis() % 36000000) / 12f);
             }
         }
-
-//        if (name.equals("c4")) {
-//            bone.setHidden(animatable.getEntityData().get(KAMIKAZE_MODE) != 2);
-//
-//        }
-
-
-//		Player player = Minecraft.getInstance().player;
-//		if (player != null && animatable.getEntityData().get(KAMIKAZE_MODE) == 2 && name.equals("c4")) {
-//			ItemStack stack = player.getMainHandItem();
-//			DroneEntity drone = EntityFindUtil.findDrone(player.level(), stack.getOrCreateTag().getString("LinkedDrone"));
-//
-//			if (!(stack.is(ModItems.MONITOR.get()) && stack.getOrCreateTag().getBoolean("Using") && stack.getOrCreateTag().getBoolean("Linked") && drone != null && drone.getUUID() == animatable.getUUID())) {
-//				bone.setHidden(true);
-//			} else {
-//				bone.setHidden(false);
-//			}
-//		}
 
         super.renderRecursively(poseStack, animatable, bone, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, color);
     }
