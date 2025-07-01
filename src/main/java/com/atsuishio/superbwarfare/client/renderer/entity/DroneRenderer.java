@@ -112,39 +112,51 @@ public class DroneRenderer extends GeoEntityRenderer<DroneEntity> {
                     poseStack.popPose();
                 }
 
-                renderAttachments(entityIn, player, entityYaw, partialTicks, poseStack, bufferIn, packedLightIn);
+                renderAttachments(entityIn, entityYaw, partialTicks, poseStack, bufferIn, packedLightIn);
             }
         }
 
         poseStack.popPose();
     }
 
+    private String entityNameCache = "";
+    private Entity entityCache = null;
+
     // 统一渲染挂载实体
-    private void renderAttachments(DroneEntity entity, Player player, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
+    private void renderAttachments(DroneEntity entity, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
         var attached = entity.getEntityData().get(ATTACHED_ENTITY);
         if (attached.isEmpty()) return;
 
-        EntityType.byString(attached).ifPresent(entityType -> {
-            var renderEntity = entityType.create(entity.level());
+        Entity renderEntity;
+
+        if (entityNameCache.equals(attached) && entityCache != null) {
+            renderEntity = entityCache;
+        } else {
+            renderEntity = EntityType.byString(attached)
+                    .map(type -> type.create(entity.level()))
+                    .orElse(null);
             if (renderEntity == null) return;
 
-            var displayData = entity.getEntityData().get(ATTACHMENT_DISPLAY);
+            entityNameCache = attached;
+            entityCache = renderEntity;
+        }
 
-            var scale = new float[]{displayData.get(0), displayData.get(1), displayData.get(2)};
-            var offset = new float[]{displayData.get(3), displayData.get(4), displayData.get(5)};
-            var rotation = new float[]{displayData.get(6), displayData.get(7), displayData.get(8)};
+        var displayData = entity.getEntityData().get(ATTACHMENT_DISPLAY);
 
-            poseStack.pushPose();
-            poseStack.translate(offset[0], offset[1], offset[2]);
-            poseStack.scale(scale[0], scale[1], scale[2]);
-            poseStack.mulPose(Axis.XP.rotationDegrees(rotation[0]));
-            poseStack.mulPose(Axis.YP.rotationDegrees(rotation[2]));
-            poseStack.mulPose(Axis.ZP.rotationDegrees(rotation[1]));
+        var scale = new float[]{displayData.get(0), displayData.get(1), displayData.get(2)};
+        var offset = new float[]{displayData.get(3), displayData.get(4), displayData.get(5)};
+        var rotation = new float[]{displayData.get(6), displayData.get(7), displayData.get(8)};
 
-            entityRenderDispatcher.render(renderEntity, 0, 0, 0, entityYaw, partialTicks, poseStack, buffer, packedLight);
+        poseStack.pushPose();
+        poseStack.translate(offset[0], offset[1], offset[2]);
+        poseStack.scale(scale[0], scale[1], scale[2]);
+        poseStack.mulPose(Axis.XP.rotationDegrees(rotation[0]));
+        poseStack.mulPose(Axis.YP.rotationDegrees(rotation[2]));
+        poseStack.mulPose(Axis.ZP.rotationDegrees(rotation[1]));
 
-            poseStack.popPose();
-        });
+        entityRenderDispatcher.render(renderEntity, 0, 0, 0, entityYaw, partialTicks, poseStack, buffer, packedLight);
+
+        poseStack.popPose();
     }
 
     @Override
