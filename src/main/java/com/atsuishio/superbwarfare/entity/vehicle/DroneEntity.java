@@ -51,6 +51,7 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.network.PlayMessages;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Math;
@@ -369,7 +370,7 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
 //            }
         } else {
             // 自定义挂载
-            var itemID = stack.getItem().toString();
+            var itemID = ForgeRegistries.ITEMS.getKey(stack.getItem()).toString();
             var attachmentData = CustomData.DRONE_ATTACHMENT.get(itemID);
 
             // 是否能挂载该物品
