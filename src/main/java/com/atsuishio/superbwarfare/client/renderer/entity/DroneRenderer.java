@@ -2,10 +2,8 @@
 package com.atsuishio.superbwarfare.client.renderer.entity;
 
 import com.atsuishio.superbwarfare.client.model.entity.DroneModel;
-import com.atsuishio.superbwarfare.data.CustomData;
 import com.atsuishio.superbwarfare.entity.projectile.MortarShellEntity;
 import com.atsuishio.superbwarfare.entity.projectile.RgoGrenadeEntity;
-import com.atsuishio.superbwarfare.entity.projectile.RpgRocketEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
 import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModItems;
@@ -28,8 +26,7 @@ import software.bernie.geckolib.cache.object.BakedGeoModel;
 import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
 
-import static com.atsuishio.superbwarfare.entity.vehicle.DroneEntity.ATTACHED;
-import static com.atsuishio.superbwarfare.entity.vehicle.DroneEntity.KAMIKAZE_MODE;
+import static com.atsuishio.superbwarfare.entity.vehicle.DroneEntity.*;
 import static com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity.AMMO;
 
 public class DroneRenderer extends GeoEntityRenderer<DroneEntity> {
@@ -71,11 +68,11 @@ public class DroneRenderer extends GeoEntityRenderer<DroneEntity> {
                     entityRenderDispatcher.render(entity, 0, 0.03, 0.25, entityYaw, partialTicks, poseStack, bufferIn, packedLightIn);
                 }
 
-                if (entityIn.getEntityData().get(KAMIKAZE_MODE) == 3) {
-                    Entity entity = new RpgRocketEntity(ModEntities.RPG_ROCKET.get(), entityIn.level());
-
-                    entityRenderDispatcher.render(entity, 0, -0.03, -1.8, entityYaw, partialTicks, poseStack, bufferIn, packedLightIn);
-                }
+//                if (entityIn.getEntityData().get(KAMIKAZE_MODE) == 3) {
+//                    Entity entity = new RpgRocketEntity(ModEntities.RPG_ROCKET.get(), entityIn.level());
+//
+//                    entityRenderDispatcher.render(entity, 0, -0.03, -1.8, entityYaw, partialTicks, poseStack, bufferIn, packedLightIn);
+//                }
 
                 for (int i = 0; i < entityIn.getEntityData().get(AMMO); i++) {
                     double yOffset = 0;
@@ -124,24 +121,27 @@ public class DroneRenderer extends GeoEntityRenderer<DroneEntity> {
 
     // 统一渲染挂载实体
     private void renderAttachments(DroneEntity entity, Player player, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
-        var attached = entity.getEntityData().get(ATTACHED);
+        var attached = entity.getEntityData().get(ATTACHED_ENTITY);
         if (attached.isEmpty()) return;
 
-        var attachmentData = CustomData.DRONE_ATTACHMENT.get(attached);
-        if (attachmentData == null) return;
-
-        var entityID = attachmentData.EntityID;
-        EntityType.byString(entityID).ifPresent(entityType -> {
+        EntityType.byString(attached).ifPresent(entityType -> {
             var renderEntity = entityType.create(entity.level());
             if (renderEntity == null) return;
 
-            var offset = (attachmentData.scale != null && attachmentData.offset.length < 3) ? new float[]{0, 0, 0} : attachmentData.offset;
-            var scale = (attachmentData.scale != null && attachmentData.scale.length < 3) ? new float[]{1, 1, 1} : attachmentData.scale;
+            var displayData = entity.getEntityData().get(ATTACHMENT_DISPLAY);
+
+            var scale = new float[]{displayData.get(0), displayData.get(1), displayData.get(2)};
+            var offset = new float[]{displayData.get(3), displayData.get(4), displayData.get(5)};
+            var rotation = new float[]{displayData.get(6), displayData.get(7), displayData.get(8)};
 
             poseStack.pushPose();
+            poseStack.translate(offset[0], offset[1], offset[2]);
             poseStack.scale(scale[0], scale[1], scale[2]);
+            poseStack.mulPose(Axis.XP.rotationDegrees(rotation[0]));
+            poseStack.mulPose(Axis.YP.rotationDegrees(rotation[2]));
+            poseStack.mulPose(Axis.ZP.rotationDegrees(rotation[1]));
 
-            entityRenderDispatcher.render(renderEntity, offset[0], offset[1], offset[2], entityYaw, partialTicks, poseStack, buffer, packedLight);
+            entityRenderDispatcher.render(renderEntity, 0, 0, 0, entityYaw, partialTicks, poseStack, buffer, packedLight);
 
             poseStack.popPose();
         });
@@ -165,10 +165,10 @@ public class DroneRenderer extends GeoEntityRenderer<DroneEntity> {
             }
         }
 
-        if (name.equals("c4")) {
-            bone.setHidden(animatable.getEntityData().get(KAMIKAZE_MODE) != 2);
-
-        }
+//        if (name.equals("c4")) {
+//            bone.setHidden(animatable.getEntityData().get(KAMIKAZE_MODE) != 2);
+//
+//        }
 
 
 //		Player player = Minecraft.getInstance().player;

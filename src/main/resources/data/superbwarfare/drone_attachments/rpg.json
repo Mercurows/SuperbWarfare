@@ -1,0 +1,12 @@
+{
+  "ItemID": "superbwarfare:rocket",
+  "EntityID": "superbwarfare:rpg_rocket",
+  "HitDamage": 270,
+  "ExplosionDamage": 130,
+  "ExplosionRadius": 10,
+  "Offset": [
+    0,
+    -0.03,
+    -1.8
+  ]
+}

@@ -16,4 +16,7 @@ public class ModSerializers {
     public static final DeferredHolder<EntityDataSerializer<?>, EntityDataSerializer<List<Integer>>> INT_LIST_SERIALIZER = REGISTRY.register("int_list_serializer",
             () -> EntityDataSerializer.forValueType(ByteBufCodecs.VAR_INT.apply(ByteBufCodecs.list()))
     );
+    public static final DeferredHolder<EntityDataSerializer<?>, EntityDataSerializer<List<Float>>> FLOAT_LIST_SERIALIZER = REGISTRY.register("float_list_serializer",
+            () -> EntityDataSerializer.forValueType(ByteBufCodecs.FLOAT.apply(ByteBufCodecs.list()))
+    );
 }

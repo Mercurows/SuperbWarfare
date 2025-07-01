@@ -4,10 +4,7 @@ import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.data.CustomData;
 import com.atsuishio.superbwarfare.entity.projectile.*;
 import com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity;
-import com.atsuishio.superbwarfare.init.ModDamageTypes;
-import com.atsuishio.superbwarfare.init.ModItems;
-import com.atsuishio.superbwarfare.init.ModSounds;
-import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.item.Monitor;
 import com.atsuishio.superbwarfare.item.common.ammo.MortarShell;
 import com.atsuishio.superbwarfare.tools.CustomExplosion;
@@ -58,6 +55,7 @@ import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -66,8 +64,11 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
     public static final EntityDataAccessor<Boolean> LINKED = SynchedEntityData.defineId(DroneEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<String> CONTROLLER = SynchedEntityData.defineId(DroneEntity.class, EntityDataSerializers.STRING);
     public static final EntityDataAccessor<Integer> KAMIKAZE_MODE = SynchedEntityData.defineId(DroneEntity.class, EntityDataSerializers.INT);
-    public static final EntityDataAccessor<String> ATTACHED = SynchedEntityData.defineId(DroneEntity.class, EntityDataSerializers.STRING);
     public static final EntityDataAccessor<Float> DELTA_X_ROT = SynchedEntityData.defineId(DroneEntity.class, EntityDataSerializers.FLOAT);
+    public static final EntityDataAccessor<String> ATTACHED_ENTITY = SynchedEntityData.defineId(DroneEntity.class, EntityDataSerializers.STRING);
+
+    // scale[3], offset[3], rotation[3]
+    public static final EntityDataAccessor<List<Float>> ATTACHMENT_DISPLAY = SynchedEntityData.defineId(DroneEntity.class, ModSerializers.FLOAT_LIST_SERIALIZER.get());
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
@@ -107,7 +108,8 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
                 .define(CONTROLLER, "undefined")
                 .define(LINKED, false)
                 .define(KAMIKAZE_MODE, 0)
-                .define(ATTACHED, "");
+                .define(ATTACHED_ENTITY, "")
+                .define(ATTACHMENT_DISPLAY, List.of(1f, 1f, 1f, 0f, 0f, 0f, 0f, 0f, 0f));
     }
 
     @Override
@@ -289,6 +291,7 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
             // 返还物品
             ItemHandlerHelper.giveItemToPlayer(player, new ItemStack(ModItems.DRONE.get()));
 
+            // TODO 返还弹药
             // 返还普通弹药
             for (int index0 = 0; index0 < this.entityData.get(AMMO); index0++) {
                 ItemHandlerHelper.giveItemToPlayer(player, new ItemStack(ModItems.RGO_GRENADE.get()));
@@ -311,7 +314,7 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
                 this.discard();
             }
         } else if (stack.getItem() == ModItems.RGO_GRENADE.get() && this.entityData.get(KAMIKAZE_MODE) == 0) {
-            // 装载普通弹药
+            // TODO 清理 装载普通弹药
             if (this.entityData.get(AMMO) < 6) {
                 this.entityData.set(AMMO, this.entityData.get(AMMO) + 1);
                 if (!player.isCreative()) {
@@ -322,7 +325,7 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
                 }
             }
         } else if (stack.getItem() instanceof MortarShell && this.entityData.get(AMMO) == 0 && this.entityData.get(KAMIKAZE_MODE) == 0) {
-            // 迫击炮神风
+            // TODO 清理 迫击炮神风
             var copy = stack.copy();
             copy.setCount(1);
             this.currentItem = copy;
@@ -335,40 +338,64 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
             if (player instanceof ServerPlayer serverPlayer) {
                 serverPlayer.level().playSound(null, serverPlayer.getOnPos(), ModSounds.BULLET_SUPPLY.get(), SoundSource.PLAYERS, 0.5F, 1);
             }
-        } else if (stack.getItem() == ModItems.C4_BOMB.get() && this.entityData.get(AMMO) == 0 && this.entityData.get(KAMIKAZE_MODE) == 0) {
-            // C4神风
-            this.currentItem = new ItemStack(stack.getItem(), 1);
-
-            if (!player.isCreative()) {
-                stack.shrink(1);
-            }
-            this.entityData.set(KAMIKAZE_MODE, 2);
-            if (player instanceof ServerPlayer serverPlayer) {
-                serverPlayer.level().playSound(null, serverPlayer.getOnPos(), ModSounds.BULLET_SUPPLY.get(), SoundSource.PLAYERS, 0.5F, 1);
-            }
-        } else if (stack.getItem() == ModItems.ROCKET.get() && this.entityData.get(AMMO) == 0 && this.entityData.get(KAMIKAZE_MODE) == 0) {
-            // RPG神风
-            this.currentItem = new ItemStack(stack.getItem(), 1);
-
-            if (!player.isCreative()) {
-                stack.shrink(1);
-            }
-            this.entityData.set(KAMIKAZE_MODE, 3);
-            if (player instanceof ServerPlayer serverPlayer) {
-                serverPlayer.level().playSound(null, serverPlayer.getOnPos(), ModSounds.BULLET_SUPPLY.get(), SoundSource.PLAYERS, 0.5F, 1);
-            }
+//        } else if (stack.getItem() == ModItems.C4_BOMB.get() && this.entityData.get(AMMO) == 0 && this.entityData.get(KAMIKAZE_MODE) == 0) {
+//            // C4神风
+//            this.currentItem = new ItemStack(stack.getItem(), 1);
+//
+//            if (!player.isCreative()) {
+//                stack.shrink(1);
+//            }
+//            this.entityData.set(KAMIKAZE_MODE, 2);
+//            if (player instanceof ServerPlayer serverPlayer) {
+//                serverPlayer.level().playSound(null, serverPlayer.getOnPos(), ModSounds.BULLET_SUPPLY.get(), SoundSource.PLAYERS, 0.5F, 1);
+//            }
+//        } else if (stack.getItem() == ModItems.ROCKET.get() && this.entityData.get(AMMO) == 0 && this.entityData.get(KAMIKAZE_MODE) == 0) {
+//            // RPG神风
+//            this.currentItem = new ItemStack(stack.getItem(), 1);
+//
+//            if (!player.isCreative()) {
+//                stack.shrink(1);
+//            }
+//            this.entityData.set(KAMIKAZE_MODE, 3);
+//            if (player instanceof ServerPlayer serverPlayer) {
+//                serverPlayer.level().playSound(null, serverPlayer.getOnPos(), ModSounds.BULLET_SUPPLY.get(), SoundSource.PLAYERS, 0.5F, 1);
+//            }
         } else {
             // 自定义挂载
             var itemID = stack.getItem().toString();
             var attachmentData = CustomData.DRONE_ATTACHMENT.get(itemID);
 
-            if (attachmentData != null && !this.entityData.get(ATTACHED).equals(itemID)) {
-                if (!player.isCreative()) {
-                    stack.shrink(1);
-                }
+            // 是否能挂载该物品
+            if (attachmentData != null && this.entityData.get(AMMO) < attachmentData.count()) {
+                if (this.entityData.get(ATTACHED_ENTITY).equals(attachmentData.entityID)) {
+                    // 同种物品挂载
+                    this.entityData.set(AMMO, this.entityData.get(AMMO) + 1);
 
-                this.entityData.set(ATTACHED, attachmentData.itemID);
-                // TODO 设置其他挂载数据
+                    if (!player.isCreative()) {
+                        stack.shrink(1);
+                    }
+                    if (player instanceof ServerPlayer serverPlayer) {
+                        serverPlayer.level().playSound(null, serverPlayer.getOnPos(), ModSounds.BULLET_SUPPLY.get(), SoundSource.PLAYERS, 0.5F, 1);
+                    }
+                } else if (this.entityData.get(AMMO) == 0) {
+                    // 不同种物品挂载
+                    this.entityData.set(ATTACHED_ENTITY, attachmentData.entityID);
+                    // TODO 正确处理和渲染AMMO
+//                    this.entityData.set(AMMO, this.entityData.get(AMMO) + 1);
+
+                    if (!player.isCreative()) {
+                        stack.shrink(1);
+                    }
+                    if (player instanceof ServerPlayer serverPlayer) {
+                        serverPlayer.level().playSound(null, serverPlayer.getOnPos(), ModSounds.BULLET_SUPPLY.get(), SoundSource.PLAYERS, 0.5F, 1);
+                    }
+
+                    var scale = attachmentData.scale();
+                    var offset = attachmentData.offset();
+                    var rotation = attachmentData.rotation();
+
+                    this.entityData.set(ATTACHMENT_DISPLAY, List.of(scale[0], scale[1], scale[2], offset[0], offset[1], offset[2], rotation[0], rotation[1], rotation[2]));
+                }
             }
 
         }
@@ -474,20 +501,41 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
 
     public void hitEntityCrash(Player player, Entity target) {
         if (lastTickSpeed > 0.12) {
+
+            var attachedEntity = this.entityData.get(ATTACHED_ENTITY);
+            if (!attachedEntity.isEmpty() && 20 * lastTickSpeed > this.getHealth()) {
+                var data = CustomData.DRONE_ATTACHMENT.values().stream().filter(d -> attachedEntity.equals(d.entityID))
+                        .findAny()
+                        .orElse(null);
+                if (data != null) {
+                    if (data.isKamikaze) {
+                        EntityType.byString(attachedEntity).ifPresent(entityType -> {
+                            var bomb = entityType.create(this.level());
+                            target.hurt(ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(), bomb, player), data.hitDamage);
+                            target.invulnerableTime = 0;
+                        });
+                    } else {
+                        // TODO 非神风模式？
+                    }
+                }
+            }
+
+            // TODO 清理这一坨
             if (this.entityData.get(KAMIKAZE_MODE) != 0 && 20 * lastTickSpeed > this.getHealth()) {
                 if (this.entityData.get(KAMIKAZE_MODE) == 1) {
                     var mortarShell = new MortarShellEntity(player, this.level());
                     target.hurt(ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(), mortarShell, player), ExplosionConfig.DRONE_KAMIKAZE_HIT_DAMAGE.get());
                     target.invulnerableTime = 0;
-                } else if (this.entityData.get(KAMIKAZE_MODE) == 2) {
-                    var c4 = new C4Entity(player, this.level());
-                    target.hurt(ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(), c4, player), ExplosionConfig.DRONE_KAMIKAZE_HIT_DAMAGE_C4.get());
-                    target.invulnerableTime = 0;
-                } else if (this.entityData.get(KAMIKAZE_MODE) == 3) {
-                    var rpg = new RpgRocketEntity(player, this.level());
-                    target.hurt(ModDamageTypes.causeCannonFireDamage(this.level().registryAccess(), rpg, player), ExplosionConfig.DRONE_KAMIKAZE_HIT_DAMAGE_RPG.get());
-                    target.invulnerableTime = 0;
                 }
+//                } else if (this.entityData.get(KAMIKAZE_MODE) == 2) {
+//                    var c4 = new C4Entity(player, this.level());
+//                    target.hurt(ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(), c4, player), ExplosionConfig.DRONE_KAMIKAZE_HIT_DAMAGE_C4.get());
+//                    target.invulnerableTime = 0;
+//                else if (this.entityData.get(KAMIKAZE_MODE) == 3) {
+//                    var rpg = new RpgRocketEntity(player, this.level());
+//                    target.hurt(ModDamageTypes.causeCannonFireDamage(this.level().registryAccess(), rpg, player), ExplosionConfig.DRONE_KAMIKAZE_HIT_DAMAGE_RPG.get());
+//                    target.invulnerableTime = 0;
+//                }
 
                 if (player != null && player.getMainHandItem().is(ModItems.MONITOR.get())) {
                     var stack = player.getMainHandItem();
@@ -560,8 +608,8 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
             level().explode(null, this.getX(), this.getY(), this.getZ(), 0, Level.ExplosionInteraction.NONE);
         }
 
-        // 神风自爆
-        if (this.entityData.get(KAMIKAZE_MODE) != 0) {
+        // TODO 清理 神风自爆
+        if (this.entityData.get(KAMIKAZE_MODE) != 0 || !this.entityData.get(ATTACHED_ENTITY).isEmpty()) {
             kamikazeExplosion(this.entityData.get(KAMIKAZE_MODE));
         }
 
@@ -603,26 +651,50 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
 
         assert controller != null;
         Entity mortarShell = new MortarShellEntity(controller, level());
-        Entity c4 = new C4Entity(controller, level());
-        Entity rpg = new RpgRocketEntity(controller, level());
+//        Entity c4 = new C4Entity(controller, level());
+//        Entity rpg = new RpgRocketEntity(controller, level());
 
+        // TODO 清理这一坨
         CustomExplosion explosion = switch (mode) {
             case 1 -> new CustomExplosion(this.level(), this,
                     ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(), mortarShell, attacker), ExplosionConfig.DRONE_KAMIKAZE_EXPLOSION_DAMAGE.get(),
                     this.getX(), this.getY(), this.getZ(), ExplosionConfig.DRONE_KAMIKAZE_EXPLOSION_RADIUS.get(), ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).setDamageMultiplier(1);
 
-            case 2 -> new CustomExplosion(this.level(), this,
-                    ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(), c4, attacker), ExplosionConfig.C4_EXPLOSION_DAMAGE.get(),
-                    this.getX(), this.getY(), this.getZ(), ExplosionConfig.C4_EXPLOSION_RADIUS.get(), ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).setDamageMultiplier(1);
+//            case 2 -> new CustomExplosion(this.level(), this,
+//                    ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(), c4, attacker), ExplosionConfig.C4_EXPLOSION_DAMAGE.get(),
+//                    this.getX(), this.getY(), this.getZ(), ExplosionConfig.C4_EXPLOSION_RADIUS.get(), ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).setDamageMultiplier(1);
 
-            case 3 -> new CustomExplosion(this.level(), this,
-                    ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(), rpg, attacker), ExplosionConfig.RPG_EXPLOSION_DAMAGE.get(),
-                    this.getX(), this.getY(), this.getZ(), ExplosionConfig.RPG_EXPLOSION_RADIUS.get(), ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).setDamageMultiplier(1);
+//            case 3 -> new CustomExplosion(this.level(), this,
+//                    ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(), rpg, attacker), ExplosionConfig.RPG_EXPLOSION_DAMAGE.get(),
+//                    this.getX(), this.getY(), this.getZ(), ExplosionConfig.RPG_EXPLOSION_RADIUS.get(), ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).setDamageMultiplier(1);
 
             default -> null;
         };
 
-        if (explosion == null) return;
+        // 自定义实体挂载
+        if (explosion == null) {
+            var attachedEntity = this.entityData.get(ATTACHED_ENTITY);
+            if (attachedEntity.isEmpty()) return;
+
+            var data = CustomData.DRONE_ATTACHMENT.values().stream().filter(d -> attachedEntity.equals(d.entityID))
+                    .findAny()
+                    .orElse(null);
+            if (data == null) return;
+
+            if (data.isKamikaze) {
+                var bomb = EntityType.byString(attachedEntity).map(entityType ->
+                        entityType.create(this.level())
+                ).orElse(null);
+                if (bomb == null) return;
+
+                explosion = new CustomExplosion(this.level(), this,
+                        ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(), bomb, attacker), data.explosionDamage,
+                        this.getX(), this.getY(), this.getZ(), data.explosionRadius, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).setDamageMultiplier(1);
+            } else {
+                // TODO 非神风自爆
+                return;
+            }
+        }
 
         explosion.explode();
         EventHooks.onExplosionStart(this.level(), explosion);

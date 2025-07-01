@@ -1,0 +1,12 @@
+{
+  "ItemID": "superbwarfare:c4_bomb",
+  "EntityID": "superbwarfare:c4",
+  "HitDamage": 150,
+  "ExplosionDamage": 300,
+  "ExplosionRadius": 10,
+  "Offset": [
+    0,
+    -0.1,
+    0
+  ]
+}
