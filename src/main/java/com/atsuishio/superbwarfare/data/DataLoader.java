@@ -125,23 +125,25 @@ public class DataLoader {
         }
 
         @Override
+        @SuppressWarnings("unchecked")
         public T put(String key, T value) {
-            throw new UnsupportedOperationException();
+            return (T) loadedData.get(name).data.put(key, value);
         }
 
         @Override
         public void putAll(Map<? extends String, ? extends T> m) {
-            throw new UnsupportedOperationException();
+            loadedData.get(name).data.putAll(m);
         }
 
         @Override
+        @SuppressWarnings("unchecked")
         public T remove(Object key) {
-            throw new UnsupportedOperationException();
+            return (T) loadedData.get(name).data.remove(key);
         }
 
         @Override
         public void clear() {
-            throw new UnsupportedOperationException();
+            loadedData.get(name).data.clear();
         }
 
         @Override
