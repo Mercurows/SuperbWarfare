@@ -6,7 +6,12 @@
   "ExplosionRadius": 10,
   "Offset": [
     0,
-    -0.1,
+    0.1,
+    0
+  ],
+  "Rotation": [
+    90,
+    -90,
     0
   ]
 }
