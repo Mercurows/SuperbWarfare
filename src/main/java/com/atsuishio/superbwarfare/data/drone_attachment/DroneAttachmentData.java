@@ -9,7 +9,7 @@ public class DroneAttachmentData implements IDBasedData {
     public String itemID = "";
 
     @SerializedName("EntityID")
-    public String EntityID = "";
+    public String entityID = "";
 
     @Override
     public String getId() {
@@ -17,10 +17,17 @@ public class DroneAttachmentData implements IDBasedData {
     }
 
     @SerializedName("Count")
-    public int count = 1;
+    private int count = 1;
+
+    public int count() {
+        return Math.min(1, this.count);
+    }
 
     @SerializedName("IsKamikaze")
     public boolean isKamikaze = true;
+
+    @SerializedName("HitDamage")
+    public float hitDamage = 0;
 
     @SerializedName("ExplosionDamage")
     public float explosionDamage = 0;
@@ -33,13 +40,25 @@ public class DroneAttachmentData implements IDBasedData {
     // display settings
 
     @SerializedName("Scale")
-    public float[] scale = new float[]{1, 1, 1};
+    private float[] scale = new float[]{1, 1, 1};
 
     @SerializedName("Offset")
-    public float[] offset = new float[]{0, 0, 0};
+    private float[] offset = new float[]{0, 0, 0};
 
     @SerializedName("Rotation")
-    public float[] rotation = new float[]{0, 0, 0};
+    private float[] rotation = new float[]{0, 0, 0};
+
+    public float[] scale() {
+        return (this.scale != null && this.scale.length < 3) ? new float[]{1, 1, 1} : this.scale;
+    }
+
+    public float[] offset() {
+        return (this.offset != null && this.offset.length < 3) ? new float[]{0, 0, 0} : this.offset;
+    }
+
+    public float[] rotation() {
+        return (this.rotation != null && this.rotation.length < 3) ? new float[]{0, 0, 0} : this.rotation;
+    }
 
     @SerializedName("Data")
     public JsonObject data;

@@ -11,10 +11,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.InputStreamReader;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 @net.minecraftforge.fml.common.Mod.EventBusSubscriber(modid = Mod.MODID)
 public class DataLoader {
@@ -155,6 +154,22 @@ public class DataLoader {
         public @NotNull Set<String> keySet() {
             if (!loadedData.containsKey(name)) return Set.of();
             return loadedData.get(name).data.keySet();
+        }
+
+        @Override
+        @SuppressWarnings("unchecked")
+        public @NotNull Collection<T> values() {
+            if (!loadedData.containsKey(name)) return Set.of();
+            return loadedData.get(name).data.values().stream().map(v -> (T) v).toList();
+        }
+
+        @Override
+        @SuppressWarnings("unchecked")
+        public @NotNull Set<Entry<String, T>> entrySet() {
+            if (!loadedData.containsKey(name)) return Set.of();
+            return loadedData.get(name).data.entrySet().stream()
+                    .map(e -> new AbstractMap.SimpleImmutableEntry<>(e.getKey(), (T) e.getValue()))
+                    .collect(Collectors.toCollection(HashSet::new));
         }
     }
 }
