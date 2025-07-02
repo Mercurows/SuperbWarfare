@@ -7,7 +7,6 @@ import com.atsuishio.superbwarfare.entity.OBBEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.*;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.*;
-import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModItems;
@@ -17,6 +16,8 @@ import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage;
 import com.atsuishio.superbwarfare.tools.*;
 import com.mojang.math.Axis;
 import it.unimi.dsi.fastutil.Pair;
+import net.minecraft.client.Camera;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
@@ -58,6 +59,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 import java.util.List;
 import java.util.function.Consumer;
 
+import static com.atsuishio.superbwarfare.event.ClientEventHandler.zoomVehicle;
 import static com.atsuishio.superbwarfare.event.ClientMouseHandler.freeCameraPitch;
 import static com.atsuishio.superbwarfare.event.ClientMouseHandler.freeCameraYaw;
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
@@ -84,6 +86,10 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
     private boolean wasFiring = false;
     public float delta_x;
     public float delta_y;
+    public Vec3 bombLandingPosO;
+    public Vec3 bombLandingPos;
+    public Vec3 deltaMovementO;
+
     public OBB obb;
     public OBB obb2;
     public OBB obb3;
@@ -222,6 +228,8 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
         this.wasFiring = this.isFiring();
 
         this.lockingTargetO = getTargetUuid();
+        bombLandingPosO = bombLandingPos;
+        deltaMovementO = getDeltaMovement();
 
         super.baseTick();
         this.updateOBB();
@@ -277,6 +285,12 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
         lowHealthWarning();
 
         releaseDecoy();
+
+        //  计算航弹落点
+        if (level().isClientSide) {
+            bombLandingPos = ProjectileCalculator.calculateImpactPosition(level(), shootPos(1), shootVec(1), -0.06).getCenter();
+        }
+
         this.refreshDimensions();
     }
 
@@ -734,8 +748,10 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
             worldPosition = transformPosition(transform, 0.1321625f, -0.56446875f, 7.85210625f);
         } else if (getWeaponIndex(0) == 1) {
             worldPosition = transformPosition(transform, 0f, -1.443f, 0.13f);
-        } else {
+        } else if (getWeaponIndex(0) == 2) {
             worldPosition = transformPosition(transform, 0f, -1.203125f, 0.0625f);
+        } else {
+            worldPosition = transformPosition(transform, 0, -1.55f, 1.83f);
         }
         return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
     }
@@ -745,7 +761,9 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
         Matrix4f transform = getVehicleTransform(tickDelta);
         Vector4f worldPosition;
         Vector4f worldPosition2;
-        if (getWeaponIndex(0) == 3) {
+        if (getWeaponIndex(0) == 2) {
+            return deltaMovementO.lerp(getDeltaMovement(), tickDelta).scale(0.75);
+        } else if (getWeaponIndex(0) == 3) {
             worldPosition = transformPosition(transform, 0, 0, 0);
             worldPosition2 = transformPosition(transform, 0, 0f, 1);
         } else {
@@ -849,7 +867,7 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
             }
 
             Mk82Entity.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
-            Mk82Entity.shoot(getDeltaMovement().x, getDeltaMovement().y, getDeltaMovement().z, (float) getDeltaMovement().length(), 10);
+            Mk82Entity.shoot(getDeltaMovement().x, getDeltaMovement().y, getDeltaMovement().z, (float) getDeltaMovement().scale(0.75).length(), 0.5f);
             player.level().addFreshEntity(Mk82Entity);
 
             BlockPos pos = BlockPos.containing(new Vec3(worldPosition.x, worldPosition.y, worldPosition.z));
@@ -982,7 +1000,7 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
 
     @Override
     public double getMouseSensitivity() {
-        return ClientEventHandler.zoomVehicle ? 0.03 : 0.07;
+        return zoomVehicle ? 0.03 : 0.07;
     }
 
     @Override
@@ -1018,7 +1036,21 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
     @OnlyIn(Dist.CLIENT)
     @Override
     public @Nullable Vec2 getCameraRotation(float partialTicks, Player player, boolean zoom, boolean isFirstPerson) {
+        Minecraft mc = Minecraft.getInstance();
+        Camera camera = mc.gameRenderer.getMainCamera();
+        Vec3 cameraPos = camera.getPosition();
+
+        Vec3 p0 = bombLandingPosO;
+        Vec3 p1 = bombLandingPos;
+        Vec3 p2 = getViewVector(partialTicks);
+        if (p0 != null && p1 != null) {
+            p2 = cameraPos.vectorTo(p0.lerp(p1, partialTicks));
+        }
+
         if (this.getSeatIndex(player) == 0) {
+            if (getWeaponIndex(0) == 2 && zoomVehicle) {
+                return new Vec2((float) (-getYRotFromVector(p2) - freeCameraYaw), (float) (-getXRotFromVector(p2) + freeCameraPitch));
+            }
             return new Vec2((float) (getRotY(partialTicks) - freeCameraYaw), (float) (getRotX(partialTicks) + freeCameraPitch));
         }
 
@@ -1029,8 +1061,12 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
     @Override
     public Vec3 getCameraPosition(float partialTicks, Player player, boolean zoom, boolean isFirstPerson) {
         if (this.getSeatIndex(player) == 0) {
-            Matrix4f transform = getClientVehicleTransform(partialTicks);
 
+            if (getWeaponIndex(0) == 2 && zoomVehicle) {
+                return shootPos(partialTicks);
+            }
+
+            Matrix4f transform = getClientVehicleTransform(partialTicks);
             Vector4f maxCameraPosition = transformPosition(transform, 0, 4, -14 - (float) ClientMouseHandler.custom3pDistanceLerp);
             Vec3 finalPos = CameraTool.getMaxZoom(transform, maxCameraPosition);
 

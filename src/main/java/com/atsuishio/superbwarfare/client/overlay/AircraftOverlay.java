@@ -35,6 +35,7 @@ import java.util.List;
 
 import static com.atsuishio.superbwarfare.client.RenderHelper.preciseBlit;
 import static com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.HEAT;
+import static com.atsuishio.superbwarfare.event.ClientEventHandler.zoomVehicle;
 
 @OnlyIn(Dist.CLIENT)
 public class AircraftOverlay implements LayeredDraw.Layer {
@@ -44,6 +45,8 @@ public class AircraftOverlay implements LayeredDraw.Layer {
     private static float lerpVy = 1;
     private static float lerpLock = 1;
     private static float lerpG = 1;
+
+    private static float scopeScale = 1;
 
     private static final ResourceLocation FRAME = Mod.loc("textures/screens/aircraft/frame.png");
     private static final ResourceLocation FRAME_TARGET = Mod.loc("textures/screens/aircraft/frame_target.png");
@@ -60,7 +63,6 @@ public class AircraftOverlay implements LayeredDraw.Layer {
         Camera camera = mc.gameRenderer.getMainCamera();
         Vec3 cameraPos = camera.getPosition();
         PoseStack poseStack = guiGraphics.pose();
-        Vec3 lookVec = new Vec3(camera.getLookVector());
 
         var partialTick = deltaTracker.getGameTimeDeltaPartialTick(true);
 
@@ -88,6 +90,42 @@ public class AircraftOverlay implements LayeredDraw.Layer {
 
             Vec3 p = VectorUtil.worldToScreen(pos, cameraPos);
             Vec3 pCross = VectorUtil.worldToScreen(posCross, cameraPos);
+
+            // 投弹准星
+            if (mobileVehicle instanceof A10Entity a10Entity && weaponVehicle.getWeaponIndex(0) == 2 && (zoomVehicle || mc.options.getCameraType() != CameraType.FIRST_PERSON)) {
+                Vec3 p0 = a10Entity.bombLandingPosO;
+                Vec3 p1 = a10Entity.bombLandingPos;
+                if (p0 != null && p1 != null) {
+                    Vec3 bombCross = p0.lerp(p1, partialTick);
+                    pCross = VectorUtil.worldToScreen(bombCross, cameraPos);
+
+                    if (pCross != null && zoomVehicle) {
+                        float f = (float) Math.min(screenWidth, screenHeight);
+                        float f1 = Math.min((float) screenWidth / f, (float) screenHeight / f);
+                        int i = Mth.floor(f * f1);
+                        int j = Mth.floor(f * f1);
+
+                        float x = (float) pCross.x;
+                        float y = (float) pCross.y;
+                        poseStack.pushPose();
+                        poseStack.rotateAround(Axis.ZP.rotationDegrees(aircraftEntity.getRotZ(partialTick)), x, y, 0);
+                        poseStack.pushPose();
+
+                        poseStack.pushPose();
+                        poseStack.translate(x, y, 0);
+                        guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("MK82 BOMB " + aircraftEntity.getAmmoCount(player)), 25, -11, 1, false);
+                        poseStack.popPose();
+
+                        preciseBlit(guiGraphics, Mod.loc("textures/screens/aircraft/bomb_scope.png"), x - 1.5f * i, y - 1.5f * j, 0, 0, 3 * i, 3 * j, 3 * i, 3 * j);
+                        preciseBlit(guiGraphics, Mod.loc("textures/screens/aircraft/bomb_scope_pitch.png"), x - 1.5f * i, y - 1.5f * j - 4 * a10Entity.getPitch(partialTick), 0, 0, 3 * i, 3 * j, 3 * i, 3 * j);
+                        renderKillIndicator(guiGraphics, x - 7.5f + (float) (2 * (Math.random() - 0.5f)), y - 7.5f + (float) (2 * (Math.random() - 0.5f)));
+                        poseStack.popPose();
+                        poseStack.popPose();
+                        return;
+                    }
+                }
+
+            }
 
             if (p != null) {
                 poseStack.pushPose();
@@ -226,13 +264,12 @@ public class AircraftOverlay implements LayeredDraw.Layer {
                 } else if (mc.options.getCameraType() == CameraType.THIRD_PERSON_BACK) {
                     poseStack.pushPose();
                     poseStack.rotateAround(Axis.ZP.rotationDegrees(aircraftEntity.getRotZ(partialTick)), x, y, 0);
-                    preciseBlit(guiGraphics, Mod.loc("textures/screens/drone.png"), x - 8, y - 8, 0, 0, 16, 16, 16, 16);
-                    renderKillIndicator(guiGraphics, x - 7.5f + (float) (2 * (Math.random() - 0.5f)), y - 7.5f + (float) (2 * (Math.random() - 0.5f)));
-
                     poseStack.pushPose();
-
                     poseStack.translate(x, y, 0);
                     poseStack.scale(0.75f, 0.75f, 1);
+
+                    ResourceLocation cross = Mod.loc("textures/screens/drone.png");
+                    float size = 16;
 
                     if (mobileVehicle instanceof A10Entity a10Entity) {
                         if (weaponVehicle.getWeaponIndex(0) == 0) {
@@ -241,6 +278,8 @@ public class AircraftOverlay implements LayeredDraw.Layer {
                         } else if (weaponVehicle.getWeaponIndex(0) == 1) {
                             guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("70MM ROCKET " + aircraftEntity.getAmmoCount(player)), 25, -9, -1, false);
                         } else if (weaponVehicle.getWeaponIndex(0) == 2) {
+                            cross = Mod.loc("textures/screens/shotgun_hud.png");
+                            size = 24;
                             guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("MK82 BOMB " + aircraftEntity.getAmmoCount(player)), 25, -9, -1, false);
                         } else if (weaponVehicle.getWeaponIndex(0) == 3) {
                             guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("AGM-65 " + aircraftEntity.getAmmoCount(player)), 25, -9, -1, false);
@@ -249,6 +288,8 @@ public class AircraftOverlay implements LayeredDraw.Layer {
 
                     guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("IR FLARES " + aircraftEntity.getDecoy()), 25, 1, -1, false);
                     poseStack.popPose();
+                    preciseBlit(guiGraphics, cross, x - 0.5f * size, y - 0.5f * size, 0, 0, size, size, size, size);
+                    renderKillIndicator(guiGraphics, x - 7.5f + (float) (2 * (Math.random() - 0.5f)), y - 7.5f + (float) (2 * (Math.random() - 0.5f)));
                     poseStack.popPose();
                 }
                 poseStack.popPose();
