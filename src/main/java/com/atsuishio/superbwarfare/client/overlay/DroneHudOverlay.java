@@ -152,17 +152,9 @@ public class DroneHudOverlay implements LayeredDraw.Layer {
 
 
                 List<Entity> entities = SeekTool.seekLivingEntities(entity, entity.level(), 256, 30);
-                float fovAdjust2 = (float) (mc.options.fov().get() / 30) - 1;
-                double zoom = 0.975 * ClientEventHandler.droneFovLerp + 0.06 * fovAdjust2;
-
                 for (var e : entities) {
-                    Vec3 droneVec = new Vec3(Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), entity.xo, entity.getX()), Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), entity.yo + entity.getEyeHeight(), entity.getEyeY()), Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), entity.zo, entity.getZ()));
                     Vec3 pos = new Vec3(Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), e.xo, e.getX()), Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), e.yo + e.getEyeHeight(), e.getEyeY()), Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), e.zo, e.getZ()));
-
-                    Vec3 lookAngle = entity.getLookAngle().normalize().scale(pos.distanceTo(droneVec) * (1 - 1.0 / zoom));
-
-                    var cPos = droneVec.add(lookAngle);
-                    Vec3 point = RenderHelper.worldToScreen(pos, cPos);
+                    Vec3 point = VectorUtil.worldToScreen(pos, cameraPos);
                     if (point != null) {
                         poseStack.pushPose();
                         float x = (float) point.x;

@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.client.overlay;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.entity.vehicle.AnnihilatorEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.Hpj11Entity;
 import com.atsuishio.superbwarfare.entity.vehicle.Mk42Entity;
@@ -12,6 +11,7 @@ import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.tools.FormatTool;
 import com.atsuishio.superbwarfare.tools.InventoryTool;
 import com.atsuishio.superbwarfare.tools.TraceTool;
+import com.atsuishio.superbwarfare.tools.VectorUtil;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -142,7 +142,8 @@ public class CannonHudOverlay implements LayeredDraw.Layer {
                         } else {
                             preciseBlit(guiGraphics, Mod.loc("textures/screens/cannon/cannon_crosshair.png"), k, l, 0, 0.0F, i, j, i, j);
                         }
-                        float diffY = -Mth.wrapDegrees(Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), player.yHeadRotO, player.getYHeadRot()) - Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), cannon.yRotO, cannon.getYRot()));
+                        float diffY = -Mth.wrapDegrees(Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), player.yHeadRotO, player.getYHeadRot())
+                                - Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), cannon.yRotO, cannon.getYRot()));
 
                         preciseBlit(guiGraphics, Mod.loc("textures/screens/cannon/indicator.png"), (float) w / 2 - 4.3f + 0.45f * diffY, (float) h / 2 - 10, 0, 0.0F, 8, 8, 8, 8);
                     } else {
@@ -168,7 +169,7 @@ public class CannonHudOverlay implements LayeredDraw.Layer {
 
                 renderKillIndicator(guiGraphics, w, h);
             } else if (Minecraft.getInstance().options.getCameraType() == CameraType.THIRD_PERSON_BACK && !ClientEventHandler.zoomVehicle) {
-                Vec3 p = RenderHelper.worldToScreen(new Vec3(Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), player.xo, player.getX()), Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), player.yo, player.getY()),
+                Vec3 p = VectorUtil.worldToScreen(new Vec3(Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), player.xo, player.getX()), Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), player.yo, player.getY()),
                         Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), player.zo, player.getZ())).add(cannon.getViewVector(deltaTracker.getGameTimeDeltaPartialTick(true)).scale(128)), cameraPos);
 
                 // 第三人称准星
