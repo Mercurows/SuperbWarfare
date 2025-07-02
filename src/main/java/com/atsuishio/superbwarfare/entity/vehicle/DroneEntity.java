@@ -7,10 +7,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity;
 import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.item.Monitor;
 import com.atsuishio.superbwarfare.item.common.ammo.MortarShell;
-import com.atsuishio.superbwarfare.tools.CustomExplosion;
-import com.atsuishio.superbwarfare.tools.EntityFindUtil;
-import com.atsuishio.superbwarfare.tools.NBTTool;
-import com.atsuishio.superbwarfare.tools.ParticleTool;
+import com.atsuishio.superbwarfare.tools.*;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
@@ -69,6 +66,7 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
 
     // scale[3], offset[3], rotation[3]
     public static final EntityDataAccessor<List<Float>> ATTACHMENT_DISPLAY = SynchedEntityData.defineId(DroneEntity.class, ModSerializers.FLOAT_LIST_SERIALIZER.get());
+    public static final EntityDataAccessor<CompoundTag> ATTACHED_ENTITY_TAG = SynchedEntityData.defineId(DroneEntity.class, EntityDataSerializers.COMPOUND_TAG);
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
@@ -109,7 +107,8 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
                 .define(LINKED, false)
                 .define(KAMIKAZE_MODE, 0)
                 .define(ATTACHED_ENTITY, "")
-                .define(ATTACHMENT_DISPLAY, List.of(1f, 1f, 1f, 0f, 0f, 0f, 0f, 0f, 0f));
+                .define(ATTACHMENT_DISPLAY, List.of(1f, 1f, 1f, 0f, 0f, 0f, 0f, 0f, 0f))
+                .define(ATTACHED_ENTITY_TAG, new CompoundTag());
     }
 
     @Override
@@ -381,7 +380,7 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
                     // 不同种物品挂载
                     this.entityData.set(ATTACHED_ENTITY, attachmentData.entityID);
                     // TODO 正确处理和渲染AMMO
-//                    this.entityData.set(AMMO, this.entityData.get(AMMO) + 1);
+                    this.entityData.set(AMMO, this.entityData.get(AMMO) + 1);
 
                     if (!player.isCreative()) {
                         stack.shrink(1);
@@ -393,6 +392,11 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
                     var scale = attachmentData.scale();
                     var offset = attachmentData.offset();
                     var rotation = attachmentData.rotation();
+
+                    if (attachmentData.displayData != null) {
+                        // TODO 数据替换
+                        this.entityData.set(ATTACHED_ENTITY_TAG, TagDataParser.parse(attachmentData.displayData));
+                    }
 
                     this.entityData.set(ATTACHMENT_DISPLAY, List.of(scale[0], scale[1], scale[2], offset[0], offset[1], offset[2], rotation[0], rotation[1], rotation[2]));
                 }

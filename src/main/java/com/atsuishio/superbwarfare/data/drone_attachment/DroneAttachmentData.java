@@ -20,7 +20,7 @@ public class DroneAttachmentData implements IDBasedData {
     private int count = 1;
 
     public int count() {
-        return Math.min(1, this.count);
+        return isKamikaze ? 1 : Math.max(1, this.count);
     }
 
     @SerializedName("IsKamikaze")
@@ -34,6 +34,12 @@ public class DroneAttachmentData implements IDBasedData {
 
     @SerializedName("ExplosionRadius")
     public float explosionRadius = 0;
+
+    /**
+     * 投弹时需要写入的实体数据
+     */
+    @SerializedName("DropData")
+    public JsonObject dropData;
 
     // TODO 其他挂载设置
 
@@ -60,6 +66,9 @@ public class DroneAttachmentData implements IDBasedData {
         return (this.rotation != null && this.rotation.length < 3) ? new float[]{0, 0, 0} : this.rotation;
     }
 
-    @SerializedName("Data")
-    public JsonObject data;
+    /**
+     * 无人机显示的挂载实体的实体数据
+     */
+    @SerializedName("DisplayData")
+    public JsonObject displayData;
 }
