@@ -19,7 +19,7 @@ public class VectorUtil {
      * Codes based on @Xjqsh
      */
     private static PoseStack cachedPoseStack = new PoseStack();
-    private static double fov = 70;
+    public static double fov = 70;
 
     public static Vec3 worldToScreen(Vec3 pos, Vec3 cameraPos) {
         Minecraft mc = Minecraft.getInstance();

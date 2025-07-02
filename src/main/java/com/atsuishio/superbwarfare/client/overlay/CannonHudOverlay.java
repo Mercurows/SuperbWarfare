@@ -56,6 +56,7 @@ public class CannonHudOverlay implements LayeredDraw.Layer {
         PoseStack poseStack = guiGraphics.pose();
         Camera camera = mc.gameRenderer.getMainCamera();
         Vec3 cameraPos = camera.getPosition();
+        Vec3 viewVec = new Vec3(camera.getLookVector());
 
         if (!shouldRenderCrossHair(player)) return;
 
@@ -105,7 +106,7 @@ public class CannonHudOverlay implements LayeredDraw.Layer {
                         shootPos = cannon.driverZoomPos(deltaTracker.getRealtimeDeltaTicks());
                     }
 
-                    Entity lookingEntity = TraceTool.camerafFindLookingEntity(player, cameraPos, 512, deltaTracker.getRealtimeDeltaTicks());
+                    Entity lookingEntity = TraceTool.camerafFindLookingEntity(player, cameraPos, viewVec, 512);
                     boolean lookAtEntity = false;
 
                     BlockHitResult result = player.level().clip(new ClipContext(shootPos, shootPos.add(player.getViewVector(1).scale(512)),

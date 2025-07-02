@@ -166,11 +166,18 @@ public class TraceTool {
         return null;
     }
 
-    public static Entity camerafFindLookingEntity(Player player, Vec3 pos, double entityReach, float ticks) {
+    public static Entity camerafFindLookingEntity(Player player, Vec3 pos, Vec3 viewVec, double entityReach) {
         double distance = entityReach * entityReach;
-        HitResult hitResult = player.pick(entityReach, 1.0f, false);
+        HitResult hitResult = pickNew(pos, entityReach, viewVec, player);
 
-        Vec3 viewVec = player.getViewVector(ticks);
+        if (hitResult.getType() != HitResult.Type.MISS) {
+            distance = hitResult.getLocation().distanceToSqr(pos);
+            double blockReach = 5;
+            if (distance > blockReach * blockReach) {
+                hitResult = BlockHitResult.miss(hitResult.getLocation(), Direction.getNearest(pos.x, pos.y, pos.z), BlockPos.containing(hitResult.getLocation()));
+            }
+        }
+
         Vec3 toVec = pos.add(viewVec.x * entityReach, viewVec.y * entityReach, viewVec.z * entityReach);
         AABB aabb = player.getBoundingBox().expandTowards(viewVec.scale(entityReach)).inflate(1.0D, 1.0D, 1.0D);
         EntityHitResult entityhitresult = ProjectileUtil.getEntityHitResult(player, pos, toVec, aabb, p -> !p.isSpectator()
@@ -182,8 +189,13 @@ public class TraceTool {
                 && p != player
                 && p != player.getVehicle(), distance);
         if (entityhitresult != null) {
-            hitResult = entityhitresult;
-
+            Vec3 targetPos = entityhitresult.getLocation();
+            double distanceToTarget = pos.distanceToSqr(targetPos);
+            if (distanceToTarget > distance || distanceToTarget > entityReach * entityReach) {
+                hitResult = BlockHitResult.miss(targetPos, Direction.getNearest(viewVec.x, viewVec.y, viewVec.z), BlockPos.containing(targetPos));
+            } else if (distanceToTarget < distance) {
+                hitResult = entityhitresult;
+            }
         }
         if (hitResult.getType() == HitResult.Type.ENTITY) {
             return ((EntityHitResult) hitResult).getEntity();
@@ -195,6 +207,11 @@ public class TraceTool {
         Vec3 vec31 = vehicle.getBarrelVector(1);
         Vec3 vec32 = pos.add(vec31.x * pHitDistance, vec31.y * pHitDistance, vec31.z * pHitDistance);
         return vehicle.level().clip(new ClipContext(pos, vec32, ClipContext.Block.COLLIDER, ClipContext.Fluid.ANY, vehicle));
+    }
+
+    public static HitResult pickNew(Vec3 pos, double pHitDistance, Vec3 viewVec, Entity entity) {
+        Vec3 vec32 = pos.add(viewVec.x * pHitDistance, viewVec.y * pHitDistance, viewVec.z * pHitDistance);
+        return entity.level().clip(new ClipContext(pos, vec32, ClipContext.Block.COLLIDER, ClipContext.Fluid.ANY, entity));
     }
 
     public static List<BlockPos> getBlocksAlongRay(Vec3 start, Vec3 direction, double maxDistance) {
