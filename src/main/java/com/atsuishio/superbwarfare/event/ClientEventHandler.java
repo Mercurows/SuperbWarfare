@@ -984,7 +984,7 @@ public class ClientEventHandler {
 
         cameraPitch = event.getPitch();
         cameraYaw = event.getYaw();
-        cameraRoll = event.getRoll();
+        cameraRoll *= 0.99f;
 
         if (player != null && player.getVehicle() instanceof ArmedVehicleEntity iArmedVehicle && iArmedVehicle.banHand(player)) {
             return;
