@@ -64,9 +64,10 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
     public static final EntityDataAccessor<Float> DELTA_X_ROT = SynchedEntityData.defineId(DroneEntity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<String> ATTACHED_ENTITY = SynchedEntityData.defineId(DroneEntity.class, EntityDataSerializers.STRING);
 
-    // scale[3], offset[3], rotation[3]
+    // scale[3], offset[3], rotation[3], xLength, zLength
     public static final EntityDataAccessor<List<Float>> ATTACHMENT_DISPLAY = SynchedEntityData.defineId(DroneEntity.class, ModSerializers.FLOAT_LIST_SERIALIZER.get());
     public static final EntityDataAccessor<CompoundTag> ATTACHED_ENTITY_TAG = SynchedEntityData.defineId(DroneEntity.class, EntityDataSerializers.COMPOUND_TAG);
+    public static final EntityDataAccessor<Integer> MAX_AMMO = SynchedEntityData.defineId(DroneEntity.class, EntityDataSerializers.INT);
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
@@ -107,8 +108,9 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
                 .define(LINKED, false)
                 .define(KAMIKAZE_MODE, 0)
                 .define(ATTACHED_ENTITY, "")
-                .define(ATTACHMENT_DISPLAY, List.of(1f, 1f, 1f, 0f, 0f, 0f, 0f, 0f, 0f))
-                .define(ATTACHED_ENTITY_TAG, new CompoundTag());
+                .define(ATTACHMENT_DISPLAY, List.of(1f, 1f, 1f, 0f, 0f, 0f, 0f, 0f, 0f, 0.2f, 0.5f))
+                .define(ATTACHED_ENTITY_TAG, new CompoundTag())
+                .define(MAX_AMMO, 1);
     }
 
     @Override
@@ -398,7 +400,13 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
                         this.entityData.set(ATTACHED_ENTITY_TAG, TagDataParser.parse(attachmentData.displayData));
                     }
 
-                    this.entityData.set(ATTACHMENT_DISPLAY, List.of(scale[0], scale[1], scale[2], offset[0], offset[1], offset[2], rotation[0], rotation[1], rotation[2]));
+                    this.entityData.set(ATTACHMENT_DISPLAY, List.of(
+                            scale[0], scale[1], scale[2],
+                            offset[0], offset[1], offset[2],
+                            rotation[0], rotation[1], rotation[2],
+                            attachmentData.xLength, attachmentData.zLength)
+                    );
+                    this.entityData.set(MAX_AMMO, attachmentData.count());
                 }
             }
 

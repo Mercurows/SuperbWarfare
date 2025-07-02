@@ -3,7 +3,6 @@ package com.atsuishio.superbwarfare.client.renderer.entity;
 
 import com.atsuishio.superbwarfare.client.model.entity.DroneModel;
 import com.atsuishio.superbwarfare.entity.projectile.MortarShellEntity;
-import com.atsuishio.superbwarfare.entity.projectile.RgoGrenadeEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
 import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModItems;
@@ -68,43 +67,43 @@ public class DroneRenderer extends GeoEntityRenderer<DroneEntity> {
                     entityRenderDispatcher.render(entity, 0, 0.03, 0.25, entityYaw, partialTicks, poseStack, bufferIn, packedLightIn);
                 }
 
-                for (int i = 0; i < entityIn.getEntityData().get(AMMO); i++) {
-                    double yOffset = 0;
-                    double xOffset = 0;
-
-                    if (i == 0) {
-                        yOffset = 0.2;
-                        xOffset = 0.1;
-                    }
-                    if (i == 1) {
-                        yOffset = 0.2;
-                        xOffset = -0.1;
-                    }
-                    if (i == 2) {
-                        yOffset = -0.05;
-                        xOffset = 0.1;
-                    }
-                    if (i == 3) {
-                        yOffset = -0.05;
-                        xOffset = -0.1;
-                    }
-                    if (i == 4) {
-                        yOffset = -0.3;
-                        xOffset = 0.1;
-                    }
-                    if (i == 5) {
-                        yOffset = -0.3;
-                        xOffset = -0.1;
-                    }
-
-
-                    poseStack.pushPose();
-                    poseStack.mulPose(Axis.XP.rotationDegrees(90));
-                    poseStack.scale(0.35f, 0.35f, 0.35f);
-                    Entity entity = new RgoGrenadeEntity(ModEntities.RGO_GRENADE.get(), entityIn.level());
-                    entityRenderDispatcher.render(entity, xOffset, yOffset, 0, entityYaw, partialTicks, poseStack, bufferIn, packedLightIn);
-                    poseStack.popPose();
-                }
+//                for (int i = 0; i < entityIn.getEntityData().get(AMMO); i++) {
+//                    double yOffset = 0;
+//                    double xOffset = 0;
+//
+//                    if (i == 0) {
+//                        yOffset = 0.2;
+//                        xOffset = 0.1;
+//                    }
+//                    if (i == 1) {
+//                        yOffset = 0.2;
+//                        xOffset = -0.1;
+//                    }
+//                    if (i == 2) {
+//                        yOffset = -0.05;
+//                        xOffset = 0.1;
+//                    }
+//                    if (i == 3) {
+//                        yOffset = -0.05;
+//                        xOffset = -0.1;
+//                    }
+//                    if (i == 4) {
+//                        yOffset = -0.3;
+//                        xOffset = 0.1;
+//                    }
+//                    if (i == 5) {
+//                        yOffset = -0.3;
+//                        xOffset = -0.1;
+//                    }
+//
+//
+//                    poseStack.pushPose();
+//                    poseStack.mulPose(Axis.XP.rotationDegrees(90));
+//                    poseStack.scale(0.35f, 0.35f, 0.35f);
+//                    Entity entity = new RgoGrenadeEntity(ModEntities.RGO_GRENADE.get(), entityIn.level());
+//                    entityRenderDispatcher.render(entity, xOffset, yOffset, 0, entityYaw, partialTicks, poseStack, bufferIn, packedLightIn);
+//                    poseStack.popPose();
+//                }
 
                 renderAttachments(entityIn, entityYaw, partialTicks, poseStack, bufferIn, packedLightIn);
             }
@@ -119,7 +118,8 @@ public class DroneRenderer extends GeoEntityRenderer<DroneEntity> {
 
     // 统一渲染挂载实体
     private void renderAttachments(DroneEntity entity, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
-        var attached = entity.getEntityData().get(ATTACHED_ENTITY);
+        var data = entity.getEntityData();
+        var attached = data.get(ATTACHED_ENTITY);
         if (attached.isEmpty()) return;
 
         Entity renderEntity;
@@ -133,7 +133,7 @@ public class DroneRenderer extends GeoEntityRenderer<DroneEntity> {
             if (renderEntity == null) return;
 
             // 填充tag
-            var tag = entity.getEntityData().get(ATTACHED_ENTITY_TAG);
+            var tag = data.get(ATTACHED_ENTITY_TAG);
             if (!tag.isEmpty()) {
                 renderEntity.load(tag);
             }
@@ -144,22 +144,45 @@ public class DroneRenderer extends GeoEntityRenderer<DroneEntity> {
         }
         renderEntity.tickCount = entity.tickCount - attachedTick;
 
-        var displayData = entity.getEntityData().get(ATTACHMENT_DISPLAY);
+        var displayData = data.get(ATTACHMENT_DISPLAY);
 
         var scale = new float[]{displayData.get(0), displayData.get(1), displayData.get(2)};
         var offset = new float[]{displayData.get(3), displayData.get(4), displayData.get(5)};
         var rotation = new float[]{displayData.get(6), displayData.get(7), displayData.get(8)};
+        var xLength = displayData.get(9);
+        var yLength = displayData.get(10);
 
-        poseStack.pushPose();
-        poseStack.translate(offset[0], offset[1], offset[2]);
-        poseStack.scale(scale[0], scale[1], scale[2]);
-        poseStack.mulPose(Axis.XP.rotationDegrees(rotation[0]));
-        poseStack.mulPose(Axis.YP.rotationDegrees(rotation[2]));
-        poseStack.mulPose(Axis.ZP.rotationDegrees(rotation[1]));
+        for (int i = 0; i < data.get(AMMO); i++) {
+            float x, z;
+            if (data.get(MAX_AMMO) == 1) {
+                // 神风或单个挂载
+                x = 0;
+                z = 0;
+            } else {
+                // 投弹
+                x = xLength / 2 * (i % 2 == 0 ? 1 : -1);
 
-        entityRenderDispatcher.render(renderEntity, 0, 0, 0, entityYaw, partialTicks, poseStack, buffer, packedLight);
+                var rows = data.get(MAX_AMMO) / 2;
+                var row = i / 2;
+                if (rows < 2) {
+                    z = 0;
+                } else {
+                    var rowLength = yLength / rows;
+                    z = -yLength / 2 + rowLength * row;
+                }
+            }
 
-        poseStack.popPose();
+            poseStack.pushPose();
+            poseStack.translate(x + offset[0], offset[1], z + offset[2]);
+            poseStack.scale(scale[0], scale[1], scale[2]);
+            poseStack.mulPose(Axis.XP.rotationDegrees(rotation[0]));
+            poseStack.mulPose(Axis.YP.rotationDegrees(rotation[2]));
+            poseStack.mulPose(Axis.ZP.rotationDegrees(rotation[1]));
+
+            entityRenderDispatcher.render(renderEntity, 0, 0, 0, entityYaw, partialTicks, poseStack, buffer, packedLight);
+
+            poseStack.popPose();
+        }
     }
 
     @Override

@@ -66,6 +66,12 @@ public class DroneAttachmentData implements IDBasedData {
         return (this.rotation != null && this.rotation.length < 3) ? new float[]{0, 0, 0} : this.rotation;
     }
 
+    @SerializedName("XLength")
+    public float xLength = 0.1f;
+
+    @SerializedName("ZLength")
+    public float zLength = 0.35f;
+
     /**
      * 无人机显示的挂载实体的实体数据
      */
