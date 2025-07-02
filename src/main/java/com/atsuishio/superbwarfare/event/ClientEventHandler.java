@@ -1357,12 +1357,10 @@ public class ClientEventHandler {
         if (entity.hasEffect(ModMobEffects.SHOCK) && Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON) {
             float shakeStrength = (float) DisplayConfig.SHOCK_SCREEN_SHAKE.get() / 100.0f;
             if (shakeStrength <= 0.0f) return;
-
             event.setYaw(Minecraft.getInstance().gameRenderer.getMainCamera().getYRot() +
                     (float) Mth.nextDouble(RandomSource.create(), -3, 3) * shakeStrength);
             event.setPitch(Minecraft.getInstance().gameRenderer.getMainCamera().getXRot() +
                     (float) Mth.nextDouble(RandomSource.create(), -3, 3) * shakeStrength);
-            event.setRoll((float) Mth.nextDouble(RandomSource.create(), 8, 12) * shakeStrength);
         }
     }
 
