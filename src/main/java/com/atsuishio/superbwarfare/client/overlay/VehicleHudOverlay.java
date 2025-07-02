@@ -152,6 +152,7 @@ public class VehicleHudOverlay implements IGuiOverlay {
         PoseStack poseStack = guiGraphics.pose();
         Camera camera = mc.gameRenderer.getMainCamera();
         Vec3 cameraPos = camera.getPosition();
+        Vec3 viewVec = new Vec3(camera.getLookVector());
 
         assert player != null;
 
@@ -263,7 +264,7 @@ public class VehicleHudOverlay implements IGuiOverlay {
 
                 double entityRange = 0;
 
-                Entity lookingEntity = TraceTool.camerafFindLookingEntity(player, cameraPos, 512, partialTick);
+                Entity lookingEntity = TraceTool.camerafFindLookingEntity(player, cameraPos, viewVec,512);
                 if (lookingEntity != null) {
                     lookAtEntity = true;
                     entityRange = player.distanceTo(lookingEntity);
