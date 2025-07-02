@@ -2,14 +2,17 @@ package com.atsuishio.superbwarfare.client.renderer.entity;
 
 import com.atsuishio.superbwarfare.client.model.entity.A10Model;
 import com.atsuishio.superbwarfare.entity.vehicle.A10Entity;
+import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import software.bernie.geckolib.cache.object.BakedGeoModel;
 import software.bernie.geckolib.cache.object.GeoBone;
@@ -54,6 +57,10 @@ public class A10Renderer extends GeoEntityRenderer<A10Entity> {
     @Override
     public void renderRecursively(PoseStack poseStack, A10Entity animatable, GeoBone bone, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
         String name = bone.getName();
+        if (name.equals("root")) {
+            Player player = Minecraft.getInstance().player;
+            bone.setHidden(ClientEventHandler.zoomVehicle && animatable.getFirstPassenger() == player && animatable.getWeaponIndex(0) == 2);
+        }
         if (name.equals("wingLR")) {
             bone.setRotX(1.5f * Mth.lerp(partialTick, animatable.flap1LRotO, animatable.getFlap1LRot()) * Mth.DEG_TO_RAD);
         }
