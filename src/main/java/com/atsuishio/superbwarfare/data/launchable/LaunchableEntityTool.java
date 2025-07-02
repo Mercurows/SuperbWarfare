@@ -2,9 +2,12 @@ package com.atsuishio.superbwarfare.data.launchable;
 
 import com.atsuishio.superbwarfare.data.CustomData;
 import com.atsuishio.superbwarfare.data.gun.ProjectileInfo;
-import com.google.gson.JsonElement;
+import com.atsuishio.superbwarfare.tools.TagDataParser;
 import com.google.gson.JsonObject;
-import net.minecraft.nbt.*;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.DoubleTag;
+import net.minecraft.nbt.NbtUtils;
+import net.minecraft.nbt.StringTag;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Locale;
@@ -23,48 +26,7 @@ public class LaunchableEntityTool {
             return null;
         }
 
-        var tag = new CompoundTag();
-
-        for (var d : launchableData.entrySet()) {
-            var parsed = parseData(d.getValue(), data);
-            if (parsed == null) continue;
-            tag.put(d.getKey(), parsed);
-        }
-
-        return tag;
-    }
-
-    private static @Nullable Tag parseData(JsonElement object, ShootData data) {
-        if (object.isJsonObject()) {
-            var tag = new CompoundTag();
-            for (var d : object.getAsJsonObject().entrySet()) {
-                var parsed = parseData(d.getValue(), data);
-                if (parsed == null) continue;
-                tag.put(d.getKey(), parsed);
-            }
-            return tag;
-        } else if (object.isJsonArray()) {
-            var tag = new ListTag();
-            for (var d : object.getAsJsonArray()) {
-                tag.add(parseData(d, data));
-            }
-            return tag;
-        } else if (object.isJsonPrimitive()) {
-            var prime = object.getAsJsonPrimitive();
-            if (prime.isString()) {
-                return modifyStringTag(prime.getAsString(), data);
-            } else if (prime.isNumber()) {
-                return DoubleTag.valueOf(prime.getAsLong());
-            } else if (prime.isBoolean()) {
-                return ByteTag.valueOf(prime.getAsBoolean());
-            }
-            return null;
-        }
-        return null;
-    }
-
-    private static Tag modifyStringTag(String value, ShootData data) {
-        return switch (value) {
+        return TagDataParser.parse(launchableData, name -> switch (name) {
             case "@sbw:damage" -> DoubleTag.valueOf(data.damage());
             case "@sbw:owner" -> NbtUtils.createUUID(data.shooter());
             case "@sbw:owner_string_lower" ->
@@ -74,7 +36,7 @@ public class LaunchableEntityTool {
             case "@sbw:explosion_damage" -> DoubleTag.valueOf(data.explosionDamage());
             case "@sbw:explosion_radius" -> DoubleTag.valueOf(data.explosionRadius());
             case "@sbw:spread" -> DoubleTag.valueOf(data.spread());
-            default -> StringTag.valueOf(value);
-        };
+            default -> StringTag.valueOf(name);
+        });
     }
 }
