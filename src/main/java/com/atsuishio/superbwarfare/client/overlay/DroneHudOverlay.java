@@ -30,8 +30,7 @@ import net.minecraftforge.client.gui.overlay.IGuiOverlay;
 import java.util.List;
 
 import static com.atsuishio.superbwarfare.client.RenderHelper.preciseBlit;
-import static com.atsuishio.superbwarfare.entity.vehicle.DroneEntity.AMMO;
-import static com.atsuishio.superbwarfare.entity.vehicle.DroneEntity.KAMIKAZE_MODE;
+import static com.atsuishio.superbwarfare.entity.vehicle.DroneEntity.*;
 
 @OnlyIn(Dist.CLIENT)
 public class DroneHudOverlay implements IGuiOverlay {
@@ -116,7 +115,7 @@ public class DroneHudOverlay implements IGuiOverlay {
                 if (entity.getEntityData().get(KAMIKAZE_MODE) == 0) {
                     // 弹药
                     guiGraphics.drawString(mc.font, Component.translatable("tips.superbwarfare.drone.ammo")
-                                    .append(Component.literal(FormatTool.format1D(entity.getEntityData().get(AMMO), " / 6"))),
+                                    .append(Component.literal(entity.getEntityData().get(AMMO) + " / " + entity.getEntityData().get(MAX_AMMO))),
                             screenWidth / 2 + 12, screenHeight / 2 - 37, -1, false);
                 } else {
                     // 神风
