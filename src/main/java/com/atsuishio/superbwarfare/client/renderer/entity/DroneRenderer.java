@@ -114,6 +114,7 @@ public class DroneRenderer extends GeoEntityRenderer<DroneEntity> {
 
 	private String entityNameCache = "";
 	private Entity entityCache = null;
+	private int attachedTick = Integer.MAX_VALUE;
 
 	// 统一渲染挂载实体
 	private void renderAttachments(DroneEntity entity, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
@@ -130,9 +131,17 @@ public class DroneRenderer extends GeoEntityRenderer<DroneEntity> {
 					.orElse(null);
 			if (renderEntity == null) return;
 
+			// 填充tag
+			var tag = entity.getEntityData().get(ATTACHED_ENTITY_TAG);
+			if (!tag.isEmpty()) {
+				renderEntity.load(tag);
+			}
+
 			entityNameCache = attached;
 			entityCache = renderEntity;
+			attachedTick = entity.tickCount;
 		}
+		renderEntity.tickCount = entity.tickCount - attachedTick;
 
 		var displayData = entity.getEntityData().get(ATTACHMENT_DISPLAY);
 
