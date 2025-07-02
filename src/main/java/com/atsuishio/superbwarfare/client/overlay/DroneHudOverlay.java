@@ -5,10 +5,7 @@ import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModItems;
-import com.atsuishio.superbwarfare.tools.EntityFindUtil;
-import com.atsuishio.superbwarfare.tools.FormatTool;
-import com.atsuishio.superbwarfare.tools.SeekTool;
-import com.atsuishio.superbwarfare.tools.TraceTool;
+import com.atsuishio.superbwarfare.tools.*;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -146,17 +143,9 @@ public class DroneHudOverlay implements IGuiOverlay {
 
 
                 List<Entity> entities = SeekTool.seekLivingEntities(entity, entity.level(), 256, 30);
-                float fovAdjust2 = (float) (mc.options.fov().get() / 30) - 1;
-                double zoom = 0.975 * ClientEventHandler.droneFovLerp + 0.06 * fovAdjust2;
-
                 for (var e : entities) {
-                    Vec3 droneVec = new Vec3(Mth.lerp(partialTick, entity.xo, entity.getX()), Mth.lerp(partialTick, entity.yo + entity.getEyeHeight(), entity.getEyeY()), Mth.lerp(partialTick, entity.zo, entity.getZ()));
                     Vec3 pos = new Vec3(Mth.lerp(partialTick, e.xo, e.getX()), Mth.lerp(partialTick, e.yo + e.getEyeHeight(), e.getEyeY()), Mth.lerp(partialTick, e.zo, e.getZ()));
-
-                    Vec3 lookAngle = entity.getLookAngle().normalize().scale(pos.distanceTo(droneVec) * (1 - 1.0 / zoom));
-
-                    var cPos = droneVec.add(lookAngle);
-                    Vec3 point = RenderHelper.worldToScreen(pos, cPos);
+                    Vec3 point = VectorUtil.worldToScreen(pos, cameraPos);
                     if (point != null) {
                         poseStack.pushPose();
                         float x = (float) point.x;

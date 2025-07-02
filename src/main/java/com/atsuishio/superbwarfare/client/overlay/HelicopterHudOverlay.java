@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.client.overlay;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.ClickHandler;
-import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.entity.vehicle.Ah6Entity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.HelicopterEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity;
@@ -10,6 +9,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.tools.FormatTool;
 import com.atsuishio.superbwarfare.tools.InventoryTool;
+import com.atsuishio.superbwarfare.tools.VectorUtil;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -142,17 +142,8 @@ public class HelicopterHudOverlay implements IGuiOverlay {
 
             }
 
-
-            float fovAdjust2 = (float) (Minecraft.getInstance().options.fov().get() / 30) - 1;
-            double zoom = 0.96 * 3 + 0.06 * fovAdjust2;
-
-            Vec3 lookVec = new Vec3(camera.getLookVector());
             Vec3 pos = iHelicopterEntity.shootPos(partialTick).add(iHelicopterEntity.shootVec(partialTick).scale(192));
-            Vec3 lookAngle = lookVec.normalize().scale(pos.distanceTo(cameraPos) * (1 - 1.0 / zoom));
-
-            var cPos = cameraPos.add(lookAngle);
-
-            Vec3 p = RenderHelper.worldToScreen(iHelicopterEntity.shootPos(partialTick).add(mobileVehicle.getViewVector(partialTick).scale(192)), ClientEventHandler.zoomVehicle ? cPos : cameraPos);
+            Vec3 p = VectorUtil.worldToScreen(pos, cameraPos);
 
             if (p != null) {
                 poseStack.pushPose();

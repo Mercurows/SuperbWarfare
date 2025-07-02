@@ -9,9 +9,11 @@ import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.tools.SeekTool;
+import com.atsuishio.superbwarfare.tools.VectorUtil;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
@@ -42,6 +44,8 @@ public class HandsomeFrameOverlay implements IGuiOverlay {
     public void render(ForgeGui gui, GuiGraphics guiGraphics, float partialTick, int screenWidth, int screenHeight) {
         Player player = gui.getMinecraft().player;
         PoseStack poseStack = guiGraphics.pose();
+        Camera camera = Minecraft.getInstance().gameRenderer.getMainCamera();
+        Vec3 cameraPos = camera.getPosition();
 
         if (player == null) return;
         ItemStack stack = player.getMainHandItem();
@@ -68,21 +72,10 @@ public class HandsomeFrameOverlay implements IGuiOverlay {
             Entity naerestEntity = SeekTool.seekLivingEntity(player, player.level(), 32 + 8 * (level - 1), 30);
             Entity targetEntity = ClientEventHandler.entity;
 
-            float fovAdjust2 = (float) (Minecraft.getInstance().options.fov().get() / 30) - 1;
-
-            double zoom = 1;
-
-            if (ClientEventHandler.zoom) {
-                zoom = Minecraft.getInstance().options.fov().get() / ClientEventHandler.fov + 0.05 * fovAdjust2;
-            }
 
             for (var e : allEntities) {
-                Vec3 playerVec = new Vec3(Mth.lerp(partialTick, player.xo, player.getX()), Mth.lerp(partialTick, player.yo + player.getEyeHeight(), player.getEyeY()), Mth.lerp(partialTick, player.zo, player.getZ()));
                 Vec3 pos = new Vec3(Mth.lerp(partialTick, e.xo, e.getX()), Mth.lerp(partialTick, e.yo + e.getEyeHeight(), e.getEyeY()), Mth.lerp(partialTick, e.zo, e.getZ()));
-                Vec3 lookAngle = player.getLookAngle().normalize().scale(pos.distanceTo(playerVec) * (1 - 1.0 / zoom));
-
-                var cPos = playerVec.add(lookAngle);
-                Vec3 point = RenderHelper.worldToScreen(pos, cPos);
+                Vec3 point = VectorUtil.worldToScreen(pos, cameraPos);
                 if (point == null) return;
 
                 boolean lockOn = e == targetEntity;

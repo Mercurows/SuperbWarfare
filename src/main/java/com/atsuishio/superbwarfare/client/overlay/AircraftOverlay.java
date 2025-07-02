@@ -8,10 +8,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.AircraftEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientMouseHandler;
-import com.atsuishio.superbwarfare.tools.EntityFindUtil;
-import com.atsuishio.superbwarfare.tools.FormatTool;
-import com.atsuishio.superbwarfare.tools.InventoryTool;
-import com.atsuishio.superbwarfare.tools.SeekTool;
+import com.atsuishio.superbwarfare.tools.*;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -37,7 +34,6 @@ import java.util.List;
 
 import static com.atsuishio.superbwarfare.client.RenderHelper.preciseBlit;
 import static com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.HEAT;
-import static com.atsuishio.superbwarfare.event.ClientEventHandler.zoomVehicle;
 
 @OnlyIn(Dist.CLIENT)
 public class AircraftOverlay implements IGuiOverlay {
@@ -82,20 +78,11 @@ public class AircraftOverlay implements IGuiOverlay {
             float diffY = (float) ClientMouseHandler.lerpSpeedX;
             float diffX = (float) ClientMouseHandler.lerpSpeedY;
 
-            float fovAdjust2 = (float) (Minecraft.getInstance().options.fov().get() / 30) - 1;
-            double zoom = 3 + 0.06 * fovAdjust2;
-
             Vec3 pos = cameraPos.add(mobileVehicle.getViewVector(partialTick).scale(192));
-            Vec3 lookAngle = lookVec.normalize().scale(pos.distanceTo(cameraPos) * (1 - 1.0 / zoom));
-
             Vec3 posCross = aircraftEntity.shootPos(partialTick).add(aircraftEntity.shootVec(partialTick).scale(192));
-            Vec3 lookAngle2 = lookVec.normalize().scale(posCross.distanceTo(cameraPos) * (1 - 1.0 / zoom));
 
-            var cPos = cameraPos.add(lookAngle);
-            var cPos2 = cameraPos.add(lookAngle2);
-
-            Vec3 p = RenderHelper.worldToScreen(pos, zoomVehicle ? cPos : cameraPos);
-            Vec3 pCross = RenderHelper.worldToScreen(posCross, zoomVehicle ? cPos2 : cameraPos);
+            Vec3 p = VectorUtil.worldToScreen(pos, cameraPos);
+            Vec3 pCross = VectorUtil.worldToScreen(posCross, cameraPos);
 
             if (p != null) {
                 poseStack.pushPose();
@@ -217,7 +204,7 @@ public class AircraftOverlay implements IGuiOverlay {
             if (pCross != null) {
                 poseStack.pushPose();
                 float x = (float) pCross.x;
-                float y = (float) pCross.y + (zoomVehicle ? 15 * (float) (Minecraft.getInstance().options.fov().get() / 70) : 5);
+                float y = (float) pCross.y;
 
                 if (mc.options.getCameraType() == CameraType.FIRST_PERSON && !(mobileVehicle instanceof A10Entity a10Entity && a10Entity.getWeaponIndex(0) == 3)) {
                     RenderSystem.disableDepthTest();
@@ -269,9 +256,7 @@ public class AircraftOverlay implements IGuiOverlay {
 
                 for (var e : entities) {
                     Vec3 pos3 = new Vec3(Mth.lerp(partialTick, e.xo, e.getX()), Mth.lerp(partialTick, e.yo + e.getEyeHeight(), e.getEyeY()), Mth.lerp(partialTick, e.zo, e.getZ()));
-                    Vec3 lookAngle3 = lookVec.normalize().scale(pos3.distanceTo(cameraPos) * (1 - 1.0 / zoom));
-                    var cPos3 = cameraPos.add(lookAngle3);
-                    Vec3 point = RenderHelper.worldToScreen(pos3, zoomVehicle ? cPos3 : cameraPos);
+                    Vec3 point = VectorUtil.worldToScreen(pos3, cameraPos);
                     if (point != null) {
                         boolean nearest = e == targetEntity;
                         boolean lockOn = a10Entity.locked && nearest;

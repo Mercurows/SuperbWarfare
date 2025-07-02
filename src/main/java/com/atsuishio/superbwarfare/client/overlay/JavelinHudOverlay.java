@@ -9,9 +9,11 @@ import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.tools.EntityFindUtil;
 import com.atsuishio.superbwarfare.tools.SeekTool;
+import com.atsuishio.superbwarfare.tools.VectorUtil;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
@@ -45,6 +47,8 @@ public class JavelinHudOverlay implements IGuiOverlay {
     public void render(ForgeGui gui, GuiGraphics guiGraphics, float partialTick, int screenWidth, int screenHeight) {
         Player player = gui.getMinecraft().player;
         PoseStack poseStack = guiGraphics.pose();
+        Camera camera = Minecraft.getInstance().gameRenderer.getMainCamera();
+        Vec3 cameraPos = camera.getPosition();
 
         if (player == null) return;
         ItemStack stack = player.getMainHandItem();
@@ -98,19 +102,10 @@ public class JavelinHudOverlay implements IGuiOverlay {
             List<Entity> entities = SeekTool.seekLivingEntities(player, player.level(), 512, 8 * fovAdjust);
             Entity naerestEntity = SeekTool.seekLivingEntity(player, player.level(), 512, 6);
 
-            float fovAdjust2 = (float) (Minecraft.getInstance().options.fov().get() / 30) - 1;
-
-            double zoom = Minecraft.getInstance().options.fov().get() / ClientEventHandler.fov + 0.5 * fovAdjust2;
-
-            Vec3 playerVec = new Vec3(Mth.lerp(partialTick, player.xo, player.getX()), Mth.lerp(partialTick, player.yo + player.getEyeHeight(), player.getEyeY()), Mth.lerp(partialTick, player.zo, player.getZ()));
-
             if (stack.getOrCreateTag().getInt("GuideType") == 0) {
                 for (var e : entities) {
-                    Vec3 pos = new Vec3(Mth.lerp(partialTick, e.xo, e.getX()), Mth.lerp(partialTick, e.yo + e.getEyeHeight(), e.getEyeY()), Mth.lerp(partialTick, e.zo, e.getZ()));
-                    Vec3 lookAngle = player.getLookAngle().normalize().scale(pos.distanceTo(playerVec) * (1 - 1.0 / zoom));
-
-                    var cPos = playerVec.add(lookAngle);
-                    Vec3 point = RenderHelper.worldToScreen(pos, cPos);
+                    Vec3 pos = e.getBoundingBox().getCenter();
+                    Vec3 point = VectorUtil.worldToScreen(pos, cameraPos);
                     if (point != null) {
                         boolean lockOn = stack.getOrCreateTag().getInt("SeekTime") > 20 && e == targetEntity;
                         boolean nearest = e == naerestEntity;
@@ -125,12 +120,9 @@ public class JavelinHudOverlay implements IGuiOverlay {
                 }
             } else {
                 Vec3 pos = new Vec3(stack.getOrCreateTag().getDouble("TargetPosX"), stack.getOrCreateTag().getDouble("TargetPosY"), stack.getOrCreateTag().getDouble("TargetPosZ"));
-                Vec3 lookAngle = player.getLookAngle().normalize().scale(pos.distanceTo(playerVec) * (1 - 1.0 / zoom));
-
                 boolean lockOn = stack.getOrCreateTag().getInt("SeekTime") > 20;
 
-                var cPos = playerVec.add(lookAngle);
-                Vec3 point = RenderHelper.worldToScreen(pos, cPos);
+                Vec3 point = VectorUtil.worldToScreen(pos, cameraPos);
                 if (point != null) {
                     poseStack.pushPose();
                     float x = (float) point.x;
