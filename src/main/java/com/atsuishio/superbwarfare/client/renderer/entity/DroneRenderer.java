@@ -118,7 +118,7 @@ public class DroneRenderer extends GeoEntityRenderer<DroneEntity> {
 	// 统一渲染挂载实体
 	private void renderAttachments(DroneEntity entity, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
 		var data = entity.getEntityData();
-		var attached = data.get(ATTACHED_ENTITY);
+		var attached = data.get(DISPLAY_ENTITY);
 		if (attached.isEmpty()) return;
 
 		Entity renderEntity;
@@ -132,7 +132,7 @@ public class DroneRenderer extends GeoEntityRenderer<DroneEntity> {
 			if (renderEntity == null) return;
 
 			// 填充tag
-			var tag = data.get(ATTACHED_ENTITY_TAG);
+			var tag = data.get(DISPLAY_ENTITY_TAG);
 			if (!tag.isEmpty()) {
 				renderEntity.load(tag);
 			}
@@ -141,7 +141,7 @@ public class DroneRenderer extends GeoEntityRenderer<DroneEntity> {
 			entityCache = renderEntity;
 			attachedTick = entity.tickCount;
 		}
-		var displayData = data.get(ATTACHMENT_DISPLAY);
+		var displayData = data.get(DISPLAY_DATA);
 
 		renderEntity.tickCount = displayData.get(11) >= 0 ? displayData.get(11).intValue() : entity.tickCount - attachedTick;
 
