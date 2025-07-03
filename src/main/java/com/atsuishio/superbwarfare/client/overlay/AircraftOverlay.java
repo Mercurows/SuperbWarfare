@@ -63,6 +63,8 @@ public class AircraftOverlay implements LayeredDraw.Layer {
         Camera camera = mc.gameRenderer.getMainCamera();
         Vec3 cameraPos = camera.getPosition();
         PoseStack poseStack = guiGraphics.pose();
+        var screenWidth = guiGraphics.guiWidth();
+        var screenHeight = guiGraphics.guiHeight();
 
         var partialTick = deltaTracker.getGameTimeDeltaPartialTick(true);
 
