@@ -20,6 +20,7 @@ import com.atsuishio.superbwarfare.tools.SeekTool;
 import com.atsuishio.superbwarfare.tools.TraceTool;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -80,12 +81,23 @@ public class ClickHandler {
         }
     }
 
+    private static boolean cancelFireKey(Player player, ItemStack stack) {
+        return stack.getItem() instanceof GunItem || stack.is(ModItems.MONITOR.get()) || stack.is(ModItems.LUNGE_MINE.get()) || player.hasEffect(ModMobEffects.SHOCK.get())
+                || (player.getVehicle() instanceof ArmedVehicleEntity iArmedVehicle && iArmedVehicle.banHand(player));
+    }
+
+    private static boolean cancelZoomKey(Player player, ItemStack stack) {
+        return stack.getItem() instanceof GunItem
+                || (player.getVehicle() instanceof ArmedVehicleEntity iArmedVehicle && iArmedVehicle.isDriver(player) && !stack.getItem().isEdible());
+    }
+
     @SubscribeEvent
     public static void onButtonPressed(InputEvent.MouseButton.Pre event) {
         if (notInGame()) return;
         if (event.getAction() != InputConstants.PRESS) return;
 
-        Player player = Minecraft.getInstance().player;
+        var mc = Minecraft.getInstance();
+        Player player = mc.player;
         if (player == null) return;
         if (player.isSpectator()) return;
 
@@ -93,22 +105,24 @@ public class ClickHandler {
 
         int button = event.getButton();
 
-        if (stack.getItem() instanceof GunItem || stack.is(ModItems.MONITOR.get()) || stack.is(ModItems.LUNGE_MINE.get()) || player.hasEffect(ModMobEffects.SHOCK.get())
-                || (player.getVehicle() instanceof ArmedVehicleEntity iArmedVehicle && iArmedVehicle.banHand(player))) {
-            if (button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
-                event.setCanceled(true);
-            }
+        var fireKey = ModKeyMappings.FIRE.getKey();
+        if (fireKey.getType() == InputConstants.Type.MOUSE
+                && fireKey.getValue() == button
+                && cancelFireKey(player, stack)
+        ) {
+            event.setCanceled(true);
         }
 
         if (player.hasEffect(ModMobEffects.SHOCK.get())) {
             return;
         }
 
-        if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
-            if (stack.getItem() instanceof GunItem
-                    || (player.getVehicle() instanceof ArmedVehicleEntity iArmedVehicle && iArmedVehicle.isDriver(player) && !stack.getItem().isEdible())) {
-                event.setCanceled(true);
-            }
+        var zoomKey = ModKeyMappings.HOLD_ZOOM.getKey();
+        if (zoomKey.getType() == InputConstants.Type.MOUSE
+                && zoomKey.getValue() == button
+                && cancelZoomKey(player, stack)
+        ) {
+            event.setCanceled(true);
         }
 
         if (button == GLFW.GLFW_MOUSE_BUTTON_MIDDLE) {
@@ -136,6 +150,15 @@ public class ClickHandler {
                 handleWeaponZoomPress(player, stack);
                 switchZoom = !switchZoom;
             }
+        }
+    }
+
+    // 枪械交互时禁止挥舞手臂
+    @SubscribeEvent
+    public static void stopSwing(InputEvent.InteractionKeyMappingTriggered event) {
+        var player = Minecraft.getInstance().player;
+        if (player != null && player.getItemInHand(event.getHand()).getItem() instanceof GunItem) {
+            event.setSwingHand(false);
         }
     }
 
@@ -228,7 +251,12 @@ public class ClickHandler {
                 Mod.PACKET_HANDLER.sendToServer(new FireModeMessage(0));
             }
             if (key == ModKeyMappings.INTERACT.getKey().getValue()) {
-                Mod.PACKET_HANDLER.sendToServer(new InteractMessage(0));
+                var mc = Minecraft.getInstance();
+                if (mc.player.getMainHandItem().getItem() instanceof GunItem) {
+                    KeyMapping.click(mc.options.keyUse.getKey());
+                } else if (mc.player.getMainHandItem().is(ModItems.MONITOR.get())) {
+                    Mod.PACKET_HANDLER.sendToServer(new InteractMessage(0));
+                }
             }
 
             if (key == ModKeyMappings.DISMOUNT.getKey().getValue()) {
