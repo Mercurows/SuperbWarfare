@@ -378,6 +378,7 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
                     if (ammo == 1) {
                         this.entityData.set(DISPLAY_ENTITY, "");
                         this.entityData.set(MAX_AMMO, 1);
+                        this.entityData.set(IS_KAMIKAZE, false);
                         this.currentItem = ItemStack.EMPTY;
                     }
                 }
@@ -406,6 +407,8 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
                     this.currentItem = stack.copyWithCount(1);
                     this.entityData.set(DISPLAY_ENTITY, attachmentData.displayEntity());
                     this.entityData.set(AMMO, this.entityData.get(AMMO) + 1);
+                    this.entityData.set(IS_KAMIKAZE, attachmentData.isKamikaze);
+                    this.entityData.set(MAX_AMMO, attachmentData.count());
 
                     if (!player.isCreative()) {
                         stack.shrink(1);
@@ -429,7 +432,6 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
                             attachmentData.xLength, attachmentData.zLength,
                             (float) attachmentData.tickCount
                     ));
-                    this.entityData.set(MAX_AMMO, attachmentData.count());
                 }
             }
 
@@ -669,9 +671,9 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
         var data = CustomData.DRONE_ATTACHMENT.get(getItemId(this.currentItem));
         if (data == null) return;
 
-        var bomb = EntityType.byString(attachedEntity).map(entityType ->
-                entityType.create(this.level())
-        ).orElse(null);
+        var bomb = EntityType.byString(attachedEntity)
+                .map(entityType -> entityType.create(this.level()))
+                .orElse(null);
         if (bomb == null) return;
 
         explosion = new CustomExplosion(this.level(), this,
