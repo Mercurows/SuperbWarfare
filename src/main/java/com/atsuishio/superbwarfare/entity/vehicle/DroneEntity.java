@@ -61,16 +61,14 @@ import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache
 import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
 
     public static final EntityDataAccessor<Boolean> LINKED = SynchedEntityData.defineId(DroneEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<String> CONTROLLER = SynchedEntityData.defineId(DroneEntity.class, EntityDataSerializers.STRING);
-    public static final EntityDataAccessor<Integer> KAMIKAZE_MODE = SynchedEntityData.defineId(DroneEntity.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Boolean> IS_KAMIKAZE = SynchedEntityData.defineId(DroneEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Float> DELTA_X_ROT = SynchedEntityData.defineId(DroneEntity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<String> DISPLAY_ENTITY = SynchedEntityData.defineId(DroneEntity.class, EntityDataSerializers.STRING);
     public static final EntityDataAccessor<CompoundTag> DISPLAY_ENTITY_TAG = SynchedEntityData.defineId(DroneEntity.class, EntityDataSerializers.COMPOUND_TAG);
@@ -126,7 +124,7 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
         this.entityData.define(DELTA_X_ROT, 0f);
         this.entityData.define(CONTROLLER, "undefined");
         this.entityData.define(LINKED, false);
-        this.entityData.define(KAMIKAZE_MODE, 0);
+        this.entityData.define(IS_KAMIKAZE, false);
         this.entityData.define(DISPLAY_ENTITY, "");
         this.entityData.define(DISPLAY_DATA, List.of(
                 data.scale()[0], data.scale()[1], data.scale()[2],
@@ -160,7 +158,11 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
         compound.putBoolean("Linked", this.entityData.get(LINKED));
         compound.putString("Controller", this.entityData.get(CONTROLLER));
         compound.putInt("Ammo", this.entityData.get(AMMO));
-        compound.putInt("KamikazeMode", this.entityData.get(KAMIKAZE_MODE));
+        compound.putBoolean("KamikazeMode", this.entityData.get(IS_KAMIKAZE));
+        compound.putInt("MaxAmmo", this.entityData.get(MAX_AMMO));
+        compound.putString("DisplayEntity", this.entityData.get(DISPLAY_ENTITY));
+        compound.putString("DisplayEntityTag", this.entityData.get(DISPLAY_ENTITY_TAG).toString());
+        compound.putString("DisplayData", this.entityData.get(DISPLAY_DATA).stream().map(Object::toString).collect(Collectors.joining(",")));
 
         CompoundTag item = new CompoundTag();
         this.currentItem.save(item);
@@ -182,9 +184,17 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
         if (compound.contains("Ammo"))
             this.entityData.set(AMMO, compound.getInt("Ammo"));
         if (compound.contains("KamikazeMode"))
-            this.entityData.set(KAMIKAZE_MODE, compound.getInt("KamikazeMode"));
+            this.entityData.set(IS_KAMIKAZE, compound.getBoolean("KamikazeMode"));
         if (compound.contains("Item"))
             this.currentItem = ItemStack.of(compound.getCompound("Item"));
+        if (compound.contains("MaxAmmo"))
+            this.entityData.set(MAX_AMMO, compound.getInt("MaxAmmo"));
+        if (compound.contains("DisplayEntity"))
+            this.entityData.set(DISPLAY_ENTITY, compound.getString("DisplayEntity"));
+        if (compound.contains("DisplayEntityTag"))
+            this.entityData.set(DISPLAY_ENTITY_TAG, compound.getCompound("DisplayEntityTag"));
+        if (compound.contains("DisplayData"))
+            this.entityData.set(DISPLAY_DATA, Arrays.stream(compound.getString("DisplayData").split(",")).map(Float::valueOf).collect(Collectors.toList()));
     }
 
     @Override
@@ -244,7 +254,7 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
                     droneDrop(controller);
                 }
             }
-            if (this.entityData.get(KAMIKAZE_MODE) != 0) {
+            if (!this.entityData.get(DISPLAY_ENTITY).isEmpty()) {
                 if (controller != null) {
                     if (controller.getMainHandItem().is(ModItems.MONITOR.get())) {
                         Monitor.disLink(controller.getMainHandItem(), controller);
@@ -546,7 +556,7 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
                     Monitor.disLink(player.getMainHandItem(), player);
                 }
             }
-            this.hurt(new DamageSource(level().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(DamageTypes.EXPLOSION), Objects.requireNonNullElse(player, this)), (float) (((this.entityData.get(KAMIKAZE_MODE) != 0) ? 20 : 4) * lastTickSpeed));
+            this.hurt(new DamageSource(level().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(DamageTypes.EXPLOSION), Objects.requireNonNullElse(player, this)), (float) ((!this.entityData.get(DISPLAY_ENTITY).isEmpty() ? 20 : 4) * lastTickSpeed));
         }
     }
 
@@ -616,7 +626,6 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
             if (data.isKamikaze) {
                 kamikazeExplosion();
             } else {
-                // TODO 清理 RGO投弹
                 if (this.level() instanceof ServerLevel) {
                     int count = this.entityData.get(AMMO);
                     for (int i = 0; i < count; i++) {

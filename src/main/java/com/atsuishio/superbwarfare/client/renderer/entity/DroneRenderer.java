@@ -2,9 +2,7 @@
 package com.atsuishio.superbwarfare.client.renderer.entity;
 
 import com.atsuishio.superbwarfare.client.model.entity.DroneModel;
-import com.atsuishio.superbwarfare.entity.projectile.MortarShellEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
-import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.tools.EntityFindUtil;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -60,50 +58,7 @@ public class DroneRenderer extends GeoEntityRenderer<DroneEntity> {
             ItemStack stack = player.getMainHandItem();
             DroneEntity drone = EntityFindUtil.findDrone(player.level(), stack.getOrCreateTag().getString("LinkedDrone"));
 
-            if (!(stack.is(ModItems.MONITOR.get()) && stack.getOrCreateTag().getBoolean("Using") && stack.getOrCreateTag().getBoolean("Linked") && drone != null && drone.getUUID() == entityIn.getUUID())) {
-				if (entityIn.getEntityData().get(KAMIKAZE_MODE) == 1) {
-					Entity entity = new MortarShellEntity(ModEntities.MORTAR_SHELL.get(), entityIn.level());
-					entityRenderDispatcher.render(entity, 0, 0.03, 0.25, entityYaw, partialTicks, poseStack, bufferIn, packedLightIn);
-				}
-
-//                for (int i = 0; i < entityIn.getEntityData().get(AMMO); i++) {
-//                    double yOffset = 0;
-//                    double xOffset = 0;
-//
-//                    if (i == 0) {
-//                        yOffset = 0.2;
-//                        xOffset = 0.1;
-//                    }
-//                    if (i == 1) {
-//                        yOffset = 0.2;
-//                        xOffset = -0.1;
-//                    }
-//                    if (i == 2) {
-//                        yOffset = -0.05;
-//                        xOffset = 0.1;
-//                    }
-//                    if (i == 3) {
-//                        yOffset = -0.05;
-//                        xOffset = -0.1;
-//                    }
-//                    if (i == 4) {
-//                        yOffset = -0.3;
-//                        xOffset = 0.1;
-//                    }
-//                    if (i == 5) {
-//                        yOffset = -0.3;
-//                        xOffset = -0.1;
-//                    }
-//
-//
-//                    poseStack.pushPose();
-//                    poseStack.mulPose(Axis.XP.rotationDegrees(90));
-//                    poseStack.scale(0.35f, 0.35f, 0.35f);
-//                    Entity entity = new RgoGrenadeEntity(ModEntities.RGO_GRENADE.get(), entityIn.level());
-//                    entityRenderDispatcher.render(entity, xOffset, yOffset, 0, entityYaw, partialTicks, poseStack, bufferIn, packedLightIn);
-//                    poseStack.popPose();
-//                }
-
+			if (!(stack.is(ModItems.MONITOR.get()) && stack.getOrCreateTag().getBoolean("Using") && stack.getOrCreateTag().getBoolean("Linked") && drone != null && drone.getUUID() == entityIn.getUUID())) {
 				renderAttachments(entityIn, entityYaw, partialTicks, poseStack, bufferIn, packedLightIn);
             }
         }
