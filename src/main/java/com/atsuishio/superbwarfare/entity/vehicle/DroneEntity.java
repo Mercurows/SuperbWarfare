@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.entity.vehicle;
 
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.data.CustomData;
+import com.atsuishio.superbwarfare.data.drone_attachment.DroneAttachmentData;
 import com.atsuishio.superbwarfare.entity.projectile.*;
 import com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity;
 import com.atsuishio.superbwarfare.init.*;
@@ -64,7 +65,7 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
     public static final EntityDataAccessor<Float> DELTA_X_ROT = SynchedEntityData.defineId(DroneEntity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<String> ATTACHED_ENTITY = SynchedEntityData.defineId(DroneEntity.class, EntityDataSerializers.STRING);
 
-    // scale[3], offset[3], rotation[3], xLength, zLength
+    // scale[3], offset[3], rotation[3], xLength, zLength, tickCount
     public static final EntityDataAccessor<List<Float>> ATTACHMENT_DISPLAY = SynchedEntityData.defineId(DroneEntity.class, ModSerializers.FLOAT_LIST_SERIALIZER.get());
     public static final EntityDataAccessor<CompoundTag> ATTACHED_ENTITY_TAG = SynchedEntityData.defineId(DroneEntity.class, EntityDataSerializers.COMPOUND_TAG);
     public static final EntityDataAccessor<Integer> MAX_AMMO = SynchedEntityData.defineId(DroneEntity.class, EntityDataSerializers.INT);
@@ -103,12 +104,20 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
+        var data = new DroneAttachmentData();
+
         builder.define(DELTA_X_ROT, 0f)
                 .define(CONTROLLER, "undefined")
                 .define(LINKED, false)
                 .define(KAMIKAZE_MODE, 0)
                 .define(ATTACHED_ENTITY, "")
-                .define(ATTACHMENT_DISPLAY, List.of(1f, 1f, 1f, 0f, 0f, 0f, 0f, 0f, 0f, 0.2f, 0.5f))
+                .define(ATTACHMENT_DISPLAY, List.of(
+                        data.scale()[0], data.scale()[1], data.scale()[2],
+                        data.offset()[0], data.offset()[1], data.offset()[2],
+                        data.rotation()[0], data.rotation()[1], data.rotation()[2],
+                        data.xLength, data.zLength,
+                        (float) data.tickCount
+                ))
                 .define(ATTACHED_ENTITY_TAG, new CompoundTag())
                 .define(MAX_AMMO, 1);
     }
@@ -404,8 +413,9 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
                             scale[0], scale[1], scale[2],
                             offset[0], offset[1], offset[2],
                             rotation[0], rotation[1], rotation[2],
-                            attachmentData.xLength, attachmentData.zLength)
-                    );
+                            attachmentData.xLength, attachmentData.zLength,
+                            (float) attachmentData.tickCount
+                    ));
                     this.entityData.set(MAX_AMMO, attachmentData.count());
                 }
             }

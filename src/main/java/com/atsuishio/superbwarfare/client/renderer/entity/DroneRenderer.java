@@ -142,9 +142,9 @@ public class DroneRenderer extends GeoEntityRenderer<DroneEntity> {
             entityCache = renderEntity;
             attachedTick = entity.tickCount;
         }
-        renderEntity.tickCount = entity.tickCount - attachedTick;
-
         var displayData = data.get(ATTACHMENT_DISPLAY);
+
+        renderEntity.tickCount = displayData.get(11) >= 0 ? displayData.get(11).intValue() : entity.tickCount - attachedTick;
 
         var scale = new float[]{displayData.get(0), displayData.get(1), displayData.get(2)};
         var offset = new float[]{displayData.get(3), displayData.get(4), displayData.get(5)};
