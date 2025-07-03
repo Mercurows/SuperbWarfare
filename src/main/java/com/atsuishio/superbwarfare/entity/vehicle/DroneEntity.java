@@ -232,14 +232,13 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
             this.hurt(new DamageSource(level().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(DamageTypes.EXPLOSION), controller), 0.25f + (float) (2 * lastTickSpeed));
         }
 
-        if (this.fire) {
-            if (this.entityData.get(AMMO) > 0) {
+        if (this.fire && this.entityData.get(AMMO) > 0) {
+            if (!this.entityData.get(IS_KAMIKAZE)) {
                 this.entityData.set(AMMO, this.entityData.get(AMMO) - 1);
                 if (controller != null && this.level() instanceof ServerLevel) {
                     droneDrop(controller);
                 }
-            }
-            if (!this.entityData.get(DISPLAY_ENTITY).isEmpty()) {
+            } else {
                 if (controller != null) {
                     var stack = controller.getMainHandItem();
                     if (stack.is(ModItems.MONITOR.get())) {
@@ -249,7 +248,6 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
                     }
                     this.hurt(new DamageSource(level().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(DamageTypes.EXPLOSION), controller), 10000);
                 }
-
             }
             this.fire = false;
         }
