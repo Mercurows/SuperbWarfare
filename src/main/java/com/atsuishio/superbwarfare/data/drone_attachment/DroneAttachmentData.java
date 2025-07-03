@@ -5,7 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
 
 public class DroneAttachmentData implements IDBasedData {
-    @SerializedName("ItemID")
+    @SerializedName("Item")
     public String itemID = "";
 
     @SerializedName("Entity")
@@ -28,6 +28,14 @@ public class DroneAttachmentData implements IDBasedData {
             return this.entity;
         }
         return this.dropEntity.isEmpty() ? this.displayEntity : this.dropEntity;
+    }
+
+
+    @SerializedName("DropPosition")
+    private float[] dropPosition = new float[]{0, -0.09f, 0};
+
+    public float[] dropPosition() {
+        return (this.dropPosition != null && this.dropPosition.length < 3) ? new float[]{0, -0.09f, 0} : this.dropPosition;
     }
 
 

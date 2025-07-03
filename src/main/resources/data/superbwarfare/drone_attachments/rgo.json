@@ -1,11 +1,14 @@
 {
-  "ItemID": "superbwarfare:rgo_grenade",
+  "Item": "superbwarfare:rgo_grenade",
   "Entity": "superbwarfare:rgo_grenade",
   "IsKamikaze": false,
   "Count": 6,
   "HitDamage": 270,
   "ExplosionDamage": 130,
   "ExplosionRadius": 10,
+  "DropData": {
+    "Fuse": 160
+  },
   "Offset": [
     0,
     -0.04,

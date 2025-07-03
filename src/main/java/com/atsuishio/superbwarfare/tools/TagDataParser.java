@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.tools;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.nbt.*;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Function;
@@ -11,7 +12,7 @@ public class TagDataParser {
     /**
      * 将JsonObject转换为NBT Tag
      */
-    public static CompoundTag parse(JsonObject object) {
+    public static CompoundTag parse(@Nullable JsonObject object) {
         return parse(object, null);
     }
 
@@ -22,8 +23,9 @@ public class TagDataParser {
      * @param tagModifier 替换函数
      * @return 替换后的NBT Tag
      */
-    public static CompoundTag parse(JsonObject object, @Nullable Function<String, Tag> tagModifier) {
+    public static CompoundTag parse(@Nullable JsonObject object, @Nullable Function<String, Tag> tagModifier) {
         var tag = new CompoundTag();
+        if (object == null) return tag;
 
         for (var d : object.entrySet()) {
             var parsed = parse(d.getValue(), tagModifier);
@@ -41,7 +43,7 @@ public class TagDataParser {
      * @param tagModifier 替换函数
      * @return 替换后的NBT Tag
      */
-    public static @Nullable Tag parse(JsonElement object, @Nullable Function<String, Tag> tagModifier) {
+    public static @Nullable Tag parse(@NotNull JsonElement object, @Nullable Function<String, Tag> tagModifier) {
         if (object.isJsonObject()) {
             // 递归处理嵌套内容
             var tag = new CompoundTag();

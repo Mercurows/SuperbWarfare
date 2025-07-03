@@ -56,20 +56,24 @@ public class RgoGrenadeEntity extends FastThrowableProjectile implements GeoEnti
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundTag pCompound) {
+    public void addAdditionalSaveData(@NotNull CompoundTag pCompound) {
         super.addAdditionalSaveData(pCompound);
         pCompound.putFloat("ExplosionDamage", this.explosionDamage);
         pCompound.putFloat("Radius", this.explosionRadius);
+        pCompound.putFloat("Fuse", this.fuse);
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundTag pCompound) {
+    public void readAdditionalSaveData(@NotNull CompoundTag pCompound) {
         super.readAdditionalSaveData(pCompound);
         if (pCompound.contains("ExplosionDamage")) {
             this.explosionDamage = pCompound.getFloat("ExplosionDamage");
         }
         if (pCompound.contains("Radius")) {
             this.explosionRadius = pCompound.getFloat("Radius");
+        }
+        if (pCompound.contains("Fuse")) {
+            this.fuse = pCompound.getInt("Fuse");
         }
     }
 

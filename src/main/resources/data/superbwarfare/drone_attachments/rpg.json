@@ -1,5 +1,5 @@
 {
-  "ItemID": "superbwarfare:rocket",
+  "Item": "superbwarfare:rocket",
   "Entity": "superbwarfare:rpg_rocket",
   "HitDamage": 270,
   "ExplosionDamage": 130,
