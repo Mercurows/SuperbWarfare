@@ -1,5 +1,5 @@
 {
-  "ItemID": "superbwarfare:mortar_shell",
+  "Item": "superbwarfare:mortar_shell",
   "Entity": "superbwarfare:mortar_shell",
   "HitDamage": 200,
   "ExplosionDamage": 160,

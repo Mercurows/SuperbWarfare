@@ -32,6 +32,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.PlayMessages;
+import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -64,14 +65,15 @@ public class RgoGrenadeEntity extends FastThrowableProjectile implements GeoEnti
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundTag pCompound) {
+    public void addAdditionalSaveData(@NotNull CompoundTag pCompound) {
         super.addAdditionalSaveData(pCompound);
         pCompound.putFloat("ExplosionDamage", this.explosionDamage);
         pCompound.putFloat("Radius", this.explosionRadius);
+        pCompound.putFloat("Fuse", this.fuse);
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundTag pCompound) {
+    public void readAdditionalSaveData(@NotNull CompoundTag pCompound) {
         super.readAdditionalSaveData(pCompound);
         if (pCompound.contains("ExplosionDamage")) {
             this.explosionDamage = pCompound.getFloat("ExplosionDamage");
@@ -79,15 +81,18 @@ public class RgoGrenadeEntity extends FastThrowableProjectile implements GeoEnti
         if (pCompound.contains("Radius")) {
             this.explosionRadius = pCompound.getFloat("Radius");
         }
+        if (pCompound.contains("Fuse")) {
+            this.fuse = pCompound.getInt("Fuse");
+        }
     }
 
     @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
+    public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
     @Override
-    protected Item getDefaultItem() {
+    protected @NotNull Item getDefaultItem() {
         return ModItems.RGO_GRENADE.get();
     }
 
@@ -97,7 +102,7 @@ public class RgoGrenadeEntity extends FastThrowableProjectile implements GeoEnti
     }
 
     @Override
-    protected void onHit(HitResult result) {
+    protected void onHit(@NotNull HitResult result) {
         if (level() instanceof ServerLevel) {
             switch (result.getType()) {
                 case BLOCK:

@@ -6,7 +6,6 @@ import com.atsuishio.superbwarfare.data.drone_attachment.DroneAttachmentData;
 import com.atsuishio.superbwarfare.entity.C4Entity;
 import com.atsuishio.superbwarfare.entity.projectile.LaserEntity;
 import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity;
-import com.atsuishio.superbwarfare.entity.projectile.RgoGrenadeEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity;
 import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.item.Monitor;
@@ -17,6 +16,8 @@ import com.atsuishio.superbwarfare.tools.TagDataParser;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtUtils;
+import net.minecraft.nbt.StringTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -61,6 +62,7 @@ import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -238,7 +240,7 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
         if (this.fire) {
             if (this.entityData.get(AMMO) > 0) {
                 this.entityData.set(AMMO, this.entityData.get(AMMO) - 1);
-                if (controller != null) {
+                if (controller != null && this.level() instanceof ServerLevel) {
                     droneDrop(controller);
                 }
             }
@@ -258,12 +260,44 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
     }
 
     private void droneDrop(@Nullable Player player) {
-        if (!this.level().isClientSide()) {
-            RgoGrenadeEntity rgoGrenadeEntity = new RgoGrenadeEntity(player, this.level(), 160);
-            rgoGrenadeEntity.setPos(this.getX(), this.getEyeY() - 0.09, this.getZ());
-            rgoGrenadeEntity.droneShoot(this);
-            this.level().addFreshEntity(rgoGrenadeEntity);
+        var data = CustomData.DRONE_ATTACHMENT.get(getItemId(this.currentItem));
+        if (data == null) return;
+        var dropEntity = EntityType.byString(data.dropEntity())
+                .map(type -> type.create(this.level()))
+                .orElse(null);
+        if (dropEntity == null) return;
+
+        if (player != null && dropEntity instanceof Projectile projectile) {
+            projectile.setOwner(player);
         }
+
+        var tag = TagDataParser.parse(data.dropData, name -> {
+            if (player == null) return StringTag.valueOf(name);
+
+            var uuid = player.getUUID();
+            return switch (name) {
+                case "@sbw:owner" -> NbtUtils.createUUID(uuid);
+                case "@sbw:owner_string_lower" ->
+                        StringTag.valueOf(uuid.toString().replace("-", "").toLowerCase(Locale.ENGLISH));
+                case "@sbw:owner_string_upper" ->
+                        StringTag.valueOf(uuid.toString().replace("-", "").toUpperCase(Locale.ENGLISH));
+                default -> StringTag.valueOf(name);
+            };
+        });
+        dropEntity.load(tag);
+
+        var dropPos = data.dropPosition();
+        dropEntity.setPos(this.getX() + dropPos[0], this.getY() + dropPos[1], this.getZ() + dropPos[2]);
+
+        var vec3 = (new Vec3(0.2 * this.getDeltaMovement().x, 0.2 * this.getDeltaMovement().y, 0.2 * this.getDeltaMovement().z));
+        dropEntity.setDeltaMovement(vec3);
+        double d0 = vec3.horizontalDistance();
+        dropEntity.setYRot((float) (Mth.atan2(vec3.x, vec3.z) * (double) (180F / (float) java.lang.Math.PI)));
+        dropEntity.setXRot((float) (Mth.atan2(vec3.y, d0) * (double) (180F / (float) java.lang.Math.PI)));
+        dropEntity.yRotO = dropEntity.getYRot();
+        dropEntity.xRotO = dropEntity.getXRot();
+
+        this.level().addFreshEntity(dropEntity);
     }
 
     @Override
@@ -363,7 +397,6 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
                     // 不同种物品挂载
                     this.currentItem = stack.copyWithCount(1);
                     this.entityData.set(DISPLAY_ENTITY, attachmentData.displayEntity());
-                    // TODO 正确处理和渲染AMMO
                     this.entityData.set(AMMO, this.entityData.get(AMMO) + 1);
 
                     if (!player.isCreative()) {
@@ -378,7 +411,6 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
                     var rotation = attachmentData.rotation();
 
                     if (attachmentData.displayData != null) {
-                        // TODO 数据替换
                         this.entityData.set(DISPLAY_ENTITY_TAG, TagDataParser.parse(attachmentData.displayData));
                     }
 
