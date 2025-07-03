@@ -5,13 +5,11 @@ import com.atsuishio.superbwarfare.data.CustomData;
 import com.atsuishio.superbwarfare.data.drone_attachment.DroneAttachmentData;
 import com.atsuishio.superbwarfare.entity.C4Entity;
 import com.atsuishio.superbwarfare.entity.projectile.LaserEntity;
-import com.atsuishio.superbwarfare.entity.projectile.MortarShellEntity;
 import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity;
 import com.atsuishio.superbwarfare.entity.projectile.RgoGrenadeEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity;
 import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.item.Monitor;
-import com.atsuishio.superbwarfare.item.common.ammo.MortarShell;
 import com.atsuishio.superbwarfare.tools.CustomExplosion;
 import com.atsuishio.superbwarfare.tools.EntityFindUtil;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
@@ -42,7 +40,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.Potion;
-import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
@@ -310,20 +307,15 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
                     }
                 }
             }
-        } else if (stack.is(ModItems.CROWBAR.get()) && player.isCrouching()) {
-            // 返还物品
-            ItemHandlerHelper.giveItemToPlayer(player, new ItemStack(ModItems.DRONE.get()));
+        } else if (player.isCrouching()) {
+            if (stack.is(ModItems.CROWBAR.get())) {
+                // 无人机拆除
+                ItemHandlerHelper.giveItemToPlayer(player, new ItemStack(ModItems.DRONE.get()));
 
-            // TODO 返还弹药
-            // 返还普通弹药
-            for (int index0 = 0; index0 < this.entityData.get(AMMO); index0++) {
-                ItemHandlerHelper.giveItemToPlayer(player, new ItemStack(ModItems.RGO_GRENADE.get()));
-            }
-
-            // 返还神风弹药
-            if (this.entityData.get(KAMIKAZE_MODE) != 0) {
-                ItemHandlerHelper.giveItemToPlayer(player, this.currentItem);
-            }
+                // 返还弹药
+                for (int index0 = 0; index0 < this.entityData.get(AMMO); index0++) {
+                    ItemHandlerHelper.giveItemToPlayer(player, this.currentItem.copy());
+                }
 
             player.getInventory().items.stream().filter(stack_ -> stack_.getItem() == ModItems.MONITOR.get())
                     .forEach(itemStack -> {
@@ -332,56 +324,22 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
                         }
                     });
 
-            if (!this.level().isClientSide()) {
-                this.discard();
-            }
-        } else if (stack.getItem() == ModItems.RGO_GRENADE.get() && this.entityData.get(KAMIKAZE_MODE) == 0) {
-            // TODO 清理 装载普通弹药
-            if (this.entityData.get(AMMO) < 6) {
-                this.entityData.set(AMMO, this.entityData.get(AMMO) + 1);
-                if (!player.isCreative()) {
-                    stack.shrink(1);
+                if (!this.level().isClientSide()) {
+                    this.discard();
                 }
-                if (player instanceof ServerPlayer serverPlayer) {
-                    serverPlayer.level().playSound(null, serverPlayer.getOnPos(), ModSounds.BULLET_SUPPLY.get(), SoundSource.PLAYERS, 0.5F, 1);
+            } else {
+                // 返还单个弹药
+                int ammo = this.entityData.get(AMMO);
+                if (ammo > 0) {
+                    ItemHandlerHelper.giveItemToPlayer(player, this.currentItem.copy());
+                    this.entityData.set(AMMO, ammo - 1);
+                    if (ammo == 1) {
+                        this.entityData.set(ATTACHED_ENTITY, "");
+                        this.entityData.set(MAX_AMMO, 1);
+                        this.currentItem = ItemStack.EMPTY;
+                    }
                 }
             }
-        } else if (stack.getItem() instanceof MortarShell && this.entityData.get(AMMO) == 0 && this.entityData.get(KAMIKAZE_MODE) == 0) {
-            // TODO 清理 迫击炮神风
-            var copy = stack.copy();
-            copy.setCount(1);
-            this.currentItem = copy;
-
-            if (!player.isCreative()) {
-                stack.shrink(1);
-            }
-            this.entityData.set(KAMIKAZE_MODE, 1);
-
-            if (player instanceof ServerPlayer serverPlayer) {
-                serverPlayer.level().playSound(null, serverPlayer.getOnPos(), ModSounds.BULLET_SUPPLY.get(), SoundSource.PLAYERS, 0.5F, 1);
-            }
-//        } else if (stack.getItem() == ModItems.C4_BOMB.get() && this.entityData.get(AMMO) == 0 && this.entityData.get(KAMIKAZE_MODE) == 0) {
-//            // C4神风
-//            this.currentItem = new ItemStack(stack.getItem(), 1);
-//
-//            if (!player.isCreative()) {
-//                stack.shrink(1);
-//            }
-//            this.entityData.set(KAMIKAZE_MODE, 2);
-//            if (player instanceof ServerPlayer serverPlayer) {
-//                serverPlayer.level().playSound(null, serverPlayer.getOnPos(), ModSounds.BULLET_SUPPLY.get(), SoundSource.PLAYERS, 0.5F, 1);
-//            }
-//        } else if (stack.getItem() == ModItems.ROCKET.get() && this.entityData.get(AMMO) == 0 && this.entityData.get(KAMIKAZE_MODE) == 0) {
-//            // RPG神风
-//            this.currentItem = new ItemStack(stack.getItem(), 1);
-//
-//            if (!player.isCreative()) {
-//                stack.shrink(1);
-//            }
-//            this.entityData.set(KAMIKAZE_MODE, 3);
-//            if (player instanceof ServerPlayer serverPlayer) {
-//                serverPlayer.level().playSound(null, serverPlayer.getOnPos(), ModSounds.BULLET_SUPPLY.get(), SoundSource.PLAYERS, 0.5F, 1);
-//            }
         } else {
             // 自定义挂载
             var itemID = ForgeRegistries.ITEMS.getKey(stack.getItem()).toString();
@@ -389,7 +347,9 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
 
             // 是否能挂载该物品
             if (attachmentData != null && this.entityData.get(AMMO) < attachmentData.count()) {
-                if (this.entityData.get(ATTACHED_ENTITY).equals(attachmentData.entityID)) {
+                if (this.entityData.get(ATTACHED_ENTITY).equals(attachmentData.entityID)
+                        && ItemStack.matches(this.currentItem, stack.copyWithCount(1))
+                ) {
                     // 同种物品挂载
                     this.entityData.set(AMMO, this.entityData.get(AMMO) + 1);
 
@@ -401,6 +361,7 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
                     }
                 } else if (this.entityData.get(AMMO) == 0) {
                     // 不同种物品挂载
+                    this.currentItem = stack.copyWithCount(1);
                     this.entityData.set(ATTACHED_ENTITY, attachmentData.entityID);
                     // TODO 正确处理和渲染AMMO
                     this.entityData.set(AMMO, this.entityData.get(AMMO) + 1);
@@ -614,16 +575,22 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
             level().explode(null, this.getX(), this.getY(), this.getZ(), 0, Level.ExplosionInteraction.NONE);
         }
 
-        // TODO 清理 神风自爆
-        if (this.entityData.get(KAMIKAZE_MODE) != 0 || !this.entityData.get(ATTACHED_ENTITY).isEmpty()) {
-            kamikazeExplosion(this.entityData.get(KAMIKAZE_MODE));
-        }
+        var attachedEntity = this.entityData.get(ATTACHED_ENTITY);
+        var data = CustomData.DRONE_ATTACHMENT.values().stream().filter(d -> attachedEntity.equals(d.entityID))
+                .findAny()
+                .orElse(null);
 
-        // RGO投弹
-        if (this.level() instanceof ServerLevel) {
-            int count = this.entityData.get(AMMO);
-            for (int i = 0; i < count; i++) {
-                droneDrop(controller);
+        if (data != null) {
+            if (data.isKamikaze) {
+                kamikazeExplosion();
+            } else {
+                // TODO 清理 RGO投弹
+                if (this.level() instanceof ServerLevel) {
+                    int count = this.entityData.get(AMMO);
+                    for (int i = 0; i < count; i++) {
+                        droneDrop(controller);
+                    }
+                }
             }
         }
 
@@ -649,71 +616,44 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
         super.destroy();
     }
 
-    private void kamikazeExplosion(int mode) {
-        var attacker = EntityFindUtil.findEntity(this.level(), this.entityData.get(LAST_ATTACKER_UUID));
+    private void kamikazeExplosion() {
+        Entity attacker = EntityFindUtil.findEntity(this.level(), this.entityData.get(LAST_ATTACKER_UUID));
         Player controller = EntityFindUtil.findPlayer(this.level(), this.entityData.get(CONTROLLER));
 
         assert controller != null;
-        Entity mortarShell = new MortarShellEntity(controller, level());
-//        Entity c4 = new C4Entity(controller, level());
-//        Entity rpg = new RpgRocketEntity(controller, level());
+        CustomExplosion explosion;
 
-        // TODO 清理这一坨
-        CustomExplosion explosion = switch (mode) {
-            case 1 -> new CustomExplosion(this.level(), this,
-                    ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(), mortarShell, attacker), ExplosionConfig.DRONE_KAMIKAZE_EXPLOSION_DAMAGE.get(),
-                    this.getX(), this.getY(), this.getZ(), ExplosionConfig.DRONE_KAMIKAZE_EXPLOSION_RADIUS.get(), ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).setDamageMultiplier(1);
+        // 挂载实体的数据
+        var attachedEntity = this.entityData.get(ATTACHED_ENTITY);
+        if (attachedEntity.isEmpty()) return;
 
-//            case 2 -> new CustomExplosion(this.level(), this,
-//                    ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(), c4, attacker), ExplosionConfig.C4_EXPLOSION_DAMAGE.get(),
-//                    this.getX(), this.getY(), this.getZ(), ExplosionConfig.C4_EXPLOSION_RADIUS.get(), ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).setDamageMultiplier(1);
+        var data = CustomData.DRONE_ATTACHMENT.values().stream().filter(d -> attachedEntity.equals(d.entityID))
+                .findAny()
+                .orElse(null);
+        if (data == null) return;
 
-//            case 3 -> new CustomExplosion(this.level(), this,
-//                    ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(), rpg, attacker), ExplosionConfig.RPG_EXPLOSION_DAMAGE.get(),
-//                    this.getX(), this.getY(), this.getZ(), ExplosionConfig.RPG_EXPLOSION_RADIUS.get(), ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).setDamageMultiplier(1);
+        var bomb = EntityType.byString(attachedEntity).map(entityType ->
+                entityType.create(this.level())
+        ).orElse(null);
+        if (bomb == null) return;
 
-            default -> null;
-        };
-
-        // 自定义实体挂载
-        if (explosion == null) {
-            var attachedEntity = this.entityData.get(ATTACHED_ENTITY);
-            if (attachedEntity.isEmpty()) return;
-
-            var data = CustomData.DRONE_ATTACHMENT.values().stream().filter(d -> attachedEntity.equals(d.entityID))
-                    .findAny()
-                    .orElse(null);
-            if (data == null) return;
-
-            if (data.isKamikaze) {
-                var bomb = EntityType.byString(attachedEntity).map(entityType ->
-                        entityType.create(this.level())
-                ).orElse(null);
-                if (bomb == null) return;
-
-                explosion = new CustomExplosion(this.level(), this,
-                        ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(), bomb, attacker), data.explosionDamage,
-                        this.getX(), this.getY(), this.getZ(), data.explosionRadius, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).setDamageMultiplier(1);
-            } else {
-                // TODO 非神风自爆
-                return;
-            }
-        }
+        explosion = new CustomExplosion(this.level(), this,
+                ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(), bomb, attacker), data.explosionDamage,
+                this.getX(), this.getY(), this.getZ(), data.explosionRadius, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).setDamageMultiplier(1);
 
         explosion.explode();
         ForgeEventFactory.onExplosionStart(this.level(), explosion);
         explosion.finalizeExplosion(false);
-        if (mode == 1) {
-            ParticleTool.spawnMediumExplosionParticles(this.level(), this.position());
+        ParticleTool.spawnHugeExplosionParticles(this.level(), this.position());
 
-            if (this.currentItem.getItem() instanceof MortarShell) {
-                this.createAreaCloud(PotionUtils.getPotion(this.currentItem), this.level(), ExplosionConfig.DRONE_KAMIKAZE_EXPLOSION_DAMAGE.get(), ExplosionConfig.DRONE_KAMIKAZE_EXPLOSION_RADIUS.get());
-            }
-        }
-
-        if (mode == 2 || mode == 3) {
-            ParticleTool.spawnHugeExplosionParticles(this.level(), this.position());
-        }
+        // TODO 药水迫击炮炮弹
+//        if (mode == 1) {
+//            ParticleTool.spawnMediumExplosionParticles(this.level(), this.position());
+//
+//            if (this.currentItem.getItem() instanceof MortarShell) {
+//                this.createAreaCloud(this.currentItem.get(DataComponents.POTION_CONTENTS), this.level(), ExplosionConfig.DRONE_KAMIKAZE_EXPLOSION_DAMAGE.get(), ExplosionConfig.DRONE_KAMIKAZE_EXPLOSION_RADIUS.get());
+//            }
+//        }
     }
 
     private void createAreaCloud(Potion potion, Level level, int duration, float radius) {
