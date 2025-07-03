@@ -38,18 +38,34 @@ public class DroneAttachmentData implements IDBasedData {
         return (this.dropPosition != null && this.dropPosition.length < 3) ? new float[]{0, -0.09f, 0} : this.dropPosition;
     }
 
+    @SerializedName("Data")
+    public JsonObject data;
 
     /**
      * 无人机显示的挂载实体的实体数据
      */
     @SerializedName("DisplayData")
-    public JsonObject displayData;
+    private JsonObject displayData;
 
     /**
      * 无人机投弹实体的实体数据
      */
     @SerializedName("DropData")
-    public JsonObject dropData;
+    private JsonObject dropData;
+
+    public JsonObject displayData() {
+        if (this.data != null) {
+            return this.data;
+        }
+        return this.displayData != null ? this.displayData : this.dropData;
+    }
+
+    public JsonObject dropData() {
+        if (this.data != null) {
+            return this.data;
+        }
+        return this.dropData != null ? this.dropData : this.displayData;
+    }
 
     @Override
     public String getId() {
@@ -74,8 +90,6 @@ public class DroneAttachmentData implements IDBasedData {
 
     @SerializedName("ExplosionRadius")
     public float explosionRadius = 0;
-
-    // TODO 其他挂载设置
 
     // display settings
 
