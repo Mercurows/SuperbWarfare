@@ -8,8 +8,40 @@ public class DroneAttachmentData implements IDBasedData {
     @SerializedName("ItemID")
     public String itemID = "";
 
-    @SerializedName("EntityID")
-    public String entityID = "";
+    @SerializedName("Entity")
+    private String entity = "";
+    @SerializedName("DisplayEntity")
+    private String displayEntity = "";
+
+    @SerializedName("DropEntity")
+    private String dropEntity = "";
+
+    public String displayEntity() {
+        if (!this.entity.isEmpty()) {
+            return this.entity;
+        }
+        return this.displayEntity.isEmpty() ? this.dropEntity : this.displayEntity;
+    }
+
+    public String dropEntity() {
+        if (!this.entity.isEmpty()) {
+            return this.entity;
+        }
+        return this.dropEntity.isEmpty() ? this.displayEntity : this.dropEntity;
+    }
+
+
+    /**
+     * 无人机显示的挂载实体的实体数据
+     */
+    @SerializedName("DisplayData")
+    public JsonObject displayData;
+
+    /**
+     * 无人机投弹实体的实体数据
+     */
+    @SerializedName("DropData")
+    public JsonObject dropData;
 
     @Override
     public String getId() {
@@ -34,12 +66,6 @@ public class DroneAttachmentData implements IDBasedData {
 
     @SerializedName("ExplosionRadius")
     public float explosionRadius = 0;
-
-    /**
-     * 投弹时需要写入的实体数据
-     */
-    @SerializedName("DropData")
-    public JsonObject dropData;
 
     // TODO 其他挂载设置
 
@@ -74,10 +100,4 @@ public class DroneAttachmentData implements IDBasedData {
 
     @SerializedName("TickCount")
     public int tickCount = -1;
-
-    /**
-     * 无人机显示的挂载实体的实体数据
-     */
-    @SerializedName("DisplayData")
-    public JsonObject displayData;
 }

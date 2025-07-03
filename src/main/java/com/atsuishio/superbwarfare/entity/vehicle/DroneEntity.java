@@ -64,11 +64,11 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
     public static final EntityDataAccessor<String> CONTROLLER = SynchedEntityData.defineId(DroneEntity.class, EntityDataSerializers.STRING);
     public static final EntityDataAccessor<Integer> KAMIKAZE_MODE = SynchedEntityData.defineId(DroneEntity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Float> DELTA_X_ROT = SynchedEntityData.defineId(DroneEntity.class, EntityDataSerializers.FLOAT);
-    public static final EntityDataAccessor<String> ATTACHED_ENTITY = SynchedEntityData.defineId(DroneEntity.class, EntityDataSerializers.STRING);
+    public static final EntityDataAccessor<String> DISPLAY_ENTITY = SynchedEntityData.defineId(DroneEntity.class, EntityDataSerializers.STRING);
+    public static final EntityDataAccessor<CompoundTag> DISPLAY_ENTITY_TAG = SynchedEntityData.defineId(DroneEntity.class, EntityDataSerializers.COMPOUND_TAG);
 
     // scale[3], offset[3], rotation[3], xLength, zLength, tickCount
-    public static final EntityDataAccessor<List<Float>> ATTACHMENT_DISPLAY = SynchedEntityData.defineId(DroneEntity.class, ModSerializers.FLOAT_LIST_SERIALIZER.get());
-    public static final EntityDataAccessor<CompoundTag> ATTACHED_ENTITY_TAG = SynchedEntityData.defineId(DroneEntity.class, EntityDataSerializers.COMPOUND_TAG);
+    public static final EntityDataAccessor<List<Float>> DISPLAY_DATA = SynchedEntityData.defineId(DroneEntity.class, ModSerializers.FLOAT_LIST_SERIALIZER.get());
     public static final EntityDataAccessor<Integer> MAX_AMMO = SynchedEntityData.defineId(DroneEntity.class, EntityDataSerializers.INT);
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
@@ -111,15 +111,15 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
                 .define(CONTROLLER, "undefined")
                 .define(LINKED, false)
                 .define(KAMIKAZE_MODE, 0)
-                .define(ATTACHED_ENTITY, "")
-                .define(ATTACHMENT_DISPLAY, List.of(
+                .define(DISPLAY_ENTITY, "")
+                .define(DISPLAY_DATA, List.of(
                         data.scale()[0], data.scale()[1], data.scale()[2],
                         data.offset()[0], data.offset()[1], data.offset()[2],
                         data.rotation()[0], data.rotation()[1], data.rotation()[2],
                         data.xLength, data.zLength,
                         (float) data.tickCount
                 ))
-                .define(ATTACHED_ENTITY_TAG, new CompoundTag())
+                .define(DISPLAY_ENTITY_TAG, new CompoundTag())
                 .define(MAX_AMMO, 1);
     }
 
@@ -326,7 +326,7 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
                     ItemHandlerHelper.giveItemToPlayer(player, this.currentItem.copy());
                     this.entityData.set(AMMO, ammo - 1);
                     if (ammo == 1) {
-                        this.entityData.set(ATTACHED_ENTITY, "");
+                        this.entityData.set(DISPLAY_ENTITY, "");
                         this.entityData.set(MAX_AMMO, 1);
                         this.currentItem = ItemStack.EMPTY;
                     }
@@ -334,12 +334,12 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
             }
         } else {
             // 自定义挂载
-            var itemID = stack.getItem().toString();
+            var itemID = getItemId(stack);
             var attachmentData = CustomData.DRONE_ATTACHMENT.get(itemID);
 
             // 是否能挂载该物品
             if (attachmentData != null && this.entityData.get(AMMO) < attachmentData.count()) {
-                if (this.entityData.get(ATTACHED_ENTITY).equals(attachmentData.entityID)
+                if (this.entityData.get(DISPLAY_ENTITY).equals(attachmentData.displayEntity())
                         && ItemStack.matches(this.currentItem, stack.copyWithCount(1))
                 ) {
                     // 同种物品挂载
@@ -354,7 +354,7 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
                 } else if (this.entityData.get(AMMO) == 0) {
                     // 不同种物品挂载
                     this.currentItem = stack.copyWithCount(1);
-                    this.entityData.set(ATTACHED_ENTITY, attachmentData.entityID);
+                    this.entityData.set(DISPLAY_ENTITY, attachmentData.displayEntity());
                     // TODO 正确处理和渲染AMMO
                     this.entityData.set(AMMO, this.entityData.get(AMMO) + 1);
 
@@ -371,10 +371,10 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
 
                     if (attachmentData.displayData != null) {
                         // TODO 数据替换
-                        this.entityData.set(ATTACHED_ENTITY_TAG, TagDataParser.parse(attachmentData.displayData));
+                        this.entityData.set(DISPLAY_ENTITY_TAG, TagDataParser.parse(attachmentData.displayData));
                     }
 
-                    this.entityData.set(ATTACHMENT_DISPLAY, List.of(
+                    this.entityData.set(DISPLAY_DATA, List.of(
                             scale[0], scale[1], scale[2],
                             offset[0], offset[1], offset[2],
                             rotation[0], rotation[1], rotation[2],
@@ -488,11 +488,9 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
 
     public void hitEntityCrash(Player player, Entity target) {
         if (lastTickSpeed > 0.12) {
-            var attachedEntity = this.entityData.get(ATTACHED_ENTITY);
+            var attachedEntity = this.entityData.get(DISPLAY_ENTITY);
             if (!attachedEntity.isEmpty() && 20 * lastTickSpeed > this.getHealth()) {
-                var data = CustomData.DRONE_ATTACHMENT.values().stream().filter(d -> attachedEntity.equals(d.entityID))
-                        .findAny()
-                        .orElse(null);
+                var data = CustomData.DRONE_ATTACHMENT.get(getItemId(this.currentItem));
                 if (data != null) {
                     if (data.isKamikaze) {
                         EntityType.byString(attachedEntity).ifPresent(entityType -> {
@@ -557,6 +555,10 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
         }
     }
 
+    static String getItemId(ItemStack stack) {
+        return stack.getItem().toString();
+    }
+
     @Override
     public void destroy() {
         Player controller = EntityFindUtil.findPlayer(this.level(), this.entityData.get(CONTROLLER));
@@ -574,11 +576,7 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
             level().explode(null, this.getX(), this.getY(), this.getZ(), 0, Level.ExplosionInteraction.NONE);
         }
 
-        var attachedEntity = this.entityData.get(ATTACHED_ENTITY);
-        var data = CustomData.DRONE_ATTACHMENT.values().stream().filter(d -> attachedEntity.equals(d.entityID))
-                .findAny()
-                .orElse(null);
-
+        var data = CustomData.DRONE_ATTACHMENT.get(getItemId(this.currentItem));
         if (data != null) {
             if (data.isKamikaze) {
                 kamikazeExplosion();
@@ -625,12 +623,10 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
         CustomExplosion explosion;
 
         // 挂载实体的数据
-        var attachedEntity = this.entityData.get(ATTACHED_ENTITY);
+        var attachedEntity = this.entityData.get(DISPLAY_ENTITY);
         if (attachedEntity.isEmpty()) return;
 
-        var data = CustomData.DRONE_ATTACHMENT.values().stream().filter(d -> attachedEntity.equals(d.entityID))
-                .findAny()
-                .orElse(null);
+        var data = CustomData.DRONE_ATTACHMENT.get(getItemId(this.currentItem));
         if (data == null) return;
 
         var bomb = EntityType.byString(attachedEntity).map(entityType ->

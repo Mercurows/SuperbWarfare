@@ -1,6 +1,6 @@
 {
   "ItemID": "superbwarfare:rgo_grenade",
-  "EntityID": "superbwarfare:rgo_grenade",
+  "Entity": "superbwarfare:rgo_grenade",
   "IsKamikaze": false,
   "Count": 6,
   "HitDamage": 270,
