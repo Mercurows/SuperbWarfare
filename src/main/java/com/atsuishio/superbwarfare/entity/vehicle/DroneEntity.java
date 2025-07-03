@@ -279,7 +279,7 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
             projectile.setOwner(player);
         }
 
-        var tag = TagDataParser.parse(data.dropData, name -> {
+        var tag = TagDataParser.parse(data.dropData(), name -> {
             if (player == null) return StringTag.valueOf(name);
 
             var uuid = player.getUUID();
@@ -421,8 +421,8 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
                     var offset = attachmentData.offset();
                     var rotation = attachmentData.rotation();
 
-                    if (attachmentData.displayData != null) {
-                        this.entityData.set(DISPLAY_ENTITY_TAG, TagDataParser.parse(attachmentData.displayData));
+                    if (attachmentData.displayData() != null) {
+                        this.entityData.set(DISPLAY_ENTITY_TAG, TagDataParser.parse(attachmentData.displayData()));
                     }
 
                     this.entityData.set(DISPLAY_DATA, List.of(
