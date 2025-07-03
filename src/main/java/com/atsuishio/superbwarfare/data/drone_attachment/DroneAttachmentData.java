@@ -72,6 +72,9 @@ public class DroneAttachmentData implements IDBasedData {
     @SerializedName("ZLength")
     public float zLength = 0.35f;
 
+    @SerializedName("TickCount")
+    public int tickCount = -1;
+
     /**
      * 无人机显示的挂载实体的实体数据
      */
