@@ -1,0 +1,12 @@
+{
+  "ItemID": "superbwarfare:mortar_shell",
+  "EntityID": "superbwarfare:mortar_shell",
+  "HitDamage": 200,
+  "ExplosionDamage": 160,
+  "ExplosionRadius": 9,
+  "Offset": [
+    0,
+    0.02,
+    0.25
+  ]
+}
