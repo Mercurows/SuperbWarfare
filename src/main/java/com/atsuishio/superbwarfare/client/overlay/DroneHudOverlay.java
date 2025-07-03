@@ -118,7 +118,7 @@ public class DroneHudOverlay implements LayeredDraw.Layer {
                 guiGraphics.drawString(mc.font, Component.translatable("tips.superbwarfare.drone.health")
                                 .append(Component.literal(FormatTool.format1D(entity.getHealth()) + " / " + FormatTool.format1D(entity.getMaxHealth()))),
                         w / 2 - 77, h / 2 + 33, -1, false);
-                if (entity.getEntityData().get(KAMIKAZE_MODE) == 0) {
+                if (!entity.getEntityData().get(IS_KAMIKAZE)) {
                     // 弹药
                     guiGraphics.drawString(mc.font, Component.translatable("tips.superbwarfare.drone.ammo")
                                     .append(Component.literal(entity.getEntityData().get(AMMO) + " / " + entity.getEntityData().get(MAX_AMMO))),
