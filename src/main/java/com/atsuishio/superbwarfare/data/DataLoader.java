@@ -1,7 +1,9 @@
 package com.atsuishio.superbwarfare.data;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -43,6 +45,11 @@ public class DataLoader {
         }
     }
 
+    public static final Gson gson = new GsonBuilder()
+            .setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE)
+            .setLenient()
+            .create();
+
     private static void reloadAllData(ResourceManager manager) {
         loadedData.forEach((name, value) -> {
             var map = value.data;
@@ -51,7 +58,6 @@ public class DataLoader {
             for (var entry : manager.listResources(name, file -> file.getPath().endsWith(".json")).entrySet()) {
                 var attribute = entry.getValue();
                 try {
-                    Gson gson = new Gson();
                     var data = (IDBasedData) gson.fromJson(new InputStreamReader(attribute.open()), value.type);
 
                     String id;
