@@ -32,19 +32,19 @@
     },
     "thirdperson_righthand": {
       "rotation": [
-        67.5,
-        -10,
+        112.5,
+        0,
         0
       ],
       "translation": [
-        0.5,
-        6.5,
-        -5
+        -1.25,
+        9.5,
+        3
       ],
       "scale": [
-        0.55,
-        0.55,
-        0.55
+        0.6,
+        0.6,
+        0.6
       ]
     },
     "thirdperson_lefthand": {

@@ -60,8 +60,8 @@ public class AureliaSceptre extends GunItem {
 
             private static final HumanoidModel.ArmPose AURELIA_SCEPTRE_POSE = HumanoidModel.ArmPose.create("AureliaSceptre", false, (model, entity, arm) -> {
                 if (arm != HumanoidArm.LEFT) {
-                    model.rightArm.xRot = -67.5f * Mth.DEG_TO_RAD + model.head.xRot + 0.2f * model.rightArm.xRot;
-                    model.rightArm.yRot = 5f * Mth.DEG_TO_RAD;
+                    model.rightArm.xRot = -67.5f * Mth.DEG_TO_RAD + model.head.xRot + 0.05f * model.rightArm.xRot;
+                    model.rightArm.yRot = 5f * Mth.DEG_TO_RAD + model.head.yRot;
                 }
             });
 

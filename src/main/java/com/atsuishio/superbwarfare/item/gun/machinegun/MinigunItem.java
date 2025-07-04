@@ -56,10 +56,10 @@ public class MinigunItem extends GunItem {
 
             private static final HumanoidModel.ArmPose MinigunPose = HumanoidModel.ArmPose.create("Minigun", false, (model, entity, arm) -> {
                 if (arm != HumanoidArm.LEFT) {
-                    model.rightArm.xRot = -22.5f * Mth.DEG_TO_RAD + model.head.xRot;
-                    model.rightArm.yRot = -10f * Mth.DEG_TO_RAD;
-                    model.leftArm.xRot = -45f * Mth.DEG_TO_RAD + model.head.xRot;
-                    model.leftArm.yRot = 40f * Mth.DEG_TO_RAD;
+                    model.rightArm.xRot = 22.5f * Mth.DEG_TO_RAD + model.head.xRot;
+                    model.rightArm.yRot = model.head.yRot;
+                    model.leftArm.xRot = Mth.clamp(-45f * Mth.DEG_TO_RAD + model.head.xRot, -67.5f * Mth.DEG_TO_RAD, 0f * Mth.DEG_TO_RAD);
+                    model.leftArm.yRot = Mth.clamp(45f * Mth.DEG_TO_RAD + model.head.yRot, 45f * Mth.DEG_TO_RAD, 80f * Mth.DEG_TO_RAD);
                 }
             });
 
