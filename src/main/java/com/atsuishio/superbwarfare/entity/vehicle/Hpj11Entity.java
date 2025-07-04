@@ -515,9 +515,9 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
     @Override
     public void travel() {
         if (this.getEnergy() <= 0) return;
-
         Entity passenger = this.getFirstPassenger();
         if (passenger != null) {
+
             float diffY = Mth.wrapDegrees(passenger.getYHeadRot() - this.getYRot());
             float diffX = Mth.wrapDegrees(passenger.getXRot() - this.getXRot());
 
@@ -622,6 +622,11 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
             }
         }
         return super.getCameraPosition(partialTicks, player, false, false);
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public boolean useFixedCameraPos(Entity entity) {
+        return true;
     }
 
     @Override
