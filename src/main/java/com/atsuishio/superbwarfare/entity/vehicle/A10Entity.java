@@ -237,7 +237,7 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
 
         super.baseTick();
         this.updateOBB();
-        float f = (float) Mth.clamp(Math.max((onGround() ? 0.819f : 0.82f) - 0.0035 * getDeltaMovement().length(), 0.5) + 0.001f * Mth.abs(90 - (float) calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90, 0.01, 0.99);
+        float f = (float) Mth.clamp(Math.max((onGround() ? 0.819f : 0.82f) - 0.005 * getDeltaMovement().length(), 0.5) + 0.001f * Mth.abs(90 - (float) calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90, 0.01, 0.99);
 
         boolean forward = getDeltaMovement().dot(getViewVector(1)) > 0;
         this.setDeltaMovement(this.getDeltaMovement().add(this.getViewVector(1).scale((forward ? 0.227 : 0.1) * getDeltaMovement().dot(getViewVector(1)))));
@@ -479,7 +479,7 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
                     }
 
                     if (backInputDown) {
-                        this.entityData.set(POWER, Math.max(this.entityData.get(POWER) - 0.002f, -0.2f));
+                        this.entityData.set(POWER, Math.max(this.entityData.get(POWER) - 0.002f, -0.05f));
                     }
                 }
 
@@ -511,22 +511,23 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
             float rotSpeed = 1.5f + 2 * Mth.abs(VectorTool.calculateY(getRoll()));
 
             float addY = Mth.clamp(Math.max((this.onGround() ? 0.1f : 0.2f) * (float) getDeltaMovement().length(), 0f) * entityData.get(MOUSE_SPEED_X), -rotSpeed, rotSpeed);
-            float addX = Mth.clamp(Math.min((float) Math.max(getDeltaMovement().dot(getViewVector(1)) - 0.24, 0.03), 0.4f) * entityData.get(MOUSE_SPEED_Y), -3.5f, 3.5f);
+            float addX = Mth.clamp(Math.min((float) Math.max(getDeltaMovement().dot(getViewVector(1)) - 0.24, 0.15), 0.4f) * entityData.get(MOUSE_SPEED_Y), -3.5f, 3.5f);
             float addZ = this.entityData.get(DELTA_ROT) - (this.onGround() ? 0 : 0.004f) * entityData.get(MOUSE_SPEED_X) * (float) getDeltaMovement().dot(getViewVector(1));
 
-            float i = getXRot() / 80;
-
             delta_x = addX;
-            delta_y = addY - VectorTool.calculateY(getXRot()) * addZ;
+            delta_y = addY;
 
             this.setYRot(this.getYRot() + delta_y);
             if (!onGround()) {
                 this.setXRot(this.getXRot() + delta_x);
-                this.setZRot(this.getRoll() - addZ * (1 - Mth.abs(i)));
+                this.setZRot(this.getRoll() - addZ);
             }
 
+            // 自动回正
             if (!onGround()) {
-                float speed = Mth.clamp(Mth.abs(roll) / 90, 0, 1);
+                float xSpeed = 1 + 20 * Mth.abs(getXRot() / 180);
+                float speed = Mth.clamp(Mth.abs(roll) / (90 / xSpeed), 0, 1);
+
                 if (this.roll > 0) {
                     setZRot(roll - Math.min(speed, roll));
                 } else if (this.roll < 0) {
@@ -602,7 +603,7 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
 
         setDeltaMovement(getDeltaMovement().add(force.scale(getDeltaMovement().dot(getViewVector(1)) * 0.022 * (1 + Math.sin((onGround() ? 25 : flapAngle + 25) * Mth.DEG_TO_RAD)))));
 
-        this.setDeltaMovement(this.getDeltaMovement().add(getViewVector(1).scale(0.2 * this.entityData.get(POWER))));
+        this.setDeltaMovement(this.getDeltaMovement().add(getViewVector(1).scale(0.4 * this.entityData.get(POWER))));
     }
 
     @Override
@@ -908,7 +909,7 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
 
             this.level().playSound(null, pos, ModSounds.BOMB_RELEASE.get(), SoundSource.PLAYERS, 3, 1);
 
-            if (this.getEntityData().get(LOADED_MISSILE) == 3) {
+            if (this.getEntityData().get(LOADED_MISSILE) == 4) {
                 reloadCoolDownMissile = 400;
             }
 
