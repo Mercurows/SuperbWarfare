@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.client.GunRendererBuilder;
 import com.atsuishio.superbwarfare.client.model.item.M2HBItemModel;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
+import com.atsuishio.superbwarfare.init.ModEnumExtensions;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import net.minecraft.client.Minecraft;
@@ -12,10 +13,8 @@ import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -43,15 +42,6 @@ public class M2HBItem extends GunItem {
         super(new Properties().stacksTo(1).rarity(Rarity.RARE));
     }
 
-    private static final HumanoidModel.ArmPose POSE = HumanoidModel.ArmPose.create("M2HB", false, (model, entity, arm) -> {
-        if (arm != HumanoidArm.LEFT) {
-            model.rightArm.xRot = 45f * Mth.DEG_TO_RAD + model.head.xRot;
-            model.rightArm.yRot = model.head.yRot;
-            model.leftArm.xRot = Mth.clamp(-45f * Mth.DEG_TO_RAD + model.head.xRot, -67.5f * Mth.DEG_TO_RAD, 0f * Mth.DEG_TO_RAD);
-            model.leftArm.yRot = Mth.clamp(45f * Mth.DEG_TO_RAD + model.head.yRot, 45f * Mth.DEG_TO_RAD, 80f * Mth.DEG_TO_RAD);
-        }
-    });
-
     @Override
     public Supplier<? extends GeoItemRenderer<? extends Item>> getRenderer() {
         return GunRendererBuilder.simple(M2HBItemModel::new, 0, 0.1, 2.95, 1.2);
@@ -61,7 +51,7 @@ public class M2HBItem extends GunItem {
     public HumanoidModel.ArmPose getArmPose(LivingEntity entityLiving, InteractionHand hand, ItemStack stack) {
         if (!stack.isEmpty()) {
             if (entityLiving.getUsedItemHand() == hand) {
-                return POSE;
+                return ModEnumExtensions.Client.getM2Pose();
             }
         }
         return HumanoidModel.ArmPose.EMPTY;
