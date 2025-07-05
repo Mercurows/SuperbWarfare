@@ -15,6 +15,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
@@ -24,7 +25,7 @@ public class MortarShell extends Item implements DispenserLaunchable {
         super(new Properties());
     }
 
-    public MortarShellEntity createShell(LivingEntity entity, Level level, ItemStack stack) {
+    public MortarShellEntity createShell(@Nullable LivingEntity entity, Level level, ItemStack stack) {
         MortarShellEntity shellEntity = new MortarShellEntity(entity, level);
         shellEntity.setEffectsFromItem(stack);
         return shellEntity;
@@ -45,7 +46,7 @@ public class MortarShell extends Item implements DispenserLaunchable {
             }
 
             @Override
-            protected void playSound(BlockSource pSource) {
+            protected void playSound(@NotNull BlockSource pSource) {
                 pSource.getLevel().playSound(null, pSource.getPos(), ModSounds.MORTAR_FIRE.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
             }
         };
