@@ -1,7 +1,8 @@
 package com.atsuishio.superbwarfare.item.gun.shotgun;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.client.renderer.gun.M870ItemRenderer;
+import com.atsuishio.superbwarfare.client.GunRendererBuilder;
+import com.atsuishio.superbwarfare.client.model.item.M870ItemModel;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModSounds;
@@ -32,8 +33,8 @@ public class M870Item extends GunItem {
     }
 
     @Override
-    public Supplier<GeoItemRenderer<? extends Item>> getRenderer() {
-        return M870ItemRenderer::new;
+    public Supplier<? extends GeoItemRenderer<? extends Item>> getRenderer() {
+        return GunRendererBuilder.simple(M870ItemModel::new, 0, 0, 1.4209, 0.8, true);
     }
 
     private PlayState fireAnimPredicate(AnimationState<M870Item> event) {

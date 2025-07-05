@@ -1,7 +1,8 @@
 package com.atsuishio.superbwarfare.item.gun.shotgun;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.client.renderer.gun.Aa12ItemRenderer;
+import com.atsuishio.superbwarfare.client.GunRendererBuilder;
+import com.atsuishio.superbwarfare.client.model.item.Aa12ItemModel;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModSounds;
@@ -32,8 +33,8 @@ public class Aa12Item extends GunItem {
     }
 
     @Override
-    public Supplier<GeoItemRenderer<? extends Item>> getRenderer() {
-        return Aa12ItemRenderer::new;
+    public Supplier<? extends GeoItemRenderer<? extends Item>> getRenderer() {
+        return GunRendererBuilder.simple(Aa12ItemModel::new, 0, 0, 1.31465, 0.5, true);
     }
 
     private PlayState idlePredicate(AnimationState<Aa12Item> event) {

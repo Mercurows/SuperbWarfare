@@ -1,7 +1,8 @@
 package com.atsuishio.superbwarfare.item.gun.launcher;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.client.renderer.gun.RpgItemRenderer;
+import com.atsuishio.superbwarfare.client.GunRendererBuilder;
+import com.atsuishio.superbwarfare.client.model.item.RpgItemModel;
 import com.atsuishio.superbwarfare.client.tooltip.component.LauncherImageComponent;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
@@ -50,8 +51,8 @@ public class RpgItem extends GunItem {
     }
 
     @Override
-    public Supplier<GeoItemRenderer<? extends Item>> getRenderer() {
-        return RpgItemRenderer::new;
+    public Supplier<? extends GeoItemRenderer<? extends Item>> getRenderer() {
+        return GunRendererBuilder.simple(RpgItemModel::new, 0, 0, 0.625, 0.7);
     }
 
     private PlayState idlePredicate(AnimationState<RpgItem> event) {

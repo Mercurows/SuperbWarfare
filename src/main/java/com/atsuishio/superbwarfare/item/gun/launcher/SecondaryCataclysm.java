@@ -2,8 +2,9 @@ package com.atsuishio.superbwarfare.item.gun.launcher;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.capability.energy.ItemEnergyProvider;
+import com.atsuishio.superbwarfare.client.GunRendererBuilder;
 import com.atsuishio.superbwarfare.client.TooltipTool;
-import com.atsuishio.superbwarfare.client.renderer.gun.SecondaryCataclysmRenderer;
+import com.atsuishio.superbwarfare.client.model.item.SecondaryCataclysmModel;
 import com.atsuishio.superbwarfare.client.tooltip.component.SecondaryCataclysmImageComponent;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.entity.projectile.GunGrenadeEntity;
@@ -109,8 +110,8 @@ public class SecondaryCataclysm extends GunItem {
     }
 
     @Override
-    public Supplier<GeoItemRenderer<? extends Item>> getRenderer() {
-        return SecondaryCataclysmRenderer::new;
+    public Supplier<? extends GeoItemRenderer<? extends Item>> getRenderer() {
+        return GunRendererBuilder.simple(SecondaryCataclysmModel::new, 0, 0, 1.0375, 0.6);
     }
 
     private PlayState reloadAnimPredicate(AnimationState<SecondaryCataclysm> event) {

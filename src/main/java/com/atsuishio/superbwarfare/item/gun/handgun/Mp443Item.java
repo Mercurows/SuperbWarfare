@@ -1,7 +1,8 @@
 package com.atsuishio.superbwarfare.item.gun.handgun;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.client.renderer.gun.Mp443ItemRenderer;
+import com.atsuishio.superbwarfare.client.GunRendererBuilder;
+import com.atsuishio.superbwarfare.client.model.item.Mp443ItemModel;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModSounds;
@@ -34,8 +35,8 @@ public class Mp443Item extends GunItem {
     }
 
     @Override
-    public Supplier<GeoItemRenderer<? extends Item>> getRenderer() {
-        return Mp443ItemRenderer::new;
+    public Supplier<? extends GeoItemRenderer<? extends Item>> getRenderer() {
+        return GunRendererBuilder.simple(Mp443ItemModel::new, 0, 0, 0.33345, 0.3);
     }
 
     private PlayState fireAnimPredicate(AnimationState<Mp443Item> event) {

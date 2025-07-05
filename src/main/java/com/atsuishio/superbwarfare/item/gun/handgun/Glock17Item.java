@@ -1,7 +1,8 @@
 package com.atsuishio.superbwarfare.item.gun.handgun;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.client.renderer.gun.Glock17ItemRenderer;
+import com.atsuishio.superbwarfare.client.GunRendererBuilder;
+import com.atsuishio.superbwarfare.client.model.item.Glock17ItemModel;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModSounds;
@@ -34,8 +35,8 @@ public class Glock17Item extends GunItem {
     }
 
     @Override
-    public Supplier<GeoItemRenderer<? extends Item>> getRenderer() {
-        return Glock17ItemRenderer::new;
+    public Supplier<? extends GeoItemRenderer<? extends Item>> getRenderer() {
+        return GunRendererBuilder.simple(Glock17ItemModel::new, 0, 0, 0.3022, 0.3);
     }
 
     private PlayState fireAnimPredicate(AnimationState<Glock17Item> event) {

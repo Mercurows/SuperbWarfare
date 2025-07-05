@@ -40,7 +40,7 @@ public class AK47Item extends GunItem {
     }
 
     @Override
-    public Supplier<GeoItemRenderer<? extends Item>> getRenderer() {
+    public Supplier<? extends GeoItemRenderer<? extends Item>> getRenderer() {
         return AK47ItemRenderer::new;
     }
 

@@ -32,7 +32,7 @@ public class InsidiousItem extends GunItem {
     }
 
     @Override
-    public Supplier<GeoItemRenderer<? extends Item>> getRenderer() {
+    public Supplier<? extends GeoItemRenderer<? extends Item>> getRenderer() {
         return InsidiousItemRenderer::new;
     }
 

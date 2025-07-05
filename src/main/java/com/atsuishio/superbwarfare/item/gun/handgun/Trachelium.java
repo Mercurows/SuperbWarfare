@@ -46,7 +46,7 @@ public class Trachelium extends GunItem {
     }
 
     @Override
-    public Supplier<GeoItemRenderer<? extends Item>> getRenderer() {
+    public Supplier<? extends GeoItemRenderer<? extends Item>> getRenderer() {
         return TracheliumItemRenderer::new;
     }
 

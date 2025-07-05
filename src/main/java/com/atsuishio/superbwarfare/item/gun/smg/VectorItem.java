@@ -37,11 +37,6 @@ public class VectorItem extends GunItem {
         super(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     }
 
-    @Override
-    public Supplier<GeoItemRenderer<? extends Item>> getRenderer() {
-        return VectorItemRenderer::new;
-    }
-
     private PlayState idlePredicate(AnimationState<VectorItem> event) {
         LocalPlayer player = Minecraft.getInstance().player;
         if (player == null) return PlayState.STOP;
@@ -102,6 +97,12 @@ public class VectorItem extends GunItem {
         data.add(editController);
     }
 
+    @Override
+    public Supplier<? extends GeoItemRenderer<? extends Item>> getRenderer() {
+        return VectorItemRenderer::new;
+    }
+
+    // TODO 移除inventoryTick
     @Override
     @ParametersAreNonnullByDefault
     public void inventoryTick(ItemStack stack, Level world, Entity entity, int slot, boolean selected) {

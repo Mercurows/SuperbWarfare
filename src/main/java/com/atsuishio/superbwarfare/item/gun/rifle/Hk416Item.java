@@ -35,7 +35,7 @@ public class Hk416Item extends GunItem {
     }
 
     @Override
-    public Supplier<GeoItemRenderer<? extends Item>> getRenderer() {
+    public Supplier<? extends GeoItemRenderer<? extends Item>> getRenderer() {
         return Hk416ItemRenderer::new;
     }
 
