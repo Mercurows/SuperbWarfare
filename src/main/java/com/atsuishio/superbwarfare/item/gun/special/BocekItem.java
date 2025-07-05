@@ -17,6 +17,7 @@ import com.atsuishio.superbwarfare.tools.SoundTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
@@ -30,6 +31,9 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import net.minecraftforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.constant.DataTickets;
@@ -54,11 +58,6 @@ public class BocekItem extends GunItem {
     @Override
     public Supplier<? extends GeoItemRenderer<? extends Item>> getRenderer() {
         return BocekItemRenderer::new;
-    }
-
-    @Override
-    public HumanoidModel.ArmPose getArmPose(LivingEntity entityLiving, InteractionHand hand, ItemStack stack) {
-        return HumanoidModel.ArmPose.BOW_AND_ARROW;
     }
 
     private PlayState idlePredicate(AnimationState<BocekItem> event) {
@@ -239,5 +238,22 @@ public class BocekItem extends GunItem {
         projectile.damage((float) damage);
 
         player.level().addFreshEntity(projectile);
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public IClientItemExtensions getClientExtensions() {
+        return new IClientItemExtensions() {
+            private final BlockEntityWithoutLevelRenderer renderer = BocekItem.this.getRenderer().get();
+
+            @Override
+            public BlockEntityWithoutLevelRenderer getCustomRenderer() {
+                return renderer;
+            }
+
+            @Override
+            public HumanoidModel.ArmPose getArmPose(LivingEntity entityLiving, InteractionHand hand, ItemStack stack) {
+                return HumanoidModel.ArmPose.BOW_AND_ARROW;
+            }
+        };
     }
 }

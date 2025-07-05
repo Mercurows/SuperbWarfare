@@ -730,15 +730,15 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
         return true;
     }
 
-    @OnlyIn(Dist.CLIENT)
-    public HumanoidModel.ArmPose getArmPose(LivingEntity entityLiving, InteractionHand hand, ItemStack stack) {
-        return PoseTool.pose(entityLiving, hand, stack);
-    }
-
     @Override
     public void initializeClient(@NotNull Consumer<IClientItemExtensions> consumer) {
         super.initializeClient(consumer);
-        consumer.accept(new IClientItemExtensions() {
+        consumer.accept(this.getClientExtensions());
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public IClientItemExtensions getClientExtensions() {
+        return new IClientItemExtensions() {
             private final BlockEntityWithoutLevelRenderer renderer = GunItem.this.getRenderer().get();
 
             @Override
@@ -748,8 +748,8 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
 
             @Override
             public HumanoidModel.ArmPose getArmPose(LivingEntity entityLiving, InteractionHand hand, ItemStack stack) {
-                return GunItem.this.getArmPose(entityLiving, hand, stack);
+                return PoseTool.pose(entityLiving, hand, stack);
             }
-        });
+        };
     }
 }

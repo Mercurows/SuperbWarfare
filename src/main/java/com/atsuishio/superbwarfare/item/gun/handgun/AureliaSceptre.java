@@ -12,6 +12,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
@@ -26,6 +27,7 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.constant.DataTickets;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -50,16 +52,6 @@ public class AureliaSceptre extends GunItem {
     @Override
     public Supplier<? extends GeoItemRenderer<? extends Item>> getRenderer() {
         return GunRendererBuilder.simple(AureliaSceptreModel::new, 0, 0, 0.3022, 0.3);
-    }
-
-    @Override
-    public HumanoidModel.ArmPose getArmPose(LivingEntity entityLiving, InteractionHand hand, ItemStack stack) {
-        if (!stack.isEmpty()) {
-            if (entityLiving.getUsedItemHand() == hand) {
-                return Pose.POSE;
-            }
-        }
-        return HumanoidModel.ArmPose.EMPTY;
     }
 
     private PlayState idlePredicate(AnimationState<AureliaSceptre> event) {
@@ -145,13 +137,31 @@ public class AureliaSceptre extends GunItem {
     }
 
     @OnlyIn(Dist.CLIENT)
-    static class Pose {
+    public IClientItemExtensions getClientExtensions() {
+        return new IClientItemExtensions() {
+            private final BlockEntityWithoutLevelRenderer renderer = AureliaSceptre.this.getRenderer().get();
 
-        private static final HumanoidModel.ArmPose POSE = HumanoidModel.ArmPose.create("AureliaSceptre", false, (model, entity, arm) -> {
-            if (arm != HumanoidArm.LEFT) {
-                model.rightArm.xRot = -67.5f * Mth.DEG_TO_RAD + model.head.xRot + 0.05f * model.rightArm.xRot;
-                model.rightArm.yRot = 5f * Mth.DEG_TO_RAD + model.head.yRot;
+            @Override
+            public BlockEntityWithoutLevelRenderer getCustomRenderer() {
+                return renderer;
             }
-        });
+
+            private static final HumanoidModel.ArmPose POSE = HumanoidModel.ArmPose.create("AureliaSceptre", false, (model, entity, arm) -> {
+                if (arm != HumanoidArm.LEFT) {
+                    model.rightArm.xRot = -67.5f * Mth.DEG_TO_RAD + model.head.xRot + 0.05f * model.rightArm.xRot;
+                    model.rightArm.yRot = 5f * Mth.DEG_TO_RAD + model.head.yRot;
+                }
+            });
+
+            @Override
+            public HumanoidModel.ArmPose getArmPose(LivingEntity entityLiving, InteractionHand hand, ItemStack stack) {
+                if (!stack.isEmpty()) {
+                    if (entityLiving.getUsedItemHand() == hand) {
+                        return POSE;
+                    }
+                }
+                return HumanoidModel.ArmPose.EMPTY;
+            }
+        };
     }
 }
