@@ -23,6 +23,8 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import software.bernie.geckolib.constant.DataTickets;
 import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.core.animation.AnimationController;
@@ -43,25 +45,17 @@ public class M2HBItem extends GunItem {
         super(new Properties().stacksTo(1).rarity(Rarity.RARE));
     }
 
-    private static final HumanoidModel.ArmPose POSE = HumanoidModel.ArmPose.create("M2HB", false, (model, entity, arm) -> {
-        if (arm != HumanoidArm.LEFT) {
-            model.rightArm.xRot = 45f * Mth.DEG_TO_RAD + model.head.xRot;
-            model.rightArm.yRot = model.head.yRot;
-            model.leftArm.xRot = Mth.clamp(-45f * Mth.DEG_TO_RAD + model.head.xRot, -67.5f * Mth.DEG_TO_RAD, 0f * Mth.DEG_TO_RAD);
-            model.leftArm.yRot = Mth.clamp(45f * Mth.DEG_TO_RAD + model.head.yRot, 45f * Mth.DEG_TO_RAD, 80f * Mth.DEG_TO_RAD);
-        }
-    });
-
     @Override
     public Supplier<? extends GeoItemRenderer<? extends Item>> getRenderer() {
         return GunRendererBuilder.simple(M2HBItemModel::new, 0, 0.1, 2.95, 1.2);
     }
 
+    @OnlyIn(Dist.CLIENT)
     @Override
     public HumanoidModel.ArmPose getArmPose(LivingEntity entityLiving, InteractionHand hand, ItemStack stack) {
         if (!stack.isEmpty()) {
             if (entityLiving.getUsedItemHand() == hand) {
-                return POSE;
+                return Pose.POSE;
             }
         }
         return HumanoidModel.ArmPose.EMPTY;
@@ -174,5 +168,18 @@ public class M2HBItem extends GunItem {
         super.addReloadTimeBehavior(behaviors);
 
         behaviors.put(70, data -> data.hideBulletChain.reset());
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    static class Pose {
+
+        private static final HumanoidModel.ArmPose POSE = HumanoidModel.ArmPose.create("M2HB", false, (model, entity, arm) -> {
+            if (arm != HumanoidArm.LEFT) {
+                model.rightArm.xRot = 45f * Mth.DEG_TO_RAD + model.head.xRot;
+                model.rightArm.yRot = model.head.yRot;
+                model.leftArm.xRot = Mth.clamp(-45f * Mth.DEG_TO_RAD + model.head.xRot, -67.5f * Mth.DEG_TO_RAD, 0f * Mth.DEG_TO_RAD);
+                model.leftArm.yRot = Mth.clamp(45f * Mth.DEG_TO_RAD + model.head.yRot, 45f * Mth.DEG_TO_RAD, 80f * Mth.DEG_TO_RAD);
+            }
+        });
     }
 }

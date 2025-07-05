@@ -17,6 +17,8 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import software.bernie.geckolib.constant.DataTickets;
 import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.core.animation.AnimationController;
@@ -43,25 +45,15 @@ public class MinigunItem extends GunItem {
         return MinigunItemRenderer::new;
     }
 
-    private static final HumanoidModel.ArmPose MinigunPose = HumanoidModel.ArmPose.create("Minigun", false, (model, entity, arm) -> {
-        if (arm != HumanoidArm.LEFT) {
-            model.rightArm.xRot = 22.5f * Mth.DEG_TO_RAD + model.head.xRot;
-            model.rightArm.yRot = model.head.yRot;
-            model.leftArm.xRot = Mth.clamp(-45f * Mth.DEG_TO_RAD + model.head.xRot, -67.5f * Mth.DEG_TO_RAD, 0f * Mth.DEG_TO_RAD);
-            model.leftArm.yRot = Mth.clamp(45f * Mth.DEG_TO_RAD + model.head.yRot, 45f * Mth.DEG_TO_RAD, 80f * Mth.DEG_TO_RAD);
-        }
-    });
-
     @Override
     public HumanoidModel.ArmPose getArmPose(LivingEntity entityLiving, InteractionHand hand, ItemStack stack) {
         if (!stack.isEmpty()) {
             if (entityLiving.getUsedItemHand() == hand) {
-                return MinigunPose;
+                return Pose.POSE;
             }
         }
         return HumanoidModel.ArmPose.EMPTY;
     }
-
 
     private PlayState idlePredicate(AnimationState<MinigunItem> event) {
         LocalPlayer player = Minecraft.getInstance().player;
@@ -95,5 +87,18 @@ public class MinigunItem extends GunItem {
     @Override
     public String getGunDisplayName() {
         return "M134 MINIGUN";
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    static class Pose {
+
+        private static final HumanoidModel.ArmPose POSE = HumanoidModel.ArmPose.create("Minigun", false, (model, entity, arm) -> {
+            if (arm != HumanoidArm.LEFT) {
+                model.rightArm.xRot = 22.5f * Mth.DEG_TO_RAD + model.head.xRot;
+                model.rightArm.yRot = model.head.yRot;
+                model.leftArm.xRot = Mth.clamp(-45f * Mth.DEG_TO_RAD + model.head.xRot, -67.5f * Mth.DEG_TO_RAD, 0f * Mth.DEG_TO_RAD);
+                model.leftArm.yRot = Mth.clamp(45f * Mth.DEG_TO_RAD + model.head.yRot, 45f * Mth.DEG_TO_RAD, 80f * Mth.DEG_TO_RAD);
+            }
+        });
     }
 }

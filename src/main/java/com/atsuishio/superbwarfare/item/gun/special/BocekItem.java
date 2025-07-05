@@ -61,7 +61,6 @@ public class BocekItem extends GunItem {
         return HumanoidModel.ArmPose.BOW_AND_ARROW;
     }
 
-
     private PlayState idlePredicate(AnimationState<BocekItem> event) {
         LocalPlayer player = Minecraft.getInstance().player;
         if (player == null) return PlayState.STOP;

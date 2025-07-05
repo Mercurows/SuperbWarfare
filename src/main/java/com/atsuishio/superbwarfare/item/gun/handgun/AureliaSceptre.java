@@ -24,6 +24,8 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.constant.DataTickets;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -50,19 +52,11 @@ public class AureliaSceptre extends GunItem {
         return GunRendererBuilder.simple(AureliaSceptreModel::new, 0, 0, 0.3022, 0.3);
     }
 
-
-    private static final HumanoidModel.ArmPose AURELIA_SCEPTRE_POSE = HumanoidModel.ArmPose.create("AureliaSceptre", false, (model, entity, arm) -> {
-        if (arm != HumanoidArm.LEFT) {
-            model.rightArm.xRot = -67.5f * Mth.DEG_TO_RAD + model.head.xRot + 0.05f * model.rightArm.xRot;
-            model.rightArm.yRot = 5f * Mth.DEG_TO_RAD + model.head.yRot;
-        }
-    });
-
     @Override
     public HumanoidModel.ArmPose getArmPose(LivingEntity entityLiving, InteractionHand hand, ItemStack stack) {
         if (!stack.isEmpty()) {
             if (entityLiving.getUsedItemHand() == hand) {
-                return AURELIA_SCEPTRE_POSE;
+                return Pose.POSE;
             }
         }
         return HumanoidModel.ArmPose.EMPTY;
@@ -148,5 +142,16 @@ public class AureliaSceptre extends GunItem {
     @Override
     public void addReloadTimeBehavior(Map<Integer, Consumer<GunData>> behaviors) {
         super.addReloadTimeBehavior(behaviors);
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    static class Pose {
+
+        private static final HumanoidModel.ArmPose POSE = HumanoidModel.ArmPose.create("AureliaSceptre", false, (model, entity, arm) -> {
+            if (arm != HumanoidArm.LEFT) {
+                model.rightArm.xRot = -67.5f * Mth.DEG_TO_RAD + model.head.xRot + 0.05f * model.rightArm.xRot;
+                model.rightArm.yRot = 5f * Mth.DEG_TO_RAD + model.head.yRot;
+            }
+        });
     }
 }
