@@ -41,7 +41,7 @@ public class HomemadeShotgunItem extends GunItem {
     }
 
     @Override
-    public int getBarWidth(ItemStack pStack) {
+    public int getBarWidth(@NotNull ItemStack pStack) {
         return Math.round(13.0F - (float) pStack.getDamageValue() * 13.0F / (float) this.getMaxDamage(pStack));
     }
 

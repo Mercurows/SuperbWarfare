@@ -691,11 +691,13 @@ public abstract class GunItem extends Item implements CustomRendererItem, GeoIte
 
         if (zoom && !player.isShiftKeyDown()) {
             Entity target = findEntity(player.level(), String.valueOf(uuid));
-            int intelligentChipLevel = GunData.from(stack).perk.getLevel(ModPerks.INTELLIGENT_CHIP);
+            var gunData = GunData.from(stack);
+            int intelligentChipLevel = gunData.perk.getLevel(ModPerks.INTELLIGENT_CHIP);
             if (intelligentChipLevel > 0 && target != null) {
                 Vec3 targetVec = target.getEyePosition();
                 Vec3 playerVec = player.getEyePosition();
-                Vec3 toVec = RangeTool.calculateFiringSolution(playerVec, targetVec, Vec3.ZERO, data.velocity(), 0.03);
+                var hasGravity = gunData.perk.getLevel(ModPerks.MICRO_MISSILE) <= 0;
+                Vec3 toVec = RangeTool.calculateFiringSolution(playerVec, targetVec, Vec3.ZERO, data.velocity(), hasGravity ? 0.03 : 0);
                 x = toVec.x;
                 y = toVec.y;
                 z = toVec.z;

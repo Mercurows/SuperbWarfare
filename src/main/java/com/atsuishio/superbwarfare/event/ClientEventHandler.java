@@ -1499,7 +1499,9 @@ public class ClientEventHandler {
                             Vec3 playerVec = new Vec3(Mth.lerp(event.getPartialTick(), player.xo - 0.1 * player.getViewVector(1).x, player.getX() - 0.1 * player.getViewVector(1).x),
                                     Mth.lerp(event.getPartialTick(), player.yo + player.getEyeHeight() - 0.1 * player.getViewVector(1).y, player.getEyeY() - 0.1 * player.getViewVector(1).y),
                                     Mth.lerp(event.getPartialTick(), player.zo - 0.1 * player.getViewVector(1).z, player.getZ() - 0.1 * player.getViewVector(1).z));
-                            Vec3 toVec = RangeTool.calculateFiringSolution(playerVec, targetVec, entity.getDeltaMovement(), data.velocity(), 0.03);
+
+                            var hasGravity = data.perk.getLevel(ModPerks.MICRO_MISSILE) <= 0;
+                            Vec3 toVec = RangeTool.calculateFiringSolution(playerVec, targetVec, entity.getDeltaMovement(), data.velocity(), hasGravity ? 0.03 : 0);
                             look(player, toVec);
                         }
                     }
