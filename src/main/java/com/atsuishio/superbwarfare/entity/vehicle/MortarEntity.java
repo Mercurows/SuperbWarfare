@@ -19,9 +19,11 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
+import net.minecraft.world.Container;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
@@ -30,6 +32,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Math;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
@@ -38,7 +41,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import static com.atsuishio.superbwarfare.tools.RangeTool.calculateLaunchVector;
 
-public class MortarEntity extends VehicleEntity implements GeoEntity {
+public class MortarEntity extends VehicleEntity implements GeoEntity, Container {
 
     public static final EntityDataAccessor<Integer> FIRE_TIME = SynchedEntityData.defineId(MortarEntity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Float> PITCH = SynchedEntityData.defineId(MortarEntity.class, EntityDataSerializers.FLOAT);
@@ -92,33 +95,43 @@ public class MortarEntity extends VehicleEntity implements GeoEntity {
         }
     }
 
+    private void fire(@Nullable LivingEntity shooter) {
+        if (!(this.stack.getItem() instanceof MortarShell shell)) return;
+
+        this.entityData.set(FIRE_TIME, 25);
+        var stackToShoot = this.stack.copyWithCount(1);
+        this.stack = ItemStack.EMPTY;
+
+        if (!this.level().isClientSide()) {
+            this.level().playSound(null, this.getX(), this.getY(), this.getZ(), ModSounds.MORTAR_LOAD.get(), SoundSource.PLAYERS, 1f, 1f);
+            this.level().playSound(null, this.getX(), this.getY(), this.getZ(), ModSounds.MORTAR_FIRE.get(), SoundSource.PLAYERS, 8f, 1f);
+            this.level().playSound(null, this.getX(), this.getY(), this.getZ(), ModSounds.MORTAR_DISTANT.get(), SoundSource.PLAYERS, 32f, 1f);
+        }
+        Mod.queueServerWork(20, () -> {
+            Level level = this.level();
+            if (level instanceof ServerLevel server) {
+                MortarShellEntity entityToSpawn = shell.createShell(shooter, level, stackToShoot);
+                entityToSpawn.setPos(this.getX(), this.getEyeY(), this.getZ());
+                entityToSpawn.shoot(this.getLookAngle().x, this.getLookAngle().y, this.getLookAngle().z, 11.4f, (float) 0.5);
+                level.addFreshEntity(entityToSpawn);
+                server.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, (this.getX() + 3 * this.getLookAngle().x), (this.getY() + 0.1 + 3 * this.getLookAngle().y), (this.getZ() + 3 * this.getLookAngle().z), 8, 0.4, 0.4, 0.4,
+                        0.007);
+                server.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, this.getX(), this.getY(), this.getZ(), 50, 2, 0.02, 2, 0.0005);
+            }
+        });
+    }
+
     @Override
     public @NotNull InteractionResult interact(Player player, @NotNull InteractionHand hand) {
-        ItemStack stack = player.getMainHandItem();
+        ItemStack mainHandItem = player.getMainHandItem();
 
-        if (stack.getItem() instanceof MortarShell shell && !player.isShiftKeyDown() && this.entityData.get(FIRE_TIME) == 0) {
-            this.entityData.set(FIRE_TIME, 25);
-
+        if (mainHandItem.getItem() instanceof MortarShell && !player.isShiftKeyDown() && this.entityData.get(FIRE_TIME) == 0) {
+            this.stack = mainHandItem.copyWithCount(1);
             if (!player.isCreative()) {
-                stack.shrink(1);
+                mainHandItem.shrink(1);
             }
-            if (!this.level().isClientSide()) {
-                this.level().playSound(null, this.getX(), this.getY(), this.getZ(), ModSounds.MORTAR_LOAD.get(), SoundSource.PLAYERS, 1f, 1f);
-                this.level().playSound(null, this.getX(), this.getY(), this.getZ(), ModSounds.MORTAR_FIRE.get(), SoundSource.PLAYERS, 8f, 1f);
-                this.level().playSound(null, this.getX(), this.getY(), this.getZ(), ModSounds.MORTAR_DISTANT.get(), SoundSource.PLAYERS, 32f, 1f);
-            }
-            Mod.queueServerWork(20, () -> {
-                Level level = this.level();
-                if (level instanceof ServerLevel server) {
-                    MortarShellEntity entityToSpawn = shell.createShell(player, level, stack);
-                    entityToSpawn.setPos(this.getX(), this.getEyeY(), this.getZ());
-                    entityToSpawn.shoot(this.getLookAngle().x, this.getLookAngle().y, this.getLookAngle().z, 11.4f, (float) 0.5);
-                    level.addFreshEntity(entityToSpawn);
-                    server.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, (this.getX() + 3 * this.getLookAngle().x), (this.getY() + 0.1 + 3 * this.getLookAngle().y), (this.getZ() + 3 * this.getLookAngle().z), 8, 0.4, 0.4, 0.4,
-                            0.007);
-                    server.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, this.getX(), this.getY(), this.getZ(), 50, 2, 0.02, 2, 0.0005);
-                }
-            });
+
+            fire(player);
         }
 
         if (player.getMainHandItem().getItem() == ModItems.FIRING_PARAMETERS.get()) {
@@ -141,7 +154,7 @@ public class MortarEntity extends VehicleEntity implements GeoEntity {
         }
 
         if (player.isShiftKeyDown()) {
-            if (stack.getItem() == ModItems.CROWBAR.get()) {
+            if (mainHandItem.getItem() == ModItems.CROWBAR.get()) {
                 this.discard();
                 ItemHandlerHelper.giveItemToPlayer(player, new ItemStack(ModItems.MORTAR_DEPLOYER.get()));
                 return InteractionResult.SUCCESS;
@@ -266,5 +279,71 @@ public class MortarEntity extends VehicleEntity implements GeoEntity {
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return this.cache;
+    }
+
+    private ItemStack stack = ItemStack.EMPTY;
+
+    @Override
+    public int getContainerSize() {
+        return 1;
+    }
+
+    @Override
+    public int getMaxStackSize() {
+        return 1;
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return stack == ItemStack.EMPTY;
+    }
+
+    @Override
+    public @NotNull ItemStack getItem(int slot) {
+        return slot == 0 ? stack : ItemStack.EMPTY;
+    }
+
+    @Override
+    public @NotNull ItemStack removeItem(int slot, int amount) {
+        if (slot != 0 || amount <= 0 || stack.isEmpty()) {
+            return ItemStack.EMPTY;
+        }
+        stack.shrink(1);
+        if (stack.isEmpty()) {
+            stack = ItemStack.EMPTY;
+        }
+        return stack;
+    }
+
+    @Override
+    public @NotNull ItemStack removeItemNoUpdate(int slot) {
+        return removeItem(0, 1);
+    }
+
+    @Override
+    public void setItem(int slot, @NotNull ItemStack stack) {
+        if (slot != 0) return;
+        this.stack = stack;
+    }
+
+    @Override
+    public void setChanged() {
+        fire(null);
+    }
+
+    @Override
+    public boolean stillValid(@NotNull Player player) {
+        return false;
+    }
+
+    @Override
+    public void clearContent() {
+        this.stack = ItemStack.EMPTY;
+    }
+
+    @Override
+    public boolean canPlaceItem(int slot, @NotNull ItemStack stack) {
+        if (slot != 0 || this.entityData.get(FIRE_TIME) != 0) return false;
+        return stack.getItem() instanceof MortarShell;
     }
 }

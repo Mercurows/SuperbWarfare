@@ -108,5 +108,11 @@ public class ModCapabilities {
                 (object, context) -> new InvWrapper(object)
         );
 
+        // 迫击炮实体
+        event.registerEntity(Capabilities.ItemHandler.ENTITY,
+                ModEntities.MORTAR.get(),
+                (obj, ctx) -> new InvWrapper(obj)
+        );
+
     }
 }

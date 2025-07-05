@@ -11,6 +11,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ProjectileItem;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
@@ -20,7 +21,7 @@ public class MortarShell extends Item implements ProjectileItem {
         super(new Properties());
     }
 
-    public MortarShellEntity createShell(LivingEntity entity, Level level, ItemStack stack) {
+    public MortarShellEntity createShell(@Nullable LivingEntity entity, Level level, ItemStack stack) {
         MortarShellEntity shellEntity = new MortarShellEntity(entity, level);
         shellEntity.setEffectsFromItem(stack);
         return shellEntity;
