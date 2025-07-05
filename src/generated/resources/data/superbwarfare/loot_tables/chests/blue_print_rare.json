@@ -156,6 +156,11 @@
         },
         {
           "type": "minecraft:item",
+          "name": "superbwarfare:qbz_191_blueprint",
+          "weight": 10
+        },
+        {
+          "type": "minecraft:item",
           "name": "superbwarfare:aa_12_blueprint",
           "weight": 3
         },

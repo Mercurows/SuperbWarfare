@@ -2,13 +2,13 @@ package com.atsuishio.superbwarfare.client.renderer.gun;
 
 import com.atsuishio.superbwarfare.client.AnimationHelper;
 import com.atsuishio.superbwarfare.client.ItemModelHelper;
-import com.atsuishio.superbwarfare.client.model.item.Hk416ItemModel;
+import com.atsuishio.superbwarfare.client.model.item.Qbz191ItemModel;
 import com.atsuishio.superbwarfare.client.renderer.CustomGunRenderer;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
-import com.atsuishio.superbwarfare.item.gun.rifle.Hk416Item;
+import com.atsuishio.superbwarfare.item.gun.rifle.Qbz191Item;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
@@ -19,14 +19,14 @@ import net.minecraft.world.item.ItemStack;
 import software.bernie.geckolib.animatable.GeoItem;
 import software.bernie.geckolib.cache.object.GeoBone;
 
-public class Hk416ItemRenderer extends CustomGunRenderer<Hk416Item> {
+public class Qbz191ItemRenderer extends CustomGunRenderer<Qbz191Item> {
 
-    public Hk416ItemRenderer() {
-        super(new Hk416ItemModel());
+    public Qbz191ItemRenderer() {
+        super(new Qbz191ItemModel());
     }
 
     @Override
-    public void renderRecursively(PoseStack stack, Hk416Item animatable, GeoBone bone, RenderType type, MultiBufferSource buffer, VertexConsumer bufferIn, boolean isReRender, float partialTick, int packedLightIn, int packedOverlayIn, float red,
+    public void renderRecursively(PoseStack stack, Qbz191Item animatable, GeoBone bone, RenderType type, MultiBufferSource buffer, VertexConsumer bufferIn, boolean isReRender, float partialTick, int packedLightIn, int packedOverlayIn, float red,
                                   float green, float blue, float alpha) {
         Minecraft mc = Minecraft.getInstance();
         String name = bone.getName();
@@ -42,18 +42,22 @@ public class Hk416ItemRenderer extends CustomGunRenderer<Hk416Item> {
         if (player == null) return;
         ItemStack itemStack = player.getMainHandItem();
 
+        boolean needHide = name.equals("Tuoxin");
         if (itemStack.getItem() instanceof GunItem && GeoItem.getId(itemStack) == this.getInstanceId(animatable)) {
             if (this.renderPerspective == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND || this.renderPerspective == ItemDisplayContext.THIRD_PERSON_RIGHT_HAND) {
 
-                AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn, 0, 0, 1.440625, 0.3);
+                if (needHide) {
+                    bone.setHidden(GunData.from(itemStack).attachment.get(AttachmentType.STOCK) == 0);
+                }
+
+                AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn, 0, 0, 1.353125, 0.3);
                 ItemModelHelper.handleGunAttachments(bone, itemStack, name);
 
                 if (this.renderPerspective == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND) {
-                    if (GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 2 && name.equals("hidden")) {
+                    if (GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 2 && bone.getName().endsWith("_hide2")) {
                         bone.setHidden(ClientEventHandler.zoomPos > 0.7 && ClientEventHandler.zoom);
                     }
-                    if (GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 3
-                            && (name.equals("jing") || name.equals("Barrel") || name.equals("yugu") || name.equals("qiangguan"))) {
+                    if (GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 3 && bone.getName().endsWith("_hide3")) {
                         bone.setHidden(ClientEventHandler.zoomPos > 0.7 && ClientEventHandler.zoom);
                     }
 
@@ -61,19 +65,24 @@ public class Hk416ItemRenderer extends CustomGunRenderer<Hk416Item> {
 
                     switch (scopeType) {
                         case 1 ->
-                                AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.25, 30, 1, 0, 255, 0, 255, "eotech", false);
+                                AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.27, 20, 1.2f, 255, 0, 0, 255, "dot", false);
                         case 2 ->
-                                AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.313, 9, 1, 255, 0, 0, 255, "acog", true);
+                                AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.28, 13, 1.5f, 255, 0, 0, 255, "qmk", true);
                         case 3 ->
-                                AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.29, 65, (float) ClientEventHandler.customZoom, 255, 0, 0, 255, "lpvo", true);
+                                AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.275, 27, 0.35f * (float) ClientEventHandler.customZoom, 255, 0, 0, 255, "lpvo", true);
                     }
                 }
-
             } else {
                 ItemModelHelper.hideAllAttachments(bone, name);
+                if (needHide) {
+                    bone.setHidden(true);
+                }
             }
         } else {
             ItemModelHelper.hideAllAttachments(bone, name);
+            if (needHide) {
+                bone.setHidden(true);
+            }
         }
 
         if (renderingArms) {

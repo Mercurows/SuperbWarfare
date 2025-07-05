@@ -55,7 +55,7 @@ public class Mp5ItemRenderer extends CustomGunRenderer<Mp5Item> {
                 ItemModelHelper.handleGunAttachments(bone, itemStack, name);
 
                 if (this.renderPerspective == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND) {
-                    if (GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 2 && (bone.getName().endsWith("_hide2"))) {
+                    if (GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 2 && bone.getName().endsWith("_hide2")) {
                         bone.setHidden(ClientEventHandler.zoomPos > 0.7 && ClientEventHandler.zoom);
                     }
 

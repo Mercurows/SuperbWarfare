@@ -63,6 +63,7 @@ public class ModItems {
     public static final RegistryObject<Item> M_4 = GUNS.register("m_4", M4Item::new);
     public static final RegistryObject<Item> HK_416 = GUNS.register("hk_416", Hk416Item::new);
     public static final RegistryObject<Item> QBZ_95 = GUNS.register("qbz_95", Qbz95Item::new);
+    public static final RegistryObject<Item> QBZ_191 = GUNS.register("qbz_191", Qbz191Item::new);
     public static final RegistryObject<Item> INSIDIOUS = GUNS.register("insidious", InsidiousItem::new);
     public static final RegistryObject<Item> MK_14 = GUNS.register("mk_14", Mk14Item::new);
     public static final RegistryObject<Item> MARLIN = GUNS.register("marlin", MarlinItem::new);
@@ -239,6 +240,7 @@ public class ModItems {
     public static final RegistryObject<Item> TASER_BLUEPRINT = ITEMS.register("taser_blueprint", () -> new BlueprintItem(Rarity.COMMON));
     public static final RegistryObject<Item> M_1911_BLUEPRINT = ITEMS.register("m_1911_blueprint", () -> new BlueprintItem(Rarity.COMMON));
     public static final RegistryObject<Item> QBZ_95_BLUEPRINT = ITEMS.register("qbz_95_blueprint", () -> new BlueprintItem(Rarity.RARE));
+    public static final RegistryObject<Item> QBZ_191_BLUEPRINT = ITEMS.register("qbz_191_blueprint", () -> new BlueprintItem(Rarity.EPIC));
     public static final RegistryObject<Item> K_98_BLUEPRINT = ITEMS.register("k_98_blueprint", () -> new BlueprintItem(Rarity.RARE));
     public static final RegistryObject<Item> MOSIN_NAGANT_BLUEPRINT = ITEMS.register("mosin_nagant_blueprint", () -> new BlueprintItem(Rarity.RARE));
     public static final RegistryObject<Item> JAVELIN_BLUEPRINT = ITEMS.register("javelin_blueprint", () -> new BlueprintItem(RarityTool.LEGENDARY));
