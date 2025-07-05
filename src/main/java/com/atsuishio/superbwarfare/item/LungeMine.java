@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.item;
 
 import com.atsuishio.superbwarfare.client.renderer.item.LungeMineRenderer;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
-import com.atsuishio.superbwarfare.init.ModEnumExtensions;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.HumanoidModel;
@@ -11,10 +10,12 @@ import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -33,7 +34,6 @@ import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.function.Consumer;
 
 public class LungeMine extends Item implements GeoItem {
@@ -45,7 +45,7 @@ public class LungeMine extends Item implements GeoItem {
     }
 
     @Override
-    public void initializeClient(@NotNull Consumer<IClientItemExtensions> consumer) {
+    public void initializeClient(Consumer<IClientItemExtensions> consumer) {
         super.initializeClient(consumer);
         consumer.accept(new IClientItemExtensions() {
             private final BlockEntityWithoutLevelRenderer renderer = new LungeMineRenderer();
@@ -55,13 +55,20 @@ public class LungeMine extends Item implements GeoItem {
                 return renderer;
             }
 
-
+            private static final HumanoidModel.ArmPose LungeMinePose = HumanoidModel.ArmPose.create("LungeMine", false, (model, entity, arm) -> {
+                if (arm != HumanoidArm.LEFT) {
+                    model.rightArm.xRot = 20f * Mth.DEG_TO_RAD + model.head.xRot;
+                    model.rightArm.yRot = -12f * Mth.DEG_TO_RAD;
+                    model.leftArm.xRot = -45f * Mth.DEG_TO_RAD + model.head.xRot;
+                    model.leftArm.yRot = 40f * Mth.DEG_TO_RAD;
+                }
+            });
 
             @Override
             public HumanoidModel.ArmPose getArmPose(LivingEntity entityLiving, InteractionHand hand, ItemStack itemStack) {
                 if (!itemStack.isEmpty()) {
                     if (entityLiving.getUsedItemHand() == hand) {
-                        return ModEnumExtensions.Client.getLungeMinePose();
+                        return LungeMinePose;
                     }
                 }
                 return HumanoidModel.ArmPose.EMPTY;
@@ -107,12 +114,17 @@ public class LungeMine extends Item implements GeoItem {
     }
 
     @Override
+    public boolean onEntitySwing(ItemStack stack, LivingEntity entity) {
+        return false;
+    }
+
+    @Override
     public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
         return false;
     }
 
     @Override
-    public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level worldIn, Player playerIn, @NotNull InteractionHand handIn) {
+    public @NotNull InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
         ItemStack stack = playerIn.getItemInHand(handIn);
         if (playerIn instanceof ServerPlayer serverPlayer) {
             serverPlayer.level().playSound(null, serverPlayer.getOnPos(), ModSounds.LUNGE_MINE_GROWL.get(), SoundSource.PLAYERS, 2, 1);
@@ -127,7 +139,6 @@ public class LungeMine extends Item implements GeoItem {
     }
 
     @Override
-    @ParametersAreNonnullByDefault
     public boolean canAttackBlock(BlockState p_41441_, Level p_41442_, BlockPos p_41443_, Player p_41444_) {
         return false;
     }
