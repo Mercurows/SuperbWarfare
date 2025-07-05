@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.entity.vehicle;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.component.ModDataComponents;
 import com.atsuishio.superbwarfare.entity.projectile.MortarShellEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
@@ -95,30 +94,19 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, Container 
         }
     }
 
-    private void fire(@Nullable LivingEntity shooter) {
-        if (!(this.stack.getItem() instanceof MortarShell shell)) return;
+    private LivingEntity shooter = null;
 
+    private void fire(@Nullable LivingEntity shooter) {
+        if (!(this.stack.getItem() instanceof MortarShell)) return;
+
+        this.shooter = shooter;
         this.entityData.set(FIRE_TIME, 25);
-        var stackToShoot = this.stack.copyWithCount(1);
-        this.stack = ItemStack.EMPTY;
 
         if (!this.level().isClientSide()) {
             this.level().playSound(null, this.getX(), this.getY(), this.getZ(), ModSounds.MORTAR_LOAD.get(), SoundSource.PLAYERS, 1f, 1f);
             this.level().playSound(null, this.getX(), this.getY(), this.getZ(), ModSounds.MORTAR_FIRE.get(), SoundSource.PLAYERS, 8f, 1f);
             this.level().playSound(null, this.getX(), this.getY(), this.getZ(), ModSounds.MORTAR_DISTANT.get(), SoundSource.PLAYERS, 32f, 1f);
         }
-        Mod.queueServerWork(20, () -> {
-            Level level = this.level();
-            if (level instanceof ServerLevel server) {
-                MortarShellEntity entityToSpawn = shell.createShell(shooter, level, stackToShoot);
-                entityToSpawn.setPos(this.getX(), this.getEyeY(), this.getZ());
-                entityToSpawn.shoot(this.getLookAngle().x, this.getLookAngle().y, this.getLookAngle().z, 11.4f, (float) 0.5);
-                level.addFreshEntity(entityToSpawn);
-                server.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, (this.getX() + 3 * this.getLookAngle().x), (this.getY() + 0.1 + 3 * this.getLookAngle().y), (this.getZ() + 3 * this.getLookAngle().z), 8, 0.4, 0.4, 0.4,
-                        0.007);
-                server.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, this.getX(), this.getY(), this.getZ(), 50, 2, 0.02, 2, 0.0005);
-            }
-        });
     }
 
     @Override
@@ -205,8 +193,24 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, Container 
     @Override
     public void baseTick() {
         super.baseTick();
-        if (this.entityData.get(FIRE_TIME) > 0) {
-            this.entityData.set(FIRE_TIME, this.entityData.get(FIRE_TIME) - 1);
+        int fireTime = this.entityData.get(FIRE_TIME);
+        if (fireTime > 0) {
+            this.entityData.set(FIRE_TIME, fireTime - 1);
+        }
+
+        if (fireTime == 5 && this.stack.getItem() instanceof MortarShell) {
+            Level level = this.level();
+            if (level instanceof ServerLevel server) {
+                MortarShellEntity entityToSpawn = MortarShell.createShell(shooter, level, this.stack);
+                entityToSpawn.setPos(this.getX(), this.getEyeY(), this.getZ());
+                entityToSpawn.shoot(this.getLookAngle().x, this.getLookAngle().y, this.getLookAngle().z, 11.4f, (float) 0.5);
+                level.addFreshEntity(entityToSpawn);
+                server.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, (this.getX() + 3 * this.getLookAngle().x), (this.getY() + 0.1 + 3 * this.getLookAngle().y), (this.getZ() + 3 * this.getLookAngle().z), 8, 0.4, 0.4, 0.4,
+                        0.007);
+                server.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, this.getX(), this.getY(), this.getZ(), 50, 2, 0.02, 2, 0.0005);
+
+                this.stack = ItemStack.EMPTY;
+            }
         }
 
         this.move(MoverType.SELF, this.getDeltaMovement());

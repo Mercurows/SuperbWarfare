@@ -21,7 +21,7 @@ public class MortarShell extends Item implements ProjectileItem {
         super(new Properties());
     }
 
-    public MortarShellEntity createShell(@Nullable LivingEntity entity, Level level, ItemStack stack) {
+    public static MortarShellEntity createShell(@Nullable LivingEntity entity, Level level, ItemStack stack) {
         MortarShellEntity shellEntity = new MortarShellEntity(entity, level);
         shellEntity.setEffectsFromItem(stack);
         return shellEntity;
