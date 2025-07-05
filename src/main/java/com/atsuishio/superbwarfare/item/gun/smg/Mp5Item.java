@@ -34,7 +34,7 @@ public class Mp5Item extends GunItem {
     }
 
     @Override
-    public Supplier<GeoItemRenderer<? extends Item>> getRenderer() {
+    public Supplier<? extends GeoItemRenderer<? extends Item>> getRenderer() {
         return Mp5ItemRenderer::new;
     }
 

@@ -6,5 +6,5 @@ import software.bernie.geckolib.renderer.GeoItemRenderer;
 import java.util.function.Supplier;
 
 public interface CustomRendererItem {
-    Supplier<GeoItemRenderer<? extends Item>> getRenderer();
+    Supplier<? extends GeoItemRenderer<? extends Item>> getRenderer();
 }

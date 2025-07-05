@@ -35,7 +35,7 @@ public class RpkItem extends GunItem {
     }
 
     @Override
-    public Supplier<GeoItemRenderer<? extends Item>> getRenderer() {
+    public Supplier<? extends GeoItemRenderer<? extends Item>> getRenderer() {
         return RpkItemRenderer::new;
     }
 

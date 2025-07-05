@@ -68,7 +68,7 @@ public class TaserItem extends GunItem implements EnergyStorageItem {
     }
 
     @Override
-    public Supplier<GeoItemRenderer<? extends Item>> getRenderer() {
+    public Supplier<? extends GeoItemRenderer<? extends Item>> getRenderer() {
         return TaserItemRenderer::new;
     }
 

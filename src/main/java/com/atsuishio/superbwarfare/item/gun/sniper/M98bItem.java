@@ -35,7 +35,7 @@ public class M98bItem extends GunItem {
     }
 
     @Override
-    public Supplier<GeoItemRenderer<? extends Item>> getRenderer() {
+    public Supplier<? extends GeoItemRenderer<? extends Item>> getRenderer() {
         return M98bItemRenderer::new;
     }
 

@@ -36,7 +36,7 @@ public class AK47Item extends GunItem {
         return Set.of(ModSounds.AK_47_RELOAD_EMPTY.get(), ModSounds.AK_47_RELOAD_NORMAL.get());
     }
 
-    public Supplier<GeoItemRenderer<? extends Item>> getRenderer() {
+    public Supplier<? extends GeoItemRenderer<? extends Item>> getRenderer() {
         return AK47ItemRenderer::new;
     }
 

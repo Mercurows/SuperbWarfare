@@ -37,7 +37,7 @@ public class Ntw20Item extends GunItem {
     }
 
     @Override
-    public Supplier<GeoItemRenderer<? extends Item>> getRenderer() {
+    public Supplier<? extends GeoItemRenderer<? extends Item>> getRenderer() {
         return Ntw20Renderer::new;
     }
 

@@ -45,7 +45,7 @@ public class BocekItem extends GunItem {
     }
 
     @Override
-    public Supplier<GeoItemRenderer<? extends Item>> getRenderer() {
+    public Supplier<? extends GeoItemRenderer<? extends Item>> getRenderer() {
         return BocekItemRenderer::new;
     }
 
