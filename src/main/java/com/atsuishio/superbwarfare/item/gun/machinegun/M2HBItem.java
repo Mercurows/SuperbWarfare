@@ -9,7 +9,6 @@ import com.atsuishio.superbwarfare.item.gun.GunItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
@@ -18,23 +17,24 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.client.extensions.common.IClientItemExtensions;
-import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.constant.DataTickets;
 import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.core.animation.AnimationController;
 import software.bernie.geckolib.core.animation.AnimationState;
 import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
+import software.bernie.geckolib.renderer.GeoItemRenderer;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class M2HBItem extends GunItem {
 
@@ -42,39 +42,28 @@ public class M2HBItem extends GunItem {
         super(new Properties().stacksTo(1).rarity(Rarity.RARE));
     }
 
+    private static final HumanoidModel.ArmPose POSE = HumanoidModel.ArmPose.create("M2HB", false, (model, entity, arm) -> {
+        if (arm != HumanoidArm.LEFT) {
+            model.rightArm.xRot = 45f * Mth.DEG_TO_RAD + model.head.xRot;
+            model.rightArm.yRot = model.head.yRot;
+            model.leftArm.xRot = Mth.clamp(-45f * Mth.DEG_TO_RAD + model.head.xRot, -67.5f * Mth.DEG_TO_RAD, 0f * Mth.DEG_TO_RAD);
+            model.leftArm.yRot = Mth.clamp(45f * Mth.DEG_TO_RAD + model.head.yRot, 45f * Mth.DEG_TO_RAD, 80f * Mth.DEG_TO_RAD);
+        }
+    });
+
     @Override
-    public void initializeClient(@NotNull Consumer<IClientItemExtensions> consumer) {
-        super.initializeClient(consumer);
-        consumer.accept(new IClientItemExtensions() {
-            private BlockEntityWithoutLevelRenderer renderer;
+    public Supplier<GeoItemRenderer<? extends Item>> getRenderer() {
+        return M2HBItemRenderer::new;
+    }
 
-            @Override
-            public BlockEntityWithoutLevelRenderer getCustomRenderer() {
-                if (renderer == null) {
-                    renderer = new M2HBItemRenderer();
-                }
-                return renderer;
+    @Override
+    public HumanoidModel.ArmPose getArmPose(LivingEntity entityLiving, InteractionHand hand, ItemStack stack) {
+        if (!stack.isEmpty()) {
+            if (entityLiving.getUsedItemHand() == hand) {
+                return POSE;
             }
-
-            private static final HumanoidModel.ArmPose POSE = HumanoidModel.ArmPose.create("M2HB", false, (model, entity, arm) -> {
-                if (arm != HumanoidArm.LEFT) {
-                    model.rightArm.xRot = 45f * Mth.DEG_TO_RAD + model.head.xRot;
-                    model.rightArm.yRot = model.head.yRot;
-                    model.leftArm.xRot = Mth.clamp(-45f * Mth.DEG_TO_RAD + model.head.xRot, -67.5f * Mth.DEG_TO_RAD, 0f * Mth.DEG_TO_RAD);
-                    model.leftArm.yRot = Mth.clamp(45f * Mth.DEG_TO_RAD + model.head.yRot, 45f * Mth.DEG_TO_RAD, 80f * Mth.DEG_TO_RAD);
-                }
-            });
-
-            @Override
-            public HumanoidModel.ArmPose getArmPose(LivingEntity entityLiving, InteractionHand hand, ItemStack itemStack) {
-                if (!itemStack.isEmpty()) {
-                    if (entityLiving.getUsedItemHand() == hand) {
-                        return POSE;
-                    }
-                }
-                return HumanoidModel.ArmPose.EMPTY;
-            }
-        });
+        }
+        return HumanoidModel.ArmPose.EMPTY;
     }
 
     private PlayState fireAnimPredicate(AnimationState<M2HBItem> event) {
