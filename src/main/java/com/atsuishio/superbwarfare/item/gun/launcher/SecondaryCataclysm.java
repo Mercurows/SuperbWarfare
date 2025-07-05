@@ -284,11 +284,13 @@ public class SecondaryCataclysm extends GunItem {
 
             if (zoom && !player.isShiftKeyDown()) {
                 Entity target = findEntity(player.level(), String.valueOf(uuid));
-                int intelligentChipLevel = GunData.from(stack).perk.getLevel(ModPerks.INTELLIGENT_CHIP);
+                var gunData = GunData.from(stack);
+                int intelligentChipLevel = gunData.perk.getLevel(ModPerks.INTELLIGENT_CHIP);
                 if (intelligentChipLevel > 0 && target != null) {
                     Vec3 targetVec = target.getEyePosition();
                     Vec3 playerVec = player.getEyePosition();
-                    Vec3 toVec = RangeTool.calculateFiringSolution(playerVec, targetVec, Vec3.ZERO, (isChargedFire ? 4 : 1) * velocity, 0.05);
+                    var hasGravity = gunData.perk.getLevel(ModPerks.MICRO_MISSILE) <= 0;
+                    Vec3 toVec = RangeTool.calculateFiringSolution(playerVec, targetVec, Vec3.ZERO, (isChargedFire ? 4 : 1) * velocity, hasGravity ? 0.05 : 0);
                     x = toVec.x;
                     y = toVec.y;
                     z = toVec.z;
