@@ -3322,5 +3322,69 @@
         "stream": false
       }
     ]
+  },
+  "qbz_191_fire_1p": {
+    "sounds": [
+      {
+        "name": "superbwarfare:qbz_191/qbz_191_fire_1p",
+        "stream": false
+      }
+    ]
+  },
+  "qbz_191_fire_1p_s": {
+    "sounds": [
+      {
+        "name": "superbwarfare:qbz_191/qbz_191_fire_1p_s",
+        "stream": false
+      }
+    ]
+  },
+  "qbz_191_fire_3p": {
+    "sounds": [
+      {
+        "name": "superbwarfare:qbz_191/qbz_191_fire_3p",
+        "stream": false
+      }
+    ]
+  },
+  "qbz_191_fire_3p_s": {
+    "sounds": [
+      {
+        "name": "superbwarfare:qbz_191/qbz_191_fire_3p_s",
+        "stream": false
+      }
+    ]
+  },
+  "qbz_191_far": {
+    "sounds": [
+      {
+        "name": "superbwarfare:qbz_191/qbz_191_far",
+        "stream": false
+      }
+    ]
+  },
+  "qbz_191_veryfar": {
+    "sounds": [
+      {
+        "name": "superbwarfare:qbz_191/qbz_191_veryfar",
+        "stream": false
+      }
+    ]
+  },
+  "qbz_191_reload_normal": {
+    "sounds": [
+      {
+        "name": "superbwarfare:qbz_191/qbz_191_reload_normal",
+        "stream": false
+      }
+    ]
+  },
+  "qbz_191_reload_empty": {
+    "sounds": [
+      {
+        "name": "superbwarfare:qbz_191/qbz_191_reload_empty",
+        "stream": false
+      }
+    ]
   }
 }

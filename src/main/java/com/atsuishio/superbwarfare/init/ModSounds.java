@@ -354,6 +354,17 @@ public class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> M_2_HB_RELOAD_NORMAL = REGISTRY.register("m_2_hb_reload_normal", () -> SoundEvent.createVariableRangeEvent(Mod.loc("m_2_hb_reload_normal")));
     public static final DeferredHolder<SoundEvent, SoundEvent> M_2_HB_RELOAD_EMPTY = REGISTRY.register("m_2_hb_reload_empty", () -> SoundEvent.createVariableRangeEvent(Mod.loc("m_2_hb_reload_empty")));
 
+    public static final DeferredHolder<SoundEvent, SoundEvent> QBZ_191_FIRE_1P = REGISTRY.register("qbz_191_fire_1p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("qbz_191_fire_1p")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> QBZ_191_FIRE_3P = REGISTRY.register("qbz_191_fire_3p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("qbz_191_fire_3p")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> QBZ_191_FIRE_1P_S = REGISTRY.register("qbz_191_fire_1p_s", () -> SoundEvent.createVariableRangeEvent(Mod.loc("qbz_191_fire_1p_s")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> QBZ_191_FIRE_3P_S = REGISTRY.register("qbz_191_fire_3p_s", () -> SoundEvent.createVariableRangeEvent(Mod.loc("qbz_191_fire_3p_s")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> QBZ_191_FAR = REGISTRY.register("qbz_191_far", () -> SoundEvent.createVariableRangeEvent(Mod.loc("qbz_191_far")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> QBZ_191_VERYFAR = REGISTRY.register("qbz_191_veryfar", () -> SoundEvent.createVariableRangeEvent(Mod.loc("qbz_191_veryfar")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> QBZ_191_RELOAD_NORMAL = REGISTRY.register("qbz_191_reload_normal", () -> SoundEvent.createVariableRangeEvent(Mod.loc("qbz_191_reload_normal")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> QBZ_191_RELOAD_EMPTY = REGISTRY.register("qbz_191_reload_empty", () -> SoundEvent.createVariableRangeEvent(Mod.loc("qbz_191_reload_empty")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> QBZ_191_FAR_S = REGISTRY.register("qbz_191_far_s", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ak_12_far_s")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> QBZ_191_VERYFAR_S = REGISTRY.register("qbz_191_veryfar_s", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ak_12_veryfar_s")));
+
     public static final DeferredHolder<SoundEvent, SoundEvent> MK_42_FIRE_1P = REGISTRY.register("mk_42_fire_1p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("mk_42_fire_1p")));
     public static final DeferredHolder<SoundEvent, SoundEvent> MK_42_FIRE_3P = REGISTRY.register("mk_42_fire_3p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("mk_42_fire_3p")));
     public static final DeferredHolder<SoundEvent, SoundEvent> MK_42_FAR = REGISTRY.register("mk_42_far", () -> SoundEvent.createVariableRangeEvent(Mod.loc("mk_42_far")));

@@ -147,6 +147,10 @@
         {
           "type": "minecraft:item",
           "name": "superbwarfare:insidious_blueprint"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:qbz_191_blueprint"
         }
       ],
       "rolls": 1.0

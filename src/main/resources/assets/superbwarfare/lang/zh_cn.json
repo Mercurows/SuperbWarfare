@@ -57,6 +57,7 @@
   "des.superbwarfare.secondary_cataclysm_1": "“宛若群星陨落后的余烬”",
   "des.superbwarfare.secondary_cataclysm_2": "灯瑠Hiru",
   "item.superbwarfare.insidious": "阴险",
+  "item.superbwarfare.qbz_191": "QBZ-191突击步枪步枪",
 
   "des.superbwarfare.guns.upgrade_point": "升级点数: ",
   "des.superbwarfare.guns.damage": "伤害: ",
@@ -121,6 +122,7 @@
   "item.superbwarfare.hpj_11_blueprint": "H/PJ-11近防炮蓝图",
   "item.superbwarfare.aurelia_sceptre_blueprint": "海月权杖蓝图",
   "item.superbwarfare.mp_5_blueprint": "MP5冲锋枪蓝图",
+  "item.superbwarfare.qbz_191_blueprint": "QBZ-191突击步枪步枪蓝图",
 
   "item.superbwarfare.common_material_pack": "普通材料包",
   "item.superbwarfare.rare_material_pack": "稀有材料包",
