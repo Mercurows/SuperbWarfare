@@ -37,15 +37,15 @@ public class Qbz191ItemModel extends CustomGunModel<Qbz191Item> {
         return Mod.loc("textures/item/qbz_191.png");
     }
 
-//    @Override
-//    public ResourceLocation getLODModelResource(Qbz191Item animatable) {
-//        return Mod.loc("geo/lod/m_4.geo.json");
-//    }
-//
-//    @Override
-//    public ResourceLocation getLODTextureResource(Qbz191Item animatable) {
-//        return Mod.loc("textures/item/lod/m_4.png");
-//    }
+    @Override
+    public ResourceLocation getLODModelResource(Qbz191Item animatable) {
+        return Mod.loc("geo/lod/qbz_191.geo.json");
+    }
+
+    @Override
+    public ResourceLocation getLODTextureResource(Qbz191Item animatable) {
+        return Mod.loc("textures/item/lod/qbz_191.png");
+    }
 
     @Override
     public void setCustomAnimations(Qbz191Item animatable, long instanceId, AnimationState<Qbz191Item> animationState) {

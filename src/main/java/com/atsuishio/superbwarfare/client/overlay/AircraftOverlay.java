@@ -42,9 +42,6 @@ public class AircraftOverlay implements IGuiOverlay {
     private static float lerpVy = 1;
     private static float lerpLock = 1;
     private static float lerpG = 1;
-
-    private static float scopeScale = 1;
-
     private static final ResourceLocation FRAME = Mod.loc("textures/screens/aircraft/frame.png");
     private static final ResourceLocation FRAME_TARGET = Mod.loc("textures/screens/aircraft/frame_target.png");
     private static final ResourceLocation FRAME_LOCK = Mod.loc("textures/screens/aircraft/frame_lock.png");
