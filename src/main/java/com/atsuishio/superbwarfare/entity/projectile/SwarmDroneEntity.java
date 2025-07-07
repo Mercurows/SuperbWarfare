@@ -306,13 +306,13 @@ public class SwarmDroneEntity extends FastThrowableProjectile implements GeoEnti
     }
 
     @Override
-    public @NotNull SoundEvent getSound() {
+    public @NotNull SoundEvent getCloseSound() {
         return ModSounds.DRONE_SOUND.get();
     }
 
     @Override
     public float getVolume() {
-        return 0.07f;
+        return 0.6f;
     }
 
     @Override
