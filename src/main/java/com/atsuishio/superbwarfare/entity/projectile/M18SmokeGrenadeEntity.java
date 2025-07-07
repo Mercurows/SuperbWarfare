@@ -1,9 +1,9 @@
 package com.atsuishio.superbwarfare.entity.projectile;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.client.particle.CustomSmokeOption;
 import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModItems;
-import com.atsuishio.superbwarfare.init.ModParticleTypes;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
@@ -175,7 +175,7 @@ public class M18SmokeGrenadeEntity extends ThrowableItemProjectile implements Ge
 
         if (fuse <= 0 && tickCount % 2 == 0) {
             if (this.level() instanceof ServerLevel serverLevel) {
-                ParticleTool.sendParticle(serverLevel, ModParticleTypes.CUSTOM_SMOKE.get(), this.getX(), this.getY() + getBbHeight(), this.getZ(),
+                ParticleTool.sendParticle(serverLevel, new CustomSmokeOption(1, 1, 1), this.getX(), this.getY() + getBbHeight(), this.getZ(),
                         8, 0.075, 0.01, 0.075, 0.08, true);
             }
         }

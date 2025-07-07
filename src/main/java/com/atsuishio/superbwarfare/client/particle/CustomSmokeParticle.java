@@ -2,32 +2,29 @@ package com.atsuishio.superbwarfare.client.particle;
 
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.*;
-import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class CustomSmokeParticle extends TextureSheetParticle {
-    public static FireStarParticleProvider provider(SpriteSet spriteSet) {
-        return new FireStarParticleProvider(spriteSet);
-    }
 
-    public static class FireStarParticleProvider implements ParticleProvider<SimpleParticleType> {
+    @OnlyIn(Dist.CLIENT)
+    public static class Provider implements ParticleProvider<CustomSmokeOption> {
         private final SpriteSet spriteSet;
 
-        public FireStarParticleProvider(SpriteSet spriteSet) {
+        public Provider(SpriteSet spriteSet) {
             this.spriteSet = spriteSet;
         }
 
-        public Particle createParticle(SimpleParticleType typeIn, ClientLevel worldIn, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
-            return new CustomSmokeParticle(worldIn, x, y, z, xSpeed, ySpeed, zSpeed, this.spriteSet);
+        public Particle createParticle(CustomSmokeOption pType, ClientLevel pLevel, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
+            return new CustomSmokeParticle(pLevel, x, y, z, xSpeed, ySpeed, zSpeed, this.spriteSet, pType.getRed(), pType.getGreen(), pType.getBlue());
         }
     }
 
     private final SpriteSet spriteSet;
 
-    protected CustomSmokeParticle(ClientLevel world, double x, double y, double z, double vx, double vy, double vz, SpriteSet spriteSet) {
-        super(world, x, y, z);
+    protected CustomSmokeParticle(ClientLevel level, double x, double y, double z, double vx, double vy, double vz, SpriteSet spriteSet, float rCol, float gCol, float bCol) {
+        super(level, x, y, z);
         this.spriteSet = spriteSet;
         this.setSize(0.4f, 0.4f);
         this.quadSize *= 10f;
@@ -38,6 +35,9 @@ public class CustomSmokeParticle extends TextureSheetParticle {
         this.yd = vy * 0.9;
         this.zd = vz * 0.9;
         this.setSpriteFromAge(spriteSet);
+        this.rCol = rCol;
+        this.gCol = gCol;
+        this.bCol = bCol;
     }
 
     @Override

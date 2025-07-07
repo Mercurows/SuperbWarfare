@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.entity.projectile;
 
+import com.atsuishio.superbwarfare.client.particle.CustomSmokeOption;
 import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModParticleTypes;
 import com.atsuishio.superbwarfare.init.ModSounds;
@@ -21,7 +22,9 @@ import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
 
 public class SmokeDecoyEntity extends Entity {
+
     public boolean releaseSmoke = true;
+
     public SmokeDecoyEntity(EntityType<? extends SmokeDecoyEntity> type, Level world) {
         super(type, world);
     }
@@ -74,7 +77,7 @@ public class SmokeDecoyEntity extends Entity {
         if (tickCount == this.igniteTime) {
             if (releaseSmoke) {
                 if (this.level() instanceof ServerLevel serverLevel) {
-                    ParticleTool.sendParticle(serverLevel, ModParticleTypes.CUSTOM_SMOKE.get(), this.xo, this.yo, this.zo,
+                    ParticleTool.sendParticle(serverLevel, new CustomSmokeOption(1, 1, 1), this.xo, this.yo, this.zo,
                             50, 0, 0, 0, 0.07, true);
                     ParticleTool.sendParticle(serverLevel, ParticleTypes.LARGE_SMOKE, this.xo, this.yo, this.zo, 10, 1, 1, 1, 0.1, true);
                     ParticleTool.sendParticle(serverLevel, ModParticleTypes.FIRE_STAR.get(), this.xo, this.yo, this.zo, 30, 0, 0, 0, 0.2, true);
