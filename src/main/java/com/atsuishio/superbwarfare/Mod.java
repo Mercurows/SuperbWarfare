@@ -16,13 +16,7 @@ import com.atsuishio.superbwarfare.network.message.receive.*;
 import com.atsuishio.superbwarfare.network.message.send.*;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.alchemy.PotionUtils;
-import net.minecraft.world.item.alchemy.Potions;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.brewing.BrewingRecipeRegistry;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -71,7 +65,7 @@ public class Mod {
         ModTabs.TABS.register(bus);
         ModMobEffects.REGISTRY.register(bus);
         ModParticleTypes.REGISTRY.register(bus);
-        ModPotion.POTIONS.register(bus);
+        ModPotions.POTIONS.register(bus);
         ModMenuTypes.REGISTRY.register(bus);
         ModVillagers.register(bus);
         ModRecipes.RECIPE_SERIALIZERS.register(bus);
@@ -201,13 +195,6 @@ public class Mod {
         addNetworkMessage(DogTagFinishEditMessage.class, DogTagFinishEditMessage::encode, DogTagFinishEditMessage::decode, DogTagFinishEditMessage::handler);
         addNetworkMessage(VehiclesDataMessage.class, VehiclesDataMessage::encode, VehiclesDataMessage::decode, (msg, ctx) -> VehiclesDataMessage.handler(msg), Optional.of(NetworkDirection.PLAY_TO_CLIENT));
         addNetworkMessage(MouseMoveMessage.class, MouseMoveMessage::encode, MouseMoveMessage::decode, MouseMoveMessage::handler);
-
-        event.enqueueWork(() -> BrewingRecipeRegistry.addRecipe(Ingredient.of(PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.WATER)),
-                Ingredient.of(Items.LIGHTNING_ROD), PotionUtils.setPotion(new ItemStack(Items.POTION), ModPotion.SHOCK.get())));
-        event.enqueueWork(() -> BrewingRecipeRegistry.addRecipe(Ingredient.of(PotionUtils.setPotion(new ItemStack(Items.POTION), ModPotion.SHOCK.get())),
-                Ingredient.of(Items.REDSTONE), PotionUtils.setPotion(new ItemStack(Items.POTION), ModPotion.LONG_SHOCK.get())));
-        event.enqueueWork(() -> BrewingRecipeRegistry.addRecipe(Ingredient.of(PotionUtils.setPotion(new ItemStack(Items.POTION), ModPotion.SHOCK.get())),
-                Ingredient.of(Items.GLOWSTONE_DUST), PotionUtils.setPotion(new ItemStack(Items.POTION), ModPotion.STRONG_SHOCK.get())));
 
         var registerContainerEvent = new RegisterContainersEvent();
         FMLJavaModLoadingContext.get().getModEventBus().post(registerContainerEvent);
