@@ -28,11 +28,11 @@ import java.util.List;
 
 public class M18SmokeGrenade extends Item implements ProjectileItem {
 
+    public static final String TAG_COLOR = "Color";
+
     public M18SmokeGrenade() {
         super(new Properties().rarity(Rarity.UNCOMMON));
     }
-
-    public static final String TAG_COLOR = "Color";
 
     public void setColor(ItemStack stack, int color) {
         NBTTool.getTag(stack).putInt(TAG_COLOR, color);
@@ -77,7 +77,10 @@ public class M18SmokeGrenade extends Item implements ProjectileItem {
                 player.getCooldowns().addCooldown(stack.getItem(), 20);
                 float power = Math.min(usingTime / 8f, 1.8f);
 
-                M18SmokeGrenadeEntity grenade = new M18SmokeGrenadeEntity(player, worldIn, 80 - usingTime);
+                int color = this.getColor(stack);
+
+                M18SmokeGrenadeEntity grenade = new M18SmokeGrenadeEntity(player, worldIn, 80 - usingTime)
+                        .setColor((color >> 16 & 255) / 255f, ((color >> 8) & 255) / 255f, (color & 255) / 255f);
                 grenade.shootFromRotation(player, player.getXRot(), player.getYRot(), 0, power, 0);
                 worldIn.addFreshEntity(grenade);
 
@@ -96,7 +99,9 @@ public class M18SmokeGrenade extends Item implements ProjectileItem {
     @ParametersAreNonnullByDefault
     public @NotNull ItemStack finishUsingItem(ItemStack pStack, Level pLevel, LivingEntity pLivingEntity) {
         if (!pLevel.isClientSide) {
-            M18SmokeGrenadeEntity grenade = new M18SmokeGrenadeEntity(pLivingEntity, pLevel, 2);
+            int color = this.getColor(pStack);
+            M18SmokeGrenadeEntity grenade = new M18SmokeGrenadeEntity(pLivingEntity, pLevel, 2)
+                    .setColor((color >> 16 & 255) / 255f, ((color >> 8) & 255) / 255f, (color & 255) / 255f);
             pLevel.addFreshEntity(grenade);
 
             if (pLivingEntity instanceof Player player) {

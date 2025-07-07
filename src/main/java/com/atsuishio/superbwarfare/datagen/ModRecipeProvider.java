@@ -8,6 +8,7 @@ import com.atsuishio.superbwarfare.item.ContainerBlockItem;
 import com.atsuishio.superbwarfare.recipe.AmmoBoxAddAmmoRecipe;
 import com.atsuishio.superbwarfare.recipe.AmmoBoxExtractAmmoRecipe;
 import com.atsuishio.superbwarfare.recipe.PotionMortarShellRecipe;
+import com.atsuishio.superbwarfare.recipe.SmokeDyeRecipe;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
@@ -36,6 +37,7 @@ public class ModRecipeProvider extends RecipeProvider {
         SpecialRecipeBuilder.special(PotionMortarShellRecipe::new).save(writer, "potion_mortar_shell");
         SpecialRecipeBuilder.special(AmmoBoxAddAmmoRecipe::new).save(writer, "ammo_box_add_ammo");
         SpecialRecipeBuilder.special(AmmoBoxExtractAmmoRecipe::new).save(writer, "ammo_box_extract_ammo");
+        SpecialRecipeBuilder.special(SmokeDyeRecipe::new).save(writer, "smoke_dye");
 
         // items
         // 材料

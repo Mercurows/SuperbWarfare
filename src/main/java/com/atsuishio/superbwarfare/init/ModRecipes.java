@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.recipe.AmmoBoxAddAmmoRecipe;
 import com.atsuishio.superbwarfare.recipe.AmmoBoxExtractAmmoRecipe;
 import com.atsuishio.superbwarfare.recipe.PotionMortarShellRecipe;
+import com.atsuishio.superbwarfare.recipe.SmokeDyeRecipe;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.SimpleCraftingRecipeSerializer;
@@ -22,4 +23,7 @@ public class ModRecipes {
             RECIPE_SERIALIZERS.register("ammo_box_add_ammo", () -> new SimpleCraftingRecipeSerializer<>(AmmoBoxAddAmmoRecipe::new));
     public static final DeferredHolder<RecipeSerializer<?>, SimpleCraftingRecipeSerializer<AmmoBoxExtractAmmoRecipe>> AMMO_BOX_EXTRACT_AMMO_SERIALIZER =
             RECIPE_SERIALIZERS.register("ammo_box_extract_ammo", () -> new SimpleCraftingRecipeSerializer<>(AmmoBoxExtractAmmoRecipe::new));
+
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<SmokeDyeRecipe>> SMOKE_DYE_SERIALIZER =
+            RECIPE_SERIALIZERS.register("smoke_dye", () -> new SimpleCraftingRecipeSerializer<>(SmokeDyeRecipe::new));
 }
