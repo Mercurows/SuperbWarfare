@@ -70,10 +70,13 @@ public class SwarmDroneEntity extends FastThrowableProjectile implements GeoEnti
 
     public SwarmDroneEntity(double x, double y, double z, Level level) {
         super(ModEntities.SWARM_DRONE.get(), x, y, z, level);
+        this.noCulling = true;
     }
 
     public SwarmDroneEntity(LivingEntity entity, Level level, float explosionDamage, float explosionRadius) {
         super(ModEntities.SWARM_DRONE.get(), entity, level);
+        this.noCulling = true;
+
         this.explosionDamage = explosionDamage;
         this.explosionRadius = explosionRadius;
     }

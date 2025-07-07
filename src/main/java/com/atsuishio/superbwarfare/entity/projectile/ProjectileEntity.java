@@ -120,7 +120,7 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
     }
 
     public ProjectileEntity(Level level) {
-        super(ModEntities.PROJECTILE.get(), level);
+        this(ModEntities.PROJECTILE.get(), level);
     }
 
     public ProjectileEntity(PlayMessages.SpawnEntity packet, Level level) {

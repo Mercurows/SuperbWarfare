@@ -52,8 +52,8 @@ import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Math;
 import org.joml.*;
+import org.joml.Math;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -89,12 +89,13 @@ public class AnnihilatorEntity extends EnergyVehicleEntity implements GeoEntity,
 
     public AnnihilatorEntity(EntityType<AnnihilatorEntity> type, Level world) {
         super(type, world);
+        this.noCulling = true;
+
         this.obb = new OBB(this.position().toVector3f(), new Vector3f(6.4375f, 1.84375f, 4.125f), new Quaternionf(), OBB.Part.BODY);
         this.obb2 = new OBB(this.position().toVector3f(), new Vector3f(5.0625f, 1.40625f, 1.5f), new Quaternionf(), OBB.Part.BODY);
         this.obb3 = new OBB(this.position().toVector3f(), new Vector3f(5.1875f, 1.84375f, 1.96875f), new Quaternionf(), OBB.Part.BODY);
         this.obb4 = new OBB(this.position().toVector3f(), new Vector3f(4.125f, 1.84375f, 0.75f), new Quaternionf(), OBB.Part.BODY);
         this.obb5 = new OBB(this.position().toVector3f(), new Vector3f(7.75f, 0.71875f, 1.46875f), new Quaternionf(), OBB.Part.BODY);
-        this.noCulling = true;
     }
 
     @Override

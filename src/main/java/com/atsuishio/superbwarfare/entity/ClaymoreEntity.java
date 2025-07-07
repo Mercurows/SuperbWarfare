@@ -50,7 +50,7 @@ public class ClaymoreEntity extends Entity implements GeoEntity, OwnableEntity {
     }
 
     public ClaymoreEntity(LivingEntity owner, Level level) {
-        super(ModEntities.CLAYMORE.get(), level);
+        this(ModEntities.CLAYMORE.get(), level);
         if (owner != null) {
             this.setOwnerUUID(owner.getUUID());
         }

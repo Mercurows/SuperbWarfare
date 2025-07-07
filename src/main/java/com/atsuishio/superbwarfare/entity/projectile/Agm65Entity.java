@@ -70,6 +70,8 @@ public class Agm65Entity extends FastThrowableProjectile implements GeoEntity, E
 
     public Agm65Entity(LivingEntity entity, Level level) {
         super(ModEntities.AGM_65.get(), entity, level);
+        this.noCulling = true;
+
         this.durability = 25;
     }
 

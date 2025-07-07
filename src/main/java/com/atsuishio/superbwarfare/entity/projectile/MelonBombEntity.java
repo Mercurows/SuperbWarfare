@@ -39,6 +39,7 @@ public class MelonBombEntity extends FastThrowableProjectile implements Explosiv
 
     public MelonBombEntity(LivingEntity entity, Level level) {
         super(ModEntities.MELON_BOMB.get(), entity, level);
+        this.noCulling = true;
     }
 
     public MelonBombEntity(PlayMessages.SpawnEntity spawnEntity, Level level) {

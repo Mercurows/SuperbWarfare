@@ -57,17 +57,21 @@ public class RpgRocketEntity extends FastThrowableProjectile implements GeoEntit
     public RpgRocketEntity(EntityType<? extends RpgRocketEntity> type, Level world) {
         super(type, world);
         this.noCulling = true;
+
         this.durability = 20;
     }
 
     public RpgRocketEntity(EntityType<? extends ThrowableItemProjectile> pEntityType, double pX, double pY, double pZ, Level pLevel) {
         super(pEntityType, pX, pY, pZ, pLevel);
         this.noCulling = true;
+
         this.durability = 20;
     }
 
     public RpgRocketEntity(LivingEntity entity, Level level) {
         super(ModEntities.RPG_ROCKET.get(), entity, level);
+        this.noCulling = true;
+
         this.durability = 2;
     }
 
