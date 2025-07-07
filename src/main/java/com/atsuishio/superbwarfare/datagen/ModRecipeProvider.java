@@ -34,6 +34,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
         SpecialRecipeBuilder.special(ModRecipes.POTION_MORTAR_SHELL_SERIALIZER.get()).save(writer, "potion_mortar_shell");
         SpecialRecipeBuilder.special(ModRecipes.AMMO_BOX_ADD_AMMO_SERIALIZER.get()).save(writer, "ammo_box_add_ammo");
         SpecialRecipeBuilder.special(ModRecipes.AMMO_BOX_EXTRACT_AMMO_SERIALIZER.get()).save(writer, "ammo_box_extract_ammo");
+        SpecialRecipeBuilder.special(ModRecipes.SMOKE_DYE_SERIALIZER.get()).save(writer, "smoke_dye");
 
         // items
         // 材料

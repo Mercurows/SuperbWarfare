@@ -40,9 +40,14 @@ import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 public class M18SmokeGrenadeEntity extends ThrowableItemProjectile implements GeoEntity {
+
+    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+
     private int count = 8;
     private int fuse = 100;
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+    private float rColor = 1.0f;
+    private float gColor = 1.0f;
+    private float bColor = 1.0f;
 
     public M18SmokeGrenadeEntity(EntityType<? extends M18SmokeGrenadeEntity> type, Level world) {
         super(type, world);
@@ -69,6 +74,9 @@ public class M18SmokeGrenadeEntity extends ThrowableItemProjectile implements Ge
         super.addAdditionalSaveData(pCompound);
         pCompound.putFloat("Fuse", this.fuse);
         pCompound.putInt("Count", this.count);
+        pCompound.putFloat("RColor", this.rColor);
+        pCompound.putFloat("GColor", this.gColor);
+        pCompound.putFloat("BColor", this.bColor);
     }
 
     @Override
@@ -79,6 +87,15 @@ public class M18SmokeGrenadeEntity extends ThrowableItemProjectile implements Ge
         }
         if (pCompound.contains("Count")) {
             this.count = Mth.clamp(pCompound.getInt("Count"), 1, 64);
+        }
+        if (pCompound.contains("RColor")) {
+            this.rColor = pCompound.getFloat("RColor");
+        }
+        if (pCompound.contains("GColor")) {
+            this.gColor = pCompound.getFloat("GColor");
+        }
+        if (pCompound.contains("BColor")) {
+            this.bColor = pCompound.getFloat("BColor");
         }
     }
 
@@ -175,7 +192,7 @@ public class M18SmokeGrenadeEntity extends ThrowableItemProjectile implements Ge
 
         if (fuse <= 0 && tickCount % 2 == 0) {
             if (this.level() instanceof ServerLevel serverLevel) {
-                ParticleTool.sendParticle(serverLevel, new CustomSmokeOption(1, 1, 1), this.getX(), this.getY() + getBbHeight(), this.getZ(),
+                ParticleTool.sendParticle(serverLevel, new CustomSmokeOption(this.rColor, this.gColor, this.bColor), this.getX(), this.getY() + getBbHeight(), this.getZ(),
                         8, 0.075, 0.01, 0.075, 0.08, true);
             }
         }
@@ -209,5 +226,24 @@ public class M18SmokeGrenadeEntity extends ThrowableItemProjectile implements Ge
     @Override
     protected float getGravity() {
         return 0.07F;
+    }
+
+    public float getRed() {
+        return rColor;
+    }
+
+    public float getGreen() {
+        return gColor;
+    }
+
+    public float getBlue() {
+        return bColor;
+    }
+
+    public M18SmokeGrenadeEntity setColor(float r, float g, float b) {
+        this.rColor = r;
+        this.gColor = g;
+        this.bColor = b;
+        return this;
     }
 }

@@ -23,12 +23,20 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
-// TODO 物品图标，合成配方等资源
-
 public class M18SmokeGrenade extends Item implements DispenserLaunchable {
+
+    public static final String TAG_COLOR = "Color";
 
     public M18SmokeGrenade() {
         super(new Properties().rarity(Rarity.UNCOMMON));
+    }
+
+    public void setColor(ItemStack stack, int color) {
+        stack.getOrCreateTag().putInt(TAG_COLOR, color);
+    }
+
+    public int getColor(ItemStack stack) {
+        return stack.getTag() != null && stack.getTag().contains(TAG_COLOR) ? stack.getTag().getInt(TAG_COLOR) : 0xFFFFFF;
     }
 
     @Override
@@ -49,16 +57,19 @@ public class M18SmokeGrenade extends Item implements DispenserLaunchable {
 
     @Override
     @ParametersAreNonnullByDefault
-    public void releaseUsing(ItemStack stack, Level worldIn, LivingEntity entityLiving, int timeLeft) {
-        if (!worldIn.isClientSide && entityLiving instanceof Player player) {
+    public void releaseUsing(ItemStack stack, Level pLevel, LivingEntity entityLiving, int timeLeft) {
+        if (!pLevel.isClientSide && entityLiving instanceof Player player) {
             int usingTime = this.getUseDuration(stack) - timeLeft;
             if (usingTime > 3) {
                 player.getCooldowns().addCooldown(stack.getItem(), 20);
                 float power = Math.min(usingTime / 8f, 1.8f);
 
-                M18SmokeGrenadeEntity grenade = new M18SmokeGrenadeEntity(player, worldIn, 80 - usingTime);
+                int color = this.getColor(stack);
+
+                M18SmokeGrenadeEntity grenade = new M18SmokeGrenadeEntity(player, pLevel, 80 - usingTime)
+                        .setColor((color >> 16 & 255) / 255f, ((color >> 8) & 255) / 255f, (color & 255) / 255f);
                 grenade.shootFromRotation(player, player.getXRot(), player.getYRot(), 0, power, 0);
-                worldIn.addFreshEntity(grenade);
+                pLevel.addFreshEntity(grenade);
 
                 if (player instanceof ServerPlayer serverPlayer) {
                     serverPlayer.level().playSound(null, serverPlayer.getOnPos(), ModSounds.GRENADE_THROW.get(), SoundSource.PLAYERS, 1, 1);
@@ -75,7 +86,9 @@ public class M18SmokeGrenade extends Item implements DispenserLaunchable {
     @ParametersAreNonnullByDefault
     public @NotNull ItemStack finishUsingItem(ItemStack pStack, Level pLevel, LivingEntity pLivingEntity) {
         if (!pLevel.isClientSide) {
-            M18SmokeGrenadeEntity grenade = new M18SmokeGrenadeEntity(pLivingEntity, pLevel, 2);
+            int color = this.getColor(pStack);
+            M18SmokeGrenadeEntity grenade = new M18SmokeGrenadeEntity(pLivingEntity, pLevel, 2)
+                    .setColor((color >> 16 & 255) / 255f, ((color >> 8) & 255) / 255f, (color & 255) / 255f);
             pLevel.addFreshEntity(grenade);
 
             if (pLivingEntity instanceof Player player) {
