@@ -3,10 +3,13 @@ package com.atsuishio.superbwarfare.item;
 import com.atsuishio.superbwarfare.entity.projectile.M18SmokeGrenadeEntity;
 import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModSounds;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockSource;
 import net.minecraft.core.Position;
 import net.minecraft.core.dispenser.AbstractProjectileDispenseBehavior;
 import net.minecraft.core.dispenser.DispenseItemBehavior;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -14,14 +17,13 @@ import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Rarity;
-import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.List;
 
 public class M18SmokeGrenade extends Item implements DispenserLaunchable {
 
@@ -37,6 +39,14 @@ public class M18SmokeGrenade extends Item implements DispenserLaunchable {
 
     public int getColor(ItemStack stack) {
         return stack.getTag() != null && stack.getTag().contains(TAG_COLOR) ? stack.getTag().getInt(TAG_COLOR) : 0xFFFFFF;
+    }
+
+    @Override
+    public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, List<Component> pTooltipComponents, TooltipFlag pIsAdvanced) {
+        pTooltipComponents.add(Component.translatable("des.superbwarfare.m18_smoke_grenade").withStyle(ChatFormatting.GRAY)
+                .append(Component.empty().withStyle(ChatFormatting.RESET))
+                .append(Component.literal("#" + Integer.toHexString(this.getColor(pStack))).withStyle(Style.EMPTY.withColor(this.getColor(pStack))))
+        );
     }
 
     @Override
