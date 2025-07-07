@@ -123,6 +123,7 @@ public enum Ammo {
     }
 
     public void set(Entity entity, int count) {
+        if (entity.level().isClientSide) return;
         var cap = entity.getData(ModAttachments.PLAYER_VARIABLE).watch();
 
         set(cap, count);
