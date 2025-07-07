@@ -16,11 +16,11 @@ public class M18SmokeGrenadeEntityModel extends GeoModel<M18SmokeGrenadeEntity> 
 
     @Override
     public ResourceLocation getModelResource(M18SmokeGrenadeEntity entity) {
-        return Mod.loc("geo/rgo_grenade.geo.json");
+        return Mod.loc("geo/m18_smoke_grenade.geo.json");
     }
 
     @Override
     public ResourceLocation getTextureResource(M18SmokeGrenadeEntity entity) {
-        return Mod.loc("textures/item/rgo_grenade.png");
+        return Mod.loc("textures/item/m_18.png");
     }
 }

@@ -21,9 +21,14 @@ import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
 
 public class SmokeDecoyEntity extends Entity {
-
+    public boolean releaseSmoke = true;
     public SmokeDecoyEntity(EntityType<? extends SmokeDecoyEntity> type, Level world) {
         super(type, world);
+    }
+
+    public SmokeDecoyEntity(EntityType<? extends SmokeDecoyEntity> type, Level world, boolean release) {
+        super(type, world);
+        releaseSmoke = release;
     }
 
     public SmokeDecoyEntity(LivingEntity entity, Level level) {
@@ -31,7 +36,7 @@ public class SmokeDecoyEntity extends Entity {
     }
 
     public SmokeDecoyEntity(PlayMessages.SpawnEntity spawnEntity, Level level) {
-        this(ModEntities.SMOKE_DECOY.get(), level);
+        this(ModEntities.SMOKE_DECOY.get(), level, true);
     }
 
     @Override
@@ -67,13 +72,15 @@ public class SmokeDecoyEntity extends Entity {
         super.tick();
         this.move(MoverType.SELF, this.getDeltaMovement());
         if (tickCount == this.igniteTime) {
-            if (this.level() instanceof ServerLevel serverLevel) {
-                ParticleTool.sendParticle(serverLevel, ModParticleTypes.CUSTOM_SMOKE.get(), this.xo, this.yo, this.zo,
-                        50, 0, 0, 0, 0.07, true);
-                ParticleTool.sendParticle(serverLevel, ParticleTypes.LARGE_SMOKE, this.xo, this.yo, this.zo, 10, 1, 1, 1, 0.1, true);
-                ParticleTool.sendParticle(serverLevel, ModParticleTypes.FIRE_STAR.get(), this.xo, this.yo, this.zo, 30, 0, 0, 0, 0.2, true);
+            if (releaseSmoke) {
+                if (this.level() instanceof ServerLevel serverLevel) {
+                    ParticleTool.sendParticle(serverLevel, ModParticleTypes.CUSTOM_SMOKE.get(), this.xo, this.yo, this.zo,
+                            50, 0, 0, 0, 0.07, true);
+                    ParticleTool.sendParticle(serverLevel, ParticleTypes.LARGE_SMOKE, this.xo, this.yo, this.zo, 10, 1, 1, 1, 0.1, true);
+                    ParticleTool.sendParticle(serverLevel, ModParticleTypes.FIRE_STAR.get(), this.xo, this.yo, this.zo, 30, 0, 0, 0, 0.2, true);
+                }
+                this.level().playSound(null, this, ModSounds.SMOKE_FIRE.get(), this.getSoundSource(), 2, random.nextFloat() * 0.05f + 1);
             }
-            this.level().playSound(null, this, ModSounds.SMOKE_FIRE.get(), this.getSoundSource(), 2, random.nextFloat() * 0.05f + 1);
             this.setDeltaMovement(Vec3.ZERO);
         }
 

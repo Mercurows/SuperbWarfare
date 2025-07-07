@@ -494,6 +494,7 @@ public class ModSounds {
     public static final RegistryObject<SoundEvent> DPS_GENERATOR_EVOLVE = REGISTRY.register("dps_generator_evolve", () -> SoundEvent.createVariableRangeEvent(Mod.loc("dps_generator_evolve")));
     public static final RegistryObject<SoundEvent> STEEL_PIPE_HIT = REGISTRY.register("steel_pipe_hit", () -> SoundEvent.createVariableRangeEvent(Mod.loc("steel_pipe_hit")));
     public static final RegistryObject<SoundEvent> STEEL_PIPE_DROP = REGISTRY.register("steel_pipe_drop", () -> SoundEvent.createVariableRangeEvent(Mod.loc("steel_pipe_drop")));
+    public static final RegistryObject<SoundEvent> SM0KE_GRENADE_RELEASE = REGISTRY.register("smoke_grenade_release", () -> SoundEvent.createVariableRangeEvent(Mod.loc("smoke_grenade_release")));
 
 }
 

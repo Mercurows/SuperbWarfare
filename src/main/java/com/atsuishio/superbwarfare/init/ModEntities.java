@@ -73,11 +73,11 @@ public class ModEntities {
     public static final RegistryObject<EntityType<MelonBombEntity>> MELON_BOMB = register("melon_bomb",
             EntityType.Builder.<MelonBombEntity>of(MelonBombEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).setCustomClientFactory(MelonBombEntity::new).noSave().sized(1f, 1f));
     public static final RegistryObject<EntityType<HandGrenadeEntity>> HAND_GRENADE = register("hand_grenade",
-            EntityType.Builder.<HandGrenadeEntity>of(HandGrenadeEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).setCustomClientFactory(HandGrenadeEntity::new).noSave().sized(0.3f, 0.3f));
+            EntityType.Builder.<HandGrenadeEntity>of(HandGrenadeEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(true).setTrackingRange(64).setUpdateInterval(1).setCustomClientFactory(HandGrenadeEntity::new).noSave().sized(0.3f, 0.3f));
     public static final RegistryObject<EntityType<RgoGrenadeEntity>> RGO_GRENADE = register("rgo_grenade",
-            EntityType.Builder.<RgoGrenadeEntity>of(RgoGrenadeEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).setCustomClientFactory(RgoGrenadeEntity::new).noSave().sized(0.3f, 0.3f));
+            EntityType.Builder.<RgoGrenadeEntity>of(RgoGrenadeEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(true).setTrackingRange(64).setUpdateInterval(1).setCustomClientFactory(RgoGrenadeEntity::new).noSave().sized(0.3f, 0.3f));
     public static final RegistryObject<EntityType<M18SmokeGrenadeEntity>> M18_SMOKE_GRENADE = register("m18_smoke_grenade",
-            EntityType.Builder.<M18SmokeGrenadeEntity>of(M18SmokeGrenadeEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).setCustomClientFactory(M18SmokeGrenadeEntity::new).noSave().sized(0.3f, 0.3f));
+            EntityType.Builder.<M18SmokeGrenadeEntity>of(M18SmokeGrenadeEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(true).setTrackingRange(64).setUpdateInterval(1).setCustomClientFactory(M18SmokeGrenadeEntity::new).noSave().sized(0.3f, 0.3f));
     public static final RegistryObject<EntityType<JavelinMissileEntity>> JAVELIN_MISSILE = register("javelin_missile",
             EntityType.Builder.<JavelinMissileEntity>of(JavelinMissileEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).setCustomClientFactory(JavelinMissileEntity::new).noSave().sized(0.5f, 0.5f));
     public static final RegistryObject<EntityType<Agm65Entity>> AGM_65 = register("agm_65",
