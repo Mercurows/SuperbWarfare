@@ -76,6 +76,8 @@ public class ModEntities {
             EntityType.Builder.<HandGrenadeEntity>of(HandGrenadeEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).noSave().setTrackingRange(64).setUpdateInterval(1).sized(0.3f, 0.3f));
     public static final DeferredHolder<EntityType<?>, EntityType<RgoGrenadeEntity>> RGO_GRENADE = register("rgo_grenade",
             EntityType.Builder.<RgoGrenadeEntity>of(RgoGrenadeEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).noSave().setTrackingRange(64).setUpdateInterval(1).sized(0.3f, 0.3f));
+    public static final DeferredHolder<EntityType<?>, EntityType<M18SmokeGrenadeEntity>> M18_SMOKE_GRENADE = register("m18_smoke_grenade",
+            EntityType.Builder.<M18SmokeGrenadeEntity>of(M18SmokeGrenadeEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).noSave().setTrackingRange(64).setUpdateInterval(1).sized(0.3f, 0.3f));
     public static final DeferredHolder<EntityType<?>, EntityType<JavelinMissileEntity>> JAVELIN_MISSILE = register("javelin_missile",
             EntityType.Builder.<JavelinMissileEntity>of(JavelinMissileEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).noSave().setTrackingRange(64).setUpdateInterval(1).sized(0.5f, 0.5f));
     public static final DeferredHolder<EntityType<?>, EntityType<Agm65Entity>> AGM_65 = register("agm_65",

@@ -113,6 +113,7 @@ public class ModItems {
     public static final DeferredHolder<Item, Item> AP_5_INCHES = AMMO.register("ap_5_inches", () -> new CannonShellItem(new Item.Properties().rarity(Rarity.RARE)));
     public static final DeferredHolder<Item, HandGrenade> HAND_GRENADE = AMMO.register("hand_grenade", HandGrenade::new);
     public static final DeferredHolder<Item, RgoGrenade> RGO_GRENADE = AMMO.register("rgo_grenade", RgoGrenade::new);
+    public static final DeferredHolder<Item, M18SmokeGrenade> M18_SMOKE_GRENADE = AMMO.register("m18_smoke_grenade", M18SmokeGrenade::new);
     public static final DeferredHolder<Item, ClaymoreMine> CLAYMORE_MINE = AMMO.register("claymore_mine", ClaymoreMine::new);
     public static final DeferredHolder<Item, Tm62Item> TM_62 = AMMO.register("tm_62", Tm62Item::new);
     public static final DeferredHolder<Item, C4BombItem> C4_BOMB = AMMO.register("c4_bomb", C4BombItem::new);
@@ -349,6 +350,7 @@ public class ModItems {
         DispenserBlock.registerBehavior(ROCKET_70.get(), new Rocket70Item.Rocket70DispenseBehavior());
         DispenserBlock.registerBehavior(MEDIUM_AERIAL_BOMB.get(), new MediumAerialBombItem.MediumAerialBombDispenseBehavior());
         DispenserBlock.registerBehavior(RGO_GRENADE.get(), new RgoGrenade.RgoGrenadeDispenserBehavior());
+        DispenserBlock.registerBehavior(M18_SMOKE_GRENADE.get(), new M18SmokeGrenade.SmokeGrenadeDispenserBehavior());
         DispenserBlock.registerBehavior(TM_62.get(), new Tm62Item.Tm62DispenseBehavior());
     }
 

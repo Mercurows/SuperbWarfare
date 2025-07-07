@@ -14,7 +14,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -25,7 +24,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
@@ -153,16 +151,6 @@ public class RgoGrenadeEntity extends FastThrowableProjectile implements GeoEnti
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return this.cache;
-    }
-
-    public void droneShoot(Entity drone) {
-        Vec3 vec3 = (new Vec3(0.2 * drone.getDeltaMovement().x, 0.2 * drone.getDeltaMovement().y, 0.2 * drone.getDeltaMovement().z));
-        this.setDeltaMovement(vec3);
-        double d0 = vec3.horizontalDistance();
-        this.setYRot((float) (Mth.atan2(vec3.x, vec3.z) * (double) (180F / (float) Math.PI)));
-        this.setXRot((float) (Mth.atan2(vec3.y, d0) * (double) (180F / (float) Math.PI)));
-        this.yRotO = this.getYRot();
-        this.xRotO = this.getXRot();
     }
 
     @Override
