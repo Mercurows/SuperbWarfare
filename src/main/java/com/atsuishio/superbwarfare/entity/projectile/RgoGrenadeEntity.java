@@ -17,7 +17,6 @@ import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -28,7 +27,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.PlayMessages;
@@ -57,11 +55,14 @@ public class RgoGrenadeEntity extends FastThrowableProjectile implements GeoEnti
 
     public RgoGrenadeEntity(LivingEntity entity, Level level, int fuse) {
         super(ModEntities.RGO_GRENADE.get(), entity, level);
+        this.noCulling = true;
+
         this.fuse = fuse;
     }
 
     public RgoGrenadeEntity(PlayMessages.SpawnEntity spawnEntity, Level level) {
         this(ModEntities.RGO_GRENADE.get(), level);
+        this.noCulling = true;
     }
 
     @Override
@@ -118,7 +119,8 @@ public class RgoGrenadeEntity extends FastThrowableProjectile implements GeoEnti
                 case ENTITY:
                     EntityHitResult entityResult = (EntityHitResult) result;
                     Entity entity = entityResult.getEntity();
-                    if (this.getOwner() != null && this.getOwner().getVehicle() != null && entity == this.getOwner().getVehicle()) return;
+                    if (this.getOwner() != null && this.getOwner().getVehicle() != null && entity == this.getOwner().getVehicle())
+                        return;
                     if (this.getOwner() instanceof LivingEntity living) {
                         if (!living.level().isClientSide() && living instanceof ServerPlayer player) {
                             living.level().playSound(null, living.blockPosition(), ModSounds.INDICATION.get(), SoundSource.VOICE, 1, 1);
@@ -166,16 +168,6 @@ public class RgoGrenadeEntity extends FastThrowableProjectile implements GeoEnti
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return this.cache;
-    }
-
-    public void droneShoot(Entity drone) {
-        Vec3 vec3 = (new Vec3(0.2 * drone.getDeltaMovement().x, 0.2 * drone.getDeltaMovement().y, 0.2 * drone.getDeltaMovement().z));
-        this.setDeltaMovement(vec3);
-        double d0 = vec3.horizontalDistance();
-        this.setYRot((float) (Mth.atan2(vec3.x, vec3.z) * (double) (180F / (float) Math.PI)));
-        this.setXRot((float) (Mth.atan2(vec3.y, d0) * (double) (180F / (float) Math.PI)));
-        this.yRotO = this.getYRot();
-        this.xRotO = this.getXRot();
     }
 
     @Override

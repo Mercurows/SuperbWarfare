@@ -28,6 +28,7 @@ public class ModEntityRenderers {
         event.registerEntityRenderer(ModEntities.DRONE.get(), DroneRenderer::new);
         event.registerEntityRenderer(ModEntities.HAND_GRENADE.get(), HandGrenadeRenderer::new);
         event.registerEntityRenderer(ModEntities.RGO_GRENADE.get(), RgoGrenadeRenderer::new);
+        event.registerEntityRenderer(ModEntities.M18_SMOKE_GRENADE.get(), M18SmokeGrenadeRenderer::new);
         event.registerEntityRenderer(ModEntities.MLE_1934.get(), Mle1934Renderer::new);
         event.registerEntityRenderer(ModEntities.JAVELIN_MISSILE.get(), JavelinMissileRenderer::new);
         event.registerEntityRenderer(ModEntities.LASER.get(), LaserEntityRenderer::new);
