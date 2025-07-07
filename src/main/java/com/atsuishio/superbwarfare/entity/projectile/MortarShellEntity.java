@@ -70,15 +70,20 @@ public class MortarShellEntity extends FastThrowableProjectile implements GeoEnt
 
     public MortarShellEntity(LivingEntity entity, Level level) {
         super(ModEntities.MORTAR_SHELL.get(), entity, level);
+        this.noCulling = true;
     }
 
     public MortarShellEntity(LivingEntity entity, Level world, float explosionDamage) {
         super(ModEntities.MORTAR_SHELL.get(), entity, world);
+        this.noCulling = true;
+
         this.explosionDamage = explosionDamage;
     }
 
     public MortarShellEntity(LivingEntity entity, Level world, float explosionDamage, float radius) {
         super(ModEntities.MORTAR_SHELL.get(), entity, world);
+        this.noCulling = true;
+
         this.explosionDamage = explosionDamage;
         this.radius = radius;
     }

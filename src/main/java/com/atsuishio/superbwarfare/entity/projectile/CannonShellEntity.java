@@ -61,6 +61,8 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
 
     public CannonShellEntity(LivingEntity entity, Level world, float damage, float radius, float explosionDamage, float fireProbability, int fireTime, float gravity) {
         super(ModEntities.CANNON_SHELL.get(), entity, world);
+        this.noCulling = true;
+
         this.damage = damage;
         this.radius = radius;
         this.explosionDamage = explosionDamage;

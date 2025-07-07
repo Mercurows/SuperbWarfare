@@ -65,6 +65,8 @@ public class JavelinMissileEntity extends FastThrowableProjectile implements Geo
 
     public JavelinMissileEntity(LivingEntity entity, Level level, float damage, float explosionDamage, float explosionRadius, int guideType, Vec3 targetPos) {
         super(ModEntities.JAVELIN_MISSILE.get(), entity, level);
+        this.noCulling = true;
+
         this.damage = damage;
         this.explosionDamage = explosionDamage;
         this.explosionRadius = explosionRadius;

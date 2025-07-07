@@ -42,6 +42,7 @@ public class Mk82Entity extends FastThrowableProjectile implements GeoEntity, Ex
 
     public Mk82Entity(LivingEntity entity, Level level) {
         super(ModEntities.MK_82.get(), entity, level);
+        this.noCulling = true;
     }
 
     public Mk82Entity(EntityType<? extends ThrowableItemProjectile> pEntityType, double pX, double pY, double pZ, Level pLevel) {

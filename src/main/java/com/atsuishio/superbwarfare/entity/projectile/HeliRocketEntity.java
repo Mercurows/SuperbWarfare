@@ -52,6 +52,7 @@ public class HeliRocketEntity extends FastThrowableProjectile implements GeoEnti
     public HeliRocketEntity(EntityType<? extends ThrowableItemProjectile> pEntityType, double pX, double pY, double pZ, Level pLevel) {
         super(pEntityType, pX, pY, pZ, pLevel);
         this.noCulling = true;
+
         this.durability = 20;
     }
 
