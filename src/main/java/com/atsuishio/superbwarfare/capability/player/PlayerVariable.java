@@ -45,6 +45,7 @@ public class PlayerVariable implements INBTSerializable<CompoundTag> {
      * 编辑并自动同步玩家变量
      */
     public static void modify(Entity entity, Consumer<PlayerVariable> consumer) {
+        if (entity.level().isClientSide) return;
         var cap = entity.getCapability(ModCapabilities.PLAYER_VARIABLE).orElse(new PlayerVariable());
 
         cap.watch();
