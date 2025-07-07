@@ -35,7 +35,9 @@ public class M18SmokeGrenade extends Item implements ProjectileItem {
     }
 
     public void setColor(ItemStack stack, int color) {
-        NBTTool.getTag(stack).putInt(TAG_COLOR, color);
+        var tag = NBTTool.getTag(stack);
+        tag.putInt(TAG_COLOR, color);
+        NBTTool.saveTag(stack, tag);
     }
 
     public int getColor(ItemStack stack) {
