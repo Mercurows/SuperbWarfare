@@ -7,6 +7,7 @@ import com.atsuishio.superbwarfare.entity.projectile.FlareDecoyEntity;
 import com.atsuishio.superbwarfare.entity.projectile.SmokeDecoyEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
+import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.tools.EntityFindUtil;
@@ -294,7 +295,7 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
         if (decoyInputDown) {
             if (this.entityData.get(DECOY_COUNT) > 0 && this.level() instanceof ServerLevel) {
                 for (int i = 0; i < 8; i++) {
-                    SmokeDecoyEntity smokeDecoyEntity = new SmokeDecoyEntity(this.level());
+                    SmokeDecoyEntity smokeDecoyEntity = new SmokeDecoyEntity(ModEntities.SMOKE_DECOY.get(), this.level());
                     smokeDecoyEntity.setPos(this.getX(), this.getY() + getBbHeight(), this.getZ());
                     smokeDecoyEntity.decoyShoot(this, vec3.yRot((-78.75f + 22.5F * i) * Mth.DEG_TO_RAD), 4f, 8);
                     this.level().addFreshEntity(smokeDecoyEntity);

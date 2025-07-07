@@ -17,7 +17,7 @@ public class ModParticles {
         event.registerSpriteSet(ModParticleTypes.FIRE_STAR.get(), FireStarParticle::provider);
         event.registerSpecial(ModParticleTypes.BULLET_DECAL.get(), new BulletDecalParticle.Provider());
         event.registerSpriteSet(ModParticleTypes.CUSTOM_CLOUD.get(), CustomCloudParticle::provider);
-        event.registerSpriteSet(ModParticleTypes.CUSTOM_SMOKE.get(), CustomSmokeParticle::provider);
+        event.registerSpriteSet(ModParticleTypes.CUSTOM_SMOKE.get(), CustomSmokeParticle.Provider::new);
     }
 }
 
