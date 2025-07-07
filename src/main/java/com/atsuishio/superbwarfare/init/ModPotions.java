@@ -8,7 +8,7 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 @SuppressWarnings("unused")
-public class ModPotion {
+public class ModPotions {
     public static final DeferredRegister<Potion> POTIONS = DeferredRegister.create(BuiltInRegistries.POTION, Mod.MODID);
 
     public static final DeferredHolder<Potion, Potion> SHOCK = POTIONS.register("superbwarfare_shock",

@@ -62,7 +62,7 @@ public class Mod {
         ModEntities.REGISTRY.register(bus);
         ModMobEffects.REGISTRY.register(bus);
         ModParticleTypes.REGISTRY.register(bus);
-        ModPotion.POTIONS.register(bus);
+        ModPotions.POTIONS.register(bus);
         ModMenuTypes.REGISTRY.register(bus);
         ModVillagers.register(bus);
         ModRecipes.RECIPE_SERIALIZERS.register(bus);
