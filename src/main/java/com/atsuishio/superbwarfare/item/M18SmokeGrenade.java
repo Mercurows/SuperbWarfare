@@ -4,10 +4,14 @@ import com.atsuishio.superbwarfare.entity.projectile.M18SmokeGrenadeEntity;
 import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
+import com.atsuishio.superbwarfare.tools.NBTTool;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Position;
 import net.minecraft.core.dispenser.BlockSource;
 import net.minecraft.core.dispenser.ProjectileDispenseBehavior;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -20,11 +24,32 @@ import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.List;
 
 public class M18SmokeGrenade extends Item implements ProjectileItem {
 
     public M18SmokeGrenade() {
         super(new Properties().rarity(Rarity.UNCOMMON));
+    }
+
+    public static final String TAG_COLOR = "Color";
+
+    public void setColor(ItemStack stack, int color) {
+        NBTTool.getTag(stack).putInt(TAG_COLOR, color);
+    }
+
+    public int getColor(ItemStack stack) {
+        var tag = NBTTool.getTag(stack);
+        return tag.contains(TAG_COLOR) ? tag.getInt(TAG_COLOR) : 0xFFFFFF;
+    }
+
+    @Override
+    @ParametersAreNonnullByDefault
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
+        tooltipComponents.add(Component.translatable("des.superbwarfare.m18_smoke_grenade").withStyle(ChatFormatting.GRAY)
+                .append(Component.empty().withStyle(ChatFormatting.RESET))
+                .append(Component.literal("#" + Integer.toHexString(this.getColor(stack))).withStyle(Style.EMPTY.withColor(this.getColor(stack))))
+        );
     }
 
     @Override
