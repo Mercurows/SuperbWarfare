@@ -17,6 +17,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.projectile.ThrowableItemProjectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BellBlock;
@@ -31,7 +32,7 @@ import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-public class RgoGrenadeEntity extends FastThrowableProjectile implements GeoEntity, ExplosiveProjectile {
+public class RgoGrenadeEntity extends ThrowableItemProjectile implements GeoEntity, ExplosiveProjectile {
 
     private float explosionDamage = ExplosionConfig.RGO_GRENADE_EXPLOSION_DAMAGE.get();
     private float explosionRadius = ExplosionConfig.RGO_GRENADE_EXPLOSION_RADIUS.get();

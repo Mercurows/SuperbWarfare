@@ -3386,5 +3386,13 @@
         "stream": false
       }
     ]
+  },
+  "smoke_grenade_release": {
+    "sounds": [
+      {
+        "name": "superbwarfare:smoke_grenade_release",
+        "stream": false
+      }
+    ]
   }
 }

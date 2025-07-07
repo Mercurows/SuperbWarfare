@@ -21,8 +21,6 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
-// TODO 物品图标，合成配方等资源
-
 public class M18SmokeGrenade extends Item implements ProjectileItem {
 
     public M18SmokeGrenade() {
@@ -73,9 +71,8 @@ public class M18SmokeGrenade extends Item implements ProjectileItem {
     @ParametersAreNonnullByDefault
     public @NotNull ItemStack finishUsingItem(ItemStack pStack, Level pLevel, LivingEntity pLivingEntity) {
         if (!pLevel.isClientSide) {
-            var grenade = new M18SmokeGrenadeEntity(pLivingEntity, pLevel, 100);
-            grenade.setPos(pLivingEntity.position());
-            grenade.releaseSmoke();
+            M18SmokeGrenadeEntity grenade = new M18SmokeGrenadeEntity(pLivingEntity, pLevel, 2);
+            pLevel.addFreshEntity(grenade);
 
             if (pLivingEntity instanceof Player player) {
                 player.getCooldowns().addCooldown(pStack.getItem(), 20);
