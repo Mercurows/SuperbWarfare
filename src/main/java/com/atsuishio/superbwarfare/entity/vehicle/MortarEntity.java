@@ -60,6 +60,9 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, Container,
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
+    private LivingEntity shooter = null;
+    public ItemStack stack = ItemStack.EMPTY;
+
     public MortarEntity(EntityType<MortarEntity> type, Level level) {
         super(type, level);
     }
@@ -139,9 +142,6 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, Container,
     public UUID getOwnerUUID() {
         return this.entityData.get(OWNER_UUID).orElse(null);
     }
-
-
-    private LivingEntity shooter = null;
 
     public void fire(@Nullable LivingEntity shooter) {
         if (!(this.stack.getItem() instanceof MortarShell)) return;
@@ -355,8 +355,6 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, Container,
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return this.cache;
     }
-
-    public ItemStack stack = ItemStack.EMPTY;
 
     @Override
     public int getContainerSize() {
