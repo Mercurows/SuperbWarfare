@@ -12,7 +12,10 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import software.bernie.geckolib.cache.object.BakedGeoModel;
+import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
+
+import static com.atsuishio.superbwarfare.entity.vehicle.MortarEntity.INTELLIGENT;
 
 public class MortarRenderer extends GeoEntityRenderer<MortarEntity> {
 
@@ -45,8 +48,13 @@ public class MortarRenderer extends GeoEntityRenderer<MortarEntity> {
     }
 
     @Override
-    protected float getDeathMaxRotation(MortarEntity entityLivingBaseIn) {
-        return 0.0F;
+    public void renderRecursively(PoseStack poseStack, MortarEntity animatable, GeoBone bone, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
+        String name = bone.getName();
+
+        if (name.equals("monitor")) {
+            bone.setHidden(!animatable.getEntityData().get(INTELLIGENT));
+        }
+        super.renderRecursively(poseStack, animatable, bone, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, red, green, blue, alpha);
     }
 
     @Override

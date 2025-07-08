@@ -5,6 +5,8 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
+import com.atsuishio.superbwarfare.item.CannonMonitor;
+import com.atsuishio.superbwarfare.item.Monitor;
 import com.atsuishio.superbwarfare.item.common.ammo.MortarShell;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
@@ -16,6 +18,9 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.players.OldUsersConverter;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.Container;
@@ -45,13 +50,18 @@ import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
+import java.util.Optional;
+import java.util.UUID;
+
 import static com.atsuishio.superbwarfare.tools.RangeTool.calculateLaunchVector;
 
-public class MortarEntity extends VehicleEntity implements GeoEntity, Container {
+public class MortarEntity extends VehicleEntity implements GeoEntity, Container, OwnableEntity {
 
     public static final EntityDataAccessor<Integer> FIRE_TIME = SynchedEntityData.defineId(MortarEntity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Float> PITCH = SynchedEntityData.defineId(MortarEntity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Float> YAW = SynchedEntityData.defineId(MortarEntity.class, EntityDataSerializers.FLOAT);
+    public static final EntityDataAccessor<Boolean> INTELLIGENT = SynchedEntityData.defineId(MortarEntity.class, EntityDataSerializers.BOOLEAN);
+    public static final EntityDataAccessor<Optional<UUID>> OWNER_UUID = SynchedEntityData.defineId(MortarEntity.class, EntityDataSerializers.OPTIONAL_UUID);
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
@@ -80,6 +90,8 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, Container 
         this.entityData.define(FIRE_TIME, 0);
         this.entityData.define(PITCH, -70f);
         this.entityData.define(YAW, this.getYRot());
+        this.entityData.define(INTELLIGENT, false);
+        this.entityData.define(OWNER_UUID, Optional.empty());
     }
 
     @Override
@@ -97,6 +109,10 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, Container 
         super.addAdditionalSaveData(compound);
         compound.putFloat("Pitch", this.entityData.get(PITCH));
         compound.putFloat("Yaw", this.entityData.get(YAW));
+        compound.putBoolean("Intelligent", this.entityData.get(INTELLIGENT));
+        if (this.getOwnerUUID() != null) {
+            compound.putUUID("Owner", this.getOwnerUUID());
+        }
     }
 
     @Override
@@ -108,11 +124,40 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, Container 
         if (compound.contains("Yaw")) {
             this.entityData.set(YAW, compound.getFloat("Yaw"));
         }
+        if (compound.contains("Intelligent")) {
+            this.entityData.set(INTELLIGENT, compound.getBoolean("Intelligent"));
+        }
+        UUID uuid;
+        if (compound.hasUUID("Owner")) {
+            uuid = compound.getUUID("Owner");
+        } else {
+            String s = compound.getString("Owner");
+
+            assert this.getServer() != null;
+            uuid = OldUsersConverter.convertMobOwnerIfNecessary(this.getServer(), s);
+        }
+
+        if (uuid != null) {
+            try {
+                this.setOwnerUUID(uuid);
+            } catch (Throwable ignored) {
+            }
+        }
     }
+
+    public void setOwnerUUID(@Nullable UUID pUuid) {
+        this.entityData.set(OWNER_UUID, Optional.ofNullable(pUuid));
+    }
+
+    @Nullable
+    public UUID getOwnerUUID() {
+        return this.entityData.get(OWNER_UUID).orElse(null);
+    }
+
 
     private LivingEntity shooter = null;
 
-    private void fire(@Nullable LivingEntity shooter) {
+    public void fire(@Nullable LivingEntity shooter) {
         if (!(this.stack.getItem() instanceof MortarShell)) return;
 
         this.shooter = shooter;
@@ -128,6 +173,22 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, Container 
     @Override
     public @NotNull InteractionResult interact(Player player, @NotNull InteractionHand hand) {
         ItemStack mainHandItem = player.getMainHandItem();
+
+        if (mainHandItem.getItem() instanceof CannonMonitor && player == getOwner() && this.entityData.get(INTELLIGENT)) {
+            mainHandItem.getOrCreateTag().putString("LinkedCannon", getStringUUID());
+            if (player instanceof ServerPlayer serverPlayer) {
+                serverPlayer.level().playSound(null, serverPlayer.getOnPos(), SoundEvents.ARROW_HIT_PLAYER, SoundSource.PLAYERS, 0.5F, 1);
+            }
+            return InteractionResult.SUCCESS;
+        }
+
+        if (mainHandItem.getItem() instanceof Monitor && player.isShiftKeyDown() && !this.entityData.get(INTELLIGENT)) {
+            setOwnerUUID(player.getUUID());
+            entityData.set(INTELLIGENT, true);
+            if (!player.isCreative()) {
+                mainHandItem.shrink(1);
+            }
+        }
 
         if (mainHandItem.getItem() instanceof MortarShell && !player.isShiftKeyDown() && this.entityData.get(FIRE_TIME) == 0) {
             this.stack = mainHandItem.copyWithCount(1);
@@ -304,7 +365,7 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, Container 
         return this.cache;
     }
 
-    private ItemStack stack = ItemStack.EMPTY;
+    public ItemStack stack = ItemStack.EMPTY;
 
     @Override
     public int getContainerSize() {
@@ -351,7 +412,9 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, Container 
 
     @Override
     public void setChanged() {
-        fire(null);
+        if (!entityData.get(INTELLIGENT)) {
+            fire(null);
+        }
     }
 
     @Override

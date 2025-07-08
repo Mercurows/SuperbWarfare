@@ -82,7 +82,7 @@ public class ClickHandler {
     }
 
     private static boolean cancelFireKey(Player player, ItemStack stack) {
-        return stack.getItem() instanceof GunItem || stack.is(ModItems.MONITOR.get()) || stack.is(ModItems.LUNGE_MINE.get()) || player.hasEffect(ModMobEffects.SHOCK.get())
+        return stack.getItem() instanceof GunItem || stack.is(ModItems.MONITOR.get()) || stack.is(ModItems.LUNGE_MINE.get()) || stack.is(ModItems.CANNON_MONITOR.get()) || player.hasEffect(ModMobEffects.SHOCK.get())
                 || (player.getVehicle() instanceof ArmedVehicleEntity iArmedVehicle && iArmedVehicle.banHand(player));
     }
 
@@ -135,7 +135,9 @@ public class ClickHandler {
                 || stack.is(ModItems.MONITOR.get())
                 || stack.is(ModItems.LUNGE_MINE.get())
                 || (player.getVehicle() instanceof ArmedVehicleEntity)
-                || (stack.is(Items.SPYGLASS) && player.isScoping() && player.getOffhandItem().is(ModItems.FIRING_PARAMETERS.get()))) {
+                || (stack.is(Items.SPYGLASS) && player.isScoping() && player.getOffhandItem().is(ModItems.FIRING_PARAMETERS.get()))
+                || (stack.is(ModItems.CANNON_MONITOR.get()))
+        ) {
             if (button == ModKeyMappings.FIRE.getKey().getValue()) {
                 handleWeaponFirePress(player, stack);
             }
@@ -309,7 +311,9 @@ public class ClickHandler {
             if (stack.getItem() instanceof GunItem
                     || stack.is(ModItems.MONITOR.get())
                     || (player.getVehicle() instanceof ArmedVehicleEntity iVehicle && iVehicle.isDriver(player))
-                    || (stack.is(Items.SPYGLASS) && player.isScoping() && player.getOffhandItem().is(ModItems.FIRING_PARAMETERS.get()))) {
+                    || (stack.is(Items.SPYGLASS) && player.isScoping() && player.getOffhandItem().is(ModItems.FIRING_PARAMETERS.get()))
+                    || (stack.is(ModItems.CANNON_MONITOR.get()))
+            ) {
                 if (key == ModKeyMappings.FIRE.getKey().getValue()) {
                     handleWeaponFirePress(player, stack);
                 }
@@ -356,6 +360,10 @@ public class ClickHandler {
         isEditing = false;
 
         if (player.hasEffect(ModMobEffects.SHOCK.get())) return;
+
+        if (stack.is(ModItems.CANNON_MONITOR.get())) {
+            Mod.PACKET_HANDLER.sendToServer(new SetFiringParametersMessage(0));
+        }
 
         if (stack.is(Items.SPYGLASS) && player.isScoping() && player.getOffhandItem().is(ModItems.FIRING_PARAMETERS.get())) {
             Mod.PACKET_HANDLER.sendToServer(new SetFiringParametersMessage(0));
