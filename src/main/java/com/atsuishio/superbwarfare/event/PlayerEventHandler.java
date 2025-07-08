@@ -12,7 +12,6 @@ import com.atsuishio.superbwarfare.init.ModParticleTypes;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
-import com.atsuishio.superbwarfare.network.message.receive.SimulationDistanceMessage;
 import com.atsuishio.superbwarfare.tools.InventoryTool;
 import com.atsuishio.superbwarfare.tools.TraceTool;
 import net.minecraft.core.BlockPos;
@@ -31,7 +30,6 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.network.PacketDistributor;
 
 import java.util.UUID;
 
@@ -90,7 +88,6 @@ public class PlayerEventHandler {
                 handleSpecialWeaponAmmo(player);
             }
 
-            handleSimulationDistance(player);
             if (event.side.isServer()) {
                 handleTacticalAttribute(player);
             }
@@ -103,16 +100,6 @@ public class PlayerEventHandler {
 
         if ((stack.is(ModItems.RPG.get()) || stack.is(ModItems.BOCEK.get())) && data.ammo.get() == 1) {
             GunData.from(stack).isEmpty.set(false);
-        }
-    }
-
-    private static void handleSimulationDistance(Player player) {
-        if (player.level() instanceof ServerLevel serverLevel && player instanceof ServerPlayer serverPlayer) {
-            var distanceManager = serverLevel.getChunkSource().chunkMap.getDistanceManager();
-            var playerTicketManager = distanceManager.playerTicketManager;
-            int maxDistance = playerTicketManager.viewDistance;
-
-            Mod.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> serverPlayer), new SimulationDistanceMessage(maxDistance));
         }
     }
 

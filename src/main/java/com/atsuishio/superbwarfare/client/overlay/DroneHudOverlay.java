@@ -37,7 +37,11 @@ public class DroneHudOverlay implements IGuiOverlay {
 
     public static final String ID = Mod.MODID + "_drone_hud";
 
-    public static int MAX_DISTANCE = 256;
+    public static int getMaxDistance() {
+        var connection = Minecraft.getInstance().getConnection();
+        return (connection == null ? 16 : connection.serverSimulationDistance) * 16;
+    }
+
     private static final ResourceLocation FRAME = Mod.loc("textures/screens/frame/frame.png");
     private static final ResourceLocation TV_FRAME = Mod.loc("textures/screens/land/tv_frame.png");
 
@@ -70,7 +74,7 @@ public class DroneHudOverlay implements IGuiOverlay {
             int addH = (screenWidth / screenHeight) * 27;
             preciseBlit(guiGraphics, TV_FRAME, (float) -addW / 2, (float) -addH / 2, 10, 0, 0.0F, screenWidth + addW, screenHeight + addH, screenWidth + addW, screenHeight + addH);
 
-            preciseBlit(guiGraphics, Mod.loc("textures/screens/drone_fov_move.png"), (float) screenWidth / 2 + 100, (float) (screenHeight / 2 - 64 - ((ClientEventHandler.droneFovLerp - 1) * 23.8)), 0, 0, 64, 129, 64, 129);
+            preciseBlit(guiGraphics, Mod.loc("textures/screens/drone_fov_move.png"), (float) screenWidth / 2 + 100, (float) (screenHeight / 2f - 64 - ((ClientEventHandler.droneFovLerp - 1) * 23.8)), 0, 0, 64, 129, 64, 129);
             guiGraphics.drawString(mc.font, Component.literal(FormatTool.format1D(ClientEventHandler.droneFovLerp, "x")),
                     screenWidth / 2 + 144, screenHeight / 2 + 56 - (int) ((ClientEventHandler.droneFovLerp - 1) * 23.8), -1, false);
 
@@ -97,7 +101,7 @@ public class DroneHudOverlay implements IGuiOverlay {
                 int color = -1;
 
                 // 超出距离警告
-                if (distance > MAX_DISTANCE - 48) {
+                if (distance > getMaxDistance() - 48) {
                     guiGraphics.drawString(mc.font, Component.translatable("tips.superbwarfare.drone.warning"),
                             screenWidth / 2 - 18, screenHeight / 2 - 47, -65536, false);
                     color = -65536;

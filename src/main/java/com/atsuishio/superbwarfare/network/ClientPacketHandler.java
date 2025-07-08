@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.network;
 
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
-import com.atsuishio.superbwarfare.client.overlay.DroneHudOverlay;
 import com.atsuishio.superbwarfare.client.screens.DogTagEditorScreen;
 import com.atsuishio.superbwarfare.client.screens.FuMO25ScreenHelper;
 import com.atsuishio.superbwarfare.config.client.KillMessageConfig;
@@ -48,12 +47,6 @@ public class ClientPacketHandler {
                 case 3 -> CrossHairOverlay.VEHICLE_INDICATOR = message.value;
                 default -> CrossHairOverlay.HIT_INDICATOR = message.value;
             }
-        }
-    }
-
-    public static void handleSimulationDistanceMessage(int distance, Supplier<NetworkEvent.Context> ctx) {
-        if (ctx.get().getDirection().getReceptionSide() == LogicalSide.CLIENT) {
-            DroneHudOverlay.MAX_DISTANCE = distance * 16;
         }
     }
 
