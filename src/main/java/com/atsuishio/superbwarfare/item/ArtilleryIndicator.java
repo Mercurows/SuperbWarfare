@@ -1,11 +1,51 @@
 package com.atsuishio.superbwarfare.item;
 
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemUtils;
+import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.NotNull;
+
+import javax.annotation.ParametersAreNonnullByDefault;
 
 public class ArtilleryIndicator extends Item {
 
     public ArtilleryIndicator() {
         super(new Properties().stacksTo(1));
+    }
+    @Override
+    public int getUseDuration(@NotNull ItemStack stack) {
+        return 1200;
+    }
+    @Override
+    public @NotNull UseAnim getUseAnimation(@NotNull ItemStack stack) {
+        return UseAnim.SPYGLASS;
+    }
+    @Override
+    @ParametersAreNonnullByDefault
+    public @NotNull InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
+        ItemStack stack = playerIn.getItemInHand(handIn);
+        playerIn.playSound(SoundEvents.SPYGLASS_USE, 1.0F, 1.0F);
+        return ItemUtils.startUsingInstantly(worldIn, playerIn, handIn);
+    }
+    @Override
+    public ItemStack finishUsingItem(ItemStack pStack, Level pLevel, LivingEntity pLivingEntity) {
+        this.stopUsing(pLivingEntity);
+        return pStack;
+    }
+    @Override
+    public void releaseUsing(ItemStack pStack, Level pLevel, LivingEntity pLivingEntity, int pTimeCharged) {
+        this.stopUsing(pLivingEntity);
+    }
+
+    private void stopUsing(LivingEntity pUser) {
+        pUser.playSound(SoundEvents.SPYGLASS_STOP_USING, 1.0F, 1.0F);
     }
 
 //    @Override
