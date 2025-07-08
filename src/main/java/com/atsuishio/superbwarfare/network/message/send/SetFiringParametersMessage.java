@@ -6,6 +6,8 @@ import com.atsuishio.superbwarfare.item.common.ammo.MortarShell;
 import com.atsuishio.superbwarfare.tools.EntityFindUtil;
 import com.atsuishio.superbwarfare.tools.TraceTool;
 import net.minecraft.ChatFormatting;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
@@ -22,6 +24,7 @@ import java.util.function.Supplier;
 import java.util.stream.StreamSupport;
 
 import static com.atsuishio.superbwarfare.entity.vehicle.MortarEntity.FIRE_TIME;
+import static com.atsuishio.superbwarfare.item.ArtilleryIndicator.TAG_MORTARS;
 
 public class SetFiringParametersMessage {
 
@@ -76,6 +79,23 @@ public class SetFiringParametersMessage {
 
                 if (mainStack.is(ModItems.ARTILLERY_INDICATOR.get())) {
                     if (player.isShiftKeyDown()) {
+                        ListTag tags = stack.getOrCreateTag().getList(TAG_MORTARS, Tag.TAG_COMPOUND);
+                        for (int i = 0; i < tags.size(); i++) {
+                            var tag = tags.getCompound(i);
+                            Entity entity = EntityFindUtil.findEntity(player.level(), tag.getString("UUID"));
+                            if (entity instanceof MortarEntity mortarEntity) {
+                                if (player.isShiftKeyDown()) {
+                                    if (mortarEntity.stack.getItem() instanceof MortarShell && mortarEntity.getEntityData().get(FIRE_TIME) == 0) {
+                                        mortarEntity.fire(player);
+                                    }
+                                } else {
+                                    if (!mortarEntity.setTarget(mainStack)) {
+                                        player.displayClientMessage(Component.translatable("tips.superbwarfare.mortar.warn").withStyle(ChatFormatting.RED), true);
+                                    }
+                                }
+                            }
+                        }
+                    } else {
                         if (lookAtEntity) {
                             mainStack.getOrCreateTag().putDouble("TargetX", lookingEntity.getX());
                             mainStack.getOrCreateTag().putDouble("TargetY", lookingEntity.getY());
@@ -90,22 +110,20 @@ public class SetFiringParametersMessage {
                                         + "," + mainStack.getOrCreateTag().getInt("TargetY")
                                         + "," + mainStack.getOrCreateTag().getInt("TargetZ") + "]")), true);
                     }
-
-
-                    List<Entity> entities = getCannon(player, player.level(), mainStack.getOrCreateTag().getString("LinkedCannon"));
-                    for (var e : entities) {
-                        if (e instanceof MortarEntity mortarEntity) {
-                            if (player.isShiftKeyDown()) {
-                                if (!mortarEntity.setTarget(mainStack)) {
-                                    player.displayClientMessage(Component.translatable("tips.superbwarfare.mortar.warn").withStyle(ChatFormatting.RED), true);
-                                }
-                            } else {
-                                if (mortarEntity.stack.getItem() instanceof MortarShell && mortarEntity.getEntityData().get(FIRE_TIME) == 0) {
-                                    mortarEntity.fire(player);
-                                }
-                            }
-                        }
-                    }
+//                    List<Entity> entities = getCannon(player, player.level(), mainStack.getOrCreateTag().getString("LinkedCannon"));
+//                    for (var e : entities) {
+//                        if (e instanceof MortarEntity mortarEntity) {
+//                            if (player.isShiftKeyDown()) {
+//                                if (!mortarEntity.setTarget(mainStack)) {
+//                                    player.displayClientMessage(Component.translatable("tips.superbwarfare.mortar.warn").withStyle(ChatFormatting.RED), true);
+//                                }
+//                            } else {
+//                                if (mortarEntity.stack.getItem() instanceof MortarShell && mortarEntity.getEntityData().get(FIRE_TIME) == 0) {
+//                                    mortarEntity.fire(player);
+//                                }
+//                            }
+//                        }
+//                    }
                 }
             }
         });

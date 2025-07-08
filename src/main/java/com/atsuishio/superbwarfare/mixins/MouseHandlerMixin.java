@@ -55,6 +55,10 @@ public class MouseHandlerMixin {
             return 0;
         }
 
+        if (player.isUsingItem() && player.getUseItem().is(ModItems.ARTILLERY_INDICATOR.get()) && mc.options.getCameraType() == CameraType.FIRST_PERSON) {
+            return original / Math.max(1 + 0.2 * ClientEventHandler.artilleryIndicatorZoom, 0.1);
+        }
+
         if (player.getVehicle() instanceof VehicleEntity vehicle && vehicle instanceof WeaponVehicleEntity weaponVehicle && weaponVehicle.banHand(player)) {
             return vehicle.getSensitivity(original, ClientEventHandler.zoomVehicle, vehicle.getSeatIndex(player), vehicle.onGround());
         }

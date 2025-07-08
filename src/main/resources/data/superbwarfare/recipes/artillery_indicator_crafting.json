@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aba"
+  ],
+  "key": {
+    "a": {
+      "item": "minecraft:spyglass"
+    },
+    "b": {
+      "item": "superbwarfare:monitor"
+    }
+  },
+  "result": {
+    "item": "superbwarfare:artillery_indicator",
+    "count": 1
+  }
+}
