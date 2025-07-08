@@ -119,6 +119,9 @@ public class ClientEventHandler {
     public static double[] randomShell = {0, 0, 0};
 
     public static double customZoom = 0;
+
+    public static double artilleryIndicatorZoom = 1;
+    public static double artilleryIndicatorCustomZoom = 0;
     public static MillisTimer clientTimer = new MillisTimer();
     public static MillisTimer clientTimerVehicle = new MillisTimer();
 
@@ -1471,6 +1474,22 @@ public class ClientEventHandler {
             fov = event.getFOV();
             return;
         }
+
+        double factor;
+
+        if (stack.is(ModItems.ARTILLERY_INDICATOR.get())) {
+            if (player.isUsingItem() && player.getUseItem().is(ModItems.ARTILLERY_INDICATOR.get())) {
+                factor = 2 + artilleryIndicatorCustomZoom;
+            } else {
+                factor = 1;
+            }
+        } else {
+            factor = 1;
+        }
+
+        artilleryIndicatorZoom = Mth.lerp(0.6 * times, artilleryIndicatorZoom, factor);
+
+        event.setFOV(event.getFOV() / artilleryIndicatorZoom);
 
         if (stack.getItem() instanceof GunItem) {
             if (!event.usedConfiguredFov()) {
