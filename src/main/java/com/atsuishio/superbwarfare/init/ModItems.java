@@ -142,6 +142,7 @@ public class ModItems {
     public static final DeferredHolder<Item, Drone> DRONE = ITEMS.register("drone", Drone::new);
 
     public static final DeferredHolder<Item, Monitor> MONITOR = ITEMS.register("monitor", Monitor::new);
+    public static final DeferredHolder<Item, CannonMonitor> CANNON_MONITOR = ITEMS.register("cannon_monitor", CannonMonitor::new);
 
     public static final DeferredHolder<Item, Detonator> DETONATOR = ITEMS.register("detonator", Detonator::new);
     public static final DeferredHolder<Item, TargetDeployer> TARGET_DEPLOYER = ITEMS.register("target_deployer", TargetDeployer::new);
