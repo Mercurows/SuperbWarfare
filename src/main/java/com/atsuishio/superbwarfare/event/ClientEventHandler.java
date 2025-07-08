@@ -1492,6 +1492,8 @@ public class ClientEventHandler {
 
         if (stack.getItem() instanceof GunItem) {
             if (!event.usedConfiguredFov()) {
+                lastX = player.getXRot();
+                lastY = player.getYRot();
                 return;
             }
 
@@ -1539,7 +1541,9 @@ public class ClientEventHandler {
                     entity = null;
                 }
             }
-            return;
+
+            lastX = player.getXRot();
+            lastY = player.getYRot();
         }
 
         if (stack.is(ModItems.MONITOR.get()) && stack.getOrCreateTag().getBoolean("Using") && stack.getOrCreateTag().getBoolean("Linked")) {
@@ -1549,13 +1553,29 @@ public class ClientEventHandler {
         }
     }
 
+    private static float lastX;
+    private static float lastY;
+
     public static void look(Player player, Vec3 pTarget) {
         double d0 = pTarget.x;
         double d1 = pTarget.y;
         double d2 = pTarget.z;
         double d3 = Math.sqrt(d0 * d0 + d2 * d2);
-        player.setXRot(Mth.wrapDegrees((float) (-(Mth.atan2(d1, d3) * 57.2957763671875))));
-        player.setYRot(Mth.wrapDegrees((float) (Mth.atan2(d2, d0) * 57.2957763671875) - 90.0F));
+
+        float fromX = lastX;
+        float fromY = lastY;
+        float toX = (float) Mth.wrapDegrees(-(Mth.atan2(d1, d3) * 57.2957763671875));
+        float toY = (float) Mth.wrapDegrees((Mth.atan2(d2, d0) * 57.2957763671875) - 90.0F);
+
+        if (fromY > 135 && toY < -135) {
+            toY += 360;
+        }
+        if (fromY < -135 && toY > 135) {
+            fromY += 360;
+        }
+
+        player.setXRot(Mth.wrapDegrees(Mth.lerp(0.2F, fromX, toX)));
+        player.setYRot(Mth.wrapDegrees(Mth.lerp(0.2F, fromY, toY)));
     }
 
     @SubscribeEvent
