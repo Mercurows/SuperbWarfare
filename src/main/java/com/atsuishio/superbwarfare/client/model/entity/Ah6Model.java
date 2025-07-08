@@ -28,11 +28,11 @@ public class Ah6Model extends GeoModel<Ah6Entity> {
         if (distance < 32) {
             return Mod.loc("geo/ah_6.geo.json");
         } else if (distance < 64) {
-            return Mod.loc("geo/ah_6.lod1.geo.json");
+            return Mod.loc("geo/vehicle_lod/ah_6.lod1.geo.json");
         } else if (distance < 96) {
-            return Mod.loc("geo/ah_6.lod2.geo.json");
+            return Mod.loc("geo/vehicle_lod/ah_6.lod2.geo.json");
         } else {
-            return Mod.loc("geo/ah_6.lod3.geo.json");
+            return Mod.loc("geo/vehicle_lod/ah_6.lod3.geo.json");
         }
     }
 

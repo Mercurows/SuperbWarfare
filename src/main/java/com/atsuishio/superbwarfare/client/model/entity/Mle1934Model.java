@@ -31,7 +31,7 @@ public class Mle1934Model extends GeoModel<Mle1934Entity> {
         if (distance < 32) {
             return Mod.loc("geo/mle1934.geo.json");
         } else {
-            return Mod.loc("geo/mle1934_lod1.geo.json");
+            return Mod.loc("geo/vehicle_lod/mle1934_lod1.geo.json");
         }
     }
 

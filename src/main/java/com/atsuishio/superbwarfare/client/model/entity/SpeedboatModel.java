@@ -27,7 +27,7 @@ public class SpeedboatModel extends GeoModel<SpeedboatEntity> {
         if (distance < 32) {
             return Mod.loc("geo/speedboat.geo.json");
         } else {
-            return Mod.loc("geo/speedboat.lod1.geo.json");
+            return Mod.loc("geo/vehicle_lod/speedboat.lod1.geo.json");
         }
     }
 

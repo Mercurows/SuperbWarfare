@@ -31,9 +31,9 @@ public class LaserTowerModel extends GeoModel<LaserTowerEntity> {
         if (distance < 24 || player.isScoping()) {
             return Mod.loc("geo/laser_tower.geo.json");
         } else if (distance < 48) {
-            return Mod.loc("geo/laser_tower.lod1.geo.json");
+            return Mod.loc("geo/vehicle_lod/laser_tower.lod1.geo.json");
         } else {
-            return Mod.loc("geo/laser_tower.lod2.geo.json");
+            return Mod.loc("geo/vehicle_lod/laser_tower.lod2.geo.json");
         }
     }
 
