@@ -565,7 +565,10 @@ public class LivingEventHandler {
         if (!(sourceEntity instanceof Player player)) return;
 
         // 创生物收集掉落物
-        if (player.getVehicle() instanceof ContainerMobileVehicleEntity containerMobileVehicleEntity && source.is(ModDamageTypes.VEHICLE_STRIKE)) {
+        if (VehicleConfig.COLLECT_DROPS_BY_CRASHING.get()
+                && player.getVehicle() instanceof ContainerMobileVehicleEntity containerMobileVehicleEntity
+                && source.is(ModDamageTypes.VEHICLE_STRIKE)
+        ) {
             var drops = event.getDrops();
             var removed = new ArrayList<ItemEntity>();
 
@@ -635,7 +638,6 @@ public class LivingEventHandler {
     @SubscribeEvent
     public static void onEffectApply(MobEffectEvent.Applicable event) {
         var effectInstance = event.getEffectInstance();
-        if (effectInstance == null) return;
 
         if (effectInstance.getEffect().value().getCategory() == MobEffectCategory.HARMFUL
                 && event.getEntity().getVehicle() instanceof VehicleEntity vehicle

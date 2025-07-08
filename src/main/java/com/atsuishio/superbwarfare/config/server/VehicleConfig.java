@@ -10,6 +10,7 @@ public class VehicleConfig {
     public static ModConfigSpec.BooleanValue COLLISION_DESTROY_HARD_BLOCKS;
     public static ModConfigSpec.BooleanValue COLLISION_DESTROY_BLOCKS_BEASTLY;
     public static ModConfigSpec.BooleanValue VEHICLE_ITEM_PICKUP;
+    public static ModConfigSpec.BooleanValue COLLECT_DROPS_BY_CRASHING;
 
     public static ModConfigSpec.ConfigValue<List<? extends String>> COLLISION_ENTITY_WHITELIST;
 
@@ -118,9 +119,13 @@ public class VehicleConfig {
         builder.comment("Allow vehicles to pick up items");
         VEHICLE_ITEM_PICKUP = builder.define("vehicle_item_pickup", true);
 
+        builder.comment("Allow vehicles to collect drops after killing other entities by crashing");
+        COLLECT_DROPS_BY_CRASHING = builder.define("collect_drops_by_crashing", true);
+
         builder.comment("List of entities that can be damaged by collision");
         COLLISION_ENTITY_WHITELIST = builder.defineList("collision_entity_whitelist",
                 DEFAULT_COLLISION_ENTITY_WHITELIST,
+                () -> "",
                 e -> e instanceof String);
 
         builder.push("repair");
