@@ -32,7 +32,7 @@ public class AnnihilatorModel extends GeoModel<AnnihilatorEntity> {
         if (distance < 64) {
             return Mod.loc("geo/annihilator.geo.json");
         } else {
-            return Mod.loc("geo/annihilator.lod1.geo.json");
+            return Mod.loc("geo/vehicle_lod/annihilator.lod1.geo.json");
         }
     }
 

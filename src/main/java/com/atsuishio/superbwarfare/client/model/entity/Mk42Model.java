@@ -32,9 +32,9 @@ public class Mk42Model extends GeoModel<Mk42Entity> {
         if (distance < 32) {
             return Mod.loc("geo/sherman.geo.json");
         } else if (distance < 64) {
-            return Mod.loc("geo/sherman_lod1.geo.json");
+            return Mod.loc("geo/vehicle_lod/sherman_lod1.geo.json");
         } else {
-            return Mod.loc("geo/sherman_lod2.geo.json");
+            return Mod.loc("geo/vehicle_lod/sherman_lod2.geo.json");
         }
     }
 

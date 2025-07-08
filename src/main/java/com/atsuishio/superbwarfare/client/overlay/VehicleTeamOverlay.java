@@ -18,6 +18,7 @@ import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -73,7 +74,7 @@ public class VehicleTeamOverlay implements LayeredDraw.Layer {
             poseStack.pushPose();
             poseStack.translate(x, y - 12, 0);
 
-            float size = (float) ((50 / VectorUtil.fov) * 0.9f * Math.max((512 - entityRange) / 512, 0.1));
+            float size = (float) Mth.clamp((50 / VectorUtil.fov) * 0.9f * Math.max((512 - entityRange) / 512, 0.1), 0.1, 1);
             poseStack.scale(size, size, size);
             var font = Minecraft.getInstance().font;
 
