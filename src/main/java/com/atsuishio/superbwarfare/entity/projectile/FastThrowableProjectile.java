@@ -93,7 +93,9 @@ public abstract class FastThrowableProjectile extends ThrowableItemProjectile im
                     double resistance = 1 - Mth.clamp(hardness / 100, 0, 0.8);
                     setDeltaMovement(getDeltaMovement().multiply(resistance, resistance, resistance));
 
-                    durability -= 10 + (int) (0.5 * hardness);
+                    if (blockState.canOcclude()) {
+                        durability -= 10 + (int) (0.5 * hardness);
+                    }
 
                     if (hardness <= durability && hardness != -1) {
                         this.level().destroyBlock(pos, true);
