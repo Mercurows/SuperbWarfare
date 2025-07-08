@@ -7,7 +7,6 @@ import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
-import com.atsuishio.superbwarfare.network.message.receive.SimulationDistanceMessage;
 import com.atsuishio.superbwarfare.tools.InventoryTool;
 import com.atsuishio.superbwarfare.tools.NBTTool;
 import com.atsuishio.superbwarfare.tools.TraceTool;
@@ -29,7 +28,6 @@ import net.neoforged.neoforge.event.AnvilUpdateEvent;
 import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
-import net.neoforged.neoforge.network.PacketDistributor;
 
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 
@@ -54,8 +52,6 @@ public class PlayerEventHandler {
                 data.save();
             }
         }
-
-        handleSimulationDistance(player);
     }
 
     @SubscribeEvent
@@ -95,13 +91,6 @@ public class PlayerEventHandler {
 
         if ((stack.is(ModItems.RPG.get()) || stack.is(ModItems.BOCEK.get())) && data.ammo.get() == 1) {
             data.isEmpty.set(false);
-        }
-    }
-
-    private static void handleSimulationDistance(Player player) {
-        if (player.level() instanceof ServerLevel serverLevel && player instanceof ServerPlayer serverPlayer) {
-            var distance = serverLevel.getChunkSource().chunkMap.serverViewDistance;
-            PacketDistributor.sendToPlayer(serverPlayer, new SimulationDistanceMessage(distance));
         }
     }
 

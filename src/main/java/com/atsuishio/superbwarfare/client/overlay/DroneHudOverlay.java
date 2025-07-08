@@ -38,7 +38,11 @@ public class DroneHudOverlay implements LayeredDraw.Layer {
 
     public static final ResourceLocation ID = Mod.loc("drone_hud");
 
-    public static int MAX_DISTANCE = 256;
+    public static int getMaxDistance() {
+        var connection = Minecraft.getInstance().getConnection();
+        return (connection == null ? 16 : connection.serverSimulationDistance) * 16;
+    }
+
     private static final ResourceLocation FRAME = Mod.loc("textures/screens/frame/frame.png");
     private static final ResourceLocation TV_FRAME = Mod.loc("textures/screens/land/tv_frame.png");
 
@@ -76,7 +80,7 @@ public class DroneHudOverlay implements LayeredDraw.Layer {
             int addH = (w / h) * 27;
             preciseBlit(guiGraphics, TV_FRAME, (float) -addW / 2, (float) -addH / 2, 10, 0, 0.0F, w + addW, h + addH, w + addW, h + addH);
 
-            preciseBlit(guiGraphics, Mod.loc("textures/screens/drone_fov_move.png"), (float) w / 2 + 100, (float) (h / 2 - 64 - ((ClientEventHandler.droneFovLerp - 1) * 23.8)), 0, 0, 64, 129, 64, 129);
+            preciseBlit(guiGraphics, Mod.loc("textures/screens/drone_fov_move.png"), (float) w / 2 + 100, (float) (h / 2f - 64 - ((ClientEventHandler.droneFovLerp - 1) * 23.8)), 0, 0, 64, 129, 64, 129);
             guiGraphics.drawString(mc.font, Component.literal(FormatTool.format1D(ClientEventHandler.droneFovLerp, "x")),
                     w / 2 + 144, h / 2 + 56 - (int) ((ClientEventHandler.droneFovLerp - 1) * 23.8), -1, false);
 
@@ -103,7 +107,7 @@ public class DroneHudOverlay implements LayeredDraw.Layer {
                 int color = -1;
 
                 // 超出距离警告
-                if (distance > MAX_DISTANCE - 48) {
+                if (distance > getMaxDistance() - 48) {
                     guiGraphics.drawString(mc.font, Component.translatable("tips.superbwarfare.drone.warning"),
                             w / 2 - 18, h / 2 - 47, -65536, false);
                     color = -65536;
@@ -132,7 +136,6 @@ public class DroneHudOverlay implements LayeredDraw.Layer {
                 if (lookAtEntity) {
                     // 实体距离
                     var displayName = lookingEntity.getDisplayName();
-                    if (displayName == null) displayName = Component.empty();
 
                     guiGraphics.drawString(mc.font, Component.translatable("tips.superbwarfare.drone.range")
                                     .append(Component.literal(FormatTool.format1D(entityRange, "m ") + displayName.getString())),
