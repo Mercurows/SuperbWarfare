@@ -74,7 +74,7 @@ public class SetFiringParametersMessage {
                                     + "," + stack.getOrCreateTag().getInt("TargetZ") + "]")), true);
                 }
 
-                if (mainStack.is(ModItems.CANNON_MONITOR.get())) {
+                if (mainStack.is(ModItems.ARTILLERY_INDICATOR.get())) {
                     if (player.isShiftKeyDown()) {
                         if (lookAtEntity) {
                             mainStack.getOrCreateTag().putDouble("TargetX", lookingEntity.getX());

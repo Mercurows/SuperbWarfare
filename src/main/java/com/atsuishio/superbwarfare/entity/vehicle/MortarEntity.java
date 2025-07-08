@@ -5,7 +5,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
-import com.atsuishio.superbwarfare.item.CannonMonitor;
+import com.atsuishio.superbwarfare.item.ArtilleryIndicator;
 import com.atsuishio.superbwarfare.item.Monitor;
 import com.atsuishio.superbwarfare.item.common.ammo.MortarShell;
 import net.minecraft.ChatFormatting;
@@ -174,7 +174,7 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, Container,
     public @NotNull InteractionResult interact(Player player, @NotNull InteractionHand hand) {
         ItemStack mainHandItem = player.getMainHandItem();
 
-        if (mainHandItem.getItem() instanceof CannonMonitor && player == getOwner() && this.entityData.get(INTELLIGENT)) {
+        if (mainHandItem.getItem() instanceof ArtilleryIndicator && player == getOwner() && this.entityData.get(INTELLIGENT)) {
             mainHandItem.getOrCreateTag().putString("LinkedCannon", getStringUUID());
             if (player instanceof ServerPlayer serverPlayer) {
                 serverPlayer.level().playSound(null, serverPlayer.getOnPos(), SoundEvents.ARROW_HIT_PLAYER, SoundSource.PLAYERS, 0.5F, 1);

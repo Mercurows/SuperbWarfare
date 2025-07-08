@@ -2,9 +2,9 @@ package com.atsuishio.superbwarfare.item;
 
 import net.minecraft.world.item.Item;
 
-public class CannonMonitor extends Item {
+public class ArtilleryIndicator extends Item {
 
-    public CannonMonitor() {
+    public ArtilleryIndicator() {
         super(new Properties().stacksTo(1));
     }
 
