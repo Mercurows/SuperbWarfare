@@ -344,6 +344,11 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, Container,
             ItemEntity mortar = new ItemEntity(level, x, (y + 1), z, new ItemStack(ModItems.MORTAR_DEPLOYER.get()));
             mortar.setPickUpDelay(10);
             level.addFreshEntity(mortar);
+            if (entityData.get(INTELLIGENT)) {
+                ItemEntity monitor = new ItemEntity(level, x, (y + 1), z, new ItemStack(ModItems.MONITOR.get()));
+                monitor.setPickUpDelay(10);
+                level.addFreshEntity(monitor);
+            }
         }
         super.destroy();
     }
