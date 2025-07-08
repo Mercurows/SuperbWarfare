@@ -76,7 +76,7 @@ public record SetFiringParametersMessage(int msgType) implements CustomPacketPay
                             + "]")), true);
         }
 
-        if (mainStack.is(ModItems.CANNON_MONITOR.get())) {
+        if (mainStack.is(ModItems.ARTILLERY_INDICATOR.get())) {
             // TODO 这数据读写是一坨什么玩意
             BlockPos pos;
             if (player.isShiftKeyDown()) {

@@ -6,7 +6,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
-import com.atsuishio.superbwarfare.item.CannonMonitor;
+import com.atsuishio.superbwarfare.item.ArtilleryIndicator;
 import com.atsuishio.superbwarfare.item.Monitor;
 import com.atsuishio.superbwarfare.item.common.ammo.MortarShell;
 import com.atsuishio.superbwarfare.tools.NBTTool;
@@ -160,7 +160,7 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, Container,
     public @NotNull InteractionResult interact(Player player, @NotNull InteractionHand hand) {
         ItemStack mainHandItem = player.getMainHandItem();
 
-        if (mainHandItem.getItem() instanceof CannonMonitor && player == getOwner() && this.entityData.get(INTELLIGENT)) {
+        if (mainHandItem.getItem() instanceof ArtilleryIndicator && player == getOwner() && this.entityData.get(INTELLIGENT)) {
             var tag = NBTTool.getTag(mainHandItem);
             tag.putString("LinkedCannon", getStringUUID());
             NBTTool.saveTag(mainHandItem, tag);
