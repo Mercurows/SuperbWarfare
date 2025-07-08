@@ -209,11 +209,7 @@ public class Agm65Entity extends FastThrowableProjectile implements GeoEntity, E
         explosion.explode();
         ForgeEventFactory.onExplosionStart(this.level(), explosion);
         explosion.finalizeExplosion(false);
-        if (explosionRadius > 9) {
-            ParticleTool.spawnHugeExplosionParticles(this.level(), vec3);
-        } else {
-            ParticleTool.spawnMediumExplosionParticles(this.level(), vec3);
-        }
+        ParticleTool.spawnHugeExplosionParticles(this.level(), vec3);
     }
 
     @Override

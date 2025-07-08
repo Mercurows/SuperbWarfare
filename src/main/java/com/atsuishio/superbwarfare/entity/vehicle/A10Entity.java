@@ -505,7 +505,7 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
             }
 
             if (getEnergy() > 0 && !this.level().isClientSide) {
-                this.consumeEnergy((int) (Mth.abs(this.entityData.get(POWER)) * VehicleConfig.A_10_MAX_ENERGY_COST.get()));
+                this.consumeEnergy((int) (Mth.abs(this.entityData.get(POWER)) * 5 * VehicleConfig.A_10_MAX_ENERGY_COST.get()));
             }
 
             float rotSpeed = 1.5f + 2 * Mth.abs(VectorTool.calculateY(getRoll()));
