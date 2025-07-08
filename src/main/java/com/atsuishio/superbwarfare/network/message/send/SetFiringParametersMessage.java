@@ -12,6 +12,8 @@ import com.atsuishio.superbwarfare.tools.TraceTool;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -31,6 +33,7 @@ import java.util.Objects;
 import java.util.stream.StreamSupport;
 
 import static com.atsuishio.superbwarfare.entity.vehicle.MortarEntity.FIRE_TIME;
+import static com.atsuishio.superbwarfare.item.ArtilleryIndicator.TAG_MORTARS;
 
 public record SetFiringParametersMessage(int msgType) implements CustomPacketPayload {
     public static final Type<SetFiringParametersMessage> TYPE = new Type<>(Mod.loc("set_firing_parameters"));
@@ -77,9 +80,26 @@ public record SetFiringParametersMessage(int msgType) implements CustomPacketPay
         }
 
         if (mainStack.is(ModItems.ARTILLERY_INDICATOR.get())) {
-            // TODO 这数据读写是一坨什么玩意
-            BlockPos pos;
             if (player.isShiftKeyDown()) {
+                var mainTag = NBTTool.getTag(mainStack);
+                ListTag tags = mainTag.getList(TAG_MORTARS, Tag.TAG_COMPOUND);
+                for (int i = 0; i < tags.size(); i++) {
+                    var tag = tags.getCompound(i);
+                    Entity entity = EntityFindUtil.findEntity(player.level(), tag.getString("UUID"));
+                    if (entity instanceof MortarEntity mortarEntity) {
+                        if (player.isShiftKeyDown()) {
+                            if (mortarEntity.stack.getItem() instanceof MortarShell && mortarEntity.getEntityData().get(FIRE_TIME) == 0) {
+                                mortarEntity.fire(player);
+                            }
+                        } else {
+                            if (!mortarEntity.setTarget(mainStack)) {
+                                player.displayClientMessage(Component.translatable("tips.superbwarfare.mortar.warn").withStyle(ChatFormatting.RED), true);
+                            }
+                        }
+                    }
+                }
+            } else {
+                BlockPos pos;
                 if (lookAtEntity) {
                     pos = lookingEntity.blockPosition();
                 } else {
@@ -94,21 +114,20 @@ public record SetFiringParametersMessage(int msgType) implements CustomPacketPay
                                 + "," + pos.getZ()
                                 + "]")), true);
             }
-
-            List<Entity> entities = getCannon(player, player.level(), NBTTool.getTag(mainStack).getString("LinkedCannon"));
-            for (var e : entities) {
-                if (e instanceof MortarEntity mortarEntity) {
-                    if (player.isShiftKeyDown()) {
-                        if (!mortarEntity.setTarget(mainStack)) {
-                            player.displayClientMessage(Component.translatable("tips.superbwarfare.mortar.warn").withStyle(ChatFormatting.RED), true);
-                        }
-                    } else {
-                        if (mortarEntity.stack.getItem() instanceof MortarShell && mortarEntity.getEntityData().get(FIRE_TIME) == 0) {
-                            mortarEntity.fire(player);
-                        }
-                    }
-                }
-            }
+//                    List<Entity> entities = getCannon(player, player.level(), mainStack.getOrCreateTag().getString("LinkedCannon"));
+//                    for (var e : entities) {
+//                        if (e instanceof MortarEntity mortarEntity) {
+//                            if (player.isShiftKeyDown()) {
+//                                if (!mortarEntity.setTarget(mainStack)) {
+//                                    player.displayClientMessage(Component.translatable("tips.superbwarfare.mortar.warn").withStyle(ChatFormatting.RED), true);
+//                                }
+//                            } else {
+//                                if (mortarEntity.stack.getItem() instanceof MortarShell && mortarEntity.getEntityData().get(FIRE_TIME) == 0) {
+//                                    mortarEntity.fire(player);
+//                                }
+//                            }
+//                        }
+//                    }
         }
     }
 

@@ -1025,12 +1025,22 @@ public class ClientEventHandler {
         ItemStack rightHandItem = player.getItemInHand(rightHand);
         final var tag = NBTTool.getTag(rightHandItem);
 
-        if (event.getHand() == leftHand && rightHandItem.getItem() instanceof GunItem) {
-            event.setCanceled(true);
+        if (event.getHand() == leftHand) {
+            if (rightHandItem.getItem() instanceof GunItem) {
+                event.setCanceled(true);
+            }
+            if (player.isUsingItem() && player.getUseItem().is(ModItems.ARTILLERY_INDICATOR.get())) {
+                event.setCanceled(true);
+            }
         }
 
-        if (event.getHand() == rightHand && rightHandItem.getItem() instanceof GunItem && drawTime > 0.15) {
-            event.setCanceled(true);
+        if (event.getHand() == rightHand) {
+            if (rightHandItem.getItem() instanceof GunItem && drawTime > 0.15) {
+                event.setCanceled(true);
+            }
+            if (player.isUsingItem() && player.getUseItem().is(ModItems.ARTILLERY_INDICATOR.get())) {
+                event.setCanceled(true);
+            }
         }
 
         ItemStack stack = player.getMainHandItem();
@@ -1462,17 +1472,13 @@ public class ClientEventHandler {
 
         double factor;
 
-        if (stack.is(ModItems.ARTILLERY_INDICATOR.get())) {
-            if (player.isUsingItem() && player.getUseItem().is(ModItems.ARTILLERY_INDICATOR.get())) {
-                factor = 2 + artilleryIndicatorCustomZoom;
-            } else {
-                factor = 1;
-            }
+        if (player.isUsingItem() && player.getUseItem().is(ModItems.ARTILLERY_INDICATOR.get()) && mc.options.getCameraType() == CameraType.FIRST_PERSON) {
+            factor = 4 + artilleryIndicatorCustomZoom;
         } else {
             factor = 1;
         }
 
-        artilleryIndicatorZoom = Mth.lerp(0.6 * times, artilleryIndicatorZoom, factor);
+        artilleryIndicatorZoom = Mth.lerp(0.3 * times, artilleryIndicatorZoom, factor);
 
         event.setFOV(event.getFOV() / artilleryIndicatorZoom);
 
@@ -1560,6 +1566,10 @@ public class ClientEventHandler {
         Player player = mc.player;
         if (player == null) return;
         if (!mc.options.getCameraType().isFirstPerson()) return;
+
+        if (player.isUsingItem() && player.getUseItem().is(ModItems.ARTILLERY_INDICATOR.get())) {
+            event.setCanceled(true);
+        }
 
         ItemStack stack = player.getMainHandItem();
         final var tag = NBTTool.getTag(stack);
