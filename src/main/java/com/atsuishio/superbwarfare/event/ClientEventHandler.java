@@ -550,10 +550,7 @@ public class ClientEventHandler {
             cantFireTime = Mth.clamp(cantFireTime - 6 * speed * times, 0, 40);
         }
 
-        int rpm = data.rpm() + customRpm;
-        if (rpm == 0) {
-            rpm = 600;
-        }
+        int rpm = Mth.clamp(data.rpm() + customRpm, 1, 114514);
 
         for (Perk.Type type : Perk.Type.values()) {
             var instance = data.perk.getInstance(type);

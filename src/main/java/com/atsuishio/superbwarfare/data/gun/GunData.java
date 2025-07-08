@@ -298,6 +298,7 @@ public class GunData {
     public double recoilY() {
         return defaultGunData().recoilY;
     }
+
     public double recoil() {
         return defaultGunData().recoil;
     }
@@ -331,7 +332,7 @@ public class GunData {
     }
 
     public int rpm() {
-        return (defaultGunData().rpm + item.getCustomRPM(stack));
+        return Mth.clamp(defaultGunData().rpm + item.getCustomRPM(stack), 1, 114514);
     }
 
     public int burstAmount() {
