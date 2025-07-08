@@ -34,7 +34,6 @@ public class ArtilleryIndicator extends Item {
     @Override
     @ParametersAreNonnullByDefault
     public @NotNull InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
-        ItemStack stack = playerIn.getItemInHand(handIn);
         playerIn.playSound(SoundEvents.SPYGLASS_USE, 1.0F, 1.0F);
         return ItemUtils.startUsingInstantly(worldIn, playerIn, handIn);
     }
