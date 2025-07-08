@@ -9,7 +9,6 @@ import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.ArtilleryIndicator;
 import com.atsuishio.superbwarfare.item.Monitor;
 import com.atsuishio.superbwarfare.item.common.ammo.MortarShell;
-import com.atsuishio.superbwarfare.tools.NBTTool;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.particles.ParticleTypes;
@@ -160,15 +159,22 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, Container,
     public @NotNull InteractionResult interact(Player player, @NotNull InteractionHand hand) {
         ItemStack mainHandItem = player.getMainHandItem();
 
-        if (mainHandItem.getItem() instanceof ArtilleryIndicator && player == getOwner() && this.entityData.get(INTELLIGENT)) {
-            var tag = NBTTool.getTag(mainHandItem);
-            tag.putString("LinkedCannon", getStringUUID());
-            NBTTool.saveTag(mainHandItem, tag);
-
-            if (player instanceof ServerPlayer serverPlayer) {
-                serverPlayer.level().playSound(null, serverPlayer.getOnPos(), SoundEvents.ARROW_HIT_PLAYER, SoundSource.PLAYERS, 0.5F, 1);
+        if (mainHandItem.getItem() instanceof ArtilleryIndicator indicator && player == getOwner() && this.entityData.get(INTELLIGENT)) {
+            if (indicator.addMortar(mainHandItem, getStringUUID())) {
+                if (player instanceof ServerPlayer serverPlayer) {
+                    serverPlayer.level().playSound(null, serverPlayer.getOnPos(), SoundEvents.ARROW_HIT_PLAYER, SoundSource.PLAYERS, 0.5F, 1);
+                }
+                player.displayClientMessage(Component.literal("added"), true);
+                return InteractionResult.SUCCESS;
+            } else if (indicator.removeMortar(mainHandItem, getStringUUID())) {
+                if (player instanceof ServerPlayer serverPlayer) {
+                    serverPlayer.level().playSound(null, serverPlayer.getOnPos(), SoundEvents.ARROW_HIT_PLAYER, SoundSource.PLAYERS, 0.5F, 1);
+                }
+                player.displayClientMessage(Component.literal("removed"), true);
+                return InteractionResult.SUCCESS;
+            } else {
+                return InteractionResult.FAIL;
             }
-            return InteractionResult.SUCCESS;
         }
 
         if (mainHandItem.getItem() instanceof Monitor && player.isShiftKeyDown() && !this.entityData.get(INTELLIGENT)) {
@@ -216,7 +222,7 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, Container,
             entityData.set(YAW, player.getYRot());
         }
 
-        return InteractionResult.SUCCESS;
+        return InteractionResult.FAIL;
     }
 
     public boolean setTarget(ItemStack stack) {

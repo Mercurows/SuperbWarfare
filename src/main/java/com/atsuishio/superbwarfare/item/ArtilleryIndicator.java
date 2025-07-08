@@ -1,5 +1,9 @@
 package com.atsuishio.superbwarfare.item;
 
+import com.atsuishio.superbwarfare.tools.NBTTool;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -7,25 +11,29 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ItemUtils;
+import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ArtilleryIndicator extends Item {
 
+    public static final String TAG_MORTARS = "Mortars";
+
     public ArtilleryIndicator() {
-        super(new Properties().stacksTo(1));
+        super(new Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
     }
 
     @Override
     @ParametersAreNonnullByDefault
     public int getUseDuration(ItemStack stack, LivingEntity entity) {
-        return 1200;
+        return 72000;
     }
-    
+
     @Override
     public @NotNull UseAnim getUseAnimation(@NotNull ItemStack stack) {
         return UseAnim.SPYGLASS;
@@ -33,44 +41,71 @@ public class ArtilleryIndicator extends Item {
 
     @Override
     @ParametersAreNonnullByDefault
-    public @NotNull InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
-        playerIn.playSound(SoundEvents.SPYGLASS_USE, 1.0F, 1.0F);
-        return ItemUtils.startUsingInstantly(worldIn, playerIn, handIn);
+    public @NotNull InteractionResultHolder<ItemStack> use(Level pLevel, Player pPlayer, InteractionHand pHand) {
+        pPlayer.playSound(SoundEvents.SPYGLASS_USE, 1.0F, 1.0F);
+        pPlayer.startUsingItem(pHand);
+        return InteractionResultHolder.consume(pPlayer.getItemInHand(pHand));
     }
 
     @Override
     @ParametersAreNonnullByDefault
     public @NotNull ItemStack finishUsingItem(ItemStack pStack, Level pLevel, LivingEntity pLivingEntity) {
-        this.stopUsing(pLivingEntity);
+        pLivingEntity.playSound(SoundEvents.SPYGLASS_STOP_USING, 1.0F, 1.0F);
         return pStack;
     }
 
     @Override
     @ParametersAreNonnullByDefault
     public void releaseUsing(ItemStack pStack, Level pLevel, LivingEntity pLivingEntity, int pTimeCharged) {
-        this.stopUsing(pLivingEntity);
+        pLivingEntity.playSound(SoundEvents.SPYGLASS_STOP_USING, 1.0F, 1.0F);
     }
 
-    private void stopUsing(LivingEntity pUser) {
-        pUser.playSound(SoundEvents.SPYGLASS_STOP_USING, 1.0F, 1.0F);
+    public boolean addMortar(ItemStack stack, String uuid) {
+        var tag = NBTTool.getTag(stack);
+        ListTag tags = tag.getList(TAG_MORTARS, Tag.TAG_COMPOUND);
+        List<CompoundTag> list = new ArrayList<>();
+        for (int i = 0; i < tags.size(); i++) {
+            list.add(tags.getCompound(i));
+        }
+        for (var t : list) {
+            if (t.getString("UUID").equals(uuid)) {
+                return false;
+            }
+        }
+        CompoundTag mortar = new CompoundTag();
+        mortar.putString("UUID", uuid);
+        list.add(mortar);
+
+        ListTag listTag = new ListTag();
+        listTag.addAll(list);
+        tag.put(TAG_MORTARS, listTag);
+        NBTTool.saveTag(stack, tag);
+
+        return true;
     }
 
-//    @Override
-//    public @NotNull InteractionResult useOn(UseOnContext pContext) {
-//        ItemStack stack = pContext.getItemInHand();
-//        BlockPos pos = pContext.getClickedPos();
-//        pos = pos.relative(pContext.getClickedFace());
-//        Player player = pContext.getPlayer();
-//        if (player == null) return InteractionResult.PASS;
-//
-//        if (player.isShiftKeyDown()) {
-//            stack.getOrCreateTag().putDouble("TargetX", pos.getX());
-//            stack.getOrCreateTag().putDouble("TargetY", pos.getY());
-//            stack.getOrCreateTag().putDouble("TargetZ", pos.getZ());
-//        }
-//
-//        return InteractionResult.SUCCESS;
-//    }
+    public boolean removeMortar(ItemStack stack, String uuid) {
+        var tag = NBTTool.getTag(stack);
+        ListTag tags = tag.getList(TAG_MORTARS, Tag.TAG_COMPOUND);
+        List<CompoundTag> list = new ArrayList<>();
+        boolean flag = false;
+        for (int i = 0; i < tags.size(); i++) {
+            var t = tags.getCompound(i);
+            if (t.getString("UUID").equals(uuid)) {
+                flag = true;
+                continue;
+            }
+            list.add(tags.getCompound(i));
+        }
+        if (flag) {
+            ListTag listTag = new ListTag();
+            listTag.addAll(list);
+            tag.put(TAG_MORTARS, listTag);
+            NBTTool.saveTag(stack, tag);
+        }
+
+        return flag;
+    }
 
 //    @Override
 //    @ParametersAreNonnullByDefault
