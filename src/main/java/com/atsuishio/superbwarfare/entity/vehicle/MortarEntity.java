@@ -65,6 +65,10 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, Container,
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
+    private LazyOptional<?> itemHandler = LazyOptional.of(() -> new InvWrapper(this));
+    private LivingEntity shooter = null;
+    public ItemStack stack = ItemStack.EMPTY;
+
     public MortarEntity(PlayMessages.SpawnEntity packet, Level level) {
         this(ModEntities.MORTAR.get(), level);
     }
@@ -153,9 +157,6 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, Container,
     public UUID getOwnerUUID() {
         return this.entityData.get(OWNER_UUID).orElse(null);
     }
-
-
-    private LivingEntity shooter = null;
 
     public void fire(@Nullable LivingEntity shooter) {
         if (!(this.stack.getItem() instanceof MortarShell)) return;
@@ -353,13 +354,6 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, Container,
         super.destroy();
     }
 
-    public String getSyncedAnimation() {
-        return null;
-    }
-
-    public void setAnimation(String animation) {
-    }
-
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar data) {
         data.add(new AnimationController<>(this, "movement", 0, this::movementPredicate));
@@ -369,8 +363,6 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, Container,
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return this.cache;
     }
-
-    public ItemStack stack = ItemStack.EMPTY;
 
     @Override
     public int getContainerSize() {
@@ -437,8 +429,6 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, Container,
         if (slot != 0 || this.entityData.get(FIRE_TIME) != 0) return false;
         return stack.getItem() instanceof MortarShell;
     }
-
-    private LazyOptional<?> itemHandler = LazyOptional.of(() -> new InvWrapper(this));
 
     @Override
     public <T> @NotNull LazyOptional<T> getCapability(@NotNull Capability<T> capability, @Nullable Direction facing) {

@@ -213,16 +213,14 @@ public class ClickHandler {
             event.setCanceled(true);
         }
 
-        Entity looking = TraceTool.findLookingEntity(player, 6);
-        if (looking == null) return;
-        if (looking instanceof MortarEntity && player.isShiftKeyDown()) {
-            Mod.PACKET_HANDLER.sendToServer(new AdjustMortarAngleMessage(scroll));
+        if (player.isUsingItem() && player.getUseItem().is(ModItems.ARTILLERY_INDICATOR.get())) {
+            artilleryIndicatorCustomZoom = Mth.clamp(artilleryIndicatorCustomZoom + 0.4 * scroll, 0, 9);
             event.setCanceled(true);
         }
 
-        //TODO 为啥还能滚轮换物品？
-        if (player.isUsingItem() && player.getUseItem().is(ModItems.ARTILLERY_INDICATOR.get())) {
-            artilleryIndicatorCustomZoom = Mth.clamp(artilleryIndicatorCustomZoom + 0.4 * scroll, 0, 9);
+        Entity looking = TraceTool.findLookingEntity(player, 6);
+        if (looking instanceof MortarEntity && player.isShiftKeyDown()) {
+            Mod.PACKET_HANDLER.sendToServer(new AdjustMortarAngleMessage(scroll));
             event.setCanceled(true);
         }
     }
