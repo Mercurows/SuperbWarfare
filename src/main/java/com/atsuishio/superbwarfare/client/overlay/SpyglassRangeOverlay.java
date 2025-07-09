@@ -1,25 +1,31 @@
 package com.atsuishio.superbwarfare.client.overlay;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.client.RenderHelper;
+import com.atsuishio.superbwarfare.component.ModDataComponents;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModItems;
-import com.atsuishio.superbwarfare.tools.FormatTool;
-import com.atsuishio.superbwarfare.tools.TraceTool;
+import com.atsuishio.superbwarfare.tools.*;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.Camera;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
@@ -29,26 +35,33 @@ import net.neoforged.api.distmarker.OnlyIn;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 import static com.atsuishio.superbwarfare.client.RenderHelper.preciseBlit;
+import static com.atsuishio.superbwarfare.item.ArtilleryIndicator.TAG_MORTARS;
 
 @OnlyIn(Dist.CLIENT)
 public class SpyglassRangeOverlay implements LayeredDraw.Layer {
 
     public static final ResourceLocation ID = Mod.loc("spyglass_range");
-
+    private static final ResourceLocation INDICATOR = Mod.loc("textures/screens/indicator.png");
+    private static final ResourceLocation FRIENDLY_INDICATOR = Mod.loc("textures/screens/friendly_indicator.png");
     private static float scopeScale = 1;
 
     @Override
     @ParametersAreNonnullByDefault
     public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
+        Minecraft mc = Minecraft.getInstance();
         PoseStack poseStack = guiGraphics.pose();
-        Player player = Minecraft.getInstance().player;
+        Player player = mc.player;
+        Camera camera = mc.gameRenderer.getMainCamera();
+        Vec3 cameraPos = camera.getPosition();
+
         if (player == null) return;
 
         var screenWidth = guiGraphics.guiWidth();
         var screenHeight = guiGraphics.guiHeight();
 
         if (((player.isUsingItem() && player.getUseItem().is(ModItems.ARTILLERY_INDICATOR.get())) || player.isScoping()) && Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON) {
-            if (player.getMainHandItem().getItem() == ModItems.ARTILLERY_INDICATOR.get()) {
+            if (player.getUseItem().is(ModItems.ARTILLERY_INDICATOR.get())) {
+                ItemStack stack = player.getUseItem();
                 poseStack.pushPose();
                 RenderSystem.disableDepthTest();
                 RenderSystem.depthMask(false);
@@ -67,6 +80,44 @@ public class SpyglassRangeOverlay implements LayeredDraw.Layer {
                 float l = ((screenHeight - j) / 2);
                 float w = i * 21 / 9;
                 preciseBlit(guiGraphics, Mod.loc("textures/screens/spyglass.png"), k - (2 * w / 7), l, 0, 0.0F, w, j, w, j);
+
+                // 标记位置
+                Vec3 pos;
+                var parameters = stack.get(ModDataComponents.FIRING_PARAMETERS);
+                if (parameters != null) {
+                    var blockPos = parameters.pos();
+                    pos = new Vec3(blockPos.getX(), blockPos.getY(), blockPos.getZ());
+                } else {
+                    pos = Vec3.ZERO;
+                }
+                Vec3 point = VectorUtil.worldToScreen(pos, cameraPos);
+                if (point != null) {
+                    float x = (float) point.x;
+                    float y = (float) point.y;
+                    preciseBlit(guiGraphics, INDICATOR, Mth.clamp(x - 6, 0, screenWidth - 12), Mth.clamp(y - 6, 0, screenHeight - 12), 0, 0, 12, 12, 12, 12);
+                }
+
+                // 火炮位置
+
+                ListTag tags = NBTTool.getTag(stack).getList(TAG_MORTARS, Tag.TAG_COMPOUND);
+                for (int m = 0; m < tags.size(); m++) {
+                    var tag = tags.getCompound(m);
+                    Entity entity = EntityFindUtil.findEntity(player.level(), tag.getString("UUID"));
+                    if (entity != null) {
+                        Vec3 posF = entity.getBoundingBox().getCenter();
+                        Vec3 pointF = VectorUtil.worldToScreen(posF, cameraPos);
+                        if (pointF != null) {
+                            float xf = (float) pointF.x;
+                            float yf = (float) pointF.y;
+
+                            preciseBlit(guiGraphics, FRIENDLY_INDICATOR, Mth.clamp(xf - 6, 0, screenWidth - 12), Mth.clamp(yf - 6, 0, screenHeight - 12), 0, 0, 12, 12, 12, 12);
+                        }
+                    }
+                }
+
+                RenderHelper.fill(guiGraphics, RenderType.guiOverlay(), (float) screenWidth / 2 - 20, (float) (screenHeight / 2 + 44), (float) screenWidth / 2 + 20, (float) screenHeight / 2 + 48, -90, -16777216);
+                RenderHelper.fill(guiGraphics, RenderType.guiOverlay(), (float) screenWidth / 2 - 20, (float) (screenHeight / 2 + 44), (float) (screenWidth / 2 - 20 + 4 * ClientEventHandler.holdArtilleryIndicator), (float) screenHeight / 2 + 48, -90, -1);
+
                 poseStack.popPose();
             }
 

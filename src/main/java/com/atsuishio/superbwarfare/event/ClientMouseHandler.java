@@ -180,7 +180,7 @@ public class ClientMouseHandler {
         event.setMouseSensitivity((newSensitivity - 0.2) / 0.6);
     }
 
-    public static float invertY() {
+    public static int invertY() {
         Minecraft mc = Minecraft.getInstance();
         Player player = mc.player;
 
@@ -220,6 +220,10 @@ public class ClientMouseHandler {
 
         if (isFreeCam(player)) {
             return 0;
+        }
+
+        if (player.isUsingItem() && player.getUseItem().is(ModItems.ARTILLERY_INDICATOR.get()) && mc.options.getCameraType() == CameraType.FIRST_PERSON) {
+            return original / Math.max(1 + 0.2 * ClientEventHandler.artilleryIndicatorZoom, 0.1);
         }
 
         if (player.getVehicle() instanceof VehicleEntity vehicle && vehicle instanceof WeaponVehicleEntity weaponVehicle && weaponVehicle.banHand(player)) {

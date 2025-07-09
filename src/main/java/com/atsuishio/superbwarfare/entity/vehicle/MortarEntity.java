@@ -217,6 +217,9 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, Container,
             if (mainHandItem.getItem() == ModItems.CROWBAR.get()) {
                 this.discard();
                 ItemHandlerHelper.giveItemToPlayer(player, new ItemStack(ModItems.MORTAR_DEPLOYER.get()));
+                if (entityData.get(INTELLIGENT)) {
+                    ItemHandlerHelper.giveItemToPlayer(player, new ItemStack(ModItems.MONITOR.get()));
+                }
                 return InteractionResult.SUCCESS;
             }
             entityData.set(YAW, player.getYRot());
@@ -236,7 +239,7 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, Container,
         var isDepressed = parameters.isDepressed();
 
         try {
-            Vec3 launchVector = calculateLaunchVector(getEyePosition(), new Vec3(targetX, targetY, targetZ), 11.4, -0.146, isDepressed);
+            Vec3 launchVector = calculateLaunchVector(getEyePosition(), new Vec3(targetX, targetY, targetZ), 13, -0.11, isDepressed);
             this.look(new Vec3(targetX, targetY, targetZ));
             float angle = (float) -getXRotFromVector(launchVector);
             if (angle < -89 || angle > -20) {
@@ -275,7 +278,7 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, Container,
             if (level instanceof ServerLevel server) {
                 MortarShellEntity entityToSpawn = MortarShell.createShell(shooter, level, this.stack);
                 entityToSpawn.setPos(this.getX(), this.getEyeY(), this.getZ());
-                entityToSpawn.shoot(this.getLookAngle().x, this.getLookAngle().y, this.getLookAngle().z, 11.4f, (float) 0.5);
+                entityToSpawn.shoot(this.getLookAngle().x, this.getLookAngle().y, this.getLookAngle().z, 13f, (float) 1);
                 level.addFreshEntity(entityToSpawn);
                 server.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, (this.getX() + 3 * this.getLookAngle().x), (this.getY() + 0.1 + 3 * this.getLookAngle().y), (this.getZ() + 3 * this.getLookAngle().z), 8, 0.4, 0.4, 0.4,
                         0.007);

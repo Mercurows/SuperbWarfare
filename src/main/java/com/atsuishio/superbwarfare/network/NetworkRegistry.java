@@ -48,7 +48,8 @@ public class NetworkRegistry {
         registrar.playToServer(PlayerStopRidingMessage.TYPE, PlayerStopRidingMessage.STREAM_CODEC, PlayerStopRidingMessage::handler);
         registrar.playToServer(ZoomMessage.TYPE, ZoomMessage.STREAM_CODEC, ZoomMessage::handler);
         registrar.playToServer(DroneFireMessage.TYPE, DroneFireMessage.STREAM_CODEC, DroneFireMessage::handler);
-        registrar.playToServer(SetFiringParametersMessage.TYPE, SetFiringParametersMessage.STREAM_CODEC, SetFiringParametersMessage::handler);
+        registrar.playToServer(SetFiringParametersMessage.TYPE, SetFiringParametersMessage.STREAM_CODEC, (message, context) -> SetFiringParametersMessage.handler(context));
+        registrar.playToServer(ArtilleryIndicatorFireMessage.TYPE, ArtilleryIndicatorFireMessage.STREAM_CODEC, (message, context) -> ArtilleryIndicatorFireMessage.handler(context));
         registrar.playToServer(SensitivityMessage.TYPE, SensitivityMessage.STREAM_CODEC, SensitivityMessage::handler);
         registrar.playToServer(EditMessage.TYPE, EditMessage.STREAM_CODEC, EditMessage::handler);
         registrar.playToServer(InteractMessage.TYPE, InteractMessage.STREAM_CODEC, InteractMessage::handler);

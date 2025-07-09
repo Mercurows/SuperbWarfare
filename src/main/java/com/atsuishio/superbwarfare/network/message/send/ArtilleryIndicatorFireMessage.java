@@ -31,10 +31,10 @@ import java.util.Objects;
 
 import static com.atsuishio.superbwarfare.item.ArtilleryIndicator.TAG_MORTARS;
 
-public class SetFiringParametersMessage implements CustomPacketPayload {
-    public static final Type<SetFiringParametersMessage> TYPE = new Type<>(Mod.loc("set_firing_parameters"));
+public class ArtilleryIndicatorFireMessage implements CustomPacketPayload {
+    public static final Type<ArtilleryIndicatorFireMessage> TYPE = new Type<>(Mod.loc("artillery_indicator_fire"));
 
-    public static final StreamCodec<ByteBuf, SetFiringParametersMessage> STREAM_CODEC = StreamCodec.unit(new SetFiringParametersMessage());
+    public static final StreamCodec<ByteBuf, ArtilleryIndicatorFireMessage> STREAM_CODEC = StreamCodec.unit(new ArtilleryIndicatorFireMessage());
 
     public static void handler(final IPayloadContext context) {
         Player player = context.player();

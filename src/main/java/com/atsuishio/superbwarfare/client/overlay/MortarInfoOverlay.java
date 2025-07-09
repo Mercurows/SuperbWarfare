@@ -41,7 +41,7 @@ public class MortarInfoOverlay implements LayeredDraw.Layer {
                             .append(Component.literal(FormatTool.format1D(mortar.getYRot(), "°"))),
                     w / 2 - 90, h / 2 - 16, -1, false);
             guiGraphics.drawString(Minecraft.getInstance().font, Component.translatable("tips.superbwarfare.mortar.range")
-                            .append(Component.literal(FormatTool.format1D((int) RangeTool.getRange(-mortar.getXRot(), 11.4, 0.146), "m"))),
+                            .append(Component.literal(FormatTool.format1D((int) RangeTool.getRange(-mortar.getXRot(), 13, 0.11), "m"))),
                     w / 2 - 90, h / 2 - 6, -1, false);
         }
     }
