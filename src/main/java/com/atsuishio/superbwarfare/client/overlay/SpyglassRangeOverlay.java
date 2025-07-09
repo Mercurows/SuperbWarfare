@@ -55,6 +55,11 @@ public class SpyglassRangeOverlay implements IGuiOverlay {
 
         if (player == null) return;
 
+        if (ClientEventHandler.holdArtilleryIndicator > 0) {
+            RenderHelper.fill(guiGraphics, RenderType.guiOverlay(), (float) screenWidth / 2 - 20, (float) (screenHeight / 2 + 44), (float) screenWidth / 2 + 20, (float) screenHeight / 2 + 48, -90, -16777216);
+            RenderHelper.fill(guiGraphics, RenderType.guiOverlay(), (float) screenWidth / 2 - 20, (float) (screenHeight / 2 + 44), (float) (screenWidth / 2 - 20 + 4 * ClientEventHandler.holdArtilleryIndicator), (float) screenHeight / 2 + 48, -90, -1);
+        }
+
         if (((player.isUsingItem() && player.getUseItem().is(ModItems.ARTILLERY_INDICATOR.get())) || player.isScoping()) && mc.options.getCameraType() == CameraType.FIRST_PERSON) {
             if (player.getUseItem().is(ModItems.ARTILLERY_INDICATOR.get())) {
                 ItemStack stack = player.getUseItem();
@@ -107,9 +112,6 @@ public class SpyglassRangeOverlay implements IGuiOverlay {
                         }
                     }
                 }
-
-                RenderHelper.fill(guiGraphics, RenderType.guiOverlay(), (float) screenWidth / 2 - 20, (float) (screenHeight / 2 + 44), (float) screenWidth / 2 + 20, (float) screenHeight / 2 + 48, -90, -16777216);
-                RenderHelper.fill(guiGraphics, RenderType.guiOverlay(), (float) screenWidth / 2 - 20, (float) (screenHeight / 2 + 44), (float) (screenWidth / 2 - 20 + 4 * ClientEventHandler.holdArtilleryIndicator), (float) screenHeight / 2 + 48, -90, -1);
 
                 poseStack.popPose();
             }
