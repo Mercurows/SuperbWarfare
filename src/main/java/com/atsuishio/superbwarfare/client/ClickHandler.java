@@ -14,6 +14,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.init.*;
+import com.atsuishio.superbwarfare.item.ItemScreenProvider;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.network.message.send.*;
 import com.atsuishio.superbwarfare.tools.SeekTool;
@@ -274,14 +275,21 @@ public class ClickHandler {
             if (key == ModKeyMappings.DISMOUNT.getKey().getValue()) {
                 handleDismountPress(player);
             }
-            if (key == ModKeyMappings.EDIT_MODE.getKey().getValue() && ClientEventHandler.burstFireAmount == 0
-                    && stack.getItem() instanceof GunItem gunItem && gunItem.isCustomizable(stack)) {
-                ClientEventHandler.holdFire = false;
+            if (key == ModKeyMappings.EDIT_MODE.getKey().getValue()) {
+                if (ClientEventHandler.burstFireAmount == 0 && stack.getItem() instanceof GunItem gunItem && gunItem.isCustomizable(stack)) {
+                    ClientEventHandler.holdFire = false;
 
-                if (!isEditing) {
-                    player.playSound(ModSounds.EDIT_MODE.get(), 1, 1);
+                    if (!isEditing) {
+                        player.playSound(ModSounds.EDIT_MODE.get(), 1, 1);
+                    }
+                    isEditing = !isEditing;
                 }
-                isEditing = !isEditing;
+                if (stack.getItem() instanceof ItemScreenProvider provider) {
+                    var screen = provider.getItemScreen(stack, player);
+                    if (screen != null) {
+                        Minecraft.getInstance().setScreen(screen);
+                    }
+                }
             }
 
             if (key == ModKeyMappings.BREATH.getKey().getValue() && !exhaustion && zoom) {

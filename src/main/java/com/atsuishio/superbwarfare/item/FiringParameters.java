@@ -1,6 +1,8 @@
 package com.atsuishio.superbwarfare.item;
 
+import com.atsuishio.superbwarfare.client.screens.FiringParametersScreen;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
@@ -12,13 +14,15 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 
-public class FiringParameters extends Item {
+public class FiringParameters extends Item implements ItemScreenProvider {
 
     public FiringParameters() {
         super(new Properties().stacksTo(1));
@@ -73,5 +77,11 @@ public class FiringParameters extends Item {
                         ? "tips.superbwarfare.mortar.target_pos.depressed_trajectory"
                         : "tips.superbwarfare.mortar.target_pos.lofted_trajectory"
         ).withStyle(ChatFormatting.GRAY));
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    @Override
+    public @Nullable Screen getItemScreen(ItemStack stack, Player player) {
+        return new FiringParametersScreen(stack);
     }
 }
