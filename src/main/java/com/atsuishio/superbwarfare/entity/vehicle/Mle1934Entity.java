@@ -249,7 +249,7 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
         Vec3 shootPos = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
 
         try {
-            double adjust = 0.004 * new Vec3(targetX, targetY, targetZ).distanceTo(shootPos);
+            double adjust = -1 + 0.004 * new Vec3(targetX, targetY, targetZ).distanceTo(shootPos);
             Vec3 launchVector = calculateLaunchVector(shootPos, new Vec3(targetX, targetY - adjust, targetZ), 15, -shellGravity, isDepressed);
             this.look(new Vec3(targetX, targetY, targetZ));
             float angle = (float) -getXRotFromVector(launchVector);
@@ -279,7 +279,7 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
         Vec3 shootPos = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
 
         try {
-            double adjust = 0.004 * new Vec3(targetX, targetY, targetZ).distanceTo(shootPos);
+            double adjust = -1 + 0.004 * new Vec3(targetX, targetY, targetZ).distanceTo(shootPos);
             Vec3 launchVector = calculateLaunchVector(shootPos, new Vec3(targetX, targetY - adjust, targetZ), 15, -shellGravity, isDepressed);
             this.look(new Vec3(targetX, targetY, targetZ));
             float angle = (float) -getXRotFromVector(launchVector);
