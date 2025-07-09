@@ -55,9 +55,9 @@ public class SpyglassRangeOverlay implements IGuiOverlay {
 
         if (player == null) return;
 
-        if (((player.isUsingItem() && player.getUseItem().is(ModItems.ARTILLERY_INDICATOR.get())) || player.isScoping()) && mc.options.getCameraType() == CameraType.FIRST_PERSON) {
-            if (player.getUseItem().is(ModItems.ARTILLERY_INDICATOR.get())) {
-                ItemStack stack = player.getUseItem();
+        if ((player.getMainHandItem().is(ModItems.ARTILLERY_INDICATOR.get()) || player.isScoping()) && mc.options.getCameraType() == CameraType.FIRST_PERSON) {
+            if (player.getMainHandItem().is(ModItems.ARTILLERY_INDICATOR.get())) {
+                ItemStack stack = player.getMainHandItem();
                 poseStack.pushPose();
                 RenderSystem.disableDepthTest();
                 RenderSystem.depthMask(false);
@@ -75,7 +75,9 @@ public class SpyglassRangeOverlay implements IGuiOverlay {
                 float k = ((screenWidth - i) / 2);
                 float l = ((screenHeight - j) / 2);
                 float w = i * 21 / 9;
-                preciseBlit(guiGraphics, Mod.loc("textures/screens/spyglass.png"), k - (2 * w / 7) , l, 0, 0.0F, w, j, w, j);
+                if (player.isUsingItem()) {
+                    preciseBlit(guiGraphics, Mod.loc("textures/screens/spyglass.png"), k - (2 * w / 7), l, 0, 0.0F, w, j, w, j);
+                }
 
                 double targetX = stack.getOrCreateTag().getDouble("TargetX");
                 double targetY = stack.getOrCreateTag().getDouble("TargetY");
@@ -108,11 +110,15 @@ public class SpyglassRangeOverlay implements IGuiOverlay {
                     }
                 }
 
-                RenderHelper.fill(guiGraphics, RenderType.guiOverlay(), (float) screenWidth / 2 - 20, (float) (screenHeight / 2 + 44), (float) screenWidth / 2 + 20, (float) screenHeight / 2 + 48, -90, -16777216);
-                RenderHelper.fill(guiGraphics, RenderType.guiOverlay(), (float) screenWidth / 2 - 20, (float) (screenHeight / 2 + 44), (float) (screenWidth / 2 - 20 + 4 * ClientEventHandler.holdArtilleryIndicator), (float) screenHeight / 2 + 48, -90, -1);
+                if (ClientEventHandler.holdArtilleryIndicator > 0) {
+                    RenderHelper.fill(guiGraphics, RenderType.guiOverlay(), (float) screenWidth / 2 - 20, (float) (screenHeight / 2 + 44), (float) screenWidth / 2 + 20, (float) screenHeight / 2 + 48, -90, -16777216);
+                    RenderHelper.fill(guiGraphics, RenderType.guiOverlay(), (float) screenWidth / 2 - 20, (float) (screenHeight / 2 + 44), (float) (screenWidth / 2 - 20 + 4 * ClientEventHandler.holdArtilleryIndicator), (float) screenHeight / 2 + 48, -90, -1);
+                }
 
                 poseStack.popPose();
             }
+
+            // vehicle info display
 
             boolean lookAtEntity = false;
 
