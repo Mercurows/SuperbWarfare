@@ -371,6 +371,13 @@ public class ClickHandler {
 
         if (player.hasEffect(ModMobEffects.SHOCK.get())) return;
 
+        if (player.getVehicle() instanceof WeaponVehicleEntity iVehicle && iVehicle.banHand(player)) {
+            if (player.getVehicle() instanceof VehicleEntity pVehicle && iVehicle.hasWeapon(pVehicle.getSeatIndex(player))) {
+                ClientEventHandler.holdFireVehicle = true;
+            }
+            return;
+        }
+
         if (stack.is(ModItems.ARTILLERY_INDICATOR.get())) {
             ClientEventHandler.holdFire = true;
         }
@@ -381,14 +388,6 @@ public class ClickHandler {
 
         if (stack.is(ModItems.MONITOR.get())) {
             Mod.PACKET_HANDLER.sendToServer(new DroneFireMessage(0));
-        }
-
-
-        if (player.getVehicle() instanceof WeaponVehicleEntity iVehicle && iVehicle.banHand(player)) {
-            if (player.getVehicle() instanceof VehicleEntity pVehicle && iVehicle.hasWeapon(pVehicle.getSeatIndex(player))) {
-                ClientEventHandler.holdFireVehicle = true;
-            }
-            return;
         }
 
         if (stack.is(ModItems.LUNGE_MINE.get())) {
