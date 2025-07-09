@@ -296,7 +296,7 @@ public class ClientEventHandler {
         if (stack.is(ModItems.ARTILLERY_INDICATOR.get()) && holdFire) {
             holdArtilleryIndicator = Mth.clamp(holdArtilleryIndicator + 1, 0, 10);
             if (holdArtilleryIndicator >= 9) {
-                Mod.PACKET_HANDLER.sendToServer(new ArtilleryIndicatorFireMessage(0));
+                Mod.PACKET_HANDLER.sendToServer(ArtilleryIndicatorFireMessage.INSTANCE);
             }
         } else {
             holdArtilleryIndicator = Mth.clamp(holdArtilleryIndicator - 1, 0, 10);

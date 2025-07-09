@@ -10,7 +10,6 @@ import com.atsuishio.superbwarfare.item.common.ammo.MortarShell;
 import com.atsuishio.superbwarfare.tools.EntityFindUtil;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -22,23 +21,10 @@ import static com.atsuishio.superbwarfare.entity.vehicle.Mk42Entity.COOL_DOWN;
 import static com.atsuishio.superbwarfare.entity.vehicle.MortarEntity.FIRE_TIME;
 import static com.atsuishio.superbwarfare.item.ArtilleryIndicator.TAG_CANNON;
 
-public class ArtilleryIndicatorFireMessage {
+public enum ArtilleryIndicatorFireMessage {
+    INSTANCE;
 
-    private final int type;
-
-    public ArtilleryIndicatorFireMessage(int type) {
-        this.type = type;
-    }
-
-    public static ArtilleryIndicatorFireMessage decode(FriendlyByteBuf buffer) {
-        return new ArtilleryIndicatorFireMessage(buffer.readInt());
-    }
-
-    public static void encode(ArtilleryIndicatorFireMessage message, FriendlyByteBuf buffer) {
-        buffer.writeInt(message.type);
-    }
-
-    public static void handler(ArtilleryIndicatorFireMessage message, Supplier<NetworkEvent.Context> contextSupplier) {
+    public static void handler(Supplier<NetworkEvent.Context> contextSupplier) {
         NetworkEvent.Context context = contextSupplier.get();
         context.enqueueWork(() -> {
             if (context.getSender() != null) {
@@ -54,9 +40,7 @@ public class ArtilleryIndicatorFireMessage {
                         if (entity instanceof MortarEntity mortarEntity) {
                             if (mortarEntity.stack.getItem() instanceof MortarShell && mortarEntity.getEntityData().get(FIRE_TIME) == 0) {
                                 int randomNumber = (int) (Math.random() * 5) + 1;
-                                Mod.queueServerWork(randomNumber, () -> {
-                                    mortarEntity.fire(player);
-                                });
+                                Mod.queueServerWork(randomNumber, () -> mortarEntity.fire(player));
                             }
                         }
                         if (entity instanceof Mk42Entity mk42Entity) {
@@ -64,9 +48,7 @@ public class ArtilleryIndicatorFireMessage {
                                 int randomNumber = (int) (Math.random() * 5) + 1;
                                 var weaponType = stack.is(ModItems.AP_5_INCHES.get()) ? 0 : 1;
                                 mk42Entity.setWeaponIndex(0, weaponType);
-                                Mod.queueServerWork(randomNumber, () -> {
-                                    mk42Entity.vehicleShoot(player, 0);
-                                });
+                                Mod.queueServerWork(randomNumber, () -> mk42Entity.vehicleShoot(player, 0));
                             }
                         }
                         if (entity instanceof Mle1934Entity mle1934Entity) {
@@ -74,9 +56,7 @@ public class ArtilleryIndicatorFireMessage {
                                 int randomNumber = (int) (Math.random() * 5) + 1;
                                 var weaponType = stack.is(ModItems.AP_5_INCHES.get()) ? 0 : 1;
                                 mle1934Entity.setWeaponIndex(0, weaponType);
-                                Mod.queueServerWork(randomNumber, () -> {
-                                    mle1934Entity.vehicleShoot(player, 0);
-                                });
+                                Mod.queueServerWork(randomNumber, () -> mle1934Entity.vehicleShoot(player, 0));
                             }
                         }
                     }

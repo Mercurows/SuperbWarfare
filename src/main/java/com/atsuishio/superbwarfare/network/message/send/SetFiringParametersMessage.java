@@ -11,7 +11,6 @@ import com.atsuishio.superbwarfare.tools.TraceTool;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -25,23 +24,10 @@ import java.util.function.Supplier;
 
 import static com.atsuishio.superbwarfare.item.ArtilleryIndicator.TAG_CANNON;
 
-public class SetFiringParametersMessage {
+public enum SetFiringParametersMessage {
+    INSTANCE;
 
-    private final int type;
-
-    public SetFiringParametersMessage(int type) {
-        this.type = type;
-    }
-
-    public static SetFiringParametersMessage decode(FriendlyByteBuf buffer) {
-        return new SetFiringParametersMessage(buffer.readInt());
-    }
-
-    public static void encode(SetFiringParametersMessage message, FriendlyByteBuf buffer) {
-        buffer.writeInt(message.type);
-    }
-
-    public static void handler(SetFiringParametersMessage message, Supplier<NetworkEvent.Context> contextSupplier) {
+    public static void handler(Supplier<NetworkEvent.Context> contextSupplier) {
         NetworkEvent.Context context = contextSupplier.get();
         context.enqueueWork(() -> {
             if (context.getSender() != null) {

@@ -24,7 +24,7 @@ public class DrawClientMessage {
         return new DrawClientMessage(buffer.readBoolean());
     }
 
-    public static void handle(Supplier<NetworkEvent.Context> context) {
+    public static void handler(Supplier<NetworkEvent.Context> context) {
         context.get().enqueueWork(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT,
                 () -> () -> ClientEventHandler.handleDrawMessage(context)));
         context.get().setPacketHandled(true);

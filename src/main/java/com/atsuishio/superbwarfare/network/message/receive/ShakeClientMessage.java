@@ -46,7 +46,7 @@ public class ShakeClientMessage {
         return new ShakeClientMessage(buffer.readDouble(), buffer.readDouble(), buffer.readDouble(), buffer.readDouble(), buffer.readDouble(), buffer.readDouble());
     }
 
-    public static void handle(ShakeClientMessage message, Supplier<NetworkEvent.Context> context) {
+    public static void handler(ShakeClientMessage message, Supplier<NetworkEvent.Context> context) {
         context.get().enqueueWork(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT,
                 () -> () -> ClientEventHandler.handleShakeClient(message.time, message.radius, message.amplitude, message.x, message.y, message.z, context)));
         context.get().setPacketHandled(true);

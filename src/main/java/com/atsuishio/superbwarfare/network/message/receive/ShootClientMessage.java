@@ -24,7 +24,7 @@ public class ShootClientMessage {
         return new ShootClientMessage(buffer.readDouble());
     }
 
-    public static void handle(ShootClientMessage message, Supplier<NetworkEvent.Context> context) {
+    public static void handler(Supplier<NetworkEvent.Context> context) {
         context.get().enqueueWork(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT,
                 () -> ClientEventHandler::handleClientShoot));
         context.get().setPacketHandled(true);

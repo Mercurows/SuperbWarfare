@@ -131,7 +131,7 @@ public class ClickHandler {
                 return;
             }
             if (stack.is(ModItems.ARTILLERY_INDICATOR.get())) {
-                Mod.PACKET_HANDLER.sendToServer(new SetFiringParametersMessage(0));
+                Mod.PACKET_HANDLER.sendToServer(SetFiringParametersMessage.INSTANCE);
                 event.setCanceled(true);
                 return;
             }
@@ -383,7 +383,7 @@ public class ClickHandler {
         }
 
         if (stack.is(Items.SPYGLASS) && player.isScoping() && player.getOffhandItem().is(ModItems.FIRING_PARAMETERS.get())) {
-            Mod.PACKET_HANDLER.sendToServer(new SetFiringParametersMessage(0));
+            Mod.PACKET_HANDLER.sendToServer(SetFiringParametersMessage.INSTANCE);
         }
 
         if (stack.is(ModItems.MONITOR.get())) {
@@ -503,7 +503,7 @@ public class ClickHandler {
         if (canDoubleJump) {
             player.setDeltaMovement(new Vec3(player.getLookAngle().x, 0.8, player.getLookAngle().z));
             level.playLocalSound(x, y, z, ModSounds.DOUBLE_JUMP.get(), SoundSource.BLOCKS, 1, 1, false);
-            Mod.PACKET_HANDLER.sendToServer(new DoubleJumpMessage(0));
+            Mod.PACKET_HANDLER.sendToServer(DoubleJumpMessage.INSTANCE);
             canDoubleJump = false;
         }
     }
