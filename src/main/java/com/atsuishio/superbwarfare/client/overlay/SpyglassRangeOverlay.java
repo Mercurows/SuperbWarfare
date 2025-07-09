@@ -45,6 +45,8 @@ public class SpyglassRangeOverlay implements LayeredDraw.Layer {
     private static final ResourceLocation FRIENDLY_INDICATOR = Mod.loc("textures/screens/friendly_indicator.png");
     private static float scopeScale = 1;
 
+    private static float lerpHoldArtilleryIndicator;
+
     @Override
     @ParametersAreNonnullByDefault
     public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
@@ -53,15 +55,16 @@ public class SpyglassRangeOverlay implements LayeredDraw.Layer {
         Player player = mc.player;
         Camera camera = mc.gameRenderer.getMainCamera();
         Vec3 cameraPos = camera.getPosition();
-
-        if (player == null) return;
-
         var screenWidth = guiGraphics.guiWidth();
         var screenHeight = guiGraphics.guiHeight();
 
+        if (player == null) return;
+
+        lerpHoldArtilleryIndicator = Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), lerpHoldArtilleryIndicator, ClientEventHandler.holdArtilleryIndicator);
+
         if (ClientEventHandler.holdArtilleryIndicator > 0) {
-            RenderHelper.fill(guiGraphics, RenderType.guiOverlay(), (float) screenWidth / 2 - 20, (float) (screenHeight / 2 + 44), (float) screenWidth / 2 + 20, (float) screenHeight / 2 + 48, -90, -16777216);
-            RenderHelper.fill(guiGraphics, RenderType.guiOverlay(), (float) screenWidth / 2 - 20, (float) (screenHeight / 2 + 44), (float) (screenWidth / 2 - 20 + 4 * ClientEventHandler.holdArtilleryIndicator), (float) screenHeight / 2 + 48, -90, -1);
+            RenderHelper.fill(guiGraphics, RenderType.guiOverlay(), (float) screenWidth / 2 - 40, (float) (screenHeight / 2 + 64), (float) screenWidth / 2 + 40, (float) screenHeight / 2 + 68, -90, -16777216);
+            RenderHelper.fill(guiGraphics, RenderType.guiOverlay(), (float) screenWidth / 2 - 40, (float) (screenHeight / 2 + 64), (float) screenWidth / 2 - 40 + 8 * lerpHoldArtilleryIndicator, (float) screenHeight / 2 + 68, -90, -1);
         }
 
         if (((player.isUsingItem() && player.getUseItem().is(ModItems.ARTILLERY_INDICATOR.get())) || player.isScoping()) && mc.options.getCameraType() == CameraType.FIRST_PERSON) {
