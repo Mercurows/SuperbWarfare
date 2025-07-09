@@ -32,7 +32,6 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.players.OldUsersConverter;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
@@ -42,7 +41,6 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MoverType;
-import net.minecraft.world.entity.OwnableEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Explosion;
@@ -70,18 +68,14 @@ import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-import java.util.Optional;
-import java.util.UUID;
-
 import static com.atsuishio.superbwarfare.tools.RangeTool.calculateLaunchVector;
 
-public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity, Container, OwnableEntity {
+public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity, Container {
 
     public static final EntityDataAccessor<Integer> COOL_DOWN = SynchedEntityData.defineId(Mk42Entity.class, EntityDataSerializers.INT);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     public static final EntityDataAccessor<Float> PITCH = SynchedEntityData.defineId(Mk42Entity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Float> YAW = SynchedEntityData.defineId(Mk42Entity.class, EntityDataSerializers.FLOAT);
-    public static final EntityDataAccessor<Optional<UUID>> OWNER_UUID = SynchedEntityData.defineId(Mk42Entity.class, EntityDataSerializers.OPTIONAL_UUID);
 
     private final float shellGravity = 0.1f;
 
@@ -102,7 +96,6 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
         this.entityData.define(COOL_DOWN, 0);
         this.entityData.define(PITCH, 0f);
         this.entityData.define(YAW, 0f);
-        this.entityData.define(OWNER_UUID, Optional.empty());
     }
 
     @Override
@@ -142,9 +135,6 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
         compound.putInt("CoolDown", this.entityData.get(COOL_DOWN));
         compound.putFloat("Pitch", this.entityData.get(PITCH));
         compound.putFloat("Yaw", this.entityData.get(YAW));
-        if (this.getOwnerUUID() != null) {
-            compound.putUUID("Owner", this.getOwnerUUID());
-        }
     }
 
     @Override
@@ -153,47 +143,14 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
         this.entityData.set(COOL_DOWN, compound.getInt("CoolDown"));
         this.entityData.set(PITCH, compound.getFloat("Pitch"));
         this.entityData.set(YAW, compound.getFloat("Yaw"));
-        UUID uuid;
-        if (compound.hasUUID("Owner")) {
-            uuid = compound.getUUID("Owner");
-        } else {
-            String s = compound.getString("Owner");
-
-            assert this.getServer() != null;
-            uuid = OldUsersConverter.convertMobOwnerIfNecessary(this.getServer(), s);
-        }
-
-        if (uuid != null) {
-            try {
-                this.setOwnerUUID(uuid);
-            } catch (Throwable ignored) {
-            }
-        }
     }
-
-    public void setOwnerUUID(@Nullable UUID pUuid) {
-        this.entityData.set(OWNER_UUID, Optional.ofNullable(pUuid));
-    }
-
-    @Nullable
-    public UUID getOwnerUUID() {
-        return this.entityData.get(OWNER_UUID).orElse(null);
-    }
-
 
     @Override
     public @NotNull InteractionResult interact(Player player, @NotNull InteractionHand hand) {
         ItemStack stack = player.getMainHandItem();
 
-        if (player.isShiftKeyDown() && this.getOwner() == null) {
-            setOwnerUUID(player.getUUID());
-            if (player instanceof ServerPlayer serverPlayer) {
-                serverPlayer.level().playSound(null, serverPlayer.getOnPos(), SoundEvents.ARROW_HIT_PLAYER, SoundSource.PLAYERS, 0.5F, 1);
-            }
-            return InteractionResult.SUCCESS;
-        }
 
-        if (stack.getItem() instanceof ArtilleryIndicator indicator && player == getOwner() && this.getOwner() == player) {
+        if (stack.getItem() instanceof ArtilleryIndicator indicator) {
             if (indicator.addCannon(stack, getStringUUID())) {
                 if (player instanceof ServerPlayer serverPlayer) {
                     serverPlayer.level().playSound(null, serverPlayer.getOnPos(), SoundEvents.ARROW_HIT_PLAYER, SoundSource.PLAYERS, 0.5F, 1);
@@ -409,7 +366,7 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
                 InventoryTool.consumeItem(player.getInventory().items, ammo, 1);
             }
 
-            if (getFirstPassenger() != getOwner()) {
+            if (getFirstPassenger() != player) {
                 this.stack = ItemStack.EMPTY;
             }
 
