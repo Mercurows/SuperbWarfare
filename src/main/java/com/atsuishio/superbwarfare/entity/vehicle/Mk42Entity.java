@@ -14,6 +14,7 @@ import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
+import com.atsuishio.superbwarfare.item.ArtilleryIndicator;
 import com.atsuishio.superbwarfare.item.common.ammo.CannonShellItem;
 import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage;
 import com.atsuishio.superbwarfare.tools.CustomExplosion;
@@ -30,13 +31,17 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.players.OldUsersConverter;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
+import net.minecraft.world.Container;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MoverType;
+import net.minecraft.world.entity.OwnableEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Explosion;
@@ -56,14 +61,18 @@ import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.*;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
+import java.util.Optional;
+import java.util.UUID;
+
 import static com.atsuishio.superbwarfare.tools.RangeTool.calculateLaunchVector;
 
-public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity {
+public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity, Container, OwnableEntity {
 
     public static final EntityDataAccessor<Integer> COOL_DOWN = SynchedEntityData.defineId(Mk42Entity.class, EntityDataSerializers.INT);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     public static final EntityDataAccessor<Float> PITCH = SynchedEntityData.defineId(Mk42Entity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Float> YAW = SynchedEntityData.defineId(Mk42Entity.class, EntityDataSerializers.FLOAT);
+    public static final EntityDataAccessor<Optional<UUID>> OWNER_UUID = SynchedEntityData.defineId(Mk42Entity.class, EntityDataSerializers.OPTIONAL_UUID);
 
     private final float shellGravity = 0.1f;
 
@@ -71,12 +80,16 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
         super(type, world);
     }
 
+    // TODO cap
+    public ItemStack stack = ItemStack.EMPTY;
+
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
         builder.define(COOL_DOWN, 0)
                 .define(PITCH, 0F)
-                .define(YAW, 0F);
+                .define(YAW, 0F)
+                .define(OWNER_UUID, Optional.empty());
     }
 
     @Override
@@ -116,6 +129,9 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
         compound.putInt("CoolDown", this.entityData.get(COOL_DOWN));
         compound.putFloat("Pitch", this.entityData.get(PITCH));
         compound.putFloat("Yaw", this.entityData.get(YAW));
+        if (this.getOwnerUUID() != null) {
+            compound.putUUID("Owner", this.getOwnerUUID());
+        }
     }
 
     @Override
@@ -124,11 +140,63 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
         this.entityData.set(COOL_DOWN, compound.getInt("CoolDown"));
         this.entityData.set(PITCH, compound.getFloat("Pitch"));
         this.entityData.set(YAW, compound.getFloat("Yaw"));
+        UUID uuid;
+        if (compound.hasUUID("Owner")) {
+            uuid = compound.getUUID("Owner");
+        } else {
+            String s = compound.getString("Owner");
+
+            assert this.getServer() != null;
+            uuid = OldUsersConverter.convertMobOwnerIfNecessary(this.getServer(), s);
+        }
+
+        if (uuid != null) {
+            try {
+                this.setOwnerUUID(uuid);
+            } catch (Throwable ignored) {
+            }
+        }
     }
+
+    public void setOwnerUUID(@Nullable UUID pUuid) {
+        this.entityData.set(OWNER_UUID, Optional.ofNullable(pUuid));
+    }
+
+    @Nullable
+    public UUID getOwnerUUID() {
+        return this.entityData.get(OWNER_UUID).orElse(null);
+    }
+
 
     @Override
     public @NotNull InteractionResult interact(Player player, @NotNull InteractionHand hand) {
         ItemStack stack = player.getMainHandItem();
+
+        if (player.isShiftKeyDown() && this.getOwner() == null) {
+            setOwnerUUID(player.getUUID());
+            if (player instanceof ServerPlayer serverPlayer) {
+                serverPlayer.level().playSound(null, serverPlayer.getOnPos(), SoundEvents.ARROW_HIT_PLAYER, SoundSource.PLAYERS, 0.5F, 1);
+            }
+            return InteractionResult.SUCCESS;
+        }
+
+        if (stack.getItem() instanceof ArtilleryIndicator indicator && player == getOwner() && this.getOwner() == player) {
+            if (indicator.addCannon(stack, getStringUUID())) {
+                if (player instanceof ServerPlayer serverPlayer) {
+                    serverPlayer.level().playSound(null, serverPlayer.getOnPos(), SoundEvents.ARROW_HIT_PLAYER, SoundSource.PLAYERS, 0.5F, 1);
+                }
+                player.displayClientMessage(Component.literal("added"), true);
+                return InteractionResult.SUCCESS;
+            } else if (indicator.removeCannon(stack, getStringUUID())) {
+                if (player instanceof ServerPlayer serverPlayer) {
+                    serverPlayer.level().playSound(null, serverPlayer.getOnPos(), SoundEvents.ARROW_HIT_PLAYER, SoundSource.PLAYERS, 0.5F, 1);
+                }
+                player.displayClientMessage(Component.literal("removed"), true);
+                return InteractionResult.SUCCESS;
+            } else {
+                return InteractionResult.FAIL;
+            }
+        }
 
         if (stack.getItem() instanceof CannonShellItem) {
             if (this.entityData.get(COOL_DOWN) == 0) {
@@ -175,7 +243,8 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
         Vec3 shootPos = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
 
         try {
-            Vec3 launchVector = calculateLaunchVector(shootPos, new Vec3(targetX, targetY, targetZ), 15, -shellGravity, isDepressed);
+            double adjust = 0.004 * new Vec3(targetX, targetY, targetZ).distanceTo(shootPos);
+            Vec3 launchVector = calculateLaunchVector(shootPos, new Vec3(targetX, targetY - adjust, targetZ), 15, -shellGravity, isDepressed);
             this.look(new Vec3(targetX, targetY, targetZ));
             float angle = (float) -getXRotFromVector(launchVector);
             if (angle < -85 || angle > 14.9) {
@@ -185,7 +254,34 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
         } catch (Exception e) {
             return false;
         }
+        return true;
+    }
 
+    public boolean setTarget(ItemStack stack, boolean isDepressed) {
+        var parameters = stack.get(ModDataComponents.FIRING_PARAMETERS);
+        if (parameters == null) return false;
+
+        var pos = parameters.pos();
+        double targetX = pos.getX();
+        double targetY = pos.getY();
+        double targetZ = pos.getZ();
+
+        Matrix4f transform = getVehicleFlatTransform(1);
+        Vector4f worldPosition = transformPosition(transform, 0f, 2.16f, 0.5175f);
+        Vec3 shootPos = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
+
+        try {
+            double adjust = 0.004 * new Vec3(targetX, targetY, targetZ).distanceTo(shootPos);
+            Vec3 launchVector = calculateLaunchVector(shootPos, new Vec3(targetX, targetY - adjust, targetZ), 15, -shellGravity, isDepressed);
+            this.look(new Vec3(targetX, targetY, targetZ));
+            float angle = (float) -getXRotFromVector(launchVector);
+            if (angle < -85 || angle > 14.9) {
+                return false;
+            }
+            entityData.set(PITCH, angle);
+        } catch (Exception e) {
+            return false;
+        }
         return true;
     }
 
@@ -305,6 +401,10 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
                 InventoryTool.consumeItem(player.getInventory().items, ammo, 1);
             }
 
+            if (getFirstPassenger() != getOwner()) {
+                this.stack = ItemStack.EMPTY;
+            }
+
             var entityToSpawn = ((CannonShellWeapon) getWeapon(0)).create(player);
 
             Matrix4f transform = getVehicleFlatTransform(1);
@@ -315,11 +415,16 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
             level.addFreshEntity(entityToSpawn);
 
             if (player instanceof ServerPlayer serverPlayer) {
-                SoundTool.playLocalSound(serverPlayer, ModSounds.MK_42_FIRE_1P.get(), 2, 1);
-                SoundTool.playLocalSound(serverPlayer, ModSounds.CANNON_RELOAD.get(), 2, 1);
-                serverPlayer.level().playSound(null, serverPlayer.getOnPos(), ModSounds.MK_42_FIRE_3P.get(), SoundSource.PLAYERS, 6, 1);
-                serverPlayer.level().playSound(null, serverPlayer.getOnPos(), ModSounds.MK_42_FAR.get(), SoundSource.PLAYERS, 16, 1);
-                serverPlayer.level().playSound(null, serverPlayer.getOnPos(), ModSounds.MK_42_VERYFAR.get(), SoundSource.PLAYERS, 32, 1);
+                if (player == getFirstPassenger()) {
+                    SoundTool.playLocalSound(serverPlayer, ModSounds.MK_42_FIRE_1P.get(), 2, 1);
+                    SoundTool.playLocalSound(serverPlayer, ModSounds.CANNON_RELOAD.get(), 2, 1);
+                }
+            }
+
+            if (!this.level().isClientSide()) {
+                this.level().playSound(null, this.getX(), this.getY(), this.getZ(), ModSounds.MK_42_FIRE_3P.get(), SoundSource.PLAYERS, 24f, 1f);
+                this.level().playSound(null, this.getX(), this.getY(), this.getZ(), ModSounds.MK_42_FAR.get(), SoundSource.PLAYERS, 48f, 1f);
+                this.level().playSound(null, this.getX(), this.getY(), this.getZ(), ModSounds.MK_42_VERYFAR.get(), SoundSource.PLAYERS, 96f, 1f);
             }
 
             this.entityData.set(COOL_DOWN, 30);
@@ -482,5 +587,71 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
     @Override
     public @Nullable ResourceLocation getVehicleItemIcon() {
         return Mod.loc("textures/gui/vehicle/type/defense.png");
+    }
+
+    @Override
+    public int getContainerSize() {
+        return 1;
+    }
+
+    @Override
+    public int getMaxStackSize() {
+        return 1;
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return stack == ItemStack.EMPTY;
+    }
+
+    @Override
+    public @NotNull ItemStack getItem(int slot) {
+        return slot == 0 ? stack : ItemStack.EMPTY;
+    }
+
+    @Override
+    public @NotNull ItemStack removeItem(int slot, int amount) {
+        if (slot != 0 || amount <= 0 || stack.isEmpty()) {
+            return ItemStack.EMPTY;
+        }
+        stack.shrink(1);
+        if (stack.isEmpty()) {
+            stack = ItemStack.EMPTY;
+        }
+        return stack;
+    }
+
+    @Override
+    public @NotNull ItemStack removeItemNoUpdate(int slot) {
+        return removeItem(0, 1);
+    }
+
+    @Override
+    public void setItem(int slot, @NotNull ItemStack stack) {
+        if (slot != 0) return;
+        this.stack = stack;
+    }
+
+    @Override
+    public void setChanged() {
+//        if (!entityData.get(INTELLIGENT)) {
+//            fire(null);
+//        }
+    }
+
+    @Override
+    public boolean stillValid(@NotNull Player player) {
+        return false;
+    }
+
+    @Override
+    public void clearContent() {
+        this.stack = ItemStack.EMPTY;
+    }
+
+    @Override
+    public boolean canPlaceItem(int slot, @NotNull ItemStack stack) {
+        if (slot != 0 || this.entityData.get(COOL_DOWN) != 0) return false;
+        return stack.getItem() instanceof CannonShellItem;
     }
 }

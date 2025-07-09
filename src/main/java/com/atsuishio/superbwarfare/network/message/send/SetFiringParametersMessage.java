@@ -2,6 +2,8 @@ package com.atsuishio.superbwarfare.network.message.send;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.component.ModDataComponents;
+import com.atsuishio.superbwarfare.entity.vehicle.Mk42Entity;
+import com.atsuishio.superbwarfare.entity.vehicle.Mle1934Entity;
 import com.atsuishio.superbwarfare.entity.vehicle.MortarEntity;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
@@ -29,7 +31,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
-import static com.atsuishio.superbwarfare.item.ArtilleryIndicator.TAG_MORTARS;
+import static com.atsuishio.superbwarfare.item.ArtilleryIndicator.TAG_CANNON;
 
 public enum SetFiringParametersMessage implements CustomPacketPayload {
     INSTANCE;
@@ -73,13 +75,13 @@ public enum SetFiringParametersMessage implements CustomPacketPayload {
         }
 
         if (mainStack.is(ModItems.ARTILLERY_INDICATOR.get())) {
+            BlockPos pos;
             if (lookAtEntity) {
-                stack.set(ModDataComponents.FIRING_PARAMETERS, new FiringParameters.Parameters(lookingEntity.blockPosition(), false));
+                pos = lookingEntity.blockPosition();
             } else {
-                stack.set(ModDataComponents.FIRING_PARAMETERS, new FiringParameters.Parameters(new BlockPos((int) hitPos.x, (int) hitPos.y, (int) hitPos.z), false));
+                pos = new BlockPos((int) hitPos.x, (int) hitPos.y, (int) hitPos.z);
             }
-
-            var pos = Objects.requireNonNull(stack.get(ModDataComponents.FIRING_PARAMETERS)).pos();
+            mainStack.set(ModDataComponents.FIRING_PARAMETERS, new FiringParameters.Parameters(pos, false));
 
             player.displayClientMessage(Component.translatable("tips.superbwarfare.mortar.target_pos")
                     .withStyle(ChatFormatting.GRAY)
@@ -89,13 +91,22 @@ public enum SetFiringParametersMessage implements CustomPacketPayload {
                             + "]")), true);
             SoundTool.playLocalSound(player, ModSounds.CANNON_ZOOM_IN.get(), 2, 1);
 
-            var mainTag = NBTTool.getTag(mainStack);
-            ListTag tags = mainTag.getList(TAG_MORTARS, Tag.TAG_COMPOUND);
+            ListTag tags = NBTTool.getTag(mainStack).getList(TAG_CANNON, Tag.TAG_COMPOUND);
             for (int i = 0; i < tags.size(); i++) {
                 var tag = tags.getCompound(i);
                 Entity entity = EntityFindUtil.findEntity(player.level(), tag.getString("UUID"));
                 if (entity instanceof MortarEntity mortarEntity) {
                     if (!mortarEntity.setTarget(mainStack)) {
+                        player.displayClientMessage(Component.translatable("tips.superbwarfare.mortar.warn").withStyle(ChatFormatting.RED), true);
+                    }
+                }
+                if (entity instanceof Mk42Entity mk42Entity) {
+                    if (!mk42Entity.setTarget(mainStack, true)) {
+                        player.displayClientMessage(Component.translatable("tips.superbwarfare.mortar.warn").withStyle(ChatFormatting.RED), true);
+                    }
+                }
+                if (entity instanceof Mle1934Entity mle1934Entity) {
+                    if (!mle1934Entity.setTarget(mainStack, true)) {
                         player.displayClientMessage(Component.translatable("tips.superbwarfare.mortar.warn").withStyle(ChatFormatting.RED), true);
                     }
                 }

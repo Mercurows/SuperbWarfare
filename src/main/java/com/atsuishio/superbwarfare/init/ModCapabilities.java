@@ -38,7 +38,7 @@ public class ModCapabilities {
 
         // 充电站
         event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, ModBlockEntities.CHARGING_STATION.value(), ChargingStationBlockEntity::getEnergyStorage);
-        // TODO 这注册对吗？
+
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ModBlockEntities.CHARGING_STATION.value(), (object, context) -> {
             if (context == null || object.isRemoved()) return null;
 
@@ -108,9 +108,23 @@ public class ModCapabilities {
                 (object, context) -> new InvWrapper(object)
         );
 
+        // 自动引导发射用
+
         // 迫击炮实体
         event.registerEntity(Capabilities.ItemHandler.ENTITY,
                 ModEntities.MORTAR.get(),
+                (obj, ctx) -> new InvWrapper(obj)
+        );
+
+        // Mk42
+        event.registerEntity(Capabilities.ItemHandler.ENTITY,
+                ModEntities.MK_42.get(),
+                (obj, ctx) -> new InvWrapper(obj)
+        );
+
+        // Mle1934
+        event.registerEntity(Capabilities.ItemHandler.ENTITY,
+                ModEntities.MLE_1934.get(),
                 (obj, ctx) -> new InvWrapper(obj)
         );
 

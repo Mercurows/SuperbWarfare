@@ -35,7 +35,7 @@ import net.neoforged.api.distmarker.OnlyIn;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 import static com.atsuishio.superbwarfare.client.RenderHelper.preciseBlit;
-import static com.atsuishio.superbwarfare.item.ArtilleryIndicator.TAG_MORTARS;
+import static com.atsuishio.superbwarfare.item.ArtilleryIndicator.TAG_CANNON;
 
 @OnlyIn(Dist.CLIENT)
 public class SpyglassRangeOverlay implements LayeredDraw.Layer {
@@ -99,7 +99,7 @@ public class SpyglassRangeOverlay implements LayeredDraw.Layer {
 
                 // 火炮位置
 
-                ListTag tags = NBTTool.getTag(stack).getList(TAG_MORTARS, Tag.TAG_COMPOUND);
+                ListTag tags = NBTTool.getTag(stack).getList(TAG_CANNON, Tag.TAG_COMPOUND);
                 for (int m = 0; m < tags.size(); m++) {
                     var tag = tags.getCompound(m);
                     Entity entity = EntityFindUtil.findEntity(player.level(), tag.getString("UUID"));
