@@ -10,6 +10,7 @@ import com.atsuishio.superbwarfare.tools.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -48,13 +49,17 @@ import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class Agm65Entity extends FastThrowableProjectile implements GeoEntity, ExplosiveProjectile {
 
     public static final EntityDataAccessor<Float> HEALTH = SynchedEntityData.defineId(Agm65Entity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<String> TARGET_UUID = SynchedEntityData.defineId(Agm65Entity.class, EntityDataSerializers.STRING);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+
+    public Set<Long> loadedChunks = new HashSet<>();
 
     private float damage = ExplosionConfig.AGM_65_DAMAGE.get();
     private float explosionDamage = ExplosionConfig.AGM_65_EXPLOSION_DAMAGE.get();
@@ -129,6 +134,14 @@ public class Agm65Entity extends FastThrowableProjectile implements GeoEntity, E
         if (compound.contains("Durability")) {
             this.durability = compound.getInt("Durability");
         }
+
+        if (compound.contains("Chunks")) {
+            ListTag listTag = compound.getList("Chunks", 10);
+            for (int i = 0; i < listTag.size(); i++) {
+                CompoundTag tag = listTag.getCompound(i);
+                this.loadedChunks.add(tag.getLong("Pos"));
+            }
+        }
     }
 
     @Override
@@ -139,6 +152,14 @@ public class Agm65Entity extends FastThrowableProjectile implements GeoEntity, E
         compound.putFloat("ExplosionDamage", this.explosionDamage);
         compound.putFloat("Radius", this.explosionRadius);
         compound.putInt("Durability", this.durability);
+
+        ListTag listTag = new ListTag();
+        for (long chunkPos : this.loadedChunks) {
+            CompoundTag tag = new CompoundTag();
+            tag.putLong("Pos", chunkPos);
+            listTag.add(tag);
+        }
+        compound.put("Chunks", listTag);
     }
 
     @Override
@@ -215,6 +236,20 @@ public class Agm65Entity extends FastThrowableProjectile implements GeoEntity, E
     @Override
     public void tick() {
         super.tick();
+
+        if (this.level() instanceof ServerLevel serverLevel && tickCount > 1) {
+            double l = getDeltaMovement().length();
+            for (double i = 0; i < l; i ++) {
+                Vec3 startPos = new Vec3(this.xo, this.yo, this.zo);
+                Vec3 pos = startPos.add(getDeltaMovement().normalize().scale(-i));
+                ParticleTool.sendParticle(serverLevel, ParticleTypes.CAMPFIRE_COSY_SMOKE, pos.x, pos.y, pos.z,
+                        1, 0, 0, 0, 0.001, true);
+            }
+            // 更新需要加载的区块
+            ChunkLoadTool.updateLoadedChunks(serverLevel, this, this.loadedChunks);
+        }
+
+
         Entity entity = EntityFindUtil.findEntity(this.level(), entityData.get(TARGET_UUID));
         List<Entity> decoy = SeekTool.seekLivingEntities(this, this.level(), 32, 90);
 
@@ -255,9 +290,6 @@ public class Agm65Entity extends FastThrowableProjectile implements GeoEntity, E
         }
 
         if (this.tickCount > 8) {
-            if (!this.level().isClientSide() && this.level() instanceof ServerLevel serverLevel) {
-                ParticleTool.sendParticle(serverLevel, ParticleTypes.CAMPFIRE_COSY_SMOKE, this.xo, this.yo, this.zo, 1, 0, 0, 0, 0, true);
-            }
             this.setDeltaMovement(this.getDeltaMovement().multiply(1.06, 1.06, 1.06));
         }
 
@@ -274,6 +306,14 @@ public class Agm65Entity extends FastThrowableProjectile implements GeoEntity, E
 
         this.setDeltaMovement(this.getDeltaMovement().multiply(f, f, f));
         destroyBlock();
+    }
+
+    @Override
+    public void onRemovedFromWorld() {
+        if (this.level() instanceof ServerLevel serverLevel) {
+            ChunkLoadTool.unloadAllChunks(serverLevel, this, this.loadedChunks);
+        }
+        super.onRemovedFromWorld();
     }
 
     @Override

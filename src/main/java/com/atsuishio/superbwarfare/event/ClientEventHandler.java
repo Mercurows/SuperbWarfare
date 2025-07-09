@@ -174,6 +174,8 @@ public class ClientEventHandler {
 
     public static boolean canDoubleJump = false;
 
+    public static int holdArtilleryIndicator;
+
 
     @SubscribeEvent
     public static void handleWeaponTurn(RenderHandEvent event) {
@@ -289,6 +291,15 @@ public class ClientEventHandler {
 
         if (player.onGround() && canDoubleJump) {
             canDoubleJump = false;
+        }
+
+        if (stack.is(ModItems.ARTILLERY_INDICATOR.get()) && holdFire) {
+            holdArtilleryIndicator = Mth.clamp(holdArtilleryIndicator + 1, 0, 10);
+            if (holdArtilleryIndicator >= 9) {
+                Mod.PACKET_HANDLER.sendToServer(new ArtilleryIndicatorFireMessage(0));
+            }
+        } else {
+            holdArtilleryIndicator = Mth.clamp(holdArtilleryIndicator - 1, 0, 10);
         }
 
         isProne(player);

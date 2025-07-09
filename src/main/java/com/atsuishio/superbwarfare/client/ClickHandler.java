@@ -128,6 +128,12 @@ public class ClickHandler {
         if (button == GLFW.GLFW_MOUSE_BUTTON_MIDDLE) {
             if (player.hasEffect(ModMobEffects.SHOCK.get())) {
                 event.setCanceled(true);
+                return;
+            }
+            if (stack.is(ModItems.ARTILLERY_INDICATOR.get())) {
+                Mod.PACKET_HANDLER.sendToServer(new SetFiringParametersMessage(0));
+                event.setCanceled(true);
+                return;
             }
         }
 
@@ -366,7 +372,7 @@ public class ClickHandler {
         if (player.hasEffect(ModMobEffects.SHOCK.get())) return;
 
         if (stack.is(ModItems.ARTILLERY_INDICATOR.get())) {
-            Mod.PACKET_HANDLER.sendToServer(new SetFiringParametersMessage(0));
+            ClientEventHandler.holdFire = true;
         }
 
         if (stack.is(Items.SPYGLASS) && player.isScoping() && player.getOffhandItem().is(ModItems.FIRING_PARAMETERS.get())) {

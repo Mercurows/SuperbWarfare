@@ -209,6 +209,16 @@ public class WgMissileEntity extends FastThrowableProjectile implements GeoEntit
     public void tick() {
         super.tick();
 
+        if (this.level() instanceof ServerLevel serverLevel && tickCount > 1) {
+            double l = getDeltaMovement().length();
+            for (double i = 0; i < l; i ++) {
+                Vec3 startPos = new Vec3(this.xo, this.yo, this.zo);
+                Vec3 pos = startPos.add(getDeltaMovement().normalize().scale(i));
+                ParticleTool.sendParticle(serverLevel, ParticleTypes.CAMPFIRE_COSY_SMOKE, pos.x, pos.y, pos.z,
+                        1, 0, 0, 0, 0.001, true);
+            }
+        }
+
         if (this.tickCount == 1) {
             if (!this.level().isClientSide() && this.level() instanceof ServerLevel serverLevel) {
                 ParticleTool.sendParticle(serverLevel, ParticleTypes.CLOUD, this.xo, this.yo, this.zo, 15, 0.8, 0.8, 0.8, 0.01, true);
@@ -217,10 +227,6 @@ public class WgMissileEntity extends FastThrowableProjectile implements GeoEntit
         }
         if (this.tickCount > 2) {
             this.setDeltaMovement(this.getDeltaMovement().multiply(1.03, 1.03, 1.03));
-
-            if (!this.level().isClientSide() && this.level() instanceof ServerLevel serverLevel) {
-                ParticleTool.sendParticle(serverLevel, ParticleTypes.SMOKE, this.xo, this.yo, this.zo, 1, 0, 0, 0, 0, true);
-            }
         }
 
         if (tickCount > 5 && this.getOwner() != null && getOwner().getVehicle() instanceof VehicleEntity vehicle) {

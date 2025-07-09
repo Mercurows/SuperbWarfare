@@ -172,6 +172,7 @@ public class Mod {
         addNetworkMessage(EditMessage.class, EditMessage::encode, EditMessage::decode, EditMessage::handler);
         addNetworkMessage(SwitchScopeMessage.class, SwitchScopeMessage::encode, SwitchScopeMessage::decode, SwitchScopeMessage::handler);
         addNetworkMessage(SetFiringParametersMessage.class, SetFiringParametersMessage::encode, SetFiringParametersMessage::decode, SetFiringParametersMessage::handler);
+        addNetworkMessage(ArtilleryIndicatorFireMessage.class, ArtilleryIndicatorFireMessage::encode, ArtilleryIndicatorFireMessage::decode, ArtilleryIndicatorFireMessage::handler);
         addNetworkMessage(ContainerDataMessage.class, ContainerDataMessage::encode, ContainerDataMessage::decode, ContainerDataMessage::handler, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
         addNetworkMessage(RadarChangeModeMessage.class, RadarChangeModeMessage::encode, RadarChangeModeMessage::decode, RadarChangeModeMessage::handler);
         addNetworkMessage(RadarSetParametersMessage.class, RadarSetParametersMessage::encode, RadarSetParametersMessage::decode, RadarSetParametersMessage::handler);

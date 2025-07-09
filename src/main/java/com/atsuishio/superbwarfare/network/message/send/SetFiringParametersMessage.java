@@ -2,8 +2,9 @@ package com.atsuishio.superbwarfare.network.message.send;
 
 import com.atsuishio.superbwarfare.entity.vehicle.MortarEntity;
 import com.atsuishio.superbwarfare.init.ModItems;
-import com.atsuishio.superbwarfare.item.common.ammo.MortarShell;
+import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.tools.EntityFindUtil;
+import com.atsuishio.superbwarfare.tools.SoundTool;
 import com.atsuishio.superbwarfare.tools.TraceTool;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.ListTag;
@@ -14,16 +15,12 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ClipContext;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.NetworkEvent;
 
-import java.util.List;
 import java.util.function.Supplier;
-import java.util.stream.StreamSupport;
 
-import static com.atsuishio.superbwarfare.entity.vehicle.MortarEntity.FIRE_TIME;
 import static com.atsuishio.superbwarfare.item.ArtilleryIndicator.TAG_MORTARS;
 
 public class SetFiringParametersMessage {
@@ -78,61 +75,35 @@ public class SetFiringParametersMessage {
                 }
 
                 if (mainStack.is(ModItems.ARTILLERY_INDICATOR.get())) {
-                    if (player.isShiftKeyDown()) {
-                        ListTag tags = stack.getOrCreateTag().getList(TAG_MORTARS, Tag.TAG_COMPOUND);
-                        for (int i = 0; i < tags.size(); i++) {
-                            var tag = tags.getCompound(i);
-                            Entity entity = EntityFindUtil.findEntity(player.level(), tag.getString("UUID"));
-                            if (entity instanceof MortarEntity mortarEntity) {
-                                if (player.isShiftKeyDown()) {
-                                    if (mortarEntity.stack.getItem() instanceof MortarShell && mortarEntity.getEntityData().get(FIRE_TIME) == 0) {
-                                        mortarEntity.fire(player);
-                                    }
-                                } else {
-                                    if (!mortarEntity.setTarget(mainStack)) {
-                                        player.displayClientMessage(Component.translatable("tips.superbwarfare.mortar.warn").withStyle(ChatFormatting.RED), true);
-                                    }
-                                }
+                    if (lookAtEntity) {
+                        mainStack.getOrCreateTag().putDouble("TargetX", lookingEntity.getX());
+                        mainStack.getOrCreateTag().putDouble("TargetY", lookingEntity.getY());
+                        mainStack.getOrCreateTag().putDouble("TargetZ", lookingEntity.getZ());
+                    } else {
+                        mainStack.getOrCreateTag().putDouble("TargetX", hitPos.x());
+                        mainStack.getOrCreateTag().putDouble("TargetY", hitPos.y());
+                        mainStack.getOrCreateTag().putDouble("TargetZ", hitPos.z());
+                    }
+                    player.displayClientMessage(Component.translatable("tips.superbwarfare.mortar.target_pos").withStyle(ChatFormatting.GRAY)
+                            .append(Component.literal("[" + mainStack.getOrCreateTag().getInt("TargetX")
+                                    + "," + mainStack.getOrCreateTag().getInt("TargetY")
+                                    + "," + mainStack.getOrCreateTag().getInt("TargetZ") + "]")), true);
+
+                    SoundTool.playLocalSound(player, ModSounds.CANNON_ZOOM_IN.get(), 2, 1);
+
+                    ListTag tags = mainStack.getOrCreateTag().getList(TAG_MORTARS, Tag.TAG_COMPOUND);
+                    for (int i = 0; i < tags.size(); i++) {
+                        var tag = tags.getCompound(i);
+                        Entity entity = EntityFindUtil.findEntity(player.level(), tag.getString("UUID"));
+                        if (entity instanceof MortarEntity mortarEntity) {
+                            if (!mortarEntity.setTarget(mainStack)) {
+                                player.displayClientMessage(Component.translatable("tips.superbwarfare.mortar.warn").withStyle(ChatFormatting.RED), true);
                             }
                         }
-                    } else {
-                        if (lookAtEntity) {
-                            mainStack.getOrCreateTag().putDouble("TargetX", lookingEntity.getX());
-                            mainStack.getOrCreateTag().putDouble("TargetY", lookingEntity.getY());
-                            mainStack.getOrCreateTag().putDouble("TargetZ", lookingEntity.getZ());
-                        } else {
-                            mainStack.getOrCreateTag().putDouble("TargetX", hitPos.x());
-                            mainStack.getOrCreateTag().putDouble("TargetY", hitPos.y());
-                            mainStack.getOrCreateTag().putDouble("TargetZ", hitPos.z());
-                        }
-                        player.displayClientMessage(Component.translatable("tips.superbwarfare.mortar.target_pos").withStyle(ChatFormatting.GRAY)
-                                .append(Component.literal("[" + mainStack.getOrCreateTag().getInt("TargetX")
-                                        + "," + mainStack.getOrCreateTag().getInt("TargetY")
-                                        + "," + mainStack.getOrCreateTag().getInt("TargetZ") + "]")), true);
                     }
-//                    List<Entity> entities = getCannon(player, player.level(), mainStack.getOrCreateTag().getString("LinkedCannon"));
-//                    for (var e : entities) {
-//                        if (e instanceof MortarEntity mortarEntity) {
-//                            if (player.isShiftKeyDown()) {
-//                                if (!mortarEntity.setTarget(mainStack)) {
-//                                    player.displayClientMessage(Component.translatable("tips.superbwarfare.mortar.warn").withStyle(ChatFormatting.RED), true);
-//                                }
-//                            } else {
-//                                if (mortarEntity.stack.getItem() instanceof MortarShell && mortarEntity.getEntityData().get(FIRE_TIME) == 0) {
-//                                    mortarEntity.fire(player);
-//                                }
-//                            }
-//                        }
-//                    }
                 }
             }
         });
         context.setPacketHandled(true);
-    }
-
-    public static List<Entity> getCannon(Player player, Level level, String uuid) {
-        return StreamSupport.stream(EntityFindUtil.getEntities(level).getAll().spliterator(), false)
-                .filter(e -> e.getStringUUID().equals(uuid))
-                .toList();
     }
 }

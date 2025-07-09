@@ -26,6 +26,7 @@ import net.minecraft.world.level.block.BellBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.PlayMessages;
@@ -183,10 +184,14 @@ public class GunGrenadeEntity extends FastThrowableProjectile implements GeoEnti
     @Override
     public void tick() {
         super.tick();
-
-        if (!this.level().isClientSide() && this.level() instanceof ServerLevel serverLevel) {
-            ParticleTool.sendParticle(serverLevel, ParticleTypes.SMOKE, this.xo, this.yo, this.zo,
-                    1, 0, 0, 0, 0.02, true);
+        if (this.level() instanceof ServerLevel serverLevel && tickCount > 1) {
+            double l = getDeltaMovement().length();
+            for (double i = 0; i < l; i ++) {
+                Vec3 startPos = new Vec3(this.xo, this.yo, this.zo);
+                Vec3 pos = startPos.add(getDeltaMovement().normalize().scale(i));
+                ParticleTool.sendParticle(serverLevel, ParticleTypes.SMOKE, pos.x, pos.y, pos.z,
+                        1, 0, 0, 0, 0.001, true);
+            }
         }
 
         if (this.tickCount > 200 || this.isInWater()) {

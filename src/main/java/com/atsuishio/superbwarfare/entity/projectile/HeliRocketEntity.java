@@ -182,15 +182,21 @@ public class HeliRocketEntity extends FastThrowableProjectile implements GeoEnti
     @Override
     public void tick() {
         super.tick();
+
+        if (this.level() instanceof ServerLevel serverLevel && tickCount > 1) {
+            double l = getDeltaMovement().length();
+            for (double i = 0; i < l; i ++) {
+                Vec3 startPos = new Vec3(this.xo, this.yo, this.zo);
+                Vec3 pos = startPos.add(getDeltaMovement().normalize().scale(i));
+                ParticleTool.sendParticle(serverLevel, ParticleTypes.CAMPFIRE_COSY_SMOKE, pos.x, pos.y, pos.z,
+                        1, 0, 0, 0, 0.001, true);
+            }
+        }
+
         if (this.tickCount == 3) {
             if (!this.level().isClientSide() && this.level() instanceof ServerLevel serverLevel) {
                 ParticleTool.sendParticle(serverLevel, ParticleTypes.CLOUD, this.xo, this.yo, this.zo, 15, 0.8, 0.8, 0.8, 0.01, true);
                 ParticleTool.sendParticle(serverLevel, ParticleTypes.CAMPFIRE_COSY_SMOKE, this.xo, this.yo, this.zo, 10, 0.8, 0.8, 0.8, 0.01, true);
-            }
-        }
-        if (this.tickCount > 2) {
-            if (!this.level().isClientSide() && this.level() instanceof ServerLevel serverLevel) {
-                ParticleTool.sendParticle(serverLevel, ParticleTypes.SMOKE, this.xo, this.yo, this.zo, 1, 0, 0, 0, 0, true);
             }
         }
 
