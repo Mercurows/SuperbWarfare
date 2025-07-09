@@ -296,7 +296,7 @@ public class ClientEventHandler {
                 PacketDistributor.sendToServer(ArtilleryIndicatorFireMessage.INSTANCE);
             }
         } else {
-            holdArtilleryIndicator = Mth.clamp(holdArtilleryIndicator - 1, 0, 10);
+            holdArtilleryIndicator = 0;
         }
 
         isProne(player);
