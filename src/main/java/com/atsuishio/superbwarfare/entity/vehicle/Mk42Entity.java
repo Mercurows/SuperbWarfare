@@ -395,7 +395,7 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
 
         Level level = player.level();
         if (level instanceof ServerLevel server) {
-            if (!InventoryTool.hasCreativeAmmoBox(player)) {
+            if (!InventoryTool.hasCreativeAmmoBox(player) && player == getFirstPassenger()) {
                 var ammo = getWeaponIndex(0) == 0 ? ModItems.AP_5_INCHES.get() : ModItems.HE_5_INCHES.get();
                 var ammoCount = InventoryTool.countItem(player.getInventory().items, ammo);
 

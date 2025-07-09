@@ -407,15 +407,19 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
         Level level = player.level();
         if (level instanceof ServerLevel server) {
             int consumed;
-            if (InventoryTool.hasCreativeAmmoBox(player)) {
-                consumed = 2;
-            } else {
-                var ammo = getWeaponIndex(0) == 0 ? ModItems.AP_5_INCHES.get() : ModItems.HE_5_INCHES.get();
-                var ammoCount = InventoryTool.countItem(player.getInventory().items, ammo);
+            if (player == getFirstPassenger()) {
+                if (InventoryTool.hasCreativeAmmoBox(player)) {
+                    consumed = 2;
+                } else {
+                    var ammo = getWeaponIndex(0) == 0 ? ModItems.AP_5_INCHES.get() : ModItems.HE_5_INCHES.get();
+                    var ammoCount = InventoryTool.countItem(player.getInventory().items, ammo);
 
-                // 尝试消耗两发弹药
-                if (ammoCount <= 0) return;
-                consumed = InventoryTool.consumeItem(player.getInventory().items, ammo, 2);
+                    // 尝试消耗两发弹药
+                    if (ammoCount <= 0) return;
+                    consumed = InventoryTool.consumeItem(player.getInventory().items, ammo, 2);
+                }
+            } else {
+                consumed = stack.getCount();
             }
 
             if (getFirstPassenger() != getOwner()) {
