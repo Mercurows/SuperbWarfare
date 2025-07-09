@@ -266,6 +266,8 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
         return true;
     }
 
+    //TODO 指示器能选择弹道后删掉这个
+
     public boolean setTarget(ItemStack stack, boolean isDepressed) {
         int targetX = stack.getOrCreateTag().getInt("TargetX");
         int targetY = stack.getOrCreateTag().getInt("TargetY");

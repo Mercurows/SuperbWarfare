@@ -272,6 +272,7 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
         return true;
     }
 
+    //这个炮仰角太低只能用低伸弹道
     public boolean setTarget(ItemStack stack, boolean isDepressed) {
         int targetX = stack.getOrCreateTag().getInt("TargetX");
         int targetY = stack.getOrCreateTag().getInt("TargetY");
