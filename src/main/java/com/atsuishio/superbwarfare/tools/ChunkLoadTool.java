@@ -53,7 +53,7 @@ public class ChunkLoadTool {
     public static void unloadAllChunks(ServerLevel level, Entity entity, Set<Long> loadedChunks) {
         loadedChunks.forEach(chunk -> {
             var chunkPos = new ChunkPos(chunk);
-            Mod.queueServerWork(10, () -> {
+            Mod.queueServerWork(20, () -> {
                 ForgeChunkManager.forceChunk(level, Mod.MODID, entity, chunkPos.x, chunkPos.z, false, false);
             });
         });

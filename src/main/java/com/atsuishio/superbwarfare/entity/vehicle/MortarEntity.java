@@ -176,13 +176,13 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, Container,
         ItemStack mainHandItem = player.getMainHandItem();
 
         if (mainHandItem.getItem() instanceof ArtilleryIndicator indicator && player == getOwner() && this.entityData.get(INTELLIGENT)) {
-            if (indicator.addMortar(mainHandItem, getStringUUID())) {
+            if (indicator.addCannon(mainHandItem, getStringUUID())) {
                 if (player instanceof ServerPlayer serverPlayer) {
                     serverPlayer.level().playSound(null, serverPlayer.getOnPos(), SoundEvents.ARROW_HIT_PLAYER, SoundSource.PLAYERS, 0.5F, 1);
                 }
                 player.displayClientMessage(Component.literal("added"), true);
                 return InteractionResult.SUCCESS;
-            } else if (indicator.removeMortar(mainHandItem, getStringUUID())) {
+            } else if (indicator.removeCannon(mainHandItem, getStringUUID())) {
                 if (player instanceof ServerPlayer serverPlayer) {
                     serverPlayer.level().playSound(null, serverPlayer.getOnPos(), SoundEvents.ARROW_HIT_PLAYER, SoundSource.PLAYERS, 0.5F, 1);
                 }
@@ -196,6 +196,9 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, Container,
         if (mainHandItem.getItem() instanceof Monitor && player.isShiftKeyDown() && !this.entityData.get(INTELLIGENT)) {
             setOwnerUUID(player.getUUID());
             entityData.set(INTELLIGENT, true);
+            if (player instanceof ServerPlayer serverPlayer) {
+                serverPlayer.level().playSound(null, serverPlayer.getOnPos(), SoundEvents.ARROW_HIT_PLAYER, SoundSource.PLAYERS, 0.5F, 1);
+            }
             if (!player.isCreative()) {
                 mainHandItem.shrink(1);
             }
@@ -251,7 +254,7 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, Container,
         boolean isDepressed = stack.getOrCreateTag().getBoolean("IsDepressed");
 
         try {
-            Vec3 launchVector = calculateLaunchVector(getEyePosition(), new Vec3(targetX, targetY, targetZ), 13, -0.11, isDepressed);
+            Vec3 launchVector = calculateLaunchVector(getEyePosition(), new Vec3(targetX, targetY - 1, targetZ), 13, -0.11, isDepressed);
             this.look(new Vec3(targetX, targetY, targetZ));
             float angle = (float) -getXRotFromVector(launchVector);
             if (angle < -89 || angle > -20) {

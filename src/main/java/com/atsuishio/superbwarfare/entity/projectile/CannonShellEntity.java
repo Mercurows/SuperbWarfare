@@ -176,6 +176,9 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
                     }
                     this.level().destroyBlock(resultPos, true);
                 }
+            } else {
+                causeExplode(blockHitResult.getLocation());
+                this.discard();
             }
             if (!ExplosionConfig.EXPLOSION_DESTROY.get()) {
                 causeExplode(blockHitResult.getLocation());

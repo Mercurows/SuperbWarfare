@@ -1,5 +1,7 @@
 package com.atsuishio.superbwarfare.network.message.send;
 
+import com.atsuishio.superbwarfare.entity.vehicle.Mk42Entity;
+import com.atsuishio.superbwarfare.entity.vehicle.Mle1934Entity;
 import com.atsuishio.superbwarfare.entity.vehicle.MortarEntity;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
@@ -21,7 +23,7 @@ import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-import static com.atsuishio.superbwarfare.item.ArtilleryIndicator.TAG_MORTARS;
+import static com.atsuishio.superbwarfare.item.ArtilleryIndicator.TAG_CANNON;
 
 public class SetFiringParametersMessage {
 
@@ -91,12 +93,22 @@ public class SetFiringParametersMessage {
 
                     SoundTool.playLocalSound(player, ModSounds.CANNON_ZOOM_IN.get(), 2, 1);
 
-                    ListTag tags = mainStack.getOrCreateTag().getList(TAG_MORTARS, Tag.TAG_COMPOUND);
+                    ListTag tags = mainStack.getOrCreateTag().getList(TAG_CANNON, Tag.TAG_COMPOUND);
                     for (int i = 0; i < tags.size(); i++) {
                         var tag = tags.getCompound(i);
                         Entity entity = EntityFindUtil.findEntity(player.level(), tag.getString("UUID"));
                         if (entity instanceof MortarEntity mortarEntity) {
                             if (!mortarEntity.setTarget(mainStack)) {
+                                player.displayClientMessage(Component.translatable("tips.superbwarfare.mortar.warn").withStyle(ChatFormatting.RED), true);
+                            }
+                        }
+                        if (entity instanceof Mk42Entity mk42Entity) {
+                            if (!mk42Entity.setTarget(mainStack, true)) {
+                                player.displayClientMessage(Component.translatable("tips.superbwarfare.mortar.warn").withStyle(ChatFormatting.RED), true);
+                            }
+                        }
+                        if (entity instanceof Mle1934Entity mle1934Entity) {
+                            if (!mle1934Entity.setTarget(mainStack, true)) {
                                 player.displayClientMessage(Component.translatable("tips.superbwarfare.mortar.warn").withStyle(ChatFormatting.RED), true);
                             }
                         }

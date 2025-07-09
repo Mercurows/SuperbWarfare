@@ -21,7 +21,7 @@ import java.util.List;
 
 public class ArtilleryIndicator extends Item {
 
-    public static final String TAG_MORTARS = "Mortars";
+    public static final String TAG_CANNON = "Cannons";
 
     public ArtilleryIndicator() {
         super(new Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
@@ -56,8 +56,8 @@ public class ArtilleryIndicator extends Item {
         pLivingEntity.playSound(SoundEvents.SPYGLASS_STOP_USING, 1.0F, 1.0F);
     }
 
-    public boolean addMortar(ItemStack stack, String uuid) {
-        ListTag tags = stack.getOrCreateTag().getList(TAG_MORTARS, Tag.TAG_COMPOUND);
+    public boolean addCannon(ItemStack stack, String uuid) {
+        ListTag tags = stack.getOrCreateTag().getList(TAG_CANNON, Tag.TAG_COMPOUND);
         List<CompoundTag> list = new ArrayList<>();
         for (int i = 0; i < tags.size(); i++) {
             list.add(tags.getCompound(i));
@@ -73,13 +73,13 @@ public class ArtilleryIndicator extends Item {
 
         ListTag listTag = new ListTag();
         listTag.addAll(list);
-        stack.getOrCreateTag().put(TAG_MORTARS, listTag);
+        stack.getOrCreateTag().put(TAG_CANNON, listTag);
 
         return true;
     }
 
-    public boolean removeMortar(ItemStack stack, String uuid) {
-        ListTag tags = stack.getOrCreateTag().getList(TAG_MORTARS, Tag.TAG_COMPOUND);
+    public boolean removeCannon(ItemStack stack, String uuid) {
+        ListTag tags = stack.getOrCreateTag().getList(TAG_CANNON, Tag.TAG_COMPOUND);
         List<CompoundTag> list = new ArrayList<>();
         boolean flag = false;
         for (int i = 0; i < tags.size(); i++) {
@@ -93,7 +93,7 @@ public class ArtilleryIndicator extends Item {
         if (flag) {
             ListTag listTag = new ListTag();
             listTag.addAll(list);
-            stack.getOrCreateTag().put(TAG_MORTARS, listTag);
+            stack.getOrCreateTag().put(TAG_CANNON, listTag);
         }
 
         return flag;
