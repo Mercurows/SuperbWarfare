@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.block;
 
 import com.atsuishio.superbwarfare.block.entity.SuperbItemInterfaceBlockEntity;
 import com.atsuishio.superbwarfare.init.ModBlockEntities;
+import com.atsuishio.superbwarfare.init.ModItems;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -91,6 +92,13 @@ public class SuperbItemInterfaceBlock extends BaseEntityBlock {
     @Override
     @ParametersAreNonnullByDefault
     public @NotNull InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
+        ItemStack stack = pPlayer.getItemInHand(pHand);
+        if (stack.is(ModItems.CROWBAR.get())) {
+            var facing = pHit.getDirection();
+            pLevel.setBlockAndUpdate(pPos, pState.setValue(FACING, facing));
+            return InteractionResult.SUCCESS;
+        }
+
         if (pLevel.isClientSide) {
             return InteractionResult.SUCCESS;
         } else {
