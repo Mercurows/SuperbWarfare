@@ -2,16 +2,21 @@ package com.atsuishio.superbwarfare.event;
 
 import com.atsuishio.superbwarfare.client.MouseMovementHandler;
 import com.atsuishio.superbwarfare.config.client.ControlConfig;
+import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.AirEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.init.ModItems;
+import com.atsuishio.superbwarfare.init.ModMobEffects;
+import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.network.message.send.MouseMoveMessage;
 import com.atsuishio.superbwarfare.tools.EntityFindUtil;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec2;
 import net.minecraftforge.api.distmarker.Dist;
@@ -172,5 +177,58 @@ public class ClientMouseHandler {
         }
 
         custom3pDistanceLerp = Mth.lerp(times, custom3pDistanceLerp, custom3pDistance);
+    }
+
+    public static int invertY() {
+        Minecraft mc = Minecraft.getInstance();
+        Player player = mc.player;
+
+        // 反转鼠标
+        if (player == null) return 1;
+
+        if (player.getVehicle() instanceof VehicleEntity vehicle && vehicle instanceof AirEntity && vehicle.getFirstPassenger() == player) {
+            return ControlConfig.INVERT_AIRCRAFT_CONTROL.get() ? -1 : 1;
+        }
+        return 1;
+    }
+
+    public static double changeSensitivity(double original) {
+        Minecraft mc = Minecraft.getInstance();
+        Player player = mc.player;
+
+        if (player == null) return original;
+
+        if (player.hasEffect(ModMobEffects.SHOCK.get()) && !player.isSpectator()) {
+            return 0;
+        }
+
+        ItemStack stack = mc.player.getMainHandItem();
+
+        if (stack.is(ModItems.MONITOR.get()) && stack.getOrCreateTag().getBoolean("Using") && stack.getOrCreateTag().getBoolean("Linked")) {
+            return 0;
+        }
+
+        if (isFreeCam(player)) {
+            return 0;
+        }
+
+        if (player.isUsingItem() && player.getUseItem().is(ModItems.ARTILLERY_INDICATOR.get()) && mc.options.getCameraType() == CameraType.FIRST_PERSON) {
+            return original / Math.max(1 + 0.2 * ClientEventHandler.artilleryIndicatorZoom, 0.1);
+        }
+
+        if (player.getVehicle() instanceof VehicleEntity vehicle && vehicle instanceof WeaponVehicleEntity weaponVehicle && weaponVehicle.banHand(player)) {
+            return vehicle.getSensitivity(original, ClientEventHandler.zoomVehicle, vehicle.getSeatIndex(player), vehicle.onGround());
+        }
+
+        if (stack.getItem() instanceof GunItem) {
+            var data = GunData.from(stack);
+            float customSens = data.sensitivity.get();
+
+            if (!player.getMainHandItem().isEmpty() && mc.options.getCameraType() == CameraType.FIRST_PERSON) {
+                return original / Math.max((1 + (0.2 * (data.zoom() - (0.3 * customSens)) * ClientEventHandler.zoomTime)), 0.1) * (ControlConfig.MOUSE_SENSITIVITY.get() / 100f);
+            }
+        }
+
+        return original;
     }
 }
