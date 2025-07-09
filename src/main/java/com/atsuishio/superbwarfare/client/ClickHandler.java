@@ -257,17 +257,17 @@ public class ClickHandler {
             if (key == ModKeyMappings.RELOAD.getKey().getValue()) {
                 ClientEventHandler.burstFireAmount = 0;
                 ClickHandler.isEditing = false;
-                Mod.PACKET_HANDLER.sendToServer(new ReloadMessage(0));
+                Mod.PACKET_HANDLER.sendToServer(ReloadMessage.INSTANCE);
             }
             if (key == ModKeyMappings.FIRE_MODE.getKey().getValue()) {
-                Mod.PACKET_HANDLER.sendToServer(new FireModeMessage(0));
+                Mod.PACKET_HANDLER.sendToServer(FireModeMessage.INSTANCE);
             }
             if (key == ModKeyMappings.INTERACT.getKey().getValue()) {
                 var mc = Minecraft.getInstance();
                 if (mc.player.getMainHandItem().getItem() instanceof GunItem) {
                     KeyMapping.click(mc.options.keyUse.getKey());
                 } else if (mc.player.getMainHandItem().is(ModItems.MONITOR.get())) {
-                    Mod.PACKET_HANDLER.sendToServer(new InteractMessage(0));
+                    Mod.PACKET_HANDLER.sendToServer(InteractMessage.INSTANCE);
                 }
             }
 
@@ -387,7 +387,7 @@ public class ClickHandler {
         }
 
         if (stack.is(ModItems.MONITOR.get())) {
-            Mod.PACKET_HANDLER.sendToServer(new DroneFireMessage(0));
+            Mod.PACKET_HANDLER.sendToServer(DroneFireMessage.INSTANCE);
         }
 
         if (stack.is(ModItems.LUNGE_MINE.get())) {
@@ -413,7 +413,7 @@ public class ClickHandler {
 
             if (!data.useBackpackAmmo() && data.ammo.get() <= 0 && data.reload.time() == 0) {
                 if (ReloadConfig.LEFT_CLICK_RELOAD.get()) {
-                    Mod.PACKET_HANDLER.sendToServer(new ReloadMessage(0));
+                    Mod.PACKET_HANDLER.sendToServer(ReloadMessage.INSTANCE);
                     ClientEventHandler.burstFireAmount = 0;
                 }
             } else {
@@ -452,7 +452,7 @@ public class ClickHandler {
         ItemStack stack = player.getMainHandItem();
 
         if (stack.is(ModItems.BOCEK.get())) {
-            Mod.PACKET_HANDLER.sendToServer(new ReloadMessage(0));
+            Mod.PACKET_HANDLER.sendToServer(ReloadMessage.INSTANCE);
         }
     }
 
@@ -525,6 +525,6 @@ public class ClickHandler {
             ClientEventHandler.dismountCountdown = 20;
             return;
         }
-        Mod.PACKET_HANDLER.sendToServer(new PlayerStopRidingMessage(0));
+        Mod.PACKET_HANDLER.sendToServer(PlayerStopRidingMessage.INSTANCE);
     }
 }

@@ -6,7 +6,6 @@ import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.tools.SoundTool;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -16,23 +15,10 @@ import net.minecraftforge.network.NetworkEvent;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 
-public class FireModeMessage {
+public enum FireModeMessage {
+    INSTANCE;
 
-    private final int type;
-
-    public FireModeMessage(int type) {
-        this.type = type;
-    }
-
-    public static FireModeMessage decode(FriendlyByteBuf buffer) {
-        return new FireModeMessage(buffer.readInt());
-    }
-
-    public static void encode(FireModeMessage message, FriendlyByteBuf buffer) {
-        buffer.writeInt(message.type);
-    }
-
-    public static void handler(FireModeMessage message, Supplier<NetworkEvent.Context> contextSupplier) {
+    public static void handler(Supplier<NetworkEvent.Context> contextSupplier) {
         NetworkEvent.Context context = contextSupplier.get();
         context.enqueueWork(() -> {
             if (context.getSender() == null) return;

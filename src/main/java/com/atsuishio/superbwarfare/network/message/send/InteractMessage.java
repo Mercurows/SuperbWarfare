@@ -6,7 +6,6 @@ import com.atsuishio.superbwarfare.tools.EntityFindUtil;
 import com.atsuishio.superbwarfare.tools.TraceTool;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -18,33 +17,20 @@ import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-public class InteractMessage {
+public enum InteractMessage {
+    INSTANCE;
 
-    private final int type;
-
-    public InteractMessage(int type) {
-        this.type = type;
-    }
-
-    public static InteractMessage decode(FriendlyByteBuf buffer) {
-        return new InteractMessage(buffer.readInt());
-    }
-
-    public static void encode(InteractMessage message, FriendlyByteBuf buffer) {
-        buffer.writeInt(message.type);
-    }
-
-    public static void handler(InteractMessage message, Supplier<NetworkEvent.Context> contextSupplier) {
+    public static void handler(Supplier<NetworkEvent.Context> contextSupplier) {
         NetworkEvent.Context context = contextSupplier.get();
         context.enqueueWork(() -> {
             if (context.getSender() != null) {
-                handleInteract(context.getSender(), message.type);
+                handleInteract(context.getSender());
             }
         });
         context.setPacketHandled(true);
     }
 
-    public static void handleInteract(Player player, int type) {
+    public static void handleInteract(Player player) {
         ItemStack stack = player.getMainHandItem();
         if (stack.is(ModItems.MONITOR.get()) && stack.getOrCreateTag().getBoolean("Using") && stack.getOrCreateTag().getBoolean("Linked") && !player.getCooldowns().isOnCooldown(stack.getItem())) {
             DroneEntity drone = EntityFindUtil.findDrone(player.level(), stack.getOrCreateTag().getString("LinkedDrone"));

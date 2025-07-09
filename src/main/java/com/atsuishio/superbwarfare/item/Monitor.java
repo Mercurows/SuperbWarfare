@@ -52,7 +52,7 @@ public class Monitor extends Item {
         ItemNBTTool.setBoolean(itemstack, LINKED, false);
         itemstack.getOrCreateTag().putString(LINKED_DRONE, "none");
         if (player instanceof ServerPlayer serverPlayer) {
-            Mod.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> serverPlayer), new ResetCameraTypeMessage(0));
+            Mod.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> serverPlayer), ResetCameraTypeMessage.INSTANCE);
         }
     }
 

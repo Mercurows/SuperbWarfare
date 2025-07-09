@@ -3,42 +3,26 @@ package com.atsuishio.superbwarfare.network.message.send;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.ReloadType;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-public class ReloadMessage {
+public enum ReloadMessage {
+    INSTANCE;
 
-    private final int type;
-
-    public ReloadMessage(int type) {
-        this.type = type;
-    }
-
-    public static ReloadMessage decode(FriendlyByteBuf buffer) {
-        return new ReloadMessage(buffer.readInt());
-    }
-
-    public static void encode(ReloadMessage message, FriendlyByteBuf buffer) {
-        buffer.writeInt(message.type);
-    }
-
-    public static void handler(ReloadMessage message, Supplier<NetworkEvent.Context> contextSupplier) {
+    public static void handler(Supplier<NetworkEvent.Context> contextSupplier) {
         NetworkEvent.Context context = contextSupplier.get();
         context.enqueueWork(() -> {
             if (context.getSender() != null) {
-                pressAction(context.getSender(), message.type);
+                pressAction(context.getSender());
             }
         });
         context.setPacketHandled(true);
     }
 
-    public static void pressAction(Player player, int type) {
-        if (type != 0) return;
-
+    public static void pressAction(Player player) {
         ItemStack stack = player.getMainHandItem();
         if (!(stack.getItem() instanceof GunItem gunItem)) return;
 

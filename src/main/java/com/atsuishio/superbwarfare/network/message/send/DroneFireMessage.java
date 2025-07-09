@@ -5,7 +5,6 @@ import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.tools.EntityFindUtil;
 import com.atsuishio.superbwarfare.tools.SeekTool;
 import net.minecraft.ChatFormatting;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -17,23 +16,10 @@ import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-public class DroneFireMessage {
+public enum DroneFireMessage {
+    INSTANCE;
 
-    private final int type;
-
-    public DroneFireMessage(int type) {
-        this.type = type;
-    }
-
-    public static DroneFireMessage decode(FriendlyByteBuf buffer) {
-        return new DroneFireMessage(buffer.readInt());
-    }
-
-    public static void encode(DroneFireMessage message, FriendlyByteBuf buffer) {
-        buffer.writeInt(message.type);
-    }
-
-    public static void handler(DroneFireMessage message, Supplier<NetworkEvent.Context> contextSupplier) {
+    public static void handler(Supplier<NetworkEvent.Context> contextSupplier) {
         NetworkEvent.Context context = contextSupplier.get();
         context.enqueueWork(() -> {
             if (context.getSender() != null) {

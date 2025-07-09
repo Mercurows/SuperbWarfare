@@ -122,7 +122,7 @@ public class ReforgingTableScreen extends AbstractContainerScreen<ReforgingTable
 
         @Override
         public void onPress() {
-            Mod.PACKET_HANDLER.sendToServer(new GunReforgeMessage(0));
+            Mod.PACKET_HANDLER.sendToServer(GunReforgeMessage.INSTANCE);
         }
 
         @Override

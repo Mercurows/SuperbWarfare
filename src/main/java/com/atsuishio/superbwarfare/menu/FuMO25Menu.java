@@ -215,7 +215,7 @@ public class FuMO25Menu extends EnergyMenu {
     @SubscribeEvent
     public static void onContainerClosed(PlayerContainerEvent.Close event) {
         if (event.getContainer() instanceof FuMO25Menu && event.getEntity() instanceof ServerPlayer serverPlayer) {
-            Mod.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> serverPlayer), new RadarMenuCloseMessage(0));
+            Mod.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> serverPlayer), RadarMenuCloseMessage.INSTANCE);
         }
     }
 }
