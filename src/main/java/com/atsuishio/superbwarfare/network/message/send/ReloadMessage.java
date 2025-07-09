@@ -5,7 +5,6 @@ import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.ReloadType;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.entity.player.Player;
@@ -13,22 +12,18 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.NotNull;
 
-public record ReloadMessage(int msgType) implements CustomPacketPayload {
+public enum ReloadMessage implements CustomPacketPayload {
+    INSTANCE;
+
     public static final Type<ReloadMessage> TYPE = new Type<>(Mod.loc("reload"));
 
-    public static final StreamCodec<ByteBuf, ReloadMessage> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.INT,
-            ReloadMessage::msgType,
-            ReloadMessage::new
-    );
+    public static final StreamCodec<ByteBuf, ReloadMessage> STREAM_CODEC = StreamCodec.unit(INSTANCE);
 
-    public static void handler(ReloadMessage message, final IPayloadContext context) {
-        pressAction(context.player(), message.msgType);
+    public static void handler(final IPayloadContext context) {
+        pressAction(context.player());
     }
 
-    public static void pressAction(Player player, int type) {
-        if (type != 0) return;
-
+    public static void pressAction(Player player) {
         ItemStack stack = player.getMainHandItem();
         if (!(stack.getItem() instanceof GunItem gunItem)) return;
 

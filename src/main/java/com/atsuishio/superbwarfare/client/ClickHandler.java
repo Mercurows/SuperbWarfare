@@ -131,7 +131,7 @@ public class ClickHandler {
                 return;
             }
             if (stack.is(ModItems.ARTILLERY_INDICATOR.get())) {
-                PacketDistributor.sendToServer(new SetFiringParametersMessage());
+                PacketDistributor.sendToServer(SetFiringParametersMessage.INSTANCE);
                 event.setCanceled(true);
                 return;
             }
@@ -256,17 +256,17 @@ public class ClickHandler {
             if (key == ModKeyMappings.RELOAD.getKey().getValue()) {
                 ClientEventHandler.burstFireAmount = 0;
                 ClickHandler.isEditing = false;
-                PacketDistributor.sendToServer(new ReloadMessage(0));
+                PacketDistributor.sendToServer(ReloadMessage.INSTANCE);
             }
             if (key == ModKeyMappings.FIRE_MODE.getKey().getValue()) {
-                PacketDistributor.sendToServer(new FireModeMessage(0));
+                PacketDistributor.sendToServer(FireModeMessage.INSTANCE);
             }
             if (key == ModKeyMappings.INTERACT.getKey().getValue()) {
                 var mc = Minecraft.getInstance();
                 if (mc.player.getMainHandItem().getItem() instanceof GunItem) {
                     KeyMapping.click(mc.options.keyUse.getKey());
                 } else if (mc.player.getMainHandItem().is(ModItems.MONITOR.get())) {
-                    PacketDistributor.sendToServer(new InteractMessage(0));
+                    PacketDistributor.sendToServer(InteractMessage.INSTANCE);
                 }
             }
             if (key == ModKeyMappings.DISMOUNT.getKey().getValue()) {
@@ -377,11 +377,11 @@ public class ClickHandler {
         }
 
         if (stack.is(Items.SPYGLASS) && player.isScoping() && player.getOffhandItem().is(ModItems.FIRING_PARAMETERS.get())) {
-            PacketDistributor.sendToServer(new SetFiringParametersMessage());
+            PacketDistributor.sendToServer(SetFiringParametersMessage.INSTANCE);
         }
 
         if (stack.is(ModItems.MONITOR.get())) {
-            PacketDistributor.sendToServer(new DroneFireMessage(0));
+            PacketDistributor.sendToServer(DroneFireMessage.INSTANCE);
         }
 
         if (stack.is(ModItems.LUNGE_MINE.get())) {
@@ -407,7 +407,7 @@ public class ClickHandler {
 
             if (!data.useBackpackAmmo() && data.ammo.get() <= 0 && data.reload.time() == 0) {
                 if (ReloadConfig.LEFT_CLICK_RELOAD.get()) {
-                    PacketDistributor.sendToServer(new ReloadMessage(0));
+                    PacketDistributor.sendToServer(ReloadMessage.INSTANCE);
                     ClientEventHandler.burstFireAmount = 0;
                 }
             } else {
@@ -446,7 +446,7 @@ public class ClickHandler {
         ItemStack stack = player.getMainHandItem();
 
         if (stack.is(ModItems.BOCEK.get())) {
-            PacketDistributor.sendToServer(new ReloadMessage(0));
+            PacketDistributor.sendToServer(ReloadMessage.INSTANCE);
         }
     }
 
@@ -498,7 +498,7 @@ public class ClickHandler {
         if (canDoubleJump) {
             player.setDeltaMovement(new Vec3(player.getLookAngle().x, 0.8, player.getLookAngle().z));
             level.playLocalSound(x, y, z, ModSounds.DOUBLE_JUMP.get(), SoundSource.BLOCKS, 1, 1, false);
-            PacketDistributor.sendToServer(new DoubleJumpMessage(0));
+            PacketDistributor.sendToServer(DoubleJumpMessage.INSTANCE);
             canDoubleJump = false;
         }
     }
@@ -520,6 +520,6 @@ public class ClickHandler {
             ClientEventHandler.dismountCountdown = 20;
             return;
         }
-        PacketDistributor.sendToServer(new PlayerStopRidingMessage(0));
+        PacketDistributor.sendToServer(PlayerStopRidingMessage.INSTANCE);
     }
 }

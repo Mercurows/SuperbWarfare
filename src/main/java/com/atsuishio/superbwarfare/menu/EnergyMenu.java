@@ -86,7 +86,7 @@ public abstract class EnergyMenu extends AbstractContainerMenu {
     @SubscribeEvent
     public static void onFuMO25Closed(PlayerContainerEvent.Close event) {
         if (event.getContainer() instanceof FuMO25Menu && event.getEntity() instanceof ServerPlayer serverPlayer) {
-            PacketDistributor.sendToPlayer(serverPlayer, new RadarMenuCloseMessage(0));
+            PacketDistributor.sendToPlayer(serverPlayer, RadarMenuCloseMessage.INSTANCE);
         }
     }
 }

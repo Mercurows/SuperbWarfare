@@ -12,7 +12,6 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.entity.Entity;
@@ -26,16 +25,14 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
-public record DroneFireMessage(int msgType) implements CustomPacketPayload {
+public enum DroneFireMessage implements CustomPacketPayload {
+    INSTANCE;
+
     public static final Type<DroneFireMessage> TYPE = new Type<>(Mod.loc("drone_fire"));
 
-    public static final StreamCodec<ByteBuf, DroneFireMessage> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.INT,
-            DroneFireMessage::msgType,
-            DroneFireMessage::new
-    );
+    public static final StreamCodec<ByteBuf, DroneFireMessage> STREAM_CODEC = StreamCodec.unit(INSTANCE);
 
-    public static void handler(DroneFireMessage message, final IPayloadContext context) {
+    public static void handler(final IPayloadContext context) {
         Player player = context.player();
         ItemStack stack = player.getMainHandItem();
         var tag = NBTTool.getTag(stack);

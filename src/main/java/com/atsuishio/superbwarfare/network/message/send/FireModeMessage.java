@@ -8,7 +8,6 @@ import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.tools.SoundTool;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
@@ -18,16 +17,14 @@ import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.NotNull;
 
-public record FireModeMessage(int msgType) implements CustomPacketPayload {
+public enum FireModeMessage implements CustomPacketPayload {
+    INSTANCE;
+
     public static final Type<FireModeMessage> TYPE = new Type<>(Mod.loc("fire_mode"));
 
-    public static final StreamCodec<ByteBuf, FireModeMessage> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.INT,
-            FireModeMessage::msgType,
-            FireModeMessage::new
-    );
+    public static final StreamCodec<ByteBuf, FireModeMessage> STREAM_CODEC = StreamCodec.unit(INSTANCE);
 
-    public static void handler(FireModeMessage message, final IPayloadContext context) {
+    public static void handler(final IPayloadContext context) {
         changeFireMode(context.player());
     }
 

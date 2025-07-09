@@ -9,7 +9,6 @@ import com.atsuishio.superbwarfare.tools.TraceTool;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.InteractionHand;
@@ -23,20 +22,18 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.NotNull;
 
-public record InteractMessage(int msgType) implements CustomPacketPayload {
+public enum InteractMessage implements CustomPacketPayload {
+    INSTANCE;
+
     public static final Type<InteractMessage> TYPE = new Type<>(Mod.loc("interact"));
 
-    public static final StreamCodec<ByteBuf, InteractMessage> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.INT,
-            InteractMessage::msgType,
-            InteractMessage::new
-    );
+    public static final StreamCodec<ByteBuf, InteractMessage> STREAM_CODEC = StreamCodec.unit(INSTANCE);
 
-    public static void handler(InteractMessage message, final IPayloadContext context) {
-        handleInteract(context.player(), message.msgType);
+    public static void handler(final IPayloadContext context) {
+        handleInteract(context.player());
     }
 
-    public static void handleInteract(Player player, int type) {
+    public static void handleInteract(Player player) {
         ItemStack stack = player.getMainHandItem();
         var tag = NBTTool.getTag(stack);
 

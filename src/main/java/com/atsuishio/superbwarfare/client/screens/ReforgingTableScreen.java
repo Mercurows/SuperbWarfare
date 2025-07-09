@@ -116,7 +116,7 @@ public class ReforgingTableScreen extends AbstractContainerScreen<ReforgingTable
 
         @Override
         public void onPress() {
-            PacketDistributor.sendToServer(new GunReforgeMessage(0));
+            PacketDistributor.sendToServer(GunReforgeMessage.INSTANCE);
         }
 
         @Override

@@ -53,7 +53,7 @@ public class Monitor extends Item {
         tag.putBoolean(LINKED, false);
         tag.putString(LINKED_DRONE, "none");
         if (player instanceof ServerPlayer serverPlayer) {
-            PacketDistributor.sendToPlayer(serverPlayer, new ResetCameraTypeMessage(0));
+            PacketDistributor.sendToPlayer(serverPlayer, ResetCameraTypeMessage.INSTANCE);
         }
     }
 

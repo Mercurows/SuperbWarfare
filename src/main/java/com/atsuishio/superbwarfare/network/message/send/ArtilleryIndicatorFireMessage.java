@@ -31,10 +31,11 @@ import java.util.Objects;
 
 import static com.atsuishio.superbwarfare.item.ArtilleryIndicator.TAG_MORTARS;
 
-public class ArtilleryIndicatorFireMessage implements CustomPacketPayload {
+public enum ArtilleryIndicatorFireMessage implements CustomPacketPayload {
+    INSTANCE;
     public static final Type<ArtilleryIndicatorFireMessage> TYPE = new Type<>(Mod.loc("artillery_indicator_fire"));
 
-    public static final StreamCodec<ByteBuf, ArtilleryIndicatorFireMessage> STREAM_CODEC = StreamCodec.unit(new ArtilleryIndicatorFireMessage());
+    public static final StreamCodec<ByteBuf, ArtilleryIndicatorFireMessage> STREAM_CODEC = StreamCodec.unit(ArtilleryIndicatorFireMessage.INSTANCE);
 
     public static void handler(final IPayloadContext context) {
         Player player = context.player();
