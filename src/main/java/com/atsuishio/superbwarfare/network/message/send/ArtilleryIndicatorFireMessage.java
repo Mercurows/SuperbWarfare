@@ -46,7 +46,7 @@ public enum ArtilleryIndicatorFireMessage {
                         if (entity instanceof Mk42Entity mk42Entity) {
                             if (mk42Entity.stack.getItem() instanceof CannonShellItem && mk42Entity.getEntityData().get(COOL_DOWN) == 0) {
                                 int randomNumber = (int) (Math.random() * 5) + 1;
-                                var weaponType = stack.is(ModItems.AP_5_INCHES.get()) ? 0 : 1;
+                                var weaponType = mk42Entity.stack.is(ModItems.AP_5_INCHES.get()) ? 0 : 1;
                                 mk42Entity.setWeaponIndex(0, weaponType);
                                 Mod.queueServerWork(randomNumber, () -> mk42Entity.vehicleShoot(player, 0));
                             }
@@ -54,7 +54,7 @@ public enum ArtilleryIndicatorFireMessage {
                         if (entity instanceof Mle1934Entity mle1934Entity) {
                             if (mle1934Entity.stack.getItem() instanceof CannonShellItem && mle1934Entity.getEntityData().get(COOL_DOWN) == 0) {
                                 int randomNumber = (int) (Math.random() * 5) + 1;
-                                var weaponType = stack.is(ModItems.AP_5_INCHES.get()) ? 0 : 1;
+                                var weaponType = mle1934Entity.stack.is(ModItems.AP_5_INCHES.get()) ? 0 : 1;
                                 mle1934Entity.setWeaponIndex(0, weaponType);
                                 Mod.queueServerWork(randomNumber, () -> mle1934Entity.vehicleShoot(player, 0));
                             }
