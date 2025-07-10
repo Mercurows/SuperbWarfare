@@ -97,6 +97,10 @@
       "Source": "@superbwarfare:mortar_shell"
     },
     {
+      "Type": "Multiply",
+      "Value": 0.8
+    },
+    {
       "Type": "Reduce",
       "Value": 2
     }

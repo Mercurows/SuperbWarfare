@@ -34,7 +34,6 @@ import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
@@ -50,7 +49,6 @@ import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache
 import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-import java.util.Comparator;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -307,7 +305,7 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
             Vec3 targetPos = target.getBoundingBox().getCenter();
             Vec3 targetVel = target.getDeltaMovement();
 
-            Vec3 targetVec = RangeTool.calculateFiringSolution(barrelRootPos, targetPos, targetVel, 30, 0.03);
+            Vec3 targetVec = RangeTool.calculateFiringSolution(barrelRootPos, targetPos, targetVel, 20, 0.03);
 
             double d0 = targetVec.x;
             double d1 = targetVec.y;
@@ -325,7 +323,6 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
             if (target.distanceTo(this) <= 144 && VectorTool.calculateAngle(getViewVector(1), targetVec) < 10) {
                 if (checkNoClip(this, target, barrelRootPos) && entityData.get(AMMO) > 0) {
                     vehicleShoot(player, 0);
-                    findEntityOnPath(barrelRootPos, targetVec, 0.3);
                 } else {
                     changeTargetTimer++;
                 }
@@ -360,34 +357,6 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
         if (projectile.getOwner() == null) return false;
         if (projectile.getOwner() == this.getOwner()) return false;
         return !projectile.getOwner().isAlliedTo(this.getOwner()) || (projectile.getOwner().getTeam() != null && projectile.getOwner().getTeam().getName().equals("TDM"));
-    }
-
-    public void findEntityOnPath(Vec3 pos, Vec3 toVec, double size) {
-        for (Entity target : level().getEntitiesOfClass(Entity.class, new AABB(pos, pos).inflate(0.125).expandTowards(toVec.scale(30)), e -> true).stream().sorted(Comparator.comparingDouble(e -> e.distanceToSqr(pos))).toList()) {
-            var condition = target instanceof Projectile && isThreateningEntity(this, target, size, pos) && smokeFilter(target);
-            if (condition) {
-                causeAirExplode(target.position());
-                target.discard();
-            }
-        }
-    }
-
-    private void causeAirExplode(Vec3 vec3) {
-        CustomExplosion explosion = new CustomExplosion(this.level(), this,
-                ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(),
-                        this,
-                        this.getOwner()),
-                VehicleConfig.HPJ11_EXPLOSION_DAMAGE.get().floatValue(),
-                vec3.x,
-                vec3.y,
-                vec3.z,
-                VehicleConfig.HPJ11_EXPLOSION_RADIUS.get().floatValue(),
-                ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP).
-                setDamageMultiplier(1.25f);
-        explosion.explode();
-        net.minecraftforge.event.ForgeEventFactory.onExplosionStart(this.level(), explosion);
-        explosion.finalizeExplosion(false);
-        ParticleTool.spawnMediumExplosionParticles(this.level(), vec3);
     }
 
     public float getGunRot() {
@@ -485,7 +454,7 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
         Vector4f worldPosition = transformPosition(transform, 0f, 0.4f, 0);
 
         entityToSpawn.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
-        entityToSpawn.shoot(getLookAngle().x, getLookAngle().y, getLookAngle().z, 30, 0.75f);
+        entityToSpawn.shoot(getLookAngle().x, getLookAngle().y, getLookAngle().z, 20, 0.25f);
         level().addFreshEntity(entityToSpawn);
 
         this.entityData.set(GUN_ROTATE, entityData.get(GUN_ROTATE) + 0.5f);

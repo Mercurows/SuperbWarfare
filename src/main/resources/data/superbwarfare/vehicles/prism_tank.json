@@ -7,7 +7,7 @@
   "DamageModifiers": [
     {
       "Type": "Multiply",
-      "Value": 0.2
+      "Value": 0.17
     },
     {
       "Type": "Multiply",
