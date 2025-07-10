@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.init;
 
 import com.atsuishio.superbwarfare.Mod;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
@@ -41,6 +42,9 @@ public class ModTags {
         public static final TagKey<Item> EPIC_BLUEPRINT = tag("blueprint/epic");
         public static final TagKey<Item> LEGENDARY_BLUEPRINT = tag("blueprint/legendary");
         public static final TagKey<Item> CANNON_BLUEPRINT = tag("blueprint/cannon");
+
+        public static final TagKey<Item> WRENCHES_TAG = ItemTags.create(ResourceLocation.fromNamespaceAndPath("c", "wrenches"));
+        public static final TagKey<Item> WRENCH_TAG = ItemTags.create(ResourceLocation.fromNamespaceAndPath("c", "tools/wrench"));
 
         private static TagKey<Item> tag(String name) {
             return ItemTags.create(Mod.loc(name));
