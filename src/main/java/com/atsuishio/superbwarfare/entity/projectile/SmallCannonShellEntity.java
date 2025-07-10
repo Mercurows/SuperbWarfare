@@ -36,6 +36,9 @@ import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
+import java.util.Comparator;
+import java.util.Optional;
+
 public class SmallCannonShellEntity extends FastThrowableProjectile implements GeoEntity, ExplosiveProjectile {
     private float damage = 40.0f;
     private float explosionDamage = 80f;
@@ -194,15 +197,15 @@ public class SmallCannonShellEntity extends FastThrowableProjectile implements G
 
     public void crushProjectile(Vec3 velocity) {
         if (this.level() instanceof ServerLevel) {
-            var frontBox = getBoundingBox().inflate(3).expandTowards(velocity);
+            var frontBox = getBoundingBox().inflate(0.5).expandTowards(velocity);
 
-            var entities = level().getEntities(
+            Optional<Projectile> target = level().getEntities(
                             EntityTypeTest.forClass(Projectile.class), frontBox, entity -> entity != this).stream()
                     .filter(entity -> !(entity instanceof SmallCannonShellEntity) && (entity.getBbWidth() >= 0.3 || entity.getBbHeight() >= 0.3))
-                    .toList();
-            for (var entity : entities) {
-                causeExplode(entity.position(), false);
-                entity.discard();
+                    .min(Comparator.comparingDouble(e -> e.position().distanceTo(position())));
+            if (target.isPresent()) {
+                causeExplode(target.get().position(), false);
+                target.get().discard();
                 this.discard();
             }
         }
