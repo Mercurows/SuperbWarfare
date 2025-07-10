@@ -10,11 +10,8 @@ import net.neoforged.neoforge.network.handling.IPayloadHandler;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 public class NetworkRegistry {
-    private static PayloadRegistrar registrar;
 
-    public static void register(final RegisterPayloadHandlersEvent event) {
-        registrar = event.registrar("1");
-
+    private static void register() {
         playToClient(PlayerVariablesSyncMessage.TYPE, PlayerVariablesSyncMessage.STREAM_CODEC, (msg, ctx) -> PlayerVariablesSyncMessage.handler(msg));
         playToClient(ShakeClientMessage.TYPE, ShakeClientMessage.STREAM_CODEC, ShakeClientMessage::handler);
         playToClient(ClientMotionSyncMessage.TYPE, ClientMotionSyncMessage.STREAM_CODEC, ClientMotionSyncMessage::handler);
@@ -28,7 +25,6 @@ public class NetworkRegistry {
         playToClient(RadarMenuOpenMessage.TYPE, RadarMenuOpenMessage.STREAM_CODEC, RadarMenuOpenMessage::handler);
         playToClient(RadarMenuCloseMessage.TYPE, RadarMenuCloseMessage.STREAM_CODEC, (message1, context1) -> RadarMenuCloseMessage.handler());
         playToClient(ClientTacticalSprintSyncMessage.TYPE, ClientTacticalSprintSyncMessage.STREAM_CODEC, (msg, ctx) -> ClientTacticalSprintSyncMessage.handler(msg));
-        playToClient(DogTagEditorMessage.TYPE, DogTagEditorMessage.STREAM_CODEC, (msg, ctx) -> DogTagEditorMessage.handler(msg));
         playToClient(VehiclesDataMessage.TYPE, VehiclesDataMessage.STREAM_CODEC, (msg, ctx) -> VehiclesDataMessage.handler(msg));
 
         playToServer(LaserShootMessage.TYPE, LaserShootMessage.STREAM_CODEC, LaserShootMessage::handler);
@@ -65,6 +61,13 @@ public class NetworkRegistry {
         playToServer(TacticalSprintMessage.TYPE, TacticalSprintMessage.STREAM_CODEC, TacticalSprintMessage::handler);
         playToServer(DogTagFinishEditMessage.TYPE, DogTagFinishEditMessage.STREAM_CODEC, DogTagFinishEditMessage::handler);
         playToServer(MouseMoveMessage.TYPE, MouseMoveMessage.STREAM_CODEC, MouseMoveMessage::handler);
+    }
+
+    private static PayloadRegistrar registrar;
+
+    public static void register(final RegisterPayloadHandlersEvent event) {
+        registrar = event.registrar("1");
+        register();
     }
 
     public static <T extends CustomPacketPayload> void playToClient(CustomPacketPayload.Type<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> reader, IPayloadHandler<T> handler) {
