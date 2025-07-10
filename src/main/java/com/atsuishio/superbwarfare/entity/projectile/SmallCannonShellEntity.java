@@ -60,6 +60,9 @@ public class SmallCannonShellEntity extends FastThrowableProjectile implements G
         this.explosionDamage = explosionDamage;
         this.explosionRadius = explosionRadius;
         this.aa = aa;
+        if (aa) {
+            crushProjectile(getDeltaMovement());
+        }
     }
 
     public SmallCannonShellEntity setBlockInteraction(Explosion.BlockInteraction blockInteraction) {

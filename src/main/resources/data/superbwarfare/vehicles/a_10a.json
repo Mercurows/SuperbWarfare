@@ -92,6 +92,10 @@
       "Source": "@superbwarfare:gun_grenade"
     },
     {
+      "Type": "Multiply",
+      "Value": 0.75
+    },
+    {
       "Type": "Reduce",
       "Value": 7
     }
