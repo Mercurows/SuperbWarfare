@@ -123,7 +123,6 @@ public class DogTagEditorScreen extends Screen {
                 this.icon = DogTag.getColors(this.stack);
             }
             this.init = true;
-            this.name.setEditable(true);
         }
     }
 
@@ -160,8 +159,7 @@ public class DogTagEditorScreen extends Screen {
         this.name.setMaxLength(30);
         this.name.setResponder(this::onNameChanged);
         this.addWidget(this.name);
-        this.setInitialFocus(this.name);
-        this.name.setEditable(false);
+        this.name.setEditable(true);
     }
 
     private void onNameChanged(String name) {
