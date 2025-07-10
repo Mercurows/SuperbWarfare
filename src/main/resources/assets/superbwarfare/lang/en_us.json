@@ -252,7 +252,7 @@
   "item.superbwarfare.medium_armament_module": "Medium Armament Module",
   "item.superbwarfare.heavy_armament_module": "Heavy Armament Module",
   "item.superbwarfare.artillery_indicator": "Artillery Indicator",
-  "des.superbwarfare.item_screen_provider": "Press %1$s key to open GUI when holding with main hand",
+  "des.superbwarfare.item_screen_provider": "Press %1$s key to open GUI",
 
   "attribute.superbwarfare.bullet_resistance": "Bullet Resistance",
 

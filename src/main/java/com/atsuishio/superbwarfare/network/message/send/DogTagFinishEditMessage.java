@@ -16,12 +16,14 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public record DogTagFinishEditMessage(List<Short> colors, String name) implements CustomPacketPayload {
+public record DogTagFinishEditMessage(List<Short> colors, String name,
+                                      boolean mainHand) implements CustomPacketPayload {
     public static final Type<DogTagFinishEditMessage> TYPE = new Type<>(Mod.loc("dog_tag_finish_edit"));
 
     public static final StreamCodec<ByteBuf, DogTagFinishEditMessage> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.SHORT.apply(ByteBufCodecs.list()), DogTagFinishEditMessage::colors,
             ByteBufCodecs.STRING_UTF8, DogTagFinishEditMessage::name,
+            ByteBufCodecs.BOOL, DogTagFinishEditMessage::mainHand,
             DogTagFinishEditMessage::new
     );
 
@@ -29,7 +31,7 @@ public record DogTagFinishEditMessage(List<Short> colors, String name) implement
     public static void handler(DogTagFinishEditMessage message, final IPayloadContext context) {
         ServerPlayer serverPlayer = (ServerPlayer) context.player();
 
-        ItemStack stack = serverPlayer.getMainHandItem();
+        ItemStack stack = message.mainHand ? serverPlayer.getMainHandItem() : serverPlayer.getOffhandItem();
         if (!stack.is(ModItems.DOG_TAG.get())) return;
 
         stack.set(ModDataComponents.DOG_TAG_IMAGE, message.colors);
