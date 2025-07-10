@@ -134,7 +134,10 @@ public class ClickHandler {
             if (stack.is(ModItems.ARTILLERY_INDICATOR.get())) {
                 Mod.PACKET_HANDLER.sendToServer(SetFiringParametersMessage.INSTANCE);
                 event.setCanceled(true);
-                return;
+            }
+            if (stack.is(ModItems.MONITOR.get()) && player.getOffhandItem().is(ModItems.ARTILLERY_INDICATOR.get())) {
+                Mod.PACKET_HANDLER.sendToServer(DroneFireMessage.INSTANCE);
+                event.setCanceled(true);
             }
         }
 
@@ -395,7 +398,11 @@ public class ClickHandler {
         }
 
         if (stack.is(ModItems.MONITOR.get())) {
-            Mod.PACKET_HANDLER.sendToServer(DroneFireMessage.INSTANCE);
+            if (player.getOffhandItem().is(ModItems.ARTILLERY_INDICATOR.get())) {
+                ClientEventHandler.holdFire = true;
+            } else {
+                Mod.PACKET_HANDLER.sendToServer(DroneFireMessage.INSTANCE);
+            }
         }
 
         if (stack.is(ModItems.LUNGE_MINE.get())) {

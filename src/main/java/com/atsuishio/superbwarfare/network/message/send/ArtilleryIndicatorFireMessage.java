@@ -32,6 +32,10 @@ public enum ArtilleryIndicatorFireMessage {
 
                 ItemStack stack = player.getMainHandItem();
 
+                if (player.getMainHandItem().is(ModItems.MONITOR.get()) && player.getOffhandItem().is(ModItems.ARTILLERY_INDICATOR.get())) {
+                    stack = player.getOffhandItem();
+                }
+
                 if (stack.is(ModItems.ARTILLERY_INDICATOR.get())) {
                     ListTag tags = stack.getOrCreateTag().getList(TAG_CANNON, Tag.TAG_COMPOUND);
                     for (int i = 0; i < tags.size(); i++) {
