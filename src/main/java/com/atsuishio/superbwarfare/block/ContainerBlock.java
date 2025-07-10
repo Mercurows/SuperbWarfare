@@ -2,8 +2,8 @@ package com.atsuishio.superbwarfare.block;
 
 import com.atsuishio.superbwarfare.block.entity.ContainerBlockEntity;
 import com.atsuishio.superbwarfare.init.ModBlockEntities;
-import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
+import com.atsuishio.superbwarfare.init.ModTags;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -64,7 +64,7 @@ public class ContainerBlock extends BaseEntityBlock {
                 || !(level.getBlockEntity(pos) instanceof ContainerBlockEntity containerBlockEntity)
         ) return ItemInteractionResult.FAIL;
 
-        if (!stack.is(ModItems.CROWBAR.get())) {
+        if (!stack.is(ModTags.Items.CROWBAR)) {
             player.displayClientMessage(Component.translatable("des.superbwarfare.container.fail.crowbar"), true);
             return ItemInteractionResult.FAIL;
         }

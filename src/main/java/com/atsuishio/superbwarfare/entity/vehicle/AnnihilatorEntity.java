@@ -15,6 +15,7 @@ import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
+import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage;
 import com.atsuishio.superbwarfare.tools.*;
 import net.minecraft.ChatFormatting;
@@ -50,8 +51,8 @@ import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.event.EventHooks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Math;
 import org.joml.*;
+import org.joml.Math;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.*;
@@ -143,7 +144,7 @@ public class AnnihilatorEntity extends EnergyVehicleEntity implements GeoEntity,
             return InteractionResult.SUCCESS;
         }
 
-        if (stack.is(ModItems.CROWBAR.get()) && !player.isCrouching()) {
+        if (stack.is(ModTags.Items.CROWBAR) && !player.isCrouching()) {
             if (this.entityData.get(COOL_DOWN) == 0) {
                 vehicleShoot(player, 0);
                 entityData.set(SHOOTER_UUID, player.getStringUUID());

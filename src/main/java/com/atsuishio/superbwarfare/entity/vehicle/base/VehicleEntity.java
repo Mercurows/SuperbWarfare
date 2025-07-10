@@ -416,7 +416,7 @@ public abstract class VehicleEntity extends Entity {
         var data = data();
 
         ItemStack stack = player.getMainHandItem();
-        if (player.isShiftKeyDown() && stack.is(ModItems.CROWBAR.get()) && this.getPassengers().isEmpty()) {
+        if (player.isShiftKeyDown() && stack.is(ModTags.Items.CROWBAR) && this.getPassengers().isEmpty()) {
             ItemStack container = ContainerBlockItem.createInstance(this);
             if (!player.addItem(container)) {
                 player.drop(container, false);

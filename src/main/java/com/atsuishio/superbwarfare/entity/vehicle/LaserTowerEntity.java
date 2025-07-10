@@ -7,8 +7,8 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.AutoAimable;
 import com.atsuishio.superbwarfare.entity.vehicle.base.EnergyVehicleEntity;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModEntities;
-import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
+import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.ContainerBlockItem;
 import com.atsuishio.superbwarfare.tools.CustomExplosion;
 import com.atsuishio.superbwarfare.tools.EntityFindUtil;
@@ -41,8 +41,8 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Math;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.animation.AnimationState;
 import software.bernie.geckolib.animation.*;
+import software.bernie.geckolib.animation.AnimationState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.Optional;
@@ -135,7 +135,7 @@ public class LaserTowerEntity extends EnergyVehicleEntity implements GeoEntity, 
     public @NotNull InteractionResult interact(Player player, @NotNull InteractionHand hand) {
         ItemStack stack = player.getMainHandItem();
         if (player.isCrouching()) {
-            if (stack.is(ModItems.CROWBAR.get()) && (getOwner() == null || player == getOwner())) {
+            if (stack.is(ModTags.Items.CROWBAR) && (getOwner() == null || player == getOwner())) {
                 ItemStack container = ContainerBlockItem.createInstance(this);
                 if (!player.addItem(container)) {
                     player.drop(container, false);

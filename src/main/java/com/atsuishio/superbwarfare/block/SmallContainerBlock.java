@@ -3,8 +3,8 @@ package com.atsuishio.superbwarfare.block;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.block.entity.SmallContainerBlockEntity;
 import com.atsuishio.superbwarfare.init.ModBlockEntities;
-import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
+import com.atsuishio.superbwarfare.init.ModTags;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -62,7 +62,7 @@ public class SmallContainerBlock extends BaseEntityBlock {
         }
 
         ItemStack stack = player.getItemInHand(player.getUsedItemHand());
-        if (!stack.is(ModItems.CROWBAR.get())) {
+        if (!stack.is(ModTags.Items.CROWBAR)) {
             player.displayClientMessage(Component.translatable("des.superbwarfare.container.fail.crowbar"), true);
             return InteractionResult.PASS;
         }

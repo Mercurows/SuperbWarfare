@@ -11,6 +11,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.weapon.VehicleWeapon;
 import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModItems;
+import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.ContainerBlockItem;
 import com.atsuishio.superbwarfare.tools.*;
 import com.mojang.math.Axis;
@@ -155,7 +156,7 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
     public @NotNull InteractionResult interact(Player player, @NotNull InteractionHand hand) {
         ItemStack stack = player.getMainHandItem();
         if (player.isCrouching()) {
-            if (stack.is(ModItems.CROWBAR.get()) && (getOwner() == null || player == getOwner())) {
+            if (stack.is(ModTags.Items.CROWBAR) && (getOwner() == null || player == getOwner())) {
                 ItemStack container = ContainerBlockItem.createInstance(this);
                 if (!player.addItem(container)) {
                     player.drop(container, false);

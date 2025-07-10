@@ -43,8 +43,9 @@ public class ModTags {
         public static final TagKey<Item> LEGENDARY_BLUEPRINT = tag("blueprint/legendary");
         public static final TagKey<Item> CANNON_BLUEPRINT = tag("blueprint/cannon");
 
-        public static final TagKey<Item> WRENCHES_TAG = ItemTags.create(ResourceLocation.fromNamespaceAndPath("c", "wrenches"));
-        public static final TagKey<Item> WRENCH_TAG = ItemTags.create(ResourceLocation.fromNamespaceAndPath("c", "tools/wrench"));
+        public static final TagKey<Item> WRENCHES = ItemTags.create(ResourceLocation.fromNamespaceAndPath("c", "wrenches"));
+        public static final TagKey<Item> WRENCH = ItemTags.create(ResourceLocation.fromNamespaceAndPath("c", "tools/wrench"));
+        public static final TagKey<Item> CROWBAR = ItemTags.create(ResourceLocation.fromNamespaceAndPath("c", "tools/crowbar"));
 
         private static TagKey<Item> tag(String name) {
             return ItemTags.create(Mod.loc(name));

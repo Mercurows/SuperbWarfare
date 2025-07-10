@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
+import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.tools.FormatTool;
 import com.atsuishio.superbwarfare.tools.SoundTool;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
@@ -31,8 +32,8 @@ import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.animation.AnimationState;
 import software.bernie.geckolib.animation.*;
+import software.bernie.geckolib.animation.AnimationState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 @EventBusSubscriber(modid = Mod.MODID)
@@ -137,7 +138,7 @@ public class TargetEntity extends LivingEntity implements GeoEntity {
 
     @Override
     public @NotNull InteractionResult interact(Player player, @NotNull InteractionHand hand) {
-        if (player.getMainHandItem() != ItemStack.EMPTY && player.getMainHandItem().getItem() != ModItems.CROWBAR.get()) {
+        if (player.getMainHandItem() != ItemStack.EMPTY && !player.getMainHandItem().is(ModTags.Items.CROWBAR)) {
             return InteractionResult.PASS;
         }
 
