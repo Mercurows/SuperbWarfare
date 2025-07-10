@@ -9,6 +9,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import top.theillusivec4.curios.api.CuriosApi;
@@ -34,19 +36,6 @@ public class DogTag extends Item implements ICurioItem, ItemScreenProvider {
         return flag.get();
     }
 
-//    @Override
-//    @ParametersAreNonnullByDefault
-//    public @NotNull InteractionResultHolder<ItemStack> use(Level pLevel, Player pPlayer, InteractionHand pUsedHand) {
-//        ItemStack stack = pPlayer.getItemInHand(pUsedHand);
-//        if (pLevel.isClientSide) {
-//            return InteractionResultHolder.success(stack);
-//        } else {
-//            pPlayer.openMenu(new SimpleMenuProvider((i, inventory, player) ->
-//                    new DogTagEditorMenu(i, ContainerLevelAccess.create(pLevel, pPlayer.getOnPos()), stack), Component.empty()));
-//            return InteractionResultHolder.consume(stack);
-//        }
-//    }
-
     @Override
     public @NotNull Optional<TooltipComponent> getTooltipImage(@NotNull ItemStack pStack) {
         return Optional.of(new DogTagImageComponent(pStack));
@@ -70,6 +59,7 @@ public class DogTag extends Item implements ICurioItem, ItemScreenProvider {
         return colors;
     }
 
+    @OnlyIn(Dist.CLIENT)
     @Override
     public @Nullable Screen getItemScreen(ItemStack stack, Player player) {
         return new DogTagEditorScreen(stack);

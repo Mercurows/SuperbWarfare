@@ -11,6 +11,7 @@ import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ServerboundRenameItemPacket;
 import net.minecraft.resources.ResourceLocation;
@@ -50,7 +51,7 @@ public class DogTagEditorScreen extends Screen {
         imageHeight = 185;
     }
 
-    protected void renderBg(GuiGraphics pGuiGraphics, float pPartialTick, int pMouseX, int pMouseY) {
+    protected void renderBg(GuiGraphics pGuiGraphics) {
         int i = (this.width - this.imageWidth) / 2;
         int j = (this.height - this.imageHeight) / 2;
         pGuiGraphics.blit(TEXTURE, i, j, 0, 0, this.imageWidth, this.imageHeight, 256, 256);
@@ -78,7 +79,7 @@ public class DogTagEditorScreen extends Screen {
     @ParametersAreNonnullByDefault
     public void render(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
         this.renderBackground(pGuiGraphics);
-        this.renderBg(pGuiGraphics, pPartialTick, pMouseX, pMouseY);
+        this.renderBg(pGuiGraphics);
         super.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
         this.name.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
     }
@@ -122,6 +123,7 @@ public class DogTagEditorScreen extends Screen {
                 this.icon = DogTag.getColors(this.stack);
             }
             this.init = true;
+            this.name.setEditable(true);
         }
     }
 
@@ -159,7 +161,7 @@ public class DogTagEditorScreen extends Screen {
         this.name.setResponder(this::onNameChanged);
         this.addWidget(this.name);
         this.setInitialFocus(this.name);
-        this.name.setEditable(true);
+        this.name.setEditable(false);
     }
 
     private void onNameChanged(String name) {
@@ -253,6 +255,7 @@ public class DogTagEditorScreen extends Screen {
             if (DogTagEditorScreen.this.minecraft != null) {
                 DogTagEditorScreen.this.minecraft.setScreen(null);
             }
+            this.updateLocal(DogTagEditorScreen.this.icon, DogTagEditorScreen.this.name.getValue());
             Mod.PACKET_HANDLER.sendToServer(new DogTagFinishEditMessage(DogTagEditorScreen.this.icon, DogTagEditorScreen.this.name.getValue()));
         }
 
@@ -266,6 +269,22 @@ public class DogTagEditorScreen extends Screen {
 
         @Override
         protected void updateWidgetNarration(@NotNull NarrationElementOutput pNarrationElementOutput) {
+        }
+
+        protected void updateLocal(short[][] colors, String name) {
+            CompoundTag colorsTag = new CompoundTag();
+            for (int i = 0; i < colors.length; i++) {
+                int[] color = new int[colors[i].length];
+                for (int j = 0; j < colors[i].length; j++) {
+                    color[j] = colors[i][j];
+                }
+                colorsTag.putIntArray("Color" + i, color);
+            }
+            DogTagEditorScreen.this.stack.getOrCreateTag().put("Colors", colorsTag);
+
+            if (!name.isEmpty()) {
+                DogTagEditorScreen.this.stack.setHoverName(Component.literal(name));
+            }
         }
     }
 
