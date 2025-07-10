@@ -92,11 +92,14 @@ public class SuperbItemInterfaceBlock extends BaseEntityBlock {
 
     @Override
     @ParametersAreNonnullByDefault
-    public @NotNull InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
+    public @NotNull InteractionResult use(BlockState state, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
         ItemStack stack = pPlayer.getItemInHand(pHand);
         if (stack.is(ModItems.CROWBAR.get()) || stack.is(ModTags.Items.WRENCHES_TAG) || stack.is(ModTags.Items.WRENCH_TAG)) {
             var facing = pHit.getDirection();
-            pLevel.setBlockAndUpdate(pPos, pState.setValue(FACING, facing));
+            if (state.getValue(FACING) == facing) {
+                facing = facing.getOpposite();
+            }
+            pLevel.setBlockAndUpdate(pPos, state.setValue(FACING, facing));
             return InteractionResult.SUCCESS;
         }
 
