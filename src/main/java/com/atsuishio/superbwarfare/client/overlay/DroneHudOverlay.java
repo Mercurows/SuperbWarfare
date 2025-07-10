@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.client.overlay;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.RenderHelper;
+import com.atsuishio.superbwarfare.component.ModDataComponents;
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModItems;
@@ -15,6 +16,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -31,7 +35,10 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 
 import static com.atsuishio.superbwarfare.client.RenderHelper.preciseBlit;
+import static com.atsuishio.superbwarfare.client.overlay.SpyglassRangeOverlay.FRIENDLY_INDICATOR;
+import static com.atsuishio.superbwarfare.client.overlay.SpyglassRangeOverlay.INDICATOR;
 import static com.atsuishio.superbwarfare.entity.vehicle.DroneEntity.*;
+import static com.atsuishio.superbwarfare.item.ArtilleryIndicator.TAG_CANNON;
 
 @OnlyIn(Dist.CLIENT)
 public class DroneHudOverlay implements LayeredDraw.Layer {
@@ -164,6 +171,59 @@ public class DroneHudOverlay implements LayeredDraw.Layer {
 
                         RenderHelper.preciseBlit(guiGraphics, FRAME, x - 12, y - 12, 24, 24, 0, 0, 24, 24, 24, 24);
                         poseStack.popPose();
+                    }
+                }
+            }
+
+            // 射击诸元标记
+
+            ItemStack offStack = player.getOffhandItem();
+            if (offStack.is(ModItems.FIRING_PARAMETERS.get()) || offStack.is(ModItems.ARTILLERY_INDICATOR.get())) {
+                var parameters = offStack.get(ModDataComponents.FIRING_PARAMETERS);
+                BlockPos blockPos;
+                if (parameters != null) {
+                    blockPos = parameters.pos();
+                } else {
+                    blockPos = new BlockPos(0, 0, 0);
+                }
+
+                double targetX = blockPos.getX();
+                double targetY = blockPos.getY();
+                double targetZ = blockPos.getZ();
+
+                RenderSystem.disableDepthTest();
+                RenderSystem.depthMask(false);
+                RenderSystem.enableBlend();
+                RenderSystem.setShader(GameRenderer::getPositionTexShader);
+                RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+                RenderSystem.setShaderColor(1, 1, 1, 1);
+
+                // 标记位置
+                Vec3 pos = new Vec3(targetX, targetY, targetZ);
+                Vec3 point = VectorUtil.worldToScreen(pos, cameraPos);
+                if (point != null) {
+                    float x = (float) point.x;
+                    float y = (float) point.y;
+                    preciseBlit(guiGraphics, INDICATOR, Mth.clamp(x - 6, 0, w - 12), Mth.clamp(y - 6, 0, h - 12), 0, 0, 12, 12, 12, 12);
+                }
+
+                // 火炮位置
+
+                if (offStack.is(ModItems.ARTILLERY_INDICATOR.get())) {
+                    ListTag tags = NBTTool.getTag(offStack).getList(TAG_CANNON, Tag.TAG_COMPOUND);
+                    for (int m = 0; m < tags.size(); m++) {
+                        var t = tags.getCompound(m);
+                        Entity e = EntityFindUtil.findEntity(player.level(), t.getString("UUID"));
+                        if (e != null) {
+                            Vec3 posF = e.getBoundingBox().getCenter();
+                            Vec3 pointF = VectorUtil.worldToScreen(posF, cameraPos);
+                            if (pointF != null) {
+                                float xf = (float) pointF.x;
+                                float yf = (float) pointF.y;
+
+                                preciseBlit(guiGraphics, FRIENDLY_INDICATOR, Mth.clamp(xf - 6, 0, w - 12), Mth.clamp(yf - 6, 0, h - 12), 0, 0, 12, 12, 12, 12);
+                            }
+                        }
                     }
                 }
             }

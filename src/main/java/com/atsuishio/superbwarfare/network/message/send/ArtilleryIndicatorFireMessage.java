@@ -34,8 +34,13 @@ public enum ArtilleryIndicatorFireMessage implements CustomPacketPayload {
         Player player = context.player();
         ItemStack stack = player.getMainHandItem();
 
+        if (player.getMainHandItem().is(ModItems.MONITOR.get()) && player.getOffhandItem().is(ModItems.ARTILLERY_INDICATOR.get())) {
+            stack = player.getOffhandItem();
+        }
+
         if (stack.is(ModItems.ARTILLERY_INDICATOR.get())) {
-            ListTag tags = NBTTool.getTag(stack).getList(TAG_CANNON, Tag.TAG_COMPOUND);
+            var mainTag = NBTTool.getTag(stack);
+            ListTag tags = mainTag.getList(TAG_CANNON, Tag.TAG_COMPOUND);
             for (int i = 0; i < tags.size(); i++) {
                 var tag = tags.getCompound(i);
                 Entity entity = EntityFindUtil.findEntity(player.level(), tag.getString("UUID"));

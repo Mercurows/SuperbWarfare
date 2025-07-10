@@ -81,8 +81,8 @@ public class ClientMouseHandler {
                     PacketDistributor.sendToServer(new MouseMoveMessage(0, 0));
                     return;
                 }
-                speedX = drone.getMouseSensitivity() * (posN.x - posO.x);
-                speedY = drone.getMouseSensitivity() * (posN.y - posO.y);
+                speedX = (drone.getMouseSensitivity() / ClientEventHandler.droneFovLerp) * (posN.x - posO.x);
+                speedY = (drone.getMouseSensitivity() / ClientEventHandler.droneFovLerp) * (posN.y - posO.y);
 
                 lerpSpeedX = Mth.lerp(drone.getMouseSpeedX(), lerpSpeedX, speedX);
                 lerpSpeedY = Mth.lerp(drone.getMouseSpeedY(), lerpSpeedY, speedY);

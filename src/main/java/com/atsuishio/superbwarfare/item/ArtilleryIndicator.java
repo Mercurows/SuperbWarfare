@@ -42,6 +42,9 @@ public class ArtilleryIndicator extends Item {
     @Override
     @ParametersAreNonnullByDefault
     public @NotNull InteractionResultHolder<ItemStack> use(Level pLevel, Player pPlayer, InteractionHand pHand) {
+        if (pHand == InteractionHand.OFF_HAND) {
+            return InteractionResultHolder.fail(pPlayer.getItemInHand(pHand));
+        }
         pPlayer.playSound(SoundEvents.SPYGLASS_USE, 1.0F, 1.0F);
         pPlayer.startUsingItem(pHand);
         return InteractionResultHolder.consume(pPlayer.getItemInHand(pHand));
