@@ -29,6 +29,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -292,9 +293,18 @@ public class ClickHandler {
                     isEditing = !isEditing;
                 }
                 if (stack.getItem() instanceof ItemScreenProvider provider) {
-                    var screen = provider.getItemScreen(stack, player);
+                    var screen = provider.getItemScreen(stack, player, InteractionHand.MAIN_HAND);
                     if (screen != null) {
                         Minecraft.getInstance().setScreen(screen);
+                        return;
+                    }
+                }
+                ItemStack offHand = player.getOffhandItem();
+                if (offHand.getItem() instanceof ItemScreenProvider provider) {
+                    var screen = provider.getItemScreen(offHand, player, InteractionHand.OFF_HAND);
+                    if (screen != null) {
+                        Minecraft.getInstance().setScreen(screen);
+                        return;
                     }
                 }
             }
@@ -354,7 +364,6 @@ public class ClickHandler {
                     switchZoom = !switchZoom;
                 }
             }
-
         } else {
             if (player.hasEffect(ModMobEffects.SHOCK.get())) {
                 return;

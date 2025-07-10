@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.client.tooltip.component.DogTagImageComponent
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
@@ -71,7 +72,7 @@ public class DogTag extends Item implements ICurioItem, ItemScreenProvider {
 
     @OnlyIn(Dist.CLIENT)
     @Override
-    public @Nullable Screen getItemScreen(ItemStack stack, Player player) {
-        return new DogTagEditorScreen(stack);
+    public @Nullable Screen getItemScreen(ItemStack stack, Player player, InteractionHand hand) {
+        return new DogTagEditorScreen(stack, hand);
     }
 }

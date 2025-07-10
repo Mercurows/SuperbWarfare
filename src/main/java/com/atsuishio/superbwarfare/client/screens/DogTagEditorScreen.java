@@ -16,6 +16,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ServerboundRenameItemPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -35,6 +36,7 @@ public class DogTagEditorScreen extends Screen {
     private short[][] icon = new short[16][16];
 
     public ItemStack stack;
+    private InteractionHand hand;
 
     private boolean init = false;
 
@@ -44,9 +46,10 @@ public class DogTagEditorScreen extends Screen {
     @Nullable
     private String itemName;
 
-    public DogTagEditorScreen(ItemStack stack) {
+    public DogTagEditorScreen(ItemStack stack, InteractionHand hand) {
         super(GameNarrator.NO_TITLE);
         this.stack = stack;
+        this.hand = hand;
         imageWidth = 207;
         imageHeight = 185;
     }
@@ -254,7 +257,8 @@ public class DogTagEditorScreen extends Screen {
                 DogTagEditorScreen.this.minecraft.setScreen(null);
             }
             this.updateLocal(DogTagEditorScreen.this.icon, DogTagEditorScreen.this.name.getValue());
-            Mod.PACKET_HANDLER.sendToServer(new DogTagFinishEditMessage(DogTagEditorScreen.this.icon, DogTagEditorScreen.this.name.getValue()));
+            Mod.PACKET_HANDLER.sendToServer(new DogTagFinishEditMessage(DogTagEditorScreen.this.icon, DogTagEditorScreen.this.name.getValue(),
+                    DogTagEditorScreen.this.hand == InteractionHand.MAIN_HAND));
         }
 
         @Override

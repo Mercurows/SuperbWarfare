@@ -14,10 +14,12 @@ public class DogTagFinishEditMessage {
 
     private final short[][] colors;
     private final String name;
+    private final boolean mainHand;
 
-    public DogTagFinishEditMessage(short[][] colors, String name) {
+    public DogTagFinishEditMessage(short[][] colors, String name, boolean mainHand) {
         this.colors = colors;
         this.name = name;
+        this.mainHand = mainHand;
     }
 
     public static void encode(DogTagFinishEditMessage message, FriendlyByteBuf buffer) {
@@ -29,6 +31,7 @@ public class DogTagFinishEditMessage {
             }
         }
         buffer.writeUtf(message.name);
+        buffer.writeBoolean(message.mainHand);
     }
 
     public static DogTagFinishEditMessage decode(FriendlyByteBuf buffer) {
@@ -40,7 +43,8 @@ public class DogTagFinishEditMessage {
             }
         }
         String name = buffer.readUtf();
-        return new DogTagFinishEditMessage(colors, name);
+        boolean mainHand = buffer.readBoolean();
+        return new DogTagFinishEditMessage(colors, name, mainHand);
     }
 
     public static void handler(DogTagFinishEditMessage message, Supplier<NetworkEvent.Context> ctx) {
@@ -48,7 +52,7 @@ public class DogTagFinishEditMessage {
             ServerPlayer serverPlayer = ctx.get().getSender();
             if (serverPlayer == null) return;
 
-            ItemStack stack = serverPlayer.getMainHandItem();
+            ItemStack stack = message.mainHand ? serverPlayer.getMainHandItem() : serverPlayer.getOffhandItem();
             if (!stack.is(ModItems.DOG_TAG.get())) return;
 
             CompoundTag colorsTag = new CompoundTag();

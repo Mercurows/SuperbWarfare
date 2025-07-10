@@ -81,7 +81,7 @@ public class FiringParameters extends Item implements ItemScreenProvider {
 
     @OnlyIn(Dist.CLIENT)
     @Override
-    public @Nullable Screen getItemScreen(ItemStack stack, Player player) {
+    public @Nullable Screen getItemScreen(ItemStack stack, Player player, InteractionHand hand) {
         return new FiringParametersScreen(stack);
     }
 }
