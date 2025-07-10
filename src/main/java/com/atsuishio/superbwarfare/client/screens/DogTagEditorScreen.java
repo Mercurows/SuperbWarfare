@@ -39,12 +39,12 @@ public class DogTagEditorScreen extends Screen {
     private short[][] icon = new short[16][16];
 
     public ItemStack stack;
-    private InteractionHand hand;
+    private final InteractionHand hand;
 
     private boolean init = false;
 
-    protected int imageWidth;
-    protected int imageHeight;
+    protected int imageWidth = 207;
+    protected int imageHeight = 185;
 
     @Nullable
     private String itemName;
@@ -53,8 +53,6 @@ public class DogTagEditorScreen extends Screen {
         super(GameNarrator.NO_TITLE);
         this.stack = stack;
         this.hand = hand;
-        imageWidth = 207;
-        imageHeight = 185;
     }
 
     protected void renderBg(GuiGraphics pGuiGraphics) {
