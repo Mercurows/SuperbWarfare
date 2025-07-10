@@ -252,6 +252,7 @@
   "item.superbwarfare.medium_armament_module": "中型武装模块",
   "item.superbwarfare.heavy_armament_module": "重型武装模块",
   "item.superbwarfare.artillery_indicator": "火炮指示器",
+  "des.superbwarfare.item_screen_provider": "在主手时按下 %1$s 以打开GUI",
 
   "attribute.superbwarfare.bullet_resistance": "子弹防护",
 

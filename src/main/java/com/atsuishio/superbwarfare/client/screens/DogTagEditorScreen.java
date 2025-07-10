@@ -162,7 +162,6 @@ public class DogTagEditorScreen extends Screen {
         this.name.setResponder(this::onNameChanged);
 //        this.name.setValue(this.stack.getHoverName().getString());
         this.addWidget(this.name);
-//        this.setInitialFocus(this.name);
         this.name.setEditable(true);
     }
 
