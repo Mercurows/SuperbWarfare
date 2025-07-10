@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.block;
 
 import com.atsuishio.superbwarfare.block.entity.SuperbItemInterfaceBlockEntity;
 import com.atsuishio.superbwarfare.init.ModBlockEntities;
-import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModTags;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -94,7 +93,7 @@ public class SuperbItemInterfaceBlock extends BaseEntityBlock {
     @ParametersAreNonnullByDefault
     public @NotNull InteractionResult use(BlockState state, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
         ItemStack stack = pPlayer.getItemInHand(pHand);
-        if (stack.is(ModItems.CROWBAR.get()) || stack.is(ModTags.Items.WRENCHES_TAG) || stack.is(ModTags.Items.WRENCH_TAG)) {
+        if (stack.is(ModTags.Items.CROWBAR) || stack.is(ModTags.Items.WRENCHES) || stack.is(ModTags.Items.WRENCH)) {
             var facing = pHit.getDirection();
             if (state.getValue(FACING) == facing) {
                 facing = facing.getOpposite();

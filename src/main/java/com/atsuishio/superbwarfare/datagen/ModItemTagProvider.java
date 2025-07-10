@@ -75,6 +75,8 @@ public class ModItemTagProvider extends ItemTagsProvider {
         this.tag(forgeTag("plates")).addTags(forgeTag("plates/copper"));
         this.tag(forgeTag("plates/copper")).add(ModItems.COPPER_PLATE.get());
 
+        this.tag(forgeTag("tools/crowbar")).add(ModItems.CROWBAR.get());
+
         // TODO 清理枪械Tag
         ModItems.GUNS.getEntries().forEach(registryObject -> this.tag(ModTags.Items.GUN).add(registryObject.get()));
 
@@ -86,7 +88,7 @@ public class ModItemTagProvider extends ItemTagsProvider {
         this.tag(ModTags.Items.SNIPER_RIFLE).add(ModItems.HUNTING_RIFLE.get(), ModItems.SENTINEL.get(),
                 ModItems.SVD.get(), ModItems.M_98B.get(), ModItems.K_98.get(), ModItems.MOSIN_NAGANT.get());
 
-        this.tag(ModTags.Items.HEAVY_WEAPON).add(ModItems.NTW_20.get(),ModItems.M_2_HB.get());
+        this.tag(ModTags.Items.HEAVY_WEAPON).add(ModItems.NTW_20.get(), ModItems.M_2_HB.get());
 
         this.tag(ModTags.Items.SHOTGUN).add(ModItems.HOMEMADE_SHOTGUN.get(), ModItems.M_870.get(), ModItems.AA_12.get());
 

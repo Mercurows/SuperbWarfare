@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
+import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.tools.FormatTool;
 import com.atsuishio.superbwarfare.tools.SoundTool;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
@@ -151,7 +152,7 @@ public class TargetEntity extends LivingEntity implements GeoEntity {
 
     @Override
     public @NotNull InteractionResult interact(Player player, @NotNull InteractionHand hand) {
-        if (player.getMainHandItem() != ItemStack.EMPTY && player.getMainHandItem().getItem() != ModItems.CROWBAR.get()) {
+        if (player.getMainHandItem() != ItemStack.EMPTY && !player.getMainHandItem().is(ModTags.Items.CROWBAR)) {
             return InteractionResult.PASS;
         }
 

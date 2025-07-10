@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.entity.vehicle.base;
 
-import com.atsuishio.superbwarfare.init.ModItems;
+import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.menu.VehicleMenu;
 import com.atsuishio.superbwarfare.tools.InventoryTool;
 import net.minecraft.core.Direction;
@@ -63,7 +63,7 @@ public abstract class ContainerMobileVehicleEntity extends MobileVehicleEntity i
         if (player.getVehicle() == this) return InteractionResult.PASS;
 
         ItemStack stack = player.getMainHandItem();
-        if (player.isShiftKeyDown() && !stack.is(ModItems.CROWBAR.get())) {
+        if (player.isShiftKeyDown() && !stack.is(ModTags.Items.CROWBAR)) {
             player.openMenu(this);
             return !player.level().isClientSide ? InteractionResult.CONSUME : InteractionResult.SUCCESS;
         }

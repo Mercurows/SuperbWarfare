@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
+import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.ArtilleryIndicator;
 import com.atsuishio.superbwarfare.item.Monitor;
 import com.atsuishio.superbwarfare.item.common.ammo.MortarShell;
@@ -198,7 +199,7 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, Container 
         }
 
         if (player.isShiftKeyDown()) {
-            if (mainHandItem.getItem() == ModItems.CROWBAR.get()) {
+            if (mainHandItem.is(ModTags.Items.CROWBAR)) {
                 this.discard();
                 ItemHandlerHelper.giveItemToPlayer(player, new ItemStack(ModItems.MORTAR_DEPLOYER.get()));
                 if (entityData.get(INTELLIGENT)) {
