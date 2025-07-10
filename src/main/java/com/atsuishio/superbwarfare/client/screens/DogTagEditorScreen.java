@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.client.screens;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.component.ModDataComponents;
 import com.atsuishio.superbwarfare.item.DogTag;
 import com.atsuishio.superbwarfare.network.message.send.DogTagFinishEditMessage;
 import net.minecraft.ChatFormatting;
@@ -25,6 +26,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 @OnlyIn(Dist.CLIENT)
 public class DogTagEditorScreen extends Screen {
@@ -52,7 +54,7 @@ public class DogTagEditorScreen extends Screen {
         imageHeight = 185;
     }
 
-    protected void renderBg(GuiGraphics pGuiGraphics, float pPartialTick, int pMouseX, int pMouseY) {
+    protected void renderBg(GuiGraphics pGuiGraphics) {
         int i = (this.width - this.imageWidth) / 2;
         int j = (this.height - this.imageHeight) / 2;
         pGuiGraphics.blit(TEXTURE, i, j, 0, 0, this.imageWidth, this.imageHeight, 256, 256);
@@ -82,7 +84,7 @@ public class DogTagEditorScreen extends Screen {
         this.renderBackground(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
         super.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
         this.name.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
-        this.renderBg(pGuiGraphics, pPartialTick, pMouseX, pMouseY);
+        this.renderBg(pGuiGraphics);
     }
 
     @Override
@@ -264,6 +266,7 @@ public class DogTagEditorScreen extends Screen {
                 }
             }
 
+            this.updateLocal(colors, DogTagEditorScreen.this.name.getValue());
             PacketDistributor.sendToServer(new DogTagFinishEditMessage(colors, DogTagEditorScreen.this.name.getValue()));
         }
 
@@ -277,6 +280,14 @@ public class DogTagEditorScreen extends Screen {
 
         @Override
         protected void updateWidgetNarration(@NotNull NarrationElementOutput pNarrationElementOutput) {
+        }
+
+        protected void updateLocal(List<Short> colors, String name) {
+            DogTagEditorScreen.this.stack.set(ModDataComponents.DOG_TAG_IMAGE, colors);
+
+            if (!name.isEmpty()) {
+                DogTagEditorScreen.this.stack.set(DataComponents.CUSTOM_NAME, Component.literal(name));
+            }
         }
     }
 
