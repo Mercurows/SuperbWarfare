@@ -7,28 +7,39 @@ import com.atsuishio.superbwarfare.entity.vehicle.MortarEntity;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.tools.EntityFindUtil;
-import com.atsuishio.superbwarfare.tools.SeekTool;
 import com.atsuishio.superbwarfare.tools.SoundTool;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.ClipContext;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.NetworkEvent;
+import org.joml.Vector3f;
 
 import java.util.function.Supplier;
 
 import static com.atsuishio.superbwarfare.item.ArtilleryIndicator.TAG_CANNON;
 
-public enum DroneFireMessage {
-    INSTANCE;
+public class DroneFireMessage {
 
-    public static void handler(Supplier<NetworkEvent.Context> contextSupplier) {
+    private final Vector3f pos;
+
+    public DroneFireMessage(Vector3f pos) {
+        this.pos = pos;
+    }
+
+    public static DroneFireMessage decode(FriendlyByteBuf buffer) {
+        return new DroneFireMessage(buffer.readVector3f());
+    }
+
+    public static void encode(DroneFireMessage message, FriendlyByteBuf buffer) {
+        buffer.writeVector3f(message.pos);
+    }
+
+    public static void handler(DroneFireMessage message, Supplier<NetworkEvent.Context> contextSupplier) {
         NetworkEvent.Context context = contextSupplier.get();
         context.enqueueWork(() -> {
             if (context.getSender() != null) {
@@ -41,27 +52,10 @@ public enum DroneFireMessage {
                     if (drone != null) {
                         if (player.getOffhandItem().is(ModItems.FIRING_PARAMETERS.get()) || player.getOffhandItem().is(ModItems.ARTILLERY_INDICATOR.get())) {
                             ItemStack offStack = player.getOffhandItem();
-                            boolean lookAtEntity = false;
 
-                            Entity lookingEntity = SeekTool.seekLivingEntity(drone, drone.level(), 512, 2);
-
-                            BlockHitResult result = player.level().clip(new ClipContext(drone.getEyePosition(), drone.getEyePosition().add(drone.getLookAngle().scale(512)),
-                                    ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, drone));
-                            Vec3 hitPos = result.getLocation();
-
-                            if (lookingEntity != null) {
-                                lookAtEntity = true;
-                            }
-
-                            if (lookAtEntity) {
-                                offStack.getOrCreateTag().putDouble("TargetX", lookingEntity.getX());
-                                offStack.getOrCreateTag().putDouble("TargetY", lookingEntity.getY());
-                                offStack.getOrCreateTag().putDouble("TargetZ", lookingEntity.getZ());
-                            } else {
-                                offStack.getOrCreateTag().putDouble("TargetX", hitPos.x());
-                                offStack.getOrCreateTag().putDouble("TargetY", hitPos.y());
-                                offStack.getOrCreateTag().putDouble("TargetZ", hitPos.z());
-                            }
+                            offStack.getOrCreateTag().putDouble("TargetX", message.pos.x());
+                            offStack.getOrCreateTag().putDouble("TargetY", message.pos.y());
+                            offStack.getOrCreateTag().putDouble("TargetZ", message.pos.z());
 
                             player.displayClientMessage(Component.translatable("tips.superbwarfare.mortar.target_pos").withStyle(ChatFormatting.GRAY)
                                     .append(Component.literal("[" + offStack.getOrCreateTag().getInt("TargetX")
