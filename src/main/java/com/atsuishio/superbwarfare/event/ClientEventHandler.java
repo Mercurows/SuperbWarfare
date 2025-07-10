@@ -1022,7 +1022,7 @@ public class ClientEventHandler {
         DroneEntity drone = EntityFindUtil.findDrone(entity.level(), tag.getString("LinkedDrone"));
 
         if (drone != null) {
-            event.setRoll(drone.getRoll((float) event.getPartialTick()) * (1 - (drone.getPitch((float) event.getPartialTick()) / 90)));
+            cameraRoll = drone.getRoll((float) event.getPartialTick()) * (1 - (drone.getPitch((float) event.getPartialTick()) / 90));
         }
     }
 

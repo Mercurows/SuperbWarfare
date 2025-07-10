@@ -11,7 +11,6 @@ import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.FiringParameters;
 import com.atsuishio.superbwarfare.tools.EntityFindUtil;
 import com.atsuishio.superbwarfare.tools.NBTTool;
-import com.atsuishio.superbwarfare.tools.SeekTool;
 import com.atsuishio.superbwarfare.tools.SoundTool;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.ChatFormatting;
@@ -19,27 +18,29 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.ClipContext;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Vector3f;
 
 import static com.atsuishio.superbwarfare.item.ArtilleryIndicator.TAG_CANNON;
 
-public enum DroneFireMessage implements CustomPacketPayload {
-    INSTANCE;
+public record DroneFireMessage(Vector3f pos) implements CustomPacketPayload {
 
     public static final Type<DroneFireMessage> TYPE = new Type<>(Mod.loc("drone_fire"));
 
-    public static final StreamCodec<ByteBuf, DroneFireMessage> STREAM_CODEC = StreamCodec.unit(INSTANCE);
+    public static final StreamCodec<ByteBuf, DroneFireMessage> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.VECTOR3F,
+            DroneFireMessage::pos,
+            DroneFireMessage::new
+    );
 
-    public static void handler(final IPayloadContext context) {
+    public static void handler(DroneFireMessage message, final IPayloadContext context) {
         Player player = context.player();
         ItemStack stack = player.getMainHandItem();
         var mainTag = NBTTool.getTag(stack);
@@ -48,42 +49,25 @@ public enum DroneFireMessage implements CustomPacketPayload {
             DroneEntity drone = EntityFindUtil.findDrone(player.level(), mainTag.getString("LinkedDrone"));
             if (drone != null) {
                 if (player.getOffhandItem().is(ModItems.FIRING_PARAMETERS.get()) || player.getOffhandItem().is(ModItems.ARTILLERY_INDICATOR.get())) {
-                    boolean lookAtEntity = false;
-
-                    Entity lookingEntity = SeekTool.seekLivingEntity(drone, drone.level(), 512, 2);
-
-                    BlockHitResult result = player.level().clip(new ClipContext(drone.getEyePosition(), drone.getEyePosition().add(drone.getLookAngle().scale(512)),
-                            ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, drone));
-                    Vec3 hitPos = result.getLocation();
-
-                    if (lookingEntity != null) {
-                        lookAtEntity = true;
-                    }
-
                     ItemStack offStack = player.getOffhandItem();
+
                     var parameters = offStack.get(ModDataComponents.FIRING_PARAMETERS);
-                    var isDepressed = parameters != null && parameters.isDepressed();
-
-                    BlockPos pos;
-                    if (lookAtEntity) {
-                        pos = lookingEntity.blockPosition();
-                    } else {
-                        pos = new BlockPos((int) hitPos.x, (int) hitPos.y, (int) hitPos.z);
+                    var isDepressed = false;
+                    if (parameters != null) {
+                        isDepressed = parameters.isDepressed();
                     }
-                    offStack.set(ModDataComponents.FIRING_PARAMETERS, new FiringParameters.Parameters(pos, isDepressed));
 
-                    player.displayClientMessage(Component.translatable("tips.superbwarfare.mortar.target_pos")
-                            .withStyle(ChatFormatting.GRAY)
-                            .append(Component.literal("["
-                                    + pos.getX()
-                                    + "," + pos.getY()
-                                    + "," + pos.getZ()
-                                    + "]")), true);
+                    offStack.set(ModDataComponents.FIRING_PARAMETERS, new FiringParameters.Parameters(new BlockPos((int) message.pos.x, (int) message.pos.y, (int) message.pos.z), isDepressed));
+
+                    player.displayClientMessage(Component.translatable("tips.superbwarfare.mortar.target_pos").withStyle(ChatFormatting.GRAY)
+                            .append(Component.literal("[" + message.pos.x()
+                                    + "," + message.pos.y()
+                                    + "," + message.pos.z() + "]")), true);
+
                     SoundTool.playLocalSound(player, ModSounds.CANNON_ZOOM_IN.get(), 2, 1);
 
                     if (offStack.is(ModItems.ARTILLERY_INDICATOR.get())) {
-                        var offTag = NBTTool.getTag(offStack);
-                        ListTag tags = offTag.getList(TAG_CANNON, Tag.TAG_COMPOUND);
+                        ListTag tags = NBTTool.getTag(offStack).getList(TAG_CANNON, Tag.TAG_COMPOUND);
                         for (int i = 0; i < tags.size(); i++) {
                             var tag = tags.getCompound(i);
                             Entity entity = EntityFindUtil.findEntity(player.level(), tag.getString("UUID"));

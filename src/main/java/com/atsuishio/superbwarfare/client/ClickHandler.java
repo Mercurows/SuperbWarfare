@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.compat.clothconfig.ClothConfigHelper;
 import com.atsuishio.superbwarfare.config.client.ReloadConfig;
 import com.atsuishio.superbwarfare.data.gun.FireMode;
 import com.atsuishio.superbwarfare.data.gun.GunData;
+import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.MortarEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.CannonEntity;
@@ -16,6 +17,7 @@ import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.item.ItemScreenProvider;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.network.message.send.*;
+import com.atsuishio.superbwarfare.tools.EntityFindUtil;
 import com.atsuishio.superbwarfare.tools.NBTTool;
 import com.atsuishio.superbwarfare.tools.SeekTool;
 import com.atsuishio.superbwarfare.tools.TraceTool;
@@ -32,7 +34,9 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -136,7 +140,7 @@ public class ClickHandler {
                 event.setCanceled(true);
             }
             if (stack.is(ModItems.MONITOR.get()) && player.getOffhandItem().is(ModItems.ARTILLERY_INDICATOR.get())) {
-                PacketDistributor.sendToServer(DroneFireMessage.INSTANCE);
+                droneLeftClick(stack, player);
                 event.setCanceled(true);
             }
         }
@@ -395,7 +399,7 @@ public class ClickHandler {
             if (player.getOffhandItem().is(ModItems.ARTILLERY_INDICATOR.get())) {
                 ClientEventHandler.holdFire = true;
             } else {
-                PacketDistributor.sendToServer(DroneFireMessage.INSTANCE);
+                droneLeftClick(stack, player);
             }
         }
 
@@ -536,5 +540,31 @@ public class ClickHandler {
             return;
         }
         PacketDistributor.sendToServer(PlayerStopRidingMessage.INSTANCE);
+    }
+
+    public static void droneLeftClick(ItemStack stack, Player player) {
+        var tag = NBTTool.getTag(stack);
+        if (stack.is(ModItems.MONITOR.get()) && tag.getBoolean("Using") && tag.getBoolean("Linked")) {
+            DroneEntity drone = EntityFindUtil.findDrone(player.level(), tag.getString("LinkedDrone"));
+            if (drone != null) {
+                boolean lookAtEntity = false;
+
+                Entity lookingEntity = SeekTool.seekLivingEntity(drone, drone.level(), 512, 2 / droneFovLerp);
+
+                BlockHitResult result = player.level().clip(new ClipContext(drone.getEyePosition(), drone.getEyePosition().add(drone.getLookAngle().scale(512)),
+                        ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, drone));
+                Vec3 pos = result.getLocation();
+
+                if (lookingEntity != null) {
+                    lookAtEntity = true;
+                }
+
+                if (lookAtEntity) {
+                    pos = lookingEntity.position();
+                }
+
+                PacketDistributor.sendToServer(new DroneFireMessage(pos.toVector3f()));
+            }
+        }
     }
 }

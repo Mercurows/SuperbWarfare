@@ -1,21 +1,17 @@
 package com.atsuishio.superbwarfare.tools;
 
 import com.atsuishio.superbwarfare.config.client.DisplayConfig;
-import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.LandArmorEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
-import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModMobEffects;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.EventPriority;
@@ -94,19 +90,6 @@ public class VectorUtil {
             }
 
             roll = -r * vehicle.getRoll((float) event.getPartialTick()) + r2 * vehicle.getViewXRot((float) event.getPartialTick());
-        }
-
-        Minecraft mc = Minecraft.getInstance();
-        LocalPlayer player = mc.player;
-        if (player != null) {
-            ItemStack stack = player.getMainHandItem();
-            var tag = NBTTool.getTag(stack);
-            if (stack.is(ModItems.MONITOR.get()) && tag.getBoolean("Using") && tag.getBoolean("Linked")) {
-                DroneEntity drone = EntityFindUtil.findDrone(player.level(), tag.getString("LinkedDrone"));
-                if (drone != null) {
-                    roll = event.getRoll();
-                }
-            }
         }
 
         PoseStack poseStack = new PoseStack();
