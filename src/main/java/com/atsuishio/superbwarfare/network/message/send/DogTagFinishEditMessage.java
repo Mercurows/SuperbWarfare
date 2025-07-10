@@ -1,8 +1,11 @@
 package com.atsuishio.superbwarfare.network.message.send;
 
-import com.atsuishio.superbwarfare.menu.DogTagEditorMenu;
+import com.atsuishio.superbwarfare.init.ModItems;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
@@ -45,11 +48,22 @@ public class DogTagFinishEditMessage {
             ServerPlayer serverPlayer = ctx.get().getSender();
             if (serverPlayer == null) return;
 
-            if (serverPlayer.containerMenu instanceof DogTagEditorMenu menu) {
-                menu.finishEdit(message.colors, message.name);
-            }
-            serverPlayer.closeContainer();
+            ItemStack stack = serverPlayer.getMainHandItem();
+            if (!stack.is(ModItems.DOG_TAG.get())) return;
 
+            CompoundTag colorsTag = new CompoundTag();
+            for (int i = 0; i < message.colors.length; i++) {
+                int[] color = new int[message.colors[i].length];
+                for (int j = 0; j < message.colors[i].length; j++) {
+                    color[j] = message.colors[i][j];
+                }
+                colorsTag.putIntArray("Color" + i, color);
+            }
+            stack.getOrCreateTag().put("Colors", colorsTag);
+
+            if (!message.name.isEmpty()) {
+                stack.setHoverName(Component.literal(message.name));
+            }
         });
         ctx.get().setPacketHandled(true);
     }

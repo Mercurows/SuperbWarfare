@@ -1,13 +1,11 @@
 package com.atsuishio.superbwarfare.network;
 
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
-import com.atsuishio.superbwarfare.client.screens.DogTagEditorScreen;
 import com.atsuishio.superbwarfare.client.screens.FuMO25ScreenHelper;
 import com.atsuishio.superbwarfare.config.client.KillMessageConfig;
 import com.atsuishio.superbwarfare.config.server.MiscConfig;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.event.KillMessageHandler;
-import com.atsuishio.superbwarfare.menu.DogTagEditorMenu;
 import com.atsuishio.superbwarfare.menu.EnergyMenu;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
 import com.atsuishio.superbwarfare.network.message.receive.ClientMotionSyncMessage;
@@ -20,7 +18,6 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.network.NetworkEvent;
 
@@ -94,18 +91,6 @@ public class ClientPacketHandler {
         if (ctx.get().getDirection().getReceptionSide() == LogicalSide.CLIENT) {
             MiscConfig.ALLOW_TACTICAL_SPRINT.set(flag);
             MiscConfig.ALLOW_TACTICAL_SPRINT.save();
-        }
-    }
-
-    public static void handleDogTagEditorMessage(int containerId, ItemStack stack, Supplier<NetworkEvent.Context> ctx) {
-        if (ctx.get().getDirection().getReceptionSide() == LogicalSide.CLIENT) {
-            Minecraft mc = Minecraft.getInstance();
-            if (mc.player != null && mc.player.containerMenu.containerId == containerId) {
-                ((DogTagEditorMenu) mc.player.containerMenu).stack = stack;
-                if (mc.screen instanceof DogTagEditorScreen dogTagEditorScreen) {
-                    dogTagEditorScreen.stack = stack;
-                }
-            }
         }
     }
 }

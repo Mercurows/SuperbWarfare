@@ -2,52 +2,59 @@ package com.atsuishio.superbwarfare.client.screens;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.item.DogTag;
-import com.atsuishio.superbwarfare.menu.DogTagEditorMenu;
 import com.atsuishio.superbwarfare.network.message.send.DogTagFinishEditMessage;
+import net.minecraft.SharedConstants;
+import net.minecraft.Util;
+import net.minecraft.client.GameNarrator;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ServerboundRenameItemPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Arrays;
 
 @OnlyIn(Dist.CLIENT)
-public class DogTagEditorScreen extends AbstractContainerScreen<DogTagEditorMenu> {
+public class DogTagEditorScreen extends Screen {
 
     private static final ResourceLocation TEXTURE = Mod.loc("textures/gui/dog_tag_editor.png");
 
     public EditBox name;
     private short currentColor = 0;
     private short[][] icon = new short[16][16];
+
     public ItemStack stack;
+
     private boolean init = false;
 
-    public DogTagEditorScreen(DogTagEditorMenu pMenu, Inventory pPlayerInventory, Component pTitle) {
-        super(pMenu, pPlayerInventory, pTitle);
-        this.stack = pMenu.stack;
+    protected int imageWidth;
+    protected int imageHeight;
+
+    @Nullable
+    private String itemName;
+
+    public DogTagEditorScreen(ItemStack stack) {
+        super(GameNarrator.NO_TITLE);
+        this.stack = stack;
         imageWidth = 207;
         imageHeight = 185;
     }
 
-    @Override
     protected void renderBg(GuiGraphics pGuiGraphics, float pPartialTick, int pMouseX, int pMouseY) {
         int i = (this.width - this.imageWidth) / 2;
         int j = (this.height - this.imageHeight) / 2;
         pGuiGraphics.blit(TEXTURE, i, j, 0, 0, this.imageWidth, this.imageHeight, 256, 256);
 
-        ItemStack stack = DogTagEditorScreen.this.menu.stack;
         pGuiGraphics.renderItem(stack, i + 18, j + 36);
 
         var pose = pGuiGraphics.pose();
@@ -71,9 +78,9 @@ public class DogTagEditorScreen extends AbstractContainerScreen<DogTagEditorMenu
     @ParametersAreNonnullByDefault
     public void render(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
         this.renderBackground(pGuiGraphics);
+        this.renderBg(pGuiGraphics, pPartialTick, pMouseX, pMouseY);
         super.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
         this.name.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
-        this.renderTooltip(pGuiGraphics, pMouseX, pMouseY);
     }
 
     @Override
@@ -106,8 +113,8 @@ public class DogTagEditorScreen extends AbstractContainerScreen<DogTagEditorMenu
     }
 
     @Override
-    public void containerTick() {
-        super.containerTick();
+    public void tick() {
+        super.tick();
         this.name.tick();
         if (!this.init) {
             if (!this.stack.isEmpty()) {
@@ -121,6 +128,7 @@ public class DogTagEditorScreen extends AbstractContainerScreen<DogTagEditorMenu
     @Override
     protected void init() {
         super.init();
+
         this.subInit();
 
         this.clearColors();
@@ -156,26 +164,43 @@ public class DogTagEditorScreen extends AbstractContainerScreen<DogTagEditorMenu
 
     private void onNameChanged(String name) {
         String s = name;
-        ItemStack stack = DogTagEditorScreen.this.menu.stack;
         if (!stack.hasCustomHoverName() && name.equals(stack.getHoverName().getString())) {
             s = "";
         }
 
-        if (this.menu.setItemName(s)) {
+        if (this.setItemName(s)) {
             if (this.minecraft != null && this.minecraft.player != null) {
                 this.minecraft.player.connection.send(new ServerboundRenameItemPacket(s));
             }
         }
     }
 
-    // 留空
-    @Override
-    protected void renderLabels(@NotNull GuiGraphics pGuiGraphics, int pMouseX, int pMouseY) {
-    }
-
     public void clearColors() {
         for (var el : this.icon) {
             Arrays.fill(el, (short) -1);
+        }
+    }
+
+    @Nullable
+    private static String validateName(String pItemName) {
+        String s = SharedConstants.filterText(pItemName);
+        return s.length() <= 30 ? s : null;
+    }
+
+    public boolean setItemName(String pItemName) {
+        String s = validateName(pItemName);
+        if (s != null && !s.equals(this.itemName)) {
+            this.itemName = s;
+            if (!this.stack.isEmpty()) {
+                if (Util.isBlank(s)) {
+                    this.stack.resetHoverName();
+                } else {
+                    this.stack.setHoverName(Component.literal(s));
+                }
+            }
+            return true;
+        } else {
+            return false;
         }
     }
 
@@ -225,6 +250,9 @@ public class DogTagEditorScreen extends AbstractContainerScreen<DogTagEditorMenu
         @Override
         public void onPress() {
             if (!DogTagEditorScreen.this.init) return;
+            if (DogTagEditorScreen.this.minecraft != null) {
+                DogTagEditorScreen.this.minecraft.setScreen(null);
+            }
             Mod.PACKET_HANDLER.sendToServer(new DogTagFinishEditMessage(DogTagEditorScreen.this.icon, DogTagEditorScreen.this.name.getValue()));
         }
 

@@ -18,6 +18,7 @@ import static com.atsuishio.superbwarfare.Mod.PACKET_HANDLER;
 import static com.atsuishio.superbwarfare.Mod.messageID;
 
 public class NetworkRegistry {
+
     public static void register() {
         playToClient(PlayerVariablesSyncMessage.class, PlayerVariablesSyncMessage::buffer, PlayerVariablesSyncMessage::new, PlayerVariablesSyncMessage::handler);
         playToClient(ShakeClientMessage.class, ShakeClientMessage::encode, ShakeClientMessage::decode, ShakeClientMessage::handler);
@@ -32,7 +33,6 @@ public class NetworkRegistry {
         playToClient(RadarMenuOpenMessage.class, RadarMenuOpenMessage::encode, RadarMenuOpenMessage::decode, RadarMenuOpenMessage::handler);
         playToClient(RadarMenuCloseMessage.INSTANCE, RadarMenuCloseMessage::handler);
         playToClient(ClientTacticalSprintSyncMessage.class, ClientTacticalSprintSyncMessage::encode, ClientTacticalSprintSyncMessage::decode, ClientTacticalSprintSyncMessage::handler);
-        playToClient(DogTagEditorMessage.class, DogTagEditorMessage::encode, DogTagEditorMessage::decode, DogTagEditorMessage::handler);
         playToClient(VehiclesDataMessage.class, VehiclesDataMessage::encode, VehiclesDataMessage::decode, (msg, ctx) -> VehiclesDataMessage.handler(msg));
 
         playToServer(LaserShootMessage.class, LaserShootMessage::encode, LaserShootMessage::decode, LaserShootMessage::handler);
