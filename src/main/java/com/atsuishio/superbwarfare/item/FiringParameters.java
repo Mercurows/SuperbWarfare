@@ -8,7 +8,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -20,7 +19,6 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 
 public class FiringParameters extends Item implements ItemScreenProvider {
@@ -44,25 +42,6 @@ public class FiringParameters extends Item implements ItemScreenProvider {
         }
 
         return InteractionResult.SUCCESS;
-    }
-
-    @Override
-    @ParametersAreNonnullByDefault
-    public @NotNull InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand usedHand) {
-        if (!player.isCrouching()) return InteractionResultHolder.pass(player.getItemInHand(usedHand));
-
-        var stack = player.getItemInHand(usedHand);
-        var isDepressed = !stack.getOrCreateTag().getBoolean("IsDepressed");
-
-        stack.getOrCreateTag().putBoolean("IsDepressed", isDepressed);
-
-        player.displayClientMessage(Component.translatable(
-                isDepressed
-                        ? "tips.superbwarfare.mortar.target_pos.depressed_trajectory"
-                        : "tips.superbwarfare.mortar.target_pos.lofted_trajectory"
-        ).withStyle(ChatFormatting.GREEN), true);
-
-        return InteractionResultHolder.success(stack);
     }
 
     @Override
