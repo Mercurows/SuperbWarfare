@@ -1,0 +1,26 @@
+{
+  "Item": "superbwarfare:blu_43_mine",
+  "Entity": "superbwarfare:blu_43",
+  "IsKamikaze": false,
+  "Count": 20,
+  "HitDamage": 1,
+  "Data": {
+    "Owner": "@sbw:owner"
+  },
+  "Offset": [
+    0,
+    0.08,
+    0
+  ],
+  "Rotation": [
+    -90,
+    0,
+    0
+  ],
+  "Scale": [
+    0.5,
+    0.5,
+    0.5
+  ],
+  "ZLength": 0.28
+}
