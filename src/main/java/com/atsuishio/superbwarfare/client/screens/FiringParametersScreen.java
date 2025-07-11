@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.client.screens;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.mojang.math.Axis;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.GameNarrator;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractButton;
@@ -46,7 +47,7 @@ public class FiringParametersScreen extends Screen {
     @Override
     public void render(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
         this.renderBackground(pGuiGraphics);
-        this.renderBg(pGuiGraphics);
+        this.renderBg(pGuiGraphics, pMouseX, pMouseY);
         super.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
         this.renderPositions(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
     }
@@ -69,10 +70,18 @@ public class FiringParametersScreen extends Screen {
         poseStack.popPose();
     }
 
-    protected void renderBg(GuiGraphics pGuiGraphics) {
+    protected void renderBg(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY) {
         int i = (this.width - this.imageWidth) / 2;
         int j = (this.height - this.imageHeight) / 2;
         pGuiGraphics.blit(TEXTURE, i, j, 0, 0, this.imageWidth, this.imageHeight, 140, 140);
+
+        if (pMouseX >= i + 12 && pMouseX <= i + 47 && pMouseY >= j + 89 && pMouseY <= j + 109) {
+            pGuiGraphics.renderTooltip(this.font,
+                    this.isDepressed ?
+                            Component.translatable("tips.superbwarfare.mortar.target_pos.depressed_trajectory").withStyle(ChatFormatting.WHITE) :
+                            Component.translatable("tips.superbwarfare.mortar.target_pos.lofted_trajectory").withStyle(ChatFormatting.WHITE),
+                    pMouseX, pMouseY);
+        }
     }
 
     @Override
