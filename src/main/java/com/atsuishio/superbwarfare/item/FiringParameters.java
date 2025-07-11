@@ -9,19 +9,16 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 
 public class FiringParameters extends Item implements ItemScreenProvider {
@@ -54,26 +51,6 @@ public class FiringParameters extends Item implements ItemScreenProvider {
 
         stack.set(ModDataComponents.FIRING_PARAMETERS, new Parameters(pos, isDepressed));
         return InteractionResult.SUCCESS;
-    }
-
-    @Override
-    @ParametersAreNonnullByDefault
-    public @NotNull InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand usedHand) {
-        if (!player.isCrouching()) return InteractionResultHolder.pass(player.getItemInHand(usedHand));
-
-        var stack = player.getItemInHand(usedHand);
-        var parameters = stack.get(ModDataComponents.FIRING_PARAMETERS);
-        if (parameters == null) return InteractionResultHolder.fail(stack);
-
-        var isDepressed = !parameters.isDepressed();
-        stack.set(ModDataComponents.FIRING_PARAMETERS, new Parameters(parameters.pos(), isDepressed));
-        player.displayClientMessage(Component.translatable(
-                isDepressed
-                        ? "tips.superbwarfare.mortar.target_pos.depressed_trajectory"
-                        : "tips.superbwarfare.mortar.target_pos.lofted_trajectory"
-        ).withStyle(ChatFormatting.GREEN), true);
-
-        return InteractionResultHolder.success(stack);
     }
 
     @Override
