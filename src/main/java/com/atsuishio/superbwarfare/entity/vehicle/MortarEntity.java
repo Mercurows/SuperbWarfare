@@ -170,12 +170,18 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, Container 
             }
         }
 
-        if (mainHandItem.getItem() instanceof MortarShell && !player.isShiftKeyDown() && this.entityData.get(FIRE_TIME) == 0) {
+        if (mainHandItem.is(ModTags.Items.CROWBAR) && !player.isShiftKeyDown()) {
+            if (this.stack.getItem() instanceof MortarShell) {
+                fire(player);
+            }
+            return InteractionResult.SUCCESS;
+        }
+
+        if (mainHandItem.getItem() instanceof MortarShell && !player.isShiftKeyDown() && this.entityData.get(FIRE_TIME) == 0 && stack.isEmpty()) {
             this.stack = mainHandItem.copyWithCount(1);
             if (!player.isCreative()) {
                 mainHandItem.shrink(1);
             }
-
             fire(player);
         }
 

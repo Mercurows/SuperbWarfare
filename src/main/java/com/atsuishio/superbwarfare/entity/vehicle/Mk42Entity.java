@@ -10,10 +10,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.CannonShellWeapon;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.VehicleWeapon;
 import com.atsuishio.superbwarfare.event.ClientMouseHandler;
-import com.atsuishio.superbwarfare.init.ModDamageTypes;
-import com.atsuishio.superbwarfare.init.ModEntities;
-import com.atsuishio.superbwarfare.init.ModItems;
-import com.atsuishio.superbwarfare.init.ModSounds;
+import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.item.ArtilleryIndicator;
 import com.atsuishio.superbwarfare.item.common.ammo.CannonShellItem;
 import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage;
@@ -149,7 +146,6 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
     public @NotNull InteractionResult interact(Player player, @NotNull InteractionHand hand) {
         ItemStack stack = player.getMainHandItem();
 
-
         if (stack.getItem() instanceof ArtilleryIndicator indicator) {
             if (indicator.addCannon(stack, getStringUUID())) {
                 if (player instanceof ServerPlayer serverPlayer) {
@@ -168,11 +164,24 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
             }
         }
 
-        if (stack.getItem() instanceof CannonShellItem) {
-            if (this.entityData.get(COOL_DOWN) == 0) {
-                var weaponType = stack.is(ModItems.AP_5_INCHES.get()) ? 0 : 1;
+        if (stack.is(ModTags.Items.CROWBAR) && !player.isShiftKeyDown()) {
+            if (this.stack.getItem() instanceof CannonShellItem) {
+                var weaponType = this.stack.is(ModItems.AP_5_INCHES.get()) ? 0 : 1;
                 setWeaponIndex(0, weaponType);
                 vehicleShoot(player, 0);
+            }
+            return InteractionResult.SUCCESS;
+        }
+
+        if (stack.getItem() instanceof CannonShellItem) {
+            if (this.entityData.get(COOL_DOWN) == 0 && this.stack.isEmpty()) {
+                this.stack = stack.copyWithCount(1);
+                if (!player.isCreative()) {
+                    stack.shrink(1);
+                }
+                if (player instanceof ServerPlayer serverPlayer) {
+                    SoundTool.playLocalSound(serverPlayer, ModSounds.CANNON_RELOAD.get(), 2, 1);
+                }
             }
             return InteractionResult.SUCCESS;
         }
