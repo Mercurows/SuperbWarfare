@@ -253,6 +253,10 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
         try {
             Vec3 launchVector = calculateLaunchVector(getEyePosition(), randomPos, 15, -shellGravity, entityData.get(DEPRESSED));
             this.look(randomPos);
+
+            if (launchVector == null) {
+                return false;
+            }
             float angle = (float) -getXRotFromVector(launchVector);
             if (angle < -30 || angle > 2.7) {
                 return false;
@@ -268,6 +272,10 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
         Vec3 randomPos = VectorTool.randomPos(new Vec3(entityData.get(TARGET_POS)), entityData.get(RADIUS));
         Vec3 launchVector = calculateLaunchVector(getEyePosition(), randomPos, 15, -shellGravity, entityData.get(DEPRESSED));
         this.look(randomPos);
+
+        if (launchVector == null) {
+            return;
+        }
         float angle = (float) -getXRotFromVector(launchVector);
         if (angle < -30 || angle > 2.7) {
             entityData.set(PITCH, angle);

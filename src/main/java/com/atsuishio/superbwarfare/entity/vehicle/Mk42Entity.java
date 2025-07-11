@@ -247,6 +247,10 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
         try {
             Vec3 launchVector = calculateLaunchVector(getEyePosition(), randomPos, 15, -shellGravity, entityData.get(DEPRESSED));
             this.look(randomPos);
+
+            if (launchVector == null) {
+                return false;
+            }
             float angle = (float) -getXRotFromVector(launchVector);
             if (angle < -85 || angle > 14.9) {
                 return false;
@@ -262,6 +266,10 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
         Vec3 randomPos = VectorTool.randomPos(new Vec3(entityData.get(TARGET_POS)), entityData.get(RADIUS));
         Vec3 launchVector = calculateLaunchVector(getEyePosition(), randomPos, 15, -shellGravity, entityData.get(DEPRESSED));
         this.look(randomPos);
+
+        if (launchVector == null) {
+            return;
+        }
         float angle = (float) -getXRotFromVector(launchVector);
         if (angle < -85 || angle > 14.9) {
             entityData.set(PITCH, angle);
@@ -276,7 +284,6 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
         double d2 = pTarget.z - shootPos.z;
         entityData.set(YAW, Mth.wrapDegrees((float) (Mth.atan2(d2, d0) * 57.2957763671875) - 90.0F));
     }
-
 
     @Override
     public DamageModifier getDamageModifier() {

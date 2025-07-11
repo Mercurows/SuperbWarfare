@@ -258,6 +258,10 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, Container 
         try {
             Vec3 launchVector = calculateLaunchVector(getEyePosition(), randomPos, 13, -0.11, entityData.get(DEPRESSED));
             this.look(randomPos);
+
+            if (launchVector == null) {
+                return false;
+            }
             float angle = (float) -getXRotFromVector(launchVector);
             if (angle < -89 || angle > -20) {
                 return false;
@@ -273,6 +277,10 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, Container 
         Vec3 randomPos = VectorTool.randomPos(new Vec3(entityData.get(TARGET_POS)), entityData.get(RADIUS));
         Vec3 launchVector = calculateLaunchVector(getEyePosition(), randomPos, 13, -0.11, entityData.get(DEPRESSED));
         this.look(randomPos);
+
+        if (launchVector == null) {
+            return;
+        }
         float angle = (float) -getXRotFromVector(launchVector);
         if (angle > -89 && angle < -20) {
             entityData.set(PITCH, angle);
