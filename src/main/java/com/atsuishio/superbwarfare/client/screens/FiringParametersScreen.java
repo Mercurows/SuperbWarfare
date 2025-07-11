@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.client.screens;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.component.ModDataComponents;
+import com.atsuishio.superbwarfare.network.message.send.FiringParametersEditMessage;
 import com.mojang.math.Axis;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.GameNarrator;
@@ -16,15 +17,15 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 
-// TODO 完成这个screen
 @OnlyIn(Dist.CLIENT)
 public class FiringParametersScreen extends Screen {
 
     private static final ResourceLocation TEXTURE = Mod.loc("textures/gui/firing_parameters.png");
 
-    private ItemStack stack;
+    private final ItemStack stack;
     private final InteractionHand hand;
 
     public EditBox posX;
@@ -33,6 +34,8 @@ public class FiringParametersScreen extends Screen {
     public EditBox radius;
 
     public boolean isDepressed;
+
+    private boolean init = false;
 
     protected int imageWidth = 94;
     protected int imageHeight = 126;
@@ -48,10 +51,34 @@ public class FiringParametersScreen extends Screen {
     }
 
     @Override
+    public void tick() {
+        super.tick();
+        if (!this.init) {
+            if (!this.stack.isEmpty()) {
+                var parameters = stack.get(ModDataComponents.FIRING_PARAMETERS);
+                if (parameters != null) {
+                    var pos = parameters.pos();
+
+                    this.posX.setValue("" + pos.getX());
+                    this.posY.setValue("" + pos.getY());
+                    this.posZ.setValue("" + pos.getZ());
+                    this.radius.setValue("" + Math.max(0, parameters.radius()));
+                } else {
+                    this.posX.setValue("0");
+                    this.posY.setValue("0");
+                    this.posZ.setValue("0");
+                    this.radius.setValue("0");
+                }
+            }
+            this.init = true;
+        }
+    }
+
+    @Override
     public void render(@NotNull GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
-        this.renderBackground(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
-        this.renderBg(pGuiGraphics, pMouseX, pMouseY);
+        // TODO 解决渲染问题
         super.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
+        this.renderBg(pGuiGraphics, pMouseX, pMouseY);
         this.renderPositions(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
     }
 
@@ -117,6 +144,7 @@ public class FiringParametersScreen extends Screen {
 
         this.radius = new EditBox(this.font, i + 41, j + 71, 40, 12, Component.empty());
         this.initEditBox(this.radius);
+        this.radius.setFilter(s -> s.matches("\\d*"));
     }
 
     protected void initEditBox(EditBox editBox) {
@@ -155,7 +183,7 @@ public class FiringParametersScreen extends Screen {
     }
 
     @OnlyIn(Dist.CLIENT)
-    static class DoneButton extends AbstractButton {
+    class DoneButton extends AbstractButton {
 
         public DoneButton(int pX, int pY, int pWidth, int pHeight) {
             super(pX, pY, pWidth, pHeight, Component.empty());
@@ -163,7 +191,20 @@ public class FiringParametersScreen extends Screen {
 
         @Override
         public void onPress() {
-
+            if (!FiringParametersScreen.this.init) return;
+            if (FiringParametersScreen.this.minecraft != null) {
+                FiringParametersScreen.this.minecraft.setScreen(null);
+            }
+            PacketDistributor.sendToServer(
+                    new FiringParametersEditMessage(
+                            getEditBoxValue(FiringParametersScreen.this.posX.getValue()),
+                            getEditBoxValue(FiringParametersScreen.this.posY.getValue()),
+                            getEditBoxValue(FiringParametersScreen.this.posZ.getValue()),
+                            Math.max(0, getEditBoxValue(FiringParametersScreen.this.radius.getValue())),
+                            FiringParametersScreen.this.isDepressed,
+                            FiringParametersScreen.this.hand == InteractionHand.MAIN_HAND
+                    )
+            );
         }
 
         @Override
@@ -175,6 +216,15 @@ public class FiringParametersScreen extends Screen {
 
         @Override
         protected void updateWidgetNarration(@NotNull NarrationElementOutput pNarrationElementOutput) {
+        }
+
+        public int getEditBoxValue(String value) {
+            if (value.equals("-")) return 0;
+            try {
+                return Integer.parseInt(value);
+            } catch (NumberFormatException e) {
+                return 0;
+            }
         }
     }
 }

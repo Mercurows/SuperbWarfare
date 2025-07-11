@@ -26,6 +26,7 @@ public class ModDataComponents {
             builder -> builder.persistent(RecordCodecBuilder.create(instance ->
                     instance.group(
                             BlockPos.CODEC.fieldOf("pos").forGetter(FiringParameters.Parameters::pos),
+                            Codec.INT.fieldOf("radius").forGetter(FiringParameters.Parameters::radius),
                             Codec.BOOL.fieldOf("is_depressed").forGetter(FiringParameters.Parameters::isDepressed)
                     ).apply(instance, FiringParameters.Parameters::new)
             ))

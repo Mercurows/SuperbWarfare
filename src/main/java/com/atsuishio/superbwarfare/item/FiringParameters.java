@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.item;
 
+import com.atsuishio.superbwarfare.client.TooltipTool;
 import com.atsuishio.superbwarfare.client.screens.FiringParametersScreen;
 import com.atsuishio.superbwarfare.component.ModDataComponents;
 import net.minecraft.ChatFormatting;
@@ -25,7 +26,14 @@ import java.util.List;
 
 public class FiringParameters extends Item implements ItemScreenProvider {
 
-    public record Parameters(BlockPos pos, boolean isDepressed) {
+    public record Parameters(BlockPos pos, int radius, boolean isDepressed) {
+        public Parameters(BlockPos pos, boolean isDepressed) {
+            this(pos, 0, isDepressed);
+        }
+
+        public Parameters(BlockPos pos) {
+            this(pos, 0, false);
+        }
     }
 
     public FiringParameters() {
@@ -69,22 +77,23 @@ public class FiringParameters extends Item implements ItemScreenProvider {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @NotNull TooltipContext context, @NotNull List<Component> tooltipComponents, @NotNull TooltipFlag tooltipFlag) {
+    public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NotNull List<Component> tooltipComponents, @NotNull TooltipFlag tooltipFlag) {
+        TooltipTool.addScreenProviderText(tooltipComponents);
+
         var parameters = stack.get(ModDataComponents.FIRING_PARAMETERS);
-        if (parameters == null) return;
+        var pos = new BlockPos(0, 0, 0);
+        var isDepressed = false;
+        if (parameters != null) {
+            pos = parameters.pos;
+            isDepressed = parameters.isDepressed;
+        }
 
-        var pos = parameters.pos();
-        tooltipComponents.add(Component.translatable("tips.superbwarfare.mortar.target_pos")
-                .withStyle(ChatFormatting.GRAY)
-                .append(Component.literal("["
-                        + pos.getX() + ","
-                        + pos.getY() + ","
-                        + pos.getZ() + "]")
-                )
-        );
-
+        tooltipComponents.add(Component.translatable("tips.superbwarfare.mortar.target_pos").withStyle(ChatFormatting.GRAY)
+                .append(Component.literal("[" + pos.getX()
+                        + ", " + pos.getY()
+                        + ", " + pos.getZ() + "]")));
         tooltipComponents.add(Component.translatable(
-                parameters.isDepressed
+                isDepressed
                         ? "tips.superbwarfare.mortar.target_pos.depressed_trajectory"
                         : "tips.superbwarfare.mortar.target_pos.lofted_trajectory"
         ).withStyle(ChatFormatting.GRAY));
