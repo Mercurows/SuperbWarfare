@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.client.screens;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.component.ModDataComponents;
 import com.mojang.math.Axis;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.GameNarrator;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractButton;
@@ -48,18 +49,10 @@ public class FiringParametersScreen extends Screen {
 
     @Override
     public void render(@NotNull GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
-        // TODO 正确渲染和处理按钮
-
-        // 弹道，背景模糊
+        this.renderBackground(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
+        this.renderBg(pGuiGraphics, pMouseX, pMouseY);
         super.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
-        // 背景模糊
-//        this.renderBackground(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
-
         this.renderPositions(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
-
-        // 背景图
-        this.renderBg(pGuiGraphics);
-
     }
 
     protected void renderPositions(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
@@ -80,10 +73,18 @@ public class FiringParametersScreen extends Screen {
         poseStack.popPose();
     }
 
-    protected void renderBg(GuiGraphics pGuiGraphics) {
+    protected void renderBg(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY) {
         int i = (this.width - this.imageWidth) / 2;
         int j = (this.height - this.imageHeight) / 2;
         pGuiGraphics.blit(TEXTURE, i, j, 0, 0, this.imageWidth, this.imageHeight, 140, 140);
+
+        if (pMouseX >= i + 12 && pMouseX <= i + 47 && pMouseY >= j + 89 && pMouseY <= j + 109) {
+            pGuiGraphics.renderTooltip(this.font,
+                    this.isDepressed ?
+                            Component.translatable("tips.superbwarfare.mortar.target_pos.depressed_trajectory").withStyle(ChatFormatting.WHITE) :
+                            Component.translatable("tips.superbwarfare.mortar.target_pos.lofted_trajectory").withStyle(ChatFormatting.WHITE),
+                    pMouseX, pMouseY);
+        }
     }
 
     @Override
