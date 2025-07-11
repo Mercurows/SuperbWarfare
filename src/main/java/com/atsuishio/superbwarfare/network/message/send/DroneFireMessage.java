@@ -76,12 +76,12 @@ public class DroneFireMessage {
                                         }
                                     }
                                     if (entity instanceof Mk42Entity mk42Entity) {
-                                        if (!mk42Entity.setTarget(offStack, true)) {
+                                        if (!mk42Entity.setTarget(offStack)) {
                                             player.displayClientMessage(Component.translatable("tips.superbwarfare.mk_42.warn").withStyle(ChatFormatting.RED), true);
                                         }
                                     }
                                     if (entity instanceof Mle1934Entity mle1934Entity) {
-                                        if (!mle1934Entity.setTarget(offStack, true)) {
+                                        if (!mle1934Entity.setTarget(offStack)) {
                                             player.displayClientMessage(Component.translatable("tips.superbwarfare.mle_1934.warn").withStyle(ChatFormatting.RED), true);
                                         }
                                     }
