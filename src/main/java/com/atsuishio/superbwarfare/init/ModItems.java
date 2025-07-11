@@ -208,6 +208,8 @@ public class ModItems {
     public static final Materials CEMENTED_CARBIDE_MATERIALS = registerMaterials("cemented_carbide");
     public static final Materials NETHERITE_MATERIALS = registerMaterials("netherite");
 
+    public static final DeferredHolder<Item, StickWooden> STICK_WOODEN = ITEMS.register("stick_wooden", () -> new StickWooden(new Item.Properties()));
+
     public static final DeferredHolder<Item, MaterialPack> COMMON_MATERIAL_PACK = ITEMS.register("common_material_pack", () -> new MaterialPack(Rarity.COMMON));
     public static final DeferredHolder<Item, MaterialPack> RARE_MATERIAL_PACK = ITEMS.register("rare_material_pack", () -> new MaterialPack(Rarity.RARE));
     public static final DeferredHolder<Item, MaterialPack> EPIC_MATERIAL_PACK = ITEMS.register("epic_material_pack", () -> new MaterialPack(Rarity.EPIC));
