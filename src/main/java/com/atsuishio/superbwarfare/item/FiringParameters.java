@@ -70,8 +70,10 @@ public class FiringParameters extends Item implements ItemScreenProvider {
         TooltipTool.addScreenProviderText(pTooltipComponents);
         pTooltipComponents.add(Component.translatable("tips.superbwarfare.mortar.target_pos").withStyle(ChatFormatting.GRAY)
                 .append(Component.literal("[" + pStack.getOrCreateTag().getInt("TargetX")
-                        + "," + pStack.getOrCreateTag().getInt("TargetY")
-                        + "," + pStack.getOrCreateTag().getInt("TargetZ") + "]")));
+                        + ", " + pStack.getOrCreateTag().getInt("TargetY")
+                        + ", " + pStack.getOrCreateTag().getInt("TargetZ") + "]")));
+        pTooltipComponents.add(Component.translatable("tips.superbwarfare.mortar.target_pos.radius",
+                pStack.getOrCreateTag().getInt("Radius")).withStyle(ChatFormatting.GRAY));
         pTooltipComponents.add(Component.translatable(
                 pStack.getOrCreateTag().getBoolean("IsDepressed")
                         ? "tips.superbwarfare.mortar.target_pos.depressed_trajectory"
