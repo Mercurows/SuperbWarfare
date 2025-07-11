@@ -14,6 +14,7 @@ import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
+import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.ArtilleryIndicator;
 import com.atsuishio.superbwarfare.item.common.ammo.CannonShellItem;
 import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage;
@@ -48,6 +49,7 @@ import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.event.EventHooks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -158,11 +160,25 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
             }
         }
 
-        if (stack.getItem() instanceof CannonShellItem) {
-            if (this.entityData.get(COOL_DOWN) == 0) {
-                var weaponType = stack.is(ModItems.AP_5_INCHES.get()) ? 0 : 1;
+        if (stack.is(ModTags.Items.CROWBAR) && !player.isShiftKeyDown()) {
+            if (this.stack.getItem() instanceof CannonShellItem) {
+                var weaponType = this.stack.is(ModItems.AP_5_INCHES.get()) ? 0 : 1;
                 setWeaponIndex(0, weaponType);
                 vehicleShoot(player, 0);
+            }
+            return InteractionResult.SUCCESS;
+        }
+
+        if (stack.getItem() instanceof CannonShellItem) {
+            var itemHandler = this.getCapability(Capabilities.ItemHandler.ENTITY);
+            if (itemHandler != null && this.entityData.get(COOL_DOWN) == 0 && (stack.getItem() == this.stack.getItem() || this.stack.isEmpty())) {
+                itemHandler.insertItem(0, stack.copyWithCount(1), false);
+                if (!player.isCreative()) {
+                    stack.shrink(1);
+                }
+                if (player instanceof ServerPlayer serverPlayer) {
+                    SoundTool.playLocalSound(serverPlayer, ModSounds.CANNON_RELOAD.get(), 2, 1);
+                }
             }
             return InteractionResult.SUCCESS;
         }
