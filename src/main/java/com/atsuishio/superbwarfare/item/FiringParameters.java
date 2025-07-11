@@ -82,9 +82,11 @@ public class FiringParameters extends Item implements ItemScreenProvider {
 
         var parameters = stack.get(ModDataComponents.FIRING_PARAMETERS);
         var pos = new BlockPos(0, 0, 0);
+        var radius = 0;
         var isDepressed = false;
         if (parameters != null) {
             pos = parameters.pos;
+            radius = parameters.radius;
             isDepressed = parameters.isDepressed;
         }
 
@@ -92,6 +94,7 @@ public class FiringParameters extends Item implements ItemScreenProvider {
                 .append(Component.literal("[" + pos.getX()
                         + ", " + pos.getY()
                         + ", " + pos.getZ() + "]")));
+        tooltipComponents.add(Component.translatable("tips.superbwarfare.mortar.target_pos.radius", radius).withStyle(ChatFormatting.GRAY));
         tooltipComponents.add(Component.translatable(
                 isDepressed
                         ? "tips.superbwarfare.mortar.target_pos.depressed_trajectory"

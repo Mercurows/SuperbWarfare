@@ -574,6 +574,7 @@
   "tips.superbwarfare.mortar.yaw": "Yaw: ",
   "tips.superbwarfare.mortar.pitch": "Pitch: ",
   "tips.superbwarfare.mortar.target_pos": "Target Position: ",
+  "tips.superbwarfare.mortar.target_pos.radius": "Hit Radius: %1$s",
   "tips.superbwarfare.mortar.target_pos.depressed_trajectory": "Depressed Trajectory",
   "tips.superbwarfare.mortar.target_pos.lofted_trajectory": "Lofted Trajectory",
   "tips.superbwarfare.mortar.warn": "This mortar cannot aim at this position",
