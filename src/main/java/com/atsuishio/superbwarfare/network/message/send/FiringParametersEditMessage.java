@@ -45,7 +45,7 @@ public class FiringParametersEditMessage {
             if (serverPlayer == null) return;
 
             ItemStack stack = message.mainHand ? serverPlayer.getMainHandItem() : serverPlayer.getOffhandItem();
-            if (!stack.is(ModItems.FIRING_PARAMETERS.get())) return;
+            if (!stack.is(ModItems.FIRING_PARAMETERS.get()) || !stack.is(ModItems.ARTILLERY_INDICATOR.get())) return;
 
             stack.getOrCreateTag().putInt("TargetX", message.posX);
             stack.getOrCreateTag().putInt("TargetY", message.posY);

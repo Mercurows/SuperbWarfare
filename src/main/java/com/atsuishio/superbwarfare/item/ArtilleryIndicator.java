@@ -1,30 +1,39 @@
 package com.atsuishio.superbwarfare.item;
 
+import com.atsuishio.superbwarfare.client.TooltipTool;
+import com.atsuishio.superbwarfare.client.screens.ArtilleryIndicatorScreen;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Rarity;
-import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ArtilleryIndicator extends Item {
+public class ArtilleryIndicator extends Item implements ItemScreenProvider {
 
     public static final String TAG_CANNON = "Cannons";
 
     public ArtilleryIndicator() {
         super(new Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
+    }
+
+    @Override
+    public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, List<Component> pTooltipComponents, TooltipFlag pIsAdvanced) {
+        TooltipTool.addScreenProviderText(pTooltipComponents);
     }
 
     @Override
@@ -102,37 +111,9 @@ public class ArtilleryIndicator extends Item {
         return flag;
     }
 
-//    @Override
-//    @ParametersAreNonnullByDefault
-//    public @NotNull InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand usedHand) {
-//        if (!player.isCrouching()) return InteractionResultHolder.pass(player.getItemInHand(usedHand));
-//
-//        var stack = player.getItemInHand(usedHand);
-//        var isDepressed = !stack.getOrCreateTag().getBoolean("IsDepressed");
-//
-//        stack.getOrCreateTag().putBoolean("IsDepressed", isDepressed);
-//
-//        player.displayClientMessage(Component.translatable(
-//                isDepressed
-//                        ? "tips.superbwarfare.mortar.target_pos.depressed_trajectory"
-//                        : "tips.superbwarfare.mortar.target_pos.lofted_trajectory"
-//        ).withStyle(ChatFormatting.GREEN), true);
-//
-//        return InteractionResultHolder.success(stack);
-//    }
-//
-//    @Override
-//    public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, List<Component> pTooltipComponents, TooltipFlag pIsAdvanced) {
-//        pTooltipComponents.add(Component.translatable("tips.superbwarfare.mortar.target_pos").withStyle(ChatFormatting.GRAY)
-//                .append(Component.literal("[" + pStack.getOrCreateTag().getInt("TargetX")
-//                        + "," + pStack.getOrCreateTag().getInt("TargetY")
-//                        + "," + pStack.getOrCreateTag().getInt("TargetZ") + "]")));
-//
-//
-//        pTooltipComponents.add(Component.translatable(
-//                pStack.getOrCreateTag().getBoolean("IsDepressed")
-//                        ? "tips.superbwarfare.mortar.target_pos.depressed_trajectory"
-//                        : "tips.superbwarfare.mortar.target_pos.lofted_trajectory"
-//        ).withStyle(ChatFormatting.GRAY));
-//    }
+    @OnlyIn(Dist.CLIENT)
+    @Override
+    public @Nullable Screen getItemScreen(ItemStack stack, Player player, InteractionHand hand) {
+        return new ArtilleryIndicatorScreen(stack, hand);
+    }
 }
