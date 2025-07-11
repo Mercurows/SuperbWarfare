@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.item;
 
+import com.atsuishio.superbwarfare.client.TooltipTool;
 import com.atsuishio.superbwarfare.client.screens.FiringParametersScreen;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
@@ -66,12 +67,11 @@ public class FiringParameters extends Item implements ItemScreenProvider {
 
     @Override
     public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, List<Component> pTooltipComponents, TooltipFlag pIsAdvanced) {
+        TooltipTool.addScreenProviderText(pTooltipComponents);
         pTooltipComponents.add(Component.translatable("tips.superbwarfare.mortar.target_pos").withStyle(ChatFormatting.GRAY)
                 .append(Component.literal("[" + pStack.getOrCreateTag().getInt("TargetX")
                         + "," + pStack.getOrCreateTag().getInt("TargetY")
                         + "," + pStack.getOrCreateTag().getInt("TargetZ") + "]")));
-
-
         pTooltipComponents.add(Component.translatable(
                 pStack.getOrCreateTag().getBoolean("IsDepressed")
                         ? "tips.superbwarfare.mortar.target_pos.depressed_trajectory"
