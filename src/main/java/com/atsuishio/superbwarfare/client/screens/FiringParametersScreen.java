@@ -9,6 +9,7 @@ import net.minecraft.client.GameNarrator;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -76,9 +77,11 @@ public class FiringParametersScreen extends Screen {
 
     @Override
     public void render(@NotNull GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
-        // TODO 解决渲染问题
-        super.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
+        this.renderBackground(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
         this.renderBg(pGuiGraphics, pMouseX, pMouseY);
+        for (Renderable renderable : this.renderables) {
+            renderable.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
+        }
         this.renderPositions(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
     }
 
