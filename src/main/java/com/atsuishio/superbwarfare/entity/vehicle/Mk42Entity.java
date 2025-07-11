@@ -18,10 +18,7 @@ import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.ArtilleryIndicator;
 import com.atsuishio.superbwarfare.item.common.ammo.CannonShellItem;
 import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage;
-import com.atsuishio.superbwarfare.tools.CustomExplosion;
-import com.atsuishio.superbwarfare.tools.InventoryTool;
-import com.atsuishio.superbwarfare.tools.ParticleTool;
-import com.atsuishio.superbwarfare.tools.SoundTool;
+import com.atsuishio.superbwarfare.tools.*;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -54,6 +51,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Math;
 import org.joml.Matrix4f;
+import org.joml.Vector3f;
 import org.joml.Vector4f;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
@@ -69,6 +67,10 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
     public static final EntityDataAccessor<Float> PITCH = SynchedEntityData.defineId(Mk42Entity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Float> YAW = SynchedEntityData.defineId(Mk42Entity.class, EntityDataSerializers.FLOAT);
 
+    public static final EntityDataAccessor<Boolean> DEPRESSED = SynchedEntityData.defineId(Mk42Entity.class, EntityDataSerializers.BOOLEAN);
+    public static final EntityDataAccessor<Vector3f> TARGET_POS = SynchedEntityData.defineId(Mk42Entity.class, EntityDataSerializers.VECTOR3);
+    public static final EntityDataAccessor<Integer> RADIUS = SynchedEntityData.defineId(Mk42Entity.class, EntityDataSerializers.INT);
+
     private final float shellGravity = 0.1f;
 
     public Mk42Entity(EntityType<Mk42Entity> type, Level world) {
@@ -83,7 +85,11 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
         super.defineSynchedData(builder);
         builder.define(COOL_DOWN, 0)
                 .define(PITCH, 0F)
-                .define(YAW, 0F);
+                .define(YAW, 0F)
+
+                .define(DEPRESSED, false)
+                .define(TARGET_POS, new Vector3f())
+                .define(RADIUS, 0);
     }
 
     @Override
@@ -123,6 +129,12 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
         compound.putInt("CoolDown", this.entityData.get(COOL_DOWN));
         compound.putFloat("Pitch", this.entityData.get(PITCH));
         compound.putFloat("Yaw", this.entityData.get(YAW));
+
+        compound.putBoolean("Depressed", this.entityData.get(DEPRESSED));
+        compound.putInt("Radius", this.entityData.get(RADIUS));
+        compound.putFloat("TargetX", this.entityData.get(TARGET_POS).x);
+        compound.putFloat("TargetY", this.entityData.get(TARGET_POS).y);
+        compound.putFloat("TargetZ", this.entityData.get(TARGET_POS).z);
     }
 
     @Override
@@ -131,6 +143,16 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
         this.entityData.set(COOL_DOWN, compound.getInt("CoolDown"));
         this.entityData.set(PITCH, compound.getFloat("Pitch"));
         this.entityData.set(YAW, compound.getFloat("Yaw"));
+
+        if (compound.contains("Depressed")) {
+            this.entityData.set(DEPRESSED, compound.getBoolean("Depressed"));
+        }
+        if (compound.contains("Radius")) {
+            this.entityData.set(RADIUS, compound.getInt("Radius"));
+        }
+        if (compound.contains("TargetX") && compound.contains("TargetY") && compound.contains("TargetZ")) {
+            this.entityData.set(TARGET_POS, new Vector3f(compound.getFloat("TargetX"), compound.getFloat("TargetX"), compound.getFloat("TargetZ")));
+        }
     }
 
     @Override
@@ -211,11 +233,16 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
         Matrix4f transform = getVehicleFlatTransform(1);
         Vector4f worldPosition = transformPosition(transform, 0f, 2.16f, 0.5175f);
         Vec3 shootPos = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
+        double adjust = -1 + 0.004 * new Vec3(targetX, targetY, targetZ).distanceTo(shootPos);
+
+        entityData.set(TARGET_POS, new Vector3f((float) targetX, (float) (targetY - adjust), (float) targetZ));
+        entityData.set(DEPRESSED, isDepressed);
+        entityData.set(RADIUS, parameters.radius());
+        Vec3 randomPos = VectorTool.randomPos(new Vec3(entityData.get(TARGET_POS)), entityData.get(RADIUS));
 
         try {
-            double adjust = -1 + 0.004 * new Vec3(targetX, targetY, targetZ).distanceTo(shootPos);
-            Vec3 launchVector = calculateLaunchVector(shootPos, new Vec3(targetX, targetY - adjust, targetZ), 15, -shellGravity, isDepressed);
-            this.look(new Vec3(targetX, targetY, targetZ));
+            Vec3 launchVector = calculateLaunchVector(getEyePosition(), randomPos, 15, -shellGravity, entityData.get(DEPRESSED));
+            this.look(randomPos);
             float angle = (float) -getXRotFromVector(launchVector);
             if (angle < -85 || angle > 14.9) {
                 return false;
@@ -227,34 +254,14 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
         return true;
     }
 
-    //TODO 指示器能选择弹道后删掉这个
-
-    public boolean setTarget(ItemStack stack, boolean isDepressed) {
-        var parameters = stack.get(ModDataComponents.FIRING_PARAMETERS);
-        if (parameters == null) return false;
-
-        var pos = parameters.pos();
-        double targetX = pos.getX();
-        double targetY = pos.getY();
-        double targetZ = pos.getZ();
-
-        Matrix4f transform = getVehicleFlatTransform(1);
-        Vector4f worldPosition = transformPosition(transform, 0f, 2.16f, 0.5175f);
-        Vec3 shootPos = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
-
-        try {
-            double adjust = -1 + 0.004 * new Vec3(targetX, targetY, targetZ).distanceTo(shootPos);
-            Vec3 launchVector = calculateLaunchVector(shootPos, new Vec3(targetX, targetY - adjust, targetZ), 15, -shellGravity, isDepressed);
-            this.look(new Vec3(targetX, targetY, targetZ));
-            float angle = (float) -getXRotFromVector(launchVector);
-            if (angle < -85 || angle > 14.9) {
-                return false;
-            }
+    public void resetTarget() {
+        Vec3 randomPos = VectorTool.randomPos(new Vec3(entityData.get(TARGET_POS)), entityData.get(RADIUS));
+        Vec3 launchVector = calculateLaunchVector(getEyePosition(), randomPos, 15, -shellGravity, entityData.get(DEPRESSED));
+        this.look(randomPos);
+        float angle = (float) -getXRotFromVector(launchVector);
+        if (angle < -85 || angle > 14.9) {
             entityData.set(PITCH, angle);
-        } catch (Exception e) {
-            return false;
         }
-        return true;
     }
 
     private void look(Vec3 pTarget) {
@@ -425,6 +432,8 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
             }
 
             ShakeClientMessage.sendToNearbyPlayers(this, 20, 15, 15, 45);
+
+            resetTarget();
         }
     }
 

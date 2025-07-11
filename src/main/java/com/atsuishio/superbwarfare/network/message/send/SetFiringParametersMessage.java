@@ -101,12 +101,12 @@ public enum SetFiringParametersMessage implements CustomPacketPayload {
                     }
                 }
                 if (entity instanceof Mk42Entity mk42Entity) {
-                    if (!mk42Entity.setTarget(mainStack, true)) {
+                    if (!mk42Entity.setTarget(mainStack)) {
                         player.displayClientMessage(Component.translatable("tips.superbwarfare.mk_42.warn").withStyle(ChatFormatting.RED), true);
                     }
                 }
                 if (entity instanceof Mle1934Entity mle1934Entity) {
-                    if (!mle1934Entity.setTarget(mainStack, true)) {
+                    if (!mle1934Entity.setTarget(mainStack)) {
                         player.displayClientMessage(Component.translatable("tips.superbwarfare.mle_1934.warn").withStyle(ChatFormatting.RED), true);
                     }
                 }

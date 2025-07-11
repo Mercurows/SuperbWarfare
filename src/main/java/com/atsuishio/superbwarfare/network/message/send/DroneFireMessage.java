@@ -67,6 +67,7 @@ public record DroneFireMessage(Vector3f pos) implements CustomPacketPayload {
                     SoundTool.playLocalSound(player, ModSounds.CANNON_ZOOM_IN.get(), 2, 1);
 
                     if (offStack.is(ModItems.ARTILLERY_INDICATOR.get())) {
+
                         ListTag tags = NBTTool.getTag(offStack).getList(TAG_CANNON, Tag.TAG_COMPOUND);
                         for (int i = 0; i < tags.size(); i++) {
                             var tag = tags.getCompound(i);
@@ -77,12 +78,12 @@ public record DroneFireMessage(Vector3f pos) implements CustomPacketPayload {
                                 }
                             }
                             if (entity instanceof Mk42Entity mk42Entity) {
-                                if (!mk42Entity.setTarget(offStack, true)) {
+                                if (!mk42Entity.setTarget(offStack)) {
                                     player.displayClientMessage(Component.translatable("tips.superbwarfare.mk_42.warn").withStyle(ChatFormatting.RED), true);
                                 }
                             }
                             if (entity instanceof Mle1934Entity mle1934Entity) {
-                                if (!mle1934Entity.setTarget(offStack, true)) {
+                                if (!mle1934Entity.setTarget(offStack)) {
                                     player.displayClientMessage(Component.translatable("tips.superbwarfare.mle_1934.warn").withStyle(ChatFormatting.RED), true);
                                 }
                             }

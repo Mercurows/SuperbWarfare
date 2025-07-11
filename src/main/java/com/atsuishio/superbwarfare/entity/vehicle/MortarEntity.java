@@ -10,6 +10,7 @@ import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.ArtilleryIndicator;
 import com.atsuishio.superbwarfare.item.Monitor;
 import com.atsuishio.superbwarfare.item.common.ammo.MortarShell;
+import com.atsuishio.superbwarfare.tools.VectorTool;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.particles.ParticleTypes;
@@ -38,6 +39,7 @@ import net.neoforged.neoforge.items.ItemHandlerHelper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Math;
+import org.joml.Vector3f;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.*;
@@ -46,11 +48,14 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 import static com.atsuishio.superbwarfare.tools.RangeTool.calculateLaunchVector;
 
 public class MortarEntity extends VehicleEntity implements GeoEntity, Container {
-
     public static final EntityDataAccessor<Integer> FIRE_TIME = SynchedEntityData.defineId(MortarEntity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Float> PITCH = SynchedEntityData.defineId(MortarEntity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Float> YAW = SynchedEntityData.defineId(MortarEntity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Boolean> INTELLIGENT = SynchedEntityData.defineId(MortarEntity.class, EntityDataSerializers.BOOLEAN);
+
+    public static final EntityDataAccessor<Boolean> DEPRESSED = SynchedEntityData.defineId(MortarEntity.class, EntityDataSerializers.BOOLEAN);
+    public static final EntityDataAccessor<Vector3f> TARGET_POS = SynchedEntityData.defineId(MortarEntity.class, EntityDataSerializers.VECTOR3);
+    public static final EntityDataAccessor<Integer> RADIUS = SynchedEntityData.defineId(MortarEntity.class, EntityDataSerializers.INT);
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
@@ -78,7 +83,13 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, Container 
         builder.define(FIRE_TIME, 0)
                 .define(PITCH, -70f)
                 .define(YAW, this.getYRot())
-                .define(INTELLIGENT, false);
+
+                .define(DEPRESSED, false)
+                .define(INTELLIGENT, false)
+                .define(TARGET_POS, new Vector3f())
+                .define(RADIUS, 0);
+
+
     }
 
     @Override
@@ -92,6 +103,12 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, Container 
         compound.putFloat("Pitch", this.entityData.get(PITCH));
         compound.putFloat("Yaw", this.entityData.get(YAW));
         compound.putBoolean("Intelligent", this.entityData.get(INTELLIGENT));
+
+        compound.putBoolean("Depressed", this.entityData.get(DEPRESSED));
+        compound.putInt("Radius", this.entityData.get(RADIUS));
+        compound.putFloat("TargetX", this.entityData.get(TARGET_POS).x);
+        compound.putFloat("TargetY", this.entityData.get(TARGET_POS).y);
+        compound.putFloat("TargetZ", this.entityData.get(TARGET_POS).z);
     }
 
     @Override
@@ -106,10 +123,21 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, Container 
         if (compound.contains("Intelligent")) {
             this.entityData.set(INTELLIGENT, compound.getBoolean("Intelligent"));
         }
+
+        if (compound.contains("Depressed")) {
+            this.entityData.set(DEPRESSED, compound.getBoolean("Depressed"));
+        }
+        if (compound.contains("Radius")) {
+            this.entityData.set(RADIUS, compound.getInt("Radius"));
+        }
+        if (compound.contains("TargetX") && compound.contains("TargetY") && compound.contains("TargetZ")) {
+            this.entityData.set(TARGET_POS, new Vector3f(compound.getFloat("TargetX"), compound.getFloat("TargetX"), compound.getFloat("TargetZ")));
+        }
     }
 
     public void fire(@Nullable LivingEntity shooter) {
         if (!(this.stack.getItem() instanceof MortarShell)) return;
+        if (entityData.get(FIRE_TIME) != 0) return;
 
         this.shooter = shooter;
         this.entityData.set(FIRE_TIME, 25);
@@ -154,7 +182,7 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, Container 
         }
 
         if (mainHandItem.is(ModTags.Items.CROWBAR) && !player.isShiftKeyDown()) {
-            if (this.stack.getItem() instanceof MortarShell) {
+            if (this.stack.getItem() instanceof MortarShell && this.entityData.get(FIRE_TIME) == 0) {
                 fire(player);
             }
             return InteractionResult.SUCCESS;
@@ -212,9 +240,14 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, Container 
         double targetZ = pos.getZ();
         var isDepressed = parameters.isDepressed();
 
+        entityData.set(TARGET_POS, new Vector3f((float) targetX, (float) targetY, (float) targetZ));
+        entityData.set(DEPRESSED, isDepressed);
+        entityData.set(RADIUS, parameters.radius());
+        Vec3 randomPos = VectorTool.randomPos(new Vec3(entityData.get(TARGET_POS)), entityData.get(RADIUS));
+
         try {
-            Vec3 launchVector = calculateLaunchVector(getEyePosition(), new Vec3(targetX, targetY - 1, targetZ), 13, -0.11, isDepressed);
-            this.look(new Vec3(targetX, targetY, targetZ));
+            Vec3 launchVector = calculateLaunchVector(getEyePosition(), randomPos, 13, -0.11, entityData.get(DEPRESSED));
+            this.look(randomPos);
             float angle = (float) -getXRotFromVector(launchVector);
             if (angle < -89 || angle > -20) {
                 return false;
@@ -223,9 +256,19 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, Container 
         } catch (Exception e) {
             return false;
         }
-
         return true;
     }
+
+    public void resetTarget() {
+        Vec3 randomPos = VectorTool.randomPos(new Vec3(entityData.get(TARGET_POS)), entityData.get(RADIUS));
+        Vec3 launchVector = calculateLaunchVector(getEyePosition(), randomPos, 13, -0.11, entityData.get(DEPRESSED));
+        this.look(randomPos);
+        float angle = (float) -getXRotFromVector(launchVector);
+        if (angle > -89 && angle < -20) {
+            entityData.set(PITCH, angle);
+        }
+    }
+
 
     private void look(Vec3 pTarget) {
         Vec3 vec3 = EntityAnchorArgument.Anchor.EYES.apply(this);
@@ -252,13 +295,14 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, Container 
             if (level instanceof ServerLevel server) {
                 MortarShellEntity entityToSpawn = MortarShell.createShell(shooter, level, this.stack);
                 entityToSpawn.setPos(this.getX(), this.getEyeY(), this.getZ());
-                entityToSpawn.shoot(this.getLookAngle().x, this.getLookAngle().y, this.getLookAngle().z, 13f, (float) 0.4);
+                entityToSpawn.shoot(this.getLookAngle().x, this.getLookAngle().y, this.getLookAngle().z, 13f, (float) 0.1);
                 level.addFreshEntity(entityToSpawn);
                 server.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, (this.getX() + 3 * this.getLookAngle().x), (this.getY() + 0.1 + 3 * this.getLookAngle().y), (this.getZ() + 3 * this.getLookAngle().z), 8, 0.4, 0.4, 0.4,
                         0.007);
                 server.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, this.getX(), this.getY(), this.getZ(), 50, 2, 0.02, 2, 0.0005);
 
                 this.stack = ItemStack.EMPTY;
+                resetTarget();
             }
         }
 
