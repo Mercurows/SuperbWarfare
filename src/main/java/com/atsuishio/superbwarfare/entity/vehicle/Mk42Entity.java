@@ -243,6 +243,10 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
         try {
             Vec3 launchVector = calculateLaunchVector(getEyePosition(), randomPos, 15, -shellGravity, entityData.get(DEPRESSED));
             this.look(randomPos);
+
+            if (launchVector == null) {
+                return false;
+            }
             float angle = (float) -getXRotFromVector(launchVector);
             if (angle < -85 || angle > 14.9) {
                 return false;
@@ -258,6 +262,10 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
         Vec3 randomPos = VectorTool.randomPos(new Vec3(entityData.get(TARGET_POS)), entityData.get(RADIUS));
         Vec3 launchVector = calculateLaunchVector(getEyePosition(), randomPos, 15, -shellGravity, entityData.get(DEPRESSED));
         this.look(randomPos);
+
+        if (launchVector == null) {
+            return;
+        }
         float angle = (float) -getXRotFromVector(launchVector);
         if (angle < -85 || angle > 14.9) {
             entityData.set(PITCH, angle);

@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.tools;
 
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,7 +23,7 @@ public class RangeTool {
     }
 
     // 谢谢DeepSeek
-
+    @Nullable
     public static Vec3 calculateLaunchVector(Vec3 pos, Vec3 pos2, double velocity, double g, boolean isDepressed) {
         double dx = pos2.x - pos.x;
         double dy = pos2.y - pos.y;
@@ -34,6 +35,7 @@ public class RangeTool {
         double c = horizontalDistSq + dy * dy;
 
         List<Double> validT = getDoubles(b, a, c);
+        if (validT.isEmpty()) return null;
 
         double t;
 
@@ -53,7 +55,7 @@ public class RangeTool {
     private static List<Double> getDoubles(double b, double a, double c) {
         double discriminant = b * b - 4 * a * c;
         if (discriminant < 0) {
-            throw new IllegalStateException("No valid trajectory: Increase velocity or adjust target");
+            return List.of();
         }
 
         double sqrtDisc = Math.sqrt(discriminant);
@@ -64,34 +66,32 @@ public class RangeTool {
         if (u1 > 0) validT.add(Math.sqrt(u1));
         if (u2 > 0) validT.add(Math.sqrt(u2));
 
-        if (validT.isEmpty()) {
-            throw new IllegalStateException("No positive real solution for flight time");
-        }
         return validT;
     }
+
     private static final double TOLERANCE = 1e-3; // 牛顿迭代法的容差
     private static final int MAX_ITERATIONS = 50; // 最大迭代次数
 
     /**
      * 计算炮弹发射向量
-     * @param launchPos 炮弹发射位置 (Vec3)
-     * @param targetPos 目标当前位置 (Vec3)
-     * @param targetVel 目标速度向量 (Vec3，单位：方块/tick)
+     *
+     * @param launchPos      炮弹发射位置 (Vec3)
+     * @param targetPos      目标当前位置 (Vec3)
+     * @param targetVel      目标速度向量 (Vec3，单位：方块/tick)
      * @param muzzleVelocity 炮弹出膛速度 (标量，单位：方块/tick)
      * @return 炮弹的发射向量 (Vec3)，若无法击中则返回预测值
      */
     public static Vec3 calculateFiringSolution(Vec3 launchPos, Vec3 targetPos, Vec3 targetVel, double muzzleVelocity, double gravity) {
         Vec3 d0 = targetPos.subtract(launchPos); // 位置差向量
-        double D = d0.lengthSqr(); // |d0|²
-        double E = d0.dot(targetVel); // d0 · u
-        double F = targetVel.lengthSqr(); // |u|²
+        double dSqr = d0.lengthSqr(); // |d0|²
+        double dot = d0.dot(targetVel); // d0 · u
+        double absSqr = targetVel.lengthSqr(); // |u|²
 
         // 计算四次方程的系数
         double a = 0.25 * gravity * gravity;
         double b = gravity * targetVel.y;
-        double c = F + gravity * d0.y - muzzleVelocity * muzzleVelocity;
-        double d = 2 * E;
-        double e = D;
+        double c = absSqr + gravity * d0.y - muzzleVelocity * muzzleVelocity;
+        double d = 2 * dot;
 
         // 牛顿迭代法求解时间 t
         double t = estimateInitialTime(d0, muzzleVelocity); // 初始估计值
@@ -103,7 +103,7 @@ public class RangeTool {
             double t4 = t3 * t;
 
             // 计算函数值 f(t) = a*t⁴ + b*t³ + c*t² + d*t + e
-            double f = a * t4 + b * t3 + c * t2 + d * t + e;
+            double f = a * t4 + b * t3 + c * t2 + d * t + dSqr;
             if (Math.abs(f) < TOLERANCE) break;
 
             // 计算导数值 f'(t) = 4a*t³ + 3b*t² + 2c*t + d
@@ -121,7 +121,7 @@ public class RangeTool {
         }
 
         // 检查解的有效性
-        if (t > 0 && !Double.isNaN(t)) {
+        if (t > 0) {
             double invT = 1.0 / t;
             // 计算速度分量
             double vx = d0.x * invT + targetVel.x;
@@ -130,7 +130,7 @@ public class RangeTool {
             return new Vec3(vx, vy, vz);
         } else {
             // 备选方案：线性预测目标位置
-            double fallbackT = Math.sqrt(D) / muzzleVelocity;
+            double fallbackT = Math.sqrt(dSqr) / muzzleVelocity;
             Vec3 predictedPos = targetPos.add(targetVel.scale(fallbackT));
             Vec3 toPredicted = predictedPos.subtract(launchPos);
             double vy = (toPredicted.y + 0.5 * gravity * fallbackT * fallbackT) / fallbackT;
@@ -148,5 +148,4 @@ public class RangeTool {
     private static double estimateInitialTime(Vec3 d0, double velocity) {
         return d0.length() / velocity;
     }
-
 }
