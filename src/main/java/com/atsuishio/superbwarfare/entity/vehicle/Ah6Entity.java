@@ -9,8 +9,8 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.HelicopterEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
-import com.atsuishio.superbwarfare.entity.vehicle.weapon.HeliRocketWeapon;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.SmallCannonShellWeapon;
+import com.atsuishio.superbwarfare.entity.vehicle.weapon.SmallRocketWeapon;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.VehicleWeapon;
 import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.init.*;
@@ -109,13 +109,13 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
                                 .sound3p(ModSounds.HELICOPTER_CANNON_FIRE_3P.get())
                                 .sound3pFar(ModSounds.HELICOPTER_CANNON_FAR.get())
                                 .sound3pVeryFar(ModSounds.HELICOPTER_CANNON_VERYFAR.get()),
-                        new HeliRocketWeapon()
+                        new SmallRocketWeapon()
                                 .damage(VehicleConfig.AH_6_ROCKET_DAMAGE.get().floatValue())
                                 .explosionDamage(VehicleConfig.AH_6_ROCKET_EXPLOSION_DAMAGE.get().floatValue())
                                 .explosionRadius(VehicleConfig.AH_6_ROCKET_EXPLOSION_RADIUS.get().floatValue())
                                 .sound(ModSounds.INTO_MISSILE.get())
-                                .sound1p(ModSounds.HELICOPTER_ROCKET_FIRE_1P.get())
-                                .sound3p(ModSounds.HELICOPTER_ROCKET_FIRE_3P.get()),
+                                .sound1p(ModSounds.SMALL_ROCKET_FIRE_1P.get())
+                                .sound3p(ModSounds.SMALL_ROCKET_FIRE_3P.get()),
                 }
         };
     }
@@ -162,7 +162,7 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
     @Override
     public @NotNull InteractionResult interact(Player player, @NotNull InteractionHand hand) {
         ItemStack stack = player.getMainHandItem();
-        if (stack.getItem() == ModItems.ROCKET_70.get() && this.entityData.get(LOADED_ROCKET) < 14) {
+        if (stack.getItem() == ModItems.SMALL_ROCKET.get() && this.entityData.get(LOADED_ROCKET) < 14) {
             // 装载火箭
             this.entityData.set(LOADED_ROCKET, this.entityData.get(LOADED_ROCKET) + 1);
             if (!player.isCreative()) {
@@ -217,11 +217,11 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
             return false;
         }).mapToInt(Ammo.HEAVY::get).sum() + countItem(ModItems.SMALL_SHELL.get());
 
-        if ((hasItem(ModItems.ROCKET_70.get()) || InventoryTool.hasCreativeAmmoBox(player)) && reloadCoolDown == 0 && this.getEntityData().get(LOADED_ROCKET) < 14) {
+        if ((hasItem(ModItems.SMALL_ROCKET.get()) || InventoryTool.hasCreativeAmmoBox(player)) && reloadCoolDown == 0 && this.getEntityData().get(LOADED_ROCKET) < 14) {
             this.entityData.set(LOADED_ROCKET, this.getEntityData().get(LOADED_ROCKET) + 1);
             reloadCoolDown = 25;
             if (!InventoryTool.hasCreativeAmmoBox(player)) {
-                this.getItemStacks().stream().filter(stack -> stack.is(ModItems.ROCKET_70.get())).findFirst().ifPresent(stack -> stack.shrink(1));
+                this.getItemStacks().stream().filter(stack -> stack.is(ModItems.SMALL_ROCKET.get())).findFirst().ifPresent(stack -> stack.shrink(1));
             }
             this.level().playSound(null, this, ModSounds.MISSILE_RELOAD.get(), this.getSoundSource(), 1, 1);
         }
@@ -607,7 +607,7 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
 
         } else if (getWeaponIndex(0) == 1 && this.getEntityData().get(LOADED_ROCKET) > 0) {
 
-            var heliRocketEntity = ((HeliRocketWeapon) getWeapon(0)).create(player);
+            var heliRocketEntity = ((SmallRocketWeapon) getWeapon(0)).create(player);
 
             Vector4f worldPosition;
             Vector4f worldPosition2;

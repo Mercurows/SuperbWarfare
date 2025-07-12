@@ -121,7 +121,7 @@ public class ModItems {
     public static final RegistryObject<Item> C4_BOMB = AMMO.register("c4_bomb", C4BombItem::new);
     public static final RegistryObject<Item> BLU_43_MINE = AMMO.register("blu_43_mine", Blu43MineItem::new);
     public static final RegistryObject<Item> SMALL_SHELL = AMMO.register("small_shell", SmallShellItem::new);
-    public static final RegistryObject<Item> ROCKET_70 = AMMO.register("rocket_70", Rocket70Item::new);
+    public static final RegistryObject<Item> SMALL_ROCKET = AMMO.register("small_rocket", SmallRocketItem::new);
     public static final RegistryObject<Item> WIRE_GUIDE_MISSILE = AMMO.register("wire_guide_missile", WireGuideMissileItem::new);
     public static final RegistryObject<Item> AGM = AMMO.register("agm", AgmItem::new);
     public static final RegistryObject<Item> SWARM_DRONE = AMMO.register("swarm_drone", SwarmDroneItem::new);

@@ -44,35 +44,35 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.Nullable;
 
-public class HeliRocketEntity extends FastThrowableProjectile implements GeoEntity, ExplosiveProjectile {
+public class SmallRocketEntity extends FastThrowableProjectile implements GeoEntity, ExplosiveProjectile {
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private float damage = 140f;
     private float explosionDamage = 60f;
     private float explosionRadius = 5f;
 
-    public HeliRocketEntity(EntityType<? extends HeliRocketEntity> type, Level world) {
+    public SmallRocketEntity(EntityType<? extends SmallRocketEntity> type, Level world) {
         super(type, world);
         this.noCulling = true;
     }
 
-    public HeliRocketEntity(EntityType<? extends ThrowableItemProjectile> pEntityType, double pX, double pY, double pZ, Level pLevel) {
+    public SmallRocketEntity(EntityType<? extends ThrowableItemProjectile> pEntityType, double pX, double pY, double pZ, Level pLevel) {
         super(pEntityType, pX, pY, pZ, pLevel);
         this.noCulling = true;
 
         this.durability = 20;
     }
 
-    public HeliRocketEntity(LivingEntity entity, Level level, float damage, float explosionDamage, float explosionRadius) {
-        super(ModEntities.HELI_ROCKET.get(), entity, level);
+    public SmallRocketEntity(LivingEntity entity, Level level, float damage, float explosionDamage, float explosionRadius) {
+        super(ModEntities.SMALL_ROCKET.get(), entity, level);
         this.damage = damage;
         this.explosionDamage = explosionDamage;
         this.explosionRadius = explosionRadius;
         this.durability = 20;
     }
 
-    public HeliRocketEntity(PlayMessages.SpawnEntity spawnEntity, Level level) {
-        this(ModEntities.HELI_ROCKET.get(), level);
+    public SmallRocketEntity(PlayMessages.SpawnEntity spawnEntity, Level level) {
+        this(ModEntities.SMALL_ROCKET.get(), level);
     }
 
     @Override
@@ -221,7 +221,7 @@ public class HeliRocketEntity extends FastThrowableProjectile implements GeoEnti
         projectile.discard();
     }
 
-    private PlayState movementPredicate(AnimationState<HeliRocketEntity> event) {
+    private PlayState movementPredicate(AnimationState<SmallRocketEntity> event) {
         return event.setAndContinue(RawAnimation.begin().thenLoop("animation.rpg.idle"));
     }
 

@@ -130,7 +130,7 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
                                 .explosionRadius(VehicleConfig.A_10_CANNON_EXPLOSION_RADIUS.get().floatValue())
                                 .sound(ModSounds.INTO_CANNON.get())
                                 .icon(Mod.loc("textures/screens/vehicle_weapon/cannon_30mm.png")),
-                        new HeliRocketWeapon()
+                        new SmallRocketWeapon()
                                 .damage(VehicleConfig.A_10_ROCKET_DAMAGE.get())
                                 .explosionDamage(VehicleConfig.A_10_ROCKET_EXPLOSION_DAMAGE.get())
                                 .explosionRadius(VehicleConfig.A_10_ROCKET_EXPLOSION_RADIUS.get().floatValue())
@@ -194,7 +194,7 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
     @Override
     public @NotNull InteractionResult interact(Player player, @NotNull InteractionHand hand) {
         ItemStack stack = player.getMainHandItem();
-        if (stack.getItem() == ModItems.ROCKET_70.get() && this.entityData.get(LOADED_ROCKET) < 28) {
+        if (stack.getItem() == ModItems.SMALL_ROCKET.get() && this.entityData.get(LOADED_ROCKET) < 28) {
             // 装载火箭
             this.entityData.set(LOADED_ROCKET, this.entityData.get(LOADED_ROCKET) + 1);
             if (!player.isCreative()) {
@@ -365,11 +365,11 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
 
         int ammoCount = countItem(ModItems.SMALL_SHELL.get());
 
-        if ((hasItem(ModItems.ROCKET_70.get()) || hasCreativeAmmoBox) && reloadCoolDown == 0 && this.getEntityData().get(LOADED_ROCKET) < 28) {
+        if ((hasItem(ModItems.SMALL_ROCKET.get()) || hasCreativeAmmoBox) && reloadCoolDown == 0 && this.getEntityData().get(LOADED_ROCKET) < 28) {
             this.entityData.set(LOADED_ROCKET, this.getEntityData().get(LOADED_ROCKET) + 1);
             reloadCoolDown = 15;
             if (!hasCreativeAmmoBox) {
-                this.getItemStacks().stream().filter(stack -> stack.is(ModItems.ROCKET_70.get())).findFirst().ifPresent(stack -> stack.shrink(1));
+                this.getItemStacks().stream().filter(stack -> stack.is(ModItems.SMALL_ROCKET.get())).findFirst().ifPresent(stack -> stack.shrink(1));
             }
             this.level().playSound(null, this, ModSounds.MISSILE_RELOAD.get(), this.getSoundSource(), 2, 1);
         }
@@ -820,7 +820,7 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
 
             this.entityData.set(HEAT, this.entityData.get(HEAT) + 2);
         } else if (getWeaponIndex(0) == 1 && this.getEntityData().get(LOADED_ROCKET) > 0) {
-            var heliRocketEntity = ((HeliRocketWeapon) getWeapon(0)).create(player);
+            var heliRocketEntity = ((SmallRocketWeapon) getWeapon(0)).create(player);
 
             Vector4f worldPosition;
             Vector4f worldPosition2;
@@ -851,7 +851,7 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
 
             BlockPos pos = BlockPos.containing(new Vec3(worldPosition.x, worldPosition.y, worldPosition.z));
 
-            this.level().playSound(null, pos, ModSounds.HELICOPTER_ROCKET_FIRE_3P.get(), SoundSource.PLAYERS, 4, 1);
+            this.level().playSound(null, pos, ModSounds.SMALL_ROCKET_FIRE_3P.get(), SoundSource.PLAYERS, 4, 1);
 
             this.entityData.set(LOADED_ROCKET, this.getEntityData().get(LOADED_ROCKET) - 1);
 

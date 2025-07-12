@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.item.common.ammo;
 
-import com.atsuishio.superbwarfare.entity.projectile.HeliRocketEntity;
+import com.atsuishio.superbwarfare.entity.projectile.SmallRocketEntity;
 import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.DispenserLaunchable;
@@ -18,9 +18,9 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
-public class Rocket70Item extends Item implements DispenserLaunchable {
+public class SmallRocketItem extends Item implements DispenserLaunchable {
 
-    public Rocket70Item() {
+    public SmallRocketItem() {
         super(new Properties());
     }
 
@@ -53,12 +53,12 @@ public class Rocket70Item extends Item implements DispenserLaunchable {
             @Override
             @ParametersAreNonnullByDefault
             protected @NotNull Projectile getProjectile(Level pLevel, Position pPosition, ItemStack pStack) {
-                return new HeliRocketEntity(ModEntities.HELI_ROCKET.get(), pPosition.x(), pPosition.y(), pPosition.z(), pLevel);
+                return new SmallRocketEntity(ModEntities.SMALL_ROCKET.get(), pPosition.x(), pPosition.y(), pPosition.z(), pLevel);
             }
 
             @Override
             protected void playSound(BlockSource pSource) {
-                pSource.getLevel().playSound(null, pSource.getPos(), ModSounds.HELICOPTER_ROCKET_FIRE_3P.get(), SoundSource.BLOCKS, 2.0F, 1.0F);
+                pSource.getLevel().playSound(null, pSource.getPos(), ModSounds.SMALL_ROCKET_FIRE_3P.get(), SoundSource.BLOCKS, 2.0F, 1.0F);
             }
         };
     }

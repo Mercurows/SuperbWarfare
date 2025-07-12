@@ -2590,18 +2590,18 @@
       }
     ]
   },
-  "heli_rocket_fire_1p": {
+  "small_rocket_fire_1p": {
     "sounds": [
       {
-        "name": "superbwarfare:helicopter/heli_rocket_fire_1p",
+        "name": "superbwarfare:helicopter/small_rocket_fire_1p",
         "stream": false
       }
     ]
   },
-  "heli_rocket_fire_3p": {
+  "small_rocket_fire_3p": {
     "sounds": [
       {
-        "name": "superbwarfare:helicopter/heli_rocket_fire_3p",
+        "name": "superbwarfare:helicopter/small_rocket_fire_3p",
         "stream": false
       }
     ]
