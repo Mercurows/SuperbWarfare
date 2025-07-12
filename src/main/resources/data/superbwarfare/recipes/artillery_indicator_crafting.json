@@ -2,7 +2,8 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "pattern": [
-    "aba"
+    " b ",
+    "aca"
   ],
   "key": {
     "a": {
@@ -10,6 +11,9 @@
     },
     "b": {
       "item": "superbwarfare:monitor"
+    },
+    "c": {
+      "item": "superbwarfare:firing_parameters"
     }
   },
   "result": {
