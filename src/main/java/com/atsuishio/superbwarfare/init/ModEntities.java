@@ -92,12 +92,14 @@ public class ModEntities {
             EntityType.Builder.<Mk82Entity>of(Mk82Entity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).noSave().setTrackingRange(64).setUpdateInterval(1).fireImmune().sized(0.8f, 0.8f));
 
     // Vehicles
+    public static final DeferredHolder<EntityType<?>, EntityType<Type63Entity>> TYPE_63 = register("type_63",
+            EntityType.Builder.of(Type63Entity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).fireImmune().sized(1f, 1.5f));
     public static final DeferredHolder<EntityType<?>, EntityType<Mk42Entity>> MK_42 = register("mk_42",
             EntityType.Builder.of(Mk42Entity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(3).fireImmune().sized(3.4f, 3.5f));
     public static final DeferredHolder<EntityType<?>, EntityType<Hpj11Entity>> HPJ_11 = register("hpj_11",
             EntityType.Builder.of(Hpj11Entity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(3).fireImmune().sized(2.8f, 2.4f));
     public static final DeferredHolder<EntityType<?>, EntityType<Mle1934Entity>> MLE_1934 = register("mle_1934",
-            EntityType.Builder.of(Mle1934Entity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(3).fireImmune().sized(4.5f, 2.8f));
+            EntityType.Builder.of(Mle1934Entity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(3).fireImmune().sized(4.5f, 2.8f).eyeHeight(2.16F));
     public static final DeferredHolder<EntityType<?>, EntityType<AnnihilatorEntity>> ANNIHILATOR = register("annihilator",
             EntityType.Builder.of(AnnihilatorEntity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(3).fireImmune().sized(13f, 4.2f));
 

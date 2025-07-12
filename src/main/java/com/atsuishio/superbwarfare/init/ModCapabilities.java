@@ -116,6 +116,12 @@ public class ModCapabilities {
                 (obj, ctx) -> new InvWrapper(obj)
         );
 
+        // Type63
+        event.registerEntity(Capabilities.ItemHandler.ENTITY,
+                ModEntities.TYPE_63.get(),
+                (obj, ctx) -> new InvWrapper(obj)
+        );
+
         // Mk42
         event.registerEntity(Capabilities.ItemHandler.ENTITY,
                 ModEntities.MK_42.get(),
