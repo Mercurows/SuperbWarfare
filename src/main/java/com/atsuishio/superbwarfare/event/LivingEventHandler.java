@@ -266,6 +266,8 @@ public class LivingEventHandler {
     }
 
     private static void killIndication(LivingDeathEvent event) {
+        if (!MiscConfig.SEND_KILL_FEEDBACK.get()) return;
+
         DamageSource source = event.getSource();
 
         var sourceEntity = source.getEntity();
