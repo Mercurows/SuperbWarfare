@@ -114,17 +114,18 @@ public class ArtilleryIndicatorScreen extends Screen {
         int i = (this.width - this.imageWidth) / 2;
         int j = (this.height - this.imageHeight) / 2;
 
-        this.posX = new EditBox(this.font, i + 24, j + 20, 40, 12, Component.empty());
+        this.posX = new EditBox(this.font, i + 24, j + 20, 60, 12, Component.empty());
         this.initEditBox(this.posX);
 
-        this.posY = new EditBox(this.font, i + 24, j + 33, 40, 12, Component.empty());
+        this.posY = new EditBox(this.font, i + 24, j + 33, 60, 12, Component.empty());
         this.initEditBox(this.posY);
 
-        this.posZ = new EditBox(this.font, i + 24, j + 46, 40, 12, Component.empty());
+        this.posZ = new EditBox(this.font, i + 24, j + 46, 60, 12, Component.empty());
         this.initEditBox(this.posZ);
 
-        this.radius = new EditBox(this.font, i + 24, j + 59, 40, 12, Component.empty());
+        this.radius = new EditBox(this.font, i + 24, j + 59, 20, 12, Component.empty());
         this.initEditBox(this.radius);
+        this.radius.setMaxLength(2);
         this.radius.setFilter(s -> s.matches("\\d*"));
     }
 
@@ -133,7 +134,7 @@ public class ArtilleryIndicatorScreen extends Screen {
         editBox.setTextColor(-1);
         editBox.setTextColorUneditable(-1);
         editBox.setBordered(false);
-        editBox.setMaxLength(10);
+        editBox.setMaxLength(9);
         this.addWidget(editBox);
         editBox.setEditable(true);
         editBox.setFilter(s -> s.matches("-?\\d*"));
