@@ -155,24 +155,8 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, Container,
     public @NotNull InteractionResult interact(Player player, @NotNull InteractionHand hand) {
         ItemStack mainHandItem = player.getMainHandItem();
 
-        if (mainHandItem.getItem() instanceof ArtilleryIndicator indicator && this.entityData.get(INTELLIGENT)) {
-            if (indicator.addCannon(mainHandItem, getStringUUID())) {
-                if (player instanceof ServerPlayer serverPlayer) {
-                    serverPlayer.level().playSound(null, serverPlayer.getOnPos(), SoundEvents.ARROW_HIT_PLAYER, SoundSource.PLAYERS, 0.5F, 1);
-                }
-                player.displayClientMessage(Component.translatable("des.superbwarfare.artillery_indicator.add", this.getDisplayName())
-                        .withStyle(ChatFormatting.GREEN), true);
-                return InteractionResult.SUCCESS;
-            } else if (indicator.removeCannon(mainHandItem, getStringUUID())) {
-                if (player instanceof ServerPlayer serverPlayer) {
-                    serverPlayer.level().playSound(null, serverPlayer.getOnPos(), SoundEvents.ARROW_HIT_PLAYER, SoundSource.PLAYERS, 0.5F, 1);
-                }
-                player.displayClientMessage(Component.translatable("des.superbwarfare.artillery_indicator.remove", this.getDisplayName())
-                        .withStyle(ChatFormatting.RED), true);
-                return InteractionResult.SUCCESS;
-            } else {
-                return InteractionResult.FAIL;
-            }
+        if (mainHandItem.getItem() instanceof ArtilleryIndicator indicator) {
+            return indicator.bind(mainHandItem, player, this);
         }
 
         if (mainHandItem.getItem() instanceof Monitor && player.isShiftKeyDown() && !this.entityData.get(INTELLIGENT)) {
