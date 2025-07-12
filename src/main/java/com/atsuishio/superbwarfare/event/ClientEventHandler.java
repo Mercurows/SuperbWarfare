@@ -179,12 +179,24 @@ public class ClientEventHandler {
             return;
         }
         float xRotOffset = Mth.lerp(event.getPartialTick(), player.xBobO, player.xBob);
-        float yRotOffset = Mth.lerp(event.getPartialTick(), player.yBobO, player.yBob);
         float xRot = player.getViewXRot(event.getPartialTick()) - xRotOffset;
-        float yRot = player.getViewYRot(event.getPartialTick()) - yRotOffset;
-        turnRot[0] = Mth.clamp(0.05 * xRot, -5, 5) * (1 - 0.75 * zoomTime);
-        turnRot[1] = Mth.clamp(0.05 * yRot, -10, 10) * (1 - 0.75 * zoomTime);
-        turnRot[2] = Mth.clamp(0.1 * yRot, -10, 10) * (1 - zoomTime);
+
+        var fromY = player.yRotO;
+        var toY = player.getYRot();
+
+        if (fromY > 135 && toY < -135) {
+            toY += 360;
+        }
+        if (fromY < -135 && toY > 135) {
+            fromY += 360;
+        }
+
+        float yRotOffset = Mth.lerp(event.getPartialTick(), 0, toY - fromY);
+//        float yRot = Mth.wrapDegrees(player.getYRot() + yRotOffset);
+
+        turnRot[0] = Mth.clamp(0.05 * yRotOffset, -5, 5) * (1 - 0.75 * zoomTime);
+        turnRot[1] = Mth.clamp(0.05 * yRotOffset, -10, 10) * (1 - 0.75 * zoomTime);
+        turnRot[2] = Mth.clamp(0.1 * yRotOffset, -10, 10) * (1 - zoomTime);
     }
 
     private static boolean notInGame() {

@@ -1,5 +1,8 @@
 package com.atsuishio.superbwarfare.tools;
 
+import com.atsuishio.superbwarfare.entity.OBBEntity;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
@@ -436,6 +439,27 @@ public record OBB(Vector3f center, Vector3f extents, Quaternionf rotation, Part 
 
     // 存储最近面结果
     public record ClosestFaceResult(OBB obb, int faceIndex, float distance, Vector3f faceCenter, Vector3f faceNormal) {
+    }
+
+    //获取玩家看向的某个OBB
+
+    // TODO 修复看向的第一个OBB后方如果还有另外的OBB时，无法正确返回看向的第一个OBB的BUG
+
+    public static OBB getLookingObb(Player player, double range) {
+        OBB lookingOBB = null;
+        Entity lookingEntity = TraceTool.findLookingEntity(player, range);
+        if (lookingEntity instanceof OBBEntity obbEntity) {
+            var obbList = obbEntity.getOBBs();
+            for (OBB obb : obbList) {
+                Vec3 hitPos = TraceTool.playerFindLookingPos(player, lookingEntity, range);
+                if (hitPos != null && obb.contains(hitPos.add(player.getViewVector(1).scale(0.02)))) {
+//                    player.displayClientMessage(Component.literal(String.valueOf(obb)), true);
+                    lookingOBB = obb;
+                    break;
+                }
+            }
+        }
+        return lookingOBB;
     }
 
     public enum Part {

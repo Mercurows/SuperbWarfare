@@ -54,6 +54,23 @@ public class Type63Renderer extends GeoEntityRenderer<Type63Entity> {
         if (name.equals("wheel2")) {
             bone.setRotX(Mth.lerp(partialTick, animatable.rightWheelRotO, animatable.getRightWheelRot()));
         }
+
+        if (name.equals("main")) {
+            bone.setRotY(Mth.lerp(partialTick, animatable.turretYRotO, animatable.getTurretYRot()) * Mth.DEG_TO_RAD);
+        }
+
+        if (name.equals("paotou")) {
+            bone.setRotX(-Mth.lerp(partialTick, animatable.turretXRotO, animatable.getTurretXRot()) * Mth.DEG_TO_RAD);
+        }
+
+        if (name.equals("shoulunx")) {
+            bone.setRotX(-Mth.lerp(partialTick, animatable.turretXRotO, animatable.getTurretXRot()) * 3);
+        }
+
+        if (name.equals("shouluny")) {
+            bone.setRotZ(-Mth.lerp(partialTick, animatable.turretYRotO, animatable.getTurretYRot()) * 6);
+        }
+
         super.renderRecursively(poseStack, animatable, bone, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, color);
     }
 }

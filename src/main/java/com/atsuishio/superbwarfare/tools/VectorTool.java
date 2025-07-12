@@ -56,6 +56,14 @@ public class VectorTool {
         return combined;
     }
 
+    public static Quaternionf combineRotationsBarrel(float partialTicks, VehicleEntity entity) {
+        Quaternionf turretPitchRot = Axis.XP.rotationDegrees(Mth.lerp(partialTicks, entity.turretXRotO, entity.getTurretXRot()));
+        Quaternionf combined = combineRotationsTurret(partialTicks, entity);
+        combined.mul(turretPitchRot);
+
+        return combined;
+    }
+
     public static Vec3 randomPos(Vec3 originPos, int radius) {
         return originPos.add(new Vec3(Math.random() * radius, 0, 0).yRot((float) (360 * Math.random()) * Mth.DEG_TO_RAD));
     }
