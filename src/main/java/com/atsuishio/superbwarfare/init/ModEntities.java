@@ -92,6 +92,9 @@ public class ModEntities {
             EntityType.Builder.<Mk82Entity>of(Mk82Entity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).setCustomClientFactory(Mk82Entity::new).noSave().sized(0.8f, 0.8f));
 
     // Vehicles
+
+    public static final RegistryObject<EntityType<Type63Entity>> TYPE_63 = register("type_63",
+            EntityType.Builder.<Type63Entity>of(Type63Entity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).setCustomClientFactory(Type63Entity::new).fireImmune().sized(1f, 1.5f));
     public static final RegistryObject<EntityType<Mk42Entity>> MK_42 = register("mk_42",
             EntityType.Builder.<Mk42Entity>of(Mk42Entity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(Mk42Entity::new).fireImmune().sized(3.4f, 3.5f));
     public static final RegistryObject<EntityType<Hpj11Entity>> HPJ_11 = register("hpj_11",
