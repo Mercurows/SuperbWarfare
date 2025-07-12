@@ -10,8 +10,11 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -129,15 +132,46 @@ public class ArtilleryIndicator extends Item implements ItemScreenProvider {
 
     public void setTarget(ItemStack stack, Player player) {
         ListTag tags = stack.getOrCreateTag().getList(TAG_CANNON, Tag.TAG_COMPOUND);
+        List<CompoundTag> list = new ArrayList<>();
+
         for (int i = 0; i < tags.size(); i++) {
             var tag = tags.getCompound(i);
             Entity entity = EntityFindUtil.findEntity(player.level(), tag.getString("UUID"));
+
             if (entity instanceof LockTargetEntity lockTargetEntity) {
+                list.add(tag);
+
                 if (!lockTargetEntity.setTarget(stack)) {
                     player.displayClientMessage(Component.translatable("tips.superbwarfare.mortar.warn", entity.getDisplayName())
                             .withStyle(ChatFormatting.RED), true);
                 }
             }
+        }
+
+        if (list.size() != tags.size()) {
+            ListTag listTag = new ListTag();
+            listTag.addAll(list);
+            stack.getOrCreateTag().put(TAG_CANNON, listTag);
+        }
+    }
+
+    public InteractionResult bind(ItemStack stack, Player player, Entity entity) {
+        if (this.addCannon(stack, entity.getStringUUID())) {
+            if (player instanceof ServerPlayer serverPlayer) {
+                serverPlayer.level().playSound(null, serverPlayer.getOnPos(), SoundEvents.ARROW_HIT_PLAYER, SoundSource.PLAYERS, 0.5F, 1);
+            }
+            player.displayClientMessage(Component.translatable("des.superbwarfare.artillery_indicator.add", entity.getDisplayName())
+                    .withStyle(ChatFormatting.GREEN), true);
+            return InteractionResult.SUCCESS;
+        } else if (this.removeCannon(stack, entity.getStringUUID())) {
+            if (player instanceof ServerPlayer serverPlayer) {
+                serverPlayer.level().playSound(null, serverPlayer.getOnPos(), SoundEvents.ARROW_HIT_PLAYER, SoundSource.PLAYERS, 0.5F, 1);
+            }
+            player.displayClientMessage(Component.translatable("des.superbwarfare.artillery_indicator.remove", entity.getDisplayName())
+                    .withStyle(ChatFormatting.RED), true);
+            return InteractionResult.SUCCESS;
+        } else {
+            return InteractionResult.FAIL;
         }
     }
 }

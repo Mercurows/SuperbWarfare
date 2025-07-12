@@ -27,7 +27,6 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.Container;
@@ -170,23 +169,7 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
         ItemStack stack = player.getMainHandItem();
 
         if (stack.getItem() instanceof ArtilleryIndicator indicator) {
-            if (indicator.addCannon(stack, getStringUUID())) {
-                if (player instanceof ServerPlayer serverPlayer) {
-                    serverPlayer.level().playSound(null, serverPlayer.getOnPos(), SoundEvents.ARROW_HIT_PLAYER, SoundSource.PLAYERS, 0.5F, 1);
-                }
-                player.displayClientMessage(Component.translatable("des.superbwarfare.artillery_indicator.add", this.getDisplayName())
-                        .withStyle(ChatFormatting.GREEN), true);
-                return InteractionResult.SUCCESS;
-            } else if (indicator.removeCannon(stack, getStringUUID())) {
-                if (player instanceof ServerPlayer serverPlayer) {
-                    serverPlayer.level().playSound(null, serverPlayer.getOnPos(), SoundEvents.ARROW_HIT_PLAYER, SoundSource.PLAYERS, 0.5F, 1);
-                }
-                player.displayClientMessage(Component.translatable("des.superbwarfare.artillery_indicator.remove", this.getDisplayName())
-                        .withStyle(ChatFormatting.RED), true);
-                return InteractionResult.SUCCESS;
-            } else {
-                return InteractionResult.FAIL;
-            }
+            return indicator.bind(stack, player, this);
         }
 
         if (stack.is(ModTags.Items.CROWBAR) && !player.isShiftKeyDown()) {
