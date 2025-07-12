@@ -31,7 +31,8 @@
     "KeymappingMixin",
     "LivingEntityRendererMixin",
     "MinecraftMixin",
-    "MouseHandlerMixin"
+    "MouseHandlerMixin",
+    "PlayerItemInHandLayerMixin"
   ],
   "minVersion": "0.8",
   "injectors": {
