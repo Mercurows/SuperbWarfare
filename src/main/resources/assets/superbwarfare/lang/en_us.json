@@ -260,6 +260,8 @@
   "des.superbwarfare.artillery_indicator_3": "Right-click to zoom, scroll wheel to adjust zoom ratio, middle mouse button to mark target location",
   "des.superbwarfare.artillery_indicator_4": "Hold left mouse button to send fire command",
   "des.superbwarfare.artillery_indicator_5": "When in off-hand: use drone to mark locations (same controls as above)",
+  "des.superbwarfare.artillery_indicator.add": "%1$s has been added to the artillery array",
+  "des.superbwarfare.artillery_indicator.remove": "%1$s has been removed from the artillery array",
 
   "attribute.superbwarfare.bullet_resistance": "Bullet Resistance",
 
