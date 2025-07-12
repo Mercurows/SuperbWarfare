@@ -7,7 +7,7 @@
     }
   ],
   "result": {
-    "id": "superbwarfare:artillery_indicator",
-    "count": 1
+    "count": 1,
+    "id": "superbwarfare:artillery_indicator"
   }
 }
