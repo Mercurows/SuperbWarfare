@@ -2,6 +2,8 @@ package com.atsuishio.superbwarfare.item;
 
 import com.atsuishio.superbwarfare.client.TooltipTool;
 import com.atsuishio.superbwarfare.client.screens.ArtilleryIndicatorScreen;
+import com.atsuishio.superbwarfare.entity.vehicle.base.LockTargetEntity;
+import com.atsuishio.superbwarfare.tools.EntityFindUtil;
 import com.atsuishio.superbwarfare.tools.NBTTool;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
@@ -12,6 +14,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
@@ -131,5 +134,19 @@ public class ArtilleryIndicator extends Item implements ItemScreenProvider {
     @Override
     public @Nullable Screen getItemScreen(ItemStack stack, Player player, InteractionHand hand) {
         return new ArtilleryIndicatorScreen(stack, hand);
+    }
+
+    public void setTarget(ItemStack stack, Player player) {
+        ListTag tags = NBTTool.getTag(stack).getList(TAG_CANNON, Tag.TAG_COMPOUND);
+        for (int i = 0; i < tags.size(); i++) {
+            var tag = tags.getCompound(i);
+            Entity entity = EntityFindUtil.findEntity(player.level(), tag.getString("UUID"));
+            if (entity instanceof LockTargetEntity lockTargetEntity) {
+                if (!lockTargetEntity.setTarget(stack)) {
+                    player.displayClientMessage(Component.translatable("tips.superbwarfare.mortar.warn", entity.getDisplayName())
+                            .withStyle(ChatFormatting.RED), true);
+                }
+            }
+        }
     }
 }
