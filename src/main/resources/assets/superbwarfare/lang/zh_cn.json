@@ -260,6 +260,8 @@
   "des.superbwarfare.artillery_indicator_3": "鼠标右键缩放，滚轮调节缩放倍率，鼠标中键标记目标位置",
   "des.superbwarfare.artillery_indicator_4": "长按鼠标左键发送射击指令",
   "des.superbwarfare.artillery_indicator_5": "放置在副手时可使用无人机标记位置，操作方式同上",
+  "des.superbwarfare.artillery_indicator.add": "已将%1$s添加至火炮阵列",
+  "des.superbwarfare.artillery_indicator.remove": "已将%1$s从火炮阵列中移除",
 
   "attribute.superbwarfare.bullet_resistance": "子弹防护",
 

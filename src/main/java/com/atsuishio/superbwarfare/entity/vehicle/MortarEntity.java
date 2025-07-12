@@ -160,13 +160,15 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, Container,
                 if (player instanceof ServerPlayer serverPlayer) {
                     serverPlayer.level().playSound(null, serverPlayer.getOnPos(), SoundEvents.ARROW_HIT_PLAYER, SoundSource.PLAYERS, 0.5F, 1);
                 }
-                player.displayClientMessage(Component.literal("added"), true);
+                player.displayClientMessage(Component.translatable("des.superbwarfare.artillery_indicator.add", this.getDisplayName())
+                        .withStyle(ChatFormatting.GREEN), true);
                 return InteractionResult.SUCCESS;
             } else if (indicator.removeCannon(mainHandItem, getStringUUID())) {
                 if (player instanceof ServerPlayer serverPlayer) {
                     serverPlayer.level().playSound(null, serverPlayer.getOnPos(), SoundEvents.ARROW_HIT_PLAYER, SoundSource.PLAYERS, 0.5F, 1);
                 }
-                player.displayClientMessage(Component.literal("removed"), true);
+                player.displayClientMessage(Component.translatable("des.superbwarfare.artillery_indicator.remove", this.getDisplayName())
+                        .withStyle(ChatFormatting.RED), true);
                 return InteractionResult.SUCCESS;
             } else {
                 return InteractionResult.FAIL;
