@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.entity.vehicle;
 
 import com.atsuishio.superbwarfare.entity.projectile.MortarShellEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.LockTargetEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModItems;
@@ -54,7 +55,8 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import static com.atsuishio.superbwarfare.tools.RangeTool.calculateLaunchVector;
 
-public class MortarEntity extends VehicleEntity implements GeoEntity, Container {
+public class MortarEntity extends VehicleEntity implements GeoEntity, Container, LockTargetEntity {
+
     public static final EntityDataAccessor<Integer> FIRE_TIME = SynchedEntityData.defineId(MortarEntity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Float> PITCH = SynchedEntityData.defineId(MortarEntity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Float> YAW = SynchedEntityData.defineId(MortarEntity.class, EntityDataSerializers.FLOAT);
@@ -245,6 +247,7 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, Container 
         return InteractionResult.FAIL;
     }
 
+    @Override
     public boolean setTarget(ItemStack stack) {
         double targetX = stack.getOrCreateTag().getDouble("TargetX");
         double targetY = stack.getOrCreateTag().getDouble("TargetY") - 1;
@@ -273,6 +276,7 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, Container 
         return true;
     }
 
+    @Override
     public void resetTarget() {
         Vec3 randomPos = VectorTool.randomPos(new Vec3(entityData.get(TARGET_POS)), entityData.get(RADIUS));
         Vec3 launchVector = calculateLaunchVector(getEyePosition(), randomPos, 13, -0.11, entityData.get(DEPRESSED));
@@ -287,8 +291,8 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, Container 
         }
     }
 
-
-    private void look(Vec3 pTarget) {
+    @Override
+    public void look(Vec3 pTarget) {
         Vec3 vec3 = EntityAnchorArgument.Anchor.EYES.apply(this);
         double d0 = (pTarget.x - vec3.x) * 0.2;
         double d2 = (pTarget.z - vec3.z) * 0.2;

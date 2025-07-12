@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.entity.vehicle.base.CannonEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.LockTargetEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
@@ -65,7 +66,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import static com.atsuishio.superbwarfare.tools.RangeTool.calculateLaunchVector;
 
-public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEntity, Container {
+public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEntity, Container, LockTargetEntity {
 
     public static final EntityDataAccessor<Integer> COOL_DOWN = SynchedEntityData.defineId(Mle1934Entity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> TYPE = SynchedEntityData.defineId(Mle1934Entity.class, EntityDataSerializers.INT);
@@ -83,6 +84,7 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
     public Mle1934Entity(PlayMessages.SpawnEntity packet, Level world) {
         this(ModEntities.MLE_1934.get(), world);
     }
+
     public Mle1934Entity(EntityType<Mle1934Entity> type, Level world) {
         super(type, world);
     }
@@ -235,6 +237,7 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
     }
 
     //这个炮仰角太低只能用低伸弹道
+    @Override
     public boolean setTarget(ItemStack stack) {
         double targetX = stack.getOrCreateTag().getDouble("TargetX");
         double targetY = stack.getOrCreateTag().getDouble("TargetY");
@@ -268,6 +271,7 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
         return true;
     }
 
+    @Override
     public void resetTarget() {
         Vec3 randomPos = VectorTool.randomPos(new Vec3(entityData.get(TARGET_POS)), entityData.get(RADIUS));
         Vec3 launchVector = calculateLaunchVector(getEyePosition(), randomPos, 15, -shellGravity, entityData.get(DEPRESSED));
@@ -282,7 +286,8 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
         }
     }
 
-    private void look(Vec3 pTarget) {
+    @Override
+    public void look(Vec3 pTarget) {
         Matrix4f transform = getVehicleFlatTransform(1);
         Vector4f worldPosition = transformPosition(transform, 0, 1.4992625f, 1.52065f);
         Vec3 shootPos = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
@@ -292,7 +297,7 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
         entityData.set(YAW, Mth.wrapDegrees((float) (Mth.atan2(d2, d0) * 57.2957763671875) - 90.0F));
     }
 
-
+    @Override
     public void positionRider(@NotNull Entity passenger, @NotNull MoveFunction callback) {
         if (!this.hasPassenger(passenger)) {
             return;
@@ -352,7 +357,6 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
         setYRot(getYRot() + (float) interpolatedYaw / (float) interpolationSteps);
         setXRot(getXRot() + (float) (serverXRot - (double) getXRot()) / (float) interpolationSteps);
         setRot(getYRot(), getXRot());
-
     }
 
     @Override
@@ -446,7 +450,6 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
                         worldPositionL.z + i * this.getLookAngle().z,
                         Mth.clamp(count--, 1, 5), 0.15, 0.15, 0.15, 0.0025);
             }
-
 
             // 右炮管
             if (salvoShoot) {

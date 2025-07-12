@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.entity.vehicle.base.CannonEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.LockTargetEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
@@ -65,7 +66,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import static com.atsuishio.superbwarfare.tools.RangeTool.calculateLaunchVector;
 
-public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity, Container {
+public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity, Container, LockTargetEntity {
 
     public static final EntityDataAccessor<Integer> COOL_DOWN = SynchedEntityData.defineId(Mk42Entity.class, EntityDataSerializers.INT);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
@@ -229,6 +230,7 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
         return super.interact(player, hand);
     }
 
+    @Override
     public boolean setTarget(ItemStack stack) {
         double targetX = stack.getOrCreateTag().getDouble("TargetX");
         double targetY = stack.getOrCreateTag().getDouble("TargetY");
@@ -262,6 +264,7 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
         return true;
     }
 
+    @Override
     public void resetTarget() {
         Vec3 randomPos = VectorTool.randomPos(new Vec3(entityData.get(TARGET_POS)), entityData.get(RADIUS));
         Vec3 launchVector = calculateLaunchVector(getEyePosition(), randomPos, 15, -shellGravity, entityData.get(DEPRESSED));
@@ -276,7 +279,8 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
         }
     }
 
-    private void look(Vec3 pTarget) {
+    @Override
+    public void look(Vec3 pTarget) {
         Matrix4f transform = getVehicleFlatTransform(1);
         Vector4f worldPosition = transformPosition(transform, 0f, 2.16f, 0.5175f);
         Vec3 shootPos = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
@@ -448,7 +452,6 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
             resetTarget();
         }
     }
-
 
     @Override
     public void travel() {

@@ -584,9 +584,7 @@
   "tips.superbwarfare.mortar.target_pos.radius": "Hit Radius: %1$s",
   "tips.superbwarfare.mortar.target_pos.depressed_trajectory": "Depressed Trajectory",
   "tips.superbwarfare.mortar.target_pos.lofted_trajectory": "Lofted Trajectory",
-  "tips.superbwarfare.mortar.warn": "This mortar cannot aim at this position",
-  "tips.superbwarfare.mk_42.warn": "MK_42 cannot aim at this position",
-  "tips.superbwarfare.mle_1934.warn": "Mle_1934 cannot aim at this position",
+  "tips.superbwarfare.mortar.warn": "%1$s cannot aim at this position",
 
   "container.superbwarfare.reforging_table": "Gun Reforge Table",
   "container.superbwarfare.charging_station": "Charging Station",

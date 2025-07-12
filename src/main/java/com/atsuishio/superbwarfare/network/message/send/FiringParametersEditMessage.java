@@ -1,23 +1,12 @@
 package com.atsuishio.superbwarfare.network.message.send;
 
-import com.atsuishio.superbwarfare.entity.vehicle.Mk42Entity;
-import com.atsuishio.superbwarfare.entity.vehicle.Mle1934Entity;
-import com.atsuishio.superbwarfare.entity.vehicle.MortarEntity;
 import com.atsuishio.superbwarfare.init.ModItems;
-import com.atsuishio.superbwarfare.tools.EntityFindUtil;
-import net.minecraft.ChatFormatting;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
+import com.atsuishio.superbwarfare.item.ArtilleryIndicator;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
-
-import static com.atsuishio.superbwarfare.item.ArtilleryIndicator.TAG_CANNON;
 
 public class FiringParametersEditMessage {
 
@@ -52,10 +41,10 @@ public class FiringParametersEditMessage {
 
     public static void handler(FiringParametersEditMessage message, Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            ServerPlayer serverPlayer = ctx.get().getSender();
-            if (serverPlayer == null) return;
+            var player = ctx.get().getSender();
+            if (player == null) return;
 
-            ItemStack stack = message.mainHand ? serverPlayer.getMainHandItem() : serverPlayer.getOffhandItem();
+            ItemStack stack = message.mainHand ? player.getMainHandItem() : player.getOffhandItem();
             if (!stack.is(ModItems.FIRING_PARAMETERS.get()) && !stack.is(ModItems.ARTILLERY_INDICATOR.get())) return;
 
             stack.getOrCreateTag().putInt("TargetX", message.posX);
@@ -64,27 +53,9 @@ public class FiringParametersEditMessage {
             stack.getOrCreateTag().putInt("Radius", message.radius);
             stack.getOrCreateTag().putBoolean("IsDepressed", message.isDepressed);
 
-            ListTag tags = stack.getOrCreateTag().getList(TAG_CANNON, Tag.TAG_COMPOUND);
-            for (int i = 0; i < tags.size(); i++) {
-                var tag = tags.getCompound(i);
-                Entity entity = EntityFindUtil.findEntity(serverPlayer.level(), tag.getString("UUID"));
-                if (entity instanceof MortarEntity mortarEntity) {
-                    if (!mortarEntity.setTarget(stack)) {
-                        serverPlayer.displayClientMessage(Component.translatable("tips.superbwarfare.mortar.warn").withStyle(ChatFormatting.RED), true);
-                    }
-                }
-                if (entity instanceof Mk42Entity mk42Entity) {
-                    if (!mk42Entity.setTarget(stack)) {
-                        serverPlayer.displayClientMessage(Component.translatable("tips.superbwarfare.mk_42.warn").withStyle(ChatFormatting.RED), true);
-                    }
-                }
-                if (entity instanceof Mle1934Entity mle1934Entity) {
-                    if (!mle1934Entity.setTarget(stack)) {
-                        serverPlayer.displayClientMessage(Component.translatable("tips.superbwarfare.mle_1934.warn").withStyle(ChatFormatting.RED), true);
-                    }
-                }
+            if (stack.getItem() instanceof ArtilleryIndicator indicator) {
+                indicator.setTarget(stack, player);
             }
-
         });
         ctx.get().setPacketHandled(true);
     }
