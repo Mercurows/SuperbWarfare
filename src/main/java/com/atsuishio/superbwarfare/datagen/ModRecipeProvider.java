@@ -49,7 +49,19 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
         generateMaterialPackRecipe(writer, ModItems.CEMENTED_CARBIDE_MATERIALS, ModItems.EPIC_MATERIAL_PACK.get());
         generateMaterialPackRecipe(writer, ModItems.NETHERITE_MATERIALS, ModItems.LEGENDARY_MATERIAL_PACK.get());
 
-        // 钢管
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.ARTILLERY_INDICATOR.get())
+                .pattern(" b ")
+                .pattern("aca")
+                .define('a', Items.SPYGLASS)
+                .define('b', ModItems.MONITOR.get())
+                .define('c', ModItems.FIRING_PARAMETERS.get())
+                .unlockedBy(getHasName(Items.SPYGLASS), has(Items.SPYGLASS))
+                .save(writer, Mod.loc(getItemName(ModItems.ARTILLERY_INDICATOR.get())));
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ModItems.ARTILLERY_INDICATOR.get())
+                .requires(ModItems.ARTILLERY_INDICATOR.get())
+                .unlockedBy(getHasName(ModItems.ARTILLERY_INDICATOR.get()), has(ModItems.ARTILLERY_INDICATOR.get()))
+                .save(writer, Mod.loc(getItemName(ModItems.ARTILLERY_INDICATOR.get()) + "_clear"));
+
         ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.STEEL_PIPE.get())
                 .pattern(" a")
                 .pattern("a ")
