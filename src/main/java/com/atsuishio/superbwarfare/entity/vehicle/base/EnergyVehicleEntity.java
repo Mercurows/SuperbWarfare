@@ -79,4 +79,8 @@ public abstract class EnergyVehicleEntity extends VehicleEntity {
         return data().maxEnergy();
     }
 
+    // 屎
+    public boolean hasEnergyStorage() {
+        return true;
+    }
 }

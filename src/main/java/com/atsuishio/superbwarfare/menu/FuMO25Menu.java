@@ -83,8 +83,9 @@ public class FuMO25Menu extends EnergyMenu {
 
             var parameters = stack.get(ModDataComponents.FIRING_PARAMETERS);
             var isDepressed = parameters != null && parameters.isDepressed();
+            var radius = parameters != null ? parameters.radius() : 0;
 
-            stack.set(ModDataComponents.FIRING_PARAMETERS, new FiringParameters.Parameters(new BlockPos(this.posX, this.posY, this.posZ), isDepressed));
+            stack.set(ModDataComponents.FIRING_PARAMETERS, new FiringParameters.Parameters(new BlockPos(this.posX, this.posY, this.posZ), radius, isDepressed));
 
             this.resetPos();
             this.container.setChanged();

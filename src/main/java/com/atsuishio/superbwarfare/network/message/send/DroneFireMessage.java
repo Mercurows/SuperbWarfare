@@ -46,11 +46,13 @@ public record DroneFireMessage(Vector3f pos) implements CustomPacketPayload {
 
                     var parameters = offStack.get(ModDataComponents.FIRING_PARAMETERS);
                     var isDepressed = false;
+                    var radius = 0;
                     if (parameters != null) {
                         isDepressed = parameters.isDepressed();
+                        radius = parameters.radius();
                     }
 
-                    offStack.set(ModDataComponents.FIRING_PARAMETERS, new FiringParameters.Parameters(new BlockPos((int) message.pos.x, (int) message.pos.y, (int) message.pos.z), isDepressed));
+                    offStack.set(ModDataComponents.FIRING_PARAMETERS, new FiringParameters.Parameters(new BlockPos((int) message.pos.x, (int) message.pos.y, (int) message.pos.z), radius, isDepressed));
 
                     player.displayClientMessage(Component.translatable("tips.superbwarfare.mortar.target_pos").withStyle(ChatFormatting.GRAY)
                             .append(Component.literal("[" + message.pos.x()

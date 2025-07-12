@@ -49,11 +49,12 @@ public enum SetFiringParametersMessage implements CustomPacketPayload {
 
             var parameters = stack.get(ModDataComponents.FIRING_PARAMETERS);
             var isDepressed = parameters != null && parameters.isDepressed();
+            var radius = parameters != null ? parameters.radius() : 0;
 
             if (lookAtEntity) {
-                stack.set(ModDataComponents.FIRING_PARAMETERS, new FiringParameters.Parameters(lookingEntity.blockPosition(), isDepressed));
+                stack.set(ModDataComponents.FIRING_PARAMETERS, new FiringParameters.Parameters(lookingEntity.blockPosition(), radius, isDepressed));
             } else {
-                stack.set(ModDataComponents.FIRING_PARAMETERS, new FiringParameters.Parameters(new BlockPos((int) hitPos.x, (int) hitPos.y, (int) hitPos.z), isDepressed));
+                stack.set(ModDataComponents.FIRING_PARAMETERS, new FiringParameters.Parameters(new BlockPos((int) hitPos.x, (int) hitPos.y, (int) hitPos.z), radius, isDepressed));
             }
 
             var pos = Objects.requireNonNull(stack.get(ModDataComponents.FIRING_PARAMETERS)).pos();
@@ -73,7 +74,10 @@ public enum SetFiringParametersMessage implements CustomPacketPayload {
             } else {
                 pos = new BlockPos((int) hitPos.x, (int) hitPos.y, (int) hitPos.z);
             }
-            mainStack.set(ModDataComponents.FIRING_PARAMETERS, new FiringParameters.Parameters(pos, false));
+            var parameters = mainStack.get(ModDataComponents.FIRING_PARAMETERS);
+            var isDepressed = parameters != null && parameters.isDepressed();
+            var radius = parameters != null ? parameters.radius() : 0;
+            mainStack.set(ModDataComponents.FIRING_PARAMETERS, new FiringParameters.Parameters(pos, radius, isDepressed));
 
             player.displayClientMessage(Component.translatable("tips.superbwarfare.mortar.target_pos")
                     .withStyle(ChatFormatting.GRAY)

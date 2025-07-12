@@ -204,4 +204,9 @@ public class Type63Entity extends MobileVehicleEntity implements GeoEntity, OBBE
     public void updateOBB() {
         Matrix4f transform = getVehicleTransform(1);
     }
+
+    @Override
+    public boolean hasEnergyStorage() {
+        return false;
+    }
 }

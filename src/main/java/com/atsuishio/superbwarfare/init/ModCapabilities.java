@@ -83,7 +83,7 @@ public class ModCapabilities {
             if (entity.get().getBaseClass().isAssignableFrom(EnergyVehicleEntity.class)) {
                 event.registerEntity(Capabilities.EnergyStorage.ENTITY,
                         entity.get(),
-                        (obj, ctx) -> (obj instanceof EnergyVehicleEntity vehicle) ? vehicle.getEnergyStorage() : null
+                        (obj, ctx) -> (obj instanceof EnergyVehicleEntity vehicle && vehicle.hasEnergyStorage()) ? vehicle.getEnergyStorage() : null
                 );
             }
 
