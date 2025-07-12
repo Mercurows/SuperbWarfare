@@ -136,17 +136,18 @@ public class FiringParametersScreen extends Screen {
         int i = (this.width - this.imageWidth) / 2;
         int j = (this.height - this.imageHeight) / 2;
 
-        this.posX = new EditBox(this.font, i + 44, j + 20, 40, 12, Component.empty());
+        this.posX = new EditBox(this.font, i + 44, j + 20, 60, 12, Component.empty());
         this.initEditBox(this.posX);
 
-        this.posY = new EditBox(this.font, i + 43, j + 37, 40, 12, Component.empty());
+        this.posY = new EditBox(this.font, i + 43, j + 37, 60, 12, Component.empty());
         this.initEditBox(this.posY);
 
-        this.posZ = new EditBox(this.font, i + 42, j + 54, 40, 12, Component.empty());
+        this.posZ = new EditBox(this.font, i + 42, j + 54, 60, 12, Component.empty());
         this.initEditBox(this.posZ);
 
-        this.radius = new EditBox(this.font, i + 41, j + 71, 40, 12, Component.empty());
+        this.radius = new EditBox(this.font, i + 41, j + 71, 20, 12, Component.empty());
         this.initEditBox(this.radius);
+        this.radius.setMaxLength(2);
         this.radius.setFilter(s -> s.matches("\\d*"));
     }
 
@@ -155,7 +156,7 @@ public class FiringParametersScreen extends Screen {
         editBox.setTextColor(0xb29f7c);
         editBox.setTextColorUneditable(0x5b4c3c);
         editBox.setBordered(false);
-        editBox.setMaxLength(10);
+        editBox.setMaxLength(9);
         this.addWidget(editBox);
         editBox.setEditable(true);
         editBox.setFilter(s -> s.matches("-?\\d*"));
