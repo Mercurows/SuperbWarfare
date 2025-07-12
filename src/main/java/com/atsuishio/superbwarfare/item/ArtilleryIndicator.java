@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.item;
 import com.atsuishio.superbwarfare.client.TooltipTool;
 import com.atsuishio.superbwarfare.client.screens.ArtilleryIndicatorScreen;
 import com.atsuishio.superbwarfare.tools.NBTTool;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -36,6 +37,12 @@ public class ArtilleryIndicator extends Item implements ItemScreenProvider {
     @ParametersAreNonnullByDefault
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
         TooltipTool.addScreenProviderText(tooltipComponents);
+        tooltipComponents.add(Component.translatable("des.superbwarfare.artillery_indicator_1").withStyle(ChatFormatting.GRAY));
+        tooltipComponents.add(Component.translatable("des.superbwarfare.artillery_indicator_2").withStyle(ChatFormatting.GRAY));
+        tooltipComponents.add(Component.translatable("des.superbwarfare.artillery_indicator_3").withStyle(ChatFormatting.GRAY));
+        tooltipComponents.add(Component.translatable("des.superbwarfare.artillery_indicator_4").withStyle(ChatFormatting.GRAY));
+        tooltipComponents.add(Component.literal(" ").withStyle(ChatFormatting.GRAY));
+        tooltipComponents.add(Component.translatable("des.superbwarfare.artillery_indicator_5").withStyle(ChatFormatting.GRAY));
     }
 
     @Override
