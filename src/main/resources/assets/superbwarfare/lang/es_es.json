@@ -159,7 +159,7 @@
   "item.superbwarfare.ap_5_inches": "oBÚS AP",
   "item.superbwarfare.javelin_missile": "Misíl Javelin",
   "item.superbwarfare.lunge_mine": "Mina de Estocada",
-  "item.superbwarfare.rocket_70": "Cohete de 70mm",
+  "item.superbwarfare.small_rocket": "Cohete de bajo Calibre",
   "item.superbwarfare.small_shell": "Munición de bajo Calibre",
   "item.superbwarfare.wire_guide_missile": "Misil guiado por Hilos",
 
@@ -410,7 +410,7 @@
   "entity.superbwarfare.cannon_shell": "Casquillo de cañón",
   "entity.superbwarfare.javelin_missile": "Misil Javelin",
   "entity.superbwarfare.small_cannon_shell": "Casquillo de cañón pequeño",
-  "entity.superbwarfare.heli_rocket": "Cohete Heli",
+  "entity.superbwarfare.small_rocket": "Cohete de bajo Calibre",
   "entity.superbwarfare.flare_decoy": "Señuelo de bengala",
   "entity.superbwarfare.mortar": "Morteri",
   "entity.superbwarfare.target": "Objetivo",

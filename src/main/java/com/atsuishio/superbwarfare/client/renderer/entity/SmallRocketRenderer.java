@@ -1,8 +1,8 @@
 package com.atsuishio.superbwarfare.client.renderer.entity;
 
-import com.atsuishio.superbwarfare.client.layer.projectile.HeliRocketLayer;
-import com.atsuishio.superbwarfare.client.model.entity.HeliRocketModel;
-import com.atsuishio.superbwarfare.entity.projectile.HeliRocketEntity;
+import com.atsuishio.superbwarfare.client.layer.projectile.SmallRocketLayer;
+import com.atsuishio.superbwarfare.client.model.entity.SmallRocketModel;
+import com.atsuishio.superbwarfare.entity.projectile.SmallRocketEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
@@ -11,22 +11,23 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.cache.object.BakedGeoModel;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
 
-public class HeliRocketRenderer extends GeoEntityRenderer<HeliRocketEntity> {
-    public HeliRocketRenderer(EntityRendererProvider.Context renderManager) {
-        super(renderManager, new HeliRocketModel());
-        this.addRenderLayer(new HeliRocketLayer(this));
+public class SmallRocketRenderer extends GeoEntityRenderer<SmallRocketEntity> {
+    public SmallRocketRenderer(EntityRendererProvider.Context renderManager) {
+        super(renderManager, new SmallRocketModel());
+        this.addRenderLayer(new SmallRocketLayer(this));
     }
 
     @Override
-    public RenderType getRenderType(HeliRocketEntity animatable, ResourceLocation texture, MultiBufferSource bufferSource, float partialTick) {
+    public RenderType getRenderType(SmallRocketEntity animatable, ResourceLocation texture, MultiBufferSource bufferSource, float partialTick) {
         return RenderType.entityTranslucent(getTextureLocation(animatable));
     }
 
     @Override
-    public void preRender(PoseStack poseStack, HeliRocketEntity entity, BakedGeoModel model, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, int color) {
+    public void preRender(PoseStack poseStack, SmallRocketEntity entity, BakedGeoModel model, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, int color) {
         float scale = 1f;
         this.scaleHeight = scale;
         this.scaleWidth = scale;
@@ -34,7 +35,7 @@ public class HeliRocketRenderer extends GeoEntityRenderer<HeliRocketEntity> {
     }
 
     @Override
-    public void render(HeliRocketEntity entityIn, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource bufferIn, int packedLightIn) {
+    public void render(SmallRocketEntity entityIn, float entityYaw, float partialTicks, PoseStack poseStack, @NotNull MultiBufferSource bufferIn, int packedLightIn) {
         poseStack.pushPose();
         poseStack.mulPose(Axis.YP.rotationDegrees(Mth.lerp(partialTicks, entityIn.yRotO, entityIn.getYRot()) - 90));
         poseStack.mulPose(Axis.ZP.rotationDegrees(90 + Mth.lerp(partialTicks, entityIn.xRotO, entityIn.getXRot())));
@@ -43,7 +44,7 @@ public class HeliRocketRenderer extends GeoEntityRenderer<HeliRocketEntity> {
     }
 
     @Override
-    protected float getDeathMaxRotation(HeliRocketEntity entityLivingBaseIn) {
+    protected float getDeathMaxRotation(SmallRocketEntity entityLivingBaseIn) {
         return 0.0F;
     }
 }

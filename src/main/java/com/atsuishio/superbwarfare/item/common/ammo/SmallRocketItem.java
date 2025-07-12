@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.item.common.ammo;
 
-import com.atsuishio.superbwarfare.entity.projectile.HeliRocketEntity;
+import com.atsuishio.superbwarfare.entity.projectile.SmallRocketEntity;
 import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
@@ -18,27 +18,27 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
-public class Rocket70Item extends Item implements ProjectileItem {
+public class SmallRocketItem extends Item implements ProjectileItem {
 
-    public Rocket70Item() {
+    public SmallRocketItem() {
         super(new Properties());
     }
 
-    public static class Rocket70DispenseBehavior extends ProjectileDispenseBehavior {
-        public Rocket70DispenseBehavior() {
-            super(ModItems.ROCKET_70.get());
+    public static class SmallRocketDispenseBehavior extends ProjectileDispenseBehavior {
+        public SmallRocketDispenseBehavior() {
+            super(ModItems.SMALL_ROCKET.get());
         }
 
         @Override
         protected void playSound(BlockSource blockSource) {
-            blockSource.level().playSound(null, blockSource.pos(), ModSounds.HELICOPTER_ROCKET_FIRE_3P.get(), SoundSource.BLOCKS, 2.0F, 1.0F);
+            blockSource.level().playSound(null, blockSource.pos(), ModSounds.SMALL_ROCKET_FIRE_3P.get(), SoundSource.BLOCKS, 2.0F, 1.0F);
         }
     }
 
     @Override
     @ParametersAreNonnullByDefault
     public @NotNull Projectile asProjectile(Level level, Position pos, ItemStack stack, Direction direction) {
-        return new HeliRocketEntity(ModEntities.HELI_ROCKET.get(), pos.x(), pos.y(), pos.z(), level);
+        return new SmallRocketEntity(ModEntities.SMALL_ROCKET.get(), pos.x(), pos.y(), pos.z(), level);
     }
 
     @Override

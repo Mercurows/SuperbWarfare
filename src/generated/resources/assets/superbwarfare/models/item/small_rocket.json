@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "superbwarfare:item/rocket_70"
+    "layer0": "superbwarfare:item/small_rocket"
   }
 }

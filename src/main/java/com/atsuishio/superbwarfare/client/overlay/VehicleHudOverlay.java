@@ -4,8 +4,8 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.client.DisplayConfig;
 import com.atsuishio.superbwarfare.entity.vehicle.SpeedboatEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.*;
-import com.atsuishio.superbwarfare.entity.vehicle.weapon.HeliRocketWeapon;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.LaserWeapon;
+import com.atsuishio.superbwarfare.entity.vehicle.weapon.SmallRocketWeapon;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.SwarmDroneWeapon;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModItems;
@@ -513,7 +513,7 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
                 );
 
                 preciseBlit(guiGraphics, SELECTED, w - 95, startY, 100, 0, 0, 8, 8, 8, 8);
-                if (InventoryTool.hasCreativeAmmoBox(player) && !(weapon instanceof LaserWeapon) && !(weapon instanceof HeliRocketWeapon) && !(weapon instanceof SwarmDroneWeapon)) {
+                if (InventoryTool.hasCreativeAmmoBox(player) && !(weapon instanceof LaserWeapon) && !(weapon instanceof SmallRocketWeapon) && !(weapon instanceof SwarmDroneWeapon)) {
                     preciseBlit(guiGraphics, NUMBER, w - 28 + xOffset, h - frameIndex * 18 - 15, 100, 58, 0, 10, 7.5f, 75, 7.5f);
                 } else {
                     renderNumber(guiGraphics, weaponVehicle.getAmmoCount(player), weapon instanceof LaserWeapon,

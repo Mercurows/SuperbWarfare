@@ -159,7 +159,7 @@
   "item.superbwarfare.ap_5_inches": "Obus AP",
   "item.superbwarfare.javelin_missile": "Missile javelin",
   "item.superbwarfare.lunge_mine": "Mine à propulsion",
-  "item.superbwarfare.rocket_70": "Rocket 70mm",
+  "item.superbwarfare.small_rocket": "Rocket de petit calibre",
   "item.superbwarfare.small_shell": "Obus de petit calibre",
   "item.superbwarfare.wire_guide_missile": "Missile téléguidé",
 
@@ -404,7 +404,7 @@
   "entity.superbwarfare.cannon_shell": "Coquille de canon",
   "entity.superbwarfare.javelin_missile": "Missile Javelin",
   "entity.superbwarfare.small_cannon_shell": "Petit obus de canon",
-  "entity.superbwarfare.heli_rocket": "Roquette Heli",
+  "entity.superbwarfare.small_rocket": "Rocket de petit calibre",
   "entity.superbwarfare.flare_decoy": "Leurre de fusée éclairante",
   "entity.superbwarfare.mortar": "Mortier",
   "entity.superbwarfare.target": "Cible",
