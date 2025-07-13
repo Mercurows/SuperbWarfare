@@ -1,7 +1,13 @@
 {
-  "EntityTypes": [
-    "superbwarfare:ah_6",
-    "superbwarfare:tom_6",
+  "List": [
+    {
+      "Type": "superbwarfare:tom_6",
+      "Weight": 3
+    },
+    {
+      "Type": "superbwarfare:ah_6",
+      "Weight": 2
+    },
     "superbwarfare:a_10a"
   ]
 }
