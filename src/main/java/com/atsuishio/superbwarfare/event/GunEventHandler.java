@@ -532,6 +532,9 @@ public class GunEventHandler {
                 if (item.equals("m2hb_blueprint")) {
                     mapping.remap(ModItems.M_2_HB_BLUEPRINT.get());
                 }
+                if (item.equals("rocket_70")) {
+                    mapping.remap(ModItems.SMALL_ROCKET.get());
+                }
             }
         }
     }

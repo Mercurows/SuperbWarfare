@@ -1,11 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
   "category": "equipment",
-  "pattern": [
-    " a ",
-    "bcb",
-    " d "
-  ],
   "key": {
     "a": {
       "item": "superbwarfare:fusee"
@@ -20,8 +15,14 @@
       "item": "superbwarfare:grain"
     }
   },
+  "pattern": [
+    " a ",
+    "bcb",
+    " d "
+  ],
   "result": {
-    "item": "superbwarfare:small_rocket",
-    "count": 4
-  }
+    "count": 4,
+    "item": "superbwarfare:small_rocket"
+  },
+  "show_notification": true
 }

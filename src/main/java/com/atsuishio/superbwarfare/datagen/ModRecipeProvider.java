@@ -69,6 +69,28 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .unlockedBy(getHasName(ModItems.STEEL_MATERIALS.barrel().get()), has(ModItems.STEEL_MATERIALS.barrel().get()))
                 .save(writer, Mod.loc(getItemName(ModItems.STEEL_PIPE.get())));
 
+        // 弹药
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.SMALL_ROCKET.get(), 4)
+                .pattern(" a ")
+                .pattern("bcb")
+                .pattern(" d ")
+                .define('a', ModItems.FUSEE.get())
+                .define('b', Items.COPPER_INGOT)
+                .define('c', ModItems.HIGH_ENERGY_EXPLOSIVES.get())
+                .define('d', ModItems.GRAIN.get())
+                .unlockedBy(getHasName(ModItems.FUSEE.get()), has(ModItems.FUSEE.get()))
+                .save(writer, Mod.loc(getItemName(ModItems.SMALL_ROCKET.get())));
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.ROCKET.get(), 2)
+                .pattern(" a ")
+                .pattern("bcb")
+                .pattern(" d ")
+                .define('a', ModItems.FUSEE.get())
+                .define('b', Items.IRON_INGOT)
+                .define('c', ModItems.HIGH_ENERGY_EXPLOSIVES.get())
+                .define('d', ModItems.GRAIN.get())
+                .unlockedBy(getHasName(ModItems.FUSEE.get()), has(ModItems.FUSEE.get()))
+                .save(writer, Mod.loc(getItemName(ModItems.ROCKET.get())));
+
         // 方块
         ShapedRecipeBuilder.shaped(RecipeCategory.REDSTONE, ModItems.SUPERB_ITEM_INTERFACE.get())
                 .pattern("cac")
