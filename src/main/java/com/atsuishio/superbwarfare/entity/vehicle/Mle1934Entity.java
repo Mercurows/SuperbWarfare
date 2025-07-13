@@ -17,7 +17,6 @@ import com.atsuishio.superbwarfare.item.common.ammo.CannonShellItem;
 import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage;
 import com.atsuishio.superbwarfare.tools.*;
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -29,7 +28,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
-import net.minecraft.world.Container;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
@@ -43,10 +41,6 @@ import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.wrapper.InvWrapper;
 import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -65,7 +59,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import static com.atsuishio.superbwarfare.tools.RangeTool.calculateLaunchVector;
 
-public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEntity, Container, LockTargetEntity {
+public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEntity, LockTargetEntity {
 
     public static final EntityDataAccessor<Integer> COOL_DOWN = SynchedEntityData.defineId(Mle1934Entity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> TYPE = SynchedEntityData.defineId(Mle1934Entity.class, EntityDataSerializers.INT);
@@ -87,9 +81,6 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
     public Mle1934Entity(EntityType<Mle1934Entity> type, Level world) {
         super(type, world);
     }
-
-    private LazyOptional<?> itemHandler = LazyOptional.of(() -> new InvWrapper(this));
-    public ItemStack stack = ItemStack.EMPTY;
 
     @Override
     public VehicleWeapon[][] initWeapons() {
@@ -178,8 +169,8 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
         }
 
         if (stack.is(ModTags.Items.CROWBAR) && !player.isShiftKeyDown()) {
-            if (this.stack.getItem() instanceof CannonShellItem) {
-                var weaponType = this.stack.is(ModItems.AP_5_INCHES.get()) ? 0 : 1;
+            if (this.items.get(0).getItem() instanceof CannonShellItem) {
+                var weaponType = this.items.get(0).is(ModItems.AP_5_INCHES.get()) ? 0 : 1;
                 setWeaponIndex(0, weaponType);
                 vehicleShoot(player, 0);
             }
@@ -187,9 +178,8 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
         }
 
         if (stack.getItem() instanceof CannonShellItem) {
-            var itemHandler = this.getCapability(ForgeCapabilities.ITEM_HANDLER).resolve().get();
-            if (this.entityData.get(COOL_DOWN) == 0 && (stack.getItem() == this.stack.getItem() || this.stack.isEmpty())) {
-                itemHandler.insertItem(0, stack.copyWithCount(1), false);
+            if (this.entityData.get(COOL_DOWN) == 0 && (stack.getItem() == this.items.get(0).getItem() || this.items.get(0).isEmpty())) {
+                this.setItem(0, stack.copyWithCount(1));
                 if (!player.isCreative()) {
                     stack.shrink(1);
                 }
@@ -393,11 +383,11 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
                     consumed = InventoryTool.consumeItem(player.getInventory().items, ammo, 2);
                 }
             } else {
-                consumed = stack.getCount();
+                consumed = this.items.get(0).getCount();
             }
 
             if (getFirstPassenger() != player) {
-                this.stack = ItemStack.EMPTY;
+                this.clearContent();
             }
 
             boolean salvoShoot = consumed == 2;
@@ -651,36 +641,8 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
     }
 
     @Override
-    public boolean isEmpty() {
-        return stack == ItemStack.EMPTY;
-    }
-
-    @Override
-    public @NotNull ItemStack getItem(int slot) {
-        return slot == 0 ? stack : ItemStack.EMPTY;
-    }
-
-    @Override
-    public @NotNull ItemStack removeItem(int slot, int amount) {
-        if (slot != 0 || amount <= 0 || stack.isEmpty()) {
-            return ItemStack.EMPTY;
-        }
-        stack.shrink(2);
-        if (stack.isEmpty()) {
-            stack = ItemStack.EMPTY;
-        }
-        return stack;
-    }
-
-    @Override
     public @NotNull ItemStack removeItemNoUpdate(int slot) {
         return removeItem(0, 2);
-    }
-
-    @Override
-    public void setItem(int slot, @NotNull ItemStack stack) {
-        if (slot != 0) return;
-        this.stack = stack;
     }
 
     @Override
@@ -696,38 +658,7 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
     }
 
     @Override
-    public void clearContent() {
-        this.stack = ItemStack.EMPTY;
-    }
-
-    @Override
     public boolean canPlaceItem(int slot, @NotNull ItemStack stack) {
-        if (slot != 0 || this.entityData.get(COOL_DOWN) != 0) return false;
-        return stack.getItem() instanceof CannonShellItem;
-    }
-
-    @Override
-    public <T> @NotNull LazyOptional<T> getCapability(@NotNull Capability<T> capability, @Nullable Direction facing) {
-        if (this.isAlive() && capability == ForgeCapabilities.ITEM_HANDLER) {
-            return itemHandler.cast();
-        }
-        return super.getCapability(capability, facing);
-    }
-
-    @Override
-    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap) {
-        return this.getCapability(cap, null);
-    }
-
-    @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        itemHandler.invalidate();
-    }
-
-    @Override
-    public void reviveCaps() {
-        super.reviveCaps();
-        itemHandler = LazyOptional.of(() -> new InvWrapper(this));
+        return super.canPlaceItem(slot, stack) && this.entityData.get(COOL_DOWN) == 0 && stack.getItem() instanceof CannonShellItem;
     }
 }

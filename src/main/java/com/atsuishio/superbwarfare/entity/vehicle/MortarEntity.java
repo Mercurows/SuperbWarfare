@@ -25,7 +25,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
-import net.minecraft.world.Container;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.*;
@@ -55,7 +54,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import static com.atsuishio.superbwarfare.tools.RangeTool.calculateLaunchVector;
 
-public class MortarEntity extends VehicleEntity implements GeoEntity, Container, LockTargetEntity {
+public class MortarEntity extends VehicleEntity implements GeoEntity, LockTargetEntity {
 
     public static final EntityDataAccessor<Integer> FIRE_TIME = SynchedEntityData.defineId(MortarEntity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Float> PITCH = SynchedEntityData.defineId(MortarEntity.class, EntityDataSerializers.FLOAT);
@@ -70,7 +69,6 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, Container,
 
     private LazyOptional<?> itemHandler = LazyOptional.of(() -> new InvWrapper(this));
     private LivingEntity shooter = null;
-    public ItemStack stack = ItemStack.EMPTY;
 
     public MortarEntity(PlayMessages.SpawnEntity packet, Level level) {
         this(ModEntities.MORTAR.get(), level);
@@ -153,7 +151,7 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, Container,
     }
 
     public void fire(@Nullable LivingEntity shooter) {
-        if (!(this.stack.getItem() instanceof MortarShell)) return;
+        if (!(this.items.get(0).getItem() instanceof MortarShell)) return;
         if (entityData.get(FIRE_TIME) != 0) return;
 
         this.shooter = shooter;
@@ -185,14 +183,14 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, Container,
         }
 
         if (mainHandItem.is(ModTags.Items.CROWBAR) && !player.isShiftKeyDown()) {
-            if (this.stack.getItem() instanceof MortarShell && this.entityData.get(FIRE_TIME) == 0) {
+            if (this.items.get(0).getItem() instanceof MortarShell && this.entityData.get(FIRE_TIME) == 0) {
                 fire(player);
             }
             return InteractionResult.SUCCESS;
         }
 
-        if (mainHandItem.getItem() instanceof MortarShell && !player.isShiftKeyDown() && this.entityData.get(FIRE_TIME) == 0 && stack.isEmpty()) {
-            this.stack = mainHandItem.copyWithCount(1);
+        if (mainHandItem.getItem() instanceof MortarShell && !player.isShiftKeyDown() && this.entityData.get(FIRE_TIME) == 0 && this.items.get(0).isEmpty()) {
+            this.items.set(0, mainHandItem.copyWithCount(1));
             if (!player.isCreative()) {
                 mainHandItem.shrink(1);
             }
@@ -298,10 +296,10 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, Container,
             this.entityData.set(FIRE_TIME, fireTime - 1);
         }
 
-        if (fireTime == 5 && this.stack.getItem() instanceof MortarShell) {
+        if (fireTime == 5 && this.items.get(0).getItem() instanceof MortarShell) {
             Level level = this.level();
             if (level instanceof ServerLevel server) {
-                MortarShellEntity entityToSpawn = MortarShell.createShell(shooter, level, this.stack);
+                MortarShellEntity entityToSpawn = MortarShell.createShell(shooter, level, this.items.get(0));
                 entityToSpawn.setPos(this.getX(), this.getEyeY(), this.getZ());
                 entityToSpawn.shoot(this.getLookAngle().x, this.getLookAngle().y, this.getLookAngle().z, 13f, (float) 0.1);
                 level.addFreshEntity(entityToSpawn);
@@ -309,7 +307,7 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, Container,
                         0.007);
                 server.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, this.getX(), this.getY(), this.getZ(), 50, 2, 0.02, 2, 0.0005);
 
-                this.stack = ItemStack.EMPTY;
+                this.clearContent();
                 resetTarget();
             }
         }
@@ -402,39 +400,6 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, Container,
     }
 
     @Override
-    public boolean isEmpty() {
-        return stack == ItemStack.EMPTY;
-    }
-
-    @Override
-    public @NotNull ItemStack getItem(int slot) {
-        return slot == 0 ? stack : ItemStack.EMPTY;
-    }
-
-    @Override
-    public @NotNull ItemStack removeItem(int slot, int amount) {
-        if (slot != 0 || amount <= 0 || stack.isEmpty()) {
-            return ItemStack.EMPTY;
-        }
-        stack.shrink(1);
-        if (stack.isEmpty()) {
-            stack = ItemStack.EMPTY;
-        }
-        return stack;
-    }
-
-    @Override
-    public @NotNull ItemStack removeItemNoUpdate(int slot) {
-        return removeItem(0, 1);
-    }
-
-    @Override
-    public void setItem(int slot, @NotNull ItemStack stack) {
-        if (slot != 0) return;
-        this.stack = stack;
-    }
-
-    @Override
     public void setChanged() {
         if (!entityData.get(INTELLIGENT)) {
             fire(null);
@@ -442,19 +407,8 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, Container,
     }
 
     @Override
-    public boolean stillValid(@NotNull Player player) {
-        return false;
-    }
-
-    @Override
-    public void clearContent() {
-        this.stack = ItemStack.EMPTY;
-    }
-
-    @Override
     public boolean canPlaceItem(int slot, @NotNull ItemStack stack) {
-        if (slot != 0 || this.entityData.get(FIRE_TIME) != 0) return false;
-        return stack.getItem() instanceof MortarShell;
+        return super.canPlaceItem(slot, stack) && this.entityData.get(FIRE_TIME) == 0 && stack.getItem() instanceof MortarShell;
     }
 
     @Override
@@ -468,17 +422,5 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, Container,
     @Override
     public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap) {
         return this.getCapability(cap, null);
-    }
-
-    @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        itemHandler.invalidate();
-    }
-
-    @Override
-    public void reviveCaps() {
-        super.reviveCaps();
-        itemHandler = LazyOptional.of(() -> new InvWrapper(this));
     }
 }

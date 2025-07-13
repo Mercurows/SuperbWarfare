@@ -42,23 +42,23 @@ public enum ArtilleryIndicatorFireMessage {
                         var tag = tags.getCompound(i);
                         Entity entity = EntityFindUtil.findEntity(player.level(), tag.getString("UUID"));
                         if (entity instanceof MortarEntity mortarEntity) {
-                            if (mortarEntity.stack.getItem() instanceof MortarShell && mortarEntity.getEntityData().get(FIRE_TIME) == 0) {
+                            if (mortarEntity.getItem(0).getItem() instanceof MortarShell && mortarEntity.getEntityData().get(FIRE_TIME) == 0) {
                                 int randomNumber = (int) (Math.random() * 5) + 1;
                                 Mod.queueServerWork(randomNumber, () -> mortarEntity.fire(player));
                             }
                         }
                         if (entity instanceof Mk42Entity mk42Entity) {
-                            if (mk42Entity.stack.getItem() instanceof CannonShellItem && mk42Entity.getEntityData().get(COOL_DOWN) == 0) {
+                            if (mk42Entity.getItem(0).getItem() instanceof CannonShellItem && mk42Entity.getEntityData().get(COOL_DOWN) == 0) {
                                 int randomNumber = (int) (Math.random() * 5) + 1;
-                                var weaponType = mk42Entity.stack.is(ModItems.AP_5_INCHES.get()) ? 0 : 1;
+                                var weaponType = mk42Entity.getItem(0).is(ModItems.AP_5_INCHES.get()) ? 0 : 1;
                                 mk42Entity.setWeaponIndex(0, weaponType);
                                 Mod.queueServerWork(randomNumber, () -> mk42Entity.vehicleShoot(player, 0));
                             }
                         }
                         if (entity instanceof Mle1934Entity mle1934Entity) {
-                            if (mle1934Entity.stack.getItem() instanceof CannonShellItem && mle1934Entity.getEntityData().get(COOL_DOWN) == 0) {
+                            if (mle1934Entity.getItem(0).getItem() instanceof CannonShellItem && mle1934Entity.getEntityData().get(COOL_DOWN) == 0) {
                                 int randomNumber = (int) (Math.random() * 5) + 1;
-                                var weaponType = mle1934Entity.stack.is(ModItems.AP_5_INCHES.get()) ? 0 : 1;
+                                var weaponType = mle1934Entity.getItem(0).is(ModItems.AP_5_INCHES.get()) ? 0 : 1;
                                 mle1934Entity.setWeaponIndex(0, weaponType);
                                 Mod.queueServerWork(randomNumber, () -> mle1934Entity.vehicleShoot(player, 0));
                             }
