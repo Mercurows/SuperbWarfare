@@ -187,7 +187,7 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, LockTarget
                 player.swing(InteractionHand.MAIN_HAND);
                 return InteractionResult.SUCCESS;
             } else {
-                player.displayClientMessage(Component.translatable("tips.superbwarfare.mortar.warn").withStyle(ChatFormatting.RED), true);
+                player.displayClientMessage(Component.translatable("tips.superbwarfare.mortar.warn", this.getDisplayName()).withStyle(ChatFormatting.RED), true);
                 return InteractionResult.FAIL;
             }
         }
@@ -196,7 +196,7 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, LockTarget
                 player.swing(InteractionHand.OFF_HAND);
                 return InteractionResult.SUCCESS;
             } else {
-                player.displayClientMessage(Component.translatable("tips.superbwarfare.mortar.warn").withStyle(ChatFormatting.RED), true);
+                player.displayClientMessage(Component.translatable("tips.superbwarfare.mortar.warn", this.getDisplayName()).withStyle(ChatFormatting.RED), true);
                 return InteractionResult.FAIL;
             }
         }

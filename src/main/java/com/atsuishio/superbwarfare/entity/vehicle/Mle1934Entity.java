@@ -193,7 +193,7 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
                 player.swing(InteractionHand.MAIN_HAND);
                 return InteractionResult.SUCCESS;
             } else {
-                player.displayClientMessage(Component.translatable("tips.superbwarfare.mle_1934.warn").withStyle(ChatFormatting.RED), true);
+                player.displayClientMessage(Component.translatable("tips.superbwarfare.mortar.warn", this.getDisplayName()).withStyle(ChatFormatting.RED), true);
                 return InteractionResult.FAIL;
             }
         }
@@ -202,7 +202,7 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
                 player.swing(InteractionHand.OFF_HAND);
                 return InteractionResult.SUCCESS;
             } else {
-                player.displayClientMessage(Component.translatable("tips.superbwarfare.mle_1934.warn").withStyle(ChatFormatting.RED), true);
+                player.displayClientMessage(Component.translatable("tips.superbwarfare.mortar.warn", this.getDisplayName()).withStyle(ChatFormatting.RED), true);
                 return InteractionResult.FAIL;
             }
         }
