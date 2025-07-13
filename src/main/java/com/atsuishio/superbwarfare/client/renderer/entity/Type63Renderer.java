@@ -10,6 +10,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import software.bernie.geckolib.cache.object.BakedGeoModel;
 import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
@@ -69,6 +70,13 @@ public class Type63Renderer extends GeoEntityRenderer<Type63Entity> {
 
         if (name.equals("shouluny")) {
             bone.setRotZ(-Mth.lerp(partialTick, animatable.turretYRotO, animatable.getTurretYRot()) * 6);
+        }
+
+        for (int i = 0; i < 11; i++) {
+            var itemHandler = animatable.getCapability(ForgeCapabilities.ITEM_HANDLER).resolve().get();
+            if (name.equals("shell" + i)) {
+                bone.setHidden(itemHandler.getStackInSlot(i).isEmpty());
+            }
         }
 
         super.renderRecursively(poseStack, animatable, bone, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, red, green, blue, alpha);

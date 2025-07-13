@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.entity.OBBEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ContainerMobileVehicleEntity;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModEntities;
+import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.SmallShellItem;
 import com.atsuishio.superbwarfare.tools.CustomExplosion;
 import com.atsuishio.superbwarfare.tools.OBB;
@@ -18,6 +19,7 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -30,8 +32,8 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.*;
 import org.joml.Math;
+import org.joml.*;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -121,34 +123,38 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
             if (OBB.getLookingObb(player, player.getEntityReach()) == hoe1) {
                 if (player.level() instanceof ServerLevel) {
                     setYRot(getYRot() + (float) interactionTick);
-                    interactionTick++;
+                    interactEvent(new Vec3(hoe1.center()));
                 }
                 player.swing(InteractionHand.MAIN_HAND);
             }
             if (OBB.getLookingObb(player, player.getEntityReach()) == hoe2) {
                 if (player.level() instanceof ServerLevel) {
                     setYRot(getYRot() - (float) interactionTick);
-                    interactionTick++;
+                    interactEvent(new Vec3(hoe2.center()));
                 }
                 player.swing(InteractionHand.MAIN_HAND);
             }
             if (OBB.getLookingObb(player, player.getEntityReach()) == yawController) {
-                if (player.level() instanceof ServerLevel) {
-                    interactionTick++;
-                }
+                interactEvent(new Vec3(yawController.center()));
                 entityData.set(YAW, Mth.clamp(entityData.get(YAW) + (player.isShiftKeyDown() ? -0.01f : 0.01f) * (float) interactionTick, -15, 15));
                 player.swing(InteractionHand.MAIN_HAND);
             }
             if (OBB.getLookingObb(player, player.getEntityReach()) == pitchController) {
-                if (player.level() instanceof ServerLevel) {
-                    interactionTick++;
-                }
+                interactEvent(new Vec3(pitchController.center()));
                 entityData.set(PITCH, Mth.clamp(entityData.get(PITCH) + (player.isShiftKeyDown() ? 0.02f : -0.02f) * (float) interactionTick, -60, 5));
                 player.swing(InteractionHand.MAIN_HAND);
             }
         }
-
         return InteractionResult.FAIL;
+    }
+
+    public void interactEvent(Vec3 vec3) {
+        if (level() instanceof ServerLevel serverLevel) {
+            interactionTick++;
+            if (tickCount %5 == 0) {
+                serverLevel.playSound(null, vec3.x, vec3.y, vec3.z, ModSounds.HAND_WHEEL_ROT.get(), SoundSource.PLAYERS, 1f, random.nextFloat() * 0.1f + 0.9f);
+            }
+        }
     }
 
     @Override

@@ -3390,5 +3390,16 @@
         "stream": false
       }
     ]
+  },
+  "hand_wheel_rot": {
+    "sounds": [
+      {
+        "name": "superbwarfare:type63/rot1",
+        "stream": true
+      },      {
+        "name": "superbwarfare:type63/rot2",
+        "stream": true
+      }
+    ]
   }
 }

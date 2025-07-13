@@ -33,7 +33,7 @@ public class Type63InfoOverlay implements IGuiOverlay {
                             .append(Component.literal(FormatTool.format2D(-VehicleEntity.getYRotFromVector(type63Entity.getShootVector(partialTick)), "°"))),
                     screenWidth / 2 - 90, screenHeight / 2 - 16, -1, false);
             guiGraphics.drawString(Minecraft.getInstance().font, Component.translatable("tips.superbwarfare.mortar.range")
-                            .append(Component.literal(FormatTool.format1D((int) RangeTool.getRange(VehicleEntity.getXRotFromVector(type63Entity.getShootVector(partialTick)), 14, 0.05), "m"))),
+                            .append(Component.literal(FormatTool.format1D((int) RangeTool.getRange(VehicleEntity.getXRotFromVector(type63Entity.getShootVector(partialTick)), 10, 0.05), "m"))),
                     screenWidth / 2 - 90, screenHeight / 2 - 6, -1, false);
         }
     }
