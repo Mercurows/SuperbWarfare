@@ -356,9 +356,7 @@ public abstract class VehicleEntity extends Entity {
         if (this instanceof WeaponVehicleEntity weaponVehicle && weaponVehicle.getAllWeapons().length > 0) {
             this.entityData.define(SELECTED_WEAPON, IntList.of(initSelectedWeaponArray(weaponVehicle)));
         }
-        if (this.hasEnergyStorage()) {
-            this.entityData.define(ENERGY, 0);
-        }
+        this.entityData.define(ENERGY, 0);
     }
 
     /**
