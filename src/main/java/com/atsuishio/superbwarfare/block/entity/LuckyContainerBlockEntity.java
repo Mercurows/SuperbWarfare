@@ -34,6 +34,8 @@ public class LuckyContainerBlockEntity extends BlockEntity implements GeoBlockEn
 
     @Nullable
     public ResourceLocation location;
+    @Nullable
+    public ResourceLocation icon;
     public int tick = 0;
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
@@ -109,6 +111,9 @@ public class LuckyContainerBlockEntity extends BlockEntity implements GeoBlockEn
         if (tag.contains("Location", 8)) {
             this.location = ResourceLocation.parse(tag.getString("Location"));
         }
+        if (tag.contains("Icon", 8)) {
+            this.icon = ResourceLocation.parse(tag.getString("Icon"));
+        }
         this.tick = tag.getInt("Tick");
     }
 
@@ -118,6 +123,9 @@ public class LuckyContainerBlockEntity extends BlockEntity implements GeoBlockEn
         super.saveAdditional(tag, registries);
         if (this.location != null) {
             tag.putString("Location", this.location.toString());
+        }
+        if (this.icon != null) {
+            tag.putString("Icon", this.icon.toString());
         }
         tag.putInt("Tick", this.tick);
     }
@@ -138,6 +146,9 @@ public class LuckyContainerBlockEntity extends BlockEntity implements GeoBlockEn
         CompoundTag tag = new CompoundTag();
         if (this.location != null) {
             tag.putString("Location", this.location.toString());
+        }
+        if (this.icon != null) {
+            tag.putString("Icon", this.icon.toString());
         }
         BlockItem.setBlockEntityData(stack, this.getType(), tag);
     }

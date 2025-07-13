@@ -5,7 +5,6 @@ import com.atsuishio.superbwarfare.client.renderer.item.LuckyContainerBlockItemR
 import com.atsuishio.superbwarfare.init.ModBlockEntities;
 import com.atsuishio.superbwarfare.init.ModBlocks;
 import com.atsuishio.superbwarfare.init.ModItems;
-import com.atsuishio.superbwarfare.tools.NBTTool;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -103,12 +102,10 @@ public class LuckyContainerBlockItem extends BlockItem implements GeoItem {
         CompoundTag tag = new CompoundTag();
 
         tag.putString("Location", location.toString());
-        BlockItem.setBlockEntityData(stack, ModBlockEntities.LUCKY_CONTAINER.get(), tag);
         if (icon != null) {
-            var iconTag = NBTTool.getTag(stack);
-            iconTag.putString("Icon", icon.toString());
-            NBTTool.saveTag(stack, iconTag);
+            tag.putString("Icon", icon.toString());
         }
+        BlockItem.setBlockEntityData(stack, ModBlockEntities.LUCKY_CONTAINER.get(), tag);
         return stack;
     }
 

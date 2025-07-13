@@ -73,8 +73,9 @@ public class ModBlockLootProvider extends BlockLootSubProvider {
                                 .include(DataComponents.CONTAINER_LOOT)
                         )
         )));
-        // TODO 改成正确的loot table
-        this.add(ModBlocks.LUCKY_CONTAINER.get(), noDrop());
+        this.add(ModBlocks.LUCKY_CONTAINER.get(), LootTable.lootTable().withPool(this.applyExplosionCondition(ModBlocks.LUCKY_CONTAINER.get(),
+                LootPool.lootPool().setRolls(ConstantValue.exactly(1.0F)).add(LootItem.lootTableItem(ModBlocks.LUCKY_CONTAINER.get()))
+                        .apply(CopyComponentsFunction.copyComponents(CopyComponentsFunction.Source.BLOCK_ENTITY).include(DataComponents.BLOCK_ENTITY_DATA)))));
     }
 
     @Override
