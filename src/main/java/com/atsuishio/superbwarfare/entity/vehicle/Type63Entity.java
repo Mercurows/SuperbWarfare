@@ -195,7 +195,7 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
 //        setTurretYRot(getTurretYRot() + 1);
 //        setTurretXRot(getTurretXRot() + 1);
 
-        interactionTick *= 0.9;
+        interactionTick *= 0.96;
 
         this.refreshDimensions();
     }
@@ -219,22 +219,15 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
     @Override
     public void travel() {
         float diffY = entityData.get(YAW) - getTurretYRot();
-        this.setTurretYRot(Mth.clamp(this.getTurretYRot() + 0.25f * diffY, -15, 15));
+        this.setTurretYRot(Mth.clamp(this.getTurretYRot() + 0.1f * diffY, -15, 15));
 
         float diffX = entityData.get(PITCH) - getTurretXRot();
-        this.setTurretXRot(Mth.clamp(this.getTurretXRot() + 0.25f * diffX, -60, 5));
+        this.setTurretXRot(Mth.clamp(this.getTurretXRot() + 0.1f * diffX, -60, 5));
 
         double s0 = getDeltaMovement().dot(this.getViewVector(1));
 
         this.setLeftWheelRot((float) (this.getLeftWheelRot() - 1.75 * s0));
         this.setRightWheelRot((float) (this.getRightWheelRot() - 1.75 * s0));
-    }
-
-    public Vec3 getTurretVector(float pPartialTicks) {
-        Matrix4f transform = getTurretTransform(pPartialTicks);
-        Vector4f rootPosition = transformPosition(transform, 0, 0, 0);
-        Vector4f targetPosition = transformPosition(transform, 0, 0, 1);
-        return new Vec3(rootPosition.x, rootPosition.y, rootPosition.z).vectorTo(new Vec3(targetPosition.x, targetPosition.y, targetPosition.z));
     }
 
     @Override
