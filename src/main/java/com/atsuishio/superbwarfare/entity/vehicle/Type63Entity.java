@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ContainerMobileVehicleEntity;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
+import com.atsuishio.superbwarfare.init.ModSerializers;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.ContainerBlockItem;
@@ -21,6 +22,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
+import net.minecraft.world.Container;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityType;
@@ -39,12 +41,14 @@ import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEntity, OBBEntity {
 
     public static final EntityDataAccessor<Float> PITCH = SynchedEntityData.defineId(Type63Entity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Float> YAW = SynchedEntityData.defineId(Type63Entity.class, EntityDataSerializers.FLOAT);
+    public static final EntityDataAccessor<List<Integer>> LOADED_AMMO = SynchedEntityData.defineId(Type63Entity.class, ModSerializers.INT_LIST_SERIALIZER.get());
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     public OBB barrel0;
     public OBB barrel1;
@@ -88,9 +92,14 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
+        var list = new ArrayList<Integer>();
+        for (int i = 0; i < this.getContainerSize(); i++) {
+            list.add(0);
+        }
 
         builder.define(PITCH, 0F)
-                .define(YAW, 0F);
+                .define(YAW, 0F)
+                .define(LOADED_AMMO, list);
     }
 
     @Override
@@ -294,7 +303,12 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
 
     @Override
     public boolean canPlaceItem(int slot, @NotNull ItemStack stack) {
-        return true;
+        return false;
+    }
+
+    @Override
+    public boolean canTakeItem(@NotNull Container target, int slot, @NotNull ItemStack stack) {
+        return false;
     }
 
     @Override
@@ -379,6 +393,11 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
         Vector4f worldPositionBarrel11 = transformPosition(transformB, -0.3659375f + 3 * i, 0.244375f - 2 * i, -0.44625f);
         this.barrel11.center().set(new Vector3f(worldPositionBarrel11.x, worldPositionBarrel11.y, worldPositionBarrel11.z));
         this.barrel11.setRotation(VectorTool.combineRotationsBarrel(1, this));
+    }
+
+    @Override
+    public void setChanged() {
+        this.entityData.set(LOADED_AMMO, this.items.stream().map(i -> i.isEmpty() ? 0 : 1).toList());
     }
 
     @Override

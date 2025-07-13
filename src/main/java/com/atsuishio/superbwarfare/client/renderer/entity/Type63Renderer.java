@@ -15,6 +15,8 @@ import software.bernie.geckolib.cache.object.BakedGeoModel;
 import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
 
+import static com.atsuishio.superbwarfare.entity.vehicle.Type63Entity.LOADED_AMMO;
+
 
 public class Type63Renderer extends GeoEntityRenderer<Type63Entity> {
 
@@ -71,12 +73,10 @@ public class Type63Renderer extends GeoEntityRenderer<Type63Entity> {
             bone.setRotZ(-Mth.lerp(partialTick, animatable.turretYRotO, animatable.getTurretYRot()) * 6);
         }
 
-        //TODO 正确实现每一个格子有物品时显示一发炮弹模型
-
-        for (int i = 0; i < 11; i++) {
-            var items = animatable.getItemStacks();
+        for (int i = 0; i < 12; i++) {
+            var items = animatable.getEntityData().get(LOADED_AMMO);
             if (name.equals("shell" + i)) {
-                bone.setHidden(items.get(i).isEmpty());
+                bone.setHidden(items.get(i) == 0);
             }
         }
 
