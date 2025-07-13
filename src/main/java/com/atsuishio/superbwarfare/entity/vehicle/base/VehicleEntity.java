@@ -232,11 +232,12 @@ public abstract class VehicleEntity extends Entity implements Container {
     public void setItem(int slot, @NotNull ItemStack pStack) {
         if (!this.hasContainer() || slot >= this.getContainerSize() || slot < 0) return;
 
-        this.items.set(slot, pStack);
         var limit = Math.min(this.getMaxStackSize(), pStack.getMaxStackSize());
         if (!pStack.isEmpty() && pStack.getCount() > limit) {
+            Mod.LOGGER.warn("try inserting ItemStack {} exceeding the maximum stack size: {}, clamped to {}", pStack.getItem(), limit, limit);
             pStack.setCount(limit);
         }
+        this.items.set(slot, pStack);
     }
 
     @Override
