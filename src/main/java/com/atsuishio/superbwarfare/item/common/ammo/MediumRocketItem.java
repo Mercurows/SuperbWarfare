@@ -38,6 +38,10 @@ public class MediumRocketItem extends Item implements DispenserLaunchable {
         this.sparedAmount = sparedAmount;
     }
 
+    public MediumRocketEntity createProjectile(Level level, Position pos) {
+        return new MediumRocketEntity(ModEntities.MEDIUM_ROCKET.get(), pos.x(), pos.y(), pos.z(), level, damage, radius, explosionDamage, fireProbability, fireTime, type, sparedAmount);
+    }
+
     @Override
     public AbstractProjectileDispenseBehavior getLaunchBehavior() {
         return new AbstractProjectileDispenseBehavior() {
@@ -50,7 +54,7 @@ public class MediumRocketItem extends Item implements DispenserLaunchable {
             @Override
             @ParametersAreNonnullByDefault
             protected @NotNull Projectile getProjectile(Level pLevel, Position pPosition, ItemStack pStack) {
-                return new MediumRocketEntity(ModEntities.MEDIUM_ROCKET.get(), pPosition.x(), pPosition.y(), pPosition.z(), pLevel, damage, radius, explosionDamage, fireProbability, fireTime, type, sparedAmount);
+                return createProjectile(pLevel, pPosition);
             }
 
             @Override

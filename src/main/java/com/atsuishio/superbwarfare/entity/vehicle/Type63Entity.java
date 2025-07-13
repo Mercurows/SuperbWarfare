@@ -35,8 +35,8 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Math;
 import org.joml.*;
+import org.joml.Math;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -186,8 +186,8 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
                 // 撬棍发射
                 for (int i = 0; i < 12; i++) {
                     if (items.get(i).getItem() instanceof MediumRocketItem) {
-                        items.set(i, ItemStack.EMPTY);
                         shoot(player, i);
+                        items.set(i, ItemStack.EMPTY);
                         setChanged();
                         player.swing(InteractionHand.MAIN_HAND);
                         return InteractionResult.SUCCESS;
@@ -212,45 +212,15 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
         if (level() instanceof ServerLevel server) {
             ItemStack stack = items.get(i);
 
-            float damage;
-            float radius;
-            float explosionDamage;
-            float fireProbability;
-            int fireTime;
-            MediumRocketEntity.Type type;
-            int sparedAmount;
-
-            if (stack.is(ModItems.MEDIUM_ROCKET_AP.get())) {
-                damage = 500;
-                radius = 6;
-                explosionDamage = 100;
-                fireProbability = 0;
-                fireTime = 0;
-                type = MediumRocketEntity.Type.AP;
-                sparedAmount = 0;
-            } else if (stack.is(ModItems.MEDIUM_ROCKET_HE.get())) {
-                damage = 200;
-                radius = 12;
-                explosionDamage = 200;
-                fireProbability = 0.2f;
-                fireTime = 40;
-                type = MediumRocketEntity.Type.HE;
-                sparedAmount = 0;
-            } else {
-                damage = 300;
-                radius = 12;
-                explosionDamage = 300;
-                fireProbability = 0;
-                fireTime = 0;
-                type = MediumRocketEntity.Type.CM;
-                sparedAmount = 20;
+            if (!(stack.getItem() instanceof MediumRocketItem rocketItem)) {
+                return;
             }
 
             OBB obb = this.barrel[i];
             Vec3 shootPos = new Vec3(obb.center());
 
-            MediumRocketEntity entityToSpawn = new MediumRocketEntity(player, server, damage, radius, explosionDamage, fireProbability, fireTime, type, sparedAmount);
-            entityToSpawn.setPos(shootPos.x, shootPos.y, shootPos.z);
+            MediumRocketEntity entityToSpawn = rocketItem.createProjectile(server, shootPos);
+            entityToSpawn.setOwner(player);
             entityToSpawn.shoot(getShootVector(1).x, getShootVector(1).y, getShootVector(1).z, 10, (float) 0.25);
             server.addFreshEntity(entityToSpawn);
 
