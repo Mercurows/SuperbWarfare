@@ -2,7 +2,7 @@ package com.atsuishio.superbwarfare.item;
 
 import com.atsuishio.superbwarfare.client.TooltipTool;
 import com.atsuishio.superbwarfare.client.screens.ArtilleryIndicatorScreen;
-import com.atsuishio.superbwarfare.entity.vehicle.base.LockTargetEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.RemoteControllableTurret;
 import com.atsuishio.superbwarfare.tools.EntityFindUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
@@ -138,7 +138,7 @@ public class ArtilleryIndicator extends Item implements ItemScreenProvider {
             var tag = tags.getCompound(i);
             Entity entity = EntityFindUtil.findEntity(player.level(), tag.getString("UUID"));
 
-            if (entity instanceof LockTargetEntity lockTargetEntity) {
+            if (entity instanceof RemoteControllableTurret lockTargetEntity) {
                 list.add(tag);
 
                 if (!lockTargetEntity.setTarget(stack)) {

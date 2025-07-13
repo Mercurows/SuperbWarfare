@@ -4,7 +4,7 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.entity.vehicle.base.CannonEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.LockTargetEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.RemoteControllableTurret;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
@@ -59,7 +59,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import static com.atsuishio.superbwarfare.tools.RangeTool.calculateLaunchVector;
 
-public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEntity, LockTargetEntity {
+public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEntity, RemoteControllableTurret {
 
     public static final EntityDataAccessor<Integer> COOL_DOWN = SynchedEntityData.defineId(Mle1934Entity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> TYPE = SynchedEntityData.defineId(Mle1934Entity.class, EntityDataSerializers.INT);
@@ -158,6 +158,17 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
         if (compound.contains("TargetX") && compound.contains("TargetY") && compound.contains("TargetZ")) {
             this.entityData.set(TARGET_POS, new Vector3f(compound.getFloat("TargetX"), compound.getFloat("TargetX"), compound.getFloat("TargetZ")));
         }
+    }
+
+    @Override
+    public boolean canRemoteFire() {
+        return this.getItem(0).getItem() instanceof CannonShellItem && this.getEntityData().get(COOL_DOWN) == 0;
+    }
+
+    @Override
+    public void remoteFire(@Nullable Player player) {
+        this.setWeaponIndex(0, this.getItem(0).is(ModItems.AP_5_INCHES.get()) ? 0 : 1);
+        this.vehicleShoot(player, 0);
     }
 
     @Override

@@ -4,7 +4,7 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.entity.vehicle.base.CannonEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.LockTargetEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.RemoteControllableTurret;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
@@ -59,7 +59,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import static com.atsuishio.superbwarfare.tools.RangeTool.calculateLaunchVector;
 
-public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity, LockTargetEntity {
+public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity, RemoteControllableTurret {
 
     public static final EntityDataAccessor<Integer> COOL_DOWN = SynchedEntityData.defineId(Mk42Entity.class, EntityDataSerializers.INT);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
@@ -356,6 +356,17 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
         Matrix4f transform = getVehicleFlatTransform(1);
         Vector4f worldPosition = transformPosition(transform, 0f, 2.16f + 1.4f, 0.5175f);
         return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
+    }
+
+    @Override
+    public boolean canRemoteFire() {
+        return this.getItem(0).getItem() instanceof CannonShellItem && this.entityData.get(COOL_DOWN) == 0;
+    }
+
+    @Override
+    public void remoteFire(Player player) {
+        this.setWeaponIndex(0, this.getItem(0).is(ModItems.AP_5_INCHES.get()) ? 0 : 1);
+        this.vehicleShoot(player, 0);
     }
 
     @Override

@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.entity.vehicle;
 
 import com.atsuishio.superbwarfare.entity.projectile.MortarShellEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.LockTargetEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.RemoteControllableTurret;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModItems;
@@ -54,7 +54,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import static com.atsuishio.superbwarfare.tools.RangeTool.calculateLaunchVector;
 
-public class MortarEntity extends VehicleEntity implements GeoEntity, LockTargetEntity {
+public class MortarEntity extends VehicleEntity implements GeoEntity, RemoteControllableTurret {
 
     public static final EntityDataAccessor<Integer> FIRE_TIME = SynchedEntityData.defineId(MortarEntity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Float> PITCH = SynchedEntityData.defineId(MortarEntity.class, EntityDataSerializers.FLOAT);
@@ -162,6 +162,16 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, LockTarget
             this.level().playSound(null, this.getX(), this.getY(), this.getZ(), ModSounds.MORTAR_FIRE.get(), SoundSource.PLAYERS, 8f, 1f);
             this.level().playSound(null, this.getX(), this.getY(), this.getZ(), ModSounds.MORTAR_DISTANT.get(), SoundSource.PLAYERS, 32f, 1f);
         }
+    }
+
+    @Override
+    public boolean canRemoteFire() {
+        return this.getItem(0).getItem() instanceof MortarShell && this.getEntityData().get(FIRE_TIME) == 0;
+    }
+
+    @Override
+    public void remoteFire(@Nullable Player player) {
+        this.fire(player);
     }
 
     @Override
