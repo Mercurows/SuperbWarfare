@@ -201,10 +201,10 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
                     return InteractionResult.SUCCESS;
                 }
             } else {
-                //TODO 正确实现扣除炮弹
                 for (int i = 0; i < 12; i++) {
                     if (items.get(i).getItem() instanceof MediumRocketItem) {
-                        items.remove(i);
+                        items.set(i, ItemStack.EMPTY);
+                        setChanged();
                         player.swing(InteractionHand.MAIN_HAND);
                         break;
                     }
