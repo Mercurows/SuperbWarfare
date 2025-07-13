@@ -50,4 +50,5 @@ public class ModBlocks {
     public static final RegistryObject<Block> VEHICLE_DEPLOYER = REGISTRY.register("vehicle_deployer", VehicleDeployerBlock::new);
     public static final RegistryObject<Block> AIRCRAFT_CATAPULT = REGISTRY.register("aircraft_catapult", AircraftCatapultBlock::new);
     public static final RegistryObject<Block> SUPERB_ITEM_INTERFACE = REGISTRY.register("superb_item_interface", SuperbItemInterfaceBlock::new);
+    public static final RegistryObject<Block> LUCKY_CONTAINER = REGISTRY.register("lucky_container", LuckyContainerBlock::new);
 }

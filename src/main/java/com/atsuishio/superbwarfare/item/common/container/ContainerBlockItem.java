@@ -1,4 +1,4 @@
-package com.atsuishio.superbwarfare.item;
+package com.atsuishio.superbwarfare.item.common.container;
 
 import com.atsuishio.superbwarfare.api.event.RegisterContainersEvent;
 import com.atsuishio.superbwarfare.client.renderer.item.ContainerBlockItemRenderer;

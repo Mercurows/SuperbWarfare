@@ -7,6 +7,9 @@ import com.atsuishio.superbwarfare.item.armor.*;
 import com.atsuishio.superbwarfare.item.common.BlueprintItem;
 import com.atsuishio.superbwarfare.item.common.MaterialPack;
 import com.atsuishio.superbwarfare.item.common.ammo.*;
+import com.atsuishio.superbwarfare.item.common.container.ContainerBlockItem;
+import com.atsuishio.superbwarfare.item.common.container.LuckyContainerBlockItem;
+import com.atsuishio.superbwarfare.item.common.container.SmallContainerBlockItem;
 import com.atsuishio.superbwarfare.item.gun.handgun.*;
 import com.atsuishio.superbwarfare.item.gun.heavy.Ntw20Item;
 import com.atsuishio.superbwarfare.item.gun.launcher.JavelinItem;
@@ -291,9 +294,10 @@ public class ModItems {
     public static final RegistryObject<Item> AIRCRAFT_CATAPULT = block(ModBlocks.AIRCRAFT_CATAPULT);
     public static final RegistryObject<Item> SUPERB_ITEM_INTERFACE = block(ModBlocks.SUPERB_ITEM_INTERFACE);
 
-    // 这俩放最后
+    // 集装箱放最后
     public static final RegistryObject<Item> CONTAINER = BLOCKS.register("container", ContainerBlockItem::new);
     public static final RegistryObject<Item> SMALL_CONTAINER = BLOCKS.register("small_container", SmallContainerBlockItem::new);
+    public static final RegistryObject<Item> LUCKY_CONTAINER = BLOCKS.register("lucky_container", LuckyContainerBlockItem::new);
 
     private static RegistryObject<Item> block(RegistryObject<Block> block) {
         return BLOCKS.register(block.getId().getPath(), () -> new BlockItem(block.get(), new Item.Properties()));
