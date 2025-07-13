@@ -34,8 +34,8 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.*;
 import org.joml.Math;
+import org.joml.*;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -180,11 +180,11 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
                     if (!player.isCreative()) {
                         stack.shrink(1);
                     }
+                    setChanged();
                     player.swing(InteractionHand.MAIN_HAND);
                 }
             }
         }
-        setChanged();
 
         if (stack.is(ModTags.Items.CROWBAR)) {
             if (player.isShiftKeyDown()) {
@@ -203,7 +203,7 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
                         items.set(i, ItemStack.EMPTY);
                         setChanged();
                         player.swing(InteractionHand.MAIN_HAND);
-                        break;
+                        return InteractionResult.SUCCESS;
                     }
                 }
             }
