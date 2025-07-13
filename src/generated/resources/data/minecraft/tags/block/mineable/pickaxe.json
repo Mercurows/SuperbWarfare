@@ -20,6 +20,7 @@
     "superbwarfare:small_container",
     "superbwarfare:vehicle_deployer",
     "superbwarfare:aircraft_catapult",
-    "superbwarfare:superb_item_interface"
+    "superbwarfare:superb_item_interface",
+    "superbwarfare:lucky_container"
   ]
 }

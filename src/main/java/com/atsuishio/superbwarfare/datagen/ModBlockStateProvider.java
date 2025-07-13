@@ -25,6 +25,7 @@ public class ModBlockStateProvider extends BlockStateProvider {
         horizontalBlock(ModBlocks.REFORGING_TABLE.get(), new ModelFile.UncheckedModelFile(modLoc("block/reforging_table")));
         horizontalBlock(ModBlocks.CONTAINER.get(), new ModelFile.UncheckedModelFile(modLoc("block/container")));
         horizontalBlock(ModBlocks.SMALL_CONTAINER.get(), new ModelFile.UncheckedModelFile(modLoc("block/small_container")));
+        horizontalBlock(ModBlocks.LUCKY_CONTAINER.get(), new ModelFile.UncheckedModelFile(modLoc("block/container")));
         horizontalBlock(ModBlocks.CHARGING_STATION.get(), new ModelFile.UncheckedModelFile(modLoc("block/charging_station")));
         horizontalBlock(ModBlocks.CREATIVE_CHARGING_STATION.get(), new ModelFile.UncheckedModelFile(modLoc("block/creative_charging_station")));
         horizontalBlock(ModBlocks.VEHICLE_DEPLOYER.get(), models().cubeBottomTop("vehicle_deployer", Mod.loc("block/vehicle_deployer_side"),

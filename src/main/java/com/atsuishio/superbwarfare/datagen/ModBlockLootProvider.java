@@ -73,6 +73,8 @@ public class ModBlockLootProvider extends BlockLootSubProvider {
                                 .include(DataComponents.CONTAINER_LOOT)
                         )
         )));
+        // TODO 改成正确的loot table
+        this.add(ModBlocks.LUCKY_CONTAINER.get(), noDrop());
     }
 
     @Override
