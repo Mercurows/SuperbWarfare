@@ -32,7 +32,7 @@ import java.util.function.Supplier;
 @EventBusSubscriber(modid = Mod.MODID, bus = EventBusSubscriber.Bus.MOD)
 public class SmallContainerBlockItem extends BlockItem implements GeoItem {
 
-    public static final List<Supplier<ItemStack>> SMALL_CONTAINER_LOOT_TABLES = List.of(
+    public static final List<Supplier<ItemStack>> SMALL_CONTAINERS = List.of(
             () -> SmallContainerBlockItem.createInstance(Mod.loc("containers/blueprints")),
             () -> SmallContainerBlockItem.createInstance(Mod.loc("containers/common"))
     );

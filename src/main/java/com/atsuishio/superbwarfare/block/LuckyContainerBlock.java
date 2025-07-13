@@ -1,18 +1,24 @@
 package com.atsuishio.superbwarfare.block;
 
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.block.entity.LuckyContainerBlockEntity;
 import com.atsuishio.superbwarfare.init.ModBlockEntities;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.mojang.serialization.MapCodec;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -33,6 +39,7 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.List;
 
 @SuppressWarnings("deprecation")
 public class LuckyContainerBlock extends BaseEntityBlock {
@@ -55,17 +62,17 @@ public class LuckyContainerBlock extends BaseEntityBlock {
         if (level.isClientSide
                 || state.getValue(OPENED)
                 || !(level.getBlockEntity(pos) instanceof LuckyContainerBlockEntity)
-        ) return ItemInteractionResult.FAIL;
+        ) return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 
         if (!stack.is(ModTags.Items.CROWBAR)) {
             player.displayClientMessage(Component.translatable("des.superbwarfare.container.fail.crowbar"), true);
-            return ItemInteractionResult.FAIL;
+            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
 
         level.setBlockAndUpdate(pos, state.setValue(OPENED, true));
         level.playSound(null, BlockPos.containing(pos.getX(), pos.getY(), pos.getZ()), ModSounds.OPEN.get(), SoundSource.BLOCKS, 1, 1);
 
-        return ItemInteractionResult.FAIL;
+        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
     }
 
     @Nullable
@@ -75,6 +82,23 @@ public class LuckyContainerBlock extends BaseEntityBlock {
             return createTickerHelper(pBlockEntityType, ModBlockEntities.LUCKY_CONTAINER.get(), LuckyContainerBlockEntity::serverTick);
         }
         return null;
+    }
+
+    @Override
+    @ParametersAreNonnullByDefault
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
+        super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
+        var component = stack.get(DataComponents.BLOCK_ENTITY_DATA);
+        CompoundTag tag = component == null ? new CompoundTag() : component.copyTag();
+
+        String location = tag.getString("Location");
+        if (location.startsWith(Mod.MODID)) {
+            var split = location.split(Mod.MODID + ":");
+            if (split.length == 2) {
+                location = "location." + split[1];
+            }
+            tooltipComponents.add(Component.translatable("des.superbwarfare.lucky_container." + location).withStyle(ChatFormatting.GRAY));
+        }
     }
 
     @Override

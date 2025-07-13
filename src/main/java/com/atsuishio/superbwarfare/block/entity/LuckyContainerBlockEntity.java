@@ -107,7 +107,7 @@ public class LuckyContainerBlockEntity extends BlockEntity implements GeoBlockEn
     protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.loadAdditional(tag, registries);
         if (tag.contains("Location", 8)) {
-            this.location = ResourceLocation.withDefaultNamespace(tag.getString("Location"));
+            this.location = ResourceLocation.parse(tag.getString("Location"));
         }
         this.tick = tag.getInt("Tick");
     }
