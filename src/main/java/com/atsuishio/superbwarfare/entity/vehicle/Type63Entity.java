@@ -190,20 +190,24 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
         setChanged();
 
         if (stack.is(ModTags.Items.CROWBAR)) {
-            if (player.isShiftKeyDown() && this.getPassengers().isEmpty()) {
-                ItemStack container = ContainerBlockItem.createInstance(this);
-                if (!player.addItem(container)) {
-                    player.drop(container, false);
+            if (player.isShiftKeyDown()) {
+                if (this.getPassengers().isEmpty()) {
+                    ItemStack container = ContainerBlockItem.createInstance(this);
+                    if (!player.addItem(container)) {
+                        player.drop(container, false);
+                    }
+                    this.remove(RemovalReason.DISCARDED);
+                    this.discard();
+                    return InteractionResult.SUCCESS;
                 }
-                this.remove(RemovalReason.DISCARDED);
-                this.discard();
-                return InteractionResult.SUCCESS;
-            }
-
-            for (int i = 0; i < 12; i++) {
-                if (!items.get(i).isEmpty()) {
-                    items.remove(i);
-                    break;
+            } else {
+                //TODO 正确实现扣除炮弹
+                for (int i = 0; i < 12; i++) {
+                    if (items.get(i).getItem() instanceof MediumRocketItem) {
+                        items.remove(i);
+                        player.swing(InteractionHand.MAIN_HAND);
+                        break;
+                    }
                 }
             }
         }
