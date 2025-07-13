@@ -52,8 +52,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.StreamSupport;
 
-public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements ControllableVehicle {
-
+public abstract class MobileVehicleEntity extends VehicleEntity implements ControllableVehicle {
     public static Consumer<MobileVehicleEntity> trackSound = vehicle -> {
     };
     public static Consumer<MobileVehicleEntity> engineSound = vehicle -> {
@@ -949,7 +948,7 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundTag compound) {
+    protected void readAdditionalSaveData(@NotNull CompoundTag compound) {
         super.readAdditionalSaveData(compound);
         this.entityData.set(POWER, compound.getFloat("Power"));
         this.entityData.set(DECOY_COUNT, compound.getInt("DecoyCount"));
@@ -958,7 +957,7 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundTag compound) {
+    public void addAdditionalSaveData(@NotNull CompoundTag compound) {
         super.addAdditionalSaveData(compound);
         compound.putFloat("Power", this.entityData.get(POWER));
         compound.putInt("DecoyCount", this.entityData.get(DECOY_COUNT));
@@ -975,4 +974,9 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
     }
 
     public static boolean IGNORE_ENTITY_GROUND_CHECK_STEPPING = false;
+
+    @Override
+    public boolean hasEnergyStorage() {
+        return true;
+    }
 }

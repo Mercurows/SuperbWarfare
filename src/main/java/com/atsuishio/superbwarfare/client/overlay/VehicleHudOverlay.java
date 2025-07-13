@@ -96,9 +96,9 @@ public class VehicleHudOverlay implements IGuiOverlay {
 
         int compatHeight = getArmorPlateCompatHeight(player);
 
-        if (vehicle instanceof EnergyVehicleEntity energyVehicleEntity) {
-            float energy = energyVehicleEntity.getEnergy();
-            float maxEnergy = energyVehicleEntity.getMaxEnergy();
+        if (vehicle instanceof VehicleEntity vehicleEntity && vehicleEntity.hasEnergyStorage()) {
+            float energy = vehicleEntity.getEnergy();
+            float maxEnergy = vehicleEntity.getMaxEnergy();
             preciseBlit(guiGraphics, ENERGY, 10, screenHeight - 22 - compatHeight, 100, 0, 0, 8, 8, 8, 8);
             preciseBlit(guiGraphics, HEALTH_FRAME, 20, screenHeight - 21 - compatHeight, 100, 0, 0, 60, 6, 60, 6);
             preciseBlit(guiGraphics, HEALTH, 20, screenHeight - 21 - compatHeight, 100, 0, 0, (int) (60 * energy / maxEnergy), 6, 60, 6);

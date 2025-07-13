@@ -1,6 +1,8 @@
 package com.atsuishio.superbwarfare.entity.vehicle.base;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.capability.energy.SyncedEntityEnergyStorage;
+import com.atsuishio.superbwarfare.capability.energy.VehicleEnergyStorage;
 import com.atsuishio.superbwarfare.data.vehicle.VehicleData;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
 import com.atsuishio.superbwarfare.entity.mixin.OBBHitter;
@@ -25,9 +27,11 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.IntTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundSetPassengersPacket;
@@ -60,7 +64,11 @@ import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.FakePlayer;
+import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.fluids.FluidType;
 import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.network.PacketDistributor;
@@ -314,6 +322,15 @@ public abstract class VehicleEntity extends Entity {
         return true;
     }
 
+    public static final EntityDataAccessor<Integer> ENERGY = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.INT);
+
+    protected final SyncedEntityEnergyStorage energyStorage = new VehicleEnergyStorage(this);
+    protected final LazyOptional<IEnergyStorage> energy = LazyOptional.of(() -> energyStorage);
+
+    public EntityDataAccessor<Integer> getEnergyDataAccessor() {
+        return ENERGY;
+    }
+
     @Override
     protected void defineSynchedData() {
         this.entityData.define(HEALTH, this.getMaxHealth());
@@ -339,6 +356,51 @@ public abstract class VehicleEntity extends Entity {
         if (this instanceof WeaponVehicleEntity weaponVehicle && weaponVehicle.getAllWeapons().length > 0) {
             this.entityData.define(SELECTED_WEAPON, IntList.of(initSelectedWeaponArray(weaponVehicle)));
         }
+        if (this.hasEnergyStorage()) {
+            this.entityData.define(ENERGY, 0);
+        }
+    }
+
+    /**
+     * 消耗指定电量
+     *
+     * @param amount 要消耗的电量
+     */
+    protected void consumeEnergy(int amount) {
+        if (!this.hasEnergyStorage()) return;
+        this.energyStorage.extractEnergy(amount, false);
+    }
+
+    protected boolean canConsume(int amount) {
+        if (!this.hasEnergyStorage()) return false;
+        return this.getEnergy() >= amount;
+    }
+
+    public int getEnergy() {
+        return this.energyStorage.getEnergyStored();
+    }
+
+    public IEnergyStorage getEnergyStorage() {
+        return this.energyStorage;
+    }
+
+    protected void setEnergy(int pEnergy) {
+        if (!this.hasEnergyStorage()) return;
+        int targetEnergy = Mth.clamp(pEnergy, 0, this.getMaxEnergy());
+
+        if (targetEnergy > energyStorage.getEnergyStored()) {
+            energyStorage.receiveEnergy(targetEnergy - energyStorage.getEnergyStored(), false);
+        } else {
+            energyStorage.extractEnergy(energyStorage.getEnergyStored() - targetEnergy, false);
+        }
+    }
+
+    public int getMaxEnergy() {
+        return data().maxEnergy();
+    }
+
+    public boolean hasEnergyStorage() {
+        return false;
     }
 
     private int[] initSelectedWeaponArray(WeaponVehicleEntity weaponVehicle) {
@@ -386,6 +448,10 @@ public abstract class VehicleEntity extends Entity {
                 this.entityData.set(SELECTED_WEAPON, IntList.of(selected));
             }
         }
+
+        if (this.hasEnergyStorage() && compound.get("Energy") instanceof IntTag energyNBT) {
+            energyStorage.deserializeNBT(energyNBT);
+        }
     }
 
     @Override
@@ -408,6 +474,10 @@ public abstract class VehicleEntity extends Entity {
 
         if (this instanceof WeaponVehicleEntity weaponVehicle && weaponVehicle.getAllWeapons().length > 0) {
             compound.putIntArray("SelectedWeapon", this.entityData.get(SELECTED_WEAPON).toIntArray());
+        }
+
+        if (this.hasEnergyStorage()) {
+            compound.put("Energy", energyStorage.serializeNBT());
         }
     }
 
@@ -1021,7 +1091,7 @@ public abstract class VehicleEntity extends Entity {
     public Matrix4f getVehicleTransform(float ticks) {
         Matrix4f transformV = getVehicleYOffsetTransform(ticks);
         Matrix4f transform = new Matrix4f();
-        Vector4f worldPosition = transformPosition(transform, 0, - rotateYOffset(), 0);
+        Vector4f worldPosition = transformPosition(transform, 0, -rotateYOffset(), 0);
         transformV.translate(worldPosition.x, worldPosition.y, worldPosition.z);
         return transformV;
     }
@@ -1426,5 +1496,18 @@ public abstract class VehicleEntity extends Entity {
     @Nullable
     public Pair<Quaternionf, Quaternionf> getPassengerRotation(Entity entity, float tickDelta) {
         return null;
+    }
+
+    @Override
+    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
+        if (cap == ForgeCapabilities.ENERGY) {
+            return energy.cast();
+        }
+        return super.getCapability(cap, side);
+    }
+
+    @Override
+    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap) {
+        return this.getCapability(cap, null);
     }
 }

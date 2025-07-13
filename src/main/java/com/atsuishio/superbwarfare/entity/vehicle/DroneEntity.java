@@ -46,8 +46,6 @@ import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.network.PlayMessages;
@@ -138,7 +136,7 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
     }
 
     @Override
-    public boolean causeFallDamage(float l, float d, DamageSource source) {
+    public boolean causeFallDamage(float l, float d, @NotNull DamageSource source) {
         return false;
     }
 
@@ -153,7 +151,7 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundTag compound) {
+    public void addAdditionalSaveData(@NotNull CompoundTag compound) {
         super.addAdditionalSaveData(compound);
         compound.putBoolean("Linked", this.entityData.get(LINKED));
         compound.putString("Controller", this.entityData.get(CONTROLLER));
@@ -170,12 +168,12 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
     }
 
     @Override
-    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap) {
-        return LazyOptional.empty();
+    public boolean hasEnergyStorage() {
+        return false;
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundTag compound) {
+    public void readAdditionalSaveData(@NotNull CompoundTag compound) {
         super.readAdditionalSaveData(compound);
         if (compound.contains("Linked"))
             this.entityData.set(LINKED, compound.getBoolean("Linked"));

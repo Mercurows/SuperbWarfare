@@ -109,6 +109,11 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
     }
 
     @Override
+    public boolean hasEnergyStorage() {
+        return false;
+    }
+
+    @Override
     public @NotNull InteractionResult interact(Player player, @NotNull InteractionHand hand) {
         ItemStack stack = player.getMainHandItem();
 

@@ -1,13 +1,13 @@
 package com.atsuishio.superbwarfare.capability.energy;
 
 import com.atsuishio.superbwarfare.data.vehicle.VehicleData;
-import com.atsuishio.superbwarfare.entity.vehicle.base.EnergyVehicleEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 
 public class VehicleEnergyStorage extends SyncedEntityEnergyStorage {
 
-    protected EnergyVehicleEntity vehicle;
+    protected VehicleEntity vehicle;
 
-    public VehicleEnergyStorage(EnergyVehicleEntity vehicle) {
+    public VehicleEnergyStorage(VehicleEntity vehicle) {
         super(Integer.MAX_VALUE, vehicle.getEntityData(), vehicle.getEnergyDataAccessor());
 
         this.vehicle = vehicle;
