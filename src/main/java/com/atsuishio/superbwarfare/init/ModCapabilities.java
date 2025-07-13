@@ -8,7 +8,7 @@ import com.atsuishio.superbwarfare.capability.energy.ItemEnergyStorage;
 import com.atsuishio.superbwarfare.capability.laser.LaserCapability;
 import com.atsuishio.superbwarfare.capability.laser.LaserCapabilityProvider;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ContainerMobileVehicleEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.EnergyVehicleEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.item.CreativeChargingStationBlockItem;
 import com.atsuishio.superbwarfare.item.EnergyStorageItem;
 import net.minecraft.core.Direction;
@@ -80,10 +80,10 @@ public class ModCapabilities {
         // 载具
         for (var entity : ModEntities.REGISTRY.getEntries()) {
             // 能量
-            if (entity.get().getBaseClass().isAssignableFrom(EnergyVehicleEntity.class)) {
+            if (entity.get().getBaseClass().isAssignableFrom(VehicleEntity.class)) {
                 event.registerEntity(Capabilities.EnergyStorage.ENTITY,
                         entity.get(),
-                        (obj, ctx) -> (obj instanceof EnergyVehicleEntity vehicle && vehicle.hasEnergyStorage()) ? vehicle.getEnergyStorage() : null
+                        (obj, ctx) -> (obj instanceof VehicleEntity vehicle && vehicle.hasEnergyStorage()) ? vehicle.getEnergyStorage() : null
                 );
             }
 

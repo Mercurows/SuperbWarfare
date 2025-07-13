@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.entity.vehicle.base;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.capability.energy.SyncedEntityEnergyStorage;
 import com.atsuishio.superbwarfare.data.vehicle.VehicleData;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
 import com.atsuishio.superbwarfare.entity.mixin.OBBHitter;
@@ -29,6 +30,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.IntTag;
 import net.minecraft.network.protocol.game.ClientboundSetPassengersPacket;
 import net.minecraft.network.protocol.game.ClientboundSoundPacket;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -61,6 +63,7 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.common.util.FakePlayer;
+import net.neoforged.neoforge.energy.IEnergyStorage;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -305,6 +308,9 @@ public abstract class VehicleEntity extends Entity {
         return true;
     }
 
+    public static final EntityDataAccessor<Integer> ENERGY = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.INT);
+    protected final IEnergyStorage energyStorage = new SyncedEntityEnergyStorage(this.getMaxEnergy(), this.entityData, ENERGY);
+
     public VehicleEntity(EntityType<?> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
         this.setHealth(this.getMaxHealth());
@@ -337,7 +343,50 @@ public abstract class VehicleEntity extends Entity {
                 .define(ENGINE2_DAMAGED, false)
 
                 // 怎么还不给玩动态注册了（恼）
-                .define(SELECTED_WEAPON, IntList.of(new int[this.getMaxPassengers()]));
+                .define(SELECTED_WEAPON, IntList.of(new int[this.getMaxPassengers()]))
+                .define(ENERGY, 0);
+    }
+
+    /**
+     * 消耗指定电量
+     *
+     * @param amount 要消耗的电量
+     */
+    protected void consumeEnergy(int amount) {
+        if (!this.hasEnergyStorage()) return;
+        this.energyStorage.extractEnergy(amount, false);
+    }
+
+    protected boolean canConsume(int amount) {
+        if (!this.hasEnergyStorage()) return false;
+        return this.getEnergy() >= amount;
+    }
+
+    public int getEnergy() {
+        return this.energyStorage.getEnergyStored();
+    }
+
+    public IEnergyStorage getEnergyStorage() {
+        return this.energyStorage;
+    }
+
+    protected void setEnergy(int pEnergy) {
+        if (!this.hasEnergyStorage()) return;
+        int targetEnergy = Mth.clamp(pEnergy, 0, this.getMaxEnergy());
+
+        if (targetEnergy > energyStorage.getEnergyStored()) {
+            energyStorage.receiveEnergy(targetEnergy - energyStorage.getEnergyStored(), false);
+        } else {
+            energyStorage.extractEnergy(energyStorage.getEnergyStored() - targetEnergy, false);
+        }
+    }
+
+    public int getMaxEnergy() {
+        return data().maxEnergy();
+    }
+
+    public boolean hasEnergyStorage() {
+        return false;
     }
 
     private int[] initSelectedWeaponArray(WeaponVehicleEntity weaponVehicle) {
@@ -385,6 +434,10 @@ public abstract class VehicleEntity extends Entity {
                 this.entityData.set(SELECTED_WEAPON, IntList.of(selected));
             }
         }
+
+        if (this.hasEnergyStorage() && compound.get("Energy") instanceof IntTag energyNBT) {
+            ((SyncedEntityEnergyStorage) energyStorage).deserializeNBT(level().registryAccess(), energyNBT);
+        }
     }
 
     @Override
@@ -407,6 +460,10 @@ public abstract class VehicleEntity extends Entity {
 
         if (this instanceof WeaponVehicleEntity weaponVehicle && weaponVehicle.getAllWeapons().length > 0) {
             compound.putIntArray("SelectedWeapon", this.entityData.get(SELECTED_WEAPON));
+        }
+
+        if (this.hasEnergyStorage()) {
+            compound.put("Energy", ((SyncedEntityEnergyStorage) energyStorage).serializeNBT(level().registryAccess()));
         }
     }
 

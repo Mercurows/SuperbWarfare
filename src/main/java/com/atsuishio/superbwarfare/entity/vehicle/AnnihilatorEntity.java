@@ -6,8 +6,8 @@ import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.CannonEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.EnergyVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.LaserWeapon;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.VehicleWeapon;
@@ -60,7 +60,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.List;
 
-public class AnnihilatorEntity extends EnergyVehicleEntity implements GeoEntity, CannonEntity, OBBEntity {
+public class AnnihilatorEntity extends VehicleEntity implements GeoEntity, CannonEntity, OBBEntity {
 
     public static final EntityDataAccessor<Integer> COOL_DOWN = SynchedEntityData.defineId(AnnihilatorEntity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Float> LASER_LEFT_LENGTH = SynchedEntityData.defineId(AnnihilatorEntity.class, EntityDataSerializers.FLOAT);
@@ -636,5 +636,10 @@ public class AnnihilatorEntity extends EnergyVehicleEntity implements GeoEntity,
         Vector4f worldPosition5 = transformPosition(transform, 0, 2.46875f, -5.28125f);
         this.obb5.center().set(new Vector3f(worldPosition5.x, worldPosition5.y, worldPosition5.z));
         this.obb5.setRotation(VectorTool.combineRotationsYaw(1, this));
+    }
+
+    @Override
+    public boolean hasEnergyStorage() {
+        return true;
     }
 }

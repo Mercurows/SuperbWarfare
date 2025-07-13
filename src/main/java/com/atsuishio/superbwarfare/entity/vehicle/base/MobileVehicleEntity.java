@@ -53,7 +53,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.StreamSupport;
 
-public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements ControllableVehicle {
+public abstract class MobileVehicleEntity extends VehicleEntity implements ControllableVehicle {
     public static Consumer<MobileVehicleEntity> trackSound = vehicle -> {
     };
     public static Consumer<MobileVehicleEntity> engineSound = vehicle -> {
@@ -970,6 +970,11 @@ public abstract class MobileVehicleEntity extends EnergyVehicleEntity implements
     }
 
     public boolean canCrushEntities() {
+        return true;
+    }
+
+    @Override
+    public boolean hasEnergyStorage() {
         return true;
     }
 }
