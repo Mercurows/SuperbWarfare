@@ -7,6 +7,8 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.ContainerMobileVehicleEnt
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModSounds;
+import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.item.ContainerBlockItem;
 import com.atsuishio.superbwarfare.tools.CustomExplosion;
 import com.atsuishio.superbwarfare.tools.OBB;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
@@ -144,6 +146,17 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
                 player.swing(InteractionHand.MAIN_HAND);
             }
         }
+
+        if (player.isShiftKeyDown() && stack.is(ModTags.Items.CROWBAR) && this.getPassengers().isEmpty()) {
+            ItemStack container = ContainerBlockItem.createInstance(this);
+            if (!player.addItem(container)) {
+                player.drop(container, false);
+            }
+            this.remove(RemovalReason.DISCARDED);
+            this.discard();
+            return InteractionResult.SUCCESS;
+        }
+
         return InteractionResult.FAIL;
     }
 
