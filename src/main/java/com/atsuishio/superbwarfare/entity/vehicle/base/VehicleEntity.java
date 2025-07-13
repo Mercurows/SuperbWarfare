@@ -1648,9 +1648,9 @@ public abstract class VehicleEntity extends Entity implements Container {
 
     @Override
     public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if (cap == ForgeCapabilities.ENERGY) {
+        if (cap == ForgeCapabilities.ENERGY && this.hasEnergyStorage()) {
             return energy.cast();
-        } else if (cap == ForgeCapabilities.ITEM_HANDLER) {
+        } else if (cap == ForgeCapabilities.ITEM_HANDLER && this.hasContainer()) {
             return itemHandler.cast();
         }
         return super.getCapability(cap, side);
