@@ -248,8 +248,9 @@ public abstract class VehicleEntity extends Entity implements Container {
         if (!this.hasContainer() || slot >= this.getContainerSize() || slot < 0) return;
 
         this.items.set(slot, pStack);
-        if (!pStack.isEmpty() && pStack.getCount() > this.getMaxStackSize()) {
-            pStack.setCount(this.getMaxStackSize());
+        var limit = Math.min(this.getMaxStackSize(), pStack.getMaxStackSize());
+        if (!pStack.isEmpty() && pStack.getCount() > limit) {
+            pStack.setCount(limit);
         }
     }
 
@@ -283,6 +284,15 @@ public abstract class VehicleEntity extends Entity implements Container {
     @Override
     public boolean canPlaceItem(int slot, @NotNull ItemStack stack) {
         if (!this.hasContainer() || slot >= this.getContainerSize() || slot < 0) return false;
+
+        var currentStack = this.items.get(slot);
+        if (!currentStack.isEmpty() && currentStack.getItem() != stack.getItem()) return false;
+
+        var currentCount = currentStack.getCount();
+        var stackCount = stack.getCount();
+        int combinedCount = currentCount + stackCount;
+        if (combinedCount > this.getMaxStackSize() || combinedCount > stack.getMaxStackSize()) return false;
+
         return Container.super.canPlaceItem(slot, stack);
     }
 
