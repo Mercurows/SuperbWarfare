@@ -29,11 +29,14 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.Container;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.entity.EntityTypeTest;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.event.EventHooks;
 import org.jetbrains.annotations.NotNull;
@@ -233,6 +236,23 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
         entityToSpawn.shoot(getShootVector(1).x, getShootVector(1).y, getShootVector(1).z, 10, (float) 0.5);
         level().addFreshEntity(entityToSpawn);
         level().playSound(null, shootPos.x, shootPos.y, shootPos.z, ModSounds.MEDIUM_ROCKET_FIRE.get(), SoundSource.PLAYERS, 4f, random.nextFloat() * 0.1f + 0.95f);
+
+        AABB ab = new AABB(getBoundingBox().getCenter(), getBoundingBox().getCenter()).inflate(0.75).move(getShootVector(1).scale(-2)).expandTowards(getShootVector(1).scale(-5));
+
+        List<Entity> entities = level().getEntities(EntityTypeTest.forClass(Entity.class), ab,
+                        entity -> entity != this && entity != getFirstPassenger() && entity.getVehicle() == null)
+                .stream().filter(entity -> entity != this)
+                .toList();
+
+        for (var entity : entities) {
+            entity.hurt(ModDamageTypes.causeBurnDamage(entity.level().registryAccess(), player), 30 - 2 * entity.distanceTo(this));
+            double force = 4 - 0.7 * entity.distanceTo(this);
+            if (level().isClientSide) {
+                entity.push(-force * getShootVector(1).x, -force * getShootVector(1).y, -force * getShootVector(1).z);
+            } else {
+                entity.push(-force * getShootVector(1).x, -force * getShootVector(1).y, -force * getShootVector(1).z);
+            }
+        }
 
         cooldown = 10;
         if (level() instanceof ServerLevel serverLevel) {
