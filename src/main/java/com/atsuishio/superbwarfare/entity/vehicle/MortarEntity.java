@@ -411,6 +411,12 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, RemoteCont
     }
 
     @Override
+    @Nullable
+    public ItemStack getPickResult() {
+        return new ItemStack(ModItems.MORTAR_DEPLOYER.get());
+    }
+
+    @Override
     public boolean canPlaceItem(int slot, @NotNull ItemStack stack) {
         return super.canPlaceItem(slot, stack) && this.entityData.get(FIRE_TIME) == 0 && stack.getItem() instanceof MortarShell;
     }

@@ -38,6 +38,7 @@ import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -388,5 +389,11 @@ public class DPSGeneratorEntity extends LivingEntity implements GeoEntity {
                 storage.setEnergy(this.getMaxEnergy());
             }
         });
+    }
+
+    @Override
+    @Nullable
+    public ItemStack getPickResult() {
+        return new ItemStack(ModItems.DPS_GENERATOR_DEPLOYER.get());
     }
 }

@@ -31,6 +31,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -254,4 +255,9 @@ public class TargetEntity extends LivingEntity implements GeoEntity {
         return this.cache;
     }
 
+    @Override
+    @Nullable
+    public ItemStack getPickResult() {
+        return new ItemStack(ModItems.TARGET_DEPLOYER.get());
+    }
 }

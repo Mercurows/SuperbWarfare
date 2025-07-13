@@ -606,6 +606,12 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
     }
 
     @Override
+    @Nullable
+    public ItemStack getPickResult() {
+        return new ItemStack(ModItems.DRONE.get());
+    }
+
+    @Override
     public void destroy() {
         Player controller = EntityFindUtil.findPlayer(this.level(), this.entityData.get(CONTROLLER));
         if (controller != null) {
