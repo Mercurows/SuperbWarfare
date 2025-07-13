@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
 import com.atsuishio.superbwarfare.entity.projectile.MediumRocketEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ContainerMobileVehicleEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.item.common.ammo.MediumRocketItem;
 import com.atsuishio.superbwarfare.item.common.container.ContainerBlockItem;
@@ -15,6 +16,7 @@ import com.atsuishio.superbwarfare.tools.VectorTool;
 import com.mojang.math.Axis;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -48,6 +50,9 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
 
     public static final EntityDataAccessor<Float> PITCH = SynchedEntityData.defineId(Type63Entity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Float> YAW = SynchedEntityData.defineId(Type63Entity.class, EntityDataSerializers.FLOAT);
+
+    public static final EntityDataAccessor<Float> SHOOT_PITCH = SynchedEntityData.defineId(Type63Entity.class, EntityDataSerializers.FLOAT);
+    public static final EntityDataAccessor<Float> SHOOT_YAW = SynchedEntityData.defineId(Type63Entity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<IntList> LOADED_AMMO = SynchedEntityData.defineId(Type63Entity.class, ModSerializers.INT_LIST_SERIALIZER.get());
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
@@ -108,6 +113,8 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
 
         this.entityData.define(PITCH, 0f);
         this.entityData.define(YAW, 0f);
+        this.entityData.define(SHOOT_PITCH, 0f);
+        this.entityData.define(SHOOT_YAW, 0f);
         this.entityData.define(LOADED_AMMO, list);
     }
 
@@ -159,14 +166,14 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
 
         if (stack.getItem() instanceof MediumRocketItem) {
             for (int i = 0; i < this.barrel.length; i++) {
-                if (OBB.getLookingObb(player, player.getEntityReach()) == this.barrel[i] && items.get(i).isEmpty()) {
+                if (OBB.getLookingObb(player, player.getEntityReach()) == this.barrel[i] && items.get(i).isEmpty() && level() instanceof ServerLevel) {
                     this.setItem(i, stack.copyWithCount(1));
                     if (!player.isCreative()) {
                         stack.shrink(1);
                     }
                     setChanged();
-                    player.swing(InteractionHand.MAIN_HAND);
                 }
+                player.swing(InteractionHand.MAIN_HAND);
             }
         }
 
@@ -184,7 +191,7 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
             } else {
                 // 撬棍发射
                 for (int i = 0; i < 12; i++) {
-                    if (items.get(i).getItem() instanceof MediumRocketItem) {
+                    if (items.get(i).getItem() instanceof MediumRocketItem && cooldown == 0) {
                         shoot(player, i);
                         items.set(i, ItemStack.EMPTY);
                         setChanged();
@@ -201,6 +208,7 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
     public void interactEvent(Vec3 vec3) {
         if (level() instanceof ServerLevel serverLevel) {
             interactionTick++;
+            interactionTick += 0.5;
             if (tickCount % 2 == 0) {
                 serverLevel.playSound(null, vec3.x, vec3.y, vec3.z, ModSounds.HAND_WHEEL_ROT.get(), SoundSource.PLAYERS, 1f, random.nextFloat() * 0.1f + 0.9f);
             }
@@ -208,27 +216,34 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
     }
 
     public void shoot(Player player, int i) {
-        if (level() instanceof ServerLevel server) {
-            ItemStack stack = items.get(i);
+        ItemStack stack = items.get(i);
 
-            if (!(stack.getItem() instanceof MediumRocketItem rocketItem)) {
-                return;
+        if (!(stack.getItem() instanceof MediumRocketItem rocketItem)) {
+            return;
+        }
+
+        OBB obb = this.barrel[i];
+        Vec3 shootPos = new Vec3(obb.center());
+
+        MediumRocketEntity entityToSpawn = rocketItem.createProjectile(level(), shootPos);
+        entityToSpawn.setOwner(player);
+        entityToSpawn.shoot(getShootVector(1).x, getShootVector(1).y, getShootVector(1).z, 10, (float) 0.5);
+        level().addFreshEntity(entityToSpawn);
+        level().playSound(null, shootPos.x, shootPos.y, shootPos.z, ModSounds.MEDIUM_ROCKET_FIRE.get(), SoundSource.PLAYERS, 4f, random.nextFloat() * 0.1f + 0.95f);
+
+        cooldown = 10;
+        if (level() instanceof ServerLevel serverLevel) {
+            for (int p = 0; p < 15; p++) {
+                Vec3 pPos = shootPos.add(getShootVector(1).scale(p * -0.5));
+                serverLevel.sendParticles(ParticleTypes.SMOKE, pPos.x, pPos.y, pPos.z, 3, 0.05, 0.05, 0.05, 0.007);
+                serverLevel.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, pPos.x, pPos.y, pPos.z, 3, 0.05, 0.05, 0.05, 0.007);
+                serverLevel.sendParticles(ParticleTypes.FLAME, pPos.x, pPos.y, pPos.z, 2, 0.05, 0.05, 0.05, 0.007);
+
+                Vec3 pPos2 = shootPos.add(getShootVector(1).scale(-p));
+                serverLevel.sendParticles(ParticleTypes.SMOKE, pPos2.x, pPos2.y, pPos2.z, 3, 0.05, 0.05, 0.05, 0.007);
+                serverLevel.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, pPos2.x, pPos2.y, pPos2.z, 3, 0.05, 0.05, 0.05, 0.007);
+                serverLevel.sendParticles(ParticleTypes.FLAME, pPos2.x, pPos2.y, pPos2.z, 2, 0.05, 0.05, 0.05, 0.007);
             }
-
-            OBB obb = this.barrel[i];
-            Vec3 shootPos = new Vec3(obb.center());
-
-            MediumRocketEntity entityToSpawn = rocketItem.createProjectile(server, shootPos);
-            entityToSpawn.setOwner(player);
-            entityToSpawn.shoot(getShootVector(1).x, getShootVector(1).y, getShootVector(1).z, 10, (float) 0.25);
-            server.addFreshEntity(entityToSpawn);
-
-            server.playSound(null, shootPos.x, shootPos.y, shootPos.z, ModSounds.MEDIUM_ROCKET_FIRE.get(), SoundSource.PLAYERS, 4f, random.nextFloat() * 0.1f + 0.95f);
-
-//            server.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, (this.getX() + 3 * this.getLookAngle().x), (this.getY() + 0.1 + 3 * this.getLookAngle().y), (this.getZ() + 3 * this.getLookAngle().z), 8, 0.4, 0.4, 0.4,
-//                    0.007);
-//            server.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, this.getX(), this.getY(), this.getZ(), 50, 2, 0.02, 2, 0.0005);
-
         }
     }
 
@@ -259,10 +274,16 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
             this.setDeltaMovement(this.getDeltaMovement().multiply(f1, 0.85, f1));
         }
 
-//        setTurretYRot(getTurretYRot() + 1);
-//        setTurretXRot(getTurretXRot() + 1);
+        if (cooldown > 0) {
+            cooldown--;
+        }
 
         interactionTick *= 0.96;
+
+        if (level() instanceof ServerLevel) {
+            entityData.set(SHOOT_PITCH, (float)VehicleEntity.getXRotFromVector(getShootVector(1)));
+            entityData.set(SHOOT_YAW, (float)-VehicleEntity.getYRotFromVector(getShootVector(1)));
+        }
 
         this.refreshDimensions();
     }
@@ -338,6 +359,7 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
         return this.cache;
     }
 
+    public int cooldown;
 
     @Override
     public ResourceLocation getVehicleIcon() {
