@@ -159,24 +159,8 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
 
         if (stack.getItem() instanceof MediumRocketItem) {
             for (int i = 0; i < this.barrel.length; i++) {
-                var itemIndex = switch (i) {
-                    case 3 -> 0;
-                    case 2 -> 1;
-                    case 1 -> 2;
-                    case 0 -> 3;
-                    case 4 -> 4;
-                    case 5 -> 5;
-                    case 6 -> 6;
-                    case 7 -> 7;
-                    case 11 -> 8;
-                    case 10 -> 9;
-                    case 9 -> 10;
-                    case 8 -> 11;
-                    default -> throw new IllegalStateException("Unexpected value: " + i);
-                };
-
-                if (OBB.getLookingObb(player, player.getEntityReach()) == this.barrel[i] && items.get(itemIndex).isEmpty()) {
-                    this.setItem(itemIndex, stack.copyWithCount(1));
+                if (OBB.getLookingObb(player, player.getEntityReach()) == this.barrel[i] && items.get(i).isEmpty()) {
+                    this.setItem(i, stack.copyWithCount(1));
                     if (!player.isCreative()) {
                         stack.shrink(1);
                     }
