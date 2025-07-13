@@ -1,0 +1,384 @@
+package com.atsuishio.superbwarfare.entity.projectile;
+
+import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
+import com.atsuishio.superbwarfare.init.ModDamageTypes;
+import com.atsuishio.superbwarfare.init.ModEntities;
+import com.atsuishio.superbwarfare.init.ModItems;
+import com.atsuishio.superbwarfare.init.ModSounds;
+import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
+import com.atsuishio.superbwarfare.network.message.receive.ClientMotionSyncMessage;
+import com.atsuishio.superbwarfare.tools.ChunkLoadTool;
+import com.atsuishio.superbwarfare.tools.CustomExplosion;
+import com.atsuishio.superbwarfare.tools.ParticleTool;
+import com.atsuishio.superbwarfare.tools.ProjectileCalculator;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.projectile.ThrowableItemProjectile;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.Explosion;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.event.EventHooks;
+import net.neoforged.neoforge.network.PacketDistributor;
+import org.jetbrains.annotations.NotNull;
+import software.bernie.geckolib.animatable.GeoEntity;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.*;
+import software.bernie.geckolib.util.GeckoLibUtil;
+
+import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.HashSet;
+import java.util.Set;
+
+public class MediumRocketEntity extends FastThrowableProjectile implements GeoEntity, ExplosiveProjectile {
+
+    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+
+    private boolean ap = true;
+    private boolean he = false;
+    private boolean cm = false;
+    private float damage = 0;
+    private float radius = 0;
+    private float explosionDamage = 0;
+    private float fireProbability = 0;
+    private int fireTime = 0;
+    public Set<Long> loadedChunks = new HashSet<>();
+    private float gravity = 0.05f;
+
+    private boolean active;
+    private int sparedTime;
+    private int sparedAmount = 50;
+
+    public MediumRocketEntity(EntityType<? extends MediumRocketEntity> type, Level world) {
+        super(type, world);
+        this.noCulling = true;
+    }
+
+    public MediumRocketEntity(EntityType<? extends ThrowableItemProjectile> pEntityType, double pX, double pY, double pZ, Level pLevel, float damage, float radius, float explosionDamage, float fireProbability, int fireTime, boolean ap, boolean he, boolean cm, int sparedAmount) {
+        super(pEntityType, pX, pY, pZ, pLevel);
+        this.noCulling = true;
+        this.damage = damage;
+        this.radius = radius;
+        this.explosionDamage = explosionDamage;
+        this.fireProbability = fireProbability;
+        this.fireTime = fireTime;
+        this.ap = ap;
+        this.he = he;
+        this.cm = cm;
+        this.sparedAmount = sparedAmount;
+    }
+
+    public MediumRocketEntity(LivingEntity entity, Level world, float damage, float radius, float explosionDamage, float fireProbability, int fireTime, boolean ap, boolean he, boolean cm, int sparedAmount) {
+        super(ModEntities.MEDIUM_ROCKET.get(), entity, world);
+        this.noCulling = true;
+        this.damage = damage;
+        this.radius = radius;
+        this.explosionDamage = explosionDamage;
+        this.fireProbability = fireProbability;
+        this.fireTime = fireTime;
+        this.ap = ap;
+        this.he = he;
+        this.cm = cm;
+        this.sparedAmount = sparedAmount;
+    }
+
+    public MediumRocketEntity durability(int durability) {
+        this.durability = durability;
+        return this;
+    }
+
+    @Override
+    @ParametersAreNonnullByDefault
+    public boolean isColliding(BlockPos pPos, BlockState pState) {
+        return true;
+    }
+
+    @Override
+    public void addAdditionalSaveData(@NotNull CompoundTag pCompound) {
+        super.addAdditionalSaveData(pCompound);
+
+        pCompound.putFloat("Damage", this.damage);
+        pCompound.putFloat("ExplosionDamage", this.explosionDamage);
+        pCompound.putFloat("Radius", this.radius);
+        pCompound.putFloat("FireProbability", this.fireProbability);
+        pCompound.putInt("FireTime", this.fireTime);
+        pCompound.putInt("Durability", this.durability);
+
+        ListTag listTag = new ListTag();
+        for (long chunkPos : this.loadedChunks) {
+            CompoundTag tag = new CompoundTag();
+            tag.putLong("Pos", chunkPos);
+            listTag.add(tag);
+        }
+        pCompound.put("Chunks", listTag);
+    }
+
+    @Override
+    public void readAdditionalSaveData(@NotNull CompoundTag pCompound) {
+        super.readAdditionalSaveData(pCompound);
+
+        if (pCompound.contains("Damage")) {
+            this.damage = pCompound.getFloat("Damage");
+        }
+
+        if (pCompound.contains("ExplosionDamage")) {
+            this.explosionDamage = pCompound.getFloat("ExplosionDamage");
+        }
+
+        if (pCompound.contains("Radius")) {
+            this.radius = pCompound.getFloat("Radius");
+        }
+
+        if (pCompound.contains("FireProbability")) {
+            this.fireProbability = pCompound.getFloat("FireProbability");
+        }
+
+        if (pCompound.contains("FireTime")) {
+            this.fireTime = pCompound.getInt("FireTime");
+        }
+
+        if (pCompound.contains("Durability")) {
+            this.durability = pCompound.getInt("Durability");
+        }
+
+        if (pCompound.contains("Chunks")) {
+            ListTag listTag = pCompound.getList("Chunks", 10);
+            for (int i = 0; i < listTag.size(); i++) {
+                CompoundTag tag = listTag.getCompound(i);
+                this.loadedChunks.add(tag.getLong("Pos"));
+            }
+        }
+    }
+
+    @Override
+    protected @NotNull Item getDefaultItem() {
+        return ModItems.SMALL_ROCKET.get();
+    }
+
+    @Override
+    public boolean shouldRenderAtSqrDistance(double pDistance) {
+        return true;
+    }
+
+    @Override
+    public void onHitBlock(@NotNull BlockHitResult blockHitResult) {
+        if (this.level() instanceof ServerLevel) {
+            if (he || cm) {
+                causeExplode(blockHitResult.getLocation());
+                this.discard();
+                return;
+            }
+            BlockPos resultPos = blockHitResult.getBlockPos();
+            float hardness = this.level().getBlockState(resultPos).getBlock().defaultDestroyTime();
+            if (hardness != -1) {
+                if (ExplosionConfig.EXPLOSION_DESTROY.get()) {
+                    if (firstHit) {
+                        causeExplode(blockHitResult.getLocation());
+                        firstHit = false;
+                        Mod.queueServerWork(3, this::discard);
+                    }
+                    this.level().destroyBlock(resultPos, true);
+                }
+            } else {
+                causeExplode(blockHitResult.getLocation());
+                this.discard();
+            }
+            if (!ExplosionConfig.EXPLOSION_DESTROY.get()) {
+                causeExplode(blockHitResult.getLocation());
+                this.discard();
+            }
+        }
+    }
+
+    @Override
+    public void onHitEntity(@NotNull EntityHitResult entityHitResult) {
+        if (this.level() instanceof ServerLevel) {
+            Entity entity = entityHitResult.getEntity();
+            if (this.getOwner() != null && entity == this.getOwner().getVehicle())
+                return;
+            entity.hurt(ModDamageTypes.causeCannonFireDamage(this.level().registryAccess(), this, this.getOwner()), this.damage);
+
+            if (entity instanceof LivingEntity) {
+                entity.invulnerableTime = 0;
+            }
+
+            if (this.getOwner() instanceof LivingEntity living) {
+                if (!living.level().isClientSide() && living instanceof ServerPlayer player) {
+                    living.level().playSound(null, living.blockPosition(), ModSounds.INDICATION.get(), SoundSource.VOICE, 1, 1);
+
+                    PacketDistributor.sendToPlayer(player, new ClientIndicatorMessage(0, 5));
+                }
+            }
+
+            ParticleTool.cannonHitParticles(this.level(), this.position(), this);
+            causeExplode(entityHitResult.getLocation());
+            if (entity instanceof VehicleEntity) {
+                this.discard();
+            }
+
+        }
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+        if (this.level() instanceof ServerLevel serverLevel && tickCount > 1) {
+            double l = getDeltaMovement().length();
+            for (double i = 0; i < l; i++) {
+                Vec3 startPos = new Vec3(this.xo, this.yo, this.zo);
+                Vec3 pos = startPos.add(getDeltaMovement().normalize().scale(-i));
+                ParticleTool.sendParticle(serverLevel, ParticleTypes.CAMPFIRE_COSY_SMOKE, pos.x, pos.y, pos.z,
+                        1, 0, 0, 0, 0.001, true);
+            }
+            // 更新需要加载的区块
+            ChunkLoadTool.updateLoadedChunks(serverLevel, this, this.loadedChunks);
+        }
+
+        destroyBlock();
+
+        if (this.tickCount > 600 || this.isInWater()) {
+            if (this.level() instanceof ServerLevel) {
+                causeExplode(position());
+            }
+            this.discard();
+        }
+
+        if (cm && getDeltaMovement().y < 0.1 && !active) {
+            if (position().y < level().getMinBuildHeight() || position().y > level().getMaxBuildHeight()) return;
+
+            BlockPos hitBlock = ProjectileCalculator.calculateImpactPosition(level(), position(), getDeltaMovement(), -0.05);
+            Vec3 finalPos = hitBlock.getCenter();
+            double vh = getDeltaMovement().horizontalDistance();
+            double dh = position().vectorTo(finalPos).horizontalDistance();
+            int t = (int) (dh / vh);
+
+            sparedTime = tickCount + t - 5;
+            active = true;
+        }
+
+        if (tickCount >= sparedTime && active) {
+            releaseClusterMunitions((LivingEntity) getOwner());
+            this.discard();
+        }
+    }
+
+    @Override
+    public void syncMotion() {
+        if (!this.level().isClientSide) {
+            PacketDistributor.sendToAllPlayers(new ClientMotionSyncMessage(this));
+        }
+    }
+
+    private void causeExplode(Vec3 vec3) {
+        CustomExplosion explosion = new CustomExplosion(this.level(), this,
+                ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(),
+                        this,
+                        this.getOwner()),
+                explosionDamage,
+                vec3.x,
+                vec3.y,
+                vec3.z,
+                radius,
+                ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).
+                setDamageMultiplier(1);
+        explosion.explode();
+        EventHooks.onExplosionStart(this.level(), explosion);
+        explosion.finalizeExplosion(false);
+        if (radius > 9) {
+            ParticleTool.spawnHugeExplosionParticles(this.level(), vec3);
+        } else {
+            ParticleTool.spawnMediumExplosionParticles(this.level(), vec3);
+        }
+        discard();
+    }
+
+    private void releaseClusterMunitions(LivingEntity shooter) {
+        if (level() instanceof ServerLevel serverLevel) {
+            ParticleTool.spawnMediumExplosionParticles(serverLevel, position());
+            for (int index0 = 0; index0 < sparedAmount; index0++) {
+                GunGrenadeEntity gunGrenadeEntity = new GunGrenadeEntity(shooter, serverLevel,
+                        2 * damage / sparedAmount,
+                        5 * explosionDamage / sparedAmount,
+                        radius / 2
+                );
+
+                gunGrenadeEntity.setPos(position().x, position().y, position().z);
+                gunGrenadeEntity.shoot(getDeltaMovement().x, getDeltaMovement().y, getDeltaMovement().z, (float) (1.25f * getDeltaMovement().length()),
+                        30);
+                serverLevel.addFreshEntity(gunGrenadeEntity);
+            }
+            discard();
+        }
+    }
+
+    private PlayState movementPredicate(AnimationState<MediumRocketEntity> event) {
+        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.rpg.idle"));
+    }
+
+    @Override
+    protected double getDefaultGravity() {
+        return gravity;
+    }
+
+    @Override
+    public void registerControllers(AnimatableManager.ControllerRegistrar data) {
+        data.add(new AnimationController<>(this, "movement", 0, this::movementPredicate));
+    }
+
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return this.cache;
+    }
+
+    @Override
+    public void onRemovedFromLevel() {
+        if (this.level() instanceof ServerLevel serverLevel) {
+            ChunkLoadTool.unloadAllChunks(serverLevel, this, this.loadedChunks);
+        }
+        super.onRemovedFromLevel();
+    }
+
+    @Override
+    public @NotNull SoundEvent getCloseSound() {
+        return ModSounds.ROCKET_ENGINE.get();
+    }
+
+    @Override
+    public @NotNull SoundEvent getSound() {
+        return ModSounds.ROCKET_FLY.get();
+    }
+
+    @Override
+    public float getVolume() {
+        return 0.7f;
+    }
+
+    @Override
+    public void setDamage(float damage) {
+        this.damage = damage;
+    }
+
+    @Override
+    public void setExplosionDamage(float damage) {
+        this.explosionDamage = damage;
+    }
+
+    @Override
+    public void setExplosionRadius(float radius) {
+        this.radius = radius;
+    }
+}
