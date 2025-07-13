@@ -114,6 +114,7 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
         super.readAdditionalSaveData(compound);
         this.entityData.set(PITCH, compound.getFloat("Pitch"));
         this.entityData.set(YAW, compound.getFloat("Yaw"));
+        setChanged();
     }
 
     @Override
