@@ -7,7 +7,6 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.ContainerMobileVehicleEnt
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModSounds;
-import com.atsuishio.superbwarfare.item.SmallShellItem;
 import com.atsuishio.superbwarfare.tools.CustomExplosion;
 import com.atsuishio.superbwarfare.tools.OBB;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
@@ -286,7 +285,7 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
 
     @Override
     public boolean canPlaceItem(int slot, @NotNull ItemStack stack) {
-        return stack.getItem() instanceof SmallShellItem;
+        return true;
     }
 
     @Override
