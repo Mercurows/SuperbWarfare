@@ -3406,5 +3406,25 @@
         "stream": true
       }
     ]
+  },
+  "medium_rocket_fire": {
+    "sounds": [
+      {
+        "name": "superbwarfare:type63/fire_1",
+        "stream": false
+      },
+      {
+        "name": "superbwarfare:type63/fire_2",
+        "stream": false
+      },
+      {
+        "name": "superbwarfare:type63/fire_3",
+        "stream": false
+      },
+      {
+        "name": "superbwarfare:type63/fire_4",
+        "stream": false
+      }
+    ]
   }
 }

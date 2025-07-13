@@ -180,7 +180,7 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
     public void interactEvent(Vec3 vec3) {
         if (level() instanceof ServerLevel serverLevel) {
             interactionTick++;
-            if (tickCount % 5 == 0) {
+            if (tickCount % 2 == 0) {
                 serverLevel.playSound(null, vec3.x, vec3.y, vec3.z, ModSounds.HAND_WHEEL_ROT.get(), SoundSource.PLAYERS, 1f, random.nextFloat() * 0.1f + 0.9f);
             }
         }

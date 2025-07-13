@@ -49,7 +49,7 @@ public class ProjectileUtilMixin {
                             acc.sbw$setCurrentHitPart(obb.part());
 
                             cir.setReturnValue(hitResult);
-                            if (pLevel instanceof ServerLevel serverLevel && pProjectile.getDeltaMovement().lengthSqr() > 0.01) {
+                            if (pLevel instanceof ServerLevel serverLevel && pProjectile.getDeltaMovement().lengthSqr() > 0.01 && pProjectile instanceof Projectile) {
                                 Vec3 hitPos = hitResult.getLocation();
                                 pLevel.playSound(null, BlockPos.containing(hitPos), ModSounds.HIT.get(), SoundSource.PLAYERS, 1, 1);
                                 sendParticle(serverLevel, ModParticleTypes.FIRE_STAR.get(), hitPos.x, hitPos.y, hitPos.z, 2, 0, 0, 0, 0.2, false);

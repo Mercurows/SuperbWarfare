@@ -46,7 +46,7 @@ public class MediumRocketItem extends Item implements ProjectileItem {
 
         @Override
         protected void playSound(BlockSource blockSource) {
-            blockSource.level().playSound(null, blockSource.pos(), ModSounds.SMALL_ROCKET_FIRE_3P.get(), SoundSource.BLOCKS, 2.0F, 1.0F);
+            blockSource.level().playSound(null, blockSource.pos(), ModSounds.MEDIUM_ROCKET_FIRE.get(), SoundSource.BLOCKS, 2.0F, 1.0F);
         }
     }
 
