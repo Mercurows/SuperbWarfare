@@ -29,9 +29,9 @@ import org.joml.Math;
 
 public abstract class ContainerMobileVehicleEntity extends MobileVehicleEntity implements HasCustomInventoryScreen, ContainerEntity {
 
-    public static final int CONTAINER_SIZE = 102;
+    public static final int DEFAULT_CONTAINER_SIZE = 102;
 
-    private final NonNullList<ItemStack> items = NonNullList.withSize(CONTAINER_SIZE, ItemStack.EMPTY);
+    private final NonNullList<ItemStack> items = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);
 
     public ContainerMobileVehicleEntity(EntityType<?> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
@@ -160,7 +160,7 @@ public abstract class ContainerMobileVehicleEntity extends MobileVehicleEntity i
      * @param count 要插入的数量
      */
     public void insertItem(Item item, int count) {
-        var rest = InventoryTool.insertItem(this.getItemStacks(), item, count);
+        var rest = InventoryTool.insertItem(this.getItemStacks(), item, count, this.getMaxStackSize());
 
         if (rest > 0) {
             var stackToDrop = new ItemStack(item, rest);
@@ -175,7 +175,7 @@ public abstract class ContainerMobileVehicleEntity extends MobileVehicleEntity i
 
     @Override
     public int getContainerSize() {
-        return CONTAINER_SIZE;
+        return DEFAULT_CONTAINER_SIZE;
     }
 
     @Override
@@ -221,14 +221,17 @@ public abstract class ContainerMobileVehicleEntity extends MobileVehicleEntity i
         this.getItemStacks().clear();
     }
 
+    public boolean hasMenu() {
+        return true;
+    }
+
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int pContainerId, @NotNull Inventory pPlayerInventory, Player pPlayer) {
-        if (pPlayer.isSpectator()) {
-            return null;
-        } else {
+        if (!pPlayer.isSpectator() && this.hasMenu()) {
             return new VehicleMenu(pContainerId, pPlayerInventory, this);
         }
+        return null;
     }
 
     @Override

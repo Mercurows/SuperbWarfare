@@ -104,9 +104,9 @@ public class InventoryTool {
      * @param count 要插入的数量
      * @return 未能成功插入的物品数量
      */
-    public static int insertItem(NonNullList<ItemStack> itemList, Item item, int count) {
+    public static int insertItem(NonNullList<ItemStack> itemList, Item item, int count, int maxStackSize) {
         var defaultStack = new ItemStack(item);
-        var maxStackSize = item.getMaxStackSize(defaultStack);
+        maxStackSize = Math.min(maxStackSize, item.getMaxStackSize(defaultStack));
 
         for (int i = 0; i < itemList.size(); i++) {
             var stack = itemList.get(i);
