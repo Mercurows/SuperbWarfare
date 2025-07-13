@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ContainerMobileVehicleEntity;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
+import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.SmallShellItem;
 import com.atsuishio.superbwarfare.tools.CustomExplosion;
 import com.atsuishio.superbwarfare.tools.OBB;
@@ -17,6 +18,7 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -117,34 +119,38 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
             if (OBB.getLookingObb(player, player.entityInteractionRange()) == hoe1) {
                 if (player.level() instanceof ServerLevel) {
                     setYRot(getYRot() + (float) interactionTick);
-                    interactionTick++;
+                    interactEvent(new Vec3(hoe1.center()));
                 }
                 player.swing(InteractionHand.MAIN_HAND);
             }
             if (OBB.getLookingObb(player, player.entityInteractionRange()) == hoe2) {
                 if (player.level() instanceof ServerLevel) {
                     setYRot(getYRot() - (float) interactionTick);
-                    interactionTick++;
+                    interactEvent(new Vec3(hoe2.center()));
                 }
                 player.swing(InteractionHand.MAIN_HAND);
             }
             if (OBB.getLookingObb(player, player.entityInteractionRange()) == yawController) {
-                if (player.level() instanceof ServerLevel) {
-                    interactionTick++;
-                }
-                entityData.set(YAW, Mth.clamp(entityData.get(YAW) + (player.isShiftKeyDown() ? -0.07f : 0.07f) * (float) interactionTick, -15, 15));
+                interactEvent(new Vec3(yawController.center()));
+                entityData.set(YAW, Mth.clamp(entityData.get(YAW) + (player.isShiftKeyDown() ? -0.01f : 0.01f) * (float) interactionTick, -15, 15));
                 player.swing(InteractionHand.MAIN_HAND);
             }
             if (OBB.getLookingObb(player, player.entityInteractionRange()) == pitchController) {
-                if (player.level() instanceof ServerLevel) {
-                    interactionTick++;
-                }
-                entityData.set(PITCH, Mth.clamp(entityData.get(PITCH) + (player.isShiftKeyDown() ? 0.15f : -0.15f) * (float) interactionTick, -60, 5));
+                interactEvent(new Vec3(pitchController.center()));
+                entityData.set(PITCH, Mth.clamp(entityData.get(PITCH) + (player.isShiftKeyDown() ? 0.02f : -0.02f) * (float) interactionTick, -60, 5));
                 player.swing(InteractionHand.MAIN_HAND);
             }
         }
-
         return InteractionResult.FAIL;
+    }
+
+    public void interactEvent(Vec3 vec3) {
+        if (level() instanceof ServerLevel serverLevel) {
+            interactionTick++;
+            if (tickCount % 5 == 0) {
+                serverLevel.playSound(null, vec3.x, vec3.y, vec3.z, ModSounds.HAND_WHEEL_ROT.get(), SoundSource.PLAYERS, 1f, random.nextFloat() * 0.1f + 0.9f);
+            }
+        }
     }
 
     @Override
@@ -242,6 +248,13 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
         float x = Mth.lerp(ticks, turretXRotO, getTurretXRot());
         transformT.rotate(Axis.XP.rotationDegrees(x));
         return transformT;
+    }
+
+    public Vec3 getShootVector(float pPartialTicks) {
+        Matrix4f transform = getBarrelTransform(pPartialTicks);
+        Vector4f rootPosition = transformPosition(transform, 0, 0, 0);
+        Vector4f targetPosition = transformPosition(transform, 0, 0, 1);
+        return new Vec3(rootPosition.x, rootPosition.y, rootPosition.z).vectorTo(new Vec3(targetPosition.x, targetPosition.y, targetPosition.z));
     }
 
     @Override

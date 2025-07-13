@@ -71,6 +71,13 @@ public class Type63Renderer extends GeoEntityRenderer<Type63Entity> {
             bone.setRotZ(-Mth.lerp(partialTick, animatable.turretYRotO, animatable.getTurretYRot()) * 6);
         }
 
+        for (int i = 0; i < 11; i++) {
+            var items = animatable.getItemStacks();
+            if (name.equals("shell" + i)) {
+                bone.setHidden(items.get(i).isEmpty());
+            }
+        }
+
         super.renderRecursively(poseStack, animatable, bone, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, color);
     }
 }
