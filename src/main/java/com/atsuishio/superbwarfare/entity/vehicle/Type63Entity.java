@@ -31,7 +31,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -199,11 +198,10 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
                     return InteractionResult.SUCCESS;
                 }
             } else {
-                var itemHandler = getCapability(ForgeCapabilities.ITEM_HANDLER).resolve().get();
-                //TODO 正确实现扣除炮弹
                 for (int i = 0; i < 12; i++) {
                     if (items.get(i).getItem() instanceof MediumRocketItem) {
-                        items.remove(i);
+                        items.set(i, ItemStack.EMPTY);
+                        setChanged();
                         player.swing(InteractionHand.MAIN_HAND);
                         break;
                     }
