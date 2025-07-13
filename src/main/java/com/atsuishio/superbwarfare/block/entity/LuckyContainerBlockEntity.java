@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.block.LuckyContainerBlock;
 import com.atsuishio.superbwarfare.data.container.ContainerDataManager;
 import com.atsuishio.superbwarfare.init.ModBlockEntities;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
+import it.unimi.dsi.fastutil.Pair;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -81,8 +82,19 @@ public class LuckyContainerBlockEntity extends BlockEntity implements GeoBlockEn
             ContainerDataManager dataManager = ContainerDataManager.INSTANCE;
             var list = dataManager.getEntityTypes(this.location);
             if (list.isPresent()) {
-                int rand = this.level.random.nextInt(list.get().size());
-                return EntityType.byString(list.get().get(rand)).orElse(null);
+                var pool = list.get();
+                int sum = pool.stream().mapToInt(Pair::second).sum();
+                if (sum <= 0) return null;
+
+                int rand = this.level.random.nextInt(sum);
+
+                int cumulativeWeight = 0;
+                for (var entry : pool) {
+                    cumulativeWeight += entry.second();
+                    if (rand < cumulativeWeight) {
+                        return EntityType.byString(entry.first()).orElse(null);
+                    }
+                }
             }
         }
         return null;

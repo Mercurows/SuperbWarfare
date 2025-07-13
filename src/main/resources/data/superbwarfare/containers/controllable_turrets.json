@@ -1,9 +1,21 @@
 {
-  "EntityTypes": [
-    "superbwarfare:mk_42",
-    "superbwarfare:hpj_11",
-    "superbwarfare:mle_1934",
-    "superbwarfare:annihilator",
-    "superbwarfare:type_63"
+  "List": [
+    {
+      "Type": "superbwarfare:type_63",
+      "Weight": 5
+    },
+    {
+      "Type": "superbwarfare:mk_42",
+      "Weight": 4
+    },
+    {
+      "Type": "superbwarfare:mle_1934",
+      "Weight": 3
+    },
+    {
+      "Type": "superbwarfare:hpj_11",
+      "Weight": 2
+    },
+    "superbwarfare:annihilator"
   ]
 }
