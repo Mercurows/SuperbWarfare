@@ -1556,9 +1556,15 @@ public abstract class VehicleEntity extends Entity implements Container {
         return false;
     }
 
+    @Override
+    @Nullable
+    public ItemStack getPickResult() {
+        return ContainerBlockItem.createInstance(this.getType());
+    }
+
     /**
      * 渲染载具的第一人称UI
-     * 务必标记 @OnlyIn(Dist.CLIENT) !
+     * 务必标记 @OnlyIn(Dist.CLIENT)
      */
     @OnlyIn(Dist.CLIENT)
     public void renderFirstPersonOverlay(GuiGraphics guiGraphics, Font font, Player player, int screenWidth, int screenHeight, float scale) {

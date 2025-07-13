@@ -30,6 +30,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.*;
@@ -240,4 +241,9 @@ public class TargetEntity extends LivingEntity implements GeoEntity {
         return this.cache;
     }
 
+    @Override
+    @Nullable
+    public ItemStack getPickResult() {
+        return new ItemStack(ModItems.TARGET_DEPLOYER.get());
+    }
 }

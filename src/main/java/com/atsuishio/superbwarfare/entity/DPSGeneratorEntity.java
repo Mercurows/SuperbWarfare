@@ -34,6 +34,7 @@ import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.energy.IEnergyStorage;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.*;
@@ -358,5 +359,11 @@ public class DPSGeneratorEntity extends LivingEntity implements GeoEntity {
             storage.setMaxExtract(this.getMaxTransfer());
             storage.setEnergy(this.getMaxEnergy());
         }
+    }
+
+    @Override
+    @Nullable
+    public ItemStack getPickResult() {
+        return new ItemStack(ModItems.DPS_GENERATOR_DEPLOYER.get());
     }
 }
