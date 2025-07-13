@@ -2,11 +2,13 @@ package com.atsuishio.superbwarfare.block;
 
 import com.atsuishio.superbwarfare.block.entity.LuckyContainerBlockEntity;
 import com.atsuishio.superbwarfare.init.ModBlockEntities;
+import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -59,6 +61,9 @@ public class LuckyContainerBlock extends BaseEntityBlock {
             player.displayClientMessage(Component.translatable("des.superbwarfare.container.fail.crowbar"), true);
             return ItemInteractionResult.FAIL;
         }
+
+        level.setBlockAndUpdate(pos, state.setValue(OPENED, true));
+        level.playSound(null, BlockPos.containing(pos.getX(), pos.getY(), pos.getZ()), ModSounds.OPEN.get(), SoundSource.BLOCKS, 1, 1);
 
         return ItemInteractionResult.FAIL;
     }
