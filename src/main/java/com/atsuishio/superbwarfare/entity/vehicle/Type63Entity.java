@@ -35,8 +35,8 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.event.EventHooks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Math;
 import org.joml.*;
+import org.joml.Math;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.AnimatableManager;
@@ -162,24 +162,8 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
 
         if (stack.getItem() instanceof MediumRocketItem) {
             for (int i = 0; i < this.barrel.length; i++) {
-                var itemIndex = switch (i) {
-                    case 3 -> 0;
-                    case 2 -> 1;
-                    case 1 -> 2;
-                    case 0 -> 3;
-                    case 4 -> 4;
-                    case 5 -> 5;
-                    case 6 -> 6;
-                    case 7 -> 7;
-                    case 11 -> 8;
-                    case 10 -> 9;
-                    case 9 -> 10;
-                    case 8 -> 11;
-                    default -> throw new IllegalStateException("Unexpected value: " + i);
-                };
-
-                if (OBB.getLookingObb(player, player.entityInteractionRange()) == this.barrel[i] && items.get(itemIndex).isEmpty()) {
-                    this.setItem(itemIndex, stack.copyWithCount(1));
+                if (OBB.getLookingObb(player, player.entityInteractionRange()) == this.barrel[i] && items.get(i).isEmpty()) {
+                    this.setItem(i, stack.copyWithCount(1));
                     if (!player.isCreative()) {
                         stack.shrink(1);
                     }
