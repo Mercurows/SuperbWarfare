@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ContainerMobileVehicleEntity;
 import com.atsuishio.superbwarfare.init.*;
+import com.atsuishio.superbwarfare.item.common.ammo.MediumRocketItem;
 import com.atsuishio.superbwarfare.item.common.container.ContainerBlockItem;
 import com.atsuishio.superbwarfare.tools.CustomExplosion;
 import com.atsuishio.superbwarfare.tools.OBB;
@@ -167,7 +168,7 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
             }
         }
 
-        if (stack.is(ModItems.MEDIUM_ROCKET_AP.get()) || stack.is(ModItems.MEDIUM_ROCKET_HE.get()) || stack.is(ModItems.MEDIUM_ROCKET_CM.get())) {
+        if (stack.getItem() instanceof MediumRocketItem) {
             if (OBB.getLookingObb(player, player.getEntityReach()) == this.barrel3 && items.get(0).isEmpty()) {
                 this.setItem(0, stack.copyWithCount(1));
                 if (!player.isCreative()) {
@@ -255,14 +256,23 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
             setChanged();
         }
 
-        if (player.isShiftKeyDown() && stack.is(ModTags.Items.CROWBAR) && this.getPassengers().isEmpty()) {
-            ItemStack container = ContainerBlockItem.createInstance(this);
-            if (!player.addItem(container)) {
-                player.drop(container, false);
+        if (stack.is(ModTags.Items.CROWBAR)) {
+            if (player.isShiftKeyDown() && this.getPassengers().isEmpty()) {
+                ItemStack container = ContainerBlockItem.createInstance(this);
+                if (!player.addItem(container)) {
+                    player.drop(container, false);
+                }
+                this.remove(RemovalReason.DISCARDED);
+                this.discard();
+                return InteractionResult.SUCCESS;
             }
-            this.remove(RemovalReason.DISCARDED);
-            this.discard();
-            return InteractionResult.SUCCESS;
+
+            for (int i = 0; i < 12; i++) {
+                if (!items.get(i).isEmpty()) {
+                    items.remove(i);
+                    break;
+                }
+            }
         }
 
         return InteractionResult.FAIL;
