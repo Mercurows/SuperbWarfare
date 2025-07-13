@@ -4,7 +4,11 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ContainerMobileVehicleEntity;
-import com.atsuishio.superbwarfare.init.*;
+import com.atsuishio.superbwarfare.init.ModDamageTypes;
+import com.atsuishio.superbwarfare.init.ModSerializers;
+import com.atsuishio.superbwarfare.init.ModSounds;
+import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.item.common.ammo.MediumRocketItem;
 import com.atsuishio.superbwarfare.item.common.container.ContainerBlockItem;
 import com.atsuishio.superbwarfare.tools.CustomExplosion;
 import com.atsuishio.superbwarfare.tools.OBB;
@@ -47,18 +51,7 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
     public static final EntityDataAccessor<Float> YAW = SynchedEntityData.defineId(Type63Entity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<List<Integer>> LOADED_AMMO = SynchedEntityData.defineId(Type63Entity.class, ModSerializers.INT_LIST_SERIALIZER.get());
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-    public OBB barrel0;
-    public OBB barrel1;
-    public OBB barrel2;
-    public OBB barrel3;
-    public OBB barrel4;
-    public OBB barrel5;
-    public OBB barrel6;
-    public OBB barrel7;
-    public OBB barrel8;
-    public OBB barrel9;
-    public OBB barrel10;
-    public OBB barrel11;
+    public OBB[] barrel = new OBB[12];
     public OBB pitchController;
     public OBB yawController;
     public OBB hoe1;
@@ -79,18 +72,18 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
         this.body1 = new OBB(this.position().toVector3f(), new Vector3f(0.4765625f, 0.3515625f, 0.7578125f), new Quaternionf(), OBB.Part.BODY);
         this.body2 = new OBB(this.position().toVector3f(), new Vector3f(0.771875f, 0.109375f, 0.296875f), new Quaternionf(), OBB.Part.BODY);
 
-        this.barrel0 = new OBB(this.position().toVector3f(), new Vector3f(0.09375f, 0.09375f, 0.0625f), new Quaternionf(), OBB.Part.INTERACTIVE);
-        this.barrel1 = new OBB(this.position().toVector3f(), new Vector3f(0.09375f, 0.09375f, 0.0625f), new Quaternionf(), OBB.Part.INTERACTIVE);
-        this.barrel2 = new OBB(this.position().toVector3f(), new Vector3f(0.09375f, 0.09375f, 0.0625f), new Quaternionf(), OBB.Part.INTERACTIVE);
-        this.barrel3 = new OBB(this.position().toVector3f(), new Vector3f(0.09375f, 0.09375f, 0.0625f), new Quaternionf(), OBB.Part.INTERACTIVE);
-        this.barrel4 = new OBB(this.position().toVector3f(), new Vector3f(0.09375f, 0.09375f, 0.0625f), new Quaternionf(), OBB.Part.INTERACTIVE);
-        this.barrel5 = new OBB(this.position().toVector3f(), new Vector3f(0.09375f, 0.09375f, 0.0625f), new Quaternionf(), OBB.Part.INTERACTIVE);
-        this.barrel6 = new OBB(this.position().toVector3f(), new Vector3f(0.09375f, 0.09375f, 0.0625f), new Quaternionf(), OBB.Part.INTERACTIVE);
-        this.barrel7 = new OBB(this.position().toVector3f(), new Vector3f(0.09375f, 0.09375f, 0.0625f), new Quaternionf(), OBB.Part.INTERACTIVE);
-        this.barrel8 = new OBB(this.position().toVector3f(), new Vector3f(0.09375f, 0.09375f, 0.0625f), new Quaternionf(), OBB.Part.INTERACTIVE);
-        this.barrel9 = new OBB(this.position().toVector3f(), new Vector3f(0.09375f, 0.09375f, 0.0625f), new Quaternionf(), OBB.Part.INTERACTIVE);
-        this.barrel10 = new OBB(this.position().toVector3f(), new Vector3f(0.09375f, 0.09375f, 0.0625f), new Quaternionf(), OBB.Part.INTERACTIVE);
-        this.barrel11 = new OBB(this.position().toVector3f(), new Vector3f(0.09375f, 0.09375f, 0.0625f), new Quaternionf(), OBB.Part.INTERACTIVE);
+        this.barrel[0] = new OBB(this.position().toVector3f(), new Vector3f(0.09375f, 0.09375f, 0.0625f), new Quaternionf(), OBB.Part.INTERACTIVE);
+        this.barrel[1] = new OBB(this.position().toVector3f(), new Vector3f(0.09375f, 0.09375f, 0.0625f), new Quaternionf(), OBB.Part.INTERACTIVE);
+        this.barrel[2] = new OBB(this.position().toVector3f(), new Vector3f(0.09375f, 0.09375f, 0.0625f), new Quaternionf(), OBB.Part.INTERACTIVE);
+        this.barrel[3] = new OBB(this.position().toVector3f(), new Vector3f(0.09375f, 0.09375f, 0.0625f), new Quaternionf(), OBB.Part.INTERACTIVE);
+        this.barrel[4] = new OBB(this.position().toVector3f(), new Vector3f(0.09375f, 0.09375f, 0.0625f), new Quaternionf(), OBB.Part.INTERACTIVE);
+        this.barrel[5] = new OBB(this.position().toVector3f(), new Vector3f(0.09375f, 0.09375f, 0.0625f), new Quaternionf(), OBB.Part.INTERACTIVE);
+        this.barrel[6] = new OBB(this.position().toVector3f(), new Vector3f(0.09375f, 0.09375f, 0.0625f), new Quaternionf(), OBB.Part.INTERACTIVE);
+        this.barrel[7] = new OBB(this.position().toVector3f(), new Vector3f(0.09375f, 0.09375f, 0.0625f), new Quaternionf(), OBB.Part.INTERACTIVE);
+        this.barrel[8] = new OBB(this.position().toVector3f(), new Vector3f(0.09375f, 0.09375f, 0.0625f), new Quaternionf(), OBB.Part.INTERACTIVE);
+        this.barrel[9] = new OBB(this.position().toVector3f(), new Vector3f(0.09375f, 0.09375f, 0.0625f), new Quaternionf(), OBB.Part.INTERACTIVE);
+        this.barrel[10] = new OBB(this.position().toVector3f(), new Vector3f(0.09375f, 0.09375f, 0.0625f), new Quaternionf(), OBB.Part.INTERACTIVE);
+        this.barrel[11] = new OBB(this.position().toVector3f(), new Vector3f(0.09375f, 0.09375f, 0.0625f), new Quaternionf(), OBB.Part.INTERACTIVE);
         this.pitchController = new OBB(this.position().toVector3f(), new Vector3f(0.15625f, 0.21875f, 0.21875f), new Quaternionf(), OBB.Part.INTERACTIVE);
         this.yawController = new OBB(this.position().toVector3f(), new Vector3f(0.125f, 0.125f, 0.125f), new Quaternionf(), OBB.Part.INTERACTIVE);
         this.hoe1 = new OBB(this.position().toVector3f(), new Vector3f(0.125f, 0.125f, 0.875f), new Quaternionf(), OBB.Part.INTERACTIVE);
@@ -167,93 +160,34 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
             }
         }
 
-        if (stack.is(ModItems.MEDIUM_ROCKET_AP.get()) || stack.is(ModItems.MEDIUM_ROCKET_HE.get()) || stack.is(ModItems.MEDIUM_ROCKET_CM.get())) {
-            if (OBB.getLookingObb(player, player.entityInteractionRange()) == this.barrel3 && items.get(0).isEmpty()) {
-                this.setItem(0, stack.copyWithCount(1));
-                if (!player.isCreative()) {
-                    stack.shrink(1);
+        if (stack.getItem() instanceof MediumRocketItem) {
+            for (int i = 0; i < this.barrel.length; i++) {
+                var itemIndex = switch (i) {
+                    case 3 -> 0;
+                    case 2 -> 1;
+                    case 1 -> 2;
+                    case 0 -> 3;
+                    case 4 -> 4;
+                    case 5 -> 5;
+                    case 6 -> 6;
+                    case 7 -> 7;
+                    case 11 -> 8;
+                    case 10 -> 9;
+                    case 9 -> 10;
+                    case 8 -> 11;
+                    default -> throw new IllegalStateException("Unexpected value: " + i);
+                };
+
+                if (OBB.getLookingObb(player, player.entityInteractionRange()) == this.barrel[i] && items.get(itemIndex).isEmpty()) {
+                    this.setItem(itemIndex, stack.copyWithCount(1));
+                    if (!player.isCreative()) {
+                        stack.shrink(1);
+                    }
+                    player.swing(InteractionHand.MAIN_HAND);
                 }
-                player.swing(InteractionHand.MAIN_HAND);
             }
-            if (OBB.getLookingObb(player, player.entityInteractionRange()) == this.barrel2 && items.get(1).isEmpty()) {
-                this.setItem(1, stack.copyWithCount(1));
-                if (!player.isCreative()) {
-                    stack.shrink(1);
-                }
-                player.swing(InteractionHand.MAIN_HAND);
-            }
-            if (OBB.getLookingObb(player, player.entityInteractionRange()) == this.barrel1 && items.get(2).isEmpty()) {
-                this.setItem(2, stack.copyWithCount(1));
-                if (!player.isCreative()) {
-                    stack.shrink(1);
-                }
-                player.swing(InteractionHand.MAIN_HAND);
-            }
-            if (OBB.getLookingObb(player, player.entityInteractionRange()) == this.barrel0 && items.get(3).isEmpty()) {
-                this.setItem(3, stack.copyWithCount(1));
-                if (!player.isCreative()) {
-                    stack.shrink(1);
-                }
-                player.swing(InteractionHand.MAIN_HAND);
-            }
-            if (OBB.getLookingObb(player, player.entityInteractionRange()) == this.barrel4 && items.get(4).isEmpty()) {
-                this.setItem(4, stack.copyWithCount(1));
-                if (!player.isCreative()) {
-                    stack.shrink(1);
-                }
-                player.swing(InteractionHand.MAIN_HAND);
-            }
-            if (OBB.getLookingObb(player, player.entityInteractionRange()) == this.barrel5 && items.get(5).isEmpty()) {
-                this.setItem(5, stack.copyWithCount(1));
-                if (!player.isCreative()) {
-                    stack.shrink(1);
-                }
-                player.swing(InteractionHand.MAIN_HAND);
-            }
-            if (OBB.getLookingObb(player, player.entityInteractionRange()) == this.barrel6 && items.get(6).isEmpty()) {
-                this.setItem(6, stack.copyWithCount(1));
-                if (!player.isCreative()) {
-                    stack.shrink(1);
-                }
-                player.swing(InteractionHand.MAIN_HAND);
-            }
-            if (OBB.getLookingObb(player, player.entityInteractionRange()) == this.barrel7 && items.get(7).isEmpty()) {
-                this.setItem(7, stack.copyWithCount(1));
-                if (!player.isCreative()) {
-                    stack.shrink(1);
-                }
-                player.swing(InteractionHand.MAIN_HAND);
-            }
-            if (OBB.getLookingObb(player, player.entityInteractionRange()) == this.barrel11 && items.get(8).isEmpty()) {
-                this.setItem(8, stack.copyWithCount(1));
-                if (!player.isCreative()) {
-                    stack.shrink(1);
-                }
-                player.swing(InteractionHand.MAIN_HAND);
-            }
-            if (OBB.getLookingObb(player, player.entityInteractionRange()) == this.barrel10 && items.get(9).isEmpty()) {
-                this.setItem(9, stack.copyWithCount(1));
-                if (!player.isCreative()) {
-                    stack.shrink(1);
-                }
-                player.swing(InteractionHand.MAIN_HAND);
-            }
-            if (OBB.getLookingObb(player, player.entityInteractionRange()) == this.barrel9 && items.get(10).isEmpty()) {
-                this.setItem(10, stack.copyWithCount(10));
-                if (!player.isCreative()) {
-                    stack.shrink(1);
-                }
-                player.swing(InteractionHand.MAIN_HAND);
-            }
-            if (OBB.getLookingObb(player, player.entityInteractionRange()) == this.barrel8 && items.get(11).isEmpty()) {
-                this.setItem(11, stack.copyWithCount(11));
-                if (!player.isCreative()) {
-                    stack.shrink(1);
-                }
-                player.swing(InteractionHand.MAIN_HAND);
-            }
-            setChanged();
         }
+        setChanged();
 
         if (player.isShiftKeyDown() && stack.is(ModTags.Items.CROWBAR) && this.getPassengers().isEmpty()) {
             ItemStack container = ContainerBlockItem.createInstance(this);
@@ -416,7 +350,7 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
 
     @Override
     public List<OBB> getOBBs() {
-        return List.of(this.barrel0, this.barrel1, this.barrel2, this.barrel3, this.barrel4, this.barrel5, this.barrel6, this.barrel7, this.barrel8, this.barrel9, this.barrel10, this.barrel11,
+        return List.of(this.barrel[0], this.barrel[1], this.barrel[2], this.barrel[3], this.barrel[4], this.barrel[5], this.barrel[6], this.barrel[7], this.barrel[8], this.barrel[9], this.barrel[10], this.barrel[11],
                 this.hoe1, this.hoe2, this.yawController, this.pitchController, this.wheel1, this.wheel2, this.body1, this.body2);
     }
 
@@ -459,59 +393,28 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
 
         float i = 0.24375f;
 
-        Vector4f worldPositionBarrel0 = transformPosition(transformB, -0.3659375f, 0.244375f, -0.44625f);
-        this.barrel0.center().set(new Vector3f(worldPositionBarrel0.x, worldPositionBarrel0.y, worldPositionBarrel0.z));
-        this.barrel0.setRotation(VectorTool.combineRotationsBarrel(1, this));
-
-        Vector4f worldPositionBarrel1 = transformPosition(transformB, -0.3659375f + i, 0.244375f, -0.44625f);
-        this.barrel1.center().set(new Vector3f(worldPositionBarrel1.x, worldPositionBarrel1.y, worldPositionBarrel1.z));
-        this.barrel1.setRotation(VectorTool.combineRotationsBarrel(1, this));
-
-        Vector4f worldPositionBarrel2 = transformPosition(transformB, -0.3659375f + 2 * i, 0.244375f, -0.44625f);
-        this.barrel2.center().set(new Vector3f(worldPositionBarrel2.x, worldPositionBarrel2.y, worldPositionBarrel2.z));
-        this.barrel2.setRotation(VectorTool.combineRotationsBarrel(1, this));
-
-        Vector4f worldPositionBarrel3 = transformPosition(transformB, -0.3659375f + 3 * i, 0.244375f, -0.44625f);
-        this.barrel3.center().set(new Vector3f(worldPositionBarrel3.x, worldPositionBarrel3.y, worldPositionBarrel3.z));
-        this.barrel3.setRotation(VectorTool.combineRotationsBarrel(1, this));
-
-
-        Vector4f worldPositionBarrel4 = transformPosition(transformB, -0.3659375f, 0.244375f - i, -0.44625f);
-        this.barrel4.center().set(new Vector3f(worldPositionBarrel4.x, worldPositionBarrel4.y, worldPositionBarrel4.z));
-        this.barrel4.setRotation(VectorTool.combineRotationsBarrel(1, this));
-
-        Vector4f worldPositionBarrel5 = transformPosition(transformB, -0.3659375f + i, 0.244375f - i, -0.44625f);
-        this.barrel5.center().set(new Vector3f(worldPositionBarrel5.x, worldPositionBarrel5.y, worldPositionBarrel5.z));
-        this.barrel5.setRotation(VectorTool.combineRotationsBarrel(1, this));
-
-        Vector4f worldPositionBarrel6 = transformPosition(transformB, -0.3659375f + 2 * i, 0.244375f - i, -0.44625f);
-        this.barrel6.center().set(new Vector3f(worldPositionBarrel6.x, worldPositionBarrel6.y, worldPositionBarrel6.z));
-        this.barrel6.setRotation(VectorTool.combineRotationsBarrel(1, this));
-
-        Vector4f worldPositionBarrel7 = transformPosition(transformB, -0.3659375f + 3 * i, 0.244375f - i, -0.44625f);
-        this.barrel7.center().set(new Vector3f(worldPositionBarrel7.x, worldPositionBarrel7.y, worldPositionBarrel7.z));
-        this.barrel7.setRotation(VectorTool.combineRotationsBarrel(1, this));
-
-
-        Vector4f worldPositionBarrel8 = transformPosition(transformB, -0.3659375f, 0.244375f - 2 * i, -0.44625f);
-        this.barrel8.center().set(new Vector3f(worldPositionBarrel8.x, worldPositionBarrel8.y, worldPositionBarrel8.z));
-        this.barrel8.setRotation(VectorTool.combineRotationsBarrel(1, this));
-
-        Vector4f worldPositionBarrel9 = transformPosition(transformB, -0.3659375f + i, 0.244375f - 2 * i, -0.44625f);
-        this.barrel9.center().set(new Vector3f(worldPositionBarrel9.x, worldPositionBarrel9.y, worldPositionBarrel9.z));
-        this.barrel9.setRotation(VectorTool.combineRotationsBarrel(1, this));
-
-        Vector4f worldPositionBarrel10 = transformPosition(transformB, -0.3659375f + 2 * i, 0.244375f - 2 * i, -0.44625f);
-        this.barrel10.center().set(new Vector3f(worldPositionBarrel10.x, worldPositionBarrel10.y, worldPositionBarrel10.z));
-        this.barrel10.setRotation(VectorTool.combineRotationsBarrel(1, this));
-
-        Vector4f worldPositionBarrel11 = transformPosition(transformB, -0.3659375f + 3 * i, 0.244375f - 2 * i, -0.44625f);
-        this.barrel11.center().set(new Vector3f(worldPositionBarrel11.x, worldPositionBarrel11.y, worldPositionBarrel11.z));
-        this.barrel11.setRotation(VectorTool.combineRotationsBarrel(1, this));
+        setBarrelOBB(0, -0.3659375f, 0.244375f, -0.44625f);
+        setBarrelOBB(1, -0.3659375f + i, 0.244375f, -0.44625f);
+        setBarrelOBB(2, -0.3659375f + 2 * i, 0.244375f, -0.44625f);
+        setBarrelOBB(3, -0.3659375f + 3 * i, 0.244375f, -0.44625f);
+        setBarrelOBB(4, -0.3659375f, 0.244375f - i, -0.44625f);
+        setBarrelOBB(5, -0.3659375f + i, 0.244375f - i, -0.44625f);
+        setBarrelOBB(6, -0.3659375f + 2 * i, 0.244375f - i, -0.44625f);
+        setBarrelOBB(7, -0.3659375f + 3 * i, 0.244375f - i, -0.44625f);
+        setBarrelOBB(8, -0.3659375f, 0.244375f - 2 * i, -0.44625f);
+        setBarrelOBB(9, -0.3659375f + i, 0.244375f - 2 * i, -0.44625f);
+        setBarrelOBB(10, -0.3659375f + 2 * i, 0.244375f - 2 * i, -0.44625f);
+        setBarrelOBB(11, -0.3659375f + 3 * i, 0.244375f - 2 * i, -0.44625f);
 
         Vector4f worldPositionBody1 = transformPosition(transformB, 0, 0, 0.3740625f);
         this.body1.center().set(new Vector3f(worldPositionBody1.x, worldPositionBody1.y, worldPositionBody1.z));
         this.body1.setRotation(VectorTool.combineRotationsBarrel(1, this));
+    }
+
+    private void setBarrelOBB(int index, float x, float y, float z) {
+        Vector4f vec = transformPosition(getBarrelTransform(1), x, y, z);
+        this.barrel[index].center().set(new Vector3f(vec.x, vec.y, vec.z));
+        this.barrel[index].setRotation(VectorTool.combineRotationsBarrel(1, this));
     }
 
     @Override
