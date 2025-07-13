@@ -84,6 +84,8 @@ public class ModEntities {
             EntityType.Builder.<Agm65Entity>of(Agm65Entity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).setCustomClientFactory(Agm65Entity::new).noSave().sized(0.75f, 0.75f));
     public static final RegistryObject<EntityType<SmallRocketEntity>> SMALL_ROCKET = register("small_rocket",
             EntityType.Builder.<SmallRocketEntity>of(SmallRocketEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).setCustomClientFactory(SmallRocketEntity::new).noSave().sized(0.5f, 0.5f));
+    public static final RegistryObject<EntityType<MediumRocketEntity>> MEDIUM_ROCKET = register("medium_rocket",
+            EntityType.Builder.<MediumRocketEntity>of(MediumRocketEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).setCustomClientFactory(MediumRocketEntity::new).noSave().sized(0.5f, 0.5f));
     public static final RegistryObject<EntityType<WgMissileEntity>> WG_MISSILE = register("wg_missile",
             EntityType.Builder.<WgMissileEntity>of(WgMissileEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).setCustomClientFactory(WgMissileEntity::new).noSave().fireImmune().sized(0.5f, 0.5f));
     public static final RegistryObject<EntityType<SwarmDroneEntity>> SWARM_DRONE = register("swarm_drone",

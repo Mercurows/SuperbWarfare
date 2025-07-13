@@ -137,7 +137,7 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
             }
             if (OBB.getLookingObb(player, player.getEntityReach()) == yawController) {
                 interactEvent(new Vec3(yawController.center()));
-                entityData.set(YAW, Mth.clamp(entityData.get(YAW) + (player.isShiftKeyDown() ? -0.01f : 0.01f) * (float) interactionTick, -15, 15));
+                entityData.set(YAW, Mth.clamp(entityData.get(YAW) + (player.isShiftKeyDown() ? -0.02f : 0.02f) * (float) interactionTick, -15, 15));
                 player.swing(InteractionHand.MAIN_HAND);
             }
             if (OBB.getLookingObb(player, player.getEntityReach()) == pitchController) {
