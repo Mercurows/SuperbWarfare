@@ -220,9 +220,10 @@ public class MediumRocketEntity extends FastThrowableProjectile implements GeoEn
 
     @Override
     public void onHitEntity(@NotNull EntityHitResult entityHitResult) {
+        if (tickCount < 2) return;
         if (this.level() instanceof ServerLevel) {
             Entity entity = entityHitResult.getEntity();
-            if (this.getOwner() != null && entity == this.getOwner().getVehicle())
+            if (this.getOwner() != null && entity == this.getOwner().getVehicle() && tickCount < 2)
                 return;
             entity.hurt(ModDamageTypes.causeCannonFireDamage(this.level().registryAccess(), this, this.getOwner()), this.damage);
 
@@ -284,7 +285,7 @@ public class MediumRocketEntity extends FastThrowableProjectile implements GeoEn
             active = true;
         }
 
-        if (tickCount >= sparedTime && active) {
+        if (tickCount >= sparedTime && active && type == Type.CM) {
             releaseClusterMunitions((LivingEntity) getOwner());
             this.discard();
         }
