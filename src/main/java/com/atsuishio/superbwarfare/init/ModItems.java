@@ -126,7 +126,7 @@ public class ModItems {
     public static final DeferredHolder<Item, SmallRocketItem> SMALL_ROCKET = AMMO.register("small_rocket", SmallRocketItem::new);
     public static final DeferredHolder<Item, MediumRocketItem> MEDIUM_ROCKET_AP = AMMO.register("medium_rocket_ap", () -> new MediumRocketItem(500, 6, 100, 0, 0, MediumRocketEntity.Type.AP, 0));
     public static final DeferredHolder<Item, MediumRocketItem> MEDIUM_ROCKET_HE = AMMO.register("medium_rocket_he", () -> new MediumRocketItem(200, 12, 200, 0.2f, 40, MediumRocketEntity.Type.HE, 0));
-    public static final DeferredHolder<Item, MediumRocketItem> MEDIUM_ROCKET_CM = AMMO.register("medium_rocket_cm", () -> new MediumRocketItem(300, 12, 300, 0, 0, MediumRocketEntity.Type.CM, 50));
+    public static final DeferredHolder<Item, MediumRocketItem> MEDIUM_ROCKET_CM = AMMO.register("medium_rocket_cm", () -> new MediumRocketItem(300, 12, 300, 0, 0, MediumRocketEntity.Type.CM, 20));
     public static final DeferredHolder<Item, WireGuideMissileItem> WIRE_GUIDE_MISSILE = AMMO.register("wire_guide_missile", WireGuideMissileItem::new);
     public static final DeferredHolder<Item, AgmItem> AGM = AMMO.register("agm", AgmItem::new);
     public static final DeferredHolder<Item, SwarmDroneItem> SWARM_DRONE = AMMO.register("swarm_drone", SwarmDroneItem::new);
