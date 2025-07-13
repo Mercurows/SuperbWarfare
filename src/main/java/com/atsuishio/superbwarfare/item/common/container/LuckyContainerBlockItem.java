@@ -1,8 +1,12 @@
 package com.atsuishio.superbwarfare.item.common.container;
 
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.renderer.item.LuckyContainerBlockItemRenderer;
+import com.atsuishio.superbwarfare.init.ModBlockEntities;
 import com.atsuishio.superbwarfare.init.ModBlocks;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
@@ -24,9 +28,18 @@ import software.bernie.geckolib.core.animation.AnimationState;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
+import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class LuckyContainerBlockItem extends BlockItem implements GeoItem {
+
+    public static final List<Supplier<ItemStack>> LUCKY_CONTAINERS = List.of(
+            () -> LuckyContainerBlockItem.createInstance(Mod.loc("mobile_vehicles")),
+            () -> LuckyContainerBlockItem.createInstance(Mod.loc("land_vehicles")),
+            () -> LuckyContainerBlockItem.createInstance(Mod.loc("aircraft")),
+            () -> LuckyContainerBlockItem.createInstance(Mod.loc("controllable_turrets"))
+    );
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
@@ -75,5 +88,13 @@ public class LuckyContainerBlockItem extends BlockItem implements GeoItem {
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return this.cache;
+    }
+
+    public static ItemStack createInstance(ResourceLocation location) {
+        ItemStack stack = new ItemStack(ModBlocks.LUCKY_CONTAINER.get());
+        CompoundTag tag = new CompoundTag();
+        tag.putString("Location", location.toString());
+        BlockItem.setBlockEntityData(stack, ModBlockEntities.LUCKY_CONTAINER.get(), tag);
+        return stack;
     }
 }

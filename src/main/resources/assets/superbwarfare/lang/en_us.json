@@ -318,6 +318,10 @@
   "block.superbwarfare.superb_item_interface": "Superb Item Interface",
   "des.superbwarfare.superb_item_interface": "A fast omnidirectional hopper for transferring items to targeted entities",
   "block.superbwarfare.lucky_container": "Lucky Container",
+  "des.superbwarfare.lucky_container.location.mobile_vehicles": "Mobile Vehicles",
+  "des.superbwarfare.lucky_container.location.land_vehicles": "Land Vehicles",
+  "des.superbwarfare.lucky_container.location.aircraft": "Aircraft",
+  "des.superbwarfare.lucky_container.location.controllable_turrets": "Controllable Turrets",
 
   "item.superbwarfare.high_energy_explosives": "High Energy Explosives",
   "item.superbwarfare.grain": "Grain",

@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.item.ArmorPlate;
 import com.atsuishio.superbwarfare.item.BatteryItem;
 import com.atsuishio.superbwarfare.item.C4BombItem;
 import com.atsuishio.superbwarfare.item.ElectricBaton;
+import com.atsuishio.superbwarfare.item.common.container.LuckyContainerBlockItem;
 import com.atsuishio.superbwarfare.item.common.container.SmallContainerBlockItem;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
@@ -104,9 +105,10 @@ public class ModTabs {
                             RegisterContainersEvent.CONTAINERS.forEach(output::accept);
                         } else if (registryObject.get() == ModItems.LUCKY_CONTAINER.get()) {
                             output.accept(registryObject.get());
+                            LuckyContainerBlockItem.LUCKY_CONTAINERS.stream().map(Supplier::get).forEach(output::accept);
                         } else if (registryObject.get() == ModItems.SMALL_CONTAINER.get()) {
                             output.accept(registryObject.get());
-                            SmallContainerBlockItem.SMALL_CONTAINER_LOOT_TABLES.stream().map(Supplier::get).forEach(output::accept);
+                            SmallContainerBlockItem.SMALL_CONTAINERS.stream().map(Supplier::get).forEach(output::accept);
                         } else {
                             output.accept(registryObject.get());
                         }
