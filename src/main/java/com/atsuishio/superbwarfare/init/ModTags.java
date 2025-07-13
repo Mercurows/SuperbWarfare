@@ -42,6 +42,7 @@ public class ModTags {
         public static final TagKey<Item> EPIC_BLUEPRINT = tag("blueprint/epic");
         public static final TagKey<Item> LEGENDARY_BLUEPRINT = tag("blueprint/legendary");
         public static final TagKey<Item> CANNON_BLUEPRINT = tag("blueprint/cannon");
+        public static final TagKey<Item> MEDIUM_ROCKET = tag("medium_rocket");
 
         public static final TagKey<Item> WRENCHES = ItemTags.create(ResourceLocation.fromNamespaceAndPath("c", "wrenches"));
         public static final TagKey<Item> WRENCH = ItemTags.create(ResourceLocation.fromNamespaceAndPath("c", "tools/wrench"));
