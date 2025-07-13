@@ -1,0 +1,34 @@
+{
+  "variants": {
+    "facing=east,opened=false": {
+      "model": "superbwarfare:block/container",
+      "y": 90
+    },
+    "facing=east,opened=true": {
+      "model": "superbwarfare:block/container",
+      "y": 90
+    },
+    "facing=north,opened=false": {
+      "model": "superbwarfare:block/container"
+    },
+    "facing=north,opened=true": {
+      "model": "superbwarfare:block/container"
+    },
+    "facing=south,opened=false": {
+      "model": "superbwarfare:block/container",
+      "y": 180
+    },
+    "facing=south,opened=true": {
+      "model": "superbwarfare:block/container",
+      "y": 180
+    },
+    "facing=west,opened=false": {
+      "model": "superbwarfare:block/container",
+      "y": 270
+    },
+    "facing=west,opened=true": {
+      "model": "superbwarfare:block/container",
+      "y": 270
+    }
+  }
+}

@@ -317,6 +317,7 @@
   "block.superbwarfare.aircraft_catapult": "Aircraft Catapult",
   "block.superbwarfare.superb_item_interface": "Superb Item Interface",
   "des.superbwarfare.superb_item_interface": "A fast omnidirectional hopper for transferring items to targeted entities",
+  "block.superbwarfare.lucky_container": "Lucky Container",
 
   "item.superbwarfare.high_energy_explosives": "High Energy Explosives",
   "item.superbwarfare.grain": "Grain",

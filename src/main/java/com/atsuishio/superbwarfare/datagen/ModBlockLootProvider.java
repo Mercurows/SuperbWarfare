@@ -60,6 +60,8 @@ public class ModBlockLootProvider extends BlockLootSubProvider {
                 LootPool.lootPool().setRolls(ConstantValue.exactly(1.0F)).add(LootItem.lootTableItem(ModBlocks.SMALL_CONTAINER.get()))
                         .apply(CopyNbtFunction.copyData(ContextNbtProvider.BLOCK_ENTITY).copy("LootTable", "BlockEntityTag.LootTable")
                                 .copy("LootTableSeed", "BlockEntityTag.LootTableSeed")))));
+        // TODO 改成正确的loot table
+        this.add(ModBlocks.LUCKY_CONTAINER.get(), noDrop());
     }
 
     @Override
