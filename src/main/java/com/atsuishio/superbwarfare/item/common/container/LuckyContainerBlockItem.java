@@ -20,6 +20,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
+import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoItem;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -35,10 +36,10 @@ import java.util.function.Supplier;
 public class LuckyContainerBlockItem extends BlockItem implements GeoItem {
 
     public static final List<Supplier<ItemStack>> LUCKY_CONTAINERS = List.of(
-            () -> LuckyContainerBlockItem.createInstance(Mod.loc("mobile_vehicles")),
-            () -> LuckyContainerBlockItem.createInstance(Mod.loc("land_vehicles")),
-            () -> LuckyContainerBlockItem.createInstance(Mod.loc("aircraft")),
-            () -> LuckyContainerBlockItem.createInstance(Mod.loc("controllable_turrets"))
+            () -> LuckyContainerBlockItem.createInstance(Mod.loc("mobile_vehicles"), Mod.loc("textures/gui/vehicle/type/civilian.png")),
+            () -> LuckyContainerBlockItem.createInstance(Mod.loc("land_vehicles"), Mod.loc("textures/gui/vehicle/type/land.png")),
+            () -> LuckyContainerBlockItem.createInstance(Mod.loc("aircraft"), Mod.loc("textures/gui/vehicle/type/aircraft.png")),
+            () -> LuckyContainerBlockItem.createInstance(Mod.loc("controllable_turrets"), Mod.loc("textures/gui/vehicle/type/defense.png"))
     );
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
@@ -90,11 +91,18 @@ public class LuckyContainerBlockItem extends BlockItem implements GeoItem {
         return this.cache;
     }
 
-    public static ItemStack createInstance(ResourceLocation location) {
+    public static ItemStack createInstance(ResourceLocation location, @Nullable ResourceLocation icon) {
         ItemStack stack = new ItemStack(ModBlocks.LUCKY_CONTAINER.get());
         CompoundTag tag = new CompoundTag();
         tag.putString("Location", location.toString());
         BlockItem.setBlockEntityData(stack, ModBlockEntities.LUCKY_CONTAINER.get(), tag);
+        if (icon != null) {
+            stack.getOrCreateTag().putString("Icon", icon.toString());
+        }
         return stack;
+    }
+
+    public static ItemStack createInstance(ResourceLocation location) {
+        return createInstance(location, null);
     }
 }

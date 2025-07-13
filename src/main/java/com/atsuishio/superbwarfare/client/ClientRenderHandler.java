@@ -1,6 +1,8 @@
 package com.atsuishio.superbwarfare.client;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.client.decorator.ContainerItemDecorator;
+import com.atsuishio.superbwarfare.client.decorator.LuckyContainerItemDecorator;
 import com.atsuishio.superbwarfare.client.overlay.*;
 import com.atsuishio.superbwarfare.client.renderer.block.*;
 import com.atsuishio.superbwarfare.client.tooltip.*;
@@ -68,5 +70,6 @@ public class ClientRenderHandler {
     @SubscribeEvent
     public static void registerItemDecorations(RegisterItemDecorationsEvent event) {
         event.register(ModItems.CONTAINER.get(), new ContainerItemDecorator());
+        event.register(ModItems.LUCKY_CONTAINER.get(), new LuckyContainerItemDecorator());
     }
 }
