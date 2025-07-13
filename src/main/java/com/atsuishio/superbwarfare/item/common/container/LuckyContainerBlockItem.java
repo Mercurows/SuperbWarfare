@@ -95,10 +95,10 @@ public class LuckyContainerBlockItem extends BlockItem implements GeoItem {
         ItemStack stack = new ItemStack(ModBlocks.LUCKY_CONTAINER.get());
         CompoundTag tag = new CompoundTag();
         tag.putString("Location", location.toString());
-        BlockItem.setBlockEntityData(stack, ModBlockEntities.LUCKY_CONTAINER.get(), tag);
         if (icon != null) {
-            stack.getOrCreateTag().putString("Icon", icon.toString());
+            tag.putString("Icon", icon.toString());
         }
+        BlockItem.setBlockEntityData(stack, ModBlockEntities.LUCKY_CONTAINER.get(), tag);
         return stack;
     }
 

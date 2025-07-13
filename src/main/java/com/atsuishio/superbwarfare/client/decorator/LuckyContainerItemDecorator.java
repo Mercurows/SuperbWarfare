@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.item.common.container.LuckyContainerBlockItem
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -16,7 +17,7 @@ public class LuckyContainerItemDecorator implements IItemDecorator {
     @Override
     public boolean render(GuiGraphics guiGraphics, Font font, ItemStack stack, int xOffset, int yOffset) {
         if (!(stack.getItem() instanceof LuckyContainerBlockItem)) return false;
-        var tag = stack.getTag();
+        var tag = BlockItem.getBlockEntityData(stack);
         if (tag == null) return false;
         if (!tag.contains("Icon")) return false;
         var iconTag = tag.getString("Icon");

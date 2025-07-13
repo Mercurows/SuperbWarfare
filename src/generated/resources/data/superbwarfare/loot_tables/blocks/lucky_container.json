@@ -1,4 +1,39 @@
 {
   "type": "minecraft:block",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:lucky_container"
+        }
+      ],
+      "functions": [
+        {
+          "function": "minecraft:copy_nbt",
+          "ops": [
+            {
+              "op": "replace",
+              "source": "Location",
+              "target": "BlockEntityTag.Location"
+            },
+            {
+              "op": "replace",
+              "source": "Icon",
+              "target": "BlockEntityTag.Icon"
+            }
+          ],
+          "source": "block_entity"
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
   "random_sequence": "superbwarfare:blocks/lucky_container"
 }
