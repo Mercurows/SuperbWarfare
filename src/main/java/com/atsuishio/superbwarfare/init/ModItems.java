@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.init;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.entity.projectile.MediumRocketEntity;
 import com.atsuishio.superbwarfare.item.*;
 import com.atsuishio.superbwarfare.item.armor.*;
 import com.atsuishio.superbwarfare.item.common.BlueprintItem;
@@ -120,9 +121,9 @@ public class ModItems {
     public static final DeferredHolder<Item, Blu43MineItem> BLU_43_MINE = AMMO.register("blu_43_mine", Blu43MineItem::new);
     public static final DeferredHolder<Item, Item> SMALL_SHELL = AMMO.register("small_shell", SmallShellItem::new);
     public static final DeferredHolder<Item, SmallRocketItem> SMALL_ROCKET = AMMO.register("small_rocket", SmallRocketItem::new);
-    public static final DeferredHolder<Item, MediumRocketAPItem> MEDIUM_ROCKET_AP = AMMO.register("medium_rocket_ap", MediumRocketAPItem::new);
-    public static final DeferredHolder<Item, MediumRocketHEItem> MEDIUM_ROCKET_HE = AMMO.register("medium_rocket_he", MediumRocketHEItem::new);
-    public static final DeferredHolder<Item, MediumRocketCMItem> MEDIUM_ROCKET_CM = AMMO.register("medium_rocket_cm", MediumRocketCMItem::new);
+    public static final DeferredHolder<Item, MediumRocketItem> MEDIUM_ROCKET_AP = AMMO.register("medium_rocket_ap", () -> new MediumRocketItem(500, 6, 100, 0, 0, MediumRocketEntity.Type.AP, 0));
+    public static final DeferredHolder<Item, MediumRocketItem> MEDIUM_ROCKET_HE = AMMO.register("medium_rocket_he", () -> new MediumRocketItem(200, 12, 200, 0.2f, 40, MediumRocketEntity.Type.HE, 0));
+    public static final DeferredHolder<Item, MediumRocketItem> MEDIUM_ROCKET_CM = AMMO.register("medium_rocket_cm", () -> new MediumRocketItem(300, 12, 300, 0, 0, MediumRocketEntity.Type.CM, 50));
     public static final DeferredHolder<Item, WireGuideMissileItem> WIRE_GUIDE_MISSILE = AMMO.register("wire_guide_missile", WireGuideMissileItem::new);
     public static final DeferredHolder<Item, AgmItem> AGM = AMMO.register("agm", AgmItem::new);
     public static final DeferredHolder<Item, SwarmDroneItem> SWARM_DRONE = AMMO.register("swarm_drone", SwarmDroneItem::new);
@@ -356,9 +357,9 @@ public class ModItems {
         DispenserBlock.registerBehavior(RGO_GRENADE.get(), new RgoGrenade.RgoGrenadeDispenserBehavior());
         DispenserBlock.registerBehavior(M18_SMOKE_GRENADE.get(), new M18SmokeGrenade.SmokeGrenadeDispenserBehavior());
         DispenserBlock.registerBehavior(TM_62.get(), new Tm62Item.Tm62DispenseBehavior());
-        DispenserBlock.registerBehavior(MEDIUM_ROCKET_AP.get(), new MediumRocketAPItem.MediumRocketDispenseBehavior());
-        DispenserBlock.registerBehavior(MEDIUM_ROCKET_CM.get(), new MediumRocketCMItem.MediumRocketDispenseBehavior());
-        DispenserBlock.registerBehavior(MEDIUM_ROCKET_HE.get(), new MediumRocketHEItem.MediumRocketDispenseBehavior());
+        DispenserBlock.registerBehavior(MEDIUM_ROCKET_AP.get(), new MediumRocketItem.MediumRocketDispenseBehavior(MEDIUM_ROCKET_AP.get()));
+        DispenserBlock.registerBehavior(MEDIUM_ROCKET_CM.get(), new MediumRocketItem.MediumRocketDispenseBehavior(MEDIUM_ROCKET_CM.get()));
+        DispenserBlock.registerBehavior(MEDIUM_ROCKET_HE.get(), new MediumRocketItem.MediumRocketDispenseBehavior(MEDIUM_ROCKET_HE.get()));
     }
 
     public static void register(IEventBus bus) {

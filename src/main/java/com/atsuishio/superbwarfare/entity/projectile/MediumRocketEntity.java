@@ -48,16 +48,17 @@ public class MediumRocketEntity extends FastThrowableProjectile implements GeoEn
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
-    private boolean ap = true;
-    private boolean he = false;
-    private boolean cm = false;
+    public enum Type {
+        AP, HE, CM
+    }
+
+    private Type type = Type.AP;
     private float damage = 0;
     private float radius = 0;
     private float explosionDamage = 0;
     private float fireProbability = 0;
     private int fireTime = 0;
     public Set<Long> loadedChunks = new HashSet<>();
-    private float gravity = 0.05f;
 
     private boolean active;
     private int sparedTime;
@@ -68,7 +69,7 @@ public class MediumRocketEntity extends FastThrowableProjectile implements GeoEn
         this.noCulling = true;
     }
 
-    public MediumRocketEntity(EntityType<? extends ThrowableItemProjectile> pEntityType, double pX, double pY, double pZ, Level pLevel, float damage, float radius, float explosionDamage, float fireProbability, int fireTime, boolean ap, boolean he, boolean cm, int sparedAmount) {
+    public MediumRocketEntity(EntityType<? extends ThrowableItemProjectile> pEntityType, double pX, double pY, double pZ, Level pLevel, float damage, float radius, float explosionDamage, float fireProbability, int fireTime, Type type, int sparedAmount) {
         super(pEntityType, pX, pY, pZ, pLevel);
         this.noCulling = true;
         this.damage = damage;
@@ -76,13 +77,11 @@ public class MediumRocketEntity extends FastThrowableProjectile implements GeoEn
         this.explosionDamage = explosionDamage;
         this.fireProbability = fireProbability;
         this.fireTime = fireTime;
-        this.ap = ap;
-        this.he = he;
-        this.cm = cm;
+        this.type = type;
         this.sparedAmount = sparedAmount;
     }
 
-    public MediumRocketEntity(LivingEntity entity, Level world, float damage, float radius, float explosionDamage, float fireProbability, int fireTime, boolean ap, boolean he, boolean cm, int sparedAmount) {
+    public MediumRocketEntity(LivingEntity entity, Level world, float damage, float radius, float explosionDamage, float fireProbability, int fireTime, Type type, int sparedAmount) {
         super(ModEntities.MEDIUM_ROCKET.get(), entity, world);
         this.noCulling = true;
         this.damage = damage;
@@ -90,9 +89,7 @@ public class MediumRocketEntity extends FastThrowableProjectile implements GeoEn
         this.explosionDamage = explosionDamage;
         this.fireProbability = fireProbability;
         this.fireTime = fireTime;
-        this.ap = ap;
-        this.he = he;
-        this.cm = cm;
+        this.type = type;
         this.sparedAmount = sparedAmount;
     }
 
@@ -177,7 +174,7 @@ public class MediumRocketEntity extends FastThrowableProjectile implements GeoEn
     @Override
     public void onHitBlock(@NotNull BlockHitResult blockHitResult) {
         if (this.level() instanceof ServerLevel) {
-            if (he || cm) {
+            if (type == Type.HE || type == Type.CM) {
                 causeExplode(blockHitResult.getLocation());
                 this.discard();
                 return;
@@ -257,7 +254,7 @@ public class MediumRocketEntity extends FastThrowableProjectile implements GeoEn
             this.discard();
         }
 
-        if (cm && getDeltaMovement().y < 0.1 && !active) {
+        if (type == Type.CM && getDeltaMovement().y < 0.1 && !active) {
             if (position().y < level().getMinBuildHeight() || position().y > level().getMaxBuildHeight()) return;
 
             BlockPos hitBlock = ProjectileCalculator.calculateImpactPosition(level(), position(), getDeltaMovement(), -0.05);
@@ -331,7 +328,7 @@ public class MediumRocketEntity extends FastThrowableProjectile implements GeoEn
 
     @Override
     protected double getDefaultGravity() {
-        return gravity;
+        return 0.05f;
     }
 
     @Override
