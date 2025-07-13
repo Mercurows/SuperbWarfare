@@ -103,6 +103,12 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
     }
 
     @Override
+    public void playerTouch(Player pPlayer) {
+        if (pPlayer.position().distanceToSqr(position()) > 1.2) return;
+        super.playerTouch(pPlayer);
+    }
+
+    @Override
     protected void defineSynchedData() {
         super.defineSynchedData();
         var list = new IntArrayList();
