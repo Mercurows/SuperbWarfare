@@ -1,21 +1,25 @@
 package com.atsuishio.superbwarfare.block.entity;
 
 import com.atsuishio.superbwarfare.block.LuckyContainerBlock;
+import com.atsuishio.superbwarfare.data.container.ContainerDataManager;
 import com.atsuishio.superbwarfare.init.ModBlockEntities;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import org.joml.Math;
 import software.bernie.geckolib.animatable.GeoBlockEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -25,8 +29,12 @@ import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
+import javax.annotation.Nullable;
+
 public class LuckyContainerBlockEntity extends BlockEntity implements GeoBlockEntity {
 
+    @Nullable
+    public ResourceLocation location;
     public int tick = 0;
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
@@ -50,9 +58,32 @@ public class LuckyContainerBlockEntity extends BlockEntity implements GeoBlockEn
             }
         } else {
             var direction = pState.getValue(LuckyContainerBlock.FACING);
+            var type = blockEntity.unpackEntities();
+
+            if (type != null) {
+                var entity = type.create(pLevel);
+                if (entity != null) {
+                    entity.setPos(pPos.getX() + 0.5 + (2 * Math.random() - 1) * 0.1f, pPos.getY() + 0.5 + (2 * Math.random() - 1) * 0.1f, pPos.getZ() + 0.5 + (2 * Math.random() - 1) * 0.1f);
+                    entity.setYRot(direction.toYRot());
+                    pLevel.addFreshEntity(entity);
+                }
+            }
 
             pLevel.setBlockAndUpdate(pPos, Blocks.AIR.defaultBlockState());
         }
+    }
+
+    @Nullable
+    public EntityType<?> unpackEntities() {
+        if (this.location != null && this.level != null && this.level.getServer() != null) {
+            ContainerDataManager dataManager = ContainerDataManager.INSTANCE;
+            var list = dataManager.getEntityTypes(this.location);
+            if (list.isPresent()) {
+                int rand = this.level.random.nextInt(list.get().size());
+                return EntityType.byString(list.get().get(rand)).orElse(null);
+            }
+        }
+        return null;
     }
 
     private PlayState predicate(AnimationState<LuckyContainerBlockEntity> event) {
@@ -75,12 +106,18 @@ public class LuckyContainerBlockEntity extends BlockEntity implements GeoBlockEn
     @Override
     public void load(CompoundTag compound) {
         super.load(compound);
+        if (compound.contains("Location", 8)) {
+            this.location = new ResourceLocation(compound.getString("Location"));
+        }
         this.tick = compound.getInt("Tick");
     }
 
     @Override
     public void saveAdditional(CompoundTag compound) {
         super.saveAdditional(compound);
+        if (this.location != null) {
+            compound.putString("Location", this.location.toString());
+        }
         compound.putInt("Tick", this.tick);
     }
 
@@ -97,6 +134,9 @@ public class LuckyContainerBlockEntity extends BlockEntity implements GeoBlockEn
     @Override
     public void saveToItem(ItemStack pStack) {
         CompoundTag tag = new CompoundTag();
+        if (this.location != null) {
+            tag.putString("Location", this.location.toString());
+        }
         BlockItem.setBlockEntityData(pStack, this.getType(), tag);
     }
 }
