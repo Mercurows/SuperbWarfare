@@ -189,14 +189,23 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
         }
         setChanged();
 
-        if (player.isShiftKeyDown() && stack.is(ModTags.Items.CROWBAR) && this.getPassengers().isEmpty()) {
-            ItemStack container = ContainerBlockItem.createInstance(this);
-            if (!player.addItem(container)) {
-                player.drop(container, false);
+        if (stack.is(ModTags.Items.CROWBAR)) {
+            if (player.isShiftKeyDown() && this.getPassengers().isEmpty()) {
+                ItemStack container = ContainerBlockItem.createInstance(this);
+                if (!player.addItem(container)) {
+                    player.drop(container, false);
+                }
+                this.remove(RemovalReason.DISCARDED);
+                this.discard();
+                return InteractionResult.SUCCESS;
             }
-            this.remove(RemovalReason.DISCARDED);
-            this.discard();
-            return InteractionResult.SUCCESS;
+
+            for (int i = 0; i < 12; i++) {
+                if (!items.get(i).isEmpty()) {
+                    items.remove(i);
+                    break;
+                }
+            }
         }
 
         return InteractionResult.FAIL;
