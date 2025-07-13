@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.init;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.entity.projectile.MediumRocketEntity;
 import com.atsuishio.superbwarfare.item.*;
 import com.atsuishio.superbwarfare.item.armor.*;
 import com.atsuishio.superbwarfare.item.common.BlueprintItem;
@@ -122,9 +123,9 @@ public class ModItems {
     public static final RegistryObject<Item> BLU_43_MINE = AMMO.register("blu_43_mine", Blu43MineItem::new);
     public static final RegistryObject<Item> SMALL_SHELL = AMMO.register("small_shell", SmallShellItem::new);
     public static final RegistryObject<Item> SMALL_ROCKET = AMMO.register("small_rocket", SmallRocketItem::new);
-    public static final RegistryObject<Item> MEDIUM_ROCKET_AP = AMMO.register("medium_rocket_ap", MediumRocketAPItem::new);
-    public static final RegistryObject<Item> MEDIUM_ROCKET_HE = AMMO.register("medium_rocket_he", MediumRocketHEItem::new);
-    public static final RegistryObject<Item> MEDIUM_ROCKET_CM = AMMO.register("medium_rocket_cm", MediumRocketCMItem::new);
+    public static final RegistryObject<Item> MEDIUM_ROCKET_AP = AMMO.register("medium_rocket_ap", () -> new MediumRocketItem(500, 6, 100, 0, 0, MediumRocketEntity.Type.AP, 0));
+    public static final RegistryObject<Item> MEDIUM_ROCKET_HE = AMMO.register("medium_rocket_he", () -> new MediumRocketItem(200, 12, 200, 0.2f, 40, MediumRocketEntity.Type.HE, 0));
+    public static final RegistryObject<Item> MEDIUM_ROCKET_CM = AMMO.register("medium_rocket_cm", () -> new MediumRocketItem(300, 12, 300, 0, 0, MediumRocketEntity.Type.CM, 50));
     public static final RegistryObject<Item> WIRE_GUIDE_MISSILE = AMMO.register("wire_guide_missile", WireGuideMissileItem::new);
     public static final RegistryObject<Item> AGM = AMMO.register("agm", AgmItem::new);
     public static final RegistryObject<Item> SWARM_DRONE = AMMO.register("swarm_drone", SwarmDroneItem::new);

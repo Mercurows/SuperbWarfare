@@ -16,10 +16,26 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
-public class MediumRocketHEItem extends Item implements DispenserLaunchable {
+public class MediumRocketItem extends Item implements DispenserLaunchable {
 
-    public MediumRocketHEItem() {
+    private final float damage;
+    private final float radius;
+    private final float explosionDamage;
+    private final float fireProbability;
+    private final int fireTime;
+    private final MediumRocketEntity.Type type;
+    private final int sparedAmount;
+
+    public MediumRocketItem(float damage, float radius, float explosionDamage, float fireProbability, int fireTime, MediumRocketEntity.Type type, int sparedAmount) {
         super(new Properties());
+
+        this.damage = damage;
+        this.radius = radius;
+        this.explosionDamage = explosionDamage;
+        this.fireProbability = fireProbability;
+        this.fireTime = fireTime;
+        this.type = type;
+        this.sparedAmount = sparedAmount;
     }
 
     @Override
@@ -34,11 +50,11 @@ public class MediumRocketHEItem extends Item implements DispenserLaunchable {
             @Override
             @ParametersAreNonnullByDefault
             protected @NotNull Projectile getProjectile(Level pLevel, Position pPosition, ItemStack pStack) {
-                return new MediumRocketEntity(ModEntities.MEDIUM_ROCKET.get(), pPosition.x(), pPosition.y(), pPosition.z(), pLevel, 200, 12, 200, 0.2f, 40, false, true, false, 0);
+                return new MediumRocketEntity(ModEntities.MEDIUM_ROCKET.get(), pPosition.x(), pPosition.y(), pPosition.z(), pLevel, damage, radius, explosionDamage, fireProbability, fireTime, type, sparedAmount);
             }
 
             @Override
-            protected void playSound(BlockSource pSource) {
+            protected void playSound(@NotNull BlockSource pSource) {
                 pSource.getLevel().playSound(null, pSource.getPos(), ModSounds.MEDIUM_ROCKET_FIRE.get(), SoundSource.BLOCKS, 4.0F, 1.0F);
             }
         };
