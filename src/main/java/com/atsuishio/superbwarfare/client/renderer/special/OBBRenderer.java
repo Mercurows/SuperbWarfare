@@ -24,13 +24,23 @@ public class OBBRenderer {
             Vector3f center = obb.center();
             Vector3f halfExtents = obb.extents();
             Quaternionf rotation = obb.rotation();
-            renderOBB(
-                    poseStack, buffer,
-                    (float) (center.x() - position.x()), (float) (center.y() - position.y()), (float) (center.z() - position.z()),
-                    rotation,
-                    halfExtents.x(), halfExtents.y(), halfExtents.z(),
-                    red, green, blue, alpha
-            );
+            if (obb.part().equals(OBB.Part.INTERACTIVE)) {
+                renderOBB(
+                        poseStack, buffer,
+                        (float) (center.x() - position.x()), (float) (center.y() - position.y()), (float) (center.z() - position.z()),
+                        rotation,
+                        halfExtents.x(), halfExtents.y(), halfExtents.z(),
+                        1, 0.8f, 0, 1
+                );
+            } else {
+                renderOBB(
+                        poseStack, buffer,
+                        (float) (center.x() - position.x()), (float) (center.y() - position.y()), (float) (center.z() - position.z()),
+                        rotation,
+                        halfExtents.x(), halfExtents.y(), halfExtents.z(),
+                        red, green, blue, alpha
+                );
+            }
         }
     }
 

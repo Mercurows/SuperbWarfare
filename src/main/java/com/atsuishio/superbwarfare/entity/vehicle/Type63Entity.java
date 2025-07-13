@@ -67,26 +67,37 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
     public OBB hoe1;
     public OBB hoe2;
 
+    public OBB wheel1;
+    public OBB wheel2;
+    public OBB body1;
+    public OBB body2;
+
+
     public double interactionTick;
 
     public Type63Entity(EntityType<Type63Entity> type, Level world) {
         super(type, world);
-        this.barrel0 = new OBB(this.position().toVector3f(), new Vector3f(0.09375f, 0.09375f, 0.0625f), new Quaternionf(), OBB.Part.BODY);
-        this.barrel1 = new OBB(this.position().toVector3f(), new Vector3f(0.09375f, 0.09375f, 0.0625f), new Quaternionf(), OBB.Part.BODY);
-        this.barrel2 = new OBB(this.position().toVector3f(), new Vector3f(0.09375f, 0.09375f, 0.0625f), new Quaternionf(), OBB.Part.BODY);
-        this.barrel3 = new OBB(this.position().toVector3f(), new Vector3f(0.09375f, 0.09375f, 0.0625f), new Quaternionf(), OBB.Part.BODY);
-        this.barrel4 = new OBB(this.position().toVector3f(), new Vector3f(0.09375f, 0.09375f, 0.0625f), new Quaternionf(), OBB.Part.BODY);
-        this.barrel5 = new OBB(this.position().toVector3f(), new Vector3f(0.09375f, 0.09375f, 0.0625f), new Quaternionf(), OBB.Part.BODY);
-        this.barrel6 = new OBB(this.position().toVector3f(), new Vector3f(0.09375f, 0.09375f, 0.0625f), new Quaternionf(), OBB.Part.BODY);
-        this.barrel7 = new OBB(this.position().toVector3f(), new Vector3f(0.09375f, 0.09375f, 0.0625f), new Quaternionf(), OBB.Part.BODY);
-        this.barrel8 = new OBB(this.position().toVector3f(), new Vector3f(0.09375f, 0.09375f, 0.0625f), new Quaternionf(), OBB.Part.BODY);
-        this.barrel9 = new OBB(this.position().toVector3f(), new Vector3f(0.09375f, 0.09375f, 0.0625f), new Quaternionf(), OBB.Part.BODY);
-        this.barrel10 = new OBB(this.position().toVector3f(), new Vector3f(0.09375f, 0.09375f, 0.0625f), new Quaternionf(), OBB.Part.BODY);
-        this.barrel11 = new OBB(this.position().toVector3f(), new Vector3f(0.09375f, 0.09375f, 0.0625f), new Quaternionf(), OBB.Part.BODY);
-        this.pitchController = new OBB(this.position().toVector3f(), new Vector3f(0.15625f, 0.21875f, 0.21875f), new Quaternionf(), OBB.Part.BODY);
-        this.yawController = new OBB(this.position().toVector3f(), new Vector3f(0.125f, 0.125f, 0.125f), new Quaternionf(), OBB.Part.BODY);
-        this.hoe1 = new OBB(this.position().toVector3f(), new Vector3f(0.125f, 0.125f, 0.875f), new Quaternionf(), OBB.Part.BODY);
-        this.hoe2 = new OBB(this.position().toVector3f(), new Vector3f(0.125f, 0.125f, 0.875f), new Quaternionf(), OBB.Part.BODY);
+        this.barrel0 = new OBB(this.position().toVector3f(), new Vector3f(0.09375f, 0.09375f, 0.0625f), new Quaternionf(), OBB.Part.INTERACTIVE);
+        this.barrel1 = new OBB(this.position().toVector3f(), new Vector3f(0.09375f, 0.09375f, 0.0625f), new Quaternionf(), OBB.Part.INTERACTIVE);
+        this.barrel2 = new OBB(this.position().toVector3f(), new Vector3f(0.09375f, 0.09375f, 0.0625f), new Quaternionf(), OBB.Part.INTERACTIVE);
+        this.barrel3 = new OBB(this.position().toVector3f(), new Vector3f(0.09375f, 0.09375f, 0.0625f), new Quaternionf(), OBB.Part.INTERACTIVE);
+        this.barrel4 = new OBB(this.position().toVector3f(), new Vector3f(0.09375f, 0.09375f, 0.0625f), new Quaternionf(), OBB.Part.INTERACTIVE);
+        this.barrel5 = new OBB(this.position().toVector3f(), new Vector3f(0.09375f, 0.09375f, 0.0625f), new Quaternionf(), OBB.Part.INTERACTIVE);
+        this.barrel6 = new OBB(this.position().toVector3f(), new Vector3f(0.09375f, 0.09375f, 0.0625f), new Quaternionf(), OBB.Part.INTERACTIVE);
+        this.barrel7 = new OBB(this.position().toVector3f(), new Vector3f(0.09375f, 0.09375f, 0.0625f), new Quaternionf(), OBB.Part.INTERACTIVE);
+        this.barrel8 = new OBB(this.position().toVector3f(), new Vector3f(0.09375f, 0.09375f, 0.0625f), new Quaternionf(), OBB.Part.INTERACTIVE);
+        this.barrel9 = new OBB(this.position().toVector3f(), new Vector3f(0.09375f, 0.09375f, 0.0625f), new Quaternionf(), OBB.Part.INTERACTIVE);
+        this.barrel10 = new OBB(this.position().toVector3f(), new Vector3f(0.09375f, 0.09375f, 0.0625f), new Quaternionf(), OBB.Part.INTERACTIVE);
+        this.barrel11 = new OBB(this.position().toVector3f(), new Vector3f(0.09375f, 0.09375f, 0.0625f), new Quaternionf(), OBB.Part.INTERACTIVE);
+        this.pitchController = new OBB(this.position().toVector3f(), new Vector3f(0.15625f, 0.21875f, 0.21875f), new Quaternionf(), OBB.Part.INTERACTIVE);
+        this.yawController = new OBB(this.position().toVector3f(), new Vector3f(0.125f, 0.125f, 0.125f), new Quaternionf(), OBB.Part.INTERACTIVE);
+        this.hoe1 = new OBB(this.position().toVector3f(), new Vector3f(0.125f, 0.125f, 0.875f), new Quaternionf(), OBB.Part.INTERACTIVE);
+        this.hoe2 = new OBB(this.position().toVector3f(), new Vector3f(0.125f, 0.125f, 0.875f), new Quaternionf(), OBB.Part.INTERACTIVE);
+
+        this.wheel1 = new OBB(this.position().toVector3f(), new Vector3f(0.125f, 0.390625f, 0.390625f), new Quaternionf(), OBB.Part.WHEEL_LEFT);
+        this.wheel2 = new OBB(this.position().toVector3f(), new Vector3f(0.125f, 0.390625f, 0.390625f), new Quaternionf(), OBB.Part.WHEEL_RIGHT);
+        this.body1 = new OBB(this.position().toVector3f(), new Vector3f(0.4765625f, 0.3515625f, 0.7578125f), new Quaternionf(), OBB.Part.BODY);
+        this.body2 = new OBB(this.position().toVector3f(), new Vector3f(0.771875f, 0.109375f, 0.296875f), new Quaternionf(), OBB.Part.BODY);
     }
 
     @Override
@@ -315,7 +326,7 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
     @Override
     public List<OBB> getOBBs() {
         return List.of(this.barrel0, this.barrel1, this.barrel2, this.barrel3, this.barrel4, this.barrel5, this.barrel6, this.barrel7, this.barrel8, this.barrel9, this.barrel10, this.barrel11,
-                this.hoe1, this.hoe2, this.yawController, this.pitchController);
+                this.hoe1, this.hoe2, this.yawController, this.pitchController, this.wheel1, this.wheel2, this.body1, this.body2);
     }
 
     @Override
@@ -330,6 +341,18 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
         Vector4f worldPosition2 = transformPosition(transform, -0.875f, 0.1875f, -1.625f);
         this.hoe2.center().set(new Vector3f(worldPosition2.x, worldPosition2.y, worldPosition2.z));
         this.hoe2.setRotation(VectorTool.combineRotations(1, this));
+
+        Vector4f worldPositionW = transformPosition(transform, 0.90625f, 0.390625f, 0.1071875f);
+        this.wheel1.center().set(new Vector3f(worldPositionW.x, worldPositionW.y, worldPositionW.z));
+        this.wheel1.setRotation(VectorTool.combineRotations(1, this));
+
+        Vector4f worldPositionW2 = transformPosition(transform, -0.90625f, 0.390625f, 0.1071875f);
+        this.wheel2.center().set(new Vector3f(worldPositionW2.x, worldPositionW2.y, worldPositionW2.z));
+        this.wheel2.setRotation(VectorTool.combineRotations(1, this));
+
+        Vector4f worldPositionBody2 = transformPosition(transform, 0, 0.42546875f, -0.090625f);
+        this.body2.center().set(new Vector3f(worldPositionBody2.x, worldPositionBody2.y, worldPositionBody2.z));
+        this.body2.setRotation(VectorTool.combineRotationsBarrel(1, this));
 
         Matrix4f transformT = getTurretTransform(1);
 
@@ -394,6 +417,10 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
         Vector4f worldPositionBarrel11 = transformPosition(transformB, -0.3659375f + 3 * i, 0.244375f - 2 * i, -0.44625f);
         this.barrel11.center().set(new Vector3f(worldPositionBarrel11.x, worldPositionBarrel11.y, worldPositionBarrel11.z));
         this.barrel11.setRotation(VectorTool.combineRotationsBarrel(1, this));
+
+        Vector4f worldPositionBody1 = transformPosition(transformB, 0, 0, 0.3740625f);
+        this.body1.center().set(new Vector3f(worldPositionBody1.x, worldPositionBody1.y, worldPositionBody1.z));
+        this.body1.setRotation(VectorTool.combineRotationsBarrel(1, this));
     }
 
     @Override
