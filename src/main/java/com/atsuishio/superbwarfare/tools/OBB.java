@@ -443,23 +443,41 @@ public record OBB(Vector3f center, Vector3f extents, Quaternionf rotation, Part 
 
     //获取玩家看向的某个OBB
 
-    // TODO 修复看向的第一个OBB后方如果还有另外的OBB时，无法正确返回看向的第一个OBB的BUG
-
     public static OBB getLookingObb(Player player, double range) {
-        OBB lookingOBB = null;
         Entity lookingEntity = TraceTool.findLookingEntity(player, range);
         if (lookingEntity instanceof OBBEntity obbEntity) {
             var obbList = obbEntity.getOBBs();
             for (OBB obb : obbList) {
                 Vec3 hitPos = TraceTool.playerFindLookingPos(player, lookingEntity, range);
-                if (hitPos != null && obb.contains(hitPos.add(player.getViewVector(1).scale(0.02)))) {
+                if (hitPos != null && obb.contains(hitPos.add(player.getViewVector(1).scale(0.05)))) {
 //                    player.displayClientMessage(Component.literal(String.valueOf(obb)), true);
-                    lookingOBB = obb;
-                    break;
+                    // 测试粒子
+//                    if (player.level() instanceof ServerLevel serverLevel) {
+//                        sendParticle(serverLevel, ModParticleTypes.FIRE_STAR.get(), hitPos.x, hitPos.y, hitPos.z, 1, 0, 0, 0, 0.01, false);
+//                    }
+                    return obb;
                 }
             }
         }
-        return lookingOBB;
+        return null;
+    }
+
+    public static Optional<OBB> getNearestOBB(Vec3 vec3, List<OBB> obbs) {
+        if (obbs.isEmpty()) return Optional.empty();
+
+        OBB nearest = null;
+        double minDistanceSq = Double.MAX_VALUE;
+
+        for (OBB obb : obbs) {
+            double distanceSq = obb.center.distanceSquared((float) vec3.x, (float) vec3.y, (float) vec3.z);
+
+            if (distanceSq < minDistanceSq) {
+                minDistanceSq = distanceSq;
+                nearest = obb;
+            }
+        }
+
+        return Optional.ofNullable(nearest);
     }
 
     public enum Part {
