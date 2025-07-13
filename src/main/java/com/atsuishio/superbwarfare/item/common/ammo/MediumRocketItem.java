@@ -39,6 +39,10 @@ public class MediumRocketItem extends Item implements ProjectileItem {
         this.sparedAmount = sparedAmount;
     }
 
+    public MediumRocketEntity createProjectile(Level level, Position pos) {
+        return new MediumRocketEntity(ModEntities.MEDIUM_ROCKET.get(), pos.x(), pos.y(), pos.z(), level, damage, radius, explosionDamage, fireProbability, fireTime, type, sparedAmount);
+    }
+
     public static class MediumRocketDispenseBehavior extends ProjectileDispenseBehavior {
         public MediumRocketDispenseBehavior(Item item) {
             super(item);
@@ -53,7 +57,7 @@ public class MediumRocketItem extends Item implements ProjectileItem {
     @Override
     @ParametersAreNonnullByDefault
     public @NotNull Projectile asProjectile(Level level, Position pos, ItemStack stack, Direction direction) {
-        return new MediumRocketEntity(ModEntities.MEDIUM_ROCKET.get(), pos.x(), pos.y(), pos.z(), level, damage, radius, explosionDamage, fireProbability, fireTime, type, sparedAmount);
+        return createProjectile(level, pos);
     }
 
     @Override
