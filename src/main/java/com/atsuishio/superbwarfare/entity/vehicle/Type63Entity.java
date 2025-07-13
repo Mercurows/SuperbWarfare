@@ -3,7 +3,7 @@ package com.atsuishio.superbwarfare.entity.vehicle;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.ContainerMobileVehicleEntity;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.item.SmallShellItem;
@@ -12,7 +12,6 @@ import com.atsuishio.superbwarfare.tools.OBB;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
 import com.atsuishio.superbwarfare.tools.VectorTool;
 import com.mojang.math.Axis;
-import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -20,7 +19,6 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
-import net.minecraft.world.Container;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityType;
@@ -29,15 +27,11 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.wrapper.InvWrapper;
 import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Math;
 import org.joml.*;
+import org.joml.Math;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -45,7 +39,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.List;
 
-public class Type63Entity extends MobileVehicleEntity implements GeoEntity, OBBEntity, Container {
+public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEntity, OBBEntity {
 
     public static final EntityDataAccessor<Float> PITCH = SynchedEntityData.defineId(Type63Entity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Float> YAW = SynchedEntityData.defineId(Type63Entity.class, EntityDataSerializers.FLOAT);
@@ -68,9 +62,6 @@ public class Type63Entity extends MobileVehicleEntity implements GeoEntity, OBBE
     public OBB hoe2;
 
     public double interactionTick;
-
-    private LazyOptional<?> itemHandler = LazyOptional.of(() -> new InvWrapper(this));
-    public ItemStack stack = ItemStack.EMPTY;
 
     public Type63Entity(PlayMessages.SpawnEntity packet, Level world) {
         this(ModEntities.TYPE_63.get(), world);
@@ -111,7 +102,7 @@ public class Type63Entity extends MobileVehicleEntity implements GeoEntity, OBBE
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundTag compound) {
+    public void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
         this.entityData.set(PITCH, compound.getFloat("Pitch"));
         this.entityData.set(YAW, compound.getFloat("Yaw"));
@@ -283,81 +274,8 @@ public class Type63Entity extends MobileVehicleEntity implements GeoEntity, OBBE
     }
 
     @Override
-    public boolean isEmpty() {
-        return stack == ItemStack.EMPTY;
-    }
-
-    @Override
-    public @NotNull ItemStack getItem(int slot) {
-        return slot == 0 ? stack : ItemStack.EMPTY;
-    }
-
-    @Override
-    public @NotNull ItemStack removeItem(int slot, int amount) {
-        if (slot != 0 || amount <= 0 || stack.isEmpty()) {
-            return ItemStack.EMPTY;
-        }
-        stack.shrink(1);
-        if (stack.isEmpty()) {
-            stack = ItemStack.EMPTY;
-        }
-        return stack;
-    }
-
-    @Override
-    public @NotNull ItemStack removeItemNoUpdate(int slot) {
-        return removeItem(0, 1);
-    }
-
-    @Override
-    public void setItem(int slot, @NotNull ItemStack stack) {
-        if (slot != 0) return;
-        this.stack = stack;
-    }
-
-    @Override
-    public void setChanged() {
-    }
-
-    @Override
-    public boolean stillValid(@NotNull Player player) {
-        return false;
-    }
-
-    @Override
-    public void clearContent() {
-        this.stack = ItemStack.EMPTY;
-    }
-
-    @Override
     public boolean canPlaceItem(int slot, @NotNull ItemStack stack) {
-        if (slot != 0) return false;
         return stack.getItem() instanceof SmallShellItem;
-    }
-
-    @Override
-    public <T> @NotNull LazyOptional<T> getCapability(@NotNull Capability<T> capability, @Nullable Direction facing) {
-        if (this.isAlive() && capability == ForgeCapabilities.ITEM_HANDLER) {
-            return itemHandler.cast();
-        }
-        return super.getCapability(capability, facing);
-    }
-
-    @Override
-    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap) {
-        return this.getCapability(cap, null);
-    }
-
-    @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        itemHandler.invalidate();
-    }
-
-    @Override
-    public void reviveCaps() {
-        super.reviveCaps();
-        itemHandler = LazyOptional.of(() -> new InvWrapper(this));
     }
 
     @Override
