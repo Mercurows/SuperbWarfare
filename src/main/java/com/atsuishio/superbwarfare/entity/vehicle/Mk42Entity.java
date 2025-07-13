@@ -32,7 +32,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
-import net.minecraft.world.Container;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
@@ -60,7 +59,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import static com.atsuishio.superbwarfare.tools.RangeTool.calculateLaunchVector;
 
-public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity, Container, LockTargetEntity {
+public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity, LockTargetEntity {
 
     public static final EntityDataAccessor<Integer> COOL_DOWN = SynchedEntityData.defineId(Mk42Entity.class, EntityDataSerializers.INT);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
@@ -76,9 +75,6 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
     public Mk42Entity(EntityType<Mk42Entity> type, Level world) {
         super(type, world);
     }
-
-    // TODO cap
-    public ItemStack stack = ItemStack.EMPTY;
 
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
@@ -164,8 +160,8 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
         }
 
         if (stack.is(ModTags.Items.CROWBAR) && !player.isShiftKeyDown()) {
-            if (this.stack.getItem() instanceof CannonShellItem) {
-                var weaponType = this.stack.is(ModItems.AP_5_INCHES.get()) ? 0 : 1;
+            if (this.items.getFirst().getItem() instanceof CannonShellItem) {
+                var weaponType = this.items.getFirst().is(ModItems.AP_5_INCHES.get()) ? 0 : 1;
                 setWeaponIndex(0, weaponType);
                 vehicleShoot(player, 0);
             }
@@ -173,8 +169,8 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
         }
 
         if (stack.getItem() instanceof CannonShellItem) {
-            if (this.entityData.get(COOL_DOWN) == 0 && this.stack.isEmpty()) {
-                this.stack = stack.copyWithCount(1);
+            if (this.entityData.get(COOL_DOWN) == 0 && this.items.getFirst().isEmpty()) {
+                this.setItem(0, stack.copyWithCount(1));
                 if (!player.isCreative()) {
                     stack.shrink(1);
                 }
@@ -378,7 +374,7 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
             }
 
             if (getFirstPassenger() != player) {
-                this.stack = ItemStack.EMPTY;
+                this.clearContent();
             }
 
             var entityToSpawn = ((CannonShellWeapon) getWeapon(0)).create(player);
@@ -577,39 +573,6 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
     }
 
     @Override
-    public boolean isEmpty() {
-        return stack == ItemStack.EMPTY;
-    }
-
-    @Override
-    public @NotNull ItemStack getItem(int slot) {
-        return slot == 0 ? stack : ItemStack.EMPTY;
-    }
-
-    @Override
-    public @NotNull ItemStack removeItem(int slot, int amount) {
-        if (slot != 0 || amount <= 0 || stack.isEmpty()) {
-            return ItemStack.EMPTY;
-        }
-        stack.shrink(1);
-        if (stack.isEmpty()) {
-            stack = ItemStack.EMPTY;
-        }
-        return stack;
-    }
-
-    @Override
-    public @NotNull ItemStack removeItemNoUpdate(int slot) {
-        return removeItem(0, 1);
-    }
-
-    @Override
-    public void setItem(int slot, @NotNull ItemStack stack) {
-        if (slot != 0) return;
-        this.stack = stack;
-    }
-
-    @Override
     public void setChanged() {
 //        if (!entityData.get(INTELLIGENT)) {
 //            fire(null);
@@ -622,13 +585,7 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
     }
 
     @Override
-    public void clearContent() {
-        this.stack = ItemStack.EMPTY;
-    }
-
-    @Override
     public boolean canPlaceItem(int slot, @NotNull ItemStack stack) {
-        if (slot != 0 || this.entityData.get(COOL_DOWN) != 0) return false;
-        return stack.getItem() instanceof CannonShellItem;
+        return super.canPlaceItem(slot, stack) && this.entityData.get(COOL_DOWN) == 0 && stack.getItem() instanceof CannonShellItem;
     }
 }

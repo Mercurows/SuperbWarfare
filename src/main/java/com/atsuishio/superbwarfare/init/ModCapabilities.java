@@ -7,7 +7,6 @@ import com.atsuishio.superbwarfare.block.entity.FuMO25BlockEntity;
 import com.atsuishio.superbwarfare.capability.energy.ItemEnergyStorage;
 import com.atsuishio.superbwarfare.capability.laser.LaserCapability;
 import com.atsuishio.superbwarfare.capability.laser.LaserCapabilityProvider;
-import com.atsuishio.superbwarfare.entity.vehicle.base.ContainerMobileVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.item.CreativeChargingStationBlockItem;
 import com.atsuishio.superbwarfare.item.EnergyStorageItem;
@@ -79,19 +78,17 @@ public class ModCapabilities {
 
         // 载具
         for (var entity : ModEntities.REGISTRY.getEntries()) {
-            // 能量
             if (entity.get().getBaseClass().isAssignableFrom(VehicleEntity.class)) {
+                // 能量
                 event.registerEntity(Capabilities.EnergyStorage.ENTITY,
                         entity.get(),
                         (obj, ctx) -> (obj instanceof VehicleEntity vehicle && vehicle.hasEnergyStorage()) ? vehicle.getEnergyStorage() : null
                 );
-            }
 
-            // 物品
-            if (entity.get().getBaseClass().isAssignableFrom(ContainerMobileVehicleEntity.class)) {
+                // 物品
                 event.registerEntity(Capabilities.ItemHandler.ENTITY,
                         entity.get(),
-                        (obj, ctx) -> (obj instanceof ContainerMobileVehicleEntity vehicle) ? new InvWrapper(vehicle) : null
+                        (obj, ctx) -> (obj instanceof VehicleEntity vehicle && vehicle.hasContainer()) ? new InvWrapper(vehicle) : null
                 );
             }
         }

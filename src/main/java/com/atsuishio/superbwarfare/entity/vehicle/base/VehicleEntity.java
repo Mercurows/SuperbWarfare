@@ -12,6 +12,7 @@ import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.item.ContainerBlockItem;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
 import com.atsuishio.superbwarfare.tools.EntityFindUtil;
+import com.atsuishio.superbwarfare.tools.InventoryTool;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
 import com.atsuishio.superbwarfare.tools.VectorTool;
 import com.google.common.collect.ImmutableList;
@@ -27,6 +28,7 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
+import net.minecraft.core.NonNullList;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
@@ -42,6 +44,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
+import net.minecraft.world.Container;
+import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
@@ -50,10 +54,12 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Pose;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.vehicle.DismountHelper;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.gameevent.GameEvent;
@@ -80,7 +86,7 @@ import java.util.function.Function;
 import static com.atsuishio.superbwarfare.client.RenderHelper.preciseBlit;
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 
-public abstract class VehicleEntity extends Entity {
+public abstract class VehicleEntity extends Entity implements Container {
 
     public static final EntityDataAccessor<Float> HEALTH = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<String> LAST_ATTACKER_UUID = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.STRING);
@@ -134,6 +140,144 @@ public abstract class VehicleEntity extends Entity {
         entityData.set(MOUSE_SPEED_X, (float) x);
         entityData.set(MOUSE_SPEED_Y, (float) y);
     }
+
+    // container start
+
+    protected final NonNullList<ItemStack> items = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);
+
+    /**
+     * 计算当前载具内指定物品的数量
+     *
+     * @param item 物品类型
+     * @return 物品数量
+     */
+    public int countItem(@Nullable Item item) {
+        if (item == null || !this.hasContainer()) return 0;
+        return InventoryTool.countItem(this.items, item);
+    }
+
+    /**
+     * 判断载具内是否包含指定物品
+     *
+     * @param item 物品类型
+     */
+    public boolean hasItem(Item item) {
+        if (!this.hasContainer()) return false;
+
+        return countItem(item) > 0;
+    }
+
+    /**
+     * 消耗载具内指定物品
+     *
+     * @param item  物品类型
+     * @param count 要消耗的数量
+     * @return 成功消耗的物品数量
+     */
+    public int consumeItem(Item item, int count) {
+        if (!this.hasContainer()) return 0;
+
+        return InventoryTool.consumeItem(this.items, item, count);
+    }
+
+    /**
+     * 尝试插入指定物品指定数量，如果载具内已满则生成掉落物
+     *
+     * @param item  物品类型
+     * @param count 要插入的数量
+     */
+    public void insertItem(Item item, int count) {
+        if (!this.hasContainer()) return;
+
+        var rest = InventoryTool.insertItem(this.items, item, count, this.getMaxStackSize());
+
+        if (rest > 0) {
+            var stackToDrop = new ItemStack(item, rest);
+            this.level().addFreshEntity(new ItemEntity(this.level(), this.getX(), this.getY(), this.getZ(), stackToDrop));
+        }
+    }
+
+    @Override
+    public int getContainerSize() {
+        return 0;
+    }
+
+    @Override
+    public @NotNull ItemStack getItem(int slot) {
+        if (!this.hasContainer() || slot >= this.getContainerSize() || slot < 0) return ItemStack.EMPTY;
+        return this.items.get(slot);
+    }
+
+    @Override
+    public @NotNull ItemStack removeItem(int slot, int pAmount) {
+        if (!this.hasContainer() || slot >= this.getContainerSize() || slot < 0) return ItemStack.EMPTY;
+
+        return ContainerHelper.removeItem(this.items, slot, pAmount);
+    }
+
+    @Override
+    public @NotNull ItemStack removeItemNoUpdate(int slot) {
+        if (!this.hasContainer() || slot >= this.getContainerSize() || slot < 0) return ItemStack.EMPTY;
+
+        ItemStack itemstack = this.items.get(slot);
+        if (itemstack.isEmpty()) {
+            return ItemStack.EMPTY;
+        } else {
+            this.items.set(slot, ItemStack.EMPTY);
+            return itemstack;
+        }
+    }
+
+    @Override
+    public void setItem(int slot, @NotNull ItemStack pStack) {
+        if (!this.hasContainer() || slot >= this.getContainerSize() || slot < 0) return;
+
+        this.items.set(slot, pStack);
+        if (!pStack.isEmpty() && pStack.getCount() > this.getMaxStackSize()) {
+            pStack.setCount(this.getMaxStackSize());
+        }
+    }
+
+    @Override
+    public void setChanged() {
+    }
+
+    @Override
+    public boolean stillValid(@NotNull Player pPlayer) {
+        return this.hasContainer() && !this.isRemoved() && this.position().closerThan(pPlayer.position(), 8.0D);
+    }
+
+    @Override
+    public void clearContent() {
+        this.items.clear();
+    }
+
+    public boolean hasMenu() {
+        return false;
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return this.items.stream().allMatch(ItemStack::isEmpty);
+    }
+
+    public boolean hasContainer() {
+        return this.getContainerSize() > 0;
+    }
+
+    @Override
+    public boolean canPlaceItem(int slot, @NotNull ItemStack stack) {
+        if (!this.hasContainer() || slot >= this.getContainerSize() || slot < 0) return false;
+        return Container.super.canPlaceItem(slot, stack);
+    }
+
+    @Override
+    public boolean canTakeItem(@NotNull Container target, int slot, @NotNull ItemStack stack) {
+        if (!this.hasContainer() || slot >= this.getContainerSize() || slot < 0) return false;
+        return Container.super.canTakeItem(target, slot, stack);
+    }
+
+    // container end
 
     // 自定义骑乘
     private final List<Entity> orderedPassengers = generatePassengersList();
@@ -347,6 +491,7 @@ public abstract class VehicleEntity extends Entity {
                 .define(ENERGY, 0);
     }
 
+    // energy start
     /**
      * 消耗指定电量
      *
@@ -388,6 +533,8 @@ public abstract class VehicleEntity extends Entity {
     public boolean hasEnergyStorage() {
         return false;
     }
+
+    // energy end
 
     private int[] initSelectedWeaponArray(WeaponVehicleEntity weaponVehicle) {
         // 初始化武器数组

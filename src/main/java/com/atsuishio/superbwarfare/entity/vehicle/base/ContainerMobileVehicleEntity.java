@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.entity.vehicle.base;
 
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.menu.VehicleMenu;
-import com.atsuishio.superbwarfare.tools.InventoryTool;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
@@ -12,12 +11,10 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.HasCustomInventoryScreen;
-import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.vehicle.ContainerEntity;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.gameevent.GameEvent;
@@ -31,7 +28,10 @@ public abstract class ContainerMobileVehicleEntity extends MobileVehicleEntity i
 
     public static final int DEFAULT_CONTAINER_SIZE = 102;
 
-    private final NonNullList<ItemStack> items = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);
+    @Override
+    public int getContainerSize() {
+        return DEFAULT_CONTAINER_SIZE;
+    }
 
     public ContainerMobileVehicleEntity(EntityType<?> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
@@ -118,109 +118,6 @@ public abstract class ContainerMobileVehicleEntity extends MobileVehicleEntity i
     }
 
     @Override
-    public @NotNull NonNullList<ItemStack> getItemStacks() {
-        return this.items;
-    }
-
-    /**
-     * 计算当前载具内指定物品的数量
-     *
-     * @param item 物品类型
-     * @return 物品数量
-     */
-    public int countItem(@Nullable Item item) {
-        if (item == null) return 0;
-        return InventoryTool.countItem(this.getItemStacks(), item);
-    }
-
-    /**
-     * 判断载具内是否包含指定物品
-     *
-     * @param item 物品类型
-     */
-    public boolean hasItem(Item item) {
-        return countItem(item) > 0;
-    }
-
-    /**
-     * 消耗载具内指定物品
-     *
-     * @param item  物品类型
-     * @param count 要消耗的数量
-     * @return 成功消耗的物品数量
-     */
-    public int consumeItem(Item item, int count) {
-        return InventoryTool.consumeItem(this.getItemStacks(), item, count);
-    }
-
-    /**
-     * 尝试插入指定物品指定数量，如果载具内已满则生成掉落物
-     *
-     * @param item  物品类型
-     * @param count 要插入的数量
-     */
-    public void insertItem(Item item, int count) {
-        var rest = InventoryTool.insertItem(this.getItemStacks(), item, count, this.getMaxStackSize());
-
-        if (rest > 0) {
-            var stackToDrop = new ItemStack(item, rest);
-            this.level().addFreshEntity(new ItemEntity(this.level(), this.getX(), this.getY(), this.getZ(), stackToDrop));
-        }
-    }
-
-    @Override
-    public void clearItemStacks() {
-        this.items.clear();
-    }
-
-    @Override
-    public int getContainerSize() {
-        return DEFAULT_CONTAINER_SIZE;
-    }
-
-    @Override
-    public @NotNull ItemStack getItem(int pSlot) {
-        return this.items.get(pSlot);
-    }
-
-    @Override
-    public @NotNull ItemStack removeItem(int pSlot, int pAmount) {
-        return ContainerHelper.removeItem(this.items, pSlot, pAmount);
-    }
-
-    @Override
-    public @NotNull ItemStack removeItemNoUpdate(int pSlot) {
-        ItemStack itemstack = this.getItemStacks().get(pSlot);
-        if (itemstack.isEmpty()) {
-            return ItemStack.EMPTY;
-        } else {
-            this.getItemStacks().set(pSlot, ItemStack.EMPTY);
-            return itemstack;
-        }
-    }
-
-    @Override
-    public void setItem(int pSlot, @NotNull ItemStack pStack) {
-        this.getItemStacks().set(pSlot, pStack);
-        if (!pStack.isEmpty() && pStack.getCount() > this.getMaxStackSize()) {
-            pStack.setCount(this.getMaxStackSize());
-        }
-    }
-
-    @Override
-    public void setChanged() {
-    }
-
-    @Override
-    public boolean stillValid(@NotNull Player pPlayer) {
-        return !this.isRemoved() && this.position().closerThan(pPlayer.position(), 8.0D);
-    }
-
-    @Override
-    public void clearContent() {
-        this.getItemStacks().clear();
-    }
-
     public boolean hasMenu() {
         return true;
     }
@@ -237,5 +134,15 @@ public abstract class ContainerMobileVehicleEntity extends MobileVehicleEntity i
     @Override
     public void stopOpen(@NotNull Player pPlayer) {
         this.level().gameEvent(GameEvent.CONTAINER_CLOSE, this.position(), GameEvent.Context.of(pPlayer));
+    }
+
+    @Override
+    public @NotNull NonNullList<ItemStack> getItemStacks() {
+        return this.items;
+    }
+
+    @Override
+    public void clearItemStacks() {
+        this.items.clear();
     }
 }
