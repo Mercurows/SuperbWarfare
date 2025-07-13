@@ -236,19 +236,12 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
 
         AABB ab = new AABB(getBoundingBox().getCenter(), getBoundingBox().getCenter()).inflate(0.75).move(getShootVector(1).scale(-2)).expandTowards(getShootVector(1).scale(-5));
 
-        List<Entity> entities = level().getEntities(EntityTypeTest.forClass(Entity.class), ab,
-                        entity -> entity != this && entity != getFirstPassenger() && entity.getVehicle() == null)
-                .stream().filter(entity -> entity != this)
-                .toList();
-
-        for (var entity : entities) {
+        for (var entity : level().getEntities(EntityTypeTest.forClass(Entity.class), ab,
+                target -> target != this && target != getFirstPassenger() && target.getVehicle() == null)
+        ) {
             entity.hurt(ModDamageTypes.causeBurnDamage(entity.level().registryAccess(), player), 30 - 2 * entity.distanceTo(this));
             double force = 4 - 0.7 * entity.distanceTo(this);
-            if (level().isClientSide) {
-                entity.push(-force * getShootVector(1).x, -force * getShootVector(1).y, -force * getShootVector(1).z);
-            } else {
-                entity.push(-force * getShootVector(1).x, -force * getShootVector(1).y, -force * getShootVector(1).z);
-            }
+            entity.push(-force * getShootVector(1).x, -force * getShootVector(1).y, -force * getShootVector(1).z);
         }
 
         cooldown = 10;
