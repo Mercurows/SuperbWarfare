@@ -71,6 +71,8 @@ public class Type63Renderer extends GeoEntityRenderer<Type63Entity> {
             bone.setRotZ(-Mth.lerp(partialTick, animatable.turretYRotO, animatable.getTurretYRot()) * 6);
         }
 
+        //TODO 正确实现每一个格子有物品时显示一发炮弹模型
+
         for (int i = 0; i < 11; i++) {
             var items = animatable.getItemStacks();
             if (name.equals("shell" + i)) {
