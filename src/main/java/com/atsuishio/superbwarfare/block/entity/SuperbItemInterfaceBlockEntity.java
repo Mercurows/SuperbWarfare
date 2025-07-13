@@ -80,7 +80,7 @@ public class SuperbItemInterfaceBlockEntity extends BaseContainerBlockEntity {
             int inserted;
             for (inserted = stack.getCount(); inserted > 0; inserted--) {
                 var insertedStack = itemHandler.insertItem(i, stack.copyWithCount(inserted), true);
-                if (insertedStack.getCount() != inserted || !ItemStack.isSameItemSameComponents(insertedStack, stack)) {
+                if (insertedStack.getCount() != inserted || !ItemStack.isSameItemSameTags(insertedStack, stack)) {
                     break;
                 }
             }

@@ -79,6 +79,11 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
 
     public Type63Entity(EntityType<Type63Entity> type, Level world) {
         super(type, world);
+        this.wheel1 = new OBB(this.position().toVector3f(), new Vector3f(0.125f, 0.390625f, 0.390625f), new Quaternionf(), OBB.Part.WHEEL_LEFT);
+        this.wheel2 = new OBB(this.position().toVector3f(), new Vector3f(0.125f, 0.390625f, 0.390625f), new Quaternionf(), OBB.Part.WHEEL_RIGHT);
+        this.body1 = new OBB(this.position().toVector3f(), new Vector3f(0.4765625f, 0.3515625f, 0.7578125f), new Quaternionf(), OBB.Part.BODY);
+        this.body2 = new OBB(this.position().toVector3f(), new Vector3f(0.771875f, 0.109375f, 0.296875f), new Quaternionf(), OBB.Part.BODY);
+
         this.barrel0 = new OBB(this.position().toVector3f(), new Vector3f(0.09375f, 0.09375f, 0.0625f), new Quaternionf(), OBB.Part.INTERACTIVE);
         this.barrel1 = new OBB(this.position().toVector3f(), new Vector3f(0.09375f, 0.09375f, 0.0625f), new Quaternionf(), OBB.Part.INTERACTIVE);
         this.barrel2 = new OBB(this.position().toVector3f(), new Vector3f(0.09375f, 0.09375f, 0.0625f), new Quaternionf(), OBB.Part.INTERACTIVE);
@@ -95,11 +100,6 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
         this.yawController = new OBB(this.position().toVector3f(), new Vector3f(0.125f, 0.125f, 0.125f), new Quaternionf(), OBB.Part.INTERACTIVE);
         this.hoe1 = new OBB(this.position().toVector3f(), new Vector3f(0.125f, 0.125f, 0.875f), new Quaternionf(), OBB.Part.INTERACTIVE);
         this.hoe2 = new OBB(this.position().toVector3f(), new Vector3f(0.125f, 0.125f, 0.875f), new Quaternionf(), OBB.Part.INTERACTIVE);
-
-        this.wheel1 = new OBB(this.position().toVector3f(), new Vector3f(0.125f, 0.390625f, 0.390625f), new Quaternionf(), OBB.Part.WHEEL_LEFT);
-        this.wheel2 = new OBB(this.position().toVector3f(), new Vector3f(0.125f, 0.390625f, 0.390625f), new Quaternionf(), OBB.Part.WHEEL_RIGHT);
-        this.body1 = new OBB(this.position().toVector3f(), new Vector3f(0.4765625f, 0.3515625f, 0.7578125f), new Quaternionf(), OBB.Part.BODY);
-        this.body2 = new OBB(this.position().toVector3f(), new Vector3f(0.771875f, 0.109375f, 0.296875f), new Quaternionf(), OBB.Part.BODY);
     }
 
     @Override
@@ -159,6 +159,94 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
                 entityData.set(PITCH, Mth.clamp(entityData.get(PITCH) + (player.isShiftKeyDown() ? 0.02f : -0.02f) * (float) interactionTick, -60, 5));
                 player.swing(InteractionHand.MAIN_HAND);
             }
+        }
+
+        if (stack.is(ModItems.MEDIUM_ROCKET_AP.get()) || stack.is(ModItems.MEDIUM_ROCKET_HE.get()) || stack.is(ModItems.MEDIUM_ROCKET_CM.get())) {
+            if (OBB.getLookingObb(player, player.getEntityReach()) == this.barrel3 && items.get(0).isEmpty()) {
+                this.setItem(0, stack.copyWithCount(1));
+                if (!player.isCreative()) {
+                    stack.shrink(1);
+                }
+                player.swing(InteractionHand.MAIN_HAND);
+            }
+            if (OBB.getLookingObb(player, player.getEntityReach()) == this.barrel2 && items.get(1).isEmpty()) {
+                this.setItem(1, stack.copyWithCount(1));
+                if (!player.isCreative()) {
+                    stack.shrink(1);
+                }
+                player.swing(InteractionHand.MAIN_HAND);
+            }
+            if (OBB.getLookingObb(player, player.getEntityReach()) == this.barrel1 && items.get(2).isEmpty()) {
+                this.setItem(2, stack.copyWithCount(1));
+                if (!player.isCreative()) {
+                    stack.shrink(1);
+                }
+                player.swing(InteractionHand.MAIN_HAND);
+            }
+            if (OBB.getLookingObb(player, player.getEntityReach()) == this.barrel0 && items.get(3).isEmpty()) {
+                this.setItem(3, stack.copyWithCount(1));
+                if (!player.isCreative()) {
+                    stack.shrink(1);
+                }
+                player.swing(InteractionHand.MAIN_HAND);
+            }
+            if (OBB.getLookingObb(player, player.getEntityReach()) == this.barrel4 && items.get(4).isEmpty()) {
+                this.setItem(4, stack.copyWithCount(1));
+                if (!player.isCreative()) {
+                    stack.shrink(1);
+                }
+                player.swing(InteractionHand.MAIN_HAND);
+            }
+            if (OBB.getLookingObb(player, player.getEntityReach()) == this.barrel5 && items.get(5).isEmpty()) {
+                this.setItem(5, stack.copyWithCount(1));
+                if (!player.isCreative()) {
+                    stack.shrink(1);
+                }
+                player.swing(InteractionHand.MAIN_HAND);
+            }
+            if (OBB.getLookingObb(player, player.getEntityReach()) == this.barrel6 && items.get(6).isEmpty()) {
+                this.setItem(6, stack.copyWithCount(1));
+                if (!player.isCreative()) {
+                    stack.shrink(1);
+                }
+                player.swing(InteractionHand.MAIN_HAND);
+            }
+            if (OBB.getLookingObb(player, player.getEntityReach()) == this.barrel7 && items.get(7).isEmpty()) {
+                this.setItem(7, stack.copyWithCount(1));
+                if (!player.isCreative()) {
+                    stack.shrink(1);
+                }
+                player.swing(InteractionHand.MAIN_HAND);
+            }
+            if (OBB.getLookingObb(player, player.getEntityReach()) == this.barrel11 && items.get(8).isEmpty()) {
+                this.setItem(8, stack.copyWithCount(1));
+                if (!player.isCreative()) {
+                    stack.shrink(1);
+                }
+                player.swing(InteractionHand.MAIN_HAND);
+            }
+            if (OBB.getLookingObb(player, player.getEntityReach()) == this.barrel10 && items.get(9).isEmpty()) {
+                this.setItem(9, stack.copyWithCount(1));
+                if (!player.isCreative()) {
+                    stack.shrink(1);
+                }
+                player.swing(InteractionHand.MAIN_HAND);
+            }
+            if (OBB.getLookingObb(player, player.getEntityReach()) == this.barrel9 && items.get(10).isEmpty()) {
+                this.setItem(10, stack.copyWithCount(10));
+                if (!player.isCreative()) {
+                    stack.shrink(1);
+                }
+                player.swing(InteractionHand.MAIN_HAND);
+            }
+            if (OBB.getLookingObb(player, player.getEntityReach()) == this.barrel8 && items.get(11).isEmpty()) {
+                this.setItem(11, stack.copyWithCount(11));
+                if (!player.isCreative()) {
+                    stack.shrink(1);
+                }
+                player.swing(InteractionHand.MAIN_HAND);
+            }
+            setChanged();
         }
 
         if (player.isShiftKeyDown() && stack.is(ModTags.Items.CROWBAR) && this.getPassengers().isEmpty()) {

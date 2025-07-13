@@ -77,6 +77,8 @@ public class ModItemTagProvider extends ItemTagsProvider {
 
         this.tag(forgeTag("tools/crowbar")).add(ModItems.CROWBAR.get());
 
+        this.tag(ModTags.Items.MEDIUM_ROCKET).add(ModItems.MEDIUM_ROCKET_AP.get(), ModItems.MEDIUM_ROCKET_HE.get(), ModItems.MEDIUM_ROCKET_CM.get());
+
         // TODO 清理枪械Tag
         ModItems.GUNS.getEntries().forEach(registryObject -> this.tag(ModTags.Items.GUN).add(registryObject.get()));
 
