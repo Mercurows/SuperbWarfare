@@ -497,6 +497,7 @@ public class ModSounds {
     public static final RegistryObject<SoundEvent> SM0KE_GRENADE_RELEASE = REGISTRY.register("smoke_grenade_release", () -> SoundEvent.createVariableRangeEvent(Mod.loc("smoke_grenade_release")));
 
     public static final RegistryObject<SoundEvent> HAND_WHEEL_ROT = REGISTRY.register("hand_wheel_rot", () -> SoundEvent.createVariableRangeEvent(Mod.loc("hand_wheel_rot")));
+    public static final RegistryObject<SoundEvent> MEDIUM_ROCKET_FIRE = REGISTRY.register("medium_rocket_fire", () -> SoundEvent.createVariableRangeEvent(Mod.loc("medium_rocket_fire")));
 
 }
 
