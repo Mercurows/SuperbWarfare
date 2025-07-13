@@ -1,5 +1,5 @@
 {
   "ID": "superbwarfare:mortar",
-  "MaxHealth": 100,
+  "MaxHealth": 40,
   "Mass": 0.05
 }
