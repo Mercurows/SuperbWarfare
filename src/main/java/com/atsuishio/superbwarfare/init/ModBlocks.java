@@ -50,5 +50,6 @@ public class ModBlocks {
     public static final DeferredHolder<Block, SmallContainerBlock> SMALL_CONTAINER = REGISTRY.register("small_container", () -> new SmallContainerBlock());
     public static final DeferredHolder<Block, VehicleDeployerBlock> VEHICLE_DEPLOYER = REGISTRY.register("vehicle_deployer", VehicleDeployerBlock::new);
     public static final DeferredHolder<Block, AircraftCatapultBlock> AIRCRAFT_CATAPULT = REGISTRY.register("aircraft_catapult", AircraftCatapultBlock::new);
-    public static final DeferredHolder<Block, SuperbItemInterfaceBlock> SUPERB_ITEM_INTERFACE = REGISTRY.register("superb_item_interface", () -> new SuperbItemInterfaceBlock());
+    public static final DeferredHolder<Block, SuperbItemInterfaceBlock> SUPERB_ITEM_INTERFACE = REGISTRY.register("superb_item_interface", SuperbItemInterfaceBlock::new);
+    public static final DeferredHolder<Block, LuckyContainerBlock> LUCKY_CONTAINER = REGISTRY.register("lucky_container", () -> new LuckyContainerBlock());
 }

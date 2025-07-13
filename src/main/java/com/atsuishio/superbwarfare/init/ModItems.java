@@ -8,6 +8,9 @@ import com.atsuishio.superbwarfare.item.common.BlueprintItem;
 import com.atsuishio.superbwarfare.item.common.MaterialPack;
 import com.atsuishio.superbwarfare.item.common.ammo.*;
 import com.atsuishio.superbwarfare.item.common.ammo.box.AmmoBox;
+import com.atsuishio.superbwarfare.item.common.container.ContainerBlockItem;
+import com.atsuishio.superbwarfare.item.common.container.LuckyContainerBlockItem;
+import com.atsuishio.superbwarfare.item.common.container.SmallContainerBlockItem;
 import com.atsuishio.superbwarfare.item.gun.handgun.*;
 import com.atsuishio.superbwarfare.item.gun.heavy.Ntw20Item;
 import com.atsuishio.superbwarfare.item.gun.launcher.JavelinItem;
@@ -288,11 +291,14 @@ public class ModItems {
     public static final DeferredHolder<Item, BlockItem> SILVER_BLOCK = block(ModBlocks.SILVER_BLOCK);
     public static final DeferredHolder<Item, BlockItem> CEMENTED_CARBIDE_BLOCK = block(ModBlocks.CEMENTED_CARBIDE_BLOCK);
     public static final DeferredHolder<Item, BlockItem> FUMO_25 = block(ModBlocks.FUMO_25);
-    public static final DeferredHolder<Item, ContainerBlockItem> CONTAINER = BLOCKS.register("container", ContainerBlockItem::new);
-    public static final DeferredHolder<Item, SmallContainerBlockItem> SMALL_CONTAINER = BLOCKS.register("small_container", SmallContainerBlockItem::new);
     public static final DeferredHolder<Item, VehicleDeployerBlockItem> VEHICLE_DEPLOYER = BLOCKS.register("vehicle_deployer", VehicleDeployerBlockItem::new);
     public static final DeferredHolder<Item, BlockItem> AIRCRAFT_CATAPULT = block(ModBlocks.AIRCRAFT_CATAPULT);
     public static final DeferredHolder<Item, BlockItem> SUPERB_ITEM_INTERFACE = block(ModBlocks.SUPERB_ITEM_INTERFACE);
+
+    public static final DeferredHolder<Item, ContainerBlockItem> CONTAINER = BLOCKS.register("container", ContainerBlockItem::new);
+    public static final DeferredHolder<Item, SmallContainerBlockItem> SMALL_CONTAINER = BLOCKS.register("small_container", SmallContainerBlockItem::new);
+    public static final DeferredHolder<Item, LuckyContainerBlockItem> LUCKY_CONTAINER = BLOCKS.register("lucky_container", LuckyContainerBlockItem::new);
+
 
     public record Materials(
             String name,
