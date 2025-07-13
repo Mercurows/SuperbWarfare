@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.entity.vehicle;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
+import com.atsuishio.superbwarfare.entity.projectile.MediumRocketEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ContainerMobileVehicleEntity;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModSerializers;
@@ -185,9 +186,11 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
                     return InteractionResult.SUCCESS;
                 }
             } else {
+                // 撬棍发射
                 for (int i = 0; i < 12; i++) {
                     if (items.get(i).getItem() instanceof MediumRocketItem) {
                         items.set(i, ItemStack.EMPTY);
+                        shoot(player, i);
                         setChanged();
                         player.swing(InteractionHand.MAIN_HAND);
                         return InteractionResult.SUCCESS;
@@ -205,6 +208,61 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
             if (tickCount % 2 == 0) {
                 serverLevel.playSound(null, vec3.x, vec3.y, vec3.z, ModSounds.HAND_WHEEL_ROT.get(), SoundSource.PLAYERS, 1f, random.nextFloat() * 0.1f + 0.9f);
             }
+        }
+    }
+
+    public void shoot(Player player, int i) {
+        if (level() instanceof ServerLevel server) {
+            ItemStack stack = items.get(i);
+
+            float damage;
+            float radius;
+            float explosionDamage;
+            float fireProbability;
+            int fireTime;
+            MediumRocketEntity.Type type;
+            int sparedAmount;
+
+            if (stack.is(ModItems.MEDIUM_ROCKET_AP.get())) {
+                damage = 500;
+                radius = 6;
+                explosionDamage = 100;
+                fireProbability = 0;
+                fireTime = 0;
+                type = MediumRocketEntity.Type.AP;
+                sparedAmount = 0;
+            } else if (stack.is(ModItems.MEDIUM_ROCKET_HE.get())) {
+                damage = 200;
+                radius = 12;
+                explosionDamage = 200;
+                fireProbability = 0.2f;
+                fireTime = 40;
+                type = MediumRocketEntity.Type.HE;
+                sparedAmount = 0;
+            } else {
+                damage = 300;
+                radius = 12;
+                explosionDamage = 300;
+                fireProbability = 0;
+                fireTime = 0;
+                type = MediumRocketEntity.Type.CM;
+                sparedAmount = 20;
+            }
+
+            OBB obb = this.barrel[i];
+            Vec3 shootPos = new Vec3(obb.center());
+
+            MediumRocketEntity entityToSpawn = new MediumRocketEntity(player, server, damage, radius, explosionDamage, fireProbability, fireTime, type, sparedAmount);
+            entityToSpawn.setPos(shootPos.x, shootPos.y, shootPos.z);
+            entityToSpawn.shoot(getShootVector(1).x, getShootVector(1).y, getShootVector(1).z, 10, (float) 0.25);
+            server.addFreshEntity(entityToSpawn);
+
+            server.playSound(null, shootPos.x, shootPos.y, shootPos.z, ModSounds.MEDIUM_ROCKET_FIRE.get(), SoundSource.PLAYERS, 4f, random.nextFloat() * 0.1f + 0.95f);
+
+//            server.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, (this.getX() + 3 * this.getLookAngle().x), (this.getY() + 0.1 + 3 * this.getLookAngle().y), (this.getZ() + 3 * this.getLookAngle().z), 8, 0.4, 0.4, 0.4,
+//                    0.007);
+//            server.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, this.getX(), this.getY(), this.getZ(), 50, 2, 0.02, 2, 0.0005);
+
         }
     }
 
