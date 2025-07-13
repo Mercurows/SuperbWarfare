@@ -206,6 +206,5 @@ public class ContainerBlock extends BaseEntityBlock {
         pLevel.getBlockEntity(pPos, ModBlockEntities.CONTAINER.get()).ifPresent((blockEntity) -> blockEntity.saveToItem(itemstack));
         return itemstack;
     }
-
 }
 

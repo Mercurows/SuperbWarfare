@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.block.entity;
 
-import com.atsuishio.superbwarfare.block.ContainerBlock;
+import com.atsuishio.superbwarfare.block.LuckyContainerBlock;
 import com.atsuishio.superbwarfare.init.ModBlockEntities;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
 import net.minecraft.core.BlockPos;
@@ -32,11 +32,11 @@ public class LuckyContainerBlockEntity extends BlockEntity implements GeoBlockEn
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     public LuckyContainerBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.CONTAINER.get(), pos, state);
+        super(ModBlockEntities.LUCKY_CONTAINER.get(), pos, state);
     }
 
     public static void serverTick(Level pLevel, BlockPos pPos, BlockState pState, LuckyContainerBlockEntity blockEntity) {
-        if (!pState.getValue(ContainerBlock.OPENED)) {
+        if (!pState.getValue(LuckyContainerBlock.OPENED)) {
             return;
         }
 
@@ -49,14 +49,14 @@ public class LuckyContainerBlockEntity extends BlockEntity implements GeoBlockEn
                 pLevel.playSound(null, pPos, SoundEvents.GENERIC_EXPLODE, SoundSource.BLOCKS, 4.0F, (1.0F + (pLevel.random.nextFloat() - pLevel.random.nextFloat()) * 0.2F) * 0.7F);
             }
         } else {
-            var direction = pState.getValue(ContainerBlock.FACING);
+            var direction = pState.getValue(LuckyContainerBlock.FACING);
 
             pLevel.setBlockAndUpdate(pPos, Blocks.AIR.defaultBlockState());
         }
     }
 
     private PlayState predicate(AnimationState<LuckyContainerBlockEntity> event) {
-        if (this.getBlockState().getValue(ContainerBlock.OPENED)) {
+        if (this.getBlockState().getValue(LuckyContainerBlock.OPENED)) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.container.open"));
         }
         return PlayState.STOP;
