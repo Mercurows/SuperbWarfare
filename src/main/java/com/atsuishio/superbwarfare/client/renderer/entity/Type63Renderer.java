@@ -10,10 +10,12 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.cache.object.BakedGeoModel;
 import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
+
+import static com.atsuishio.superbwarfare.entity.vehicle.Type63Entity.LOADED_AMMO;
 
 
 public class Type63Renderer extends GeoEntityRenderer<Type63Entity> {
@@ -38,7 +40,7 @@ public class Type63Renderer extends GeoEntityRenderer<Type63Entity> {
     }
 
     @Override
-    public void render(Type63Entity entityIn, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource bufferIn, int packedLightIn) {
+    public void render(Type63Entity entityIn, float entityYaw, float partialTicks, PoseStack poseStack, @NotNull MultiBufferSource bufferIn, int packedLightIn) {
         poseStack.pushPose();
         poseStack.mulPose(Axis.YP.rotationDegrees(-Mth.lerp(partialTicks, entityIn.yRotO, entityIn.getYRot())));
         super.render(entityIn, entityYaw, partialTicks, poseStack, bufferIn, packedLightIn);
@@ -72,10 +74,10 @@ public class Type63Renderer extends GeoEntityRenderer<Type63Entity> {
             bone.setRotZ(-Mth.lerp(partialTick, animatable.turretYRotO, animatable.getTurretYRot()) * 6);
         }
 
-        for (int i = 0; i < 11; i++) {
-            var itemHandler = animatable.getCapability(ForgeCapabilities.ITEM_HANDLER).resolve().get();
+        for (int i = 0; i < 12; i++) {
+            var items = animatable.getEntityData().get(LOADED_AMMO);
             if (name.equals("shell" + i)) {
-                bone.setHidden(itemHandler.getStackInSlot(i).isEmpty());
+                bone.setHidden(items.getInt(i) == 0);
             }
         }
 

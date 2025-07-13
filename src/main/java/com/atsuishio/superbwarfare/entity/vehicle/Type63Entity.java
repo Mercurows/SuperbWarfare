@@ -4,16 +4,15 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ContainerMobileVehicleEntity;
-import com.atsuishio.superbwarfare.init.ModDamageTypes;
-import com.atsuishio.superbwarfare.init.ModEntities;
-import com.atsuishio.superbwarfare.init.ModSounds;
-import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.item.ContainerBlockItem;
 import com.atsuishio.superbwarfare.tools.CustomExplosion;
 import com.atsuishio.superbwarfare.tools.OBB;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
 import com.atsuishio.superbwarfare.tools.VectorTool;
 import com.mojang.math.Axis;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -22,6 +21,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
+import net.minecraft.world.Container;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityType;
@@ -33,8 +33,8 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Math;
 import org.joml.*;
+import org.joml.Math;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -46,6 +46,7 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
 
     public static final EntityDataAccessor<Float> PITCH = SynchedEntityData.defineId(Type63Entity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Float> YAW = SynchedEntityData.defineId(Type63Entity.class, EntityDataSerializers.FLOAT);
+    public static final EntityDataAccessor<IntList> LOADED_AMMO = SynchedEntityData.defineId(Type63Entity.class, ModSerializers.INT_LIST_SERIALIZER.get());
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     public OBB barrel0;
     public OBB barrel1;
@@ -93,27 +94,28 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
     @Override
     protected void defineSynchedData() {
         super.defineSynchedData();
+        var list = new IntArrayList();
+        for (int i = 0; i < this.getContainerSize(); i++) {
+            list.add(0);
+        }
+
         this.entityData.define(PITCH, 0f);
         this.entityData.define(YAW, 0f);
+        this.entityData.define(LOADED_AMMO, list);
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundTag compound) {
+    public void addAdditionalSaveData(@NotNull CompoundTag compound) {
         super.addAdditionalSaveData(compound);
         compound.putFloat("Pitch", this.entityData.get(PITCH));
         compound.putFloat("Yaw", this.entityData.get(YAW));
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundTag compound) {
+    public void readAdditionalSaveData(@NotNull CompoundTag compound) {
         super.readAdditionalSaveData(compound);
         this.entityData.set(PITCH, compound.getFloat("Pitch"));
         this.entityData.set(YAW, compound.getFloat("Yaw"));
-    }
-
-    @Override
-    public boolean hasEnergyStorage() {
-        return false;
     }
 
     @Override
@@ -163,7 +165,7 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
     public void interactEvent(Vec3 vec3) {
         if (level() instanceof ServerLevel serverLevel) {
             interactionTick++;
-            if (tickCount %2 == 0) {
+            if (tickCount % 2 == 0) {
                 serverLevel.playSound(null, vec3.x, vec3.y, vec3.z, ModSounds.HAND_WHEEL_ROT.get(), SoundSource.PLAYERS, 1f, random.nextFloat() * 0.1f + 0.9f);
             }
         }
@@ -298,7 +300,12 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
 
     @Override
     public boolean canPlaceItem(int slot, @NotNull ItemStack stack) {
-        return true;
+        return false;
+    }
+
+    @Override
+    public boolean canTakeItem(@NotNull Container target, int slot, @NotNull ItemStack stack) {
+        return false;
     }
 
     @Override
@@ -383,5 +390,19 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
         Vector4f worldPositionBarrel11 = transformPosition(transformB, -0.3659375f + 3 * i, 0.244375f - 2 * i, -0.44625f);
         this.barrel11.center().set(new Vector3f(worldPositionBarrel11.x, worldPositionBarrel11.y, worldPositionBarrel11.z));
         this.barrel11.setRotation(VectorTool.combineRotationsBarrel(1, this));
+    }
+
+    @Override
+    public void setChanged() {
+        var list = new IntArrayList();
+        for (var item : this.items) {
+            list.add(item.isEmpty() ? 0 : 1);
+        }
+        this.entityData.set(LOADED_AMMO, list);
+    }
+
+    @Override
+    public boolean hasEnergyStorage() {
+        return false;
     }
 }
