@@ -36,8 +36,8 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.event.EventHooks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.*;
 import org.joml.Math;
+import org.joml.*;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.AnimatableManager;
@@ -52,17 +52,16 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
     public static final EntityDataAccessor<Float> YAW = SynchedEntityData.defineId(Type63Entity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<List<Integer>> LOADED_AMMO = SynchedEntityData.defineId(Type63Entity.class, ModSerializers.INT_LIST_SERIALIZER.get());
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+
     public OBB[] barrel = new OBB[12];
     public OBB pitchController;
     public OBB yawController;
     public OBB hoe1;
     public OBB hoe2;
-
     public OBB wheel1;
     public OBB wheel2;
     public OBB body1;
     public OBB body2;
-
 
     public double interactionTick;
 
