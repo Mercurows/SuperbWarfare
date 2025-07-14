@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.component.ModDataComponents;
 import com.atsuishio.superbwarfare.entity.vehicle.Type63Entity;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.item.FiringParameters;
+import com.atsuishio.superbwarfare.item.common.ammo.MediumRocketItem;
 import com.atsuishio.superbwarfare.tools.*;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.ChatFormatting;
@@ -67,7 +68,6 @@ public class Type63InfoOverlay implements LayeredDraw.Layer {
         for (int i = 0; i < type63Entity.barrel.length; i++) {
             if (OBB.getLookingObb(player, player.entityInteractionRange()) == type63Entity.barrel[i]) {
                 int type = items.get(i);
-                if (type == -1) return;
 
                 ItemStack stack = switch (type) {
                     case 0 -> new ItemStack(ModItems.MEDIUM_ROCKET_AP.get());
@@ -75,7 +75,6 @@ public class Type63InfoOverlay implements LayeredDraw.Layer {
                     case 2 -> new ItemStack(ModItems.MEDIUM_ROCKET_CM.get());
                     default -> ItemStack.EMPTY;
                 };
-                if (stack.isEmpty()) return;
 
                 Vec3 pos = new Vec3(type63Entity.barrel[i].center());
                 Vec3 point = VectorUtil.worldToScreen(pos, cameraPos);
@@ -87,6 +86,11 @@ public class Type63InfoOverlay implements LayeredDraw.Layer {
                 poseStack.translate(x, y, 0);
 
                 var component = Component.literal("[").append(stack.getHoverName()).append("]");
+
+                if (!(stack.getItem() instanceof MediumRocketItem)) {
+                    component = Component.literal("[").append(Component.translatable("tips.superbwarfare.barrel_empty")).append("]");
+                }
+
                 int width = Minecraft.getInstance().font.width(component);
                 guiGraphics.drawString(Minecraft.getInstance().font, component, -width / 2, -4, -1, false);
 
