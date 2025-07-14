@@ -76,7 +76,7 @@ public class Type63Renderer extends GeoEntityRenderer<Type63Entity> {
         for (int i = 0; i < 12; i++) {
             var items = animatable.getEntityData().get(LOADED_AMMO);
             if (name.equals("shell" + i)) {
-                bone.setHidden(items.get(i) == 0);
+                bone.setHidden(items.get(i) == -1);
             }
         }
 

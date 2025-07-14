@@ -111,7 +111,7 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
         super.defineSynchedData(builder);
         var list = new ArrayList<Integer>();
         for (int i = 0; i < this.getContainerSize(); i++) {
-            list.add(0);
+            list.add(-1);
         }
 
         builder.define(PITCH, 0F)
@@ -533,6 +533,14 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
 
     @Override
     public void setChanged() {
-        this.entityData.set(LOADED_AMMO, this.items.stream().map(i -> i.isEmpty() ? 0 : 1).toList());
+        var list = new ArrayList<Integer>();
+        for (var item : this.items) {
+            if (item.getItem() instanceof MediumRocketItem mediumRocketItem) {
+                list.add(mediumRocketItem.type.ordinal());
+            } else {
+                list.add(-1);
+            }
+        }
+        this.entityData.set(LOADED_AMMO, list);
     }
 }
