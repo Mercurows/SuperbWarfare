@@ -167,6 +167,23 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
                 entityData.set(PITCH, Mth.clamp(entityData.get(PITCH) + (player.isShiftKeyDown() ? 0.02f : -0.02f) * (float) interactionTick, -60, 5));
                 player.swing(InteractionHand.MAIN_HAND);
             }
+
+            // 取出炮弹
+
+            if (player.isShiftKeyDown()) {
+                for (int i = 0; i < this.barrel.length; i++) {
+                    if (OBB.getLookingObb(player, player.getEntityReach()) == this.barrel[i] && !items.get(i).isEmpty() && level() instanceof ServerLevel serverLevel && cooldown == 0) {
+                        player.addItem(items.get(i).copyWithCount(1));
+                        Vec3 vec3 = new Vec3(this.barrel[i].center());
+                        serverLevel.playSound(null, vec3.x, vec3.y, vec3.z, ModSounds.TYPE_63_RELOAD.get(), SoundSource.PLAYERS, 1f, random.nextFloat() * 0.1f + 0.9f);
+                        cooldown = 5;
+                        items.set(i, ItemStack.EMPTY);
+                        setChanged();
+                    }
+                    player.swing(InteractionHand.MAIN_HAND);
+                }
+            }
+
         }
 
         if (stack.getItem() instanceof MediumRocketItem) {
@@ -198,19 +215,42 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
                 }
             } else {
                 // 撬棍发射
-                for (int i = 0; i < 12; i++) {
-                    if (items.get(i).getItem() instanceof MediumRocketItem && cooldown == 0 && getEnergy() > 0) {
-                        shoot(player, i);
-                        items.set(i, ItemStack.EMPTY);
-                        setChanged();
+                if (lookingAtBarrel(player)) {
+                    // 精准发射
+                    for (int i = 0; i < this.barrel.length; i++) {
+                        if (OBB.getLookingObb(player, player.getEntityReach()) == this.barrel[i] && items.get(i).getItem() instanceof MediumRocketItem && cooldown == 0 && getEnergy() > 0) {
+                            shoot(player, i);
+                            items.set(i, ItemStack.EMPTY);
+                            setChanged();
+                            player.swing(InteractionHand.MAIN_HAND);
+                        }
                         player.swing(InteractionHand.MAIN_HAND);
-                        return InteractionResult.SUCCESS;
+                    }
+                } else {
+                    // 顺序发射
+                    for (int i = 0; i < 12; i++) {
+                        if (items.get(i).getItem() instanceof MediumRocketItem && cooldown == 0 && getEnergy() > 0) {
+                            shoot(player, i);
+                            items.set(i, ItemStack.EMPTY);
+                            setChanged();
+                            player.swing(InteractionHand.MAIN_HAND);
+                            return InteractionResult.SUCCESS;
+                        }
                     }
                 }
             }
         }
 
         return InteractionResult.FAIL;
+    }
+
+    public boolean lookingAtBarrel(Player player) {
+        for (int i = 0; i < 12; i++) {
+            if (OBB.getLookingObb(player, player.getEntityReach()) == barrel[i]) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void interactEvent(Vec3 vec3) {
