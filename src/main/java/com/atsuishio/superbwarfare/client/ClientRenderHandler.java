@@ -56,6 +56,7 @@ public class ClientRenderHandler {
         event.registerBelowAll(ItemRendererFixOverlay.ID, new ItemRendererFixOverlay());
         event.registerBelowAll(CannonHudOverlay.ID, new CannonHudOverlay());
         event.registerBelowAll(CrossHairOverlay.ID, new CrossHairOverlay());
+        event.registerBelowAll(HeatBarOverlay.ID, new HeatBarOverlay());
         event.registerBelowAll(DroneHudOverlay.ID, new DroneHudOverlay());
         event.registerBelowAll(GrenadeLauncherOverlay.ID, new GrenadeLauncherOverlay());
         event.registerBelowAll(RedTriangleOverlay.ID, new RedTriangleOverlay());

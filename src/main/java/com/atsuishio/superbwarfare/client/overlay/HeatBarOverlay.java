@@ -1,0 +1,82 @@
+package com.atsuishio.superbwarfare.client.overlay;
+
+import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.client.ClickHandler;
+import com.atsuishio.superbwarfare.client.RenderHelper;
+import com.atsuishio.superbwarfare.data.gun.GunData;
+import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
+import com.atsuishio.superbwarfare.item.gun.GunItem;
+import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.LayeredDraw;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import org.jetbrains.annotations.NotNull;
+
+@OnlyIn(Dist.CLIENT)
+public class HeatBarOverlay implements LayeredDraw.Layer {
+
+    public static final ResourceLocation ID = Mod.loc("heat_bar");
+
+    private static final ResourceLocation TEXTURE = Mod.loc("textures/screens/heat_bar.png");
+
+    @Override
+    public void render(@NotNull GuiGraphics guiGraphics, @NotNull DeltaTracker deltaTracker) {
+        Minecraft mc = Minecraft.getInstance();
+        Player player = mc.player;
+        if (player == null) return;
+        if (ClickHandler.isEditing) return;
+        if (!(player.getMainHandItem().getItem() instanceof GunItem) || (player.getVehicle() instanceof ArmedVehicleEntity iArmedVehicle && iArmedVehicle.banHand(player)))
+            return;
+
+        var screenWidth = guiGraphics.guiWidth();
+        var screenHeight = guiGraphics.guiHeight();
+
+        ItemStack stack = player.getMainHandItem();
+        var data = GunData.from(stack);
+        double heat = data.heat.get();
+        if (heat <= 0) return;
+
+        var poseStack = guiGraphics.pose();
+        poseStack.pushPose();
+
+        RenderSystem.disableDepthTest();
+        RenderSystem.depthMask(false);
+        RenderSystem.enableBlend();
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+        RenderSystem.setShaderColor(1, 1, 1, 1);
+
+        int width = 16;
+        int height = 64;
+
+        int i = (screenWidth - width) / 2;
+        int j = (screenHeight - height) / 2;
+
+        float posX = i + 64;
+        float posY = j + 6;
+
+        RenderHelper.preciseBlit(guiGraphics, TEXTURE, posX, posY, 0, 0, 37 / 4f, 233 / 4f, width, height);
+
+        float rate = (float) (heat / 100.0);
+        float barHeight = 56 * rate;
+
+        RenderHelper.preciseBlit(guiGraphics, TEXTURE, posX + 2.5f, posY + 1.5f + 56 - barHeight,
+                10.5f, 0, 2.25f, barHeight, width, height);
+
+        RenderSystem.depthMask(true);
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.enableDepthTest();
+        RenderSystem.disableBlend();
+        RenderSystem.setShaderColor(1, 1, 1, 1);
+
+        poseStack.popPose();
+    }
+}
