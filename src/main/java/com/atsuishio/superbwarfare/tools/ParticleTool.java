@@ -79,9 +79,9 @@ public class ParticleTool {
             if ((level.getBlockState(BlockPos.containing(x, y, z))).getBlock() == Blocks.WATER) {
                 level.playSound(null, BlockPos.containing(x, y + 1, z), ModSounds.EXPLOSION_WATER.get(), SoundSource.BLOCKS, 3, 1);
             }
-            level.playSound(null, BlockPos.containing(x, y + 1, z), ModSounds.EXPLOSION_CLOSE.get(), SoundSource.BLOCKS, 16, 1);
-            level.playSound(null, BlockPos.containing(x, y + 1, z), ModSounds.EXPLOSION_FAR.get(), SoundSource.BLOCKS, 48, 1);
-            level.playSound(null, BlockPos.containing(x, y + 1, z), ModSounds.EXPLOSION_VERY_FAR.get(), SoundSource.BLOCKS, 128, 1);
+            level.playSound(null, BlockPos.containing(x, y + 1, z), ModSounds.EXPLOSION_CLOSE.get(), SoundSource.BLOCKS, 8, 1);
+            level.playSound(null, BlockPos.containing(x, y + 1, z), ModSounds.EXPLOSION_FAR.get(), SoundSource.BLOCKS, 16, 1);
+            level.playSound(null, BlockPos.containing(x, y + 1, z), ModSounds.EXPLOSION_VERY_FAR.get(), SoundSource.BLOCKS, 32, 1);
         }
 
         if (level instanceof ServerLevel serverLevel) {
@@ -109,9 +109,9 @@ public class ParticleTool {
             if ((level.getBlockState(BlockPos.containing(x, y, z))).getBlock() == Blocks.WATER) {
                 level.playSound(null, BlockPos.containing(x, y + 1, z), ModSounds.EXPLOSION_WATER.get(), SoundSource.BLOCKS, 3, 1);
             }
-            level.playSound(null, BlockPos.containing(x, y + 1, z), ModSounds.HUGE_EXPLOSION_CLOSE.get(), SoundSource.BLOCKS, 24, 1);
-            level.playSound(null, BlockPos.containing(x, y + 1, z), ModSounds.HUGE_EXPLOSION_FAR.get(), SoundSource.BLOCKS, 64, 1);
-            level.playSound(null, BlockPos.containing(x, y + 1, z), ModSounds.HUGE_EXPLOSION_VERY_FAR.get(), SoundSource.BLOCKS, 160, 1);
+            level.playSound(null, BlockPos.containing(x, y + 1, z), ModSounds.HUGE_EXPLOSION_CLOSE.get(), SoundSource.BLOCKS, 16, 1);
+            level.playSound(null, BlockPos.containing(x, y + 1, z), ModSounds.HUGE_EXPLOSION_FAR.get(), SoundSource.BLOCKS, 32, 1);
+            level.playSound(null, BlockPos.containing(x, y + 1, z), ModSounds.HUGE_EXPLOSION_VERY_FAR.get(), SoundSource.BLOCKS, 64, 1);
         }
 
         if (level instanceof ServerLevel serverLevel) {
