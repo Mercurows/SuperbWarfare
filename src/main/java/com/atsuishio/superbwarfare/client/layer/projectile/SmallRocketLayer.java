@@ -13,6 +13,7 @@ import software.bernie.geckolib.renderer.GeoRenderer;
 import software.bernie.geckolib.renderer.layer.GeoRenderLayer;
 
 public class SmallRocketLayer extends GeoRenderLayer<SmallRocketEntity> {
+
     private static final ResourceLocation LAYER = Mod.loc("textures/entity/rpg_rocket_e.png");
 
     public SmallRocketLayer(GeoRenderer<SmallRocketEntity> entityRenderer) {
