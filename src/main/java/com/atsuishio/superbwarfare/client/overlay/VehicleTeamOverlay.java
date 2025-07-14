@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.config.client.DisplayConfig;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.tools.FormatTool;
+import com.atsuishio.superbwarfare.tools.SeekTool;
 import com.atsuishio.superbwarfare.tools.TraceTool;
 import com.atsuishio.superbwarfare.tools.VectorUtil;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -23,6 +24,11 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.gui.overlay.ForgeGui;
 import net.minecraftforge.client.gui.overlay.IGuiOverlay;
+
+import java.util.List;
+
+import static com.atsuishio.superbwarfare.client.RenderHelper.preciseBlit;
+import static com.atsuishio.superbwarfare.client.overlay.SpyglassRangeOverlay.FRIENDLY_INDICATOR;
 
 @OnlyIn(Dist.CLIENT)
 public class VehicleTeamOverlay implements IGuiOverlay {
@@ -91,6 +97,22 @@ public class VehicleTeamOverlay implements IGuiOverlay {
             RenderHelper.fill(guiGraphics, RenderType.guiOverlay(), -40, -2, -40 + 80 * (vehicle.getHealth() / vehicle.getMaxHealth()), 2, 0, -1);
 
             poseStack.popPose();
+        }
+
+        if (player.getVehicle() instanceof VehicleEntity) {
+            List<Entity> entities = SeekTool.getPlayer(player, player.level());
+            for (var e : entities) {
+                if (e != null) {
+                    Vec3 pos = new Vec3(Mth.lerp(partialTick,e.xo, e.getX()), Mth.lerp(partialTick,e.yo + e.getBbHeight() / 2, e.getY() + e.getBbHeight() / 2), Mth.lerp(partialTick,e.zo, e.getZ()));
+                    Vec3 point = VectorUtil.worldToScreen(pos, cameraPos);
+                    if (point != null) {
+                        float xf = (float) point.x;
+                        float yf = (float) point.y;
+
+                        preciseBlit(guiGraphics, FRIENDLY_INDICATOR, Mth.clamp(xf - 6, 0, screenWidth - 12), Mth.clamp(yf - 6, 0, screenHeight - 12), 0, 0, 12, 12, 12, 12);
+                    }
+                }
+            }
         }
     }
 }
