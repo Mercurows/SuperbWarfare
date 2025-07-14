@@ -14,11 +14,11 @@ public class SmallRocketModel extends GeoModel<SmallRocketEntity> {
 
     @Override
     public ResourceLocation getModelResource(SmallRocketEntity entity) {
-        return Mod.loc("geo/medium_rocket.geo.json");
+        return Mod.loc("geo/small_rocket.geo.json");
     }
 
     @Override
     public ResourceLocation getTextureResource(SmallRocketEntity entity) {
-        return Mod.loc("textures/entity/medium_rocket.png");
+        return Mod.loc("textures/entity/small_rocket.png");
     }
 }
