@@ -39,6 +39,12 @@ public class SeekTool {
                 .toList();
     }
 
+    public static List<Entity> getPlayer(Player player, Level level) {
+        return StreamSupport.stream(EntityFindUtil.getEntities(level).getAll().spliterator(), false)
+                .filter(e -> e instanceof Player && e.getTeam() != null && !e.getTeam().getName().equals("TDM") && e.getTeam() == player.getTeam())
+                .toList();
+    }
+
     public static Entity seekEntity(Entity entity, Level level, double seekRange, double seekAngle) {
         return StreamSupport.stream(EntityFindUtil.getEntities(level).getAll().spliterator(), false)
                 .filter(e -> {
