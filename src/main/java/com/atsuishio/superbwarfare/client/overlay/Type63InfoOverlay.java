@@ -64,7 +64,7 @@ public class Type63InfoOverlay implements LayeredDraw.Layer {
                         .append(Component.literal(FormatTool.format2D(type63Entity.getEntityData().get(SHOOT_YAW), "°"))),
                 screenWidth / 2 - 130, screenHeight / 2 - 16, -1, false);
         guiGraphics.drawString(Minecraft.getInstance().font, Component.translatable("tips.superbwarfare.mortar.range")
-                        .append(Component.literal(FormatTool.format1D((int) RangeTool.getRange(type63Entity.getEntityData().get(SHOOT_PITCH), 10, 0.05), "m"))),
+                        .append(Component.literal(FormatTool.format1D(Math.max((int) RangeTool.getRange(type63Entity.getEntityData().get(SHOOT_PITCH), 10, 0.05), 0) , "m"))),
                 screenWidth / 2 - 130, screenHeight / 2 - 6, -1, false);
 
         var items = type63Entity.getEntityData().get(Type63Entity.LOADED_AMMO);
