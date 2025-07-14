@@ -264,7 +264,7 @@ public class MediumRocketEntity extends FastThrowableProjectile implements GeoEn
             double dh = position().vectorTo(finalPos).horizontalDistance();
             int t = (int) (dh / vh);
 
-            sparedTime = tickCount + t - 5;
+            sparedTime = tickCount + t - 10;
             active = true;
         }
 
@@ -309,14 +309,14 @@ public class MediumRocketEntity extends FastThrowableProjectile implements GeoEn
             ParticleTool.spawnMediumExplosionParticles(serverLevel, position());
             for (int index0 = 0; index0 < sparedAmount; index0++) {
                 GunGrenadeEntity gunGrenadeEntity = new GunGrenadeEntity(shooter, serverLevel,
-                        2 * damage / sparedAmount,
+                        6 * damage / sparedAmount,
                         5 * explosionDamage / sparedAmount,
                         radius / 2
                 );
 
                 gunGrenadeEntity.setPos(position().x, position().y, position().z);
-                gunGrenadeEntity.shoot(getDeltaMovement().x, getDeltaMovement().y, getDeltaMovement().z, (float) (1.25f * getDeltaMovement().length()),
-                        30);
+                gunGrenadeEntity.shoot(getDeltaMovement().x, getDeltaMovement().y, getDeltaMovement().z, (float) (random.nextFloat() * 0.1f + 0.8f * getDeltaMovement().length()),
+                        25);
                 serverLevel.addFreshEntity(gunGrenadeEntity);
             }
             discard();

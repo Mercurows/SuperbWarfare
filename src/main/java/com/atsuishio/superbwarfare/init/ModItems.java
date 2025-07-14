@@ -181,6 +181,7 @@ public class ModItems {
     public static final DeferredHolder<Item, Item> PRIMER = ITEMS.register("primer", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> AP_HEAD = ITEMS.register("ap_head", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> HE_HEAD = ITEMS.register("he_head", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> CM_HEAD = ITEMS.register("cm_head", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> CANNON_CORE = ITEMS.register("cannon_core", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> COPPER_PLATE = ITEMS.register("copper_plate", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> STEEL_INGOT = ITEMS.register("steel_ingot", () -> new Item(new Item.Properties()));

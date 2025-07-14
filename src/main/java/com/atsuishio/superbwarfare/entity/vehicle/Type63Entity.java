@@ -202,7 +202,7 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
             } else {
                 // 撬棍发射
                 for (int i = 0; i < 12; i++) {
-                    if (items.get(i).getItem() instanceof MediumRocketItem && cooldown == 0) {
+                    if (items.get(i).getItem() instanceof MediumRocketItem && cooldown == 0 && getEnergy() > 0) {
                         shoot(player, i);
                         items.set(i, ItemStack.EMPTY);
                         setChanged();
@@ -268,6 +268,7 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
             }
         }
 
+        consumeEnergy(1);
         ShakeClientMessage.sendToNearbyPlayers(this, 8, 8, 10, 20);
     }
 
@@ -493,10 +494,5 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
     @Override
     public void setChanged() {
         this.entityData.set(LOADED_AMMO, this.items.stream().map(i -> i.isEmpty() ? 0 : 1).toList());
-    }
-
-    @Override
-    public boolean hasEnergyStorage() {
-        return false;
     }
 }
