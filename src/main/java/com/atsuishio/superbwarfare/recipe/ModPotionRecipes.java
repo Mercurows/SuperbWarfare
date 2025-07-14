@@ -2,8 +2,8 @@ package com.atsuishio.superbwarfare.recipe;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.init.ModPotions;
-import com.momosoftworks.coldsweat.util.item.PotionUtils;
 import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.Potion;
@@ -34,7 +34,14 @@ public class ModPotionRecipes {
     }
 
     private static ItemStack potion(Holder<Potion> potion) {
-        return PotionUtils.setPotion(Items.POTION.getDefaultInstance(), potion);
+        var stack = Items.POTION.getDefaultInstance();
+        var contents = stack.get(DataComponents.POTION_CONTENTS);
+
+        if (contents != null) {
+            stack.set(DataComponents.POTION_CONTENTS, contents.withPotion(potion));
+        }
+
+        return stack;
     }
 
     private static IBrewingRecipe createRecipe(Ingredient input, Ingredient ingredient, ItemStack output) {
