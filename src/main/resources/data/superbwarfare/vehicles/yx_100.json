@@ -79,6 +79,11 @@
     },
     {
       "Type": "Multiply",
+      "Value": 1.25,
+      "Source": "superbwarfare:laser"
+    },
+    {
+      "Type": "Multiply",
       "Value": 0.15,
       "Source": "#superbwarfare:projectile_absolute"
     },
