@@ -58,6 +58,7 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
 
     public static final EntityDataAccessor<Float> SHOOT_PITCH = SynchedEntityData.defineId(Type63Entity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Float> SHOOT_YAW = SynchedEntityData.defineId(Type63Entity.class, EntityDataSerializers.FLOAT);
+
     public static final EntityDataAccessor<List<Integer>> LOADED_AMMO = SynchedEntityData.defineId(Type63Entity.class, ModSerializers.INT_LIST_SERIALIZER.get());
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
@@ -172,11 +173,14 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
 
         if (stack.getItem() instanceof MediumRocketItem) {
             for (int i = 0; i < this.barrel.length; i++) {
-                if (OBB.getLookingObb(player, player.entityInteractionRange()) == this.barrel[i] && items.get(i).isEmpty() && level() instanceof ServerLevel) {
+                if (OBB.getLookingObb(player, player.entityInteractionRange()) == this.barrel[i] && items.get(i).isEmpty() && level() instanceof ServerLevel serverLevel && cooldown == 0) {
                     this.setItem(i, stack.copyWithCount(1));
                     if (!player.isCreative()) {
                         stack.shrink(1);
                     }
+                    Vec3 vec3 = new Vec3(this.barrel[i].center());
+                    serverLevel.playSound(null, vec3.x, vec3.y, vec3.z, ModSounds.TYPE_63_RELOAD.get(), SoundSource.PLAYERS, 1f, random.nextFloat() * 0.1f + 0.9f);
+                    cooldown = 5;
                     setChanged();
                 }
                 player.swing(InteractionHand.MAIN_HAND);
@@ -215,8 +219,9 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
         if (level() instanceof ServerLevel serverLevel) {
             interactionTick++;
             interactionTick += 0.5;
-            if (tickCount % 2 == 0) {
-                serverLevel.playSound(null, vec3.x, vec3.y, vec3.z, ModSounds.HAND_WHEEL_ROT.get(), SoundSource.PLAYERS, 1f, random.nextFloat() * 0.1f + 0.9f);
+            if (cooldown == 0) {
+                cooldown = 6;
+                serverLevel.playSound(null, vec3.x, vec3.y, vec3.z, ModSounds.HAND_WHEEL_ROT.get(), SoundSource.PLAYERS, 1f, random.nextFloat() * 0.05f + 0.975f);
             }
         }
     }
@@ -364,6 +369,12 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
         Vector4f rootPosition = transformPosition(transform, 0, 0, 0);
         Vector4f targetPosition = transformPosition(transform, 0, 0, 1);
         return new Vec3(rootPosition.x, rootPosition.y, rootPosition.z).vectorTo(new Vec3(targetPosition.x, targetPosition.y, targetPosition.z));
+    }
+
+    public Vec3 getShootPos(float pPartialTicks) {
+        Matrix4f transform = getBarrelTransform(pPartialTicks);
+        Vector4f rootPosition = transformPosition(transform, 0, 0.000625f, -0.44625f);
+        return new Vec3(rootPosition.x, rootPosition.y, rootPosition.z);
     }
 
     @Override

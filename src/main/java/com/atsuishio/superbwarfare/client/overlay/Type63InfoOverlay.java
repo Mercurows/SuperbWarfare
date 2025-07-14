@@ -1,22 +1,33 @@
 package com.atsuishio.superbwarfare.client.overlay;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.component.ModDataComponents;
 import com.atsuishio.superbwarfare.entity.vehicle.Type63Entity;
-import com.atsuishio.superbwarfare.tools.FormatTool;
-import com.atsuishio.superbwarfare.tools.RangeTool;
-import com.atsuishio.superbwarfare.tools.TraceTool;
+import com.atsuishio.superbwarfare.item.FiringParameters;
+import com.atsuishio.superbwarfare.tools.*;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.LayeredDraw;
+import net.minecraft.commands.arguments.EntityAnchorArgument;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import org.jetbrains.annotations.NotNull;
 
 import static com.atsuishio.superbwarfare.entity.vehicle.Type63Entity.SHOOT_PITCH;
 import static com.atsuishio.superbwarfare.entity.vehicle.Type63Entity.SHOOT_YAW;
+import static com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.getXRotFromVector;
+import static com.atsuishio.superbwarfare.tools.RangeTool.calculateLaunchVector;
 
 public class Type63InfoOverlay implements LayeredDraw.Layer {
 
@@ -26,23 +37,101 @@ public class Type63InfoOverlay implements LayeredDraw.Layer {
     public void render(GuiGraphics guiGraphics, @NotNull DeltaTracker deltaTracker) {
         Minecraft mc = Minecraft.getInstance();
         Player player = mc.player;
+        Camera camera = mc.gameRenderer.getMainCamera();
+        Vec3 cameraPos = camera.getPosition();
+        Vec3 viewVec = new Vec3(camera.getLookVector());
+        PoseStack poseStack = guiGraphics.pose();
+
         var screenWidth = guiGraphics.guiWidth();
         var screenHeight = guiGraphics.guiHeight();
+        var partialTick = deltaTracker.getGameTimeDeltaPartialTick(true);
 
-        Entity lookingEntity = null;
+        Entity lookingEntity;
         if (player != null) {
-            lookingEntity = TraceTool.findLookingEntity(player, 6);
-        }
-        if (lookingEntity instanceof Type63Entity type63Entity) {
-            guiGraphics.drawString(Minecraft.getInstance().font, Component.translatable("tips.superbwarfare.mortar.pitch")
-                            .append(Component.literal(FormatTool.format2D(type63Entity.getEntityData().get(SHOOT_PITCH), "°"))),
-                    screenWidth / 2 - 90, screenHeight / 2 - 26, -1, false);
-            guiGraphics.drawString(Minecraft.getInstance().font, Component.translatable("tips.superbwarfare.mortar.yaw")
-                            .append(Component.literal(FormatTool.format2D(type63Entity.getEntityData().get(SHOOT_YAW), "°"))),
-                    screenWidth / 2 - 90, screenHeight / 2 - 16, -1, false);
-            guiGraphics.drawString(Minecraft.getInstance().font, Component.translatable("tips.superbwarfare.mortar.range")
-                            .append(Component.literal(FormatTool.format1D((int) RangeTool.getRange(type63Entity.getEntityData().get(SHOOT_PITCH), 10, 0.05), "m"))),
-                    screenWidth / 2 - 90, screenHeight / 2 - 6, -1, false);
+            lookingEntity = TraceTool.findLookingEntity(player, player.entityInteractionRange());
+
+            if (lookingEntity instanceof Type63Entity type63Entity) {
+                guiGraphics.drawString(Minecraft.getInstance().font, Component.translatable("tips.superbwarfare.mortar.pitch")
+                                .append(Component.literal(FormatTool.format2D(type63Entity.getEntityData().get(SHOOT_PITCH), "°"))),
+                        screenWidth / 2 - 130, screenHeight / 2 - 26, -1, false);
+                guiGraphics.drawString(Minecraft.getInstance().font, Component.translatable("tips.superbwarfare.mortar.yaw")
+                                .append(Component.literal(FormatTool.format2D(type63Entity.getEntityData().get(SHOOT_YAW), "°"))),
+                        screenWidth / 2 - 130, screenHeight / 2 - 16, -1, false);
+                guiGraphics.drawString(Minecraft.getInstance().font, Component.translatable("tips.superbwarfare.mortar.range")
+                                .append(Component.literal(FormatTool.format1D((int) RangeTool.getRange(type63Entity.getEntityData().get(SHOOT_PITCH), 10, 0.05), "m"))),
+                        screenWidth / 2 - 130, screenHeight / 2 - 6, -1, false);
+
+                var itemHandler = type63Entity.getCapability(Capabilities.ItemHandler.ENTITY);
+
+                // TODO 正确读取item
+
+                for (int i = 0; i < type63Entity.barrel.length; i++) {
+                    if (OBB.getLookingObb(player, player.entityInteractionRange()) == type63Entity.barrel[i]) {
+                        ItemStack stack = itemHandler.getStackInSlot(i);
+
+                        Vec3 pos = new Vec3(type63Entity.barrel[i].center());
+                        Vec3 point = VectorUtil.worldToScreen(pos, cameraPos);
+                        if (point == null) return;
+
+                        poseStack.pushPose();
+                        float x = (float) point.x;
+                        float y = (float) point.y;
+                        poseStack.translate(x, y, 0);
+
+                        String info = stack.getDisplayName().getString();
+                        int width = Minecraft.getInstance().font.width(info);
+
+                        guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(stack.getDisplayName().getString()),
+                                -width / 2, -4, -1, false);
+
+                        poseStack.popPose();
+
+
+                    }
+                }
+
+                ItemStack stack = player.getOffhandItem();
+                if (stack.getItem() instanceof FiringParameters) {
+                    var parameters = stack.get(ModDataComponents.FIRING_PARAMETERS);
+                    if (parameters == null) {
+                        parameters = new FiringParameters.Parameters(new BlockPos(0, 0, 0));
+                    }
+                    double targetX = parameters.pos().getX();
+                    double targetY = parameters.pos().getY() - 1;
+                    double targetZ = parameters.pos().getZ();
+                    boolean isDepressed = parameters.isDepressed();
+
+                    Vec3 targetPos = new Vec3(targetX, targetY, targetZ);
+                    Vec3 launchVector = calculateLaunchVector(type63Entity.getShootPos(partialTick), targetPos, 10, -0.05, isDepressed);
+
+                    Vec3 vec3 = EntityAnchorArgument.Anchor.EYES.apply(lookingEntity);
+                    double d0 = (targetPos.x - vec3.x) * 0.2;
+                    double d2 = (targetPos.z - vec3.z) * 0.2;
+                    double targetYaw = Mth.wrapDegrees((float) (Mth.atan2(d2, d0) * 57.2957763671875) - 90.0F);
+
+                    float angle = 0;
+
+                    if (launchVector != null) {
+                        angle = (float) getXRotFromVector(launchVector);
+                    }
+
+                    if (angle > -5 && angle < 60) {
+                        guiGraphics.drawString(Minecraft.getInstance().font, Component.translatable("tips.superbwarfare.target.pitch")
+                                        .append(Component.literal(FormatTool.format2D(angle, "°"))),
+                                screenWidth / 2 + 90, screenHeight / 2 - 26, -1, false);
+                        guiGraphics.drawString(Minecraft.getInstance().font, Component.translatable("tips.superbwarfare.target.yaw")
+                                        .append(Component.literal(FormatTool.format2D(targetYaw, "°"))),
+                                screenWidth / 2 + 90, screenHeight / 2 - 16, -1, false);
+                        guiGraphics.drawString(Minecraft.getInstance().font, Component.translatable("tips.superbwarfare.mortar.target_pos")
+                                        .append(Component.literal(FormatTool.format0D(targetX) + " " + FormatTool.format0D(targetY) + " " + FormatTool.format0D(targetZ))),
+                                screenWidth / 2 + 90, screenHeight / 2 - 6, -1, false);
+                    } else {
+                        guiGraphics.drawString(Minecraft.getInstance().font, Component.translatable("tips.superbwarfare.mortar.warn", lookingEntity.getDisplayName()).withStyle(ChatFormatting.RED),
+                                screenWidth / 2 + 90, screenHeight / 2 - 26, -1, false);
+                    }
+                }
+            }
+
         }
     }
 }

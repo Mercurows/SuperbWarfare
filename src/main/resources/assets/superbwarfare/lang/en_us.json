@@ -597,6 +597,9 @@
   "tips.superbwarfare.mortar.target_pos.depressed_trajectory": "Depressed Trajectory",
   "tips.superbwarfare.mortar.target_pos.lofted_trajectory": "Lofted Trajectory",
   "tips.superbwarfare.mortar.warn": "%1$s cannot aim at this position",
+  "tips.superbwarfare.target.yaw": "Target Yaw: ",
+  "tips.superbwarfare.target.pitch": "Target Pitch: ",
+
 
   "container.superbwarfare.reforging_table": "Gun Reforge Table",
   "container.superbwarfare.charging_station": "Charging Station",

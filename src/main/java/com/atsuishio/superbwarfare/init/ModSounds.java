@@ -498,6 +498,7 @@ public class ModSounds {
 
     public static final DeferredHolder<SoundEvent, SoundEvent> HAND_WHEEL_ROT = REGISTRY.register("hand_wheel_rot", () -> SoundEvent.createVariableRangeEvent(Mod.loc("hand_wheel_rot")));
     public static final DeferredHolder<SoundEvent, SoundEvent> MEDIUM_ROCKET_FIRE = REGISTRY.register("medium_rocket_fire", () -> SoundEvent.createVariableRangeEvent(Mod.loc("medium_rocket_fire")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> TYPE_63_RELOAD = REGISTRY.register("ty63_reload", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ty63_reload")));
 
 }
 
