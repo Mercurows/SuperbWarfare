@@ -68,6 +68,11 @@
     },
     {
       "Type": "Multiply",
+      "Value": 0.4,
+      "Source": "superbwarfare:laser"
+    },
+    {
+      "Type": "Multiply",
       "Value": 0.9,
       "Source": "@superbwarfare:cannon_shell"
     },

@@ -51,7 +51,7 @@
     },
     {
       "Type": "Multiply",
-      "Value": 2.4,
+      "Value": 2.0,
       "Source": "superbwarfare:custom_explosion"
     },
     {
@@ -66,8 +66,13 @@
     },
     {
       "Type": "Multiply",
-      "Value": 1.4,
+      "Value": 1.25,
       "Source": "superbwarfare:cannon_fire"
+    },
+    {
+      "Type": "Multiply",
+      "Value": 1.25,
+      "Source": "superbwarfare:laser"
     },
     {
       "Type": "Multiply",
