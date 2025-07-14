@@ -83,9 +83,9 @@ public class DogTagEditorScreen extends Screen {
     @Override
     public void render(@NotNull GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
         this.renderBackground(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
+        this.renderBg(pGuiGraphics);
         super.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
         this.name.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
-        this.renderBg(pGuiGraphics);
     }
 
     @Override
