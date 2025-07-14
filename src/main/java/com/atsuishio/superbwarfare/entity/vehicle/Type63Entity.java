@@ -9,6 +9,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.item.common.ammo.MediumRocketItem;
 import com.atsuishio.superbwarfare.item.common.container.ContainerBlockItem;
+import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage;
 import com.atsuishio.superbwarfare.tools.CustomExplosion;
 import com.atsuishio.superbwarfare.tools.OBB;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
@@ -235,7 +236,7 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
 
         MediumRocketEntity entityToSpawn = rocketItem.createProjectile(level(), shootPos);
         entityToSpawn.setOwner(player);
-        entityToSpawn.shoot(getShootVector(1).x, getShootVector(1).y, getShootVector(1).z, 10, (float) 0.5);
+        entityToSpawn.shoot(getShootVector(1).x, getShootVector(1).y, getShootVector(1).z, 10, (float) 0.75);
         level().addFreshEntity(entityToSpawn);
         level().playSound(null, shootPos.x, shootPos.y, shootPos.z, ModSounds.MEDIUM_ROCKET_FIRE.get(), SoundSource.PLAYERS, 4f, random.nextFloat() * 0.1f + 0.95f);
 
@@ -263,6 +264,8 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
                 serverLevel.sendParticles(ParticleTypes.FLAME, pPos2.x, pPos2.y, pPos2.z, 2, 0.05, 0.05, 0.05, 0.007);
             }
         }
+
+        ShakeClientMessage.sendToNearbyPlayers(this, 8, 8, 10, 20);
     }
 
     @Override

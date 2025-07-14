@@ -10,6 +10,7 @@ import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.ArtilleryIndicator;
 import com.atsuishio.superbwarfare.item.Monitor;
 import com.atsuishio.superbwarfare.item.common.ammo.MortarShell;
+import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage;
 import com.atsuishio.superbwarfare.tools.VectorTool;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
@@ -313,6 +314,7 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, RemoteCont
 
                 this.clearContent();
                 resetTarget();
+                ShakeClientMessage.sendToNearbyPlayers(this, 6, 6, 8, 14);
             }
         }
 
