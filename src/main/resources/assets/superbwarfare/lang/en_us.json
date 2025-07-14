@@ -601,6 +601,7 @@
 
   "tips.superbwarfare.target.yaw": "Target Yaw: ",
   "tips.superbwarfare.target.pitch": "Target Pitch: ",
+  "tips.superbwarfare.barrel_empty": "EMPTY",
 
 
   "container.superbwarfare.reforging_table": "Gun Reforge Table",

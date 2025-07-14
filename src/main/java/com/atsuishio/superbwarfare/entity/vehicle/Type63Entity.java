@@ -54,6 +54,7 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
 
     public static final EntityDataAccessor<Float> PITCH = SynchedEntityData.defineId(Type63Entity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Float> YAW = SynchedEntityData.defineId(Type63Entity.class, EntityDataSerializers.FLOAT);
+    public static final EntityDataAccessor<Float> BODY_YAW = SynchedEntityData.defineId(Type63Entity.class, EntityDataSerializers.FLOAT);
 
     public static final EntityDataAccessor<Float> SHOOT_PITCH = SynchedEntityData.defineId(Type63Entity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Float> SHOOT_YAW = SynchedEntityData.defineId(Type63Entity.class, EntityDataSerializers.FLOAT);
@@ -118,6 +119,7 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
 
         this.entityData.define(PITCH, 0f);
         this.entityData.define(YAW, 0f);
+        this.entityData.define(BODY_YAW, 0f);
         this.entityData.define(SHOOT_PITCH, 0f);
         this.entityData.define(SHOOT_YAW, 0f);
         this.entityData.define(LOADED_AMMO, list);
@@ -143,20 +145,33 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
         ItemStack stack = player.getMainHandItem();
 
         if (stack.isEmpty()) {
-            if (OBB.getLookingObb(player, player.getEntityReach()) == hoe1) {
-                if (player.level() instanceof ServerLevel) {
-                    setYRot(getYRot() + (float) interactionTick);
-                    interactEvent(new Vec3(hoe1.center()));
+            if (player.isShiftKeyDown()) {
+                if (OBB.getLookingObb(player, player.getEntityReach()) == hoe1) {
+                    if (player.level() instanceof ServerLevel serverLevel) {
+                        entityData.set(BODY_YAW, entityData.get(BODY_YAW) + 0.2f * (float) interactionTick);
+                        interactionTick++;
+                        if (cooldown == 0) {
+                            cooldown = 6;
+                            Vec3 vec3 = new Vec3(hoe1.center());
+                            serverLevel.playSound(null, vec3.x, vec3.y, vec3.z, ModSounds.WHEEL_STEP.get(), SoundSource.PLAYERS, 0.5f, random.nextFloat() * 0.05f + 0.975f);
+                        }
+                    }
+                    player.swing(InteractionHand.MAIN_HAND);
                 }
-                player.swing(InteractionHand.MAIN_HAND);
-            }
-            if (OBB.getLookingObb(player, player.getEntityReach()) == hoe2) {
-                if (player.level() instanceof ServerLevel) {
-                    setYRot(getYRot() - (float) interactionTick);
-                    interactEvent(new Vec3(hoe2.center()));
+                if (OBB.getLookingObb(player, player.getEntityReach()) == hoe2) {
+                    if (player.level() instanceof ServerLevel serverLevel) {
+                        entityData.set(BODY_YAW, entityData.get(BODY_YAW) - 0.2f * (float) interactionTick);
+                        interactionTick++;
+                        if (cooldown == 0) {
+                            cooldown = 6;
+                            Vec3 vec3 = new Vec3(hoe1.center());
+                            serverLevel.playSound(null, vec3.x, vec3.y, vec3.z, ModSounds.WHEEL_STEP.get(), SoundSource.PLAYERS, 0.5f, random.nextFloat() * 0.05f + 0.975f);
+                        }
+                    }
+                    player.swing(InteractionHand.MAIN_HAND);
                 }
-                player.swing(InteractionHand.MAIN_HAND);
             }
+
             if (OBB.getLookingObb(player, player.getEntityReach()) == yawController) {
                 interactEvent(new Vec3(yawController.center()));
                 entityData.set(YAW, Mth.clamp(entityData.get(YAW) + (player.isShiftKeyDown() ? -0.02f : 0.02f) * (float) interactionTick, -15, 15));
@@ -256,7 +271,7 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
     public void interactEvent(Vec3 vec3) {
         if (level() instanceof ServerLevel serverLevel) {
             interactionTick++;
-            interactionTick += 0.5;
+            interactionTick++;
             if (cooldown == 0) {
                 cooldown = 6;
                 serverLevel.playSound(null, vec3.x, vec3.y, vec3.z, ModSounds.HAND_WHEEL_ROT.get(), SoundSource.PLAYERS, 1f, random.nextFloat() * 0.05f + 0.975f);
@@ -346,6 +361,9 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
             entityData.set(SHOOT_PITCH, (float) VehicleEntity.getXRotFromVector(getShootVector(1)));
             entityData.set(SHOOT_YAW, (float) -VehicleEntity.getYRotFromVector(getShootVector(1)));
         }
+
+        entityData.set(BODY_YAW, entityData.get(BODY_YAW) * 0.8f);
+        setYRot(getYRot() + entityData.get(BODY_YAW));
 
         this.refreshDimensions();
     }

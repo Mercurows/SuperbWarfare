@@ -601,6 +601,7 @@
 
   "tips.superbwarfare.target.yaw": "目标偏航角: ",
   "tips.superbwarfare.target.pitch": "目标俯仰角: ",
+  "tips.superbwarfare.barrel_empty": "空",
 
   "container.superbwarfare.reforging_table": "枪械重铸台",
   "container.superbwarfare.charging_station": "充电站",
