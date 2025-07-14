@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "ddd",
+    "bdb",
+    "cac"
+  ],
+  "key": {
+    "a": {
+      "item": "minecraft:gunpowder"
+    },
+    "b": {
+      "item": "minecraft:iron_ingot"
+    },
+    "c": {
+      "tag": "superbwarfare:ingots/steel"
+    },
+    "d": {
+      "item": "superbwarfare:grenade_40mm"
+    }
+  },
+  "result": {
+    "item": "superbwarfare:cm_head",
+    "count": 2
+  }
+}

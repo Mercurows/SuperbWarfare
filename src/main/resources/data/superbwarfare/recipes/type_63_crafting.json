@@ -1,0 +1,34 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "abc",
+    "ddd",
+    "e e"
+  ],
+  "key": {
+    "a": {
+      "item": "minecraft:dispenser"
+    },
+    "b": {
+      "item": "minecraft:flint_and_steel"
+    },
+    "c": {
+      "item": "superbwarfare:cell"
+    },
+    "d": {
+      "tag": "superbwarfare:ingots/steel"
+    },
+    "e": {
+      "item": "superbwarfare:wheel"
+    }
+  },
+  "result": {
+    "item": "superbwarfare:container",
+    "nbt": {
+      "BlockEntityTag": {
+        "EntityType": "superbwarfare:type_63"
+      }
+    }
+  }
+}

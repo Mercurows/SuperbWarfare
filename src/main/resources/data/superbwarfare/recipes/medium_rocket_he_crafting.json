@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "a",
+    "b",
+    "b"
+  ],
+  "key": {
+    "a": {
+      "item": "superbwarfare:he_head"
+    },
+    "b": {
+      "item": "superbwarfare:small_rocket"
+    }
+  },
+  "result": {
+    "item": "superbwarfare:medium_rocket_he",
+    "count": 1
+  }
+}
