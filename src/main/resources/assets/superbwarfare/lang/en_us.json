@@ -601,7 +601,7 @@
   "tips.superbwarfare.target.yaw": "Target Yaw: ",
   "tips.superbwarfare.target.pitch": "Target Pitch: ",
   "tips.superbwarfare.barrel_empty": "EMPTY",
-
+  "tips.superbwarfare.mortar.out_of_range": "Out of Range",
 
   "container.superbwarfare.reforging_table": "Gun Reforge Table",
   "container.superbwarfare.charging_station": "Charging Station",

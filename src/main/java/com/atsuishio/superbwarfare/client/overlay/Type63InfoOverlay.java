@@ -133,21 +133,25 @@ public class Type63InfoOverlay implements LayeredDraw.Layer {
 
             if (launchVector != null) {
                 angle = (float) getXRotFromVector(launchVector);
+            } else {
+                guiGraphics.drawString(Minecraft.getInstance().font, Component.translatable("tips.superbwarfare.mortar.out_of_range").withStyle(ChatFormatting.RED),
+                        screenWidth / 2 + 90, screenHeight / 2 - 26, -1, false);
+                return;
             }
 
-            if (angle > -5 && angle < 60) {
-                guiGraphics.drawString(Minecraft.getInstance().font, Component.translatable("tips.superbwarfare.target.pitch")
-                                .append(Component.literal(FormatTool.format2D(angle, "°"))),
-                        screenWidth / 2 + 90, screenHeight / 2 - 26, -1, false);
-                guiGraphics.drawString(Minecraft.getInstance().font, Component.translatable("tips.superbwarfare.target.yaw")
-                                .append(Component.literal(FormatTool.format2D(targetYaw, "°"))),
-                        screenWidth / 2 + 90, screenHeight / 2 - 16, -1, false);
-                guiGraphics.drawString(Minecraft.getInstance().font, Component.translatable("tips.superbwarfare.mortar.target_pos")
-                                .append(Component.literal(FormatTool.format0D(targetX) + " " + FormatTool.format0D(targetY) + " " + FormatTool.format0D(targetZ))),
-                        screenWidth / 2 + 90, screenHeight / 2 - 6, -1, false);
-            } else {
+            guiGraphics.drawString(Minecraft.getInstance().font, Component.translatable("tips.superbwarfare.target.pitch")
+                            .append(Component.literal(FormatTool.format2D(angle, "°"))),
+                    screenWidth / 2 + 90, screenHeight / 2 - 26, -1, false);
+            guiGraphics.drawString(Minecraft.getInstance().font, Component.translatable("tips.superbwarfare.target.yaw")
+                            .append(Component.literal(FormatTool.format2D(targetYaw, "°"))),
+                    screenWidth / 2 + 90, screenHeight / 2 - 16, -1, false);
+            guiGraphics.drawString(Minecraft.getInstance().font, Component.translatable("tips.superbwarfare.mortar.target_pos")
+                            .append(Component.literal(FormatTool.format0D(targetX) + " " + FormatTool.format0D(targetY) + " " + FormatTool.format0D(targetZ))),
+                    screenWidth / 2 + 90, screenHeight / 2 - 6, -1, false);
+
+            if (angle < -5 || angle > 60) {
                 guiGraphics.drawString(Minecraft.getInstance().font, Component.translatable("tips.superbwarfare.mortar.warn", lookingEntity.getDisplayName()).withStyle(ChatFormatting.RED),
-                        screenWidth / 2 + 90, screenHeight / 2 - 26, -1, false);
+                        screenWidth / 2 + 90, screenHeight / 2 + 4, -1, false);
             }
         }
     }
