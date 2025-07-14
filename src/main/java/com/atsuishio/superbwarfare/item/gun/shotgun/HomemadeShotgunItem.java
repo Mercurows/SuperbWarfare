@@ -15,13 +15,11 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
-import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.constant.DataTickets;
 import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.core.animation.AnimationController;
@@ -37,23 +35,6 @@ public class HomemadeShotgunItem extends GunItem {
 
     public HomemadeShotgunItem() {
         super(new Item.Properties().durability(24).rarity(Rarity.COMMON));
-    }
-
-    @Override
-    public boolean isBarVisible(@NotNull ItemStack stack) {
-        return stack.isDamaged();
-    }
-
-    @Override
-    public int getBarWidth(@NotNull ItemStack pStack) {
-        return Math.round(13.0F - (float) pStack.getDamageValue() * 13.0F / (float) this.getMaxDamage(pStack));
-    }
-
-    @Override
-    public int getBarColor(@NotNull ItemStack pStack) {
-        float stackMaxDamage = this.getMaxDamage(pStack);
-        float f = Math.max(0.0F, (stackMaxDamage - (float) pStack.getDamageValue()) / stackMaxDamage);
-        return Mth.hsvToRgb(f / 3.0F, 1.0F, 1.0F);
     }
 
     @Override
