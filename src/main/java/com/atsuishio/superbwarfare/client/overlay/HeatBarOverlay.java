@@ -14,6 +14,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
@@ -68,8 +69,12 @@ public class HeatBarOverlay implements LayeredDraw.Layer {
         float rate = (float) (heat / 100.0);
         float barHeight = 56 * rate;
 
+        poseStack.pushPose();
+
         RenderHelper.preciseBlit(guiGraphics, TEXTURE, posX + 2.5f, posY + 1.5f + 56 - barHeight,
-                10.5f, 0, 2.25f, barHeight, width, height);
+                10.5f, 0, 2.25f, barHeight, width, height, rate >= 0.795f ? calculateGradientColor(rate) : 0xFFFFFF);
+
+        poseStack.popPose();
 
         RenderSystem.depthMask(true);
         RenderSystem.defaultBlendFunc();
@@ -78,5 +83,16 @@ public class HeatBarOverlay implements LayeredDraw.Layer {
         RenderSystem.setShaderColor(1, 1, 1, 1);
 
         poseStack.popPose();
+    }
+
+    public static int calculateGradientColor(float rate) {
+        float clampedRate = Mth.clamp(rate, 0.795f, 1.0f);
+        float normalized = (clampedRate - 0.795f) / (1.0f - 0.795f);
+
+        int red = 255;
+        int green = (int) (255 * (1 - normalized));
+        int blue = (int) (255 * (1 - normalized));
+
+        return (red << 16) | (green << 8) | blue;
     }
 }
