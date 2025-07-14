@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.client.overlay;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.ClickHandler;
 import com.atsuishio.superbwarfare.client.RenderHelper;
+import com.atsuishio.superbwarfare.config.client.DisplayConfig;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
@@ -28,6 +29,8 @@ public class HeatBarOverlay implements IGuiOverlay {
 
     @Override
     public void render(ForgeGui gui, GuiGraphics guiGraphics, float partialTick, int screenWidth, int screenHeight) {
+        if (!DisplayConfig.ENABLE_HEAT_BAR_HUD.get()) return;
+
         Player player = gui.getMinecraft().player;
         if (player == null) return;
         if (ClickHandler.isEditing) return;
@@ -55,8 +58,8 @@ public class HeatBarOverlay implements IGuiOverlay {
         int i = (screenWidth - width) / 2;
         int j = (screenHeight - height) / 2;
 
-        float posX = i + 64;
-        float posY = j + 6;
+        float posX = i + 64 + DisplayConfig.HEAT_BAR_HUD_X_OFFSET.get();
+        float posY = j + 6 + DisplayConfig.HEAT_BAR_HUD_Y_OFFSET.get();
 
         RenderHelper.preciseBlit(guiGraphics, TEXTURE, posX, posY, 0, 0, 37 / 4f, 233 / 4f, width, height);
 

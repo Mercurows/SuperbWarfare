@@ -38,6 +38,32 @@ public class DisplayClothConfig {
         );
 
         category.addEntry(entryBuilder
+                .startBooleanToggle(Component.translatable("config.superbwarfare.client.display.enable_heat_bar_hud"), DisplayConfig.ENABLE_HEAT_BAR_HUD.get())
+                .setDefaultValue(true)
+                .setSaveConsumer(DisplayConfig.ENABLE_HEAT_BAR_HUD::set)
+                .setTooltip(Component.translatable("config.superbwarfare.client.display.enable_heat_bar_hud.des"))
+                .build()
+        );
+
+        category.addEntry(entryBuilder
+                .startIntSlider(Component.translatable("config.superbwarfare.client.display.heat_bar_hud_x_offset"), DisplayConfig.HEAT_BAR_HUD_X_OFFSET.get(),
+                        -1000, 1000)
+                .setDefaultValue(0)
+                .setSaveConsumer(DisplayConfig.HEAT_BAR_HUD_X_OFFSET::set)
+                .setTooltip(Component.translatable("config.superbwarfare.client.display.heat_bar_hud_x_offset.des"))
+                .build()
+        );
+
+        category.addEntry(entryBuilder
+                .startIntSlider(Component.translatable("config.superbwarfare.client.display.heat_bar_hud_y_offset"), DisplayConfig.HEAT_BAR_HUD_Y_OFFSET.get(),
+                        -1000, 1000)
+                .setDefaultValue(0)
+                .setSaveConsumer(DisplayConfig.HEAT_BAR_HUD_Y_OFFSET::set)
+                .setTooltip(Component.translatable("config.superbwarfare.client.display.heat_bar_hud_y_offset.des"))
+                .build()
+        );
+
+        category.addEntry(entryBuilder
                 .startBooleanToggle(Component.translatable("config.superbwarfare.client.display.kill_indication"), DisplayConfig.KILL_INDICATION.get())
                 .setDefaultValue(true)
                 .setSaveConsumer(DisplayConfig.KILL_INDICATION::set)

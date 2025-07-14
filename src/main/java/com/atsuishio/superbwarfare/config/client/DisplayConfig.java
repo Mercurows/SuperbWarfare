@@ -7,6 +7,9 @@ public class DisplayConfig {
     public static ForgeConfigSpec.BooleanValue ENABLE_GUN_LOD;
     public static ForgeConfigSpec.IntValue WEAPON_HUD_X_OFFSET;
     public static ForgeConfigSpec.IntValue WEAPON_HUD_Y_OFFSET;
+    public static ForgeConfigSpec.BooleanValue ENABLE_HEAT_BAR_HUD;
+    public static ForgeConfigSpec.IntValue HEAT_BAR_HUD_X_OFFSET;
+    public static ForgeConfigSpec.IntValue HEAT_BAR_HUD_Y_OFFSET;
     public static ForgeConfigSpec.BooleanValue KILL_INDICATION;
     public static ForgeConfigSpec.BooleanValue AMMO_HUD;
     public static ForgeConfigSpec.BooleanValue VEHICLE_INFO;
@@ -31,6 +34,15 @@ public class DisplayConfig {
 
         builder.comment("The y offset of weapon hud");
         WEAPON_HUD_Y_OFFSET = builder.defineInRange("weapon_hud_y_offset", 0, -1000, 1000);
+
+        builder.comment("Set true to enable heat bar hud");
+        ENABLE_HEAT_BAR_HUD = builder.define("enable_heat_bar_hud", true);
+
+        builder.comment("The x offset of heat bar hud");
+        HEAT_BAR_HUD_X_OFFSET = builder.defineInRange("heat_bar_hud_x_offset", 0, -1000, 1000);
+
+        builder.comment("The y offset of heat bar hud");
+        HEAT_BAR_HUD_Y_OFFSET = builder.defineInRange("heat_bar_hud_y_offset", 0, -1000, 1000);
 
         builder.comment("Set true if you want to show kill indication while killing an entity");
         KILL_INDICATION = builder.define("kill_indication", true);
