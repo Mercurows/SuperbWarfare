@@ -113,7 +113,7 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
         super.defineSynchedData();
         var list = new IntArrayList();
         for (int i = 0; i < this.getContainerSize(); i++) {
-            list.add(0);
+            list.add(-1);
         }
 
         this.entityData.define(PITCH, 0f);
@@ -343,8 +343,8 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
         interactionTick *= 0.96;
 
         if (level() instanceof ServerLevel) {
-            entityData.set(SHOOT_PITCH, (float)VehicleEntity.getXRotFromVector(getShootVector(1)));
-            entityData.set(SHOOT_YAW, (float)-VehicleEntity.getYRotFromVector(getShootVector(1)));
+            entityData.set(SHOOT_PITCH, (float) VehicleEntity.getXRotFromVector(getShootVector(1)));
+            entityData.set(SHOOT_YAW, (float) -VehicleEntity.getYRotFromVector(getShootVector(1)));
         }
 
         this.refreshDimensions();
@@ -532,7 +532,11 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
     public void setChanged() {
         var list = new IntArrayList();
         for (var item : this.items) {
-            list.add(item.isEmpty() ? 0 : 1);
+            if (item.getItem() instanceof MediumRocketItem mediumRocketItem) {
+                list.add(mediumRocketItem.type.ordinal());
+            } else {
+                list.add(-1);
+            }
         }
         this.entityData.set(LOADED_AMMO, list);
     }
