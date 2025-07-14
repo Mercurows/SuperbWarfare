@@ -66,12 +66,15 @@ public class JavelinHudOverlay implements LayeredDraw.Layer {
             var data = GunData.from(stack);
             var tag = data.tag();
 
+            poseStack.pushPose();
+
             RenderSystem.disableDepthTest();
             RenderSystem.depthMask(false);
             RenderSystem.enableBlend();
             RenderSystem.setShader(GameRenderer::getPositionTexShader);
             RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
             RenderSystem.setShaderColor(1, 1, 1, 1);
+
             float deltaFrame = Minecraft.getInstance().getTimer().getRealtimeDeltaTicks();
             float moveX = (float) (-32 * ClientEventHandler.turnRot[1] - (player.isSprinting() ? 100 : 67) * ClientEventHandler.movePosX + 3 * ClientEventHandler.cameraRot[2]);
             float moveY = (float) (-32 * ClientEventHandler.turnRot[0] + 100 * (float) ClientEventHandler.velocityY - (player.isSprinting() ? 100 : 67) * ClientEventHandler.movePosY - 12 * ClientEventHandler.firePos + 3 * ClientEventHandler.cameraRot[1]);
@@ -84,6 +87,7 @@ public class JavelinHudOverlay implements LayeredDraw.Layer {
             float l = ((h - j) / 2) + moveY;
             float i1 = k + i;
             float j1 = l + j;
+
             preciseBlit(guiGraphics, Mod.loc("textures/screens/javelin/javelin_hud.png"), k, l, 0, 0.0F, i, j, i, j);
             preciseBlit(guiGraphics, Mod.loc(tag.getBoolean("TopMode") ? "textures/screens/javelin/top.png" : "textures/screens/javelin/dir.png"), k, l, 0, 0.0F, i, j, i, j);
             preciseBlit(guiGraphics, Mod.loc(data.hasEnoughAmmoToShoot(player) ? "textures/screens/javelin/missile_green.png" : "textures/screens/javelin/missile_red.png"), k, l, 0, 0.0F, i, j, i, j);
@@ -99,12 +103,15 @@ public class JavelinHudOverlay implements LayeredDraw.Layer {
             RenderSystem.disableBlend();
             RenderSystem.setShaderColor(1, 1, 1, 1);
 
+            poseStack.popPose();
+
             float fovAdjust = (float) Minecraft.getInstance().options.fov().get() / 80;
 
             Entity targetEntity = EntityFindUtil.findEntity(player.level(), tag.getString("TargetEntity"));
             List<Entity> entities = SeekTool.seekLivingEntities(player, player.level(), 512, 8 * fovAdjust);
             Entity naerestEntity = SeekTool.seekLivingEntity(player, player.level(), 512, 6);
 
+            poseStack.pushPose();
             if (tag.getInt("GuideType") == 0) {
                 for (var e : entities) {
                     Vec3 pos = e.getBoundingBox().getCenter();
@@ -113,12 +120,10 @@ public class JavelinHudOverlay implements LayeredDraw.Layer {
                         boolean lockOn = tag.getInt("SeekTime") > 20 && e == targetEntity;
                         boolean nearest = e == naerestEntity;
 
-                        poseStack.pushPose();
                         float x = (float) point.x;
                         float y = (float) point.y;
 
                         RenderHelper.preciseBlit(guiGraphics, lockOn ? FRAME_LOCK : nearest ? FRAME_TARGET : FRAME, x - 12, y - 12, 24, 24, 0, 0, 24, 24, 24, 24);
-                        poseStack.popPose();
                     }
                 }
             } else {
@@ -127,12 +132,10 @@ public class JavelinHudOverlay implements LayeredDraw.Layer {
 
                 Vec3 point = VectorUtil.worldToScreen(pos, cameraPos);
                 if (point != null) {
-                    poseStack.pushPose();
                     float x = (float) point.x;
                     float y = (float) point.y;
 
                     RenderHelper.preciseBlit(guiGraphics, lockOn ? FRAME_LOCK : FRAME_TARGET, x - 12, y - 12, 24, 24, 0, 0, 24, 24, 24, 24);
-                    poseStack.popPose();
                 }
             }
             poseStack.popPose();
