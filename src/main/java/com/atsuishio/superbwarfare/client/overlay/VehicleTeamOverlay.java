@@ -103,7 +103,11 @@ public class VehicleTeamOverlay implements IGuiOverlay {
             List<Entity> entities = SeekTool.getPlayer(player, player.level());
             for (var e : entities) {
                 if (e != null) {
-                    Vec3 pos = new Vec3(Mth.lerp(partialTick,e.xo, e.getX()), Mth.lerp(partialTick,e.yo + e.getBbHeight() / 2, e.getY() + e.getBbHeight() / 2), Mth.lerp(partialTick,e.zo, e.getZ()));
+                    Entity team = e;
+                    if (e.getVehicle() != null) {
+                        team = e.getVehicle();
+                    }
+                    Vec3 pos = new Vec3(Mth.lerp(partialTick,team.xo, team.getX()), Mth.lerp(partialTick,team.yo + team.getBbHeight() / 2, team.getY() + team.getBbHeight() / 2), Mth.lerp(partialTick,team.zo, team.getZ()));
                     Vec3 point = VectorUtil.worldToScreen(pos, cameraPos);
                     if (point != null) {
                         float xf = (float) point.x;
