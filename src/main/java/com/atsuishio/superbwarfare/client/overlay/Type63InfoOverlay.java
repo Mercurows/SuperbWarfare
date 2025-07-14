@@ -4,7 +4,6 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.entity.vehicle.Type63Entity;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.item.FiringParameters;
-import com.atsuishio.superbwarfare.item.common.ammo.MediumRocketItem;
 import com.atsuishio.superbwarfare.tools.*;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.ChatFormatting;
@@ -32,6 +31,10 @@ import static com.atsuishio.superbwarfare.tools.RangeTool.calculateLaunchVector;
 public class Type63InfoOverlay implements IGuiOverlay {
 
     public static final String ID = Mod.MODID + "_type_63_info";
+
+    private static final ItemStack AP = new ItemStack(ModItems.MEDIUM_ROCKET_AP.get());
+    private static final ItemStack HE = new ItemStack(ModItems.MEDIUM_ROCKET_HE.get());
+    private static final ItemStack CM = new ItemStack(ModItems.MEDIUM_ROCKET_CM.get());
 
     @Override
     public void render(ForgeGui gui, GuiGraphics guiGraphics, float partialTick, int screenWidth, int screenHeight) {
@@ -62,9 +65,9 @@ public class Type63InfoOverlay implements IGuiOverlay {
                 int type = items.getInt(i);
 
                 ItemStack stack = switch (type) {
-                    case 0 -> new ItemStack(ModItems.MEDIUM_ROCKET_AP.get());
-                    case 1 -> new ItemStack(ModItems.MEDIUM_ROCKET_HE.get());
-                    case 2 -> new ItemStack(ModItems.MEDIUM_ROCKET_CM.get());
+                    case 0 -> AP;
+                    case 1 -> HE;
+                    case 2 -> CM;
                     default -> ItemStack.EMPTY;
                 };
 
@@ -75,16 +78,25 @@ public class Type63InfoOverlay implements IGuiOverlay {
                 poseStack.pushPose();
                 float x = (float) point.x;
                 float y = (float) point.y;
-                poseStack.translate(x, y, 0);
 
-                var component = Component.literal("[").append(stack.getHoverName()).append("]");
+                var component = stack.getHoverName();
 
-                if (!(stack.getItem() instanceof MediumRocketItem)) {
-                    component = Component.literal("[").append(Component.translatable("tips.superbwarfare.barrel_empty")).append("]");
+                if (stack.isEmpty()) {
+                    component = Component.translatable("tips.superbwarfare.barrel_empty");
+                    int width = Minecraft.getInstance().font.width(component);
+
+                    poseStack.translate(x - width / 2F, y, 0);
+                    guiGraphics.drawString(Minecraft.getInstance().font, component, 0, 0, -1, false);
+                } else {
+                    int width = Minecraft.getInstance().font.width(component) + 20;
+
+                    poseStack.pushPose();
+                    poseStack.translate(x - width / 2F, y, 0);
+                    guiGraphics.renderFakeItem(stack, 0, 0);
+
+                    poseStack.translate(20, 4, 0);
+                    guiGraphics.drawString(Minecraft.getInstance().font, component, 0, 0, -1, false);
                 }
-
-                int width = Minecraft.getInstance().font.width(component);
-                guiGraphics.drawString(Minecraft.getInstance().font, component, -width / 2, -4, -1, false);
 
                 poseStack.popPose();
             }
