@@ -110,8 +110,11 @@ public class LaserTowerEntity extends VehicleEntity implements GeoEntity, Ownabl
         } else {
             String s = compound.getString("Owner");
 
-            assert this.getServer() != null;
-            uuid = OldUsersConverter.convertMobOwnerIfNecessary(this.getServer(), s);
+            if (this.getServer() == null) {
+                uuid = UUID.fromString(s);
+            } else {
+                uuid = OldUsersConverter.convertMobOwnerIfNecessary(this.getServer(), s);
+            }
         }
 
         if (uuid != null) {
