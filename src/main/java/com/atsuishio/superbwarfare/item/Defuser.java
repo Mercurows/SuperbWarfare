@@ -55,7 +55,7 @@ public class Defuser extends Item {
             ).withStyle(ChatFormatting.GREEN), true);
         }
 
-        if (useTick >= C4Entity.DEFAULT_DEFUSE_PROGRESS) {
+        if (useTick >= C4Entity.DEFAULT_DEFUSE_PROGRESS && pLevel instanceof ServerLevel) {
             player.stopUsingItem();
             if (pLevel instanceof ServerLevel serverLevel) {
                 pStack.hurtAndBreak(1, serverLevel, player, p -> {
