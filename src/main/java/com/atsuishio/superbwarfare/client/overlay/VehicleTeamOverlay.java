@@ -53,7 +53,7 @@ public class VehicleTeamOverlay implements IGuiOverlay {
         boolean lookAtEntity = false;
 
         double entityRange = 0;
-        Entity lookingEntity = TraceTool.camerafFindLookingEntity(player, cameraPos, viewVec,512);
+        Entity lookingEntity = TraceTool.camerafFindLookingEntity(player, cameraPos, viewVec, 512);
 
         if (lookingEntity != null) {
             lookAtEntity = true;
@@ -61,7 +61,6 @@ public class VehicleTeamOverlay implements IGuiOverlay {
         }
 
         if (lookAtEntity && lookingEntity instanceof VehicleEntity vehicle) {
-
             Vec3 pos = lookingEntity.getBoundingBox().getCenter().add(new Vec3(0, lookingEntity.getBbHeight() / 2 + 1, 0));
             Vec3 point = VectorUtil.worldToScreen(pos);
 
@@ -106,7 +105,7 @@ public class VehicleTeamOverlay implements IGuiOverlay {
                     if (e.getVehicle() != null) {
                         team = e.getVehicle();
                     }
-                    Vec3 pos = new Vec3(Mth.lerp(partialTick,team.xo, team.getX()), Mth.lerp(partialTick,team.yo + team.getBbHeight() / 2, team.getY() + team.getBbHeight() / 2), Mth.lerp(partialTick,team.zo, team.getZ()));
+                    Vec3 pos = new Vec3(Mth.lerp(partialTick, team.xo, team.getX()), Mth.lerp(partialTick, team.yo + team.getBbHeight() / 2, team.getY() + team.getBbHeight() / 2), Mth.lerp(partialTick, team.zo, team.getZ()));
                     Vec3 point = VectorUtil.worldToScreen(pos);
                     float xf = (float) point.x;
                     float yf = (float) point.y;
