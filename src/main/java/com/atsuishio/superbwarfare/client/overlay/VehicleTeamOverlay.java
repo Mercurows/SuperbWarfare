@@ -5,10 +5,7 @@ import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.config.client.DisplayConfig;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.ModItems;
-import com.atsuishio.superbwarfare.tools.FormatTool;
-import com.atsuishio.superbwarfare.tools.SeekTool;
-import com.atsuishio.superbwarfare.tools.TraceTool;
-import com.atsuishio.superbwarfare.tools.VectorUtil;
+import com.atsuishio.superbwarfare.tools.*;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
@@ -100,7 +97,7 @@ public class VehicleTeamOverlay implements IGuiOverlay {
         if (player.getVehicle() instanceof VehicleEntity) {
             List<Entity> entities = SeekTool.getPlayer(player, player.level());
             for (var e : entities) {
-                if (e != null && e != player) {
+                if (e != null && e != player && calculateAngle(e, camera) < VectorUtil.fov / 2) {
                     Entity team = e;
                     if (e.getVehicle() != null) {
                         team = e.getVehicle();
@@ -114,5 +111,11 @@ public class VehicleTeamOverlay implements IGuiOverlay {
                 }
             }
         }
+    }
+
+    public static double calculateAngle(Entity entityA, Camera camera) {
+        Vec3 v1 = camera.getPosition().vectorTo(entityA.position());
+        Vec3 v2 = new Vec3(camera.getLookVector());
+        return VectorTool.calculateAngle(v1,v2);
     }
 }
