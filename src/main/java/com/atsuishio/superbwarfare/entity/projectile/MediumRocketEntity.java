@@ -258,8 +258,7 @@ public class MediumRocketEntity extends FastThrowableProjectile implements GeoEn
         if (type == Type.CM && getDeltaMovement().y < 0.1 && !active) {
             if (position().y < level().getMinBuildHeight() || position().y > level().getMaxBuildHeight()) return;
 
-            BlockPos hitBlock = ProjectileCalculator.calculateImpactPosition(level(), position(), getDeltaMovement(), -0.05);
-            Vec3 finalPos = hitBlock.getCenter();
+            Vec3 finalPos = ProjectileCalculator.calculatePreciseImpactPoint(level(), position(), getDeltaMovement(), -0.05);
             double vh = getDeltaMovement().horizontalDistance();
             double dh = position().vectorTo(finalPos).horizontalDistance();
             int t = (int) (dh / vh);

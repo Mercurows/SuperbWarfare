@@ -1,146 +1,145 @@
 package com.atsuishio.superbwarfare.tools;
 
-import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 
+import java.util.Optional;
+
 public class ProjectileCalculator {
-    private static final double TIME_STEP = 0.1; // 时间步长（刻）
-    private static final int MAX_ITERATIONS = 1000; // 最大迭代次数
+    private static final double TIME_STEP = 0.05; // 时间步长（刻）
+    private static final int MAX_ITERATIONS = 2000; // 最大迭代次数
+    private static final double COLLISION_THRESHOLD = 0.001; // 碰撞检测阈值
 
     /**
-     * 计算炮弹落地位置
+     * 计算炮弹精确落点位置（Vec3）
      *
-     * @param world 世界对象
-     * @param startPos 发射点位置
-     * @param launchVector 发射向量
-     * @return 预测的落点方块位置
+     * @param level 世界对象
+     * @param startPos 发射点位置（Vec3）
+     * @param launchVector 发射向量（Vec3）
+     * @return 精确的落点位置（Vec3），如果没有碰撞则返回最后位置
      */
-    public static BlockPos calculateImpactPosition(Level world, Vec3 startPos, Vec3 launchVector, double gravity) {
-        // 当前炮弹位置和速度
+    public static Vec3 calculatePreciseImpactPoint(Level level, Vec3 startPos, Vec3 launchVector, double gravity) {
         Vec3 currentPos = startPos;
         Vec3 currentVelocity = launchVector;
-
-        // 记录上一刻位置
-        Vec3 prevPos = startPos;
+        Vec3 previousPos = startPos;
 
         for (int i = 0; i < MAX_ITERATIONS; i++) {
-            // 更新位置
+            // 计算下一个位置
             Vec3 nextPos = currentPos.add(
                     currentVelocity.x * TIME_STEP,
                     currentVelocity.y * TIME_STEP,
                     currentVelocity.z * TIME_STEP
             );
 
-            // 更新速度（重力影响）
+            // 应用重力
             currentVelocity = currentVelocity.add(0, gravity * TIME_STEP, 0);
 
-            // 检查是否碰撞方块
-            BlockPos collisionPos = checkCollision(world, prevPos, nextPos);
-            if (collisionPos != null) {
-                return collisionPos;
+            // 检查碰撞
+            Optional<Vec3> collisionPoint = checkCollision(level, previousPos, nextPos);
+
+            if (collisionPoint.isPresent()) {
+                // 精确计算碰撞点
+                return refineCollisionPoint(level, previousPos, collisionPoint.get());
             }
 
-            // 更新位置进行下一步
-            prevPos = currentPos;
+            // 边界检查
+            if (nextPos.y < level.getMinBuildHeight()) {
+                return new Vec3(nextPos.x, level.getMinBuildHeight(), nextPos.z);
+            }
+
+            // 更新位置
+            previousPos = currentPos;
+            currentPos = nextPos;
+        }
+
+        // 超过最大迭代次数，返回最后位置
+        return currentPos;
+    }
+
+    /**
+     * 检查两点之间是否有碰撞
+     */
+    private static Optional<Vec3> checkCollision(Level level, Vec3 start, Vec3 end) {
+        // 使用Minecraft内置的光线追踪进行碰撞检测
+        BlockHitResult hitResult = level.clip(new ClipContext(
+                start,
+                end,
+                ClipContext.Block.COLLIDER, // 只检测碰撞方块
+                ClipContext.Fluid.NONE, // 忽略流体
+                null // 无实体
+        ));
+
+        // 如果检测到碰撞，返回碰撞点
+        if (hitResult.getType() == HitResult.Type.BLOCK) {
+            return Optional.of(hitResult.getLocation());
+        }
+
+        // 没有检测到碰撞
+        return Optional.empty();
+    }
+
+    /**
+     * 精确计算碰撞点（使用二分法提高精度）
+     */
+    private static Vec3 refineCollisionPoint(Level level, Vec3 safePoint, Vec3 collisionPoint) {
+        Vec3 low = safePoint;
+        Vec3 high = collisionPoint;
+        Vec3 bestPoint = collisionPoint;
+
+        // 二分法迭代提高精度
+        for (int i = 0; i < 10; i++) {
+            Vec3 mid = low.add(high.subtract(low).scale(0.5));
+
+            // 检查从安全点到中点是否有碰撞
+            Optional<Vec3> collision = checkCollision(level, low, mid);
+
+            if (collision.isPresent()) {
+                // 有碰撞，将高点移动到中点
+                high = mid;
+                bestPoint = collision.get();
+            } else {
+                // 无碰撞，将低点移动到中点
+                low = mid;
+            }
+        }
+
+        return bestPoint;
+    }
+
+    /**
+     * 可视化炮弹轨迹（用于调试）
+     */
+    public static void visualizeTrajectory(Level level, Vec3 startPos, Vec3 launchVector, double gravity) {
+        if (!level.isClientSide()) return;
+
+        Vec3 currentPos = startPos;
+        Vec3 currentVelocity = launchVector;
+
+        for (int i = 0; i < 100; i++) {
+            Vec3 nextPos = currentPos.add(
+                    currentVelocity.x * 0.5,
+                    currentVelocity.y * 0.5,
+                    currentVelocity.z * 0.5
+            );
+
+            // 创建粒子效果显示轨迹
+            for (double d = 0; d < 1.0; d += 0.1) {
+                Vec3 point = currentPos.add(nextPos.subtract(currentPos).scale(d));
+                level.addParticle(ParticleTypes.ELECTRIC_SPARK,
+                        point.x, point.y, point.z,
+                        0, 0, 0);
+            }
+
+            // 应用重力
+            currentVelocity = currentVelocity.add(0, gravity * 0.5, 0);
             currentPos = nextPos;
 
-            // 安全检查：防止飞出世界边界
-            if (currentPos.y < world.getMinBuildHeight() || currentPos.y > world.getMaxBuildHeight()) {
-                return new BlockPos(
-                        (int)Math.floor(currentPos.x),
-                        (int)Math.floor(currentPos.y),
-                        (int)Math.floor(currentPos.z)
-                );
-            }
+            // 提前终止检查
+            if (currentPos.y < level.getMinBuildHeight()) break;
         }
-
-        // 超过最大迭代次数，返回当前位置
-        return new BlockPos(
-                (int)Math.floor(currentPos.x),
-                (int)Math.floor(currentPos.y),
-                (int)Math.floor(currentPos.z)
-        );
-    }
-
-    /**
-     * 检查两点之间是否有碰撞方块
-     */
-    private static BlockPos checkCollision(Level world, Vec3 start, Vec3 end) {
-        // 使用距离和方向向量
-        double dx = end.x - start.x;
-        double dy = end.y - start.y;
-        double dz = end.z - start.z;
-        double distance = Math.sqrt(dx*dx + dy*dy + dz*dz);
-
-        if (distance == 0) return null;
-
-        // 方向单位向量
-        double dirX = dx / distance;
-        double dirY = dy / distance;
-        double dirZ = dz / distance;
-
-        // 步进检查
-        double stepSize = 0.1; // 检查步长
-        for (double t = 0; t < distance; t += stepSize) {
-            double x = start.x + dirX * t;
-            double y = start.y + dirY * t;
-            double z = start.z + dirZ * t;
-
-            BlockPos pos = new BlockPos((int)Math.floor(x), (int)Math.floor(y), (int)Math.floor(z));
-            BlockState state = world.getBlockState(pos);
-
-            // 检查是否碰到固体方块
-            if (!state.isAir()) {
-                return pos;
-            }
-
-            // 检查是否碰到下方方块（炮弹落地）
-            BlockPos belowPos = pos.below();
-            BlockState belowState = world.getBlockState(belowPos);
-
-            if (y - Math.floor(y) < 0.1 && !belowState.isAir()) {
-                return belowPos;
-            }
-        }
-
-        return null;
-    }
-
-
-    /**
-     * 快速预测落点（不考虑地形，仅数学计算）
-     * 用于平坦地形或初始估算
-     */
-    public static Vec3 estimateLandingPosition(Vec3 startPos, Vec3 launchVector, double gravity) {
-        double vx = launchVector.x;
-        double vy = launchVector.y;
-        double vz = launchVector.z;
-
-        // 计算飞行时间 (解二次方程: y = y0 + vy*t + 0.5*g*t² = 0)
-        double a = 0.5 * gravity;
-        double b = vy;
-        double c = startPos.y; // 假设地面高度为0
-
-        // 计算判别式
-        double discriminant = b*b - 4*a*c;
-
-        if (discriminant < 0) {
-            // 无实数解，炮弹不会落地
-            return null;
-        }
-
-        // 取正数解
-        double t = (-b + Math.sqrt(discriminant)) / (2*a);
-        if (t < 0) {
-            t = (-b - Math.sqrt(discriminant)) / (2*a);
-        }
-
-        // 计算落点
-        double x = startPos.x + vx * t;
-        double z = startPos.z + vz * t;
-
-        return new Vec3(x, 0, z);
     }
 }

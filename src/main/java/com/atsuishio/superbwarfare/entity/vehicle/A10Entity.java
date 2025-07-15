@@ -288,7 +288,7 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
 
         //  计算航弹落点
         if (level().isClientSide) {
-            bombLandingPos = ProjectileCalculator.calculateImpactPosition(level(), shootPos(1), shootVec(1), -0.06).getCenter();
+            bombLandingPos = ProjectileCalculator.calculatePreciseImpactPoint(level(), shootPos(1), shootVec(1), -0.06);
         }
 
         this.refreshDimensions();
