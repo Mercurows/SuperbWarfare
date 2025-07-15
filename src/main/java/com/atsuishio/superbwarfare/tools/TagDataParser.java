@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.tools;
 
+import com.atsuishio.superbwarfare.Mod;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.nbt.*;
@@ -28,9 +29,13 @@ public class TagDataParser {
         if (object == null) return tag;
 
         for (var d : object.entrySet()) {
-            var parsed = parse(d.getValue(), tagModifier);
-            if (parsed == null) continue;
-            tag.put(d.getKey(), parsed);
+            try {
+                var parsed = parse(d.getValue(), tagModifier);
+                if (parsed == null) continue;
+                tag.put(d.getKey(), parsed);
+            } catch (Exception e) {
+                Mod.LOGGER.error("Failed to parse tag {}: {}", d.getKey(), e);
+            }
         }
 
         return tag;
@@ -48,9 +53,13 @@ public class TagDataParser {
             // 递归处理嵌套内容
             var tag = new CompoundTag();
             for (var d : object.getAsJsonObject().entrySet()) {
-                var parsed = parse(d.getValue(), tagModifier);
-                if (parsed == null) continue;
-                tag.put(d.getKey(), parsed);
+                try {
+                    var parsed = parse(d.getValue(), tagModifier);
+                    if (parsed == null) continue;
+                    tag.put(d.getKey(), parsed);
+                } catch (Exception e) {
+                    Mod.LOGGER.error("Failed to parse tag {}: {}", d.getKey(), e);
+                }
             }
             return tag;
         } else if (object.isJsonArray()) {

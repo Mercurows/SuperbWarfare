@@ -413,7 +413,17 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
                     var rotation = attachmentData.rotation();
 
                     if (attachmentData.displayData() != null) {
-                        this.entityData.set(DISPLAY_ENTITY_TAG, TagDataParser.parse(attachmentData.displayData()));
+                        this.entityData.set(DISPLAY_ENTITY_TAG, TagDataParser.parse(attachmentData.displayData(), name -> {
+                            var uuid = player.getUUID();
+                            return switch (name) {
+                                case "@sbw:owner" -> NbtUtils.createUUID(uuid);
+                                case "@sbw:owner_string_lower" ->
+                                        StringTag.valueOf(uuid.toString().replace("-", "").toLowerCase(Locale.ENGLISH));
+                                case "@sbw:owner_string_upper" ->
+                                        StringTag.valueOf(uuid.toString().replace("-", "").toUpperCase(Locale.ENGLISH));
+                                default -> StringTag.valueOf(name);
+                            };
+                        }));
                     }
 
                     this.entityData.set(DISPLAY_DATA, List.of(
