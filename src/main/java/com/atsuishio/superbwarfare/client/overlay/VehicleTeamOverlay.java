@@ -105,7 +105,7 @@ public class VehicleTeamOverlay implements LayeredDraw.Layer {
         if (player.getVehicle() instanceof VehicleEntity) {
             List<Entity> entities = SeekTool.getPlayer(player, player.level());
             for (var e : entities) {
-                if (e != null && e != player && calculateAngle(e, camera) < VectorUtil.fov / 2) {
+                if (e != null && e != player && calculateAngle(e, camera) < VectorUtil.fov) {
                     Entity team = e;
                     if (e.getVehicle() != null) {
                         team = e.getVehicle();
