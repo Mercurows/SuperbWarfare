@@ -47,7 +47,6 @@ public class HandsomeFrameOverlay implements LayeredDraw.Layer {
         Player player = Minecraft.getInstance().player;
         PoseStack poseStack = guiGraphics.pose();
         Camera camera = Minecraft.getInstance().gameRenderer.getMainCamera();
-        Vec3 cameraPos = camera.getPosition();
 
         if (player == null) return;
         ItemStack stack = player.getMainHandItem();
@@ -78,8 +77,7 @@ public class HandsomeFrameOverlay implements LayeredDraw.Layer {
 
             for (var e : allEntities) {
                 Vec3 pos = new Vec3(Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), e.xo, e.getX()), Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), e.yo + e.getEyeHeight(), e.getEyeY()), Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), e.zo, e.getZ()));
-                Vec3 point = VectorUtil.worldToScreen(pos, cameraPos);
-                if (point == null) return;
+                Vec3 point = VectorUtil.worldToScreen(pos);
 
                 boolean lockOn = e == targetEntity;
                 boolean isNearestEntity = e == naerestEntity;

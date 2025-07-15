@@ -52,7 +52,6 @@ public class JavelinHudOverlay implements LayeredDraw.Layer {
         Player player = Minecraft.getInstance().player;
         PoseStack poseStack = guiGraphics.pose();
         Camera camera = Minecraft.getInstance().gameRenderer.getMainCamera();
-        Vec3 cameraPos = camera.getPosition();
 
         if (player == null) return;
         ItemStack stack = player.getMainHandItem();
@@ -115,28 +114,24 @@ public class JavelinHudOverlay implements LayeredDraw.Layer {
             if (tag.getInt("GuideType") == 0) {
                 for (var e : entities) {
                     Vec3 pos = e.getBoundingBox().getCenter();
-                    Vec3 point = VectorUtil.worldToScreen(pos, cameraPos);
-                    if (point != null) {
-                        boolean lockOn = tag.getInt("SeekTime") > 20 && e == targetEntity;
-                        boolean nearest = e == naerestEntity;
+                    Vec3 point = VectorUtil.worldToScreen(pos);
+                    boolean lockOn = tag.getInt("SeekTime") > 20 && e == targetEntity;
+                    boolean nearest = e == naerestEntity;
 
-                        float x = (float) point.x;
-                        float y = (float) point.y;
+                    float x = (float) point.x;
+                    float y = (float) point.y;
 
-                        RenderHelper.preciseBlit(guiGraphics, lockOn ? FRAME_LOCK : nearest ? FRAME_TARGET : FRAME, x - 12, y - 12, 24, 24, 0, 0, 24, 24, 24, 24);
-                    }
+                    RenderHelper.preciseBlit(guiGraphics, lockOn ? FRAME_LOCK : nearest ? FRAME_TARGET : FRAME, x - 12, y - 12, 24, 24, 0, 0, 24, 24, 24, 24);
                 }
             } else {
                 Vec3 pos = new Vec3(tag.getDouble("TargetPosX"), tag.getDouble("TargetPosY"), tag.getDouble("TargetPosZ"));
                 boolean lockOn = tag.getInt("SeekTime") > 20;
 
-                Vec3 point = VectorUtil.worldToScreen(pos, cameraPos);
-                if (point != null) {
-                    float x = (float) point.x;
-                    float y = (float) point.y;
+                Vec3 point = VectorUtil.worldToScreen(pos);
+                float x = (float) point.x;
+                float y = (float) point.y;
 
-                    RenderHelper.preciseBlit(guiGraphics, lockOn ? FRAME_LOCK : FRAME_TARGET, x - 12, y - 12, 24, 24, 0, 0, 24, 24, 24, 24);
-                }
+                RenderHelper.preciseBlit(guiGraphics, lockOn ? FRAME_LOCK : FRAME_TARGET, x - 12, y - 12, 24, 24, 0, 0, 24, 24, 24, 24);
             }
             poseStack.popPose();
         } else {

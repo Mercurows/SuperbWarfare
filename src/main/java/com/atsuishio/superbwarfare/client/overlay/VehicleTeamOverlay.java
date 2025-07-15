@@ -39,8 +39,6 @@ public class VehicleTeamOverlay implements LayeredDraw.Layer {
     public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
         if (!DisplayConfig.VEHICLE_INFO.get()) return;
 
-        int w = guiGraphics.guiWidth();
-        int h = guiGraphics.guiHeight();
         Minecraft mc = Minecraft.getInstance();
         Player player = mc.player;
         Camera camera = mc.gameRenderer.getMainCamera();
@@ -66,8 +64,7 @@ public class VehicleTeamOverlay implements LayeredDraw.Layer {
         if (lookAtEntity && lookingEntity instanceof VehicleEntity vehicle) {
 
             Vec3 pos = lookingEntity.getBoundingBox().getCenter().add(new Vec3(0, lookingEntity.getBbHeight() / 2 + 1, 0));
-            Vec3 point = VectorUtil.worldToScreen(pos, cameraPos);
-            if (point == null) return;
+            Vec3 point = VectorUtil.worldToScreen(pos);
 
             float x = (float) point.x;
             float y = (float) point.y;
@@ -115,13 +112,11 @@ public class VehicleTeamOverlay implements LayeredDraw.Layer {
                         team = e.getVehicle();
                     }
                     Vec3 pos = new Vec3(Mth.lerp(partialTick, team.xo, team.getX()), Mth.lerp(partialTick, team.yo + team.getBbHeight() / 2, team.getY() + team.getBbHeight() / 2), Mth.lerp(partialTick, team.zo, team.getZ()));
-                    Vec3 point = VectorUtil.worldToScreen(pos, cameraPos);
-                    if (point != null) {
-                        float xf = (float) point.x;
-                        float yf = (float) point.y;
+                    Vec3 point = VectorUtil.worldToScreen(pos);
+                    float xf = (float) point.x;
+                    float yf = (float) point.y;
 
-                        preciseBlit(guiGraphics, FRIENDLY_INDICATOR, Mth.clamp(xf - 6, 0, screenWidth - 12), Mth.clamp(yf - 6, 0, screenHeight - 12), 0, 0, 12, 12, 12, 12);
-                    }
+                    preciseBlit(guiGraphics, FRIENDLY_INDICATOR, Mth.clamp(xf - 6, 0, screenWidth - 12), Mth.clamp(yf - 6, 0, screenHeight - 12), 0, 0, 12, 12, 12, 12);
                 }
             }
         }

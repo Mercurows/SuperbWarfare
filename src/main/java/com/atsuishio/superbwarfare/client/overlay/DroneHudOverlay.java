@@ -163,15 +163,13 @@ public class DroneHudOverlay implements LayeredDraw.Layer {
                 List<Entity> entities = SeekTool.seekLivingEntities(entity, entity.level(), 256, 30);
                 for (var e : entities) {
                     Vec3 pos = new Vec3(Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), e.xo, e.getX()), Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), e.yo + e.getEyeHeight(), e.getEyeY()), Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), e.zo, e.getZ()));
-                    Vec3 point = VectorUtil.worldToScreen(pos, cameraPos);
-                    if (point != null) {
-                        poseStack.pushPose();
-                        float x = (float) point.x;
-                        float y = (float) point.y;
+                    Vec3 point = VectorUtil.worldToScreen(pos);
+                    poseStack.pushPose();
+                    float x = (float) point.x;
+                    float y = (float) point.y;
 
-                        RenderHelper.preciseBlit(guiGraphics, FRAME, x - 12, y - 12, 24, 24, 0, 0, 24, 24, 24, 24);
-                        poseStack.popPose();
-                    }
+                    RenderHelper.preciseBlit(guiGraphics, FRAME, x - 12, y - 12, 24, 24, 0, 0, 24, 24, 24, 24);
+                    poseStack.popPose();
                 }
             }
 
@@ -200,12 +198,10 @@ public class DroneHudOverlay implements LayeredDraw.Layer {
 
                 // 标记位置
                 Vec3 pos = new Vec3(targetX, targetY, targetZ);
-                Vec3 point = VectorUtil.worldToScreen(pos, cameraPos);
-                if (point != null) {
-                    float x = (float) point.x;
-                    float y = (float) point.y;
-                    preciseBlit(guiGraphics, INDICATOR, Mth.clamp(x - 6, 0, w - 12), Mth.clamp(y - 6, 0, h - 12), 0, 0, 12, 12, 12, 12);
-                }
+                Vec3 point = VectorUtil.worldToScreen(pos);
+                float x = (float) point.x;
+                float y = (float) point.y;
+                preciseBlit(guiGraphics, INDICATOR, Mth.clamp(x - 6, 0, w - 12), Mth.clamp(y - 6, 0, h - 12), 0, 0, 12, 12, 12, 12);
 
                 // 火炮位置
 
@@ -216,13 +212,11 @@ public class DroneHudOverlay implements LayeredDraw.Layer {
                         Entity e = EntityFindUtil.findEntity(player.level(), t.getString("UUID"));
                         if (e != null) {
                             Vec3 posF = e.getBoundingBox().getCenter();
-                            Vec3 pointF = VectorUtil.worldToScreen(posF, cameraPos);
-                            if (pointF != null) {
-                                float xf = (float) pointF.x;
-                                float yf = (float) pointF.y;
+                            Vec3 pointF = VectorUtil.worldToScreen(posF);
+                            float xf = (float) pointF.x;
+                            float yf = (float) pointF.y;
 
-                                preciseBlit(guiGraphics, FRIENDLY_INDICATOR, Mth.clamp(xf - 6, 0, w - 12), Mth.clamp(yf - 6, 0, h - 12), 0, 0, 12, 12, 12, 12);
-                            }
+                            preciseBlit(guiGraphics, FRIENDLY_INDICATOR, Mth.clamp(xf - 6, 0, w - 12), Mth.clamp(yf - 6, 0, h - 12), 0, 0, 12, 12, 12, 12);
                         }
                     }
                 }

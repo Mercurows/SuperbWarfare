@@ -19,39 +19,38 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ViewportEvent;
 import org.joml.Matrix4f;
-import org.joml.Vector3f;
+import org.joml.Vector4f;
 
 @EventBusSubscriber(Dist.CLIENT)
 public class VectorUtil {
 
-    /**
-     * Codes based on @Xjqsh
-     */
-    private static PoseStack cachedPoseStack = new PoseStack();
     public static double fov = 70;
 
-    public static Vec3 worldToScreen(Vec3 pos, Vec3 cameraPos) {
-        Minecraft mc = Minecraft.getInstance();
+    public static Matrix4f modelViewMatrix;
+    public static Matrix4f projectionMatrix;
 
-        Matrix4f matrix4f = cachedPoseStack.last().pose();
-        var projectionMatrix = mc.gameRenderer.getProjectionMatrix(fov);
+    // 感谢 Minecraft-Ping-Wheel 开源
+    // https://github.com/LukenSkyne/Minecraft-Ping-Wheel/blob/ede72b18f57bd9dfe55ef44afe61190421fbc084/common/src/main/java/nx/pingwheel/common/helper/MathUtils.java#L15
+    public static Vec3 worldToScreen(Vec3 pos) {
+        var mc = Minecraft.getInstance();
+        var window = mc.getWindow();
+        var camera = mc.gameRenderer.getMainCamera();
 
-        Vector3f relativePos = pos.subtract(cameraPos).toVector3f();
+        var worldPosRel = new Vector4f(camera.getPosition().reverse().add(pos).toVector3f(), 1f);
+        worldPosRel.mul(modelViewMatrix);
+        worldPosRel.mul(projectionMatrix);
 
-        Vector3f transformedPos = projectionMatrix.mul(matrix4f).transformProject(
-                relativePos.x,
-                relativePos.y,
-                relativePos.z,
-                new Vector3f()
+        var depth = worldPosRel.w;
+
+        if (depth != 0) {
+            worldPosRel.div(depth);
+        }
+
+        return new Vec3(
+                window.getGuiScaledWidth() * (0.5f + worldPosRel.x * 0.5f),
+                window.getGuiScaledHeight() * (0.5f - worldPosRel.y * 0.5f),
+                depth
         );
-
-        double scaleFactor = mc.getWindow().getGuiScale();
-        float guiScaleMul = 0.5f / (float) scaleFactor;
-
-        Vector3f screenPos = transformedPos.mul(1.0F, -1.0F, 1.0F).add(1.0F, 1.0F, 0.0F)
-                .mul(guiScaleMul * mc.getWindow().getWidth(), guiScaleMul * mc.getWindow().getHeight(), 1.0F);
-
-        return transformedPos.z < 1.0f ? new Vec3(screenPos.x, screenPos.y, transformedPos.z) : null;
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
@@ -97,6 +96,5 @@ public class VectorUtil {
         poseStack.mulPose(Axis.XP.rotationDegrees(event.getPitch()));
         poseStack.mulPose(Axis.YP.rotationDegrees(event.getYaw() + 180.0F));
 
-        cachedPoseStack = poseStack;
     }
 }

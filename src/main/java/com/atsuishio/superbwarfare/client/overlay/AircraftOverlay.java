@@ -87,8 +87,8 @@ public class AircraftOverlay implements LayeredDraw.Layer {
             Vec3 pos = cameraPos.add(mobileVehicle.getViewVector(partialTick).scale(192));
             Vec3 posCross = aircraftEntity.shootPos(partialTick).add(aircraftEntity.shootVec(partialTick).scale(192));
 
-            Vec3 p = VectorUtil.worldToScreen(pos, cameraPos);
-            Vec3 pCross = VectorUtil.worldToScreen(posCross, cameraPos);
+            Vec3 p = VectorUtil.worldToScreen(pos);
+            Vec3 pCross = VectorUtil.worldToScreen(posCross);
 
             // 投弹准星
             if (mobileVehicle instanceof A10Entity a10Entity && weaponVehicle.getWeaponIndex(0) == 2 && (zoomVehicle || mc.options.getCameraType() != CameraType.FIRST_PERSON)) {
@@ -96,9 +96,9 @@ public class AircraftOverlay implements LayeredDraw.Layer {
                 Vec3 p1 = a10Entity.bombLandingPos;
                 if (p0 != null && p1 != null) {
                     Vec3 bombCross = p0.lerp(p1, partialTick);
-                    pCross = VectorUtil.worldToScreen(bombCross, cameraPos);
+                    pCross = VectorUtil.worldToScreen(bombCross);
 
-                    if (pCross != null && zoomVehicle) {
+                    if (zoomVehicle) {
                         float f = (float) Math.min(screenWidth, screenHeight);
                         float f1 = Math.min((float) screenWidth / f, (float) screenHeight / f);
                         int i = Mth.floor(f * f1);
@@ -126,7 +126,7 @@ public class AircraftOverlay implements LayeredDraw.Layer {
 
             }
 
-            if (p != null) {
+            {
                 poseStack.pushPose();
                 float x = (float) p.x;
                 float y = (float) p.y;
@@ -243,7 +243,7 @@ public class AircraftOverlay implements LayeredDraw.Layer {
             }
 
             // 准星
-            if (pCross != null) {
+            {
                 poseStack.pushPose();
                 float x = (float) pCross.x;
                 float y = (float) pCross.y;
@@ -301,30 +301,28 @@ public class AircraftOverlay implements LayeredDraw.Layer {
 
                 for (var e : entities) {
                     Vec3 pos3 = new Vec3(Mth.lerp(partialTick, e.xo, e.getX()), Mth.lerp(partialTick, e.yo + e.getEyeHeight(), e.getEyeY()), Mth.lerp(partialTick, e.zo, e.getZ()));
-                    Vec3 point = VectorUtil.worldToScreen(pos3, cameraPos);
-                    if (point != null) {
-                        boolean nearest = e == targetEntity;
-                        boolean lockOn = a10Entity.locked && nearest;
+                    Vec3 point = VectorUtil.worldToScreen(pos3);
+                    boolean nearest = e == targetEntity;
+                    boolean lockOn = a10Entity.locked && nearest;
 
-                        poseStack.pushPose();
-                        float x = (float) point.x;
-                        float y = (float) point.y;
+                    poseStack.pushPose();
+                    float x = (float) point.x;
+                    float y = (float) point.y;
 
-                        if (lockOn) {
-                            RenderHelper.preciseBlit(guiGraphics, FRAME_LOCK, x - 12, y - 12, 24, 24, 0, 0, 24, 24, 24, 24);
-                        } else if (nearest) {
-                            lerpLock = Mth.lerp(partialTick, lerpLock, 2 * a10Entity.lockTime);
-                            float lockTime = Mth.clamp(20 - lerpLock, 0, 20);
-                            RenderHelper.preciseBlit(guiGraphics, IND_1, x - 12, y - 12 - lockTime, 24, 24, 0, 0, 24, 24, 24, 24);
-                            RenderHelper.preciseBlit(guiGraphics, IND_2, x - 12, y - 12 + lockTime, 24, 24, 0, 0, 24, 24, 24, 24);
-                            RenderHelper.preciseBlit(guiGraphics, IND_3, x - 12 - lockTime, y - 12, 24, 24, 0, 0, 24, 24, 24, 24);
-                            RenderHelper.preciseBlit(guiGraphics, IND_4, x - 12 + lockTime, y - 12, 24, 24, 0, 0, 24, 24, 24, 24);
-                            RenderHelper.preciseBlit(guiGraphics, FRAME_TARGET, x - 12, y - 12, 24, 24, 0, 0, 24, 24, 24, 24);
-                        } else {
-                            RenderHelper.preciseBlit(guiGraphics, FRAME, x - 12, y - 12, 24, 24, 0, 0, 24, 24, 24, 24);
-                        }
-                        poseStack.popPose();
+                    if (lockOn) {
+                        RenderHelper.preciseBlit(guiGraphics, FRAME_LOCK, x - 12, y - 12, 24, 24, 0, 0, 24, 24, 24, 24);
+                    } else if (nearest) {
+                        lerpLock = Mth.lerp(partialTick, lerpLock, 2 * a10Entity.lockTime);
+                        float lockTime = Mth.clamp(20 - lerpLock, 0, 20);
+                        RenderHelper.preciseBlit(guiGraphics, IND_1, x - 12, y - 12 - lockTime, 24, 24, 0, 0, 24, 24, 24, 24);
+                        RenderHelper.preciseBlit(guiGraphics, IND_2, x - 12, y - 12 + lockTime, 24, 24, 0, 0, 24, 24, 24, 24);
+                        RenderHelper.preciseBlit(guiGraphics, IND_3, x - 12 - lockTime, y - 12, 24, 24, 0, 0, 24, 24, 24, 24);
+                        RenderHelper.preciseBlit(guiGraphics, IND_4, x - 12 + lockTime, y - 12, 24, 24, 0, 0, 24, 24, 24, 24);
+                        RenderHelper.preciseBlit(guiGraphics, FRAME_TARGET, x - 12, y - 12, 24, 24, 0, 0, 24, 24, 24, 24);
+                    } else {
+                        RenderHelper.preciseBlit(guiGraphics, FRAME, x - 12, y - 12, 24, 24, 0, 0, 24, 24, 24, 24);
                     }
+                    poseStack.popPose();
                 }
             }
 

@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.tools;
 
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
@@ -70,7 +71,7 @@ public class ProjectileCalculator {
                 end,
                 ClipContext.Block.COLLIDER, // 只检测碰撞方块
                 ClipContext.Fluid.NONE, // 忽略流体
-                null // 无实体
+                (Entity) null // 无实体
         ));
 
         // 如果检测到碰撞，返回碰撞点

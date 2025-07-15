@@ -54,7 +54,6 @@ public class SpyglassRangeOverlay implements LayeredDraw.Layer {
         PoseStack poseStack = guiGraphics.pose();
         Player player = mc.player;
         Camera camera = mc.gameRenderer.getMainCamera();
-        Vec3 cameraPos = camera.getPosition();
         var screenWidth = guiGraphics.guiWidth();
         var screenHeight = guiGraphics.guiHeight();
 
@@ -98,12 +97,10 @@ public class SpyglassRangeOverlay implements LayeredDraw.Layer {
                 } else {
                     pos = Vec3.ZERO;
                 }
-                Vec3 point = VectorUtil.worldToScreen(pos, cameraPos);
-                if (point != null) {
-                    float x = (float) point.x;
-                    float y = (float) point.y;
-                    preciseBlit(guiGraphics, INDICATOR, Mth.clamp(x - 6, 0, screenWidth - 12), Mth.clamp(y - 6, 0, screenHeight - 12), 0, 0, 12, 12, 12, 12);
-                }
+                Vec3 point = VectorUtil.worldToScreen(pos);
+                float x = (float) point.x;
+                float y = (float) point.y;
+                preciseBlit(guiGraphics, INDICATOR, Mth.clamp(x - 6, 0, screenWidth - 12), Mth.clamp(y - 6, 0, screenHeight - 12), 0, 0, 12, 12, 12, 12);
 
                 // 火炮位置
 
@@ -113,13 +110,11 @@ public class SpyglassRangeOverlay implements LayeredDraw.Layer {
                     Entity entity = EntityFindUtil.findEntity(player.level(), tag.getString("UUID"));
                     if (entity != null) {
                         Vec3 posF = entity.getBoundingBox().getCenter();
-                        Vec3 pointF = VectorUtil.worldToScreen(posF, cameraPos);
-                        if (pointF != null) {
-                            float xf = (float) pointF.x;
-                            float yf = (float) pointF.y;
+                        Vec3 pointF = VectorUtil.worldToScreen(posF);
+                        float xf = (float) pointF.x;
+                        float yf = (float) pointF.y;
 
-                            preciseBlit(guiGraphics, FRIENDLY_INDICATOR, Mth.clamp(xf - 6, 0, screenWidth - 12), Mth.clamp(yf - 6, 0, screenHeight - 12), 0, 0, 12, 12, 12, 12);
-                        }
+                        preciseBlit(guiGraphics, FRIENDLY_INDICATOR, Mth.clamp(xf - 6, 0, screenWidth - 12), Mth.clamp(yf - 6, 0, screenHeight - 12), 0, 0, 12, 12, 12, 12);
                     }
                 }
 

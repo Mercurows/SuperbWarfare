@@ -8,7 +8,6 @@ import com.atsuishio.superbwarfare.item.FiringParameters;
 import com.atsuishio.superbwarfare.tools.*;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -44,8 +43,6 @@ public class Type63InfoOverlay implements LayeredDraw.Layer {
     public void render(GuiGraphics guiGraphics, @NotNull DeltaTracker deltaTracker) {
         Minecraft mc = Minecraft.getInstance();
         Player player = mc.player;
-        Camera camera = mc.gameRenderer.getMainCamera();
-        Vec3 cameraPos = camera.getPosition();
         PoseStack poseStack = guiGraphics.pose();
 
         if (player == null) return;
@@ -80,8 +77,7 @@ public class Type63InfoOverlay implements LayeredDraw.Layer {
                 };
 
                 Vec3 pos = new Vec3(type63Entity.barrel[i].center());
-                Vec3 point = VectorUtil.worldToScreen(pos, cameraPos);
-                if (point == null) return;
+                Vec3 point = VectorUtil.worldToScreen(pos);
 
                 poseStack.pushPose();
                 float x = (float) point.x;

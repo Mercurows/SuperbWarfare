@@ -51,8 +51,7 @@ public class RedTriangleOverlay implements LayeredDraw.Layer {
         if (idf == null) return;
         double distance = idf.position().distanceTo(cameraPos);
         Vec3 pos = new Vec3(Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), idf.xo, idf.getX()), Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), idf.yo + idf.getEyeHeight() + 0.5 + 0.07 * distance, idf.getEyeY() + 0.5 + 0.07 * distance), Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), idf.zo, idf.getZ()));
-        Vec3 point = VectorUtil.worldToScreen(pos, cameraPos);
-        if (point == null) return;
+        Vec3 point = VectorUtil.worldToScreen(pos);
 
         poseStack.pushPose();
         float x = (float) point.x;
