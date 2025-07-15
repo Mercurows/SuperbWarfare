@@ -129,12 +129,14 @@ public class HelicopterHudOverlay implements IGuiOverlay {
                             screenWidth / 2 - 42, screenHeight / 2 + 24, -65536, false);
                 }
 
-                if (mobileVehicle.getEnergy() < 0.02 * mobileVehicle.getMaxEnergy()) {
-                    guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("NO POWER!"),
-                            screenWidth / 2 - 144, screenHeight / 2 + 14, -65536, false);
-                } else if (mobileVehicle.getEnergy() < 0.2 * mobileVehicle.getMaxEnergy()) {
-                    guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("LOW POWER"),
-                            screenWidth / 2 - 144, screenHeight / 2 + 14, 0xFF6B00, false);
+                if (mobileVehicle.hasEnergyStorage()) {
+                    if (mobileVehicle.getEnergy() < 0.02 * mobileVehicle.getMaxEnergy()) {
+                        guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("NO POWER!"),
+                                screenWidth / 2 - 144, screenHeight / 2 + 14, -65536, false);
+                    } else if (mobileVehicle.getEnergy() < 0.2 * mobileVehicle.getMaxEnergy()) {
+                        guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("LOW POWER"),
+                                screenWidth / 2 - 144, screenHeight / 2 + 14, 0xFF6B00, false);
+                    }
                 }
 
             }

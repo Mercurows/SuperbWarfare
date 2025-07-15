@@ -78,20 +78,22 @@ public abstract class ContainerMobileVehicleEntity extends MobileVehicleEntity i
     public void baseTick() {
         super.baseTick();
 
-        for (var stack : this.getItemStacks()) {
-            int neededEnergy = this.getMaxEnergy() - this.getEnergy();
-            if (neededEnergy <= 0) break;
+        if (this.hasEnergyStorage() && this.tickCount % 20 == 0) {
+            for (var stack : this.getItemStacks()) {
+                int neededEnergy = this.getMaxEnergy() - this.getEnergy();
+                if (neededEnergy <= 0) break;
 
-            var energyCap = stack.getCapability(ForgeCapabilities.ENERGY).resolve();
-            if (energyCap.isEmpty()) continue;
+                var energyCap = stack.getCapability(ForgeCapabilities.ENERGY).resolve();
+                if (energyCap.isEmpty()) continue;
 
-            var energyStorage = energyCap.get();
-            var stored = energyStorage.getEnergyStored();
-            if (stored <= 0) continue;
+                var energyStorage = energyCap.get();
+                var stored = energyStorage.getEnergyStored();
+                if (stored <= 0) continue;
 
-            int energyToExtract = Math.min(stored, neededEnergy);
-            energyStorage.extractEnergy(energyToExtract, false);
-            this.setEnergy(this.getEnergy() + energyToExtract);
+                int energyToExtract = Math.min(stored, neededEnergy);
+                energyStorage.extractEnergy(energyToExtract, false);
+                this.setEnergy(this.getEnergy() + energyToExtract);
+            }
         }
         this.refreshDimensions();
     }

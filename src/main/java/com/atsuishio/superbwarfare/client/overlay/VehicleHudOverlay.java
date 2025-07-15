@@ -245,12 +245,14 @@ public class VehicleHudOverlay implements IGuiOverlay {
                         screenWidth / 2 + 160, screenHeight / 2 - 48, 0x66FF00, false);
 
                 // 低电量警告
-                if (mobileVehicle.getEnergy() < 0.02 * mobileVehicle.getMaxEnergy()) {
-                    guiGraphics.drawString(mc.font, Component.literal("NO POWER!"),
-                            screenWidth / 2 - 144, screenHeight / 2 + 14, -65536, false);
-                } else if (mobileVehicle.getEnergy() < 0.2 * mobileVehicle.getMaxEnergy()) {
-                    guiGraphics.drawString(mc.font, Component.literal("LOW POWER"),
-                            screenWidth / 2 - 144, screenHeight / 2 + 14, 0xFF6B00, false);
+                if (mobileVehicle.hasEnergyStorage()) {
+                    if (mobileVehicle.getEnergy() < 0.02 * mobileVehicle.getMaxEnergy()) {
+                        guiGraphics.drawString(mc.font, Component.literal("NO POWER!"),
+                                screenWidth / 2 - 144, screenHeight / 2 + 14, -65536, false);
+                    } else if (mobileVehicle.getEnergy() < 0.2 * mobileVehicle.getMaxEnergy()) {
+                        guiGraphics.drawString(mc.font, Component.literal("LOW POWER"),
+                                screenWidth / 2 - 144, screenHeight / 2 + 14, 0xFF6B00, false);
+                    }
                 }
 
                 // 测距
@@ -264,7 +266,7 @@ public class VehicleHudOverlay implements IGuiOverlay {
 
                 double entityRange = 0;
 
-                Entity lookingEntity = TraceTool.camerafFindLookingEntity(player, cameraPos, viewVec,512);
+                Entity lookingEntity = TraceTool.camerafFindLookingEntity(player, cameraPos, viewVec, 512);
                 if (lookingEntity != null) {
                     lookAtEntity = true;
                     entityRange = player.distanceTo(lookingEntity);
