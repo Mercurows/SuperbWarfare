@@ -104,7 +104,14 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
     @Override
     public void playerTouch(Player pPlayer) {
         if (pPlayer.position().distanceToSqr(position()) > 1.2) return;
-        super.playerTouch(pPlayer);
+        if (pPlayer.isCrouching() && !this.level().isClientSide) {
+            double entitySize = pPlayer.getBbWidth() * pPlayer.getBbHeight();
+            double thisSize = this.getBbWidth() * this.getBbHeight();
+            double f = Math.min(entitySize / thisSize, 2);
+            double f1 = Math.min(thisSize / entitySize, 4);
+            this.setDeltaMovement(this.getDeltaMovement().add(new Vec3(pPlayer.position().vectorTo(this.position()).toVector3f()).scale(0.22 * f * pPlayer.getDeltaMovement().length())));
+            pPlayer.setDeltaMovement(pPlayer.getDeltaMovement().add(new Vec3(this.position().vectorTo(pPlayer.position()).toVector3f()).scale(0.1 * f1 * pPlayer.getDeltaMovement().length())));
+        }
     }
 
     @Override
