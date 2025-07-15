@@ -70,8 +70,6 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
     public static final EntityDataAccessor<Vector3f> TARGET_POS = SynchedEntityData.defineId(Mk42Entity.class, EntityDataSerializers.VECTOR3);
     public static final EntityDataAccessor<Integer> RADIUS = SynchedEntityData.defineId(Mk42Entity.class, EntityDataSerializers.INT);
 
-    private final float shellGravity = 0.1f;
-
     public Mk42Entity(EntityType<Mk42Entity> type, Level world) {
         super(type, world);
     }
@@ -97,7 +95,7 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
                                 .explosionDamage(VehicleConfig.MK42_AP_EXPLOSION_DAMAGE.get())
                                 .explosionRadius(VehicleConfig.MK42_AP_EXPLOSION_RADIUS.get().floatValue())
                                 .durability(60)
-                                .gravity(shellGravity)
+                                .gravity(projectileGravity())
                                 .sound(ModSounds.CANNON_RELOAD.get())
                                 .icon(Mod.loc("textures/screens/vehicle_weapon/ap_shell.png")),
                         new CannonShellWeapon()
@@ -107,7 +105,7 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
                                 .durability(1)
                                 .fireProbability(0.18F)
                                 .fireTime(2)
-                                .gravity(shellGravity)
+                                .gravity(projectileGravity())
                                 .sound(ModSounds.CANNON_RELOAD.get())
                                 .icon(Mod.loc("textures/screens/vehicle_weapon/he_shell.png")),
                 }
@@ -182,69 +180,65 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
         }
 
         if (player.getMainHandItem().getItem() == ModItems.FIRING_PARAMETERS.get()) {
-            if (setTarget(player.getMainHandItem())) {
-                player.swing(InteractionHand.MAIN_HAND);
-                return InteractionResult.SUCCESS;
-            } else {
-                player.displayClientMessage(Component.translatable("tips.superbwarfare.mortar.warn", this.getDisplayName()).withStyle(ChatFormatting.RED), true);
-                return InteractionResult.FAIL;
-            }
+            setTarget(player.getMainHandItem(), player);
         }
         if (player.getOffhandItem().getItem() == ModItems.FIRING_PARAMETERS.get()) {
-            if (setTarget(player.getOffhandItem())) {
-                player.swing(InteractionHand.OFF_HAND);
-                return InteractionResult.SUCCESS;
-            } else {
-                player.displayClientMessage(Component.translatable("tips.superbwarfare.mortar.warn", this.getDisplayName()).withStyle(ChatFormatting.RED), true);
-                return InteractionResult.FAIL;
-            }
+            setTarget(player.getMainHandItem(), player);
         }
         return super.interact(player, hand);
     }
 
     @Override
-    public boolean setTarget(ItemStack stack) {
+    public void setTarget(ItemStack stack, Entity entity) {
         var parameters = stack.get(ModDataComponents.FIRING_PARAMETERS);
-        if (parameters == null) return false;
+        if (parameters == null) return;
 
         var pos = parameters.pos();
         int targetX = pos.getX();
         int targetY = pos.getY();
         int targetZ = pos.getZ();
         var isDepressed = parameters.isDepressed();
+        var radius = parameters.radius();
 
-        Matrix4f transform = getVehicleFlatTransform(1);
-        Vector4f worldPosition = transformPosition(transform, 0f, 2.16f, 0.5175f);
-        Vec3 shootPos = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
-        double adjust = -1 + 0.004 * new Vec3(targetX, targetY, targetZ).distanceTo(shootPos);
+        boolean canAim = true;
 
-        entityData.set(TARGET_POS, new Vector3f((float) targetX, (float) (targetY - adjust), (float) targetZ));
+        entityData.set(TARGET_POS, new Vector3f((float) targetX, (float) targetY, (float) targetZ));
         entityData.set(DEPRESSED, isDepressed);
-        entityData.set(RADIUS, parameters.radius());
+        entityData.set(RADIUS, radius);
         Vec3 randomPos = VectorTool.randomPos(new Vec3(entityData.get(TARGET_POS)), entityData.get(RADIUS));
+        Vec3 launchVector = calculateLaunchVector(getEyePosition(), randomPos, shootVelocity(), projectileGravity(), entityData.get(DEPRESSED));
 
-        try {
-            Vec3 launchVector = calculateLaunchVector(getEyePosition(), randomPos, 15, -shellGravity, entityData.get(DEPRESSED));
-            this.look(randomPos);
+        Component component = Component.literal("");
+        Component location = Component.translatable("tips.superbwarfare.mortar.position", this.getDisplayName())
+                .append(Component.literal(" X:" + FormatTool.format0D(getX()) + " Y:" + FormatTool.format0D(getY()) + " Z:" + FormatTool.format0D(getZ()) + " "));
+        float angle = getXRot();
 
-            if (launchVector == null) {
-                return false;
+        if (launchVector == null) {
+            canAim = false;
+            component = Component.translatable("tips.superbwarfare.mortar.out_of_range");
+        } else {
+            angle = (float) -getXRotFromVector(launchVector);
+            if (angle < -maxPitch() || angle > -minPitch()) {
+                canAim = false;
+                component = Component.translatable("tips.superbwarfare.mortar.warn", this.getDisplayName());
+                if (angle < -maxPitch()) {
+                    component = Component.translatable("tips.superbwarfare.ballistics.warn");
+                }
             }
-            float angle = (float) -getXRotFromVector(launchVector);
-            if (angle < -85 || angle > 14.9) {
-                return false;
-            }
-            entityData.set(PITCH, angle);
-        } catch (Exception e) {
-            return false;
         }
-        return true;
+
+        if (canAim) {
+            this.look(randomPos);
+            entityData.set(PITCH, angle);
+        } else if (entity instanceof Player player) {
+            player.displayClientMessage(location.copy().append(component).withStyle(ChatFormatting.RED), false);
+        }
     }
 
     @Override
     public void resetTarget() {
         Vec3 randomPos = VectorTool.randomPos(new Vec3(entityData.get(TARGET_POS)), entityData.get(RADIUS));
-        Vec3 launchVector = calculateLaunchVector(getEyePosition(), randomPos, 15, -shellGravity, entityData.get(DEPRESSED));
+        Vec3 launchVector = calculateLaunchVector(getEyePosition(), randomPos, 15, projectileGravity(), entityData.get(DEPRESSED));
         this.look(randomPos);
 
         if (launchVector == null) {
@@ -254,6 +248,26 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
         if (angle < -85 || angle > 14.9) {
             entityData.set(PITCH, angle);
         }
+    }
+
+    @Override
+    public double minPitch() {
+        return -14.9;
+    }
+
+    @Override
+    public double maxPitch() {
+        return 85;
+    }
+
+    @Override
+    public double shootVelocity() {
+        return 15;
+    }
+
+    @Override
+    public float projectileGravity() {
+        return -0.1f;
     }
 
     @Override

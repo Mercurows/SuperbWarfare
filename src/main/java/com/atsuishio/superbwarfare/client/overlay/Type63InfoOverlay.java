@@ -107,6 +107,11 @@ public class Type63InfoOverlay implements LayeredDraw.Layer {
         }
 
         ItemStack stack = player.getOffhandItem();
+
+        if (player.getMainHandItem().getItem() instanceof FiringParameters) {
+            stack = player.getMainHandItem();
+        }
+
         if (stack.getItem() instanceof FiringParameters) {
             var parameters = stack.get(ModDataComponents.FIRING_PARAMETERS);
             if (parameters == null) {
@@ -148,6 +153,10 @@ public class Type63InfoOverlay implements LayeredDraw.Layer {
             if (angle < -5 || angle > 60) {
                 guiGraphics.drawString(Minecraft.getInstance().font, Component.translatable("tips.superbwarfare.mortar.warn", lookingEntity.getDisplayName()).withStyle(ChatFormatting.RED),
                         screenWidth / 2 + 90, screenHeight / 2 + 4, -1, false);
+                if (angle > 60 && !isDepressed) {
+                    guiGraphics.drawString(Minecraft.getInstance().font, Component.translatable("tips.superbwarfare.ballistics.warn").withStyle(ChatFormatting.RED),
+                            screenWidth / 2 + 90, screenHeight / 2 + 14, -1, false);
+                }
             }
         }
     }

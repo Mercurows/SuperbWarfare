@@ -561,4 +561,9 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
         }
         this.entityData.set(LOADED_AMMO, list);
     }
+
+    @Override
+    public boolean hasEnergyStorage() {
+        return false;
+    }
 }
