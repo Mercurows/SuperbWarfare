@@ -62,7 +62,6 @@ public class VehicleTeamOverlay implements LayeredDraw.Layer {
         }
 
         if (lookAtEntity && lookingEntity instanceof VehicleEntity vehicle) {
-
             Vec3 pos = lookingEntity.getBoundingBox().getCenter().add(new Vec3(0, lookingEntity.getBbHeight() / 2 + 1, 0));
             Vec3 point = VectorUtil.worldToScreen(pos);
 

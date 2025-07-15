@@ -44,12 +44,12 @@ public class ClientRenderHandler {
     @SubscribeEvent
     public static void registerOverlays(RegisterGuiLayersEvent event) {
         event.registerBelowAll(KillMessageOverlay.ID, new KillMessageOverlay());
-        event.registerBelow(KillMessageOverlay.ID, JavelinHudOverlay.ID, new JavelinHudOverlay());
+        event.registerBelow(KillMessageOverlay.ID, VehicleTeamOverlay.ID, new VehicleTeamOverlay());
+        event.registerBelow(VehicleTeamOverlay.ID, JavelinHudOverlay.ID, new JavelinHudOverlay());
         event.registerBelow(JavelinHudOverlay.ID, ArmorPlateOverlay.ID, new ArmorPlateOverlay());
         event.registerBelow(ArmorPlateOverlay.ID, VehicleHudOverlay.ID, new VehicleHudOverlay());
         event.registerBelow(VehicleHudOverlay.ID, VehicleMgHudOverlay.ID, new VehicleMgHudOverlay());
         event.registerBelowAll(StaminaOverlay.ID, new StaminaOverlay());
-        event.registerBelowAll(VehicleTeamOverlay.ID, new VehicleTeamOverlay());
         event.registerBelowAll(Yx100SwarmDroneHudOverlay.ID, new Yx100SwarmDroneHudOverlay());
         event.registerBelowAll(AmmoBarOverlay.ID, new AmmoBarOverlay());
         event.registerBelowAll(AmmoCountOverlay.ID, new AmmoCountOverlay());
