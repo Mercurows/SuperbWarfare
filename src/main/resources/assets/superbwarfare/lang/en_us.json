@@ -214,7 +214,7 @@
   "item.superbwarfare.mortar_base_plate": "Mortar Base Plate",
   "item.superbwarfare.mortar_barrel": "Mortar Barrel",
   "item.superbwarfare.mortar_deployer": "Mortar",
-  "des.superbwarfare.mortar_deployer": "While sneaking, right-click mortar with remote controller to convert to intelligent mortar",
+  "des.superbwarfare.mortar_deployer": "While sneaking, right-click mortar with Monitor to convert it to intelligent mortar",
   "item.superbwarfare.claymore_mine": "Claymore",
   "item.superbwarfare.c4_bomb": "C4",
   "des.superbwarfare.c4_bomb.time": "Timed Explosive",
