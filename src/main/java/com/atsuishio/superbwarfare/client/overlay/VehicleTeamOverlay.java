@@ -105,7 +105,7 @@ public class VehicleTeamOverlay implements LayeredDraw.Layer {
         if (player.getVehicle() instanceof VehicleEntity) {
             List<Entity> entities = SeekTool.getPlayer(player, player.level());
             for (var e : entities) {
-                if (e != null && e != player) {
+                if (e != null && e != player && calculateAngle(e, camera) < VectorUtil.fov / 2) {
                     Entity team = e;
                     if (e.getVehicle() != null) {
                         team = e.getVehicle();
@@ -119,5 +119,11 @@ public class VehicleTeamOverlay implements LayeredDraw.Layer {
                 }
             }
         }
+    }
+
+    public static double calculateAngle(Entity entityA, Camera camera) {
+        Vec3 v1 = camera.getPosition().vectorTo(entityA.position());
+        Vec3 v2 = new Vec3(camera.getLookVector());
+        return VectorTool.calculateAngle(v1,v2);
     }
 }
