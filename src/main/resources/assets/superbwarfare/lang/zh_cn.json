@@ -598,6 +598,9 @@
   "tips.superbwarfare.mortar.target_pos.depressed_trajectory": "低伸弹道",
   "tips.superbwarfare.mortar.target_pos.lofted_trajectory": "传统弹道",
   "tips.superbwarfare.mortar.warn": "%1$s无法瞄准该位置",
+  "tips.superbwarfare.mortar.position": "%1$s位于",
+  "tips.superbwarfare.ballistics.warn": "请使用低伸弹道",
+  "tips.superbwarfare.ballistics.warn2": "请使用传统弹道",
 
   "tips.superbwarfare.target.yaw": "目标偏航角: ",
   "tips.superbwarfare.target.pitch": "目标俯仰角: ",

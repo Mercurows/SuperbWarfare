@@ -1,7 +1,6 @@
 {
   "ID": "superbwarfare:type_63",
   "MaxHealth": 100,
-  "MaxEnergy": 24000,
   "Mass": 0.45,
   "DamageModifiers": [
     {

@@ -140,11 +140,7 @@ public class ArtilleryIndicator extends Item implements ItemScreenProvider {
 
             if (entity instanceof RemoteControllableTurret lockTargetEntity) {
                 list.add(tag);
-
-                if (!lockTargetEntity.setTarget(stack)) {
-                    player.displayClientMessage(Component.translatable("tips.superbwarfare.mortar.warn", entity.getDisplayName())
-                            .withStyle(ChatFormatting.RED), true);
-                }
+                lockTargetEntity.setTarget(stack, player);
             }
         }
 

@@ -598,6 +598,9 @@
   "tips.superbwarfare.mortar.target_pos.depressed_trajectory": "Depressed Trajectory",
   "tips.superbwarfare.mortar.target_pos.lofted_trajectory": "Lofted Trajectory",
   "tips.superbwarfare.mortar.warn": "%1$s cannot aim at this position",
+  "tips.superbwarfare.mortar.position": "%1$s located in",
+  "tips.superbwarfare.ballistics.warn": "Use Depressed Trajectory Please",
+  "tips.superbwarfare.ballistics.warn2": "Use Lofted Trajectory Please",
 
   "tips.superbwarfare.target.yaw": "Target Yaw: ",
   "tips.superbwarfare.target.pitch": "Target Pitch: ",
