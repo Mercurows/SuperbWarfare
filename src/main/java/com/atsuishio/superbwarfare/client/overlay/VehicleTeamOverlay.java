@@ -72,7 +72,7 @@ public class VehicleTeamOverlay implements LayeredDraw.Layer {
             poseStack.pushPose();
             poseStack.translate(x, y - 12, 0);
 
-            float size = (float) Mth.clamp((50 / VectorUtil.fov) * 0.9f * Math.max((512 - entityRange) / 512, 0.1), 0.1, 1);
+            float size = (float) Mth.clamp((50 / VectorUtil.fov) * 0.9f * Math.max((512 - entityRange) / 512, 0.1), 0.4, 1);
             poseStack.scale(size, size, size);
             var font = Minecraft.getInstance().font;
 

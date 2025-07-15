@@ -950,6 +950,9 @@ public abstract class VehicleEntity extends Entity implements Container {
             this.handlePartHealth();
         }
 
+        entityData.set(MOUSE_SPEED_X, entityData.get(MOUSE_SPEED_X) * 0.95f);
+        entityData.set(MOUSE_SPEED_Y, entityData.get(MOUSE_SPEED_Y) * 0.95f);
+
         this.refreshDimensions();
     }
 
