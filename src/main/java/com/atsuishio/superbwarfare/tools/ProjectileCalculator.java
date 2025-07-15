@@ -1,12 +1,12 @@
 package com.atsuishio.superbwarfare.tools;
 
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.CollisionContext;
 
 import java.util.Optional;
 
@@ -18,8 +18,8 @@ public class ProjectileCalculator {
     /**
      * 计算炮弹精确落点位置（Vec3）
      *
-     * @param level 世界对象
-     * @param startPos 发射点位置（Vec3）
+     * @param level        世界对象
+     * @param startPos     发射点位置（Vec3）
      * @param launchVector 发射向量（Vec3）
      * @return 精确的落点位置（Vec3），如果没有碰撞则返回最后位置
      */
@@ -71,7 +71,7 @@ public class ProjectileCalculator {
                 end,
                 ClipContext.Block.COLLIDER, // 只检测碰撞方块
                 ClipContext.Fluid.NONE, // 忽略流体
-                (Entity) null // 无实体
+                CollisionContext.empty() // 无实体
         ));
 
         // 如果检测到碰撞，返回碰撞点
