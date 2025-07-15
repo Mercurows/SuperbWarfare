@@ -25,9 +25,9 @@ public class ProjectileTool {
         EventHooks.onExplosionStart(projectile.level(), explosion);
         explosion.finalizeExplosion(false);
 
-        if (radius <= 5) {
+        if (radius <= 4) {
             ParticleTool.spawnSmallExplosionParticles(projectile.level(), projectile.position().add(projectile.getDeltaMovement().scale(0.5)));
-        } else if (radius > 5 && radius < 10) {
+        } else if (radius > 4 && radius < 10) {
             ParticleTool.spawnMediumExplosionParticles(projectile.level(), projectile.position().add(projectile.getDeltaMovement().scale(0.5)));
         } else {
             ParticleTool.spawnHugeExplosionParticles(projectile.level(), projectile.position().add(projectile.getDeltaMovement().scale(0.5)));
