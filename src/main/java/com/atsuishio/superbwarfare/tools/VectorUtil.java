@@ -1,17 +1,6 @@
 package com.atsuishio.superbwarfare.tools;
 
-import com.atsuishio.superbwarfare.config.client.DisplayConfig;
-import com.atsuishio.superbwarfare.entity.vehicle.base.LandArmorEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
-import com.atsuishio.superbwarfare.event.ClientEventHandler;
-import com.atsuishio.superbwarfare.init.ModMobEffects;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.Mth;
-import net.minecraft.util.RandomSource;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ViewportEvent;
@@ -56,42 +45,5 @@ public class VectorUtil {
         if (event.usedConfiguredFov()) {
             fov = event.getFOV();
         }
-    }
-
-    @SubscribeEvent(priority = EventPriority.LOWEST)
-    public static void captureCamera(ViewportEvent.ComputeCameraAngles event) {
-        float roll;
-        roll = ClientEventHandler.cameraRoll;
-
-        Entity entity = event.getCamera().getEntity();
-
-        if (entity instanceof Player player && !player.isSpectator() && player.hasEffect(ModMobEffects.SHOCK.get())) {
-            float shakeStrength = (float) DisplayConfig.SHOCK_SCREEN_SHAKE.get() / 100.0f;
-            if (shakeStrength <= 0.0f) return;
-            roll = (float) Mth.nextDouble(RandomSource.create(), 8, 12) * shakeStrength;
-        }
-
-        if (entity.getRootVehicle() instanceof VehicleEntity vehicle && (!event.getCamera().isDetached() || vehicle instanceof LandArmorEntity && ClientEventHandler.zoomVehicle)) {
-            // rotate camera
-            float a = vehicle.getTurretYaw((float) event.getPartialTick());
-            float r = (Mth.abs(a) - 90f) / 90f;
-            float r2;
-            if (Mth.abs(a) <= 90f) {
-                r2 = a / 90f;
-            } else {
-                if (a < 0) {
-                    r2 = -(180f + a) / 90f;
-                } else {
-                    r2 = (180f - a) / 90f;
-                }
-            }
-
-            roll = -r * vehicle.getRoll((float) event.getPartialTick()) + r2 * vehicle.getViewXRot((float) event.getPartialTick());
-        }
-
-        PoseStack poseStack = new PoseStack();
-        poseStack.mulPose(Axis.ZP.rotationDegrees(roll));
-        poseStack.mulPose(Axis.XP.rotationDegrees(event.getPitch()));
-        poseStack.mulPose(Axis.YP.rotationDegrees(event.getYaw() + 180.0F));
     }
 }
