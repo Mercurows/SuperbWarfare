@@ -1537,11 +1537,12 @@ public class ClientEventHandler {
                     && drawTime < 0.01
                     && !ClickHandler.isEditing) {
                 if (!player.isShiftKeyDown()) {
-                    int intelligentChipLevel = data.perk.getLevel(ModPerks.INTELLIGENT_CHIP);
+                    int intelligentChipLevel = GunData.from(stack).perk.getLevel(ModPerks.INTELLIGENT_CHIP);
+                    double seekRange = 32 + 8 * (intelligentChipLevel - 1);
 
                     if (intelligentChipLevel > 0) {
                         if (ClientEventHandler.entity == null || !entity.isAlive()) {
-                            ClientEventHandler.entity = SeekTool.seekLivingEntity(player, player.level(), 32 + 8 * (intelligentChipLevel - 1), 16 / customZoom);
+                            ClientEventHandler.entity = SeekTool.seekLivingEntity(player, player.level(), seekRange, 16 / customZoom);
                         }
                         if (entity != null && entity.isAlive()) {
                             Vec3 targetVec = new Vec3(Mth.lerp(event.getPartialTick(), entity.xo, entity.getX()), Mth.lerp(event.getPartialTick(), entity.yo + entity.getEyeHeight(), entity.getEyeY()), Mth.lerp(event.getPartialTick(), entity.zo, entity.getZ()));
@@ -1552,6 +1553,10 @@ public class ClientEventHandler {
                             var hasGravity = data.perk.getLevel(ModPerks.MICRO_MISSILE) <= 0;
                             Vec3 toVec = RangeTool.calculateFiringSolution(playerVec, targetVec, entity.getDeltaMovement(), data.velocity(), hasGravity ? 0.03 : 0);
                             look(player, toVec);
+
+                            if (player.distanceTo(entity) > seekRange) {
+                                entity = null;
+                            }
                         }
                     }
                 } else {
