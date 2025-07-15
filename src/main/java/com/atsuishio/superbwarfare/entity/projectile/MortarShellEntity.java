@@ -275,7 +275,7 @@ public class MortarShellEntity extends FastThrowableProjectile implements GeoEnt
 
     @Override
     protected double getDefaultGravity() {
-        return 0.11;
+        return 0.13;
     }
 
     @Override
