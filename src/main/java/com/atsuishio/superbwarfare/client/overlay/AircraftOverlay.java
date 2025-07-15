@@ -232,12 +232,14 @@ public class AircraftOverlay implements LayeredDraw.Layer {
                     poseStack.popPose();
 
                     // 能量警告
-                    if (mobileVehicle.getEnergy() < 0.02 * mobileVehicle.getMaxEnergy()) {
-                        guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("NO POWER!"),
-                                (int) x - 144, (int) y + 14, -65536, false);
-                    } else if (mobileVehicle.getEnergy() < 0.2 * mobileVehicle.getMaxEnergy()) {
-                        guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("LOW POWER"),
-                                (int) x - 144, (int) y + 14, 0xFF6B00, false);
+                    if (mobileVehicle.hasEnergyStorage()) {
+                        if (mobileVehicle.getEnergy() < 0.02 * mobileVehicle.getMaxEnergy()) {
+                            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("NO POWER!"),
+                                    (int) x - 144, (int) y + 14, -65536, false);
+                        } else if (mobileVehicle.getEnergy() < 0.2 * mobileVehicle.getMaxEnergy()) {
+                            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("LOW POWER"),
+                                    (int) x - 144, (int) y + 14, 0xFF6B00, false);
+                        }
                     }
                 }
             }

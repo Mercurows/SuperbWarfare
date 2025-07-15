@@ -251,12 +251,14 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
                         w / 2 + 160, h / 2 - 48, 0x66FF00, false);
 
                 // 低电量警告
-                if (mobileVehicle.getEnergy() < 0.02 * mobileVehicle.getMaxEnergy()) {
-                    guiGraphics.drawString(mc.font, Component.literal("NO POWER!"),
-                            w / 2 - 144, h / 2 + 14, -65536, false);
-                } else if (mobileVehicle.getEnergy() < 0.2 * mobileVehicle.getMaxEnergy()) {
-                    guiGraphics.drawString(mc.font, Component.literal("LOW POWER"),
-                            w / 2 - 144, h / 2 + 14, 0xFF6B00, false);
+                if (mobileVehicle.hasEnergyStorage()) {
+                    if (mobileVehicle.getEnergy() < 0.02 * mobileVehicle.getMaxEnergy()) {
+                        guiGraphics.drawString(mc.font, Component.literal("NO POWER!"),
+                                w / 2 - 144, h / 2 + 14, -65536, false);
+                    } else if (mobileVehicle.getEnergy() < 0.2 * mobileVehicle.getMaxEnergy()) {
+                        guiGraphics.drawString(mc.font, Component.literal("LOW POWER"),
+                                w / 2 - 144, h / 2 + 14, 0xFF6B00, false);
+                    }
                 }
 
                 // 测距
