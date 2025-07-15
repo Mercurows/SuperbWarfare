@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.tools.FormatTool;
 import com.atsuishio.superbwarfare.tools.TraceTool;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
@@ -49,7 +50,7 @@ public class Defuser extends Item {
             ).withStyle(ChatFormatting.GREEN), true);
         }
 
-        if (useTick >= C4Entity.DEFAULT_DEFUSE_PROGRESS) {
+        if (useTick >= C4Entity.DEFAULT_DEFUSE_PROGRESS && pLevel instanceof ServerLevel) {
             player.stopUsingItem();
             pStack.hurtAndBreak(1, player, p -> p.broadcastBreakEvent(player.getUsedItemHand()));
             target.defuse();
