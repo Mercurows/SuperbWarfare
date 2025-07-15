@@ -153,15 +153,13 @@ public class DroneHudOverlay implements IGuiOverlay {
                 List<Entity> entities = SeekTool.seekLivingEntities(entity, entity.level(), 256, 30);
                 for (var e : entities) {
                     Vec3 pos = new Vec3(Mth.lerp(partialTick, e.xo, e.getX()), Mth.lerp(partialTick, e.yo + e.getEyeHeight(), e.getEyeY()), Mth.lerp(partialTick, e.zo, e.getZ()));
-                    Vec3 point = VectorUtil.worldToScreen(pos, cameraPos);
-                    if (point != null) {
-                        poseStack.pushPose();
-                        float x = (float) point.x;
-                        float y = (float) point.y;
+                    Vec3 point = VectorUtil.worldToScreen(pos);
+                    poseStack.pushPose();
+                    float x = (float) point.x;
+                    float y = (float) point.y;
 
-                        RenderHelper.blit(poseStack, FRAME, x - 12, y - 12, 0, 0, 24, 24, 24, 24, 1f);
-                        poseStack.popPose();
-                    }
+                    RenderHelper.blit(poseStack, FRAME, x - 12, y - 12, 0, 0, 24, 24, 24, 24, 1f);
+                    poseStack.popPose();
                 }
             }
 
@@ -182,12 +180,10 @@ public class DroneHudOverlay implements IGuiOverlay {
 
                 // 标记位置
                 Vec3 pos = new Vec3(targetX, targetY, targetZ);
-                Vec3 point = VectorUtil.worldToScreen(pos, cameraPos);
-                if (point != null) {
-                    float x = (float) point.x;
-                    float y = (float) point.y;
-                    preciseBlit(guiGraphics, INDICATOR, Mth.clamp(x - 6, 0, screenWidth - 12), Mth.clamp(y - 6, 0, screenHeight - 12), 0, 0, 12, 12, 12, 12);
-                }
+                Vec3 point = VectorUtil.worldToScreen(pos);
+                float x = (float) point.x;
+                float y = (float) point.y;
+                preciseBlit(guiGraphics, INDICATOR, Mth.clamp(x - 6, 0, screenWidth - 12), Mth.clamp(y - 6, 0, screenHeight - 12), 0, 0, 12, 12, 12, 12);
 
                 // 火炮位置
 
@@ -198,13 +194,11 @@ public class DroneHudOverlay implements IGuiOverlay {
                         Entity e = EntityFindUtil.findEntity(player.level(), tag.getString("UUID"));
                         if (e != null) {
                             Vec3 posF = e.getBoundingBox().getCenter();
-                            Vec3 pointF = VectorUtil.worldToScreen(posF, cameraPos);
-                            if (pointF != null) {
-                                float xf = (float) pointF.x;
-                                float yf = (float) pointF.y;
+                            Vec3 pointF = VectorUtil.worldToScreen(posF);
+                            float xf = (float) pointF.x;
+                            float yf = (float) pointF.y;
 
-                                preciseBlit(guiGraphics, FRIENDLY_INDICATOR, Mth.clamp(xf - 6, 0, screenWidth - 12), Mth.clamp(yf - 6, 0, screenHeight - 12), 0, 0, 12, 12, 12, 12);
-                            }
+                            preciseBlit(guiGraphics, FRIENDLY_INDICATOR, Mth.clamp(xf - 6, 0, screenWidth - 12), Mth.clamp(yf - 6, 0, screenHeight - 12), 0, 0, 12, 12, 12, 12);
                         }
                     }
                 }

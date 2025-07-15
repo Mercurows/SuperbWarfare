@@ -48,8 +48,7 @@ public class RedTriangleOverlay implements IGuiOverlay {
         if (idf == null) return;
         double distance = idf.position().distanceTo(cameraPos);
         Vec3 pos = new Vec3(Mth.lerp(partialTick, idf.xo, idf.getX()), Mth.lerp(partialTick, idf.yo + idf.getEyeHeight() + 0.5 + 0.07 * distance, idf.getEyeY() + 0.5 + 0.07 * distance), Mth.lerp(partialTick, idf.zo, idf.getZ()));
-        Vec3 point = VectorUtil.worldToScreen(pos, cameraPos);
-        if (point == null) return;
+        Vec3 point = VectorUtil.worldToScreen(pos);
 
         poseStack.pushPose();
         float x = (float) point.x;

@@ -29,6 +29,7 @@
     "ItemInHandLayerMixin",
     "KeyboardInputMixin",
     "KeymappingMixin",
+    "LevelRendererMixin",
     "LivingEntityRendererMixin",
     "MinecraftMixin",
     "MouseHandlerMixin",

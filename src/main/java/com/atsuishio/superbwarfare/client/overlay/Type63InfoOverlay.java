@@ -7,7 +7,6 @@ import com.atsuishio.superbwarfare.item.FiringParameters;
 import com.atsuishio.superbwarfare.tools.*;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
@@ -40,8 +39,6 @@ public class Type63InfoOverlay implements IGuiOverlay {
     public void render(ForgeGui gui, GuiGraphics guiGraphics, float partialTick, int screenWidth, int screenHeight) {
         Minecraft mc = gui.getMinecraft();
         Player player = mc.player;
-        Camera camera = mc.gameRenderer.getMainCamera();
-        Vec3 cameraPos = camera.getPosition();
         PoseStack poseStack = guiGraphics.pose();
 
         if (player == null) return;
@@ -72,8 +69,7 @@ public class Type63InfoOverlay implements IGuiOverlay {
                 };
 
                 Vec3 pos = new Vec3(type63Entity.barrel[i].center());
-                Vec3 point = VectorUtil.worldToScreen(pos, cameraPos);
-                if (point == null) return;
+                Vec3 point = VectorUtil.worldToScreen(pos);
 
                 poseStack.pushPose();
                 float x = (float) point.x;
@@ -110,14 +106,14 @@ public class Type63InfoOverlay implements IGuiOverlay {
             boolean isDepressed = stack.getOrCreateTag().getBoolean("IsDepressed");
 
             Vec3 targetPos = new Vec3(targetX, targetY, targetZ);
-            Vec3 launchVector = calculateLaunchVector(((Type63Entity) lookingEntity).getShootPos(partialTick), targetPos, 10, -0.05, isDepressed);
+            Vec3 launchVector = calculateLaunchVector(type63Entity.getShootPos(partialTick), targetPos, 10, -0.05, isDepressed);
 
             Vec3 vec3 = EntityAnchorArgument.Anchor.EYES.apply(lookingEntity);
             double d0 = (targetPos.x - vec3.x) * 0.2;
             double d2 = (targetPos.z - vec3.z) * 0.2;
             double targetYaw = Mth.wrapDegrees((float) (Mth.atan2(d2, d0) * 57.2957763671875) - 90.0F);
 
-            float angle = 0;
+            float angle;
 
             if (launchVector != null) {
                 angle = (float) getXRotFromVector(launchVector);

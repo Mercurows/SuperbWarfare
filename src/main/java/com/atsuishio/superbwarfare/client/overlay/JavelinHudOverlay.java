@@ -13,7 +13,6 @@ import com.atsuishio.superbwarfare.tools.VectorUtil;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
@@ -47,8 +46,6 @@ public class JavelinHudOverlay implements IGuiOverlay {
     public void render(ForgeGui gui, GuiGraphics guiGraphics, float partialTick, int screenWidth, int screenHeight) {
         Player player = gui.getMinecraft().player;
         PoseStack poseStack = guiGraphics.pose();
-        Camera camera = Minecraft.getInstance().gameRenderer.getMainCamera();
-        Vec3 cameraPos = camera.getPosition();
 
         if (player == null) return;
         ItemStack stack = player.getMainHandItem();
@@ -105,32 +102,28 @@ public class JavelinHudOverlay implements IGuiOverlay {
             if (stack.getOrCreateTag().getInt("GuideType") == 0) {
                 for (var e : entities) {
                     Vec3 pos = e.getBoundingBox().getCenter();
-                    Vec3 point = VectorUtil.worldToScreen(pos, cameraPos);
-                    if (point != null) {
-                        boolean lockOn = stack.getOrCreateTag().getInt("SeekTime") > 20 && e == targetEntity;
-                        boolean nearest = e == naerestEntity;
+                    Vec3 point = VectorUtil.worldToScreen(pos);
+                    boolean lockOn = stack.getOrCreateTag().getInt("SeekTime") > 20 && e == targetEntity;
+                    boolean nearest = e == naerestEntity;
 
-                        poseStack.pushPose();
-                        float x = (float) point.x;
-                        float y = (float) point.y;
+                    poseStack.pushPose();
+                    float x = (float) point.x;
+                    float y = (float) point.y;
 
-                        RenderHelper.blit(poseStack, lockOn ? FRAME_LOCK : nearest ? FRAME_TARGET : FRAME, x - 12, y - 12, 0, 0, 24, 24, 24, 24, 1f);
-                        poseStack.popPose();
-                    }
+                    RenderHelper.blit(poseStack, lockOn ? FRAME_LOCK : nearest ? FRAME_TARGET : FRAME, x - 12, y - 12, 0, 0, 24, 24, 24, 24, 1f);
+                    poseStack.popPose();
                 }
             } else {
                 Vec3 pos = new Vec3(stack.getOrCreateTag().getDouble("TargetPosX"), stack.getOrCreateTag().getDouble("TargetPosY"), stack.getOrCreateTag().getDouble("TargetPosZ"));
                 boolean lockOn = stack.getOrCreateTag().getInt("SeekTime") > 20;
 
-                Vec3 point = VectorUtil.worldToScreen(pos, cameraPos);
-                if (point != null) {
-                    poseStack.pushPose();
-                    float x = (float) point.x;
-                    float y = (float) point.y;
+                Vec3 point = VectorUtil.worldToScreen(pos);
+                poseStack.pushPose();
+                float x = (float) point.x;
+                float y = (float) point.y;
 
-                    RenderHelper.blit(poseStack, lockOn ? FRAME_LOCK : FRAME_TARGET, x - 12, y - 12, 0, 0, 24, 24, 24, 24, 1f);
-                    poseStack.popPose();
-                }
+                RenderHelper.blit(poseStack, lockOn ? FRAME_LOCK : FRAME_TARGET, x - 12, y - 12, 0, 0, 24, 24, 24, 24, 1f);
+                poseStack.popPose();
             }
             poseStack.popPose();
         } else {

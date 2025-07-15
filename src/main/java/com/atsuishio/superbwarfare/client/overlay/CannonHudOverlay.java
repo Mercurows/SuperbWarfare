@@ -163,45 +163,43 @@ public class CannonHudOverlay implements IGuiOverlay {
                 renderKillIndicator(guiGraphics, screenWidth, screenHeight);
             } else if (Minecraft.getInstance().options.getCameraType() == CameraType.THIRD_PERSON_BACK && !ClientEventHandler.zoomVehicle) {
                 Vec3 p = VectorUtil.worldToScreen(new Vec3(Mth.lerp(partialTick, player.xo, player.getX()), Mth.lerp(partialTick, player.yo, player.getY()),
-                        Mth.lerp(partialTick, player.zo, player.getZ())).add(cannon.getViewVector(partialTick).scale(128)), cameraPos);
+                        Mth.lerp(partialTick, player.zo, player.getZ())).add(cannon.getViewVector(partialTick).scale(128)));
 
                 // 第三人称准星
-                if (p != null) {
-                    poseStack.pushPose();
-                    float x = (float) p.x;
-                    float y = (float) p.y;
+                poseStack.pushPose();
+                float x = (float) p.x;
+                float y = (float) p.y;
 
-                    poseStack.pushPose();
-                    preciseBlit(guiGraphics, Mod.loc("textures/screens/drone.png"), x - 12, y - 12, 0, 0, 24, 24, 24, 24);
-                    renderKillIndicator3P(guiGraphics, x - 7.5f + (float) (2 * (Math.random() - 0.5f)), y - 7.5f + (float) (2 * (Math.random() - 0.5f)));
+                poseStack.pushPose();
+                preciseBlit(guiGraphics, Mod.loc("textures/screens/drone.png"), x - 12, y - 12, 0, 0, 24, 24, 24, 24);
+                renderKillIndicator3P(guiGraphics, x - 7.5f + (float) (2 * (Math.random() - 0.5f)), y - 7.5f + (float) (2 * (Math.random() - 0.5f)));
 
-                    poseStack.pushPose();
+                poseStack.pushPose();
 
-                    poseStack.translate(x, y, 0);
-                    poseStack.scale(0.75f, 0.75f, 1);
+                poseStack.translate(x, y, 0);
+                poseStack.scale(0.75f, 0.75f, 1);
 
-                    if (player.getVehicle() instanceof Mk42Entity || player.getVehicle() instanceof Mle1934Entity) {
-                        if (cannonEntity.getWeaponIndex(0) == 0) {
-                            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("AP SHELL " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : cannonEntity.getAmmoCount(player))), 30, -9, -1, false);
-                        } else {
-                            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("HE SHELL " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : cannonEntity.getAmmoCount(player))), 30, -9, -1, false);
-                        }
+                if (player.getVehicle() instanceof Mk42Entity || player.getVehicle() instanceof Mle1934Entity) {
+                    if (cannonEntity.getWeaponIndex(0) == 0) {
+                        guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("AP SHELL " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : cannonEntity.getAmmoCount(player))), 30, -9, -1, false);
+                    } else {
+                        guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("HE SHELL " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : cannonEntity.getAmmoCount(player))), 30, -9, -1, false);
                     }
-
-                    // 歼灭者
-                    if (player.getVehicle() instanceof AnnihilatorEntity annihilatorEntity) {
-                        guiGraphics.drawString(mc.font, Component.literal("LASER " + (FormatTool.format0D((double) (100 * annihilatorEntity.getEnergy()) / annihilatorEntity.getMaxEnergy()) + "％")), 30, -9, -1, false);
-                    }
-
-                    double heal = 1 - cannon.getHealth() / cannon.getMaxHealth();
-
-                    guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("HP " +
-                            FormatTool.format0D(100 * cannon.getHealth() / cannon.getMaxHealth())), 30, 1, Mth.hsvToRgb(0F, (float) heal, 1.0F), false);
-
-                    poseStack.popPose();
-                    poseStack.popPose();
-                    poseStack.popPose();
                 }
+
+                // 歼灭者
+                if (player.getVehicle() instanceof AnnihilatorEntity annihilatorEntity) {
+                    guiGraphics.drawString(mc.font, Component.literal("LASER " + (FormatTool.format0D((double) (100 * annihilatorEntity.getEnergy()) / annihilatorEntity.getMaxEnergy()) + "％")), 30, -9, -1, false);
+                }
+
+                double heal = 1 - cannon.getHealth() / cannon.getMaxHealth();
+
+                guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("HP " +
+                        FormatTool.format0D(100 * cannon.getHealth() / cannon.getMaxHealth())), 30, 1, Mth.hsvToRgb(0F, (float) heal, 1.0F), false);
+
+                poseStack.popPose();
+                poseStack.popPose();
+                poseStack.popPose();
             }
             poseStack.popPose();
         }

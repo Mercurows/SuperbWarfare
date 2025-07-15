@@ -14,7 +14,6 @@ import com.atsuishio.superbwarfare.tools.VectorUtil;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.Camera;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -46,8 +45,6 @@ public class VehicleMgHudOverlay implements IGuiOverlay {
         Minecraft mc = gui.getMinecraft();
         Player player = mc.player;
         PoseStack poseStack = guiGraphics.pose();
-        Camera camera = mc.gameRenderer.getMainCamera();
-        Vec3 cameraPos = camera.getPosition();
 
         if (!shouldRenderCrossHair(player)) return;
 
@@ -77,44 +74,42 @@ public class VehicleMgHudOverlay implements IGuiOverlay {
                 VehicleHudOverlay.renderKillIndicator(guiGraphics, screenWidth, screenHeight);
             } else if (Minecraft.getInstance().options.getCameraType() == CameraType.THIRD_PERSON_BACK && !ClientEventHandler.zoomVehicle) {
                 Vec3 p = VectorUtil.worldToScreen(new Vec3(Mth.lerp(partialTick, player.xo, player.getX()), Mth.lerp(partialTick, player.yo + player.getEyeHeight(), player.getEyeY()),
-                        Mth.lerp(partialTick, player.zo, player.getZ())).add(iLand.getGunVec(partialTick).scale(192)), cameraPos);
+                        Mth.lerp(partialTick, player.zo, player.getZ())).add(iLand.getGunVec(partialTick).scale(192)));
 
                 // 第三人称准星
-                if (p != null) {
-                    poseStack.pushPose();
-                    float x = (float) p.x;
-                    float y = (float) p.y;
+                poseStack.pushPose();
+                float x = (float) p.x;
+                float y = (float) p.y;
 
-                    poseStack.pushPose();
-                    preciseBlit(guiGraphics, Mod.loc("textures/screens/drone.png"), x - 12, y - 12, 0, 0, 24, 24, 24, 24);
-                    renderKillIndicator3P(guiGraphics, x - 7.5f + (float) (2 * (Math.random() - 0.5f)), y - 7.5f + (float) (2 * (Math.random() - 0.5f)));
+                poseStack.pushPose();
+                preciseBlit(guiGraphics, Mod.loc("textures/screens/drone.png"), x - 12, y - 12, 0, 0, 24, 24, 24, 24);
+                renderKillIndicator3P(guiGraphics, x - 7.5f + (float) (2 * (Math.random() - 0.5f)), y - 7.5f + (float) (2 * (Math.random() - 0.5f)));
 
-                    poseStack.pushPose();
+                poseStack.pushPose();
 
-                    poseStack.translate(x, y, 0);
-                    poseStack.scale(0.75f, 0.75f, 1);
+                poseStack.translate(x, y, 0);
+                poseStack.scale(0.75f, 0.75f, 1);
 
-                    // YX-100
-                    if (player.getVehicle() instanceof Yx100Entity yx100) {
-                        double heat = yx100.getEntityData().get(HEAT) / 100.0F;
-                        guiGraphics.drawString(mc.font, Component.literal(".50 HMG " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : yx100.getEntityData().get(MG_AMMO))), 30, -9, Mth.hsvToRgb(0F, (float) heat, 1.0F), false);
-                    }
-
-                    // 快艇
-                    if (player.getVehicle() instanceof SpeedboatEntity speedboat) {
-                        double heat = speedboat.getEntityData().get(HEAT) / 100.0F;
-                        guiGraphics.drawString(mc.font, Component.literal(".50 HMG " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : speedboat.getEntityData().get(AMMO))), 30, -9, Mth.hsvToRgb(0F, (float) heat, 1.0F), false);
-                    }
-
-                    double heal = 1 - mobileVehicle.getHealth() / mobileVehicle.getMaxHealth();
-
-                    guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("HP " +
-                            FormatTool.format0D(100 * mobileVehicle.getHealth() / mobileVehicle.getMaxHealth())), 30, 1, Mth.hsvToRgb(0F, (float) heal, 1.0F), false);
-
-                    poseStack.popPose();
-                    poseStack.popPose();
-                    poseStack.popPose();
+                // YX-100
+                if (player.getVehicle() instanceof Yx100Entity yx100) {
+                    double heat = yx100.getEntityData().get(HEAT) / 100.0F;
+                    guiGraphics.drawString(mc.font, Component.literal(".50 HMG " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : yx100.getEntityData().get(MG_AMMO))), 30, -9, Mth.hsvToRgb(0F, (float) heat, 1.0F), false);
                 }
+
+                // 快艇
+                if (player.getVehicle() instanceof SpeedboatEntity speedboat) {
+                    double heat = speedboat.getEntityData().get(HEAT) / 100.0F;
+                    guiGraphics.drawString(mc.font, Component.literal(".50 HMG " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : speedboat.getEntityData().get(AMMO))), 30, -9, Mth.hsvToRgb(0F, (float) heat, 1.0F), false);
+                }
+
+                double heal = 1 - mobileVehicle.getHealth() / mobileVehicle.getMaxHealth();
+
+                guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("HP " +
+                        FormatTool.format0D(100 * mobileVehicle.getHealth() / mobileVehicle.getMaxHealth())), 30, 1, Mth.hsvToRgb(0F, (float) heal, 1.0F), false);
+
+                poseStack.popPose();
+                poseStack.popPose();
+                poseStack.popPose();
             }
         }
 

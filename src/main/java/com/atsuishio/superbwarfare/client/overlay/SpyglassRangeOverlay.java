@@ -12,7 +12,6 @@ import com.atsuishio.superbwarfare.tools.VectorUtil;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.Camera;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -52,8 +51,6 @@ public class SpyglassRangeOverlay implements IGuiOverlay {
         Minecraft mc = gui.getMinecraft();
         PoseStack poseStack = guiGraphics.pose();
         Player player = gui.getMinecraft().player;
-        Camera camera = mc.gameRenderer.getMainCamera();
-        Vec3 cameraPos = camera.getPosition();
 
         if (player == null) return;
 
@@ -91,12 +88,10 @@ public class SpyglassRangeOverlay implements IGuiOverlay {
 
                 // 标记位置
                 Vec3 pos = new Vec3(targetX, targetY, targetZ);
-                Vec3 point = VectorUtil.worldToScreen(pos, cameraPos);
-                if (point != null) {
-                    float x = (float) point.x;
-                    float y = (float) point.y;
-                    preciseBlit(guiGraphics, INDICATOR, Mth.clamp(x - 6, 0, screenWidth - 12), Mth.clamp(y - 6, 0, screenHeight - 12), 0, 0, 12, 12, 12, 12);
-                }
+                Vec3 point = VectorUtil.worldToScreen(pos);
+                float x = (float) point.x;
+                float y = (float) point.y;
+                preciseBlit(guiGraphics, INDICATOR, Mth.clamp(x - 6, 0, screenWidth - 12), Mth.clamp(y - 6, 0, screenHeight - 12), 0, 0, 12, 12, 12, 12);
 
                 // 火炮位置
 
@@ -106,13 +101,11 @@ public class SpyglassRangeOverlay implements IGuiOverlay {
                     Entity entity = EntityFindUtil.findEntity(player.level(), tag.getString("UUID"));
                     if (entity != null) {
                         Vec3 posF = entity.getBoundingBox().getCenter();
-                        Vec3 pointF = VectorUtil.worldToScreen(posF, cameraPos);
-                        if (pointF != null) {
-                            float xf = (float) pointF.x;
-                            float yf = (float) pointF.y;
+                        Vec3 pointF = VectorUtil.worldToScreen(posF);
+                        float xf = (float) pointF.x;
+                        float yf = (float) pointF.y;
 
-                            preciseBlit(guiGraphics, FRIENDLY_INDICATOR, Mth.clamp(xf - 6, 0, screenWidth - 12), Mth.clamp(yf - 6, 0, screenHeight - 12), 0, 0, 12, 12, 12, 12);
-                        }
+                        preciseBlit(guiGraphics, FRIENDLY_INDICATOR, Mth.clamp(xf - 6, 0, screenWidth - 12), Mth.clamp(yf - 6, 0, screenHeight - 12), 0, 0, 12, 12, 12, 12);
                     }
                 }
 

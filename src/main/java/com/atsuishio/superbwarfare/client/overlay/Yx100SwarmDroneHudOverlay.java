@@ -8,7 +8,6 @@ import com.atsuishio.superbwarfare.tools.VectorUtil;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.Camera;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -36,8 +35,6 @@ public class Yx100SwarmDroneHudOverlay implements IGuiOverlay {
         Minecraft mc = gui.getMinecraft();
         Player player = mc.player;
         PoseStack poseStack = guiGraphics.pose();
-        Camera camera = mc.gameRenderer.getMainCamera();
-        Vec3 cameraPos = camera.getPosition();
 
         if (!shouldRenderCrossHair(player)) return;
 
@@ -70,8 +67,7 @@ public class Yx100SwarmDroneHudOverlay implements IGuiOverlay {
                 if (naerestEntity != null) {
                     Vec3 pos = new Vec3(Mth.lerp(partialTick, naerestEntity.xo, naerestEntity.getX()), Mth.lerp(partialTick, naerestEntity.yo + naerestEntity.getEyeHeight(), naerestEntity.getEyeY()), Mth.lerp(partialTick, naerestEntity.zo, naerestEntity.getZ()));
 
-                    Vec3 point = VectorUtil.worldToScreen(pos, cameraPos);
-                    if (point == null) return;
+                    Vec3 point = VectorUtil.worldToScreen(pos);
 
                     poseStack.pushPose();
                     float x = (float) point.x;
