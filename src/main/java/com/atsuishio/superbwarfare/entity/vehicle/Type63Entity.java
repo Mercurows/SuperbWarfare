@@ -236,7 +236,7 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
                 if (lookingAtBarrel(player)) {
                     // 精准发射
                     for (int i = 0; i < this.barrel.length; i++) {
-                        if (OBB.getLookingObb(player, player.entityInteractionRange()) == this.barrel[i] && items.get(i).getItem() instanceof MediumRocketItem && cooldown == 0 && getEnergy() > 0) {
+                        if (OBB.getLookingObb(player, player.entityInteractionRange()) == this.barrel[i] && items.get(i).getItem() instanceof MediumRocketItem && cooldown == 0) {
                             shoot(player, i);
                             items.set(i, ItemStack.EMPTY);
                             setChanged();
@@ -247,7 +247,7 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
                 } else {
                     // 顺序发射
                     for (int i = 0; i < 12; i++) {
-                        if (items.get(i).getItem() instanceof MediumRocketItem && cooldown == 0 && getEnergy() > 0) {
+                        if (items.get(i).getItem() instanceof MediumRocketItem && cooldown == 0) {
                             shoot(player, i);
                             items.set(i, ItemStack.EMPTY);
                             setChanged();
@@ -323,7 +323,6 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
             }
         }
 
-        consumeEnergy(1);
         ShakeClientMessage.sendToNearbyPlayers(this, 8, 8, 10, 20);
     }
 
