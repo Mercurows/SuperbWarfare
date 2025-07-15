@@ -524,25 +524,41 @@ public abstract class VehicleEntity extends Entity implements Container {
      * @param amount 要消耗的电量
      */
     protected void consumeEnergy(int amount) {
-        if (!this.hasEnergyStorage()) return;
+        if (!this.hasEnergyStorage()) {
+            Mod.LOGGER.warn("Trying to consume energy of vehicle {}, but it has no energy storage", this.getName());
+            return;
+        }
         this.energyStorage.extractEnergy(amount, false);
     }
 
     protected boolean canConsume(int amount) {
-        if (!this.hasEnergyStorage()) return false;
+        if (!this.hasEnergyStorage()) {
+            Mod.LOGGER.warn("Trying to check if can consume energy of vehicle {}, but it has no energy storage", this.getName());
+            return false;
+        }
         return this.getEnergy() >= amount;
     }
 
     public int getEnergy() {
+        if (!this.hasEnergyStorage()) {
+            Mod.LOGGER.warn("Trying to get energy of vehicle {}, but it has no energy storage", this.getName());
+            return Integer.MAX_VALUE;
+        }
         return this.energyStorage.getEnergyStored();
     }
 
     public IEnergyStorage getEnergyStorage() {
+        if (!this.hasEnergyStorage()) {
+            Mod.LOGGER.warn("Trying to get energy storage of vehicle {}, but it has no energy storage", this.getName());
+        }
         return this.energyStorage;
     }
 
     protected void setEnergy(int pEnergy) {
-        if (!this.hasEnergyStorage()) return;
+        if (!this.hasEnergyStorage()) {
+            Mod.LOGGER.warn("Trying to set energy of vehicle {}, but it has no energy storage", this.getName());
+            return;
+        }
         int targetEnergy = Mth.clamp(pEnergy, 0, this.getMaxEnergy());
 
         if (targetEnergy > energyStorage.getEnergyStored()) {
@@ -553,6 +569,10 @@ public abstract class VehicleEntity extends Entity implements Container {
     }
 
     public int getMaxEnergy() {
+        if (!this.hasEnergyStorage()) {
+            Mod.LOGGER.warn("Trying to get max energy of vehicle {}, but it has no energy storage", this.getName());
+            return Integer.MAX_VALUE;
+        }
         return data().maxEnergy();
     }
 
