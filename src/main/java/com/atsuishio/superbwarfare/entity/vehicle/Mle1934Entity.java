@@ -89,7 +89,7 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
                                 .explosionDamage(VehicleConfig.MLE1934_AP_EXPLOSION_DAMAGE.get())
                                 .explosionRadius(VehicleConfig.MLE1934_AP_EXPLOSION_RADIUS.get().floatValue())
                                 .durability(70)
-                                .gravity(projectileGravity())
+                                .gravity(-projectileGravity())
                                 .sound(ModSounds.CANNON_RELOAD.get())
                                 .icon(Mod.loc("textures/screens/vehicle_weapon/ap_shell.png")),
                         new CannonShellWeapon()
@@ -99,7 +99,7 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
                                 .durability(1)
                                 .fireProbability(0.24F)
                                 .fireTime(5)
-                                .gravity(projectileGravity())
+                                .gravity(-projectileGravity())
                                 .sound(ModSounds.CANNON_RELOAD.get())
                                 .icon(Mod.loc("textures/screens/vehicle_weapon/he_shell.png")),
                 }
