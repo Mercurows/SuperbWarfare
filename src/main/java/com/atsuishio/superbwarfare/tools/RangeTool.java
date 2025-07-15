@@ -24,11 +24,13 @@ public class RangeTool {
 
     // 谢谢DeepSeek
     @Nullable
-    public static Vec3 calculateLaunchVector(Vec3 pos, Vec3 pos2, double velocity, double g, boolean isDepressed) {
+    public static Vec3 calculateLaunchVector(Vec3 pos, Vec3 pos2, double velocity, double gravity, boolean isDepressed) {
         double dx = pos2.x - pos.x;
         double dy = pos2.y - pos.y;
         double dz = pos2.z - pos.z;
         double horizontalDistSq = dx * dx + dz * dz;
+
+        double g = -gravity;
 
         double a = 0.25 * g * g;
         double b = -velocity * velocity - g * dy;

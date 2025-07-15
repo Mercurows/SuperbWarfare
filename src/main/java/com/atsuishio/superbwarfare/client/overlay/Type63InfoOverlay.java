@@ -123,7 +123,7 @@ public class Type63InfoOverlay implements LayeredDraw.Layer {
             boolean isDepressed = parameters.isDepressed();
 
             Vec3 targetPos = new Vec3(targetX, targetY, targetZ);
-            Vec3 launchVector = calculateLaunchVector(type63Entity.getShootPos(partialTick), targetPos, 10, -0.05, isDepressed);
+            Vec3 launchVector = calculateLaunchVector(type63Entity.getShootPos(partialTick), targetPos, 10, 0.05, isDepressed);
 
             Vec3 vec3 = EntityAnchorArgument.Anchor.EYES.apply(lookingEntity);
             double d0 = (targetPos.x - vec3.x) * 0.2;
