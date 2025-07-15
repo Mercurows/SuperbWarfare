@@ -115,7 +115,7 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundTag compound) {
+    public void addAdditionalSaveData(@NotNull CompoundTag compound) {
         super.addAdditionalSaveData(compound);
         compound.putInt("AnimTime", this.entityData.get(ANIM_TIME));
         compound.putBoolean("Active", this.entityData.get(ACTIVE));
@@ -125,7 +125,7 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundTag compound) {
+    public void readAdditionalSaveData(@NotNull CompoundTag compound) {
         super.readAdditionalSaveData(compound);
         this.entityData.set(ANIM_TIME, compound.getInt("AnimTime"));
         this.entityData.set(ACTIVE, compound.getBoolean("Active"));
@@ -136,10 +136,15 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
         } else {
             String s = compound.getString("Owner");
 
-            if (this.getServer() == null) {
-                uuid = UUID.fromString(s);
-            } else {
-                uuid = OldUsersConverter.convertMobOwnerIfNecessary(this.getServer(), s);
+            try {
+                if (this.getServer() == null) {
+                    uuid = UUID.fromString(s);
+                } else {
+                    uuid = OldUsersConverter.convertMobOwnerIfNecessary(this.getServer(), s);
+                }
+            } catch (Exception exception) {
+                Mod.LOGGER.error("Couldn't load owner UUID of {}: {}", this, exception);
+                uuid = null;
             }
         }
 

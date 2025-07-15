@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.entity;
 
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModEntities;
@@ -35,12 +36,14 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.*;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.items.ItemHandlerHelper;
+import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -138,10 +141,15 @@ public class C4Entity extends Entity implements GeoEntity, OwnableEntity {
         } else {
             String s = compound.getString("Owner");
 
-            if (this.getServer() == null) {
-                uuid = UUID.fromString(s);
-            } else {
-                uuid = OldUsersConverter.convertMobOwnerIfNecessary(this.getServer(), s);
+            try {
+                if (this.getServer() == null) {
+                    uuid = UUID.fromString(s);
+                } else {
+                    uuid = OldUsersConverter.convertMobOwnerIfNecessary(this.getServer(), s);
+                }
+            } catch (Exception exception) {
+                Mod.LOGGER.error("Couldn't load owner UUID of {}: {}", this, exception);
+                uuid = null;
             }
         }
 
@@ -154,7 +162,8 @@ public class C4Entity extends Entity implements GeoEntity, OwnableEntity {
     }
 
     @Override
-    public InteractionResult interact(Player player, InteractionHand hand) {
+    @ParametersAreNonnullByDefault
+    public @NotNull InteractionResult interact(Player player, InteractionHand hand) {
         if (this.getOwner() == player && player.isShiftKeyDown()) {
             if (!this.level().isClientSide()) {
                 this.discard();
@@ -301,7 +310,7 @@ public class C4Entity extends Entity implements GeoEntity, OwnableEntity {
     }
 
     @Override
-    public void move(MoverType pType, Vec3 pPos) {
+    public void move(@NotNull MoverType pType, @NotNull Vec3 pPos) {
         super.move(pType, pPos);
         if (pType != MoverType.SELF && this.shouldFall()) {
             this.startFalling();
@@ -430,7 +439,7 @@ public class C4Entity extends Entity implements GeoEntity, OwnableEntity {
     }
 
     @Override
-    public EntityDimensions getDimensions(Pose pPose) {
+    public @NotNull EntityDimensions getDimensions(@NotNull Pose pPose) {
         return super.getDimensions(pPose).scale((float) 0.5);
     }
 

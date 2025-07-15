@@ -128,10 +128,15 @@ public class ClaymoreEntity extends Entity implements GeoEntity, OwnableEntity {
         } else {
             String s = compound.getString("Owner");
 
-            if (this.getServer() == null) {
-                uuid = UUID.fromString(s);
-            } else {
-                uuid = OldUsersConverter.convertMobOwnerIfNecessary(this.getServer(), s);
+            try {
+                if (this.getServer() == null) {
+                    uuid = UUID.fromString(s);
+                } else {
+                    uuid = OldUsersConverter.convertMobOwnerIfNecessary(this.getServer(), s);
+                }
+            } catch (Exception exception) {
+                Mod.LOGGER.error("Couldn't load owner UUID of {}: {}", this, exception);
+                uuid = null;
             }
         }
 
