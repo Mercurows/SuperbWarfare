@@ -98,9 +98,11 @@ public class SpyglassRangeOverlay implements LayeredDraw.Layer {
                     pos = Vec3.ZERO;
                 }
                 Vec3 point = VectorUtil.worldToScreen(pos);
-                float x = (float) point.x;
-                float y = (float) point.y;
-                preciseBlit(guiGraphics, INDICATOR, Mth.clamp(x - 6, 0, screenWidth - 12), Mth.clamp(y - 6, 0, screenHeight - 12), 0, 0, 12, 12, 12, 12);
+                if (VectorUtil.canSee(pos)) {
+                    float x = (float) point.x;
+                    float y = (float) point.y;
+                    preciseBlit(guiGraphics, INDICATOR, Mth.clamp(x - 6, 0, screenWidth - 12), Mth.clamp(y - 6, 0, screenHeight - 12), 0, 0, 12, 12, 12, 12);
+                }
 
                 // 火炮位置
 
@@ -111,10 +113,11 @@ public class SpyglassRangeOverlay implements LayeredDraw.Layer {
                     if (entity != null) {
                         Vec3 posF = entity.getBoundingBox().getCenter();
                         Vec3 pointF = VectorUtil.worldToScreen(posF);
-                        float xf = (float) pointF.x;
-                        float yf = (float) pointF.y;
-
-                        preciseBlit(guiGraphics, FRIENDLY_INDICATOR, Mth.clamp(xf - 6, 0, screenWidth - 12), Mth.clamp(yf - 6, 0, screenHeight - 12), 0, 0, 12, 12, 12, 12);
+                        if (VectorUtil.canSee(posF)) {
+                            float xf = (float) pointF.x;
+                            float yf = (float) pointF.y;
+                            preciseBlit(guiGraphics, FRIENDLY_INDICATOR, Mth.clamp(xf - 6, 0, screenWidth - 12), Mth.clamp(yf - 6, 0, screenHeight - 12), 0, 0, 12, 12, 12, 12);
+                        }
                     }
                 }
 
