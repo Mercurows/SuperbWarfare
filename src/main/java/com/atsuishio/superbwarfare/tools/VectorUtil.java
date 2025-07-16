@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.tools;
 
+import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
@@ -45,5 +46,14 @@ public class VectorUtil {
         if (event.usedConfiguredFov()) {
             fov = event.getFOV();
         }
+    }
+
+    public static boolean canSee(Vec3 pos) {
+        Minecraft mc = Minecraft.getInstance();
+        Camera camera = mc.gameRenderer.getMainCamera();
+        Vec3 cameraPos = camera.getPosition();
+        Vec3 viewVec = new Vec3(camera.getLookVector());
+        Vec3 v1 = cameraPos.vectorTo(pos);
+        return VectorTool.calculateAngle(v1, viewVec) < fov;
     }
 }

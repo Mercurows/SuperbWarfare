@@ -97,7 +97,7 @@ public class VehicleTeamOverlay implements IGuiOverlay {
         if (player.getVehicle() instanceof VehicleEntity) {
             List<Entity> entities = SeekTool.getPlayer(player, player.level());
             for (var e : entities) {
-                if (e != null && e != player && calculateAngle(e, camera) < VectorUtil.fov) {
+                if (e != null && e != player && VectorUtil.canSee(e.position())) {
                     Entity team = e;
                     if (e.getVehicle() != null) {
                         team = e.getVehicle();
