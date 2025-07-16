@@ -24,7 +24,7 @@ public class Bmp2Model extends GeoModel<Bmp2Entity> {
             distance = (int) player.position().distanceTo(entity.position());
         }
 
-        if (distance < 32 || player.isScoping()) {
+        if (distance < 48 || player.isScoping()) {
             return Mod.loc("geo/bmp2.geo.json");
         } else if (distance < 96) {
             return Mod.loc("geo/vehicle_lod/bmp2.lod1.geo.json");
