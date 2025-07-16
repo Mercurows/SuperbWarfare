@@ -2,8 +2,10 @@ package com.atsuishio.superbwarfare.client.model.entity;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.entity.vehicle.MortarEntity;
+import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.player.Player;
 import software.bernie.geckolib.animation.AnimationState;
 import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.constant.DataTickets;
@@ -19,7 +21,19 @@ public class MortarModel extends GeoModel<MortarEntity> {
 
     @Override
     public ResourceLocation getModelResource(MortarEntity entity) {
-        return Mod.loc("geo/mortar.geo.json");
+        Player player = Minecraft.getInstance().player;
+
+        int distance = 0;
+
+        if (player != null) {
+            distance = (int) player.position().distanceTo(entity.position());
+        }
+
+        if (distance < 48 || player.isScoping()) {
+            return Mod.loc("geo/mortar.geo.json");
+        } else {
+            return Mod.loc("geo/vehicle_lod/mortar.lod1.geo.json");
+        }
     }
 
     @Override
