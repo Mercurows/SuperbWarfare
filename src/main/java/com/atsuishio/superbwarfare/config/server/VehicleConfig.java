@@ -19,6 +19,8 @@ public class VehicleConfig {
     public static ForgeConfigSpec.IntValue REPAIR_COOLDOWN;
     public static ForgeConfigSpec.DoubleValue REPAIR_AMOUNT;
 
+    public static ForgeConfigSpec.IntValue VEHICLE_INFO_DISPLAY_DISTANCE;
+
     public static ForgeConfigSpec.IntValue MK42_AP_DAMAGE;
     public static ForgeConfigSpec.IntValue MK42_AP_EXPLOSION_DAMAGE;
     public static ForgeConfigSpec.IntValue MK42_AP_EXPLOSION_RADIUS;
@@ -134,6 +136,9 @@ public class VehicleConfig {
 
         builder.comment("The default amount of health restored per tick when a vehicle is self-repairing");
         REPAIR_AMOUNT = builder.defineInRange("repair_amount", 0.05d, -100000000, 100000000);
+
+        builder.comment("Within this distance, the vehicle info will be displayed at client side");
+        VEHICLE_INFO_DISPLAY_DISTANCE = builder.defineInRange("vehicle_info_display_distance", 512, 0, 1024);
 
         builder.pop();
 
