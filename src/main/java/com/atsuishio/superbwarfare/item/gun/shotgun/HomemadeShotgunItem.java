@@ -34,7 +34,7 @@ import java.util.function.Supplier;
 public class HomemadeShotgunItem extends GunItem {
 
     public HomemadeShotgunItem() {
-        super(new Item.Properties().durability(24).rarity(Rarity.COMMON));
+        super(new Item.Properties().rarity(Rarity.COMMON));
     }
 
     @Override
@@ -103,13 +103,5 @@ public class HomemadeShotgunItem extends GunItem {
             ParticleTool.sendParticle(serverLevel, ParticleTypes.CLOUD, player.getX() + 1.8 * player.getLookAngle().x, player.getY() + player.getBbHeight() - 0.1 + 1.8 * player.getLookAngle().y,
                     player.getZ() + 1.8 * player.getLookAngle().z, 30, 0.4, 0.4, 0.4, 0.005, true, serverPlayer);
         }
-    }
-
-    @Override
-    public void afterShoot(GunData data, Player player) {
-        super.afterShoot(data, player);
-
-        var stack = data.stack();
-        stack.hurtAndBreak(1, player, p -> p.broadcastBreakEvent(player.getUsedItemHand()));
     }
 }

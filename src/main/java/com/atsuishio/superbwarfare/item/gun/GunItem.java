@@ -224,6 +224,16 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
         return false;
     }
 
+    @Override
+    public int getMaxDamage(@NotNull ItemStack stack) {
+        return GunData.from(stack).maxDurability();
+    }
+
+    @Override
+    public boolean isDamageable(ItemStack stack) {
+        return getMaxDamage(stack) > 0;
+    }
+
     /**
      * 开膛待击
      *
@@ -472,7 +482,6 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
             data.holdOpen.set(true);
         }
 
-
         // 判断是否为栓动武器（BoltActionTime > 0），并在开火后给一个需要上膛的状态
         if (data.defaultActionTime() > 0 && data.ammo.get() > 1) {
             data.bolt.needed.set(true);
@@ -488,6 +497,11 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
             data.isEmpty.set(true);
         } else {
             data.consumeBackupAmmo(player, 1);
+        }
+
+        var stack = data.stack();
+        if (this.getMaxDamage(stack) > 0) {
+            stack.hurtAndBreak(1, player, p -> p.broadcastBreakEvent(player.getUsedItemHand()));
         }
     }
 
