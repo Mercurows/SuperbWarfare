@@ -8,5 +8,8 @@
     "gui": {
       "parent": "superbwarfare:item/taser_icon"
     }
+  },
+  "textures": {
+    "particle": "superbwarfare:item/taser_icon"
   }
 }

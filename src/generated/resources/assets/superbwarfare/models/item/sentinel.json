@@ -8,5 +8,8 @@
     "gui": {
       "parent": "superbwarfare:item/sentinel_icon"
     }
+  },
+  "textures": {
+    "particle": "superbwarfare:item/sentinel_icon"
   }
 }

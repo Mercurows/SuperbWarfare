@@ -8,5 +8,8 @@
     "gui": {
       "parent": "superbwarfare:item/homemade_shotgun_icon"
     }
+  },
+  "textures": {
+    "particle": "superbwarfare:item/homemade_shotgun_icon"
   }
 }

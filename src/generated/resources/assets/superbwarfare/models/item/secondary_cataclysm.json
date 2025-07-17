@@ -8,5 +8,8 @@
     "gui": {
       "parent": "superbwarfare:item/secondary_cataclysm_icon"
     }
+  },
+  "textures": {
+    "particle": "superbwarfare:item/secondary_cataclysm_icon"
   }
 }

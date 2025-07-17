@@ -8,5 +8,8 @@
     "gui": {
       "parent": "superbwarfare:item/aurelia_sceptre_icon"
     }
+  },
+  "textures": {
+    "particle": "superbwarfare:item/aurelia_sceptre_icon"
   }
 }

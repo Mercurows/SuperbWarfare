@@ -8,5 +8,8 @@
     "gui": {
       "parent": "superbwarfare:item/m_870_icon"
     }
+  },
+  "textures": {
+    "particle": "superbwarfare:item/m_870_icon"
   }
 }
