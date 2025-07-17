@@ -78,6 +78,7 @@ public class MelonBombEntity extends FastThrowableProjectile implements Explosiv
 
     @Override
     protected void defineSynchedData() {
+        super.defineSynchedData();
         this.entityData.define(HEALTH, 10f);
     }
 

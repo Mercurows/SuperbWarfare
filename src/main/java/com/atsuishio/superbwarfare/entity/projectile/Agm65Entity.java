@@ -61,6 +61,7 @@ public class Agm65Entity extends FastThrowableProjectile implements GeoEntity, E
 
     public Set<Long> loadedChunks = new HashSet<>();
 
+    private static final DamageModifier DAMAGE_MODIFIER = DamageModifier.createDefaultModifier();
     private float damage = ExplosionConfig.AGM_65_DAMAGE.get();
     private float explosionDamage = ExplosionConfig.AGM_65_EXPLOSION_DAMAGE.get();
     private float explosionRadius = ExplosionConfig.AGM_65_EXPLOSION_RADIUS.get().floatValue();
@@ -92,9 +93,6 @@ public class Agm65Entity extends FastThrowableProjectile implements GeoEntity, E
     protected @NotNull Item getDefaultItem() {
         return ModItems.AGM.get();
     }
-
-
-    private static final DamageModifier DAMAGE_MODIFIER = DamageModifier.createDefaultModifier();
 
     @Override
     public boolean hurt(@NotNull DamageSource source, float amount) {
@@ -239,7 +237,7 @@ public class Agm65Entity extends FastThrowableProjectile implements GeoEntity, E
 
         if (this.level() instanceof ServerLevel serverLevel && tickCount > 1) {
             double l = getDeltaMovement().length();
-            for (double i = 0; i < l; i ++) {
+            for (double i = 0; i < l; i++) {
                 Vec3 startPos = new Vec3(this.xo, this.yo, this.zo);
                 Vec3 pos = startPos.add(getDeltaMovement().normalize().scale(-i));
                 ParticleTool.sendParticle(serverLevel, ParticleTypes.CAMPFIRE_COSY_SMOKE, pos.x, pos.y, pos.z,
