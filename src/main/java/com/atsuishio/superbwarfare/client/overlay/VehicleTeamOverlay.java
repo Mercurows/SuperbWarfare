@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.client.overlay;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.config.client.DisplayConfig;
+import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.tools.*;
@@ -54,12 +55,14 @@ public class VehicleTeamOverlay implements LayeredDraw.Layer {
         boolean lookAtEntity = false;
 
         double entityRange = 0;
-        Entity lookingEntity = TraceTool.camerafFindLookingEntity(player, cameraPos, viewVec, 512);
+        Entity lookingEntity = TraceTool.camerafFindLookingEntity(player, cameraPos, viewVec, VehicleConfig.VEHICLE_INFO_DISPLAY_DISTANCE.get());
 
         if (lookingEntity != null) {
             lookAtEntity = true;
             entityRange = player.distanceTo(lookingEntity);
         }
+
+        if (entityRange > VehicleConfig.VEHICLE_INFO_DISPLAY_DISTANCE.get()) return;
 
         if (lookAtEntity && lookingEntity instanceof VehicleEntity vehicle) {
             Vec3 pos = lookingEntity.getBoundingBox().getCenter().add(new Vec3(0, lookingEntity.getBbHeight() / 2 + 1, 0));
@@ -124,6 +127,6 @@ public class VehicleTeamOverlay implements LayeredDraw.Layer {
     public static double calculateAngle(Entity entityA, Camera camera) {
         Vec3 v1 = camera.getPosition().vectorTo(entityA.position());
         Vec3 v2 = new Vec3(camera.getLookVector());
-        return VectorTool.calculateAngle(v1,v2);
+        return VectorTool.calculateAngle(v1, v2);
     }
 }
