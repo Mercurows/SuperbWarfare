@@ -8,5 +8,8 @@
     "gui": {
       "parent": "superbwarfare:item/ntw_20_icon"
     }
+  },
+  "textures": {
+    "particle": "superbwarfare:item/ntw_20_icon"
   }
 }

@@ -8,5 +8,8 @@
     "gui": {
       "parent": "superbwarfare:item/marlin_icon"
     }
+  },
+  "textures": {
+    "particle": "superbwarfare:item/marlin_icon"
   }
 }

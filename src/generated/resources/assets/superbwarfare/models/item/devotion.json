@@ -8,5 +8,8 @@
     "gui": {
       "parent": "superbwarfare:item/devotion_icon"
     }
+  },
+  "textures": {
+    "particle": "superbwarfare:item/devotion_icon"
   }
 }

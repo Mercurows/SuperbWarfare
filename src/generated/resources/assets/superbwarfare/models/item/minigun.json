@@ -8,5 +8,8 @@
     "gui": {
       "parent": "superbwarfare:item/minigun_icon"
     }
+  },
+  "textures": {
+    "particle": "superbwarfare:item/minigun_icon"
   }
 }

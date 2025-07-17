@@ -275,6 +275,7 @@ public class ModItemModelProvider extends ItemModelProvider {
                 .customLoader(CustomSeparateModelBuilder::begin)
                 .base(base)
                 .perspective(ItemDisplayContext.GUI, icon)
+                .texture("particle", modLoc("item/" + name + "_icon"))
                 .end();
     }
 

@@ -19,6 +19,7 @@ public class CustomSeparateModelBuilder<T extends ModelBuilder<T>> extends Custo
 
     private String base;
     private final Map<String, String> childModels = new LinkedHashMap<>();
+    private final Map<String, ResourceLocation> texture = new LinkedHashMap<>();
 
     protected CustomSeparateModelBuilder(T parent, ExistingFileHelper existingFileHelper) {
         super(new ResourceLocation("forge:separate_transforms"), parent, existingFileHelper);
@@ -34,6 +35,13 @@ public class CustomSeparateModelBuilder<T extends ModelBuilder<T>> extends Custo
         Preconditions.checkNotNull(perspective, "perspective must not be null");
         Preconditions.checkNotNull(location, "location must not be null");
         childModels.put(perspective.getSerializedName(), location);
+        return this;
+    }
+
+    public CustomSeparateModelBuilder<T> texture(String name, ResourceLocation location) {
+        Preconditions.checkNotNull(name, "name must not be null");
+        Preconditions.checkNotNull(location, "location must not be null");
+        texture.put(name, location);
         return this;
     }
 
@@ -54,6 +62,12 @@ public class CustomSeparateModelBuilder<T extends ModelBuilder<T>> extends Custo
             parts.add(entry.getKey(), part);
         }
         json.add("perspectives", parts);
+
+        JsonObject textures = new JsonObject();
+        for (Map.Entry<String, ResourceLocation> entry : texture.entrySet()) {
+            textures.addProperty(entry.getKey(), entry.getValue().toString());
+        }
+        json.add("textures", textures);
 
         return json;
     }
