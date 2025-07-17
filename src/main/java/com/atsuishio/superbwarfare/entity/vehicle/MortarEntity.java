@@ -345,7 +345,10 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, RemoteCont
                 server.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, this.getX(), this.getY(), this.getZ(), 50, 2, 0.02, 2, 0.0005);
 
                 this.clearContent();
-                resetTarget();
+
+                if (this.entityData.get(INTELLIGENT)) {
+                    this.resetTarget();
+                }
                 ShakeClientMessage.sendToNearbyPlayers(this, 6, 6, 8, 14);
             }
         }
