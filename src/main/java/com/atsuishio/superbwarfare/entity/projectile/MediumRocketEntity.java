@@ -331,7 +331,7 @@ public class MediumRocketEntity extends FastThrowableProjectile implements GeoEn
                 );
 
                 gunGrenadeEntity.setPos(position().x, position().y, position().z);
-                gunGrenadeEntity.shoot(getDeltaMovement().x, getDeltaMovement().y, getDeltaMovement().z, (float) (random.nextFloat() * 0.1f + 0.8f * getDeltaMovement().length()),
+                gunGrenadeEntity.shoot(getDeltaMovement().x, getDeltaMovement().y, getDeltaMovement().z, (float) (random.nextFloat() * 0.2f + 0.4f * getDeltaMovement().length()),
                         25);
                 serverLevel.addFreshEntity(gunGrenadeEntity);
             }

@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.entity.vehicle;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
+import com.atsuishio.superbwarfare.entity.projectile.CannonShellEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.CannonEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.RemoteControllableTurret;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
@@ -34,6 +35,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
@@ -41,6 +43,7 @@ import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -90,6 +93,7 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
                                 .explosionRadius(VehicleConfig.MLE1934_AP_EXPLOSION_RADIUS.get().floatValue())
                                 .durability(70)
                                 .gravity(projectileGravity())
+                                .type(CannonShellEntity.Type.AP)
                                 .sound(ModSounds.CANNON_RELOAD.get())
                                 .icon(Mod.loc("textures/screens/vehicle_weapon/ap_shell.png")),
                         new CannonShellWeapon()
@@ -100,8 +104,19 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
                                 .fireProbability(0.24F)
                                 .fireTime(5)
                                 .gravity(projectileGravity())
+                                .type(CannonShellEntity.Type.HE)
                                 .sound(ModSounds.CANNON_RELOAD.get())
                                 .icon(Mod.loc("textures/screens/vehicle_weapon/he_shell.png")),
+                        new CannonShellWeapon()
+                                .hitDamage(VehicleConfig.MLE1934_HE_DAMAGE.get())
+                                .explosionDamage(VehicleConfig.MLE1934_HE_EXPLOSION_DAMAGE.get())
+                                .explosionRadius(VehicleConfig.MLE1934_HE_EXPLOSION_RADIUS.get().floatValue())
+                                .durability(1)
+                                .gravity(projectileGravity())
+                                .type(CannonShellEntity.Type.CM)
+                                .spreadAmount(50)
+                                .sound(ModSounds.CANNON_RELOAD.get())
+                                .icon(Mod.loc("textures/screens/vehicle_weapon/cm_shell.png")),
                 }
         };
     }
@@ -165,7 +180,16 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
 
     @Override
     public void remoteFire(@Nullable Player player) {
-        this.setWeaponIndex(0, this.getItem(0).is(ModItems.AP_5_INCHES.get()) ? 0 : 1);
+        ItemStack stack = this.getItem(0);
+
+        int type = 0;
+        if (stack.is(ModItems.HE_5_INCHES.get())) {
+            type = 1;
+        } else if (stack.is(ModItems.CM_5_INCHES.get())) {
+            type = 2;
+        }
+
+        this.setWeaponIndex(0, type);
         this.vehicleShoot(player, 0);
     }
 
@@ -179,8 +203,15 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
 
         if (stack.is(ModTags.Items.CROWBAR) && !player.isShiftKeyDown()) {
             if (this.items.get(0).getItem() instanceof CannonShellItem) {
-                var weaponType = this.items.get(0).is(ModItems.AP_5_INCHES.get()) ? 0 : 1;
-                setWeaponIndex(0, weaponType);
+                ItemStack item = this.getItem(0);
+
+                int type = 0;
+                if (item.is(ModItems.HE_5_INCHES.get())) {
+                    type = 1;
+                } else if (item.is(ModItems.CM_5_INCHES.get())) {
+                    type = 2;
+                }
+                setWeaponIndex(0, type);
                 vehicleShoot(player, 0);
             }
             return InteractionResult.SUCCESS;
@@ -371,7 +402,7 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
                     ModDamageTypes.causeCustomExplosionDamage(this.level().registryAccess(), getAttacker(), getAttacker()), 120f,
                     this.getX(), this.getY(), this.getZ(), 6f, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).setDamageMultiplier(1);
             explosion.explode();
-            net.minecraftforge.event.ForgeEventFactory.onExplosionStart(this.level(), explosion);
+            ForgeEventFactory.onExplosionStart(this.level(), explosion);
             explosion.finalizeExplosion(false);
             ParticleTool.spawnMediumExplosionParticles(this.level(), this.position());
         }
@@ -398,7 +429,12 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
                 if (InventoryTool.hasCreativeAmmoBox(player)) {
                     consumed = 2;
                 } else {
-                    var ammo = getWeaponIndex(0) == 0 ? ModItems.AP_5_INCHES.get() : ModItems.HE_5_INCHES.get();
+                    Item ammo = switch (getWeaponIndex(0))
+                    {
+                        case 1 -> ModItems.HE_5_INCHES.get();
+                        case 2 -> ModItems.CM_5_INCHES.get();
+                        default -> ModItems.AP_5_INCHES.get();
+                    };
                     var ammoCount = InventoryTool.countItem(player.getInventory().items, ammo);
 
                     // 尝试消耗两发弹药
@@ -574,7 +610,12 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
 
     @Override
     public int getAmmoCount(Player player) {
-        var ammo = getWeaponIndex(0) == 0 ? ModItems.AP_5_INCHES.get() : ModItems.HE_5_INCHES.get();
+        Item ammo = switch (getWeaponIndex(0))
+        {
+            case 1 -> ModItems.HE_5_INCHES.get();
+            case 2 -> ModItems.CM_5_INCHES.get();
+            default -> ModItems.AP_5_INCHES.get();
+        };
         return InventoryTool.countItem(player.getInventory().items, ammo);
     }
 

@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.entity.vehicle;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
+import com.atsuishio.superbwarfare.entity.projectile.CannonShellEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.CannonEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.RemoteControllableTurret;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
@@ -34,6 +35,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
@@ -112,6 +114,16 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
                                 .gravity(projectileGravity())
                                 .sound(ModSounds.CANNON_RELOAD.get())
                                 .icon(Mod.loc("textures/screens/vehicle_weapon/he_shell.png")),
+                        new CannonShellWeapon()
+                                .hitDamage(VehicleConfig.MK42_HE_DAMAGE.get())
+                                .explosionDamage(VehicleConfig.MK42_HE_EXPLOSION_DAMAGE.get())
+                                .explosionRadius(VehicleConfig.MK42_HE_EXPLOSION_RADIUS.get().floatValue())
+                                .durability(1)
+                                .gravity(projectileGravity())
+                                .type(CannonShellEntity.Type.CM)
+                                .spreadAmount(30)
+                                .sound(ModSounds.CANNON_RELOAD.get())
+                                .icon(Mod.loc("textures/screens/vehicle_weapon/cm_shell.png")),
                 }
         };
     }
@@ -163,8 +175,15 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
 
         if (stack.is(ModTags.Items.CROWBAR) && !player.isShiftKeyDown()) {
             if (this.items.get(0).getItem() instanceof CannonShellItem) {
-                var weaponType = this.items.get(0).is(ModItems.AP_5_INCHES.get()) ? 0 : 1;
-                setWeaponIndex(0, weaponType);
+                ItemStack item = this.getItem(0);
+
+                int type = 0;
+                if (item.is(ModItems.HE_5_INCHES.get())) {
+                    type = 1;
+                } else if (item.is(ModItems.CM_5_INCHES.get())) {
+                    type = 2;
+                }
+                setWeaponIndex(0, type);
                 vehicleShoot(player, 0);
             }
             return InteractionResult.SUCCESS;
@@ -376,8 +395,17 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
     }
 
     @Override
-    public void remoteFire(Player player) {
-        this.setWeaponIndex(0, this.getItem(0).is(ModItems.AP_5_INCHES.get()) ? 0 : 1);
+    public void remoteFire(@Nullable Player player) {
+        ItemStack stack = this.getItem(0);
+
+        int type = 0;
+        if (stack.is(ModItems.HE_5_INCHES.get())) {
+            type = 1;
+        } else if (stack.is(ModItems.CM_5_INCHES.get())) {
+            type = 2;
+        }
+
+        this.setWeaponIndex(0, type);
         this.vehicleShoot(player, 0);
     }
 
@@ -388,7 +416,12 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
         Level level = player.level();
         if (level instanceof ServerLevel server) {
             if (!InventoryTool.hasCreativeAmmoBox(player) && player == getFirstPassenger()) {
-                var ammo = getWeaponIndex(0) == 0 ? ModItems.AP_5_INCHES.get() : ModItems.HE_5_INCHES.get();
+                Item ammo = switch (getWeaponIndex(0))
+                {
+                    case 1 -> ModItems.HE_5_INCHES.get();
+                    case 2 -> ModItems.CM_5_INCHES.get();
+                    default -> ModItems.AP_5_INCHES.get();
+                };
                 var ammoCount = InventoryTool.countItem(player.getInventory().items, ammo);
 
                 if (ammoCount <= 0) return;
@@ -510,7 +543,12 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
 
     @Override
     public int getAmmoCount(Player player) {
-        var ammo = getWeaponIndex(0) == 0 ? ModItems.AP_5_INCHES.get() : ModItems.HE_5_INCHES.get();
+        Item ammo = switch (getWeaponIndex(0))
+        {
+            case 1 -> ModItems.HE_5_INCHES.get();
+            case 2 -> ModItems.CM_5_INCHES.get();
+            default -> ModItems.AP_5_INCHES.get();
+        };
         return InventoryTool.countItem(player.getInventory().items, ammo);
     }
 

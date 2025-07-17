@@ -12,6 +12,7 @@ import com.atsuishio.superbwarfare.network.message.receive.ClientMotionSyncMessa
 import com.atsuishio.superbwarfare.tools.ChunkLoadTool;
 import com.atsuishio.superbwarfare.tools.CustomExplosion;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
+import com.atsuishio.superbwarfare.tools.ProjectileCalculator;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -59,21 +60,31 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
     public Set<Long> loadedChunks = new HashSet<>();
     private float gravity = 0.1f;
 
+    public enum Type {
+        AP, HE, CM
+    }
+    private Type type = Type.AP;
+
+    private boolean active;
+    private int sparedTime;
+    private int sparedAmount = 50;
+
     public CannonShellEntity(EntityType<? extends CannonShellEntity> type, Level world) {
         super(type, world);
         this.noCulling = true;
     }
 
-    public CannonShellEntity(LivingEntity entity, Level world, float damage, float radius, float explosionDamage, float fireProbability, int fireTime, float gravity) {
+    public CannonShellEntity(LivingEntity entity, Level world, float damage, float radius, float explosionDamage, float fireProbability, int fireTime, float gravity, Type type, int sparedAmount) {
         super(ModEntities.CANNON_SHELL.get(), entity, world);
         this.noCulling = true;
-
         this.damage = damage;
         this.radius = radius;
         this.explosionDamage = explosionDamage;
         this.fireProbability = fireProbability;
         this.fireTime = fireTime;
         this.gravity = gravity;
+        this.type = type;
+        this.sparedAmount = sparedAmount;
     }
 
     public CannonShellEntity(PlayMessages.SpawnEntity spawnEntity, Level level) {
@@ -165,6 +176,11 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
     @Override
     public void onHitBlock(BlockHitResult blockHitResult) {
         if (this.level() instanceof ServerLevel) {
+            if (type == Type.HE || type == Type.CM) {
+                causeExplode(blockHitResult.getLocation());
+                this.discard();
+                return;
+            }
             BlockPos resultPos = blockHitResult.getBlockPos();
             float hardness = this.level().getBlockState(resultPos).getBlock().defaultDestroyTime();
             if (hardness != -1) {
@@ -238,6 +254,42 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
                 causeExplode(position());
             }
             this.discard();
+        }
+
+        if (type == Type.CM && getDeltaMovement().y < 0.1 && !active) {
+            if (position().y < level().getMinBuildHeight() || position().y > level().getMaxBuildHeight()) return;
+
+            Vec3 finalPos = ProjectileCalculator.calculatePreciseImpactPoint(level(), position(), getDeltaMovement(), -gravity);
+            double vh = getDeltaMovement().horizontalDistance();
+            double dh = position().vectorTo(finalPos).horizontalDistance();
+            int t = (int) (dh / vh);
+
+            sparedTime = tickCount + t - 10;
+            active = true;
+        }
+
+        if (tickCount >= sparedTime && active && type == Type.CM) {
+            releaseClusterMunitions((LivingEntity) getOwner());
+            this.discard();
+        }
+    }
+
+    private void releaseClusterMunitions(LivingEntity shooter) {
+        if (level() instanceof ServerLevel serverLevel) {
+            ParticleTool.spawnMediumExplosionParticles(serverLevel, position());
+            for (int index0 = 0; index0 < sparedAmount; index0++) {
+                GunGrenadeEntity gunGrenadeEntity = new GunGrenadeEntity(shooter, serverLevel,
+                        6 * damage / sparedAmount,
+                        5 * explosionDamage / sparedAmount,
+                        radius / 2
+                );
+
+                gunGrenadeEntity.setPos(position().x, position().y, position().z);
+                gunGrenadeEntity.shoot(getDeltaMovement().x, getDeltaMovement().y, getDeltaMovement().z, (float) (random.nextFloat() * 0.2f + 0.4f * getDeltaMovement().length()),
+                        25);
+                serverLevel.addFreshEntity(gunGrenadeEntity);
+            }
+            discard();
         }
     }
 
