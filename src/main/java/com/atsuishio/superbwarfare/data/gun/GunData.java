@@ -149,6 +149,10 @@ public class GunData {
         return GunsTool.gunsData.getOrDefault(id, new DefaultGunData());
     }
 
+    public int maxDurability() {
+        return Math.max(0, defaultGunData().maxDurability);
+    }
+
     // 枪械本体属性开始
     public double rawDamage() {
         return defaultGunData().damage;

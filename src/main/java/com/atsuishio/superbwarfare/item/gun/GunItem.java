@@ -23,6 +23,7 @@ import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -221,6 +222,22 @@ public abstract class GunItem extends Item implements CustomRendererItem, GeoIte
     @ParametersAreNonnullByDefault
     public boolean supportsEnchantment(ItemStack stack, Holder<Enchantment> enchantment) {
         return false;
+    }
+
+    @Override
+    public int getMaxDamage(@NotNull ItemStack stack) {
+        var maxDurability = GunData.from(stack).maxDurability();
+
+        if (maxDurability > 0) {
+            if (!stack.has(DataComponents.MAX_DAMAGE) || !stack.has(DataComponents.DAMAGE)) {
+                stack.set(DataComponents.MAX_DAMAGE, maxDurability);
+                stack.set(DataComponents.DAMAGE, 0);
+            }
+        } else {
+            stack.remove(DataComponents.MAX_DAMAGE);
+            stack.remove(DataComponents.DAMAGE);
+        }
+        return maxDurability;
     }
 
     /**
@@ -472,7 +489,6 @@ public abstract class GunItem extends Item implements CustomRendererItem, GeoIte
             data.holdOpen.set(true);
         }
 
-
         // 判断是否为栓动武器（BoltActionTime > 0），并在开火后给一个需要上膛的状态
         if (data.defaultActionTime() > 0 && data.ammo.get() > 1) {
             data.bolt.needed.set(true);
@@ -488,6 +504,12 @@ public abstract class GunItem extends Item implements CustomRendererItem, GeoIte
             data.isEmpty.set(true);
         } else {
             data.consumeBackupAmmo(player, 1);
+        }
+
+        var stack = data.stack();
+        if (this.getMaxDamage(stack) > 0) {
+            stack.hurtAndBreak(1, (ServerLevel) player.level(), player, p -> {
+            });
         }
     }
 
