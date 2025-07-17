@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.capability.player.PlayerVariable;
 import com.atsuishio.superbwarfare.client.PoseTool;
 import com.atsuishio.superbwarfare.client.tooltip.component.GunImageComponent;
+import com.atsuishio.superbwarfare.data.gun.DefaultGunData;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.ProjectileInfo;
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
@@ -17,6 +18,7 @@ import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.CustomRendererItem;
 import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
+import com.atsuishio.superbwarfare.tools.GunsTool;
 import com.atsuishio.superbwarfare.tools.RangeTool;
 import com.atsuishio.superbwarfare.tools.SoundTool;
 import com.google.common.collect.HashMultimap;
@@ -226,7 +228,9 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
 
     @Override
     public int getMaxDamage(@NotNull ItemStack stack) {
-        return GunData.from(stack).maxDurability();
+        var id = this.getDescriptionId();
+        var desId = id.substring(id.indexOf(".") + 1).replace('.', ':');
+        return GunsTool.gunsData.getOrDefault(desId, new DefaultGunData()).maxDurability;
     }
 
     @Override
