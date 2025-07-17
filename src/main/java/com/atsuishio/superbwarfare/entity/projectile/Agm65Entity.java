@@ -53,6 +53,7 @@ public class Agm65Entity extends FastThrowableProjectile implements GeoEntity, E
 
     public Set<Long> loadedChunks = new HashSet<>();
 
+    private static final DamageModifier DAMAGE_MODIFIER = DamageModifier.createDefaultModifier();
     private float damage = ExplosionConfig.AGM_65_DAMAGE.get();
     private float explosionDamage = ExplosionConfig.AGM_65_EXPLOSION_DAMAGE.get();
     private float explosionRadius = ExplosionConfig.AGM_65_EXPLOSION_RADIUS.get().floatValue();
@@ -80,9 +81,6 @@ public class Agm65Entity extends FastThrowableProjectile implements GeoEntity, E
     protected @NotNull Item getDefaultItem() {
         return ModItems.AGM.get();
     }
-
-
-    private static final DamageModifier DAMAGE_MODIFIER = DamageModifier.createDefaultModifier();
 
     @Override
     public boolean hurt(@NotNull DamageSource source, float amount) {

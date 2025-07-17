@@ -46,6 +46,8 @@ public class WgMissileEntity extends FastThrowableProjectile implements GeoEntit
     public static final EntityDataAccessor<Float> HEALTH = SynchedEntityData.defineId(WgMissileEntity.class, EntityDataSerializers.FLOAT);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
+    private static final DamageModifier DAMAGE_MODIFIER = DamageModifier.createDefaultModifier();
+
     private float damage = 250f;
     private float explosionDamage = 200f;
     private float explosionRadius = 10f;
@@ -64,8 +66,6 @@ public class WgMissileEntity extends FastThrowableProjectile implements GeoEntit
         this.explosionRadius = explosionRadius;
         this.durability = 50;
     }
-
-    private static final DamageModifier DAMAGE_MODIFIER = DamageModifier.createDefaultModifier();
 
     @Override
     public boolean hurt(@NotNull DamageSource source, float amount) {

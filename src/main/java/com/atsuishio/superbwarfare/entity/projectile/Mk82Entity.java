@@ -30,6 +30,9 @@ public class Mk82Entity extends FastThrowableProjectile implements GeoEntity, Ex
     public static final EntityDataAccessor<Float> HEALTH = SynchedEntityData.defineId(Mk82Entity.class, EntityDataSerializers.FLOAT);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
+    private static final DamageModifier DAMAGE_MODIFIER = DamageModifier.createDefaultModifier()
+            .immuneTo(ModEntities.MK_82.get());
+
     private float explosionDamage = ExplosionConfig.MK_82_EXPLOSION_DAMAGE.get();
     private float explosionRadius = ExplosionConfig.MK_82_EXPLOSION_RADIUS.get().floatValue();
 
@@ -54,9 +57,6 @@ public class Mk82Entity extends FastThrowableProjectile implements GeoEntity, Ex
     protected @NotNull Item getDefaultItem() {
         return ModItems.MEDIUM_AERIAL_BOMB.get();
     }
-
-    private static final DamageModifier DAMAGE_MODIFIER = DamageModifier.createDefaultModifier()
-            .immuneTo(ModEntities.MK_82.get());
 
     @Override
     public boolean hurt(@NotNull DamageSource source, float amount) {
