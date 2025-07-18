@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.data.gun;
 
 import com.atsuishio.superbwarfare.annotation.ServerOnly;
 import com.atsuishio.superbwarfare.data.IDBasedData;
+import com.atsuishio.superbwarfare.data.StringOrObject;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
@@ -53,7 +54,7 @@ public class DefaultGunData implements IDBasedData {
 
     @ServerOnly
     @SerializedName("Projectile")
-    public ProjectileInfo projectile = new ProjectileInfo();
+    public StringOrObject<ProjectileInfo> projectile = new StringOrObject<>(new ProjectileInfo());
 
     @SerializedName("ProjectileAmount")
     public int projectileAmount = 1;

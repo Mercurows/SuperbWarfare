@@ -4,9 +4,7 @@
   "RecoilX": 0.004,
   "RecoilY": 0.023,
   "Damage": 40,
-  "Projectile": {
-    "Type": "superbwarfare:gun_grenade"
-  },
+  "Projectile": "superbwarfare:gun_grenade",
   "ExplosionDamage": 80,
   "ExplosionRadius": 5,
   "Velocity": 3.75,
