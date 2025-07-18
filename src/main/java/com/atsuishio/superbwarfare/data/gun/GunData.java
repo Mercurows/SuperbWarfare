@@ -213,7 +213,7 @@ public class GunData {
     }
 
     public ProjectileInfo projectileInfo() {
-        var info = defaultGunData().projectile;
+        var info = defaultGunData().projectile.value;
         if (info == null) return new ProjectileInfo();
 
         return info;

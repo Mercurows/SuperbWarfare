@@ -48,6 +48,8 @@ public class DataLoader {
     public static final Gson gson = new GsonBuilder()
             .setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE)
             .setLenient()
+            .registerTypeAdapterFactory(new ListOrObject.ListOrObjectFactory())
+            .registerTypeAdapterFactory(new StringOrObject.StringOrObjectAdapterFactory())
             .create();
 
     private static void reloadAllData(ResourceManager manager) {
