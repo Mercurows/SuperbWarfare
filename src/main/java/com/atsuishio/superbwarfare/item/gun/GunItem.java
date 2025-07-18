@@ -31,10 +31,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.EquipmentSlotGroup;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
@@ -508,8 +505,7 @@ public abstract class GunItem extends Item implements CustomRendererItem, GeoIte
 
         var stack = data.stack();
         if (this.getMaxDamage(stack) > 0) {
-            stack.hurtAndBreak(1, (ServerLevel) player.level(), player, p -> {
-            });
+            stack.hurtAndBreak(1, player, EquipmentSlot.MAINHAND);
         }
     }
 

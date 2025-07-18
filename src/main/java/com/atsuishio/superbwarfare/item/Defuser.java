@@ -9,6 +9,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -57,9 +58,8 @@ public class Defuser extends Item {
 
         if (useTick >= C4Entity.DEFAULT_DEFUSE_PROGRESS && pLevel instanceof ServerLevel) {
             player.stopUsingItem();
-            if (pLevel instanceof ServerLevel serverLevel) {
-                pStack.hurtAndBreak(1, serverLevel, player, p -> {
-                });
+            if (pLevel instanceof ServerLevel) {
+                pStack.hurtAndBreak(1, player, player.getUsedItemHand() == InteractionHand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND);
             }
             target.defuse();
         }
