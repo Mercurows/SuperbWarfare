@@ -1,11 +1,11 @@
 package com.atsuishio.superbwarfare.data.gun;
 
-import com.atsuishio.superbwarfare.data.FromString;
+import com.atsuishio.superbwarfare.data.DeserializeFromString;
 import com.atsuishio.superbwarfare.data.IDBasedData;
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
 
-public class ProjectileInfo implements IDBasedData, FromString {
+public class ProjectileInfo implements IDBasedData, DeserializeFromString {
 
     @SerializedName("Type")
     public String type = "superbwarfare:projectile";
@@ -19,7 +19,7 @@ public class ProjectileInfo implements IDBasedData, FromString {
     }
 
     @Override
-    public void fromString(String s) {
-        this.type = s;
+    public void deserializeFromString(String str) {
+        this.type = str;
     }
 }

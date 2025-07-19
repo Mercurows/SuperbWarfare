@@ -505,7 +505,7 @@ public class GunData {
 
     public List<Perk> availablePerks() {
         List<Perk> availablePerks = new ArrayList<>();
-        var perkNames = defaultGunData().availablePerks;
+        var perkNames = defaultGunData().availablePerks.list;
         if (perkNames == null || perkNames.isEmpty()) return availablePerks;
 
         List<String> sortedNames = new ArrayList<>(perkNames);

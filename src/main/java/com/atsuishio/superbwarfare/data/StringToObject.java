@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.data;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.google.gson.Gson;
 import com.google.gson.TypeAdapter;
 import com.google.gson.TypeAdapterFactory;
@@ -16,15 +15,18 @@ import java.lang.reflect.Type;
 /**
  * "" -> {}
  */
-public class StringOrObject<T> {
+public class StringToObject<T extends DeserializeFromString> {
     public T value;
 
-    public StringOrObject(T value) {
+    public StringToObject(T value) {
         this.value = value;
     }
 
-    static class StringOrObjectAdapter<T> extends TypeAdapter<StringOrObject<T>> {
+    static class StringOrObjectAdapter<T extends DeserializeFromString> extends TypeAdapter<StringToObject<T>> {
 
+        /**
+         * Type of T
+         */
         private final Type type;
         private final Gson gson;
 
@@ -34,42 +36,32 @@ public class StringOrObject<T> {
         }
 
         @Override
-        public void write(JsonWriter jsonWriter, StringOrObject<T> obj) {
+        public void write(JsonWriter jsonWriter, StringToObject<T> obj) {
             gson.toJson(obj.value, type, jsonWriter);
         }
 
         @Override
-        @SuppressWarnings("unchecked")
-        public StringOrObject<T> read(JsonReader jsonReader) throws IOException {
+        public StringToObject<T> read(JsonReader jsonReader) throws IOException {
             var token = jsonReader.peek();
             if (token == JsonToken.NULL) return gson.fromJson("{}", type);
 
-            if (token == JsonToken.BEGIN_OBJECT) {
-                T t = gson.fromJson(jsonReader, type);
-                return new StringOrObject<>(t);
+            if (token == JsonToken.BEGIN_OBJECT || token == JsonToken.BEGIN_ARRAY) {
+                return new StringToObject<>(gson.fromJson(jsonReader, type));
             }
 
-            if (token == JsonToken.BEGIN_ARRAY) {
-                throw new IllegalArgumentException("excepted string or object, but got array");
-            }
+            var obj = gson.<T>fromJson("{}", type);
+            obj.deserializeFromString(gson.fromJson(jsonReader, String.class));
 
-            var obj = gson.fromJson("{}", type);
-            if (obj instanceof FromString fromString) {
-                fromString.fromString(gson.fromJson(jsonReader, String.class));
-            } else {
-                Mod.LOGGER.warn("warning: type {} is not FromString", type);
-            }
-
-            return (StringOrObject<T>) new StringOrObject<>(obj);
+            return new StringToObject<>(obj);
         }
     }
 
-    static class StringOrObjectAdapterFactory implements TypeAdapterFactory {
+    static class AdapterFactory implements TypeAdapterFactory {
 
         @Override
         @SuppressWarnings("unchecked")
         public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-            if (StringOrObject.class.isAssignableFrom(type.getRawType()) && type.getType() instanceof ParameterizedType) {
+            if (StringToObject.class.isAssignableFrom(type.getRawType()) && type.getType() instanceof ParameterizedType) {
                 return (TypeAdapter<T>) new StringOrObjectAdapter<>(type.getType(), gson);
             }
             return null;
