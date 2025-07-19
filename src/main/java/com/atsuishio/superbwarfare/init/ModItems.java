@@ -26,6 +26,7 @@ import com.atsuishio.superbwarfare.item.gun.smg.VectorItem;
 import com.atsuishio.superbwarfare.item.gun.sniper.*;
 import com.atsuishio.superbwarfare.item.gun.special.BocekItem;
 import com.atsuishio.superbwarfare.item.gun.special.TaserItem;
+import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.tiers.ModItemTier;
 import com.atsuishio.superbwarfare.tools.Ammo;
 import com.atsuishio.superbwarfare.tools.RarityTool;
@@ -43,7 +44,9 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @SuppressWarnings("unused")
 public class ModItems {
@@ -329,19 +332,29 @@ public class ModItems {
      */
     public static final DeferredRegister<Item> PERKS = DeferredRegister.create(ForgeRegistries.ITEMS, Mod.MODID);
 
+    public static final Map<RegistryObject<Perk>, RegistryObject<Item>> PERK_ITEMS = new HashMap<>();
+
+    /**
+     * 单独注册，用于Tab图标，不要删
+     */
+    public static RegistryObject<Item> AP_BULLET;
+    public static RegistryObject<Item> INTELLIGENT_CHIP;
+
     public static void registerPerkItems() {
-        ModPerks.AMMO_PERKS.getEntries().stream().filter(p -> p != ModPerks.AP_BULLET)
-                .forEach(registryObject -> PERKS.register(registryObject.getId().getPath(), () -> new PerkItem(registryObject)));
-        ModPerks.FUNC_PERKS.getEntries().forEach(registryObject -> PERKS.register(registryObject.getId().getPath(), () -> new PerkItem(registryObject)));
-        ModPerks.DAMAGE_PERKS.getEntries().forEach(registryObject -> PERKS.register(registryObject.getId().getPath(), () -> new PerkItem(registryObject)));
+        ModPerks.AMMO_PERKS.getEntries().forEach(ModItems::registerSinglePerkItem);
+        ModPerks.FUNC_PERKS.getEntries().forEach(ModItems::registerSinglePerkItem);
+        ModPerks.DAMAGE_PERKS.getEntries().forEach(ModItems::registerSinglePerkItem);
+
+        AP_BULLET = PERK_ITEMS.get(ModPerks.AP_BULLET);
+        INTELLIGENT_CHIP = PERK_ITEMS.get(ModPerks.INTELLIGENT_CHIP);
+    }
+
+    private static void registerSinglePerkItem(RegistryObject<Perk> perk) {
+        PERK_ITEMS.put(perk, PERKS.register(perk.getId().getPath(), () -> new PerkItem(perk)));
     }
 
     public static final RegistryObject<Item> SHORTCUT_PACK = PERKS.register("shortcut_pack", ShortcutPack::new);
     public static final RegistryObject<Item> EMPTY_PERK = PERKS.register("empty_perk", () -> new Item(new Item.Properties()));
-    /**
-     * 单独注册，用于Tab图标，不要删
-     */
-    public static final RegistryObject<Item> AP_BULLET = PERKS.register("ap_bullet", () -> new PerkItem(ModPerks.AP_BULLET));
 
 
     public static void registerDispenserBehavior(FMLCommonSetupEvent event) {

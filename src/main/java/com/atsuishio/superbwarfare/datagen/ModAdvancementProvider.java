@@ -102,6 +102,11 @@ public class ModAdvancementProvider implements DataProvider {
             .type(ModAdvancement.Type.GOAL)
             .parent(ANCIENT_TECHNOLOGY)),
 
+    HANDSOME_FRAME = advancement("handsome_frame", builder -> builder.icon(ModItems.INTELLIGENT_CHIP.get())
+            .whenIconCollected()
+            .type(ModAdvancement.Type.GOAL)
+            .parent(ENCLAVE)),
+
     // 哑弹棒（？）
     BOOMSTICK_MELEE = advancement("boomstick_melee", builder -> builder.icon(ModItems.ROCKET.get())
             .externalTrigger(RPGMeleeExplosionTrigger.TriggerInstance.get())
