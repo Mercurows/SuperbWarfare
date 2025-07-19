@@ -148,6 +148,10 @@ public abstract class VehicleEntity extends Entity implements Container {
     public VehicleEntity(EntityType<?> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
         this.setHealth(this.getMaxHealth());
+
+        if (this.hasEnergyStorage()) {
+            this.energyStorage = new VehicleEnergyStorage(this);
+        }
     }
 
     public void mouseInput(double x, double y) {
@@ -481,7 +485,7 @@ public abstract class VehicleEntity extends Entity implements Container {
 
     public static final EntityDataAccessor<Integer> ENERGY = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.INT);
 
-    protected final SyncedEntityEnergyStorage energyStorage = new VehicleEnergyStorage(this);
+    protected SyncedEntityEnergyStorage energyStorage = null;
     protected LazyOptional<IEnergyStorage> energy = LazyOptional.of(() -> energyStorage);
 
     public EntityDataAccessor<Integer> getEnergyDataAccessor() {
@@ -547,6 +551,7 @@ public abstract class VehicleEntity extends Entity implements Container {
         return this.energyStorage.getEnergyStored();
     }
 
+    @Nullable
     public IEnergyStorage getEnergyStorage() {
         if (!this.hasEnergyStorage()) {
             Mod.LOGGER.warn("Trying to get energy storage of vehicle {}, but it has no energy storage", this.getName());

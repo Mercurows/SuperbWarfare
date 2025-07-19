@@ -14,27 +14,41 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.IItemDecorator;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @OnlyIn(Dist.CLIENT)
 public class ContainerItemDecorator implements IItemDecorator {
+
+    private static final Map<String, ResourceLocation> icons = new HashMap<>();
 
     @Override
     public boolean render(GuiGraphics guiGraphics, Font font, ItemStack stack, int xOffset, int yOffset) {
         if (!(stack.getItem() instanceof ContainerBlockItem)) return false;
         var tag = BlockItem.getBlockEntityData(stack);
         if (tag == null) return false;
-        EntityType<?> entityType = null;
+
+        ResourceLocation icon = null;
         if (tag.contains("EntityType")) {
-            entityType = EntityType.byString(tag.getString("EntityType")).orElse(null);
+            var typeString = tag.getString("EntityType");
+
+            if (icons.containsKey(typeString)) {
+                icon = icons.get(typeString);
+            } else {
+                var entityType = EntityType.byString(typeString).orElse(null);
+                if (entityType == null) return false;
+
+                Minecraft mc = Minecraft.getInstance();
+                var level = mc.level;
+                if (level == null) return false;
+
+                var entity = entityType.create(level);
+                if (!(entity instanceof VehicleEntity vehicle)) return false;
+
+                icon = vehicle.getVehicleItemIcon();
+                icons.put(typeString, icon);
+            }
         }
-        if (entityType == null) return false;
-        Minecraft mc = Minecraft.getInstance();
-        var level = mc.level;
-        if (level == null) return false;
-
-        var entity = entityType.create(level);
-        if (!(entity instanceof VehicleEntity vehicle)) return false;
-
-        ResourceLocation icon = vehicle.getVehicleItemIcon();
         if (icon == null) return false;
 
         var pose = guiGraphics.pose();
