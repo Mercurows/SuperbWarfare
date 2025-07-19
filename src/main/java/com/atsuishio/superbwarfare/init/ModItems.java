@@ -27,6 +27,7 @@ import com.atsuishio.superbwarfare.item.gun.smg.VectorItem;
 import com.atsuishio.superbwarfare.item.gun.sniper.*;
 import com.atsuishio.superbwarfare.item.gun.special.BocekItem;
 import com.atsuishio.superbwarfare.item.gun.special.TaserItem;
+import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.tiers.ModItemTier;
 import com.atsuishio.superbwarfare.tools.Ammo;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -41,7 +42,9 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @SuppressWarnings("unused")
 public class ModItems {
@@ -326,19 +329,29 @@ public class ModItems {
      */
     public static final DeferredRegister<Item> PERKS = DeferredRegister.create(BuiltInRegistries.ITEM, Mod.MODID);
 
+    public static final Map<DeferredHolder<Perk, ? extends Perk>, DeferredHolder<Item, ? extends PerkItem<?>>> PERK_ITEMS = new HashMap<>();
+
+    /**
+     * 单独注册，用于Tab图标，不要删
+     */
+    public static DeferredHolder<Item, ? extends PerkItem<?>> AP_BULLET;
+    public static DeferredHolder<Item, ? extends PerkItem<?>> INTELLIGENT_CHIP;
+
     public static void registerPerkItems() {
-        ModPerks.AMMO_PERKS.getEntries().stream().filter(p -> p != ModPerks.AP_BULLET)
-                .forEach(registryObject -> PERKS.register(registryObject.getId().getPath(), () -> new PerkItem<>(registryObject)));
-        ModPerks.FUNC_PERKS.getEntries().forEach(registryObject -> PERKS.register(registryObject.getId().getPath(), () -> new PerkItem<>(registryObject)));
-        ModPerks.DAMAGE_PERKS.getEntries().forEach(registryObject -> PERKS.register(registryObject.getId().getPath(), () -> new PerkItem<>(registryObject)));
+        ModPerks.AMMO_PERKS.getEntries().forEach(ModItems::registerSinglePerkItem);
+        ModPerks.FUNC_PERKS.getEntries().forEach(ModItems::registerSinglePerkItem);
+        ModPerks.DAMAGE_PERKS.getEntries().forEach(ModItems::registerSinglePerkItem);
+
+        AP_BULLET = PERK_ITEMS.get(ModPerks.AP_BULLET);
+        INTELLIGENT_CHIP = PERK_ITEMS.get(ModPerks.INTELLIGENT_CHIP);
+    }
+
+    private static void registerSinglePerkItem(DeferredHolder<Perk, ? extends Perk> perk) {
+        PERK_ITEMS.put(perk, PERKS.register(perk.getId().getPath(), () -> new PerkItem<>(perk)));
     }
 
     public static final DeferredHolder<Item, ShortcutPack> SHORTCUT_PACK = PERKS.register("shortcut_pack", ShortcutPack::new);
     public static final DeferredHolder<Item, Item> EMPTY_PERK = PERKS.register("empty_perk", () -> new Item(new Item.Properties()));
-    /**
-     * 单独注册，用于Tab图标，不要删
-     */
-    public static final DeferredHolder<Item, Item> AP_BULLET = PERKS.register("ap_bullet", () -> new PerkItem<>(ModPerks.AP_BULLET));
 
     private static <T extends Block> DeferredHolder<Item, BlockItem> block(DeferredHolder<Block, T> block) {
         return BLOCKS.register(block.getId().getPath(), () -> new BlockItem(block.get(), new Item.Properties()));

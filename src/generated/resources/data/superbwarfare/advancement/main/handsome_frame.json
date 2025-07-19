@@ -1,0 +1,34 @@
+{
+  "parent": "superbwarfare:main/enclave",
+  "criteria": {
+    "0": {
+      "conditions": {
+        "items": [
+          {
+            "items": "superbwarfare:intelligent_chip"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "superbwarfare.advancement.main.handsome_frame.des"
+    },
+    "frame": "goal",
+    "icon": {
+      "count": 1,
+      "id": "superbwarfare:intelligent_chip"
+    },
+    "title": {
+      "translate": "superbwarfare.advancement.main.handsome_frame"
+    }
+  },
+  "requirements": [
+    [
+      "0"
+    ]
+  ],
+  "sends_telemetry_event": true
+}
