@@ -121,6 +121,6 @@ public class VehicleData {
             modifier.reduce(5, ModDamageTypes.VEHICLE_STRIKE);
         }
 
-        return modifier.addAll(data.damageModifiers);
+        return modifier.addAll(data.damageModifiers.list);
     }
 }

@@ -2,10 +2,10 @@ package com.atsuishio.superbwarfare.data.gun;
 
 import com.atsuishio.superbwarfare.annotation.ServerOnly;
 import com.atsuishio.superbwarfare.data.IDBasedData;
-import com.atsuishio.superbwarfare.data.StringOrObject;
+import com.atsuishio.superbwarfare.data.ObjectToList;
+import com.atsuishio.superbwarfare.data.StringToObject;
 import com.google.gson.annotations.SerializedName;
 
-import java.util.List;
 import java.util.Set;
 
 public class DefaultGunData implements IDBasedData {
@@ -54,7 +54,7 @@ public class DefaultGunData implements IDBasedData {
 
     @ServerOnly
     @SerializedName("Projectile")
-    public StringOrObject<ProjectileInfo> projectile = new StringOrObject<>(new ProjectileInfo());
+    public StringToObject<ProjectileInfo> projectile = new StringToObject<>(new ProjectileInfo());
 
     @SerializedName("ProjectileAmount")
     public int projectileAmount = 1;
@@ -126,7 +126,7 @@ public class DefaultGunData implements IDBasedData {
     public double heatPerShoot = 0;
 
     @SerializedName("AvailablePerks")
-    public List<String> availablePerks = List.of(
+    public ObjectToList<String> availablePerks = new ObjectToList<>(
             "@Ammo",
             "superbwarfare:field_doctor",
             "superbwarfare:powerful_attraction",

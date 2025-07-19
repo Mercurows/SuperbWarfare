@@ -146,9 +146,9 @@ public class GunData {
         return GunsTool.gunsData.getOrDefault(id, new DefaultGunData());
     }
 
-    public int maxDurability() {
-        return Math.max(0, defaultGunData().maxDurability);
-    }
+//    public int maxDurability() {
+//        return Math.max(0, defaultGunData().maxDurability);
+//    }
 
     // 枪械本体属性开始
     public double rawDamage() {
@@ -502,7 +502,7 @@ public class GunData {
 
     public List<Perk> availablePerks() {
         List<Perk> availablePerks = new ArrayList<>();
-        var perkNames = defaultGunData().availablePerks;
+        var perkNames = defaultGunData().availablePerks.list;
         if (perkNames == null || perkNames.isEmpty()) return availablePerks;
 
         List<String> sortedNames = new ArrayList<>(perkNames);
