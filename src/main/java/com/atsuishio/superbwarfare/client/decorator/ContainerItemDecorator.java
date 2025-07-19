@@ -15,9 +15,13 @@ import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.IItemDecorator;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.HashMap;
+import java.util.Map;
 
 @OnlyIn(Dist.CLIENT)
 public class ContainerItemDecorator implements IItemDecorator {
+
+    private static final Map<String, ResourceLocation> icons = new HashMap<>();
 
     @Override
     @ParametersAreNonnullByDefault
@@ -27,19 +31,28 @@ public class ContainerItemDecorator implements IItemDecorator {
         if (data == null) return false;
         var tag = data.copyTag();
 
-        EntityType<?> entityType = null;
+        ResourceLocation icon = null;
         if (tag.contains("EntityType")) {
-            entityType = EntityType.byString(tag.getString("EntityType")).orElse(null);
+            var typeString = tag.getString("EntityType");
+
+            if (icons.containsKey(typeString)) {
+                icon = icons.get(typeString);
+            } else {
+                EntityType<?> entityType;
+                entityType = EntityType.byString(typeString).orElse(null);
+                if (entityType == null) return false;
+
+                Minecraft mc = Minecraft.getInstance();
+                var level = mc.level;
+                if (level == null) return false;
+
+                var entity = entityType.create(level);
+                if (!(entity instanceof VehicleEntity vehicle)) return false;
+
+                icon = vehicle.getVehicleItemIcon();
+                icons.put(typeString, icon);
+            }
         }
-        if (entityType == null) return false;
-        Minecraft mc = Minecraft.getInstance();
-        var level = mc.level;
-        if (level == null) return false;
-
-        var entity = entityType.create(level);
-        if (!(entity instanceof VehicleEntity vehicle)) return false;
-
-        ResourceLocation icon = vehicle.getVehicleItemIcon();
         if (icon == null) return false;
 
         var pose = guiGraphics.pose();

@@ -464,7 +464,7 @@ public abstract class VehicleEntity extends Entity implements Container {
     }
 
     public static final EntityDataAccessor<Integer> ENERGY = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.INT);
-    protected final IEnergyStorage energyStorage = new SyncedEntityEnergyStorage(this.getMaxEnergy(), this.entityData, ENERGY);
+    protected IEnergyStorage energyStorage = null;
 
     public VehicleEntity(EntityType<?> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
@@ -472,6 +472,9 @@ public abstract class VehicleEntity extends Entity implements Container {
 
         if (this instanceof WeaponVehicleEntity weaponVehicle && weaponVehicle.getAllWeapons().length > 0) {
             this.entityData.set(SELECTED_WEAPON, IntList.of(initSelectedWeaponArray(weaponVehicle)));
+        }
+        if (this.hasEnergyStorage()) {
+            this.energyStorage = new SyncedEntityEnergyStorage(this.getMaxEnergy(), this.entityData, ENERGY);
         }
     }
 
@@ -533,6 +536,7 @@ public abstract class VehicleEntity extends Entity implements Container {
         return this.energyStorage.getEnergyStored();
     }
 
+    @Nullable
     public IEnergyStorage getEnergyStorage() {
         if (!this.hasEnergyStorage()) {
             Mod.LOGGER.warn("Trying to get energy storage of vehicle {}, but it has no energy storage", this.getName());
