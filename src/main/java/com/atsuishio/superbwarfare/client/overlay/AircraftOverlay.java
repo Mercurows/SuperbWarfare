@@ -91,7 +91,7 @@ public class AircraftOverlay implements IGuiOverlay {
                     Vec3 bombCross = p0.lerp(p1, partialTick);
                     pCross = VectorUtil.worldToScreen(bombCross);
 
-                    if (zoomVehicle) {
+                    if (zoomVehicle && VectorUtil.canSee(bombCross)) {
                         float f = (float) Math.min(screenWidth, screenHeight);
                         float f1 = Math.min((float) screenWidth / f, (float) screenHeight / f);
                         int i = Mth.floor(f * f1);
@@ -124,7 +124,8 @@ public class AircraftOverlay implements IGuiOverlay {
                 float x = (float) p.x;
                 float y = (float) p.y;
 
-                if (mc.options.getCameraType() == CameraType.FIRST_PERSON) {
+                if (mc.options.getCameraType() == CameraType.FIRST_PERSON && VectorUtil.canSee(pos)) {
+
                     RenderSystem.disableDepthTest();
                     RenderSystem.depthMask(false);
                     RenderSystem.enableBlend();
@@ -243,49 +244,52 @@ public class AircraftOverlay implements IGuiOverlay {
                 float x = (float) pCross.x;
                 float y = (float) pCross.y;
 
-                if (mc.options.getCameraType() == CameraType.FIRST_PERSON && !(mobileVehicle instanceof A10Entity a10Entity && a10Entity.getWeaponIndex(0) == 3)) {
-                    RenderSystem.disableDepthTest();
-                    RenderSystem.depthMask(false);
-                    RenderSystem.enableBlend();
-                    RenderSystem.setShader(GameRenderer::getPositionTexShader);
-                    RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-                    RenderSystem.setShaderColor(1, 1, 1, 1);
+                if (VectorUtil.canSee(posCross)) {
+                    if (mc.options.getCameraType() == CameraType.FIRST_PERSON && !(mobileVehicle instanceof A10Entity a10Entity && a10Entity.getWeaponIndex(0) == 3)) {
+                        RenderSystem.disableDepthTest();
+                        RenderSystem.depthMask(false);
+                        RenderSystem.enableBlend();
+                        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+                        RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+                        RenderSystem.setShaderColor(1, 1, 1, 1);
 
-                    preciseBlit(guiGraphics, Mod.loc("textures/screens/aircraft/hud_base2.png"), x - 72 + diffY, y - 72 + diffX, 0, 0, 144, 144, 144, 144);
+                        preciseBlit(guiGraphics, Mod.loc("textures/screens/aircraft/hud_base2.png"), x - 72 + diffY, y - 72 + diffX, 0, 0, 144, 144, 144, 144);
 
-                    preciseBlit(guiGraphics, Mod.loc("textures/screens/aircraft/crosshair_ind.png"), x - 16, y - 16, 0, 0, 32, 32, 32, 32);
-                    renderKillIndicator(guiGraphics, x - 7.5f + (float) (2 * (Math.random() - 0.5f)), y - 7.5f + (float) (2 * (Math.random() - 0.5f)));
-                } else if (mc.options.getCameraType() == CameraType.THIRD_PERSON_BACK) {
-                    poseStack.pushPose();
-                    poseStack.rotateAround(Axis.ZP.rotationDegrees(aircraftEntity.getRotZ(partialTick)), x, y, 0);
-                    poseStack.pushPose();
-                    poseStack.translate(x, y, 0);
-                    poseStack.scale(0.75f, 0.75f, 1);
+                        preciseBlit(guiGraphics, Mod.loc("textures/screens/aircraft/crosshair_ind.png"), x - 16, y - 16, 0, 0, 32, 32, 32, 32);
+                        renderKillIndicator(guiGraphics, x - 7.5f + (float) (2 * (Math.random() - 0.5f)), y - 7.5f + (float) (2 * (Math.random() - 0.5f)));
+                    } else if (mc.options.getCameraType() == CameraType.THIRD_PERSON_BACK) {
+                        poseStack.pushPose();
+                        poseStack.rotateAround(Axis.ZP.rotationDegrees(aircraftEntity.getRotZ(partialTick)), x, y, 0);
+                        poseStack.pushPose();
+                        poseStack.translate(x, y, 0);
+                        poseStack.scale(0.75f, 0.75f, 1);
 
-                    ResourceLocation cross = Mod.loc("textures/screens/drone.png");
-                    float size = 16;
+                        ResourceLocation cross = Mod.loc("textures/screens/drone.png");
+                        float size = 16;
 
-                    if (mobileVehicle instanceof A10Entity a10Entity) {
-                        if (weaponVehicle.getWeaponIndex(0) == 0) {
-                            double heat = a10Entity.getEntityData().get(HEAT) / 100.0F;
-                            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("30MM CANNON " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : aircraftEntity.getAmmoCount(player))), 25, -9, Mth.hsvToRgb(0F, (float) heat, 1.0F), false);
-                        } else if (weaponVehicle.getWeaponIndex(0) == 1) {
-                            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("70MM ROCKET " + aircraftEntity.getAmmoCount(player)), 25, -9, -1, false);
-                        } else if (weaponVehicle.getWeaponIndex(0) == 2) {
-                            cross = Mod.loc("textures/screens/shotgun_hud.png");
-                            size = 24;
-                            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("MK82 BOMB " + aircraftEntity.getAmmoCount(player)), 25, -9, -1, false);
-                        } else if (weaponVehicle.getWeaponIndex(0) == 3) {
-                            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("AGM-65 " + aircraftEntity.getAmmoCount(player)), 25, -9, -1, false);
+                        if (mobileVehicle instanceof A10Entity a10Entity) {
+                            if (weaponVehicle.getWeaponIndex(0) == 0) {
+                                double heat = a10Entity.getEntityData().get(HEAT) / 100.0F;
+                                guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("30MM CANNON " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : aircraftEntity.getAmmoCount(player))), 25, -9, Mth.hsvToRgb(0F, (float) heat, 1.0F), false);
+                            } else if (weaponVehicle.getWeaponIndex(0) == 1) {
+                                guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("70MM ROCKET " + aircraftEntity.getAmmoCount(player)), 25, -9, -1, false);
+                            } else if (weaponVehicle.getWeaponIndex(0) == 2) {
+                                cross = Mod.loc("textures/screens/shotgun_hud.png");
+                                size = 24;
+                                guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("MK82 BOMB " + aircraftEntity.getAmmoCount(player)), 25, -9, -1, false);
+                            } else if (weaponVehicle.getWeaponIndex(0) == 3) {
+                                guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("AGM-65 " + aircraftEntity.getAmmoCount(player)), 25, -9, -1, false);
+                            }
                         }
-                    }
 
-                    guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("IR FLARES " + aircraftEntity.getDecoy()), 25, 1, -1, false);
-                    poseStack.popPose();
-                    preciseBlit(guiGraphics, cross, x - 0.5f * size, y - 0.5f * size, 0, 0, size, size, size, size);
-                    renderKillIndicator(guiGraphics, x - 7.5f + (float) (2 * (Math.random() - 0.5f)), y - 7.5f + (float) (2 * (Math.random() - 0.5f)));
-                    poseStack.popPose();
+                        guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("IR FLARES " + aircraftEntity.getDecoy()), 25, 1, -1, false);
+                        poseStack.popPose();
+                        preciseBlit(guiGraphics, cross, x - 0.5f * size, y - 0.5f * size, 0, 0, size, size, size, size);
+                        renderKillIndicator(guiGraphics, x - 7.5f + (float) (2 * (Math.random() - 0.5f)), y - 7.5f + (float) (2 * (Math.random() - 0.5f)));
+                        poseStack.popPose();
+                    }
                 }
+
                 poseStack.popPose();
             }
 
@@ -296,28 +300,30 @@ public class AircraftOverlay implements IGuiOverlay {
 
                 for (var e : entities) {
                     Vec3 pos3 = new Vec3(Mth.lerp(partialTick, e.xo, e.getX()), Mth.lerp(partialTick, e.yo + e.getEyeHeight(), e.getEyeY()), Mth.lerp(partialTick, e.zo, e.getZ()));
-                    Vec3 point = VectorUtil.worldToScreen(pos3);
-                    boolean nearest = e == targetEntity;
-                    boolean lockOn = a10Entity.locked && nearest;
+                    if (VectorUtil.canSee(pos3)) {
+                        Vec3 point = VectorUtil.worldToScreen(pos3);
+                        boolean nearest = e == targetEntity;
+                        boolean lockOn = a10Entity.locked && nearest;
 
-                    poseStack.pushPose();
-                    float x = (float) point.x;
-                    float y = (float) point.y;
+                        poseStack.pushPose();
+                        float x = (float) point.x;
+                        float y = (float) point.y;
 
-                    if (lockOn) {
-                        RenderHelper.blit(poseStack, FRAME_LOCK, x - 12, y - 12, 0, 0, 24, 24, 24, 24, 1f);
-                    } else if (nearest) {
-                        lerpLock = Mth.lerp(partialTick, lerpLock, 2 * a10Entity.lockTime);
-                        float lockTime = Mth.clamp(20 - lerpLock, 0, 20);
-                        RenderHelper.blit(poseStack, IND_1, x - 12, y - 12 - lockTime, 0, 0, 24, 24, 24, 24, 1f);
-                        RenderHelper.blit(poseStack, IND_2, x - 12, y - 12 + lockTime, 0, 0, 24, 24, 24, 24, 1f);
-                        RenderHelper.blit(poseStack, IND_3, x - 12 - lockTime, y - 12, 0, 0, 24, 24, 24, 24, 1f);
-                        RenderHelper.blit(poseStack, IND_4, x - 12 + lockTime, y - 12, 0, 0, 24, 24, 24, 24, 1f);
-                        RenderHelper.blit(poseStack, FRAME_TARGET, x - 12, y - 12, 0, 0, 24, 24, 24, 24, 1f);
-                    } else {
-                        RenderHelper.blit(poseStack, FRAME, x - 12, y - 12, 0, 0, 24, 24, 24, 24, 1f);
+                        if (lockOn) {
+                            RenderHelper.blit(poseStack, FRAME_LOCK, x - 12, y - 12, 0, 0, 24, 24, 24, 24, 1f);
+                        } else if (nearest) {
+                            lerpLock = Mth.lerp(partialTick, lerpLock, 2 * a10Entity.lockTime);
+                            float lockTime = Mth.clamp(20 - lerpLock, 0, 20);
+                            RenderHelper.blit(poseStack, IND_1, x - 12, y - 12 - lockTime, 0, 0, 24, 24, 24, 24, 1f);
+                            RenderHelper.blit(poseStack, IND_2, x - 12, y - 12 + lockTime, 0, 0, 24, 24, 24, 24, 1f);
+                            RenderHelper.blit(poseStack, IND_3, x - 12 - lockTime, y - 12, 0, 0, 24, 24, 24, 24, 1f);
+                            RenderHelper.blit(poseStack, IND_4, x - 12 + lockTime, y - 12, 0, 0, 24, 24, 24, 24, 1f);
+                            RenderHelper.blit(poseStack, FRAME_TARGET, x - 12, y - 12, 0, 0, 24, 24, 24, 24, 1f);
+                        } else {
+                            RenderHelper.blit(poseStack, FRAME, x - 12, y - 12, 0, 0, 24, 24, 24, 24, 1f);
+                        }
+                        poseStack.popPose();
                     }
-                    poseStack.popPose();
                 }
             }
 

@@ -180,10 +180,12 @@ public class DroneHudOverlay implements IGuiOverlay {
 
                 // 标记位置
                 Vec3 pos = new Vec3(targetX, targetY, targetZ);
-                Vec3 point = VectorUtil.worldToScreen(pos);
-                float x = (float) point.x;
-                float y = (float) point.y;
-                preciseBlit(guiGraphics, INDICATOR, Mth.clamp(x - 6, 0, screenWidth - 12), Mth.clamp(y - 6, 0, screenHeight - 12), 0, 0, 12, 12, 12, 12);
+                if (VectorUtil.canSee(pos)) {
+                    Vec3 point = VectorUtil.worldToScreen(pos);
+                    float x = (float) point.x;
+                    float y = (float) point.y;
+                    preciseBlit(guiGraphics, INDICATOR, Mth.clamp(x - 6, 0, screenWidth - 12), Mth.clamp(y - 6, 0, screenHeight - 12), 0, 0, 12, 12, 12, 12);
+                }
 
                 // 火炮位置
 
@@ -192,7 +194,7 @@ public class DroneHudOverlay implements IGuiOverlay {
                     for (int m = 0; m < tags.size(); m++) {
                         var tag = tags.getCompound(m);
                         Entity e = EntityFindUtil.findEntity(player.level(), tag.getString("UUID"));
-                        if (e != null) {
+                        if (e != null && VectorUtil.canSee(e.position())) {
                             Vec3 posF = e.getBoundingBox().getCenter();
                             Vec3 pointF = VectorUtil.worldToScreen(posF);
                             float xf = (float) pointF.x;
