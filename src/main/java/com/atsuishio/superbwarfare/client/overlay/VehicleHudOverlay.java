@@ -303,34 +303,35 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
 
                 renderKillIndicator(guiGraphics, w, h);
             } else if (Minecraft.getInstance().options.getCameraType() == CameraType.THIRD_PERSON_BACK && !ClientEventHandler.zoomVehicle) {
-                Vec3 p = VectorUtil.worldToScreen(new Vec3(Mth.lerp(partialTick, player.xo, player.getX()), Mth.lerp(partialTick, player.yo + player.getEyeHeight(), player.getEyeY()), Mth.lerp(partialTick, player.zo, player.getZ())).add(iLand.getBarrelVec(partialTick).scale(192)));
+                Vec3 pos = cameraPos.add(iLand.getBarrelVec(partialTick).scale(192));
+                Vec3 p = VectorUtil.worldToScreen(pos);
                 // 第三人称准星
-                poseStack.pushPose();
-                float x = (float) p.x;
-                float y = (float) p.y;
+                if (VectorUtil.canSee(pos)) {
+                    float x = (float) p.x;
+                    float y = (float) p.y;
 
-                preciseBlit(guiGraphics, Mod.loc("textures/screens/drone.png"), x - 12, y - 12, 0, 0, 24, 24, 24, 24);
-                renderKillIndicator3P(guiGraphics, x - 7.5f + (float) (2 * (Math.random() - 0.5f)), y - 7.5f + (float) (2 * (Math.random() - 0.5f)));
+                    preciseBlit(guiGraphics, Mod.loc("textures/screens/drone.png"), x - 12, y - 12, 0, 0, 24, 24, 24, 24);
+                    renderKillIndicator3P(guiGraphics, x - 7.5f + (float) (2 * (Math.random() - 0.5f)), y - 7.5f + (float) (2 * (Math.random() - 0.5f)));
 
-                poseStack.pushPose();
+                    poseStack.pushPose();
 
-                poseStack.translate(x, y, 0);
-                poseStack.scale(0.75f, 0.75f, 1);
+                    poseStack.translate(x, y, 0);
+                    poseStack.scale(0.75f, 0.75f, 1);
 
-                // 载具自定义第三人称准心
-                mobileVehicle.renderThirdPersonOverlay(guiGraphics, mc.font, player, w, h, scale);
+                    // 载具自定义第三人称准心
+                    mobileVehicle.renderThirdPersonOverlay(guiGraphics, mc.font, player, w, h, scale);
 
-                double health = 1 - mobileVehicle.getHealth() / mobileVehicle.getMaxHealth();
+                    double health = 1 - mobileVehicle.getHealth() / mobileVehicle.getMaxHealth();
 
-                guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("HP " +
-                        FormatTool.format0D(100 * mobileVehicle.getHealth() / mobileVehicle.getMaxHealth())), 30, 1, Mth.hsvToRgb(0F, (float) health, 1.0F), false);
+                    guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("HP " +
+                            FormatTool.format0D(100 * mobileVehicle.getHealth() / mobileVehicle.getMaxHealth())), 30, 1, Mth.hsvToRgb(0F, (float) health, 1.0F), false);
 
-                if (mobileVehicle.hasDecoy()) {
-                    guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("SMOKE " + mobileVehicle.getEntityData().get(DECOY_COUNT)), 30, 11, -1, false);
+                    if (mobileVehicle.hasDecoy()) {
+                        guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("SMOKE " + mobileVehicle.getEntityData().get(DECOY_COUNT)), 30, 11, -1, false);
+                    }
+
+                    poseStack.popPose();
                 }
-
-                poseStack.popPose();
-                poseStack.popPose();
             }
             poseStack.popPose();
         } else {

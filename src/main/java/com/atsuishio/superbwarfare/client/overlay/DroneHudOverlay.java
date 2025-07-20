@@ -198,10 +198,12 @@ public class DroneHudOverlay implements LayeredDraw.Layer {
 
                 // 标记位置
                 Vec3 pos = new Vec3(targetX, targetY, targetZ);
-                Vec3 point = VectorUtil.worldToScreen(pos);
-                float x = (float) point.x;
-                float y = (float) point.y;
-                preciseBlit(guiGraphics, INDICATOR, Mth.clamp(x - 6, 0, w - 12), Mth.clamp(y - 6, 0, h - 12), 0, 0, 12, 12, 12, 12);
+                if (VectorUtil.canSee(pos)) {
+                    Vec3 point = VectorUtil.worldToScreen(pos);
+                    float x = (float) point.x;
+                    float y = (float) point.y;
+                    preciseBlit(guiGraphics, INDICATOR, Mth.clamp(x - 6, 0, w - 12), Mth.clamp(y - 6, 0, h - 12), 0, 0, 12, 12, 12, 12);
+                }
 
                 // 火炮位置
 
@@ -210,7 +212,7 @@ public class DroneHudOverlay implements LayeredDraw.Layer {
                     for (int m = 0; m < tags.size(); m++) {
                         var t = tags.getCompound(m);
                         Entity e = EntityFindUtil.findEntity(player.level(), t.getString("UUID"));
-                        if (e != null) {
+                        if (e != null && VectorUtil.canSee(e.position())) {
                             Vec3 posF = e.getBoundingBox().getCenter();
                             Vec3 pointF = VectorUtil.worldToScreen(posF);
                             float xf = (float) pointF.x;

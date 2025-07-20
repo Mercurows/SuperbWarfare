@@ -161,7 +161,7 @@ public class HelicopterHudOverlay implements LayeredDraw.Layer {
             if (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON) {
                 preciseBlit(guiGraphics, Mod.loc("textures/screens/helicopter/crosshair_ind.png"), x - 8, y - 8, 0, 0, 16, 16, 16, 16);
                 renderKillIndicator(guiGraphics, x - 7.5f + (float) (2 * (Math.random() - 0.5f)), y - 7.5f + (float) (2 * (Math.random() - 0.5f)));
-            } else if (mc.options.getCameraType() != CameraType.FIRST_PERSON) {
+            } else if (VectorUtil.canSee(pos)) {
                 poseStack.pushPose();
                 poseStack.rotateAround(Axis.ZP.rotationDegrees(iHelicopterEntity.getRotZ(partialTick)), x, y, 0);
                 preciseBlit(guiGraphics, Mod.loc("textures/screens/drone.png"), x - 8, y - 8, 0, 0, 16, 16, 16, 16);
