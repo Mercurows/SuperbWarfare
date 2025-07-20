@@ -22,23 +22,19 @@ public class DamageModify {
     }
 
     @SerializedName("Value")
-    private float value = 0;
+    public float value = 0;
     @SerializedName("Type")
-    private ModifyType type = ModifyType.IMMUNITY;
-
-    public ModifyType getType() {
-        return type;
-    }
+    public ModifyType type = ModifyType.IMMUNITY;
 
     @SerializedName("Source")
-    private String source = "All";
+    public String source = "All";
 
-    private transient String entityId = "";
+    public transient String entityId = "";
 
     // 必须默认为null，否则无法处理JSON读取Source的情况
-    private transient SourceType sourceType = null;
+    public transient SourceType sourceType = null;
 
-    private enum SourceType {
+    public enum SourceType {
         TAG_KEY,
         RESOURCE_KEY,
         FUNCTION,
@@ -47,10 +43,10 @@ public class DamageModify {
         ALL,
     }
 
-    private transient TagKey<DamageType> sourceTagKey = null;
-    private transient ResourceKey<DamageType> sourceKey = null;
-    private transient TagKey<EntityType<?>> entityTag = null;
-    private transient Function<DamageSource, Boolean> condition = null;
+    public transient TagKey<DamageType> sourceTagKey = null;
+    public transient ResourceKey<DamageType> sourceKey = null;
+    public transient TagKey<EntityType<?>> entityTag = null;
+    public transient Function<DamageSource, Boolean> condition = null;
 
     public DamageModify() {
     }
