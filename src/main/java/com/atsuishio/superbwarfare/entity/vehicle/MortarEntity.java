@@ -186,7 +186,7 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, RemoteCont
     public @NotNull InteractionResult interact(Player player, @NotNull InteractionHand hand) {
         ItemStack mainHandItem = player.getMainHandItem();
 
-        if (mainHandItem.getItem() instanceof ArtilleryIndicator indicator) {
+        if (mainHandItem.getItem() instanceof ArtilleryIndicator indicator && this.entityData.get(INTELLIGENT)) {
             return indicator.bind(mainHandItem, player, this);
         }
 
