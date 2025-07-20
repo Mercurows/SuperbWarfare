@@ -33,6 +33,7 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.IntTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSetPassengersPacket;
 import net.minecraft.network.protocol.game.ClientboundSoundPacket;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -71,6 +72,7 @@ import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.common.util.FakePlayer;
 import net.neoforged.neoforge.energy.IEnergyStorage;
 import net.neoforged.neoforge.network.PacketDistributor;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Math;
@@ -135,6 +137,8 @@ public abstract class VehicleEntity extends Entity implements Container {
     public float gunXRotO;
 
     public boolean cannotFire;
+
+    public @Nullable Player damageDebugResultReceiver = null;
 
     public void mouseInput(double x, double y) {
         entityData.set(MOUSE_SPEED_X, (float) x);
@@ -656,6 +660,21 @@ public abstract class VehicleEntity extends Entity implements Container {
         var data = data();
 
         ItemStack stack = player.getMainHandItem();
+
+        if (stack.is(ModItems.TARGET_DEPLOYER.get()) || stack.is(ModItems.DPS_GENERATOR_DEPLOYER.get())) {
+            // TODO 优化交互和提示
+            if (!level().isClientSide) {
+                if (this.damageDebugResultReceiver != null) {
+                    this.damageDebugResultReceiver = null;
+                    player.sendSystemMessage(Component.literal("unbind success"));
+                } else {
+                    this.damageDebugResultReceiver = player;
+                    player.sendSystemMessage(Component.literal("bind success"));
+                }
+            }
+            return InteractionResult.SUCCESS;
+        }
+
         if (player.isShiftKeyDown() && stack.is(ModTags.Items.CROWBAR) && this.getPassengers().isEmpty()) {
             ItemStack container = ContainerBlockItem.createInstance(this);
             if (!player.addItem(container)) {
@@ -725,6 +744,16 @@ public abstract class VehicleEntity extends Entity implements Container {
     public boolean hurt(@NotNull DamageSource source, float amount) {
         if (source.is(DamageTypes.CACTUS) || source.is(DamageTypes.SWEET_BERRY_BUSH) || source.is(DamageTypes.IN_WALL))
             return false;
+
+        if (this.damageDebugResultReceiver != null) {
+            var detailedDamageResult = getDamageModifier().matchResult(source, amount);
+            this.damageDebugResultReceiver.sendSystemMessage(Component.literal(
+                    "§eraw: " + source.getMsgId() + " " + amount + "§r\n" +
+                            StringUtils.join(detailedDamageResult, '\n') + '\n' +
+                            "§dfinal: " + detailedDamageResult.getLast().damage()
+            ));
+        }
+
         // 计算减伤后的伤害
         float computedAmount = getDamageModifier().compute(source, amount);
         this.crash = source.is(ModDamageTypes.VEHICLE_STRIKE);

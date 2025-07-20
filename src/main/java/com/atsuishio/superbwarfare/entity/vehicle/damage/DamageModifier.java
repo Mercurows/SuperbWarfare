@@ -6,6 +6,8 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.EntityType;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -228,7 +230,7 @@ public class DamageModifier {
 
     public DamageModifier addAll(List<DamageModify> list) {
         for (var damageModify : list) {
-            switch (damageModify.getType()) {
+            switch (damageModify.type) {
                 case IMMUNITY -> immuneList.add(damageModify);
                 case REDUCE -> reduceList.add(damageModify);
                 case MULTIPLY -> multiplyList.add(damageModify);
@@ -248,6 +250,57 @@ public class DamageModifier {
         return list;
     }
 
+    public List<DamageModify> match(DamageSource source) {
+        return toList().stream().filter(m -> m.match(source)).toList();
+    }
+
+    public record ModifyResult(@Nullable DamageModify modify, float damage) {
+        @Override
+        public @NotNull String toString() {
+            if (modify == null) {
+                return "[§a<Function> §r= " + damage + "]";
+            }
+            var sourceString = switch (modify.sourceType) {
+                case TAG_KEY -> "§4" + modify.sourceTagKey.location();
+                case ENTITY_TAG -> "§9" + modify.entityTag.location();
+                case FUNCTION -> "§a<Function>";
+                case ENTITY_ID -> "§6" + modify.entityId;
+                case RESOURCE_KEY -> "§b" + modify.sourceKey.location();
+                case ALL -> "";
+            };
+
+            return "[" + modify.sourceType + (modify.sourceType == DamageModify.SourceType.ALL ? "" : ":") + sourceString + " " + switch (modify.type) {
+                case IMMUNITY -> "§70§r";
+                case REDUCE -> "§a- " + modify.value + " §r= " + damage;
+                case MULTIPLY -> "§e* " + modify.value + " §r= " + damage;
+            } + "]";
+        }
+    }
+
+    /**
+     * 获取调试用的详细减伤结果
+     */
+    public List<ModifyResult> matchResult(DamageSource source, float damage) {
+        var matchList = match(source);
+        var list = new ArrayList<ModifyResult>();
+
+        for (var damageModify : matchList) {
+            damage = damageModify.compute(damage);
+            list.add(new ModifyResult(damageModify, damage));
+
+            if (damage <= 0) return list;
+        }
+
+        for (var func : customList) {
+            damage = func.apply(source, damage);
+            list.add(new ModifyResult(null, damage));
+
+            if (damage <= 0) break;
+        }
+
+        return list;
+    }
+
     /**
      * 计算减伤后的伤害值
      *
@@ -256,17 +309,17 @@ public class DamageModifier {
      * @return 减伤后的伤害值
      */
     public float compute(DamageSource source, float damage) {
-        for (DamageModify damageModify : toList()) {
-            if (damageModify.match(source)) {
-                damage = damageModify.compute(damage);
+        var matchList = match(source);
 
-                if (damage <= 0) return 0;
-            }
+        for (var damageModify : matchList) {
+            damage = damageModify.compute(damage);
+            if (damage <= 0) return 0;
         }
 
         // 最后计算自定义伤害
         for (var func : customList) {
             damage = func.apply(source, damage);
+            if (damage <= 0) return 0;
         }
 
         return damage;
