@@ -17,17 +17,17 @@ import java.util.List;
  */
 @ApiStatus.AvailableSince("0.8.0")
 public class RegisterContainersEvent extends Event implements IModBusEvent {
-    public static final List<ItemStack> containers = new ArrayList<>();
+    public static final List<ItemStack> CONTAINERS = new ArrayList<>();
 
     public <T extends Entity> void add(DeferredHolder<EntityType<?>, EntityType<T>> type) {
         add(type.get());
     }
 
     public <T extends Entity> void add(EntityType<T> type) {
-        containers.add(ContainerBlockItem.createInstance(type));
+        CONTAINERS.add(ContainerBlockItem.createInstance(type));
     }
 
     public void add(Entity entity) {
-        containers.add(ContainerBlockItem.createInstance(entity));
+        CONTAINERS.add(ContainerBlockItem.createInstance(entity));
     }
 }

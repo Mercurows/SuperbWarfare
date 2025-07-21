@@ -300,9 +300,14 @@ public class ModItems {
     public static final DeferredHolder<Item, BlockItem> AIRCRAFT_CATAPULT = block(ModBlocks.AIRCRAFT_CATAPULT);
     public static final DeferredHolder<Item, BlockItem> SUPERB_ITEM_INTERFACE = block(ModBlocks.SUPERB_ITEM_INTERFACE);
 
-    public static final DeferredHolder<Item, ContainerBlockItem> CONTAINER = BLOCKS.register("container", ContainerBlockItem::new);
-    public static final DeferredHolder<Item, SmallContainerBlockItem> SMALL_CONTAINER = BLOCKS.register("small_container", SmallContainerBlockItem::new);
-    public static final DeferredHolder<Item, LuckyContainerBlockItem> LUCKY_CONTAINER = BLOCKS.register("lucky_container", LuckyContainerBlockItem::new);
+    /**
+     * Vehicle
+     */
+    public static final DeferredRegister<Item> VEHICLES = DeferredRegister.create(BuiltInRegistries.ITEM, Mod.MODID);
+
+    public static final DeferredHolder<Item, ContainerBlockItem> CONTAINER = VEHICLES.register("container", ContainerBlockItem::new);
+    public static final DeferredHolder<Item, SmallContainerBlockItem> SMALL_CONTAINER = VEHICLES.register("small_container", SmallContainerBlockItem::new);
+    public static final DeferredHolder<Item, LuckyContainerBlockItem> LUCKY_CONTAINER = VEHICLES.register("lucky_container", LuckyContainerBlockItem::new);
 
 
     public record Materials(
@@ -388,6 +393,7 @@ public class ModItems {
         GUNS.register(bus);
         AMMO.register(bus);
         BLOCKS.register(bus);
+        VEHICLES.register(bus);
         registerPerkItems();
         PERKS.register(bus);
     }
