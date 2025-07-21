@@ -99,9 +99,7 @@ public class AircraftOverlay implements IGuiOverlay {
 
                         float x = (float) pCross.x;
                         float y = (float) pCross.y;
-                        poseStack.pushPose();
-                        poseStack.rotateAround(Axis.ZP.rotationDegrees(aircraftEntity.getRotZ(partialTick)), x, y, 0);
-                        poseStack.pushPose();
+
 
                         poseStack.pushPose();
                         poseStack.translate(x, y, 0);
@@ -109,9 +107,11 @@ public class AircraftOverlay implements IGuiOverlay {
                         poseStack.popPose();
 
                         preciseBlit(guiGraphics, Mod.loc("textures/screens/aircraft/bomb_scope.png"), x - 1.5f * i, y - 1.5f * j, 0, 0, 3 * i, 3 * j, 3 * i, 3 * j);
+
+                        poseStack.pushPose();
+                        poseStack.rotateAround(Axis.ZP.rotationDegrees(aircraftEntity.getRotZ(partialTick)), x, y, 0);
                         preciseBlit(guiGraphics, Mod.loc("textures/screens/aircraft/bomb_scope_pitch.png"), x - 1.5f * i, y - 1.5f * j - 4 * a10Entity.getPitch(partialTick), 0, 0, 3 * i, 3 * j, 3 * i, 3 * j);
                         renderKillIndicator(guiGraphics, x - 7.5f + (float) (2 * (Math.random() - 0.5f)), y - 7.5f + (float) (2 * (Math.random() - 0.5f)));
-                        poseStack.popPose();
                         poseStack.popPose();
                         return;
                     }
