@@ -100,19 +100,22 @@ public class ModTabs {
                     .title(Component.translatable("item_group.superbwarfare.block"))
                     .icon(() -> new ItemStack(ModItems.SANDBAG.get()))
                     .withTabsBefore(ITEM_TAB.getKey())
-                    .displayItems((param, output) -> ModItems.BLOCKS.getEntries().forEach(registryObject -> {
-                        if (registryObject.get() == ModItems.CONTAINER.get()) {
-                            RegisterContainersEvent.CONTAINERS.forEach(output::accept);
-                        } else if (registryObject.get() == ModItems.LUCKY_CONTAINER.get()) {
-                            output.accept(registryObject.get());
-                            LuckyContainerBlockItem.LUCKY_CONTAINERS.stream().map(Supplier::get).forEach(output::accept);
-                        } else if (registryObject.get() == ModItems.SMALL_CONTAINER.get()) {
-                            output.accept(registryObject.get());
-                            SmallContainerBlockItem.SMALL_CONTAINERS.stream().map(Supplier::get).forEach(output::accept);
-                        } else {
-                            output.accept(registryObject.get());
-                        }
-                    }))
+                    .displayItems((param, output) -> ModItems.BLOCKS.getEntries().forEach(registryObject -> output.accept(registryObject.get())))
+                    .build());
+
+    public static final RegistryObject<CreativeModeTab> VEHICLE_TAB = TABS.register("vehicle",
+            () -> CreativeModeTab.builder()
+                    .title(Component.translatable("item_group.superbwarfare.vehicle"))
+                    .icon(() -> new ItemStack(ModItems.CONTAINER.get()))
+                    .withTabsBefore(BLOCK_TAB.getKey())
+                    .displayItems((param, output) -> {
+                                RegisterContainersEvent.CONTAINERS.forEach(output::accept);
+                                output.accept(ModItems.LUCKY_CONTAINER.get());
+                                LuckyContainerBlockItem.LUCKY_CONTAINERS.stream().map(Supplier::get).forEach(output::accept);
+                                output.accept(ModItems.SMALL_CONTAINER.get());
+                                SmallContainerBlockItem.SMALL_CONTAINERS.stream().map(Supplier::get).forEach(output::accept);
+                            }
+                    )
                     .build());
 
     @SubscribeEvent

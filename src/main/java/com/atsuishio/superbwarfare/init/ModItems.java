@@ -299,10 +299,14 @@ public class ModItems {
     public static final RegistryObject<Item> AIRCRAFT_CATAPULT = block(ModBlocks.AIRCRAFT_CATAPULT);
     public static final RegistryObject<Item> SUPERB_ITEM_INTERFACE = block(ModBlocks.SUPERB_ITEM_INTERFACE);
 
-    // 集装箱放最后
-    public static final RegistryObject<Item> CONTAINER = BLOCKS.register("container", ContainerBlockItem::new);
-    public static final RegistryObject<Item> SMALL_CONTAINER = BLOCKS.register("small_container", SmallContainerBlockItem::new);
-    public static final RegistryObject<Item> LUCKY_CONTAINER = BLOCKS.register("lucky_container", LuckyContainerBlockItem::new);
+    /**
+     * Vehicle
+     */
+    public static final DeferredRegister<Item> VEHICLES = DeferredRegister.create(ForgeRegistries.ITEMS, Mod.MODID);
+
+    public static final RegistryObject<Item> CONTAINER = VEHICLES.register("container", ContainerBlockItem::new);
+    public static final RegistryObject<Item> SMALL_CONTAINER = VEHICLES.register("small_container", SmallContainerBlockItem::new);
+    public static final RegistryObject<Item> LUCKY_CONTAINER = VEHICLES.register("lucky_container", LuckyContainerBlockItem::new);
 
     private static RegistryObject<Item> block(RegistryObject<Block> block) {
         return BLOCKS.register(block.getId().getPath(), () -> new BlockItem(block.get(), new Item.Properties()));
@@ -374,6 +378,7 @@ public class ModItems {
         GUNS.register(bus);
         AMMO.register(bus);
         BLOCKS.register(bus);
+        VEHICLES.register(bus);
         registerPerkItems();
         PERKS.register(bus);
     }
