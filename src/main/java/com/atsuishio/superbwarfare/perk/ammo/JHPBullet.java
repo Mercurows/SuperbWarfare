@@ -18,7 +18,7 @@ public class JHPBullet extends AmmoPerk {
     @Override
     public float getModifiedDamage(float damage, GunData data, PerkInstance instance, @Nullable LivingEntity target, DamageSource source) {
         if (target != null) {
-            return damage * (1.0f + 0.12f * instance.level()) * ((float) (10 / (target.getAttributeValue(Attributes.ARMOR) + 10)) + 0.25f);
+            return damage * (1.0f + 0.12f * instance.level()) * ((float) (100 / (Math.pow(target.getAttributeValue(Attributes.ARMOR), 2) + 100)) + 0.2f);
         }
         return super.getModifiedDamage(damage, data, instance, null, source);
     }
