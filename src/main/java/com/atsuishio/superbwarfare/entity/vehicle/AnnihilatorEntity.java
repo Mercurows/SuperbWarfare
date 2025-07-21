@@ -96,6 +96,14 @@ public class AnnihilatorEntity extends VehicleEntity implements GeoEntity, Canno
     }
 
     @Override
+    public void onAddedToWorld() {
+        super.onAddedToWorld();
+
+        entityData.set(YAW, getYRot());
+        entityData.set(PITCH, getXRot());
+    }
+
+    @Override
     public VehicleWeapon[][] initWeapons() {
         return new VehicleWeapon[][]{
                 new VehicleWeapon[]{

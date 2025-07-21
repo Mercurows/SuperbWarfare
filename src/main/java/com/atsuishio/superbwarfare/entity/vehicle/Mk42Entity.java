@@ -81,6 +81,14 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
     }
 
     @Override
+    public void onAddedToWorld() {
+        super.onAddedToWorld();
+
+        entityData.set(YAW, getYRot());
+        entityData.set(PITCH, getXRot());
+    }
+
+    @Override
     protected void defineSynchedData() {
         super.defineSynchedData();
         this.entityData.define(COOL_DOWN, 0);
