@@ -80,6 +80,14 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
     }
 
     @Override
+    public void onAddedToLevel() {
+        super.onAddedToLevel();
+
+        entityData.set(YAW, getYRot());
+        entityData.set(PITCH, getXRot());
+    }
+
+    @Override
     public VehicleWeapon[][] initWeapons() {
         return new VehicleWeapon[][]{
                 new VehicleWeapon[]{
