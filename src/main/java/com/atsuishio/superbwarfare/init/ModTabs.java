@@ -116,6 +116,7 @@ public class ModTabs {
                     .icon(() -> new ItemStack(ModItems.CONTAINER.get()))
                     .withTabsBefore(BLOCK_TAB.getKey())
                     .displayItems((param, output) -> {
+                        output.accept(ModItems.CROWBAR.get());
                                 RegisterContainersEvent.CONTAINERS.forEach(output::accept);
                                 output.accept(ModItems.LUCKY_CONTAINER.get());
                                 LuckyContainerBlockItem.LUCKY_CONTAINERS.stream().map(Supplier::get).forEach(output::accept);
