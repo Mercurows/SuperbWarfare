@@ -14,6 +14,8 @@ public class GeHelmetM35ArmorRenderer extends GeoArmorRenderer<GeHelmetM35> {
 		this.head = new GeoBone(null, "", false, (double) 0, false, false);
 	}
 
+	//TODO 尝试让戴在饰品栏里时让头盔渲染
+
 	@Override
 	public RenderType getRenderType(GeHelmetM35 animatable, ResourceLocation texture, MultiBufferSource bufferSource, float partialTick) {
 		return RenderType.entityTranslucent(getTextureLocation(animatable));
