@@ -225,6 +225,10 @@ public class ModItems {
     public static final DeferredHolder<Item, MaterialPack> EPIC_MATERIAL_PACK = ITEMS.register("epic_material_pack", () -> new MaterialPack(Rarity.EPIC));
     public static final DeferredHolder<Item, MaterialPack> LEGENDARY_MATERIAL_PACK = ITEMS.register("legendary_material_pack", () -> new MaterialPack(ModEnumExtensions.getLegendary()));
 
+    public static final DeferredHolder<Item, Item> LIGHT_ARMAMENT_MODULE = ITEMS.register("light_armament_module", () -> new Item(new Item.Properties().rarity(Rarity.RARE)));
+    public static final DeferredHolder<Item, Item> MEDIUM_ARMAMENT_MODULE = ITEMS.register("medium_armament_module", () -> new Item(new Item.Properties().rarity(Rarity.EPIC)));
+    public static final DeferredHolder<Item, Item> HEAVY_ARMAMENT_MODULE = ITEMS.register("heavy_armament_module", () -> new Item(new Item.Properties().rarity(ModEnumExtensions.getLegendary())));
+
     public static final DeferredHolder<Item, BlueprintItem> TRACHELIUM_BLUEPRINT = ITEMS.register("trachelium_blueprint", () -> new BlueprintItem(Rarity.EPIC));
     public static final DeferredHolder<Item, BlueprintItem> GLOCK_17_BLUEPRINT = ITEMS.register("glock_17_blueprint", () -> new BlueprintItem(Rarity.COMMON));
     public static final DeferredHolder<Item, BlueprintItem> MP_443_BLUEPRINT = ITEMS.register("mp_443_blueprint", () -> new BlueprintItem(Rarity.COMMON));
@@ -267,10 +271,6 @@ public class ModItems {
     public static final DeferredHolder<Item, BlueprintItem> MLE_1934_BLUEPRINT = ITEMS.register("mle_1934_blueprint", () -> new BlueprintItem(ModEnumExtensions.getLegendary()));
     public static final DeferredHolder<Item, BlueprintItem> HPJ_11_BLUEPRINT = ITEMS.register("hpj_11_blueprint", () -> new BlueprintItem(ModEnumExtensions.getLegendary()));
     public static final DeferredHolder<Item, BlueprintItem> ANNIHILATOR_BLUEPRINT = ITEMS.register("annihilator_blueprint", () -> new BlueprintItem(ModEnumExtensions.getLegendary()));
-
-    public static final DeferredHolder<Item, Item> LIGHT_ARMAMENT_MODULE = ITEMS.register("light_armament_module", () -> new Item(new Item.Properties().rarity(Rarity.RARE)));
-    public static final DeferredHolder<Item, Item> MEDIUM_ARMAMENT_MODULE = ITEMS.register("medium_armament_module", () -> new Item(new Item.Properties().rarity(Rarity.EPIC)));
-    public static final DeferredHolder<Item, Item> HEAVY_ARMAMENT_MODULE = ITEMS.register("heavy_armament_module", () -> new Item(new Item.Properties().rarity(ModEnumExtensions.getLegendary())));
 
     /**
      * Block
