@@ -9,13 +9,11 @@ import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
 import com.atsuishio.superbwarfare.network.message.receive.ClientMotionSyncMessage;
-import com.atsuishio.superbwarfare.tools.ChunkLoadTool;
 import com.atsuishio.superbwarfare.tools.CustomExplosion;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
@@ -24,6 +22,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
@@ -53,7 +52,9 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
     private float explosionDamage = 0;
     private float fireProbability = 0;
     private int fireTime = 0;
-    public Set<Long> loadedChunks = new HashSet<>();
+    private static final int CHUNK_RADIUS = 1; // 加载3x3区块区域
+    private final Set<ChunkPos> forcedChunks = new HashSet<>();
+    private ChunkPos lastChunkPos;
     private float gravity = 0.1f;
 
     public enum Type {
@@ -102,14 +103,6 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
         pCompound.putFloat("FireProbability", this.fireProbability);
         pCompound.putInt("FireTime", this.fireTime);
         pCompound.putInt("Durability", this.durability);
-
-        ListTag listTag = new ListTag();
-        for (long chunkPos : this.loadedChunks) {
-            CompoundTag tag = new CompoundTag();
-            tag.putLong("Pos", chunkPos);
-            listTag.add(tag);
-        }
-        pCompound.put("Chunks", listTag);
     }
 
     @Override
@@ -138,14 +131,6 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
 
         if (pCompound.contains("Durability")) {
             this.durability = pCompound.getInt("Durability");
-        }
-
-        if (pCompound.contains("Chunks")) {
-            ListTag listTag = pCompound.getList("Chunks", 10);
-            for (int i = 0; i < listTag.size(); i++) {
-                CompoundTag tag = listTag.getCompound(i);
-                this.loadedChunks.add(tag.getLong("Pos"));
-            }
         }
     }
 
@@ -229,8 +214,6 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
                 ParticleTool.sendParticle(serverLevel, ParticleTypes.CAMPFIRE_COSY_SMOKE, pos.x, pos.y, pos.z,
                         1, 0, 0, 0, 0.001, true);
             }
-            // 更新需要加载的区块
-            ChunkLoadTool.updateLoadedChunks(serverLevel, this, this.loadedChunks);
         }
 
         destroyBlock();
@@ -256,6 +239,50 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
                 releaseClusterMunitions((LivingEntity) getOwner());
             }
         }
+
+        if (!level().isClientSide) {
+            // 更新区块加载位置
+            updateChunkLoading();
+        }
+
+    }
+
+    private void updateChunkLoading() {
+        if (!(level() instanceof ServerLevel serverLevel)) return;
+
+        ChunkPos currentPos = new ChunkPos(blockPosition());
+
+        // 检查是否需要更新
+        if (lastChunkPos != null && lastChunkPos.equals(currentPos)) {
+            return;
+        }
+
+        // 计算需要加载的新区块
+        Set<ChunkPos> newChunks = new HashSet<>();
+        for (int x = -CHUNK_RADIUS; x <= CHUNK_RADIUS; x++) {
+            for (int z = -CHUNK_RADIUS; z <= CHUNK_RADIUS; z++) {
+                newChunks.add(new ChunkPos(currentPos.x + x, currentPos.z + z));
+            }
+        }
+
+        // 卸载不再需要的区块
+        Set<ChunkPos> toUnload = new HashSet<>(forcedChunks);
+        toUnload.removeAll(newChunks);
+
+        for (ChunkPos pos : toUnload) {
+            serverLevel.setChunkForced(pos.x, pos.z, false);
+            forcedChunks.remove(pos);
+        }
+
+        // 加载新区块
+        for (ChunkPos pos : newChunks) {
+            if (!forcedChunks.contains(pos)) {
+                serverLevel.setChunkForced(pos.x, pos.z, true);
+                forcedChunks.add(pos);
+            }
+        }
+
+        lastChunkPos = currentPos;
     }
 
     private void releaseClusterMunitions(LivingEntity shooter) {
@@ -328,8 +355,12 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
 
     @Override
     public void onRemovedFromLevel() {
-        if (this.level() instanceof ServerLevel serverLevel) {
-            ChunkLoadTool.unloadAllChunks(serverLevel, this, this.loadedChunks);
+        // 释放所有加载的区块
+        if (!level().isClientSide && level() instanceof ServerLevel serverLevel) {
+            for (ChunkPos pos : forcedChunks) {
+                serverLevel.setChunkForced(pos.x, pos.z, false);
+            }
+            forcedChunks.clear();
         }
         super.onRemovedFromLevel();
     }
