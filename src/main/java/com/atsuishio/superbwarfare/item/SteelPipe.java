@@ -14,8 +14,8 @@ public class SteelPipe extends SwordItem {
 
     public SteelPipe() {
         super(ModItemTier.STEEL, 4, -3.0f, new Properties().durability(810));
-
     }
+
     // TODO 音效，特殊攻击效果等
 
     @Override
