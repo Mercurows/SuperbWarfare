@@ -143,7 +143,7 @@ public class ExplosionConfig {
         MK_82_EXPLOSION_DAMAGE = builder.defineInRange("mk_82_explosion_damage", 650, 1, Integer.MAX_VALUE);
 
         builder.comment("The explosion radius of MK-82");
-        MK_82_EXPLOSION_RADIUS = builder.defineInRange("mk_82_explosion_radius", 11d, 1, Integer.MAX_VALUE);
+        MK_82_EXPLOSION_RADIUS = builder.defineInRange("mk_82_explosion_radius", 22d, 1, Integer.MAX_VALUE);
 
         builder.pop();
 

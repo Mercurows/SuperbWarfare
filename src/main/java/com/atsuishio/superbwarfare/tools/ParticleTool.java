@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.tools;
 
 import com.atsuishio.superbwarfare.init.ModParticleTypes;
 import com.atsuishio.superbwarfare.init.ModSounds;
+import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
@@ -122,15 +123,51 @@ public class ParticleTool {
                 sendParticle(serverLevel, ParticleTypes.BUBBLE_COLUMN_UP, x, y, z, 350, 6, 1, 6, 0.1, true);
             }
 
-            sendParticle(serverLevel, ParticleTypes.EXPLOSION, x, y + 1, z, 75, 2.5, 2.5, 2.5, 1, true);
-            sendParticle(serverLevel, ParticleTypes.FLASH, x, y + 1, z, 200, 5, 5, 5, 20, true);
+            sendParticle(serverLevel, ParticleTypes.EXPLOSION, x, y + 3, z, 75, 2.5, 2.5, 2.5, 1, true);
+            sendParticle(serverLevel, ParticleTypes.FLASH, x, y + 3, z, 200, 5, 5, 5, 20, true);
             sendParticle(serverLevel, ModParticleTypes.FIRE_STAR.get(), x, y + 1, z, 400, 0, 0, 0, 1.5, true);
-            sendParticle(serverLevel, ParticleTypes.CAMPFIRE_COSY_SMOKE, x, y + 1, z, 75, 2, 3, 2, 0.005, true);
+            sendParticle(serverLevel, ParticleTypes.CAMPFIRE_COSY_SMOKE, x, y + 3, z, 75, 2, 3, 2, 0.005, true);
             sendParticle(serverLevel, ParticleTypes.CAMPFIRE_COSY_SMOKE, x, y, z, 150, 7, 0.1, 7, 0.005, true);
             sendParticle(serverLevel, ParticleTypes.CLOUD, x, y + 1, z, 200, 3, 4, 3, 0.4, true);
+
+            ShakeClientMessage.sendToNearbyPlayers(level, x, y, z, 192, 30, 192, 12);
+        }
+    }
+
+    public static void spawnGiantExplosionParticles(Level level, Vec3 pos) {
+        double x = pos.x;
+        double y = pos.y;
+        double z = pos.z;
+
+        if (!level.isClientSide()) {
+            if ((level.getBlockState(BlockPos.containing(x, y, z))).getBlock() == Blocks.WATER) {
+                level.playSound(null, BlockPos.containing(x, y + 1, z), ModSounds.EXPLOSION_WATER.get(), SoundSource.BLOCKS, 3, 1);
+            }
+            level.playSound(null, BlockPos.containing(x, y + 1, z), ModSounds.HUGE_EXPLOSION_CLOSE.get(), SoundSource.BLOCKS, 12, 1);
+            level.playSound(null, BlockPos.containing(x, y + 1, z), ModSounds.HUGE_EXPLOSION_FAR.get(), SoundSource.BLOCKS, 32, 1);
+            level.playSound(null, BlockPos.containing(x, y + 1, z), ModSounds.HUGE_EXPLOSION_VERY_FAR.get(), SoundSource.BLOCKS, 192, 1);
         }
 
+        if (level instanceof ServerLevel serverLevel) {
+            if ((level.getBlockState(BlockPos.containing(x, y, z))).getBlock() == Blocks.WATER) {
+                sendParticle(serverLevel, ParticleTypes.CLOUD, x, y + 3, z, 100, 2, 6, 2, 0.01, true);
+                sendParticle(serverLevel, ParticleTypes.CLOUD, x, y + 3, z, 200, 4, 2, 4, 0.01, true);
+                sendParticle(serverLevel, ParticleTypes.FALLING_WATER, x, y + 3, z, 500, 3, 8, 3, 1, true);
+                sendParticle(serverLevel, ParticleTypes.BUBBLE_COLUMN_UP, x, y, z, 350, 6, 1, 6, 0.1, true);
+            }
+
+            sendParticle(serverLevel, ParticleTypes.EXPLOSION, x, y + 11, z, 200, 8, 8, 8, 1, true);
+            sendParticle(serverLevel, ParticleTypes.LARGE_SMOKE, x, y + 9, z, 1200, 7, 7, 7, 0.005, true);
+            sendParticle(serverLevel, ParticleTypes.FLAME, x, y + 9, z, 1200, 8, 8, 8, 0.005, true);
+            sendParticle(serverLevel, ParticleTypes.FLASH, x, y + 11, z, 200, 11, 11, 11, 20, true);
+            sendParticle(serverLevel, ModParticleTypes.FIRE_STAR.get(), x, y + 1, z, 800, 0, 0, 0, 2, true);
+            sendParticle(serverLevel, ParticleTypes.CAMPFIRE_COSY_SMOKE, x, y + 9, z, 700, 8, 9, 8, 0.005, true);
+            sendParticle(serverLevel, ParticleTypes.CAMPFIRE_COSY_SMOKE, x, y, z, 500, 15, 0.5, 15, 0.005, true);
+            sendParticle(serverLevel, ParticleTypes.CLOUD, x, y + 1, z, 200, 3, 4, 3, 0.4, true);
+            ShakeClientMessage.sendToNearbyPlayers(level, x, y, z, 384, 30, 384, 16);
+        }
     }
+
 
     public static void cannonHitParticles(Level level, Vec3 pos, Entity entity) {
         double x = pos.x + 0.5 * entity.getDeltaMovement().x;

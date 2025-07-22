@@ -28,8 +28,10 @@ public class ProjectileTool {
             ParticleTool.spawnSmallExplosionParticles(projectile.level(), projectile.position().add(projectile.getDeltaMovement().scale(0.5)));
         } else if (radius > 4 && radius < 10) {
             ParticleTool.spawnMediumExplosionParticles(projectile.level(), projectile.position().add(projectile.getDeltaMovement().scale(0.5)));
-        } else {
+        } else if (radius >= 10 && radius < 16) {
             ParticleTool.spawnHugeExplosionParticles(projectile.level(), projectile.position().add(projectile.getDeltaMovement().scale(0.5)));
+        } else {
+            ParticleTool.spawnGiantExplosionParticles(projectile.level(), projectile.position().add(projectile.getDeltaMovement().scale(0.5)));
         }
 
         Vec3 pos = projectile.position().add(projectile.getDeltaMovement().scale(0.5));
