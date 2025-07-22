@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.decorator.ContainerItemDecorator;
 import com.atsuishio.superbwarfare.client.decorator.LuckyContainerItemDecorator;
 import com.atsuishio.superbwarfare.client.overlay.*;
+import com.atsuishio.superbwarfare.client.renderer.armor.GeHelmetM35ArmorRenderer;
 import com.atsuishio.superbwarfare.client.renderer.block.*;
 import com.atsuishio.superbwarfare.client.tooltip.*;
 import com.atsuishio.superbwarfare.client.tooltip.component.*;
@@ -15,6 +16,8 @@ import net.minecraftforge.client.event.RegisterClientTooltipComponentFactoriesEv
 import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
 import net.minecraftforge.client.event.RegisterItemDecorationsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import top.theillusivec4.curios.api.client.CuriosRendererRegistry;
 
 @net.minecraftforge.fml.common.Mod.EventBusSubscriber(bus = net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class ClientRenderHandler {
@@ -72,5 +75,10 @@ public class ClientRenderHandler {
     public static void registerItemDecorations(RegisterItemDecorationsEvent event) {
         event.register(ModItems.CONTAINER.get(), new ContainerItemDecorator());
         event.register(ModItems.LUCKY_CONTAINER.get(), new LuckyContainerItemDecorator());
+    }
+
+    @SubscribeEvent
+    public static void onClientSetup(FMLClientSetupEvent event) {
+        CuriosRendererRegistry.register(ModItems.GE_HELMET_M_35.get(), GeHelmetM35ArmorRenderer::new);
     }
 }
