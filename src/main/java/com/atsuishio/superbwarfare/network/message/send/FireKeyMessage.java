@@ -66,7 +66,7 @@ public record FireKeyMessage(int msgType, double power, boolean zoom) implements
         ) {
             if (!player.getCooldowns().isOnCooldown(stack.getItem()) && data.bolt.needed.get()) {
                 data.bolt.actionTimer.set(data.defaultActionTime() + 1);
-                GunEventHandler.playGunBoltSounds(player);
+                GunEventHandler.playGunBoltSounds(player, data);
             }
         }
     }

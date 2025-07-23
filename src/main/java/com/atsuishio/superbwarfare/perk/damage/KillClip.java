@@ -6,7 +6,7 @@ import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkInstance;
 import com.atsuishio.superbwarfare.tools.DamageTypeTool;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.Nullable;
 
 public class KillClip extends Perk {
@@ -16,13 +16,13 @@ public class KillClip extends Perk {
     }
 
     @Override
-    public void tick(GunData data, PerkInstance instance, @Nullable LivingEntity living) {
+    public void tick(GunData data, PerkInstance instance, @Nullable Entity living) {
         data.perk.reduceCooldown(this, "KillClipReloadTime");
         data.perk.reduceCooldown(this, "KillClipTime");
     }
 
     @Override
-    public void preReload(GunData data, PerkInstance instance, @Nullable LivingEntity living) {
+    public void preReload(GunData data, PerkInstance instance, @Nullable Entity living) {
         int time = data.perk.getTag(this).getInt("KillClipReloadTime");
         if (time > 0) {
             data.perk.getTag(this).remove("KillClipReloadTime");
@@ -33,7 +33,7 @@ public class KillClip extends Perk {
     }
 
     @Override
-    public void postReload(GunData data, PerkInstance instance, @Nullable LivingEntity living) {
+    public void postReload(GunData data, PerkInstance instance, @Nullable Entity living) {
         if (!data.perk.getTag(this).getBoolean("KillClip")) {
             return;
         }
@@ -43,7 +43,7 @@ public class KillClip extends Perk {
     }
 
     @Override
-    public void onKill(GunData data, PerkInstance instance, LivingEntity target, DamageSource source) {
+    public void onKill(GunData data, PerkInstance instance, Entity target, DamageSource source) {
         if (DamageTypeTool.isGunDamage(source) || source.is(ModDamageTypes.PROJECTILE_BOOM)) {
             int killClipLevel = instance.level();
             if (killClipLevel != 0) {
@@ -53,7 +53,7 @@ public class KillClip extends Perk {
     }
 
     @Override
-    public float getModifiedDamage(float damage, GunData data, PerkInstance instance, @Nullable LivingEntity target, DamageSource source) {
+    public float getModifiedDamage(float damage, GunData data, PerkInstance instance, @Nullable Entity target, DamageSource source) {
         if (DamageTypeTool.isGunDamage(source) || source.is(ModDamageTypes.PROJECTILE_BOOM)) {
             if (data.perk.getTag(this).getInt("KillClipTime") > 0) {
                 return damage * (1.2f + 0.05f * instance.level());

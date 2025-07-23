@@ -8,7 +8,7 @@ import com.atsuishio.superbwarfare.tools.CustomExplosion;
 import com.atsuishio.superbwarfare.tools.DamageTypeTool;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.neoforged.neoforge.event.EventHooks;
@@ -20,7 +20,7 @@ public class Firefly extends Perk {
     }
 
     @Override
-    public void onKill(GunData data, PerkInstance instance, LivingEntity target, DamageSource source) {
+    public void onKill(GunData data, PerkInstance instance, Entity target, DamageSource source) {
         if (!DamageTypeTool.isHeadshotDamage(source)) return;
 
         Player attacker = null;

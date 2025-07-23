@@ -5,7 +5,7 @@ import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkInstance;
 import com.atsuishio.superbwarfare.tools.DamageTypeTool;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.Nullable;
 
 public class Desperado extends Perk {
@@ -15,7 +15,7 @@ public class Desperado extends Perk {
     }
 
     @Override
-    public void tick(GunData data, PerkInstance instance, @Nullable LivingEntity living) {
+    public void tick(GunData data, PerkInstance instance, @Nullable Entity living) {
         data.perk.reduceCooldown(this, "DesperadoTime");
         data.perk.reduceCooldown(this, "DesperadoTimePost");
     }
@@ -29,14 +29,14 @@ public class Desperado extends Perk {
     }
 
     @Override
-    public void onKill(GunData data, PerkInstance instance, LivingEntity target, DamageSource source) {
+    public void onKill(GunData data, PerkInstance instance, Entity target, DamageSource source) {
         if (DamageTypeTool.isHeadshotDamage(source)) {
             data.perk.getTag(this).putInt("DesperadoTime", 90 + instance.level() * 10);
         }
     }
 
     @Override
-    public void preReload(GunData data, PerkInstance instance, @Nullable LivingEntity living) {
+    public void preReload(GunData data, PerkInstance instance, @Nullable Entity living) {
         int time = data.perk.getTag(this).getInt("DesperadoTime");
         if (time > 0) {
             data.perk.getTag(this).remove("DesperadoTime");
@@ -47,7 +47,7 @@ public class Desperado extends Perk {
     }
 
     @Override
-    public void postReload(GunData data, PerkInstance instance, @Nullable LivingEntity living) {
+    public void postReload(GunData data, PerkInstance instance, @Nullable Entity living) {
         if (!data.perk.getTag(this).getBoolean("Desperado")) {
             return;
         }

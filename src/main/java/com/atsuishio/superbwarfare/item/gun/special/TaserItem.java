@@ -27,6 +27,7 @@ import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animation.*;
 import software.bernie.geckolib.constant.DataTickets;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
@@ -187,7 +188,7 @@ public class TaserItem extends GunItem implements EnergyStorageItem {
     }
 
     @Override
-    public boolean canShoot(GunData data) {
+    public boolean canShoot(GunData data, @Nullable Entity shooter) {
         var stack = data.stack;
 
         int perkLevel = data.perk.getLevel(ModPerks.VOLT_OVERLOAD);
@@ -197,7 +198,7 @@ public class TaserItem extends GunItem implements EnergyStorageItem {
 
         if (!hasEnoughEnergy) return false;
         if (data.reloading()) return false;
-        return super.canShoot(data);
+        return super.canShoot(data, shooter);
     }
 
     @Override

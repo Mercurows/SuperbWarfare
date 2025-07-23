@@ -7,7 +7,6 @@ import com.atsuishio.superbwarfare.item.PerkItem;
 import net.minecraft.ChatFormatting;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import org.jetbrains.annotations.Nullable;
@@ -58,22 +57,22 @@ public class Perk {
     /**
      * 在背包中每Tick触发
      */
-    public void tick(GunData data, PerkInstance instance, @Nullable LivingEntity living) {
+    public void tick(GunData data, PerkInstance instance, @Nullable Entity living) {
     }
 
-    public void preReload(GunData data, PerkInstance instance, @Nullable LivingEntity living) {
+    public void preReload(GunData data, PerkInstance instance, @Nullable Entity living) {
     }
 
-    public void postReload(GunData data, PerkInstance instance, @Nullable LivingEntity living) {
+    public void postReload(GunData data, PerkInstance instance, @Nullable Entity living) {
     }
 
-    public void onKill(GunData data, PerkInstance instance, LivingEntity target, DamageSource source) {
+    public void onKill(GunData data, PerkInstance instance, Entity target, DamageSource source) {
     }
 
-    public void onHit(float damage, GunData data, PerkInstance instance, LivingEntity target, DamageSource source) {
+    public void onHit(float damage, GunData data, PerkInstance instance, Entity target, DamageSource source) {
     }
 
-    public float getModifiedDamage(float damage, GunData data, PerkInstance instance, @Nullable LivingEntity target, DamageSource source) {
+    public float getModifiedDamage(float damage, GunData data, PerkInstance instance, @Nullable Entity target, DamageSource source) {
         return damage;
     }
 
@@ -88,10 +87,10 @@ public class Perk {
     /**
      * 在切换物品时触发
      */
-    public void onChangeSlot(GunData data, PerkInstance instance, @Nullable LivingEntity living) {
+    public void onChangeSlot(GunData data, PerkInstance instance, @Nullable Entity living) {
     }
 
-    public boolean shouldCancelHurtEvent(float damage, GunData data, PerkInstance instance, LivingEntity target, DamageSource source) {
+    public boolean shouldCancelHurtEvent(float damage, GunData data, PerkInstance instance, Entity target, DamageSource source) {
         return false;
     }
 

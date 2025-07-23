@@ -595,21 +595,15 @@ public class ClientEventHandler {
         if (((holdFire || burstFireAmount > 0) && shootDelay >= data.shootDelay())
                 && !(player.getVehicle() instanceof ArmedVehicleEntity iArmedVehicle && iArmedVehicle.banHand(player))
                 && !holdFireVehicle
-                && gunItem.canShoot(data)
-                && !data.overHeat.get()
-                && (stack.is(ModTags.Items.NORMAL_GUN)
+                && gunItem.canShoot(data, player)
+                && stack.is(ModTags.Items.NORMAL_GUN)
                 && cantFireTime == 0
                 && drawTime < 0.01
                 && !ClickHandler.isEditing
                 && !notInGame()
                 && !ClickHandler.isEditing
-                && (!(data.reload.normal() || data.reload.empty())
-                && !data.reloading()
-                && !data.charging()
-                && data.hasEnoughAmmoToShoot(player)
                 && !player.getCooldowns().isOnCooldown(stack.getItem())
-                && !GunData.from(stack).bolt.needed.get())
-        )) {
+        ) {
             if (mode == FireMode.SEMI) {
                 if (clientTimer.getProgress() == 0) {
                     clientTimer.start();
@@ -684,8 +678,7 @@ public class ClientEventHandler {
         ItemStack stack = player.getMainHandItem();
         if (!(stack.getItem() instanceof GunItem gunItem)) return;
         var data = GunData.from(stack);
-        if (!data.hasEnoughAmmoToShoot(player)) return;
-        if (!gunItem.canShoot(data)) return;
+        if (!gunItem.canShoot(data, player)) return;
 
         if (stack.is(ModTags.Items.NORMAL_GUN)) {
             var mode = data.fireMode.get();

@@ -51,6 +51,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoItem;
 import software.bernie.geckolib.animatable.SingletonGeoAnimatable;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
@@ -473,8 +474,13 @@ public abstract class GunItem extends Item implements CustomRendererItem, GeoIte
     /**
      * 判断武器能否开火
      */
-    public boolean canShoot(GunData data) {
-        return data.projectileAmount() > 0;
+    public boolean canShoot(GunData data, @Nullable Entity shooter) {
+        return data.projectileAmount() > 0
+                && !data.overHeat.get()
+                && !data.reloading()
+                && !data.charging()
+                && !data.bolt.needed.get()
+                && data.hasEnoughAmmoToShoot(shooter);
     }
 
     /**

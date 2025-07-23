@@ -50,7 +50,7 @@ public enum ReloadMessage implements CustomPacketPayload {
                 var maxAmmo = magazine + extra;
 
                 if (data.ammo.get() < maxAmmo) {
-                    data.reload.reloadStarter.markStart();
+                    data.startReload();
                 }
                 return;
             }
