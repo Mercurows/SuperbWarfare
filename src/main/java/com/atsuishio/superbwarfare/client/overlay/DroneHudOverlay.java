@@ -11,6 +11,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Camera;
+import net.minecraft.client.CameraType;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -56,8 +57,8 @@ public class DroneHudOverlay implements LayeredDraw.Layer {
     @Override
     @ParametersAreNonnullByDefault
     public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
-        int w = guiGraphics.guiWidth();
-        int h = guiGraphics.guiHeight();
+        int screenWidth = guiGraphics.guiWidth();
+        int screenHeight = guiGraphics.guiHeight();
 
         Minecraft mc = Minecraft.getInstance();
         Player player = mc.player;
@@ -80,16 +81,18 @@ public class DroneHudOverlay implements LayeredDraw.Layer {
         RenderSystem.setShaderColor(1, 1, 1, 1);
 
         var tag = NBTTool.getTag(stack);
-        if (stack.is(ModItems.MONITOR.get()) && tag.getBoolean("Using") && tag.getBoolean("Linked")) {
-            guiGraphics.blit(Mod.loc("textures/screens/drone.png"), w / 2 - 16, h / 2 - 16, 0, 0, 32, 32, 32, 32);
-            guiGraphics.blit(Mod.loc("textures/screens/drone_fov.png"), w / 2 + 100, h / 2 - 64, 0, 0, 64, 129, 64, 129);
-            int addW = (w / h) * 48;
-            int addH = (w / h) * 27;
-            preciseBlit(guiGraphics, TV_FRAME, (float) -addW / 2, (float) -addH / 2, 10, 0, 0.0F, w + addW, h + addH, w + addW, h + addH);
+        boolean firstPerson = Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON || Minecraft.getInstance().options.getCameraType() == CameraType.THIRD_PERSON_BACK;
 
-            preciseBlit(guiGraphics, Mod.loc("textures/screens/drone_fov_move.png"), (float) w / 2 + 100, (float) (h / 2f - 64 - ((ClientEventHandler.droneFovLerp - 1) * 23.8)), 0, 0, 64, 129, 64, 129);
+        if (stack.is(ModItems.MONITOR.get()) && tag.getBoolean("Using") && tag.getBoolean("Linked") && firstPerson) {
+            guiGraphics.blit(Mod.loc("textures/screens/drone.png"), screenWidth / 2 - 16, screenHeight / 2 - 16, 0, 0, 32, 32, 32, 32);
+            guiGraphics.blit(Mod.loc("textures/screens/drone_fov.png"), screenWidth / 2 + 100, screenHeight / 2 - 64, 0, 0, 64, 129, 64, 129);
+            int addW = (screenWidth / screenHeight) * 48;
+            int addH = (screenWidth / screenHeight) * 27;
+            preciseBlit(guiGraphics, TV_FRAME, (float) -addW / 2, (float) -addH / 2, 10, 0, 0.0F, screenWidth + addW, screenHeight + addH, screenWidth + addW, screenHeight + addH);
+
+            preciseBlit(guiGraphics, Mod.loc("textures/screens/drone_fov_move.png"), (float) screenWidth / 2 + 100, (float) (screenHeight / 2f - 64 - ((ClientEventHandler.droneFovLerp - 1) * 23.8)), 0, 0, 64, 129, 64, 129);
             guiGraphics.drawString(mc.font, Component.literal(FormatTool.format1D(ClientEventHandler.droneFovLerp, "x")),
-                    w / 2 + 144, h / 2 + 56 - (int) ((ClientEventHandler.droneFovLerp - 1) * 23.8), -1, false);
+                    screenWidth / 2 + 144, screenHeight / 2 + 56 - (int) ((ClientEventHandler.droneFovLerp - 1) * 23.8), -1, false);
 
             DroneEntity entity = EntityFindUtil.findDrone(player.level(), tag.getString("LinkedDrone"));
 
@@ -116,28 +119,28 @@ public class DroneHudOverlay implements LayeredDraw.Layer {
                 // 超出距离警告
                 if (distance > getMaxDistance() - 48) {
                     guiGraphics.drawString(mc.font, Component.translatable("tips.superbwarfare.drone.warning"),
-                            w / 2 - 18, h / 2 - 47, -65536, false);
+                            screenWidth / 2 - 18, screenHeight / 2 - 47, -65536, false);
                     color = -65536;
                 }
 
                 // 距离
                 guiGraphics.drawString(mc.font, Component.translatable("tips.superbwarfare.drone.distance")
                                 .append(Component.literal(FormatTool.format1D(distance, "m"))),
-                        w / 2 + 10, h / 2 + 33, color, false);
+                        screenWidth / 2 + 10, screenHeight / 2 + 33, color, false);
 
                 // 血量
                 guiGraphics.drawString(mc.font, Component.translatable("tips.superbwarfare.drone.health")
                                 .append(Component.literal(FormatTool.format1D(entity.getHealth()) + " / " + FormatTool.format1D(entity.getMaxHealth()))),
-                        w / 2 - 77, h / 2 + 33, -1, false);
+                        screenWidth / 2 - 77, screenHeight / 2 + 33, -1, false);
                 if (!entity.getEntityData().get(IS_KAMIKAZE)) {
                     // 弹药
                     guiGraphics.drawString(mc.font, Component.translatable("tips.superbwarfare.drone.ammo")
                                     .append(Component.literal(entity.getEntityData().get(AMMO) + " / " + entity.getEntityData().get(MAX_AMMO))),
-                            w / 2 + 12, h / 2 - 37, -1, false);
+                            screenWidth / 2 + 12, screenHeight / 2 - 37, -1, false);
                 } else {
                     // 神风
                     guiGraphics.drawString(mc.font, Component.translatable("tips.superbwarfare.drone.kamikaze"),
-                            w / 2 + 12, h / 2 - 37, -65536, false);
+                            screenWidth / 2 + 12, screenHeight / 2 - 37, -65536, false);
                 }
 
                 if (lookAtEntity) {
@@ -146,16 +149,16 @@ public class DroneHudOverlay implements LayeredDraw.Layer {
 
                     guiGraphics.drawString(mc.font, Component.translatable("tips.superbwarfare.drone.range")
                                     .append(Component.literal(FormatTool.format1D(entityRange, "m ") + displayName.getString())),
-                            w / 2 + 12, h / 2 - 28, color, false);
+                            screenWidth / 2 + 12, screenHeight / 2 - 28, color, false);
                 } else {
                     // 方块距离
                     if (blockRange > 500) {
                         guiGraphics.drawString(mc.font, Component.translatable("tips.superbwarfare.drone.range")
-                                .append(Component.literal("---m")), w / 2 + 12, h / 2 - 28, color, false);
+                                .append(Component.literal("---m")), screenWidth / 2 + 12, screenHeight / 2 - 28, color, false);
                     } else {
                         guiGraphics.drawString(mc.font, Component.translatable("tips.superbwarfare.drone.range")
                                         .append(Component.literal(FormatTool.format1D(blockRange, "m"))),
-                                w / 2 + 12, h / 2 - 28, color, false);
+                                screenWidth / 2 + 12, screenHeight / 2 - 28, color, false);
                     }
                 }
 
@@ -202,7 +205,7 @@ public class DroneHudOverlay implements LayeredDraw.Layer {
                     Vec3 point = VectorUtil.worldToScreen(pos);
                     float x = (float) point.x;
                     float y = (float) point.y;
-                    preciseBlit(guiGraphics, INDICATOR, Mth.clamp(x - 6, 0, w - 12), Mth.clamp(y - 6, 0, h - 12), 0, 0, 12, 12, 12, 12);
+                    preciseBlit(guiGraphics, INDICATOR, Mth.clamp(x - 6, 0, screenWidth - 12), Mth.clamp(y - 6, 0, screenHeight - 12), 0, 0, 12, 12, 12, 12);
                 }
 
                 // 火炮位置
@@ -218,7 +221,7 @@ public class DroneHudOverlay implements LayeredDraw.Layer {
                             float xf = (float) pointF.x;
                             float yf = (float) pointF.y;
 
-                            preciseBlit(guiGraphics, FRIENDLY_INDICATOR, Mth.clamp(xf - 6, 0, w - 12), Mth.clamp(yf - 6, 0, h - 12), 0, 0, 12, 12, 12, 12);
+                            preciseBlit(guiGraphics, FRIENDLY_INDICATOR, Mth.clamp(xf - 6, 0, screenWidth - 12), Mth.clamp(yf - 6, 0, screenHeight - 12), 0, 0, 12, 12, 12, 12);
                         }
                     }
                 }
