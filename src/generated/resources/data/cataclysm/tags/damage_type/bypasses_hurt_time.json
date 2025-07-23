@@ -1,0 +1,20 @@
+{
+  "values": [
+    "superbwarfare:gunfire_absolute",
+    "superbwarfare:gunfire_headshot_absolute",
+    "superbwarfare:air_crash",
+    "superbwarfare:burn",
+    "superbwarfare:cannon_fire",
+    "superbwarfare:custom_explosion",
+    "superbwarfare:drone_hit",
+    "superbwarfare:laser",
+    "superbwarfare:laser_headshot",
+    "superbwarfare:laser_static",
+    "superbwarfare:lunge_mine",
+    "superbwarfare:mine",
+    "superbwarfare:projectile_boom",
+    "superbwarfare:shock",
+    "superbwarfare:vehicle_explosion",
+    "superbwarfare:vehicle_strike"
+  ]
+}
