@@ -785,4 +785,9 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
         Vector4f maxCameraPosition = transformPosition(transform, 0, 0.75f, -2 - 0.2f * (float) ClientMouseHandler.custom3pDistanceLerp);
         return CameraTool.getMaxZoom(transform, maxCameraPosition);
     }
+
+    public Entity getController() {
+        return EntityFindUtil.findPlayer(this.level(), this.entityData.get(CONTROLLER));
+    }
 }
+

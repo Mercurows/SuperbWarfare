@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "ab",
+    "c "
+  ],
+  "key": {
+    "a": {
+      "tag": "forge:dusts/redstone"
+    },
+    "b": {
+      "tag": "forge:gems/lapis"
+    },
+    "c": {
+      "tag": "forge:plates/copper"
+    }
+  },
+  "result": {
+    "item": "superbwarfare:iff",
+    "count": 1
+  }
+}

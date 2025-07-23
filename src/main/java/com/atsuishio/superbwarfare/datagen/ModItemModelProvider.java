@@ -113,6 +113,7 @@ public class ModItemModelProvider extends ItemModelProvider {
         simpleItem(ModItems.GALENA);
         simpleItem(ModItems.SCHEELITE);
         simpleItem(ModItems.DOG_TAG);
+        simpleItem(ModItems.IFF);
         simpleItem(ModItems.TRANSCRIPT);
         simpleItem(ModItems.RAW_SILVER);
         simpleItem(ModItems.SILVER_INGOT);

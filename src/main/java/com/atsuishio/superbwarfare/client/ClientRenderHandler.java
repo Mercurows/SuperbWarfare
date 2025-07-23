@@ -47,7 +47,8 @@ public class ClientRenderHandler {
     @SubscribeEvent
     public static void registerGuiOverlays(RegisterGuiOverlaysEvent event) {
         event.registerBelowAll(KillMessageOverlay.ID, new KillMessageOverlay());
-        event.registerBelow(Mod.loc(KillMessageOverlay.ID), VehicleTeamOverlay.ID, new VehicleTeamOverlay());
+        event.registerBelow(Mod.loc(KillMessageOverlay.ID), IFFOverlay.ID, new IFFOverlay());
+        event.registerBelow(Mod.loc(IFFOverlay.ID), VehicleTeamOverlay.ID, new VehicleTeamOverlay());
         event.registerBelow(Mod.loc(VehicleTeamOverlay.ID), JavelinHudOverlay.ID, new JavelinHudOverlay());
         event.registerBelow(Mod.loc(JavelinHudOverlay.ID), ArmorPlateOverlay.ID, new ArmorPlateOverlay());
         event.registerBelow(Mod.loc(ArmorPlateOverlay.ID), VehicleHudOverlay.ID, new VehicleHudOverlay());

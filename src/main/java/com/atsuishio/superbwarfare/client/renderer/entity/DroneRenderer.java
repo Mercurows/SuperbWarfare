@@ -1,6 +1,7 @@
 
 package com.atsuishio.superbwarfare.client.renderer.entity;
 
+import com.atsuishio.superbwarfare.client.layer.vehicle.DroneLayer;
 import com.atsuishio.superbwarfare.client.model.entity.DroneModel;
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
 import com.atsuishio.superbwarfare.init.ModItems;
@@ -29,6 +30,7 @@ import static com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntit
 public class DroneRenderer extends GeoEntityRenderer<DroneEntity> {
 	public DroneRenderer(EntityRendererProvider.Context renderManager) {
 		super(renderManager, new DroneModel());
+		this.addRenderLayer(new DroneLayer(this));
 		this.shadowRadius = 0.2f;
 	}
 

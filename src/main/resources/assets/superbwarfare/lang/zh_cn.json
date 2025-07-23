@@ -231,6 +231,8 @@
   "item.superbwarfare.cannon_core": "火炮核心",
   "item.superbwarfare.dog_tag": "狗牌",
   "curios.identifier.dog_tag": "狗牌",
+  "item.superbwarfare.iff": "敌我识别装置",
+  "curios.identifier.iff": "敌我识别装置",
   "item.superbwarfare.cell": "电池",
   "item.superbwarfare.battery": "大型电池",
   "item.superbwarfare.small_battery_pack": "小型电池组",
@@ -268,6 +270,7 @@
   "des.superbwarfare.artillery_indicator_5": "放置在副手时可使用无人机标记位置，操作方式同上",
   "des.superbwarfare.artillery_indicator.add": "已将%1$s添加至火炮阵列",
   "des.superbwarfare.artillery_indicator.remove": "已将%1$s从火炮阵列中移除",
+  "des.superbwarfare.iff_1": "当玩家加入原版队伍，且队伍ID不是“TDM”时，会在屏幕上标记队友位置",
 
   "attribute.superbwarfare.bullet_resistance": "子弹防护",
 
