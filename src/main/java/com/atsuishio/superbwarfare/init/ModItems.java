@@ -204,6 +204,7 @@ public class ModItems {
     public static final DeferredHolder<Item, Item> SCHEELITE = ITEMS.register("scheelite", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> RAW_SILVER = ITEMS.register("raw_silver", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, DogTag> DOG_TAG = ITEMS.register("dog_tag", DogTag::new);
+    public static final DeferredHolder<Item, Iff> IFF = ITEMS.register("iff", Iff::new);
     public static final DeferredHolder<Item, BatteryItem> CELL = ITEMS.register("cell", () -> new BatteryItem(24000, new Item.Properties()));
     public static final DeferredHolder<Item, BatteryItem> BATTERY = ITEMS.register("battery", () -> new BatteryItem(100000, new Item.Properties()));
     public static final DeferredHolder<Item, BatteryItem> SMALL_BATTERY_PACK = ITEMS.register("small_battery_pack", () -> new BatteryItem(500000, new Item.Properties()));

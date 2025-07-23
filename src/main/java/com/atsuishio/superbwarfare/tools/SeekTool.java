@@ -3,15 +3,19 @@ package com.atsuishio.superbwarfare.tools;
 import com.atsuishio.superbwarfare.config.server.SeekConfig;
 import com.atsuishio.superbwarfare.entity.projectile.SmokeDecoyEntity;
 import com.atsuishio.superbwarfare.entity.projectile.SwarmDroneEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
+import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModTags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.OwnableEntity;
 import net.minecraft.world.entity.decoration.HangingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -39,10 +43,32 @@ public class SeekTool {
                 .toList();
     }
 
-    public static List<Entity> getPlayer(Player player, Level level) {
+    public static List<Entity> getTeammate(Player player, Level level) {
         return StreamSupport.stream(EntityFindUtil.getEntities(level).getAll().spliterator(), false)
-                .filter(e -> e instanceof Player && e.getTeam() != null && !e.getTeam().getName().equals("TDM") && e.getTeam() == player.getTeam())
+                .filter(e -> (e instanceof Player && e.getTeam() != null && !e.getTeam().getName().equals("TDM") && e.getTeam() == player.getTeam())
+                        || teammatePet(e, player) || teammateDrone(e, player)
+                )
                 .toList();
+    }
+
+    public static boolean teammatePet(Entity e, Player player) {
+        return e instanceof OwnableEntity ownableEntity
+                && ownableEntity.getOwner() != null
+                && ownableEntity.getOwner().getTeam() != null && !ownableEntity.getOwner().getTeam().getName().equals("TDM") && ownableEntity.getOwner().getTeam() == player.getTeam();
+    }
+
+    public static boolean teammateDrone(Entity e, Player player) {
+        ItemStack stack = player.getMainHandItem();
+        DroneEntity drone2 = null;
+        var tag = NBTTool.getTag(stack);
+        if (stack.is(ModItems.MONITOR.get()) && tag.getBoolean("Using") && tag.getBoolean("Linked")) {
+            drone2 = EntityFindUtil.findDrone(player.level(), tag.getString("LinkedDrone"));
+        }
+
+        return e instanceof DroneEntity drone
+                && drone != drone2
+                && drone.getController() != null
+                && drone.getController().getTeam() != null && !drone.getController().getTeam().getName().equals("TDM") && drone.getController().getTeam() == player.getTeam();
     }
 
     public static Entity seekEntity(Entity entity, Level level, double seekRange, double seekAngle) {

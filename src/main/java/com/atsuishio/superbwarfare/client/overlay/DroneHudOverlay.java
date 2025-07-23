@@ -64,6 +64,7 @@ public class DroneHudOverlay implements LayeredDraw.Layer {
         Player player = mc.player;
         Camera camera = mc.gameRenderer.getMainCamera();
         Vec3 cameraPos = camera.getPosition();
+        var partialTick = deltaTracker.getGameTimeDeltaPartialTick(true);
 
         if (player == null) return;
 
@@ -226,6 +227,19 @@ public class DroneHudOverlay implements LayeredDraw.Layer {
                     }
                 }
             }
+        }
+
+        if (VectorUtil.canSee(player.position())) {
+            Entity team = player;
+            if (player.getVehicle() != null) {
+                team = player.getVehicle();
+            }
+            Vec3 pos = new Vec3(Mth.lerp(partialTick, team.xo, team.getX()), Mth.lerp(partialTick, team.yo + team.getBbHeight() / 2, team.getY() + team.getBbHeight() / 2), Mth.lerp(partialTick, team.zo, team.getZ()));
+            Vec3 point = VectorUtil.worldToScreen(pos);
+            float xf = (float) point.x;
+            float yf = (float) point.y;
+
+            preciseBlit(guiGraphics, FRIENDLY_INDICATOR, Mth.clamp(xf - 6, 0, screenWidth - 12), Mth.clamp(yf - 6, 0, screenHeight - 12), 0, 0, 12, 12, 12, 12);
         }
 
         RenderSystem.depthMask(true);

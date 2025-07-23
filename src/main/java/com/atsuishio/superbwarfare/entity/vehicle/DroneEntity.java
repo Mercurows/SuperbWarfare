@@ -793,6 +793,10 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
         return CameraTool.getMaxZoom(transform, maxCameraPosition);
     }
 
+    public Entity getController() {
+        return EntityFindUtil.findPlayer(this.level(), this.entityData.get(CONTROLLER));
+    }
+
     @Override
     public boolean hasEnergyStorage() {
         return false;
