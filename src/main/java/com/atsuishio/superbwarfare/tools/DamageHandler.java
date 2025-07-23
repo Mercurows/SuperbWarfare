@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.tools;
 
+import com.atsuishio.superbwarfare.entity.mixin.DamageAccess;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
@@ -9,6 +10,7 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.player.Player;
 
 public class DamageHandler {
@@ -31,7 +33,8 @@ public class DamageHandler {
                 }
                 living.setNoActionTime(0);
 
-                float f = damage;
+                DamageAccess access = DamageAccess.of(living);
+
                 boolean flag = false;
 
                 living.walkAnimation.setSpeed(1.5F);
@@ -42,19 +45,19 @@ public class DamageHandler {
                         return false;
                     }
 
-                    living.actuallyHurt(source, damage - living.lastHurt);
+                    access.superbWarfare$actuallyHurt(source, damage - living.lastHurt);
                     living.lastHurt = damage;
                     flag1 = false;
                 } else {
                     living.lastHurt = damage;
                     living.invulnerableTime = 20;
-                    living.actuallyHurt(source, damage);
+                    access.superbWarfare$actuallyHurt(source, damage);
                     living.hurtDuration = 10;
                     living.hurtTime = living.hurtDuration;
                 }
 
                 if (source.is(DamageTypeTags.DAMAGES_HELMET) && !living.getItemBySlot(EquipmentSlot.HEAD).isEmpty()) {
-                    living.hurtHelmet(source, damage);
+                    access.superbWarfare$hurtHelmet(source, damage);
                     damage *= 0.75F;
                 }
 
@@ -69,11 +72,10 @@ public class DamageHandler {
                     if (entity1 instanceof Player p) {
                         living.lastHurtByPlayerTime = 100;
                         living.setLastHurtByPlayer(p);
-                    } else if (entity1 instanceof net.minecraft.world.entity.TamableAnimal tamableEntity) {
+                    } else if (entity1 instanceof TamableAnimal tamableEntity) {
                         if (tamableEntity.isTame()) {
                             living.lastHurtByPlayerTime = 100;
-                            LivingEntity livingentity2 = tamableEntity.getOwner();
-                            if (livingentity2 instanceof Player player) {
+                            if (tamableEntity.getOwner() instanceof Player player) {
                                 living.setLastHurtByPlayer(player);
                             } else {
                                 living.setLastHurtByPlayer(null);
@@ -105,27 +107,26 @@ public class DamageHandler {
                 }
 
                 if (living.isDeadOrDying()) {
-                    if (!living.checkTotemDeathProtection(source)) {
-                        SoundEvent soundevent = living.getDeathSound();
+                    if (!access.superbWarfare$checkTotemDeathProtection(source)) {
+                        SoundEvent soundevent = access.superbWarfare$getDeathSound();
                         if (flag1 && soundevent != null) {
-                            living.playSound(soundevent, living.getSoundVolume(), living.getVoicePitch());
+                            living.playSound(soundevent, access.superbWarfare$getSoundVolume(), living.getVoicePitch());
                         }
-
                         living.die(source);
                     }
                 } else if (flag1) {
-                    living.playHurtSound(source);
+                    access.superbWarfare$playHurtSound(source);
                 }
 
                 living.lastDamageSource = source;
                 living.lastDamageStamp = living.level().getGameTime();
 
                 if (living instanceof ServerPlayer) {
-                    CriteriaTriggers.ENTITY_HURT_PLAYER.trigger((ServerPlayer) living, source, f, damage, flag);
+                    CriteriaTriggers.ENTITY_HURT_PLAYER.trigger((ServerPlayer) living, source, damage, damage, flag);
                 }
 
                 if (entity1 instanceof ServerPlayer) {
-                    CriteriaTriggers.PLAYER_HURT_ENTITY.trigger((ServerPlayer) entity1, living, source, f, damage, flag);
+                    CriteriaTriggers.PLAYER_HURT_ENTITY.trigger((ServerPlayer) entity1, living, source, damage, damage, flag);
                 }
 
                 return true;
