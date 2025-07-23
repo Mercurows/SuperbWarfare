@@ -7,12 +7,11 @@ import com.atsuishio.superbwarfare.entity.C4Entity;
 import com.atsuishio.superbwarfare.entity.projectile.LaserEntity;
 import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity;
+import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.item.Monitor;
-import com.atsuishio.superbwarfare.tools.CustomExplosion;
-import com.atsuishio.superbwarfare.tools.EntityFindUtil;
-import com.atsuishio.superbwarfare.tools.ParticleTool;
-import com.atsuishio.superbwarfare.tools.TagDataParser;
+import com.atsuishio.superbwarfare.tools.*;
+import com.mojang.math.Axis;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
@@ -45,7 +44,10 @@ import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.network.PlayMessages;
@@ -53,7 +55,9 @@ import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Math;
+import org.joml.Matrix4f;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -61,6 +65,9 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static com.atsuishio.superbwarfare.event.ClientMouseHandler.freeCameraPitch;
+import static com.atsuishio.superbwarfare.event.ClientMouseHandler.freeCameraYaw;
 
 public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
 
@@ -473,7 +480,7 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
                 holdTickZ = 0;
             }
 
-            this.setDeltaMovement(this.getDeltaMovement().multiply(0.965, 0.935, 0.965));
+            this.setDeltaMovement(this.getDeltaMovement().multiply(0.965, 0.7, 0.965));
         } else {
             this.setDeltaMovement(this.getDeltaMovement().multiply(0.8, 1, 0.8));
             this.setZRot(this.roll * 0.7f);
@@ -492,35 +499,36 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
         if (up) {
             holdTickY++;
             this.entityData.set(POWER, Math.min(this.entityData.get(POWER) + 0.01f * Math.min(holdTickY, 5), 0.2f));
+            setDeltaMovement(new Vec3(getDeltaMovement().x, 0.05 * holdTickY, getDeltaMovement().z));
         } else if (down) {
             holdTickY++;
-            this.entityData.set(POWER, Math.max(this.entityData.get(POWER) - 0.02f * Math.min(holdTickY, 5), this.onGround() ? 0 : 0.01f));
+            this.entityData.set(POWER, Math.max(this.entityData.get(POWER) - 0.02f * Math.min(holdTickY, 5), this.onGround() ? 0 : 0.06f));
+            setDeltaMovement(new Vec3(getDeltaMovement().x, -0.05 * holdTickY, getDeltaMovement().z));
         } else {
             holdTickY = 0;
         }
 
         if (!(up || down)) {
             if (this.getDeltaMovement().y() < 0) {
-                this.entityData.set(POWER, Math.min(this.entityData.get(POWER) + 0.01f, 0.4f));
+                this.entityData.set(POWER, Math.min(this.entityData.get(POWER) + 0.005f, 0.2f));
             } else {
-                this.entityData.set(POWER, Math.max(this.entityData.get(POWER) - 0.01f, this.onGround() ? 0 : 0.01f));
+                this.entityData.set(POWER, Math.max(this.entityData.get(POWER) - (this.onGround() ? 0.0005f : 0.005f), 0.02f));
             }
         }
 
-        this.entityData.set(POWER, this.entityData.get(POWER) * 0.99f);
         this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) * 0.7f);
         this.entityData.set(DELTA_X_ROT, this.entityData.get(DELTA_X_ROT) * 0.7f);
 
         this.setZRot(Mth.clamp(this.getRoll() - this.entityData.get(DELTA_ROT), -30, 30));
         this.setBodyXRot(Mth.clamp(this.getBodyPitch() - this.entityData.get(DELTA_X_ROT), -30, 30));
 
-        setDeltaMovement(getDeltaMovement().add(0.0f, this.entityData.get(POWER) * 0.6f, 0.0f));
+        setDeltaMovement(getDeltaMovement().add(0.0f, this.entityData.get(POWER) * 0.6, 0.0f));
 
         Vector3f direction = getRightDirection().mul(this.entityData.get(DELTA_ROT));
-        setDeltaMovement(getDeltaMovement().add(new Vec3(direction.x, direction.y, direction.z).scale(0.03)));
+        setDeltaMovement(getDeltaMovement().add(new Vec3(direction.x, direction.y, direction.z).scale(0.017)));
 
         Vector3f directionZ = getForwardDirection().mul(-this.entityData.get(DELTA_X_ROT));
-        setDeltaMovement(getDeltaMovement().add(new Vec3(directionZ.x, directionZ.y, directionZ.z).scale(0.03)));
+        setDeltaMovement(getDeltaMovement().add(new Vec3(directionZ.x, directionZ.y, directionZ.z).scale(0.017)));
 
         Player controller = EntityFindUtil.findPlayer(this.level(), this.entityData.get(CONTROLLER));
         if (controller != null) {
@@ -570,7 +578,7 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
 
     @Override
     public boolean engineRunning() {
-        return !onGround();
+        return Math.abs(this.entityData.get(POWER)) > 0.05;
     }
 
     @Override
@@ -580,6 +588,11 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
 
     @Override
     public float getEngineSoundVolume() {
+
+        if (Math.abs(this.entityData.get(POWER)) <= 0.05) {
+            return 0;
+        }
+
         Player player = EntityFindUtil.findPlayer(this.level(), this.entityData.get(CONTROLLER));
 
         if (player == null) return entityData.get(POWER);
@@ -736,5 +749,40 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
     @Override
     public boolean canCrushEntities() {
         return false;
+    }
+
+    public float getRotX(float tickDelta) {
+        return this.getPitch(tickDelta);
+    }
+
+    public float getRotY(float tickDelta) {
+        return this.getYaw(tickDelta);
+    }
+
+    public float getRotZ(float tickDelta) {
+        return this.getRoll(tickDelta);
+    }
+
+    public Matrix4f getClientVehicleTransform(float ticks) {
+        Matrix4f transform = new Matrix4f();
+        transform.translate((float) Mth.lerp(ticks, xo, getX()), (float) Mth.lerp(ticks, yo, getY()), (float) Mth.lerp(ticks, zo, getZ()));
+        transform.rotate(Axis.YP.rotationDegrees((float) (-Mth.lerp(ticks, yRotO, getYRot()) + freeCameraYaw)));
+        transform.rotate(Axis.XP.rotationDegrees((float) (Mth.lerp(ticks, xRotO, getXRot()) + freeCameraPitch)));
+        transform.rotate(Axis.ZP.rotationDegrees(Mth.lerp(ticks, prevRoll, getRoll())));
+        return transform;
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    @Override
+    public @Nullable Vec2 getCameraRotation(float partialTicks, Player player, boolean zoom, boolean isFirstPerson) {
+        return new Vec2((float) (getRotY(partialTicks) - freeCameraYaw), (float) (getRotX(partialTicks) + freeCameraPitch));
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    @Override
+    public Vec3 getCameraPosition(float partialTicks, Player player, boolean zoom, boolean isFirstPerson) {
+        Matrix4f transform = getClientVehicleTransform(partialTicks);
+        Vector4f maxCameraPosition = transformPosition(transform, 0, 0.75f, -2 - 0.2f * (float) ClientMouseHandler.custom3pDistanceLerp);
+        return CameraTool.getMaxZoom(transform, maxCameraPosition);
     }
 }

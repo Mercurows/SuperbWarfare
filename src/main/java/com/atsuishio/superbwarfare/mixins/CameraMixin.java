@@ -48,16 +48,32 @@ public abstract class CameraMixin {
             if (stack.is(ModItems.MONITOR.get()) && stack.getOrCreateTag().getBoolean("Using") && stack.getOrCreateTag().getBoolean("Linked")) {
                 DroneEntity drone = EntityFindUtil.findDrone(player.level(), stack.getOrCreateTag().getString("LinkedDrone"));
                 if (drone != null) {
-                    Matrix4f transform = superbWarfare$getDroneTransform(drone, partialTicks);
-                    float x0 = 0f;
-                    float y0 = 0.075f;
-                    float z0 = 0.18f;
+                    boolean firstPerson = Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON || Minecraft.getInstance().options.getCameraType() == CameraType.THIRD_PERSON_BACK;
+                    if (firstPerson) {
+                        Matrix4f transform = superbWarfare$getDroneTransform(drone, partialTicks);
+                        float x0 = 0f;
+                        float y0 = 0.075f;
+                        float z0 = 0.18f;
 
-                    Vector4f worldPosition = superbWarfare$transformPosition(transform, x0, y0, z0);
+                        Vector4f worldPosition = superbWarfare$transformPosition(transform, x0, y0, z0);
 
-                    setRotation(drone.getYaw(partialTicks), drone.getPitch(partialTicks));
-                    setPosition(worldPosition.x, worldPosition.y, worldPosition.z);
-                    info.cancel();
+                        setRotation(drone.getYaw(partialTicks), drone.getPitch(partialTicks));
+                        setPosition(worldPosition.x, worldPosition.y, worldPosition.z);
+                        info.cancel();
+                    } else {
+                        var rotation = drone.getCameraRotation(partialTicks, player, false, false);
+                        if (rotation != null) {
+                            setRotation(rotation.x, rotation.y);
+                        }
+                        var position = drone.getCameraPosition(partialTicks, player, false, false);
+                        if (position != null) {
+                            setPosition(position.x, position.y, position.z);
+                        }
+
+                        if (rotation != null || position != null) {
+                            info.cancel();
+                        }
+                    }
                 }
                 return;
             }
