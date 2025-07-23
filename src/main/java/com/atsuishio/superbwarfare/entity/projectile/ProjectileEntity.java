@@ -722,12 +722,12 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
 
         float headShotModifier = isHeadshot ? this.headShot : 1;
         if (normalDamage > 0) {
-            entity.hurt(isHeadshot ? ModDamageTypes.causeGunFireHeadshotDamage(this.level().registryAccess(), this, this.shooter)
+            DamageHandler.doDamage(entity, isHeadshot ? ModDamageTypes.causeGunFireHeadshotDamage(this.level().registryAccess(), this, this.shooter)
                     : ModDamageTypes.causeGunFireDamage(this.level().registryAccess(), this, this.shooter), normalDamage * headShotModifier);
             entity.invulnerableTime = 0;
         }
         if (absoluteDamage > 0) {
-            entity.hurt(isHeadshot ? ModDamageTypes.causeGunFireHeadshotAbsoluteDamage(this.level().registryAccess(), this, this.shooter)
+            DamageHandler.doDamage(entity, isHeadshot ? ModDamageTypes.causeGunFireHeadshotAbsoluteDamage(this.level().registryAccess(), this, this.shooter)
                     : ModDamageTypes.causeGunFireAbsoluteDamage(this.level().registryAccess(), this, this.shooter), absoluteDamage * headShotModifier);
             entity.invulnerableTime = 0;
 
