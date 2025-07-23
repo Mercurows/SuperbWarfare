@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkInstance;
 import com.atsuishio.superbwarfare.tools.DamageTypeTool;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.Nullable;
@@ -19,12 +20,12 @@ public class HealClip extends Perk {
     }
 
     @Override
-    public void tick(GunData data, PerkInstance instance, @Nullable LivingEntity living) {
+    public void tick(GunData data, PerkInstance instance, @Nullable Entity living) {
         data.perk.reduceCooldown(this, "HealClipTime");
     }
 
     @Override
-    public void onKill(GunData data, PerkInstance instance, LivingEntity target, DamageSource source) {
+    public void onKill(GunData data, PerkInstance instance, Entity target, DamageSource source) {
         if (DamageTypeTool.isGunDamage(source) || source.is(ModDamageTypes.PROJECTILE_BOOM)) {
             int healClipLevel = instance.level();
             if (healClipLevel != 0) {
@@ -34,7 +35,7 @@ public class HealClip extends Perk {
     }
 
     @Override
-    public void preReload(GunData data, PerkInstance instance, @Nullable LivingEntity living) {
+    public void preReload(GunData data, PerkInstance instance, @Nullable Entity living) {
         int time = data.perk.getTag(this).getInt("HealClipTime");
         if (time > 0) {
             data.perk.getTag(this).remove("HealClipTime");
@@ -45,8 +46,8 @@ public class HealClip extends Perk {
     }
 
     @Override
-    public void postReload(GunData data, PerkInstance instance, @Nullable LivingEntity living) {
-        if (living == null) return;
+    public void postReload(GunData data, PerkInstance instance, @Nullable Entity target) {
+        if (!(target instanceof LivingEntity living)) return;
 
         if (!data.perk.getTag(this).contains("HealClip")) {
             return;
@@ -58,8 +59,8 @@ public class HealClip extends Perk {
         }
 
         living.heal(12.0f * (0.8f + 0.2f * healClipLevel));
-        List<Player> players = living.level().getEntitiesOfClass(Player.class, living.getBoundingBox().inflate(5))
-                .stream().filter(p -> p.isAlliedTo(living)).toList();
+        List<Player> players = target.level().getEntitiesOfClass(Player.class, target.getBoundingBox().inflate(5))
+                .stream().filter(p -> p.isAlliedTo(target)).toList();
         int finalHealClipLevel = healClipLevel;
         players.forEach(p -> p.heal(6.0f * (0.8f + 0.2f * finalHealClipLevel)));
     }

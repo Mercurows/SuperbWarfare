@@ -8,7 +8,7 @@ import com.atsuishio.superbwarfare.perk.PerkInstance;
 import com.atsuishio.superbwarfare.tools.DamageTypeTool;
 import com.atsuishio.superbwarfare.tools.InventoryTool;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
@@ -20,7 +20,7 @@ public class Subsistence extends Perk {
     }
 
     @Override
-    public void onKill(GunData data, PerkInstance instance, LivingEntity target, DamageSource source) {
+    public void onKill(GunData data, PerkInstance instance, Entity target, DamageSource source) {
         Player attacker = null;
         if (source.getEntity() instanceof Player player) {
             attacker = player;

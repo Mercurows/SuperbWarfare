@@ -11,7 +11,7 @@ import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ai.behavior.VillagerMakeLove;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.npc.Villager;
@@ -27,7 +27,7 @@ public class CupidArrow extends AmmoPerk {
     }
 
     @Override
-    public void onHit(float damage, GunData data, PerkInstance instance, LivingEntity target, DamageSource source) {
+    public void onHit(float damage, GunData data, PerkInstance instance, Entity target, DamageSource source) {
         Player attacker = null;
         if (source.getEntity() instanceof Player player) {
             attacker = player;
@@ -59,12 +59,12 @@ public class CupidArrow extends AmmoPerk {
     }
 
     @Override
-    public float getModifiedDamage(float damage, GunData data, PerkInstance instance, @Nullable LivingEntity target, DamageSource source) {
+    public float getModifiedDamage(float damage, GunData data, PerkInstance instance, @Nullable Entity target, DamageSource source) {
         return 0;
     }
 
     @Override
-    public boolean shouldCancelHurtEvent(float damage, GunData data, PerkInstance instance, LivingEntity target, DamageSource source) {
+    public boolean shouldCancelHurtEvent(float damage, GunData data, PerkInstance instance, Entity target, DamageSource source) {
         return true;
     }
 }

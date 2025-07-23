@@ -81,7 +81,7 @@ public class AureliaSceptre extends GunItem {
 
         var data = GunData.from(stack);
 
-        if (ClientEventHandler.holdFire && gunItem.canShoot(data) && !data.overHeat.get()) {
+        if (ClientEventHandler.holdFire && gunItem.canShoot(data, player)) {
             return event.setAndContinue(RawAnimation.begin().thenLoop("animation.aurelia_sceptre.fire"));
         }
 

@@ -4,7 +4,6 @@ import com.atsuishio.superbwarfare.api.event.ReloadEvent;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.perk.Perk;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -14,34 +13,31 @@ public class ReloadEventHandler {
 
     @SubscribeEvent
     public static void onPreReload(ReloadEvent.Pre event) {
-        Player player = event.player;
+        var shooter = event.shooter;
         ItemStack stack = event.stack;
-        if (player == null || !(stack.getItem() instanceof GunItem)) {
-            return;
-        }
-
-        if (player.level().isClientSide) {
-            return;
-        }
+        if (shooter == null
+                || !(stack.getItem() instanceof GunItem)
+                || shooter.level().isClientSide
+        ) return;
 
         GunData data = GunData.from(stack);
         for (Perk.Type type : Perk.Type.values()) {
             var instance = data.perk.getInstance(type);
             if (instance != null) {
-                instance.perk().preReload(data, instance, player);
+                instance.perk().preReload(data, instance, shooter);
             }
         }
     }
 
     @SubscribeEvent
     public static void onPostReload(ReloadEvent.Post event) {
-        Player player = event.player;
+        var shooter = event.shooter;
         ItemStack stack = event.stack;
-        if (player == null || !(stack.getItem() instanceof GunItem)) {
+        if (shooter == null || !(stack.getItem() instanceof GunItem)) {
             return;
         }
 
-        if (player.level().isClientSide) {
+        if (shooter.level().isClientSide) {
             return;
         }
 
@@ -49,7 +45,7 @@ public class ReloadEventHandler {
         for (Perk.Type type : Perk.Type.values()) {
             var instance = data.perk.getInstance(type);
             if (instance != null) {
-                instance.perk().postReload(data, instance, player);
+                instance.perk().postReload(data, instance, shooter);
             }
         }
     }

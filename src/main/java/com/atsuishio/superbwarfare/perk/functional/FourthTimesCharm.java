@@ -7,7 +7,7 @@ import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkInstance;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.Nullable;
 
 public class FourthTimesCharm extends Perk {
@@ -17,7 +17,7 @@ public class FourthTimesCharm extends Perk {
     }
 
     @Override
-    public void tick(GunData data, PerkInstance instance, @Nullable LivingEntity living) {
+    public void tick(GunData data, PerkInstance instance, @Nullable Entity living) {
         data.perk.reduceCooldown(this, "FourthTimesCharmTick");
 
         var tag = data.perk.getTag(this);
@@ -40,7 +40,7 @@ public class FourthTimesCharm extends Perk {
     }
 
     @Override
-    public void onHit(float damage, GunData data, PerkInstance instance, LivingEntity target, DamageSource source) {
+    public void onHit(float damage, GunData data, PerkInstance instance, Entity target, DamageSource source) {
         if (source.getDirectEntity() instanceof ProjectileEntity projectile) {
             float bypassArmorRate = projectile.getBypassArmorRate();
             if (bypassArmorRate >= 1.0f && source.is(ModDamageTypes.GUN_FIRE_HEADSHOT_ABSOLUTE)) {

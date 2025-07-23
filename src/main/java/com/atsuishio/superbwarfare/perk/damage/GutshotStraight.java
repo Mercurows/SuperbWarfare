@@ -6,7 +6,7 @@ import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkInstance;
 import com.atsuishio.superbwarfare.tools.DamageTypeTool;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.Nullable;
 
 public class GutshotStraight extends Perk {
@@ -16,7 +16,7 @@ public class GutshotStraight extends Perk {
     }
 
     @Override
-    public float getModifiedDamage(float damage, GunData data, PerkInstance instance, @Nullable LivingEntity target, DamageSource source) {
+    public float getModifiedDamage(float damage, GunData data, PerkInstance instance, @Nullable Entity target, DamageSource source) {
         if (DamageTypeTool.isGunFireDamage(source) && source.getDirectEntity() instanceof ProjectileEntity projectile && projectile.isZoom()) {
             return damage * (1.15f + 0.05f * instance.level());
         }

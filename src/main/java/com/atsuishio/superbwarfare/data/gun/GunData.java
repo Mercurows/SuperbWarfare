@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.data.gun;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.data.gun.subdata.*;
 import com.atsuishio.superbwarfare.data.gun.value.*;
+import com.atsuishio.superbwarfare.event.GunEventHandler;
 import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.perk.AmmoPerk;
@@ -18,9 +19,12 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryManager;
 import org.jetbrains.annotations.NotNull;
@@ -369,9 +373,14 @@ public class GunData {
             return Objects.requireNonNull(Ammo.getType(value));
         }
 
-        public TagKey<Item> toTag() {
+        public @NotNull TagKey<Item> toTag() {
             if (type != AmmoConsumeType.TAG) throw new IllegalArgumentException("not TAG type!");
-            return ItemTags.create(Objects.requireNonNull(ResourceLocation.tryParse(this.value())));
+            return ItemTags.create(Objects.requireNonNull(ResourceLocation.tryParse(this.value)));
+        }
+
+        public @NotNull Item toItem() {
+            if (type != AmmoConsumeType.ITEM) throw new IllegalArgumentException("not ITEM type!");
+            return Objects.requireNonNull(ForgeRegistries.ITEMS.getValue(ResourceLocation.tryParse(this.value)));
         }
     }
 
@@ -407,72 +416,94 @@ public class GunData {
     /**
      * 是否还有剩余弹药（不考虑枪内弹药）
      */
-    public boolean hasBackupAmmo(Player player) {
-        return countBackupAmmo(player) > 0;
+    public boolean hasBackupAmmo(@Nullable Entity entity) {
+        return countBackupAmmo(entity) > 0;
+    }
+
+    public int countBackupAmmo(@Nullable Entity entity) {
+        if (entity == null) return 0;
+        if (entity instanceof Player player && player.isCreative()) return Integer.MAX_VALUE;
+
+        var info = ammoTypeInfo();
+        if (info.type() == AmmoConsumeType.PLAYER_AMMO && entity instanceof Player player) {
+            return Objects.requireNonNull(Ammo.getType(info.value())).get(player);
+        }
+
+        return entity.getCapability(ForgeCapabilities.ITEM_HANDLER)
+                .map(this::countBackupAmmo)
+                .orElse(0);
     }
 
     /**
      * 计算剩余弹药数量（不考虑枪内弹药）
      */
-    public int countBackupAmmo(Player player) {
-        if (player.isCreative() || InventoryTool.hasCreativeAmmoBox(player)) return Integer.MAX_VALUE;
+    public int countBackupAmmo(@Nullable IItemHandler handler) {
+        if (handler == null) return 0;
+        if (InventoryTool.hasCreativeAmmoBox(handler)) return Integer.MAX_VALUE;
 
         var info = ammoTypeInfo();
         return switch (info.type()) {
-            case PLAYER_AMMO -> {
-                var type = Ammo.getType(info.value());
-                assert type != null;
-
-                yield type.get(player);
-            }
-            case ITEM -> player.getInventory().clearOrCountMatchingItems(
-                    p -> p.getItem() == ForgeRegistries.ITEMS.getValue(ResourceLocation.tryParse(info.value())),
-                    0,
-                    player.inventoryMenu.getCraftSlots()
-            );
-            case TAG -> player.getInventory().clearOrCountMatchingItems(
-                    p -> p.is(info.toTag()),
-                    0,
-                    player.inventoryMenu.getCraftSlots()
-            );
-            case INVALID -> 0;
+            case ITEM -> InventoryTool.countItem(handler, info.toItem());
+            case TAG -> InventoryTool.countItem(handler, info.toTag());
+            default -> 0;
         };
     }
 
     /**
      * 消耗额外弹药（不影响枪内弹药）
      */
-    public void consumeBackupAmmo(Player player, int count) {
-        if (player.isCreative() || InventoryTool.hasCreativeAmmoBox(player) || count <= 0) return;
+    public void consumeBackupAmmo(@Nullable Entity entity, int count) {
+        if (entity == null || count <= 0) return;
+        if (entity instanceof Player player && player.isCreative()) return;
+
+        var info = ammoTypeInfo();
+        if (info.type() == AmmoConsumeType.PLAYER_AMMO && entity instanceof Player player) {
+            info.toPlayerAmmoType().add(player, -count);
+        }
+
+        entity.getCapability(ForgeCapabilities.ITEM_HANDLER)
+                .ifPresent(cap -> consumeBackupAmmo(cap, count));
+    }
+
+    /**
+     * 消耗额外弹药（不影响枪内弹药）
+     */
+    public void consumeBackupAmmo(@Nullable IItemHandler handler, int count) {
+        if (handler == null || count <= 0) return;
+        if (InventoryTool.hasCreativeAmmoBox(handler)) return;
 
         var info = ammoTypeInfo();
         switch (info.type()) {
-            case PLAYER_AMMO -> info.toPlayerAmmoType().set(player, info.toPlayerAmmoType().get(player) - count);
-            case ITEM -> player.getInventory().clearOrCountMatchingItems(
-                    p -> p.getItem() == ForgeRegistries.ITEMS.getValue(ResourceLocation.tryParse(info.value())),
-                    count,
-                    player.inventoryMenu.getCraftSlots()
-            );
-            case TAG -> player.getInventory().clearOrCountMatchingItems(
-                    p -> p.is(info.toTag()),
-                    count,
-                    player.inventoryMenu.getCraftSlots()
-            );
+            case ITEM -> InventoryTool.consumeItem(handler, info.toItem(), count);
+            case TAG -> InventoryTool.consumeItem(handler, stack -> stack.is(info.toTag()), count);
         }
     }
 
     /**
      * 是否拥有足够的弹药进行开火
      */
-    public boolean hasEnoughAmmoToShoot(Player player) {
-        return useBackpackAmmo() ? hasBackupAmmo(player) : this.ammo.get() > 0;
+    public boolean hasEnoughAmmoToShoot(@Nullable Entity entity) {
+        return useBackpackAmmo() ? hasBackupAmmo(entity) : this.ammo.get() > 0;
     }
 
-    public void reload(Player player) {
-        reload(player, false);
+    /**
+     * 开始换弹流程
+     */
+    public void startReload() {
+        this.reload.reloadStarter.markStart();
     }
 
-    public void reload(Player player, boolean extraOne) {
+    /**
+     * 换弹完成装填弹药，请确保在换弹完成后再调用
+     */
+    public void reloadAmmo(@Nullable Entity entity) {
+        reloadAmmo(entity, false);
+    }
+
+    /**
+     * 换弹完成装填弹药，请确保在换弹完成后再调用
+     */
+    public void reloadAmmo(@Nullable Entity entity, boolean extraOne) {
         if (useBackpackAmmo()) return;
 
         int mag = magazine();
@@ -484,13 +515,27 @@ public class GunData {
             bolt.needed.set(false);
         }
 
-        var available = countBackupAmmo(player);
+        var available = countBackupAmmo(entity);
         var ammoToAdd = Math.min(ammoNeeded, available);
 
-        consumeBackupAmmo(player, ammoToAdd);
+        consumeBackupAmmo(entity, ammoToAdd);
         this.ammo.set(ammo + ammoToAdd);
 
         reload.setState(ReloadState.NOT_RELOADING);
+    }
+
+    /**
+     * 当前状态能否开火
+     */
+    public boolean canShoot(@Nullable Entity shooter) {
+        return item.canShoot(this, shooter);
+    }
+
+    /**
+     * 执行tick
+     */
+    public void tick(@Nullable Entity shooter) {
+        GunEventHandler.gunTick(shooter, this);
     }
 
     private static int getPriority(String s) {

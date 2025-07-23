@@ -46,19 +46,11 @@ public enum ReloadMessage {
 
             if (canReload || clipLoad) {
                 int magazine = data.magazine();
+                var extra = (gunItem.isOpenBolt(stack) && gunItem.hasBulletInBarrel(stack)) ? 1 : 0;
+                var maxAmmo = magazine + extra;
 
-                if (gunItem.isOpenBolt(stack)) {
-                    if (gunItem.hasBulletInBarrel(stack)) {
-                        if (data.ammo.get() < magazine + 1) {
-                            data.reload.reloadStarter.markStart();
-                        }
-                    } else {
-                        if (data.ammo.get() < magazine) {
-                            data.reload.reloadStarter.markStart();
-                        }
-                    }
-                } else if (data.ammo.get() < magazine) {
-                    data.reload.reloadStarter.markStart();
+                if (data.ammo.get() < maxAmmo) {
+                    data.startReload();
                 }
                 return;
             }

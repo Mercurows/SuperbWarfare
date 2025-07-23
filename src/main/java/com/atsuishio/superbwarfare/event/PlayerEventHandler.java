@@ -110,7 +110,7 @@ public class PlayerEventHandler {
             if (stack.getItem() instanceof GunItem) {
                 var data = GunData.from(stack);
                 if (!InventoryTool.hasCreativeAmmoBox(player)) {
-                    data.reload(player);
+                    data.reloadAmmo(player);
                 } else {
                     data.ammo.set(data.magazine());
                 }

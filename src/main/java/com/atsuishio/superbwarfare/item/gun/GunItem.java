@@ -57,6 +57,7 @@ import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoItem;
 import software.bernie.geckolib.animatable.SingletonGeoAnimatable;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
@@ -473,8 +474,13 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
     /**
      * 判断武器能否开火
      */
-    public boolean canShoot(GunData data) {
-        return data.projectileAmount() > 0;
+    public boolean canShoot(GunData data, @Nullable Entity shooter) {
+        return data.projectileAmount() > 0
+                && !data.overHeat.get()
+                && !data.reloading()
+                && !data.charging()
+                && !data.bolt.needed.get()
+                && data.hasEnoughAmmoToShoot(shooter);
     }
 
     /**
