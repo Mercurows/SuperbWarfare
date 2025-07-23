@@ -9,6 +9,7 @@ import com.atsuishio.superbwarfare.tools.NBTTool;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
+import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -59,7 +60,9 @@ public class DroneRenderer extends GeoEntityRenderer<DroneEntity> {
             var tag = NBTTool.getTag(stack);
             DroneEntity drone = EntityFindUtil.findDrone(player.level(), tag.getString("LinkedDrone"));
 
-            if (!(stack.is(ModItems.MONITOR.get()) && tag.getBoolean("Using") && tag.getBoolean("Linked") && drone != null && drone.getUUID() == entityIn.getUUID())) {
+            boolean firstPerson = Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON || Minecraft.getInstance().options.getCameraType() == CameraType.THIRD_PERSON_BACK;
+
+            if (!(stack.is(ModItems.MONITOR.get()) && tag.getBoolean("Using") && tag.getBoolean("Linked") && drone != null && drone.getUUID() == entityIn.getUUID()) || !firstPerson) {
                 renderAttachments(entityIn, entityYaw, partialTicks, poseStack, bufferIn, packedLightIn);
             }
         }

@@ -1,10 +1,13 @@
 package com.atsuishio.superbwarfare.block;
 
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
@@ -88,6 +91,17 @@ public class DragonTeethBlock extends Block {
             world.scheduleTick(currentPos, Fluids.WATER, Fluids.WATER.getTickDelay(world));
         }
         return super.updateShape(state, facing, facingState, world, currentPos, facingPos);
+    }
+
+    @Override
+    @ParametersAreNonnullByDefault
+    public void stepOn(Level pLevel, BlockPos pPos, BlockState pState, Entity pEntity) {
+        super.stepOn(pLevel, pPos, pState, pEntity);
+
+        // TODO 正确实现载具减速
+        if (pEntity instanceof VehicleEntity vehicle) {
+            vehicle.setDeltaMovement(vehicle.getDeltaMovement().multiply(0.05, 0.05, 0.05));
+        }
     }
 }
 
