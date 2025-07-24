@@ -10,7 +10,6 @@ import com.atsuishio.superbwarfare.tools.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -49,18 +48,13 @@ import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class Agm65Entity extends FastThrowableProjectile implements GeoEntity, ExplosiveProjectile {
 
     public static final EntityDataAccessor<Float> HEALTH = SynchedEntityData.defineId(Agm65Entity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<String> TARGET_UUID = SynchedEntityData.defineId(Agm65Entity.class, EntityDataSerializers.STRING);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-
-    public Set<Long> loadedChunks = new HashSet<>();
-
     private static final DamageModifier DAMAGE_MODIFIER = DamageModifier.createDefaultModifier();
     private float damage = ExplosionConfig.AGM_65_DAMAGE.get();
     private float explosionDamage = ExplosionConfig.AGM_65_EXPLOSION_DAMAGE.get();
@@ -77,7 +71,6 @@ public class Agm65Entity extends FastThrowableProjectile implements GeoEntity, E
     public Agm65Entity(LivingEntity entity, Level level) {
         super(ModEntities.AGM_65.get(), entity, level);
         this.noCulling = true;
-
         this.durability = 25;
     }
 
@@ -132,14 +125,6 @@ public class Agm65Entity extends FastThrowableProjectile implements GeoEntity, E
         if (compound.contains("Durability")) {
             this.durability = compound.getInt("Durability");
         }
-
-        if (compound.contains("Chunks")) {
-            ListTag listTag = compound.getList("Chunks", 10);
-            for (int i = 0; i < listTag.size(); i++) {
-                CompoundTag tag = listTag.getCompound(i);
-                this.loadedChunks.add(tag.getLong("Pos"));
-            }
-        }
     }
 
     @Override
@@ -150,14 +135,6 @@ public class Agm65Entity extends FastThrowableProjectile implements GeoEntity, E
         compound.putFloat("ExplosionDamage", this.explosionDamage);
         compound.putFloat("Radius", this.explosionRadius);
         compound.putInt("Durability", this.durability);
-
-        ListTag listTag = new ListTag();
-        for (long chunkPos : this.loadedChunks) {
-            CompoundTag tag = new CompoundTag();
-            tag.putLong("Pos", chunkPos);
-            listTag.add(tag);
-        }
-        compound.put("Chunks", listTag);
     }
 
     @Override
@@ -243,8 +220,6 @@ public class Agm65Entity extends FastThrowableProjectile implements GeoEntity, E
                 ParticleTool.sendParticle(serverLevel, ParticleTypes.CAMPFIRE_COSY_SMOKE, pos.x, pos.y, pos.z,
                         1, 0, 0, 0, 0.001, true);
             }
-            // 更新需要加载的区块
-            ChunkLoadTool.updateLoadedChunks(serverLevel, this, this.loadedChunks);
         }
 
 
@@ -291,7 +266,7 @@ public class Agm65Entity extends FastThrowableProjectile implements GeoEntity, E
             this.setDeltaMovement(this.getDeltaMovement().multiply(1.06, 1.06, 1.06));
         }
 
-        if (this.tickCount > 200 || this.isInWater() || this.entityData.get(HEALTH) <= 0) {
+        if (this.tickCount > 600 || this.isInWater() || this.entityData.get(HEALTH) <= 0) {
             if (this.level() instanceof ServerLevel) {
                 ProjectileTool.causeCustomExplode(this,
                         ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(), this, this.getOwner()),
@@ -304,14 +279,6 @@ public class Agm65Entity extends FastThrowableProjectile implements GeoEntity, E
 
         this.setDeltaMovement(this.getDeltaMovement().multiply(f, f, f));
         destroyBlock();
-    }
-
-    @Override
-    public void onRemovedFromWorld() {
-        if (this.level() instanceof ServerLevel serverLevel) {
-            ChunkLoadTool.unloadAllChunks(serverLevel, this, this.loadedChunks);
-        }
-        super.onRemovedFromWorld();
     }
 
     @Override
@@ -376,5 +343,10 @@ public class Agm65Entity extends FastThrowableProjectile implements GeoEntity, E
     @Override
     public void setExplosionRadius(float radius) {
         this.explosionRadius = radius;
+    }
+
+    @Override
+    public boolean forceLoadChunk() {
+        return true;
     }
 }
