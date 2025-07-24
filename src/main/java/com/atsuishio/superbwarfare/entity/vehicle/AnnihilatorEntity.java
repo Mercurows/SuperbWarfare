@@ -49,8 +49,8 @@ import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.*;
 import org.joml.Math;
+import org.joml.*;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -380,10 +380,10 @@ public class AnnihilatorEntity extends VehicleEntity implements GeoEntity, Canno
                     Entity target = ((EntityHitResult) hitResult).getEntity();
 
                     if (passenger != null) {
-                        target.hurt(ModDamageTypes.causeLaserDamage(this.level().registryAccess(), this, passenger), (float) 200);
+                        DamageHandler.doDamage(target, ModDamageTypes.causeLaserDamage(this.level().registryAccess(), this, passenger), (float) 200);
                     } else {
                         Entity shooter = EntityFindUtil.findEntity(this.level(), this.entityData.get(SHOOTER_UUID));
-                        target.hurt(ModDamageTypes.causeLaserDamage(this.level().registryAccess(), this, shooter), (float) 200);
+                        DamageHandler.doDamage(target, ModDamageTypes.causeLaserDamage(this.level().registryAccess(), this, shooter), (float) 200);
 
                     }
 

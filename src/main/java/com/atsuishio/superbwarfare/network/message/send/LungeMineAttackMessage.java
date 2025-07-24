@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.tools.CustomExplosion;
+import com.atsuishio.superbwarfare.tools.DamageHandler;
 import com.atsuishio.superbwarfare.tools.EntityFindUtil;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
 import net.minecraft.network.FriendlyByteBuf;
@@ -57,7 +58,7 @@ public class LungeMineAttackMessage {
                         }
                         Entity lookingEntity = EntityFindUtil.findEntity(player.level(), String.valueOf(message.uuid));
                         if (lookingEntity != null) {
-                            lookingEntity.hurt(ModDamageTypes.causeLungeMineDamage(player.level().registryAccess(), player, player), lookingEntity instanceof VehicleEntity ? 600 : 150);
+                            DamageHandler.doDamage(lookingEntity, ModDamageTypes.causeLungeMineDamage(player.level().registryAccess(), player, player), lookingEntity instanceof VehicleEntity ? 600 : 150);
                             causeLungeMineExplode(player.level(), player, lookingEntity);
                         }
                     } else if (message.type == 1) {

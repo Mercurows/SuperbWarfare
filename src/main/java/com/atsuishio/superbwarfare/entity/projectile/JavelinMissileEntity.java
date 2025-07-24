@@ -190,9 +190,9 @@ public class JavelinMissileEntity extends FastThrowableProjectile implements Geo
             }
 
             if (entity instanceof Monster monster) {
-                monster.hurt(ModDamageTypes.causeCannonFireDamage(this.level().registryAccess(), this, this.getOwner()), (entityData.get(TOP) ? 1.25f : 1f) * this.damage * damageMultiplier);
+                DamageHandler.doDamage(monster, ModDamageTypes.causeCannonFireDamage(this.level().registryAccess(), this, this.getOwner()), (entityData.get(TOP) ? 1.25f : 1f) * this.damage * damageMultiplier);
             } else {
-                entity.hurt(ModDamageTypes.causeCannonFireDamage(this.level().registryAccess(), this, this.getOwner()), (entityData.get(TOP) ? 1.25f : 1f) * this.damage);
+                DamageHandler.doDamage(entity, ModDamageTypes.causeCannonFireDamage(this.level().registryAccess(), this, this.getOwner()), (entityData.get(TOP) ? 1.25f : 1f) * this.damage);
             }
 
             if (entity instanceof LivingEntity) {

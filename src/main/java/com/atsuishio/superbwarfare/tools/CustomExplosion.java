@@ -169,9 +169,9 @@ public class CustomExplosion extends Explosion {
                         double damageFinal = (damagePercent * damagePercent + damagePercent) / 2.0D * damage;
 
                         if (entity instanceof Monster monster) {
-                            monster.hurt(this.damageSource, (float) damageFinal * (1 + 0.2f * this.damageMultiplier));
+                            DamageHandler.doDamage(monster, this.damageSource, (float) damageFinal * (1 + 0.2f * this.damageMultiplier));
                         } else {
-                            entity.hurt(this.damageSource, (float) damageFinal);
+                            DamageHandler.doDamage(entity, this.damageSource, (float) damageFinal);
                         }
                         entity.invulnerableTime = 1;
 

@@ -10,10 +10,7 @@ import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.common.container.ContainerBlockItem;
-import com.atsuishio.superbwarfare.tools.CustomExplosion;
-import com.atsuishio.superbwarfare.tools.EntityFindUtil;
-import com.atsuishio.superbwarfare.tools.ParticleTool;
-import com.atsuishio.superbwarfare.tools.VectorTool;
+import com.atsuishio.superbwarfare.tools.*;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -305,7 +302,7 @@ public class LaserTowerEntity extends VehicleEntity implements GeoEntity, Ownabl
                     sendParticle(serverLevel, ParticleTypes.LAVA, target.getX(), target.getEyeY(), target.getZ(), 4, 0, 0, 0, 0.15, true);
                 }
 
-                target.hurt(ModDamageTypes.causeLaserStaticDamage(this.level().registryAccess(), this, this.getOwner()), VehicleConfig.LASER_TOWER_DAMAGE.get());
+                DamageHandler.doDamage(target, ModDamageTypes.causeLaserStaticDamage(this.level().registryAccess(), this, this.getOwner()), VehicleConfig.LASER_TOWER_DAMAGE.get());
                 target.invulnerableTime = 0;
                 entityData.set(LASER_LENGTH, distanceTo(target));
                 if (Math.random() < 0.25 && target instanceof LivingEntity living) {

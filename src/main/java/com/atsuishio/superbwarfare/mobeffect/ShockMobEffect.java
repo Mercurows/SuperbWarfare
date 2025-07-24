@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModMobEffects;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
+import com.atsuishio.superbwarfare.tools.DamageHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
@@ -42,7 +43,7 @@ public class ShockMobEffect extends MobEffect {
             attacker = entity.level().getEntity(entity.getPersistentData().getInt("TargetShockAttacker"));
         }
 
-        entity.hurt(ModDamageTypes.causeShockDamage(entity.level().registryAccess(), attacker), 2 + (1.25f * amplifier));
+        DamageHandler.doDamage(entity, ModDamageTypes.causeShockDamage(entity.level().registryAccess(), attacker), 2 + (1.25f * amplifier));
         entity.level().playSound(null, entity.getOnPos(), ModSounds.ELECTRIC.get(), SoundSource.PLAYERS, 1, 1);
 
         if (attacker instanceof ServerPlayer player) {
@@ -73,7 +74,7 @@ public class ShockMobEffect extends MobEffect {
             }
         }
 
-        living.hurt(ModDamageTypes.causeShockDamage(living.level().registryAccess(),
+        DamageHandler.doDamage(living, ModDamageTypes.causeShockDamage(living.level().registryAccess(),
                 event.getEffectSource()), 2 + (1.25f * instance.getAmplifier()));
 
         if (event.getEffectSource() instanceof LivingEntity source) {

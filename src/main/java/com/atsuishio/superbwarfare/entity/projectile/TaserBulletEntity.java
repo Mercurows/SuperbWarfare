@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModMobEffects;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
+import com.atsuishio.superbwarfare.tools.DamageHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
@@ -124,7 +125,7 @@ public class TaserBulletEntity extends AbstractArrow implements GeoEntity {
         }
         if (entity instanceof LivingEntity living) {
             entity.invulnerableTime = 0;
-            entity.hurt(ModDamageTypes.causeShockDamage(this.level().registryAccess(), this.getOwner()), this.damage);
+            DamageHandler.doDamage(entity, ModDamageTypes.causeShockDamage(this.level().registryAccess(), this.getOwner()), this.damage);
             if (living instanceof Player player && player.isCreative()) {
                 return;
             }
