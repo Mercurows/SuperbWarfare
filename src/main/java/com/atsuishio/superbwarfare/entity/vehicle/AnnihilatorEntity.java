@@ -384,10 +384,10 @@ public class AnnihilatorEntity extends VehicleEntity implements GeoEntity, Canno
                     Entity target = ((EntityHitResult) hitResult).getEntity();
 
                     if (passenger != null) {
-                        target.hurt(ModDamageTypes.causeLaserDamage(this.level().registryAccess(), this, passenger), (float) 200);
+                        DamageHandler.doDamage(target, ModDamageTypes.causeLaserDamage(this.level().registryAccess(), this, passenger), (float) 200);
                     } else {
                         Entity shooter = EntityFindUtil.findEntity(this.level(), this.entityData.get(SHOOTER_UUID));
-                        target.hurt(ModDamageTypes.causeLaserDamage(this.level().registryAccess(), this, shooter), (float) 200);
+                        DamageHandler.doDamage(target, ModDamageTypes.causeLaserDamage(this.level().registryAccess(), this, shooter), (float) 200);
 
                     }
 

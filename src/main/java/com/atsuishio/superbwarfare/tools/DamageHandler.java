@@ -27,6 +27,8 @@ public class DamageHandler {
                 return false;
             } else if (source.is(DamageTypeTags.IS_FIRE) && living.hasEffect(MobEffects.FIRE_RESISTANCE)) {
                 return false;
+            } else if (living instanceof Player player && (player.isCreative() || player.isSpectator())) {
+                return false;
             } else {
                 if (living.isSleeping() && !living.level().isClientSide) {
                     living.stopSleeping();

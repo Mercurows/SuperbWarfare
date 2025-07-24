@@ -557,11 +557,11 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
                     if (data.isKamikaze) {
                         EntityType.byString(attachedEntity).ifPresent(entityType -> {
                             var bomb = entityType.create(this.level());
-                            target.hurt(ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(), bomb, player), data.hitDamage);
+                            DamageHandler.doDamage(target, ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(), bomb, player), data.hitDamage);
                             target.invulnerableTime = 0;
                         });
                     } else {
-                        target.hurt(ModDamageTypes.causeDroneHitDamage(this.level().registryAccess(), this, player), (float) (5 * lastTickSpeed));
+                        DamageHandler.doDamage(target, ModDamageTypes.causeDroneHitDamage(this.level().registryAccess(), this, player), (float) (5 * lastTickSpeed));
                     }
                 }
 

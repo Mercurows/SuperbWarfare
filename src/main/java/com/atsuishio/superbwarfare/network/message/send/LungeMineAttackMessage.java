@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.tools.CustomExplosion;
+import com.atsuishio.superbwarfare.tools.DamageHandler;
 import com.atsuishio.superbwarfare.tools.EntityFindUtil;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
 import io.netty.buffer.ByteBuf;
@@ -26,7 +27,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
-public record LungeMineAttackMessage(int msgType, UUID uuid, Vec3 hitPos) implements CustomPacketPayload {
+public record LungeMineAttackMessage(int msgType, UUID uuid, Vec3 pos) implements CustomPacketPayload {
     public static final Type<LungeMineAttackMessage> TYPE = new Type<>(Mod.loc("lunge_mine_melee_attack"));
 
     public static final StreamCodec<ByteBuf, LungeMineAttackMessage> STREAM_CODEC = StreamCodec.composite(
@@ -40,7 +41,7 @@ public record LungeMineAttackMessage(int msgType, UUID uuid, Vec3 hitPos) implem
                     ByteBufCodecs.DOUBLE, Vec3::z,
                     Vec3::new
             ),
-            LungeMineAttackMessage::hitPos,
+            LungeMineAttackMessage::pos,
             LungeMineAttackMessage::new
     );
 
@@ -55,7 +56,7 @@ public record LungeMineAttackMessage(int msgType, UUID uuid, Vec3 hitPos) implem
                 }
                 Entity lookingEntity = EntityFindUtil.findEntity(player.level(), String.valueOf(message.uuid));
                 if (lookingEntity != null) {
-                    lookingEntity.hurt(ModDamageTypes.causeLungeMineDamage(player.level().registryAccess(), player, player), lookingEntity instanceof VehicleEntity ? 600 : 150);
+                    DamageHandler.doDamage(lookingEntity, ModDamageTypes.causeLungeMineDamage(player.level().registryAccess(), player, player), lookingEntity instanceof VehicleEntity ? 600 : 150);
                     causeLungeMineExplode(player.level(), player, lookingEntity);
                 }
             } else if (message.msgType == 1) {
@@ -64,11 +65,12 @@ public record LungeMineAttackMessage(int msgType, UUID uuid, Vec3 hitPos) implem
                 }
                 CustomExplosion explosion = new CustomExplosion(player.level(), null,
                         ModDamageTypes.causeProjectileBoomDamage(player.level().registryAccess(), player, player), 60,
-                        message.hitPos.x, message.hitPos.y, message.hitPos.z, 4f, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).setDamageMultiplier(1.25f);
+                        message.pos.x, message.pos.y, message.pos.z, 4f, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).setDamageMultiplier(1.25f);
                 explosion.explode();
                 EventHooks.onExplosionStart(player.level(), explosion);
                 explosion.finalizeExplosion(false);
-                ParticleTool.spawnMediumExplosionParticles(player.level(), message.hitPos);
+                ParticleTool.spawnMediumExplosionParticles(player.level(), message.pos);
+
             }
             player.swing(InteractionHand.MAIN_HAND);
         }

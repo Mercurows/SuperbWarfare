@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
+import com.atsuishio.superbwarfare.tools.DamageHandler;
 import com.atsuishio.superbwarfare.tools.EntityFindUtil;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.UUIDUtil;
@@ -49,11 +50,11 @@ public record LaserShootMessage(
 
         if (entity != null) {
             if (headshot) {
-                entity.hurt(ModDamageTypes.causeLaserHeadshotDamage(level.registryAccess(), player, player), (float) (2 * damage));
+                DamageHandler.doDamage(entity, ModDamageTypes.causeLaserHeadshotDamage(level.registryAccess(), player, player), (float) (2 * damage));
                 player.level().playSound(null, player.blockPosition(), ModSounds.HEADSHOT.get(), SoundSource.VOICE, 0.1f, 1);
                 PacketDistributor.sendToPlayer(player, new ClientIndicatorMessage(1, 5));
             } else {
-                entity.hurt(ModDamageTypes.causeLaserDamage(level.registryAccess(), player, player), (float) damage);
+                DamageHandler.doDamage(entity, ModDamageTypes.causeLaserDamage(level.registryAccess(), player, player), (float) damage);
                 player.level().playSound(null, player.blockPosition(), ModSounds.INDICATION.get(), SoundSource.VOICE, 0.1f, 1);
                 PacketDistributor.sendToPlayer(player, new ClientIndicatorMessage(0, 5));
             }

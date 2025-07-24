@@ -168,7 +168,7 @@ public class Agm65Entity extends FastThrowableProjectile implements GeoEntity, E
                 }
             }
 
-            entity.hurt(ModDamageTypes.causeCannonFireDamage(this.level().registryAccess(), this, this.getOwner()), this.damage);
+            DamageHandler.doDamage(entity, ModDamageTypes.causeCannonFireDamage(this.level().registryAccess(), this, this.getOwner()), this.damage);
 
             if (entity instanceof LivingEntity) {
                 entity.invulnerableTime = 0;
