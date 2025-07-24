@@ -6,6 +6,7 @@ public class MiscConfig {
 
     public static ForgeConfigSpec.BooleanValue ALLOW_TACTICAL_SPRINT;
     public static ForgeConfigSpec.BooleanValue SEND_KILL_FEEDBACK;
+    public static ForgeConfigSpec.BooleanValue ALLOW_FORCE_DAMAGE;
     public static ForgeConfigSpec.IntValue DEFAULT_ARMOR_LEVEL;
     public static ForgeConfigSpec.IntValue MILITARY_ARMOR_LEVEL;
     public static ForgeConfigSpec.IntValue HEAVY_MILITARY_ARMOR_LEVEL;
@@ -24,6 +25,9 @@ public class MiscConfig {
 
         builder.comment("Set true to enable kill feedback sending");
         SEND_KILL_FEEDBACK = builder.define("send_kill_feedback", true);
+
+        builder.comment("Set true to enable force damage");
+        ALLOW_FORCE_DAMAGE = builder.define("allow_force_damage", true);
 
         builder.comment("The default maximum armor level for normal armors");
         DEFAULT_ARMOR_LEVEL = builder.defineInRange("default_armor_level", 1, 0, 10000000);
