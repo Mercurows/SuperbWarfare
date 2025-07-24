@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.tools;
 
+import com.atsuishio.superbwarfare.config.server.MiscConfig;
 import com.atsuishio.superbwarfare.entity.mixin.DamageAccess;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.server.level.ServerPlayer;
@@ -19,6 +20,9 @@ public class DamageHandler {
         if (entity.hurt(source, damage)) {
             return true;
         } else if (entity instanceof LivingEntity living) {
+            if (!MiscConfig.ALLOW_FORCE_DAMAGE.get()) {
+                return false;
+            }
             if (living.isInvulnerableTo(source)) {
                 return false;
             } else if (living.level().isClientSide) {

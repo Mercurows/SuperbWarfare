@@ -91,6 +91,14 @@ public class ConfigCommand {
 
                     context.getSource().sendSuccess(() -> Component.translatable(value ? "commands.config.glass_destroy.enabled" : "commands.config.glass_destroy.disabled"), true);
                     return 0;
+                })))
+                .then(Commands.literal("forceDamage").requires(s -> s.hasPermission(2)).then(Commands.argument("value", BoolArgumentType.bool()).executes(context -> {
+                    var value = BoolArgumentType.getBool(context, "value");
+                    MiscConfig.ALLOW_FORCE_DAMAGE.set(value);
+                    MiscConfig.ALLOW_FORCE_DAMAGE.save();
+
+                    context.getSource().sendSuccess(() -> Component.translatable(value ? "commands.config.force_damage.enabled" : "commands.config.force_damage.disabled"), true);
+                    return 0;
                 })));
     }
 }

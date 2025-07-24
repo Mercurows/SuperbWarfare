@@ -577,6 +577,8 @@
   "commands.config.tactical_sprint.disabled": "Disabled tactical sprint",
   "commands.config.glass_destroy.enabled": "Enabled bullet glass breaking",
   "commands.config.glass_destroy.disabled": "Disabled bullet glass breaking",
+  "commands.config.force_damage.enabled": "Enabled force damage",
+  "commands.config.force_damage.disabled": "Disabled force damage",
 
   "tips.superbwarfare.sensitivity": "Current Sensitivity of This Gun: %1$s",
   "tips.superbwarfare.monitor.linked": "Connect!",
