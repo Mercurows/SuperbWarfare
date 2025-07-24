@@ -5,7 +5,6 @@ import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
-import com.atsuishio.superbwarfare.tools.ChunkLoadTool;
 import com.atsuishio.superbwarfare.tools.CustomExplosion;
 import com.atsuishio.superbwarfare.tools.DamageHandler;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
@@ -43,7 +42,6 @@ import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -54,7 +52,6 @@ public class MortarShellEntity extends FastThrowableProjectile implements GeoEnt
     private int life = 600;
     private float radius = ExplosionConfig.MORTAR_SHELL_EXPLOSION_RADIUS.get();
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-    public Set<Long> loadedChunks = new HashSet<>();
 
     private Potion potion = Potions.WATER.value();
     private final Set<MobEffectInstance> effects = Sets.newHashSet();
@@ -110,14 +107,6 @@ public class MortarShellEntity extends FastThrowableProjectile implements GeoEnt
         pCompound.putInt("Life", this.life);
         pCompound.putFloat("Radius", this.radius);
 
-        ListTag listTag = new ListTag();
-        for (long chunkPos : this.loadedChunks) {
-            CompoundTag tag = new CompoundTag();
-            tag.putLong("Pos", chunkPos);
-            listTag.add(tag);
-        }
-        pCompound.put("Chunks", listTag);
-
         if (this.potion != Potions.WATER.value()) {
             pCompound.putString("Potion", Objects.requireNonNullElse(BuiltInRegistries.POTION.getKey(this.potion), "empty").toString());
         }
@@ -152,14 +141,6 @@ public class MortarShellEntity extends FastThrowableProjectile implements GeoEnt
             this.radius = ExplosionConfig.MORTAR_SHELL_EXPLOSION_RADIUS.get();
         }
 
-        if (pCompound.contains("Chunks")) {
-            ListTag listTag = pCompound.getList("Chunks", 10);
-            for (int i = 0; i < listTag.size(); i++) {
-                CompoundTag tag = listTag.getCompound(i);
-                this.loadedChunks.add(tag.getLong("Pos"));
-            }
-        }
-
         if (pCompound.contains("Potion", 8)) {
             var tagName = pCompound.getString("Potion");
             this.potion = BuiltInRegistries.POTION.get(ResourceLocation.tryParse(tagName));
@@ -192,7 +173,7 @@ public class MortarShellEntity extends FastThrowableProjectile implements GeoEnt
             DamageHandler.doDamage(entity, ModDamageTypes.causeCannonFireDamage(this.level().registryAccess(), this, this.getOwner()), this.damage);
             if (this.level() instanceof ServerLevel) {
                 causeExplode(entityHitResult.getLocation());
-                this.createAreaCloud(this.level());
+                this.createAreaCloud(this.level(), position());
             }
             this.discard();
         }
@@ -218,7 +199,7 @@ public class MortarShellEntity extends FastThrowableProjectile implements GeoEnt
         if (!this.level().isClientSide() && this.level() instanceof ServerLevel) {
             if (this.tickCount > 1) {
                 causeExplode(blockHitResult.getLocation());
-                this.createAreaCloud(this.level());
+                this.createAreaCloud(this.level(), position());
             }
         }
         this.discard();
@@ -235,13 +216,11 @@ public class MortarShellEntity extends FastThrowableProjectile implements GeoEnt
                 ParticleTool.sendParticle(serverLevel, ParticleTypes.CAMPFIRE_COSY_SMOKE, pos.x, pos.y, pos.z,
                         1, 0, 0, 0, 0.001, true);
             }
-            // 更新需要加载的区块
-            ChunkLoadTool.updateLoadedChunks(serverLevel, this, this.loadedChunks);
         }
         if (this.tickCount > this.life || this.isInWater()) {
             if (this.level() instanceof ServerLevel) {
                 causeExplode(position());
-                this.createAreaCloud(this.level());
+                this.createAreaCloud(this.level(), position());
             }
             this.discard();
         }
@@ -279,19 +258,10 @@ public class MortarShellEntity extends FastThrowableProjectile implements GeoEnt
         return 0.13;
     }
 
-    @Override
-    public void onRemovedFromLevel() {
-        if (this.level() instanceof ServerLevel serverLevel) {
-            ChunkLoadTool.unloadAllChunks(serverLevel, this, this.loadedChunks);
-        }
-        super.onRemovedFromLevel();
-    }
-
-    private void createAreaCloud(Level level) {
+    private void createAreaCloud(Level level, Vec3 pos) {
         if (this.potion == Potions.WATER.value()) return;
 
-        AreaEffectCloud cloud = new AreaEffectCloud(level, this.getX() + 0.75 * getDeltaMovement().x, this.getY() + 0.5 * getBbHeight() + 0.75 * getDeltaMovement().y, this.getZ() + 0.75 * getDeltaMovement().z);
-
+        AreaEffectCloud cloud = new AreaEffectCloud(level, pos.x, pos.y, pos.z);
         for (MobEffectInstance effect : this.effects) {
             cloud.addEffect(effect);
         }

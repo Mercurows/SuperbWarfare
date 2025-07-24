@@ -23,7 +23,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
@@ -41,8 +40,6 @@ import software.bernie.geckolib.animation.*;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.HashSet;
-import java.util.Set;
 
 public class CannonShellEntity extends FastThrowableProjectile implements GeoEntity, ExplosiveProjectile {
 
@@ -53,9 +50,6 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
     private float explosionDamage = 0;
     private float fireProbability = 0;
     private int fireTime = 0;
-    private static final int CHUNK_RADIUS = 1; // 加载3x3区块区域
-    private final Set<ChunkPos> forcedChunks = new HashSet<>();
-    private ChunkPos lastChunkPos;
     private float gravity = 0.1f;
 
     public enum Type {
@@ -230,7 +224,7 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
             // 使用Minecraft内置的光线追踪进行碰撞检测
             BlockHitResult hitResult = level().clip(new ClipContext(
                     position(),
-                    position().add(getDeltaMovement().scale(12)),
+                    position().add(getDeltaMovement().scale(7)),
                     ClipContext.Block.OUTLINE,
                     ClipContext.Fluid.ANY,
                     this
@@ -240,50 +234,6 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
                 releaseClusterMunitions((LivingEntity) getOwner());
             }
         }
-
-        if (!level().isClientSide) {
-            // 更新区块加载位置
-            updateChunkLoading();
-        }
-
-    }
-
-    private void updateChunkLoading() {
-        if (!(level() instanceof ServerLevel serverLevel)) return;
-
-        ChunkPos currentPos = new ChunkPos(blockPosition());
-
-        // 检查是否需要更新
-        if (lastChunkPos != null && lastChunkPos.equals(currentPos)) {
-            return;
-        }
-
-        // 计算需要加载的新区块
-        Set<ChunkPos> newChunks = new HashSet<>();
-        for (int x = -CHUNK_RADIUS; x <= CHUNK_RADIUS; x++) {
-            for (int z = -CHUNK_RADIUS; z <= CHUNK_RADIUS; z++) {
-                newChunks.add(new ChunkPos(currentPos.x + x, currentPos.z + z));
-            }
-        }
-
-        // 卸载不再需要的区块
-        Set<ChunkPos> toUnload = new HashSet<>(forcedChunks);
-        toUnload.removeAll(newChunks);
-
-        for (ChunkPos pos : toUnload) {
-            serverLevel.setChunkForced(pos.x, pos.z, false);
-            forcedChunks.remove(pos);
-        }
-
-        // 加载新区块
-        for (ChunkPos pos : newChunks) {
-            if (!forcedChunks.contains(pos)) {
-                serverLevel.setChunkForced(pos.x, pos.z, true);
-                forcedChunks.add(pos);
-            }
-        }
-
-        lastChunkPos = currentPos;
     }
 
     private void releaseClusterMunitions(LivingEntity shooter) {
@@ -298,7 +248,7 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
 
                 gunGrenadeEntity.setPos(position().x, position().y, position().z);
                 gunGrenadeEntity.shoot(getDeltaMovement().x, getDeltaMovement().y, getDeltaMovement().z, (float) (random.nextFloat() * 0.2f + 0.4f * getDeltaMovement().length()),
-                        25);
+                        15);
                 serverLevel.addFreshEntity(gunGrenadeEntity);
             }
             discard();
@@ -355,18 +305,6 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
     }
 
     @Override
-    public void onRemovedFromLevel() {
-        // 释放所有加载的区块
-        if (!level().isClientSide && level() instanceof ServerLevel serverLevel) {
-            for (ChunkPos pos : forcedChunks) {
-                serverLevel.setChunkForced(pos.x, pos.z, false);
-            }
-            forcedChunks.clear();
-        }
-        super.onRemovedFromLevel();
-    }
-
-    @Override
     public @NotNull SoundEvent getSound() {
         return ModSounds.SHELL_FLY.get();
     }
@@ -389,5 +327,10 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
     @Override
     public void setExplosionRadius(float radius) {
         this.radius = radius;
+    }
+
+    @Override
+    public boolean forceLoadChunk() {
+        return true;
     }
 }

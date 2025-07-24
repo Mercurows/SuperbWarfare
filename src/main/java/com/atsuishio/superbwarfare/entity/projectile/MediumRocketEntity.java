@@ -9,14 +9,12 @@ import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
 import com.atsuishio.superbwarfare.network.message.receive.ClientMotionSyncMessage;
-import com.atsuishio.superbwarfare.tools.ChunkLoadTool;
 import com.atsuishio.superbwarfare.tools.CustomExplosion;
 import com.atsuishio.superbwarfare.tools.DamageHandler;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
@@ -43,8 +41,6 @@ import software.bernie.geckolib.animation.*;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.HashSet;
-import java.util.Set;
 
 public class MediumRocketEntity extends FastThrowableProjectile implements GeoEntity, ExplosiveProjectile {
 
@@ -60,7 +56,6 @@ public class MediumRocketEntity extends FastThrowableProjectile implements GeoEn
     private float explosionDamage = 0;
     private float fireProbability = 0;
     private int fireTime = 0;
-    public Set<Long> loadedChunks = new HashSet<>();
     private int sparedAmount = 50;
 
     public MediumRocketEntity(EntityType<? extends MediumRocketEntity> type, Level world) {
@@ -113,14 +108,6 @@ public class MediumRocketEntity extends FastThrowableProjectile implements GeoEn
         pCompound.putFloat("FireProbability", this.fireProbability);
         pCompound.putInt("FireTime", this.fireTime);
         pCompound.putInt("Durability", this.durability);
-
-        ListTag listTag = new ListTag();
-        for (long chunkPos : this.loadedChunks) {
-            CompoundTag tag = new CompoundTag();
-            tag.putLong("Pos", chunkPos);
-            listTag.add(tag);
-        }
-        pCompound.put("Chunks", listTag);
     }
 
     @Override
@@ -149,14 +136,6 @@ public class MediumRocketEntity extends FastThrowableProjectile implements GeoEn
 
         if (pCompound.contains("Durability")) {
             this.durability = pCompound.getInt("Durability");
-        }
-
-        if (pCompound.contains("Chunks")) {
-            ListTag listTag = pCompound.getList("Chunks", 10);
-            for (int i = 0; i < listTag.size(); i++) {
-                CompoundTag tag = listTag.getCompound(i);
-                this.loadedChunks.add(tag.getLong("Pos"));
-            }
         }
     }
 
@@ -241,8 +220,6 @@ public class MediumRocketEntity extends FastThrowableProjectile implements GeoEn
                 ParticleTool.sendParticle(serverLevel, ParticleTypes.CAMPFIRE_COSY_SMOKE, pos.x, pos.y, pos.z,
                         1, 0, 0, 0, 0.001, true);
             }
-            // 更新需要加载的区块
-            ChunkLoadTool.updateLoadedChunks(serverLevel, this, this.loadedChunks);
         }
 
         destroyBlock();
@@ -258,7 +235,7 @@ public class MediumRocketEntity extends FastThrowableProjectile implements GeoEn
             // 使用Minecraft内置的光线追踪进行碰撞检测
             BlockHitResult hitResult = level().clip(new ClipContext(
                     position(),
-                    position().add(getDeltaMovement().scale(12)),
+                    position().add(getDeltaMovement().scale(8)),
                     ClipContext.Block.OUTLINE,
                     ClipContext.Fluid.ANY,
                     this
@@ -312,7 +289,7 @@ public class MediumRocketEntity extends FastThrowableProjectile implements GeoEn
 
                 gunGrenadeEntity.setPos(position().x, position().y, position().z);
                 gunGrenadeEntity.shoot(getDeltaMovement().x, getDeltaMovement().y, getDeltaMovement().z, (float) (random.nextFloat() * 0.2f + 0.4f * getDeltaMovement().length()),
-                        25);
+                        20);
                 serverLevel.addFreshEntity(gunGrenadeEntity);
             }
             discard();
@@ -336,14 +313,6 @@ public class MediumRocketEntity extends FastThrowableProjectile implements GeoEn
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return this.cache;
-    }
-
-    @Override
-    public void onRemovedFromLevel() {
-        if (this.level() instanceof ServerLevel serverLevel) {
-            ChunkLoadTool.unloadAllChunks(serverLevel, this, this.loadedChunks);
-        }
-        super.onRemovedFromLevel();
     }
 
     @Override
@@ -374,5 +343,10 @@ public class MediumRocketEntity extends FastThrowableProjectile implements GeoEn
     @Override
     public void setExplosionRadius(float radius) {
         this.radius = radius;
+    }
+
+    @Override
+    public boolean forceLoadChunk() {
+        return true;
     }
 }
