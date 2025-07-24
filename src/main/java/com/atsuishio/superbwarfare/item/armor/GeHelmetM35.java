@@ -9,11 +9,10 @@ import software.bernie.geckolib.animatable.GeoItem;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.renderer.GeoArmorRenderer;
 import software.bernie.geckolib.util.GeckoLibUtil;
-import top.theillusivec4.curios.api.type.capability.ICurioItem;
 
 import java.util.function.Supplier;
 
-public class GeHelmetM35 extends BulletResistantArmor implements GeoItem, ICurioItem {
+public class GeHelmetM35 extends BulletResistantArmor implements GeoItem {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     public GeHelmetM35() {

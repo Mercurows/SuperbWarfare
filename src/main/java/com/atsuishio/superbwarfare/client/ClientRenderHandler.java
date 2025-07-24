@@ -3,7 +3,6 @@ package com.atsuishio.superbwarfare.client;
 import com.atsuishio.superbwarfare.client.decorator.ContainerItemDecorator;
 import com.atsuishio.superbwarfare.client.decorator.LuckyContainerItemDecorator;
 import com.atsuishio.superbwarfare.client.overlay.*;
-import com.atsuishio.superbwarfare.client.renderer.armor.GeHelmetM35ArmorRenderer;
 import com.atsuishio.superbwarfare.client.renderer.block.*;
 import com.atsuishio.superbwarfare.client.tooltip.*;
 import com.atsuishio.superbwarfare.client.tooltip.component.*;
@@ -17,7 +16,6 @@ import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterClientTooltipComponentFactoriesEvent;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.event.RegisterItemDecorationsEvent;
-import top.theillusivec4.curios.api.client.CuriosRendererRegistry;
 
 @EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class ClientRenderHandler {
@@ -80,6 +78,5 @@ public class ClientRenderHandler {
 
     @SubscribeEvent
     public static void onClientSetup(FMLClientSetupEvent event) {
-        CuriosRendererRegistry.register(ModItems.GE_HELMET_M_35.get(), GeHelmetM35ArmorRenderer::new);
     }
 }
