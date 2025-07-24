@@ -32,9 +32,11 @@ public abstract class LivingEntityMixin implements ICustomKnockback, DamageAcces
     @Shadow
     protected abstract void actuallyHurt(DamageSource pDamageSource, float pDamageAmount);
 
-    @Shadow protected abstract void hurtHelmet(DamageSource pDamageSource, float pDamageAmount);
+    @Shadow
+    protected abstract void hurtHelmet(DamageSource pDamageSource, float pDamageAmount);
 
-    @Shadow public abstract boolean checkTotemDeathProtection(DamageSource pDamageSource);
+    @Shadow
+    protected abstract boolean checkTotemDeathProtection(DamageSource pDamageSource);
 
     @Unique
     private double superbwarfare$knockbackStrength = -1;
