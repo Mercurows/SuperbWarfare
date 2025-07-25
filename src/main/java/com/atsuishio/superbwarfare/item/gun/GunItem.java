@@ -486,7 +486,7 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
     /**
      * 服务端在开火前的额外行为
      */
-    public void beforeShoot(GunData data, Player player, double spread, boolean zoom) {
+    public void beforeShoot(GunData data, Entity shooter, double spread, boolean zoom) {
         // 空仓挂机
         if (data.ammo.get() == 1) {
             data.holdOpen.set(true);
@@ -501,35 +501,41 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
     /**
      * 服务端在开火后的额外行为
      */
-    public void afterShoot(GunData data, Player player) {
+    public void afterShoot(GunData data, Entity shooter) {
         if (!data.useBackpackAmmo()) {
             data.ammo.set(data.ammo.get() - 1);
             data.isEmpty.set(true);
         } else {
-            data.consumeBackupAmmo(player, 1);
+            data.consumeBackupAmmo(shooter, 1);
         }
 
         var stack = data.stack();
         if (this.getMaxDamage(stack) > 0) {
-            stack.hurtAndBreak(1, player, p -> p.broadcastBreakEvent(player.getUsedItemHand()));
+            if (shooter instanceof LivingEntity living) {
+                stack.hurtAndBreak(1, living, p -> p.broadcastBreakEvent(living.getUsedItemHand()));
+            } else {
+                if (stack.hurt(1, RandomSource.create(), null)) {
+                    stack.shrink(1);
+                }
+            }
         }
     }
 
     /**
      * 服务端处理开火
      */
-    public void onShoot(GunData data, Player player, double spread, boolean zoom, UUID uuid) {
-        if (!data.hasEnoughAmmoToShoot(player)) return;
+    public void onShoot(GunData data, Entity shooter, double spread, boolean zoom, UUID uuid) {
+        if (!data.hasEnoughAmmoToShoot(shooter)) return;
 
         // 开火前事件
-        data.item.beforeShoot(data, player, spread, zoom);
+        data.item.beforeShoot(data, shooter, spread, zoom);
 
         int projectileAmount = data.projectileAmount();
         var perk = data.perk.get(Perk.Type.AMMO);
 
         // 生成所有子弹
         for (int index0 = 0; index0 < (perk instanceof AmmoPerk ammoPerk && ammoPerk.slug ? 1 : projectileAmount); index0++) {
-            if (!shootBullet(player, data, spread, zoom, uuid)) return;
+            if (!shootBullet(shooter, data, spread, zoom, uuid)) return;
         }
 
         // 添加热量
@@ -539,19 +545,19 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
         // 过热
         if (data.heat.get() >= 100 && !data.overHeat.get()) {
             data.overHeat.set(true);
-            if (!player.level().isClientSide() && player instanceof ServerPlayer serverPlayer) {
+            if (!shooter.level().isClientSide() && shooter instanceof ServerPlayer serverPlayer) {
                 SoundTool.playLocalSound(serverPlayer, ModSounds.MINIGUN_OVERHEAT.get(), 2f, 1f);
             }
         }
 
-        data.item.afterShoot(data, player);
-        playFireSounds(data, player, zoom);
+        data.item.afterShoot(data, shooter);
+        playFireSounds(data, shooter, zoom);
     }
 
     /**
      * 播放开火音效
      */
-    public void playFireSounds(GunData data, Player player, boolean zoom) {
+    public void playFireSounds(GunData data, Entity shooter, boolean zoom) {
         ItemStack stack = data.stack;
         if (!(stack.getItem() instanceof GunItem)) return;
 
@@ -562,7 +568,7 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
 
         var perk = data.perk.get(Perk.Type.AMMO);
         if (perk == ModPerks.BEAST_BULLET.get()) {
-            player.playSound(ModSounds.HENG.get(), 4f, pitch);
+            shooter.playSound(ModSounds.HENG.get(), 4f, pitch);
         }
 
         float soundRadius = (float) data.soundRadius();
@@ -570,17 +576,17 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
 
         SoundEvent sound3p = ForgeRegistries.SOUND_EVENTS.getValue(Mod.loc(name + (barrelType == 2 ? "_fire_3p_s" : "_fire_3p")));
         if (sound3p != null) {
-            player.playSound(sound3p, soundRadius * 0.4f, pitch);
+            shooter.playSound(sound3p, soundRadius * 0.4f, pitch);
         }
 
         SoundEvent soundFar = ForgeRegistries.SOUND_EVENTS.getValue(Mod.loc(name + (barrelType == 2 ? "_far_s" : "_far")));
         if (soundFar != null) {
-            player.playSound(soundFar, soundRadius * 0.7f, pitch);
+            shooter.playSound(soundFar, soundRadius * 0.7f, pitch);
         }
 
         SoundEvent soundVeryFar = ForgeRegistries.SOUND_EVENTS.getValue(Mod.loc(name + (barrelType == 2 ? "_veryfar_s" : "_veryfar")));
         if (soundVeryFar != null) {
-            player.playSound(soundVeryFar, soundRadius, pitch);
+            shooter.playSound(soundVeryFar, soundRadius, pitch);
         }
     }
 
@@ -606,14 +612,43 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
         return 1;
     }
 
+    public boolean shootBullet(@NotNull Entity shooter, @NotNull GunData data, double spread, boolean zoom, @Nullable UUID uuid) {
+        if (shooter.level() instanceof ServerLevel server) {
+            return shootBullet(shooter, server, new Vec3(shooter.getX(), shooter.getEyeY(), shooter.getZ()), shooter.getLookAngle(), data, spread, zoom, uuid);
+        }
+        return false;
+    }
+
+    public boolean shootBullet(@NotNull ServerLevel level, @NotNull Vec3 shootPosition, @NotNull Vec3 shootDirection, @NotNull GunData data, double spread, boolean zoom, @Nullable UUID uuid) {
+        return shootBullet(null, level, shootPosition, shootDirection, data, spread, zoom, uuid);
+    }
+
+    // TODO 将子类shootBullet均修改为重写该方法
+
     /**
      * 服务端发射单发子弹
      *
+     * @param shooter        射击者
+     * @param level          ServerLevel
+     * @param shootPosition  子弹位置
+     * @param shootDirection 射击方向
+     * @param data           GunData
+     * @param spread         子弹散布
+     * @param zoom           是否开镜
+     * @param uuid           已锁定实体UUID
      * @return 是否发射成功
      */
-    public boolean shootBullet(Player player, GunData data, double spread, boolean zoom, UUID uuid) {
+    public boolean shootBullet(
+            @Nullable Entity shooter,
+            @NotNull ServerLevel level,
+            @NotNull Vec3 shootPosition,
+            @NotNull Vec3 shootDirection,
+            @NotNull GunData data,
+            double spread,
+            boolean zoom,
+            @Nullable UUID uuid
+    ) {
         var stack = data.stack;
-        var level = player.level();
 
         float headshot = (float) data.headshot();
         float damage = (float) data.damage();
@@ -628,12 +663,12 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
             if (entity == null) return;
 
             if (entity instanceof Projectile projectileEntity) {
-                projectileEntity.setOwner(player);
+                projectileEntity.setOwner(shooter);
             }
 
             // SBW子弹弹射物专属属性
             if (entity instanceof ProjectileEntity projectile) {
-                projectile.shooter(player)
+                projectile.shooter(shooter)
                         .damage(damage)
                         .headShot(headshot)
                         .zoom(zoom)
@@ -651,7 +686,7 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
             // 填充其他自定义NBT数据
             if (projectileInfo.data != null) {
                 var tag = LaunchableEntityTool.getModifiedTag(projectileInfo,
-                        new ShootData(player.getUUID(), damage, data.explosionDamage(), data.explosionRadius(), data.spread())
+                        new ShootData(shooter != null ? shooter.getUUID() : null, damage, data.explosionDamage(), data.explosionRadius(), data.spread())
                 );
                 if (tag != null) {
                     entity.load(tag);
@@ -664,7 +699,7 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
 
                 var tag = LaunchableEntityTool.getModifiedTag(
                         newInfo,
-                        new ShootData(player.getUUID(), damage, data.explosionDamage(), data.explosionRadius(), data.spread())
+                        new ShootData(shooter != null ? shooter.getUUID() : null, damage, data.explosionDamage(), data.explosionRadius(), data.spread())
                 );
                 if (tag != null) {
                     entity.load(tag);
@@ -688,19 +723,19 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
         }
 
         // 发射任意实体
-        entity.setPos(player.getX() - 0.1 * player.getLookAngle().x, player.getEyeY() - 0.1 - 0.1 * player.getLookAngle().y, player.getZ() + -0.1 * player.getLookAngle().z);
+        entity.setPos(shootPosition.x - 0.1 * shootDirection.x, shootPosition.y - 0.1 - 0.1 * shootDirection.y, shootPosition.z + -0.1 * shootDirection.z);
 
-        var x = player.getLookAngle().x;
-        var y = player.getLookAngle().y + 0.001f;
-        var z = player.getLookAngle().z;
+        var x = shootDirection.x;
+        var y = shootDirection.y + 0.001f;
+        var z = shootDirection.z;
 
-        if (zoom && !player.isShiftKeyDown()) {
-            Entity target = findEntity(player.level(), String.valueOf(uuid));
+        if (uuid != null && zoom && (shooter != null && !shooter.isShiftKeyDown())) {
+            Entity target = findEntity(level, String.valueOf(uuid));
             var gunData = GunData.from(stack);
             int intelligentChipLevel = gunData.perk.getLevel(ModPerks.INTELLIGENT_CHIP);
             if (intelligentChipLevel > 0 && target != null) {
                 Vec3 targetVec = target.getEyePosition();
-                Vec3 playerVec = player.getEyePosition();
+                Vec3 playerVec = shooter.getEyePosition();
                 var hasGravity = gunData.perk.getLevel(ModPerks.MICRO_MISSILE) <= 0;
                 Vec3 toVec = RangeTool.calculateFiringSolution(playerVec, targetVec, Vec3.ZERO, data.velocity(), hasGravity ? 0.03 : 0);
                 x = toVec.x;

@@ -28,11 +28,13 @@ public class LaunchableEntityTool {
 
         return TagDataParser.parse(launchableData, name -> switch (name) {
             case "@sbw:damage" -> DoubleTag.valueOf(data.damage());
-            case "@sbw:owner" -> NbtUtils.createUUID(data.shooter());
-            case "@sbw:owner_string_lower" ->
-                    StringTag.valueOf(data.shooter().toString().replace("-", "").toLowerCase(Locale.ENGLISH));
-            case "@sbw:owner_string_upper" ->
-                    StringTag.valueOf(data.shooter().toString().replace("-", "").toUpperCase(Locale.ENGLISH));
+            case "@sbw:owner" -> data.shooter() != null ? NbtUtils.createUUID(data.shooter()) : null;
+            case "@sbw:owner_string_lower" -> data.shooter() != null
+                    ? StringTag.valueOf(data.shooter().toString().replace("-", "").toLowerCase(Locale.ENGLISH))
+                    : null;
+            case "@sbw:owner_string_upper" -> data.shooter() != null
+                    ? StringTag.valueOf(data.shooter().toString().replace("-", "").toUpperCase(Locale.ENGLISH))
+                    : null;
             case "@sbw:explosion_damage" -> DoubleTag.valueOf(data.explosionDamage());
             case "@sbw:explosion_radius" -> DoubleTag.valueOf(data.explosionRadius());
             case "@sbw:spread" -> DoubleTag.valueOf(data.spread());

@@ -246,6 +246,10 @@ public class JavelinItem extends GunItem {
     }
 
     @Override
+    public void onShoot(GunData data, Entity shooter, double spread, boolean zoom, UUID uuid) {
+    }
+
+    @Override
     public void onFireKeyRelease(GunData data, Player player, double power, boolean zoom) {
         super.onFireKeyRelease(data, player, power, zoom);
 
@@ -260,6 +264,7 @@ public class JavelinItem extends GunItem {
             serverPlayer.connection.send(clientboundstopsoundpacket);
         }
     }
+
 
     @Override
     public void onShoot(GunData data, Player player, double spread, boolean zoom, UUID uuid) {

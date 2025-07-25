@@ -247,7 +247,7 @@ public class SecondaryCataclysm extends GunItem {
 
     // TODO 这玩意能提取吗
     @Override
-    public boolean shootBullet(Player player, GunData data, double spread, boolean zoom, UUID uuid) {
+    public boolean shootBullet(@NotNull Entity shooter, @NotNull GunData data, double spread, boolean zoom, UUID uuid) {
         if (data.reloading()) return false;
         var stack = data.stack;
 
@@ -257,8 +257,8 @@ public class SecondaryCataclysm extends GunItem {
 
         boolean isChargedFire = zoom && hasEnoughEnergy;
 
-        if (player.level() instanceof ServerLevel serverLevel) {
-            GunGrenadeEntity gunGrenadeEntity = new GunGrenadeEntity(player, serverLevel,
+        if (shooter.level() instanceof ServerLevel serverLevel) {
+            GunGrenadeEntity gunGrenadeEntity = new GunGrenadeEntity(shooter, serverLevel,
                     (float) data.damage(),
                     (float) data.explosionDamage(),
                     (float) data.explosionRadius()
@@ -278,17 +278,17 @@ public class SecondaryCataclysm extends GunItem {
 
             gunGrenadeEntity.charged(isChargedFire);
 
-            var x = player.getLookAngle().x;
-            var y = player.getLookAngle().y + 0.001f;
-            var z = player.getLookAngle().z;
+            var x = shooter.getLookAngle().x;
+            var y = shooter.getLookAngle().y + 0.001f;
+            var z = shooter.getLookAngle().z;
 
-            if (zoom && !player.isShiftKeyDown()) {
-                Entity target = findEntity(player.level(), String.valueOf(uuid));
+            if (zoom && !shooter.isShiftKeyDown()) {
+                Entity target = findEntity(shooter.level(), String.valueOf(uuid));
                 var gunData = GunData.from(stack);
                 int intelligentChipLevel = gunData.perk.getLevel(ModPerks.INTELLIGENT_CHIP);
                 if (intelligentChipLevel > 0 && target != null) {
                     Vec3 targetVec = target.getEyePosition();
-                    Vec3 playerVec = player.getEyePosition();
+                    Vec3 playerVec = shooter.getEyePosition();
                     var hasGravity = gunData.perk.getLevel(ModPerks.MICRO_MISSILE) <= 0;
                     Vec3 toVec = RangeTool.calculateFiringSolution(playerVec, targetVec, Vec3.ZERO, (isChargedFire ? 4 : 1) * velocity, hasGravity ? 0.05 : 0);
                     x = toVec.x;
@@ -297,14 +297,14 @@ public class SecondaryCataclysm extends GunItem {
                 }
             }
 
-            gunGrenadeEntity.setPos(player.getX(), player.getEyeY() - 0.1, player.getZ());
+            gunGrenadeEntity.setPos(shooter.getX(), shooter.getEyeY() - 0.1, shooter.getZ());
             gunGrenadeEntity.shoot(x, y, z, (isChargedFire ? 4 : 1) * velocity,
                     (float) (zoom ? 0.1 : spread));
             serverLevel.addFreshEntity(gunGrenadeEntity);
 
-            ParticleTool.sendParticle(serverLevel, ParticleTypes.CLOUD, player.getX() + 1.8 * player.getLookAngle().x,
-                    player.getEyeY() - 0.35 + 1.8 * player.getLookAngle().y,
-                    player.getZ() + 1.8 * player.getLookAngle().z,
+            ParticleTool.sendParticle(serverLevel, ParticleTypes.CLOUD, shooter.getX() + 1.8 * shooter.getLookAngle().x,
+                    shooter.getEyeY() - 0.35 + 1.8 * shooter.getLookAngle().y,
+                    shooter.getZ() + 1.8 * shooter.getLookAngle().z,
                     4, 0.1, 0.1, 0.1, 0.002, true);
 
             if (isChargedFire) {
@@ -316,16 +316,16 @@ public class SecondaryCataclysm extends GunItem {
     }
 
     @Override
-    public void playFireSounds(GunData data, Player player, boolean zoom) {
+    public void playFireSounds(GunData data, Entity shooter, boolean zoom) {
         data.stack.getCapability(ForgeCapabilities.ENERGY).ifPresent(cap -> {
             if (cap.getEnergyStored() > 3000 && zoom) {
                 float soundRadius = (float) data.soundRadius();
 
-                player.playSound(ModSounds.SECONDARY_CATACLYSM_FIRE_3P_CHARGE.get(), soundRadius * 0.4f, 1f);
-                player.playSound(ModSounds.SECONDARY_CATACLYSM_FAR_CHARGE.get(), soundRadius * 0.7f, 1f);
-                player.playSound(ModSounds.SECONDARY_CATACLYSM_VERYFAR_CHARGE.get(), soundRadius, 1f);
+                shooter.playSound(ModSounds.SECONDARY_CATACLYSM_FIRE_3P_CHARGE.get(), soundRadius * 0.4f, 1f);
+                shooter.playSound(ModSounds.SECONDARY_CATACLYSM_FAR_CHARGE.get(), soundRadius * 0.7f, 1f);
+                shooter.playSound(ModSounds.SECONDARY_CATACLYSM_VERYFAR_CHARGE.get(), soundRadius, 1f);
             } else {
-                super.playFireSounds(data, player, zoom);
+                super.playFireSounds(data, shooter, zoom);
             }
         });
     }

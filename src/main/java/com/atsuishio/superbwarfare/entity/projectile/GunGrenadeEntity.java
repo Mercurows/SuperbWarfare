@@ -31,6 +31,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.PlayMessages;
+import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -50,7 +51,7 @@ public class GunGrenadeEntity extends FastThrowableProjectile implements GeoEnti
         this.noCulling = true;
     }
 
-    public GunGrenadeEntity(LivingEntity entity, Level level, float damage, float explosionDamage, float explosionRadius) {
+    public GunGrenadeEntity(Entity entity, Level level, float damage, float explosionDamage, float explosionRadius) {
         super(ModEntities.GUN_GRENADE.get(), entity, level);
         this.noCulling = true;
 
@@ -64,7 +65,7 @@ public class GunGrenadeEntity extends FastThrowableProjectile implements GeoEnti
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundTag pCompound) {
+    public void addAdditionalSaveData(@NotNull CompoundTag pCompound) {
         super.addAdditionalSaveData(pCompound);
         pCompound.putFloat("Damage", this.damage);
         pCompound.putFloat("ExplosionDamage", this.explosionDamage);
@@ -72,7 +73,7 @@ public class GunGrenadeEntity extends FastThrowableProjectile implements GeoEnti
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundTag pCompound) {
+    public void readAdditionalSaveData(@NotNull CompoundTag pCompound) {
         super.readAdditionalSaveData(pCompound);
         if (pCompound.contains("Damage")) {
             this.damage = pCompound.getFloat("Damage");
@@ -113,12 +114,12 @@ public class GunGrenadeEntity extends FastThrowableProjectile implements GeoEnti
     }
 
     @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
+    public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
     @Override
-    protected Item getDefaultItem() {
+    protected @NotNull Item getDefaultItem() {
         return ModItems.GRENADE_40MM.get();
     }
 

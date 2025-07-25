@@ -64,7 +64,6 @@ import software.bernie.geckolib.core.animatable.model.CoreGeoBone;
 import software.bernie.geckolib.core.animation.AnimationProcessor;
 
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 
@@ -744,7 +743,7 @@ public class ClientEventHandler {
         if (!(stack.getItem() instanceof GunItem)) return;
         var data = GunData.from(stack);
 
-        Mod.PACKET_HANDLER.sendToServer(new ShootMessage(gunSpread, zoom, entity != null ? entity.getUUID() : UUID.randomUUID()));
+        Mod.PACKET_HANDLER.sendToServer(new ShootMessage(gunSpread, zoom, entity != null ? entity.getUUID() : null));
         fireRecoilTime = 10;
 
         // 真实后座（

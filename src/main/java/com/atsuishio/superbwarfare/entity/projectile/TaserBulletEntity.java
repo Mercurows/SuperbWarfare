@@ -35,6 +35,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.PlayMessages;
+import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -62,8 +63,8 @@ public class TaserBulletEntity extends AbstractArrow implements GeoEntity {
         this.wireLength = wireLength;
     }
 
-    public TaserBulletEntity(LivingEntity entity, Level level, float damage) {
-        super(ModEntities.TASER_BULLET.get(), entity, level);
+    public TaserBulletEntity(Level level, float damage) {
+        super(ModEntities.TASER_BULLET.get(), level);
         this.noCulling = true;
 
         this.damage = damage;
@@ -99,16 +100,16 @@ public class TaserBulletEntity extends AbstractArrow implements GeoEntity {
     }
 
     @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
+    public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
     @Override
-    public void playerTouch(Player pEntity) {
+    public void playerTouch(@NotNull Player pEntity) {
     }
 
     @Override
-    protected ItemStack getPickupItem() {
+    protected @NotNull ItemStack getPickupItem() {
         return PROJECTILE_ITEM;
     }
 
@@ -141,7 +142,7 @@ public class TaserBulletEntity extends AbstractArrow implements GeoEntity {
     }
 
     @Override
-    public void onHitBlock(BlockHitResult blockHitResult) {
+    public void onHitBlock(@NotNull BlockHitResult blockHitResult) {
         super.onHitBlock(blockHitResult);
         BlockPos resultPos = blockHitResult.getBlockPos();
         BlockState state = this.level().getBlockState(resultPos);

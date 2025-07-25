@@ -14,7 +14,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -202,23 +201,23 @@ public class SentinelItem extends GunItem {
     }
 
     @Override
-    public void afterShoot(GunData data, Player player) {
-        super.afterShoot(data, player);
+    public void afterShoot(GunData data, Entity shooter) {
+        super.afterShoot(data, shooter);
         data.stack.getCapability(ForgeCapabilities.ENERGY).ifPresent(cap -> cap.extractEnergy(3000, false));
     }
 
     @Override
-    public void playFireSounds(GunData data, Player player, boolean zoom) {
+    public void playFireSounds(GunData data, Entity shooter, boolean zoom) {
         var cap = data.stack.getCapability(ForgeCapabilities.ENERGY);
 
         if (cap.map(c -> c.getEnergyStored() > 0).orElse(false)) {
             float soundRadius = (float) data.soundRadius();
 
-            player.playSound(ModSounds.SENTINEL_CHARGE_FAR.get(), soundRadius * 0.7f, 1f);
-            player.playSound(ModSounds.SENTINEL_CHARGE_FIRE_3P.get(), soundRadius * 0.4f, 1f);
-            player.playSound(ModSounds.SENTINEL_CHARGE_VERYFAR.get(), soundRadius, 1f);
+            shooter.playSound(ModSounds.SENTINEL_CHARGE_FAR.get(), soundRadius * 0.7f, 1f);
+            shooter.playSound(ModSounds.SENTINEL_CHARGE_FIRE_3P.get(), soundRadius * 0.4f, 1f);
+            shooter.playSound(ModSounds.SENTINEL_CHARGE_VERYFAR.get(), soundRadius, 1f);
         } else {
-            super.playFireSounds(data, player, zoom);
+            super.playFireSounds(data, shooter, zoom);
         }
     }
 }

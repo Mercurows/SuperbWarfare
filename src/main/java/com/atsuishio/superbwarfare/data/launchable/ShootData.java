@@ -1,10 +1,12 @@
 package com.atsuishio.superbwarfare.data.launchable;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.util.UUID;
 
 // 开火时的信息
 public record ShootData(
-        UUID shooter,
+        @Nullable UUID shooter,
         double damage,
         double explosionDamage,
         double explosionRadius,

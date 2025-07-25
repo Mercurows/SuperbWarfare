@@ -5,7 +5,9 @@ import com.atsuishio.superbwarfare.item.gun.GunItem;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.network.NetworkEvent;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Supplier;
 
@@ -13,22 +15,22 @@ public class ShootMessage {
 
     private final double spread;
     private final boolean zoom;
-    private final UUID uuid;
+    private final @Nullable UUID uuid;
 
-    public ShootMessage(double spread, boolean zoom, UUID uuid) {
+    public ShootMessage(double spread, boolean zoom, @Nullable UUID uuid) {
         this.spread = spread;
         this.zoom = zoom;
         this.uuid = uuid;
     }
 
     public static ShootMessage decode(FriendlyByteBuf buffer) {
-        return new ShootMessage(buffer.readDouble(), buffer.readBoolean(), buffer.readUUID());
+        return new ShootMessage(buffer.readDouble(), buffer.readBoolean(), buffer.readOptional(FriendlyByteBuf::readUUID).orElse(null));
     }
 
     public static void encode(ShootMessage message, FriendlyByteBuf buffer) {
         buffer.writeDouble(message.spread);
         buffer.writeBoolean(message.zoom);
-        buffer.writeUUID(message.uuid);
+        buffer.writeOptional(Optional.ofNullable(message.uuid), FriendlyByteBuf::writeUUID);
     }
 
     public static void handler(ShootMessage message, Supplier<NetworkEvent.Context> contextSupplier) {
@@ -41,11 +43,10 @@ public class ShootMessage {
         context.setPacketHandled(true);
     }
 
-    public static void pressAction(Player player, double spread, boolean zoom, UUID uuid) {
+    public static void pressAction(Player player, double spread, boolean zoom, @Nullable UUID uuid) {
         var stack = player.getMainHandItem();
         if (!(stack.getItem() instanceof GunItem)) return;
-        var data = GunData.from(stack);
 
-        data.item.onShoot(data, player, spread, zoom, uuid);
+        GunData.from(stack).shoot(player, spread, zoom, uuid);
     }
 }

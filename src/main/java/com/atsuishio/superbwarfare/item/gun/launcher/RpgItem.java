@@ -16,7 +16,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -120,17 +119,15 @@ public class RpgItem extends GunItem {
     }
 
     @Override
-    public boolean shootBullet(Player player, GunData data, double spread, boolean zoom, UUID uuid) {
+    public boolean shootBullet(@NotNull Entity shooter, @NotNull GunData data, double spread, boolean zoom, UUID uuid) {
         if (data.reloading()) return false;
-        if (!super.shootBullet(player, data, spread, zoom, uuid)) return false;
+        if (!super.shootBullet(shooter, data, spread, zoom, uuid)) return false;
 
-        if (player.level() instanceof ServerLevel serverLevel) {
-            ParticleTool.sendParticle(serverLevel, ParticleTypes.CLOUD, player.getX() + 1.8 * player.getLookAngle().x,
-                    player.getY() + player.getBbHeight() - 0.1 + 1.8 * player.getLookAngle().y,
-                    player.getZ() + 1.8 * player.getLookAngle().z,
-                    30, 0.4, 0.4, 0.4, 0.005, true);
+        ParticleTool.sendParticle((ServerLevel) shooter.level(), ParticleTypes.CLOUD, shooter.getX() + 1.8 * shooter.getLookAngle().x,
+                shooter.getY() + shooter.getBbHeight() - 0.1 + 1.8 * shooter.getLookAngle().y,
+                shooter.getZ() + 1.8 * shooter.getLookAngle().z,
+                30, 0.4, 0.4, 0.4, 0.005, true);
 
-        }
         data.isEmpty.set(true);
         data.closeHammer.set(true);
 
