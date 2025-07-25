@@ -1,5 +1,7 @@
 package com.atsuishio.superbwarfare.tools;
 
+import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.client.particle.FastCloudOption;
 import com.atsuishio.superbwarfare.init.ModParticleTypes;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage;
@@ -92,6 +94,10 @@ public class ParticleTool {
                 sendParticle(serverLevel, ParticleTypes.FALLING_WATER, x, y + 3, z, 50, 1.5, 4, 1.5, 1, true);
                 sendParticle(serverLevel, ParticleTypes.BUBBLE_COLUMN_UP, x, y, z, 60, 3, 0.5, 3, 0.1, true);
             }
+            sendParticle(serverLevel, ParticleTypes.EXPLOSION, x, y + 1, z, 30, 1, 1, 1, 1, true);
+            sendParticle(serverLevel, ParticleTypes.FLASH, x, y + 1, z, 30, 1, 1, 1, 1, true);
+            sendParticle(serverLevel, ModParticleTypes.FIRE_STAR.get(), x, y + 1, z, 100, 0, 0, 0, 2, true);
+
             sendParticle(serverLevel, ParticleTypes.EXPLOSION, x, y + 1, z, 5, 0.7, 0.7, 0.7, 1, true);
             sendParticle(serverLevel, ParticleTypes.CAMPFIRE_COSY_SMOKE, x, y + 1, z, 20, 0.2, 1, 0.2, 0.02, true);
             sendParticle(serverLevel, ParticleTypes.LARGE_SMOKE, x, y + 1, z, 10, 0.4, 1, 0.4, 0.02, true);
@@ -123,12 +129,34 @@ public class ParticleTool {
                 sendParticle(serverLevel, ParticleTypes.BUBBLE_COLUMN_UP, x, y, z, 350, 6, 1, 6, 0.1, true);
             }
 
-            sendParticle(serverLevel, ParticleTypes.EXPLOSION, x, y + 3, z, 75, 2.5, 2.5, 2.5, 1, true);
-            sendParticle(serverLevel, ParticleTypes.FLASH, x, y + 3, z, 200, 5, 5, 5, 20, true);
-            sendParticle(serverLevel, ModParticleTypes.FIRE_STAR.get(), x, y + 1, z, 400, 0, 0, 0, 1.5, true);
-            sendParticle(serverLevel, ParticleTypes.CAMPFIRE_COSY_SMOKE, x, y + 3, z, 75, 2, 3, 2, 0.005, true);
-            sendParticle(serverLevel, ParticleTypes.CAMPFIRE_COSY_SMOKE, x, y, z, 150, 7, 0.1, 7, 0.005, true);
-            sendParticle(serverLevel, ParticleTypes.CLOUD, x, y + 1, z, 200, 3, 4, 3, 0.4, true);
+            sendParticle(serverLevel, ParticleTypes.EXPLOSION, x, y + 3, z, 80, 3, 3, 3, 1, true);
+            sendParticle(serverLevel, ParticleTypes.FLASH, x, y + 4, z, 100, 4, 4, 4, 1, true);
+            sendParticle(serverLevel, ModParticleTypes.FIRE_STAR.get(), x, y + 1, z, 400, 0, 0, 0, 2, true);
+
+            for (int h = 0; h < 4; h++) {
+                for (int i = 0; i < 200; i++) {
+                    Vec3 v = new Vec3(1, 0, 0).yRot((float) (i * Math.random()));
+                    sendParticle(serverLevel, new FastCloudOption(1, 1, 1, 25, 4, false, false), x, y + 0.5, z,
+                            0, v.x, v.y, v.z, 200 - 2 * h, true);
+                }
+            }
+            for (int i = 0; i < 24; i++) {
+                int j = i;
+                Mod.queueServerWork(i, () -> {
+                    if (j < 12) {
+                        sendParticle(serverLevel, new FastCloudOption(1 - ((float) j / 24), 0.5f - ((float) j / 48), 0, 100, 4, true, true), x, y + j, z, 25, 1 - 0.1 * j, 0.3, 1 - 0.1 * j, 0.005, true);
+                        sendParticle(serverLevel, new FastCloudOption(0.8f - ((float) j / 24), 0.4f - ((float) j / 48), 0, 100, 4, true, true), x, y + 0.5, z, 30, 2 + 0.5 * j, 0.2, 2 + 0.5 * j, 0.005, true);
+                    }
+
+                    if (j >= 8 && j < 16) {
+                        int k = j - 8;
+                        sendParticle(serverLevel, new FastCloudOption(1, 0.5f, 0, 100, 6, true, true), x, y + 10, z, 15 * k, 1 + 0.3 * k, 1 + 0.12 * k, 1 + 0.3 * k, 0.005, true);
+                        sendParticle(serverLevel, new FastCloudOption(0.5f, 0.25f, 0, 100, 6, true, true), x, y + 10, z, 7 * k, 1 + 0.3 * k, 1 + 0.12 * k, 1 + 0.3 * k, 0.005, true);
+                        sendParticle(serverLevel, new FastCloudOption(0.25f, 0.125f, 0, 100, 8, true, true), x, y + 10, z, 7 * k, 1 + 0.3 * k, 1 + 0.12 * k, 1 + 0.3 * k, 0.005, true);
+                    }
+                    sendParticle(serverLevel, new FastCloudOption(0.667f, 0.631f, 0.592f, 100, 4, false, false), x, y + 0.2, z, 2 * j, 0.5 * j, 0.1, 0.5 * j, 0.0003 * j, true);
+                });
+            }
 
             ShakeClientMessage.sendToNearbyPlayers(level, x, y, z, 192, 30, 192, 12);
         }
@@ -156,14 +184,33 @@ public class ParticleTool {
                 sendParticle(serverLevel, ParticleTypes.BUBBLE_COLUMN_UP, x, y, z, 350, 6, 1, 6, 0.1, true);
             }
 
-            sendParticle(serverLevel, ParticleTypes.EXPLOSION, x, y + 11, z, 200, 8, 8, 8, 1, true);
-            sendParticle(serverLevel, ParticleTypes.LARGE_SMOKE, x, y + 9, z, 1200, 7, 7, 7, 0.005, true);
-            sendParticle(serverLevel, ParticleTypes.FLAME, x, y + 9, z, 1200, 8, 8, 8, 0.005, true);
-            sendParticle(serverLevel, ParticleTypes.FLASH, x, y + 11, z, 200, 11, 11, 11, 20, true);
-            sendParticle(serverLevel, ModParticleTypes.FIRE_STAR.get(), x, y + 1, z, 800, 0, 0, 0, 2, true);
-            sendParticle(serverLevel, ParticleTypes.CAMPFIRE_COSY_SMOKE, x, y + 9, z, 700, 8, 9, 8, 0.005, true);
-            sendParticle(serverLevel, ParticleTypes.CAMPFIRE_COSY_SMOKE, x, y, z, 500, 15, 0.5, 15, 0.005, true);
-            sendParticle(serverLevel, ParticleTypes.CLOUD, x, y + 1, z, 200, 3, 4, 3, 0.4, true);
+            sendParticle(serverLevel, ParticleTypes.EXPLOSION, x, y + 6, z, 100, 6, 6, 6, 1, true);
+            sendParticle(serverLevel, ParticleTypes.FLASH, x, y + 7, z, 200, 7, 7, 7, 1, true);
+            sendParticle(serverLevel, ModParticleTypes.FIRE_STAR.get(), x, y + 3, z, 800, 0, 0, 0, 2, true);
+            for (int h = 0; h < 5; h++) {
+                for (int i = 0; i < 200; i++) {
+                    Vec3 v = new Vec3(1, 0, 0).yRot((float) (i * Math.random()));
+                    sendParticle(serverLevel, new FastCloudOption(1, 1, 1, 25, 4, false, false), x, y + 0.5, z,
+                            0, v.x, v.y, v.z, 500 - 3 * h, true);
+                }
+            }
+            for (int i = 0; i < 24; i++) {
+                int j = i;
+                Mod.queueServerWork(i, () -> {
+                    if (j < 12) {
+                        sendParticle(serverLevel, new FastCloudOption(1 - ((float) j / 24), 0.5f - ((float) j / 48), 0, 100, 4, true, true), x, y + 2 * j, z, 35, 2 - 0.1 * j, 0.5, 2 - 0.1 * j, 0.005, true);
+                        sendParticle(serverLevel, new FastCloudOption(0.8f - ((float) j / 24), 0.4f - ((float) j / 48), 0, 100, 4, true, true), x, y + 0.5, z, 55, 3 + 0.5 * j, 0.3, 3 + 0.5 * j, 0.005, true);
+                    }
+
+                    if (j >= 8 && j < 16) {
+                        int k = j - 8;
+                        sendParticle(serverLevel, new FastCloudOption(1, 0.5f, 0, 100, 6, true, true), x, y + 20, z, 20 * k, 1 + 0.5 * k, 1 + 0.2 * k, 1 + 0.5 * k, 0.005, true);
+                        sendParticle(serverLevel, new FastCloudOption(0.5f, 0.25f, 0, 100, 6, true, true), x, y + 20, z, 10 * k, 1 + 0.5 * k, 1 + 0.2 * k, 1 + 0.5 * k, 0.005, true);
+                        sendParticle(serverLevel, new FastCloudOption(0.25f, 0.125f, 0, 100, 8, true, true), x, y + 20, z, 10 * k, 1 + 0.5 * k, 1 + 0.2 * k, 1 + 0.5 * k, 0.005, true);
+                    }
+                    sendParticle(serverLevel, new FastCloudOption(0.667f, 0.631f, 0.592f, 100, 4, false, false), x, y + 0.2, z, 4 * j, j, 0.1, j, 0.0003 * j, true);
+                });
+            }
             ShakeClientMessage.sendToNearbyPlayers(level, x, y, z, 384, 30, 384, 16);
         }
     }

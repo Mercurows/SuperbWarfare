@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.init;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.particle.BulletDecalOption;
 import com.atsuishio.superbwarfare.client.particle.CustomSmokeOption;
+import com.atsuishio.superbwarfare.client.particle.FastCloudOption;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
@@ -23,6 +24,7 @@ public class ModParticleTypes {
             () -> createOptions(BulletDecalOption.CODEC, BulletDecalOption.STREAM_CODEC));
     public static final DeferredHolder<ParticleType<?>, SimpleParticleType> CUSTOM_CLOUD = REGISTRY.register("custom_cloud", () -> new SimpleParticleType(false));
     public static final DeferredHolder<ParticleType<?>, ParticleType<CustomSmokeOption>> CUSTOM_SMOKE = REGISTRY.register("custom_smoke", () -> createOptions(CustomSmokeOption.CODEC, CustomSmokeOption.STREAM_CODEC));
+    public static final DeferredHolder<ParticleType<?>, ParticleType<FastCloudOption>> FAST_CLOUD = REGISTRY.register("fast_cloud", () -> createOptions(FastCloudOption.CODEC, FastCloudOption.STREAM_CODEC));
 
     public static <T extends ParticleOptions> ParticleType<T> createOptions(MapCodec<T> codec, StreamCodec<? super RegistryFriendlyByteBuf, T> streamCodec) {
         return new ParticleType<>(false) {

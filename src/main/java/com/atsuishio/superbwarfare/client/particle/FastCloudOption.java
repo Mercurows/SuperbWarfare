@@ -1,0 +1,96 @@
+package com.atsuishio.superbwarfare.client.particle;
+
+import com.atsuishio.superbwarfare.init.ModParticleTypes;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.particles.ParticleType;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import org.jetbrains.annotations.NotNull;
+import org.joml.Vector3f;
+
+public class FastCloudOption implements ParticleOptions {
+
+    public static final MapCodec<FastCloudOption> CODEC = RecordCodecBuilder.mapCodec(builder ->
+            builder.group(
+                    Codec.FLOAT.fieldOf("r").forGetter(option -> option.red),
+                    Codec.FLOAT.fieldOf("g").forGetter(option -> option.green),
+                    Codec.FLOAT.fieldOf("b").forGetter(option -> option.blue),
+                    Codec.INT.fieldOf("life").forGetter(option -> option.life),
+                    Codec.INT.fieldOf("size").forGetter(option -> option.size),
+                    Codec.BOOL.fieldOf("cooldown").forGetter(option -> option.cooldown),
+                    Codec.BOOL.fieldOf("light").forGetter(option -> option.light)
+            ).apply(builder, FastCloudOption::new));
+
+    public static final StreamCodec<ByteBuf, FastCloudOption> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.VECTOR3F, FastCloudOption::getColor,
+            ByteBufCodecs.INT, FastCloudOption::getLife,
+            ByteBufCodecs.INT, FastCloudOption::getSize,
+            ByteBufCodecs.BOOL, FastCloudOption::getCooldown,
+            ByteBufCodecs.BOOL, FastCloudOption::getLight,
+            FastCloudOption::new
+    );
+
+    private final float red;
+    private final float green;
+    private final float blue;
+    private final int life;
+    private final int size;
+    private final boolean cooldown;
+    private final boolean light;
+
+
+    public FastCloudOption(Vector3f color, int life, int size, boolean cooldown, boolean light) {
+        this(color.x, color.y, color.z, life, size, cooldown, light);
+    }
+
+    public FastCloudOption(float r, float g, float b, int life, int size, boolean cooldown, boolean light) {
+        this.red = r;
+        this.green = g;
+        this.blue = b;
+        this.life = life;
+        this.size = size;
+        this.cooldown = cooldown;
+        this.light = light;
+    }
+
+    public Vector3f getColor() {
+        return new Vector3f(red, green, blue);
+    }
+
+    public float getRed() {
+        return red;
+    }
+
+    public float getGreen() {
+        return green;
+    }
+
+    public float getBlue() {
+        return blue;
+    }
+
+    public int getLife() {
+        return life;
+    }
+
+    public int getSize() {
+        return size;
+    }
+
+    public boolean getCooldown() {
+        return cooldown;
+    }
+
+    public boolean getLight() {
+        return light;
+    }
+
+    @Override
+    public @NotNull ParticleType<?> getType() {
+        return ModParticleTypes.FAST_CLOUD.get();
+    }
+}
