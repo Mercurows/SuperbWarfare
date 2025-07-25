@@ -11,7 +11,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.event.KillMessageHandler;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModItems;
-import com.atsuishio.superbwarfare.item.DogTag;
+import com.atsuishio.superbwarfare.item.curio.DogTagItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.tools.DamageTypeTool;
 import com.atsuishio.superbwarfare.tools.PlayerKillRecord;
@@ -367,8 +367,6 @@ public class KillMessageOverlay implements LayeredDraw.Layer {
     }
 
     public static String getEntityName(Entity entity) {
-        if (entity.getDisplayName() == null) return "";
-
         var name = entity.getDisplayName().getString();
         if (!DisplayConfig.DOG_TAG_NAME_VISIBLE.get()) return name;
 
@@ -417,7 +415,9 @@ public class KillMessageOverlay implements LayeredDraw.Layer {
 
     public static void renderDogTagIcon(GuiGraphics guiGraphics, LivingEntity living, float x, float y) {
         CuriosApi.getCuriosInventory(living).flatMap(c -> c.findFirstCurio(ModItems.DOG_TAG.get())).ifPresent(s -> {
-            short[][] icon = DogTag.getColors(s.stack());
+            var stack = s.stack();
+            short[][] icon = DogTagItem.getColors(stack);
+
             guiGraphics.pose().pushPose();
 
             for (int i = 0; i < 16; i++) {

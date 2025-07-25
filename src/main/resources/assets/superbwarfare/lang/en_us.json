@@ -231,8 +231,6 @@
   "item.superbwarfare.cannon_core": "Cannon Core",
   "item.superbwarfare.dog_tag": "Dog Tag",
   "curios.identifier.dog_tag": "Dog Tag",
-  "item.superbwarfare.iff": "IFF",
-  "curios.identifier.iff": "IFF",
   "item.superbwarfare.cell": "Cell",
   "item.superbwarfare.battery": "Battery",
   "item.superbwarfare.small_battery_pack": "Small Battery Pack",
@@ -270,7 +268,10 @@
   "des.superbwarfare.artillery_indicator_5": "When in off-hand: use drone to mark locations (same controls as above)",
   "des.superbwarfare.artillery_indicator.add": "%1$s has been added to the artillery array",
   "des.superbwarfare.artillery_indicator.remove": "%1$s has been removed from the artillery array",
+  "item.superbwarfare.iff": "IFF",
+  "curios.identifier.iff": "IFF",
   "des.superbwarfare.iff_1": "When player joins a vanilla team and team ID ≠ 'TDM', teammate indicator will display onscreen",
+  "item.superbwarfare.medical_kit": "Medical Kit",
 
   "attribute.superbwarfare.bullet_resistance": "Bullet Resistance",
 

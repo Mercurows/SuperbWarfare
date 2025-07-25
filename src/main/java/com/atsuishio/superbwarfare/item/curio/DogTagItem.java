@@ -1,9 +1,10 @@
-package com.atsuishio.superbwarfare.item;
+package com.atsuishio.superbwarfare.item.curio;
 
 import com.atsuishio.superbwarfare.client.TooltipTool;
 import com.atsuishio.superbwarfare.client.screens.DogTagEditorScreen;
 import com.atsuishio.superbwarfare.client.tooltip.component.DogTagImageComponent;
 import com.atsuishio.superbwarfare.component.ModDataComponents;
+import com.atsuishio.superbwarfare.item.ItemScreenProvider;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
@@ -27,9 +28,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class DogTag extends Item implements ICurioItem, ItemScreenProvider {
+public class DogTagItem extends Item implements ICurioItem, ItemScreenProvider {
 
-    public DogTag() {
+    public DogTagItem() {
         super(new Properties().stacksTo(1));
     }
 

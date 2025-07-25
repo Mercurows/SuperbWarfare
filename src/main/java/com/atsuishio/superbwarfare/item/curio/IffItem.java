@@ -1,4 +1,4 @@
-package com.atsuishio.superbwarfare.item;
+package com.atsuishio.superbwarfare.item.curio;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -13,9 +13,9 @@ import top.theillusivec4.curios.api.type.capability.ICurioItem;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 
-public class Iff extends Item implements ICurioItem {
+public class IffItem extends Item implements ICurioItem {
 
-    public Iff() {
+    public IffItem() {
         super(new Properties().stacksTo(1));
     }
 

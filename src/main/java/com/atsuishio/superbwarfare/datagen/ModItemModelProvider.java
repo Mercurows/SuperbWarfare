@@ -140,6 +140,7 @@ public class ModItemModelProvider extends ItemModelProvider {
         simpleItem(ModItems.SMALL_BATTERY_PACK);
         simpleItem(ModItems.MEDIUM_BATTERY_PACK);
         simpleItem(ModItems.LARGE_BATTERY_PACK);
+        simpleItem(ModItems.MEDICAL_KIT);
 
         simpleItem(ModItems.TUNGSTEN_ROD);
 
