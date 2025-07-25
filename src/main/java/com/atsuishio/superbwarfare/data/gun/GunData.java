@@ -552,15 +552,15 @@ public class GunData {
     /**
      * 无实体情况下开火
      */
-    public boolean shoot(@NotNull ServerLevel level, @NotNull Vec3 shootPosition, @NotNull Vec3 shootDirection, double spread, boolean zoom) {
-        return this.item.shootBullet(level, shootPosition, shootDirection, this, spread, zoom, null);
+    public void shoot(@NotNull ServerLevel level, @NotNull Vec3 shootPosition, @NotNull Vec3 shootDirection, double spread, boolean zoom) {
+        this.item.shoot(level, shootPosition, shootDirection, this, spread, zoom, null);
     }
 
     /**
      * 有实体情况下开火
      */
-    public boolean shoot(@NotNull Entity entity, double spread, boolean zoom, @Nullable UUID uuid) {
-        return this.item.shootBullet(entity, this, spread, zoom, uuid);
+    public void shoot(@NotNull Entity entity, double spread, boolean zoom, @Nullable UUID uuid) {
+        this.item.shoot(this, entity, spread, zoom, uuid);
     }
 
     /**

@@ -12,6 +12,7 @@ import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
@@ -23,9 +24,12 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.constant.DataTickets;
 import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.core.animation.AnimationController;
@@ -145,8 +149,16 @@ public class M2HBItem extends GunItem {
     }
 
     @Override
-    public void beforeShoot(GunData data, Entity shooter, double spread, boolean zoom) {
-        super.beforeShoot(data, shooter, spread, zoom);
+    public void beforeShoot(
+            @Nullable Entity shooter,
+            @NotNull ServerLevel level,
+            @NotNull Vec3 shootPosition,
+            @NotNull Vec3 shootDirection,
+            @NotNull GunData data,
+            double spread,
+            boolean zoom
+    ) {
+        super.beforeShoot(shooter, level, shootPosition, shootDirection, data, spread, zoom);
 
         if (data.ammo.get() <= 5) {
             data.hideBulletChain.set(true);

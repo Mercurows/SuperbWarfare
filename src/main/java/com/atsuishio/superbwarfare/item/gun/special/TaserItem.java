@@ -214,8 +214,18 @@ public class TaserItem extends GunItem {
     }
 
     @Override
-    public void afterShoot(GunData data, Entity shooter) {
-        super.afterShoot(data, shooter);
+    public void afterShoot(
+            @Nullable Entity shooter,
+            @NotNull ServerLevel level,
+            @NotNull Vec3 shootPosition,
+            @NotNull Vec3 shootDirection,
+            @NotNull GunData data,
+            double spread,
+            boolean zoom,
+            @Nullable UUID uuid
+    ) {
+        super.afterShoot(shooter, level, shootPosition, shootDirection, data, spread, zoom, uuid);
+
         var stack = data.stack;
         int perkLevel = data.perk.getLevel(ModPerks.VOLT_OVERLOAD);
         stack.getCapability(ForgeCapabilities.ENERGY).ifPresent(energy -> energy.extractEnergy(400 + 100 * perkLevel, false));

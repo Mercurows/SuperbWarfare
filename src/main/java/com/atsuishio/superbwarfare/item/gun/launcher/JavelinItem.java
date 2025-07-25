@@ -38,6 +38,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3d;
 import software.bernie.geckolib.constant.DataTickets;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -246,7 +247,16 @@ public class JavelinItem extends GunItem {
     }
 
     @Override
-    public void onShoot(GunData data, Entity shooter, double spread, boolean zoom, UUID uuid) {
+    public void shoot(
+            @Nullable Entity shooter,
+            @NotNull ServerLevel level,
+            Vec3 shootPosition,
+            Vec3 shootDirection,
+            @NotNull GunData data,
+            double spread,
+            boolean zoom,
+            @Nullable UUID uuid
+    ) {
     }
 
     @Override
@@ -263,11 +273,6 @@ public class JavelinItem extends GunItem {
             var clientboundstopsoundpacket = new ClientboundStopSoundPacket(new ResourceLocation(Mod.MODID, "javelin_lock"), SoundSource.PLAYERS);
             serverPlayer.connection.send(clientboundstopsoundpacket);
         }
-    }
-
-
-    @Override
-    public void onShoot(GunData data, Player player, double spread, boolean zoom, UUID uuid) {
     }
 
     @Override

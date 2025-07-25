@@ -20,6 +20,9 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
+import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.constant.DataTickets;
 import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.core.animation.AnimationController;
@@ -96,11 +99,19 @@ public class HomemadeShotgunItem extends GunItem {
     }
 
     @Override
-    public void beforeShoot(GunData data, Entity shooter, double spread, boolean zoom) {
-        super.beforeShoot(data, shooter, spread, zoom);
+    public void beforeShoot(
+            @Nullable Entity shooter,
+            @NotNull ServerLevel level,
+            @NotNull Vec3 shootPosition,
+            @NotNull Vec3 shootDirection,
+            @NotNull GunData data,
+            double spread,
+            boolean zoom
+    ) {
+        super.beforeShoot(shooter, level, shootPosition, shootDirection, data, spread, zoom);
 
-        if (shooter instanceof ServerPlayer serverPlayer && shooter.level() instanceof ServerLevel serverLevel) {
-            ParticleTool.sendParticle(serverLevel, ParticleTypes.CLOUD, shooter.getX() + 1.8 * shooter.getLookAngle().x, shooter.getY() + shooter.getBbHeight() - 0.1 + 1.8 * shooter.getLookAngle().y,
+        if (shooter instanceof ServerPlayer serverPlayer) {
+            ParticleTool.sendParticle(level, ParticleTypes.CLOUD, shooter.getX() + 1.8 * shooter.getLookAngle().x, shooter.getY() + shooter.getBbHeight() - 0.1 + 1.8 * shooter.getLookAngle().y,
                     shooter.getZ() + 1.8 * shooter.getLookAngle().z, 30, 0.4, 0.4, 0.4, 0.005, true, serverPlayer);
         }
     }
