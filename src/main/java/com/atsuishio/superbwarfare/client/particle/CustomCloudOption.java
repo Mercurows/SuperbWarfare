@@ -12,9 +12,9 @@ import net.minecraft.network.codec.StreamCodec;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 
-public class FastCloudOption implements ParticleOptions {
+public class CustomCloudOption implements ParticleOptions {
 
-    public static final MapCodec<FastCloudOption> CODEC = RecordCodecBuilder.mapCodec(builder ->
+    public static final MapCodec<CustomCloudOption> CODEC = RecordCodecBuilder.mapCodec(builder ->
             builder.group(
                     Codec.FLOAT.fieldOf("r").forGetter(option -> option.red),
                     Codec.FLOAT.fieldOf("g").forGetter(option -> option.green),
@@ -23,15 +23,15 @@ public class FastCloudOption implements ParticleOptions {
                     Codec.INT.fieldOf("size").forGetter(option -> option.size),
                     Codec.BOOL.fieldOf("cooldown").forGetter(option -> option.cooldown),
                     Codec.BOOL.fieldOf("light").forGetter(option -> option.light)
-            ).apply(builder, FastCloudOption::new));
+            ).apply(builder, CustomCloudOption::new));
 
-    public static final StreamCodec<ByteBuf, FastCloudOption> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.VECTOR3F, FastCloudOption::getColor,
-            ByteBufCodecs.INT, FastCloudOption::getLife,
-            ByteBufCodecs.INT, FastCloudOption::getSize,
-            ByteBufCodecs.BOOL, FastCloudOption::getCooldown,
-            ByteBufCodecs.BOOL, FastCloudOption::getLight,
-            FastCloudOption::new
+    public static final StreamCodec<ByteBuf, CustomCloudOption> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.VECTOR3F, CustomCloudOption::getColor,
+            ByteBufCodecs.INT, CustomCloudOption::getLife,
+            ByteBufCodecs.INT, CustomCloudOption::getSize,
+            ByteBufCodecs.BOOL, CustomCloudOption::getCooldown,
+            ByteBufCodecs.BOOL, CustomCloudOption::getLight,
+            CustomCloudOption::new
     );
 
     private final float red;
@@ -43,11 +43,11 @@ public class FastCloudOption implements ParticleOptions {
     private final boolean light;
 
 
-    public FastCloudOption(Vector3f color, int life, int size, boolean cooldown, boolean light) {
+    public CustomCloudOption(Vector3f color, int life, int size, boolean cooldown, boolean light) {
         this(color.x, color.y, color.z, life, size, cooldown, light);
     }
 
-    public FastCloudOption(float r, float g, float b, int life, int size, boolean cooldown, boolean light) {
+    public CustomCloudOption(float r, float g, float b, int life, int size, boolean cooldown, boolean light) {
         this.red = r;
         this.green = g;
         this.blue = b;
@@ -91,6 +91,6 @@ public class FastCloudOption implements ParticleOptions {
 
     @Override
     public @NotNull ParticleType<?> getType() {
-        return ModParticleTypes.FAST_CLOUD.get();
+        return ModParticleTypes.CUSTOM_CLOUD.get();
     }
 }
