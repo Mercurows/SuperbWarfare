@@ -10,9 +10,9 @@ import net.minecraft.core.particles.ParticleType;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.registries.ForgeRegistries;
 
-public class FastCloudOption implements ParticleOptions {
+public class CustomCloudOption implements ParticleOptions {
 
-    public static final Codec<FastCloudOption> CODEC = RecordCodecBuilder.create(builder ->
+    public static final Codec<CustomCloudOption> CODEC = RecordCodecBuilder.create(builder ->
             builder.group(
                     Codec.FLOAT.fieldOf("r").forGetter(option -> option.red),
                     Codec.FLOAT.fieldOf("g").forGetter(option -> option.green),
@@ -21,12 +21,12 @@ public class FastCloudOption implements ParticleOptions {
                     Codec.INT.fieldOf("size").forGetter(option -> option.size),
                     Codec.BOOL.fieldOf("cooldown").forGetter(option -> option.cooldown),
                     Codec.BOOL.fieldOf("light").forGetter(option -> option.light)
-            ).apply(builder, FastCloudOption::new));
+            ).apply(builder, CustomCloudOption::new));
 
     @SuppressWarnings("deprecation")
-    public static final Deserializer<FastCloudOption> DESERIALIZER = new Deserializer<>() {
+    public static final Deserializer<CustomCloudOption> DESERIALIZER = new Deserializer<>() {
         @Override
-        public FastCloudOption fromCommand(ParticleType<FastCloudOption> particleType, StringReader reader) throws CommandSyntaxException {
+        public CustomCloudOption fromCommand(ParticleType<CustomCloudOption> particleType, StringReader reader) throws CommandSyntaxException {
             reader.expect(' ');
             float r = reader.readFloat();
             reader.expect(' ');
@@ -41,12 +41,12 @@ public class FastCloudOption implements ParticleOptions {
             boolean cooldown = reader.readBoolean();
             reader.expect(' ');
             boolean light = reader.readBoolean();
-            return new FastCloudOption(r, g, b, life, size, cooldown, light);
+            return new CustomCloudOption(r, g, b, life, size, cooldown, light);
         }
 
         @Override
-        public FastCloudOption fromNetwork(ParticleType<FastCloudOption> particleType, FriendlyByteBuf buffer) {
-            return new FastCloudOption(buffer.readFloat(), buffer.readFloat(), buffer.readFloat(), buffer.readInt(), buffer.readInt(), buffer.readBoolean(), buffer.readBoolean());
+        public CustomCloudOption fromNetwork(ParticleType<CustomCloudOption> particleType, FriendlyByteBuf buffer) {
+            return new CustomCloudOption(buffer.readFloat(), buffer.readFloat(), buffer.readFloat(), buffer.readInt(), buffer.readInt(), buffer.readBoolean(), buffer.readBoolean());
         }
     };
 
@@ -58,7 +58,7 @@ public class FastCloudOption implements ParticleOptions {
     private final boolean cooldown;
     private final boolean light;
 
-    public FastCloudOption(float r, float g, float b, int life, int size, boolean cooldown, boolean light) {
+    public CustomCloudOption(float r, float g, float b, int life, int size, boolean cooldown, boolean light) {
         this.red = r;
         this.green = g;
         this.blue = b;
@@ -98,7 +98,7 @@ public class FastCloudOption implements ParticleOptions {
 
     @Override
     public ParticleType<?> getType() {
-        return ModParticleTypes.FAST_CLOUD.get();
+        return ModParticleTypes.CUSTOM_CLOUD.get();
     }
 
     @Override
