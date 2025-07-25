@@ -138,10 +138,10 @@ public class WheelChairEntity extends MobileVehicleEntity implements GeoEntity {
     }
 
     @Override
-    protected void addPassenger(@NotNull Entity newPassenger) {
-        super.addPassenger(newPassenger);
+    protected void addPassenger(@NotNull Entity pPassenger) {
+        super.addPassenger(pPassenger);
 
-        if (newPassenger instanceof ServerPlayer player
+        if (pPassenger instanceof ServerPlayer player
                 && (player.getMainHandItem().getItem() == ModItems.ELECTRIC_BATON.get()
                 || player.getOffhandItem().getItem() == ModItems.ELECTRIC_BATON.get())
         ) {

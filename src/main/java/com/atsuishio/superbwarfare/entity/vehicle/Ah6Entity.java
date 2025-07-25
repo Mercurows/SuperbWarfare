@@ -694,6 +694,7 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
         return this.entityData.get(DECOY_COUNT);
     }
 
+    @Override
     public int getMaxPassengers() {
         return 4;
     }

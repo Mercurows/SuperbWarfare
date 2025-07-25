@@ -90,6 +90,8 @@ import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 
 public abstract class VehicleEntity extends Entity implements Container {
 
+    public static final String TAG_SEAT_INDEX = "SBWSeatIndex";
+
     public static final EntityDataAccessor<Float> HEALTH = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<String> LAST_ATTACKER_UUID = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.STRING);
     public static final EntityDataAccessor<String> LAST_DRIVER_UUID = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.STRING);
@@ -318,15 +320,15 @@ public abstract class VehicleEntity extends Entity implements Container {
     public Function<Entity, Integer> entityIndexOverride = null;
 
     @Override
-    protected void addPassenger(@NotNull Entity newPassenger) {
-        if (newPassenger.getVehicle() != this) {
+    protected void addPassenger(@NotNull Entity pPassenger) {
+        if (pPassenger.getVehicle() != this) {
             throw new IllegalStateException("Use x.startRiding(y), not y.addPassenger(x)");
         }
 
         int index;
 
-        if (entityIndexOverride != null && entityIndexOverride.apply(newPassenger) != -1) {
-            index = entityIndexOverride.apply(newPassenger);
+        if (entityIndexOverride != null && entityIndexOverride.apply(pPassenger) != -1) {
+            index = entityIndexOverride.apply(pPassenger);
         } else {
             index = 0;
             for (Entity passenger : orderedPassengers) {
@@ -338,9 +340,12 @@ public abstract class VehicleEntity extends Entity implements Container {
         }
         if (index >= getMaxPassengers() || index < 0) return;
 
-        orderedPassengers.set(index, newPassenger);
+        orderedPassengers.set(index, pPassenger);
+
+        pPassenger.getPersistentData().putInt(TAG_SEAT_INDEX, index);
+
         this.passengers = ImmutableList.copyOf(orderedPassengers.stream().filter(Objects::nonNull).toList());
-        this.gameEvent(GameEvent.ENTITY_MOUNT, newPassenger);
+        this.gameEvent(GameEvent.ENTITY_MOUNT, pPassenger);
     }
 
     @Override
@@ -399,6 +404,8 @@ public abstract class VehicleEntity extends Entity implements Container {
         orderedPassengers.set(orderedPassengers.indexOf(entity), null);
         orderedPassengers.set(index, entity);
 
+        entity.getPersistentData().putInt(TAG_SEAT_INDEX, index);
+
         // 在服务端运行时，向所有玩家同步载具座位信息
         if (!this.level().isClientSide && this.level() instanceof ServerLevel serverLevel) {
             serverLevel.getPlayers(s -> true).forEach(p -> p.connection.send(new ClientboundSetPassengersPacket(this)));
@@ -415,6 +422,17 @@ public abstract class VehicleEntity extends Entity implements Container {
      */
     public int getSeatIndex(Entity entity) {
         return orderedPassengers.indexOf(entity);
+    }
+
+    /**
+     * 获取乘客所在座位索引，用于下车时的位置判定
+     * 下车前会先移除载具，因此 {@link VehicleEntity#getSeatIndex(Entity)} 会返回-1
+     *
+     * @param entity 乘客
+     * @return 座位索引
+     */
+    public int getTagSeatIndex(Entity entity) {
+        return entity.getPersistentData().getInt(TAG_SEAT_INDEX);
     }
 
     /**
@@ -1391,6 +1409,8 @@ public abstract class VehicleEntity extends Entity implements Container {
 
     @Override
     public @NotNull Vec3 getDismountLocationForPassenger(LivingEntity passenger) {
+        passenger.getPersistentData().remove(TAG_SEAT_INDEX);
+
         Vec3 vec3d = getDismountOffset(getBbWidth() * Mth.SQRT_OF_TWO, passenger.getBbWidth() * Mth.SQRT_OF_TWO);
         double ox = getX() - vec3d.x;
         double oz = getZ() + vec3d.z;
