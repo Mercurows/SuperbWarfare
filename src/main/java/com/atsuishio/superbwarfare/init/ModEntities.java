@@ -126,7 +126,7 @@ public class ModEntities {
     public static final DeferredHolder<EntityType<?>, EntityType<Tom6Entity>> TOM_6 = register("tom_6",
             EntityType.Builder.of(Tom6Entity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).fireImmune().sized(1.05f, 1.0f));
     public static final DeferredHolder<EntityType<?>, EntityType<Ah6Entity>> AH_6 = register("ah_6",
-            EntityType.Builder.of(Ah6Entity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).fireImmune().sized(3.6f, 2.9f));
+            EntityType.Builder.of(Ah6Entity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).fireImmune().sized(3f, 2.9f));
     public static final DeferredHolder<EntityType<?>, EntityType<A10Entity>> A_10A = register("a_10a",
             EntityType.Builder.of(A10Entity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).fireImmune().sized(9f, 3.5f));
 
