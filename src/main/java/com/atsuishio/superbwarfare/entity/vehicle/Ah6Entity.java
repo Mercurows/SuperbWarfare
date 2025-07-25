@@ -734,6 +734,11 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
         return super.getDismountLocationForIndex(passenger, index);
     }
 
+    @Override
+    public @NotNull Vec3 getDismountMovement(LivingEntity passenger, int index) {
+        return new Vec3(0, 10, 0);
+    }
+
     @OnlyIn(Dist.CLIENT)
     @Nullable
     public Pair<Quaternionf, Quaternionf> getPassengerRotation(Entity entity, float tickDelta) {
