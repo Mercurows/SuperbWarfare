@@ -15,7 +15,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
@@ -96,12 +96,12 @@ public class HomemadeShotgunItem extends GunItem {
     }
 
     @Override
-    public void beforeShoot(GunData data, Player player, double spread, boolean zoom) {
-        super.beforeShoot(data, player, spread, zoom);
+    public void beforeShoot(GunData data, Entity shooter, double spread, boolean zoom) {
+        super.beforeShoot(data, shooter, spread, zoom);
 
-        if (player instanceof ServerPlayer serverPlayer && player.level() instanceof ServerLevel serverLevel) {
-            ParticleTool.sendParticle(serverLevel, ParticleTypes.CLOUD, player.getX() + 1.8 * player.getLookAngle().x, player.getY() + player.getBbHeight() - 0.1 + 1.8 * player.getLookAngle().y,
-                    player.getZ() + 1.8 * player.getLookAngle().z, 30, 0.4, 0.4, 0.4, 0.005, true, serverPlayer);
+        if (shooter instanceof ServerPlayer serverPlayer && shooter.level() instanceof ServerLevel serverLevel) {
+            ParticleTool.sendParticle(serverLevel, ParticleTypes.CLOUD, shooter.getX() + 1.8 * shooter.getLookAngle().x, shooter.getY() + shooter.getBbHeight() - 0.1 + 1.8 * shooter.getLookAngle().y,
+                    shooter.getZ() + 1.8 * shooter.getLookAngle().z, 30, 0.4, 0.4, 0.4, 0.005, true, serverPlayer);
         }
     }
 }

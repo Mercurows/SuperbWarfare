@@ -12,7 +12,6 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
@@ -132,8 +131,8 @@ public class M60Item extends GunItem {
     }
 
     @Override
-    public void beforeShoot(GunData data, Player player, double spread, boolean zoom) {
-        super.beforeShoot(data, player, spread, zoom);
+    public void beforeShoot(GunData data, Entity shooter, double spread, boolean zoom) {
+        super.beforeShoot(data, shooter, spread, zoom);
 
         if (data.ammo.get() <= 5) {
             data.hideBulletChain.set(true);
