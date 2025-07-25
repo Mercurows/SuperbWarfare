@@ -16,6 +16,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -25,6 +26,7 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import org.jetbrains.annotations.NotNull;
@@ -181,10 +183,18 @@ public class TaserItem extends GunItem {
     }
 
     @Override
-    public boolean shootBullet(@NotNull Entity shooter, @NotNull GunData data, double spread, boolean zoom, UUID uuid) {
+    public boolean shootBullet(
+            @Nullable Entity shooter,
+            @NotNull ServerLevel level,
+            @NotNull Vec3 shootPosition,
+            @NotNull Vec3 shootDirection,
+            @NotNull GunData data,
+            double spread,
+            boolean zoom,
+            @Nullable UUID uuid
+    ) {
 //        shooter.getCooldowns().addCooldown(stack.getItem(), 5);
 
-        var level = shooter.level();
         TaserBulletEntity projectile = new TaserBulletEntity(level,
                 (float) data.damage());
 
@@ -195,8 +205,8 @@ public class TaserItem extends GunItem {
             }
         }
 
-        projectile.setPos(shooter.getX(), shooter.getEyeY() - 0.1, shooter.getZ());
-        projectile.shoot(shooter.getLookAngle().x, shooter.getLookAngle().y, shooter.getLookAngle().z, (float) data.velocity(),
+        projectile.setPos(shootPosition.x, shootPosition.y - 0.1, shootPosition.z);
+        projectile.shoot(shootDirection.x, shootDirection.y, shootDirection.z, (float) data.velocity(),
                 (float) (zoom ? 0.1 : spread));
         level.addFreshEntity(projectile);
 

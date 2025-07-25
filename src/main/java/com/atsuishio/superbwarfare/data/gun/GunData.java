@@ -570,11 +570,14 @@ public class GunData {
         GunEventHandler.gunTick(shooter, this);
     }
 
-    private static int getPriority(String s) {
+    private static int getPerkPriority(String s) {
         if (s == null || s.isEmpty()) return 2;
-        if (s.startsWith("@")) return 0;
-        else if (s.startsWith("!")) return 2;
-        else return 1;
+
+        return switch (s.charAt(0)) {
+            case '@' -> 0;
+            case '!' -> 2;
+            default -> 1;
+        };
     }
 
     public List<Perk> availablePerks() {
@@ -585,8 +588,8 @@ public class GunData {
         List<String> sortedNames = new ArrayList<>(perkNames);
 
         sortedNames.sort((s1, s2) -> {
-            int p1 = getPriority(s1);
-            int p2 = getPriority(s2);
+            int p1 = getPerkPriority(s1);
+            int p2 = getPerkPriority(s2);
 
             if (p1 != p2) {
                 return Integer.compare(p1, p2);

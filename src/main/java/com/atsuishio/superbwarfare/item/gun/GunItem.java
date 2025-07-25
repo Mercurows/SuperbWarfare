@@ -623,8 +623,6 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
         return shootBullet(null, level, shootPosition, shootDirection, data, spread, zoom, uuid);
     }
 
-    // TODO 将子类shootBullet均修改为重写该方法
-
     /**
      * 服务端发射单发子弹
      *

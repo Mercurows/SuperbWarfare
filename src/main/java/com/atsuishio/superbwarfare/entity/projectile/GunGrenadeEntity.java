@@ -32,6 +32,7 @@ import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -51,7 +52,7 @@ public class GunGrenadeEntity extends FastThrowableProjectile implements GeoEnti
         this.noCulling = true;
     }
 
-    public GunGrenadeEntity(Entity entity, Level level, float damage, float explosionDamage, float explosionRadius) {
+    public GunGrenadeEntity(@Nullable Entity entity, Level level, float damage, float explosionDamage, float explosionRadius) {
         super(ModEntities.GUN_GRENADE.get(), entity, level);
         this.noCulling = true;
 

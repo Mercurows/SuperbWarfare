@@ -247,7 +247,16 @@ public class SecondaryCataclysm extends GunItem {
 
     // TODO 这玩意能提取吗
     @Override
-    public boolean shootBullet(@NotNull Entity shooter, @NotNull GunData data, double spread, boolean zoom, UUID uuid) {
+    public boolean shootBullet(
+            @Nullable Entity shooter,
+            @NotNull ServerLevel level,
+            @NotNull Vec3 shootPosition,
+            @NotNull Vec3 shootDirection,
+            @NotNull GunData data,
+            double spread,
+            boolean zoom,
+            @Nullable UUID uuid
+    ) {
         if (data.reloading()) return false;
         var stack = data.stack;
 
@@ -257,59 +266,57 @@ public class SecondaryCataclysm extends GunItem {
 
         boolean isChargedFire = zoom && hasEnoughEnergy;
 
-        if (shooter.level() instanceof ServerLevel serverLevel) {
-            GunGrenadeEntity gunGrenadeEntity = new GunGrenadeEntity(shooter, serverLevel,
-                    (float) data.damage(),
-                    (float) data.explosionDamage(),
-                    (float) data.explosionRadius()
-            );
+        GunGrenadeEntity gunGrenadeEntity = new GunGrenadeEntity(shooter, level,
+                (float) data.damage(),
+                (float) data.explosionDamage(),
+                (float) data.explosionRadius()
+        );
 
-            float velocity = (float) data.velocity();
+        float velocity = (float) data.velocity();
 
-            for (Perk.Type type : Perk.Type.values()) {
-                var instance = data.perk.getInstance(type);
-                if (instance != null) {
-                    instance.perk().modifyProjectile(data, instance, gunGrenadeEntity);
-                    if (instance.perk() instanceof AmmoPerk ammoPerk) {
-                        velocity = (float) ammoPerk.getModifiedVelocity(data, instance);
-                    }
+        for (Perk.Type type : Perk.Type.values()) {
+            var instance = data.perk.getInstance(type);
+            if (instance != null) {
+                instance.perk().modifyProjectile(data, instance, gunGrenadeEntity);
+                if (instance.perk() instanceof AmmoPerk ammoPerk) {
+                    velocity = (float) ammoPerk.getModifiedVelocity(data, instance);
                 }
             }
+        }
 
-            gunGrenadeEntity.charged(isChargedFire);
+        gunGrenadeEntity.charged(isChargedFire);
 
-            var x = shooter.getLookAngle().x;
-            var y = shooter.getLookAngle().y + 0.001f;
-            var z = shooter.getLookAngle().z;
+        var x = shootDirection.x;
+        var y = shootDirection.y + 0.001f;
+        var z = shootDirection.z;
 
-            if (zoom && !shooter.isShiftKeyDown()) {
-                Entity target = findEntity(shooter.level(), String.valueOf(uuid));
-                var gunData = GunData.from(stack);
-                int intelligentChipLevel = gunData.perk.getLevel(ModPerks.INTELLIGENT_CHIP);
-                if (intelligentChipLevel > 0 && target != null) {
-                    Vec3 targetVec = target.getEyePosition();
-                    Vec3 playerVec = shooter.getEyePosition();
-                    var hasGravity = gunData.perk.getLevel(ModPerks.MICRO_MISSILE) <= 0;
-                    Vec3 toVec = RangeTool.calculateFiringSolution(playerVec, targetVec, Vec3.ZERO, (isChargedFire ? 4 : 1) * velocity, hasGravity ? 0.05 : 0);
-                    x = toVec.x;
-                    y = toVec.y;
-                    z = toVec.z;
-                }
+        if (uuid != null && zoom && shooter != null && !shooter.isShiftKeyDown()) {
+            Entity target = findEntity(shooter.level(), String.valueOf(uuid));
+            var gunData = GunData.from(stack);
+            int intelligentChipLevel = gunData.perk.getLevel(ModPerks.INTELLIGENT_CHIP);
+            if (intelligentChipLevel > 0 && target != null) {
+                Vec3 targetVec = target.getEyePosition();
+                Vec3 playerVec = shooter.getEyePosition();
+                var hasGravity = gunData.perk.getLevel(ModPerks.MICRO_MISSILE) <= 0;
+                Vec3 toVec = RangeTool.calculateFiringSolution(playerVec, targetVec, Vec3.ZERO, (isChargedFire ? 4 : 1) * velocity, hasGravity ? 0.05 : 0);
+                x = toVec.x;
+                y = toVec.y;
+                z = toVec.z;
             }
+        }
 
-            gunGrenadeEntity.setPos(shooter.getX(), shooter.getEyeY() - 0.1, shooter.getZ());
-            gunGrenadeEntity.shoot(x, y, z, (isChargedFire ? 4 : 1) * velocity,
-                    (float) (zoom ? 0.1 : spread));
-            serverLevel.addFreshEntity(gunGrenadeEntity);
+        gunGrenadeEntity.setPos(shootPosition.x, shootPosition.y - 0.1, shootPosition.z);
+        gunGrenadeEntity.shoot(x, y, z, (isChargedFire ? 4 : 1) * velocity,
+                (float) (zoom ? 0.1 : spread));
+        level.addFreshEntity(gunGrenadeEntity);
 
-            ParticleTool.sendParticle(serverLevel, ParticleTypes.CLOUD, shooter.getX() + 1.8 * shooter.getLookAngle().x,
-                    shooter.getEyeY() - 0.35 + 1.8 * shooter.getLookAngle().y,
-                    shooter.getZ() + 1.8 * shooter.getLookAngle().z,
-                    4, 0.1, 0.1, 0.1, 0.002, true);
+        ParticleTool.sendParticle(level, ParticleTypes.CLOUD, shootPosition.x + 1.8 * shootDirection.x,
+                shootPosition.y - 0.35 + 1.8 * shootDirection.y,
+                shootPosition.z + 1.8 * shootDirection.z,
+                4, 0.1, 0.1, 0.1, 0.002, true);
 
-            if (isChargedFire) {
-                stack.getCapability(ForgeCapabilities.ENERGY).ifPresent(energy -> energy.extractEnergy(3000, false));
-            }
+        if (isChargedFire) {
+            stack.getCapability(ForgeCapabilities.ENERGY).ifPresent(energy -> energy.extractEnergy(3000, false));
         }
 
         return true;
