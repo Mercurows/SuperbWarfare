@@ -76,6 +76,7 @@ public class GunData {
         perk = new Perks(this);
 
         ammo = new IntValue(data, "Ammo");
+        virtualAmmo = new IntValue(data, "VirtualAmmo");
 
         var defaultFireMode = defaultGunData().defaultFireMode;
         if (defaultFireMode == null) {
@@ -425,23 +426,23 @@ public class GunData {
     }
 
     public int countBackupAmmo(@Nullable Entity entity) {
-        if (entity == null) return 0;
+        if (entity == null) return virtualAmmo.get();
         if (entity instanceof Player player && player.isCreative()) return Integer.MAX_VALUE;
 
         var info = ammoTypeInfo();
         if (info.type() == AmmoConsumeType.PLAYER_AMMO && entity instanceof Player player) {
-            return Objects.requireNonNull(Ammo.getType(info.value())).get(player);
+            return Objects.requireNonNull(Ammo.getType(info.value())).get(player) + virtualAmmo.get();
         }
 
         var cap = entity.getCapability(Capabilities.ItemHandler.ENTITY);
-        return cap == null ? 0 : countBackupAmmo(cap);
+        return cap == null ? virtualAmmo.get() : countBackupAmmo(cap);
     }
 
     /**
      * 计算剩余弹药数量（不考虑枪内弹药）
      */
     public int countBackupAmmo(@Nullable IItemHandler handler) {
-        if (handler == null) return 0;
+        if (handler == null) return virtualAmmo.get();
         if (InventoryTool.hasCreativeAmmoBox(handler)) return Integer.MAX_VALUE;
 
         var info = ammoTypeInfo();
@@ -449,22 +450,29 @@ public class GunData {
             case ITEM -> InventoryTool.countItem(handler, info.toItem());
             case TAG -> InventoryTool.countItem(handler, info.toTag());
             default -> 0;
-        };
+        } + virtualAmmo.get();
     }
 
     /**
      * 消耗额外弹药（不影响枪内弹药）
      */
     public void consumeBackupAmmo(@Nullable Entity entity, int count) {
-        if (entity == null || count <= 0) return;
-        if (entity instanceof Player player && player.isCreative()) return;
+        if (count <= 0 || entity instanceof Player player && player.isCreative()) return;
+
+        if (virtualAmmo.get() > 0) {
+            var consumed = Math.min(virtualAmmo.get(), count);
+            virtualAmmo.add(-consumed);
+            count -= consumed;
+            save();
+        }
+        if (count <= 0) return;
 
         var info = ammoTypeInfo();
         if (info.type() == AmmoConsumeType.PLAYER_AMMO && entity instanceof Player player) {
             info.toPlayerAmmoType().add(player, -count);
         }
 
-        var cap = entity.getCapability(Capabilities.ItemHandler.ENTITY);
+        var cap = entity == null ? null : entity.getCapability(Capabilities.ItemHandler.ENTITY);
         if (cap != null) consumeBackupAmmo(cap, count);
     }
 
@@ -472,8 +480,15 @@ public class GunData {
      * 消耗额外弹药（不影响枪内弹药）
      */
     public void consumeBackupAmmo(@Nullable IItemHandler handler, int count) {
-        if (handler == null || count <= 0) return;
-        if (InventoryTool.hasCreativeAmmoBox(handler)) return;
+        if (count <= 0 || InventoryTool.hasCreativeAmmoBox(handler)) return;
+
+        if (virtualAmmo.get() > 0) {
+            var consumed = Math.min(virtualAmmo.get(), count);
+            virtualAmmo.add(-consumed);
+            count -= consumed;
+            save();
+        }
+        if (count <= 0) return;
 
         var info = ammoTypeInfo();
         switch (info.type()) {
@@ -650,6 +665,7 @@ public class GunData {
 
     // 可持久化属性开始
     public final IntValue ammo;
+    public final IntValue virtualAmmo;
     public final StringEnumValue<FireMode> fireMode;
     public final IntValue level;
     public final DoubleValue exp;
