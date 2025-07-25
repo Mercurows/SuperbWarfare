@@ -11,6 +11,7 @@ import com.atsuishio.superbwarfare.item.gun.GunItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
@@ -19,14 +20,17 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animation.*;
 import software.bernie.geckolib.constant.DataTickets;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
 
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.function.Supplier;
 
 public class SentinelItem extends GunItem implements EnergyStorageItem {
@@ -174,8 +178,17 @@ public class SentinelItem extends GunItem implements EnergyStorageItem {
     }
 
     @Override
-    public void afterShoot(GunData data, Entity shooter) {
-        super.afterShoot(data, shooter);
+    public void afterShoot(
+            @Nullable Entity shooter,
+            @NotNull ServerLevel level,
+            @NotNull Vec3 shootPosition,
+            @NotNull Vec3 shootDirection,
+            @NotNull GunData data,
+            double spread,
+            boolean zoom,
+            @Nullable UUID uuid
+    ) {
+        super.afterShoot(shooter, level, shootPosition, shootDirection, data, spread, zoom, uuid);
 
         var cap = data.stack.getCapability(Capabilities.EnergyStorage.ITEM);
         if (cap != null) {

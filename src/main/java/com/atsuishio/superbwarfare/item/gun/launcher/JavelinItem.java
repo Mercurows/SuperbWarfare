@@ -39,6 +39,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3d;
 import software.bernie.geckolib.animation.*;
 import software.bernie.geckolib.constant.DataTickets;
@@ -248,7 +249,16 @@ public class JavelinItem extends GunItem {
     }
 
     @Override
-    public void onShoot(GunData data, Entity shooter, double spread, boolean zoom, UUID uuid) {
+    public void shoot(
+            @Nullable Entity shooter,
+            @NotNull ServerLevel level,
+            Vec3 shootPosition,
+            Vec3 shootDirection,
+            @NotNull GunData data,
+            double spread,
+            boolean zoom,
+            @Nullable UUID uuid
+    ) {
     }
 
     @Override

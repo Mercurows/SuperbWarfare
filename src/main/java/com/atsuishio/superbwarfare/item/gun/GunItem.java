@@ -486,7 +486,15 @@ public abstract class GunItem extends Item implements CustomRendererItem, GeoIte
     /**
      * 服务端在开火前的额外行为
      */
-    public void beforeShoot(GunData data, Entity shooter, double spread, boolean zoom) {
+    public void beforeShoot(
+            @Nullable Entity shooter,
+            @NotNull ServerLevel level,
+            @NotNull Vec3 shootPosition,
+            @NotNull Vec3 shootDirection,
+            @NotNull GunData data,
+            double spread,
+            boolean zoom
+    ) {
         // 空仓挂机
         if (data.ammo.get() == 1) {
             data.holdOpen.set(true);
@@ -501,7 +509,16 @@ public abstract class GunItem extends Item implements CustomRendererItem, GeoIte
     /**
      * 服务端在开火后的额外行为
      */
-    public void afterShoot(GunData data, Entity shooter) {
+    public void afterShoot(
+            @Nullable Entity shooter,
+            @NotNull ServerLevel level,
+            @NotNull Vec3 shootPosition,
+            @NotNull Vec3 shootDirection,
+            @NotNull GunData data,
+            double spread,
+            boolean zoom,
+            @Nullable UUID uuid
+    ) {
         if (!data.useBackpackAmmo()) {
             data.ammo.set(data.ammo.get() - 1);
             data.isEmpty.set(true);
@@ -514,52 +531,81 @@ public abstract class GunItem extends Item implements CustomRendererItem, GeoIte
             if (shooter instanceof LivingEntity living) {
                 stack.hurtAndBreak(1, living, EquipmentSlot.MAINHAND);
             } else {
-                stack.hurtAndBreak(1, (ServerLevel) shooter.level(), (LivingEntity) null, item -> {
+                stack.hurtAndBreak(1, level, (LivingEntity) null, item -> {
                 });
             }
         }
     }
 
+    public void shoot(@NotNull ServerLevel level, @NotNull Vec3 shootPosition, @NotNull Vec3 shootDirection, @NotNull GunData data, double spread, boolean zoom, @Nullable UUID uuid) {
+        shoot(null, level, shootPosition, shootDirection, data, spread, zoom, uuid);
+    }
+
+    public void shoot(@NotNull GunData data, @NotNull Entity shooter, double spread, boolean zoom, UUID uuid) {
+        if (shooter.level() instanceof ServerLevel server) {
+            shoot(shooter, server, new Vec3(shooter.getX(), shooter.getEyeY(), shooter.getZ()), shooter.getLookAngle(), data, spread, zoom, uuid);
+        }
+    }
+
     /**
-     * 服务端处理开火
+     * 服务端处理单次开火
+     *
+     * @param shooter        射击者
+     * @param level          ServerLevel
+     * @param shootPosition  子弹位置
+     * @param shootDirection 射击方向
+     * @param data           GunData
+     * @param spread         子弹散布
+     * @param zoom           是否开镜
+     * @param uuid           已锁定实体UUID
      */
-    public void onShoot(GunData data, Entity shooter, double spread, boolean zoom, UUID uuid) {
-        if (!data.hasEnoughAmmoToShoot(shooter)) return;
+    public void shoot(
+            @Nullable Entity shooter,
+            @NotNull ServerLevel level,
+            Vec3 shootPosition,
+            Vec3 shootDirection,
+            @NotNull GunData data,
+            double spread,
+            boolean zoom,
+            @Nullable UUID uuid
+    ) {
+        if (!data.canShoot(shooter)) return;
 
         // 开火前事件
-        data.item.beforeShoot(data, shooter, spread, zoom);
+        data.item.beforeShoot(shooter, level, shootPosition, shootDirection, data, spread, zoom);
 
         int projectileAmount = data.projectileAmount();
         var perk = data.perk.get(Perk.Type.AMMO);
 
         // 生成所有子弹
         for (int index0 = 0; index0 < (perk instanceof AmmoPerk ammoPerk && ammoPerk.slug ? 1 : projectileAmount); index0++) {
-            if (!shootBullet(shooter, data, spread, zoom, uuid)) return;
+            if (!shootBullet(shooter, level, shootPosition, shootDirection, data, spread, zoom, uuid)) return;
         }
 
         // 添加热量
-
         data.heat.set(Mth.clamp(data.heat.get() + data.heatPerShoot(), 0, 100));
 
         // 过热
         if (data.heat.get() >= 100 && !data.overHeat.get()) {
             data.overHeat.set(true);
-            if (!shooter.level().isClientSide() && shooter instanceof ServerPlayer serverPlayer) {
+            if (shooter instanceof ServerPlayer serverPlayer) {
                 SoundTool.playLocalSound(serverPlayer, ModSounds.MINIGUN_OVERHEAT.get(), 2f, 1f);
             }
         }
 
-        data.item.afterShoot(data, shooter);
         playFireSounds(data, shooter, zoom);
+
+        // 开火后事件
+        data.item.afterShoot(shooter, level, shootPosition, shootDirection, data, spread, zoom, uuid);
     }
 
     /**
      * 播放开火音效
      */
-    public void playFireSounds(GunData data, Entity shooter, boolean zoom) {
-        ItemStack stack = data.stack;
-        if (!(stack.getItem() instanceof GunItem)) return;
+    public void playFireSounds(GunData data, @Nullable Entity shooter, boolean zoom) {
+        if (shooter == null) return;
 
+        ItemStack stack = data.stack;
         String origin = stack.getItem().getDescriptionId();
         String name = origin.substring(origin.lastIndexOf(".") + 1);
 
@@ -609,17 +655,6 @@ public abstract class GunItem extends Item implements CustomRendererItem, GeoIte
             return ammoPerk.damageRate;
         }
         return 1;
-    }
-
-    public boolean shootBullet(@NotNull Entity shooter, @NotNull GunData data, double spread, boolean zoom, @Nullable UUID uuid) {
-        if (shooter.level() instanceof ServerLevel server) {
-            return shootBullet(shooter, server, new Vec3(shooter.getX(), shooter.getEyeY(), shooter.getZ()), shooter.getLookAngle(), data, spread, zoom, uuid);
-        }
-        return false;
-    }
-
-    public boolean shootBullet(@NotNull ServerLevel level, @NotNull Vec3 shootPosition, @NotNull Vec3 shootDirection, @NotNull GunData data, double spread, boolean zoom, @Nullable UUID uuid) {
-        return shootBullet(null, level, shootPosition, shootDirection, data, spread, zoom, uuid);
     }
 
     /**
