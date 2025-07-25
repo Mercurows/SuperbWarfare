@@ -2,27 +2,37 @@ package com.atsuishio.superbwarfare.network.message.send;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
+import com.atsuishio.superbwarfare.network.message.receive.ClientSetMotionMessage;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.NotNull;
 
-public enum PlayerStopRidingMessage implements CustomPacketPayload {
-    INSTANCE;
+public record PlayerStopRidingMessage(boolean ejection) implements CustomPacketPayload {
 
     public static final Type<PlayerStopRidingMessage> TYPE = new Type<>(Mod.loc("player_stop_riding"));
 
-    public static final StreamCodec<ByteBuf, PlayerStopRidingMessage> STREAM_CODEC = StreamCodec.unit(INSTANCE);
+    public static final StreamCodec<ByteBuf, PlayerStopRidingMessage> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.BOOL,
+            PlayerStopRidingMessage::ejection,
+            PlayerStopRidingMessage::new
+    );
 
-    public static void handler(final IPayloadContext context) {
+    public static void handler(PlayerStopRidingMessage message, final IPayloadContext context) {
         ServerPlayer player = (ServerPlayer) context.player();
         var vehicle = player.getVehicle();
-        if (!(vehicle instanceof VehicleEntity)) return;
-
-        player.stopRiding();
-        player.setJumping(false);
+        if (vehicle instanceof VehicleEntity vehicle1) {
+            if (message.ejection) {
+                var vec = vehicle1.getDismountMovement(player, vehicle1.getTagSeatIndex(player));
+                Mod.queueServerWork(1, () -> PacketDistributor.sendToPlayer(player, new ClientSetMotionMessage(vec.toVector3f())));
+            }
+            player.stopRiding();
+            player.setJumping(false);
+        }
     }
 
     @Override

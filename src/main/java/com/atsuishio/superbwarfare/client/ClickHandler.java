@@ -548,7 +548,7 @@ public class ClickHandler {
             ClientEventHandler.dismountCountdown = 20;
             return;
         }
-        PacketDistributor.sendToServer(PlayerStopRidingMessage.INSTANCE);
+        PacketDistributor.sendToServer(new PlayerStopRidingMessage(false));
     }
 
     public static void droneLeftClick(ItemStack stack, Player player) {

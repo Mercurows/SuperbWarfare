@@ -48,7 +48,7 @@ public class NetworkRegistry {
         playToServer(FireKeyMessage.TYPE, FireKeyMessage.STREAM_CODEC, FireKeyMessage::handler);
         playToServer(ReloadMessage.TYPE, ReloadMessage.STREAM_CODEC, (message2, context2) -> ReloadMessage.handler(context2));
         playToServer(FireModeMessage.TYPE, FireModeMessage.STREAM_CODEC, (message1, context1) -> FireModeMessage.handler(context1));
-        playToServer(PlayerStopRidingMessage.TYPE, PlayerStopRidingMessage.STREAM_CODEC, (message1, context1) -> PlayerStopRidingMessage.handler(context1));
+        playToServer(PlayerStopRidingMessage.TYPE, PlayerStopRidingMessage.STREAM_CODEC, PlayerStopRidingMessage::handler);
         playToServer(ZoomMessage.TYPE, ZoomMessage.STREAM_CODEC, ZoomMessage::handler);
         playToServer(DroneFireMessage.TYPE, DroneFireMessage.STREAM_CODEC, DroneFireMessage::handler);
         playToServer(SetFiringParametersMessage.TYPE, SetFiringParametersMessage.STREAM_CODEC, (message, context) -> SetFiringParametersMessage.handler(context));

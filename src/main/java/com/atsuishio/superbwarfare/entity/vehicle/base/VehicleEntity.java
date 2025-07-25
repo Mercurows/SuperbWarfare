@@ -1408,7 +1408,7 @@ public abstract class VehicleEntity extends Entity implements Container {
     }
 
     @Override
-    public @NotNull Vec3 getDismountLocationForPassenger(LivingEntity passenger) {
+    public @NotNull Vec3 getDismountLocationForPassenger(@NotNull LivingEntity passenger) {
         int index = this.getTagSeatIndex(passenger);
         if (index < 0) {
             return super.getDismountLocationForPassenger(passenger);
@@ -1454,6 +1454,10 @@ public abstract class VehicleEntity extends Entity implements Container {
 
     public @NotNull Vec3 getDismountMovement(LivingEntity passenger, int index) {
         return new Vec3(0, 0, 0);
+    }
+
+    public boolean allowEjection() {
+        return false;
     }
 
     public void removeSeatIndexTag(Entity entity) {

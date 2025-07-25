@@ -36,6 +36,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -682,6 +683,27 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
         callback.accept(passenger, worldPosition.x, worldPosition.y, worldPosition.z);
 
         copyEntityData(passenger);
+    }
+
+    @Override
+    public @NotNull Vec3 getDismountLocationForIndex(LivingEntity passenger, int index) {
+        Matrix4f transform = getVehicleTransform(1);
+        if ((!onGround() || getDeltaMovement().length() >= 0.1)) {
+            Vector4f worldPosition = transformPosition(transform, 0, 2f + (float) passenger.getVehicleAttachmentPoint(this).y, 3.95f);
+            return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
+        } else {
+            return super.getDismountLocationForIndex(passenger, index);
+        }
+    }
+
+    @Override
+    public @NotNull Vec3 getDismountMovement(LivingEntity passenger, int index) {
+        return getDeltaMovement().add(new Vec3(0, 4, 0));
+    }
+
+    @Override
+    public boolean allowEjection() {
+        return true;
     }
 
     @Override

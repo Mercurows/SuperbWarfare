@@ -60,8 +60,12 @@ public abstract class ClientPacketListenerMixin {
 
                 if (passenger == player || hasIndirectPassenger) {
                     Component component = Component.translatable("mount.onboard", ModKeyMappings.DISMOUNT.getTranslatedKeyMessage());
-                    minecraft.gui.setOverlayMessage(component, false);
-                    minecraft.getNarrator().sayNow(component);
+                    if (vehicle.allowEjection()) {
+                        component = Component.translatable("tips.superbwarfare.mount.onboard", ModKeyMappings.DISMOUNT.getTranslatedKeyMessage());
+                    }
+
+                    Minecraft.getInstance().gui.setOverlayMessage(component, false);
+                    Minecraft.getInstance().getNarrator().sayNow(component);
                 }
             }
         }
