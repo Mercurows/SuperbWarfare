@@ -736,7 +736,7 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
 
     @Override
     public @NotNull Vec3 getDismountMovement(LivingEntity passenger, int index) {
-        return new Vec3(0, 10, 0);
+        return new Vec3(10, -5, 10);
     }
 
     @OnlyIn(Dist.CLIENT)

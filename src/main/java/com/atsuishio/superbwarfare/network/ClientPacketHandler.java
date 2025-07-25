@@ -7,10 +7,7 @@ import com.atsuishio.superbwarfare.config.server.MiscConfig;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.event.KillMessageHandler;
 import com.atsuishio.superbwarfare.menu.EnergyMenu;
-import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
-import com.atsuishio.superbwarfare.network.message.receive.ClientMotionSyncMessage;
-import com.atsuishio.superbwarfare.network.message.receive.ContainerDataMessage;
-import com.atsuishio.superbwarfare.network.message.receive.RadarMenuOpenMessage;
+import com.atsuishio.superbwarfare.network.message.receive.*;
 import com.atsuishio.superbwarfare.tools.PlayerKillRecord;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
@@ -91,6 +88,17 @@ public class ClientPacketHandler {
         if (ctx.get().getDirection().getReceptionSide() == LogicalSide.CLIENT) {
             MiscConfig.ALLOW_TACTICAL_SPRINT.set(flag);
             MiscConfig.ALLOW_TACTICAL_SPRINT.save();
+        }
+    }
+
+    public static void handleClientSetMotion(ClientSetMotionMessage message, Supplier<NetworkEvent.Context> ctx) {
+        if (ctx.get().getDirection().getReceptionSide() == LogicalSide.CLIENT) {
+            var level = Minecraft.getInstance().level;
+            if (level == null) return;
+            Entity entity = level.getEntity(message.id());
+            if (entity != null) {
+                entity.setDeltaMovement(message.motion().x, message.motion().y, message.motion().z);
+            }
         }
     }
 }
