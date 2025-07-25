@@ -6,10 +6,13 @@ import com.atsuishio.superbwarfare.item.*;
 import com.atsuishio.superbwarfare.item.armor.*;
 import com.atsuishio.superbwarfare.item.common.BlueprintItem;
 import com.atsuishio.superbwarfare.item.common.MaterialPack;
+import com.atsuishio.superbwarfare.item.common.MedicalKitItem;
 import com.atsuishio.superbwarfare.item.common.ammo.*;
 import com.atsuishio.superbwarfare.item.common.container.ContainerBlockItem;
 import com.atsuishio.superbwarfare.item.common.container.LuckyContainerBlockItem;
 import com.atsuishio.superbwarfare.item.common.container.SmallContainerBlockItem;
+import com.atsuishio.superbwarfare.item.curio.DogTagItem;
+import com.atsuishio.superbwarfare.item.curio.IffItem;
 import com.atsuishio.superbwarfare.item.gun.handgun.*;
 import com.atsuishio.superbwarfare.item.gun.heavy.Ntw20Item;
 import com.atsuishio.superbwarfare.item.gun.launcher.JavelinItem;
@@ -202,8 +205,8 @@ public class ModItems {
     public static final RegistryObject<Item> GALENA = ITEMS.register("galena", () -> new Item(new Item.Properties()));
     public static final RegistryObject<Item> SCHEELITE = ITEMS.register("scheelite", () -> new Item(new Item.Properties()));
     public static final RegistryObject<Item> RAW_SILVER = ITEMS.register("raw_silver", () -> new Item(new Item.Properties()));
-    public static final RegistryObject<Item> DOG_TAG = ITEMS.register("dog_tag", DogTag::new);
-    public static final RegistryObject<Item> IFF = ITEMS.register("iff", Iff::new);
+    public static final RegistryObject<Item> DOG_TAG = ITEMS.register("dog_tag", DogTagItem::new);
+    public static final RegistryObject<Item> IFF = ITEMS.register("iff", IffItem::new);
     public static final RegistryObject<Item> CELL = ITEMS.register("cell", () -> new BatteryItem(24000, new Item.Properties()));
     public static final RegistryObject<Item> BATTERY = ITEMS.register("battery", () -> new BatteryItem(100000, new Item.Properties()));
     public static final RegistryObject<Item> SMALL_BATTERY_PACK = ITEMS.register("small_battery_pack", () -> new BatteryItem(500000, new Item.Properties()));
@@ -212,6 +215,7 @@ public class ModItems {
     public static final RegistryObject<Item> BEAST = ITEMS.register("beast", Beast::new);
     public static final RegistryObject<Item> TRANSCRIPT = ITEMS.register("transcript", Transcript::new);
     public static final RegistryObject<Item> FIRING_PARAMETERS = ITEMS.register("firing_parameters", FiringParameters::new);
+    public static final RegistryObject<Item> MEDICAL_KIT = ITEMS.register("medical_kit", MedicalKitItem::new);
 
     public static final RegistryObject<Item> TUNGSTEN_ROD = ITEMS.register("tungsten_rod", () -> new Item(new Item.Properties()));
 

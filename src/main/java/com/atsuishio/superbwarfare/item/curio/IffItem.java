@@ -1,4 +1,4 @@
-package com.atsuishio.superbwarfare.item;
+package com.atsuishio.superbwarfare.item.curio;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -15,9 +15,9 @@ import top.theillusivec4.curios.api.type.capability.ICurioItem;
 
 import java.util.List;
 
-public class Iff extends Item implements ICurioItem {
+public class IffItem extends Item implements ICurioItem {
 
-    public Iff() {
+    public IffItem() {
         super(new Properties().stacksTo(1));
     }
 
@@ -32,6 +32,5 @@ public class Iff extends Item implements ICurioItem {
     @Override
     public void appendHoverText(@NotNull ItemStack pStack, @Nullable Level pLevel, List<Component> pTooltipComponents, @NotNull TooltipFlag pIsAdvanced) {
         pTooltipComponents.add(Component.translatable("des.superbwarfare.iff_1").withStyle(ChatFormatting.GRAY));
-
     }
 }

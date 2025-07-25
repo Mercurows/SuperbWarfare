@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.client.screens;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.item.DogTag;
+import com.atsuishio.superbwarfare.item.curio.DogTagItem;
 import com.atsuishio.superbwarfare.network.message.send.DogTagFinishEditMessage;
 import net.minecraft.SharedConstants;
 import net.minecraft.Util;
@@ -121,7 +121,7 @@ public class DogTagEditorScreen extends Screen {
         if (!this.init) {
             if (!this.stack.isEmpty()) {
                 this.name.setValue(this.stack.getHoverName().getString());
-                this.icon = DogTag.getColors(this.stack);
+                this.icon = DogTagItem.getColors(this.stack);
             }
             this.init = true;
         }

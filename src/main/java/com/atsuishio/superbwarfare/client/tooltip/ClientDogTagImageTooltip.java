@@ -2,7 +2,7 @@ package com.atsuishio.superbwarfare.client.tooltip;
 
 import com.atsuishio.superbwarfare.client.screens.DogTagEditorScreen;
 import com.atsuishio.superbwarfare.client.tooltip.component.DogTagImageComponent;
-import com.atsuishio.superbwarfare.item.DogTag;
+import com.atsuishio.superbwarfare.item.curio.DogTagItem;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
@@ -23,7 +23,7 @@ public class ClientDogTagImageTooltip implements ClientTooltipComponent {
     @Override
     public void renderImage(Font pFont, int pX, int pY, GuiGraphics pGuiGraphics) {
         if (this.stack.getTag() == null) return;
-        short[][] colors = DogTag.getColors(this.stack);
+        short[][] colors = DogTagItem.getColors(this.stack);
         if (isAllMinusOne(colors)) return;
 
         pGuiGraphics.pose().pushPose();
@@ -51,7 +51,7 @@ public class ClientDogTagImageTooltip implements ClientTooltipComponent {
 
     public static boolean shouldRenderIcon(ItemStack stack) {
         if (stack.getTag() == null) return false;
-        short[][] colors = DogTag.getColors(stack);
+        short[][] colors = DogTagItem.getColors(stack);
         return !isAllMinusOne(colors);
     }
 
