@@ -31,10 +31,9 @@ public class PlayerStopRidingMessage {
         context.enqueueWork(() -> {
             ServerPlayer player = context.getSender();
             if (player == null) return;
-            var vehicle = player.getVehicle();
-            if (vehicle instanceof VehicleEntity vehicle1) {
+            if (player.getVehicle() instanceof VehicleEntity vehicle) {
                 if (message.ejection) {
-                    var vec = vehicle1.getDismountMovement(player, vehicle1.getTagSeatIndex(player));
+                    var vec = vehicle.getDismountMovement(player, vehicle.getTagSeatIndex(player));
                     Mod.queueServerWork(1, () -> Mod.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> player), new ClientSetMotionMessage(vec)));
                 }
                 player.stopRiding();
