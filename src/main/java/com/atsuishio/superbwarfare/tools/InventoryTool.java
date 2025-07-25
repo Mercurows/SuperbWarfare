@@ -122,7 +122,7 @@ public class InventoryTool {
 
 
     public static int consumeItem(@Nullable NonNullList<ItemStack> itemList, Predicate<ItemStack> predicate, int count) {
-        if (itemList == null) return 0;
+        if (itemList == null || count <= 0) return 0;
 
         int initialCount = count;
         var items = itemList.stream().filter(predicate).toList();
@@ -140,7 +140,7 @@ public class InventoryTool {
     }
 
     public static int consumeItem(@Nullable IItemHandler handler, Predicate<ItemStack> predicate, int count) {
-        if (handler == null) return 0;
+        if (handler == null || count <= 0) return 0;
         int initialCount = count;
 
         for (int i = 0; i < handler.getSlots(); i++) {
@@ -164,7 +164,7 @@ public class InventoryTool {
      * @return 未能成功插入的物品数量
      */
     public static int insertItem(@Nullable NonNullList<ItemStack> itemList, Item item, int count, int maxStackSize) {
-        if (itemList == null) return count;
+        if (itemList == null || count <= 0) return count;
 
         var defaultStack = new ItemStack(item);
         maxStackSize = Math.min(maxStackSize, item.getMaxStackSize(defaultStack));
