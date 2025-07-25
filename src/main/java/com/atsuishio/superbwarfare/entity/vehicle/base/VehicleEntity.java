@@ -1409,8 +1409,23 @@ public abstract class VehicleEntity extends Entity implements Container {
 
     @Override
     public @NotNull Vec3 getDismountLocationForPassenger(LivingEntity passenger) {
+        int index = this.getTagSeatIndex(passenger);
         passenger.getPersistentData().remove(TAG_SEAT_INDEX);
+        if (index < 0) {
+            return super.getDismountLocationForPassenger(passenger);
+        } else {
+            return this.getDismountLocationForIndex(passenger, index);
+        }
+    }
 
+    /**
+     * 获取第N个乘客的坐下位置
+     *
+     * @param passenger 乘客
+     * @param index     座位
+     * @return 下车的位置
+     */
+    public @NotNull Vec3 getDismountLocationForIndex(LivingEntity passenger, int index) {
         Vec3 vec3d = getDismountOffset(getBbWidth() * Mth.SQRT_OF_TWO, passenger.getBbWidth() * Mth.SQRT_OF_TWO);
         double ox = getX() - vec3d.x;
         double oz = getZ() + vec3d.z;

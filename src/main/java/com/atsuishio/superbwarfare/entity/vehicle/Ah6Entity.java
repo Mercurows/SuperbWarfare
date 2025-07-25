@@ -33,6 +33,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Explosion;
@@ -722,6 +723,12 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
     @Override
     public double getMouseSpeedY() {
         return 0.25;
+    }
+
+    // TODO 改成正确的位置
+    @Override
+    public @NotNull Vec3 getDismountLocationForIndex(LivingEntity passenger, int index) {
+        return super.getDismountLocationForIndex(passenger, index);
     }
 
     @OnlyIn(Dist.CLIENT)
