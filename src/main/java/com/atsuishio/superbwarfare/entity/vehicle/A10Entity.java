@@ -721,12 +721,12 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
 
         if (level() instanceof ServerLevel) {
             CustomExplosion explosion = new CustomExplosion(this.level(), this,
-                    ModDamageTypes.causeCustomExplosionDamage(this.level().registryAccess(), this, getAttacker()), 300.0f,
-                    this.getX(), this.getY(), this.getZ(), 8f, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).setDamageMultiplier(1);
+                    ModDamageTypes.causeCustomExplosionDamage(this.level().registryAccess(), this, getAttacker()), 800.0f,
+                    this.getX(), this.getY(), this.getZ(), 16f, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).setDamageMultiplier(1);
             explosion.explode();
             ForgeEventFactory.onExplosionStart(this.level(), explosion);
             explosion.finalizeExplosion(false);
-            ParticleTool.spawnHugeExplosionParticles(this.level(), this.position());
+            ParticleTool.spawnGiantExplosionParticles(this.level(), this.position());
         }
         super.destroy();
     }

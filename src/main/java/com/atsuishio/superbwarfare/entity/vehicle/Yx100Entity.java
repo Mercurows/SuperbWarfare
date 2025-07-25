@@ -884,12 +884,12 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
     public void destroy() {
         if (level() instanceof ServerLevel) {
             CustomExplosion explosion = new CustomExplosion(this.level(), this,
-                    ModDamageTypes.causeCustomExplosionDamage(this.level().registryAccess(), getAttacker(), getAttacker()), 80f,
-                    this.getX(), this.getY(), this.getZ(), 5f, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).setDamageMultiplier(1);
+                    ModDamageTypes.causeCustomExplosionDamage(this.level().registryAccess(), getAttacker(), getAttacker()), 200f,
+                    this.getX(), this.getY(), this.getZ(), 16f, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).setDamageMultiplier(1);
             explosion.explode();
             ForgeEventFactory.onExplosionStart(this.level(), explosion);
             explosion.finalizeExplosion(false);
-            ParticleTool.spawnMediumExplosionParticles(this.level(), this.position());
+            ParticleTool.spawnGiantExplosionParticles(this.level(), this.position());
         }
 
         explodePassengers();

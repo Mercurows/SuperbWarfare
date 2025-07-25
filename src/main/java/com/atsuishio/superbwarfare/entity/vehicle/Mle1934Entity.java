@@ -407,8 +407,8 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
     public void destroy() {
         if (level() instanceof ServerLevel) {
             CustomExplosion explosion = new CustomExplosion(this.level(), this,
-                    ModDamageTypes.causeCustomExplosionDamage(this.level().registryAccess(), getAttacker(), getAttacker()), 120f,
-                    this.getX(), this.getY(), this.getZ(), 6f, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).setDamageMultiplier(1);
+                    ModDamageTypes.causeCustomExplosionDamage(this.level().registryAccess(), getAttacker(), getAttacker()), 160f,
+                    this.getX(), this.getY(), this.getZ(), 9f, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).setDamageMultiplier(1);
             explosion.explode();
             ForgeEventFactory.onExplosionStart(this.level(), explosion);
             explosion.finalizeExplosion(false);

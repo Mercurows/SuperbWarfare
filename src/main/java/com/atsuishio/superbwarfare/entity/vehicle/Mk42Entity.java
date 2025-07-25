@@ -361,12 +361,12 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
     public void destroy() {
         if (level() instanceof ServerLevel) {
             CustomExplosion explosion = new CustomExplosion(this.level(), this,
-                    ModDamageTypes.causeCustomExplosionDamage(this.level().registryAccess(), getAttacker(), getAttacker()), 100f,
-                    this.getX(), this.getY(), this.getZ(), 7f, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).setDamageMultiplier(1);
+                    ModDamageTypes.causeCustomExplosionDamage(this.level().registryAccess(), getAttacker(), getAttacker()), 160f,
+                    this.getX(), this.getY(), this.getZ(), 8f, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).setDamageMultiplier(1);
             explosion.explode();
             net.minecraftforge.event.ForgeEventFactory.onExplosionStart(this.level(), explosion);
             explosion.finalizeExplosion(false);
-            ParticleTool.spawnMediumExplosionParticles(this.level(), this.position());
+            ParticleTool.spawnHugeExplosionParticles(this.level(), this.position());
         }
 
         explodePassengers();
