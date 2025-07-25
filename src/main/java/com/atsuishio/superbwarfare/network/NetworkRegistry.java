@@ -26,6 +26,7 @@ public class NetworkRegistry {
         playToClient(RadarMenuCloseMessage.TYPE, RadarMenuCloseMessage.STREAM_CODEC, (message1, context1) -> RadarMenuCloseMessage.handler());
         playToClient(ClientTacticalSprintSyncMessage.TYPE, ClientTacticalSprintSyncMessage.STREAM_CODEC, (msg, ctx) -> ClientTacticalSprintSyncMessage.handler(msg));
         playToClient(VehiclesDataMessage.TYPE, VehiclesDataMessage.STREAM_CODEC, (msg, ctx) -> VehiclesDataMessage.handler(msg));
+        playToClient(ClientSetMotionMessage.TYPE, ClientSetMotionMessage.STREAM_CODEC, (msg, ctx) -> ClientSetMotionMessage.handler(msg));
 
         playToServer(LaserShootMessage.TYPE, LaserShootMessage.STREAM_CODEC, LaserShootMessage::handler);
         playToServer(ShootMessage.TYPE, ShootMessage.STREAM_CODEC, ShootMessage::handler);

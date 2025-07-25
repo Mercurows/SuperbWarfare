@@ -4,11 +4,14 @@ import com.atsuishio.superbwarfare.entity.mixin.DamageAccess;
 import com.atsuishio.superbwarfare.entity.mixin.ICustomKnockback;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
+import com.atsuishio.superbwarfare.network.message.receive.ClientSetMotionMessage;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -101,7 +104,13 @@ public abstract class LivingEntityMixin implements ICustomKnockback, DamageAcces
     private void dismountVehicle(Entity pVehicle, CallbackInfo ci) {
         if (pVehicle instanceof VehicleEntity vehicle) {
             var living = ((LivingEntity) (Object) this);
-            living.setDeltaMovement(vehicle.getDismountMovement(living, vehicle.getTagSeatIndex(living)));
+            var vec = vehicle.getDismountMovement(living, vehicle.getTagSeatIndex(living));
+            // TODO 为什么弹射不了
+            if (living instanceof ServerPlayer player) {
+                PacketDistributor.sendToPlayer(player, new ClientSetMotionMessage(player.getId(), vec.toVector3f()));
+            } else {
+                living.setDeltaMovement(vec);
+            }
             vehicle.removeSeatIndexTag(living);
         }
     }
