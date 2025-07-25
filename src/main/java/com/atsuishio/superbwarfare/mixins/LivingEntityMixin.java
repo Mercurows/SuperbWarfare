@@ -2,9 +2,11 @@ package com.atsuishio.superbwarfare.mixins;
 
 import com.atsuishio.superbwarfare.entity.mixin.DamageAccess;
 import com.atsuishio.superbwarfare.entity.mixin.ICustomKnockback;
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import org.spongepowered.asm.mixin.Mixin;
@@ -93,5 +95,14 @@ public abstract class LivingEntityMixin implements ICustomKnockback, DamageAcces
     @Override
     public boolean superbWarfare$checkTotemDeathProtection(DamageSource pDamageSource) {
         return this.checkTotemDeathProtection(pDamageSource);
+    }
+
+    @Inject(method = "dismountVehicle", at = @At("RETURN"))
+    private void dismountVehicle(Entity pVehicle, CallbackInfo ci) {
+        if (pVehicle instanceof VehicleEntity vehicle) {
+            var living = ((LivingEntity) (Object) this);
+            living.setDeltaMovement(vehicle.getDismountMovement(living, vehicle.getTagSeatIndex(living)));
+            vehicle.removeSeatIndexTag(living);
+        }
     }
 }

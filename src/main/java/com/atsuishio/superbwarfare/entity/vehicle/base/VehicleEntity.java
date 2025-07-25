@@ -1410,7 +1410,6 @@ public abstract class VehicleEntity extends Entity implements Container {
     @Override
     public @NotNull Vec3 getDismountLocationForPassenger(LivingEntity passenger) {
         int index = this.getTagSeatIndex(passenger);
-        passenger.getPersistentData().remove(TAG_SEAT_INDEX);
         if (index < 0) {
             return super.getDismountLocationForPassenger(passenger);
         } else {
@@ -1451,6 +1450,14 @@ public abstract class VehicleEntity extends Entity implements Container {
         }
 
         return super.getDismountLocationForPassenger(passenger);
+    }
+
+    public @NotNull Vec3 getDismountMovement(LivingEntity passenger, int index) {
+        return new Vec3(0, 0, 0);
+    }
+
+    public void removeSeatIndexTag(Entity entity) {
+        entity.getPersistentData().remove(TAG_SEAT_INDEX);
     }
 
     public ResourceLocation getVehicleIcon() {
