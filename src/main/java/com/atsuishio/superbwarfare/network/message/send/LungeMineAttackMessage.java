@@ -15,68 +15,54 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.UUID;
 import java.util.function.Supplier;
 
-public class LungeMineAttackMessage {
-
-    private final int type;
-    private final UUID uuid;
-    private final BlockHitResult hitResult;
-
-    public LungeMineAttackMessage(int type, UUID uuid, BlockHitResult hitResult) {
-        this.type = type;
-        this.uuid = uuid;
-        this.hitResult = hitResult;
-    }
+public record LungeMineAttackMessage(int type, UUID uuid, Vec3 pos) {
 
     public static LungeMineAttackMessage decode(FriendlyByteBuf buffer) {
-        return new LungeMineAttackMessage(buffer.readInt(), buffer.readUUID(), buffer.readBlockHitResult());
+        return new LungeMineAttackMessage(buffer.readInt(), buffer.readUUID(), new Vec3(buffer.readVector3f()));
     }
 
     public static void encode(LungeMineAttackMessage message, FriendlyByteBuf buffer) {
         buffer.writeInt(message.type);
         buffer.writeUUID(message.uuid);
-        buffer.writeBlockHitResult(message.hitResult);
+        buffer.writeVector3f(message.pos.toVector3f());
     }
 
     public static void handler(LungeMineAttackMessage message, Supplier<NetworkEvent.Context> contextSupplier) {
         NetworkEvent.Context context = contextSupplier.get();
         context.enqueueWork(() -> {
-            if (context.getSender() != null) {
-                Player player = context.getSender();
+            Player player = context.getSender();
+            if (player == null) return;
 
-                ItemStack stack = player.getMainHandItem();
+            ItemStack stack = player.getMainHandItem();
+            if (!stack.is(ModItems.LUNGE_MINE.get())) return;
 
-                if (stack.is(ModItems.LUNGE_MINE.get())) {
-                    if (message.type == 0) {
-                        if (!player.isCreative()) {
-                            stack.shrink(1);
-                        }
-                        Entity lookingEntity = EntityFindUtil.findEntity(player.level(), String.valueOf(message.uuid));
-                        if (lookingEntity != null) {
-                            DamageHandler.doDamage(lookingEntity, ModDamageTypes.causeLungeMineDamage(player.level().registryAccess(), player, player), lookingEntity instanceof VehicleEntity ? 600 : 150);
-                            causeLungeMineExplode(player.level(), player, lookingEntity);
-                        }
-                    } else if (message.type == 1) {
-                        if (!player.isCreative()) {
-                            stack.shrink(1);
-                        }
-                        CustomExplosion explosion = new CustomExplosion(player.level(), null,
-                                ModDamageTypes.causeProjectileBoomDamage(player.level().registryAccess(), player, player), 60,
-                                message.hitResult.getLocation().x, message.hitResult.getLocation().y, message.hitResult.getLocation().z, 4f, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).setDamageMultiplier(1.25f);
-                        explosion.explode();
-                        net.minecraftforge.event.ForgeEventFactory.onExplosionStart(player.level(), explosion);
-                        explosion.finalizeExplosion(false);
-                        ParticleTool.spawnMediumExplosionParticles(player.level(), message.hitResult.getLocation());
-
-                    }
-                    player.swing(InteractionHand.MAIN_HAND);
-                }
+            if (!player.isCreative()) {
+                stack.shrink(1);
             }
+
+            if (message.type == 0) {
+                Entity lookingEntity = EntityFindUtil.findEntity(player.level(), String.valueOf(message.uuid));
+                if (lookingEntity != null) {
+                    DamageHandler.doDamage(lookingEntity, ModDamageTypes.causeLungeMineDamage(player.level().registryAccess(), player, player), lookingEntity instanceof VehicleEntity ? 600 : 150);
+                    causeLungeMineExplode(player.level(), player, lookingEntity);
+                }
+            } else if (message.type == 1) {
+                CustomExplosion explosion = new CustomExplosion(player.level(), null,
+                        ModDamageTypes.causeProjectileBoomDamage(player.level().registryAccess(), player, player), 60,
+                        message.pos.x, message.pos.y, message.pos.z, 4f, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).setDamageMultiplier(1.25f);
+                explosion.explode();
+                ForgeEventFactory.onExplosionStart(player.level(), explosion);
+                explosion.finalizeExplosion(false);
+                ParticleTool.spawnMediumExplosionParticles(player.level(), message.pos);
+            }
+            player.swing(InteractionHand.MAIN_HAND);
         });
         context.setPacketHandled(true);
     }
@@ -86,7 +72,7 @@ public class LungeMineAttackMessage {
                 ModDamageTypes.causeProjectileBoomDamage(pLevel.registryAccess(), pLivingEntity, entity), 60,
                 pLivingEntity.getX(), pLivingEntity.getEyeY(), pLivingEntity.getZ(), 4f, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).setDamageMultiplier(1.25f);
         explosion.explode();
-        net.minecraftforge.event.ForgeEventFactory.onExplosionStart(pLevel, explosion);
+        ForgeEventFactory.onExplosionStart(pLevel, explosion);
         explosion.finalizeExplosion(false);
         ParticleTool.spawnMediumExplosionParticles(pLevel, pLivingEntity.position());
     }

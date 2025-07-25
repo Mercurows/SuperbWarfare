@@ -471,12 +471,12 @@ public class ClientEventHandler {
             BlockState blockState = player.level().getBlockState(BlockPos.containing(looking.x(), looking.y(), looking.z()));
 
             if (lookingEntity != null) {
-                Mod.PACKET_HANDLER.sendToServer(new LungeMineAttackMessage(0, lookingEntity.getUUID(), result));
+                Mod.PACKET_HANDLER.sendToServer(new LungeMineAttackMessage(0, lookingEntity.getUUID(), result.getLocation()));
                 lungeSprint = 0;
                 lungeAttack = 0;
                 lungeDraw = 15;
             } else if ((blockState.canOcclude() || blockState.getBlock() instanceof DoorBlock || blockState.getBlock() instanceof CrossCollisionBlock || blockState.getBlock() instanceof BellBlock) && lungeSprint == 0) {
-                Mod.PACKET_HANDLER.sendToServer(new LungeMineAttackMessage(1, player.getUUID(), result));
+                Mod.PACKET_HANDLER.sendToServer(new LungeMineAttackMessage(1, player.getUUID(), result.getLocation()));
                 lungeSprint = 0;
                 lungeAttack = 0;
                 lungeDraw = 15;
