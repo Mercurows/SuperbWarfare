@@ -728,7 +728,6 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
         return 0.25;
     }
 
-    // TODO 改成正确的位置
     @Override
     public @NotNull Vec3 getDismountLocationForIndex(LivingEntity passenger, int index) {
         Matrix4f transform = getVehicleTransform(1);
@@ -745,11 +744,6 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
         }
 
         return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
-    }
-
-    @Override
-    public @NotNull Vec3 getDismountMovement(LivingEntity passenger, int index) {
-        return new Vec3(10, -5, 10);
     }
 
     @OnlyIn(Dist.CLIENT)

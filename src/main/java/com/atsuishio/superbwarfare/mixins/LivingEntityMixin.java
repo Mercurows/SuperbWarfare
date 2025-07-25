@@ -106,12 +106,14 @@ public abstract class LivingEntityMixin implements ICustomKnockback, DamageAcces
         if (pVehicle instanceof VehicleEntity vehicle) {
             var living = ((LivingEntity) (Object) this);
             var vec = vehicle.getDismountMovement(living, vehicle.getTagSeatIndex(living));
-            // TODO 为什么弹射不了
-            if (living instanceof ServerPlayer player) {
-                Mod.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> player), new ClientSetMotionMessage(vec));
-            } else {
-                living.setDeltaMovement(vec);
-            }
+            Mod.queueServerWork(1, () -> {
+                if (living instanceof ServerPlayer player) {
+                    Mod.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> player), new ClientSetMotionMessage(vec));
+                } else {
+                    living.setDeltaMovement(vec);
+                }
+            });
+
             vehicle.removeSeatIndexTag(living);
         }
     }
