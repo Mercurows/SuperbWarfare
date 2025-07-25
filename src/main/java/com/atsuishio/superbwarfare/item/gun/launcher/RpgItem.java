@@ -22,7 +22,9 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animation.*;
 import software.bernie.geckolib.constant.DataTickets;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
@@ -120,14 +122,25 @@ public class RpgItem extends GunItem {
     }
 
     @Override
-    public boolean shootBullet(@NotNull Entity shooter, @NotNull GunData data, double spread, boolean zoom, UUID uuid) {
+    public boolean shootBullet(
+            @Nullable Entity shooter,
+            @NotNull ServerLevel level,
+            @NotNull Vec3 shootPosition,
+            @NotNull Vec3 shootDirection,
+            @NotNull GunData data,
+            double spread,
+            boolean zoom,
+            @Nullable UUID uuid
+    ) {
         if (data.reloading()) return false;
-        if (!super.shootBullet(shooter, data, spread, zoom, uuid)) return false;
+        if (!super.shootBullet(shooter, level, shootPosition, shootDirection, data, spread, zoom, uuid)) return false;
 
-        ParticleTool.sendParticle((ServerLevel) shooter.level(), ParticleTypes.CLOUD, shooter.getX() + 1.8 * shooter.getLookAngle().x,
-                shooter.getY() + shooter.getBbHeight() - 0.1 + 1.8 * shooter.getLookAngle().y,
-                shooter.getZ() + 1.8 * shooter.getLookAngle().z,
-                30, 0.4, 0.4, 0.4, 0.005, true);
+        if (shooter != null) {
+            ParticleTool.sendParticle(level, ParticleTypes.CLOUD, shooter.getX() + 1.8 * shooter.getLookAngle().x,
+                    shooter.getY() + shooter.getBbHeight() - 0.1 + 1.8 * shooter.getLookAngle().y,
+                    shooter.getZ() + 1.8 * shooter.getLookAngle().z,
+                    30, 0.4, 0.4, 0.4, 0.005, true);
+        }
 
         data.isEmpty.set(true);
         data.closeHammer.set(true);
