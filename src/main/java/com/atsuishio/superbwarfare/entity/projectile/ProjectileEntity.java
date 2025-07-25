@@ -88,7 +88,7 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
     public static final float DEFAULT_B = 39 / 255f;
 
     @Nullable
-    protected LivingEntity shooter;
+    protected Entity shooter;
     protected int shooterId;
     private float damage = 1f;
     private float headShot = 1f;
@@ -675,7 +675,7 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
         return p_217300_2_.apply(context);
     }
 
-    public @Nullable LivingEntity getShooter() {
+    public @Nullable Entity getShooter() {
         return this.shooter;
     }
 
@@ -785,7 +785,7 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
     /**
      * Builders
      */
-    public ProjectileEntity shooter(LivingEntity shooter) {
+    public ProjectileEntity shooter(@Nullable Entity shooter) {
         this.shooter = shooter;
         return this;
     }

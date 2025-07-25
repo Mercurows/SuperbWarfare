@@ -248,7 +248,7 @@ public class JavelinItem extends GunItem {
     }
 
     @Override
-    public void onShoot(GunData data, Player player, double spread, boolean zoom, UUID uuid) {
+    public void onShoot(GunData data, Entity shooter, double spread, boolean zoom, UUID uuid) {
     }
 
     @Override

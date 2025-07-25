@@ -10,7 +10,6 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.ThrowableItemProjectile;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
@@ -54,7 +53,7 @@ public abstract class FastThrowableProjectile extends ThrowableItemProjectile im
         super(pEntityType, pX, pY, pZ, pLevel);
     }
 
-    public FastThrowableProjectile(EntityType<? extends ThrowableItemProjectile> pEntityType, @Nullable LivingEntity pShooter, Level pLevel) {
+    public FastThrowableProjectile(EntityType<? extends ThrowableItemProjectile> pEntityType, @Nullable Entity pShooter, Level pLevel) {
         super(pEntityType, pLevel);
         this.setOwner(pShooter);
         if (pShooter != null) {

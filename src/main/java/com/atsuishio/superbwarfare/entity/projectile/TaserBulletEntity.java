@@ -53,7 +53,7 @@ public class TaserBulletEntity extends AbstractArrow implements GeoEntity {
         this.wireLength = wireLength;
     }
 
-    public TaserBulletEntity(LivingEntity entity, Level level, float damage) {
+    public TaserBulletEntity(Level level, float damage) {
         super(ModEntities.TASER_BULLET.get(), level);
         this.noCulling = true;
 

@@ -15,7 +15,6 @@ import com.atsuishio.superbwarfare.perk.Perk;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -151,33 +150,31 @@ public class TaserItem extends GunItem implements EnergyStorageItem {
     }
 
     @Override
-    public boolean shootBullet(Player player, GunData data, double spread, boolean zoom, UUID uuid) {
-        var stack = data.stack;
-        player.getCooldowns().addCooldown(stack.getItem(), 5);
+    public boolean shootBullet(@NotNull Entity shooter, @NotNull GunData data, double spread, boolean zoom, UUID uuid) {
+//        shooter.getCooldowns().addCooldown(stack.getItem(), 5);
 
-        if (player instanceof ServerPlayer serverPlayer) {
-            var level = serverPlayer.level();
-            TaserBulletEntity projectile = new TaserBulletEntity(player, level,
-                    (float) data.damage());
+        var level = shooter.level();
+        TaserBulletEntity projectile = new TaserBulletEntity(level,
+                (float) data.damage());
 
-            for (Perk.Type type : Perk.Type.values()) {
-                var instance = data.perk.getInstance(type);
-                if (instance != null) {
-                    instance.perk().modifyProjectile(data, instance, projectile);
-                }
+        for (Perk.Type type : Perk.Type.values()) {
+            var instance = data.perk.getInstance(type);
+            if (instance != null) {
+                instance.perk().modifyProjectile(data, instance, projectile);
             }
-
-            projectile.setPos(player.getX(), player.getEyeY() - 0.1, player.getZ());
-            projectile.shoot(player.getLookAngle().x, player.getLookAngle().y, player.getLookAngle().z, (float) data.velocity(),
-                    (float) (zoom ? 0.1 : spread));
-            level.addFreshEntity(projectile);
         }
+
+        projectile.setPos(shooter.getX(), shooter.getEyeY() - 0.1, shooter.getZ());
+        projectile.shoot(shooter.getLookAngle().x, shooter.getLookAngle().y, shooter.getLookAngle().z, (float) data.velocity(),
+                (float) (zoom ? 0.1 : spread));
+        level.addFreshEntity(projectile);
+
         return true;
     }
 
     @Override
-    public void afterShoot(GunData data, Player player) {
-        super.afterShoot(data, player);
+    public void afterShoot(GunData data, Entity shooter) {
+        super.afterShoot(data, shooter);
         var stack = data.stack;
         int perkLevel = data.perk.getLevel(ModPerks.VOLT_OVERLOAD);
 

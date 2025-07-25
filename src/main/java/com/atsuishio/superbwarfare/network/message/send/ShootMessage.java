@@ -11,10 +11,12 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.Optional;
 import java.util.UUID;
 
-public record ShootMessage(double spread, boolean zoom, UUID uuid) implements CustomPacketPayload {
+public record ShootMessage(double spread, boolean zoom, Optional<UUID> uuid) implements CustomPacketPayload {
 
     public static final Type<ShootMessage> TYPE = new Type<>(Mod.loc("shoot"));
 
@@ -23,23 +25,20 @@ public record ShootMessage(double spread, boolean zoom, UUID uuid) implements Cu
             ShootMessage::spread,
             ByteBufCodecs.BOOL,
             ShootMessage::zoom,
-            UUIDUtil.STREAM_CODEC,
+            ByteBufCodecs.optional(UUIDUtil.STREAM_CODEC),
             ShootMessage::uuid,
             ShootMessage::new
     );
 
     public static void handler(final ShootMessage message, final IPayloadContext context) {
-        pressAction(context.player(), message.spread, message.zoom, message.uuid);
+        pressAction(context.player(), message.spread, message.zoom, message.uuid.orElse(null));
     }
 
-    public static void pressAction(Player player, double spread, boolean zoom, UUID uuid) {
+    public static void pressAction(Player player, double spread, boolean zoom, @Nullable UUID uuid) {
         var stack = player.getMainHandItem();
         if (!(stack.getItem() instanceof GunItem)) return;
-        var data = GunData.from(stack);
 
-        data.item.onShoot(data, player, spread, zoom, uuid);
-
-        data.save();
+        GunData.from(stack).shoot(player, spread, zoom, uuid);
     }
 
     @Override

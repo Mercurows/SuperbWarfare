@@ -15,7 +15,7 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -98,13 +98,13 @@ public class M79Item extends GunItem {
     }
 
     @Override
-    public boolean shootBullet(Player player, GunData data, double spread, boolean zoom, UUID uuid) {
+    public boolean shootBullet(@NotNull Entity shooter, @NotNull GunData data, double spread, boolean zoom, UUID uuid) {
         if (data.reloading()) return false;
-        if (!super.shootBullet(player, data, spread, zoom, uuid)) return false;
+        if (!super.shootBullet(shooter, data, spread, zoom, uuid)) return false;
 
-        ParticleTool.sendParticle((ServerLevel) player.level(), ParticleTypes.CLOUD, player.getX() + 1.8 * player.getLookAngle().x,
-                player.getY() + player.getBbHeight() - 0.1 + 1.8 * player.getLookAngle().y,
-                player.getZ() + 1.8 * player.getLookAngle().z,
+        ParticleTool.sendParticle((ServerLevel) shooter.level(), ParticleTypes.CLOUD, shooter.getX() + 1.8 * shooter.getLookAngle().x,
+                shooter.getY() + shooter.getBbHeight() - 0.1 + 1.8 * shooter.getLookAngle().y,
+                shooter.getZ() + 1.8 * shooter.getLookAngle().z,
                 4, 0.1, 0.1, 0.1, 0.002, true);
 
         return true;

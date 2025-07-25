@@ -60,7 +60,7 @@ import software.bernie.geckolib.animation.AnimationProcessor;
 import software.bernie.geckolib.cache.object.GeoBone;
 
 import java.util.List;
-import java.util.UUID;
+import java.util.Optional;
 
 @EventBusSubscriber(modid = Mod.MODID, bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
 public class ClientEventHandler {
@@ -743,7 +743,7 @@ public class ClientEventHandler {
         if (!(stack.getItem() instanceof GunItem)) return;
         var data = GunData.from(stack);
 
-        PacketDistributor.sendToServer(new ShootMessage(gunSpread, zoom, entity != null ? entity.getUUID() : UUID.randomUUID()));
+        PacketDistributor.sendToServer(new ShootMessage(gunSpread, zoom, entity != null ? Optional.of(entity.getUUID()) : Optional.empty()));
         fireRecoilTime = 10;
 
         // 真实后座（

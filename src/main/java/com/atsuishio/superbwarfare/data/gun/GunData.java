@@ -18,6 +18,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
@@ -26,6 +27,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -547,6 +549,20 @@ public class GunData {
      */
     public boolean canShoot(@Nullable Entity shooter) {
         return item.canShoot(this, shooter);
+    }
+
+    /**
+     * 无实体情况下开火
+     */
+    public boolean shoot(@NotNull ServerLevel level, @NotNull Vec3 shootPosition, @NotNull Vec3 shootDirection, double spread, boolean zoom) {
+        return this.item.shootBullet(level, shootPosition, shootDirection, this, spread, zoom, null);
+    }
+
+    /**
+     * 有实体情况下开火
+     */
+    public boolean shoot(@NotNull Entity entity, double spread, boolean zoom, @Nullable UUID uuid) {
+        return this.item.shootBullet(entity, this, spread, zoom, uuid);
     }
 
     /**
