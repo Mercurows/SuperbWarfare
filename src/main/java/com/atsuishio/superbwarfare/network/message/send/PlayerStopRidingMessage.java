@@ -24,10 +24,10 @@ public record PlayerStopRidingMessage(boolean ejection) implements CustomPacketP
 
     public static void handler(PlayerStopRidingMessage message, final IPayloadContext context) {
         ServerPlayer player = (ServerPlayer) context.player();
-        var vehicle = player.getVehicle();
-        if (vehicle instanceof VehicleEntity vehicle1) {
+        var entity = player.getVehicle();
+        if (entity instanceof VehicleEntity vehicle) {
             if (message.ejection) {
-                var vec = vehicle1.getDismountMovement(player, vehicle1.getTagSeatIndex(player));
+                var vec = vehicle.getDismountMovement(player, vehicle.getTagSeatIndex(player));
                 Mod.queueServerWork(1, () -> PacketDistributor.sendToPlayer(player, new ClientSetMotionMessage(vec.toVector3f())));
             }
             player.stopRiding();
