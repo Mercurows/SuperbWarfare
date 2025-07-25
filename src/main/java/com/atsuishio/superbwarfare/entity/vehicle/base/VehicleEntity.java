@@ -1469,6 +1469,10 @@ public abstract class VehicleEntity extends Entity implements Container {
         return new Vec3(0, 0, 0);
     }
 
+    public boolean allowEjection() {
+        return false;
+    }
+
     public void removeSeatIndexTag(Entity entity) {
         entity.getPersistentData().remove(TAG_SEAT_INDEX);
     }

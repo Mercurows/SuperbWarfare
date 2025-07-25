@@ -175,6 +175,7 @@ public class ClientEventHandler {
     public static boolean canDoubleJump = false;
 
     public static int holdArtilleryIndicator;
+    public static int holdToEjection;
 
 
     @SubscribeEvent
@@ -300,6 +301,15 @@ public class ClientEventHandler {
             }
         } else {
             holdArtilleryIndicator = 0;
+        }
+
+        if (player.getVehicle() instanceof VehicleEntity vehicle && vehicle.allowEjection() && ModKeyMappings.DISMOUNT.isDown()) {
+            holdToEjection = Mth.clamp(holdToEjection + 1, 0, 10);
+            if (holdToEjection >= 10) {
+                Mod.PACKET_HANDLER.sendToServer(new PlayerStopRidingMessage(true));
+            }
+        } else {
+            holdToEjection = 0;
         }
 
         isProne(player);

@@ -553,7 +553,7 @@ public class ClickHandler {
             ClientEventHandler.dismountCountdown = 20;
             return;
         }
-        Mod.PACKET_HANDLER.sendToServer(PlayerStopRidingMessage.INSTANCE);
+        Mod.PACKET_HANDLER.sendToServer(new PlayerStopRidingMessage(false));
     }
 
     public static void droneLeftClick(ItemStack stack, Player player) {
