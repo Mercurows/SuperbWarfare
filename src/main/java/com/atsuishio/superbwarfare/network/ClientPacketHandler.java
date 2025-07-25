@@ -93,11 +93,10 @@ public class ClientPacketHandler {
 
     public static void handleClientSetMotion(ClientSetMotionMessage message, Supplier<NetworkEvent.Context> ctx) {
         if (ctx.get().getDirection().getReceptionSide() == LogicalSide.CLIENT) {
-            var level = Minecraft.getInstance().level;
-            if (level == null) return;
-            Entity entity = level.getEntity(message.id());
-            if (entity != null) {
-                entity.setDeltaMovement(message.motion().x, message.motion().y, message.motion().z);
+            Minecraft minecraft = Minecraft.getInstance();
+            Player player = minecraft.player;
+            if (player != null) {
+                player.setDeltaMovement(message.motion().x, message.motion().y, message.motion().z);
             }
         }
     }

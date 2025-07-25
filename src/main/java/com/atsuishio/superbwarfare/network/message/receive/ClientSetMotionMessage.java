@@ -6,24 +6,19 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.network.NetworkEvent;
+import org.joml.Vector3f;
 
 import java.util.function.Supplier;
 
-public record ClientSetMotionMessage(int id, Vec3 motion) {
+public record ClientSetMotionMessage(Vec3 motion) {
 
     public static void encode(ClientSetMotionMessage message, FriendlyByteBuf buffer) {
-        buffer.writeVarInt(message.id);
-        buffer.writeDouble(message.motion.x);
-        buffer.writeDouble(message.motion.y);
-        buffer.writeDouble(message.motion.z);
+        buffer.writeVector3f(message.motion.toVector3f());
     }
 
     public static ClientSetMotionMessage decode(FriendlyByteBuf buffer) {
-        int id = buffer.readVarInt();
-        double x = buffer.readDouble();
-        double y = buffer.readDouble();
-        double z = buffer.readDouble();
-        return new ClientSetMotionMessage(id, new Vec3(x, y, z));
+        Vector3f v = buffer.readVector3f();
+        return new ClientSetMotionMessage(new Vec3(v));
     }
 
     public static void handler(ClientSetMotionMessage message, Supplier<NetworkEvent.Context> ctx) {
