@@ -15,6 +15,7 @@ import com.atsuishio.superbwarfare.item.common.container.SmallContainerBlockItem
 import com.atsuishio.superbwarfare.item.curio.DogTagItem;
 import com.atsuishio.superbwarfare.item.curio.IffItem;
 import com.atsuishio.superbwarfare.item.curio.Parachute;
+import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.handgun.*;
 import com.atsuishio.superbwarfare.item.gun.heavy.Ntw20Item;
 import com.atsuishio.superbwarfare.item.gun.launcher.JavelinItem;
@@ -393,6 +394,8 @@ public class ModItems {
         DispenserBlock.registerBehavior(MEDIUM_ROCKET_AP.get(), new MediumRocketItem.MediumRocketDispenseBehavior(MEDIUM_ROCKET_AP.get()));
         DispenserBlock.registerBehavior(MEDIUM_ROCKET_CM.get(), new MediumRocketItem.MediumRocketDispenseBehavior(MEDIUM_ROCKET_CM.get()));
         DispenserBlock.registerBehavior(MEDIUM_ROCKET_HE.get(), new MediumRocketItem.MediumRocketDispenseBehavior(MEDIUM_ROCKET_HE.get()));
+
+        GUNS.getEntries().forEach(reg -> DispenserBlock.registerBehavior(reg.get(), new GunItem.LiveAllFamilyGunDispenseBehavior()));
     }
 
     public static void register(IEventBus bus) {

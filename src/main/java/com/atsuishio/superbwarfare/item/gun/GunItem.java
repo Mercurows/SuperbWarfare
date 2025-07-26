@@ -22,8 +22,12 @@ import com.atsuishio.superbwarfare.tools.SoundTool;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
+import net.minecraft.core.Position;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.dispenser.BlockSource;
+import net.minecraft.core.dispenser.DefaultDispenseItemBehavior;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -39,9 +43,11 @@ import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ProjectileItem;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
@@ -65,7 +71,7 @@ import java.util.function.Consumer;
 import static com.atsuishio.superbwarfare.tools.EntityFindUtil.findEntity;
 
 @EventBusSubscriber(modid = Mod.MODID, bus = EventBusSubscriber.Bus.MOD)
-public abstract class GunItem extends Item implements CustomRendererItem, GeoItem {
+public abstract class GunItem extends Item implements CustomRendererItem, GeoItem, ProjectileItem {
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
@@ -811,6 +817,27 @@ public abstract class GunItem extends Item implements CustomRendererItem, GeoIte
     @OnlyIn(Dist.CLIENT)
     public HumanoidModel.ArmPose getArmPose(LivingEntity entityLiving, InteractionHand hand, ItemStack stack) {
         return PoseTool.pose(entityLiving, hand, stack);
+    }
+
+    @Override
+    @ParametersAreNonnullByDefault
+    public Projectile asProjectile(Level level, Position position, ItemStack itemStack, Direction direction) {
+        return null;
+    }
+
+    public static class LiveAllFamilyGunDispenseBehavior extends DefaultDispenseItemBehavior {
+        @Override
+        @ParametersAreNonnullByDefault
+        protected @NotNull ItemStack execute(BlockSource blockSource, ItemStack stack) {
+            var level = blockSource.level();
+            var position = DispenserBlock.getDispensePosition(blockSource);
+            var direction = blockSource.state().getValue(DispenserBlock.FACING);
+
+            GunData data = GunData.from(stack);
+            data.shoot(level, new Vec3(position.x(), position.y(), position.z()), new Vec3(direction.getStepX(), direction.getStepY(), direction.getStepZ()), data.spread(), false);
+
+            return stack;
+        }
     }
 
     @SubscribeEvent
