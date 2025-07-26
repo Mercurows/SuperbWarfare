@@ -18,8 +18,8 @@ public class ShortcutPack extends Item {
     @Override
     @ParametersAreNonnullByDefault
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
-        tooltipComponents.add(Component.translatable("des.superbwarfare.use_tip.shortcut_pack").withStyle(ChatFormatting.AQUA));
-        tooltipComponents.add(Component.translatable("des.superbwarfare.tips.shortcut_pack").withStyle(ChatFormatting.GRAY));
+        tooltipComponents.add(Component.translatable("des.superbwarfare.shortcut_pack_2").withStyle(ChatFormatting.AQUA));
+        tooltipComponents.add(Component.translatable("des.superbwarfare.shortcut_pack_1").withStyle(ChatFormatting.GRAY));
     }
 
 }

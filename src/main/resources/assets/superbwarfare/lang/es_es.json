@@ -5,11 +5,13 @@
   "item_group.superbwarfare.block": "Bloques de Superb Warfare",
   "item_group.superbwarfare.ammo": "Munición de Superb Warfare",
   "item_group.superbwarfare.vehicle": "Vehículos de Superb Warfare",
+  
   "item.superbwarfare.ammo.shotgun": "Munición de Escopeta",
   "item.superbwarfare.ammo.handgun": "Munición de Pistola",
   "item.superbwarfare.ammo.rifle": "Munición de Fusil",
   "item.superbwarfare.ammo.sniper": "Munición de Francotirador",
   "item.superbwarfare.ammo.heavy": "Munición Pesada",
+
   "item.superbwarfare.sentinel": "Centinela",
   "item.superbwarfare.rpk": "RPK",
   "item.superbwarfare.m_870": "M870",
@@ -58,6 +60,7 @@
   "des.superbwarfare.secondary_cataclysm_2": "Hiru",
   "item.superbwarfare.insidious": "Insidioso",
   "item.superbwarfare.qbz_191": "QBZ-191",
+
   "des.superbwarfare.guns.damage": "Daño: ",
   "des.superbwarfare.guns.level": "Nivel: ",
   "des.superbwarfare.guns.bypass": "Perforación de Armadura: ",
@@ -65,6 +68,7 @@
   "des.superbwarfare.guns.rpm": "Disparos por minuto: ",
   "des.superbwarfare.guns.headshot": "Daño a la cabeza: ",
   "des.superbwarfare.guns.edit": "Presiona la tecla %1$s para editar esta arma",
+
   "item.superbwarfare.ammo_box": "Caja de Munición",
   "des.superbwarfare.ammo_box.rifle": "Munición de Fusil almacenada: ",
   "des.superbwarfare.ammo_box.handgun": "Munición de Pistola almacenada: ",
@@ -78,6 +82,7 @@
   "des.superbwarfare.ammo_box.type.sniper": "Munición de Francotirador seleccionada",
   "des.superbwarfare.ammo_box.type.heavy": "Munición Pesada seleccionada",
   "des.superbwarfare.ammo_box": "Agáchate y haz clic izquierdo para cambiar tipos de munición, clic derecho para almacenar ese tipo. Clic derecho sin agacharte para sacar munición",
+
   "item.superbwarfare.vector_blueprint": "Plano de VECTOR",
   "item.superbwarfare.m_60_blueprint": "Plano de M60",
   "item.superbwarfare.hk_416_blueprint": "Plano de HK-416",
@@ -120,6 +125,7 @@
   "item.superbwarfare.aurelia_sceptre_blueprint": "Plano de Cetro Aurelia",
   "item.superbwarfare.mp_5_blueprint": "Plano de MP5",
   "item.superbwarfare.qbz_191_blueprint": "Plano de QBZ-191",
+
   "item.superbwarfare.common_material_pack": "Paquete de Materiales Comunes",
   "item.superbwarfare.rare_material_pack": "Paquete de Materiales Raros",
   "item.superbwarfare.epic_material_pack": "Paquete de Materiales Épicos",
@@ -141,6 +147,7 @@
   "item.superbwarfare.netherite_action": "Mecanismo de Netherita",
   "item.superbwarfare.netherite_spring": "Resorte de Netherita",
   "item.superbwarfare.netherite_trigger": "Gatillo de Netherita",
+
   "item.superbwarfare.buckshot": "Postas",
   "item.superbwarfare.taser_electrode": "Electrodo de Taser",
   "item.superbwarfare.mortar_shell": "Proyectil de Mortero",
@@ -262,7 +269,9 @@
   "des.superbwarfare.artillery_indicator_5": "Cuando está en la mano secundaria: usa el dron para marcar ubicaciones (mismos controles que arriba)",
   "des.superbwarfare.artillery_indicator.add": "%1$s ha sido añadido al conjunto de artillería",
   "des.superbwarfare.artillery_indicator.remove": "%1$s ha sido eliminado del conjunto de artillería",
+
   "attribute.superbwarfare.bullet_resistance": "Resistencia a Balas",
+
   "block.superbwarfare.jump_pad": "Plataforma de Salto",
   "block.superbwarfare.sandbag": "Saco de Arena",
   "block.superbwarfare.barbed_wire": "Alambre de Púas",
@@ -317,6 +326,7 @@
   "des.superbwarfare.lucky_container.location.land_vehicles": "Vehículos Terrestres",
   "des.superbwarfare.lucky_container.location.aircraft": "Aeronaves",
   "des.superbwarfare.lucky_container.location.controllable_turrets": "Torretas Controlables",
+
   "item.superbwarfare.high_energy_explosives": "Explosivos de Alta Energía",
   "item.superbwarfare.grain": "Grano",
   "item.superbwarfare.tungsten_rod": "Varilla de Tungsteno",
@@ -334,13 +344,16 @@
   "item.superbwarfare.galena": "Galena Cruda",
   "item.superbwarfare.scheelite": "Scheelita Cruda",
   "item.superbwarfare.raw_silver": "Plata Cruda",
+
   "item.superbwarfare.armor_plate": "Placa de Blindaje",
   "des.superbwarfare.armor_plate.infinite": "Infinito",
+
   "item.superbwarfare.ru_helmet_6b47": "Casco Ruso 6b47",
   "item.superbwarfare.ru_chest_6b43": "Chaleco Ruso 6b43",
   "item.superbwarfare.us_helmet_pastg": "Casco US PASTG",
   "item.superbwarfare.us_chest_iotv": "Chaleco US IOTV",
   "item.superbwarfare.ge_helmet_m_35": "Casco Alemán M35",
+
   "item.superbwarfare.ap_bullet": "Bala AP",
   "des.superbwarfare.ap_bullet": "Aumenta la proporción de perforación de armadura de las balas.",
   "item.superbwarfare.silver_bullet": "Bala de Plata",
@@ -348,7 +361,7 @@
   "item.superbwarfare.beast_bullet": "Bala BESTIA",
   "des.superbwarfare.beast_bullet": "Ignora obstáculos, aumenta el área de criterio, mata a todas las entidades vivas.",
   "item.superbwarfare.poisonous_bullet": "Bala Venenosa",
-  "item.superbwarfare.blade_bullet": "Bala Cortante",
+    "item.superbwarfare.blade_bullet": "Bala Cortante",
   "des.superbwarfare.blade_bullet": "Hace que el objetivo sangre después de ser golpeado.",
   "item.superbwarfare.curse_flame_bullet": "Bala de Fuego Maldito",
   "des.superbwarfare.curse_flame_bullet": "Aplica un efecto de llama maldita al objetivo al impactar.",
@@ -370,6 +383,7 @@
   "des.superbwarfare.cupid_arrow": "Hace que el objetivo se enamore al ser golpeado. No hace daño a entidades vivas.",
   "item.superbwarfare.riot_bullet": "Bala Antidisturbios",
   "des.superbwarfare.riot_bullet": "Aplica lentitud y debilidad al objetivo, con daño adicional a illagers.",
+
   "item.superbwarfare.heal_clip": "Cargador Sanador",
   "des.superbwarfare.heal_clip": "Recargar después de matar un mob te cura a ti y a aliados cercanos.",
   "item.superbwarfare.fourth_times_charm": "La Cuarta es la Vencida",
@@ -386,6 +400,7 @@
   "des.superbwarfare.powerful_attraction": "Experiencia y ítems de mobs muertos van directamente a tu inventario.",
   "item.superbwarfare.intelligent_chip": "Chip Inteligente",
   "des.superbwarfare.intelligent_chip": "Apunta automáticamente a enemigos (No usar en PVP).",
+
   "item.superbwarfare.kill_clip": "Cargador Letal",
   "des.superbwarfare.kill_clip": "Aumenta el daño del arma tras un golpe final.",
   "item.superbwarfare.killing_tally": "Conteo de Muertes",
@@ -406,15 +421,18 @@
   "des.superbwarfare.magnificent_howl": "Muertes precisas antes de recargar aumentan daño de balas.",
   "item.superbwarfare.firefly": "Luciérnaga",
   "des.superbwarfare.firefly": "Muertes precisas hacen explotar al objetivo con fuego.",
+
   "item.superbwarfare.empty_perk": "Ventaja Vacía",
   "item.superbwarfare.shortcut_pack": "Paquete de Acceso Rápido",
-  "des.superbwarfare.tips.shortcut_pack": "¿En serio?",
-  "des.superbwarfare.use_tip.shortcut_pack": "Combina armas y kits de acceso rápido en el yunque para un punto de mejora",
+  "des.superbwarfare.shortcut_pack_1": "¿En serio?",
+  "des.superbwarfare.shortcut_pack_2": "Combina armas y kits de acceso rápido en el yunque para un punto de mejora",
+
   "perk.superbwarfare.tips": "[Ventajas]",
   "perk.superbwarfare.slot": "Tipo: ",
   "perk.superbwarfare.slot_Ammo": "Ventaja de Bala",
   "perk.superbwarfare.slot_Functional": "Ventaja Funcional",
   "perk.superbwarfare.slot_Damage": "Ventaja de Daño",
+
   "death.attack.gunfire": "%1$s fue abatido por %2$s",
   "death.attack.gunfire.entity": "%1$s fue abatido por %2$s",
   "death.attack.gunfire.item": "%1$s fue abatido por %2$s usando %3$s",
@@ -458,6 +476,7 @@
   "death.attack.vehicle_explosion": "El vehículo de %1$s fue destruido",
   "death.attack.vehicle_explosion.entity": "El vehículo de %1$s fue destruido por %2$s",
   "death.attack.vehicle_explosion.item": "El vehículo de %1$s fue destruido por %2$s usando %3$s",
+
   "entity.superbwarfare.projectile": "Bala",
   "entity.superbwarfare.mortar_shell": "Proyectil de Mortero",
   "entity.superbwarfare.gun_grenade": "Granada de Fusil",
@@ -503,6 +522,7 @@
   "entity.superbwarfare.tm_62": "Mina Antitanque TM-62",
   "entity.superbwarfare.m18_smoke_grenade": "Granada de Humo M-18",
   "entity.superbwarfare.type_63": "Type-63 107mm MLRS",
+
   "key.categories.superbwarfare": "Superb Warfare",
   "key.superbwarfare.hold_zoom": "Zoom (Mantener)",
   "key.superbwarfare.switch_zoom": "Zoom (Cambiar)",
@@ -525,6 +545,7 @@
   "key.superbwarfare.melee": "Cuerpo a Cuerpo",
   "key.superbwarfare.free_camera": "Cámara Libre de Vehículo",
   "key.superbwarfare.launch": "Lanzar",
+
   "effect.superbwarfare.shock": "Electrocutado",
   "effect.superbwarfare.burn": "Quemadura",
   "item.minecraft.potion.effect.superbwarfare_shock": "Poción de Electrocución",
@@ -553,6 +574,7 @@
   "commands.config.tactical_sprint.disabled": "Carrera táctica desactivada",
   "commands.config.glass_destroy.enabled": "Rotura de cristales por balas activada",
   "commands.config.glass_destroy.disabled": "Rotura de cristales por balas desactivada",
+
   "tips.superbwarfare.sensitivity": "Sensibilidad actual de esta arma: %1$s",
   "tips.superbwarfare.monitor.linked": "¡Conectado!",
   "tips.superbwarfare.monitor.already_linked": "¡Este monitor ya está conectado!",
@@ -581,15 +603,18 @@
   "tips.superbwarfare.mortar.position": "%1$s ubicado en",
   "tips.superbwarfare.ballistics.warn": "Usa Trayectoria Deprimida",
   "tips.superbwarfare.ballistics.warn2": "Usa Trayectoria Elevada",
+
   "tips.superbwarfare.target.yaw": "Guiñada objetivo: ",
   "tips.superbwarfare.target.pitch": "Cabeceo objetivo: ",
   "tips.superbwarfare.barrel_empty": "VACÍO",
   "tips.superbwarfare.mortar.out_of_range": "Fuera de alcance",
+
   "container.superbwarfare.reforging_table": "Mesa de Mejora de Armas",
   "container.superbwarfare.charging_station": "Estación de Carga",
   "container.superbwarfare.charging_station.show_range": "Mostrar alcance",
   "container.superbwarfare.charging_station.hide_range": "Ocultar alcance",
   "container.superbwarfare.superb_item_interface": "Interfaz de Ítem Superb",
+
   "config.superbwarfare.title": "SuperbWarfare: Configuración",
   "config.superbwarfare.client.reload": "Recargar Configuración",
   "config.superbwarfare.client.reload.left_click_reload": "Recarga Rápida",
@@ -651,6 +676,7 @@
   "config.superbwarfare.client.control.invert_aircraft_control.des": "Activar para invertir controles de aeronave",
   "config.superbwarfare.client.control.mouse_sensitivity": "Sensibilidad del Ratón",
   "config.superbwarfare.client.control.mouse_sensitivity.des": "Ajustar sensibilidad del ratón al sostener un arma",
+
   "config.superbwarfare.common.gameplay": "Configuración de Juego",
   "config.superbwarfare.common.gameplay.respawn_reload": "Recarga al Reaparecer",
   "config.superbwarfare.common.gameplay.respawn_reload.des": "Recargar automáticamente todas las armas del inventario al reaparecer",
@@ -658,17 +684,22 @@
   "config.superbwarfare.common.gameplay.global_indication.des": "Mostrar indicador de muerte alrededor de la mira al matar una criatura solo con daño de este módulo",
   "config.superbwarfare.common.gameplay.respawn_auto_armor": "Placa Blindada Automática al Reaparecer",
   "config.superbwarfare.common.gameplay.respawn_auto_armor.des": "Rellenar automáticamente la placa blindada al reaparecer",
+
   "des.superbwarfare.perk_damage_reduce": "Daño -",
   "des.superbwarfare.perk_damage_plus": "Daño +",
   "des.superbwarfare.perk_speed_reduce": "Velocidad -",
   "des.superbwarfare.perk_speed_plus": "Velocidad +",
   "des.superbwarfare.perk_slug": "Bala Sólida",
+
   "des.superbwarfare.revolver.da": "DA",
   "des.superbwarfare.revolver.sa": "SA",
+
   "des.superbwarfare.developing": "Este ítem aún está en desarrollo",
+
   "jei.superbwarfare.ancient_cpu": "Tecnología antigua misteriosa, puede encontrarse en ciudades antiguas.",
   "jei.superbwarfare.charging_station": "Genera energía consumiendo combustible o comida, y también acepta entrada de energía FE. Suministra energía FE a bloques adyacentes y puede cargar vehículos recargables en su alcance.",
   "jei.superbwarfare.gun_perks": "Ventajas Disponibles",
+
   "config.jade.plugin_superbwarfare.vehicle_energy": "Energía del Vehículo",
   "config.jade.plugin_superbwarfare.vehicle_health": "Salud del Vehículo",
   "config.jade.plugin_superbwarfare.container_entity": "Entidad Contenedora",
@@ -679,6 +710,7 @@
   "des.jade_plugin_superbwarfare.dps_generator.level": "Nivel del Generador: %1$s",
   "des.jade_plugin_superbwarfare.dps_generator.health": "Salud Máxima: %1$s",
   "config.jade.plugin_superbwarfare.vehicle_deployer": "Desplegador de Vehículos",
+
   "superbwarfare.advancement.main.root": "Guerra Excelente",
   "superbwarfare.advancement.main.root.des": "¡Bienvenido a Guerra Excelente!",
   "superbwarfare.advancement.main.best_friend": "\"Mejores Amigos\" Para Siempre",
@@ -715,9 +747,11 @@
   "superbwarfare.advancement.main.boomstick_melee.des": "¿Quién dijo que los RPG no pueden ser bates de béisbol?",
   "superbwarfare.advancement.main.rush_rush_run": "Rush♿Rush♿Run",
   "superbwarfare.advancement.main.rush_rush_run.des": "El bastón eléctrico tiene que emparejarse con una silla de ruedas para hacer daño, haciéndolo parecer tan débil como un soldado super terminal.",
+  
   "warning.title.example": "[Advertencia del Mod SuperbWarfare]",
   "warning.content.example": "Este mod es Gratuito y de Código Abierto, Sin Uso Comercial\nCódigo: Licencia GPL-3.0; Assets: Privados (Sin Comercialización)\nProhibidas descargas pagadas o compras que violen el EULA\nReporta violaciones enviando un issue en el repositorio del mod",
   "warning.check.example": "He leído y acepto el contenido. No mostrar este mensaje nuevamente",
+
   "superbwarfare.book.superb_warfare_manual": "Manual de Guerra Excelente",
   "superbwarfare.book.superb_warfare_manual.des": "Un tutorial sobre el mod Guerra Excelente, enseñándote cómo convertirte en un soldado excelente (En desarrollo)",
   "superbwarfare.category.weapon": "Armas",
@@ -728,6 +762,7 @@
   "superbwarfare.category.perk.des": "Entiende la función de las ventajas de Guerra Excelente",
   "superbwarfare.category.misc": "Misceláneos",
   "superbwarfare.category.misc.des": "Aprende a usar los objetos varios de Guerra Excelente",
+
   "superbwarfare.entry.vehicle.intro": "Conocimientos Básicos",
   "superbwarfare.page.vehicle.intro1": "Los vehículos en Guerra Excelente se almacenan en $(item)Contenedores$() y necesitan ser abiertos con una $(item)Palanca$().$(p)Abrir un contenedor requiere espacio suficiente. Puedes verificar el espacio requerido apuntando al contenedor mientras sostienes una palanca.",
   "superbwarfare.page.vehicle.intro2": "$(thing)Agáchate y Haz Click Derecho$() en un vehículo vacío con una palanca para guardarlo en un contenedor.",
@@ -737,16 +772,19 @@
   "superbwarfare.page.vehicle.control1": "$(o)\"¡Un conductor debe saber conducir!\"$()$(br)--El Autor$(p)Este capítulo introduce las operaciones de vehículos en Guerra Excelente, ayudándote a entender cómo controlarlos.",
   "superbwarfare.page.vehicle.control2": "$(l)Controles Básicos: $()$(p)$(thing)$(k:key.use)$() - Entrar al vehículo$(br)$(thing)$(k:key.superbwarfare.dismount)$() - Bajarse (Presiona dos veces para bajarte de vehículos en movimiento)$(br)$(thing)$(k:key.forward)$() - Adelante$(br)$(thing)$(k:key.back)$() - Frenar/Retroceder$(br)$(thing)$(k:key.left) / $(k:key.right)$() - Dirección/Inclinación$(br)$(thing)$(k:key.jump)$() - Frenar$(br)$(thing)$(k:key.inventory)$() - Abrir inventario del vehículo$(p)Para vehículos con múltiples asientos: $(br)$(thing)$(k:key.sneak) + $(k:key.hotbar.1) ~ $(k:key.hotbar.9)$() - Cambiar de asiento",
   "superbwarfare.page.vehicle.control3": "$(l)Controles de Armas: $()$(p)$(thing)$(k:key.superbwarfare.fire)$() - Disparar$(br)$(thing)$(k:key.superbwarfare.hold_zoom) / $(k:key.superbwarfare.switch_zoom)$() - Zoom$(br)$(thing)Rueda del Ratón / $(k:key.hotbar.1) ~ $(k:key.hotbar.9)$() - Cambiar de arma$(p)Funciones disponibles para ciertos vehículos: $(br)$(thing)$(k:key.superbwarfare.release_decoy)$() - Liberar señuelo/humo$(br)$(thing)$(k:key.superbwarfare.free_camera)$() - Alternar cámara libre$(br)$(thing)$(k:key.jump)$() - Soltar bombas",
+
   "superbwarfare.entry.vehicle.lav_150": "LAV-150 Commando",
   "superbwarfare.page.vehicle.lav_1501": "$(thing)LAV-150$() es un VCI (Vehículo de Combate de Infantería) ligero con ruedas que transporta 5 miembros de tripulación, con protección blindada básica y capacidades anfibias.$(p)Equipado con generadores de humo para interrumpir el objetivo guiado, reponiendo automáticamente granadas de humo periódicamente.",
   "superbwarfare.page.vehicle.lav_1502": "Requiere al menos 5 x 5 x 4 de espacio para su colocación.",
   "superbwarfare.page.vehicle.lav_1503": "$(l)Atributos Básicos: $()$(p)Durabilidad - 250$(br)Máx. Pasajeros - 5$(br)Altura de Escalada - 1.5m$(br)Energía Máx. - 5,000,000FE$(br)Costo de Energía - 64FE/tick$(br)Vehículo Cerrado",
   "superbwarfare.page.vehicle.lav_1504": "$(l)Atributos de Armas: $()$(p)Posición 1: $(p)(1) Cañón 20mm$(br)Velocidad de Disparo - 300RPM$(br)Daño - 45$(br)Municón - $(item)Balas de Calibre Pequeño$()$(br)(2) Ametralladora 7.62mm$(br)Velocidad de Disparo - 600RPM$(br)Daño - 9.5$(br)Municón - $(item)Balas de Rifle$()",
+
   "superbwarfare.entry.vehicle.bmp_2": "BMP-2",
   "superbwarfare.page.vehicle.bmp_21": "$(thing)BMP-2$() es un VCI (Vehículo de Combate de Infantería) con orugas que transporta 7 miembros de tripulación, con buena protección blindada y capacidades anfibias.$(p)Equipado con generadores de humo para interrumpir el objetivo guiado, reponiendo automáticamente granadas de humo periódicamente.",
   "superbwarfare.page.vehicle.bmp_22": "Requiere al menos 5 x 5 x 4 de espacio para su colocación.",
   "superbwarfare.page.vehicle.bmp_23": "$(l)Atributos Básicos: $()$(p)Durabilidad - 300$(br)Máx. Pasajeros - 7$(br)Altura de Escalada - 2.25m$(br)Energía Máx. - 5,000,000FE$(br)Costo de Energía - 64FE/tick$(br)Vehículo Cerrado",
   "superbwarfare.page.vehicle.bmp_24": "$(l)Atributos de Armas: $()$(p)Posición 1: $(p)(1) Cañón 30mm$(br)Velocidad de Disparo - 250RPM$(br)Daño - 55$(br)Municón - $(item)Balas de Calibre Pequeño$()$(br)(2) Ametralladora 7.62mm$(br)Velocidad de Disparo - 750RPM$(br)Daño - 9.5$(br)Municón - $(item)Balas de Rifle$()$(br)(3) Lanzamisiles 9M113$(br)Daño Directo - 700$(br)Daño de Explosión - 60$(br)Radio de Explosión - 6m$(br)Municón - $(item)Misil Guiado por Cable$()",
+
   "superbwarfare.entry.vehicle.yx_100": "YX-100 MBT",
   "superbwarfare.page.vehicle.yx_1001": "$(thing)YX-100$() es un tanque principal de batalla que transporta 3 miembros de tripulación, con poderosa protección blindada pero sin capacidades anfibias.$(p)Equipado con generadores de humo para interrumpir el objetivo guiado, reponiendo automáticamente granadas de humo periódicamente.",
   "superbwarfare.page.vehicle.yx_1002": "Requiere al menos 7 x 7 x 4 de espacio para su colocación.",
@@ -754,21 +792,25 @@
   "superbwarfare.page.vehicle.yx_1004": "$(l)Atributos de Armas: $()$(br)Posición 1: $(br)(1) Cañón Rail de Gran Calibre$(br)Velocidad de Disparo - 15RPM$(br)Daño Directo - 500$(br)Daño de Explosión - 100$(br)Radio de Explosión - 4m$(br)Municón - $(item)Bala AP$()$(br)(2) Cañón Rail de Gran Calibre$(br)Velocidad de Disparo - 15RPM$(br)Daño Directo - 150$(br)Daño de Explosión - 150$(br)Radio de Explosión - 10m$(br)Municón - $(item)Bala HE$()$(br)(3) Ametralladora Pesada 12.7mm$(br)Velocidad de Disparo - 500RPM$(br)Daño - 25$(br)Municón - $(item)Balas Pesadas$()",
   "superbwarfare.page.vehicle.yx_1005": "Posición 2: $(p)(1) Ametralladora Pesada 12.7mm$(br)Velocidad de Disparo - 500RPM$(br)Daño - 25$(br)Municón - $(item)Balas Pesadas$()",
   "superbwarfare.page.vehicle.yx_1006": "Posición 3: $(p)(1) Lanzador de Enjambre de Drones$(br)Velocidad de Disparo - 600RPM$(br)Daño de Explosión - 80$(br)Radio de Explosión - 5m$(br)Municón - $(item)Drones de Enjambre$()",
+
   "superbwarfare.entry.vehicle.prism_tank": "Tanque Prisma",
   "superbwarfare.page.vehicle.prism_tank1": "$(thing)Tanque Prisma$() es un tanque de propósito especial que transporta 2 miembros de tripulación, con excelente protección blindada pero sin capacidades anfibias.$(p)Equipado con generadores de humo para interrumpir el objetivo guiado, reponiendo automáticamente granadas de humo periódicamente.",
   "superbwarfare.page.vehicle.prism_tank2": "Requiere al menos 7 x 7 x 3 de espacio para su colocación.",
   "superbwarfare.page.vehicle.prism_tank3": "$(l)Atributos Básicos: $()$(p)Durabilidad - 400$(br)Máx. Pasajeros - 2$(br)Altura de Escalada - 2.25m$(br)Energía Máx. - 20,000,000FE$(br)Costo de Energía - 96FE/tick$(br)Vehículo Cerrado (Posición 1)",
   "superbwarfare.page.vehicle.prism_tank4": "$(l)Atributos de Armas: $()$(p)Posición 1: $(p)(1) Cañón Láser$(br)Velocidad de Disparo - 30RPM$(br)Daño - 350$(br)Daño de Salpicadura - 72$(br)Radio de Salpicadura - 4m$(br)Costo de Energía - 100,000FE$(br)(2) Láser$(br)Daño - 15$(br)Costo de Energía - 5,000FE/tick",
+
   "superbwarfare.entry.vehicle.speedboat": "Lancha Rápida",
   "superbwarfare.page.vehicle.speedboat1": "$(thing)Lancha Rápida$() es una embarcación ligera que transporta 5 miembros de tripulación, con débil protección blindada.",
   "superbwarfare.page.vehicle.speedboat2": "Requiere al menos 5 x 5 x 3 de espacio para su colocación, puede colocarse directamente en el agua.",
   "superbwarfare.page.vehicle.speedboat3": "$(l)Atributos Básicos: $()$(p)Durabilidad - 200$(br)Máx. Pasajeros - 5$(br)Energía Máx. - 500,000FE$(br)Costo de Energía - 16FE/tick",
   "superbwarfare.page.vehicle.speedboat4": "$(l)Atributos de Armas: $()$(p)Posición 1: $(p)(1) Ametralladora Pesada 12.7mm$(br)Velocidad de Disparo - 500RPM$(br)Daño - 25$(br)Municón - $(item)Balas Pesadas$()",
+
   "superbwarfare.entry.vehicle.ah_6": "AH-6 Little Bird",
   "superbwarfare.page.vehicle.ah_61": "$(thing)AH-6 Little Bird$() es un helicóptero ligero que transporta 4 miembros de tripulación, con débil protección blindada. Lleva 4 contramedidas de bengalas para interrumpir el objetivo guiado, reponiendo bengalas una por una con el tiempo.",
   "superbwarfare.page.vehicle.ah_62": "Requiere al menos 5 x 5 x 3 de espacio para su colocación.",
   "superbwarfare.page.vehicle.ah_63": "$(l)Atributos Básicos: $()$(p)Durabilidad - 250$(br)Máx. Pasajeros - 4$(br)Energía Máx. - 500,000FE$(br)Costo de Energía - 64 ~ 128FE/tick",
   "superbwarfare.page.vehicle.ah_64": "$(l)Atributos de Armas: $()$(p)Posición 1: $(p)(1) Cañón 20mm$(br)Velocidad de Disparo - 500RPM$(br)Daño Directo - 25$(br)Daño de Explosión - 13$(br)Radio de Explosión - 4m$(br)Municón - $(item)Balas de Calibre Pequeño$()$(br)(2) Cohete de Calibre Pequeño$(br)Daño Directo - 80$(br)Daño de Explosión - 40$(br)Radio de Explosión - 5m$(br)Municón - $(item)Cohete de Calibre Pequeño$()",
+
   "superbwarfare.entry.vehicle.a_10a": "A-10A Thunderbolt II",
   "superbwarfare.page.vehicle.a_10a1": "$(thing)A-10A Thunderbolt II$() es un avión de ataque monoplaza con protección blindada media. Lleva 4 contramedidas de bengalas para interrumpir el objetivo guiado, reponiendo bengalas una por una con el tiempo.$(p)Presiona $(thing)$(k:key.jump)$() para operar el tren de aterrizaje, $(thing)$(k:key.sneak)$() para abrir el freno de velocidad, $(thing)$(k:key.sprint)$() para activar el impulso.",
   "superbwarfare.page.vehicle.a_10a2": "Requiere al menos 11 x 11 x 4 de espacio para su colocación.",

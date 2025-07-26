@@ -279,6 +279,8 @@
   "des.superbwarfare.vehicle_damage_analyzer": "Right-click a vehicle to start tracking its damage situation, right-click again to stop tracking",
   "des.superbwarfare.vehicle_damage_analyzer.bind": "Start analyzing damage situation of %1$s",
   "des.superbwarfare.vehicle_damage_analyzer.unbind": "Stop analyzing damage situation of %1$s",
+  "des.superbwarfare.vehicle_damage_analyzer.info.raw": "Raw Value: %1$s",
+  "des.superbwarfare.vehicle_damage_analyzer.info.final": "Final Value: %1$s",
 
   "attribute.superbwarfare.bullet_resistance": "Bullet Resistance",
 
@@ -436,8 +438,8 @@
 
   "item.superbwarfare.empty_perk": "Empty Perk",
   "item.superbwarfare.shortcut_pack": "Shortcut Pack",
-  "des.superbwarfare.tips.shortcut_pack": "Really?",
-  "des.superbwarfare.use_tip.shortcut_pack": "Synthesize firearms and shortcut kits at the anvil for one upgrade point",
+  "des.superbwarfare.shortcut_pack_1": "Really?",
+  "des.superbwarfare.shortcut_pack_2": "Synthesize firearms and shortcut kits at the anvil for one upgrade point",
 
   "perk.superbwarfare.tips": "[Perks]",
   "perk.superbwarfare.slot": "Type: ",
@@ -624,6 +626,13 @@
   "tips.superbwarfare.target.pitch": "Target Pitch: ",
   "tips.superbwarfare.barrel_empty": "EMPTY",
   "tips.superbwarfare.mortar.out_of_range": "Out of Range",
+
+  "tips.superbwarfare.modify_result.function": "[Custom Function]",
+  "tips.superbwarfare.modify_result.all": "[All Damage]",
+  "tips.superbwarfare.modify_result.resource_key": "[Damage Type] <%1$s>",
+  "tips.superbwarfare.modify_result.tag_key": "[Damage Tag] <%1$s>",
+  "tips.superbwarfare.modify_result.entity_type": "[Entity Type] <%1$s>",
+  "tips.superbwarfare.modify_result.entity_id": "[Entity ID] <%1$s>",
 
   "container.superbwarfare.reforging_table": "Gun Reforge Table",
   "container.superbwarfare.charging_station": "Charging Station",

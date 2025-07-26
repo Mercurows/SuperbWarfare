@@ -279,6 +279,8 @@
   "des.superbwarfare.vehicle_damage_analyzer": "右击载具以实时追踪载具的受损情况，再次右击取消追踪",
   "des.superbwarfare.vehicle_damage_analyzer.bind": "开始追踪%1$s的损伤情况",
   "des.superbwarfare.vehicle_damage_analyzer.unbind": "停止追踪%1$s的损伤情况",
+  "des.superbwarfare.vehicle_damage_analyzer.info.raw": "原始值：%1$s",
+  "des.superbwarfare.vehicle_damage_analyzer.info.final": "最终值：%1$s",
 
   "attribute.superbwarfare.bullet_resistance": "子弹防护",
 
@@ -436,8 +438,8 @@
 
   "item.superbwarfare.empty_perk": "空白模组",
   "item.superbwarfare.shortcut_pack": "捷径包",
-  "des.superbwarfare.tips.shortcut_pack": "真的吗?",
-  "des.superbwarfare.use_tip.shortcut_pack": "将枪械和捷径包在铁砧合成，可直接获得一个升级点数",
+  "des.superbwarfare.shortcut_pack_1": "真的吗?",
+  "des.superbwarfare.shortcut_pack_2": "将枪械和捷径包在铁砧合成，可直接获得一个升级点数",
 
   "perk.superbwarfare.tips": "[武器模组]",
   "perk.superbwarfare.slot": "类型: ",
@@ -624,6 +626,13 @@
   "tips.superbwarfare.target.pitch": "目标俯仰角: ",
   "tips.superbwarfare.barrel_empty": "空",
   "tips.superbwarfare.mortar.out_of_range": "超出射程",
+
+  "tips.superbwarfare.modify_result.function": "[自定计算]",
+  "tips.superbwarfare.modify_result.all": "[全局减伤]",
+  "tips.superbwarfare.modify_result.resource_key": "[伤害类型] <%1$s>",
+  "tips.superbwarfare.modify_result.tag_key": "[伤害标签] <%1$s>",
+  "tips.superbwarfare.modify_result.entity_type": "[实体类型] <%1$s>",
+  "tips.superbwarfare.modify_result.entity_id": "[实体ID] <%1$s>",
 
   "container.superbwarfare.reforging_table": "枪械重铸台",
   "container.superbwarfare.charging_station": "充电站",
