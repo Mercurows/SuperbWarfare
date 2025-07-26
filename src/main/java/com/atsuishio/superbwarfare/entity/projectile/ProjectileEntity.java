@@ -121,8 +121,6 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
 
     @Nullable
     protected EntityResult findEntityOnPath(Vec3 startVec, Vec3 endVec) {
-        if (this.shooter == null) return null;
-
         Vec3 hitVec = null;
         Entity hitEntity = null;
         boolean headshot = false;
@@ -137,8 +135,8 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
         double closestDistance = Double.MAX_VALUE;
 
         for (Entity entity : entities) {
-            if (entity.equals(this.shooter)) continue;
-            if (entity.equals(this.shooter.getVehicle())) continue;
+            if (entity.equals(this.shooter) || this.shooter != null && entity.equals(this.shooter.getVehicle()))
+                continue;
 
             if (entity instanceof TargetEntity && entity.getEntityData().get(TargetEntity.DOWN_TIME) > 0) continue;
             if (entity instanceof DPSGeneratorEntity && entity.getEntityData().get(DPSGeneratorEntity.DOWN_TIME) > 0)
@@ -173,10 +171,11 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
                 PROJECTILE_TARGETS
         );
         for (Entity entity : entities) {
-            if (shooter != null && entity != shooter && entity != shooter.getVehicle()) {
+            if (this.shooter == null || entity != shooter && entity != this.shooter.getVehicle()) {
                 EntityResult result = this.getHitResult(entity, startVec, endVec);
                 if (result == null) continue;
-                if (entity.getVehicle() != null && entity.getVehicle() == shooter.getVehicle()) continue;
+                if (entity.getVehicle() != null && this.shooter != null && entity.getVehicle() == this.shooter.getVehicle())
+                    continue;
                 hitEntities.add(result);
             }
         }
@@ -275,7 +274,7 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
 
         Vec3 vec = this.getDeltaMovement();
 
-        if (!this.level().isClientSide() && this.shooter != null) {
+        if (!this.level().isClientSide()) {
             Vec3 startVec = this.position();
             Vec3 endVec = startVec.add(this.getDeltaMovement());
             HitResult result = rayTraceBlocks(this.level(), new ClipContext(startVec, endVec, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this),
@@ -287,7 +286,10 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
             List<EntityResult> entityResults = new ArrayList<>();
             var temp = findEntitiesOnPath(startVec, endVec);
             if (temp != null) entityResults.addAll(temp);
-            entityResults.sort(Comparator.comparingDouble(e -> e.getHitPos().distanceTo(this.shooter.position())));
+
+            if (this.shooter != null) {
+                entityResults.sort(Comparator.comparingDouble(e -> e.getHitPos().distanceTo(this.shooter.position())));
+            }
 
             for (EntityResult entityResult : entityResults) {
                 result = new ExtendedEntityRayTraceResult(entityResult);
@@ -367,9 +369,7 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
                 }
             }
 
-            if (state.getBlock() instanceof TargetBlock) {
-                if (this.shooter == null) return;
-
+            if (state.getBlock() instanceof TargetBlock && this.shooter != null) {
                 int rings = getRings(blockHitResult, hitVec);
                 double dis = this.shooter.position().distanceTo(hitVec);
                 recordHitScore(rings, dis);
@@ -429,7 +429,7 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
                 .append(Component.translatable("tips.superbwarfare.shoot.rings"))
                 .append(Component.literal(" " + FormatTool.format1D(distance, "m"))), false);
 
-        if (!this.shooter.level().isClientSide() && this.shooter instanceof ServerPlayer serverPlayer) {
+        if (!this.level().isClientSide() && this.shooter instanceof ServerPlayer serverPlayer) {
             var holder = score == 10 ? Holder.direct(ModSounds.HEADSHOT.get()) : Holder.direct(ModSounds.INDICATION.get());
             serverPlayer.connection.send(new ClientboundSoundPacket(holder, SoundSource.PLAYERS, player.getX(), player.getY(), player.getZ(), 1f, 1f, player.level().random.nextLong()));
             PacketDistributor.sendToPlayer(serverPlayer, new ClientIndicatorMessage(score == 10 ? 1 : 0, 5));
@@ -488,8 +488,6 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
     }
 
     protected void onHitEntity(Entity entity, boolean headshot, boolean legShot) {
-        if (this.shooter == null) return;
-
         if (entity == null) return;
 
         if (entity instanceof PartEntity<?> part) {
@@ -512,14 +510,14 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
         }
 
         if (headshot) {
-            if (!this.shooter.level().isClientSide() && this.shooter instanceof ServerPlayer player) {
+            if (!this.level().isClientSide() && this.shooter instanceof ServerPlayer player) {
                 var holder = Holder.direct(ModSounds.HEADSHOT.get());
                 player.connection.send(new ClientboundSoundPacket(holder, SoundSource.PLAYERS, player.getX(), player.getY(), player.getZ(), 1f, 1f, player.level().random.nextLong()));
                 PacketDistributor.sendToPlayer(player, new ClientIndicatorMessage(1, 5));
             }
             performOnHit(entity, this.damage, true, this.knockback);
         } else {
-            if (!this.shooter.level().isClientSide() && this.shooter instanceof ServerPlayer player) {
+            if (!this.level().isClientSide() && this.shooter instanceof ServerPlayer player) {
                 var holder = Holder.direct(ModSounds.INDICATION.get());
                 player.connection.send(new ClientboundSoundPacket(holder, SoundSource.PLAYERS, player.getX(), player.getY(), player.getZ(), 1f, 1f, player.level().random.nextLong()));
                 PacketDistributor.sendToPlayer(player, new ClientIndicatorMessage(0, 5));
