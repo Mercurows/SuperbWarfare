@@ -268,6 +268,8 @@
   "des.superbwarfare.artillery_indicator_5": "放置在副手时可使用无人机标记位置，操作方式同上",
   "des.superbwarfare.artillery_indicator.add": "已将%1$s添加至火炮阵列",
   "des.superbwarfare.artillery_indicator.remove": "已将%1$s从火炮阵列中移除",
+  "des.superbwarfare.artillery_indicator.fail": "%1$s的类型与火炮阵列不匹配",
+  "des.superbwarfare.artillery_indicator.type": "当前绑定的类型为：%1$s",
   "item.superbwarfare.iff": "敌我识别装置",
   "curios.identifier.iff": "敌我识别装置",
   "des.superbwarfare.iff_1": "当玩家加入原版队伍，且队伍ID不是“TDM”时，会在屏幕上标记队友位置",
