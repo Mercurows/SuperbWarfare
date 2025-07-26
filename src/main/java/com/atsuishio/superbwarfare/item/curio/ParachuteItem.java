@@ -7,6 +7,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.Vec3;
 import top.theillusivec4.curios.api.CuriosApi;
 import top.theillusivec4.curios.api.SlotContext;
@@ -20,6 +21,11 @@ public class ParachuteItem extends Item implements ICurioItem {
 
     public ParachuteItem() {
         super(new Properties().stacksTo(1).durability(600));
+    }
+
+    @Override
+    public boolean isValidRepairItem(ItemStack pStack, ItemStack pRepairCandidate) {
+        return pRepairCandidate.is(Items.PHANTOM_MEMBRANE);
     }
 
     @Override
