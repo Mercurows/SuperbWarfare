@@ -13,8 +13,11 @@ import top.theillusivec4.curios.api.CuriosApi;
 import top.theillusivec4.curios.api.SlotContext;
 import top.theillusivec4.curios.api.type.capability.ICurioItem;
 
-public class Parachute extends Item implements ICurioItem {
-    public Parachute() {
+public class ParachuteItem extends Item implements ICurioItem {
+
+    public static final String TAG_OPEN = "Open";
+
+    public ParachuteItem() {
         super(new Properties().stacksTo(1).durability(600));
     }
 
@@ -29,21 +32,22 @@ public class Parachute extends Item implements ICurioItem {
     public void curioTick(SlotContext slotContext, ItemStack stack) {
         LivingEntity entity = slotContext.entity();
         var tag = NBTTool.getTag(stack);
-        if ((entity.onGround() || entity.isInWater()) && tag.getBoolean("open")) {
-            tag.putBoolean("open", false);
-            entity.level().playSound(null, entity.getX(), entity.getY(), entity.getZ(), ModSounds.PARACHUTE_CLOSE.get(), SoundSource.PLAYERS, 1f, 1);
-            NBTTool.saveTag(stack, tag);
-        }
-        if (tag.getBoolean("open") && entity instanceof Player player) {
-            if (player.level().isClientSide) {
-                player.addDeltaMovement(new Vec3(player.getLookAngle().x, 0, player.getLookAngle().z).normalize().scale(0.05));
-                player.setDeltaMovement(player.getDeltaMovement().multiply(1.03, 0.75, 1.03));
+        if (tag.getBoolean(TAG_OPEN)) {
+            if ((entity.onGround() || entity.isInWater())) {
+                tag.putBoolean(TAG_OPEN, false);
+                entity.level().playSound(null, entity.getX(), entity.getY(), entity.getZ(), ModSounds.PARACHUTE_CLOSE.get(), SoundSource.PLAYERS, 1f, 1);
             }
-            if (player.tickCount % 40 == 0 && player.level() instanceof ServerLevel serverLevel) {
-                stack.hurtAndBreak(1, serverLevel, player, item -> {
+            if (entity instanceof Player player) {
+                if (player.level().isClientSide) {
+                    player.addDeltaMovement(new Vec3(player.getLookAngle().x, 0, player.getLookAngle().z).normalize().scale(0.05));
+                    player.setDeltaMovement(player.getDeltaMovement().multiply(1.03, 0.75, 1.03));
+                }
+            }
+            if (entity.tickCount % 40 == 0 && entity.level() instanceof ServerLevel serverLevel) {
+                stack.hurtAndBreak(1, serverLevel, entity, item -> {
                 });
             }
-            player.resetFallDistance();
+            entity.resetFallDistance();
         }
     }
 }

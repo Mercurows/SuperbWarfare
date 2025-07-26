@@ -14,7 +14,7 @@ import com.atsuishio.superbwarfare.item.common.container.LuckyContainerBlockItem
 import com.atsuishio.superbwarfare.item.common.container.SmallContainerBlockItem;
 import com.atsuishio.superbwarfare.item.curio.DogTagItem;
 import com.atsuishio.superbwarfare.item.curio.IffItem;
-import com.atsuishio.superbwarfare.item.curio.Parachute;
+import com.atsuishio.superbwarfare.item.curio.ParachuteItem;
 import com.atsuishio.superbwarfare.item.gun.handgun.*;
 import com.atsuishio.superbwarfare.item.gun.heavy.Ntw20Item;
 import com.atsuishio.superbwarfare.item.gun.launcher.JavelinItem;
@@ -179,7 +179,7 @@ public class ModItems {
     public static final DeferredHolder<Item, UsHelmetPastg> US_HELMET_PASTG = ITEMS.register("us_helmet_pastg", UsHelmetPastg::new);
     public static final DeferredHolder<Item, UsChestIotv> US_CHEST_IOTV = ITEMS.register("us_chest_iotv", UsChestIotv::new);
     public static final DeferredHolder<Item, GeHelmetM35> GE_HELMET_M_35 = ITEMS.register("ge_helmet_m_35", GeHelmetM35::new);
-    public static final DeferredHolder<Item, Parachute> PARACHUTE = ITEMS.register("parachute", Parachute::new);
+    public static final DeferredHolder<Item, ParachuteItem> PARACHUTE = ITEMS.register("parachute", ParachuteItem::new);
     public static final DeferredHolder<Item, MortarDeployer> MORTAR_DEPLOYER = ITEMS.register("mortar_deployer", MortarDeployer::new);
     public static final DeferredHolder<Item, Item> MORTAR_BARREL = ITEMS.register("mortar_barrel", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> MORTAR_BASE_PLATE = ITEMS.register("mortar_base_plate", () -> new Item(new Item.Properties()));
