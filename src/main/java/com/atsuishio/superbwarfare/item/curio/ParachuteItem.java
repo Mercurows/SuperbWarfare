@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.item.curio;
 
+import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.LivingEntity;
@@ -49,5 +50,13 @@ public class ParachuteItem extends Item implements ICurioItem {
             }
             entity.resetFallDistance();
         }
+    }
+
+    public static boolean isParachuteOpen(LivingEntity entity) {
+        return CuriosApi.getCuriosInventory(entity)
+                .map(c -> c.findFirstCurio(ModItems.PARACHUTE.get())
+                        .map(slotResult -> slotResult.stack().getOrCreateTag().getBoolean(ParachuteItem.TAG_OPEN))
+                        .orElse(false)
+                ).orElse(false);
     }
 }

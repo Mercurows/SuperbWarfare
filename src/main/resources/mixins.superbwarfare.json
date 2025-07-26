@@ -33,7 +33,8 @@
     "LivingEntityRendererMixin",
     "MinecraftMixin",
     "MouseHandlerMixin",
-    "PlayerItemInHandLayerMixin"
+    "PlayerItemInHandLayerMixin",
+    "PlayerModelMixin"
   ],
   "minVersion": "0.8",
   "injectors": {

@@ -25,10 +25,8 @@ public class ItemInHandLayerMixin {
             if (arm == HumanoidArm.LEFT) {
                 ItemStack mainHand = entity.getMainHandItem();
                 if (!(mainHand.getItem() instanceof GunItem)) return;
-
                 ci.cancel();
             }
         }
     }
-
 }
