@@ -142,6 +142,7 @@ public class ModItemModelProvider extends ItemModelProvider {
         simpleItem(ModItems.LARGE_BATTERY_PACK);
         simpleItem(ModItems.MEDICAL_KIT);
         simpleItem(ModItems.PARACHUTE);
+        simpleItem(ModItems.VEHICLE_DAMAGE_ANALYZER);
 
         simpleItem(ModItems.TUNGSTEN_ROD);
 
