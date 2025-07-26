@@ -13,7 +13,7 @@ public class IncendiaryBullet extends AmmoPerk {
 
     public IncendiaryBullet() {
         super(new AmmoPerk.Builder("incendiary_bullet", Perk.Type.AMMO).bypassArmorRate(-0.4f).damageRate(0.7f).speedRate(0.75f).slug(false).rgb(230, 131, 65)
-                .mobEffect(ModMobEffects.BURN));
+                .mobEffect(ModMobEffects.BURN::get));
     }
 
     @Override

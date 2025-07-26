@@ -31,6 +31,7 @@ public class NetworkRegistry {
         playToServer(LaserShootMessage.TYPE, LaserShootMessage.STREAM_CODEC, LaserShootMessage::handler);
         playToServer(ShootMessage.TYPE, ShootMessage.STREAM_CODEC, ShootMessage::handler);
         playToServer(DoubleJumpMessage.TYPE, DoubleJumpMessage.STREAM_CODEC, (message, context) -> DoubleJumpMessage.handler(context));
+        playToServer(ParachuteMessage.TYPE, ParachuteMessage.STREAM_CODEC, (msg, ctx) -> ParachuteMessage.handler(ctx));
         playToServer(VehicleMovementMessage.TYPE, VehicleMovementMessage.STREAM_CODEC, VehicleMovementMessage::handler);
         playToServer(MeleeAttackMessage.TYPE, MeleeAttackMessage.STREAM_CODEC, MeleeAttackMessage::handler);
         playToServer(LungeMineAttackMessage.TYPE, LungeMineAttackMessage.STREAM_CODEC, LungeMineAttackMessage::handler);

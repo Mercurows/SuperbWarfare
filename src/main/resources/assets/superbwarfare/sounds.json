@@ -3430,5 +3430,21 @@
         "stream": false
       }
     ]
+  },
+  "parachute_open": {
+    "sounds": [
+      {
+        "name": "superbwarfare:parachute/parachute_open",
+        "stream": false
+      }
+    ]
+  },
+  "parachute_close": {
+    "sounds": [
+      {
+        "name": "superbwarfare:parachute/parachute_close",
+        "stream": false
+      }
+    ]
   }
 }
