@@ -299,7 +299,7 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
             return;
         }
         float angle = (float) -getXRotFromVector(launchVector);
-        if (angle < -30 || angle > 2.7) {
+        if (angle > -maxPitch() && angle < -minPitch()) {
             entityData.set(PITCH, angle);
         }
     }

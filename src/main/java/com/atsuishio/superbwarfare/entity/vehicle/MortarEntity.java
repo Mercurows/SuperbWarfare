@@ -305,7 +305,7 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, RemoteCont
             return;
         }
         float angle = (float) -getXRotFromVector(launchVector);
-        if (angle > -89 && angle < -20) {
+        if (angle > -maxPitch() && angle < -minPitch()) {
             entityData.set(PITCH, angle);
         }
     }
