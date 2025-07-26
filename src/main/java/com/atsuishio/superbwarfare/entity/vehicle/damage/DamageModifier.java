@@ -269,11 +269,11 @@ public class DamageModifier {
             var sourceString = switch (modify.sourceType) {
                 case TAG_KEY -> {
                     color = 0xff987e;
-                    yield modify.sourceTagKey.location();
+                    yield modify.sourceTagKey.location().toString();
                 }
                 case ENTITY_TAG -> {
                     color = 0xffd07e;
-                    yield modify.entityTag.location();
+                    yield modify.entityTag.location().toString();
                 }
                 case FUNCTION -> {
                     color = 0xe1ff6b;
@@ -285,7 +285,7 @@ public class DamageModifier {
                 }
                 case RESOURCE_KEY -> {
                     color = 0x6b7aff;
-                    yield modify.sourceKey.location();
+                    yield modify.sourceKey.location().toString();
                 }
                 case ALL -> {
                     color = 0xff6bdf;
