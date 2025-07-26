@@ -679,15 +679,14 @@ public abstract class VehicleEntity extends Entity implements Container {
 
         ItemStack stack = player.getMainHandItem();
 
-        if (stack.is(ModItems.TARGET_DEPLOYER.get()) || stack.is(ModItems.DPS_GENERATOR_DEPLOYER.get())) {
-            // TODO 优化交互和提示
+        if (stack.is(ModItems.VEHICLE_DAMAGE_ANALYZER.get())) {
             if (!level().isClientSide) {
                 if (this.damageDebugResultReceiver != null) {
                     this.damageDebugResultReceiver = null;
-                    player.sendSystemMessage(Component.literal("unbind success"));
+                    player.displayClientMessage(Component.translatable("des.superbwarfare.vehicle_damage_analyzer.unbind", this.getDisplayName()), true);
                 } else {
                     this.damageDebugResultReceiver = player;
-                    player.sendSystemMessage(Component.literal("bind success"));
+                    player.displayClientMessage(Component.translatable("des.superbwarfare.vehicle_damage_analyzer.bind", this.getDisplayName()), true);
                 }
             }
             return InteractionResult.SUCCESS;

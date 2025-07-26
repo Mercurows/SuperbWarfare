@@ -219,6 +219,7 @@ public class ModItems {
     public static final DeferredHolder<Item, Transcript> TRANSCRIPT = ITEMS.register("transcript", Transcript::new);
     public static final DeferredHolder<Item, FiringParameters> FIRING_PARAMETERS = ITEMS.register("firing_parameters", FiringParameters::new);
     public static final DeferredHolder<Item, MedicalKitItem> MEDICAL_KIT = ITEMS.register("medical_kit", MedicalKitItem::new);
+    public static final DeferredHolder<Item, VehicleDamageAnalyzer> VEHICLE_DAMAGE_ANALYZER = ITEMS.register("vehicle_damage_analyzer", VehicleDamageAnalyzer::new);
 
     public static final DeferredHolder<Item, Item> TUNGSTEN_ROD = ITEMS.register("tungsten_rod", () -> new Item(new Item.Properties()));
 
