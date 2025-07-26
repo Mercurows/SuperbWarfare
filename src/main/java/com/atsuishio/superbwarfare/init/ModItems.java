@@ -218,6 +218,7 @@ public class ModItems {
     public static final RegistryObject<Item> TRANSCRIPT = ITEMS.register("transcript", Transcript::new);
     public static final RegistryObject<Item> FIRING_PARAMETERS = ITEMS.register("firing_parameters", FiringParameters::new);
     public static final RegistryObject<Item> MEDICAL_KIT = ITEMS.register("medical_kit", MedicalKitItem::new);
+    public static final RegistryObject<Item> VEHICLE_DAMAGE_ANALYZER = ITEMS.register("vehicle_damage_analyzer", VehicleDamageAnalyzer::new);
 
     public static final RegistryObject<Item> TUNGSTEN_ROD = ITEMS.register("tungsten_rod", () -> new Item(new Item.Properties()));
 
