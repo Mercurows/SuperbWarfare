@@ -154,17 +154,19 @@ public class GunEventHandler {
         var magazine = data.magazine();
 
         // TODO 修改为更正确的退弹药方式？
-        if (((hasBulletInBarrel && ammoCount > magazine + 1) || (!hasBulletInBarrel && ammoCount > magazine)) && shooter instanceof Player player) {
+        if ((hasBulletInBarrel && ammoCount > magazine + 1) || (!hasBulletInBarrel && ammoCount > magazine)) {
             int count = ammoCount - magazine - (hasBulletInBarrel ? 1 : 0);
-            var capability = player.getData(ModAttachments.PLAYER_VARIABLE).watch();
 
-            var ammoType = data.ammoTypeInfo().playerAmmoType();
-            if (ammoType != null) {
-                ammoType.add(capability, count);
+            if (shooter instanceof Player player) {
+                var capability = player.getData(ModAttachments.PLAYER_VARIABLE).watch();
+                var ammoType = data.ammoTypeInfo().playerAmmoType();
+                if (ammoType != null) {
+                    ammoType.add(capability, count);
+                }
+                player.setData(ModAttachments.PLAYER_VARIABLE, capability);
+                capability.sync(player);
             }
 
-            player.setData(ModAttachments.PLAYER_VARIABLE, capability);
-            capability.sync(player);
             data.ammo.set(magazine + (hasBulletInBarrel ? 1 : 0));
         }
     }
