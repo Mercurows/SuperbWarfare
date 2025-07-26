@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.network.message.send;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.entity.vehicle.base.RemoteControllableTurret;
 import com.atsuishio.superbwarfare.init.ModItems;
+import com.atsuishio.superbwarfare.item.ArtilleryIndicator;
 import com.atsuishio.superbwarfare.tools.EntityFindUtil;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -32,6 +33,11 @@ public enum ArtilleryIndicatorFireMessage {
 
                 if (stack.is(ModItems.ARTILLERY_INDICATOR.get())) {
                     ListTag tags = stack.getOrCreateTag().getList(TAG_CANNON, Tag.TAG_COMPOUND);
+                    if (tags.isEmpty()) {
+                        stack.getOrCreateTag().remove(ArtilleryIndicator.TAG_TYPE);
+                        return;
+                    }
+
                     for (int i = 0; i < tags.size(); i++) {
                         var tag = tags.getCompound(i);
                         Entity entity = EntityFindUtil.findEntity(player.level(), tag.getString("UUID"));
