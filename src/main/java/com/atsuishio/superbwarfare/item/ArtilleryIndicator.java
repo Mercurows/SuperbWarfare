@@ -33,6 +33,7 @@ import java.util.List;
 public class ArtilleryIndicator extends Item implements ItemScreenProvider {
 
     public static final String TAG_CANNON = "Cannons";
+    public static final String TAG_TYPE = "Type";
 
     public ArtilleryIndicator() {
         super(new Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
@@ -41,6 +42,10 @@ public class ArtilleryIndicator extends Item implements ItemScreenProvider {
     @Override
     public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, List<Component> pTooltipComponents, TooltipFlag pIsAdvanced) {
         TooltipTool.addScreenProviderText(pTooltipComponents);
+        if (pStack.getTag() != null && pStack.getTag().contains(TAG_TYPE)) {
+            pTooltipComponents.add(Component.translatable("des.superbwarfare.artillery_indicator.type", Component.translatable(pStack.getTag().getString(TAG_TYPE)))
+                    .withStyle(ChatFormatting.WHITE));
+        }
         pTooltipComponents.add(Component.translatable("des.superbwarfare.artillery_indicator_1").withStyle(ChatFormatting.GRAY));
         pTooltipComponents.add(Component.translatable("des.superbwarfare.artillery_indicator_2").withStyle(ChatFormatting.GRAY));
         pTooltipComponents.add(Component.translatable("des.superbwarfare.artillery_indicator_3").withStyle(ChatFormatting.GRAY));
@@ -81,8 +86,17 @@ public class ArtilleryIndicator extends Item implements ItemScreenProvider {
         pLivingEntity.playSound(SoundEvents.SPYGLASS_STOP_USING, 1.0F, 1.0F);
     }
 
-    public boolean addCannon(ItemStack stack, String uuid) {
+    public boolean addCannon(ItemStack stack, Entity entity) {
+        String uuid = entity.getStringUUID();
         ListTag tags = stack.getOrCreateTag().getList(TAG_CANNON, Tag.TAG_COMPOUND);
+        if (tags.isEmpty()) {
+            stack.getOrCreateTag().putString(TAG_TYPE, entity.getType().getDescriptionId());
+        } else {
+            if (!stack.getOrCreateTag().getString(TAG_TYPE).equals(entity.getType().getDescriptionId())) {
+                return false;
+            }
+        }
+
         List<CompoundTag> list = new ArrayList<>();
         for (int i = 0; i < tags.size(); i++) {
             list.add(tags.getCompound(i));
@@ -92,9 +106,9 @@ public class ArtilleryIndicator extends Item implements ItemScreenProvider {
                 return false;
             }
         }
-        CompoundTag mortar = new CompoundTag();
-        mortar.putString("UUID", uuid);
-        list.add(mortar);
+        CompoundTag uuidTag = new CompoundTag();
+        uuidTag.putString("UUID", uuid);
+        list.add(uuidTag);
 
         ListTag listTag = new ListTag();
         listTag.addAll(list);
@@ -119,6 +133,9 @@ public class ArtilleryIndicator extends Item implements ItemScreenProvider {
             ListTag listTag = new ListTag();
             listTag.addAll(list);
             stack.getOrCreateTag().put(TAG_CANNON, listTag);
+            if (listTag.isEmpty()) {
+                stack.getOrCreateTag().remove(TAG_TYPE);
+            }
         }
 
         return flag;
@@ -152,7 +169,7 @@ public class ArtilleryIndicator extends Item implements ItemScreenProvider {
     }
 
     public InteractionResult bind(ItemStack stack, Player player, Entity entity) {
-        if (this.addCannon(stack, entity.getStringUUID())) {
+        if (this.addCannon(stack, entity)) {
             if (player instanceof ServerPlayer serverPlayer) {
                 serverPlayer.level().playSound(null, serverPlayer.getOnPos(), SoundEvents.ARROW_HIT_PLAYER, SoundSource.PLAYERS, 0.5F, 1);
             }
@@ -167,6 +184,8 @@ public class ArtilleryIndicator extends Item implements ItemScreenProvider {
                     .withStyle(ChatFormatting.RED), true);
             return InteractionResult.SUCCESS;
         } else {
+            player.displayClientMessage(Component.translatable("des.superbwarfare.artillery_indicator.fail", entity.getDisplayName())
+                    .withStyle(ChatFormatting.RED), true);
             return InteractionResult.FAIL;
         }
     }

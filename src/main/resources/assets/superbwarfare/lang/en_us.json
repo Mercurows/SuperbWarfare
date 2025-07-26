@@ -268,6 +268,8 @@
   "des.superbwarfare.artillery_indicator_5": "When in off-hand: use drone to mark locations (same controls as above)",
   "des.superbwarfare.artillery_indicator.add": "%1$s has been added to the artillery array",
   "des.superbwarfare.artillery_indicator.remove": "%1$s has been removed from the artillery array",
+  "des.superbwarfare.artillery_indicator.fail": "%1$s's type is not compatible with the artillery array",
+  "des.superbwarfare.artillery_indicator.type": "Current artillery type: %1$s",
   "item.superbwarfare.iff": "IFF",
   "curios.identifier.iff": "IFF",
   "des.superbwarfare.iff_1": "When player joins a vanilla team and team ID ≠ 'TDM', teammate indicator will display onscreen",
