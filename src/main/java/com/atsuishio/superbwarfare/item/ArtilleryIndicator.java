@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.item;
 
 import com.atsuishio.superbwarfare.client.TooltipTool;
 import com.atsuishio.superbwarfare.client.screens.ArtilleryIndicatorScreen;
+import com.atsuishio.superbwarfare.config.server.MiscConfig;
 import com.atsuishio.superbwarfare.entity.vehicle.base.RemoteControllableTurret;
 import com.atsuishio.superbwarfare.tools.EntityFindUtil;
 import com.atsuishio.superbwarfare.tools.NBTTool;
@@ -91,6 +92,11 @@ public class ArtilleryIndicator extends Item implements ItemScreenProvider {
         pLivingEntity.playSound(SoundEvents.SPYGLASS_STOP_USING, 1.0F, 1.0F);
     }
 
+    public boolean checkFull(ItemStack stack) {
+        ListTag tags = NBTTool.getTag(stack).getList(TAG_CANNON, Tag.TAG_COMPOUND);
+        return tags.size() >= MiscConfig.ARTILLERY_INDICATOR_LIST_SIZE.get();
+    }
+
     public boolean addCannon(ItemStack stack, Entity entity) {
         String uuid = entity.getStringUUID();
         var tag = NBTTool.getTag(stack);
@@ -176,11 +182,19 @@ public class ArtilleryIndicator extends Item implements ItemScreenProvider {
             ListTag listTag = new ListTag();
             listTag.addAll(list);
             mainTag.put(TAG_CANNON, listTag);
+            if (listTag.isEmpty()) {
+                mainTag.remove(TAG_TYPE);
+            }
             NBTTool.saveTag(stack, mainTag);
         }
     }
 
     public InteractionResult bind(ItemStack stack, Player player, Entity entity) {
+        if (this.checkFull(stack)) {
+            player.displayClientMessage(Component.translatable("des.superbwarfare.artillery_indicator.full").withStyle(ChatFormatting.RED), true);
+            return InteractionResult.FAIL;
+        }
+
         if (this.addCannon(stack, entity)) {
             if (player instanceof ServerPlayer serverPlayer) {
                 serverPlayer.level().playSound(null, serverPlayer.getOnPos(), SoundEvents.ARROW_HIT_PLAYER, SoundSource.PLAYERS, 0.5F, 1);

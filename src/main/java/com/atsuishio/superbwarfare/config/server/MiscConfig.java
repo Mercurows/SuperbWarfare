@@ -16,6 +16,7 @@ public class MiscConfig {
     public static ModConfigSpec.IntValue CHARGING_STATION_TRANSFER_SPEED;
     public static ModConfigSpec.IntValue CHARGING_STATION_CHARGE_RADIUS;
     public static ModConfigSpec.IntValue CHARGING_STATION_DEFAULT_FUEL_TIME;
+    public static ModConfigSpec.IntValue ARTILLERY_INDICATOR_LIST_SIZE;
 
     public static void init(ModConfigSpec.Builder builder) {
         builder.push("misc");
@@ -55,6 +56,9 @@ public class MiscConfig {
 
         builder.comment("The default fuel time of the charging station");
         CHARGING_STATION_DEFAULT_FUEL_TIME = builder.defineInRange("charging_station_default_fuel_time", 1600, 1, Integer.MAX_VALUE);
+
+        builder.comment("The max size of artillery indicator binding list");
+        ARTILLERY_INDICATOR_LIST_SIZE = builder.defineInRange("artillery_indicator_list_size", 32, 1, Integer.MAX_VALUE);
 
         builder.pop();
     }
