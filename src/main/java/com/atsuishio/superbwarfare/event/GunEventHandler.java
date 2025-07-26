@@ -22,13 +22,15 @@ import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.common.NeoForge;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class GunEventHandler {
 
     /**
      * 拉大栓
      */
-    private static void handleGunBolt(GunData data) {
+    private static void handleGunBolt(@NotNull GunData data) {
         var stack = data.stack();
 
         if (stack.is(ModTags.Items.NORMAL_GUN)) {
@@ -47,8 +49,8 @@ public class GunEventHandler {
     /**
      * 播放拉栓音效
      */
-    public static void playGunBoltSounds(Entity shooter, GunData data) {
-        if (!shooter.level().isClientSide) {
+    public static void playGunBoltSounds(@Nullable Entity shooter, @NotNull GunData data) {
+        if (shooter != null && !shooter.level().isClientSide) {
             String origin = data.stack.getItem().getDescriptionId();
             String name = origin.substring(origin.lastIndexOf(".") + 1);
 
@@ -81,7 +83,7 @@ public class GunEventHandler {
     /**
      * 完成换弹过程，装填弹药
      */
-    private static void finishReload(Entity shooter, GunData data) {
+    private static void finishReload(@Nullable Entity shooter, @NotNull GunData data) {
         if (data.item.isOpenBolt(data.stack)) {
             if (data.ammo.get() == 0) {
                 finishGunEmptyReload(shooter, data);
@@ -100,7 +102,7 @@ public class GunEventHandler {
     /**
      * 初始化枪械ID和弹药数量
      */
-    public static void init(Entity shooter, GunData data) {
+    public static void init(@Nullable Entity shooter, @NotNull GunData data) {
         if (!data.initialized()) {
             data.initialize();
             if (shooter instanceof Player player && player.isCreative()) {
@@ -112,7 +114,7 @@ public class GunEventHandler {
     /**
      * 更新perk相关属性
      */
-    public static void tickPerk(Entity shooter, GunData data) {
+    public static void tickPerk(@Nullable Entity shooter, @NotNull GunData data) {
         for (Perk.Type type : Perk.Type.values()) {
             var instance = data.perk.getInstance(type);
             if (instance != null) {
@@ -124,17 +126,19 @@ public class GunEventHandler {
     /**
      * 减少过热值
      */
-    public static void handleCooldown(Entity shooter, GunData data) {
-        double cooldown = 0;
-        if (shooter.wasInPowderSnow) {
-            cooldown = 0.15;
-        } else if (shooter.isInWaterOrRain()) {
-            cooldown = 0.04;
-        } else if (shooter.isOnFire() || shooter.isInLava()) {
-            cooldown = -0.1;
+    public static void handleCooldown(@Nullable Entity shooter, @NotNull GunData data) {
+        double extraCooldown = 0;
+        if (shooter != null) {
+            if (shooter.wasInPowderSnow) {
+                extraCooldown = 0.15;
+            } else if (shooter.isInWaterOrRain()) {
+                extraCooldown = 0.04;
+            } else if (shooter.isOnFire() || shooter.isInLava()) {
+                extraCooldown = -0.1;
+            }
         }
 
-        data.heat.set(Mth.clamp(data.heat.get() - 0.25 - cooldown, 0, 100));
+        data.heat.set(Mth.clamp(data.heat.get() - 0.25 - extraCooldown, 0, 100));
 
         if (data.heat.get() < 80 && data.overHeat.get()) {
             data.overHeat.set(false);
@@ -144,7 +148,7 @@ public class GunEventHandler {
     /**
      * 返还多余弹药
      */
-    public static void redrawExtraAmmo(Entity shooter, GunData data) {
+    public static void redrawExtraAmmo(@Nullable Entity shooter, @NotNull GunData data) {
         var hasBulletInBarrel = data.item.hasBulletInBarrel(data.stack);
         var ammoCount = data.ammo.get();
         var magazine = data.magazine();
@@ -165,7 +169,7 @@ public class GunEventHandler {
         }
     }
 
-    public static void gunTick(Entity shooter, GunData data, boolean inMainHand) {
+    public static void gunTick(@Nullable Entity shooter, @NotNull GunData data, boolean inMainHand) {
         init(shooter, data);
         tickPerk(shooter, data);
         handleCooldown(shooter, data);
@@ -203,27 +207,27 @@ public class GunEventHandler {
         data.save();
     }
 
-    private static void startReload(Entity entity, GunData data) {
+    private static void startReload(@Nullable Entity shooter, @NotNull GunData data) {
         var reload = data.reload;
 
         if (data.item.isOpenBolt(data.stack)) {
             if (data.ammo.get() == 0) {
                 reload.setTime(data.defaultEmptyReloadTime() + 1);
                 reload.setState(ReloadState.EMPTY_RELOADING);
-                playGunEmptyReloadSounds(entity, data);
+                playGunEmptyReloadSounds(shooter, data);
             } else {
                 reload.setTime(data.defaultNormalReloadTime() + 1);
                 reload.setState(ReloadState.NORMAL_RELOADING);
-                playGunNormalReloadSounds(entity, data);
+                playGunNormalReloadSounds(shooter, data);
             }
         } else {
             reload.setTime(data.defaultEmptyReloadTime() + 2);
             reload.setState(ReloadState.EMPTY_RELOADING);
-            playGunEmptyReloadSounds(entity, data);
+            playGunEmptyReloadSounds(shooter, data);
         }
     }
 
-    public static void finishGunNormalReload(Entity shooter, GunData data) {
+    public static void finishGunNormalReload(@Nullable Entity shooter, @NotNull GunData data) {
         var stack = data.stack();
         var gunItem = data.item();
 
@@ -240,7 +244,7 @@ public class GunEventHandler {
         NeoForge.EVENT_BUS.post(new ReloadEvent.Post(shooter, data));
     }
 
-    public static void finishGunEmptyReload(Entity shooter, GunData data) {
+    public static void finishGunEmptyReload(@Nullable Entity shooter, @NotNull GunData data) {
         if (InventoryTool.hasCreativeAmmoBox(shooter)) {
             data.ammo.set(data.magazine());
         } else {
@@ -249,30 +253,30 @@ public class GunEventHandler {
         NeoForge.EVENT_BUS.post(new ReloadEvent.Post(shooter, data));
     }
 
-    public static void playGunEmptyReloadSounds(Entity entity, GunData data) {
+    public static void playGunEmptyReloadSounds(@Nullable Entity shooter, @NotNull GunData data) {
         ItemStack stack = data.stack;
 
-        if (!entity.level().isClientSide) {
+        if (shooter != null && !shooter.level().isClientSide) {
             String origin = stack.getItem().getDescriptionId();
             String name = origin.substring(origin.lastIndexOf(".") + 1);
 
             SoundEvent sound1p = BuiltInRegistries.SOUND_EVENT.get(Mod.loc(name + "_reload_empty"));
-            if (sound1p != null && entity instanceof ServerPlayer serverPlayer) {
+            if (sound1p != null && shooter instanceof ServerPlayer serverPlayer) {
                 SoundTool.playLocalSound(serverPlayer, sound1p, 10f, 1f);
             }
         }
     }
 
-    public static void playGunNormalReloadSounds(Entity entity, GunData data) {
+    public static void playGunNormalReloadSounds(@Nullable Entity shooter, @NotNull GunData data) {
         ItemStack stack = data.stack;
 
-        if (!entity.level().isClientSide) {
+        if (shooter != null && !shooter.level().isClientSide) {
             String origin = stack.getItem().getDescriptionId();
             String name = origin.substring(origin.lastIndexOf(".") + 1);
 
             SoundEvent sound1p = BuiltInRegistries.SOUND_EVENT.get(Mod.loc(name + "_reload_normal"));
 
-            if (sound1p != null && entity instanceof ServerPlayer serverPlayer) {
+            if (sound1p != null && shooter instanceof ServerPlayer serverPlayer) {
                 SoundTool.playLocalSound(serverPlayer, sound1p, 10f, 1f);
             }
         }
@@ -281,7 +285,7 @@ public class GunEventHandler {
     /**
      * 单发装填类的武器换弹流程
      */
-    private static void handleGunSingleReload(Entity shooter, GunData data) {
+    private static void handleGunSingleReload(@Nullable Entity shooter, @NotNull GunData data) {
         var stack = data.stack();
         var reload = data.reload;
 
@@ -398,20 +402,24 @@ public class GunEventHandler {
         }
     }
 
-    public static void iterativeLoad(Entity shooter, GunData data) {
+    public static void iterativeLoad(@Nullable Entity shooter, @NotNull GunData data) {
         var required = Math.min(data.magazine() - data.ammo.get(), data.iterativeLoadAmount());
         var available = Math.min(required, data.countBackupAmmo(shooter));
         data.ammo.add(available);
 
         if (!InventoryTool.hasCreativeAmmoBox(shooter)) {
-            var cap = shooter.getData(ModAttachments.PLAYER_VARIABLE);
-            data.consumeBackupAmmo(shooter, available);
-            shooter.setData(ModAttachments.PLAYER_VARIABLE, cap);
+            if (shooter != null) {
+                var cap = shooter.getData(ModAttachments.PLAYER_VARIABLE);
+                data.consumeBackupAmmo(shooter, available);
+                shooter.setData(ModAttachments.PLAYER_VARIABLE, cap);
+            } else {
+                data.consumeBackupAmmo((Entity) null, available);
+            }
         }
     }
 
-    public static void playGunPrepareReloadSounds(Entity shooter, GunData data) {
-        if (!shooter.level().isClientSide) {
+    public static void playGunPrepareReloadSounds(@Nullable Entity shooter, @NotNull GunData data) {
+        if (shooter != null && !shooter.level().isClientSide) {
             String origin = data.stack.getItem().getDescriptionId();
             String name = origin.substring(origin.lastIndexOf(".") + 1);
 
@@ -422,8 +430,8 @@ public class GunEventHandler {
         }
     }
 
-    public static void playGunEmptyPrepareSounds(Entity shooter, GunData data) {
-        if (!shooter.level().isClientSide) {
+    public static void playGunEmptyPrepareSounds(@Nullable Entity shooter, @NotNull GunData data) {
+        if (shooter != null && !shooter.level().isClientSide) {
             String origin = data.stack.getItem().getDescriptionId();
             String name = origin.substring(origin.lastIndexOf(".") + 1);
 
@@ -453,10 +461,10 @@ public class GunEventHandler {
         }
     }
 
-    public static void playGunPrepareLoadReloadSounds(Entity shooter, GunData data) {
+    public static void playGunPrepareLoadReloadSounds(@Nullable Entity shooter, @NotNull GunData data) {
         ItemStack stack = data.stack;
 
-        if (!shooter.level().isClientSide) {
+        if (shooter != null && !shooter.level().isClientSide) {
             String origin = stack.getItem().getDescriptionId();
             String name = origin.substring(origin.lastIndexOf(".") + 1);
 
@@ -486,8 +494,8 @@ public class GunEventHandler {
         }
     }
 
-    public static void playGunLoopReloadSounds(Entity shooter, GunData data) {
-        if (!shooter.level().isClientSide) {
+    public static void playGunLoopReloadSounds(@Nullable Entity shooter, @NotNull GunData data) {
+        if (shooter != null && !shooter.level().isClientSide) {
             String origin = data.stack.getItem().getDescriptionId();
             String name = origin.substring(origin.lastIndexOf(".") + 1);
 
@@ -498,8 +506,8 @@ public class GunEventHandler {
         }
     }
 
-    public static void playGunEndReloadSounds(Entity shooter, GunData data) {
-        if (!shooter.level().isClientSide) {
+    public static void playGunEndReloadSounds(@Nullable Entity shooter, @NotNull GunData data) {
+        if (shooter != null && !shooter.level().isClientSide) {
             String origin = data.stack.getItem().getDescriptionId();
             String name = origin.substring(origin.lastIndexOf(".") + 1);
 

@@ -5,6 +5,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.Event;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 
 @ApiStatus.Internal
 @ApiStatus.AvailableSince("0.8.0")
@@ -21,18 +22,18 @@ public class ReloadEvent extends Event {
     }
 
     public static class Pre extends ReloadEvent {
-        public Pre(Entity shooter, GunData data) {
+        public Pre(@Nullable Entity shooter, GunData data) {
             super(shooter, data);
         }
     }
 
     public static class Post extends ReloadEvent {
-        public Post(Entity shooter, GunData data) {
+        public Post(@Nullable Entity shooter, GunData data) {
             super(shooter, data);
         }
     }
 
-    public Entity getEntity() {
+    public @Nullable Entity getEntity() {
         return shooter;
     }
 
