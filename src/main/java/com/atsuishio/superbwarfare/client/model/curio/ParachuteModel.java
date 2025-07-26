@@ -24,7 +24,7 @@ public class ParachuteModel extends HumanoidModel<LivingEntity> {
     }
 
     public static LayerDefinition createBodyLayer() {
-        MeshDefinition meshdefinition = new MeshDefinition();
+        MeshDefinition meshdefinition = HumanoidModel.createMesh(new CubeDeformation(0.0f), 0.0f);
         PartDefinition partdefinition = meshdefinition.getRoot();
 
         PartDefinition parachute = partdefinition.addOrReplaceChild("parachute", CubeListBuilder.create(), PartPose.offset(0.0F, -22.0F, 0.0F));
