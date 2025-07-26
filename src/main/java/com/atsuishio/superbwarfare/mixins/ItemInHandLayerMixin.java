@@ -21,12 +21,12 @@ public class ItemInHandLayerMixin {
     @Inject(method = "renderArmWithItem(Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/item/ItemDisplayContext;Lnet/minecraft/world/entity/HumanoidArm;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V",
             at = @At(value = "HEAD"), cancellable = true)
     private void renderArmWithItemHead(LivingEntity entity, ItemStack stack, ItemDisplayContext display, HumanoidArm arm, PoseStack poseStack, MultiBufferSource source, int light, CallbackInfo ci) {
-        if (entity.getType() == EntityType.PLAYER && arm == HumanoidArm.LEFT) {
-            ItemStack mainHand = entity.getMainHandItem();
-            if (!(mainHand.getItem() instanceof GunItem)) return;
-
-            ci.cancel();
+        if (entity.getType() == EntityType.PLAYER) {
+            if (arm == HumanoidArm.LEFT) {
+                ItemStack mainHand = entity.getMainHandItem();
+                if (!(mainHand.getItem() instanceof GunItem)) return;
+                ci.cancel();
+            }
         }
     }
-
 }

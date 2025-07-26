@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.item.curio;
 
+import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.tools.NBTTool;
 import net.minecraft.server.level.ServerLevel;
@@ -49,5 +50,13 @@ public class ParachuteItem extends Item implements ICurioItem {
             }
             entity.resetFallDistance();
         }
+    }
+
+    public static boolean isParachuteOpen(LivingEntity entity) {
+        return CuriosApi.getCuriosInventory(entity)
+                .map(c -> c.findFirstCurio(ModItems.PARACHUTE.get())
+                        .map(slotResult -> NBTTool.getTag(slotResult.stack()).getBoolean(ParachuteItem.TAG_OPEN))
+                        .orElse(false)
+                ).orElse(false);
     }
 }
