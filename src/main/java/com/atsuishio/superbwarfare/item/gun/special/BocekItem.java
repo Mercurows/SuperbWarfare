@@ -149,8 +149,8 @@ public class BocekItem extends GunItem {
     public void shoot(
             @Nullable Entity shooter,
             @NotNull ServerLevel level,
-            Vec3 shootPosition,
-            Vec3 shootDirection,
+            @NotNull Vec3 shootPosition,
+            @NotNull Vec3 shootDirection,
             @NotNull GunData data,
             double spread,
             boolean zoom,
