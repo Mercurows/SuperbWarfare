@@ -2,9 +2,11 @@ package com.atsuishio.superbwarfare.network.message.send;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
+import com.atsuishio.superbwarfare.init.ModMobEffects;
 import com.atsuishio.superbwarfare.network.message.receive.ClientSetMotionMessage;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraftforge.network.NetworkEvent;
 import net.minecraftforge.network.PacketDistributor;
 
@@ -38,6 +40,7 @@ public class PlayerStopRidingMessage {
                 }
                 player.stopRiding();
                 player.setJumping(false);
+                player.addEffect(new MobEffectInstance(ModMobEffects.STRIKE_PROTECTION.get(), 10, 0, false, true), player);
             }
         });
         context.setPacketHandled(true);
