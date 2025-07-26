@@ -552,6 +552,7 @@
 
   "effect.superbwarfare.shock": "电击",
   "effect.superbwarfare.burn": "点燃",
+  "effect.superbwarfare.strike_protection": "撞击保护",
   "item.minecraft.potion.effect.superbwarfare_shock": "电击药水",
   "item.minecraft.splash_potion.effect.superbwarfare_shock": "喷溅型电击药水",
   "item.minecraft.lingering_potion.effect.superbwarfare_shock": "滞留型电击药水",
