@@ -293,7 +293,7 @@ public class DamageModifier {
                 }
             };
             MutableComponent typeString = switch (modify.type) {
-                case IMMUNITY -> Component.literal("0");
+                case IMMUNITY -> Component.literal(" 0").withStyle(ChatFormatting.GRAY);
                 case REDUCE -> Component.literal(" - ").withStyle(ChatFormatting.GREEN)
                         .append(Component.literal("" + modify.value).withStyle(ChatFormatting.RESET))
                         .append(Component.literal(" = " + FormatTool.format2D(damage)).withStyle(ChatFormatting.WHITE));
