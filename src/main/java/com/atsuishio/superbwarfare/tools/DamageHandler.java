@@ -2,7 +2,13 @@ package com.atsuishio.superbwarfare.tools;
 
 import com.atsuishio.superbwarfare.config.server.MiscConfig;
 import com.atsuishio.superbwarfare.entity.mixin.DamageAccess;
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
+import net.minecraft.ChatFormatting;
 import net.minecraft.advancements.CriteriaTriggers;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.tags.DamageTypeTags;
@@ -13,6 +19,8 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.player.Player;
+
+import java.util.List;
 
 public class DamageHandler {
 
@@ -139,5 +147,30 @@ public class DamageHandler {
             }
         }
         return false;
+    }
+
+    public static MutableComponent getDamageInfo(VehicleEntity vehicle, DamageSource source, float amount) {
+        var detailedDamageResult = vehicle.getDamageModifier().matchResult(source, amount);
+        float finalDamage = detailedDamageResult.get(detailedDamageResult.size() - 1).damage();
+
+        var details = Component.empty()
+                .append(Component.translatable("des.superbwarfare.vehicle_damage_analyzer.info.raw", FormatTool.format2D(amount) + "\n").withStyle(ChatFormatting.YELLOW).withStyle(ChatFormatting.UNDERLINE))
+                .append(Component.empty().withStyle(ChatFormatting.RESET))
+                .append(integrateInfo(detailedDamageResult))
+                .append(Component.translatable("des.superbwarfare.vehicle_damage_analyzer.info.final", FormatTool.format2D(finalDamage)).withStyle(ChatFormatting.GREEN));
+
+        return Component.literal("[").append(vehicle.getDisplayName()).append(Component.literal("] ").withStyle(ChatFormatting.WHITE))
+                .append(Component.translatable("des.superbwarfare.vehicle_damage_analyzer.info.raw", FormatTool.format2D(amount)).withStyle(ChatFormatting.YELLOW))
+                .append(Component.literal(" => ").withStyle(ChatFormatting.WHITE))
+                .append(Component.translatable("des.superbwarfare.vehicle_damage_analyzer.info.final", FormatTool.format2D(finalDamage)).withStyle(ChatFormatting.GREEN))
+                .withStyle(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, details)));
+    }
+
+    private static MutableComponent integrateInfo(List<DamageModifier.ModifyResult> results) {
+        var info = Component.empty();
+        for (var result : results) {
+            info = info.append(result.getDamageInfo()).append(Component.literal("\n").withStyle(ChatFormatting.RESET));
+        }
+        return info;
     }
 }

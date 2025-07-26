@@ -12,10 +12,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.weapon.VehicleWeapon;
 import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.item.common.container.ContainerBlockItem;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
-import com.atsuishio.superbwarfare.tools.EntityFindUtil;
-import com.atsuishio.superbwarfare.tools.InventoryTool;
-import com.atsuishio.superbwarfare.tools.ParticleTool;
-import com.atsuishio.superbwarfare.tools.VectorTool;
+import com.atsuishio.superbwarfare.tools.*;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.GlStateManager;
@@ -81,7 +78,6 @@ import net.minecraftforge.items.wrapper.InvWrapper;
 import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.registries.ForgeRegistries;
-import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Math;
@@ -777,12 +773,7 @@ public abstract class VehicleEntity extends Entity implements Container {
             return false;
 
         if (this.damageDebugResultReceiver != null) {
-            var detailedDamageResult = getDamageModifier().matchResult(source, amount);
-            this.damageDebugResultReceiver.sendSystemMessage(Component.literal(
-                    "§eraw: " + source.getMsgId() + " " + amount + "§r\n" +
-                            StringUtils.join(detailedDamageResult, '\n') + '\n' +
-                            "§dfinal: " + detailedDamageResult.get(detailedDamageResult.size() - 1).damage()
-            ));
+            this.damageDebugResultReceiver.sendSystemMessage(DamageHandler.getDamageInfo(this, source, amount));
         }
 
         // 计算减伤后的伤害

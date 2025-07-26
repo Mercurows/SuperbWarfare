@@ -1,16 +1,20 @@
 package com.atsuishio.superbwarfare.entity.vehicle.damage;
 
+import com.atsuishio.superbwarfare.tools.FormatTool;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.EntityType;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -255,25 +259,51 @@ public class DamageModifier {
     }
 
     public record ModifyResult(@Nullable DamageModify modify, float damage) {
-        @Override
-        public @NotNull String toString() {
-            if (modify == null) {
-                return "[§a<Function> §r= " + damage + "]";
-            }
-            var sourceString = switch (modify.sourceType) {
-                case TAG_KEY -> "§4" + modify.sourceTagKey.location();
-                case ENTITY_TAG -> "§9" + modify.entityTag.location();
-                case FUNCTION -> "§a<Function>";
-                case ENTITY_ID -> "§6" + modify.entityId;
-                case RESOURCE_KEY -> "§b" + modify.sourceKey.location();
-                case ALL -> "";
-            };
 
-            return "[" + modify.sourceType + (modify.sourceType == DamageModify.SourceType.ALL ? "" : ":") + sourceString + " " + switch (modify.type) {
-                case IMMUNITY -> "§70§r";
-                case REDUCE -> "§a- " + modify.value + " §r= " + damage;
-                case MULTIPLY -> "§e* " + modify.value + " §r= " + damage;
-            } + "]";
+        public MutableComponent getDamageInfo() {
+            if (modify == null) {
+                return Component.translatable("tips.superbwarfare.modify_result.function").withStyle(style -> style.withColor(0xe1ff6b))
+                        .append(Component.literal(" " + FormatTool.format2D(damage)).withStyle(ChatFormatting.WHITE));
+            }
+            int color;
+            var sourceString = switch (modify.sourceType) {
+                case TAG_KEY -> {
+                    color = 0xff987e;
+                    yield modify.sourceTagKey.location();
+                }
+                case ENTITY_TAG -> {
+                    color = 0xffd07e;
+                    yield modify.entityTag.location();
+                }
+                case FUNCTION -> {
+                    color = 0xe1ff6b;
+                    yield "";
+                }
+                case ENTITY_ID -> {
+                    color = 0x6be6ff;
+                    yield modify.entityId;
+                }
+                case RESOURCE_KEY -> {
+                    color = 0x6b7aff;
+                    yield modify.sourceKey.location();
+                }
+                case ALL -> {
+                    color = 0xff6bdf;
+                    yield "";
+                }
+            };
+            MutableComponent typeString = switch (modify.type) {
+                case IMMUNITY -> Component.literal("0");
+                case REDUCE -> Component.literal(" - ").withStyle(ChatFormatting.GREEN)
+                        .append(Component.literal("" + modify.value).withStyle(ChatFormatting.RESET))
+                        .append(Component.literal(" = " + FormatTool.format2D(damage)).withStyle(ChatFormatting.WHITE));
+                case MULTIPLY -> Component.literal(" * ").withStyle(ChatFormatting.YELLOW)
+                        .append(Component.literal("" + modify.value).withStyle(ChatFormatting.RESET))
+                        .append(Component.literal(" = " + FormatTool.format2D(damage)).withStyle(ChatFormatting.WHITE));
+            };
+            var component = Component.translatable("tips.superbwarfare.modify_result." + modify.sourceType.name().toLowerCase(Locale.ENGLISH), sourceString)
+                    .withStyle(style -> style.withColor(color));
+            return component.append(typeString);
         }
     }
 
