@@ -500,5 +500,8 @@ public class ModSounds {
     public static final RegistryObject<SoundEvent> MEDIUM_ROCKET_FIRE = REGISTRY.register("medium_rocket_fire", () -> SoundEvent.createVariableRangeEvent(Mod.loc("medium_rocket_fire")));
     public static final RegistryObject<SoundEvent> TYPE_63_RELOAD = REGISTRY.register("ty63_reload", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ty63_reload")));
 
+    public static final RegistryObject<SoundEvent> PARACHUTE_OPEN = REGISTRY.register("parachute_open", () -> SoundEvent.createVariableRangeEvent(Mod.loc("parachute_open")));
+    public static final RegistryObject<SoundEvent> PARACHUTE_CLOSE = REGISTRY.register("parachute_close", () -> SoundEvent.createVariableRangeEvent(Mod.loc("parachute_close")));
+
 }
 

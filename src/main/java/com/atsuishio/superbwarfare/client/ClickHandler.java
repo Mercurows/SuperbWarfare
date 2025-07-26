@@ -258,6 +258,7 @@ public class ClickHandler {
 
             if (key == Minecraft.getInstance().options.keyJump.getKey().getValue()) {
                 handleDoubleJump(player);
+                handleParachute();
             }
 
             if (key == ModKeyMappings.CONFIG.getKey().getValue() && ModKeyMappings.CONFIG.getKeyModifier().isActive(KeyConflictContext.IN_GAME)) {
@@ -534,6 +535,10 @@ public class ClickHandler {
             Mod.PACKET_HANDLER.sendToServer(DoubleJumpMessage.INSTANCE);
             canDoubleJump = false;
         }
+    }
+
+    private static void handleParachute() {
+        Mod.PACKET_HANDLER.sendToServer(ParachuteMessage.INSTANCE);
     }
 
     private static void handleConfigScreen(Player player) {
