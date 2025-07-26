@@ -8,37 +8,22 @@ import com.atsuishio.superbwarfare.init.ModAttachments;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
-import com.atsuishio.superbwarfare.item.gun.GunItem;
+import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.tools.InventoryTool;
 import com.atsuishio.superbwarfare.tools.SoundTool;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
-@EventBusSubscriber(modid = Mod.MODID)
 public class GunEventHandler {
-
-    @SubscribeEvent
-    public static void onPlayerTick(PlayerTickEvent.Post event) {
-        Player player = event.getEntity();
-
-        ItemStack stack = player.getMainHandItem();
-
-        if (stack.getItem() instanceof GunItem) {
-            var data = GunData.from(stack);
-            gunTick(player, data);
-        }
-    }
 
     /**
      * 拉大栓
@@ -59,6 +44,9 @@ public class GunEventHandler {
         }
     }
 
+    /**
+     * 播放拉栓音效
+     */
     public static void playGunBoltSounds(Entity shooter, GunData data) {
         if (!shooter.level().isClientSide) {
             String origin = data.stack.getItem().getDescriptionId();
@@ -90,6 +78,9 @@ public class GunEventHandler {
         }
     }
 
+    /**
+     * 完成换弹过程，装填弹药
+     */
     private static void finishReload(Entity shooter, GunData data) {
         if (data.item.isOpenBolt(data.stack)) {
             if (data.ammo.get() == 0) {
@@ -106,32 +97,108 @@ public class GunEventHandler {
         data.reload.reloadStarter.finish();
     }
 
-    public static void gunTick(Entity shooter, GunData data) {
-        handleGunBolt(data);
+    /**
+     * 初始化枪械ID和弹药数量
+     */
+    public static void init(Entity shooter, GunData data) {
+        if (!data.initialized()) {
+            data.initialize();
+            if (shooter instanceof Player player && player.isCreative()) {
+                data.ammo.set(data.magazine());
+            }
+        }
+    }
 
-        // 启动换弹
-        if (data.reload.reloadStarter.start()) {
-            NeoForge.EVENT_BUS.post(new ReloadEvent.Pre(shooter, data));
+    /**
+     * 更新perk相关属性
+     */
+    public static void tickPerk(Entity shooter, GunData data) {
+        for (Perk.Type type : Perk.Type.values()) {
+            var instance = data.perk.getInstance(type);
+            if (instance != null) {
+                instance.perk().tick(data, instance, shooter);
+            }
+        }
+    }
 
-            startReload(shooter, data);
+    /**
+     * 减少过热值
+     */
+    public static void handleCooldown(Entity shooter, GunData data) {
+        double cooldown = 0;
+        if (shooter.wasInPowderSnow) {
+            cooldown = 0.15;
+        } else if (shooter.isInWaterOrRain()) {
+            cooldown = 0.04;
+        } else if (shooter.isOnFire() || shooter.isInLava()) {
+            cooldown = -0.1;
         }
 
-        // 减少换弹剩余时间
-        data.reload.reduce();
+        data.heat.set(Mth.clamp(data.heat.get() - 0.25 - cooldown, 0, 100));
 
-        // 换弹时额外行为
-        var behavior = data.item.reloadTimeBehaviors.get(data.reload.time());
-        if (behavior != null) {
-            behavior.accept(data);
+        if (data.heat.get() < 80 && data.overHeat.get()) {
+            data.overHeat.set(false);
         }
+    }
 
-        // 换弹完成
-        if (data.reload.time() == 1) {
-            finishReload(shooter, data);
+    /**
+     * 返还多余弹药
+     */
+    public static void redrawExtraAmmo(Entity shooter, GunData data) {
+        var hasBulletInBarrel = data.item.hasBulletInBarrel(data.stack);
+        var ammoCount = data.ammo.get();
+        var magazine = data.magazine();
+
+        // TODO 修改为更正确的退弹药方式？
+        if (((hasBulletInBarrel && ammoCount > magazine + 1) || (!hasBulletInBarrel && ammoCount > magazine)) && shooter instanceof Player player) {
+            int count = ammoCount - magazine - (hasBulletInBarrel ? 1 : 0);
+            var capability = player.getData(ModAttachments.PLAYER_VARIABLE).watch();
+
+            var ammoType = data.ammoTypeInfo().playerAmmoType();
+            if (ammoType != null) {
+                ammoType.add(capability, count);
+            }
+
+            player.setData(ModAttachments.PLAYER_VARIABLE, capability);
+            capability.sync(player);
+            data.ammo.set(magazine + (hasBulletInBarrel ? 1 : 0));
         }
+    }
 
-        handleGunSingleReload(shooter, data);
-        handleSentinelCharge(shooter, data);
+    public static void gunTick(Entity shooter, GunData data, boolean inMainHand) {
+        init(shooter, data);
+        tickPerk(shooter, data);
+        handleCooldown(shooter, data);
+        redrawExtraAmmo(shooter, data);
+
+        data.draw.set(false);
+
+        if (inMainHand) {
+            handleGunBolt(data);
+
+            // 启动换弹
+            if (data.reload.reloadStarter.start()) {
+                NeoForge.EVENT_BUS.post(new ReloadEvent.Pre(shooter, data));
+                startReload(shooter, data);
+            }
+
+            // 减少换弹剩余时间
+            data.reload.reduce();
+
+            // 执行换弹期间额外行为
+            var behavior = data.item.reloadTimeBehaviors.get(data.reload.time());
+            if (behavior != null) {
+                behavior.accept(data);
+            }
+
+            // 换弹完成
+            if (data.reload.time() == 1) {
+                finishReload(shooter, data);
+            }
+
+            handleGunSingleReload(shooter, data);
+            handleSentinelCharge(shooter, data);
+        }
 
         data.save();
     }
@@ -233,19 +300,15 @@ public class GunEventHandler {
                 playGunPrepareLoadReloadSounds(shooter, data);
                 int prepareLoadTime = data.defaultPrepareLoadTime();
                 reload.prepareLoadTimer.set(prepareLoadTime + 1);
-                // TODO 重新实现冷却
-//                shooter.getCooldowns().addCooldown(stack.getItem(), prepareLoadTime);
             } else if (data.defaultPrepareEmptyTime() != 0 && data.ammo.get() == 0) {
                 // 此处判断空仓换弹，如莫辛纳甘
                 playGunEmptyPrepareSounds(shooter, data);
                 int prepareEmptyTime = data.defaultPrepareEmptyTime();
                 reload.prepareTimer.set(prepareEmptyTime + 1);
-//                shooter.getCooldowns().addCooldown(stack.getItem(), prepareEmptyTime);
             } else {
                 playGunPrepareReloadSounds(shooter, data);
                 int prepareTime = data.defaultPrepareTime();
                 reload.prepareTimer.set(prepareTime + 1);
-//                shooter.getCooldowns().addCooldown(stack.getItem(), prepareTime);
             }
 
             data.forceStop.set(false);
@@ -282,7 +345,7 @@ public class GunEventHandler {
             playGunLoopReloadSounds(shooter, data);
             int iterativeTime = data.defaultIterativeTime();
             reload.iterativeLoadTimer.set(iterativeTime);
-//            shooter.getCooldowns().addCooldown(stack.getItem(), iterativeTime);
+
             // 动画播放nbt
             data.loadIndex.set(data.loadIndex.get() == 1 ? 0 : 1);
         }
@@ -314,7 +377,6 @@ public class GunEventHandler {
 
             int finishTime = data.defaultFinishTime();
             reload.finishTimer.set(finishTime + 2);
-//            shooter.getCooldowns().addCooldown(stack.getItem(), finishTime + 2);
 
             playGunEndReloadSounds(shooter, data);
         }

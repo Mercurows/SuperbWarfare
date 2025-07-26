@@ -420,6 +420,20 @@ public class GunData {
         return new AmmoTypeInfo(AmmoConsumeType.ITEM, ammoType);
     }
 
+    // 开火相关流程开始
+
+    /*
+     * 开火相关流程描述
+     * 1. 调用hasEnoughAmmoToShoot(@Nullable Entity shooter)查看是否拥有足够的枪内弹药开火，没有弹药时可以尝试调用startReload()开始换弹流程
+     * 2. 调用canShoot(@Nullable Entity shooter)查看当前状态是否能够开火，如果能够开火则调用shootBullet进行开火
+     * 3. 调用tick(@Nullable Entity shooter)执行枪械tick任务，包括换弹流程、过热计算、拉栓等
+     *
+     * 可选项：
+     * 1. 使用GunData.virtualAmmo.set来设置虚拟弹药数量
+     * 2. 传入带有IItemHandler能力的任意Entity来提供额外弹药
+     *
+     */
+
     /**
      * 是否还有剩余弹药（不考虑枪内弹药）
      */
@@ -507,21 +521,21 @@ public class GunData {
     }
 
     /**
-     * 开始换弹流程
+     * 开始换弹流程，换弹将在tick内被执行
      */
     public void startReload() {
         this.reload.reloadStarter.markStart();
     }
 
     /**
-     * 换弹完成装填弹药，请确保在换弹完成后再调用
+     * 换弹完成后装填弹药，请确保在换弹完成后再调用
      */
     public void reloadAmmo(@Nullable Entity entity) {
         reloadAmmo(entity, false);
     }
 
     /**
-     * 换弹完成装填弹药，请确保在换弹完成后再调用
+     * 换弹完成后装填弹药，请确保在换弹完成后再调用
      */
     public void reloadAmmo(@Nullable Entity entity, boolean extraOne) {
         if (useBackpackAmmo()) return;
@@ -566,11 +580,19 @@ public class GunData {
     }
 
     /**
-     * 执行tick
+     * 执行tick更新枪械数据
+     * <br>
+     * 在玩家背包里时会使用GunItem.inventoryTick自动执行
+     * <br>
+     * 若需要在其他地方使用，请手动调用该方法
+     *
+     * @param inMainHand 枪械是否在主手上，用于控制部分tick流程是否执行
      */
-    public void tick(@Nullable Entity shooter) {
-        GunEventHandler.gunTick(shooter, this);
+    public void tick(@Nullable Entity shooter, boolean inMainHand) {
+        GunEventHandler.gunTick(shooter, this, inMainHand);
     }
+
+    // 开火相关流程结束
 
     private static int getPerkPriority(String s) {
         if (s == null || s.isEmpty()) return 2;
@@ -703,6 +725,9 @@ public class GunData {
 
     public final Reload reload;
 
+    /**
+     * 是否正在换弹
+     */
     public boolean reloading() {
         return reload.state() != ReloadState.NOT_RELOADING;
     }
