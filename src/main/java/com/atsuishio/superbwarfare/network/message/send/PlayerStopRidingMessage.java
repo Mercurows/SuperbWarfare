@@ -50,7 +50,7 @@ public record PlayerStopRidingMessage(boolean ejection) implements CustomPacketP
             }
             player.stopRiding();
             player.setJumping(false);
-            player.addEffect(new MobEffectInstance(ModMobEffects.STRIKE_PROTECTION, 10, 0, false, true), player);
+            player.addEffect(new MobEffectInstance(ModMobEffects.STRIKE_PROTECTION, 10, 0, false, false), player);
         }
     }
 
