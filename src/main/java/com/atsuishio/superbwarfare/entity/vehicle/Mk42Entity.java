@@ -269,7 +269,7 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
             return;
         }
         float angle = (float) -getXRotFromVector(launchVector);
-        if (angle < -85 || angle > 14.9) {
+        if (angle > -maxPitch() && angle < -minPitch()) {
             entityData.set(PITCH, angle);
         }
     }
