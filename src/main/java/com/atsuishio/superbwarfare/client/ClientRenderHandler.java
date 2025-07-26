@@ -3,8 +3,10 @@ package com.atsuishio.superbwarfare.client;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.decorator.ContainerItemDecorator;
 import com.atsuishio.superbwarfare.client.decorator.LuckyContainerItemDecorator;
+import com.atsuishio.superbwarfare.client.model.curio.ParachuteModel;
 import com.atsuishio.superbwarfare.client.overlay.*;
 import com.atsuishio.superbwarfare.client.renderer.block.*;
+import com.atsuishio.superbwarfare.client.renderer.curio.ParachuteRenderer;
 import com.atsuishio.superbwarfare.client.tooltip.*;
 import com.atsuishio.superbwarfare.client.tooltip.component.*;
 import com.atsuishio.superbwarfare.init.ModBlockEntities;
@@ -16,6 +18,7 @@ import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
 import net.minecraftforge.client.event.RegisterItemDecorationsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import top.theillusivec4.curios.api.client.CuriosRendererRegistry;
 
 @net.minecraftforge.fml.common.Mod.EventBusSubscriber(bus = net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class ClientRenderHandler {
@@ -78,5 +81,11 @@ public class ClientRenderHandler {
 
     @SubscribeEvent
     public static void onClientSetup(FMLClientSetupEvent event) {
+        CuriosRendererRegistry.register(ModItems.PARACHUTE.get(), ParachuteRenderer::new);
+    }
+
+    @SubscribeEvent
+    public static void registerLayer(EntityRenderersEvent.RegisterLayerDefinitions event) {
+        event.registerLayerDefinition(ParachuteModel.LAYER_LOCATION, ParachuteModel::createBodyLayer);
     }
 }
