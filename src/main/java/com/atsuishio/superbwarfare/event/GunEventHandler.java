@@ -162,13 +162,12 @@ public class GunEventHandler {
         if (((hasBulletInBarrel && ammoCount > magazine + 1) || (!hasBulletInBarrel && ammoCount > magazine))) {
             int count = ammoCount - magazine - (hasBulletInBarrel ? 1 : 0);
 
-            if (shooter != null) {
-                PlayerVariable.modify(shooter, capability -> {
+            if (shooter instanceof Player player) {
+                PlayerVariable.modify(player, capability -> {
                     var ammoType = data.ammoTypeInfo().playerAmmoType();
                     if (ammoType != null) {
                         ammoType.add(capability, count);
                     }
-
                 });
             }
 
