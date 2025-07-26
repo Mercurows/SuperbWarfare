@@ -563,8 +563,8 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
     public void shoot(
             @Nullable Entity shooter,
             @NotNull ServerLevel level,
-            Vec3 shootPosition,
-            Vec3 shootDirection,
+            @NotNull Vec3 shootPosition,
+            @NotNull Vec3 shootDirection,
             @NotNull GunData data,
             double spread,
             boolean zoom,
@@ -693,7 +693,10 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
         AtomicReference<Entity> entityHolder = new AtomicReference<>();
         EntityType.byString(projectileType).ifPresent(entityType -> {
             var entity = entityType.create(level);
-            if (entity == null) return;
+            if (entity == null) {
+                Mod.LOGGER.warn("Failed to create projectile entity {}", projectileType);
+                return;
+            }
 
             if (entity instanceof Projectile projectileEntity) {
                 projectileEntity.setOwner(shooter);
@@ -743,7 +746,10 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
         });
 
         var entity = entityHolder.get();
-        if (entity == null) return false;
+        if (entity == null) {
+            Mod.LOGGER.warn("Failed to create projectile entity {}", projectileType);
+            return false;
+        }
 
         for (Perk.Type type : Perk.Type.values()) {
             var instance = data.perk.getInstance(type);
