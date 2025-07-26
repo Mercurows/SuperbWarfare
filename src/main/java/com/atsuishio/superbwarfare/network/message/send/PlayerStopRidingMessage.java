@@ -56,7 +56,7 @@ public class PlayerStopRidingMessage {
                 }
                 player.stopRiding();
                 player.setJumping(false);
-                player.addEffect(new MobEffectInstance(ModMobEffects.STRIKE_PROTECTION.get(), 10, 0, false, true), player);
+                player.addEffect(new MobEffectInstance(ModMobEffects.STRIKE_PROTECTION.get(), 10, 0, false, false), player);
             }
         });
         context.setPacketHandled(true);
