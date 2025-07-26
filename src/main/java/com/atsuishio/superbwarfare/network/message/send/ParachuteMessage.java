@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.network.message.send;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
+import com.atsuishio.superbwarfare.item.curio.ParachuteItem;
 import com.atsuishio.superbwarfare.tools.NBTTool;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -26,13 +27,13 @@ public enum ParachuteMessage implements CustomPacketPayload {
             var stack = s.stack();
             if (!player.getCooldowns().isOnCooldown(stack.getItem())) {
                 var tag = NBTTool.getTag(stack);
-                if (!tag.getBoolean("open") && player.getDeltaMovement().y < -0.6) {
-                    tag.putBoolean("open", true);
+                if (!tag.getBoolean(ParachuteItem.TAG_OPEN) && player.getDeltaMovement().y < -0.6) {
+                    tag.putBoolean(ParachuteItem.TAG_OPEN, true);
                     NBTTool.saveTag(stack, tag);
                     player.getCooldowns().addCooldown(stack.getItem(), 10);
                     player.level().playSound(null, player.getX(), player.getY(), player.getZ(), ModSounds.PARACHUTE_OPEN.get(), SoundSource.PLAYERS, 1f, 1);
-                } else if (tag.getBoolean("open")) {
-                    tag.putBoolean("open", false);
+                } else if (tag.getBoolean(ParachuteItem.TAG_OPEN)) {
+                    tag.putBoolean(ParachuteItem.TAG_OPEN, false);
                     NBTTool.saveTag(stack, tag);
                     player.getCooldowns().addCooldown(stack.getItem(), 10);
                     player.level().playSound(null, player.getX(), player.getY(), player.getZ(), ModSounds.PARACHUTE_CLOSE.get(), SoundSource.PLAYERS, 1f, 1);
