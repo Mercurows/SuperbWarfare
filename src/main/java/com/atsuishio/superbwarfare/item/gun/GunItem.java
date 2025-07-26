@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.item.gun;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.capability.player.PlayerVariable;
 import com.atsuishio.superbwarfare.client.PoseTool;
 import com.atsuishio.superbwarfare.client.tooltip.component.GunImageComponent;
 import com.atsuishio.superbwarfare.data.gun.DefaultGunData;
@@ -100,60 +99,14 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
     @Override
     @ParametersAreNonnullByDefault
     public void inventoryTick(ItemStack stack, Level level, Entity entity, int slot, boolean selected) {
-        if (!(entity instanceof LivingEntity living) || !(stack.getItem() instanceof GunItem gunItem)) return;
+        if (!(stack.getItem() instanceof GunItem)) return;
 
         if (level instanceof ServerLevel serverLevel) {
             GeoItem.getOrAssignId(stack, serverLevel);
         }
 
-        var data = GunData.from(stack);
-
-        if (!data.initialized()) {
-            data.initialize();
-            if (level.getServer() != null && entity instanceof Player player && player.isCreative()) {
-                data.ammo.set(data.magazine());
-            }
-        }
-        data.draw.set(false);
-
-        for (Perk.Type type : Perk.Type.values()) {
-            var instance = data.perk.getInstance(type);
-            if (instance != null) {
-                instance.perk().tick(data, instance, living);
-            }
-        }
-
-        var hasBulletInBarrel = gunItem.hasBulletInBarrel(stack);
-        var ammoCount = data.ammo.get();
-        var magazine = data.magazine();
-
-        if ((hasBulletInBarrel && ammoCount > magazine + 1) || (!hasBulletInBarrel && ammoCount > magazine)) {
-            int count = ammoCount - magazine - (hasBulletInBarrel ? 1 : 0);
-            PlayerVariable.modify(entity, capability -> {
-                var ammoType = data.ammoTypeInfo().playerAmmoType();
-                if (ammoType != null) {
-                    ammoType.add(capability, count);
-                }
-
-                data.ammo.set(magazine + (hasBulletInBarrel ? 1 : 0));
-            });
-        }
-
-        // 冷却
-        double cooldown = 0;
-        if (entity.wasInPowderSnow) {
-            cooldown = 0.15;
-        } else if (entity.isInWaterOrRain()) {
-            cooldown = 0.04;
-        } else if (entity.isOnFire() || entity.isInLava()) {
-            cooldown = -0.1;
-        }
-
-        data.heat.set(Mth.clamp(data.heat.get() - 0.25 - cooldown, 0, 100));
-
-        if (data.heat.get() < 80 && data.overHeat.get()) {
-            data.overHeat.set(false);
-        }
+        var inMainHand = entity instanceof LivingEntity living && living.getMainHandItem() == stack;
+        GunData.from(stack).tick(entity, inMainHand);
     }
 
     @Override
