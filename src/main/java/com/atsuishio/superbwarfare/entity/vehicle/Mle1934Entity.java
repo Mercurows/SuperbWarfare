@@ -196,7 +196,7 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
         }
 
         this.setWeaponIndex(0, type);
-        this.shoot(player, 0, true);
+        this.shoot(player, true);
     }
 
     @Override
@@ -223,12 +223,15 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
             return InteractionResult.SUCCESS;
         }
 
-        //TODO 修复无限吞炮弹BUG
-
         if (stack.getItem() instanceof CannonShellItem) {
             if (this.entityData.get(COOL_DOWN) == 0 && (stack.getItem() == this.items.get(0).getItem() || this.items.get(0).isEmpty())) {
                 var inStack = this.items.get(0);
-                int count = inStack.isEmpty() ? 0 : inStack.getCount();
+                int count = inStack.getCount();
+
+                if (count >= Math.min(this.getMaxStackSize(), inStack.getMaxStackSize())) {
+                    return InteractionResult.PASS;
+                }
+
                 this.setItem(0, stack.copyWithCount(count + 1));
                 if (!player.isCreative()) {
                     stack.shrink(1);
@@ -434,10 +437,10 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
 
     @Override
     public void vehicleShoot(Player player, int type) {
-        shoot(player, type, false);
+        shoot(player, false);
     }
 
-    public void shoot(Player player, int type, boolean reset) {
+    public void shoot(Player player, boolean reset) {
         if (this.entityData.get(COOL_DOWN) > 0) return;
 
         Level level = player.level();
@@ -754,13 +757,6 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
     @Override
     public @NotNull ItemStack removeItemNoUpdate(int slot) {
         return removeItem(0, 2);
-    }
-
-    @Override
-    public void setChanged() {
-//        if (!entityData.get(INTELLIGENT)) {
-//            fire(null);
-//        }
     }
 
     @Override
