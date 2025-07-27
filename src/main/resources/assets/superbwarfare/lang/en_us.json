@@ -275,6 +275,7 @@
   "curios.identifier.iff": "IFF",
   "des.superbwarfare.iff_1": "When player joins a vanilla team and team ID is not 'TDM', teammate indicator will display onscreen",
   "item.superbwarfare.medical_kit": "Medical Kit",
+  "des.superbwarfare.medical_kit": "Right-click while sneaking to throw it, hold right mouse button to heal when health is not full",
   "item.superbwarfare.vehicle_damage_analyzer": "Vehicle Damage Analyzer",
   "des.superbwarfare.vehicle_damage_analyzer": "Right-click a vehicle to start tracking its damage situation, right-click again to stop tracking",
   "des.superbwarfare.vehicle_damage_analyzer.bind": "Start analyzing damage situation of %1$s",

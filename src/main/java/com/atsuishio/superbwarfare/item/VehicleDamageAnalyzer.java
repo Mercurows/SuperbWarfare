@@ -13,7 +13,7 @@ import java.util.List;
 public class VehicleDamageAnalyzer extends Item {
 
     public VehicleDamageAnalyzer() {
-        super(new Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
+        super(new Properties().stacksTo(1).rarity(Rarity.EPIC));
     }
 
     @Override

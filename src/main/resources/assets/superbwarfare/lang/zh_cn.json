@@ -275,6 +275,7 @@
   "curios.identifier.iff": "敌我识别装置",
   "des.superbwarfare.iff_1": "当玩家加入原版队伍，且队伍ID不是“TDM”时，会在屏幕上标记队友位置",
   "item.superbwarfare.medical_kit": "医疗包",
+  "des.superbwarfare.medical_kit": "潜行使用以丢出，在生命值未满的情况下长按使用以治疗",
   "item.superbwarfare.vehicle_damage_analyzer": "载具损伤分析仪",
   "des.superbwarfare.vehicle_damage_analyzer": "右击载具以实时追踪载具的受损情况，再次右击取消追踪",
   "des.superbwarfare.vehicle_damage_analyzer.bind": "开始追踪%1$s的损伤情况",

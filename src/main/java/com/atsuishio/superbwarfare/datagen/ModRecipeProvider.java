@@ -9,7 +9,10 @@ import com.atsuishio.superbwarfare.recipe.AmmoBoxAddAmmoRecipe;
 import com.atsuishio.superbwarfare.recipe.AmmoBoxExtractAmmoRecipe;
 import com.atsuishio.superbwarfare.recipe.PotionMortarShellRecipe;
 import com.atsuishio.superbwarfare.recipe.SmokeDyeRecipe;
+import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponentMap;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.*;
@@ -18,9 +21,13 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.Potion;
+import net.minecraft.world.item.alchemy.PotionContents;
+import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
 import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.common.crafting.DataComponentIngredient;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.CompletableFuture;
@@ -71,6 +78,16 @@ public class ModRecipeProvider extends RecipeProvider {
                 .define('a', ModItems.STEEL_MATERIALS.barrel().get())
                 .unlockedBy(getHasName(ModItems.STEEL_MATERIALS.barrel().get()), has(ModItems.STEEL_MATERIALS.barrel().get()))
                 .save(writer, Mod.loc(getItemName(ModItems.STEEL_PIPE.get())));
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.MEDICAL_KIT.get(), 2)
+                .pattern("aba")
+                .pattern("bcb")
+                .pattern("aba")
+                .define('a', Items.STRING)
+                .define('b', ItemTags.WOOL_CARPETS)
+                .define('c', getPotionIngredient(Potions.REGENERATION))
+                .unlockedBy(getHasName(Items.STRING), has(Items.STRING))
+                .save(writer, Mod.loc(getItemName(ModItems.MEDICAL_KIT.get())));
 
         // 弹药
         ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.SMALL_ROCKET.get(), 4)
@@ -370,5 +387,9 @@ public class ModRecipeProvider extends RecipeProvider {
                 .unlockedBy(getHasName(material.spring().get()), has(material.spring().get()))
                 .unlockedBy(getHasName(material.trigger().get()), has(material.trigger().get()))
                 .save(writer, Mod.loc(getItemName(pack)));
+    }
+
+    public static Ingredient getPotionIngredient(Holder<Potion> potion) {
+        return DataComponentIngredient.of(false, DataComponentMap.builder().set(DataComponents.POTION_CONTENTS, new PotionContents(potion)).build(), Items.POTION);
     }
 }

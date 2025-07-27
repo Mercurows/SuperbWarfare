@@ -33,7 +33,7 @@ public class ModPotionRecipes {
         event.getBuilder().addRecipe(createRecipe(Ingredient.of(shock), Ingredient.of(Items.REDSTONE), longShock));
     }
 
-    private static ItemStack potion(Holder<Potion> potion) {
+    public static ItemStack potion(Holder<Potion> potion) {
         var stack = Items.POTION.getDefaultInstance();
         var contents = stack.get(DataComponents.POTION_CONTENTS);
 
