@@ -175,7 +175,8 @@ public class WgMissileEntity extends FastThrowableProjectile implements GeoEntit
         }
     }
 
-    private void causeExplode(Vec3 vec3) {
+    @Override
+    public void causeExplode(Vec3 vec3) {
         CustomExplosion explosion = new CustomExplosion(this.level(), this,
                 ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(),
                         this,

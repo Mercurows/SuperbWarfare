@@ -64,7 +64,7 @@ import static com.atsuishio.superbwarfare.tools.RangeTool.calculateLaunchVector;
 public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEntity, RemoteControllableTurret {
 
     public static final EntityDataAccessor<Integer> COOL_DOWN = SynchedEntityData.defineId(Mle1934Entity.class, EntityDataSerializers.INT);
-    public static final EntityDataAccessor<Integer> TYPE = SynchedEntityData.defineId(Mle1934Entity.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Integer> RIGHT_BARREL_ANIM = SynchedEntityData.defineId(Mle1934Entity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Float> PITCH = SynchedEntityData.defineId(Mle1934Entity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Float> YAW = SynchedEntityData.defineId(Mle1934Entity.class, EntityDataSerializers.FLOAT);
 
@@ -133,7 +133,7 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
         builder.define(COOL_DOWN, 0)
-                .define(TYPE, 0)
+                .define(RIGHT_BARREL_ANIM, 0)
                 .define(PITCH, 0f)
                 .define(YAW, 0f)
 
@@ -146,7 +146,6 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
     public void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
         compound.putInt("CoolDown", this.entityData.get(COOL_DOWN));
-        compound.putInt("Type", this.entityData.get(TYPE));
         compound.putFloat("Pitch", this.entityData.get(PITCH));
         compound.putFloat("Yaw", this.entityData.get(YAW));
 
@@ -161,7 +160,6 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
     public void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
         this.entityData.set(COOL_DOWN, compound.getInt("CoolDown"));
-        this.entityData.set(TYPE, compound.getInt("Type"));
         this.entityData.set(PITCH, compound.getFloat("Pitch"));
         this.entityData.set(YAW, compound.getFloat("Yaw"));
 
@@ -371,6 +369,10 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
             this.entityData.set(COOL_DOWN, this.entityData.get(COOL_DOWN) - 1);
         }
 
+        if (this.entityData.get(RIGHT_BARREL_ANIM) > 0) {
+            this.entityData.set(RIGHT_BARREL_ANIM, this.entityData.get(RIGHT_BARREL_ANIM) - 1);
+        }
+
         this.move(MoverType.SELF, this.getDeltaMovement());
         if (this.onGround()) {
             this.setDeltaMovement(Vec3.ZERO);
@@ -433,73 +435,23 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
 
         Level level = player.level();
         if (level instanceof ServerLevel server) {
-            int consumed;
-            if (player == getFirstPassenger()) {
-                if (InventoryTool.hasCreativeAmmoBox(player)) {
-                    consumed = 2;
-                } else {
-                    Item ammo = switch (getWeaponIndex(0)) {
-                        case 1 -> ModItems.HE_5_INCHES.get();
-                        case 2 -> ModItems.CM_5_INCHES.get();
-                        default -> ModItems.AP_5_INCHES.get();
-                    };
-                    var ammoCount = InventoryTool.countItem(player.getInventory().items, ammo);
 
-                    // 尝试消耗两发弹药
-                    if (ammoCount <= 0) return;
-                    consumed = InventoryTool.consumeItem(player.getInventory().items, ammo, 2);
-                }
-            } else {
-                consumed = this.items.getFirst().getCount();
-            }
-
-            if (getFirstPassenger() != player) {
-                this.clearContent();
-            }
-
-            boolean salvoShoot = consumed == 2;
+            if (!(this.items.getFirst().getItem() instanceof CannonShellItem) && getAmmoCount(player) == 0 && !InventoryTool.hasCreativeAmmoBox(player))
+                return;
 
             Matrix4f transform = getVehicleFlatTransform(1);
             Vector4f worldPositionL = transformPosition(transform, 0.486775f, 1.4992625f, 1.52065f);
             Vector4f worldPositionR = transformPosition(transform, -0.486775f, 1.4992625f, 1.52065f);
 
             // 左炮管
-            var entityToSpawnLeft = ((CannonShellWeapon) getWeapon(0)).create(player);
+            if (this.items.getFirst().getItem() instanceof CannonShellItem ||
+                    (player == getFirstPassenger() && (getAmmoCount(player) > 0 || InventoryTool.hasCreativeAmmoBox(player)))
+            ) {
+                var entityToSpawnLeft = ((CannonShellWeapon) getWeapon(0)).create(player);
 
-            entityToSpawnLeft.setPos(worldPositionL.x, worldPositionL.y, worldPositionL.z);
-            entityToSpawnLeft.shoot(this.getLookAngle().x, this.getLookAngle().y, this.getLookAngle().z, 15, 0.05f);
-            level.addFreshEntity(entityToSpawnLeft);
-
-            server.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE,
-                    this.getX() + 5 * this.getLookAngle().x,
-                    this.getY(),
-                    this.getZ() + 5 * this.getLookAngle().z,
-                    100, 7, 0.02, 7, 0.005);
-
-            double x = worldPositionL.x + 9 * this.getLookAngle().x;
-            double y = worldPositionL.y + 9 * this.getLookAngle().y;
-            double z = worldPositionL.z + 9 * this.getLookAngle().z;
-
-            server.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, x, y, z, 10, 0.4, 0.4, 0.4, 0.0075);
-            server.sendParticles(ParticleTypes.CLOUD, x, y, z, 10, 0.4, 0.4, 0.4, 0.0075);
-
-            int count = 6;
-
-            for (float i = 9.5f; i < 16; i += .5f) {
-                server.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE,
-                        worldPositionL.x + i * this.getLookAngle().x,
-                        worldPositionL.y + i * this.getLookAngle().y,
-                        worldPositionL.z + i * this.getLookAngle().z,
-                        Mth.clamp(count--, 1, 5), 0.15, 0.15, 0.15, 0.0025);
-            }
-
-            // 右炮管
-            if (salvoShoot) {
-                var entityToSpawnRight = ((CannonShellWeapon) getWeapon(0)).create(player);
-
-                entityToSpawnRight.setPos(worldPositionR.x, worldPositionR.y, worldPositionR.z);
-                entityToSpawnRight.shoot(this.getLookAngle().x, this.getLookAngle().y, this.getLookAngle().z, 15, 0.05f);
-                level.addFreshEntity(entityToSpawnRight);
+                entityToSpawnLeft.setPos(worldPositionL.x, worldPositionL.y, worldPositionL.z);
+                entityToSpawnLeft.shoot(this.getLookAngle().x, this.getLookAngle().y, this.getLookAngle().z, 15, 0.05f);
+                level.addFreshEntity(entityToSpawnLeft);
 
                 server.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE,
                         this.getX() + 5 * this.getLookAngle().x,
@@ -507,39 +459,95 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
                         this.getZ() + 5 * this.getLookAngle().z,
                         100, 7, 0.02, 7, 0.005);
 
-                double xR = worldPositionR.x + 9 * this.getLookAngle().x;
-                double yR = worldPositionR.y + 9 * this.getLookAngle().y;
-                double zR = worldPositionR.z + 9 * this.getLookAngle().z;
+                double x = worldPositionL.x + 9 * this.getLookAngle().x;
+                double y = worldPositionL.y + 9 * this.getLookAngle().y;
+                double z = worldPositionL.z + 9 * this.getLookAngle().z;
 
-                server.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, xR, yR, zR, 10, 0.4, 0.4, 0.4, 0.0075);
-                server.sendParticles(ParticleTypes.CLOUD, xR, yR, zR, 10, 0.4, 0.4, 0.4, 0.0075);
+                server.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, x, y, z, 10, 0.4, 0.4, 0.4, 0.0075);
+                server.sendParticles(ParticleTypes.CLOUD, x, y, z, 10, 0.4, 0.4, 0.4, 0.0075);
 
-                int countR = 6;
+                int count = 6;
 
                 for (float i = 9.5f; i < 16; i += .5f) {
                     server.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE,
-                            worldPositionR.x + i * this.getLookAngle().x,
-                            worldPositionR.y + i * this.getLookAngle().y,
-                            worldPositionR.z + i * this.getLookAngle().z,
-                            Mth.clamp(countR--, 1, 5), 0.15, 0.15, 0.15, 0.0025);
+                            worldPositionL.x + i * this.getLookAngle().x,
+                            worldPositionL.y + i * this.getLookAngle().y,
+                            worldPositionL.z + i * this.getLookAngle().z,
+                            Mth.clamp(count--, 1, 5), 0.15, 0.15, 0.15, 0.0025);
                 }
 
-                this.entityData.set(TYPE, 1);
-            } else {
-                this.entityData.set(TYPE, -1);
+                if (player instanceof ServerPlayer serverPlayer) {
+                    if (player == getFirstPassenger()) {
+                        SoundTool.playLocalSound(serverPlayer, ModSounds.MK_42_FIRE_1P.get(), 2, 1);
+                    }
+                }
+
+                if (!this.level().isClientSide()) {
+                    this.level().playSound(null, this.getX(), this.getY(), this.getZ(), ModSounds.MK_42_FIRE_3P.get(), SoundSource.PLAYERS, 24f, 1f);
+                    this.level().playSound(null, this.getX(), this.getY(), this.getZ(), ModSounds.MK_42_FAR.get(), SoundSource.PLAYERS, 48f, 1f);
+                    this.level().playSound(null, this.getX(), this.getY(), this.getZ(), ModSounds.MK_42_VERYFAR.get(), SoundSource.PLAYERS, 96f, 1f);
+                }
+
+                consumeAmmo(player);
             }
+
+            Mod.queueServerWork(3, () -> {
+                // 右炮管
+                if (this.items.getFirst().getItem() instanceof CannonShellItem ||
+                        (player == getFirstPassenger() && (getAmmoCount(player) > 0 || InventoryTool.hasCreativeAmmoBox(player)))
+                ) {
+                    var entityToSpawnRight = ((CannonShellWeapon) getWeapon(0)).create(player);
+
+                    entityToSpawnRight.setPos(worldPositionR.x, worldPositionR.y, worldPositionR.z);
+                    entityToSpawnRight.shoot(this.getLookAngle().x, this.getLookAngle().y, this.getLookAngle().z, 15, 0.05f);
+                    level.addFreshEntity(entityToSpawnRight);
+
+                    server.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE,
+                            this.getX() + 5 * this.getLookAngle().x,
+                            this.getY(),
+                            this.getZ() + 5 * this.getLookAngle().z,
+                            100, 7, 0.02, 7, 0.005);
+
+                    double xR = worldPositionR.x + 9 * this.getLookAngle().x;
+                    double yR = worldPositionR.y + 9 * this.getLookAngle().y;
+                    double zR = worldPositionR.z + 9 * this.getLookAngle().z;
+
+                    server.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, xR, yR, zR, 10, 0.4, 0.4, 0.4, 0.0075);
+                    server.sendParticles(ParticleTypes.CLOUD, xR, yR, zR, 10, 0.4, 0.4, 0.4, 0.0075);
+
+                    int countR = 6;
+
+                    for (float i = 9.5f; i < 16; i += .5f) {
+                        server.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE,
+                                worldPositionR.x + i * this.getLookAngle().x,
+                                worldPositionR.y + i * this.getLookAngle().y,
+                                worldPositionR.z + i * this.getLookAngle().z,
+                                Mth.clamp(countR--, 1, 5), 0.15, 0.15, 0.15, 0.0025);
+                    }
+
+                    if (player instanceof ServerPlayer serverPlayer) {
+                        if (player == getFirstPassenger()) {
+                            SoundTool.playLocalSound(serverPlayer, ModSounds.MK_42_FIRE_1P.get(), 2, 1);
+                        }
+                    }
+
+                    if (!this.level().isClientSide()) {
+                        this.level().playSound(null, this.getX(), this.getY(), this.getZ(), ModSounds.MK_42_FIRE_3P.get(), SoundSource.PLAYERS, 24f, 1f);
+                        this.level().playSound(null, this.getX(), this.getY(), this.getZ(), ModSounds.MK_42_FAR.get(), SoundSource.PLAYERS, 48f, 1f);
+                        this.level().playSound(null, this.getX(), this.getY(), this.getZ(), ModSounds.MK_42_VERYFAR.get(), SoundSource.PLAYERS, 96f, 1f);
+                    }
+
+                    consumeAmmo(player);
+
+                    this.entityData.set(RIGHT_BARREL_ANIM, 20);
+                }
+            });
+
 
             if (player instanceof ServerPlayer serverPlayer) {
                 if (player == getFirstPassenger()) {
-                    SoundTool.playLocalSound(serverPlayer, ModSounds.MK_42_FIRE_1P.get(), 2, 1);
                     Mod.queueServerWork(44, () -> SoundTool.playLocalSound(serverPlayer, ModSounds.CANNON_RELOAD.get(), 2, 1));
                 }
-            }
-
-            if (!this.level().isClientSide()) {
-                this.level().playSound(null, this.getX(), this.getY(), this.getZ(), ModSounds.MK_42_FIRE_3P.get(), SoundSource.PLAYERS, 24f, 1f);
-                this.level().playSound(null, this.getX(), this.getY(), this.getZ(), ModSounds.MK_42_FAR.get(), SoundSource.PLAYERS, 48f, 1f);
-                this.level().playSound(null, this.getX(), this.getY(), this.getZ(), ModSounds.MK_42_VERYFAR.get(), SoundSource.PLAYERS, 96f, 1f);
             }
 
             this.entityData.set(COOL_DOWN, 74);
@@ -553,6 +561,25 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
             ShakeClientMessage.sendToNearbyPlayers(this, 20, 15, 15, 45);
 
             resetTarget();
+        }
+    }
+
+    public void consumeAmmo(Player player) {
+        if (player == getFirstPassenger()) {
+            if (InventoryTool.hasCreativeAmmoBox(player)) return;
+
+            Item ammo = switch (getWeaponIndex(0)) {
+                case 1 -> ModItems.HE_5_INCHES.get();
+                case 2 -> ModItems.CM_5_INCHES.get();
+                default -> ModItems.AP_5_INCHES.get();
+            };
+            var ammoCount = InventoryTool.countItem(player.getInventory().items, ammo);
+
+            if (ammoCount <= 0) return;
+            InventoryTool.consumeItem(player.getInventory().items, ammo, 1);
+
+        } else {
+            this.items.getFirst().shrink(1);
         }
     }
 
@@ -585,20 +612,24 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
         this.clampRotation(entity);
     }
 
-    private PlayState movementPredicate(AnimationState<Mle1934Entity> event) {
-        if (this.entityData.get(COOL_DOWN) > 64) {
-            if (this.entityData.get(TYPE) == 1) {
-                return event.setAndContinue(RawAnimation.begin().thenPlay("animation.mle1934.salvo_fire"));
-            } else {
-                return event.setAndContinue(RawAnimation.begin().thenPlay("animation.mle1934.fire"));
-            }
+    private PlayState fireLeftPredicate(AnimationState<Mle1934Entity> event) {
+        if (this.entityData.get(COOL_DOWN) > 54) {
+            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.mle1934.fire_left"));
+        }
+        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.mle1934.idle"));
+    }
+
+    private PlayState fireRightPredicate(AnimationState<Mle1934Entity> event) {
+        if (this.entityData.get(RIGHT_BARREL_ANIM) > 0) {
+            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.mle1934.fire_right"));
         }
         return event.setAndContinue(RawAnimation.begin().thenLoop("animation.mle1934.idle"));
     }
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar data) {
-        data.add(new AnimationController<>(this, "movement", 0, this::movementPredicate));
+        data.add(new AnimationController<>(this, "fireLeft", 0, this::fireLeftPredicate));
+        data.add(new AnimationController<>(this, "fireRight", 0, this::fireRightPredicate));
     }
 
     @Override
