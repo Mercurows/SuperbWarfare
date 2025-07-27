@@ -227,7 +227,9 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
 
         if (stack.getItem() instanceof CannonShellItem) {
             if (this.entityData.get(COOL_DOWN) == 0 && (stack.getItem() == this.items.get(0).getItem() || this.items.get(0).isEmpty())) {
-                this.setItem(0, stack.copyWithCount(1));
+                var inStack = this.items.get(0);
+                int count = inStack.isEmpty() ? 0 : inStack.getCount();
+                this.setItem(0, stack.copyWithCount(count + 1));
                 if (!player.isCreative()) {
                     stack.shrink(1);
                 }
@@ -437,8 +439,7 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
                 if (InventoryTool.hasCreativeAmmoBox(player)) {
                     consumed = 2;
                 } else {
-                    Item ammo = switch (getWeaponIndex(0))
-                    {
+                    Item ammo = switch (getWeaponIndex(0)) {
                         case 1 -> ModItems.HE_5_INCHES.get();
                         case 2 -> ModItems.CM_5_INCHES.get();
                         default -> ModItems.AP_5_INCHES.get();
@@ -618,8 +619,7 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
 
     @Override
     public int getAmmoCount(Player player) {
-        Item ammo = switch (getWeaponIndex(0))
-        {
+        Item ammo = switch (getWeaponIndex(0)) {
             case 1 -> ModItems.HE_5_INCHES.get();
             case 2 -> ModItems.CM_5_INCHES.get();
             default -> ModItems.AP_5_INCHES.get();
