@@ -48,13 +48,8 @@ public class ModDamageTypeTagProvider extends DamageTypeTagsProvider {
         this.tag(DamageTypeTags.BYPASSES_ARMOR).add(ModDamageTypes.GUN_FIRE_ABSOLUTE, ModDamageTypes.GUN_FIRE_HEADSHOT_ABSOLUTE,
                 ModDamageTypes.SHOCK, ModDamageTypes.CANNON_FIRE, ModDamageTypes.LASER, ModDamageTypes.LASER_HEADSHOT, ModDamageTypes.LASER_STATIC,
                 ModDamageTypes.VEHICLE_STRIKE, ModDamageTypes.VEHICLE_EXPLOSION, ModDamageTypes.AIR_CRASH);
-        this.tag(DamageTypeTags.BYPASSES_EFFECTS).add(ModDamageTypes.GUN_FIRE_ABSOLUTE, ModDamageTypes.GUN_FIRE_HEADSHOT_ABSOLUTE,
-                ModDamageTypes.SHOCK, ModDamageTypes.CANNON_FIRE, ModDamageTypes.LASER, ModDamageTypes.LASER_HEADSHOT, ModDamageTypes.LASER_STATIC,
-                ModDamageTypes.VEHICLE_STRIKE, ModDamageTypes.VEHICLE_EXPLOSION, ModDamageTypes.AIR_CRASH);
+        this.tag(DamageTypeTags.BYPASSES_EFFECTS).add(ModDamageTypes.SHOCK);
         this.tag(DamageTypeTags.BYPASSES_ENCHANTMENTS).add(ModDamageTypes.GUN_FIRE_ABSOLUTE, ModDamageTypes.GUN_FIRE_HEADSHOT_ABSOLUTE,
-                ModDamageTypes.SHOCK, ModDamageTypes.CANNON_FIRE, ModDamageTypes.LASER, ModDamageTypes.LASER_HEADSHOT, ModDamageTypes.LASER_STATIC,
-                ModDamageTypes.VEHICLE_STRIKE, ModDamageTypes.VEHICLE_EXPLOSION, ModDamageTypes.AIR_CRASH);
-        this.tag(DamageTypeTags.BYPASSES_RESISTANCE).add(ModDamageTypes.GUN_FIRE_ABSOLUTE, ModDamageTypes.GUN_FIRE_HEADSHOT_ABSOLUTE,
                 ModDamageTypes.SHOCK, ModDamageTypes.CANNON_FIRE, ModDamageTypes.LASER, ModDamageTypes.LASER_HEADSHOT, ModDamageTypes.LASER_STATIC,
                 ModDamageTypes.VEHICLE_STRIKE, ModDamageTypes.VEHICLE_EXPLOSION, ModDamageTypes.AIR_CRASH);
         this.tag(DamageTypeTags.IS_EXPLOSION).add(ModDamageTypes.PROJECTILE_BOOM, ModDamageTypes.CUSTOM_EXPLOSION, ModDamageTypes.LUNGE_MINE);
