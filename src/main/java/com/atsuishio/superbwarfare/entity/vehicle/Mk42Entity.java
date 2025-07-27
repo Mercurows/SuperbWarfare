@@ -417,11 +417,15 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
         }
 
         this.setWeaponIndex(0, type);
-        this.vehicleShoot(player, 0);
+        this.shoot(player, 0, true);
     }
 
     @Override
     public void vehicleShoot(Player player, int type) {
+        shoot(player, type, false);
+    }
+
+    public void shoot(Player player, int type, boolean reset) {
         if (this.entityData.get(COOL_DOWN) > 0) return;
 
         Level level = player.level();
@@ -491,7 +495,9 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
 
             ShakeClientMessage.sendToNearbyPlayers(this, 20, 15, 15, 45);
 
-            resetTarget();
+            if (reset) {
+                resetTarget();
+            }
         }
     }
 
