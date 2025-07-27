@@ -47,7 +47,6 @@ import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.event.EventHooks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -222,9 +221,10 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
         }
 
         if (stack.getItem() instanceof CannonShellItem) {
-            var itemHandler = this.getCapability(Capabilities.ItemHandler.ENTITY);
-            if (itemHandler != null && this.entityData.get(COOL_DOWN) == 0 && (stack.getItem() == this.items.getFirst().getItem() || this.items.getFirst().isEmpty())) {
-                itemHandler.insertItem(0, stack.copyWithCount(1), false);
+            if (this.entityData.get(COOL_DOWN) == 0 && (stack.getItem() == this.items.get(0).getItem() || this.items.get(0).isEmpty())) {
+                var inStack = this.items.getFirst();
+                int count = inStack.isEmpty() ? 0 : inStack.getCount();
+                this.setItem(0, stack.copyWithCount(count + 1));
                 if (!player.isCreative()) {
                     stack.shrink(1);
                 }
