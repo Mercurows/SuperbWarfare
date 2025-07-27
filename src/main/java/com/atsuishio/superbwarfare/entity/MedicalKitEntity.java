@@ -47,6 +47,8 @@ public class MedicalKitEntity extends Entity implements GeoEntity {
                 this.discard();
             }
 
+            //TODO 为什么捡不起来
+
             if (!player.getAbilities().instabuild) {
                 ItemHandlerHelper.giveItemToPlayer(player, new ItemStack(ModItems.MEDICAL_KIT.get()));
             }
