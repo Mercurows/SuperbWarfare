@@ -3,6 +3,9 @@ package com.atsuishio.superbwarfare.entity.mixin;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
+import net.neoforged.neoforge.common.damagesource.DamageContainer;
+
+import java.util.Stack;
 
 public interface DamageAccess {
 
@@ -21,4 +24,6 @@ public interface DamageAccess {
     void superbWarfare$hurtHelmet(DamageSource pDamageSource, float pDamageAmount);
 
     boolean superbWarfare$checkTotemDeathProtection(DamageSource pDamageSource);
+
+    Stack<DamageContainer> superbwarfare$getDamageContainers();
 }
