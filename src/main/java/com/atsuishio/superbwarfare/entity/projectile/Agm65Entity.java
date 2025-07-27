@@ -171,6 +171,9 @@ public class Agm65Entity extends FastThrowableProjectile implements GeoEntity, E
                     }
                     this.level().destroyBlock(resultPos, true);
                 }
+            } else {
+                causeExplode(blockHitResult.getLocation());
+                this.discard();
             }
             if (!ExplosionConfig.EXPLOSION_DESTROY.get()) {
                 causeExplode(blockHitResult.getLocation());
