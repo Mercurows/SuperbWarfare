@@ -536,6 +536,7 @@
   "entity.superbwarfare.tm_62": "TM-62 Anti-tank Mine",
   "entity.superbwarfare.m18_smoke_grenade": "M-18 Smoke Grenade",
   "entity.superbwarfare.type_63": "Type-63 107mm MLRS",
+  "entity.superbwarfare.medical_kit": "Medical Kit",
 
   "key.categories.superbwarfare": "Superb Warfare",
   "key.superbwarfare.hold_zoom": "Zoom (Hold)",
