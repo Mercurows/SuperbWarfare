@@ -40,7 +40,7 @@ public class ParachuteItem extends Item implements ICurioItem {
     public void curioTick(SlotContext slotContext, ItemStack stack) {
         LivingEntity entity = slotContext.entity();
         if (stack.getOrCreateTag().getBoolean(TAG_OPEN)) {
-            if ((entity.onGround() || entity.isInWater())) {
+            if ((entity.onGround() || entity.isInWater()) || entity.isFallFlying() || entity.getVehicle() != null || (entity instanceof Player player && player.getAbilities().flying)) {
                 stack.getOrCreateTag().putBoolean(TAG_OPEN, false);
                 entity.level().playSound(null, entity.getX(), entity.getY(), entity.getZ(), ModSounds.PARACHUTE_CLOSE.get(), SoundSource.PLAYERS, 1f, 1);
             }
