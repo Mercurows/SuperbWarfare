@@ -41,13 +41,16 @@ public class MedicalKitEntity extends Entity implements GeoEntity {
     }
 
     @Override
+    public boolean isPickable() {
+        return true;
+    }
+
+    @Override
     public @NotNull InteractionResult interact(@NotNull Player player, @NotNull InteractionHand hand) {
         if (player.isShiftKeyDown()) {
             if (!this.level().isClientSide()) {
                 this.discard();
             }
-
-            //TODO 为什么捡不起来
 
             if (!player.getAbilities().instabuild) {
                 ItemHandlerHelper.giveItemToPlayer(player, new ItemStack(ModItems.MEDICAL_KIT.get()));
@@ -113,7 +116,6 @@ public class MedicalKitEntity extends Entity implements GeoEntity {
     @Override
     protected void addAdditionalSaveData(@NotNull CompoundTag pCompound) {
     }
-
 
     protected void updateRotation() {
         if (getDeltaMovement().length() > 0.05) {
