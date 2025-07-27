@@ -28,7 +28,7 @@ public class MiscConfig {
         SEND_KILL_FEEDBACK = builder.define("send_kill_feedback", true);
 
         builder.comment("Set true to enable force damage");
-        ALLOW_FORCE_DAMAGE = builder.define("allow_force_damage", true);
+        ALLOW_FORCE_DAMAGE = builder.define("allow_force_damage", false);
 
         builder.comment("The default maximum armor level for normal armors");
         DEFAULT_ARMOR_LEVEL = builder.defineInRange("default_armor_level", 1, 0, 10000000);
