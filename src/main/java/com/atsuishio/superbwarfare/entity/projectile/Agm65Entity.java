@@ -193,7 +193,8 @@ public class Agm65Entity extends FastThrowableProjectile implements GeoEntity, E
         }
     }
 
-    private void causeExplode(Vec3 vec3) {
+    @Override
+    public void causeExplode(Vec3 vec3) {
         CustomExplosion explosion = new CustomExplosion(this.level(), this,
                 ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(),
                         this,

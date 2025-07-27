@@ -118,11 +118,16 @@ public abstract class FastThrowableProjectile extends ThrowableItemProjectile im
                         this.level().destroyBlock(pos, true);
                     }
                     if (hardness == -1 || hardness > durability || durability <= 0) {
+                        causeExplode(pos.getCenter());
                         discard();
+                        break;
                     }
                 }
             }
         }
+    }
+
+    public void causeExplode(Vec3 vec3) {
     }
 
     private void updateChunkLoading() {

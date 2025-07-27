@@ -224,7 +224,7 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
 
         destroyBlock();
 
-        if (this.tickCount > 600 || this.isInWater()) {
+        if (this.tickCount > 600) {
             if (this.level() instanceof ServerLevel) {
                 causeExplode(position());
             }
@@ -273,7 +273,8 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
         }
     }
 
-    private void causeExplode(Vec3 vec3) {
+    @Override
+    public void causeExplode(Vec3 vec3) {
         CustomExplosion explosion = new CustomExplosion(this.level(), this,
                 ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(),
                         this,
