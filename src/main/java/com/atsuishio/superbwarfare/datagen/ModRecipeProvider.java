@@ -13,10 +13,15 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.Potion;
+import net.minecraft.world.item.alchemy.PotionUtils;
+import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
 import net.minecraftforge.common.Tags;
+import net.minecraftforge.common.crafting.StrictNBTIngredient;
 import net.minecraftforge.common.crafting.conditions.IConditionBuilder;
 import org.jetbrains.annotations.NotNull;
 
@@ -68,6 +73,16 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .define('a', ModItems.STEEL_MATERIALS.barrel().get())
                 .unlockedBy(getHasName(ModItems.STEEL_MATERIALS.barrel().get()), has(ModItems.STEEL_MATERIALS.barrel().get()))
                 .save(writer, Mod.loc(getItemName(ModItems.STEEL_PIPE.get())));
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.MEDICAL_KIT.get(), 2)
+                .pattern("aba")
+                .pattern("bcb")
+                .pattern("aba")
+                .define('a', Items.STRING)
+                .define('b', ItemTags.WOOL_CARPETS)
+                .define('c', getPotionStack(Potions.REGENERATION))
+                .unlockedBy(getHasName(Items.STRING), has(Items.STRING))
+                .save(writer, Mod.loc(getItemName(ModItems.MEDICAL_KIT.get())));
 
         // 弹药
         ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.SMALL_ROCKET.get(), 4)
@@ -376,5 +391,11 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .unlockedBy(getHasName(material.spring().get()), has(material.spring().get()))
                 .unlockedBy(getHasName(material.trigger().get()), has(material.trigger().get()))
                 .save(writer, Mod.loc(getItemName(pack)));
+    }
+
+    public static StrictNBTIngredient getPotionStack(Potion potion) {
+        var stack = new ItemStack(Items.POTION);
+        PotionUtils.setPotion(stack, potion);
+        return StrictNBTIngredient.of(stack);
     }
 }
