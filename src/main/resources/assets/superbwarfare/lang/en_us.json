@@ -622,6 +622,7 @@
   "tips.superbwarfare.mortar.position": "%1$s located in",
   "tips.superbwarfare.ballistics.warn": "Use Depressed Trajectory Please",
   "tips.superbwarfare.ballistics.warn2": "Use Lofted Trajectory Please",
+  "tips.superbwarfare.ballistics.warn3": "Exceeding maximum elevation",
   "tips.superbwarfare.mount.onboard": "Press %1$s to Dismount, Hold %1$s to Ejection",
 
   "tips.superbwarfare.target.yaw": "Target Yaw: ",

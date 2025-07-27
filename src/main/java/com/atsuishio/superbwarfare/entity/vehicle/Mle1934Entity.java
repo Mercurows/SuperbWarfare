@@ -196,7 +196,7 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
         }
 
         this.setWeaponIndex(0, type);
-        this.vehicleShoot(player, 0);
+        this.shoot(player, 0, true);
     }
 
     @Override
@@ -222,6 +222,8 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
             }
             return InteractionResult.SUCCESS;
         }
+
+        //TODO 修复无限吞炮弹BUG
 
         if (stack.getItem() instanceof CannonShellItem) {
             if (this.entityData.get(COOL_DOWN) == 0 && (stack.getItem() == this.items.get(0).getItem() || this.items.get(0).isEmpty())) {
@@ -275,7 +277,7 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
                 canAim = false;
                 component = Component.translatable("tips.superbwarfare.mortar.warn", this.getDisplayName());
                 if (angle < -maxPitch()) {
-                    component = Component.translatable("tips.superbwarfare.ballistics.warn");
+                    component = Component.translatable("tips.superbwarfare.ballistics.warn3");
                 }
             }
         }
@@ -432,6 +434,10 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
 
     @Override
     public void vehicleShoot(Player player, int type) {
+        shoot(player, type, false);
+    }
+
+    public void shoot(Player player, int type, boolean reset) {
         if (this.entityData.get(COOL_DOWN) > 0) return;
 
         Level level = player.level();
@@ -560,7 +566,9 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
 
             ShakeClientMessage.sendToNearbyPlayers(this, 20, 15, 15, 45);
 
-            resetTarget();
+            if (reset) {
+                resetTarget();
+            }
         }
     }
 
