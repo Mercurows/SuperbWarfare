@@ -1,0 +1,31 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "ddd",
+    "bcb",
+    "aaa"
+  ],
+  "key": {
+    "a": {
+      "tag": "superbwarfare:storage_blocks/steel"
+    },
+    "b": {
+      "item": "superbwarfare:cannon_core"
+    },
+    "c": {
+      "item": "superbwarfare:bl_132_blueprint"
+    },
+    "d": {
+      "tag": "superbwarfare:ingots/steel"
+    }
+  },
+  "result": {
+    "item": "superbwarfare:container",
+    "nbt": {
+      "BlockEntityTag": {
+        "EntityType": "superbwarfare:bl_132"
+      }
+    }
+  }
+}

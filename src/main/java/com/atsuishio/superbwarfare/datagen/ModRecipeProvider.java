@@ -239,6 +239,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
         copyBlueprint(writer, ModItems.AURELIA_SCEPTRE_BLUEPRINT.get());
         copyBlueprint(writer, ModItems.MK_42_BLUEPRINT.get());
         copyBlueprint(writer, ModItems.MLE_1934_BLUEPRINT.get());
+        copyBlueprint(writer, ModItems.BL_132_BLUEPRINT.get());
         copyBlueprint(writer, ModItems.HPJ_11_BLUEPRINT.get());
         copyBlueprint(writer, ModItems.ANNIHILATOR_BLUEPRINT.get());
     }

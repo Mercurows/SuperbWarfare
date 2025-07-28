@@ -17,6 +17,7 @@ import com.atsuishio.superbwarfare.item.ArtilleryIndicator;
 import com.atsuishio.superbwarfare.item.common.ammo.CannonShellItem;
 import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage;
 import com.atsuishio.superbwarfare.tools.*;
+import com.mojang.math.Axis;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -43,7 +44,6 @@ import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -62,24 +62,25 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import static com.atsuishio.superbwarfare.tools.RangeTool.calculateLaunchVector;
 
-public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEntity, RemoteControllableTurret {
+public class Bl132Entity extends VehicleEntity implements GeoEntity, CannonEntity, RemoteControllableTurret {
 
-    public static final EntityDataAccessor<Integer> COOL_DOWN = SynchedEntityData.defineId(Mle1934Entity.class, EntityDataSerializers.INT);
-    public static final EntityDataAccessor<Integer> RIGHT_BARREL_ANIM = SynchedEntityData.defineId(Mle1934Entity.class, EntityDataSerializers.INT);
-    public static final EntityDataAccessor<Float> PITCH = SynchedEntityData.defineId(Mle1934Entity.class, EntityDataSerializers.FLOAT);
-    public static final EntityDataAccessor<Float> YAW = SynchedEntityData.defineId(Mle1934Entity.class, EntityDataSerializers.FLOAT);
-
-    public static final EntityDataAccessor<Boolean> DEPRESSED = SynchedEntityData.defineId(Mle1934Entity.class, EntityDataSerializers.BOOLEAN);
-    public static final EntityDataAccessor<Vector3f> TARGET_POS = SynchedEntityData.defineId(Mle1934Entity.class, EntityDataSerializers.VECTOR3);
-    public static final EntityDataAccessor<Integer> RADIUS = SynchedEntityData.defineId(Mle1934Entity.class, EntityDataSerializers.INT);
-
+    public static final EntityDataAccessor<Integer> COOL_DOWN = SynchedEntityData.defineId(Bl132Entity.class, EntityDataSerializers.INT);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+    public static final EntityDataAccessor<Float> PITCH = SynchedEntityData.defineId(Bl132Entity.class, EntityDataSerializers.FLOAT);
+    public static final EntityDataAccessor<Float> YAW = SynchedEntityData.defineId(Bl132Entity.class, EntityDataSerializers.FLOAT);
 
-    public Mle1934Entity(PlayMessages.SpawnEntity packet, Level world) {
-        this(ModEntities.MLE_1934.get(), world);
+    public static final EntityDataAccessor<Boolean> DEPRESSED = SynchedEntityData.defineId(Bl132Entity.class, EntityDataSerializers.BOOLEAN);
+    public static final EntityDataAccessor<Vector3f> TARGET_POS = SynchedEntityData.defineId(Bl132Entity.class, EntityDataSerializers.VECTOR3);
+    public static final EntityDataAccessor<Integer> RADIUS = SynchedEntityData.defineId(Bl132Entity.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Integer> BARREL_ANIM_2 = SynchedEntityData.defineId(Bl132Entity.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Integer> BARREL_ANIM_3 = SynchedEntityData.defineId(Bl132Entity.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Integer> BARREL_ANIM_4 = SynchedEntityData.defineId(Bl132Entity.class, EntityDataSerializers.INT);
+
+    public Bl132Entity(PlayMessages.SpawnEntity packet, Level world) {
+        this(ModEntities.BL_132.get(), world);
     }
 
-    public Mle1934Entity(EntityType<Mle1934Entity> type, Level world) {
+    public Bl132Entity(EntityType<Bl132Entity> type, Level world) {
         super(type, world);
     }
 
@@ -92,37 +93,49 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
     }
 
     @Override
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+        this.entityData.define(COOL_DOWN, 0);
+        this.entityData.define(PITCH, 0f);
+        this.entityData.define(YAW, 0f);
+        this.entityData.define(DEPRESSED, false);
+        this.entityData.define(TARGET_POS, new Vector3f());
+        this.entityData.define(RADIUS, 0);
+        this.entityData.define(BARREL_ANIM_2, 0);
+        this.entityData.define(BARREL_ANIM_3, 0);
+        this.entityData.define(BARREL_ANIM_4, 0);
+    }
+
+    @Override
     public VehicleWeapon[][] initWeapons() {
         return new VehicleWeapon[][]{
                 new VehicleWeapon[]{
                         new CannonShellWeapon()
-                                .hitDamage(VehicleConfig.MLE1934_AP_DAMAGE.get())
-                                .explosionDamage(VehicleConfig.MLE1934_AP_EXPLOSION_DAMAGE.get())
-                                .explosionRadius(VehicleConfig.MLE1934_AP_EXPLOSION_RADIUS.get().floatValue())
-                                .durability(70)
+                                .hitDamage(VehicleConfig.MK42_AP_DAMAGE.get())
+                                .explosionDamage(VehicleConfig.MK42_AP_EXPLOSION_DAMAGE.get())
+                                .explosionRadius(VehicleConfig.MK42_AP_EXPLOSION_RADIUS.get().floatValue())
+                                .durability(60)
                                 .gravity(projectileGravity())
-                                .type(CannonShellEntity.Type.AP)
                                 .sound(ModSounds.CANNON_RELOAD.get())
                                 .icon(Mod.loc("textures/screens/vehicle_weapon/ap_shell.png")),
                         new CannonShellWeapon()
-                                .hitDamage(VehicleConfig.MLE1934_HE_DAMAGE.get())
-                                .explosionDamage(VehicleConfig.MLE1934_HE_EXPLOSION_DAMAGE.get())
-                                .explosionRadius(VehicleConfig.MLE1934_HE_EXPLOSION_RADIUS.get().floatValue())
+                                .hitDamage(VehicleConfig.MK42_HE_DAMAGE.get())
+                                .explosionDamage(VehicleConfig.MK42_HE_EXPLOSION_DAMAGE.get())
+                                .explosionRadius(VehicleConfig.MK42_HE_EXPLOSION_RADIUS.get().floatValue())
                                 .durability(1)
-                                .fireProbability(0.24F)
-                                .fireTime(5)
+                                .fireProbability(0.18F)
+                                .fireTime(2)
                                 .gravity(projectileGravity())
-                                .type(CannonShellEntity.Type.HE)
                                 .sound(ModSounds.CANNON_RELOAD.get())
                                 .icon(Mod.loc("textures/screens/vehicle_weapon/he_shell.png")),
                         new CannonShellWeapon()
-                                .hitDamage(VehicleConfig.MLE1934_HE_DAMAGE.get())
-                                .explosionDamage(VehicleConfig.MLE1934_HE_EXPLOSION_DAMAGE.get())
-                                .explosionRadius(VehicleConfig.MLE1934_HE_EXPLOSION_RADIUS.get().floatValue())
+                                .hitDamage(VehicleConfig.MK42_HE_DAMAGE.get())
+                                .explosionDamage(VehicleConfig.MK42_HE_EXPLOSION_DAMAGE.get())
+                                .explosionRadius(VehicleConfig.MK42_HE_EXPLOSION_RADIUS.get().floatValue())
                                 .durability(1)
                                 .gravity(projectileGravity())
                                 .type(CannonShellEntity.Type.CM)
-                                .spreadAmount(50)
+                                .spreadAmount(30)
                                 .sound(ModSounds.CANNON_RELOAD.get())
                                 .icon(Mod.loc("textures/screens/vehicle_weapon/cm_shell.png")),
                 }
@@ -131,20 +144,7 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
 
     @Override
     public ThirdPersonCameraPosition getThirdPersonCameraPosition(int index) {
-        return new ThirdPersonCameraPosition(10 + 1.25 * ClientMouseHandler.custom3pDistanceLerp, 1.3, 0);
-    }
-
-    @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(COOL_DOWN, 0);
-        this.entityData.define(RIGHT_BARREL_ANIM, 0);
-        this.entityData.define(PITCH, 0f);
-        this.entityData.define(YAW, 0f);
-
-        this.entityData.define(DEPRESSED, false);
-        this.entityData.define(TARGET_POS, new Vector3f());
-        this.entityData.define(RADIUS, 0);
+        return new ThirdPersonCameraPosition(8 + ClientMouseHandler.custom3pDistanceLerp, 1, 0);
     }
 
     @Override
@@ -162,7 +162,7 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundTag compound) {
+    protected void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
         this.entityData.set(COOL_DOWN, compound.getInt("CoolDown"));
         this.entityData.set(PITCH, compound.getFloat("Pitch"));
@@ -177,26 +177,6 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
         if (compound.contains("TargetX") && compound.contains("TargetY") && compound.contains("TargetZ")) {
             this.entityData.set(TARGET_POS, new Vector3f(compound.getFloat("TargetX"), compound.getFloat("TargetX"), compound.getFloat("TargetZ")));
         }
-    }
-
-    @Override
-    public boolean canRemoteFire() {
-        return this.getItem(0).getItem() instanceof CannonShellItem && this.getEntityData().get(COOL_DOWN) == 0;
-    }
-
-    @Override
-    public void remoteFire(@Nullable Player player) {
-        ItemStack stack = this.getItem(0);
-
-        int type = 0;
-        if (stack.is(ModItems.HE_5_INCHES.get())) {
-            type = 1;
-        } else if (stack.is(ModItems.CM_5_INCHES.get())) {
-            type = 2;
-        }
-
-        this.setWeaponIndex(0, type);
-        this.shoot(player, true);
     }
 
     @Override
@@ -252,7 +232,6 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
         return super.interact(player, hand);
     }
 
-    //这个炮仰角太低只能用低伸弹道
     @Override
     public void setTarget(ItemStack stack, Entity entity) {
         double targetX = stack.getOrCreateTag().getDouble("TargetX");
@@ -261,7 +240,7 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
         boolean canAim = true;
 
         entityData.set(TARGET_POS, new Vector3f((float) targetX, (float) targetY, (float) targetZ));
-        entityData.set(DEPRESSED, true);
+        entityData.set(DEPRESSED, stack.getOrCreateTag().getBoolean("IsDepressed"));
         entityData.set(RADIUS, stack.getOrCreateTag().getInt("Radius"));
         Vec3 randomPos = VectorTool.randomPos(new Vec3(entityData.get(TARGET_POS)), entityData.get(RADIUS));
         Vec3 launchVector = calculateLaunchVector(getEyePosition(), randomPos, shootVelocity(), projectileGravity(), entityData.get(DEPRESSED));
@@ -280,7 +259,7 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
                 canAim = false;
                 component = Component.translatable("tips.superbwarfare.mortar.warn", this.getDisplayName());
                 if (angle < -maxPitch()) {
-                    component = Component.translatable("tips.superbwarfare.ballistics.warn3");
+                    component = Component.translatable("tips.superbwarfare.ballistics.warn");
                 }
             }
         }
@@ -310,12 +289,12 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
 
     @Override
     public double minPitch() {
-        return -2.7;
+        return -5;
     }
 
     @Override
     public double maxPitch() {
-        return 30;
+        return 85;
     }
 
     @Override
@@ -331,29 +310,11 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
     @Override
     public void look(Vec3 pTarget) {
         Matrix4f transform = getVehicleFlatTransform(1);
-        Vector4f worldPosition = transformPosition(transform, 0, 1.4992625f, 1.52065f);
+        Vector4f worldPosition = transformPosition(transform, 0f, 2.16f, 0.5175f);
         Vec3 shootPos = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
-
         double d0 = pTarget.x - shootPos.x;
         double d2 = pTarget.z - shootPos.z;
         entityData.set(YAW, Mth.wrapDegrees((float) (Mth.atan2(d2, d0) * 57.2957763671875) - 90.0F));
-    }
-
-    @Override
-    public void positionRider(@NotNull Entity passenger, @NotNull MoveFunction callback) {
-        if (!this.hasPassenger(passenger)) {
-            return;
-        }
-
-        Matrix4f transform = getVehicleFlatTransform(1);
-
-        float x = 0f;
-        float y = 2.0f;
-        float z = 0.5f;
-
-        Vector4f worldPosition = transformPosition(transform, x, y, z);
-        passenger.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
-        callback.accept(passenger, worldPosition.x, worldPosition.y, worldPosition.z);
     }
 
     @Override
@@ -375,8 +336,16 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
             this.entityData.set(COOL_DOWN, this.entityData.get(COOL_DOWN) - 1);
         }
 
-        if (this.entityData.get(RIGHT_BARREL_ANIM) > 0) {
-            this.entityData.set(RIGHT_BARREL_ANIM, this.entityData.get(RIGHT_BARREL_ANIM) - 1);
+        if (this.entityData.get(BARREL_ANIM_2) > 0) {
+            this.entityData.set(BARREL_ANIM_2, this.entityData.get(BARREL_ANIM_2) - 1);
+        }
+
+        if (this.entityData.get(BARREL_ANIM_3) > 0) {
+            this.entityData.set(BARREL_ANIM_3, this.entityData.get(BARREL_ANIM_3) - 1);
+        }
+
+        if (this.entityData.get(BARREL_ANIM_4) > 0) {
+            this.entityData.set(BARREL_ANIM_4, this.entityData.get(BARREL_ANIM_4) - 1);
         }
 
         this.move(MoverType.SELF, this.getDeltaMovement());
@@ -403,6 +372,7 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
         setYRot(getYRot() + (float) interpolatedYaw / (float) interpolationSteps);
         setXRot(getXRot() + (float) (serverXRot - (double) getXRot()) / (float) interpolationSteps);
         setRot(getYRot(), getXRot());
+
     }
 
     @Override
@@ -417,22 +387,71 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
         if (level() instanceof ServerLevel) {
             CustomExplosion explosion = new CustomExplosion(this.level(), this,
                     ModDamageTypes.causeCustomExplosionDamage(this.level().registryAccess(), getAttacker(), getAttacker()), 160f,
-                    this.getX(), this.getY(), this.getZ(), 9f, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).setDamageMultiplier(1);
+                    this.getX(), this.getY(), this.getZ(), 8f, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).setDamageMultiplier(1);
             explosion.explode();
-            ForgeEventFactory.onExplosionStart(this.level(), explosion);
+            net.minecraftforge.event.ForgeEventFactory.onExplosionStart(this.level(), explosion);
             explosion.finalizeExplosion(false);
-            ParticleTool.spawnMediumExplosionParticles(this.level(), this.position());
+            ParticleTool.spawnHugeExplosionParticles(this.level(), this.position());
         }
 
         explodePassengers();
         super.destroy();
     }
 
+    public Matrix4f getBarrelTransform(float ticks) {
+        Matrix4f transformT = getVehicleFlatTransform(ticks);
+
+        Matrix4f transform = new Matrix4f();
+        Vector4f worldPosition = transformPosition(transform, 0, 2.625f, -0.39375f);
+
+        transformT.translate(worldPosition.x, worldPosition.y, worldPosition.z);
+
+        transformT.rotate(Axis.XP.rotationDegrees(getPitch(ticks)));
+        return transformT;
+    }
+
+    @Override
+    public void positionRider(@NotNull Entity passenger, @NotNull MoveFunction callback) {
+        if (!this.hasPassenger(passenger)) {
+            return;
+        }
+
+        Matrix4f transform = getVehicleFlatTransform(1);
+
+        float x = 0f;
+        float y = 4f;
+        float z = -2;
+
+        Vector4f worldPosition = transformPosition(transform, x, y, z);
+        passenger.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
+        callback.accept(passenger, worldPosition.x, worldPosition.y, worldPosition.z);
+    }
+
     @Override
     public Vec3 driverZoomPos(float ticks) {
-        Matrix4f transform = getVehicleFlatTransform(1);
-        Vector4f worldPosition = transformPosition(transform, 0, 1.4992625f + 1.4f, 1.52065f);
+        Matrix4f transform = getBarrelTransform(ticks);
+        Vector4f worldPosition = transformPosition(transform, 0, 0.6f, 0);
         return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
+    }
+
+    @Override
+    public boolean canRemoteFire() {
+        return this.getItem(0).getItem() instanceof CannonShellItem && this.entityData.get(COOL_DOWN) == 0;
+    }
+
+    @Override
+    public void remoteFire(@Nullable Player player) {
+        ItemStack stack = this.getItem(0);
+
+        int type = 0;
+        if (stack.is(ModItems.HE_5_INCHES.get())) {
+            type = 1;
+        } else if (stack.is(ModItems.CM_5_INCHES.get())) {
+            type = 2;
+        }
+
+        this.setWeaponIndex(0, type);
+        this.shoot(player, true);
     }
 
     @Override
@@ -445,35 +464,57 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
 
         if (player.level() instanceof ServerLevel serverLevel) {
             if (!(this.items.get(0).getItem() instanceof CannonShellItem) && getAmmoCount(player) == 0 && !InventoryTool.hasCreativeAmmoBox(player)) return;
-            Matrix4f transform = getVehicleFlatTransform(1);
+            Matrix4f transform = getBarrelTransform(1);
 
-            // 左炮管
+            // 左上炮管
             if (this.items.get(0).getItem() instanceof CannonShellItem ||
                     (player == getFirstPassenger() && (getAmmoCount(player) > 0 || InventoryTool.hasCreativeAmmoBox(player)))
             ) {
-                Vector4f worldPositionL = transformPosition(transform, 0.486775f, 1.4992625f, 1.52065f);
-                summonShell(new Vec3(worldPositionL.x, worldPositionL.y, worldPositionL.z), player);
+                Vector4f worldPositionL = transformPosition(transform, 1.24625f, 0.5625f, 0);
+                summonShell(new Vec3(worldPositionL.x, worldPositionL.y, worldPositionL.z), player, 0.05f);
             }
 
-            // 右炮管
-            Mod.queueServerWork(3, () -> {
+            // 右上炮管
+            Mod.queueServerWork(2, () -> {
                 if (this.items.get(0).getItem() instanceof CannonShellItem ||
                         (player == getFirstPassenger() && (getAmmoCount(player) > 0 || InventoryTool.hasCreativeAmmoBox(player)))
                 ) {
-                    Vector4f worldPositionR = transformPosition(transform, -0.486775f, 1.4992625f, 1.52065f);
-                    summonShell(new Vec3(worldPositionR.x, worldPositionR.y, worldPositionR.z), player);
-                    this.entityData.set(RIGHT_BARREL_ANIM, 20);
+                    Vector4f worldPositionR = transformPosition(transform, -1.24625f, 0.5625f, 0);
+                    summonShell(new Vec3(worldPositionR.x, worldPositionR.y, worldPositionR.z), player, 0.1f);
+                    this.entityData.set(BARREL_ANIM_2, 20);
+                }
+            });
+
+            // 左下炮管
+            Mod.queueServerWork(4, () -> {
+                if (this.items.get(0).getItem() instanceof CannonShellItem ||
+                        (player == getFirstPassenger() && (getAmmoCount(player) > 0 || InventoryTool.hasCreativeAmmoBox(player)))
+                ) {
+                    Vector4f worldPositionLL = transformPosition(transform, 1.24625f, -0.5625f, 0);
+                    summonShell(new Vec3(worldPositionLL.x, worldPositionLL.y, worldPositionLL.z), player, 0.15f);
+                    this.entityData.set(BARREL_ANIM_3, 20);
+                }
+            });
+
+            // 右下炮管
+            Mod.queueServerWork(6, () -> {
+                if (this.items.get(0).getItem() instanceof CannonShellItem ||
+                        (player == getFirstPassenger() && (getAmmoCount(player) > 0 || InventoryTool.hasCreativeAmmoBox(player)))
+                ) {
+                    Vector4f worldPositionRL = transformPosition(transform, -1.24625f, -0.5625f, 0);
+                    summonShell(new Vec3(worldPositionRL.x, worldPositionRL.y, worldPositionRL.z), player, 0.2f);
+                    this.entityData.set(BARREL_ANIM_4, 20);
                 }
             });
 
 
             if (player instanceof ServerPlayer serverPlayer) {
                 if (player == getFirstPassenger()) {
-                    Mod.queueServerWork(44, () -> SoundTool.playLocalSound(serverPlayer, ModSounds.CANNON_RELOAD.get(), 2, 1));
+                    Mod.queueServerWork(70, () -> SoundTool.playLocalSound(serverPlayer, ModSounds.BL_132_RELOAD.get(), 2, 1));
                 }
             }
 
-            this.entityData.set(COOL_DOWN, 74);
+            this.entityData.set(COOL_DOWN, 90);
 
             serverLevel.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE,
                     this.getX() + 5 * this.getLookAngle().x,
@@ -489,12 +530,12 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
         }
     }
 
-    public void summonShell(Vec3 pos, Player player) {
+    public void summonShell(Vec3 pos, Player player, float spread) {
         if (player.level() instanceof ServerLevel level) {
             var entityToSpawnLeft = ((CannonShellWeapon) getWeapon(0)).create(player);
 
             entityToSpawnLeft.setPos(pos.x, pos.y, pos.z);
-            entityToSpawnLeft.shoot(this.getLookAngle().x, this.getLookAngle().y, this.getLookAngle().z, 15, 0.05f);
+            entityToSpawnLeft.shoot(this.getLookAngle().x, this.getLookAngle().y, this.getLookAngle().z, 15, spread);
             level.addFreshEntity(entityToSpawnLeft);
 
             level.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE,
@@ -522,12 +563,12 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
 
             if (player instanceof ServerPlayer serverPlayer) {
                 if (player == getFirstPassenger()) {
-                    SoundTool.playLocalSound(serverPlayer, ModSounds.MK_42_FIRE_1P.get(), 2, 1);
+                    SoundTool.playLocalSound(serverPlayer, ModSounds.BL_132_FIRE_1P.get(), 2, 1);
                 }
             }
 
             if (!this.level().isClientSide()) {
-                this.level().playSound(null, this.getX(), this.getY(), this.getZ(), ModSounds.MK_42_FIRE_3P.get(), SoundSource.PLAYERS, 24f, 1f);
+                this.level().playSound(null, this.getX(), this.getY(), this.getZ(), ModSounds.BL_132_FIRE_3P.get(), SoundSource.PLAYERS, 24f, 1f);
                 this.level().playSound(null, this.getX(), this.getY(), this.getZ(), ModSounds.MK_42_FAR.get(), SoundSource.PLAYERS, 48f, 1f);
                 this.level().playSound(null, this.getX(), this.getY(), this.getZ(), ModSounds.MK_42_VERYFAR.get(), SoundSource.PLAYERS, 96f, 1f);
             }
@@ -570,12 +611,12 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
         turretTurnSound(diffX, diffY, 0.95f);
 
         this.setYRot(this.getYRot() + Mth.clamp(0.5f * diffY, -1.25f, 1.25f));
-        this.setXRot(Mth.clamp(this.getXRot() + Mth.clamp(0.5f * diffX, -2f, 2f), -30, 5f));
+        this.setXRot(Mth.clamp(this.getXRot() + Mth.clamp(0.5f * diffX, -2f, 2f), -85, 5f));
     }
 
     protected void clampRotation(Entity entity) {
         float f = Mth.wrapDegrees(entity.getXRot());
-        float f1 = Mth.clamp(f, -30.0F, 7.0F);
+        float f1 = Mth.clamp(f, -85.0F, 6F);
         entity.xRotO += f1 - f;
         entity.setXRot(entity.getXRot() + f1 - f);
     }
@@ -585,24 +626,40 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
         this.clampRotation(entity);
     }
 
-    private PlayState fireLeftPredicate(AnimationState<Mle1934Entity> event) {
-        if (this.entityData.get(COOL_DOWN) > 54) {
-            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.mle1934.fire_left"));
+    private PlayState fire1Predicate(AnimationState<Bl132Entity> event) {
+        if (this.entityData.get(COOL_DOWN) > 70) {
+            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.bl_132.fire_1"));
         }
-        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.mle1934.idle"));
+        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.bl_132.idle"));
     }
 
-    private PlayState fireRightPredicate(AnimationState<Mle1934Entity> event) {
-        if (this.entityData.get(RIGHT_BARREL_ANIM) > 0) {
-            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.mle1934.fire_right"));
+    private PlayState fire2Predicate(AnimationState<Bl132Entity> event) {
+        if (this.entityData.get(BARREL_ANIM_2) > 0) {
+            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.bl_132.fire_2"));
         }
-        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.mle1934.idle"));
+        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.bl_132.idle"));
+    }
+
+    private PlayState fire3Predicate(AnimationState<Bl132Entity> event) {
+        if (this.entityData.get(BARREL_ANIM_3) > 0) {
+            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.bl_132.fire_3"));
+        }
+        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.bl_132.idle"));
+    }
+
+    private PlayState fire4Predicate(AnimationState<Bl132Entity> event) {
+        if (this.entityData.get(BARREL_ANIM_4) > 0) {
+            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.bl_132.fire_4"));
+        }
+        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.bl_132.idle"));
     }
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar data) {
-        data.add(new AnimationController<>(this, "fireLeft", 0, this::fireLeftPredicate));
-        data.add(new AnimationController<>(this, "fireRight", 0, this::fireRightPredicate));
+        data.add(new AnimationController<>(this, "fire1", 0, this::fire1Predicate));
+        data.add(new AnimationController<>(this, "fire2", 0, this::fire2Predicate));
+        data.add(new AnimationController<>(this, "fire3", 0, this::fire3Predicate));
+        data.add(new AnimationController<>(this, "fire4", 0, this::fire4Predicate));
     }
 
     @Override
@@ -622,17 +679,13 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
 
     @Override
     public int getAmmoCount(Player player) {
-        Item ammo = switch (getWeaponIndex(0)) {
+        Item ammo = switch (getWeaponIndex(0))
+        {
             case 1 -> ModItems.HE_5_INCHES.get();
             case 2 -> ModItems.CM_5_INCHES.get();
             default -> ModItems.AP_5_INCHES.get();
         };
         return InventoryTool.countItem(player.getInventory().items, ammo);
-    }
-
-    @Override
-    public boolean banHand(Player player) {
-        return true;
     }
 
     @Override
@@ -660,7 +713,7 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
 
     @Override
     public ResourceLocation getVehicleIcon() {
-        return Mod.loc("textures/vehicle_icon/mle1934_icon.png");
+        return Mod.loc("textures/vehicle_icon/sherman_icon.png");
     }
 
     @Override
@@ -712,12 +765,14 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
 
     @Override
     public int getMaxStackSize() {
-        return 2;
+        return 4;
     }
 
     @Override
-    public @NotNull ItemStack removeItemNoUpdate(int slot) {
-        return removeItem(0, 2);
+    public void setChanged() {
+//        if (!entityData.get(INTELLIGENT)) {
+//            fire(null);
+//        }
     }
 
     @Override

@@ -3442,5 +3442,53 @@
         "stream": false
       }
     ]
+  },
+  "bl_132_fire_1p": {
+    "sounds": [
+      {
+        "name": "superbwarfare:bl_132/bl_132_fire_1p_01",
+        "stream": false
+      },
+      {
+        "name": "superbwarfare:bl_132/bl_132_fire_1p_02",
+        "stream": false
+      },
+      {
+        "name": "superbwarfare:bl_132/bl_132_fire_1p_03",
+        "stream": false
+      }
+    ]
+  },
+  "bl_132_fire_3p": {
+    "sounds": [
+      {
+        "name": "superbwarfare:bl_132/bl_132_fire_3p_01",
+        "stream": false
+      },
+      {
+        "name": "superbwarfare:bl_132/bl_132_fire_3p_02",
+        "stream": false
+      },
+      {
+        "name": "superbwarfare:bl_132/bl_132_fire_3p_03",
+        "stream": false
+      }
+    ]
+  },
+  "bl_132_reload": {
+    "sounds": [
+      {
+        "name": "superbwarfare:bl_132/bl_132_reload_01",
+        "stream": false
+      },
+      {
+        "name": "superbwarfare:bl_132/bl_132_reload_02",
+        "stream": false
+      },
+      {
+        "name": "superbwarfare:bl_132/bl_132_reload_03",
+        "stream": false
+      }
+    ]
   }
 }

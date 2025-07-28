@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "#": {
+      "item": "minecraft:diamond"
+    },
+    "C": {
+      "item": "minecraft:lapis_lazuli"
+    },
+    "S": {
+      "item": "superbwarfare:bl_132_blueprint"
+    }
+  },
+  "pattern": [
+    "#S#",
+    "#C#",
+    "###"
+  ],
+  "result": {
+    "count": 2,
+    "item": "superbwarfare:bl_132_blueprint"
+  },
+  "show_notification": true
+}

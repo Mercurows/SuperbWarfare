@@ -206,6 +206,11 @@
         },
         {
           "type": "minecraft:item",
+          "name": "superbwarfare:bl_132_blueprint",
+          "weight": 2
+        },
+        {
+          "type": "minecraft:item",
           "name": "superbwarfare:annihilator_blueprint"
         }
       ],

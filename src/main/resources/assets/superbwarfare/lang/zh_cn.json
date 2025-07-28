@@ -124,6 +124,7 @@
   "item.superbwarfare.aurelia_sceptre_blueprint": "海月权杖蓝图",
   "item.superbwarfare.mp_5_blueprint": "MP5冲锋枪蓝图",
   "item.superbwarfare.qbz_191_blueprint": "QBZ-191突击步枪蓝图",
+  "item.superbwarfare.bl_132_blueprint": "58 BL-132蓝图",
 
   "item.superbwarfare.common_material_pack": "普通材料包",
   "item.superbwarfare.rare_material_pack": "稀有材料包",
@@ -512,6 +513,7 @@
   "entity.superbwarfare.senpai": "野兽先辈",
   "entity.superbwarfare.mk_42": "5''/54 Mk42",
   "entity.superbwarfare.mle_1934": "138.6mm50 Mle1934 R1938",
+  "entity.superbwarfare.bl_132": "58 BL-132",
   "entity.superbwarfare.drone": "无人机",
   "entity.superbwarfare.annihilator": "歼灭者能量炮",
   "entity.superbwarfare.speedboat": "快艇",

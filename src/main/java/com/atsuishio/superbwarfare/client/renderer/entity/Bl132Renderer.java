@@ -1,8 +1,8 @@
 package com.atsuishio.superbwarfare.client.renderer.entity;
 
-import com.atsuishio.superbwarfare.client.layer.vehicle.Mle1934Layer;
-import com.atsuishio.superbwarfare.client.model.entity.Mle1934Model;
-import com.atsuishio.superbwarfare.entity.vehicle.Mle1934Entity;
+import com.atsuishio.superbwarfare.client.layer.vehicle.Bl132Layer;
+import com.atsuishio.superbwarfare.client.model.entity.Bl132Model;
+import com.atsuishio.superbwarfare.entity.vehicle.Bl132Entity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -18,24 +18,23 @@ import software.bernie.geckolib.cache.object.BakedGeoModel;
 import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
 
-import static com.atsuishio.superbwarfare.entity.vehicle.Mle1934Entity.COOL_DOWN;
-import static com.atsuishio.superbwarfare.entity.vehicle.Mle1934Entity.RIGHT_BARREL_ANIM;
+import static com.atsuishio.superbwarfare.entity.vehicle.Bl132Entity.*;
 
-public class Mle1934Renderer extends GeoEntityRenderer<Mle1934Entity> {
+public class Bl132Renderer extends GeoEntityRenderer<Bl132Entity> {
 
-    public Mle1934Renderer(EntityRendererProvider.Context renderManager) {
-        super(renderManager, new Mle1934Model());
+    public Bl132Renderer(EntityRendererProvider.Context renderManager) {
+        super(renderManager, new Bl132Model());
         this.shadowRadius = 2f;
-        this.addRenderLayer(new Mle1934Layer(this));
+        this.addRenderLayer(new Bl132Layer(this));
     }
 
     @Override
-    public RenderType getRenderType(Mle1934Entity animatable, ResourceLocation texture, MultiBufferSource bufferSource, float partialTick) {
+    public RenderType getRenderType(Bl132Entity animatable, ResourceLocation texture, MultiBufferSource bufferSource, float partialTick) {
         return RenderType.entityTranslucent(getTextureLocation(animatable));
     }
 
     @Override
-    public void preRender(PoseStack poseStack, Mle1934Entity entity, BakedGeoModel model, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, float red, float green,
+    public void preRender(PoseStack poseStack, Bl132Entity entity, BakedGeoModel model, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, float red, float green,
                           float blue, float alpha) {
         float scale = 1f;
         this.scaleHeight = scale;
@@ -44,7 +43,7 @@ public class Mle1934Renderer extends GeoEntityRenderer<Mle1934Entity> {
     }
 
     @Override
-    public void render(Mle1934Entity entityIn, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource bufferIn, int packedLightIn) {
+    public void render(Bl132Entity entityIn, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource bufferIn, int packedLightIn) {
         poseStack.pushPose();
         poseStack.mulPose(Axis.YP.rotationDegrees(-Mth.lerp(partialTicks, entityIn.yRotO, entityIn.getYRot())));
         super.render(entityIn, entityYaw, partialTicks, poseStack, bufferIn, packedLightIn);
@@ -52,20 +51,28 @@ public class Mle1934Renderer extends GeoEntityRenderer<Mle1934Entity> {
     }
 
     @Override
-    public void renderRecursively(PoseStack poseStack, Mle1934Entity animatable, GeoBone bone, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
+    public void renderRecursively(PoseStack poseStack, Bl132Entity animatable, GeoBone bone, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
         String name = bone.getName();
 
-        if (name.equals("bone")) {
+        if (name.equals("main")) {
             Player player = Minecraft.getInstance().player;
             bone.setHidden(ClientEventHandler.zoomVehicle && animatable.getFirstPassenger() == player);
         }
 
-        if (name.equals("flare2")) {
-            bone.setHidden(animatable.getEntityData().get(COOL_DOWN) <= 64);
+        if (name.equals("flare")) {
+            bone.setHidden(animatable.getEntityData().get(COOL_DOWN) <= 75);
         }
 
-        if (name.equals("flare")) {
-            bone.setHidden(animatable.getEntityData().get(RIGHT_BARREL_ANIM) <= 10);
+        if (name.equals("flare2")) {
+            bone.setHidden(animatable.getEntityData().get(BARREL_ANIM_2) <= 10);
+        }
+
+        if (name.equals("flare3")) {
+            bone.setHidden(animatable.getEntityData().get(BARREL_ANIM_3) <= 10);
+        }
+
+        if (name.equals("flare4")) {
+            bone.setHidden(animatable.getEntityData().get(BARREL_ANIM_4) <= 10);
         }
 
         super.renderRecursively(poseStack, animatable, bone, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, red, green, blue, alpha);
