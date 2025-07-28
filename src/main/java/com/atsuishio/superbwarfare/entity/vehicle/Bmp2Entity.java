@@ -160,11 +160,6 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
     }
 
     @Override
-    public double getSubmergedHeight(Entity entity) {
-        return super.getSubmergedHeight(entity);
-    }
-
-    @Override
     public void baseTick() {
         super.baseTick();
         updateOBB();

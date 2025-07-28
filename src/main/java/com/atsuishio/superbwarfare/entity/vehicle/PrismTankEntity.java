@@ -148,11 +148,6 @@ public class PrismTankEntity extends ContainerMobileVehicleEntity implements Geo
     }
 
     @Override
-    public double getSubmergedHeight(Entity entity) {
-        return super.getSubmergedHeight(entity);
-    }
-
-    @Override
     public void baseTick() {
         this.entityData.set(LASER_SCALE_O, this.entityData.get(LASER_SCALE));
         super.baseTick();

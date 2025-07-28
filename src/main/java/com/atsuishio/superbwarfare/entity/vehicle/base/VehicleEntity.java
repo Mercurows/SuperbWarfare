@@ -901,7 +901,7 @@ public abstract class VehicleEntity extends Entity implements Container {
         return 1;
     }
 
-    public double getSubmergedHeight(Entity entity) {
+    public static double getSubmergedHeight(Entity entity) {
         for (Fluid fluid : BuiltInRegistries.FLUID) {
             var type = fluid.getFluidType();
             if (entity.level().getFluidState(entity.blockPosition()).getFluidType() == type)

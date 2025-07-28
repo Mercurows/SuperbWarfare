@@ -284,6 +284,11 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
                 this.entityData.set(TARGET_UUID, "none");
                 return;
             }
+            if (VehicleEntity.getSubmergedHeight(target) >= target.getBbHeight()) {
+                this.entityData.set(TARGET_UUID, "none");
+                return;
+            }
+
             if (target.distanceTo(this) > 160) {
                 this.entityData.set(TARGET_UUID, "none");
                 return;
@@ -296,7 +301,7 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
                 this.entityData.set(TARGET_UUID, "none");
                 return;
             }
-            if (target instanceof Projectile && (VectorTool.calculateAngle(target.getDeltaMovement().normalize(), target.position().vectorTo(this.position()).normalize()) > 60 || target.onGround())) {
+            if (target instanceof Projectile && (VectorTool.calculateAngle(target.getDeltaMovement().normalize(), target.position().vectorTo(this.position()).normalize()) > 60 || target.onGround() || target.getDeltaMovement().lengthSqr() < 0.001)) {
                 this.entityData.set(TARGET_UUID, "none");
                 return;
             }
@@ -357,9 +362,10 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
     @Override
     public boolean basicEnemyProjectileFilter(Projectile projectile) {
         if (this.getOwner() == null) return false;
-        if (projectile.getOwner() == null) return false;
-        if (projectile.getOwner() == this.getOwner()) return false;
-        return !projectile.getOwner().isAlliedTo(this.getOwner()) || (projectile.getOwner().getTeam() != null && projectile.getOwner().getTeam().getName().equals("TDM"));
+        if (projectile.getOwner() != null && projectile.getOwner() == this.getOwner()) return false;
+        return (projectile.getOwner() != null && !projectile.getOwner().isAlliedTo(this.getOwner()))
+                || (projectile.getOwner() != null && projectile.getOwner().getTeam() != null && projectile.getOwner().getTeam().getName().equals("TDM"))
+                || projectile.getOwner() == null;
     }
 
     public float getGunRot() {
