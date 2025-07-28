@@ -57,10 +57,9 @@ public abstract class ContainerMobileVehicleEntity extends MobileVehicleEntity i
     public @NotNull InteractionResult interact(Player player, @NotNull InteractionHand hand) {
         if (player.getVehicle() == this) return InteractionResult.PASS;
 
-        ItemStack stack = player.getMainHandItem();
-        if (player.isShiftKeyDown() && !stack.is(ModTags.Items.CROWBAR)) {
+        if (this.hasMenu() && player.isShiftKeyDown() && !player.getMainHandItem().is(ModTags.Items.CROWBAR)) {
             player.openMenu(this);
-            return !player.level().isClientSide ? InteractionResult.CONSUME : InteractionResult.SUCCESS;
+            return InteractionResult.sidedSuccess(player.level().isClientSide);
         }
 
         return super.interact(player, hand);

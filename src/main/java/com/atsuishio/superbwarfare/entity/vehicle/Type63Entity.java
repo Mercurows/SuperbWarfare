@@ -8,7 +8,6 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.ContainerMobileVehicleEnt
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.item.common.ammo.MediumRocketItem;
-import com.atsuishio.superbwarfare.item.common.container.ContainerBlockItem;
 import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage;
 import com.atsuishio.superbwarfare.tools.CustomExplosion;
 import com.atsuishio.superbwarfare.tools.OBB;
@@ -41,8 +40,8 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Math;
 import org.joml.*;
+import org.joml.Math;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -149,6 +148,9 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
 
     @Override
     public @NotNull InteractionResult interact(Player player, @NotNull InteractionHand hand) {
+        var result = super.interact(player, hand);
+        if (result != InteractionResult.PASS) return result;
+
         ItemStack stack = player.getMainHandItem();
 
         if (stack.isEmpty()) {
@@ -225,39 +227,27 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
         }
 
         if (stack.is(ModTags.Items.CROWBAR)) {
-            if (player.isShiftKeyDown()) {
-                if (this.getPassengers().isEmpty()) {
-                    ItemStack container = ContainerBlockItem.createInstance(this);
-                    if (!player.addItem(container)) {
-                        player.drop(container, false);
-                    }
-                    this.remove(RemovalReason.DISCARDED);
-                    this.discard();
-                    return InteractionResult.SUCCESS;
-                }
-            } else {
-                // 撬棍发射
-                if (lookingAtBarrel(player)) {
-                    // 精准发射
-                    for (int i = 0; i < this.barrel.length; i++) {
-                        if (OBB.getLookingObb(player, player.getEntityReach()) == this.barrel[i] && items.get(i).getItem() instanceof MediumRocketItem && cooldown == 0) {
-                            shoot(player, i);
-                            items.set(i, ItemStack.EMPTY);
-                            setChanged();
-                            player.swing(InteractionHand.MAIN_HAND);
-                        }
+            // 撬棍发射
+            if (lookingAtBarrel(player)) {
+                // 精准发射
+                for (int i = 0; i < this.barrel.length; i++) {
+                    if (OBB.getLookingObb(player, player.getEntityReach()) == this.barrel[i] && items.get(i).getItem() instanceof MediumRocketItem && cooldown == 0) {
+                        shoot(player, i);
+                        items.set(i, ItemStack.EMPTY);
+                        setChanged();
                         player.swing(InteractionHand.MAIN_HAND);
                     }
-                } else {
-                    // 顺序发射
-                    for (int i = 0; i < 12; i++) {
-                        if (items.get(i).getItem() instanceof MediumRocketItem && cooldown == 0) {
-                            shoot(player, i);
-                            items.set(i, ItemStack.EMPTY);
-                            setChanged();
-                            player.swing(InteractionHand.MAIN_HAND);
-                            return InteractionResult.SUCCESS;
-                        }
+                    player.swing(InteractionHand.MAIN_HAND);
+                }
+            } else {
+                // 顺序发射
+                for (int i = 0; i < 12; i++) {
+                    if (items.get(i).getItem() instanceof MediumRocketItem && cooldown == 0) {
+                        shoot(player, i);
+                        items.set(i, ItemStack.EMPTY);
+                        setChanged();
+                        player.swing(InteractionHand.MAIN_HAND);
+                        return InteractionResult.SUCCESS;
                     }
                 }
             }
@@ -568,5 +558,15 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
     @Override
     public boolean hasEnergyStorage() {
         return false;
+    }
+
+    @Override
+    public boolean hasMenu() {
+        return false;
+    }
+
+    @Override
+    public int getMaxPassengers() {
+        return 0;
     }
 }
