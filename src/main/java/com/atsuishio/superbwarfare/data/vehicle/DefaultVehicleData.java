@@ -11,6 +11,8 @@ public class DefaultVehicleData implements IDBasedData {
     @SerializedName("ID")
     public String id = "";
 
+    public transient boolean isDefaultData = true;
+
     @Override
     public String getId() {
         return this.id;
