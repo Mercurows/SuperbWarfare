@@ -19,15 +19,34 @@ import java.util.Objects;
 public class VehicleData {
 
     public final String id;
-    public final DefaultVehicleData data;
     public final VehicleEntity vehicle;
-    public final boolean isDefaultData;
 
     private VehicleData(VehicleEntity entity) {
-        this.id = EntityType.getKey(entity.getType()).toString();
-        this.isDefaultData = !VehicleDataTool.vehicleData.containsKey(id);
-        this.data = VehicleDataTool.vehicleData.getOrDefault(id, new DefaultVehicleData());
+        this.id = getRegistryId(entity.getType());
         this.vehicle = entity;
+    }
+
+    public static DefaultVehicleData getDefault(String id) {
+        var isDefault = !VehicleDataTool.vehicleData.containsKey(id);
+        var data = VehicleDataTool.vehicleData.getOrDefault(id, new DefaultVehicleData());
+        data.isDefaultData = isDefault;
+        return data;
+    }
+
+    public DefaultVehicleData getDefault() {
+        return getDefault(this.id);
+    }
+
+    public static DefaultVehicleData getDefault(VehicleEntity entity) {
+        return getDefault(entity.getType());
+    }
+
+    public static DefaultVehicleData getDefault(EntityType<?> type) {
+        return getDefault(getRegistryId(type));
+    }
+
+    public static String getRegistryId(EntityType<?> type) {
+        return EntityType.getKey(type).toString();
     }
 
     public static final LoadingCache<VehicleEntity, VehicleData> dataCache = CacheBuilder.newBuilder()
@@ -43,23 +62,23 @@ public class VehicleData {
     }
 
     public float maxHealth() {
-        return data.maxHealth;
+        return getDefault().maxHealth;
     }
 
     public int repairCooldown() {
-        return data.repairCooldown;
+        return getDefault().repairCooldown;
     }
 
     public float repairAmount() {
-        return data.repairAmount;
+        return getDefault().repairAmount;
     }
 
     public String repairMaterial() {
-        return data.repairMaterial;
+        return getDefault().repairMaterial;
     }
 
     public float repairMaterialHealAmount() {
-        return data.repairMaterialHealAmount;
+        return getDefault().repairMaterialHealAmount;
     }
 
     public boolean canRepairManually() {
@@ -90,37 +109,37 @@ public class VehicleData {
     }
 
     public float selfHurtPercent() {
-        return Mth.clamp(data.selfHurtPercent, 0, 1);
+        return Mth.clamp(getDefault().selfHurtPercent, 0, 1);
     }
 
     public float selfHurtAmount() {
-        return data.selfHurtAmount;
+        return getDefault().selfHurtAmount;
     }
 
     public int maxEnergy() {
-        return data.maxEnergy;
+        return getDefault().maxEnergy;
     }
 
     public float upStep() {
-        return data.upStep;
+        return getDefault().upStep;
     }
 
     public boolean allowFreeCam() {
-        return data.allowFreeCam;
+        return getDefault().allowFreeCam;
     }
 
     public float mass() {
-        return data.mass;
+        return getDefault().mass;
     }
 
     public DamageModifier damageModifier() {
         var modifier = new DamageModifier();
 
-        if (data.applyDefaultDamageModifiers) {
+        if (getDefault().applyDefaultDamageModifiers) {
             modifier.addAll(DamageModifier.createDefaultModifier().toList());
             modifier.reduce(5, ModDamageTypes.VEHICLE_STRIKE);
         }
 
-        return modifier.addAll(data.damageModifiers.list);
+        return modifier.addAll(getDefault().damageModifiers.list);
     }
 }
