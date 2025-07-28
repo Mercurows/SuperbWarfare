@@ -67,7 +67,7 @@ public class VehicleTeamOverlay implements LayeredDraw.Layer {
 
         if (lookAtEntity && lookingEntity instanceof VehicleEntity vehicle && !usingDrone && !outOfRange) {
             if (entityRange > VehicleConfig.VEHICLE_INFO_DISPLAY_DISTANCE.get()) return;
-            Vec3 pos = lookingEntity.getBoundingBox().getCenter().add(new Vec3(0, lookingEntity.getBbHeight() / 2, 0));
+            Vec3 pos = lookingEntity.getBoundingBox().getCenter().add(new Vec3(0, lookingEntity.getBbHeight() / 2 + 0.5, 0));
             Vec3 point = VectorUtil.worldToScreen(pos);
 
             float x = (float) point.x;

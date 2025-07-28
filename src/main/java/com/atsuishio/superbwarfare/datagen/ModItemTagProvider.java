@@ -121,10 +121,11 @@ public class ModItemTagProvider extends ItemTagsProvider {
 
         this.tag(ModTags.Items.LEGENDARY_BLUEPRINT).add(ModItems.AA_12_BLUEPRINT.get(), ModItems.NTW_20_BLUEPRINT.get(), ModItems.MINIGUN_BLUEPRINT.get(),
                 ModItems.SENTINEL_BLUEPRINT.get(), ModItems.JAVELIN_BLUEPRINT.get(), ModItems.SECONDARY_CATACLYSM_BLUEPRINT.get(), ModItems.MK_42_BLUEPRINT.get(),
-                ModItems.MLE_1934_BLUEPRINT.get(), ModItems.ANNIHILATOR_BLUEPRINT.get(), ModItems.HPJ_11_BLUEPRINT.get(), ModItems.AURELIA_SCEPTRE_BLUEPRINT.get());
+                ModItems.MLE_1934_BLUEPRINT.get(), ModItems.ANNIHILATOR_BLUEPRINT.get(), ModItems.HPJ_11_BLUEPRINT.get(), ModItems.AURELIA_SCEPTRE_BLUEPRINT.get()
+                , ModItems.BL_132_BLUEPRINT.get());
 
         this.tag(ModTags.Items.CANNON_BLUEPRINT).add(ModItems.MK_42_BLUEPRINT.get(), ModItems.MLE_1934_BLUEPRINT.get(), ModItems.ANNIHILATOR_BLUEPRINT.get(),
-                ModItems.HPJ_11_BLUEPRINT.get());
+                ModItems.HPJ_11_BLUEPRINT.get(), ModItems.BL_132_BLUEPRINT.get());
     }
 
     public static TagKey<Item> cTag(String name) {

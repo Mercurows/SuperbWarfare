@@ -277,6 +277,7 @@ public class ModItems {
     public static final DeferredHolder<Item, BlueprintItem> AURELIA_SCEPTRE_BLUEPRINT = ITEMS.register("aurelia_sceptre_blueprint", () -> new BlueprintItem(ModEnumExtensions.getLegendary()));
     public static final DeferredHolder<Item, BlueprintItem> MK_42_BLUEPRINT = ITEMS.register("mk_42_blueprint", () -> new BlueprintItem(ModEnumExtensions.getLegendary()));
     public static final DeferredHolder<Item, BlueprintItem> MLE_1934_BLUEPRINT = ITEMS.register("mle_1934_blueprint", () -> new BlueprintItem(ModEnumExtensions.getLegendary()));
+    public static final DeferredHolder<Item, BlueprintItem> BL_132_BLUEPRINT = ITEMS.register("bl_132_blueprint", () -> new BlueprintItem(ModEnumExtensions.getLegendary()));
     public static final DeferredHolder<Item, BlueprintItem> HPJ_11_BLUEPRINT = ITEMS.register("hpj_11_blueprint", () -> new BlueprintItem(ModEnumExtensions.getLegendary()));
     public static final DeferredHolder<Item, BlueprintItem> ANNIHILATOR_BLUEPRINT = ITEMS.register("annihilator_blueprint", () -> new BlueprintItem(ModEnumExtensions.getLegendary()));
 

@@ -124,6 +124,7 @@
   "item.superbwarfare.aurelia_sceptre_blueprint": "Aurelia Sceptre Blueprint",
   "item.superbwarfare.mp_5_blueprint": "MP5 Blueprint",
   "item.superbwarfare.qbz_191_blueprint": "QBZ-191 Blueprint",
+  "item.superbwarfare.bl_132_blueprint": "58 BL-132 Blueprint",
 
   "item.superbwarfare.common_material_pack": "Common Material Pack",
   "item.superbwarfare.rare_material_pack": "Rare Material Pack",
@@ -512,6 +513,7 @@
   "entity.superbwarfare.senpai": "Beast Senpai",
   "entity.superbwarfare.mk_42": "5''/54 Mk42",
   "entity.superbwarfare.mle_1934": "138.6mm50 Mle1934 R1938",
+  "entity.superbwarfare.bl_132": "58 BL-132",
   "entity.superbwarfare.drone": "Drone",
   "entity.superbwarfare.annihilator": "Annihilator Energy Cannon",
   "entity.superbwarfare.speedboat": "Speedboat",

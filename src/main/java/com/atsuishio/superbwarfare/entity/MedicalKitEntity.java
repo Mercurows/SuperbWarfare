@@ -99,12 +99,10 @@ public class MedicalKitEntity extends Entity implements GeoEntity {
             var entities = level().getEntities(EntityTypeTest.forClass(LivingEntity.class), frontBox, living -> living.getHealth() < living.getMaxHealth()).stream().toList();
 
             for (var entity : entities) {
-                if (entity != null) {
-                    treat(entity);
-                    serverLevel.playSound(null, position().x, position().y, position().z, SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS, 0.5f, 1);
-                    this.discard();
-                    break;
-                }
+                treat(entity);
+                serverLevel.playSound(null, position().x, position().y, position().z, SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS, 0.5f, 1);
+                this.discard();
+                break;
             }
         }
     }

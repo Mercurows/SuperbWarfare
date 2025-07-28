@@ -104,6 +104,8 @@ public class ModEntities {
             EntityType.Builder.of(Hpj11Entity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(3).fireImmune().sized(2.8f, 2.4f));
     public static final DeferredHolder<EntityType<?>, EntityType<Mle1934Entity>> MLE_1934 = register("mle_1934",
             EntityType.Builder.of(Mle1934Entity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(3).fireImmune().sized(4.5f, 2.8f));
+    public static final DeferredHolder<EntityType<?>, EntityType<Bl132Entity>> BL_132 = register("bl_132",
+            EntityType.Builder.of(Bl132Entity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(3).fireImmune().sized(7f, 4.4375f));
     public static final DeferredHolder<EntityType<?>, EntityType<AnnihilatorEntity>> ANNIHILATOR = register("annihilator",
             EntityType.Builder.of(AnnihilatorEntity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(3).fireImmune().sized(13f, 4.2f));
     public static final DeferredHolder<EntityType<?>, EntityType<LaserTowerEntity>> LASER_TOWER = register("laser_tower",
