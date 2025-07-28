@@ -24,6 +24,7 @@ public interface AutoAimable {
             var condition = target.distanceToSqr(attacker) > minRange * minRange
                     && target.distanceToSqr(attacker) <= seekRange * seekRange
                     && canAim(pos, target, minAngle, maxAngle)
+                    && VehicleEntity.getSubmergedHeight(target) <= target.getBbHeight()
                     && checkNoClip(attacker, target, pos)
                     && !(target instanceof Player player && (player.isSpectator() || player.isCreative()))
                     && ((target instanceof LivingEntity living && living instanceof Enemy && living.getHealth() > 0) || isThreateningEntity(attacker, target, size, pos) || basicEnemyFilter(target))
@@ -48,7 +49,7 @@ public interface AutoAimable {
     // 判断载具和目标之间有无障碍物
     default boolean checkNoClip(Entity attacker, Entity target, Vec3 pos) {
         return attacker.level().clip(new ClipContext(pos, target.getEyePosition(),
-                ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, attacker)).getType() != HitResult.Type.BLOCK;
+                ClipContext.Block.COLLIDER, ClipContext.Fluid.ANY, attacker)).getType() != HitResult.Type.BLOCK;
     }
 
     boolean basicEnemyFilter(Entity pEntity);

@@ -911,7 +911,7 @@ public abstract class VehicleEntity extends Entity implements Container {
         return 1;
     }
 
-    public double getSubmergedHeight(Entity entity) {
+    public static double getSubmergedHeight(Entity entity) {
         for (FluidType fluidType : ForgeRegistries.FLUID_TYPES.get().getValues()) {
             if (entity.level().getFluidState(entity.blockPosition()).getFluidType() == fluidType)
                 return entity.getFluidTypeHeight(fluidType);
