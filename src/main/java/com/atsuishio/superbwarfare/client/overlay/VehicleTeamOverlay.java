@@ -106,13 +106,13 @@ public class VehicleTeamOverlay implements LayeredDraw.Layer {
                     guiGraphics.drawString(font, Component.literal(info), -width / 2, -13, color, false);
                 }
             } else {
-                if (lookingEntity.getFirstPassenger() instanceof Player player1) {
+                if (vehicle.getMaxPassengers() > 0 && vehicle.getFirstPassenger() instanceof Player player1) {
                     color = player1.getTeamColor();
                     String info = player1.getDisplayName().getString() + (player1.getTeam() == null ? "" : " <" + (player1.getTeam().getName()) + ">");
                     int width = Minecraft.getInstance().font.width(info);
                     guiGraphics.drawString(font, Component.literal(info), -width / 2, -13, color, false);
                 } else {
-                    String info = lookingEntity.getDisplayName().getString();
+                    String info = vehicle.getDisplayName().getString();
                     int width = Minecraft.getInstance().font.width(info);
                     guiGraphics.drawString(font, Component.literal(info), -width / 2, -13, color, false);
                 }

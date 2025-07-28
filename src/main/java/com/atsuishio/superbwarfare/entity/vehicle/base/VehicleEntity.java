@@ -68,6 +68,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.common.util.FakePlayer;
 import net.neoforged.neoforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -372,6 +373,10 @@ public abstract class VehicleEntity extends Entity implements Container {
     @Nullable
     @Override
     public Entity getFirstPassenger() {
+        if (orderedPassengers.isEmpty()) {
+            Mod.LOGGER.warn("getFirstPassenger() called on vehicle {} with no passengers", this);
+            return null;
+        }
         return orderedPassengers.getFirst();
     }
 
@@ -689,9 +694,8 @@ public abstract class VehicleEntity extends Entity implements Container {
         }
 
         if (player.isShiftKeyDown() && stack.is(ModTags.Items.CROWBAR) && this.getPassengers().isEmpty()) {
-            ItemStack container = ContainerBlockItem.createInstance(this);
-            if (!player.addItem(container)) {
-                player.drop(container, false);
+            for (var item : getRetrieveItems()) {
+                ItemHandlerHelper.giveItemToPlayer(player, item);
             }
             this.remove(RemovalReason.DISCARDED);
             this.discard();
@@ -706,7 +710,7 @@ public abstract class VehicleEntity extends Entity implements Container {
                 this.level().playSound(null, this, SoundEvents.IRON_GOLEM_REPAIR, this.getSoundSource(), 0.5f, 1);
             }
             return InteractionResult.SUCCESS;
-        } else if (!player.isShiftKeyDown()) {
+        } else if (!player.isShiftKeyDown() && this.getMaxPassengers() > 0) {
             if (this.getFirstPassenger() == null) {
                 if (player instanceof FakePlayer) return InteractionResult.PASS;
                 setDriverAngle(player);
@@ -996,7 +1000,7 @@ public abstract class VehicleEntity extends Entity implements Container {
             }
         }
 
-        if (getFirstPassenger() != null) {
+        if (this.getMaxPassengers() > 0 && getFirstPassenger() != null) {
             this.entityData.set(LAST_DRIVER_UUID, getFirstPassenger().getStringUUID());
         }
 
@@ -1735,5 +1739,12 @@ public abstract class VehicleEntity extends Entity implements Container {
     @Nullable
     public Pair<Quaternionf, Quaternionf> getPassengerRotation(Entity entity, float tickDelta) {
         return null;
+    }
+
+    /**
+     * 撬棍shift+右键收回载具时返还的物品
+     */
+    public @NotNull List<ItemStack> getRetrieveItems() {
+        return List.of(ContainerBlockItem.createInstance(this));
     }
 }

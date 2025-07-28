@@ -38,7 +38,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Math;
@@ -47,6 +46,9 @@ import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.*;
 import software.bernie.geckolib.util.GeckoLibUtil;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.atsuishio.superbwarfare.tools.RangeTool.calculateLaunchVector;
 
@@ -184,6 +186,9 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, RemoteCont
 
     @Override
     public @NotNull InteractionResult interact(Player player, @NotNull InteractionHand hand) {
+        var result = super.interact(player, hand);
+        if (result != InteractionResult.PASS) return result;
+
         ItemStack mainHandItem = player.getMainHandItem();
 
         if (mainHandItem.getItem() instanceof ArtilleryIndicator indicator && this.entityData.get(INTELLIGENT)) {
@@ -200,7 +205,7 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, RemoteCont
             }
         }
 
-        if (mainHandItem.is(ModTags.Items.CROWBAR) && !player.isShiftKeyDown()) {
+        if (mainHandItem.is(ModTags.Items.CROWBAR)) {
             if (this.items.getFirst().getItem() instanceof MortarShell && this.entityData.get(FIRE_TIME) == 0 && level() instanceof ServerLevel) {
                 fire(player);
             }
@@ -223,18 +228,22 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, RemoteCont
         }
 
         if (player.isShiftKeyDown()) {
-            if (mainHandItem.is(ModTags.Items.CROWBAR)) {
-                this.discard();
-                ItemHandlerHelper.giveItemToPlayer(player, new ItemStack(ModItems.MORTAR_DEPLOYER.get()));
-                if (entityData.get(INTELLIGENT)) {
-                    ItemHandlerHelper.giveItemToPlayer(player, new ItemStack(ModItems.MONITOR.get()));
-                }
-                return InteractionResult.SUCCESS;
-            }
             entityData.set(YAW, player.getYRot());
         }
 
         return InteractionResult.FAIL;
+    }
+
+    @Override
+    public @NotNull List<ItemStack> getRetrieveItems() {
+        var list = new ArrayList<ItemStack>();
+
+        list.add(new ItemStack(ModItems.MORTAR_DEPLOYER.get()));
+        if (entityData.get(INTELLIGENT)) {
+            list.add(new ItemStack(ModItems.MONITOR.get()));
+        }
+
+        return list;
     }
 
     @Override
@@ -454,5 +463,10 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, RemoteCont
     @Override
     public boolean canPlaceItem(int slot, @NotNull ItemStack stack) {
         return super.canPlaceItem(slot, stack) && this.entityData.get(FIRE_TIME) == 0 && stack.getItem() instanceof MortarShell;
+    }
+
+    @Override
+    public int getMaxPassengers() {
+        return 0;
     }
 }

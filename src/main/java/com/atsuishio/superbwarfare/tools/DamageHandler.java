@@ -181,7 +181,7 @@ public class DamageHandler {
 
     public static MutableComponent getDamageInfo(VehicleEntity vehicle, DamageSource source, float damage) {
         var detailedDamageResult = vehicle.getDamageModifier().matchResult(source, damage);
-        float finalDamage = detailedDamageResult.get(detailedDamageResult.size() - 1).damage();
+        float finalDamage = detailedDamageResult.isEmpty() ? damage : detailedDamageResult.getLast().damage();
 
         var details = Component.empty()
                 .append(Component.translatable("des.superbwarfare.vehicle_damage_analyzer.info.raw", FormatTool.format2D(damage) + "\n").withStyle(ChatFormatting.YELLOW).withStyle(ChatFormatting.UNDERLINE))
