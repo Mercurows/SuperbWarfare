@@ -54,6 +54,9 @@ public class ModTags {
         public static final TagKey<Block> SOFT_COLLISION = tag("soft_collision");
         public static final TagKey<Block> HARD_COLLISION = tag("hard_collision");
 
+        // 子弹会穿过的方块
+        public static final TagKey<Block> BULLET_IGNORE = tag("bullet_ignore");
+
         private static TagKey<Block> tag(String name) {
             return BlockTags.create(Mod.loc(name));
         }

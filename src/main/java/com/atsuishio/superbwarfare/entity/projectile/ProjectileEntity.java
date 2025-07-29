@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.entity.projectile;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.block.BarbedWireBlock;
 import com.atsuishio.superbwarfare.client.particle.BulletDecalOption;
 import com.atsuishio.superbwarfare.config.server.ProjectileConfig;
 import com.atsuishio.superbwarfare.entity.DPSGeneratorEntity;
@@ -48,7 +47,8 @@ import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.BellBlock;
+import net.minecraft.world.level.block.TargetBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.*;
@@ -80,12 +80,7 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     private static final Predicate<Entity> PROJECTILE_TARGETS = input -> input != null && input.isPickable() && !input.isSpectator() && input.isAlive();
-    private static final Predicate<BlockState> IGNORE_LIST = input -> input != null && (input.getBlock() instanceof LeavesBlock
-            || input.getBlock() instanceof FenceBlock
-            || input.is(Blocks.IRON_BARS)
-            || input.getBlock() instanceof DoorBlock
-            || input.getBlock() instanceof TrapDoorBlock
-            || input.getBlock() instanceof BarbedWireBlock);
+    private static final Predicate<BlockState> IGNORE_LIST = input -> input != null && input.is(ModTags.Blocks.BULLET_IGNORE);
 
     public static final float DEFAULT_R = 1.0f;
     public static final float DEFAULT_G = 222 / 255f;

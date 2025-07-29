@@ -1,0 +1,12 @@
+{
+  "values": [
+    "#minecraft:fences",
+    "#minecraft:fence_gates",
+    "#minecraft:doors",
+    "#minecraft:trapdoors",
+    "#minecraft:walls",
+    "#minecraft:leaves",
+    "minecraft:iron_bars",
+    "superbwarfare:barbed_wire"
+  ]
+}
