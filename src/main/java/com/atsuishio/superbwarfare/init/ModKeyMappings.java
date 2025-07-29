@@ -36,7 +36,7 @@ public class ModKeyMappings {
     public static final KeyMapping FIRE = new KeyMapping("key.superbwarfare.fire", InputConstants.Type.MOUSE, GLFW.GLFW_MOUSE_BUTTON_LEFT, "key.categories.superbwarfare");
     public static final KeyMapping HOLD_ZOOM = new KeyMapping("key.superbwarfare.hold_zoom", InputConstants.Type.MOUSE, GLFW.GLFW_MOUSE_BUTTON_RIGHT, "key.categories.superbwarfare");
     public static final KeyMapping SWITCH_ZOOM = new KeyMapping("key.superbwarfare.switch_zoom", GLFW.GLFW_KEY_UNKNOWN, "key.categories.superbwarfare");
-    public static final KeyMapping RELEASE_DECOY = new KeyMapping("key.superbwarfare.release_decoy", GLFW.GLFW_KEY_X, "key.categories.superbwarfare");
+    public static final KeyMapping RELEASE_DECOY = new KeyMapping("key.superbwarfare.release_decoy", GLFW.GLFW_KEY_V, "key.categories.superbwarfare");
     public static final KeyMapping FREE_CAMERA = new KeyMapping("key.superbwarfare.free_camera", GLFW.GLFW_KEY_C, "key.categories.superbwarfare");
     public static final KeyMapping MELEE = new KeyMapping("key.superbwarfare.melee", GLFW.GLFW_KEY_V, "key.categories.superbwarfare");
 
