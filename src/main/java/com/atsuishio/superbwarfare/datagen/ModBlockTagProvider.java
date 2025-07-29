@@ -50,8 +50,10 @@ public class ModBlockTagProvider extends BlockTagsProvider {
                 .addTags(BlockTags.LOGS, BlockTags.PLANKS, Tags.Blocks.GLASS)
                 .add(Blocks.ICE, Blocks.FROSTED_ICE, Blocks.PACKED_ICE, Blocks.BLUE_ICE);
         this.tag(ModTags.Blocks.BULLET_IGNORE)
-                .addTags(BlockTags.FENCES, BlockTags.FENCE_GATES, BlockTags.DOORS, BlockTags.TRAPDOORS, BlockTags.WALLS, BlockTags.LEAVES)
+                .addTags(BlockTags.FENCES, BlockTags.FENCE_GATES, BlockTags.DOORS, BlockTags.TRAPDOORS, BlockTags.WALLS, BlockTags.LEAVES, Tags.Blocks.GLASS_PANES)
                 .add(Blocks.IRON_BARS, ModBlocks.BARBED_WIRE.get());
+        this.tag(ModTags.Blocks.BULLET_CAN_DESTROY)
+                .addTags(Tags.Blocks.GLASS_PANES, Tags.Blocks.GLASS);
 
         this.tag(Tags.Blocks.ORES).addTags(forgeTag("ores/lead"), forgeTag("ores/tungsten"), forgeTag("ores/silver"));
         this.tag(forgeTag("ores/lead")).add(ModBlocks.GALENA_ORE.get(), ModBlocks.DEEPSLATE_GALENA_ORE.get());

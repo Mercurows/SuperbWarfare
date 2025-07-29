@@ -593,8 +593,8 @@
   "commands.config.collision_destroy.beastly": "Enabled vehicle collision destroy blocks (Beastly Mode)",
   "commands.config.tactical_sprint.enabled": "Enabled tactical sprint",
   "commands.config.tactical_sprint.disabled": "Disabled tactical sprint",
-  "commands.config.glass_destroy.enabled": "Enabled bullet glass breaking",
-  "commands.config.glass_destroy.disabled": "Disabled bullet glass breaking",
+  "commands.config.block_destroy.enabled": "Enabled bullet breaking blocks",
+  "commands.config.block_destroy.disabled": "Disabled bullet breaking blocks",
   "commands.config.force_damage.enabled": "Enabled force damage",
   "commands.config.force_damage.disabled": "Disabled force damage",
 

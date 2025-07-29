@@ -85,12 +85,12 @@ public class ConfigCommand {
                     context.getSource().sendSuccess(() -> Component.translatable(value ? "commands.config.tactical_sprint.enabled" : "commands.config.tactical_sprint.disabled"), true);
                     return 0;
                 })))
-                .then(Commands.literal("glassDestroy").requires(s -> s.hasPermission(2)).then(Commands.argument("value", BoolArgumentType.bool()).executes(context -> {
+                .then(Commands.literal("blockDestroy").requires(s -> s.hasPermission(2)).then(Commands.argument("value", BoolArgumentType.bool()).executes(context -> {
                     var value = BoolArgumentType.getBool(context, "value");
-                    ProjectileConfig.ALLOW_PROJECTILE_DESTROY_GLASS.set(value);
-                    ProjectileConfig.ALLOW_PROJECTILE_DESTROY_GLASS.save();
+                    ProjectileConfig.ALLOW_PROJECTILE_DESTROY_BLOCKS.set(value);
+                    ProjectileConfig.ALLOW_PROJECTILE_DESTROY_BLOCKS.save();
 
-                    context.getSource().sendSuccess(() -> Component.translatable(value ? "commands.config.glass_destroy.enabled" : "commands.config.glass_destroy.disabled"), true);
+                    context.getSource().sendSuccess(() -> Component.translatable(value ? "commands.config.block_destroy.enabled" : "commands.config.block_destroy.disabled"), true);
                     return 0;
                 })))
                 .then(Commands.literal("forceDamage").requires(s -> s.hasPermission(2)).then(Commands.argument("value", BoolArgumentType.bool()).executes(context -> {

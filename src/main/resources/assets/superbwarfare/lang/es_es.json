@@ -572,8 +572,8 @@
   "commands.config.collision_destroy.beastly": "Activada destrucción de bloques por colisión de vehículos (Modo Bestial)",
   "commands.config.tactical_sprint.enabled": "Carrera táctica activada",
   "commands.config.tactical_sprint.disabled": "Carrera táctica desactivada",
-  "commands.config.glass_destroy.enabled": "Rotura de cristales por balas activada",
-  "commands.config.glass_destroy.disabled": "Rotura de cristales por balas desactivada",
+  "commands.config.block_destroy.enabled": "Rotura de cristales por balas activada",
+  "commands.config.block_destroy.disabled": "Rotura de cristales por balas desactivada",
 
   "tips.superbwarfare.sensitivity": "Sensibilidad actual de esta arma: %1$s",
   "tips.superbwarfare.monitor.linked": "¡Conectado!",
