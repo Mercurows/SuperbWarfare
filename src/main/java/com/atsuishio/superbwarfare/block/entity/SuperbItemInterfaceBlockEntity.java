@@ -60,39 +60,38 @@ public class SuperbItemInterfaceBlockEntity extends BaseContainerBlockEntity {
 
         // item transfer
 
-        var index = -1;
         for (int i = 0; i < blockEntity.items.size(); i++) {
             var stack = blockEntity.items.get(i);
-            if (!stack.isEmpty()) {
-                index = i;
-                break;
-            }
-        }
-        if (index == -1) return;
+            if (stack.isEmpty()) continue;
 
-        var stack = blockEntity.items.get(index);
-        var itemHandler = target.getCapability(Capabilities.ItemHandler.ENTITY, null);
-        assert itemHandler != null;
+            var itemHandler = target.getCapability(Capabilities.ItemHandler.ENTITY, null);
+            assert itemHandler != null;
 
-        for (int i = 0; i < itemHandler.getSlots(); i++) {
-            if (stack.isEmpty()) break;
+            var totalInserted = 0;
+            for (int ii = 0; ii < itemHandler.getSlots(); ii++) {
+                int inserted;
+                for (inserted = stack.getCount(); inserted > 0; inserted--) {
+                    var insertedStack = itemHandler.insertItem(ii, stack.copyWithCount(inserted), true);
+                    if (insertedStack.getCount() != inserted || !ItemStack.isSameItemSameComponents(insertedStack, stack)) {
+                        break;
+                    }
+                }
 
-            int inserted;
-            for (inserted = stack.getCount(); inserted > 0; inserted--) {
-                var insertedStack = itemHandler.insertItem(i, stack.copyWithCount(inserted), true);
-                if (insertedStack.getCount() != inserted || !ItemStack.isSameItemSameComponents(insertedStack, stack)) {
-                    break;
+                if (inserted > 0) {
+                    itemHandler.insertItem(ii, stack.copyWithCount(inserted), false);
+                    stack.shrink(inserted);
+                    totalInserted += inserted;
                 }
             }
 
-            if (inserted > 0) {
-                itemHandler.insertItem(i, stack.copyWithCount(inserted), false);
-                stack.shrink(inserted);
+            blockEntity.items.set(i, stack);
+            blockEntity.setChanged();
+
+            // 只尝试进行一次单格物品传输
+            if (totalInserted > 0) {
+                break;
             }
         }
-
-        blockEntity.items.set(index, stack);
-        blockEntity.setChanged();
     }
 
     @Override
