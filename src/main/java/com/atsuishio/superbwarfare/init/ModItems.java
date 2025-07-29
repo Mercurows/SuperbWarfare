@@ -297,8 +297,8 @@ public class ModItems {
     public static final DeferredHolder<Item, BlockItem> BARBED_WIRE = block(ModBlocks.BARBED_WIRE);
     public static final DeferredHolder<Item, BlockItem> DRAGON_TEETH = block(ModBlocks.DRAGON_TEETH);
     public static final DeferredHolder<Item, BlockItem> REFORGING_TABLE = block(ModBlocks.REFORGING_TABLE);
-    public static final DeferredHolder<Item, CreativeChargingStationBlockItem> CREATIVE_CHARGING_STATION = BLOCKS.register("creative_charging_station", CreativeChargingStationBlockItem::new);
     public static final DeferredHolder<Item, ChargingStationBlockItem> CHARGING_STATION = BLOCKS.register("charging_station", ChargingStationBlockItem::new);
+    public static final DeferredHolder<Item, CreativeChargingStationBlockItem> CREATIVE_CHARGING_STATION = BLOCKS.register("creative_charging_station", CreativeChargingStationBlockItem::new);
     public static final DeferredHolder<Item, BlockItem> LEAD_BLOCK = block(ModBlocks.LEAD_BLOCK);
     public static final DeferredHolder<Item, BlockItem> STEEL_BLOCK = block(ModBlocks.STEEL_BLOCK);
     public static final DeferredHolder<Item, BlockItem> TUNGSTEN_BLOCK = block(ModBlocks.TUNGSTEN_BLOCK);
@@ -308,7 +308,7 @@ public class ModItems {
     public static final DeferredHolder<Item, VehicleDeployerBlockItem> VEHICLE_DEPLOYER = BLOCKS.register("vehicle_deployer", VehicleDeployerBlockItem::new);
     public static final DeferredHolder<Item, BlockItem> AIRCRAFT_CATAPULT = block(ModBlocks.AIRCRAFT_CATAPULT);
     public static final DeferredHolder<Item, BlockItem> SUPERB_ITEM_INTERFACE = block(ModBlocks.SUPERB_ITEM_INTERFACE);
-    public static final DeferredHolder<Item, BlockItem> CREATIVE_SUPERB_ITEM_INTERFACE = block(ModBlocks.CREATIVE_SUPERB_ITEM_INTERFACE);
+    public static final DeferredHolder<Item, BlockItem> CREATIVE_SUPERB_ITEM_INTERFACE = block(ModBlocks.CREATIVE_SUPERB_ITEM_INTERFACE, Rarity.EPIC);
 
     /**
      * Vehicle
@@ -319,6 +319,9 @@ public class ModItems {
     public static final DeferredHolder<Item, SmallContainerBlockItem> SMALL_CONTAINER = VEHICLES.register("small_container", SmallContainerBlockItem::new);
     public static final DeferredHolder<Item, LuckyContainerBlockItem> LUCKY_CONTAINER = VEHICLES.register("lucky_container", LuckyContainerBlockItem::new);
 
+    private static <T extends Block> DeferredHolder<Item, BlockItem> block(DeferredHolder<Block, T> block, Rarity rarity) {
+        return BLOCKS.register(block.getId().getPath(), () -> new BlockItem(block.get(), new Item.Properties().rarity(rarity)));
+    }
 
     public record Materials(
             String name,
