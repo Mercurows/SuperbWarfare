@@ -13,6 +13,7 @@ public class CommandRegister {
         command.then(AmmoCommand.get());
         command.then(ConfigCommand.get());
 
-        event.getDispatcher().register(command);
+        var result = event.getDispatcher().register(command);
+        event.getDispatcher().register(Commands.literal("superbwarfare").redirect(result));
     }
 }
