@@ -48,6 +48,13 @@ public class ModBlockStateProvider extends BlockStateProvider {
                 .texture("particle", Mod.loc("block/superb_item_interface_bottom"))
         );
 
+        directionalBlock(ModBlocks.CREATIVE_SUPERB_ITEM_INTERFACE.get(), models().cubeBottomTop("creative_superb_item_interface",
+                        Mod.loc("block/creative_superb_item_interface_side"),
+                        Mod.loc("block/creative_superb_item_interface_bottom"),
+                        Mod.loc("block/creative_superb_item_interface_top"))
+                .texture("particle", Mod.loc("block/creative_superb_item_interface_bottom"))
+        );
+
         blockWithItem(ModBlocks.GALENA_ORE);
         blockWithItem(ModBlocks.DEEPSLATE_GALENA_ORE);
         blockWithItem(ModBlocks.SCHEELITE_ORE);

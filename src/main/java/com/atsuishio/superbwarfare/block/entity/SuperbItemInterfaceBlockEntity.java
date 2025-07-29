@@ -17,6 +17,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.capabilities.Capabilities;
@@ -31,8 +32,12 @@ public class SuperbItemInterfaceBlockEntity extends BaseContainerBlockEntity {
     private NonNullList<ItemStack> items = NonNullList.withSize(CONTAINER_SIZE, ItemStack.EMPTY);
     private int cooldownTime = -1;
 
+    public SuperbItemInterfaceBlockEntity(BlockEntityType<?> type, BlockPos pPos, BlockState pBlockState) {
+        super(type, pPos, pBlockState);
+    }
+
     public SuperbItemInterfaceBlockEntity(BlockPos pPos, BlockState pBlockState) {
-        super(ModBlockEntities.SUPERB_ITEM_INTERFACE.get(), pPos, pBlockState);
+        this(ModBlockEntities.SUPERB_ITEM_INTERFACE.get(), pPos, pBlockState);
     }
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, SuperbItemInterfaceBlockEntity blockEntity) {
@@ -64,6 +69,8 @@ public class SuperbItemInterfaceBlockEntity extends BaseContainerBlockEntity {
             var stack = blockEntity.items.get(i);
             if (stack.isEmpty()) continue;
 
+            var originalStack = stack.copy();
+
             var itemHandler = target.getCapability(Capabilities.ItemHandler.ENTITY, null);
             assert itemHandler != null;
 
@@ -84,14 +91,22 @@ public class SuperbItemInterfaceBlockEntity extends BaseContainerBlockEntity {
                 }
             }
 
-            blockEntity.items.set(i, stack);
-            blockEntity.setChanged();
+            if (!blockEntity.isCreative()) {
+                blockEntity.items.set(i, stack);
+                blockEntity.setChanged();
+            } else {
+                blockEntity.items.set(i, originalStack);
+            }
 
             // 只尝试进行一次单格物品传输
             if (totalInserted > 0) {
                 break;
             }
         }
+    }
+
+    protected boolean isCreative() {
+        return false;
     }
 
     @Override

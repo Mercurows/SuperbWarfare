@@ -335,6 +335,8 @@
   "block.superbwarfare.aircraft_catapult": "Aircraft Catapult",
   "block.superbwarfare.superb_item_interface": "Superb Item Interface",
   "des.superbwarfare.superb_item_interface": "A fast omnidirectional hopper for transferring items to targeted entities",
+  "block.superbwarfare.creative_superb_item_interface": "Superb Item Interface",
+  "des.superbwarfare.creative_superb_item_interface": "A fast omnidirectional hopper for transferring unlimited items to targeted entities",
   "block.superbwarfare.lucky_container": "Lucky Container",
   "des.superbwarfare.lucky_container.location.mobile_vehicles": "Mobile Vehicles",
   "des.superbwarfare.lucky_container.location.land_vehicles": "Land Vehicles",

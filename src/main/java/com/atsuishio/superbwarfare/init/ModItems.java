@@ -308,6 +308,7 @@ public class ModItems {
     public static final DeferredHolder<Item, VehicleDeployerBlockItem> VEHICLE_DEPLOYER = BLOCKS.register("vehicle_deployer", VehicleDeployerBlockItem::new);
     public static final DeferredHolder<Item, BlockItem> AIRCRAFT_CATAPULT = block(ModBlocks.AIRCRAFT_CATAPULT);
     public static final DeferredHolder<Item, BlockItem> SUPERB_ITEM_INTERFACE = block(ModBlocks.SUPERB_ITEM_INTERFACE);
+    public static final DeferredHolder<Item, BlockItem> CREATIVE_SUPERB_ITEM_INTERFACE = block(ModBlocks.CREATIVE_SUPERB_ITEM_INTERFACE);
 
     /**
      * Vehicle
