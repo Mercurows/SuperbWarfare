@@ -13,6 +13,7 @@ import net.minecraft.world.level.storage.loot.functions.CopyNbtFunction;
 import net.minecraft.world.level.storage.loot.providers.nbt.ContextNbtProvider;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.minecraftforge.registries.RegistryObject;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Set;
@@ -40,6 +41,7 @@ public class ModBlockLootProvider extends BlockLootSubProvider {
         this.dropSelf(ModBlocks.VEHICLE_DEPLOYER.get());
         this.dropSelf(ModBlocks.AIRCRAFT_CATAPULT.get());
         this.dropSelf(ModBlocks.SUPERB_ITEM_INTERFACE.get());
+        this.dropSelf(ModBlocks.CREATIVE_SUPERB_ITEM_INTERFACE.get());
 
         this.add(ModBlocks.CHARGING_STATION.get(), createCopyNBTDrops(ModBlocks.CHARGING_STATION.get(),
                 List.of(Pair.of("Energy", "BlockEntityTag.Energy"),
@@ -67,7 +69,7 @@ public class ModBlockLootProvider extends BlockLootSubProvider {
     }
 
     @Override
-    protected Iterable<Block> getKnownBlocks() {
+    protected @NotNull Iterable<Block> getKnownBlocks() {
         return ModBlocks.REGISTRY.getEntries().stream().map(RegistryObject::get)::iterator;
     }
 

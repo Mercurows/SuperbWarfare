@@ -55,7 +55,7 @@ public class SuperbItemInterfaceBlock extends BaseEntityBlock {
     @Nullable
     @ParametersAreNonnullByDefault
     public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
-        return new SuperbItemInterfaceBlockEntity(pPos, pState);
+        return new SuperbItemInterfaceBlockEntity(ModBlockEntities.SUPERB_ITEM_INTERFACE.get(), pPos, pState);
     }
 
     @Nullable

@@ -335,6 +335,8 @@
   "block.superbwarfare.aircraft_catapult": "飞行器弹射装置",
   "block.superbwarfare.superb_item_interface": "卓越物品接口",
   "des.superbwarfare.superb_item_interface": "可快速给指向实体传输物品的全方向漏斗",
+  "block.superbwarfare.creative_superb_item_interface": "创造模式卓越物品接口",
+  "des.superbwarfare.creative_superb_item_interface": "可快速给指向实体无限传输物品的全方向漏斗",
   "block.superbwarfare.lucky_container": "幸运集装箱",
   "des.superbwarfare.lucky_container.location.mobile_vehicles": "移动载具",
   "des.superbwarfare.lucky_container.location.land_vehicles": "陆地载具",

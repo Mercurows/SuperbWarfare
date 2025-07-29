@@ -17,6 +17,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.common.capabilities.Capability;
@@ -33,8 +34,12 @@ public class SuperbItemInterfaceBlockEntity extends BaseContainerBlockEntity {
     private NonNullList<ItemStack> items = NonNullList.withSize(CONTAINER_SIZE, ItemStack.EMPTY);
     private int cooldownTime = -1;
 
+    public SuperbItemInterfaceBlockEntity(BlockEntityType<?> type, BlockPos pPos, BlockState pBlockState) {
+        super(type, pPos, pBlockState);
+    }
+
     public SuperbItemInterfaceBlockEntity(BlockPos pPos, BlockState pBlockState) {
-        super(ModBlockEntities.SUPERB_ITEM_INTERFACE.get(), pPos, pBlockState);
+        this(ModBlockEntities.SUPERB_ITEM_INTERFACE.get(), pPos, pBlockState);
     }
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, SuperbItemInterfaceBlockEntity blockEntity) {
@@ -61,38 +66,47 @@ public class SuperbItemInterfaceBlockEntity extends BaseContainerBlockEntity {
         var target = list.get(level.random.nextInt(list.size()));
 
         // item transfer
-        var index = -1;
         for (int i = 0; i < blockEntity.items.size(); i++) {
             var stack = blockEntity.items.get(i);
-            if (!stack.isEmpty()) {
-                index = i;
-                break;
-            }
-        }
-        if (index == -1) return;
+            if (stack.isEmpty()) continue;
 
-        var stack = blockEntity.items.get(index);
-        var itemHandler = target.getCapability(ForgeCapabilities.ITEM_HANDLER).resolve().get();
+            var originalStack = stack.copy();
 
-        for (int i = 0; i < itemHandler.getSlots(); i++) {
-            if (stack.isEmpty()) break;
+            var itemHandler = target.getCapability(ForgeCapabilities.ITEM_HANDLER).resolve().get();
 
-            int inserted;
-            for (inserted = stack.getCount(); inserted > 0; inserted--) {
-                var insertedStack = itemHandler.insertItem(i, stack.copyWithCount(inserted), true);
-                if (insertedStack.getCount() != inserted || !ItemStack.isSameItemSameTags(insertedStack, stack)) {
-                    break;
+            var totalInserted = 0;
+            for (int ii = 0; ii < itemHandler.getSlots(); ii++) {
+                int inserted;
+                for (inserted = stack.getCount(); inserted > 0; inserted--) {
+                    var insertedStack = itemHandler.insertItem(ii, stack.copyWithCount(inserted), true);
+                    if (insertedStack.getCount() != inserted || !ItemStack.isSameItemSameTags(insertedStack, stack)) {
+                        break;
+                    }
+                }
+
+                if (inserted > 0) {
+                    itemHandler.insertItem(ii, stack.copyWithCount(inserted), false);
+                    stack.shrink(inserted);
+                    totalInserted += inserted;
                 }
             }
 
-            if (inserted > 0) {
-                itemHandler.insertItem(i, stack.copyWithCount(inserted), false);
-                stack.shrink(inserted);
+            if (!blockEntity.isCreative()) {
+                blockEntity.items.set(i, stack);
+                blockEntity.setChanged();
+            } else {
+                blockEntity.items.set(i, originalStack);
+            }
+
+            // 只尝试进行一次单格物品传输
+            if (totalInserted > 0) {
+                break;
             }
         }
+    }
 
-        blockEntity.items.set(index, stack);
-        blockEntity.setChanged();
+    protected boolean isCreative() {
+        return false;
     }
 
     @Override

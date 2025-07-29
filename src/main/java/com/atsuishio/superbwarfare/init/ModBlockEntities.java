@@ -25,6 +25,8 @@ public class ModBlockEntities {
             () -> BlockEntityType.Builder.of(VehicleDeployerBlockEntity::new, ModBlocks.VEHICLE_DEPLOYER.get()).build(null));
     public static final RegistryObject<BlockEntityType<SuperbItemInterfaceBlockEntity>> SUPERB_ITEM_INTERFACE = REGISTRY.register("superb_item_interface",
             () -> BlockEntityType.Builder.of(SuperbItemInterfaceBlockEntity::new, ModBlocks.SUPERB_ITEM_INTERFACE.get()).build(null));
+    public static final RegistryObject<BlockEntityType<CreativeSuperbItemInterfaceBlockEntity>> CREATIVE_SUPERB_ITEM_INTERFACE = REGISTRY.register("creative_superb_item_interface",
+            () -> BlockEntityType.Builder.of(CreativeSuperbItemInterfaceBlockEntity::new, ModBlocks.CREATIVE_SUPERB_ITEM_INTERFACE.get()).build(null));
     public static final RegistryObject<BlockEntityType<LuckyContainerBlockEntity>> LUCKY_CONTAINER = REGISTRY.register("lucky_container",
             () -> BlockEntityType.Builder.of(LuckyContainerBlockEntity::new, ModBlocks.LUCKY_CONTAINER.get()).build(null));
 }

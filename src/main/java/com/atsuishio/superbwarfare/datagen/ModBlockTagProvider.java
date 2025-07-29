@@ -13,6 +13,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.data.BlockTagsProvider;
 import net.minecraftforge.common.data.ExistingFileHelper;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.concurrent.CompletableFuture;
@@ -25,7 +26,7 @@ public class ModBlockTagProvider extends BlockTagsProvider {
     }
 
     @Override
-    protected void addTags(HolderLookup.Provider pProvider) {
+    protected void addTags(HolderLookup.@NotNull Provider pProvider) {
         this.tag(BlockTags.NEEDS_IRON_TOOL).add(ModBlocks.GALENA_ORE.get(), ModBlocks.SCHEELITE_ORE.get(),
                 ModBlocks.DEEPSLATE_GALENA_ORE.get(), ModBlocks.DEEPSLATE_SCHEELITE_ORE.get(), ModBlocks.DRAGON_TEETH.get(),
                 ModBlocks.SILVER_ORE.get(), ModBlocks.DEEPSLATE_SILVER_ORE.get());
@@ -37,7 +38,7 @@ public class ModBlockTagProvider extends BlockTagsProvider {
                 ModBlocks.CEMENTED_CARBIDE_BLOCK.get(), ModBlocks.SILVER_ORE.get(), ModBlocks.DEEPSLATE_SILVER_ORE.get(),
                 ModBlocks.SILVER_BLOCK.get(), ModBlocks.JUMP_PAD.get(), ModBlocks.CONTAINER.get(), ModBlocks.CHARGING_STATION.get(),
                 ModBlocks.FUMO_25.get(), ModBlocks.SMALL_CONTAINER.get(), ModBlocks.VEHICLE_DEPLOYER.get(), ModBlocks.AIRCRAFT_CATAPULT.get(),
-                ModBlocks.SUPERB_ITEM_INTERFACE.get(), ModBlocks.LUCKY_CONTAINER.get());
+                ModBlocks.SUPERB_ITEM_INTERFACE.get(), ModBlocks.CREATIVE_SUPERB_ITEM_INTERFACE.get(), ModBlocks.LUCKY_CONTAINER.get());
         this.tag(BlockTags.MINEABLE_WITH_SHOVEL).add(ModBlocks.SANDBAG.get());
 
         this.tag(ModTags.Blocks.SOFT_COLLISION)
