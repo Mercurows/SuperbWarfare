@@ -180,7 +180,7 @@ public class ParticleTool {
             for (int h = 0; h < 5; h++) {
                 for (int i = 0; i < 200; i++) {
                     Vec3 v = new Vec3(1, 0, 0).yRot((float) (i * Math.random()));
-                    sendParticle(serverLevel, new CustomCloudOption(1, 1, 1, 25, 4, false, false), x, y + 0.5, z,
+                    sendParticle(serverLevel, new CustomCloudOption(1, 1, 1, 25, 4, false, false), x, y + 1, z,
                             0, v.x, v.y, v.z, 500 - 3 * h, true);
                 }
             }

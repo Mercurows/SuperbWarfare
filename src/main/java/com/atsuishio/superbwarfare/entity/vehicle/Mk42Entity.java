@@ -222,7 +222,7 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
     @Override
     public void setTarget(ItemStack stack, Entity entity) {
         double targetX = stack.getOrCreateTag().getDouble("TargetX");
-        double targetY = stack.getOrCreateTag().getDouble("TargetY") - 1;
+        double targetY = stack.getOrCreateTag().getDouble("TargetY");
         double targetZ = stack.getOrCreateTag().getDouble("TargetZ");
         boolean canAim = true;
 
