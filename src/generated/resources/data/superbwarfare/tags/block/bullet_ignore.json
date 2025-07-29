@@ -6,6 +6,7 @@
     "#minecraft:trapdoors",
     "#minecraft:walls",
     "#minecraft:leaves",
+    "#c:glass_panes",
     "minecraft:iron_bars",
     "superbwarfare:barbed_wire"
   ]

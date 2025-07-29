@@ -49,7 +49,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.*;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.entity.PartEntity;
 import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -273,7 +272,7 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
             Vec3 startVec = this.position();
             Vec3 endVec = startVec.add(this.getDeltaMovement());
             HitResult result = rayTraceBlocks(this.level(), new ClipContext(startVec, endVec, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this),
-                    ProjectileConfig.ALLOW_PROJECTILE_DESTROY_GLASS.get() ? IGNORE_LIST : IGNORE_LIST.or(input -> input.is(Tags.Blocks.GLASS_PANES)));
+                    ProjectileConfig.ALLOW_PROJECTILE_DESTROY_BLOCKS.get() ? IGNORE_LIST.and(input -> !input.is(ModTags.Blocks.BULLET_CAN_DESTROY)) : IGNORE_LIST);
             if (result.getType() != HitResult.Type.MISS) {
                 endVec = result.getLocation();
             }
@@ -358,10 +357,8 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
                 bell.attemptToRing(this.level(), resultPos, blockHitResult.getDirection());
             }
 
-            if (ProjectileConfig.ALLOW_PROJECTILE_DESTROY_GLASS.get()) {
-                if (state.is(Tags.Blocks.GLASS_BLOCKS) || state.is(Tags.Blocks.GLASS_PANES)) {
-                    this.level().destroyBlock(resultPos, false, this.getShooter());
-                }
+            if (ProjectileConfig.ALLOW_PROJECTILE_DESTROY_BLOCKS.get() && state.is(ModTags.Blocks.BULLET_CAN_DESTROY)) {
+                this.level().destroyBlock(resultPos, false, this.getShooter());
             }
 
             if (state.getBlock() instanceof TargetBlock && this.shooter != null) {
