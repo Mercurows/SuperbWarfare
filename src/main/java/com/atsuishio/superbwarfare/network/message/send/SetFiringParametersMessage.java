@@ -42,7 +42,7 @@ public enum SetFiringParametersMessage implements CustomPacketPayload {
                 ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, player));
         Vec3 hitPos = result.getLocation();
 
-        if (lookingEntity != null) {
+        if (lookingEntity != null && !player.isShiftKeyDown()) {
             lookAtEntity = true;
         }
         if (stack.is(ModItems.FIRING_PARAMETERS.get())) {
