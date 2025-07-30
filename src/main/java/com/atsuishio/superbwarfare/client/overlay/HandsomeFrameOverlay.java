@@ -49,6 +49,8 @@ public class HandsomeFrameOverlay implements LayeredDraw.Layer {
         Camera camera = Minecraft.getInstance().gameRenderer.getMainCamera();
 
         if (player == null) return;
+        if (player.isSpectator()) return;
+
         ItemStack stack = player.getMainHandItem();
 
         if (ClickHandler.isEditing)

@@ -513,7 +513,11 @@ public class ClickHandler {
         int level = data.perk.getLevel(ModPerks.INTELLIGENT_CHIP);
         if (level > 0) {
             if (ClientEventHandler.entity == null) {
-                ClientEventHandler.entity = SeekTool.seekLivingEntity(player, player.level(), 32 + 8 * (level - 1), 20);
+                if (GunData.from(stack).perk.getLevel(ModPerks.PHASE_PENETRATING_BULLET) > 0) {
+                    ClientEventHandler.entity = SeekTool.seekEntityThroughWall(player, player.level(), 32 + 8 * (level - 1), 20);
+                } else {
+                    ClientEventHandler.entity = SeekTool.seekLivingEntity(player, player.level(), 32 + 8 * (level - 1), 20);
+                }
             }
         }
     }

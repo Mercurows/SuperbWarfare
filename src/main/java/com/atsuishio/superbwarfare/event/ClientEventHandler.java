@@ -1545,7 +1545,11 @@ public class ClientEventHandler {
 
                     if (intelligentChipLevel > 0) {
                         if (ClientEventHandler.entity == null || !entity.isAlive()) {
-                            ClientEventHandler.entity = SeekTool.seekLivingEntity(player, player.level(), seekRange, 16 / customZoom);
+                            if (GunData.from(stack).perk.getLevel(ModPerks.PHASE_PENETRATING_BULLET) > 0) {
+                                ClientEventHandler.entity = SeekTool.seekEntityThroughWall(player, player.level(), seekRange, 16 / customZoom);
+                            } else {
+                                ClientEventHandler.entity = SeekTool.seekLivingEntity(player, player.level(), seekRange, 16 / customZoom);
+                            }
                         }
                         if (entity != null && entity.isAlive()) {
                             Vec3 targetVec = new Vec3(Mth.lerp(event.getPartialTick(), entity.xo, entity.getX()), Mth.lerp(event.getPartialTick(), entity.yo + entity.getEyeHeight(), entity.getEyeY()), Mth.lerp(event.getPartialTick(), entity.zo, entity.getZ()));
