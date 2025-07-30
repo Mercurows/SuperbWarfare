@@ -24,6 +24,7 @@
     "Type": "Heavy"
   },
   "AmmoType": "@HeavyAmmo",
+  "AmmoConsumer": "@HeavyAmmo",
   "AvailablePerks": [
     "@Ammo",
     "superbwarfare:fourth_times_charm",

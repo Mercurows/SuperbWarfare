@@ -470,6 +470,9 @@ public abstract class GunItem extends Item implements CustomRendererItem, GeoIte
         if (!data.useBackpackAmmo()) {
             data.ammo.set(data.ammo.get() - 1);
             data.isEmpty.set(true);
+            if (data.ammo.get() <= 0) {
+                data.insertedItem = ItemStack.EMPTY;
+            }
         } else {
             data.consumeBackupAmmo(shooter, 1);
         }
@@ -545,6 +548,8 @@ public abstract class GunItem extends Item implements CustomRendererItem, GeoIte
 
         // 开火后事件
         data.item.afterShoot(shooter, level, shootPosition, shootDirection, data, spread, zoom, uuid);
+
+        data.save();
     }
 
     /**
@@ -752,7 +757,6 @@ public abstract class GunItem extends Item implements CustomRendererItem, GeoIte
         }
 
         level.addFreshEntity(entity);
-        data.save();
         return true;
     }
 

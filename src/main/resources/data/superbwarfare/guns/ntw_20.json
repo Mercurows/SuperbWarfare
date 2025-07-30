@@ -19,6 +19,7 @@
     "Type": "Heavy"
   },
   "AmmoType": "@HeavyAmmo",
+  "AmmoConsumer": "@HeavyAmmo",
   "AvailablePerks": [
     "@Ammo",
     "superbwarfare:heal_clip",

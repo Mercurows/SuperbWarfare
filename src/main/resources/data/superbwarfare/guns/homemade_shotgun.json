@@ -19,6 +19,7 @@
     "Type": "Shotgun"
   },
   "AmmoType": "@ShotgunAmmo",
+  "AmmoConsumer": "@ShotgunAmmo",
   "AvailablePerks": [
     "@Ammo",
     "superbwarfare:field_doctor",

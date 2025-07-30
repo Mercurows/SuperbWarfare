@@ -13,6 +13,7 @@
   "EmptyReloadTime": 64,
   "RPM": 180,
   "AmmoType": "superbwarfare:grenade_40mm",
+  "AmmoConsumer": "superbwarfare:grenade_40mm",
   "AvailablePerks": [
     "superbwarfare:powerful_attraction",
     "superbwarfare:intelligent_chip",
