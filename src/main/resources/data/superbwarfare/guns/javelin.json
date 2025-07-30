@@ -9,6 +9,7 @@
   "ExplosionDamage": 120,
   "ExplosionRadius": 9,
   "AmmoType": "superbwarfare:javelin_missile",
+  "AmmoConsumer": "superbwarfare:javelin_missile",
   "AvailablePerks": [
     "superbwarfare:powerful_attraction",
     "superbwarfare:intelligent_chip",

@@ -48,13 +48,13 @@ public class AmmoBarOverlay implements IGuiOverlay {
 
     private static String getGunAmmoString(GunData data, Player player) {
         if (data.useBackpackAmmo() && hasCreativeAmmo()) return "∞";
-        return data.useBackpackAmmo() ? data.countBackupAmmo(player) + "" : data.ammo.get() + "";
+        return data.useBackpackAmmo() ? data.countBackupAmmo(player) - data.virtualAmmo.get() + "" : data.ammo.get() + "";
     }
 
     private static String getBackupAmmoString(GunData data, Player player) {
         if (data.useBackpackAmmo()) return "";
 
-        return hasCreativeAmmo() ? "∞" : data.countBackupAmmo(player) + "";
+        return hasCreativeAmmo() ? "∞" : data.countBackupAmmo(player) - data.virtualAmmo.get() + "";
     }
 
     @Override
@@ -163,6 +163,19 @@ public class AmmoBarOverlay implements IGuiOverlay {
             );
 
             poseStack.popPose();
+
+            if (data.virtualAmmo.get() > 0) {
+                guiGraphics.drawString(
+                        Minecraft.getInstance().font,
+                        "+" + data.virtualAmmo.get(),
+                        x - 64,
+                        y - 26,
+                        0x55FFFF,
+                        true
+                );
+            }
+
+            // TODO 渲染GunData.insertedItem
 
             // 渲染备弹量
             guiGraphics.drawString(

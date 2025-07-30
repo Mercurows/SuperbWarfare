@@ -25,7 +25,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryManager;
@@ -43,6 +42,7 @@ public class GunData {
     public final CompoundTag perkTag;
     public final CompoundTag attachmentTag;
     public final String id;
+    public final List<AmmoConsumer> ammoConsumers;
 
     public static final LoadingCache<ItemStack, GunData> dataCache = CacheBuilder.newBuilder()
             .weakKeys()
@@ -66,7 +66,9 @@ public class GunData {
         data = getOrPut("GunData");
         perkTag = getOrPut("Perks");
         attachmentTag = getOrPut("Attachments");
+        ammoConsumers = getDefault().ammoConsumers.list.stream().map(c -> c.value.setData(this)).toList();
 
+        // 可持久化属性
         reload = new Reload(this);
         charge = new Charge(this);
         bolt = new Bolt(this);
@@ -407,6 +409,7 @@ public class GunData {
         }
     }
 
+    // TODO 清理这个
     public AmmoTypeInfo ammoTypeInfo() {
         var ammoType = getDefault().ammoType;
         if (ammoType == null || ammoType.isEmpty()) {
@@ -459,16 +462,12 @@ public class GunData {
 
     public int countBackupAmmo(@Nullable Entity entity) {
         if (entity == null) return virtualAmmo.get();
-        if (entity instanceof Player player && player.isCreative()) return Integer.MAX_VALUE;
+        if (entity instanceof Player player && player.isCreative() || InventoryTool.hasCreativeAmmoBox(entity))
+            return Integer.MAX_VALUE;
 
-        var info = ammoTypeInfo();
-        if (info.type() == AmmoConsumeType.PLAYER_AMMO && entity instanceof Player player) {
-            return Objects.requireNonNull(Ammo.getType(info.value())).get(player) + virtualAmmo.get();
-        }
-
-        return entity.getCapability(ForgeCapabilities.ITEM_HANDLER)
-                .map(this::countBackupAmmo)
-                .orElse(virtualAmmo.get());
+        return this.ammoConsumers.stream()
+                .mapToInt(c -> c.count(entity) * c.loadAmount)
+                .sum() + this.virtualAmmo.get();
     }
 
     /**
@@ -478,12 +477,9 @@ public class GunData {
         if (handler == null) return virtualAmmo.get();
         if (InventoryTool.hasCreativeAmmoBox(handler)) return Integer.MAX_VALUE;
 
-        var info = ammoTypeInfo();
-        return switch (info.type()) {
-            case ITEM -> InventoryTool.countItem(handler, info.toItem());
-            case TAG -> InventoryTool.countItem(handler, info.toTag());
-            default -> 0;
-        } + virtualAmmo.get();
+        return this.ammoConsumers.stream()
+                .mapToInt(c -> c.count(handler) * c.loadAmount)
+                .sum() + this.virtualAmmo.get();
     }
 
     /**
@@ -497,17 +493,25 @@ public class GunData {
             virtualAmmo.add(-consumed);
             count -= consumed;
         }
-        if (count <= 0) return;
+        if (count <= 0 || entity == null) return;
 
-        var info = ammoTypeInfo();
-        if (info.type() == AmmoConsumeType.PLAYER_AMMO && entity instanceof Player player) {
-            info.toPlayerAmmoType().add(player, -count);
-        }
+        for (var consumer : this.ammoConsumers) {
+            var loadAmount = consumer.loadAmount;
+            if (count % loadAmount != 0) {
+                var required = (count / loadAmount) + 1;
+                var consumed = consumer.consume(entity, required);
+                count -= consumed * loadAmount;
 
-        if (entity != null) {
-            int finalCount = count;
-            entity.getCapability(ForgeCapabilities.ITEM_HANDLER)
-                    .ifPresent(cap -> consumeBackupAmmo(cap, finalCount));
+                if (count <= 0) {
+                    this.virtualAmmo.add(-count);
+                }
+            } else {
+                var required = count / loadAmount;
+                var consumed = consumer.consume(entity, required);
+                count -= consumed * loadAmount;
+            }
+
+            if (count <= 0) return;
         }
     }
 
@@ -522,12 +526,27 @@ public class GunData {
             virtualAmmo.add(-consumed);
             count -= consumed;
         }
-        if (count <= 0) return;
+        if (count <= 0 || handler == null) return;
 
-        var info = ammoTypeInfo();
-        switch (info.type()) {
-            case ITEM -> InventoryTool.consumeItem(handler, info.toItem(), count);
-            case TAG -> InventoryTool.consumeItem(handler, stack -> stack.is(info.toTag()), count);
+        for (var consumer : this.ammoConsumers) {
+            var loadAmount = consumer.loadAmount;
+
+            if (count % loadAmount != 0) {
+                var required = (count / loadAmount) + 1;
+                var consumed = consumer.consume(handler, required);
+                count -= consumed * loadAmount;
+
+                // 迫真过载装填
+                if (count <= 0) {
+                    this.virtualAmmo.add(-count);
+                }
+            } else {
+                var required = count / loadAmount;
+                var consumed = consumer.consume(handler, required);
+                count -= consumed * loadAmount;
+            }
+
+            if (count <= 0) return;
         }
     }
 
@@ -718,6 +737,10 @@ public class GunData {
     }
 
     // 可持久化属性开始
+
+    // TODO 持久化
+    public ItemStack insertedItem = ItemStack.EMPTY;
+
     public final IntValue ammo;
     public final IntValue virtualAmmo;
     public final StringEnumValue<FireMode> fireMode;

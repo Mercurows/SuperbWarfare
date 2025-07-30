@@ -13,6 +13,7 @@
   "EmptyReloadTime": 107,
   "RPM": 120,
   "AmmoType": "superbwarfare:rocket",
+  "AmmoConsumer": "superbwarfare:rocket",
   "AvailablePerks": [
     "superbwarfare:powerful_attraction",
     "superbwarfare:intelligent_chip",

@@ -22,6 +22,7 @@
     "Type": "Handgun"
   },
   "AmmoType": "@HandgunAmmo",
+  "AmmoConsumer": "@HandgunAmmo",
   "AvailablePerks": [
     "@Ammo",
     "superbwarfare:heal_clip",

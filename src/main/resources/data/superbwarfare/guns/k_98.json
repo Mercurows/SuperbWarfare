@@ -24,6 +24,7 @@
     "Type": "Sniper"
   },
   "AmmoType": "@SniperAmmo",
+  "AmmoConsumer": "@SniperAmmo",
   "AvailablePerks": [
     "@Ammo",
     "superbwarfare:heal_clip",

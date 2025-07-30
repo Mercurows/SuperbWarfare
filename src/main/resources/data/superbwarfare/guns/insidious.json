@@ -21,6 +21,7 @@
     "Type": "Rifle"
   },
   "AmmoType": "@RifleAmmo",
+  "AmmoConsumer": "@RifleAmmo",
   "AvailablePerks": [
     "@Ammo",
     "superbwarfare:heal_clip",
