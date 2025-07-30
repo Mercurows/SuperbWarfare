@@ -209,12 +209,7 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
     private void handleAmmo() {
         if (!(this.getFirstPassenger() instanceof Player player)) return;
 
-        int ammoCount = this.getItemStacks().stream().filter(stack -> {
-            if (stack.is(ModItems.AMMO_BOX.get())) {
-                return Ammo.HEAVY.get(stack) > 0;
-            }
-            return false;
-        }).mapToInt(Ammo.HEAVY::get).sum() + countItem(ModItems.SMALL_SHELL.get());
+        int ammoCount = countItem(ModItems.SMALL_SHELL.get());
 
         if ((hasItem(ModItems.SMALL_ROCKET.get()) || InventoryTool.hasCreativeAmmoBox(player)) && reloadCoolDown == 0 && this.getEntityData().get(LOADED_ROCKET) < 14) {
             this.entityData.set(LOADED_ROCKET, this.getEntityData().get(LOADED_ROCKET) + 1);
