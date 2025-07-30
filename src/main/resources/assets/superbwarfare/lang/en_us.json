@@ -401,6 +401,8 @@
   "des.superbwarfare.cupid_arrow": "Make the target fall in love after being hit. Deals no damage to living entities.",
   "item.superbwarfare.riot_bullet": "Riot Bullet",
   "des.superbwarfare.riot_bullet": "Adds slowness and weakness on the target after hitting, deals extra damage to illager entities.",
+  "item.superbwarfare.phase_penetrating_bullet": "Phase Penetrating Bullet",
+  "des.superbwarfare.phase_penetrating_bullet": "Allows bullets to penetrate any block.",
 
   "item.superbwarfare.heal_clip": "Heal Clip",
   "des.superbwarfare.heal_clip": "Reloading after defeating a mob will heal you and your nearby allies.",
