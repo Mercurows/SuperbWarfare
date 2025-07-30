@@ -72,6 +72,7 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
     public static final EntityDataAccessor<Boolean> DEPRESSED = SynchedEntityData.defineId(Mle1934Entity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Vector3f> TARGET_POS = SynchedEntityData.defineId(Mle1934Entity.class, EntityDataSerializers.VECTOR3);
     public static final EntityDataAccessor<Integer> RADIUS = SynchedEntityData.defineId(Mle1934Entity.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Integer> AMMO_COUNT = SynchedEntityData.defineId(Mle1934Entity.class, EntityDataSerializers.INT);
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
@@ -145,6 +146,7 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
         this.entityData.define(DEPRESSED, false);
         this.entityData.define(TARGET_POS, new Vector3f());
         this.entityData.define(RADIUS, 0);
+        this.entityData.define(AMMO_COUNT, 0);
     }
 
     @Override
@@ -386,7 +388,20 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
             this.setDeltaMovement(this.getDeltaMovement().add(0.0, -0.04, 0.0));
         }
 
+        countAmmo();
         lowHealthWarning();
+    }
+
+    public void countAmmo () {
+        if (level() instanceof ServerLevel) {
+            int ammoCount = switch (getWeaponIndex(0)) {
+                case 1 -> countItem(ModItems.HE_5_INCHES.get());
+                case 2 -> countItem(ModItems.CM_5_INCHES.get());
+                default -> countItem(ModItems.AP_5_INCHES.get());
+            };
+
+            entityData.set(AMMO_COUNT, ammoCount);
+        }
     }
 
     @Override
@@ -442,28 +457,25 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
 
     public void shoot(Player player, boolean reset) {
         if (this.entityData.get(COOL_DOWN) > 0) return;
+        if (getFirstPassenger() != null && getFirstPassenger() != player) return;
 
         if (player.level() instanceof ServerLevel serverLevel) {
-            if (!(this.items.get(0).getItem() instanceof CannonShellItem) && getAmmoCount(player) == 0 && !InventoryTool.hasCreativeAmmoBox(player)) return;
+            if (getAmmoCount(player) == 0 && !InventoryTool.hasCreativeAmmoBox(getFirstPassenger())) return;
             Matrix4f transform = getVehicleFlatTransform(1);
 
             // 左炮管
-            if (this.items.get(0).getItem() instanceof CannonShellItem ||
-                    (player == getFirstPassenger() && (getAmmoCount(player) > 0 || InventoryTool.hasCreativeAmmoBox(player)))
-            ) {
+
+            if (!(getAmmoCount(player) == 0 && !InventoryTool.hasCreativeAmmoBox(getFirstPassenger()))) {
                 Vector4f worldPositionL = transformPosition(transform, 0.486775f, 1.4992625f, 1.52065f);
                 summonShell(new Vec3(worldPositionL.x, worldPositionL.y, worldPositionL.z), player);
             }
 
             // 右炮管
             Mod.queueServerWork(3, () -> {
-                if (this.items.get(0).getItem() instanceof CannonShellItem ||
-                        (player == getFirstPassenger() && (getAmmoCount(player) > 0 || InventoryTool.hasCreativeAmmoBox(player)))
-                ) {
-                    Vector4f worldPositionR = transformPosition(transform, -0.486775f, 1.4992625f, 1.52065f);
-                    summonShell(new Vec3(worldPositionR.x, worldPositionR.y, worldPositionR.z), player);
-                    this.entityData.set(RIGHT_BARREL_ANIM, 20);
-                }
+                if (getAmmoCount(player) == 0 && !InventoryTool.hasCreativeAmmoBox(getFirstPassenger())) return;
+                Vector4f worldPositionR = transformPosition(transform, -0.486775f, 1.4992625f, 1.52065f);
+                summonShell(new Vec3(worldPositionR.x, worldPositionR.y, worldPositionR.z), player);
+                this.entityData.set(RIGHT_BARREL_ANIM, 20);
             });
 
 
@@ -540,17 +552,20 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
         if (player == getFirstPassenger()) {
             if (InventoryTool.hasCreativeAmmoBox(player)) return;
 
-            Item ammo = switch (getWeaponIndex(0))
-            {
-                case 1 -> ModItems.HE_5_INCHES.get();
-                case 2 -> ModItems.CM_5_INCHES.get();
-                default -> ModItems.AP_5_INCHES.get();
-            };
-            var ammoCount = InventoryTool.countItem(player.getInventory().items, ammo);
+            if (entityData.get(AMMO_COUNT) > 0) {
+                this.items.get(0).shrink(1);
+            } else {
+                Item ammo = switch (getWeaponIndex(0))
+                {
+                    case 1 -> ModItems.HE_5_INCHES.get();
+                    case 2 -> ModItems.CM_5_INCHES.get();
+                    default -> ModItems.AP_5_INCHES.get();
+                };
+                var ammoCount = InventoryTool.countItem(player.getInventory().items, ammo);
 
-            if (ammoCount <= 0) return;
-            InventoryTool.consumeItem(player.getInventory().items, ammo, 1);
-
+                if (ammoCount <= 0) return;
+                InventoryTool.consumeItem(player.getInventory().items, ammo, 1);
+            }
         } else {
             this.items.get(0).shrink(1);
         }
@@ -622,12 +637,18 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
 
     @Override
     public int getAmmoCount(Player player) {
-        Item ammo = switch (getWeaponIndex(0)) {
-            case 1 -> ModItems.HE_5_INCHES.get();
-            case 2 -> ModItems.CM_5_INCHES.get();
-            default -> ModItems.AP_5_INCHES.get();
-        };
-        return InventoryTool.countItem(player.getInventory().items, ammo);
+        int playerAmmo = 0;
+        if (player == getFirstPassenger()) {
+            Item ammo = switch (getWeaponIndex(0))
+            {
+                case 1 -> ModItems.HE_5_INCHES.get();
+                case 2 -> ModItems.CM_5_INCHES.get();
+                default -> ModItems.AP_5_INCHES.get();
+            };
+            playerAmmo = InventoryTool.countItem(player.getInventory().items, ammo);
+        }
+
+        return playerAmmo + entityData.get(AMMO_COUNT);
     }
 
     @Override

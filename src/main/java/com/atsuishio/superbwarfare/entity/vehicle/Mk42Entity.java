@@ -72,6 +72,8 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
     public static final EntityDataAccessor<Vector3f> TARGET_POS = SynchedEntityData.defineId(Mk42Entity.class, EntityDataSerializers.VECTOR3);
     public static final EntityDataAccessor<Integer> RADIUS = SynchedEntityData.defineId(Mk42Entity.class, EntityDataSerializers.INT);
 
+    public static final EntityDataAccessor<Integer> AMMO_COUNT = SynchedEntityData.defineId(Mk42Entity.class, EntityDataSerializers.INT);
+
     public Mk42Entity(PlayMessages.SpawnEntity packet, Level world) {
         this(ModEntities.MK_42.get(), world);
     }
@@ -98,6 +100,7 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
         this.entityData.define(DEPRESSED, false);
         this.entityData.define(TARGET_POS, new Vector3f());
         this.entityData.define(RADIUS, 0);
+        this.entityData.define(AMMO_COUNT, 0);
     }
 
     @Override
@@ -330,7 +333,20 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
             this.setDeltaMovement(this.getDeltaMovement().add(0.0, -0.04, 0.0));
         }
 
+        countAmmo();
         lowHealthWarning();
+    }
+
+    public void countAmmo () {
+        if (level() instanceof ServerLevel) {
+            int ammoCount = switch (getWeaponIndex(0)) {
+                case 1 -> countItem(ModItems.HE_5_INCHES.get());
+                case 2 -> countItem(ModItems.CM_5_INCHES.get());
+                default -> countItem(ModItems.AP_5_INCHES.get());
+            };
+
+            entityData.set(AMMO_COUNT, ammoCount);
+        }
     }
 
     @Override
@@ -424,20 +440,25 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
 
     public void shoot(Player player, int type, boolean reset) {
         if (this.entityData.get(COOL_DOWN) > 0) return;
+        if (getFirstPassenger() != null && getFirstPassenger() != player) return;
 
         Level level = player.level();
         if (level instanceof ServerLevel server) {
             if (!InventoryTool.hasCreativeAmmoBox(player) && player == getFirstPassenger()) {
-                Item ammo = switch (getWeaponIndex(0))
-                {
-                    case 1 -> ModItems.HE_5_INCHES.get();
-                    case 2 -> ModItems.CM_5_INCHES.get();
-                    default -> ModItems.AP_5_INCHES.get();
-                };
-                var ammoCount = InventoryTool.countItem(player.getInventory().items, ammo);
+                if (entityData.get(AMMO_COUNT) > 0) {
+                    this.items.get(0).shrink(1);
+                } else {
+                    Item ammo = switch (getWeaponIndex(0))
+                    {
+                        case 1 -> ModItems.HE_5_INCHES.get();
+                        case 2 -> ModItems.CM_5_INCHES.get();
+                        default -> ModItems.AP_5_INCHES.get();
+                    };
+                    var ammoCount = InventoryTool.countItem(player.getInventory().items, ammo);
 
-                if (ammoCount <= 0) return;
-                InventoryTool.consumeItem(player.getInventory().items, ammo, 1);
+                    if (ammoCount <= 0) return;
+                    InventoryTool.consumeItem(player.getInventory().items, ammo, 1);
+                }
             }
 
             if (getFirstPassenger() != player) {
@@ -557,13 +578,18 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
 
     @Override
     public int getAmmoCount(Player player) {
-        Item ammo = switch (getWeaponIndex(0))
-        {
-            case 1 -> ModItems.HE_5_INCHES.get();
-            case 2 -> ModItems.CM_5_INCHES.get();
-            default -> ModItems.AP_5_INCHES.get();
-        };
-        return InventoryTool.countItem(player.getInventory().items, ammo);
+        int playerAmmo = 0;
+        if (player == getFirstPassenger()) {
+            Item ammo = switch (getWeaponIndex(0))
+            {
+                case 1 -> ModItems.HE_5_INCHES.get();
+                case 2 -> ModItems.CM_5_INCHES.get();
+                default -> ModItems.AP_5_INCHES.get();
+            };
+            playerAmmo = InventoryTool.countItem(player.getInventory().items, ammo);
+        }
+
+        return playerAmmo + entityData.get(AMMO_COUNT);
     }
 
     @Override
