@@ -401,6 +401,8 @@
   "des.superbwarfare.cupid_arrow": "命中后会使目标坠入爱河，不会对生物造成伤害",
   "item.superbwarfare.riot_bullet": "镇暴弹",
   "des.superbwarfare.riot_bullet": "命中后会使目标减速、虚弱，对刁民造成额外伤害",
+  "item.superbwarfare.phase_penetrating_bullet": "相位穿透弹",
+  "des.superbwarfare.phase_penetrating_bullet": "允许子弹穿透任何方块",
 
   "item.superbwarfare.heal_clip": "治疗弹匣",
   "des.superbwarfare.heal_clip": "最后一击后短时间内填装，可治疗自身和附近队友",

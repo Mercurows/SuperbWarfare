@@ -81,25 +81,43 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
     private static final Predicate<Entity> PROJECTILE_TARGETS = input -> input != null && input.isPickable() && !input.isSpectator() && input.isAlive();
     private static final Predicate<BlockState> IGNORE_LIST = input -> input != null && input.is(ModTags.Blocks.BULLET_IGNORE);
 
+    // 子弹的颜色
     public static final float DEFAULT_R = 1.0f;
     public static final float DEFAULT_G = 222 / 255f;
     public static final float DEFAULT_B = 39 / 255f;
 
+    // 子弹的发射者，可以为空
     @Nullable
     protected Entity shooter;
+    // 子弹的发射者的ID
     protected int shooterId;
+    // 子弹的伤害
     private float damage = 1f;
+    // 子弹的爆头倍率
     private float headShot = 1f;
+    // 子弹的打腿倍率
     private float legShot = 0.5f;
+    // 是否为野兽弹
     private boolean beast = false;
+    // 子弹是否是瞄准时发射的
     private boolean zoom = false;
+    // 子弹的穿甲比例
     private float bypassArmorRate = 0.0f;
+    // 高爆弹等级
     private int heLevel = 0;
+    // 燃烧弹等级
     private int fireLevel = 0;
+    // 是否为龙息弹
     private boolean dragonBreath = false;
+    // 击退力度
     private float knockback = 0.05f;
+    // 是否强制击退生物
     private boolean forceKnockback = false;
+    // 是否能穿墙
+    private boolean penetrating = false;
+    // 子弹造成的状态效果
     private final ArrayList<MobEffectInstance> mobEffects = new ArrayList<>();
+    // 发射子弹的武器ID
     private String gunItemId;
 
     public static final Predicate<Entity> MONSTER_PREDICATE = entity -> entity instanceof Monster;
@@ -281,7 +299,8 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
             Vec3 startVec = this.position();
             Vec3 endVec = startVec.add(this.getDeltaMovement());
             HitResult result = rayTraceBlocks(this.level(), new ClipContext(startVec, endVec, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this),
-                    ProjectileConfig.ALLOW_PROJECTILE_DESTROY_BLOCKS.get() ? IGNORE_LIST.and(input -> !input.is(ModTags.Blocks.BULLET_CAN_DESTROY)) : IGNORE_LIST);
+                    this.penetrating ? state -> true :
+                            ProjectileConfig.ALLOW_PROJECTILE_DESTROY_BLOCKS.get() ? IGNORE_LIST.and(input -> !input.is(ModTags.Blocks.BULLET_CAN_DESTROY)) : IGNORE_LIST);
             if (result.getType() != HitResult.Type.MISS) {
                 endVec = result.getLocation();
             }
@@ -788,6 +807,14 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
 
     public Map<Predicate<Entity>, Float> getDamageModifiers() {
         return damageModifiers;
+    }
+
+    public boolean isPenetrating() {
+        return this.penetrating;
+    }
+
+    public void setPenetrating(boolean penetrating) {
+        this.penetrating = penetrating;
     }
 
     /**

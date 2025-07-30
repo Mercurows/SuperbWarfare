@@ -47,6 +47,7 @@ public class ModPerks {
     public static final RegistryObject<Perk> MICRO_MISSILE = AMMO_PERKS.register("micro_missile", MicroMissile::new);
     public static final RegistryObject<Perk> CUPID_ARROW = AMMO_PERKS.register("cupid_arrow", CupidArrow::new);
     public static final RegistryObject<Perk> RIOT_BULLET = AMMO_PERKS.register("riot_bullet", RiotBullet::new);
+    public static final RegistryObject<Perk> PHASE_PENETRATING_BULLET = AMMO_PERKS.register("phase_penetrating_bullet", PhasePenetratingBullet::new);
 
     /**
      * Functional Perks
