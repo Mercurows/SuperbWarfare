@@ -34,7 +34,7 @@ public enum SetFiringParametersMessage {
                     ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, player));
             Vec3 hitPos = result.getLocation();
 
-            if (lookingEntity != null) {
+            if (lookingEntity != null && !player.isShiftKeyDown()) {
                 lookAtEntity = true;
             }
 

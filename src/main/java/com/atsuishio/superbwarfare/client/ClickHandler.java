@@ -137,12 +137,19 @@ public class ClickHandler {
                 return;
             }
             if (stack.is(ModItems.ARTILLERY_INDICATOR.get())) {
-                Mod.PACKET_HANDLER.sendToServer(SetFiringParametersMessage.INSTANCE);
                 event.setCanceled(true);
             }
             if (stack.is(ModItems.MONITOR.get()) && player.getOffhandItem().is(ModItems.ARTILLERY_INDICATOR.get())) {
-                droneLeftClick(stack, player);
                 event.setCanceled(true);
+            }
+        }
+
+        if (button == ModKeyMappings.MARK.getKey().getValue()) {
+            if (stack.is(ModItems.ARTILLERY_INDICATOR.get())) {
+                Mod.PACKET_HANDLER.sendToServer(SetFiringParametersMessage.INSTANCE);
+            }
+            if (stack.is(ModItems.MONITOR.get()) && player.getOffhandItem().is(ModItems.ARTILLERY_INDICATOR.get())) {
+                droneLeftClick(stack, player);
             }
         }
 
@@ -365,6 +372,16 @@ public class ClickHandler {
                     switchZoom = !switchZoom;
                 }
             }
+
+            if (key == ModKeyMappings.MARK.getKey().getValue()) {
+                if (stack.is(ModItems.ARTILLERY_INDICATOR.get())) {
+                    Mod.PACKET_HANDLER.sendToServer(SetFiringParametersMessage.INSTANCE);
+                }
+                if (stack.is(ModItems.MONITOR.get()) && player.getOffhandItem().is(ModItems.ARTILLERY_INDICATOR.get())) {
+                    droneLeftClick(stack, player);
+                }
+            }
+
         } else {
             if (player.hasEffect(ModMobEffects.SHOCK.get())) {
                 return;
@@ -578,7 +595,7 @@ public class ClickHandler {
                         ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, drone));
                 Vec3 pos = result.getLocation();
 
-                if (lookingEntity != null) {
+                if (lookingEntity != null && !player.isShiftKeyDown()) {
                     lookAtEntity = true;
                 }
 
