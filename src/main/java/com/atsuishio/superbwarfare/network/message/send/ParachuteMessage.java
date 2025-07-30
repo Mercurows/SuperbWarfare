@@ -27,7 +27,7 @@ public enum ParachuteMessage implements CustomPacketPayload {
             var stack = s.stack();
             if (!player.getCooldowns().isOnCooldown(stack.getItem())) {
                 var tag = NBTTool.getTag(stack);
-                if (!tag.getBoolean(ParachuteItem.TAG_OPEN) && player.getDeltaMovement().y < -0.6 && player.fallDistance > 5) {
+                if (!tag.getBoolean(ParachuteItem.TAG_OPEN) && player.getDeltaMovement().y < -0.6 && player.fallDistance > 4) {
                     tag.putBoolean(ParachuteItem.TAG_OPEN, true);
                     NBTTool.saveTag(stack, tag);
                     player.getCooldowns().addCooldown(stack.getItem(), 10);
