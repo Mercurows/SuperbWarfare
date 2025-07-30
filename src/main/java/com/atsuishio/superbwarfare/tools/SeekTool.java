@@ -181,6 +181,11 @@ public class SeekTool {
                         && (!e.isAlliedTo(entity) || e.getTeam() == null || e.getTeam().getName().equals("TDM"))).toList();
     }
 
+    public static Entity seekEntityThroughWall(Entity entity, Level level, double seekRange, double seekAngle) {
+        return seekLivingEntitiesThroughWall(entity, level, seekRange, seekAngle)
+                .stream().min(Comparator.comparingDouble(e -> calculateAngle(e, entity))).orElse(null);
+    }
+
     public static List<Entity> getEntitiesWithinRange(BlockPos pos, Level level, double range) {
         return StreamSupport.stream(EntityFindUtil.getEntities(level).getAll().spliterator(), false)
                 .filter(e -> e.distanceToSqr(pos.getX(), pos.getY(), pos.getZ()) <= range * range

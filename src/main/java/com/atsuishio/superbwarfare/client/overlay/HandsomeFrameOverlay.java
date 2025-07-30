@@ -45,6 +45,8 @@ public class HandsomeFrameOverlay implements IGuiOverlay {
         PoseStack poseStack = guiGraphics.pose();
 
         if (player == null) return;
+        if (player.isSpectator()) return;
+
         ItemStack stack = player.getMainHandItem();
 
         if (ClickHandler.isEditing)
