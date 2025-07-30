@@ -25,7 +25,7 @@ public enum ParachuteMessage {
                             s -> {
                                 var stack = s.stack();
                                 if (!player.getCooldowns().isOnCooldown(stack.getItem())) {
-                                    if (!stack.getOrCreateTag().getBoolean(ParachuteItem.TAG_OPEN) && player.getDeltaMovement().y < -0.6 && player.fallDistance > 5) {
+                                    if (!stack.getOrCreateTag().getBoolean(ParachuteItem.TAG_OPEN) && player.getDeltaMovement().y < -0.6 && player.fallDistance > 4) {
                                         stack.getOrCreateTag().putBoolean(ParachuteItem.TAG_OPEN, true);
                                         player.getCooldowns().addCooldown(stack.getItem(), 10);
                                         player.level().playSound(null, player.getX(), player.getY(), player.getZ(), ModSounds.PARACHUTE_OPEN.get(), SoundSource.PLAYERS, 1f, 1);
