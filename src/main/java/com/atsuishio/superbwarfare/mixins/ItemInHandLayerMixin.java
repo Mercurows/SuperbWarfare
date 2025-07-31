@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.mixins;
 
+import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -7,6 +8,7 @@ import net.minecraft.client.renderer.entity.layers.ItemInHandLayer;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
@@ -22,6 +24,11 @@ public class ItemInHandLayerMixin {
             at = @At(value = "HEAD"), cancellable = true)
     private void renderArmWithItemHead(LivingEntity entity, ItemStack stack, ItemDisplayContext display, HumanoidArm arm, PoseStack poseStack, MultiBufferSource source, int light, CallbackInfo ci) {
         if (entity.getType() == EntityType.PLAYER) {
+            if (arm == HumanoidArm.LEFT || arm == HumanoidArm.RIGHT) {
+                if (entity instanceof Player player && player.getVehicle() instanceof ArmedVehicleEntity vehicle && vehicle.banHand(player)) {
+                    ci.cancel();
+                }
+            }
             if (arm == HumanoidArm.LEFT) {
                 ItemStack mainHand = entity.getMainHandItem();
                 if (!(mainHand.getItem() instanceof GunItem)) return;
