@@ -32,10 +32,10 @@ public class FourthTimesCharm extends Perk {
                 data.ammo.set(Math.min(mag, data.ammo.get() + 2));
             } else if (living != null) {
                 int countToWithdraw = 2;
-                for (var consumer : data.ammoConsumers) {
-                    countToWithdraw -= consumer.withdraw(living, countToWithdraw);
-                    if (countToWithdraw <= 0) break;
-                }
+
+                // TODO 这里不太对，得改
+                var consumer = data.selectedAmmoConsumer();
+                countToWithdraw -= consumer.withdraw(living, countToWithdraw);
 
                 if (countToWithdraw > 0) {
                     Mod.LOGGER.warn("Failed to withdraw ammo of amount {} for FourthTimesCharm", countToWithdraw);

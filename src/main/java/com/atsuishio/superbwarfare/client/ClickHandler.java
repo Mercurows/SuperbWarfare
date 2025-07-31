@@ -322,6 +322,7 @@ public class ClickHandler {
             }
 
             if (isEditing) {
+                // 改枪
                 if (!(stack.getItem() instanceof GunItem gunItem)) return;
                 if (ModKeyMappings.EDIT_GRIP.getKeyModifier().isActive(KeyConflictContext.IN_GAME)) {
                     if (key == ModKeyMappings.EDIT_GRIP.getKey().getValue() && gunItem.hasCustomGrip(stack)) {
@@ -342,6 +343,17 @@ public class ClickHandler {
                         Mod.PACKET_HANDLER.sendToServer(new EditMessage(3));
                         editModelShake();
                     }
+                }
+            } else {
+                // 改弹药类型
+                if (!(stack.getItem() instanceof GunItem)) return;
+
+                var data = GunData.from(stack);
+                if (key == ModKeyMappings.EDIT_SCOPE.getKey().getValue() || key == ModKeyMappings.EDIT_MAGAZINE.getKey().getValue()) {
+                    var diff = key == ModKeyMappings.EDIT_SCOPE.getKey().getValue() ? -1 : 1;
+                    var selectedAmmoType = Mth.clamp(data.selectedAmmoType.get() + diff, 0, data.ammoConsumers.size() - 1);
+
+                    Mod.PACKET_HANDLER.sendToServer(new ChangeAmmoTypeMessage(selectedAmmoType));
                 }
             }
             if (key == ModKeyMappings.SENSITIVITY_INCREASE.getKey().getValue()) {

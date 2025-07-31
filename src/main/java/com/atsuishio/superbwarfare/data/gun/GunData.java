@@ -75,6 +75,9 @@ public class GunData {
         attachment = new Attachment(this);
         perk = new Perks(this);
 
+        insertedItem = new ItemStackValue(data, "InsertedItem");
+        selectedAmmoType = new IntValue(data, "SelectedAmmoType");
+
         ammo = new IntValue(data, "Ammo");
         virtualAmmo = new IntValue(data, "VirtualAmmo");
 
@@ -439,6 +442,13 @@ public class GunData {
         return new AmmoTypeInfo(AmmoConsumeType.ITEM, ammoType);
     }
 
+    public AmmoConsumer selectedAmmoConsumer() {
+        if (this.ammoConsumers.isEmpty()) {
+            return AmmoConsumer.INVALID;
+        }
+        return this.ammoConsumers.get(Mth.clamp(this.selectedAmmoType.get(), 0, this.ammoConsumers.size() - 1));
+    }
+
     // 开火相关流程开始
 
     /*
@@ -465,9 +475,7 @@ public class GunData {
         if (entity instanceof Player player && player.isCreative() || InventoryTool.hasCreativeAmmoBox(entity))
             return Integer.MAX_VALUE;
 
-        return this.ammoConsumers.stream()
-                .mapToInt(c -> c.count(entity) * c.loadAmount)
-                .sum() + this.virtualAmmo.get();
+        return this.selectedAmmoConsumer().count(entity) * this.selectedAmmoConsumer().loadAmount + this.virtualAmmo.get();
     }
 
     /**
@@ -477,9 +485,7 @@ public class GunData {
         if (handler == null) return virtualAmmo.get();
         if (InventoryTool.hasCreativeAmmoBox(handler)) return Integer.MAX_VALUE;
 
-        return this.ammoConsumers.stream()
-                .mapToInt(c -> c.count(handler) * c.loadAmount)
-                .sum() + this.virtualAmmo.get();
+        return this.selectedAmmoConsumer().count(handler) * this.selectedAmmoConsumer().loadAmount + this.virtualAmmo.get();
     }
 
     /**
@@ -495,24 +501,19 @@ public class GunData {
         }
         if (count <= 0 || entity == null) return;
 
-        for (var consumer : this.ammoConsumers) {
-            var loadAmount = consumer.loadAmount;
-            if (count % loadAmount != 0) {
-                var required = (count / loadAmount) + 1;
-                var consumed = consumer.consume(entity, required);
-                count -= consumed * loadAmount;
+        var consumer = this.selectedAmmoConsumer();
+        var loadAmount = consumer.loadAmount;
+        if (count % loadAmount != 0) {
+            var required = (count / loadAmount) + 1;
+            var consumed = consumer.consume(entity, required);
+            count -= consumed * loadAmount;
 
-                // 迫真过载装填
-                if (count <= 0) {
-                    this.virtualAmmo.add(-count);
-                }
-            } else {
-                var required = count / loadAmount;
-                var consumed = consumer.consume(entity, required);
-                count -= consumed * loadAmount;
+            // 迫真过载装填
+            if (count <= 0) {
+                this.virtualAmmo.add(-count);
             }
-
-            if (count <= 0) return;
+        } else {
+            consumer.consume(entity, count / loadAmount);
         }
     }
 
@@ -529,25 +530,20 @@ public class GunData {
         }
         if (count <= 0 || handler == null) return;
 
-        for (var consumer : this.ammoConsumers) {
-            var loadAmount = consumer.loadAmount;
+        var consumer = selectedAmmoConsumer();
+        var loadAmount = consumer.loadAmount;
 
-            if (count % loadAmount != 0) {
-                var required = (count / loadAmount) + 1;
-                var consumed = consumer.consume(handler, required);
-                count -= consumed * loadAmount;
+        if (count % loadAmount != 0) {
+            var required = (count / loadAmount) + 1;
+            var consumed = consumer.consume(handler, required);
+            count -= consumed * loadAmount;
 
-                // 迫真过载装填
-                if (count <= 0) {
-                    this.virtualAmmo.add(-count);
-                }
-            } else {
-                var required = count / loadAmount;
-                var consumed = consumer.consume(handler, required);
-                count -= consumed * loadAmount;
+            // 迫真过载装填
+            if (count <= 0) {
+                this.virtualAmmo.add(-count);
             }
-
-            if (count <= 0) return;
+        } else {
+            consumer.consume(handler, count / loadAmount);
         }
     }
 
@@ -631,6 +627,30 @@ public class GunData {
     }
 
     // 开火相关流程结束
+
+    /**
+     * 返还弹匣内弹药，在换弹和切换弹匣配件时调用
+     */
+    public void withdrawAmmo(@NotNull Entity shooter) {
+        var amount = this.virtualAmmo.get() + this.ammo.get();
+        this.virtualAmmo.reset();
+        this.ammo.reset();
+
+        // 直接丢弃余数（恼）
+        var itemAmount = amount / selectedAmmoConsumer().loadAmount;
+        selectedAmmoConsumer().withdraw(shooter, itemAmount);
+    }
+
+    /**
+     * 返还弹匣内弹药，在换弹和切换弹匣配件时调用
+     */
+    public void withdrawAmmo(@NotNull IItemHandler handler) {
+        var amount = this.virtualAmmo.get() + this.ammo.get();
+
+        // 直接丢弃余数（恼）
+        var itemAmount = amount / selectedAmmoConsumer().loadAmount;
+        selectedAmmoConsumer().withdraw(handler, itemAmount);
+    }
 
     private static int getPerkPriority(String s) {
         if (s == null || s.isEmpty()) return 2;
@@ -739,8 +759,8 @@ public class GunData {
 
     // 可持久化属性开始
 
-    // TODO 持久化
-    public ItemStack insertedItem = ItemStack.EMPTY;
+    public final ItemStackValue insertedItem;
+    public final IntValue selectedAmmoType;
 
     public final IntValue ammo;
     public final IntValue virtualAmmo;

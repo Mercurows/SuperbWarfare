@@ -32,6 +32,8 @@ public class AmmoConsumer implements DeserializeFromString {
     @SerializedName("Value")
     public String value;
 
+    public static final AmmoConsumer INVALID = new AmmoConsumer();
+
     private transient boolean initialized = false;
     private transient GunData data;
     private transient Ammo playerAmmoType;
@@ -89,7 +91,7 @@ public class AmmoConsumer implements DeserializeFromString {
         if (!initialized) init();
 
         Predicate<ItemStack> matcher;
-        if (data.insertedItem.isEmpty()) {
+        if (data.insertedItem.get().isEmpty()) {
             matcher = switch (type) {
                 case ITEM -> stack -> stack.is(this.item);
                 case TAG -> stack -> stack.is(this.tag);
@@ -99,7 +101,7 @@ public class AmmoConsumer implements DeserializeFromString {
                 }
             };
         } else {
-            matcher = stack -> ItemStack.isSameItemSameTags(stack, data.insertedItem);
+            matcher = stack -> ItemStack.isSameItemSameTags(stack, data.insertedItem.get());
         }
         if (matcher == null) return 0;
 
@@ -143,6 +145,7 @@ public class AmmoConsumer implements DeserializeFromString {
      * 注：不会实际消耗枪内弹药
      * @return 成功返还的弹药数量
      */
+    // TODO 正确处理多发弹药装填情况下的退弹
     public int withdraw(@NotNull Entity shooter, int count) {
         if (type == AmmoConsumeType.INVALID) {
             Mod.LOGGER.warn("withdraw ammo failed: invalid type");
@@ -163,7 +166,7 @@ public class AmmoConsumer implements DeserializeFromString {
             }
         } else {
             if (shooter instanceof Player player) {
-                ItemHandlerHelper.giveItemToPlayer(player, data.insertedItem.copyWithCount(count));
+                ItemHandlerHelper.giveItemToPlayer(player, data.insertedItem.get().copyWithCount(count));
                 return count;
             } else {
                 var itemHandler = shooter.getCapability(ForgeCapabilities.ITEM_HANDLER).resolve().orElse(null);
@@ -180,7 +183,7 @@ public class AmmoConsumer implements DeserializeFromString {
     public int withdraw(@NotNull IItemHandler handler, int count) {
         if (!initialized) init();
 
-        var copiedStack = data.insertedItem.copyWithCount(count);
+        var copiedStack = data.insertedItem.get().copyWithCount(count);
         var result = ItemHandlerHelper.insertItemStacked(handler, copiedStack, false);
 
         int inserted = count - result.getCount();

@@ -58,6 +58,7 @@ public class EditMessage {
                 int att = data.attachment.get(AttachmentType.MAGAZINE);
                 att++;
                 att %= 3;
+                data.withdrawAmmo(player);
                 data.attachment.set(AttachmentType.MAGAZINE, att);
             }
             case 3 -> {
