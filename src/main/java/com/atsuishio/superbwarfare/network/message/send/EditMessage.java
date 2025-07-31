@@ -54,6 +54,7 @@ public record EditMessage(int msgType) implements CustomPacketPayload {
                 int att = attachment.get(AttachmentType.MAGAZINE);
                 att++;
                 att %= 3;
+                data.withdrawAmmo(player);
                 attachment.set(AttachmentType.MAGAZINE, att);
             }
             case 3 -> {

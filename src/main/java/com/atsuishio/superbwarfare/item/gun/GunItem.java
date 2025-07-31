@@ -470,9 +470,6 @@ public abstract class GunItem extends Item implements CustomRendererItem, GeoIte
         if (!data.useBackpackAmmo()) {
             data.ammo.set(data.ammo.get() - 1);
             data.isEmpty.set(true);
-            if (data.ammo.get() <= 0) {
-                data.insertedItem = ItemStack.EMPTY;
-            }
         } else {
             data.consumeBackupAmmo(shooter, 1);
         }
