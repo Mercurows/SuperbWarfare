@@ -169,6 +169,10 @@ public class ReforgingTableMenu extends AbstractContainerMenu {
                         && GunData.from(copy).perk.getLevel(perkItem) > 0
                 ) continue;
 
+                if (itemstack.getItem() instanceof GunItem) {
+                    var data = GunData.from(itemstack);
+                    data.upgradePoint.set(Math.min(MAX_UPGRADE_POINT, this.upgradePoint.get()));
+                }
 
                 if (!itemstack.isEmpty()) {
                     pPlayer.getInventory().placeItemBackInInventory(itemstack);
@@ -386,6 +390,8 @@ public class ReforgingTableMenu extends AbstractContainerMenu {
                 this.container.setItem(slot, ItemStack.EMPTY);
             }
         }
+
+        data.upgradePoint.set(Math.min(MAX_UPGRADE_POINT, this.upgradePoint.get()));
 
         this.upgradePoint.set(0);
         this.ammoPerkLevel.set(0);
