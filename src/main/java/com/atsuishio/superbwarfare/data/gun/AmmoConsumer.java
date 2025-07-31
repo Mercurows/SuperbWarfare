@@ -201,7 +201,8 @@ public class AmmoConsumer implements DeserializeFromString {
             return;
         }
 
-        this.loadAmount = Mth.clamp(Integer.parseInt(matcher.group("count").trim()), 1, Integer.MAX_VALUE);
+        var numStr = matcher.group("count").trim();
+        this.loadAmount = Mth.clamp(numStr.isEmpty() ? 1 : Integer.parseInt(numStr), 1, Integer.MAX_VALUE);
 
         var prefix = matcher.group("prefix");
         var id = matcher.group("id");

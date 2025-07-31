@@ -502,6 +502,7 @@ public class GunData {
                 var consumed = consumer.consume(entity, required);
                 count -= consumed * loadAmount;
 
+                // 迫真过载装填
                 if (count <= 0) {
                     this.virtualAmmo.add(-count);
                 }
