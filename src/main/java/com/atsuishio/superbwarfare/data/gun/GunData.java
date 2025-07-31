@@ -639,6 +639,8 @@ public class GunData {
         // 直接丢弃余数（恼）
         var itemAmount = amount / selectedAmmoConsumer().loadAmount;
         selectedAmmoConsumer().withdraw(shooter, itemAmount);
+
+        this.insertedItem.set(selectedAmmoConsumer().toItemStack());
     }
 
     /**

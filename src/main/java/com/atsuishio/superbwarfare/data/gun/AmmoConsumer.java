@@ -21,7 +21,6 @@ import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 public class AmmoConsumer implements DeserializeFromString {
@@ -45,8 +44,15 @@ public class AmmoConsumer implements DeserializeFromString {
         return this;
     }
 
+    // TODO TAG支持？
     public enum AmmoConsumeType {
         PLAYER_AMMO, ITEM, TAG, INVALID,
+    }
+
+    public ItemStack toItemStack() {
+        if (type != AmmoConsumeType.ITEM) return ItemStack.EMPTY;
+
+        return new ItemStack(item);
     }
 
     /**
@@ -90,23 +96,11 @@ public class AmmoConsumer implements DeserializeFromString {
         if (type == AmmoConsumeType.PLAYER_AMMO || type == AmmoConsumeType.INVALID || count <= 0) return 0;
         if (!initialized) init();
 
-        Predicate<ItemStack> matcher;
-        if (data.insertedItem.get().isEmpty()) {
-            matcher = switch (type) {
-                case ITEM -> stack -> stack.is(this.item);
-                case TAG -> stack -> stack.is(this.tag);
-                default -> {
-                    Mod.LOGGER.warn("consume ammo failed: invalid type");
-                    yield null;
-                }
-            };
-        } else {
-            matcher = stack -> ItemStack.isSameItemSameTags(stack, data.insertedItem.get());
-        }
-        if (matcher == null) return 0;
+//        if (data.insertedItem.get().isEmpty()) {
+//            data.insertedItem.set(InventoryTool.findFirst(handler, this.item));
+//        }
 
-        // TODO 将第一个匹配物品设置至GunData.insertedItem
-        return InventoryTool.consumeItem(handler, matcher, count);
+        return InventoryTool.consumeItem(handler, stack -> ItemStack.isSameItemSameTags(stack, data.insertedItem.get()), count);
     }
 
     /**
@@ -132,11 +126,16 @@ public class AmmoConsumer implements DeserializeFromString {
         if (InventoryTool.hasCreativeAmmoBox(handler)) return Integer.MAX_VALUE;
         if (!initialized) init();
 
-        return switch (type) {
-            case ITEM -> InventoryTool.countItem(handler, this.item);
-            case TAG -> InventoryTool.countItem(handler, this.tag);
-            default -> 0;
-        };
+        // TODO data.insertedItem怎么可能为null？？？
+        if (data.insertedItem == null || data.insertedItem.get().isEmpty()) {
+            return switch (type) {
+                case ITEM -> InventoryTool.countItem(handler, this.item);
+                case TAG -> InventoryTool.countItem(handler, this.tag);
+                default -> 0;
+            };
+        }
+
+        return InventoryTool.countItem(handler, stack -> ItemStack.isSameItemSameTags(data.insertedItem == null ? ItemStack.EMPTY : data.insertedItem.get(), stack));
     }
 
     /**

@@ -74,7 +74,7 @@ public class InventoryTool {
      * @param item   物品类型
      */
     public static boolean hasItem(@Nullable Entity entity, @NotNull Item item) {
-        return countItem(entity, item) > 0;
+        return !findFirst(entity, item).isEmpty();
     }
 
     /**
@@ -84,11 +84,44 @@ public class InventoryTool {
      * @param item     物品类型
      */
     public static boolean hasItem(@Nullable NonNullList<ItemStack> itemList, @NotNull Item item) {
-        return countItem(itemList, item) > 0;
+        return !findFirst(itemList, item).isEmpty();
     }
 
+    public static ItemStack findFirst(@Nullable Entity entity, @NotNull Item item) {
+        if (entity == null) return ItemStack.EMPTY;
+
+        return findFirst(entity.getCapability(ForgeCapabilities.ITEM_HANDLER).resolve().orElse(null), stack -> stack.is(item));
+    }
+
+    public static ItemStack findFirst(@Nullable IItemHandler handler, @NotNull Item item) {
+        return findFirst(handler, stack -> stack.is(item));
+    }
+
+    public static ItemStack findFirst(@Nullable NonNullList<ItemStack> list, @NotNull Item item) {
+        return findFirst(list, stack -> stack.is(item));
+    }
+
+    public static ItemStack findFirst(@Nullable NonNullList<ItemStack> list, @NotNull Predicate<ItemStack> predicate) {
+        if (list == null) return ItemStack.EMPTY;
+
+        return list.stream().filter(predicate).findFirst().orElse(ItemStack.EMPTY);
+    }
+
+    public static ItemStack findFirst(@Nullable IItemHandler handler, @NotNull Predicate<ItemStack> predicate) {
+        if (handler == null) return ItemStack.EMPTY;
+
+        for (int i = 0; i < handler.getSlots(); i++) {
+            var stack = handler.getStackInSlot(i);
+            if (predicate.test(stack)) {
+                return stack;
+            }
+        }
+        return ItemStack.EMPTY;
+    }
+
+
     public static boolean hasCreativeAmmoBox(@Nullable IItemHandler handler) {
-        return countItem(handler, ModItems.CREATIVE_AMMO_BOX.get()) > 0;
+        return !findFirst(handler, ModItems.CREATIVE_AMMO_BOX.get()).isEmpty();
     }
 
     /**
@@ -97,7 +130,7 @@ public class InventoryTool {
      * @param itemList 物品列表
      */
     public static boolean hasCreativeAmmoBox(@Nullable NonNullList<ItemStack> itemList) {
-        return countItem(itemList, ModItems.CREATIVE_AMMO_BOX.get()) > 0;
+        return !findFirst(itemList, ModItems.CREATIVE_AMMO_BOX.get()).isEmpty();
     }
 
     /**
