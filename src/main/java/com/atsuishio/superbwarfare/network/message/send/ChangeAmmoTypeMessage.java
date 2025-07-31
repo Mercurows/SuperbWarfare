@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.network.message.send;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.data.gun.AmmoConsumer;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
 import com.atsuishio.superbwarfare.init.ModSounds;
@@ -35,10 +36,14 @@ public record ChangeAmmoTypeMessage(int index) implements CustomPacketPayload {
         var data = GunData.from(stack);
         data.withdrawAmmo(player);
         data.selectedAmmoType.set(Mth.clamp(message.index, 0, AttachmentType.values().length - 1));
+
+        if (data.selectedAmmoConsumer().type == AmmoConsumer.AmmoConsumeType.ITEM) {
+            data.insertedItem.set(data.selectedAmmoConsumer().toItemStack());
+        }
+
         data.save();
 
         player.displayClientMessage(Component.literal("selected index: " + message.index), true);
-
         SoundTool.playLocalSound(player, ModSounds.EDIT.get(), 1f, 1f);
     }
 
