@@ -420,7 +420,7 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
 
         Matrix4f transform = getVehicleTransform(1);
 
-        float x = 0.6f;
+        float x = 0.45f;
         float y = -0.65f;
         float z = 1f;
 
