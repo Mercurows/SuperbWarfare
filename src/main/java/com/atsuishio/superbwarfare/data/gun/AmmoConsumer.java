@@ -102,6 +102,7 @@ public class AmmoConsumer implements DeserializeFromString {
 //            data.insertedItem.set(InventoryTool.findFirst(handler, this.item));
 //        }
 
+        // TODO 修改insertedItem判断 byd这玩意在重载等情况下根本不能用
         return InventoryTool.consumeItem(handler, stack -> ItemStack.isSameItemSameComponents(stack, data.insertedItem.get()), count);
     }
 
