@@ -55,6 +55,7 @@ public class AureliaSceptre extends GunItem {
         return HumanoidModel.ArmPose.EMPTY;
     }
 
+    @OnlyIn(Dist.CLIENT)
     private PlayState idlePredicate(AnimationState<AureliaSceptre> event) {
         LocalPlayer player = Minecraft.getInstance().player;
         if (player == null) return PlayState.STOP;
@@ -72,6 +73,7 @@ public class AureliaSceptre extends GunItem {
         return event.setAndContinue(RawAnimation.begin().thenLoop("animation.aurelia_sceptre.idle"));
     }
 
+    @OnlyIn(Dist.CLIENT)
     private PlayState firePredicate(AnimationState<AureliaSceptre> event) {
         LocalPlayer player = Minecraft.getInstance().player;
         if (player == null) return PlayState.STOP;
@@ -89,6 +91,7 @@ public class AureliaSceptre extends GunItem {
         return event.setAndContinue(RawAnimation.begin().thenLoop("animation.aurelia_sceptre.idle"));
     }
 
+    @OnlyIn(Dist.CLIENT)
     private PlayState meleePredicate(AnimationState<AureliaSceptre> event) {
         if (event.getData(DataTickets.ITEM_RENDER_PERSPECTIVE) != ItemDisplayContext.FIRST_PERSON_RIGHT_HAND)
             return event.setAndContinue(RawAnimation.begin().thenLoop("animation.aurelia_sceptre.idle"));

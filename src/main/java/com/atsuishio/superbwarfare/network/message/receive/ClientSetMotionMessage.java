@@ -7,6 +7,8 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.entity.player.Player;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 
@@ -20,6 +22,7 @@ public record ClientSetMotionMessage(Vector3f motion) implements CustomPacketPay
             ClientSetMotionMessage::new
     );
 
+    @OnlyIn(Dist.CLIENT)
     public static void handler(ClientSetMotionMessage message) {
         Minecraft minecraft = Minecraft.getInstance();
         Player player = minecraft.player;
