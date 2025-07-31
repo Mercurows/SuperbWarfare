@@ -1,4 +1,3 @@
-
 package com.atsuishio.superbwarfare.command;
 
 import com.atsuishio.superbwarfare.tools.Ammo;
@@ -8,14 +7,13 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.chat.Component;
-import net.neoforged.neoforge.server.command.EnumArgument;
 
 public class AmmoCommand {
 
     public static LiteralArgumentBuilder<CommandSourceStack> get() {
         // mojang你看看你写的是个牛魔Builder😅
         return Commands.literal("ammo").requires(s -> s.hasPermission(0))
-                .then(Commands.literal("get").then(Commands.argument("player", EntityArgument.player()).then(Commands.argument("type", EnumArgument.enumArgument(Ammo.class)).executes(context -> {
+                .then(Commands.literal("get").then(Commands.argument("player", EntityArgument.player()).then(Commands.argument("type", LowerCamelCaseEnumArgument.enumArgument(Ammo.class)).executes(context -> {
                     var player = EntityArgument.getPlayer(context, "player");
 
                     var source = context.getSource();
@@ -29,12 +27,11 @@ public class AmmoCommand {
                     }
 
                     var type = context.getArgument("type", Ammo.class);
-
                     var value = type.get(player);
                     context.getSource().sendSuccess(() -> Component.translatable("commands.ammo.get", Component.translatable(type.translationKey), value), true);
                     return 0;
                 }))))
-                .then(Commands.literal("set").requires(s -> s.hasPermission(2)).then(Commands.argument("players", EntityArgument.players()).then(Commands.argument("type", EnumArgument.enumArgument(Ammo.class)).then(Commands.argument("value", IntegerArgumentType.integer(0)).executes(context -> {
+                .then(Commands.literal("set").requires(s -> s.hasPermission(2)).then(Commands.argument("players", EntityArgument.players()).then(Commands.argument("type", LowerCamelCaseEnumArgument.enumArgument(Ammo.class)).then(Commands.argument("value", IntegerArgumentType.integer(0)).executes(context -> {
                     var players = EntityArgument.getPlayers(context, "players");
                     var type = context.getArgument("type", Ammo.class);
                     var value = IntegerArgumentType.getInteger(context, "value");
@@ -46,7 +43,7 @@ public class AmmoCommand {
                     context.getSource().sendSuccess(() -> Component.translatable("commands.ammo.set", Component.translatable(type.translationKey), value, players.size()), true);
                     return 0;
                 })))))
-                .then(Commands.literal("add").requires(s -> s.hasPermission(2)).then(Commands.argument("players", EntityArgument.players()).then(Commands.argument("type", EnumArgument.enumArgument(Ammo.class)).then(Commands.argument("value", IntegerArgumentType.integer(0)).executes(context -> {
+                .then(Commands.literal("add").requires(s -> s.hasPermission(2)).then(Commands.argument("players", EntityArgument.players()).then(Commands.argument("type", LowerCamelCaseEnumArgument.enumArgument(Ammo.class)).then(Commands.argument("value", IntegerArgumentType.integer(0)).executes(context -> {
                     var players = EntityArgument.getPlayers(context, "players");
                     var type = context.getArgument("type", Ammo.class);
                     var value = IntegerArgumentType.getInteger(context, "value");

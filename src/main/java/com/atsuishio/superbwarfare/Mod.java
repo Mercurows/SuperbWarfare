@@ -70,6 +70,7 @@ public class Mod {
         ModAttributes.ATTRIBUTES.register(bus);
         ModCriteriaTriggers.REGISTRY.register(bus);
         ModAttachments.ATTACHMENT_TYPES.register(bus);
+        ModCommandArguments.COMMAND_ARGUMENT_TYPES.register(bus);
 
         bus.addListener(this::onClientSetup);
         bus.addListener(FMLCommonSetupEvent.class, event -> onCommonSetup(bus));
