@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.data.gun;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.data.DeserializeFromString;
+import com.atsuishio.superbwarfare.data.StringToObject;
 import com.atsuishio.superbwarfare.tools.Ammo;
 import com.atsuishio.superbwarfare.tools.InventoryTool;
 import com.google.gson.annotations.SerializedName;
@@ -24,12 +25,13 @@ import org.jetbrains.annotations.Nullable;
 import java.util.regex.Pattern;
 
 public class AmmoConsumer implements DeserializeFromString {
-    @SerializedName("Type")
-    public AmmoConsumeType type = AmmoConsumeType.INVALID;
-    @SerializedName("LoadAmount")
-    public int loadAmount = 1;
     @SerializedName("Value")
     public String value;
+    @SerializedName("Projectile")
+    public StringToObject<ProjectileInfo> projectile = null;
+
+    public transient AmmoConsumeType type = AmmoConsumeType.INVALID;
+    public transient int loadAmount = 1;
 
     public static final AmmoConsumer INVALID = new AmmoConsumer();
 
@@ -196,10 +198,14 @@ public class AmmoConsumer implements DeserializeFromString {
 
     private void init() {
         this.type = AmmoConsumeType.INVALID;
+        if (value == null) {
+            Mod.LOGGER.warn("ammo value should not be null!");
+            return;
+        }
 
         var matcher = AMMO_PATTERN.matcher(value);
         if (!matcher.matches()) {
-            Mod.LOGGER.warn("invalid ammo pattern: {}", value);
+            Mod.LOGGER.warn("invalid ammo value: {}", value);
             return;
         }
 
