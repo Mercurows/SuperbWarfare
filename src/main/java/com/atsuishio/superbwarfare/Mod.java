@@ -63,6 +63,7 @@ public class Mod {
         ModMenuTypes.REGISTRY.register(bus);
         ModVillagers.register(bus);
         ModRecipes.RECIPE_SERIALIZERS.register(bus);
+        ModCommandArguments.COMMAND_ARGUMENT_TYPES.register(bus);
 
         bus.addListener(this::onCommonSetup);
         bus.addListener(this::onClientSetup);
