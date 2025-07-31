@@ -24,22 +24,26 @@ public record ChangeAmmoTypeMessage(int index) {
         buffer.writeInt(message.index);
     }
 
-    public static void handler(ChangeAmmoTypeMessage message, Supplier<NetworkEvent.Context> contextSupplier) {
-        var player = contextSupplier.get().getSender();
-        if (player == null) return;
+    public static void handler(ChangeAmmoTypeMessage message, Supplier<NetworkEvent.Context> ctx) {
+        ctx.get().enqueueWork(() -> {
+            var player = ctx.get().getSender();
+            if (player == null) return;
 
-        ItemStack stack = player.getMainHandItem();
-        if (!(stack.getItem() instanceof GunItem)) return;
+            ItemStack stack = player.getMainHandItem();
+            if (!(stack.getItem() instanceof GunItem)) return;
 
-        var data = GunData.from(stack);
-        data.withdrawAmmo(player);
-        data.selectedAmmoType.set(Mth.clamp(message.index, 0, AttachmentType.values().length - 1));
+            var data = GunData.from(stack);
+            data.withdrawAmmo(player);
+            data.selectedAmmoType.set(Mth.clamp(message.index, 0, AttachmentType.values().length - 1));
 
-        if (data.selectedAmmoConsumer().type == AmmoConsumer.AmmoConsumeType.ITEM) {
-            data.insertedItem.set(data.selectedAmmoConsumer().toItemStack());
-        }
+            if (data.selectedAmmoConsumer().type == AmmoConsumer.AmmoConsumeType.ITEM) {
+                data.insertedItem.set(data.selectedAmmoConsumer().toItemStack());
+            }
 
-        player.displayClientMessage(Component.literal("selected index: " + message.index), true);
-        SoundTool.playLocalSound(player, ModSounds.EDIT.get(), 1f, 1f);
+            // TODO 修改显示
+            player.displayClientMessage(Component.literal("selected index: " + message.index), true);
+            SoundTool.playLocalSound(player, ModSounds.EDIT.get(), 1f, 1f);
+        });
+        ctx.get().setPacketHandled(true);
     }
 }
