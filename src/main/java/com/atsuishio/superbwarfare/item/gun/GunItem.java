@@ -637,8 +637,9 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
         float velocity = (float) data.velocity();
         float bypassArmorRate = (float) data.bypassArmor();
 
-        var projectileType = data.projectileType();
-        var projectileInfo = data.projectileInfo();
+        var projectileInfo = data.selectedAmmoConsumer().projectile == null ? data.projectileInfo() : data.selectedAmmoConsumer().projectile.value;
+        var projectileType = projectileInfo.type;
+
         AtomicReference<Entity> entityHolder = new AtomicReference<>();
         EntityType.byString(projectileType).ifPresent(entityType -> {
             var entity = entityType.create(level);
