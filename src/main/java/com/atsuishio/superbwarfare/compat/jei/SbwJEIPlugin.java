@@ -74,7 +74,7 @@ public class SbwJEIPlugin implements IModPlugin {
             @Override
             @ParametersAreNonnullByDefault
             public @NotNull String getLegacyStringSubtypeInfo(ItemStack ingredient, UidContext context) {
-                return (String) getSubtypeData(ingredient, context);
+                return getSubtypeData(ingredient, context).toString();
             }
         });
 
@@ -90,6 +90,7 @@ public class SbwJEIPlugin implements IModPlugin {
             }
 
             @Override
+            @ParametersAreNonnullByDefault
             public @NotNull String getLegacyStringSubtypeInfo(ItemStack ingredient, UidContext context) {
                 if (ingredient.getComponentsPatch().isEmpty()) {
                     return "";
@@ -103,13 +104,15 @@ public class SbwJEIPlugin implements IModPlugin {
 
         registration.registerSubtypeInterpreter(ModItems.C4_BOMB.get(), new ISubtypeInterpreter<>() {
             @Override
+            @ParametersAreNonnullByDefault
             public @NotNull Object getSubtypeData(ItemStack ingredient, UidContext context) {
                 return NBTTool.getTag(ingredient).getBoolean("Control");
             }
 
             @Override
+            @ParametersAreNonnullByDefault
             public @NotNull String getLegacyStringSubtypeInfo(ItemStack ingredient, UidContext context) {
-                return (String) getSubtypeData(ingredient, context);
+                return getSubtypeData(ingredient, context).toString();
             }
         });
     }
