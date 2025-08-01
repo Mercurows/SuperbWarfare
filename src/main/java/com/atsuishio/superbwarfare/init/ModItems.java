@@ -120,7 +120,8 @@ public class ModItems {
     public static final RegistryObject<Item> JAVELIN_MISSILE = AMMO.register("javelin_missile", () -> new Item(new Item.Properties()));
     public static final RegistryObject<Item> MORTAR_SHELL = AMMO.register("mortar_shell", MortarShell::new);
     public static final RegistryObject<Item> POTION_MORTAR_SHELL = AMMO.register("potion_mortar_shell", PotionMortarShell::new);
-    public static final RegistryObject<Item> ROCKET = AMMO.register("rocket", RocketItem::new);
+    public static final RegistryObject<Item> RPG_ROCKET_STANDARD = AMMO.register("rpg_rocket_standard", RpgRocketStandard::new);
+    public static final RegistryObject<Item> RPG_ROCKET_TBG = AMMO.register("rpg_rocket_tbg", RpgRocketTBG::new);
     public static final RegistryObject<Item> LUNGE_MINE = AMMO.register("lunge_mine", LungeMine::new);
     public static final RegistryObject<Item> HE_5_INCHES = AMMO.register("he_5_inches", () -> new CannonShellItem(new Item.Properties().rarity(Rarity.RARE)));
     public static final RegistryObject<Item> AP_5_INCHES = AMMO.register("ap_5_inches", () -> new CannonShellItem(new Item.Properties().rarity(Rarity.RARE)));

@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "a": {
+      "item": "superbwarfare:fusee"
+    },
+    "b": {
+      "item": "minecraft:iron_ingot"
+    },
+    "c": {
+      "item": "superbwarfare:high_energy_explosives"
+    },
+    "d": {
+      "item": "superbwarfare:grain"
+    }
+  },
+  "pattern": [
+    " a ",
+    "bcb",
+    " d "
+  ],
+  "result": {
+    "count": 2,
+    "item": "superbwarfare:rpg_rocket_tbg"
+  },
+  "show_notification": true
+}

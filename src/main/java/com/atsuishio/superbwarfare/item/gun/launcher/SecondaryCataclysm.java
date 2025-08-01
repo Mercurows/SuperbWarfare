@@ -241,7 +241,7 @@ public class SecondaryCataclysm extends GunItem {
     }
 
     @Override
-    public String getAmmoDisplayName(GunData data) {
+    public String getAmmoDisplayName(GunData data, ItemStack stack) {
         return "40mm Grenade";
     }
 

@@ -404,7 +404,7 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
     /**
      * 右下角弹药显示名称
      */
-    public String getAmmoDisplayName(GunData data) {
+    public String getAmmoDisplayName(GunData data, ItemStack stack) {
         var type = data.ammoTypeInfo().playerAmmoType();
         if (type != null) {
             return type.displayName;

@@ -128,7 +128,7 @@ public class RpgRocketEntity extends FastThrowableProjectile implements GeoEntit
 
     @Override
     protected @NotNull Item getDefaultItem() {
-        return ModItems.ROCKET.get();
+        return ModItems.RPG_ROCKET_TBG.get();
     }
 
     @Override

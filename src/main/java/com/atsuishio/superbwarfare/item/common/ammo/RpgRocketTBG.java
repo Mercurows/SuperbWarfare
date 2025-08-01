@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.item.common.ammo;
 
 import com.atsuishio.superbwarfare.advancement.CriteriaRegister;
-import com.atsuishio.superbwarfare.client.renderer.item.RocketItemRenderer;
+import com.atsuishio.superbwarfare.client.renderer.item.RpgRocketTBGRenderer;
 import com.atsuishio.superbwarfare.entity.projectile.RpgRocketEntity;
 import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModSounds;
@@ -23,7 +23,6 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
@@ -36,12 +35,10 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.function.Consumer;
 
-public class RocketItem extends Item implements GeoItem, DispenserLaunchable {
-
+public class RpgRocketTBG extends Item implements GeoItem, DispenserLaunchable {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-    public static ItemDisplayContext transformType;
 
-    public RocketItem() {
+    public RpgRocketTBG() {
         super(new Item.Properties().stacksTo(16));
     }
 
@@ -49,17 +46,13 @@ public class RocketItem extends Item implements GeoItem, DispenserLaunchable {
     public void initializeClient(@NotNull Consumer<IClientItemExtensions> consumer) {
         super.initializeClient(consumer);
         consumer.accept(new IClientItemExtensions() {
-            private final BlockEntityWithoutLevelRenderer renderer = new RocketItemRenderer();
+            private final BlockEntityWithoutLevelRenderer renderer = new RpgRocketTBGRenderer();
 
             @Override
             public BlockEntityWithoutLevelRenderer getCustomRenderer() {
                 return renderer;
             }
         });
-    }
-
-    public void getTransformType(ItemDisplayContext type) {
-        transformType = type;
     }
 
     @Override

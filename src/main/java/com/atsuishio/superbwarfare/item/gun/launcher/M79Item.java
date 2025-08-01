@@ -99,7 +99,7 @@ public class M79Item extends GunItem {
     }
 
     @Override
-    public String getAmmoDisplayName(GunData data) {
+    public String getAmmoDisplayName(GunData data, ItemStack stack) {
         return "40mm Grenade";
     }
 

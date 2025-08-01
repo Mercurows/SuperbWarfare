@@ -9,20 +9,23 @@
       "item": "minecraft:iron_ingot"
     },
     "c": {
-      "item": "superbwarfare:high_energy_explosives"
+      "tag": "forge:plates/copper"
     },
     "d": {
       "item": "superbwarfare:grain"
+    },
+    "e": {
+      "item": "minecraft:gunpowder"
     }
   },
   "pattern": [
     " a ",
     "bcb",
-    " d "
+    "ede"
   ],
   "result": {
     "count": 2,
-    "item": "superbwarfare:rocket"
+    "item": "superbwarfare:rpg_rocket_standard"
   },
   "show_notification": true
 }

@@ -226,7 +226,7 @@ public class AmmoBarOverlay implements IGuiOverlay {
             );
 
             // 渲染弹药类型
-            String ammoName = gunItem.getAmmoDisplayName(data);
+            String ammoName = gunItem.getAmmoDisplayName(data, data.stack);
             guiGraphics.drawString(
                     Minecraft.getInstance().font,
                     ammoName,

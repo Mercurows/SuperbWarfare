@@ -178,7 +178,7 @@ public class TaserItem extends GunItem {
     }
 
     @Override
-    public String getAmmoDisplayName(GunData data) {
+    public String getAmmoDisplayName(GunData data, ItemStack stack) {
         return "Electrode Rod";
     }
 

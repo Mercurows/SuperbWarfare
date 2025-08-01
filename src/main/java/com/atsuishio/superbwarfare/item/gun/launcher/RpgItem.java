@@ -48,7 +48,13 @@ public class RpgItem extends GunItem {
     }
 
     @Override
-    public String getAmmoDisplayName(GunData data) {
+    public String getAmmoDisplayName(GunData data, ItemStack stack) {
+        int i = GunData.from(stack).attachment.get(AttachmentType.BARREL);
+        if (i == 0) {
+            return "RPG ROCKET STANDARD";
+        } else if (i == 1) {
+            return "RPG ROCKET Yasin 105 TBG";
+        }
         return "RPG-7";
     }
 
@@ -91,6 +97,8 @@ public class RpgItem extends GunItem {
     public Set<SoundEvent> getReloadSound() {
         return Set.of(ModSounds.RPG_RELOAD_EMPTY.get());
     }
+
+    // TODO 实现换弹种功能
 
     @Override
     public void inventoryTick(@NotNull ItemStack stack, @NotNull Level world, @NotNull Entity entity, int slot, boolean selected) {

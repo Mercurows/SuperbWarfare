@@ -187,7 +187,7 @@ public class JavelinItem extends GunItem {
     }
 
     @Override
-    public String getAmmoDisplayName(GunData data) {
+    public String getAmmoDisplayName(GunData data, ItemStack stack) {
         return "Javelin Missile";
     }
 
