@@ -50,10 +50,8 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
             renderBypassAndHeadshotTooltip(font, guiGraphics, x, y + yo);
             yo += 10;
         }
-        if (shouldRenderEditTooltip()) {
-            renderWeaponEditTooltip(font, guiGraphics, x, y + yo);
-            yo += 20;
-        }
+        renderWeaponEditTooltip(font, guiGraphics, x, y + yo);
+        yo += 20;
 
         if (shouldRenderPerks()) {
             if (!Screen.hasShiftDown()) {
@@ -68,13 +66,6 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
 
     protected boolean shouldRenderBypassAndHeadshotTooltip(ItemStack stack) {
         return !stack.is(ModTags.Items.LAUNCHER);
-    }
-
-    protected boolean shouldRenderEditTooltip() {
-        if (this.stack.getItem() instanceof GunItem gunItem) {
-            return gunItem.isCustomizable(stack);
-        }
-        return false;
     }
 
     protected boolean shouldRenderPerks() {
@@ -303,9 +294,7 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
         if (shouldRenderBypassAndHeadshotTooltip(stack)) {
             width = Math.max(width, font.width(getBypassComponent().getVisualOrderText()) + font.width(getHeadshotComponent().getVisualOrderText()) + 16);
         }
-        if (shouldRenderEditTooltip()) {
-            width = Math.max(width, font.width(getEditComponent().getVisualOrderText()) + 16);
-        }
+        width = Math.max(width, font.width(getEditComponent().getVisualOrderText()) + 16);
 
         return width + 4;
     }
@@ -333,7 +322,7 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
         int height = Math.max(20, this.height);
 
         if (shouldRenderBypassAndHeadshotTooltip(stack)) height += 10;
-        if (shouldRenderEditTooltip()) height += 20;
+        height += 20;
         if (shouldRenderPerks()) {
             height += 16;
 

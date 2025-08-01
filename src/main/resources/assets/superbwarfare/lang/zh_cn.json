@@ -66,7 +66,7 @@
   "des.superbwarfare.guns.bypass": "护甲穿透: ",
   "des.superbwarfare.guns.rpm": "射速: ",
   "des.superbwarfare.guns.headshot": "爆头倍率: ",
-  "des.superbwarfare.guns.edit": "按下 %1$s 键进行改装",
+  "des.superbwarfare.guns.edit": "按下 %1$s 键打开改装界面",
 
   "item.superbwarfare.ammo_box": "弹药盒",
   "des.superbwarfare.ammo_box.rifle": "已存储的步枪弹药: ",

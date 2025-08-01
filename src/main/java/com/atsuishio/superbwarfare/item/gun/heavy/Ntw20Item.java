@@ -148,11 +148,6 @@ public class Ntw20Item extends GunItem {
     }
 
     @Override
-    public boolean isCustomizable(ItemStack stack) {
-        return true;
-    }
-
-    @Override
     public boolean hasCustomMagazine(ItemStack stack) {
         return true;
     }
