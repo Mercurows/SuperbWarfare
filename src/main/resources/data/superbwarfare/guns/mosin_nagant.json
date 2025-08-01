@@ -22,7 +22,6 @@
   "DamageReduce": {
     "Type": "Sniper"
   },
-  "AmmoType": "@SniperAmmo",
   "AmmoConsumer": "@SniperAmmo",
   "AvailablePerks": [
     "@Ammo",

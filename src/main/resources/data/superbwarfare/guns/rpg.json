@@ -12,8 +12,16 @@
   "Weight": 7,
   "EmptyReloadTime": 107,
   "RPM": 120,
-  "AmmoType": "superbwarfare:rpg_rocket_tbg",
-  "AmmoConsumer": "superbwarfare:rpg_rocket_tbg",
+  "AmmoConsumer": [
+    {
+      "Value": "superbwarfare:rpg_rocket_tbg",
+      "Projectile": "superbwarfare:rpg_rocket"
+    },
+    {
+      "Value": "superbwarfare:rpg_rocket_standard",
+      "Projectile": "superbwarfare:rpg_rocket"
+    }
+  ],
   "AvailablePerks": [
     "superbwarfare:powerful_attraction",
     "superbwarfare:intelligent_chip",

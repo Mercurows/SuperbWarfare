@@ -23,7 +23,6 @@
   "DamageReduce": {
     "Type": "Heavy"
   },
-  "AmmoType": "@HeavyAmmo",
   "AmmoConsumer": "@HeavyAmmo",
   "AvailablePerks": [
     "@Ammo",
