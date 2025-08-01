@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.client.ClickHandler;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.config.client.DisplayConfig;
 import com.atsuishio.superbwarfare.config.server.MiscConfig;
+import com.atsuishio.superbwarfare.data.gun.AmmoConsumer;
 import com.atsuishio.superbwarfare.data.gun.FireMode;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
@@ -844,18 +845,18 @@ public class ClientEventHandler {
 
         Mod.queueClientWork((int) (1 + 1.5 * shooterHeight), () -> {
             if (gunItem.canEjectShell(stack)) {
-                var ammoType = data.ammoTypeInfo().playerAmmoType();
-                if (ammoType != null) {
+                if (data.selectedAmmoConsumer().type == AmmoConsumer.AmmoConsumeType.PLAYER_AMMO) {
+                    var ammoType = data.selectedAmmoConsumer().getPlayerAmmoType();
                     switch (ammoType) {
                         case SHOTGUN ->
                                 player.playSound(ModSounds.SHELL_CASING_SHOTGUN.get(), (float) Math.max(0.75 - 0.12 * shooterHeight, 0), (float) ((2 * Math.random() - 1) * 0.05f + 1.0f));
                         case SNIPER, HEAVY ->
-                                player.playSound(ModSounds.SHELL_CASING_50CAL.get(), (float) Math.max(1 - 0.15 * shooterHeight, 0), (float) ((2 * org.joml.Math.random() - 1) * 0.05f + 1.0f));
+                                player.playSound(ModSounds.SHELL_CASING_50CAL.get(), (float) Math.max(1 - 0.15 * shooterHeight, 0), (float) ((2 * Math.random() - 1) * 0.05f + 1.0f));
                         default ->
-                                player.playSound(ModSounds.SHELL_CASING_NORMAL.get(), (float) Math.max(1.5 - 0.2 * shooterHeight, 0), (float) ((2 * org.joml.Math.random() - 1) * 0.05f + 1.0f));
+                                player.playSound(ModSounds.SHELL_CASING_NORMAL.get(), (float) Math.max(1.5 - 0.2 * shooterHeight, 0), (float) ((2 * Math.random() - 1) * 0.05f + 1.0f));
                     }
                 } else {
-                    player.playSound(ModSounds.SHELL_CASING_NORMAL.get(), (float) Math.max(1.5 - 0.2 * shooterHeight, 0), (float) ((2 * org.joml.Math.random() - 1) * 0.05f + 1.0f));
+                    player.playSound(ModSounds.SHELL_CASING_NORMAL.get(), (float) Math.max(1.5 - 0.2 * shooterHeight, 0), (float) ((2 * Math.random() - 1) * 0.05f + 1.0f));
                 }
             }
         });

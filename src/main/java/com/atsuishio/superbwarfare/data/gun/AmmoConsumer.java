@@ -243,4 +243,8 @@ public class AmmoConsumer implements DeserializeFromString {
         this.value = str;
         init();
     }
+
+    public Ammo getPlayerAmmoType() {
+        return playerAmmoType;
+    }
 }

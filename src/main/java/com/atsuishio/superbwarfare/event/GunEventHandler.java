@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.event;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.api.event.ReloadEvent;
 import com.atsuishio.superbwarfare.capability.player.PlayerVariable;
+import com.atsuishio.superbwarfare.data.gun.AmmoConsumer;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.value.ReloadState;
 import com.atsuishio.superbwarfare.init.ModItems;
@@ -67,8 +68,8 @@ public class GunEventHandler {
                         ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, shooter)).getBlockPos())));
 
                 Mod.queueServerWork((int) (data.bolt.actionTimer.get() / 2.0 + 1.5 * shooterHeight), () -> {
-                    var ammoType = data.ammoTypeInfo().playerAmmoType();
-                    if (ammoType != null) {
+                    if (data.selectedAmmoConsumer().type == AmmoConsumer.AmmoConsumeType.PLAYER_AMMO) {
+                        var ammoType = data.selectedAmmoConsumer().getPlayerAmmoType();
                         switch (ammoType) {
                             case SHOTGUN ->
                                     SoundTool.playLocalSound(serverPlayer, ModSounds.SHELL_CASING_SHOTGUN.get(), (float) Math.max(0.75 - 0.12 * shooterHeight, 0), 1);
@@ -164,8 +165,8 @@ public class GunEventHandler {
 
             if (shooter instanceof Player player) {
                 PlayerVariable.modify(player, capability -> {
-                    var ammoType = data.ammoTypeInfo().playerAmmoType();
-                    if (ammoType != null) {
+                    if (data.selectedAmmoConsumer().type == AmmoConsumer.AmmoConsumeType.PLAYER_AMMO) {
+                        var ammoType = data.selectedAmmoConsumer().getPlayerAmmoType();
                         ammoType.add(capability, count);
                     }
                 });
@@ -237,12 +238,8 @@ public class GunEventHandler {
 
         if (InventoryTool.hasCreativeAmmoBox(shooter)) {
             data.ammo.set(data.magazine() + (gunItem.hasBulletInBarrel(stack) ? 1 : 0));
-        } else {
-            var ammoTypeInfo = data.ammoTypeInfo();
-
-            if (ammoTypeInfo.type() == GunData.AmmoConsumeType.PLAYER_AMMO) {
-                data.reloadAmmo(shooter, gunItem.hasBulletInBarrel(stack));
-            }
+        } else if (data.selectedAmmoConsumer().type == AmmoConsumer.AmmoConsumeType.PLAYER_AMMO) {
+            data.reloadAmmo(shooter, gunItem.hasBulletInBarrel(stack));
         }
         data.reload.setState(ReloadState.NOT_RELOADING);
         MinecraftForge.EVENT_BUS.post(new ReloadEvent.Post(shooter, data));
@@ -441,8 +438,8 @@ public class GunEventHandler {
                         ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, shooter)).getBlockPos())));
 
                 Mod.queueServerWork((int) (data.defaultPrepareEmptyTime() / 2.0 + 3 + 1.5 * shooterHeight), () -> {
-                    var ammoType = data.ammoTypeInfo().playerAmmoType();
-                    if (ammoType != null) {
+                    if (data.selectedAmmoConsumer().type == AmmoConsumer.AmmoConsumeType.PLAYER_AMMO) {
+                        var ammoType = data.selectedAmmoConsumer().getPlayerAmmoType();
                         switch (ammoType) {
                             case SHOTGUN ->
                                     SoundTool.playLocalSound(serverPlayer, ModSounds.SHELL_CASING_SHOTGUN.get(), (float) Math.max(0.75 - 0.12 * shooterHeight, 0), 1);
@@ -474,8 +471,8 @@ public class GunEventHandler {
                         ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, shooter)).getBlockPos())));
 
                 Mod.queueServerWork((int) (8 + 1.5 * shooterHeight), () -> {
-                    var ammoType = data.ammoTypeInfo().playerAmmoType();
-                    if (ammoType != null) {
+                    if (data.selectedAmmoConsumer().type == AmmoConsumer.AmmoConsumeType.PLAYER_AMMO) {
+                        var ammoType = data.selectedAmmoConsumer().getPlayerAmmoType();
                         switch (ammoType) {
                             case SHOTGUN ->
                                     SoundTool.playLocalSound(serverPlayer, ModSounds.SHELL_CASING_SHOTGUN.get(), (float) Math.max(0.75 - 0.12 * shooterHeight, 0), 1);
