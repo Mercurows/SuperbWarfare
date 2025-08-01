@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.client.overlay;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.client.ClickHandler;
 import com.atsuishio.superbwarfare.config.client.DisplayConfig;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.entity.vehicle.Ah6Entity;
@@ -63,7 +62,7 @@ public class CrossHairOverlay implements LayeredDraw.Layer {
             return;
         }
 
-        if (ClickHandler.isEditing)
+        if (ClientEventHandler.isEditing)
             return;
         if (!(player.getMainHandItem().getItem() instanceof GunItem) || (player.getVehicle() instanceof ArmedVehicleEntity iArmedVehicle && iArmedVehicle.banHand(player)))
             return;

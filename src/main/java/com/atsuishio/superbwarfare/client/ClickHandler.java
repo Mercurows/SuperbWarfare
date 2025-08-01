@@ -53,7 +53,6 @@ import static com.atsuishio.superbwarfare.event.ClientEventHandler.*;
 
 @EventBusSubscriber(bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
 public class ClickHandler {
-    public static boolean isEditing = false;
     public static boolean switchZoom = false;
 
     private static boolean notInGame() {
@@ -272,7 +271,7 @@ public class ClickHandler {
 
             if (key == ModKeyMappings.RELOAD.getKey().getValue()) {
                 ClientEventHandler.burstFireAmount = 0;
-                ClickHandler.isEditing = false;
+                isEditing = false;
                 PacketDistributor.sendToServer(ReloadMessage.INSTANCE);
             }
             if (key == ModKeyMappings.FIRE_MODE.getKey().getValue()) {
@@ -290,14 +289,14 @@ public class ClickHandler {
                 handleDismountPress(player);
             }
             if (key == ModKeyMappings.EDIT_MODE.getKey().getValue()) {
-                if (ClientEventHandler.burstFireAmount == 0 && stack.getItem() instanceof GunItem gunItem && gunItem.isCustomizable(stack)) {
-                    ClientEventHandler.holdFire = false;
+//                if (ClientEventHandler.burstFireAmount == 0 && stack.getItem() instanceof GunItem gunItem && gunItem.isCustomizable(stack)) {
+//                    ClientEventHandler.holdFire = false;
 
-                    if (!isEditing) {
-                        player.playSound(ModSounds.EDIT_MODE.get(), 1, 1);
-                    }
-                    isEditing = !isEditing;
-                }
+//                    if (!isEditing) {
+//                        player.playSound(ModSounds.EDIT_MODE.get(), 1, 1);
+//                    }
+//                    isEditing = !isEditing;
+//                }
                 if (stack.getItem() instanceof ItemScreenProvider provider) {
                     var screen = provider.getItemScreen(stack, player, InteractionHand.MAIN_HAND);
                     if (screen != null) {
@@ -511,7 +510,7 @@ public class ClickHandler {
     public static void handleWeaponZoomPress(Player player, ItemStack stack) {
         PacketDistributor.sendToServer(new ZoomMessage(0));
 
-        ClickHandler.isEditing = false;
+        isEditing = false;
 
         if (player.getVehicle() instanceof VehicleEntity pVehicle && player.getVehicle() instanceof WeaponVehicleEntity iVehicle && iVehicle.hasWeapon(pVehicle.getSeatIndex(player)) && iVehicle.banHand(player)) {
             ClientEventHandler.zoomVehicle = true;

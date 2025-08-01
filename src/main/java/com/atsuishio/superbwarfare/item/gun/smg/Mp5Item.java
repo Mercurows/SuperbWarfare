@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.item.gun.smg;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.client.ClickHandler;
 import com.atsuishio.superbwarfare.client.renderer.gun.Mp5ItemRenderer;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
@@ -83,7 +82,7 @@ public class Mp5Item extends GunItem {
         if (event.getData(DataTickets.ITEM_RENDER_PERSPECTIVE) != ItemDisplayContext.FIRST_PERSON_RIGHT_HAND)
             return event.setAndContinue(RawAnimation.begin().thenLoop("animation.mp5.idle"));
 
-        if (ClickHandler.isEditing) {
+        if (ClientEventHandler.isEditing) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.mp5.edit"));
         }
 

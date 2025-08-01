@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.client.overlay;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.client.ClickHandler;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.CannonEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
@@ -34,7 +33,7 @@ public class GrenadeLauncherOverlay implements LayeredDraw.Layer {
         Player player = Minecraft.getInstance().player;
         if (player == null) return;
 
-        if (ClickHandler.isEditing)
+        if (ClientEventHandler.isEditing)
             return;
         if (player.getVehicle() instanceof ArmedVehicleEntity iArmedVehicle && iArmedVehicle.banHand(player))
             return;
