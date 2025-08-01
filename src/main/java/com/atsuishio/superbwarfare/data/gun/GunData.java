@@ -66,7 +66,14 @@ public class GunData {
         data = getOrPut("GunData");
         perkTag = getOrPut("Perks");
         attachmentTag = getOrPut("Attachments");
-        ammoConsumers = getDefault().ammoConsumers.list.stream().map(c -> c.value).toList();
+        ammoConsumers = getDefault().ammoConsumers.list.stream()
+                .map(c -> {
+                    if (!c.value.initialized()) {
+                        c.value.init();
+                    }
+                    return c.value;
+                })
+                .toList();
 
         // 可持久化属性
         reload = new Reload(this);
@@ -446,6 +453,10 @@ public class GunData {
             return AmmoConsumer.INVALID;
         }
         return this.ammoConsumers.get(Mth.clamp(this.selectedAmmoType.get(), 0, this.ammoConsumers.size() - 1));
+    }
+
+    public void changeAmmoConsumer(int index) {
+        this.selectedAmmoType.set(Mth.clamp(index, 0, this.ammoConsumers.size() - 1));
     }
 
     // 开火相关流程开始
