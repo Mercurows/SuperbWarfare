@@ -71,8 +71,4 @@ public class InsidiousItem extends GunItem {
         return Mod.loc("textures/gun_icon/insidious_icon.png");
     }
 
-    @Override
-    public String getGunDisplayName() {
-        return "INSIDIOUS";
-    }
 }

@@ -138,11 +138,6 @@ public class Ntw20Item extends GunItem {
     }
 
     @Override
-    public String getGunDisplayName() {
-        return "NTW-20";
-    }
-
-    @Override
     public boolean isOpenBolt(ItemStack stack) {
         return true;
     }

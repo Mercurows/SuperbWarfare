@@ -177,18 +177,8 @@ public class JavelinItem extends GunItem {
     }
 
     @Override
-    public String getGunDisplayName() {
-        return "FGM-148";
-    }
-
-    @Override
     public @NotNull Optional<TooltipComponent> getTooltipImage(@NotNull ItemStack pStack) {
         return Optional.of(new LauncherImageComponent(pStack));
-    }
-
-    @Override
-    public String getAmmoDisplayName(GunData data, ItemStack stack) {
-        return "Javelin Missile";
     }
 
     private void fire(Player player) {

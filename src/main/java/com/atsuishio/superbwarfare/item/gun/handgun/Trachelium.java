@@ -289,11 +289,6 @@ public class Trachelium extends GunItem {
     }
 
     @Override
-    public String getGunDisplayName() {
-        return "TRACHELIUM";
-    }
-
-    @Override
     public boolean isCustomizable(ItemStack stack) {
         return true;
     }

@@ -45,7 +45,6 @@ public class RpgItem extends GunItem {
         super(new Properties().stacksTo(1).rarity(Rarity.RARE));
     }
 
-    @Override
     public String getAmmoDisplayName(GunData data, ItemStack stack) {
         int i = GunData.from(stack).attachment.get(AttachmentType.BARREL);
         if (i == 0) {
@@ -89,8 +88,6 @@ public class RpgItem extends GunItem {
 
         return event.setAndContinue(RawAnimation.begin().thenLoop("animation.rpg.idle"));
     }
-
-
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar data) {
@@ -137,11 +134,6 @@ public class RpgItem extends GunItem {
             return Mod.loc("textures/gun_icon/rpg_tbg_icon.png");
         }
         return Mod.loc("textures/gun_icon/rpg_standard_icon.png");
-    }
-
-    @Override
-    public String getGunDisplayName() {
-        return "RPG-7";
     }
 
     @Override

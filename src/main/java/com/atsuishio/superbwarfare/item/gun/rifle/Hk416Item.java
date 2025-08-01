@@ -158,11 +158,6 @@ public class Hk416Item extends GunItem {
     }
 
     @Override
-    public String getGunDisplayName() {
-        return "HK-416";
-    }
-
-    @Override
     public boolean isOpenBolt(ItemStack stack) {
         return true;
     }

@@ -164,11 +164,6 @@ public class M4Item extends GunItem {
     }
 
     @Override
-    public String getGunDisplayName() {
-        return "M4A1";
-    }
-
-    @Override
     public boolean isOpenBolt(ItemStack stack) {
         return true;
     }

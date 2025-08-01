@@ -160,11 +160,6 @@ public class Mk14Item extends GunItem {
     }
 
     @Override
-    public String getGunDisplayName() {
-        return "MK-14";
-    }
-
-    @Override
     public boolean isOpenBolt(ItemStack stack) {
         return true;
     }

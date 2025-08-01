@@ -145,11 +145,6 @@ public class VectorItem extends GunItem {
     }
 
     @Override
-    public String getGunDisplayName() {
-        return "VECTOR";
-    }
-
-    @Override
     public boolean isOpenBolt(ItemStack stack) {
         return true;
     }

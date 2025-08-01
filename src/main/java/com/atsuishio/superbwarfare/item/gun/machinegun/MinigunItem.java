@@ -79,9 +79,4 @@ public class MinigunItem extends GunItem {
     public ResourceLocation getGunIcon(ItemStack stack) {
         return Mod.loc("textures/gun_icon/minigun_icon.png");
     }
-
-    @Override
-    public String getGunDisplayName() {
-        return "M134 MINIGUN";
-    }
 }

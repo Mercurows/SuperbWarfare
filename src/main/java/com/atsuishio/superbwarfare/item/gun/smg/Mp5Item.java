@@ -144,11 +144,6 @@ public class Mp5Item extends GunItem {
     }
 
     @Override
-    public String getGunDisplayName() {
-        return "MP5-A5";
-    }
-
-    @Override
     public boolean isOpenBolt(ItemStack stack) {
         return true;
     }

@@ -131,11 +131,6 @@ public class AureliaSceptre extends GunItem {
     }
 
     @Override
-    public String getGunDisplayName() {
-        return "AURELIA SCEPTRE";
-    }
-
-    @Override
     public void addReloadTimeBehavior(Map<Integer, Consumer<GunData>> behaviors) {
         super.addReloadTimeBehavior(behaviors);
     }

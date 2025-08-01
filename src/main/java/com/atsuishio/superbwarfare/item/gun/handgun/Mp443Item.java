@@ -95,11 +95,6 @@ public class Mp443Item extends GunItem {
     }
 
     @Override
-    public String getGunDisplayName() {
-        return "MP-443";
-    }
-
-    @Override
     public boolean isOpenBolt(ItemStack stack) {
         return true;
     }

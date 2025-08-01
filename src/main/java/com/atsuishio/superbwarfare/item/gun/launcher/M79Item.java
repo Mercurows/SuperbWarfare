@@ -85,18 +85,8 @@ public class M79Item extends GunItem {
     }
 
     @Override
-    public String getGunDisplayName() {
-        return "M79 LAUNCHER";
-    }
-
-    @Override
     public @NotNull Optional<TooltipComponent> getTooltipImage(@NotNull ItemStack pStack) {
         return Optional.of(new LauncherImageComponent(pStack));
-    }
-
-    @Override
-    public String getAmmoDisplayName(GunData data, ItemStack stack) {
-        return "40mm Grenade";
     }
 
     @Override

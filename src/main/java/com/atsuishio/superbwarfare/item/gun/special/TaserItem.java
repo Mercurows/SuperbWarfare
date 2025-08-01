@@ -137,18 +137,8 @@ public class TaserItem extends GunItem implements EnergyStorageItem {
     }
 
     @Override
-    public String getGunDisplayName() {
-        return "TASER";
-    }
-
-    @Override
     public @NotNull Optional<TooltipComponent> getTooltipImage(@NotNull ItemStack pStack) {
         return Optional.of(new EnergyImageComponent(pStack));
-    }
-
-    @Override
-    public String getAmmoDisplayName(GunData data, ItemStack stack) {
-        return "Electrode Rod";
     }
 
     @Override

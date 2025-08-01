@@ -158,11 +158,6 @@ public class SentinelItem extends GunItem implements EnergyStorageItem {
     }
 
     @Override
-    public String getGunDisplayName() {
-        return "SENTINEL";
-    }
-
-    @Override
     public @NotNull Optional<TooltipComponent> getTooltipImage(@NotNull ItemStack pStack) {
         return Optional.of(new SentinelImageComponent(pStack));
     }

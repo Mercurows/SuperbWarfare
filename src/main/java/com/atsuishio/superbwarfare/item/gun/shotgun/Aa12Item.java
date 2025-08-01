@@ -77,11 +77,6 @@ public class Aa12Item extends GunItem {
     }
 
     @Override
-    public String getGunDisplayName() {
-        return "AA-12";
-    }
-
-    @Override
     public boolean isOpenBolt(ItemStack stack) {
         return true;
     }

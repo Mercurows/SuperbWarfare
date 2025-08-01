@@ -76,11 +76,6 @@ public class DevotionItem extends GunItem {
     }
 
     @Override
-    public String getGunDisplayName() {
-        return "Devotion";
-    }
-
-    @Override
     public boolean isOpenBolt(ItemStack stack) {
         return true;
     }

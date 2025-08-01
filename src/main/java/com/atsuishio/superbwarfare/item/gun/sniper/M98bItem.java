@@ -116,11 +116,6 @@ public class M98bItem extends GunItem {
     }
 
     @Override
-    public String getGunDisplayName() {
-        return "M98-B";
-    }
-
-    @Override
     @ParametersAreNonnullByDefault
     public void inventoryTick(ItemStack stack, Level world, Entity entity, int slot, boolean selected) {
         super.inventoryTick(stack, world, entity, slot, selected);

@@ -130,11 +130,6 @@ public class M2HBItem extends GunItem {
     }
 
     @Override
-    public String getGunDisplayName() {
-        return "M2HB";
-    }
-
-    @Override
     public boolean isOpenBolt(ItemStack stack) {
         return true;
     }
