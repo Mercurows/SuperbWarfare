@@ -103,11 +103,11 @@ public class RpgRocketTBG extends Item implements GeoItem, ProjectileItem {
     public boolean hurtEnemy(@NotNull ItemStack stack, LivingEntity entity, @NotNull LivingEntity source) {
         if (entity.level() instanceof ServerLevel level && Math.random() < 0.25) {
 
-            level.explode(source, source.getX(), source.getY() + 1, source.getZ(), 6, Level.ExplosionInteraction.NONE);
-            level.explode(null, source.getX(), source.getY() + 1, source.getZ(), 6, Level.ExplosionInteraction.NONE);
+            level.explode(source, source.getX(), source.getY() + 1, source.getZ(), 10, Level.ExplosionInteraction.NONE);
+            level.explode(null, source.getX(), source.getY() + 1, source.getZ(), 10, Level.ExplosionInteraction.NONE);
 
             if (!source.level().isClientSide() && source.getServer() != null) {
-                ParticleTool.spawnMediumExplosionParticles(source.level(), source.getPosition(0));
+                ParticleTool.spawnHugeExplosionParticles(source.level(), source.getPosition(0));
             }
 
             if (source instanceof ServerPlayer player) {
@@ -137,7 +137,7 @@ public class RpgRocketTBG extends Item implements GeoItem, ProjectileItem {
     @Override
     @ParametersAreNonnullByDefault
     public @NotNull Projectile asProjectile(Level level, Position pos, ItemStack stack, Direction direction) {
-        return new RpgRocketEntity(ModEntities.RPG_ROCKET.get(), pos.x(), pos.y(), pos.z(), level);
+        return new RpgRocketEntity(ModEntities.RPG_ROCKET.get(), pos.x(), pos.y(), pos.z(), level, 270, 130, 10, 0.03f);
     }
 
     @Override
