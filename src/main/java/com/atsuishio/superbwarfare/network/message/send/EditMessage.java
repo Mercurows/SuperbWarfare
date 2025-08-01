@@ -36,52 +36,52 @@ public record EditMessage(int msgType, boolean add) implements CustomPacketPaylo
         if (player == null) return;
 
         ItemStack stack = player.getMainHandItem();
-        if (!(stack.getItem() instanceof GunItem)) return;
+        if (!(stack.getItem() instanceof GunItem gunItem)) return;
         var data = GunData.from(stack);
 
         switch (message.msgType) {
             case 0 -> {
                 int att = data.attachment.get(AttachmentType.BARREL);
                 if (message.add) {
-                    att = (att + 1) % 3;
+                    att = (att + 1) % gunItem.getBarrelCount();
                 } else {
-                    att = (att + 3 - 1) % 3;
+                    att = (att + gunItem.getBarrelCount() - 1) % gunItem.getBarrelCount();
                 }
                 data.attachment.set(AttachmentType.BARREL, att);
             }
             case 1 -> {
                 int att = data.attachment.get(AttachmentType.SCOPE);
                 if (message.add) {
-                    att = (att + 1) % 4;
+                    att = (att + 1) % gunItem.getScopeCount();
                 } else {
-                    att = (att + 4 - 1) % 4;
+                    att = (att + gunItem.getScopeCount() - 1) % gunItem.getScopeCount();
                 }
                 data.attachment.set(AttachmentType.SCOPE, att);
-            }
-            case 3 -> {
-                int att = data.attachment.get(AttachmentType.STOCK);
-                if (message.add) {
-                    att = (att + 1) % 3;
-                } else {
-                    att = (att + 3 - 1) % 3;
-                }
-                data.attachment.set(AttachmentType.STOCK, att);
             }
             case 2 -> {
                 int att = data.attachment.get(AttachmentType.GRIP);
                 if (message.add) {
-                    att = (att + 1) % 4;
+                    att = (att + 1) % gunItem.getGripCount();
                 } else {
-                    att = (att + 4 - 1) % 4;
+                    att = (att + gunItem.getGripCount() - 1) % gunItem.getGripCount();
                 }
                 data.attachment.set(AttachmentType.GRIP, att);
+            }
+            case 3 -> {
+                int att = data.attachment.get(AttachmentType.STOCK);
+                if (message.add) {
+                    att = (att + 1) % gunItem.getStockCount();
+                } else {
+                    att = (att + gunItem.getStockCount() - 1) % gunItem.getStockCount();
+                }
+                data.attachment.set(AttachmentType.STOCK, att);
             }
             case 4 -> {
                 int att = data.attachment.get(AttachmentType.MAGAZINE);
                 if (message.add) {
-                    att = (att + 1) % 3;
+                    att = (att + 1) % gunItem.getMagazineCount();
                 } else {
-                    att = (att + 3 - 1) % 3;
+                    att = (att + gunItem.getMagazineCount() - 1) % gunItem.getMagazineCount();
                 }
                 data.withdrawAmmo(player);
                 data.attachment.set(AttachmentType.MAGAZINE, att);
