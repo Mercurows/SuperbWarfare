@@ -224,6 +224,10 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
         return false;
     }
 
+    public int getBarrelCount() {
+        return 3;
+    }
+
     /**
      * 武器是否能更换枪托配件
      *
@@ -231,6 +235,10 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
      */
     public boolean hasCustomGrip(ItemStack stack) {
         return false;
+    }
+
+    public int getGripCount() {
+        return 4;
     }
 
     /**
@@ -242,6 +250,10 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
         return false;
     }
 
+    public int getMagazineCount() {
+        return 3;
+    }
+
     /**
      * 武器是否能更换瞄具配件
      *
@@ -251,6 +263,10 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
         return false;
     }
 
+    public int getScopeCount() {
+        return 4;
+    }
+
     /**
      * 武器是否能更换枪托配件
      *
@@ -258,6 +274,10 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
      */
     public boolean hasCustomStock(ItemStack stack) {
         return false;
+    }
+
+    public int getStockCount() {
+        return 3;
     }
 
     /**
