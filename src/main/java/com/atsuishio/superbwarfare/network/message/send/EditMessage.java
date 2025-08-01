@@ -7,7 +7,6 @@ import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.tools.SoundTool;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -72,9 +71,6 @@ public record EditMessage(int msgType, boolean add) implements CustomPacketPaylo
                 var diff = message.add ? 1 : -1;
                 var selectedAmmoType = data.selectedAmmoType.get() + diff;
                 data.changeAmmoConsumer(selectedAmmoType);
-
-                // TODO 修改显示
-                player.displayClientMessage(Component.literal("selected index: " + selectedAmmoType), true);
                 SoundTool.playLocalSound(player, ModSounds.EDIT.get(), 1f, 1f);
             }
         }
