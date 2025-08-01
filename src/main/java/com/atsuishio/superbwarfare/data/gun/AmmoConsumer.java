@@ -99,7 +99,6 @@ public class AmmoConsumer implements DeserializeFromString {
      */
     public int count(@Nullable Entity entity) {
         if (entity == null) return 0;
-        if (entity instanceof Player player && player.isCreative()) return Integer.MAX_VALUE;
         if (!initialized) init();
 
         if (type == AmmoConsumeType.PLAYER_AMMO && entity instanceof Player player) {
@@ -114,7 +113,6 @@ public class AmmoConsumer implements DeserializeFromString {
      */
     public int count(@Nullable IItemHandler handler) {
         if (handler == null) return 0;
-        if (InventoryTool.hasCreativeAmmoBox(handler)) return Integer.MAX_VALUE;
         if (!initialized) init();
 
         if (type == AmmoConsumeType.ITEM) {
