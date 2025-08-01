@@ -25,12 +25,6 @@ public class ModKeyMappings {
             KeyModifier.ALT, InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_O, "key.categories.superbwarfare");
 
     public static final KeyMapping EDIT_MODE = new KeyMapping("key.superbwarfare.edit_mode", GLFW.GLFW_KEY_H, "key.categories.superbwarfare");
-    public static final KeyMapping EDIT_SCOPE = new KeyMapping("key.superbwarfare.edit_scope", GLFW.GLFW_KEY_UP, "key.categories.superbwarfare");
-    public static final KeyMapping EDIT_BARREL = new KeyMapping("key.superbwarfare.edit_barrel", GLFW.GLFW_KEY_LEFT, "key.categories.superbwarfare");
-    public static final KeyMapping EDIT_MAGAZINE = new KeyMapping("key.superbwarfare.edit_magazine", GLFW.GLFW_KEY_DOWN, "key.categories.superbwarfare");
-    public static final KeyMapping EDIT_STOCK = new KeyMapping("key.superbwarfare.edit_stock", GLFW.GLFW_KEY_RIGHT, "key.categories.superbwarfare");
-    public static final KeyMapping EDIT_GRIP = new KeyMapping("key.superbwarfare.edit_grip", KeyConflictContext.IN_GAME,
-            KeyModifier.SHIFT, InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_DOWN, "key.categories.superbwarfare");
 
     public static final KeyMapping FIRE = new KeyMapping("key.superbwarfare.fire", InputConstants.Type.MOUSE, GLFW.GLFW_MOUSE_BUTTON_LEFT, "key.categories.superbwarfare");
     public static final KeyMapping HOLD_ZOOM = new KeyMapping("key.superbwarfare.hold_zoom", InputConstants.Type.MOUSE, GLFW.GLFW_MOUSE_BUTTON_RIGHT, "key.categories.superbwarfare");
@@ -52,11 +46,6 @@ public class ModKeyMappings {
         event.register(BREATH);
         event.register(CONFIG);
         event.register(EDIT_MODE);
-        event.register(EDIT_SCOPE);
-        event.register(EDIT_BARREL);
-        event.register(EDIT_MAGAZINE);
-        event.register(EDIT_STOCK);
-        event.register(EDIT_GRIP);
         event.register(FIRE);
         event.register(HOLD_ZOOM);
         event.register(SWITCH_ZOOM);

@@ -6,6 +6,8 @@ import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.tools.SoundTool;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.network.NetworkEvent;
 
@@ -59,15 +61,6 @@ public class EditMessage {
                     }
                     data.attachment.set(AttachmentType.SCOPE, att);
                 }
-                case 3 -> {
-                    int att = data.attachment.get(AttachmentType.STOCK);
-                    if (message.add) {
-                        att = (att + 1) % 3;
-                    } else {
-                        att = (att + 3 - 1) % 3;
-                    }
-                    data.attachment.set(AttachmentType.STOCK, att);
-                }
                 case 2 -> {
                     int att = data.attachment.get(AttachmentType.GRIP);
                     if (message.add) {
@@ -76,6 +69,15 @@ public class EditMessage {
                         att = (att + 4 - 1) % 4;
                     }
                     data.attachment.set(AttachmentType.GRIP, att);
+                }
+                case 3 -> {
+                    int att = data.attachment.get(AttachmentType.STOCK);
+                    if (message.add) {
+                        att = (att + 1) % 3;
+                    } else {
+                        att = (att + 3 - 1) % 3;
+                    }
+                    data.attachment.set(AttachmentType.STOCK, att);
                 }
                 case 4 -> {
                     int att = data.attachment.get(AttachmentType.MAGAZINE);
@@ -86,6 +88,16 @@ public class EditMessage {
                     }
                     data.withdrawAmmo(player);
                     data.attachment.set(AttachmentType.MAGAZINE, att);
+                }
+                case 5 -> {
+                    data.withdrawAmmo(player);
+                    var diff = message.add ? 1 : -1;
+                    var selectedAmmoType = Mth.clamp(data.selectedAmmoType.get() + diff, 0, data.ammoConsumers.size() - 1);
+                    data.selectedAmmoType.set(Mth.clamp(selectedAmmoType, 0, AttachmentType.values().length - 1));
+
+                    // TODO 修改显示
+                    player.displayClientMessage(Component.literal("selected index: " + selectedAmmoType), true);
+                    SoundTool.playLocalSound(player, ModSounds.EDIT.get(), 1f, 1f);
                 }
             }
             SoundTool.playLocalSound(player, ModSounds.EDIT.get(), 1f, 1f);

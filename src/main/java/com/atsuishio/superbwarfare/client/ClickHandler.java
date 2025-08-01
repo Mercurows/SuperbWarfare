@@ -315,19 +315,6 @@ public class ClickHandler {
             if (key == ModKeyMappings.BREATH.getKey().getValue() && !exhaustion && zoom) {
                 breath = true;
             }
-
-            if (!isEditing) {
-                // 改弹药类型
-                if (!(stack.getItem() instanceof GunItem)) return;
-
-                var data = GunData.from(stack);
-                if (key == ModKeyMappings.EDIT_SCOPE.getKey().getValue() || key == ModKeyMappings.EDIT_MAGAZINE.getKey().getValue()) {
-                    var diff = key == ModKeyMappings.EDIT_SCOPE.getKey().getValue() ? -1 : 1;
-                    var selectedAmmoType = Mth.clamp(data.selectedAmmoType.get() + diff, 0, data.ammoConsumers.size() - 1);
-
-                    Mod.PACKET_HANDLER.sendToServer(new ChangeAmmoTypeMessage(selectedAmmoType));
-                }
-            }
             if (key == ModKeyMappings.SENSITIVITY_INCREASE.getKey().getValue()) {
                 Mod.PACKET_HANDLER.sendToServer(new SensitivityMessage(true));
             }
