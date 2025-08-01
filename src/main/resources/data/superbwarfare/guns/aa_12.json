@@ -19,7 +19,6 @@
   "DamageReduce": {
     "Type": "Shotgun"
   },
-  "AmmoType": "@ShotgunAmmo",
   "AmmoConsumer": "@ShotgunAmmo",
   "AvailablePerks": [
     "@Ammo",

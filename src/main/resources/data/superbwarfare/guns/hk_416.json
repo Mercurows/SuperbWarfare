@@ -23,7 +23,6 @@
     "Semi",
     "Auto"
   ],
-  "AmmoType": "@RifleAmmo",
   "AmmoConsumer": "@RifleAmmo",
   "AvailablePerks": [
     "@Ammo",

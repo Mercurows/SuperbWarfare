@@ -18,7 +18,6 @@
   "DamageReduce": {
     "Type": "Rifle"
   },
-  "AmmoType": "@SniperAmmo",
   "AmmoConsumer": "@SniperAmmo",
   "AvailablePerks": [
     "@Ammo",

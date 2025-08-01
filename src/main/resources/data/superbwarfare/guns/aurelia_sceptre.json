@@ -23,7 +23,6 @@
     "Type": "Handgun"
   },
   "DefaultFireMode": "Auto",
-  "AmmoType": "@HandgunAmmo",
   "AmmoConsumer": "@HandgunAmmo",
   "AvailablePerks": [
     "@Ammo",

@@ -11,7 +11,6 @@
     "Rate": 0.007,
     "MinDistance": 100
   },
-  "AmmoType": "minecraft:arrow",
   "AmmoConsumer": "minecraft:arrow",
   "AvailablePerks": [
     "@Ammo",
