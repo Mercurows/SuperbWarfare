@@ -72,7 +72,7 @@ public class WeaponEditScreen extends Screen {
 
         pGuiGraphics.fill(this.width - 165, 4, this.width - 4, 110, 0x80000000);
         pGuiGraphics.drawString(this.font, this.stack.getHoverName(), this.width - 161, 6, 0xFFFFFF, false);
-        pGuiGraphics.fill(this.width - 160, 16, Math.min(this.width + this.font.width(this.stack.getHoverName()) - 159, this.width - 6), 17, 0xFFFFFFFF);
+        pGuiGraphics.fill(this.width - 163, 16, Math.min(this.width + this.font.width(this.stack.getHoverName()) - 159, this.width - 6), 17, 0xFFFFFFFF);
 
         int posX1 = this.width - 163;
         int posX2 = this.width - 85;
@@ -115,6 +115,15 @@ public class WeaponEditScreen extends Screen {
         RenderHelper.preciseBlit(pGuiGraphics, AMMO_TYPE, posX2, posY3, 0, 0, 24, 24, 24, 24);
         if (data.ammoConsumers.size() <= 1) {
             RenderHelper.preciseBlit(pGuiGraphics, INVALID, posX2, posY3, 0, 0, 24, 24, 24, 24);
+        } else {
+            int size = data.ammoConsumers.size();
+            float tempPos = size % 2 == 0 ? this.width - size / 2 * 6 - 33.5f : this.width - size / 2 * 6 - 4 - 33.5f;
+            for (int i = 0; i < size; i++) {
+                RenderHelper.preciseBlit(pGuiGraphics,
+                        i == data.selectedAmmoType.get() ? CHOSEN : NOT_CHOSEN,
+                        tempPos + 6 * i, posY3, 0, 0,
+                        4, 4, 4, 4);
+            }
         }
 
         RenderSystem.depthMask(true);
