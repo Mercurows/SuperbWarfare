@@ -152,10 +152,6 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
         return Mod.loc("textures/gun_icon/default_icon.png");
     }
 
-    public String getGunDisplayName() {
-        return "";
-    }
-
     @Override
     public boolean isFoil(@NotNull ItemStack stack) {
         return false;
@@ -399,17 +395,6 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
      */
     public boolean canSwitchScope(ItemStack stack) {
         return false;
-    }
-
-    /**
-     * 右下角弹药显示名称
-     */
-    public String getAmmoDisplayName(GunData data, ItemStack stack) {
-        var type = data.ammoTypeInfo().playerAmmoType();
-        if (type != null) {
-            return type.displayName;
-        }
-        return "";
     }
 
     public final Map<Integer, Consumer<GunData>> reloadTimeBehaviors = new HashMap<>();

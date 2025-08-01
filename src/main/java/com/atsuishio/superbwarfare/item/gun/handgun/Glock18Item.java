@@ -101,11 +101,6 @@ public class Glock18Item extends GunItem {
     }
 
     @Override
-    public String getGunDisplayName() {
-        return "GLOCK-18";
-    }
-
-    @Override
     public boolean isOpenBolt(ItemStack stack) {
         return true;
     }

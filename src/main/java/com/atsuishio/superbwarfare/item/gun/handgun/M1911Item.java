@@ -101,11 +101,6 @@ public class M1911Item extends GunItem {
     }
 
     @Override
-    public String getGunDisplayName() {
-        return "M-1911";
-    }
-
-    @Override
     public boolean isOpenBolt(ItemStack stack) {
         return true;
     }

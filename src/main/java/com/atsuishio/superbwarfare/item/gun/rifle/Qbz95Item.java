@@ -174,11 +174,6 @@ public class Qbz95Item extends GunItem {
     }
 
     @Override
-    public String getGunDisplayName() {
-        return "QBZ-95-1";
-    }
-
-    @Override
     public boolean isOpenBolt(ItemStack stack) {
         return true;
     }

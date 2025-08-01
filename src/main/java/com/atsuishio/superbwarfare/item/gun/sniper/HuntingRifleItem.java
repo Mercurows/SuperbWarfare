@@ -75,8 +75,4 @@ public class HuntingRifleItem extends GunItem {
         return Mod.loc("textures/gun_icon/hunting_rifle_icon.png");
     }
 
-    @Override
-    public String getGunDisplayName() {
-        return "Hunting Rifle";
-    }
 }

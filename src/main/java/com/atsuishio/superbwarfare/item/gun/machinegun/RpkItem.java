@@ -164,11 +164,6 @@ public class RpkItem extends GunItem {
     }
 
     @Override
-    public String getGunDisplayName() {
-        return "RPK";
-    }
-
-    @Override
     @ParametersAreNonnullByDefault
     public void inventoryTick(ItemStack stack, Level world, Entity entity, int slot, boolean selected) {
         super.inventoryTick(stack, world, entity, slot, selected);

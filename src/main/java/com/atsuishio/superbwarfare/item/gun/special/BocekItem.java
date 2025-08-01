@@ -142,18 +142,8 @@ public class BocekItem extends GunItem {
     }
 
     @Override
-    public String getGunDisplayName() {
-        return "Bocek";
-    }
-
-    @Override
     public @NotNull Optional<TooltipComponent> getTooltipImage(@NotNull ItemStack pStack) {
         return Optional.of(new BocekImageComponent(pStack));
-    }
-
-    @Override
-    public String getAmmoDisplayName(GunData data, ItemStack stack) {
-        return "Arrow";
     }
 
     @Override

@@ -76,11 +76,6 @@ public class MinigunItem extends GunItem {
         return Mod.loc("textures/gun_icon/minigun_icon.png");
     }
 
-    @Override
-    public String getGunDisplayName() {
-        return "M134 MINIGUN";
-    }
-
     @OnlyIn(Dist.CLIENT)
     public IClientItemExtensions getClientExtensions() {
         return new IClientItemExtensions() {

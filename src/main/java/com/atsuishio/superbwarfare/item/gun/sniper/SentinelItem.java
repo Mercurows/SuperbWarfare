@@ -185,11 +185,6 @@ public class SentinelItem extends GunItem {
     }
 
     @Override
-    public String getGunDisplayName() {
-        return "SENTINEL";
-    }
-
-    @Override
     public @NotNull Optional<TooltipComponent> getTooltipImage(@NotNull ItemStack pStack) {
         return Optional.of(new SentinelImageComponent(pStack));
     }

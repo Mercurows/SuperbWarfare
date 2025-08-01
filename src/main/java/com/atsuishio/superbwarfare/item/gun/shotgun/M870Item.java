@@ -118,8 +118,4 @@ public class M870Item extends GunItem {
         return Mod.loc("textures/gun_icon/m_870_icon.png");
     }
 
-    @Override
-    public String getGunDisplayName() {
-        return "M870 MCS";
-    }
 }

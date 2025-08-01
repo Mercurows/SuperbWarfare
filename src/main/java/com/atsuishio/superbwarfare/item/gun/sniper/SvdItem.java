@@ -127,11 +127,6 @@ public class SvdItem extends GunItem {
     }
 
     @Override
-    public String getGunDisplayName() {
-        return "SVD";
-    }
-
-    @Override
     public boolean isCustomizable(ItemStack stack) {
         return true;
     }

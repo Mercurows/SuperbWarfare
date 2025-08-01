@@ -116,8 +116,4 @@ public class MarlinItem extends GunItem {
         return Mod.loc("textures/gun_icon/marlin_icon.png");
     }
 
-    @Override
-    public String getGunDisplayName() {
-        return "MARLIN-1894";
-    }
 }

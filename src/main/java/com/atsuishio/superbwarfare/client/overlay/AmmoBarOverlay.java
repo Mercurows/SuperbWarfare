@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.client.overlay;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.client.language.ClientLanguageGetter;
 import com.atsuishio.superbwarfare.config.client.DisplayConfig;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
@@ -53,7 +54,6 @@ public class AmmoBarOverlay implements IGuiOverlay {
 
     private static String getBackupAmmoString(GunData data, Player player) {
         if (data.useBackpackAmmo()) return "";
-
         return hasCreativeAmmo() ? "∞" : data.countBackupAmmo(player) - data.virtualAmmo.get() + "";
     }
 
@@ -137,7 +137,7 @@ public class AmmoBarOverlay implements IGuiOverlay {
                         8);
             }
 
-            if (stack.getItem() != ModItems.MINIGUN.get() && stack.getItem() != ModItems.TRACHELIUM.get()) {
+            if (stack.getItem() != ModItems.MINIGUN.get()) {
                 guiGraphics.blit(LINE,
                         x - 95,
                         y - 16,
@@ -183,7 +183,7 @@ public class AmmoBarOverlay implements IGuiOverlay {
                     Minecraft.getInstance().font,
                     getGunAmmoString(data, player),
                     x / 1.5f - 64 / 1.5f,
-                    y / 1.5f - 48 / 1.5f,
+                    (y + 5) / 1.5f - 48 / 1.5f,
                     0xFFFFFF,
                     true
             );
@@ -195,7 +195,7 @@ public class AmmoBarOverlay implements IGuiOverlay {
                         Minecraft.getInstance().font,
                         "+" + data.virtualAmmo.get(),
                         x - 64,
-                        y - 26,
+                        y - 21,
                         0x55FFFF,
                         true
                 );
@@ -206,7 +206,7 @@ public class AmmoBarOverlay implements IGuiOverlay {
                     Minecraft.getInstance().font,
                     getBackupAmmoString(data, player),
                     x - 64,
-                    y - 35,
+                    y - 30,
                     0xCCCCCC,
                     true
             );
@@ -215,7 +215,7 @@ public class AmmoBarOverlay implements IGuiOverlay {
             poseStack.scale(0.9f, 0.9f, 1f);
 
             // 渲染物品名称
-            String gunName = gunItem.getGunDisplayName();
+            String gunName = getGunDisplayName(stack);
             guiGraphics.drawString(
                     Minecraft.getInstance().font,
                     gunName,
@@ -226,7 +226,8 @@ public class AmmoBarOverlay implements IGuiOverlay {
             );
 
             // 渲染弹药类型
-            String ammoName = gunItem.getAmmoDisplayName(data, data.stack);
+            var ammoName = getAmmoDisplayName(data, data.selectedAmmoConsumer().stack());
+
             guiGraphics.drawString(
                     Minecraft.getInstance().font,
                     ammoName,
@@ -237,6 +238,25 @@ public class AmmoBarOverlay implements IGuiOverlay {
             );
 
             poseStack.popPose();
+        }
+    }
+
+    private static String getGunDisplayName(ItemStack stack) {
+        if (!stack.isEmpty()) {
+            return ClientLanguageGetter.EN_US.getOrDefault(stack.getDescriptionId());
+        } else {
+            return "";
+        }
+    }
+
+    private static String getAmmoDisplayName(GunData data, ItemStack stack) {
+        var type = data.ammoTypeInfo().playerAmmoType();
+        if (type != null) {
+            return type.displayName;
+        } else if (!stack.isEmpty()) {
+            return ClientLanguageGetter.EN_US.getOrDefault(stack.getDescriptionId());
+        } else {
+            return "";
         }
     }
 }

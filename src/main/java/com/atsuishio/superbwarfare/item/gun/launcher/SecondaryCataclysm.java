@@ -231,18 +231,8 @@ public class SecondaryCataclysm extends GunItem {
     }
 
     @Override
-    public String getGunDisplayName() {
-        return "SECONDARY CATACLYSM";
-    }
-
-    @Override
     public @NotNull Optional<TooltipComponent> getTooltipImage(@NotNull ItemStack pStack) {
         return Optional.of(new SecondaryCataclysmImageComponent(pStack));
-    }
-
-    @Override
-    public String getAmmoDisplayName(GunData data, ItemStack stack) {
-        return "40mm Grenade";
     }
 
     // TODO 这玩意能提取吗

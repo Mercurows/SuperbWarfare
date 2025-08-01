@@ -125,8 +125,4 @@ public class MosinNagantItem extends GunItem {
         return Mod.loc("textures/gun_icon/mosin_nagant_icon.png");
     }
 
-    @Override
-    public String getGunDisplayName() {
-        return "MOSIN NAGANT";
-    }
 }

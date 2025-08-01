@@ -126,8 +126,4 @@ public class K98Item extends GunItem {
         return Mod.loc("textures/gun_icon/k_98_icon.png");
     }
 
-    @Override
-    public String getGunDisplayName() {
-        return "KAR-98K";
-    }
 }

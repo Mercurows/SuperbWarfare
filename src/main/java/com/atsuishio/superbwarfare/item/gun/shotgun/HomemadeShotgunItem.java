@@ -89,11 +89,6 @@ public class HomemadeShotgunItem extends GunItem {
     }
 
     @Override
-    public String getGunDisplayName() {
-        return "Homemade Shotgun";
-    }
-
-    @Override
     public boolean isOpenBolt(ItemStack stack) {
         return true;
     }
