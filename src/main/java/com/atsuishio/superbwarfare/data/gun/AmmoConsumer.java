@@ -46,6 +46,10 @@ public class AmmoConsumer implements DeserializeFromString {
         return this.stack;
     }
 
+    public boolean initialized() {
+        return this.initialized;
+    }
+
     public enum AmmoConsumeType {
         PLAYER_AMMO, ITEM, INVALID,
     }
@@ -178,7 +182,7 @@ public class AmmoConsumer implements DeserializeFromString {
 
     private static final Pattern AMMO_PATTERN = Pattern.compile("^(?<count>(\\d+ )?)(?<prefix>[@#]?)(?<id>\\w+(:\\w+)?)(?<data>(\\{.*})?)$");
 
-    private void init() {
+    public void init() {
         this.type = AmmoConsumeType.INVALID;
         if (value == null) {
             Mod.LOGGER.warn("ammo value should not be null!");

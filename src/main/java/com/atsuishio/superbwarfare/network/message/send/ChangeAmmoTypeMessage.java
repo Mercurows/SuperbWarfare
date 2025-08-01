@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.network.message.send;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.data.gun.GunData;
-import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.tools.SoundTool;
@@ -11,7 +10,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
@@ -34,7 +32,7 @@ public record ChangeAmmoTypeMessage(int index) implements CustomPacketPayload {
 
         var data = GunData.from(stack);
         data.withdrawAmmo(player);
-        data.selectedAmmoType.set(Mth.clamp(message.index, 0, AttachmentType.values().length - 1));
+        data.changeAmmoConsumer(message.index);
         data.save();
 
         player.displayClientMessage(Component.literal("selected index: " + message.index), true);
