@@ -1,7 +1,6 @@
 {
   "attributes": {
     "attack_range": 3.0,
-    "category": "rainy_butterfly",
     "attacks": [
       {
         "hitbox": "FORWARD_BOX",
