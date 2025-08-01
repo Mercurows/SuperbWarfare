@@ -56,7 +56,6 @@ public class NetworkRegistry {
         playToServer(ArtilleryIndicatorFireMessage.TYPE, ArtilleryIndicatorFireMessage.STREAM_CODEC, (message, context) -> ArtilleryIndicatorFireMessage.handler(context));
         playToServer(SensitivityMessage.TYPE, SensitivityMessage.STREAM_CODEC, SensitivityMessage::handler);
         playToServer(EditMessage.TYPE, EditMessage.STREAM_CODEC, EditMessage::handler);
-        playToServer(ChangeAmmoTypeMessage.TYPE, ChangeAmmoTypeMessage.STREAM_CODEC, ChangeAmmoTypeMessage::handler);
         playToServer(InteractMessage.TYPE, InteractMessage.STREAM_CODEC, (interactMessage, context) -> InteractMessage.handler(context));
         playToServer(AdjustMortarAngleMessage.TYPE, AdjustMortarAngleMessage.STREAM_CODEC, AdjustMortarAngleMessage::handler);
         playToServer(ChangeVehicleSeatMessage.TYPE, ChangeVehicleSeatMessage.STREAM_CODEC, ChangeVehicleSeatMessage::handler);

@@ -7,15 +7,17 @@ import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.tools.SoundTool;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.NotNull;
 
-public record EditMessage(int msgType,boolean add) implements CustomPacketPayload {
+public record EditMessage(int msgType, boolean add) implements CustomPacketPayload {
     public static final Type<EditMessage> TYPE = new Type<>(Mod.loc("edit"));
 
     public static final StreamCodec<ByteBuf, EditMessage> STREAM_CODEC = StreamCodec.composite(
@@ -83,6 +85,16 @@ public record EditMessage(int msgType,boolean add) implements CustomPacketPayloa
                 }
                 data.withdrawAmmo(player);
                 data.attachment.set(AttachmentType.MAGAZINE, att);
+            }
+            case 5 -> {
+                data.withdrawAmmo(player);
+                var diff = message.add ? 1 : -1;
+                var selectedAmmoType = Mth.clamp(data.selectedAmmoType.get() + diff, 0, data.ammoConsumers.size() - 1);
+                data.selectedAmmoType.set(Mth.clamp(selectedAmmoType, 0, AttachmentType.values().length - 1));
+
+                // TODO 修改显示
+                player.displayClientMessage(Component.literal("selected index: " + selectedAmmoType), true);
+                SoundTool.playLocalSound(player, ModSounds.EDIT.get(), 1f, 1f);
             }
         }
         data.save();
