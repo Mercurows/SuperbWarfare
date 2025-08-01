@@ -17,6 +17,8 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
+
 public record EditMessage(int msgType, boolean add) implements CustomPacketPayload {
     public static final Type<EditMessage> TYPE = new Type<>(Mod.loc("edit"));
 
@@ -42,47 +44,27 @@ public record EditMessage(int msgType, boolean add) implements CustomPacketPaylo
         switch (message.msgType) {
             case 0 -> {
                 int att = data.attachment.get(AttachmentType.BARREL);
-                if (message.add) {
-                    att = (att + 1) % gunItem.getBarrelCount();
-                } else {
-                    att = (att + gunItem.getBarrelCount() - 1) % gunItem.getBarrelCount();
-                }
+                att = setAttachment(gunItem.getValidBarrels(), att, message.add);
                 data.attachment.set(AttachmentType.BARREL, att);
             }
             case 1 -> {
                 int att = data.attachment.get(AttachmentType.SCOPE);
-                if (message.add) {
-                    att = (att + 1) % gunItem.getScopeCount();
-                } else {
-                    att = (att + gunItem.getScopeCount() - 1) % gunItem.getScopeCount();
-                }
+                att = setAttachment(gunItem.getValidScopes(), att, message.add);
                 data.attachment.set(AttachmentType.SCOPE, att);
             }
             case 2 -> {
                 int att = data.attachment.get(AttachmentType.GRIP);
-                if (message.add) {
-                    att = (att + 1) % gunItem.getGripCount();
-                } else {
-                    att = (att + gunItem.getGripCount() - 1) % gunItem.getGripCount();
-                }
+                att = setAttachment(gunItem.getValidGrips(), att, message.add);
                 data.attachment.set(AttachmentType.GRIP, att);
             }
             case 3 -> {
                 int att = data.attachment.get(AttachmentType.STOCK);
-                if (message.add) {
-                    att = (att + 1) % gunItem.getStockCount();
-                } else {
-                    att = (att + gunItem.getStockCount() - 1) % gunItem.getStockCount();
-                }
+                att = setAttachment(gunItem.getValidStocks(), att, message.add);
                 data.attachment.set(AttachmentType.STOCK, att);
             }
             case 4 -> {
                 int att = data.attachment.get(AttachmentType.MAGAZINE);
-                if (message.add) {
-                    att = (att + 1) % gunItem.getMagazineCount();
-                } else {
-                    att = (att + gunItem.getMagazineCount() - 1) % gunItem.getMagazineCount();
-                }
+                att = setAttachment(gunItem.getValidMagazines(), att, message.add);
                 data.withdrawAmmo(player);
                 data.attachment.set(AttachmentType.MAGAZINE, att);
             }
@@ -104,6 +86,17 @@ public record EditMessage(int msgType, boolean add) implements CustomPacketPaylo
     @Override
     public @NotNull Type<? extends CustomPacketPayload> type() {
         return TYPE;
+    }
+
+    private static int setAttachment(int[] arr, int value, boolean add) {
+        if (arr.length == 0) return 0;
+        int[] sorted = Arrays.copyOf(arr, arr.length);
+        Arrays.sort(sorted);
+        int index = Arrays.binarySearch(sorted, value);
+        if (index < 0) index = -index - 1;
+        if (add) index = (index + 1) % arr.length;
+        else index = (index + arr.length - 1) % arr.length;
+        return sorted[index];
     }
 }
 

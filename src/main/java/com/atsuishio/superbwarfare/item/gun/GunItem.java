@@ -223,8 +223,8 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
         return false;
     }
 
-    public int getBarrelCount() {
-        return 3;
+    public int[] getValidBarrels() {
+        return new int[]{0, 1, 2};
     }
 
     /**
@@ -236,8 +236,8 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
         return false;
     }
 
-    public int getGripCount() {
-        return 4;
+    public int[] getValidGrips() {
+        return new int[]{0, 1, 2, 3};
     }
 
     /**
@@ -249,8 +249,8 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
         return false;
     }
 
-    public int getMagazineCount() {
-        return 3;
+    public int[] getValidMagazines() {
+        return new int[]{0, 1, 2};
     }
 
     /**
@@ -262,8 +262,8 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
         return false;
     }
 
-    public int getScopeCount() {
-        return 4;
+    public int[] getValidScopes() {
+        return new int[]{0, 1, 2, 3};
     }
 
     /**
@@ -275,8 +275,8 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
         return false;
     }
 
-    public int getStockCount() {
-        return 3;
+    public int[] getValidStocks() {
+        return new int[]{0, 1, 2};
     }
 
     /**

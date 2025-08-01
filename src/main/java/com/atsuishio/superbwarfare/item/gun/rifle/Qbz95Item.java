@@ -202,6 +202,11 @@ public class Qbz95Item extends GunItem {
     }
 
     @Override
+    public int[] getValidMagazines() {
+        return new int[]{0, 2};
+    }
+
+    @Override
     public boolean hasCustomScope(ItemStack stack) {
         return true;
     }
