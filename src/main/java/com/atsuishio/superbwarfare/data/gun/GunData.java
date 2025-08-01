@@ -8,19 +8,14 @@ import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
-import com.atsuishio.superbwarfare.tools.Ammo;
 import com.atsuishio.superbwarfare.tools.GunsTool;
 import com.atsuishio.superbwarfare.tools.InventoryTool;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.tags.ItemTags;
-import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -33,7 +28,10 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 public class GunData {
 
@@ -395,61 +393,6 @@ public class GunData {
 
     public enum AmmoConsumeType {
         PLAYER_AMMO, ITEM, TAG, INVALID,
-    }
-
-    public record AmmoTypeInfo(AmmoConsumeType type, String value) {
-        /**
-         * 尝试返回Ammo类型
-         */
-        public @Nullable Ammo playerAmmoType() {
-            if (type != AmmoConsumeType.PLAYER_AMMO) return null;
-            return toPlayerAmmoType();
-        }
-
-        public @NotNull Ammo toPlayerAmmoType() {
-            if (type != AmmoConsumeType.PLAYER_AMMO) throw new IllegalArgumentException("not PLAYER_AMMO type!");
-            return Objects.requireNonNull(Ammo.getType(value));
-        }
-
-        public @NotNull TagKey<Item> toTag() {
-            if (type != AmmoConsumeType.TAG) throw new IllegalArgumentException("not TAG type!");
-            return ItemTags.create(ResourceLocation.parse(this.value));
-        }
-
-        public @NotNull Item toItem() {
-            if (type != AmmoConsumeType.ITEM) throw new IllegalArgumentException("not ITEM type!");
-            return BuiltInRegistries.ITEM.get(ResourceLocation.parse(this.value));
-        }
-    }
-
-    // TODO 清理这个
-    public AmmoTypeInfo ammoTypeInfo() {
-        var ammoType = getDefault().ammoType;
-        if (ammoType == null || ammoType.isEmpty()) {
-            return new AmmoTypeInfo(AmmoConsumeType.INVALID, "");
-        }
-
-        // 玩家弹药
-        if (ammoType.startsWith("@")) {
-            if (Ammo.getType(ammoType.substring(1)) == null) {
-                return new AmmoTypeInfo(AmmoConsumeType.INVALID, ammoType.substring(1));
-            }
-            return new AmmoTypeInfo(AmmoConsumeType.PLAYER_AMMO, ammoType.substring(1));
-        }
-
-        // 物品Tag
-        if (ammoType.startsWith("#")) {
-            if (ResourceLocation.tryParse(ammoType.substring(1)) == null) {
-                return new AmmoTypeInfo(AmmoConsumeType.INVALID, ammoType.substring(1));
-            }
-            return new AmmoTypeInfo(AmmoConsumeType.TAG, ammoType.substring(1));
-        }
-
-        // 普通物品
-        if (ResourceLocation.tryParse(ammoType) == null) {
-            return new AmmoTypeInfo(AmmoConsumeType.INVALID, ammoType);
-        }
-        return new AmmoTypeInfo(AmmoConsumeType.ITEM, ammoType);
     }
 
     public AmmoConsumer selectedAmmoConsumer() {

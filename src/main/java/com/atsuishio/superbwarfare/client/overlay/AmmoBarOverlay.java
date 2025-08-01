@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.client.overlay;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.language.ClientLanguageGetter;
 import com.atsuishio.superbwarfare.config.client.DisplayConfig;
+import com.atsuishio.superbwarfare.data.gun.AmmoConsumer;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
 import com.atsuishio.superbwarfare.init.ModItems;
@@ -256,9 +257,8 @@ public class AmmoBarOverlay implements LayeredDraw.Layer {
     }
 
     private static String getAmmoDisplayName(GunData data, ItemStack stack) {
-        var type = data.ammoTypeInfo().playerAmmoType();
-        if (type != null) {
-            return type.displayName;
+        if (data.selectedAmmoConsumer().type == AmmoConsumer.AmmoConsumeType.PLAYER_AMMO) {
+            return data.selectedAmmoConsumer().getPlayerAmmoType().displayName;
         } else if (!stack.isEmpty()) {
             return ClientLanguageGetter.EN_US.getOrDefault(stack.getDescriptionId());
         } else {
