@@ -125,6 +125,12 @@ public class M98bItem extends GunItem {
     public void inventoryTick(ItemStack stack, Level world, Entity entity, int slot, boolean selected) {
         super.inventoryTick(stack, world, entity, slot, selected);
 
+        int barrelType = GunData.from(stack).attachment.get(AttachmentType.BARREL);
+        if (barrelType == 1) {
+            CompoundTag tag = GunData.from(stack).attachment();
+            tag.putInt("Barrel", 2);
+        }
+
         int magType = GunData.from(stack).attachment.get(AttachmentType.MAGAZINE);
         if (magType == 2) {
             CompoundTag tag = GunData.from(stack).attachment();
