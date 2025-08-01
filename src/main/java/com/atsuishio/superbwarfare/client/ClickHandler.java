@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.client;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.client.screens.WeaponEditScreen;
 import com.atsuishio.superbwarfare.compat.CompatHolder;
 import com.atsuishio.superbwarfare.compat.clothconfig.ClothConfigHelper;
 import com.atsuishio.superbwarfare.config.client.ReloadConfig;
@@ -291,18 +292,13 @@ public class ClickHandler {
                 handleDismountPress(player);
             }
             if (key == ModKeyMappings.EDIT_MODE.getKey().getValue()) {
-//                if (ClientEventHandler.burstFireAmount == 0 && stack.getItem() instanceof GunItem gunItem && gunItem.isCustomizable(stack)) {
-//                    ClientEventHandler.holdFire = false;
-
-//                    if (!isEditing) {
-//                        player.playSound(ModSounds.EDIT_MODE.get(), 1, 1);
-//                    }
-//                    isEditing = !isEditing;
-//                }
                 if (stack.getItem() instanceof ItemScreenProvider provider) {
                     var screen = provider.getItemScreen(stack, player, InteractionHand.MAIN_HAND);
                     if (screen != null) {
                         Minecraft.getInstance().setScreen(screen);
+                        if (screen instanceof WeaponEditScreen) {
+                            ClientEventHandler.onOpenEditScreen();
+                        }
                         return;
                     }
                 }
