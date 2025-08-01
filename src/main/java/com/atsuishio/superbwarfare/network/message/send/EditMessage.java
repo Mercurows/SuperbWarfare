@@ -6,7 +6,6 @@ import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.tools.SoundTool;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.network.NetworkEvent;
 
@@ -74,9 +73,6 @@ public class EditMessage {
                     var diff = message.add ? 1 : -1;
                     var selectedAmmoType = data.selectedAmmoType.get() + diff;
                     data.changeAmmoConsumer(selectedAmmoType);
-
-                    // TODO 修改显示
-                    player.displayClientMessage(Component.literal("selected index: " + selectedAmmoType), true);
                     SoundTool.playLocalSound(player, ModSounds.EDIT.get(), 1f, 1f);
                 }
             }

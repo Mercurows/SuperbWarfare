@@ -9,6 +9,7 @@ import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.network.message.send.EditMessage;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
@@ -64,8 +65,12 @@ public class WeaponEditScreen extends Screen {
 
     public void renderEdit(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
         if (!(stack.getItem() instanceof GunItem gunItem)) return;
+        var player = Minecraft.getInstance().player;
+        if (player == null) return;
+        var itemStack = player.getMainHandItem();
+        if (!(itemStack.getItem() instanceof GunItem)) return;
+        if (itemStack.getItem() != stack.getItem()) return;
 
-        var data = GunData.from(stack);
         var pose = pGuiGraphics.pose();
 
         pose.pushPose();
@@ -112,15 +117,16 @@ public class WeaponEditScreen extends Screen {
             RenderHelper.preciseBlit(pGuiGraphics, INVALID, posX1, posY3, 0, 0, 24, 24, 24, 24);
         }
 
+        var currentData = GunData.from(itemStack);
         RenderHelper.preciseBlit(pGuiGraphics, AMMO_TYPE, posX2, posY3, 0, 0, 24, 24, 24, 24);
-        if (data.ammoConsumers.size() <= 1) {
+        if (currentData.ammoConsumers.size() <= 1) {
             RenderHelper.preciseBlit(pGuiGraphics, INVALID, posX2, posY3, 0, 0, 24, 24, 24, 24);
         } else {
-            int size = data.ammoConsumers.size();
+            int size = currentData.ammoConsumers.size();
             float tempPos = size % 2 == 0 ? this.width - size / 2 * 6 - 33.5f : this.width - size / 2 * 6 - 4 - 33.5f;
             for (int i = 0; i < size; i++) {
                 RenderHelper.preciseBlit(pGuiGraphics,
-                        i == data.selectedAmmoType.get() ? CHOSEN : NOT_CHOSEN,
+                        i == currentData.selectedAmmoType.get() ? CHOSEN : NOT_CHOSEN,
                         tempPos + 6 * i, posY3, 0, 0,
                         4, 4, 4, 4);
             }
@@ -163,6 +169,14 @@ public class WeaponEditScreen extends Screen {
 
         this.addRenderableWidget(new EditButton(posX2, posY3, 16, 16, 5, true));
         this.addRenderableWidget(new EditButton(posX2 + 24, posY3, 16, 16, 5, false));
+    }
+
+    @Override
+    public boolean mouseClicked(double pMouseX, double pMouseY, int pButton) {
+        if (pMouseX < this.width - 165 || pMouseY < 4 || pMouseX > this.width - 4 || pMouseY > 110) {
+            this.onClose();
+        }
+        return super.mouseClicked(pMouseX, pMouseY, pButton);
     }
 
     @Override
@@ -223,7 +237,7 @@ public class WeaponEditScreen extends Screen {
         @Override
         public void onPress() {
             if (!this.isActive()) return;
-            Mod.PACKET_HANDLER.sendToServer(new EditMessage(this.type, this.left));
+            Mod.PACKET_HANDLER.sendToServer(new EditMessage(this.type, !this.left));
             ClientEventHandler.editModelShake();
         }
 
