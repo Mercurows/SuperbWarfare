@@ -54,26 +54,23 @@ public class RpgRocketEntity extends FastThrowableProjectile implements GeoEntit
     private float explosionDamage = 200f;
     private float explosionRadius = 10;
 
+    private float gravity = 0.03f;
+
 
     public RpgRocketEntity(EntityType<? extends RpgRocketEntity> type, Level world) {
         super(type, world);
         this.noCulling = true;
-
         this.durability = 20;
     }
 
-    public RpgRocketEntity(EntityType<? extends ThrowableItemProjectile> pEntityType, double pX, double pY, double pZ, Level pLevel) {
+    public RpgRocketEntity(EntityType<? extends ThrowableItemProjectile> pEntityType, double pX, double pY, double pZ, Level pLevel, float damage, float explosionDamage, float explosionRadius, float gravity) {
         super(pEntityType, pX, pY, pZ, pLevel);
         this.noCulling = true;
-
         this.durability = 20;
-    }
-
-    public RpgRocketEntity(LivingEntity entity, Level level) {
-        super(ModEntities.RPG_ROCKET.get(), entity, level);
-        this.noCulling = true;
-
-        this.durability = 2;
+        this.damage = damage;
+        this.explosionDamage = explosionDamage;
+        this.explosionRadius = explosionRadius;
+        this.gravity = gravity;
     }
 
     public RpgRocketEntity(PlayMessages.SpawnEntity spawnEntity, Level level) {
@@ -208,7 +205,11 @@ public class RpgRocketEntity extends FastThrowableProjectile implements GeoEntit
         explosion.explode();
         net.minecraftforge.event.ForgeEventFactory.onExplosionStart(this.level(), explosion);
         explosion.finalizeExplosion(false);
-        ParticleTool.spawnHugeExplosionParticles(this.level(), vec3);
+        if (explosionRadius >= 10) {
+            ParticleTool.spawnHugeExplosionParticles(this.level(), vec3);
+        } else {
+            ParticleTool.spawnMediumExplosionParticles(this.level(), vec3);
+        }
     }
 
     @Override
@@ -271,6 +272,10 @@ public class RpgRocketEntity extends FastThrowableProjectile implements GeoEntit
     @Override
     public SoundEvent getSound() {
         return ModSounds.ROCKET_FLY.get();
+    }
+    @Override
+    public float getGravity() {
+        return gravity;
     }
 
     @Override

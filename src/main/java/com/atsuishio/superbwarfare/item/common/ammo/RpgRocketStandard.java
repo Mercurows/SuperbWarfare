@@ -69,7 +69,7 @@ public class RpgRocketStandard extends Item implements GeoItem, DispenserLauncha
         Multimap<Attribute, AttributeModifier> map = super.getAttributeModifiers(slot, stack);
         if (slot == EquipmentSlot.MAINHAND) {
             map = HashMultimap.create(map);
-            map.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_UUID, "Item modifier", 6d, AttributeModifier.Operation.ADDITION));
+            map.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_UUID, "Item modifier", 5d, AttributeModifier.Operation.ADDITION));
             map.put(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_UUID, "Item modifier", -2.4, AttributeModifier.Operation.ADDITION));
         }
         return map;
@@ -79,8 +79,8 @@ public class RpgRocketStandard extends Item implements GeoItem, DispenserLauncha
     public boolean hurtEnemy(@NotNull ItemStack stack, LivingEntity entity, @NotNull LivingEntity source) {
         if (entity.level() instanceof ServerLevel level && Math.random() < 0.25) {
 
-            level.explode(source, source.getX(), source.getY() + 1, source.getZ(), 6, Level.ExplosionInteraction.NONE);
-            level.explode(null, source.getX(), source.getY() + 1, source.getZ(), 6, Level.ExplosionInteraction.NONE);
+            level.explode(source, source.getX(), source.getY() + 1, source.getZ(), 5, Level.ExplosionInteraction.NONE);
+            level.explode(null, source.getX(), source.getY() + 1, source.getZ(), 5, Level.ExplosionInteraction.NONE);
 
             if (!source.level().isClientSide() && source.getServer() != null) {
                 ParticleTool.spawnMediumExplosionParticles(source.level(), source.getPosition(0));
@@ -105,13 +105,13 @@ public class RpgRocketStandard extends Item implements GeoItem, DispenserLauncha
 
             @Override
             protected float getPower() {
-                return 1.5F;
+                return 2F;
             }
 
             @Override
             @ParametersAreNonnullByDefault
             protected @NotNull Projectile getProjectile(Level pLevel, Position pPosition, ItemStack pStack) {
-                return new RpgRocketEntity(ModEntities.RPG_ROCKET.get(), pPosition.x(), pPosition.y(), pPosition.z(), pLevel);
+                return new RpgRocketEntity(ModEntities.RPG_ROCKET.get(), pPosition.x(), pPosition.y(), pPosition.z(), pLevel, 320, 100, 6, 0.015f);
             }
 
             @Override

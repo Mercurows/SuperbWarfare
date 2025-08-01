@@ -55,7 +55,6 @@ public class GunGrenadeEntity extends FastThrowableProjectile implements GeoEnti
     public GunGrenadeEntity(@Nullable Entity entity, Level level, float damage, float explosionDamage, float explosionRadius) {
         super(ModEntities.GUN_GRENADE.get(), entity, level);
         this.noCulling = true;
-
         this.damage = damage;
         this.explosionDamage = explosionDamage;
         this.explosionRadius = explosionRadius;
