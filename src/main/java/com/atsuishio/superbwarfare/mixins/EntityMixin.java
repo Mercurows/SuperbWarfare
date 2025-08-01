@@ -2,7 +2,7 @@ package com.atsuishio.superbwarfare.mixins;
 
 import com.atsuishio.superbwarfare.entity.mixin.OBBHitter;
 import com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity;
-import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.tools.OBB;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import static com.atsuishio.superbwarfare.event.ClientEventHandler.isProne;
@@ -92,12 +92,22 @@ public abstract class EntityMixin implements OBBHitter {
 //        cir.setReturnValue(movement.subtract(vec));
 //    }
 
-    @Redirect(method = "turn(DD)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;setXRot(F)V", ordinal = 1))
-    public void turn(Entity instance, float pXRot) {
-        if (instance instanceof Player player && player.getMainHandItem().is(ModTags.Items.GUN) && isProne(player)) {
-            player.setXRot(Mth.clamp(instance.getXRot(), -45.0F, 30.0F));
-        } else {
-            instance.setXRot(Mth.clamp(instance.getXRot(), -90.0F, 90.0F));
+    @Inject(method = "turn(DD)V", at = @At("HEAD"), cancellable = true)
+    public void turn(double pYRot, double pXRot, CallbackInfo ci) {
+        var entity = (Entity) (Object) this;
+        if (entity instanceof Player player && player.getMainHandItem().getItem() instanceof GunItem && isProne(player)) {
+            ci.cancel();
+            float f = (float) pXRot * 0.15F;
+            float f1 = (float) pYRot * 0.15F;
+            player.setXRot(player.getXRot() + f);
+            player.setYRot(player.getYRot() + f1);
+            player.setXRot(Mth.clamp(player.getXRot(), -45.0F, 30.0F));
+            player.xRotO += f;
+            player.yRotO += f1;
+            player.xRotO = Mth.clamp(player.xRotO, -90.0F, 90.0F);
+            if (player.getVehicle() != null) {
+                player.getVehicle().onPassengerTurned(player);
+            }
         }
     }
 }
