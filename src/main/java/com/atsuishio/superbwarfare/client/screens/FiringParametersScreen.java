@@ -52,6 +52,11 @@ public class FiringParametersScreen extends Screen {
     }
 
     @Override
+    public boolean isPauseScreen() {
+        return false;
+    }
+
+    @Override
     public void tick() {
         super.tick();
         if (!this.init) {

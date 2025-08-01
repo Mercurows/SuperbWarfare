@@ -56,6 +56,11 @@ public class DogTagEditorScreen extends Screen {
         this.hand = hand;
     }
 
+    @Override
+    public boolean isPauseScreen() {
+        return false;
+    }
+
     protected void renderBg(GuiGraphics pGuiGraphics) {
         int i = (this.width - this.imageWidth) / 2;
         int j = (this.height - this.imageHeight) / 2;
