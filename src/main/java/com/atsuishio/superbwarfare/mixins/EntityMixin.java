@@ -2,8 +2,11 @@ package com.atsuishio.superbwarfare.mixins;
 
 import com.atsuishio.superbwarfare.entity.mixin.OBBHitter;
 import com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity;
+import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.tools.OBB;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -12,7 +15,10 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import static com.atsuishio.superbwarfare.event.ClientEventHandler.isProne;
 
 @Mixin(Entity.class)
 public abstract class EntityMixin implements OBBHitter {
@@ -86,19 +92,12 @@ public abstract class EntityMixin implements OBBHitter {
 //        cir.setReturnValue(movement.subtract(vec));
 //    }
 
-    // TODO 优化后续逻辑
-//    @Redirect(method = "turn(DD)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;setXRot(F)V", ordinal = 1))
-//    public void turn(Entity instance, float pXRot) {
-//        if (instance instanceof Player player) {
-//            player.setXRot(player.getXRot());
-//            while (player.getXRot() > 180F) {
-//                player.setXRot(player.getXRot() - 360F);
-//            }
-//            while (player.getYRot() <= -180F) {
-//                player.setXRot(player.getXRot() + 360F);
-//            }
-//        } else {
-//            instance.setXRot(Mth.clamp(instance.getXRot(), -90.0F, 90.0F));
-//        }
-//    }
+    @Redirect(method = "turn(DD)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;setXRot(F)V", ordinal = 1))
+    public void turn(Entity instance, float pXRot) {
+        if (instance instanceof Player player && player.getMainHandItem().is(ModTags.Items.GUN) && isProne(player)) {
+            player.setXRot(Mth.clamp(instance.getXRot(), -45.0F, 30.0F));
+        } else {
+            instance.setXRot(Mth.clamp(instance.getXRot(), -90.0F, 90.0F));
+        }
+    }
 }
