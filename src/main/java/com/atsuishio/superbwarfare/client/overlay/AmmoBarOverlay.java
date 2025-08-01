@@ -173,7 +173,7 @@ public class AmmoBarOverlay implements LayeredDraw.Layer {
                 );
             }
 
-            // TODO 渲染GunData.insertedItem
+            // TODO 渲染AmmoConsumer.stack
 
             // 渲染备弹量
             guiGraphics.drawString(

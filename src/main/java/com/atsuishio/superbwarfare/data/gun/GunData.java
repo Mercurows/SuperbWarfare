@@ -69,7 +69,7 @@ public class GunData {
         data = getOrPut("GunData");
         perkTag = getOrPut("Perks");
         attachmentTag = getOrPut("Attachments");
-        ammoConsumers = getDefault().ammoConsumers.list.stream().map(c -> c.value.setData(this)).toList();
+        ammoConsumers = getDefault().ammoConsumers.list.stream().map(c -> c.value).toList();
 
         // 可持久化属性
         reload = new Reload(this);
@@ -78,7 +78,6 @@ public class GunData {
         attachment = new Attachment(this);
         perk = new Perks(this);
 
-        insertedItem = new ItemStackValue(data, "InsertedItem");
         selectedAmmoType = new IntValue(data, "SelectedAmmoType");
 
         ammo = new IntValue(data, "Ammo");
@@ -645,8 +644,6 @@ public class GunData {
         // 直接丢弃余数（恼）
         var itemAmount = amount / selectedAmmoConsumer().loadAmount;
         selectedAmmoConsumer().withdraw(shooter, itemAmount);
-
-        this.insertedItem.set(selectedAmmoConsumer().toItemStack());
     }
 
     /**
@@ -772,7 +769,6 @@ public class GunData {
 
     // 可持久化属性开始
 
-    public final ItemStackValue insertedItem;
     public final IntValue selectedAmmoType;
 
     public final IntValue ammo;
