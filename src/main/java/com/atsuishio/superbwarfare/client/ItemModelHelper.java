@@ -15,6 +15,10 @@ public class ItemModelHelper {
         splitBoneName(bone, name, "Barrel", tag);
         splitBoneName(bone, name, "Stock", tag);
         splitBoneName(bone, name, "Grip", tag);
+
+        // TODO 根据选择的弹种切换弹种模型的显示
+
+//        splitBoneName(bone, name, "AmmoType", tag);
     }
 
     private static void splitBoneName(GeoBone bone, String boneName, String tagName, CompoundTag tag) {
@@ -36,6 +40,8 @@ public class ItemModelHelper {
         splitAndHideBone(bone, name, "Barrel");
         splitAndHideBone(bone, name, "Stock");
         splitAndHideBone(bone, name, "Grip");
+
+//        splitAndHideBone(bone, name, "AmmoType");
     }
 
     private static void splitAndHideBone(GeoBone bone, String boneName, String tagName) {
