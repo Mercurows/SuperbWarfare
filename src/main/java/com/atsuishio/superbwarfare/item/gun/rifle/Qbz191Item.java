@@ -148,6 +148,16 @@ public class Qbz191Item extends GunItem {
     }
 
     @Override
+    public int[] getValidMagazines() {
+        return new int[]{0, 2};
+    }
+
+    @Override
+    public int[] getValidGrips() {
+        return new int[]{0, 1, 2};
+    }
+
+    @Override
     public int getCustomMagazine(ItemStack stack) {
         int magType = GunData.from(stack).attachment.get(AttachmentType.MAGAZINE);
         return magType == 2 ? 45 : 0;

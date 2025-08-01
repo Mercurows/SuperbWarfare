@@ -9,15 +9,12 @@ import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
-import net.minecraft.world.level.Level;
 import software.bernie.geckolib.constant.DataTickets;
 import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.core.animation.AnimationController;
@@ -26,7 +23,6 @@ import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
 
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Set;
 import java.util.function.Supplier;
 
@@ -102,26 +98,18 @@ public class Mp5Item extends GunItem {
     }
 
     @Override
-    @ParametersAreNonnullByDefault
-    public void inventoryTick(ItemStack stack, Level world, Entity entity, int slot, boolean selected) {
-        super.inventoryTick(stack, world, entity, slot, selected);
+    public int[] getValidMagazines() {
+        return new int[]{0, 2};
+    }
 
-        int scopeType = GunData.from(stack).attachment.get(AttachmentType.SCOPE);
-        int magType = GunData.from(stack).attachment.get(AttachmentType.MAGAZINE);
-        int gripType = GunData.from(stack).attachment.get(AttachmentType.GRIP);
+    @Override
+    public int[] getValidScopes() {
+        return new int[]{0, 1, 2};
+    }
 
-        if (scopeType == 3) {
-            CompoundTag tag = GunData.from(stack).attachment();
-            tag.putInt("Scope", 0);
-        }
-        if (magType == 1) {
-            CompoundTag tag = GunData.from(stack).attachment();
-            tag.putInt("Magazine", 2);
-        }
-        if (gripType == 3) {
-            CompoundTag tag = GunData.from(stack).attachment();
-            tag.putInt("Grip", 0);
-        }
+    @Override
+    public int[] getValidGrips() {
+        return new int[]{0, 1, 2};
     }
 
     @Override

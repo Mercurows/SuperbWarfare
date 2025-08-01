@@ -10,15 +10,12 @@ import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.tools.GunsTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
-import net.minecraft.world.level.Level;
 import software.bernie.geckolib.constant.DataTickets;
 import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.core.animation.AnimationController;
@@ -27,7 +24,6 @@ import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
 
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Set;
 import java.util.function.Supplier;
 
@@ -117,22 +113,15 @@ public class M98bItem extends GunItem {
     }
 
     @Override
-    @ParametersAreNonnullByDefault
-    public void inventoryTick(ItemStack stack, Level world, Entity entity, int slot, boolean selected) {
-        super.inventoryTick(stack, world, entity, slot, selected);
-
-        int barrelType = GunData.from(stack).attachment.get(AttachmentType.BARREL);
-        if (barrelType == 1) {
-            CompoundTag tag = GunData.from(stack).attachment();
-            tag.putInt("Barrel", 2);
-        }
-
-        int magType = GunData.from(stack).attachment.get(AttachmentType.MAGAZINE);
-        if (magType == 2) {
-            CompoundTag tag = GunData.from(stack).attachment();
-            tag.putInt("Magazine", 0);
-        }
+    public int[] getValidMagazines() {
+        return new int[]{0, 1};
     }
+
+    @Override
+    public int[] getValidBarrels() {
+        return new int[]{0, 2};
+    }
+
 
     @Override
     public boolean canSwitchScope(ItemStack stack) {

@@ -11,12 +11,10 @@ import com.atsuishio.superbwarfare.item.gun.GunItem;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
@@ -220,21 +218,13 @@ public class Trachelium extends GunItem {
     }
 
     @Override
-    @ParametersAreNonnullByDefault
-    public void inventoryTick(ItemStack stack, Level world, Entity entity, int slot, boolean selected) {
-        super.inventoryTick(stack, world, entity, slot, selected);
+    public int[] getValidStocks() {
+        return new int[]{0, 2};
+    }
 
-        int scopeType = GunData.from(stack).attachment.get(AttachmentType.SCOPE);
-        int stockType = GunData.from(stack).attachment.get(AttachmentType.STOCK);
-        CompoundTag tags = GunData.from(stack).attachment();
-
-        if (stockType == 1) {
-            tags.putInt("Stock", 2);
-        }
-
-        if (scopeType == 3) {
-            tags.putInt("Scope", 0);
-        }
+    @Override
+    public int[] getValidScopes() {
+        return new int[]{0, 1, 2};
     }
 
     @Override
