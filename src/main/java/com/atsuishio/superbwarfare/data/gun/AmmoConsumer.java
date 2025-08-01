@@ -6,13 +6,11 @@ import com.atsuishio.superbwarfare.data.StringToObject;
 import com.atsuishio.superbwarfare.tools.Ammo;
 import com.atsuishio.superbwarfare.tools.InventoryTool;
 import com.google.gson.annotations.SerializedName;
+import net.minecraft.nbt.NbtUtils;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.ItemTags;
-import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
@@ -36,25 +34,11 @@ public class AmmoConsumer implements DeserializeFromString {
     public static final AmmoConsumer INVALID = new AmmoConsumer();
 
     private transient boolean initialized = false;
-    private transient GunData data;
     private transient Ammo playerAmmoType;
-    private transient Item item;
-    private transient TagKey<Item> tag;
+    private transient ItemStack stack;
 
-    public AmmoConsumer setData(GunData data) {
-        this.data = data;
-        return this;
-    }
-
-    // TODO TAG支持？
     public enum AmmoConsumeType {
-        PLAYER_AMMO, ITEM, TAG, INVALID,
-    }
-
-    public ItemStack toItemStack() {
-        if (type != AmmoConsumeType.ITEM) return ItemStack.EMPTY;
-
-        return new ItemStack(item);
+        PLAYER_AMMO, ITEM, INVALID,
     }
 
     /**
@@ -98,12 +82,7 @@ public class AmmoConsumer implements DeserializeFromString {
         if (type == AmmoConsumeType.PLAYER_AMMO || type == AmmoConsumeType.INVALID || count <= 0) return 0;
         if (!initialized) init();
 
-//        if (data.insertedItem.get().isEmpty()) {
-//            data.insertedItem.set(InventoryTool.findFirst(handler, this.item));
-//        }
-
-        // TODO 修改insertedItem判断 byd这玩意在重载等情况下根本不能用
-        return InventoryTool.consumeItem(handler, stack -> ItemStack.isSameItemSameTags(stack, data.insertedItem.get()), count);
+        return InventoryTool.consumeItem(handler, stack -> ItemStack.isSameItemSameTags(stack, this.stack), count);
     }
 
     /**
@@ -129,16 +108,11 @@ public class AmmoConsumer implements DeserializeFromString {
         if (InventoryTool.hasCreativeAmmoBox(handler)) return Integer.MAX_VALUE;
         if (!initialized) init();
 
-        // TODO data.insertedItem怎么可能为null？？？
-        if (data.insertedItem == null || data.insertedItem.get().isEmpty()) {
-            return switch (type) {
-                case ITEM -> InventoryTool.countItem(handler, this.item);
-                case TAG -> InventoryTool.countItem(handler, this.tag);
-                default -> 0;
-            };
+        if (type == AmmoConsumeType.ITEM) {
+            return InventoryTool.countItem(handler, stack -> ItemStack.isSameItemSameTags(stack, this.stack));
         }
 
-        return InventoryTool.countItem(handler, stack -> ItemStack.isSameItemSameTags(data.insertedItem == null ? ItemStack.EMPTY : data.insertedItem.get(), stack));
+        return 0;
     }
 
     /**
@@ -168,7 +142,7 @@ public class AmmoConsumer implements DeserializeFromString {
             }
         } else {
             if (shooter instanceof Player player) {
-                ItemHandlerHelper.giveItemToPlayer(player, data.insertedItem.get().copyWithCount(count));
+                ItemHandlerHelper.giveItemToPlayer(player, this.stack.copyWithCount(count));
                 return count;
             } else {
                 var itemHandler = shooter.getCapability(ForgeCapabilities.ITEM_HANDLER).resolve().orElse(null);
@@ -185,7 +159,7 @@ public class AmmoConsumer implements DeserializeFromString {
     public int withdraw(@NotNull IItemHandler handler, int count) {
         if (!initialized) init();
 
-        var copiedStack = data.insertedItem.get().copyWithCount(count);
+        var copiedStack = this.stack.copyWithCount(count);
         var result = ItemHandlerHelper.insertItemStacked(handler, copiedStack, false);
 
         int inserted = count - result.getCount();
@@ -215,8 +189,7 @@ public class AmmoConsumer implements DeserializeFromString {
 
         var prefix = matcher.group("prefix");
         var id = matcher.group("id");
-        // TODO NBT匹配？
-//        var data = matcher.group("data");
+        var data = matcher.group("data");
 
         if ("@".equals(prefix)) {
             this.playerAmmoType = Ammo.getType(id);
@@ -225,24 +198,29 @@ public class AmmoConsumer implements DeserializeFromString {
                 return;
             }
             this.type = AmmoConsumeType.PLAYER_AMMO;
-        } else if ("#".equals(prefix)) {
-            var location = ResourceLocation.tryParse(id);
-            if (location == null) {
-                Mod.LOGGER.warn("invalid tag location: {}", id);
-                return;
-            }
-            this.tag = ItemTags.create(location);
-            this.type = AmmoConsumeType.TAG;
         } else {
             var location = ResourceLocation.tryParse(id);
             if (location == null) {
-                Mod.LOGGER.warn("invalid item location: {}", id);
+                Mod.LOGGER.warn("invalid item id: {}", id);
                 return;
             }
-            this.item = ForgeRegistries.ITEMS.getValue(location);
-            if (this.item == Items.AIR) {
+            var item = ForgeRegistries.ITEMS.getValue(location);
+            if (item == null || item == Items.AIR) {
                 Mod.LOGGER.warn("invalid item: {}", id);
                 return;
+            }
+
+            this.stack = new ItemStack(item);
+            if (!data.isEmpty()) {
+                try {
+                    var tag = NbtUtils.snbtToStructure(data);
+                    tag.putString("id", location.toString());
+                    tag.putInt("Count", 1);
+                    this.stack = ItemStack.of(tag);
+                } catch (Exception exception) {
+                    Mod.LOGGER.warn("invalid item data {}: {}", data, exception.getMessage());
+                    return;
+                }
             }
 
             this.type = AmmoConsumeType.ITEM;
