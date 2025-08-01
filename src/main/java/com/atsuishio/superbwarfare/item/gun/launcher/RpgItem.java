@@ -1,10 +1,10 @@
 package com.atsuishio.superbwarfare.item.gun.launcher;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.client.GunRendererBuilder;
-import com.atsuishio.superbwarfare.client.model.item.RpgItemModel;
+import com.atsuishio.superbwarfare.client.renderer.gun.RpgItemRenderer;
 import com.atsuishio.superbwarfare.client.tooltip.component.LauncherImageComponent;
 import com.atsuishio.superbwarfare.data.gun.GunData;
+import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
@@ -12,6 +12,7 @@ import com.atsuishio.superbwarfare.tools.ParticleTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
@@ -45,12 +46,12 @@ public class RpgItem extends GunItem {
 
     @Override
     public String getAmmoDisplayName(GunData data) {
-        return "Yassin105 TBG";
+        return "RPG-7";
     }
 
     @Override
     public Supplier<? extends GeoItemRenderer<? extends Item>> getRenderer() {
-        return GunRendererBuilder.simple(RpgItemModel::new, 0, 0, 0.625, 0.7);
+        return RpgItemRenderer::new;
     }
 
     private PlayState idlePredicate(AnimationState<RpgItem> event) {
@@ -99,6 +100,12 @@ public class RpgItem extends GunItem {
             if (data.ammo.get() == 0) {
                 data.isEmpty.set(true);
             }
+        }
+
+        int barrelType = GunData.from(stack).attachment.get(AttachmentType.BARREL);
+        if (barrelType == 2) {
+            CompoundTag tag = GunData.from(stack).attachment();
+            tag.putInt("Barrel", 0);
         }
 
         data.save();
@@ -154,5 +161,15 @@ public class RpgItem extends GunItem {
 
         behaviors.put(84, data -> data.isEmpty.set(false));
         behaviors.put(16, data -> data.closeHammer.set(false));
+    }
+
+    @Override
+    public boolean isCustomizable(ItemStack stack) {
+        return true;
+    }
+
+    @Override
+    public boolean hasCustomBarrel(ItemStack stack) {
+        return true;
     }
 }
