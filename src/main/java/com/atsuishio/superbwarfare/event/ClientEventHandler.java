@@ -1745,4 +1745,9 @@ public class ClientEventHandler {
     public static void onCloseEditScreen() {
         isEditing = false;
     }
+
+    public static void editModelShake() {
+        movePosY = -0.8;
+        fireRotTimer = 0.4;
+    }
 }
