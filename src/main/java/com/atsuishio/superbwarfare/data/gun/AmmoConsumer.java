@@ -26,8 +26,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.regex.Pattern;
 
 public class AmmoConsumer implements DeserializeFromString {
-    @SerializedName("Value")
-    public String value;
+    @SerializedName("Ammo")
+    public String ammo;
 
     @ServerOnly
     @SerializedName("Projectile")
@@ -184,14 +184,14 @@ public class AmmoConsumer implements DeserializeFromString {
 
     public void init() {
         this.type = AmmoConsumeType.INVALID;
-        if (value == null) {
+        if (ammo == null) {
             Mod.LOGGER.warn("ammo value should not be null!");
             return;
         }
 
-        var matcher = AMMO_PATTERN.matcher(value);
+        var matcher = AMMO_PATTERN.matcher(ammo);
         if (!matcher.matches()) {
-            Mod.LOGGER.warn("invalid ammo value: {}", value);
+            Mod.LOGGER.warn("invalid ammo value: {}", ammo);
             return;
         }
 
@@ -242,7 +242,7 @@ public class AmmoConsumer implements DeserializeFromString {
 
     @Override
     public void deserializeFromString(String str) {
-        this.value = str;
+        this.ammo = str;
         init();
     }
 
