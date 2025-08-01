@@ -14,11 +14,11 @@
   "RPM": 120,
   "AmmoConsumer": [
     {
-      "Value": "superbwarfare:rpg_rocket_tbg",
+      "Ammo": "superbwarfare:rpg_rocket_tbg",
       "Projectile": "superbwarfare:rpg_rocket"
     },
     {
-      "Value": "superbwarfare:rpg_rocket_standard",
+      "Ammo": "superbwarfare:rpg_rocket_standard",
       "Projectile": "superbwarfare:rpg_rocket"
     }
   ],
