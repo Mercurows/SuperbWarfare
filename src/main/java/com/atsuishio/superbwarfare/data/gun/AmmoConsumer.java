@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.data.gun;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.annotation.ServerOnly;
 import com.atsuishio.superbwarfare.data.DeserializeFromString;
 import com.atsuishio.superbwarfare.data.StringToObject;
 import com.atsuishio.superbwarfare.tools.Ammo;
@@ -25,6 +26,8 @@ import java.util.regex.Pattern;
 public class AmmoConsumer implements DeserializeFromString {
     @SerializedName("Value")
     public String value;
+
+    @ServerOnly
     @SerializedName("Projectile")
     public StringToObject<ProjectileInfo> projectile = null;
 
@@ -35,7 +38,11 @@ public class AmmoConsumer implements DeserializeFromString {
 
     private transient boolean initialized = false;
     private transient Ammo playerAmmoType;
-    private transient ItemStack stack;
+    private transient ItemStack stack = ItemStack.EMPTY;
+
+    public ItemStack stack() {
+        return this.stack;
+    }
 
     public enum AmmoConsumeType {
         PLAYER_AMMO, ITEM, INVALID,
