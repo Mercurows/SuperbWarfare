@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.item.gun.rifle;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.client.ClickHandler;
 import com.atsuishio.superbwarfare.client.renderer.gun.Hk416ItemRenderer;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
@@ -109,7 +108,7 @@ public class Hk416Item extends GunItem {
         if (event.getData(DataTickets.ITEM_RENDER_PERSPECTIVE) != ItemDisplayContext.FIRST_PERSON_RIGHT_HAND)
             return event.setAndContinue(RawAnimation.begin().thenLoop("animation.m_4.idle"));
 
-        if (ClickHandler.isEditing) {
+        if (ClientEventHandler.isEditing) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m_4.edit"));
         }
 

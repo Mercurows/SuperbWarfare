@@ -175,6 +175,7 @@ public class ClientEventHandler {
 
     public static int holdArtilleryIndicator;
     public static int holdToEjection;
+    public static boolean isEditing = false;
 
 
     @SubscribeEvent
@@ -441,7 +442,7 @@ public class ClientEventHandler {
                     && !(player.getVehicle() instanceof ArmedVehicleEntity iArmedVehicle && iArmedVehicle.banHand(player))
                     && !holdFireVehicle
                     && !notInGame()
-                    && !ClickHandler.isEditing
+                    && !isEditing
                     && !(GunData.from(stack).reload.normal() || GunData.from(stack).reload.empty())
                     && !data.reloading()
                     && !data.charging() && !player.getCooldowns().isOnCooldown(stack.getItem())
@@ -600,7 +601,7 @@ public class ClientEventHandler {
                 && cantFireTime == 0
                 && drawTime < 0.01
                 && !notInGame()
-                && !ClickHandler.isEditing
+                && !isEditing
                 && !player.getCooldowns().isOnCooldown(stack.getItem())
         ) {
             if (mode == FireMode.SEMI) {
@@ -1115,7 +1116,7 @@ public class ClientEventHandler {
                 onGround = 0.001;
             }
 
-            if (!ClickHandler.isEditing) {
+            if (!isEditing) {
                 if (Minecraft.getInstance().options.keyUp.isDown() && firePosTimer == 0) {
                     moveRotZ = Mth.lerp(0.2f * times, moveRotZ, 0.14) * (1 - zoomTime);
                 } else {
@@ -1180,7 +1181,7 @@ public class ClientEventHandler {
                 && !(player.getVehicle() instanceof ArmedVehicleEntity iArmedVehicle && iArmedVehicle.banHand(player))
                 && !notInGame()
                 && drawTime < 0.01
-                && !ClickHandler.isEditing) {
+                && !isEditing) {
             if (Minecraft.getInstance().player != null) {
                 cantSprint = 5;
             }
@@ -1531,7 +1532,7 @@ public class ClientEventHandler {
             if (zoom
                     && !notInGame()
                     && drawTime < 0.01
-                    && !ClickHandler.isEditing) {
+                    && !isEditing) {
                 if (!player.isShiftKeyDown()) {
                     int intelligentChipLevel = GunData.from(stack).perk.getLevel(ModPerks.INTELLIGENT_CHIP);
                     double seekRange = 32 + 8 * (intelligentChipLevel - 1);
@@ -1680,7 +1681,7 @@ public class ClientEventHandler {
             bowPullTimer = 0;
             bowPower = 0;
             cantSprint = 10;
-            ClickHandler.isEditing = false;
+            isEditing = false;
         }
     }
 
@@ -1719,5 +1720,29 @@ public class ClientEventHandler {
                 }
             }
         }
+    }
+
+    /**
+     * 能否开启改枪GUI，只有在当前没有待发射的子弹，且物品为武器，主手持有的情况下才能开启
+     *
+     * @param stack 待改装武器
+     * @param hand  持有武器的手
+     * @return 能否成功打开GUI
+     */
+    public static boolean canOpenEditScreen(ItemStack stack, InteractionHand hand) {
+        return burstFireAmount == 0 && stack.getItem() instanceof GunItem gunItem && gunItem.isCustomizable(stack) && hand == InteractionHand.MAIN_HAND;
+    }
+
+    public static void onOpenEditScreen() {
+        var player = Minecraft.getInstance().player;
+        if (player == null) return;
+
+        isEditing = true;
+        holdFire = false;
+        player.playSound(ModSounds.EDIT_MODE.get(), 1, 1);
+    }
+
+    public static void onCloseEditScreen() {
+        isEditing = false;
     }
 }

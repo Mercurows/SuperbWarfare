@@ -11,6 +11,7 @@ import com.atsuishio.superbwarfare.data.launchable.LaunchableEntityTool;
 import com.atsuishio.superbwarfare.data.launchable.ShootData;
 import com.atsuishio.superbwarfare.entity.projectile.ExplosiveProjectile;
 import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity;
+import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
@@ -773,7 +774,7 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
     @OnlyIn(Dist.CLIENT)
     @Override
     public @Nullable Screen getItemScreen(ItemStack stack, Player player, InteractionHand hand) {
-        if (this.isCustomizable(stack) && hand == InteractionHand.MAIN_HAND) {
+        if (ClientEventHandler.canOpenEditScreen(stack, hand)) {
             return new WeaponEditScreen(stack);
         }
         return null;

@@ -1,12 +1,12 @@
 package com.atsuishio.superbwarfare.client.overlay;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.client.ClickHandler;
 import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.entity.vehicle.A10Entity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.AircraftEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
+import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.tools.*;
 import com.mojang.blaze3d.platform.GlStateManager;
@@ -60,7 +60,7 @@ public class AircraftOverlay implements IGuiOverlay {
 
         if (player == null) return;
 
-        if (ClickHandler.isEditing)
+        if (ClientEventHandler.isEditing)
             return;
 
         if (player.getVehicle() instanceof AircraftEntity aircraftEntity && aircraftEntity instanceof MobileVehicleEntity mobileVehicle && aircraftEntity.isDriver(player) && player.getVehicle() instanceof WeaponVehicleEntity weaponVehicle) {

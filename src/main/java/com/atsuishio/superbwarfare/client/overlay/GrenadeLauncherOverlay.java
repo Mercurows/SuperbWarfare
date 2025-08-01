@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.client.overlay;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.client.ClickHandler;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.CannonEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
@@ -27,7 +26,7 @@ public class GrenadeLauncherOverlay implements IGuiOverlay {
     public void render(ForgeGui gui, GuiGraphics guiGraphics, float partialTick, int screenWidth, int screenHeight) {
         Player player = gui.getMinecraft().player;
 
-        if (player != null && ClickHandler.isEditing)
+        if (player != null && ClientEventHandler.isEditing)
             return;
         if (player != null && player.getVehicle() instanceof ArmedVehicleEntity iArmedVehicle && iArmedVehicle.banHand(player))
             return;
