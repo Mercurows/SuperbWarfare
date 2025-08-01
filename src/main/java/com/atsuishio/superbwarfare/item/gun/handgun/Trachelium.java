@@ -16,9 +16,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.*;
-import net.minecraft.world.level.Level;
 import software.bernie.geckolib.animation.*;
 import software.bernie.geckolib.constant.DataTickets;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
@@ -216,21 +214,13 @@ public class Trachelium extends GunItem {
     }
 
     @Override
-    @ParametersAreNonnullByDefault
-    public void inventoryTick(ItemStack stack, Level world, Entity entity, int slot, boolean selected) {
-        super.inventoryTick(stack, world, entity, slot, selected);
-        var data = GunData.from(stack);
+    public int[] getValidStocks() {
+        return new int[]{0, 2};
+    }
 
-        int scopeType = data.attachment.get(AttachmentType.SCOPE);
-        int stockType = data.attachment.get(AttachmentType.STOCK);
-
-        if (stockType == 1) {
-            data.attachment.set(AttachmentType.STOCK, 2);
-        }
-
-        if (scopeType == 3) {
-            data.attachment.set(AttachmentType.SCOPE, 0);
-        }
+    @Override
+    public int[] getValidScopes() {
+        return new int[]{0, 1, 2};
     }
 
     @Override

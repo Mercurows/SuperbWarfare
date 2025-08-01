@@ -11,17 +11,14 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
-import net.minecraft.world.level.Level;
 import software.bernie.geckolib.animation.*;
 import software.bernie.geckolib.constant.DataTickets;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
 
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Set;
 import java.util.function.Supplier;
 
@@ -97,24 +94,14 @@ public class VectorItem extends GunItem {
         return VectorItemRenderer::new;
     }
 
-    // TODO 移除inventoryTick
     @Override
-    @ParametersAreNonnullByDefault
-    public void inventoryTick(ItemStack stack, Level world, Entity entity, int slot, boolean selected) {
-        super.inventoryTick(stack, world, entity, slot, selected);
+    public int[] getValidScopes() {
+        return new int[]{0, 1, 2};
+    }
 
-        var data = GunData.from(stack);
-        int scopeType = data.attachment.get(AttachmentType.SCOPE);
-        int gripType = data.attachment.get(AttachmentType.GRIP);
-
-        if (scopeType == 3) {
-            data.attachment.set(AttachmentType.SCOPE, 0);
-            data.save();
-        }
-        if (gripType == 3) {
-            data.attachment.set(AttachmentType.GRIP, 0);
-            data.save();
-        }
+    @Override
+    public int[] getValidGrips() {
+        return new int[]{0, 1, 2};
     }
 
     @Override
