@@ -314,30 +314,7 @@ public class ClickHandler {
                 breath = true;
             }
 
-            if (isEditing) {
-                // 改枪
-                if (!(stack.getItem() instanceof GunItem gunItem)) return;
-                if (ModKeyMappings.EDIT_GRIP.getKeyModifier().isActive(KeyConflictContext.IN_GAME)) {
-                    if (key == ModKeyMappings.EDIT_GRIP.getKey().getValue() && gunItem.hasCustomGrip(stack)) {
-                        PacketDistributor.sendToServer(new EditMessage(4));
-                        editModelShake();
-                    }
-                } else {
-                    if (key == ModKeyMappings.EDIT_SCOPE.getKey().getValue() && gunItem.hasCustomScope(stack)) {
-                        PacketDistributor.sendToServer(new EditMessage(0));
-                        editModelShake();
-                    } else if (key == ModKeyMappings.EDIT_BARREL.getKey().getValue() && gunItem.hasCustomBarrel(stack)) {
-                        PacketDistributor.sendToServer(new EditMessage(1));
-                        editModelShake();
-                    } else if (key == ModKeyMappings.EDIT_MAGAZINE.getKey().getValue() && gunItem.hasCustomMagazine(stack)) {
-                        PacketDistributor.sendToServer(new EditMessage(2));
-                        editModelShake();
-                    } else if (key == ModKeyMappings.EDIT_STOCK.getKey().getValue() && gunItem.hasCustomStock(stack)) {
-                        PacketDistributor.sendToServer(new EditMessage(3));
-                        editModelShake();
-                    }
-                }
-            } else {
+            if (!isEditing) {
                 // 改弹药类型
                 if (!(stack.getItem() instanceof GunItem)) return;
 
@@ -535,11 +512,6 @@ public class ClickHandler {
         ClientEventHandler.zoomVehicle = false;
         ClientEventHandler.entity = null;
         breath = false;
-    }
-
-    private static void editModelShake() {
-        ClientEventHandler.movePosY = -0.8;
-        ClientEventHandler.fireRotTimer = 0.4;
     }
 
     private static void handleDoubleJump(Player player) {

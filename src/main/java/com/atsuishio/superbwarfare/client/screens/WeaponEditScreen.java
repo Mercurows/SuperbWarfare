@@ -2,9 +2,11 @@ package com.atsuishio.superbwarfare.client.screens;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.RenderHelper;
+import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModKeyMappings;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
+import com.atsuishio.superbwarfare.network.message.send.EditMessage;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.GuiGraphics;
@@ -17,6 +19,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 
 @OnlyIn(Dist.CLIENT)
@@ -36,6 +39,8 @@ public class WeaponEditScreen extends Screen {
     // 按钮，大小64*64
     private static final ResourceLocation BUTTON_LEFT = Mod.loc("textures/gui/attachment/button_left.png");
     private static final ResourceLocation BUTTON_RIGHT = Mod.loc("textures/gui/attachment/button_right.png");
+    private static final ResourceLocation BUTTON_LEFT_HOVERED = Mod.loc("textures/gui/attachment/button_left_hovered.png");
+    private static final ResourceLocation BUTTON_RIGHT_HOVERED = Mod.loc("textures/gui/attachment/button_right_hovered.png");
 
     // 标记，大小16*16
     private static final ResourceLocation CHOSEN = Mod.loc("textures/gui/attachment/chosen.png");
@@ -62,13 +67,14 @@ public class WeaponEditScreen extends Screen {
     public void renderEdit(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
         if (!(stack.getItem() instanceof GunItem gunItem)) return;
 
+        var data = GunData.from(stack);
         var pose = pGuiGraphics.pose();
 
         pose.pushPose();
 
         pGuiGraphics.fill(this.width - 165, 4, this.width - 4, 110, 0x80000000);
-        pGuiGraphics.drawString(this.font, this.stack.getHoverName(), this.width - 163, 6, 0xFFFFFF, false);
-        pGuiGraphics.fill(this.width - 163, 16, Math.min(this.width + this.font.width(this.stack.getHoverName()) - 169, this.width - 6), 17, 0xFFFFFFFF);
+        pGuiGraphics.drawString(this.font, this.stack.getHoverName(), this.width - 161, 6, 0xFFFFFF, false);
+        pGuiGraphics.fill(this.width - 160, 16, Math.min(this.width + this.font.width(this.stack.getHoverName()) - 159, this.width - 6), 17, 0xFFFFFFFF);
 
         int posX1 = this.width - 163;
         int posX2 = this.width - 85;
@@ -109,9 +115,9 @@ public class WeaponEditScreen extends Screen {
         }
 
         RenderHelper.preciseBlit(pGuiGraphics, AMMO_TYPE, posX2, posY3, 0, 0, 24, 24, 24, 24);
-//        if (true) {
-//            RenderHelper.preciseBlit(pGuiGraphics,INVALID, posX2, posY3, 0, 0, 24, 24, 24, 24);
-//        }
+        if (data.ammoConsumers.size() <= 1) {
+            RenderHelper.preciseBlit(pGuiGraphics, INVALID, posX2, posY3, 0, 0, 24, 24, 24, 24);
+        }
 
         RenderSystem.depthMask(true);
         RenderSystem.defaultBlendFunc();
@@ -182,19 +188,43 @@ public class WeaponEditScreen extends Screen {
 
         @Override
         protected void renderWidget(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
-            pGuiGraphics.blit(this.left ? BUTTON_LEFT : BUTTON_RIGHT, this.getX(), this.getY(),
-                    0, 0, 16, 16, 16, 16);
+            pGuiGraphics.pose().pushPose();
+
+            RenderSystem.disableDepthTest();
+            RenderSystem.depthMask(false);
+            RenderSystem.enableBlend();
+            RenderSystem.setShader(GameRenderer::getPositionTexShader);
+            RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+
+            if (this.isHovered && this.isActive()) {
+                pGuiGraphics.blit(this.left ? BUTTON_LEFT_HOVERED : BUTTON_RIGHT_HOVERED, this.getX(), this.getY(),
+                        0, 0, 16, 16, 16, 16);
+            } else {
+                pGuiGraphics.blit(this.left ? BUTTON_LEFT : BUTTON_RIGHT, this.getX(), this.getY(),
+                        0, 0, 16, 16, 16, 16);
+            }
+
+            RenderSystem.depthMask(true);
+            RenderSystem.defaultBlendFunc();
+            RenderSystem.enableDepthTest();
+            RenderSystem.disableBlend();
+            RenderSystem.setShaderColor(1, 1, 1, 1);
+
+            pGuiGraphics.pose().popPose();
         }
 
         @Override
         public void onPress() {
-
+            if (!this.isActive()) return;
+            PacketDistributor.sendToServer(new EditMessage(this.type, this.left));
+            ClientEventHandler.editModelShake();
         }
 
         @Override
-        protected boolean isValidClickButton(int pButton) {
+        public boolean isActive() {
             var stack = WeaponEditScreen.this.stack;
             if (!(stack.getItem() instanceof GunItem gunItem)) return false;
+            var data = GunData.from(stack);
 
             return switch (this.type) {
                 case 0 -> gunItem.hasCustomBarrel(stack);
@@ -202,7 +232,7 @@ public class WeaponEditScreen extends Screen {
                 case 2 -> gunItem.hasCustomGrip(stack);
                 case 3 -> gunItem.hasCustomStock(stack);
                 case 4 -> gunItem.hasCustomMagazine(stack);
-                case 5 -> true;
+                case 5 -> data.ammoConsumers.size() > 1;
                 default -> false;
             };
         }
