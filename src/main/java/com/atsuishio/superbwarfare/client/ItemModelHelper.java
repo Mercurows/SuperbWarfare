@@ -16,6 +16,10 @@ public class ItemModelHelper {
         splitBoneName(bone, name, attachments, AttachmentType.BARREL);
         splitBoneName(bone, name, attachments, AttachmentType.STOCK);
         splitBoneName(bone, name, attachments, AttachmentType.GRIP);
+
+        // TODO 根据选择的弹种切换弹种模型的显示
+
+//        splitBoneName(bone, name, "AmmoType", tag);
     }
 
     private static void splitBoneName(GeoBone bone, String boneName, Attachment attachment, AttachmentType type) {
@@ -37,6 +41,8 @@ public class ItemModelHelper {
         splitAndHideBone(bone, name, "Barrel");
         splitAndHideBone(bone, name, "Stock");
         splitAndHideBone(bone, name, "Grip");
+
+//        splitAndHideBone(bone, name, "AmmoType");
     }
 
     private static void splitAndHideBone(GeoBone bone, String boneName, String tagName) {
