@@ -80,7 +80,7 @@ public class HomemadeShotgunItem extends GunItem {
     }
 
     @Override
-    public ResourceLocation getGunIcon() {
+    public ResourceLocation getGunIcon(ItemStack stack) {
         return Mod.loc("textures/gun_icon/homemade_shotgun_icon.png");
     }
 

@@ -388,13 +388,13 @@ public class KillMessageOverlay implements LayeredDraw.Layer {
                 return vehicleEntity.getVehicleIcon();
             } else {
                 if (record.stack.getItem() instanceof GunItem gunItem) {
-                    return gunItem.getGunIcon();
+                    return gunItem.getGunIcon(record.stack);
                 }
             }
         } else {
             // 如果是枪械击杀，则渲染枪械图标
             if (record.stack.getItem() instanceof GunItem gunItem) {
-                return gunItem.getGunIcon();
+                return gunItem.getGunIcon(record.stack);
             }
 
             // TODO 如果是特殊武器击杀，则渲染对应图标

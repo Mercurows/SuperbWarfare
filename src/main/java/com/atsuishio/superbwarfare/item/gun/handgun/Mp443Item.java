@@ -90,7 +90,7 @@ public class Mp443Item extends GunItem {
     }
 
     @Override
-    public ResourceLocation getGunIcon() {
+    public ResourceLocation getGunIcon(ItemStack stack) {
         return Mod.loc("textures/gun_icon/mp_443_icon.png");
     }
 

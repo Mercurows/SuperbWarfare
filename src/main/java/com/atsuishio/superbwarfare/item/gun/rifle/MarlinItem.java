@@ -108,7 +108,7 @@ public class MarlinItem extends GunItem {
     }
 
     @Override
-    public ResourceLocation getGunIcon() {
+    public ResourceLocation getGunIcon(ItemStack stack) {
         return Mod.loc("textures/gun_icon/marlin_icon.png");
     }
 

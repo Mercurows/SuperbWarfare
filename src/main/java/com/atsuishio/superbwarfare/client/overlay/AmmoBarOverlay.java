@@ -73,7 +73,7 @@ public class AmmoBarOverlay implements LayeredDraw.Layer {
             var data = GunData.from(stack);
 
             // 渲染图标
-            guiGraphics.blit(gunItem.getGunIcon(),
+            guiGraphics.blit(gunItem.getGunIcon(stack),
                     x - 135,
                     y - 40,
                     0,

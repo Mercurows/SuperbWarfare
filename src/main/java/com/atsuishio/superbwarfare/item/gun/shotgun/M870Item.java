@@ -112,7 +112,7 @@ public class M870Item extends GunItem {
     }
 
     @Override
-    public ResourceLocation getGunIcon() {
+    public ResourceLocation getGunIcon(ItemStack stack) {
         return Mod.loc("textures/gun_icon/m_870_icon.png");
     }
 

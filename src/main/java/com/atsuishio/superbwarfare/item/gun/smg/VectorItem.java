@@ -140,7 +140,7 @@ public class VectorItem extends GunItem {
     }
 
     @Override
-    public ResourceLocation getGunIcon() {
+    public ResourceLocation getGunIcon(ItemStack stack) {
         return Mod.loc("textures/gun_icon/vector_icon.png");
     }
 

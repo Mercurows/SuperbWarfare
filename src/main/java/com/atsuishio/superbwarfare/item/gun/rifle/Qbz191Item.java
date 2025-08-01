@@ -172,7 +172,7 @@ public class Qbz191Item extends GunItem {
     }
 
     @Override
-    public ResourceLocation getGunIcon() {
+    public ResourceLocation getGunIcon(ItemStack stack) {
         return Mod.loc("textures/gun_icon/qbz_191_icon.png");
     }
 

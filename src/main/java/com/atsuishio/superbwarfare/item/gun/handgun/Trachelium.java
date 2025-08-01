@@ -284,6 +284,11 @@ public class Trachelium extends GunItem {
     }
 
     @Override
+    public ResourceLocation getGunIcon(ItemStack stack) {
+        return Mod.loc("textures/gun_icon/trachelium_icon.png");
+    }
+
+    @Override
     public String getGunDisplayName() {
         return "TRACHELIUM";
     }
@@ -311,10 +316,5 @@ public class Trachelium extends GunItem {
     @Override
     public boolean hasCustomStock(ItemStack stack) {
         return true;
-    }
-
-    @Override
-    public ResourceLocation getGunIcon() {
-        return Mod.loc("textures/gun_icon/trachelium_icon.png");
     }
 }

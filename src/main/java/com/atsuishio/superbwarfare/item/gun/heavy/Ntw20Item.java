@@ -133,7 +133,7 @@ public class Ntw20Item extends GunItem {
     }
 
     @Override
-    public ResourceLocation getGunIcon() {
+    public ResourceLocation getGunIcon(ItemStack stack) {
         return Mod.loc("textures/gun_icon/ntw_20_icon.png");
     }
 
