@@ -12,7 +12,6 @@ import com.atsuishio.superbwarfare.tools.ParticleTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
@@ -113,13 +112,6 @@ public class RpgItem extends GunItem {
                 data.isEmpty.set(true);
             }
         }
-
-        int barrelType = GunData.from(stack).attachment.get(AttachmentType.BARREL);
-        if (barrelType == 2) {
-            CompoundTag tag = GunData.from(stack).attachment();
-            tag.putInt("Barrel", 0);
-        }
-
         super.inventoryTick(stack, world, entity, slot, selected);
     }
 
@@ -172,10 +164,5 @@ public class RpgItem extends GunItem {
 
         behaviors.put(84, data -> data.isEmpty.set(false));
         behaviors.put(16, data -> data.closeHammer.set(false));
-    }
-
-    @Override
-    public boolean hasCustomBarrel(ItemStack stack) {
-        return true;
     }
 }
