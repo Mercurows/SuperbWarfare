@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.item.gun;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.PoseTool;
+import com.atsuishio.superbwarfare.client.screens.WeaponEditScreen;
 import com.atsuishio.superbwarfare.client.tooltip.component.GunImageComponent;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.ProjectileInfo;
@@ -14,12 +15,14 @@ import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.CustomRendererItem;
+import com.atsuishio.superbwarfare.item.ItemScreenProvider;
 import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.tools.RangeTool;
 import com.atsuishio.superbwarfare.tools.SoundTool;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.core.BlockPos;
@@ -68,7 +71,7 @@ import java.util.function.Consumer;
 import static com.atsuishio.superbwarfare.tools.EntityFindUtil.findEntity;
 
 @net.minecraftforge.fml.common.Mod.EventBusSubscriber
-public abstract class GunItem extends Item implements GeoItem, CustomRendererItem {
+public abstract class GunItem extends Item implements GeoItem, CustomRendererItem, ItemScreenProvider {
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
@@ -765,5 +768,14 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
                 return PoseTool.pose(entityLiving, hand, stack);
             }
         };
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    @Override
+    public @Nullable Screen getItemScreen(ItemStack stack, Player player, InteractionHand hand) {
+        if (this.isCustomizable(stack) && hand == InteractionHand.MAIN_HAND) {
+            return new WeaponEditScreen(stack);
+        }
+        return null;
     }
 }

@@ -59,6 +59,11 @@ public class ArtilleryIndicatorScreen extends Screen {
     }
 
     @Override
+    public boolean isPauseScreen() {
+        return false;
+    }
+
+    @Override
     public void render(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
         this.renderBackground(pGuiGraphics);
         this.renderBg(pGuiGraphics, pMouseX, pMouseY);
