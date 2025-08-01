@@ -36,10 +36,8 @@ public class ClientEnergyImageTooltip extends ClientGunImageTooltip {
             yo += 10;
         }
 
-        if (shouldRenderEditTooltip()) {
-            renderWeaponEditTooltip(font, guiGraphics, x, y + yo);
-            yo += 20;
-        }
+        renderWeaponEditTooltip(font, guiGraphics, x, y + yo);
+        yo += 20;
 
         if (shouldRenderPerks()) {
             if (!Screen.hasShiftDown()) {

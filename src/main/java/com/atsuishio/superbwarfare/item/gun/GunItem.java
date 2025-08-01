@@ -206,15 +206,6 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
     }
 
     /**
-     * 武器是否能进行改装
-     *
-     * @param stack 武器物品
-     */
-    public boolean isCustomizable(ItemStack stack) {
-        return false;
-    }
-
-    /**
      * 武器是否能更换枪管配件
      *
      * @param stack 武器物品

@@ -173,11 +173,6 @@ public class M4Item extends GunItem {
     }
 
     @Override
-    public boolean isCustomizable(ItemStack stack) {
-        return true;
-    }
-
-    @Override
     public boolean hasCustomBarrel(ItemStack stack) {
         return true;
     }

@@ -1327,12 +1327,6 @@ public class ClientEventHandler {
             default -> 2.0;
         };
 
-        if (!gunItem.isCustomizable(stack)) {
-            recoil = 1.6;
-            gripRecoilX = 0.75;
-            gripRecoilY = 1.25;
-        }
-
         double customWeight = data.customWeight();
 
         double rpm = 1;
@@ -1725,7 +1719,7 @@ public class ClientEventHandler {
      * @return 能否成功打开GUI
      */
     public static boolean canOpenEditScreen(ItemStack stack, InteractionHand hand) {
-        return burstFireAmount == 0 && stack.getItem() instanceof GunItem gunItem && gunItem.isCustomizable(stack) && hand == InteractionHand.MAIN_HAND;
+        return burstFireAmount == 0 && stack.getItem() instanceof GunItem && hand == InteractionHand.MAIN_HAND;
     }
 
     public static void onOpenEditScreen() {
