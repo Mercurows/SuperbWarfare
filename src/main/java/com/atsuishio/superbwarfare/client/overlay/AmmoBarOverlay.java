@@ -147,6 +147,32 @@ public class AmmoBarOverlay implements LayeredDraw.Layer {
                         8);
             }
 
+            // 如果当前弹药为物品，渲染备弹物品数量
+            if (!data.selectedAmmoConsumer().stack().isEmpty()) {
+                poseStack.pushPose();
+
+                // 物品
+                poseStack.translate(x - 80, y - 22, 0);
+                poseStack.scale(0.75f, 0.75f, 1f);
+                guiGraphics.renderFakeItem(data.selectedAmmoConsumer().stack(), 0, 0);
+
+                // 数量
+                var text = "" + data.countBackupAmmoItem(player);
+                var length = Minecraft.getInstance().font.width(text);
+                poseStack.translate(16 - length, 8, 0);
+
+                guiGraphics.drawString(
+                        Minecraft.getInstance().font,
+                        text,
+                        0,
+                        0,
+                        0xFFFFFF,
+                        true
+                );
+
+                poseStack.popPose();
+            }
+
             // 渲染当前弹药量
             poseStack.pushPose();
             poseStack.scale(1.5f, 1.5f, 1f);
@@ -172,8 +198,6 @@ public class AmmoBarOverlay implements LayeredDraw.Layer {
                         true
                 );
             }
-
-            // TODO 渲染AmmoConsumer.stack
 
             // 渲染备弹量
             guiGraphics.drawString(

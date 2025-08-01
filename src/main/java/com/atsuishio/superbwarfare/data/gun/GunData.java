@@ -473,12 +473,15 @@ public class GunData {
         return countBackupAmmo(entity) > 0;
     }
 
+    /**
+     * 计算剩余弹药数量（不考虑枪内弹药）
+     */
     public int countBackupAmmo(@Nullable Entity entity) {
         if (entity == null) return virtualAmmo.get();
         if (entity instanceof Player player && player.isCreative() || InventoryTool.hasCreativeAmmoBox(entity))
             return Integer.MAX_VALUE;
 
-        return this.selectedAmmoConsumer().count(entity) * this.selectedAmmoConsumer().loadAmount + this.virtualAmmo.get();
+        return countBackupAmmoItem(entity) * this.selectedAmmoConsumer().loadAmount + this.virtualAmmo.get();
     }
 
     /**
@@ -488,7 +491,15 @@ public class GunData {
         if (handler == null) return virtualAmmo.get();
         if (InventoryTool.hasCreativeAmmoBox(handler)) return Integer.MAX_VALUE;
 
-        return this.selectedAmmoConsumer().count(handler) * this.selectedAmmoConsumer().loadAmount + this.virtualAmmo.get();
+        return countBackupAmmoItem(handler) * this.selectedAmmoConsumer().loadAmount + this.virtualAmmo.get();
+    }
+
+    public int countBackupAmmoItem(@Nullable Entity entity) {
+        return this.selectedAmmoConsumer().count(entity);
+    }
+
+    public int countBackupAmmoItem(@Nullable IItemHandler handler) {
+        return this.selectedAmmoConsumer().count(handler);
     }
 
     /**
