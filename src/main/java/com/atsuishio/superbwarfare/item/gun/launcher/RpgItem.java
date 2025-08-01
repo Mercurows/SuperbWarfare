@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.item.gun.launcher;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.client.ClickHandler;
 import com.atsuishio.superbwarfare.client.renderer.gun.RpgItemRenderer;
 import com.atsuishio.superbwarfare.client.tooltip.component.LauncherImageComponent;
 import com.atsuishio.superbwarfare.data.gun.GunData;
@@ -51,9 +52,9 @@ public class RpgItem extends GunItem {
     public String getAmmoDisplayName(GunData data, ItemStack stack) {
         int i = GunData.from(stack).attachment.get(AttachmentType.BARREL);
         if (i == 0) {
-            return "RPG ROCKET STANDARD";
+            return "PG-7VM";
         } else if (i == 1) {
-            return "RPG ROCKET Yasin 105 TBG";
+            return "Yasin 105 TBG";
         }
         return "RPG-7";
     }
@@ -72,6 +73,10 @@ public class RpgItem extends GunItem {
         if (event.getData(DataTickets.ITEM_RENDER_PERSPECTIVE) != ItemDisplayContext.FIRST_PERSON_RIGHT_HAND)
             return event.setAndContinue(RawAnimation.begin().thenLoop("animation.rpg.idle"));
 
+        if (ClickHandler.isEditing) {
+            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.rpg.edit"));
+        }
+
         if (GunData.from(stack).reload.empty()) {
             return event.setAndContinue(RawAnimation.begin().thenPlayAndHold("animation.rpg.reload"));
         }
@@ -86,6 +91,8 @@ public class RpgItem extends GunItem {
 
         return event.setAndContinue(RawAnimation.begin().thenLoop("animation.rpg.idle"));
     }
+
+
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar data) {
@@ -121,8 +128,14 @@ public class RpgItem extends GunItem {
     }
 
     @Override
-    public ResourceLocation getGunIcon() {
-        return Mod.loc("textures/gun_icon/rpg_icon.png");
+    public ResourceLocation getGunIcon(ItemStack stack) {
+        int i = GunData.from(stack).attachment.get(AttachmentType.BARREL);
+        if (i == 0) {
+            return Mod.loc("textures/gun_icon/rpg_standard_icon.png");
+        } else if (i == 1) {
+            return Mod.loc("textures/gun_icon/rpg_tbg_icon.png");
+        }
+        return Mod.loc("textures/gun_icon/rpg_standard_icon.png");
     }
 
     @Override

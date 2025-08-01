@@ -390,7 +390,7 @@ public class KillMessageOverlay implements IGuiOverlay {
                 return vehicleEntity.getVehicleIcon();
             } else {
                 if (record.stack.getItem() instanceof GunItem gunItem) {
-                    return gunItem.getGunIcon();
+                    return gunItem.getGunIcon(record.stack);
                 } else if (TACZGunEventHandler.compatCondition()) {
                     return TACZGunEventHandler.getTaczCompatIcon(record.stack);
                 }
@@ -398,7 +398,7 @@ public class KillMessageOverlay implements IGuiOverlay {
         } else {
             // 如果是枪械击杀，则渲染枪械图标
             if (record.stack.getItem() instanceof GunItem gunItem) {
-                return gunItem.getGunIcon();
+                return gunItem.getGunIcon(record.stack);
             } else if (TACZGunEventHandler.compatCondition()) {
                 return TACZGunEventHandler.getTaczCompatIcon(record.stack);
             }

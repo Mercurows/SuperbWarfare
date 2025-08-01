@@ -155,7 +155,7 @@ public class Hk416Item extends GunItem {
     }
 
     @Override
-    public ResourceLocation getGunIcon() {
+    public ResourceLocation getGunIcon(ItemStack stack) {
         return Mod.loc("textures/gun_icon/hk_416_icon.png");
     }
 

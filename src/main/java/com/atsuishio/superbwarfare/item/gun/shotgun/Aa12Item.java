@@ -76,7 +76,7 @@ public class Aa12Item extends GunItem {
     }
 
     @Override
-    public ResourceLocation getGunIcon() {
+    public ResourceLocation getGunIcon(ItemStack stack) {
         return Mod.loc("textures/gun_icon/aa_12_icon.png");
     }
 

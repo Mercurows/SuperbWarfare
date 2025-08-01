@@ -122,7 +122,7 @@ public class K98Item extends GunItem {
     }
 
     @Override
-    public ResourceLocation getGunIcon() {
+    public ResourceLocation getGunIcon(ItemStack stack) {
         return Mod.loc("textures/gun_icon/k_98_icon.png");
     }
 

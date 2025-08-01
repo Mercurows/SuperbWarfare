@@ -148,7 +148,7 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
         return Set.of();
     }
 
-    public ResourceLocation getGunIcon() {
+    public ResourceLocation getGunIcon(ItemStack stack) {
         return Mod.loc("textures/gun_icon/default_icon.png");
     }
 

@@ -288,7 +288,7 @@ public class Trachelium extends GunItem {
     }
 
     @Override
-    public ResourceLocation getGunIcon() {
+    public ResourceLocation getGunIcon(ItemStack stack) {
         return Mod.loc("textures/gun_icon/trachelium_icon.png");
     }
 

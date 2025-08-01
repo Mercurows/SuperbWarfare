@@ -121,7 +121,7 @@ public class MosinNagantItem extends GunItem {
     }
 
     @Override
-    public ResourceLocation getGunIcon() {
+    public ResourceLocation getGunIcon(ItemStack stack) {
         return Mod.loc("textures/gun_icon/mosin_nagant_icon.png");
     }
 
