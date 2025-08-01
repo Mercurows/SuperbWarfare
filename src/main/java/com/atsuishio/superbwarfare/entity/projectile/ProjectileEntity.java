@@ -48,6 +48,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BellBlock;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.TargetBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
@@ -79,7 +81,7 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     private static final Predicate<Entity> PROJECTILE_TARGETS = input -> input != null && input.isPickable() && !input.isSpectator() && input.isAlive();
-    private static final Predicate<BlockState> IGNORE_LIST = input -> input != null && input.is(ModTags.Blocks.BULLET_IGNORE);
+    private static final Predicate<BlockState> IGNORE_LIST = input -> input != null && input.is(ModTags.Blocks.BULLET_IGNORE) && !(input.is(Blocks.IRON_DOOR) || input.is(Blocks.IRON_TRAPDOOR));
 
     // 子弹的颜色
     public static final float DEFAULT_R = 1.0f;
@@ -488,12 +490,9 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
             Direction face = result.getDirection();
             BlockState state = level().getBlockState(pos);
 
-            BlockParticleOption particleData = new BlockParticleOption(ParticleTypes.BLOCK, state);
-
-            double speed = 0.05;
-            double vx = face.getStepX() * speed;
-            double vy = face.getStepY() * speed;
-            double vz = face.getStepZ() * speed;
+            double vx = face.getStepX();
+            double vy = face.getStepY();
+            double vz = face.getStepZ();
 
             if (this.beast) {
                 ParticleTool.sendParticle(serverLevel, ParticleTypes.END_ROD, location.x, location.y, location.z, 15, 0.1, 0.1, 0.1, 0.05, true);
@@ -505,14 +504,36 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
                     bulletDecalOption = new BulletDecalOption(result.getDirection(), result.getBlockPos(),
                             this.entityData.get(COLOR_R), this.entityData.get(COLOR_G), this.entityData.get(COLOR_B));
                 }
-                serverLevel.sendParticles(bulletDecalOption, location.x, location.y, location.z, 1, 0, 0, 0, 0);
+                ParticleTool.sendParticle(serverLevel, bulletDecalOption, location.x, location.y, location.z, 1, 0, 0, 0, 0, true);
+                summonVectorParticle(serverLevel, state, location, new Vec3(vx, vy, vz));
 
-                ParticleTool.sendParticle(serverLevel, ParticleTypes.SMOKE, location.x, location.y, location.z, 3, vx, vy, vz, 0.01, true);
-                ParticleTool.sendParticle(serverLevel, particleData, location.x, location.y, location.z, 5, vx, vy, vz, 0.1, true);
                 this.discard();
             }
             serverLevel.playSound(null, new BlockPos((int) location.x, (int) location.y, (int) location.z), ModSounds.LAND.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
         }
+    }
+
+    public void summonVectorParticle(ServerLevel serverLevel, BlockState state, Vec3 pos, Vec3 dir) {
+        BlockParticleOption particleData = new BlockParticleOption(ParticleTypes.BLOCK, state);
+        for (int i = 0; i < 7; i++) {
+            Vec3 vec3 = randomVec(dir, 40);
+            ParticleTool.sendParticle(serverLevel, particleData, pos.x + 0.05 * i * dir.x, pos.y + 0.05 * i * dir.y, pos.z + 0.05 * i * dir.z, 0, vec3.x, vec3.y, vec3.z, 10, true);
+        }
+        for (int i = 0; i < 3; i++) {
+            Vec3 vec3 = randomVec(dir, 20);
+            ParticleTool.sendParticle(serverLevel, ParticleTypes.SMOKE, pos.x, pos.y, pos.z, 0, vec3.x, vec3.y, vec3.z, 0.05, true);
+        }
+        if (state.getSoundType() == SoundType.METAL || state.getSoundType() == SoundType.ANVIL || state.getSoundType() == SoundType.CHAIN || state.getSoundType() == SoundType.COPPER || state.getSoundType() == SoundType.NETHERITE_BLOCK) {
+            serverLevel.playSound(null, pos.x, pos.y, pos.z, ModSounds.HIT.get(), SoundSource.BLOCKS, 2, 1);
+            for (int i = 0; i < 3; i++) {
+                Vec3 vec3 = randomVec(dir, 80);
+                ParticleTool.sendParticle(serverLevel, ModParticleTypes.FIRE_STAR.get(), pos.x, pos.y, pos.z, 0, vec3.x, vec3.y, vec3.z, 0.2 + 0.1 * Math.random(), true);
+            }
+        }
+    }
+
+    public Vec3 randomVec(Vec3 vec3, double spread) {
+        return vec3.normalize().add(this.random.triangle(0.0D, 0.0172275D * spread), this.random.triangle(0.0D, 0.0172275D * spread), this.random.triangle(0.0D, 0.0172275D * spread));
     }
 
     protected void onHitEntity(Entity entity, boolean headshot, boolean legShot) {
