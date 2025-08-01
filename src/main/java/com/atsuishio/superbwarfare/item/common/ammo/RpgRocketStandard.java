@@ -1,8 +1,7 @@
 package com.atsuishio.superbwarfare.item.common.ammo;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.PoseTool;
-import com.atsuishio.superbwarfare.client.renderer.item.RocketItemRenderer;
+import com.atsuishio.superbwarfare.client.renderer.item.RpgRocketStandardRenderer;
 import com.atsuishio.superbwarfare.entity.projectile.RpgRocketEntity;
 import com.atsuishio.superbwarfare.init.ModCriteriaTriggers;
 import com.atsuishio.superbwarfare.init.ModEntities;
@@ -25,13 +24,11 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ProjectileItem;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import org.jetbrains.annotations.NotNull;
@@ -44,20 +41,17 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.List;
 
-@EventBusSubscriber(modid = Mod.MODID, bus = EventBusSubscriber.Bus.MOD)
-public class RocketItem extends Item implements GeoItem, ProjectileItem {
-
+public class RpgRocketStandard extends Item implements GeoItem, ProjectileItem {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-    public static ItemDisplayContext transformType;
 
-    public RocketItem() {
-        super(new Item.Properties().stacksTo(16));
+    public RpgRocketStandard() {
+        super(new Properties().stacksTo(16));
     }
 
     @SubscribeEvent
     private static void registerGunExtensions(RegisterClientExtensionsEvent event) {
         event.registerItem(new IClientItemExtensions() {
-            private final BlockEntityWithoutLevelRenderer renderer = new RocketItemRenderer();
+            private final BlockEntityWithoutLevelRenderer renderer = new RpgRocketStandardRenderer();
 
             @Override
             public @NotNull BlockEntityWithoutLevelRenderer getCustomRenderer() {
@@ -69,13 +63,8 @@ public class RocketItem extends Item implements GeoItem, ProjectileItem {
             public HumanoidModel.ArmPose getArmPose(LivingEntity entityLiving, InteractionHand hand, ItemStack stack) {
                 return PoseTool.pose(entityLiving, hand, stack);
             }
-        }, ModItems.ROCKET.get());
+        }, ModItems.RPG_ROCKET_STANDARD.get());
     }
-
-    public void getTransformType(ItemDisplayContext type) {
-        transformType = type;
-    }
-
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar data) {
@@ -132,7 +121,7 @@ public class RocketItem extends Item implements GeoItem, ProjectileItem {
 
     public static class RocketDispenseBehavior extends ProjectileDispenseBehavior {
         public RocketDispenseBehavior() {
-            super(ModItems.ROCKET.get());
+            super(ModItems.RPG_ROCKET_STANDARD.get());
         }
 
         @Override

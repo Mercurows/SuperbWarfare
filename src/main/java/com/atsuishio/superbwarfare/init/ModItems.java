@@ -118,7 +118,8 @@ public class ModItems {
     public static final DeferredHolder<Item, Item> JAVELIN_MISSILE = AMMO.register("javelin_missile", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, MortarShell> MORTAR_SHELL = AMMO.register("mortar_shell", MortarShell::new);
     public static final DeferredHolder<Item, PotionMortarShell> POTION_MORTAR_SHELL = AMMO.register("potion_mortar_shell", PotionMortarShell::new);
-    public static final DeferredHolder<Item, RocketItem> ROCKET = AMMO.register("rocket", RocketItem::new);
+    public static final DeferredHolder<Item, RpgRocketStandard> RPG_ROCKET_STANDARD = AMMO.register("rpg_rocket_standard", RpgRocketStandard::new);
+    public static final DeferredHolder<Item, RpgRocketTBG> RPG_ROCKET_TBG = AMMO.register("rpg_rocket_tbg", RpgRocketTBG::new);
     public static final DeferredHolder<Item, LungeMine> LUNGE_MINE = AMMO.register("lunge_mine", LungeMine::new);
     public static final DeferredHolder<Item, Item> HE_5_INCHES = AMMO.register("he_5_inches", () -> new CannonShellItem(new Item.Properties().rarity(Rarity.RARE)));
     public static final DeferredHolder<Item, Item> AP_5_INCHES = AMMO.register("ap_5_inches", () -> new CannonShellItem(new Item.Properties().rarity(Rarity.RARE)));
@@ -390,7 +391,8 @@ public class ModItems {
         DispenserBlock.registerBehavior(C4_BOMB.get(), new C4BombItem.C4DispenseItemBehavior());
         DispenserBlock.registerBehavior(CLAYMORE_MINE.get(), new ClaymoreMine.ClaymoreDispenseBehavior());
         DispenserBlock.registerBehavior(BLU_43_MINE.get(), new Blu43MineItem.Blu43MineDispenseBehavior());
-        DispenserBlock.registerBehavior(ROCKET.get(), new RocketItem.RocketDispenseBehavior());
+        DispenserBlock.registerBehavior(RPG_ROCKET_STANDARD.get(), new RpgRocketStandard.RocketDispenseBehavior());
+        DispenserBlock.registerBehavior(RPG_ROCKET_TBG.get(), new RpgRocketTBG.RocketDispenseBehavior());
         DispenserBlock.registerBehavior(SMALL_ROCKET.get(), new SmallRocketItem.SmallRocketDispenseBehavior());
         DispenserBlock.registerBehavior(MEDIUM_AERIAL_BOMB.get(), new MediumAerialBombItem.MediumAerialBombDispenseBehavior());
         DispenserBlock.registerBehavior(RGO_GRENADE.get(), new RgoGrenade.RgoGrenadeDispenserBehavior());

@@ -89,7 +89,7 @@ public class SmallRocketEntity extends FastThrowableProjectile implements GeoEnt
 
     @Override
     protected @NotNull Item getDefaultItem() {
-        return ModItems.ROCKET.get();
+        return ModItems.SMALL_ROCKET.get();
     }
 
     @Override

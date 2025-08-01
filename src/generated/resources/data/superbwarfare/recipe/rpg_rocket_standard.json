@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "a": {
+      "item": "superbwarfare:fusee"
+    },
+    "b": {
+      "item": "minecraft:iron_ingot"
+    },
+    "c": {
+      "tag": "c:plates/copper"
+    },
+    "d": {
+      "item": "superbwarfare:grain"
+    },
+    "e": {
+      "item": "minecraft:gunpowder"
+    }
+  },
+  "pattern": [
+    " a ",
+    "bcb",
+    "ede"
+  ],
+  "result": {
+    "count": 2,
+    "id": "superbwarfare:rpg_rocket_standard"
+  }
+}

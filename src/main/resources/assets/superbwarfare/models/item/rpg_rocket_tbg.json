@@ -1,0 +1,6 @@
+{
+  "parent": "superbwarfare:displaysettings/rpg_head.item",
+  "textures": {
+    "layer0": "superbwarfare:item/rpg7"
+  }
+}

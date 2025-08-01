@@ -147,7 +147,7 @@ public class TaserItem extends GunItem implements EnergyStorageItem {
     }
 
     @Override
-    public String getAmmoDisplayName(GunData data) {
+    public String getAmmoDisplayName(GunData data, ItemStack stack) {
         return "Electrode Rod";
     }
 

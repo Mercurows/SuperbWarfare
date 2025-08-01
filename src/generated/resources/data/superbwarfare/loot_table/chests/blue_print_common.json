@@ -251,7 +251,7 @@
               "function": "minecraft:set_count"
             }
           ],
-          "name": "superbwarfare:rocket",
+          "name": "superbwarfare:rpg_rocket_tbg",
           "weight": 4
         },
         {

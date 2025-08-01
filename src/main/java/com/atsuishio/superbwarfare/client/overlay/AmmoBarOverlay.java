@@ -224,7 +224,7 @@ public class AmmoBarOverlay implements LayeredDraw.Layer {
             );
 
             // 渲染弹药类型
-            String ammoName = gunItem.getAmmoDisplayName(data);
+            String ammoName = gunItem.getAmmoDisplayName(data, data.stack);
             guiGraphics.drawString(
                     Minecraft.getInstance().font,
                     ammoName,

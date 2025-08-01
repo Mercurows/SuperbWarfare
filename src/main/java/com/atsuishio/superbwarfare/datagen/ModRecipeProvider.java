@@ -32,6 +32,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.CompletableFuture;
 
+import static com.atsuishio.superbwarfare.datagen.ModItemTagProvider.cTag;
+
 public class ModRecipeProvider extends RecipeProvider {
 
     public ModRecipeProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
@@ -100,7 +102,7 @@ public class ModRecipeProvider extends RecipeProvider {
                 .define('d', ModItems.GRAIN.get())
                 .unlockedBy(getHasName(ModItems.FUSEE.get()), has(ModItems.FUSEE.get()))
                 .save(writer, Mod.loc(getItemName(ModItems.SMALL_ROCKET.get())));
-        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.ROCKET.get(), 2)
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.RPG_ROCKET_TBG.get(), 2)
                 .pattern(" a ")
                 .pattern("bcb")
                 .pattern(" d ")
@@ -109,7 +111,18 @@ public class ModRecipeProvider extends RecipeProvider {
                 .define('c', ModItems.HIGH_ENERGY_EXPLOSIVES.get())
                 .define('d', ModItems.GRAIN.get())
                 .unlockedBy(getHasName(ModItems.FUSEE.get()), has(ModItems.FUSEE.get()))
-                .save(writer, Mod.loc(getItemName(ModItems.ROCKET.get())));
+                .save(writer, Mod.loc(getItemName(ModItems.RPG_ROCKET_TBG.get())));
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.RPG_ROCKET_STANDARD.get(), 2)
+                .pattern(" a ")
+                .pattern("bcb")
+                .pattern("ede")
+                .define('a', ModItems.FUSEE.get())
+                .define('b', Items.IRON_INGOT)
+                .define('c', cTag("plates/copper"))
+                .define('d', ModItems.GRAIN.get())
+                .define('e', Items.GUNPOWDER)
+                .unlockedBy(getHasName(ModItems.FUSEE.get()), has(ModItems.FUSEE.get()))
+                .save(writer, Mod.loc(getItemName(ModItems.RPG_ROCKET_STANDARD.get())));
 
         // 方块
         ShapedRecipeBuilder.shaped(RecipeCategory.REDSTONE, ModItems.SUPERB_ITEM_INTERFACE.get())
