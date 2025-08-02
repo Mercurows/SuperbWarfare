@@ -111,6 +111,8 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
     private boolean dragonBreath = false;
     // 击退力度
     private float knockback = 0.05f;
+    // 出膛速度
+    private float velocity = 20f;
     // 是否强制击退生物
     private boolean forceKnockback = false;
     // 是否能穿墙
@@ -293,9 +295,14 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
         if (!this.level().isClientSide()) {
             Vec3 startVec = this.position();
             Vec3 endVec = startVec.add(this.getDeltaMovement());
-            HitResult result = rayTraceBlocks(this.level(), new ClipContext(startVec, endVec, ClipContext.Block.COLLIDER, ClipContext.Fluid.ANY, this),
+            HitResult result = rayTraceBlocks(this.level(), new ClipContext(startVec, endVec, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this),
                     this.penetrating ? state -> true :
                             ProjectileConfig.ALLOW_PROJECTILE_DESTROY_BLOCKS.get() ? IGNORE_LIST.and(input -> !input.is(ModTags.Blocks.BULLET_CAN_DESTROY)) : IGNORE_LIST);
+
+            BlockHitResult fluidResult = rayTraceBlocks(this.level(), new ClipContext(startVec, endVec, ClipContext.Block.COLLIDER, ClipContext.Fluid.ANY, this),
+                    this.penetrating ? state -> true :
+                            ProjectileConfig.ALLOW_PROJECTILE_DESTROY_BLOCKS.get() ? IGNORE_LIST.and(input -> !input.is(ModTags.Blocks.BULLET_CAN_DESTROY)) : IGNORE_LIST);
+
             if (result.getType() != HitResult.Type.MISS) {
                 endVec = result.getLocation();
             }
@@ -333,6 +340,8 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
                 this.onHit(result);
             }
 
+            this.onHitWater(fluidResult.getLocation(), fluidResult);
+
             this.setPos(this.getX() + vec.x, this.getY() + vec.y, this.getZ() + vec.z);
         } else {
             this.setPosRaw(this.getX() + vec.x, this.getY() + vec.y, this.getZ() + vec.z);
@@ -355,6 +364,9 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
         }
 
         if (this.level() instanceof ServerLevel serverLevel) {
+            if (VectorTool.isInLiquid(serverLevel, position())) {
+                this.setDeltaMovement(this.getDeltaMovement().multiply(0.75, 0.75, 0.75));
+            }
             if (isInWater()) {
                 double l = getDeltaMovement().length();
                 for (double i = 0; i < l; i++) {
@@ -363,7 +375,6 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
                     ParticleTool.sendParticle(serverLevel, ParticleTypes.BUBBLE_COLUMN_UP, pos.x, pos.y, pos.z,
                             1, 0, 0, 0, 0.001, true);
                 }
-                this.setDeltaMovement(this.getDeltaMovement().multiply(0.5, 0.5, 0.5));
             }
         }
 
@@ -483,7 +494,7 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
         }
     }
 
-    protected void onHitBlock(Vec3 location, BlockHitResult result) {
+    protected void onHitWater(Vec3 location, BlockHitResult result) {
         if (this.level() instanceof ServerLevel serverLevel) {
             BlockPos pos = result.getBlockPos();
             Direction face = result.getDirection();
@@ -516,6 +527,8 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
                         ParticleTool.sendParticle(serverLevel, ParticleTypes.BUBBLE_COLUMN_UP, p.x, p.y, p.z,
                                 1, 0, 0, 0, 0.001, false);
                     }
+
+                    this.setDeltaMovement(this.getDeltaMovement().multiply(0.1, 0.1, 0.1));
                 }
             } else if (state.getBlock() == Blocks.LAVA) {
                 if (!isInLava()) {
@@ -529,24 +542,37 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
                     serverLevel.playSound(null, new BlockPos((int) location.x, (int) location.y, (int) location.z), SoundEvents.LAVA_POP, SoundSource.BLOCKS, 1.0F, 1.0F);
                     this.discard();
                 }
-            } else {
-                if (this.beast) {
-                    ParticleTool.sendParticle(serverLevel, ParticleTypes.END_ROD, location.x, location.y, location.z, 15, 0.1, 0.1, 0.1, 0.05, true);
-                } else {
-                    BulletDecalOption bulletDecalOption;
-                    if (this.entityData.get(COLOR_R) == DEFAULT_R && this.entityData.get(COLOR_G) == DEFAULT_G && this.entityData.get(COLOR_B) == DEFAULT_B) {
-                        bulletDecalOption = new BulletDecalOption(result.getDirection(), result.getBlockPos());
-                    } else {
-                        bulletDecalOption = new BulletDecalOption(result.getDirection(), result.getBlockPos(),
-                                this.entityData.get(COLOR_R), this.entityData.get(COLOR_G), this.entityData.get(COLOR_B));
-                    }
-                    ParticleTool.sendParticle(serverLevel, bulletDecalOption, location.x, location.y, location.z, 1, 0, 0, 0, 0, true);
-                    summonVectorParticle(serverLevel, state, location, dir);
-
-                    this.discard();
-                }
-                serverLevel.playSound(null, new BlockPos((int) location.x, (int) location.y, (int) location.z), ModSounds.LAND.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
             }
+        }
+    }
+
+    protected void onHitBlock(Vec3 location, BlockHitResult result) {
+        if (this.level() instanceof ServerLevel serverLevel) {
+            BlockPos pos = result.getBlockPos();
+            Direction face = result.getDirection();
+            BlockState state = level().getBlockState(pos);
+
+            double vx = face.getStepX();
+            double vy = face.getStepY();
+            double vz = face.getStepZ();
+            Vec3 dir = new Vec3(vx, vy, vz);
+
+            if (this.beast) {
+                ParticleTool.sendParticle(serverLevel, ParticleTypes.END_ROD, location.x, location.y, location.z, 15, 0.1, 0.1, 0.1, 0.05, true);
+            } else {
+                BulletDecalOption bulletDecalOption;
+                if (this.entityData.get(COLOR_R) == DEFAULT_R && this.entityData.get(COLOR_G) == DEFAULT_G && this.entityData.get(COLOR_B) == DEFAULT_B) {
+                    bulletDecalOption = new BulletDecalOption(result.getDirection(), result.getBlockPos());
+                } else {
+                    bulletDecalOption = new BulletDecalOption(result.getDirection(), result.getBlockPos(),
+                            this.entityData.get(COLOR_R), this.entityData.get(COLOR_G), this.entityData.get(COLOR_B));
+                }
+                ParticleTool.sendParticle(serverLevel, bulletDecalOption, location.x, location.y, location.z, 1, 0, 0, 0, 0, true);
+                summonVectorParticle(serverLevel, state, location, dir);
+
+                this.discard();
+            }
+            serverLevel.playSound(null, new BlockPos((int) location.x, (int) location.y, (int) location.z), ModSounds.LAND.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
         }
     }
 
@@ -594,6 +620,8 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
                 this.damage *= entry.getValue();
             }
         }
+
+        this.damage *= (float) (getDeltaMovement().length() / velocity);
 
         if (headshot) {
             if (!this.level().isClientSide() && this.shooter instanceof ServerPlayer player) {
@@ -884,6 +912,11 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
 
     public ProjectileEntity damage(float damage) {
         this.damage = damage;
+        return this;
+    }
+
+    public ProjectileEntity velocity(float velocity) {
+        this.velocity = velocity;
         return this;
     }
 

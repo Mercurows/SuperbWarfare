@@ -21,6 +21,7 @@ import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.tools.RangeTool;
 import com.atsuishio.superbwarfare.tools.SoundTool;
+import com.atsuishio.superbwarfare.tools.VectorTool;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
@@ -648,10 +649,17 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
         float velocity = (float) data.velocity();
         float bypassArmorRate = (float) data.bypassArmor();
 
+        if (VectorTool.isInLiquid(level, shootPosition)) {
+            velocity = 2 + 0.05f * velocity;
+        }
+
+        float finalVelocity = velocity;
+
         var projectileInfo = data.selectedAmmoConsumer().projectile == null ? data.projectileInfo() : data.selectedAmmoConsumer().projectile.value;
         var projectileType = projectileInfo.type;
 
         AtomicReference<Entity> entityHolder = new AtomicReference<>();
+
         EntityType.byString(projectileType).ifPresent(entityType -> {
             var entity = entityType.create(level);
             if (entity == null) {
@@ -670,7 +678,8 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
                         .headShot(headshot)
                         .zoom(zoom)
                         .bypassArmorRate(bypassArmorRate)
-                        .setGunItemId(stack);
+                        .setGunItemId(stack)
+                        .velocity(finalVelocity);
             }
 
             // SBW爆炸物专属属性

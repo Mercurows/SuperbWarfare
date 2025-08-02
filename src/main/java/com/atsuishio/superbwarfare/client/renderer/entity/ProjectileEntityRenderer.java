@@ -15,6 +15,8 @@ import net.minecraft.util.Mth;
 import software.bernie.geckolib.cache.object.BakedGeoModel;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+
 public class ProjectileEntityRenderer extends GeoEntityRenderer<ProjectileEntity> {
     public ProjectileEntityRenderer(EntityRendererProvider.Context renderManager) {
         super(renderManager, new ProjectileEntityModel());
@@ -30,7 +32,7 @@ public class ProjectileEntityRenderer extends GeoEntityRenderer<ProjectileEntity
 
     @Override
     public void preRender(PoseStack poseStack, ProjectileEntity entity, BakedGeoModel model, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, int color) {
-        if (entity.tickCount > 1 && !entity.isInWater()) {
+        if (entity.tickCount > 1 && !entity.isInWater() && entity.getDeltaMovement().lengthSqr() > 25) {
             float scale = 1f;
             this.scaleHeight = scale;
             this.scaleWidth = scale;
@@ -39,8 +41,9 @@ public class ProjectileEntityRenderer extends GeoEntityRenderer<ProjectileEntity
     }
 
     @Override
+    @ParametersAreNonnullByDefault
     public void render(ProjectileEntity entityIn, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource bufferIn, int packedLightIn) {
-        if (entityIn.tickCount > 1 && !entityIn.isInWater()) {
+        if (entityIn.tickCount > 1 && !entityIn.isInWater() && entityIn.getDeltaMovement().lengthSqr() > 25) {
             poseStack.pushPose();
             poseStack.mulPose(Axis.YP.rotationDegrees(Mth.lerp(partialTicks, entityIn.yRotO, entityIn.getYRot()) - 90));
             poseStack.mulPose(Axis.ZP.rotationDegrees(90 + Mth.lerp(partialTicks, entityIn.xRotO, entityIn.getXRot())));
