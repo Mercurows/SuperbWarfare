@@ -71,6 +71,7 @@ public class AureliaSceptre extends GunItem {
         return event.setAndContinue(RawAnimation.begin().thenLoop("animation.aurelia_sceptre.idle"));
     }
 
+    @OnlyIn(Dist.CLIENT)
     private PlayState firePredicate(AnimationState<AureliaSceptre> event) {
         LocalPlayer player = Minecraft.getInstance().player;
         if (player == null) return PlayState.STOP;
