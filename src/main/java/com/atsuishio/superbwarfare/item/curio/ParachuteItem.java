@@ -43,6 +43,7 @@ public class ParachuteItem extends Item implements ICurioItem {
         if (tag.getBoolean(TAG_OPEN)) {
             if (entity.onGround() || entity.isInWater() || entity.isFallFlying() || entity.getVehicle() != null || (entity instanceof Player player && player.getAbilities().flying)) {
                 tag.putBoolean(TAG_OPEN, false);
+                NBTTool.saveTag(stack, tag);
                 entity.level().playSound(null, entity.getX(), entity.getY(), entity.getZ(), ModSounds.PARACHUTE_CLOSE.get(), SoundSource.PLAYERS, 1f, 1);
             }
             if (entity instanceof Player player) {
