@@ -459,7 +459,8 @@ public class GunData {
      * 消耗额外弹药（不影响枪内弹药）
      */
     public void consumeBackupAmmo(@Nullable Entity entity, int count) {
-        if (count <= 0 || entity instanceof Player player && player.isCreative()) return;
+        if (count <= 0 || entity instanceof Player player && player.isCreative() || InventoryTool.hasCreativeAmmoBox(entity))
+            return;
 
         if (virtualAmmo.get() > 0) {
             var consumed = Math.min(virtualAmmo.get(), count);
