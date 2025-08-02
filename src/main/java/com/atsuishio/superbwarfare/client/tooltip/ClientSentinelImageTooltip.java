@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.client.tooltip;
 
 import com.atsuishio.superbwarfare.client.tooltip.component.GunImageComponent;
+import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.tools.FormatTool;
 import net.minecraft.ChatFormatting;
@@ -19,7 +20,7 @@ public class ClientSentinelImageTooltip extends ClientEnergyImageTooltip {
         int energy = stack.getCapability(ForgeCapabilities.ENERGY).map(IEnergyStorage::getEnergyStored).orElse(0);
 
         if (energy > 0) {
-            double damage = getGunData().damage();
+            double damage = data.get(GunProp.DAMAGE);
             double extraDamage = -1;
             for (var type : Perk.Type.values()) {
                 var instance = getGunData().perk.getInstance(type);

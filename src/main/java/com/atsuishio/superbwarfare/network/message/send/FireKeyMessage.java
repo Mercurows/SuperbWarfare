@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.network.message.send;
 
 import com.atsuishio.superbwarfare.data.gun.GunData;
+import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.event.GunEventHandler;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import net.minecraft.network.FriendlyByteBuf;
@@ -65,7 +66,7 @@ public class FireKeyMessage {
         if (!(stack.getItem() instanceof GunItem)) return;
         var data = GunData.from(stack);
 
-        if (data.defaultActionTime() > 0
+        if (data.get(GunProp.BOLT_ACTION_TIME) > 0
                 && data.ammo.get() > 0
                 && data.bolt.actionTimer.get() == 0
                 && !(data.reload.normal() || data.reload.empty())
@@ -73,7 +74,7 @@ public class FireKeyMessage {
                 && !data.charging()
         ) {
             if (!player.getCooldowns().isOnCooldown(stack.getItem()) && data.bolt.needed.get()) {
-                data.bolt.actionTimer.set(data.defaultActionTime() + 1);
+                data.bolt.actionTimer.set(data.get(GunProp.BOLT_ACTION_TIME) + 1);
                 GunEventHandler.playGunBoltSounds(player, data);
             }
         }

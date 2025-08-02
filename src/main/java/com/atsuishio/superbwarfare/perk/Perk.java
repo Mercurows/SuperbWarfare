@@ -2,6 +2,8 @@ package com.atsuishio.superbwarfare.perk;
 
 import com.atsuishio.superbwarfare.data.gun.DamageReduce;
 import com.atsuishio.superbwarfare.data.gun.GunData;
+import com.atsuishio.superbwarfare.data.gun.GunProp;
+import com.atsuishio.superbwarfare.data.gun.GunPropertyModifier;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.item.PerkItem;
 import net.minecraft.ChatFormatting;
@@ -9,16 +11,28 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.registries.RegistryObject;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
+import java.util.function.BiFunction;
 
-public class Perk {
+// TODO 重写所有Perk的枪械属性修改方法
+public class Perk implements GunPropertyModifier {
 
     public final String descriptionId;
     public final String name;
     public final Type type;
     public int level = 1;
+
+    public Map<GunProp<?>, BiFunction<GunData, ?, ?>> propertyModifiers = new HashMap<>();
+
+    @Override
+    public @NotNull Map<GunProp<?>, BiFunction<GunData, ?, ?>> getPropModifiers() {
+        return this.propertyModifiers;
+    }
 
     public Perk(String descriptionId, Type type) {
         this.descriptionId = descriptionId;

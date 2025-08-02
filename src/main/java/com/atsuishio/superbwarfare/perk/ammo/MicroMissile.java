@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.perk.ammo;
 
 import com.atsuishio.superbwarfare.data.gun.GunData;
+import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.entity.projectile.ExplosiveProjectile;
 import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
@@ -16,8 +17,8 @@ public class MicroMissile extends AmmoPerk {
     // TODO 正确设计和实现伤害修改
     @Override
     public void modifyProjectile(GunData data, PerkInstance instance, Entity entity) {
-        float radius = (float) (data.explosionRadius() * 0.5f);
-        float damage = (float) data.explosionDamage() * (1.1f + instance.level() * 0.1f);
+        float radius = (float) (data.get(GunProp.EXPLOSION_RADIUS) * 0.5f);
+        float damage = data.get(GunProp.EXPLOSION_DAMAGE).floatValue() * (1.1f + instance.level() * 0.1f);
         entity.setNoGravity(true);
         if (entity instanceof ExplosiveProjectile projectile) {
             projectile.setExplosionRadius(radius);

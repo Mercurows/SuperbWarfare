@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.api.event.ReloadEvent;
 import com.atsuishio.superbwarfare.capability.player.PlayerVariable;
 import com.atsuishio.superbwarfare.data.gun.AmmoConsumer;
 import com.atsuishio.superbwarfare.data.gun.GunData;
+import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.data.gun.value.ReloadState;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
@@ -112,7 +113,7 @@ public class GunEventHandler {
         if (!data.initialized()) {
             data.initialize();
             if (shooter instanceof Player player && player.isCreative()) {
-                data.ammo.set(data.magazine());
+                data.ammo.set(data.get(GunProp.MAGAZINE));
             }
         }
     }
@@ -157,7 +158,7 @@ public class GunEventHandler {
     public static void redrawExtraAmmo(@Nullable Entity shooter, @NotNull GunData data) {
         var hasBulletInBarrel = data.item.hasBulletInBarrel(data.stack);
         var ammoCount = data.ammo.get();
-        var magazine = data.magazine();
+        var magazine = data.get(GunProp.MAGAZINE);
 
         // TODO 修改为更正确的退弹药方式？
         if (((hasBulletInBarrel && ammoCount > magazine + 1) || (!hasBulletInBarrel && ammoCount > magazine))) {
@@ -208,6 +209,15 @@ public class GunEventHandler {
             handleGunSingleReload(shooter, data);
             handleSentinelCharge(shooter, data);
         }
+
+        if (inMainHand && !data.reloading()) {
+            if (data.ammo.get() <= 5) {
+                data.hideBulletChain.set(true);
+            }
+            if (data.ammo.get() == 0) {
+                data.holdOpen.set(true);
+            }
+        }
     }
 
     private static void startReload(@Nullable Entity shooter, @NotNull GunData data) {
@@ -215,16 +225,16 @@ public class GunEventHandler {
 
         if (data.item.isOpenBolt(data.stack)) {
             if (data.ammo.get() == 0) {
-                reload.setTime(data.defaultEmptyReloadTime() + 1);
+                reload.setTime(data.get(GunProp.EMPTY_RELOAD_TIME) + 1);
                 reload.setState(ReloadState.EMPTY_RELOADING);
                 playGunEmptyReloadSounds(shooter, data);
             } else {
-                reload.setTime(data.defaultNormalReloadTime() + 1);
+                reload.setTime(data.get(GunProp.NORMAL_RELOAD_TIME) + 1);
                 reload.setState(ReloadState.NORMAL_RELOADING);
                 playGunNormalReloadSounds(shooter, data);
             }
         } else {
-            reload.setTime(data.defaultEmptyReloadTime() + 2);
+            reload.setTime(data.get(GunProp.EMPTY_RELOAD_TIME) + 2);
             reload.setState(ReloadState.EMPTY_RELOADING);
             playGunEmptyReloadSounds(shooter, data);
         }
@@ -289,19 +299,19 @@ public class GunEventHandler {
         if (reload.singleReloadStarter.start()) {
             MinecraftForge.EVENT_BUS.post(new ReloadEvent.Pre(shooter, data));
 
-            if (data.defaultPrepareLoadTime() != 0 && (data.ammo.get() == 0 || stack.is(ModItems.SECONDARY_CATACLYSM.get()))) {
+            if (data.get(GunProp.PREPARE_LOAD_TIME) != 0 && (data.ammo.get() == 0 || stack.is(ModItems.SECONDARY_CATACLYSM.get()))) {
                 // 此处判断空仓换弹的时候，是否在准备阶段就需要装填一发，如M870
                 playGunPrepareLoadReloadSounds(shooter, data);
-                int prepareLoadTime = data.defaultPrepareLoadTime();
+                int prepareLoadTime = data.get(GunProp.PREPARE_LOAD_TIME);
                 reload.prepareLoadTimer.set(prepareLoadTime + 1);
-            } else if (data.defaultPrepareEmptyTime() != 0 && data.ammo.get() == 0) {
+            } else if (data.get(GunProp.PREPARE_EMPTY_TIME) != 0 && data.ammo.get() == 0) {
                 // 此处判断空仓换弹，如莫辛纳甘
                 playGunEmptyPrepareSounds(shooter, data);
-                int prepareEmptyTime = data.defaultPrepareEmptyTime();
+                int prepareEmptyTime = data.get(GunProp.PREPARE_EMPTY_TIME);
                 reload.prepareTimer.set(prepareEmptyTime + 1);
             } else {
                 playGunPrepareReloadSounds(shooter, data);
-                int prepareTime = data.defaultPrepareTime();
+                int prepareTime = data.get(GunProp.PREPARE_TIME);
                 reload.prepareTimer.set(prepareTime + 1);
             }
 
@@ -311,13 +321,13 @@ public class GunEventHandler {
             reload.setState(ReloadState.NORMAL_RELOADING);
         }
 
-        if (reload.prepareLoadTimer.get() == data.prepareAmmoLoadTime()) {
+        if (reload.prepareLoadTimer.get() == data.get(GunProp.PREPARE_AMMO_LOAD_TIME)) {
             iterativeLoad(shooter, data);
         }
 
         // 一阶段结束，检查备弹，如果有则二阶段启动，无则直接跳到三阶段
         if ((reload.prepareTimer.get() == 1 || reload.prepareLoadTimer.get() == 1)) {
-            if (!data.hasBackupAmmo(shooter) || data.ammo.get() >= data.magazine()) {
+            if (!data.hasBackupAmmo(shooter) || data.ammo.get() >= data.get(GunProp.MAGAZINE)) {
                 reload.stage3Starter.markStart();
             } else {
                 reload.setStage(2);
@@ -334,10 +344,10 @@ public class GunEventHandler {
                 && reload.stage() == 2
                 && reload.iterativeLoadTimer.get() == 0
                 && !data.stopped.get()
-                && data.ammo.get() < data.magazine()
+                && data.ammo.get() < data.get(GunProp.MAGAZINE)
         ) {
             playGunLoopReloadSounds(shooter, data);
-            int iterativeTime = data.defaultIterativeTime();
+            int iterativeTime = data.get(GunProp.ITERATIVE_TIME);
             reload.iterativeLoadTimer.set(iterativeTime);
 
             // 动画播放nbt
@@ -345,14 +355,14 @@ public class GunEventHandler {
         }
 
         // 装填
-        if (data.iterativeAmmoLoadTime() == reload.iterativeLoadTimer.get()) {
+        if (data.get(GunProp.ITERATIVE_AMMO_LOAD_TIME) == reload.iterativeLoadTimer.get()) {
             iterativeLoad(shooter, data);
         }
 
         // 二阶段打断
         if (reload.iterativeLoadTimer.get() == 1) {
             // 装满或备弹耗尽结束
-            if (!data.hasBackupAmmo(shooter) || data.ammo.get() >= data.magazine()) {
+            if (!data.hasBackupAmmo(shooter) || data.ammo.get() >= data.get(GunProp.MAGAZINE)) {
                 reload.setStage(3);
             }
 
@@ -369,7 +379,7 @@ public class GunEventHandler {
             reload.setStage(3);
             reload.stage3Starter.finish();
 
-            int finishTime = data.defaultFinishTime();
+            int finishTime = data.get(GunProp.FINISH_TIME);
             reload.finishTimer.set(finishTime + 2);
 
             playGunEndReloadSounds(shooter, data);
@@ -382,7 +392,7 @@ public class GunEventHandler {
         // 三阶段结束
         if (reload.finishTimer.get() == 1) {
             reload.setStage(0);
-            if (data.defaultActionTime() > 0) {
+            if (data.get(GunProp.BOLT_ACTION_TIME) > 0) {
                 data.bolt.needed.set(false);
             }
             reload.setState(ReloadState.NOT_RELOADING);
@@ -393,7 +403,7 @@ public class GunEventHandler {
     }
 
     public static void iterativeLoad(@Nullable Entity shooter, @NotNull GunData data) {
-        var required = Math.min(data.magazine() - data.ammo.get(), data.iterativeLoadAmount());
+        var required = Math.min(data.get(GunProp.MAGAZINE) - data.ammo.get(), data.get(GunProp.ITERATIVE_LOAD_AMOUNT));
         var available = Math.min(required, data.countBackupAmmo(shooter));
         data.ammo.add(available);
 
@@ -426,7 +436,7 @@ public class GunEventHandler {
                 double shooterHeight = shooter.getEyePosition().distanceTo((Vec3.atLowerCornerOf(shooter.level().clip(new ClipContext(shooter.getEyePosition(), shooter.getEyePosition().add(new Vec3(0, -1, 0).scale(10)),
                         ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, shooter)).getBlockPos())));
 
-                Mod.queueServerWork((int) (data.defaultPrepareEmptyTime() / 2.0 + 3 + 1.5 * shooterHeight), () -> {
+                Mod.queueServerWork((int) (data.get(GunProp.PREPARE_EMPTY_TIME) / 2.0 + 3 + 1.5 * shooterHeight), () -> {
                     if (data.selectedAmmoConsumer().type == AmmoConsumer.AmmoConsumeType.PLAYER_AMMO) {
                         var ammoType = data.selectedAmmoConsumer().getPlayerAmmoType();
                         switch (ammoType) {

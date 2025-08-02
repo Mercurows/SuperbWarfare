@@ -6,7 +6,6 @@ import com.atsuishio.superbwarfare.data.gun.value.*;
 import com.atsuishio.superbwarfare.event.GunEventHandler;
 import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
-import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.tools.GunsTool;
 import com.atsuishio.superbwarfare.tools.InventoryTool;
@@ -82,7 +81,7 @@ public class GunData {
         ammo = new IntValue(data, "Ammo");
         virtualAmmo = new IntValue(data, "VirtualAmmo");
 
-        var defaultFireMode = getDefault().defaultFireMode;
+        var defaultFireMode = get(GunProp.DEFAULT_FIRE_MODE);
         if (defaultFireMode == null) {
             defaultFireMode = FireMode.SEMI;
         }
@@ -178,94 +177,30 @@ public class GunData {
         return id;
     }
 
-//    public int maxDurability() {
-//        return Math.max(0, getDefault().maxDurability);
-//    }
+    public <T> T get(GunProp<T> prop) {
+        var modifier = prop.asModifier(this);
 
-    // 枪械本体属性开始
-    public double rawDamage() {
-        return getDefault().damage;
-    }
+        // gun modifiers
+        modifier.apply(this.item.getModifier(prop));
 
-    public double perkDamageRate() {
-        var perk = this.perk.get(Perk.Type.AMMO);
-        if (perk instanceof AmmoPerk ammoPerk) {
-            if (ammoPerk.slug) {
-                return ammoPerk.damageRate * rawProjectileAmount();
-            }
-            return ammoPerk.damageRate;
+        // perk
+        for (var type : Perk.Type.values()) {
+            var instance = perk.get(type);
+            if (instance == null) continue;
+
+            modifier.apply(instance.getModifier(prop));
         }
-        return 1;
-    }
 
-    public double damage() {
-        return (rawDamage() + item.getCustomDamage(stack)) * perkDamageRate();
-    }
+        // TODO AmmoConsumer
 
-    public double meleeDamage() {
-        return getDefault().meleeDamage;
-    }
-
-    public int meleeDuration() {
-        return Math.max(0, getDefault().meleeDuration);
-    }
-
-    public int meleeDamageTime() {
-        return Math.min(meleeDuration(), getDefault().meleeDamageTime);
-    }
-
-    public double explosionDamage() {
-        return getDefault().explosionDamage;
-    }
-
-    public double explosionRadius() {
-        return getDefault().explosionRadius;
-    }
-
-    public double velocity() {
-        return getDefault().velocity + item.getCustomVelocity(stack);
-    }
-
-    public double spread() {
-        return getDefault().spread;
-    }
-
-    public int magazine() {
-        return getDefault().magazine + item.getCustomMagazine(stack);
+        return modifier.get();
     }
 
     /**
      * 武器是否直接使用背包内弹药
      */
     public boolean useBackpackAmmo() {
-        return magazine() <= 0;
-    }
-
-    public ProjectileInfo projectileInfo() {
-        var info = getDefault().projectile.value;
-        if (info == null) return new ProjectileInfo();
-
-        return info;
-    }
-
-    public String projectileType() {
-        return projectileInfo().type;
-    }
-
-    public int rawProjectileAmount() {
-        return getDefault().projectileAmount;
-    }
-
-    public int projectileAmount() {
-        var perk = this.perk.get(Perk.Type.AMMO);
-        if (perk instanceof AmmoPerk ammoPerk && ammoPerk.slug) {
-            return 1;
-        }
-        return getDefault().projectileAmount;
-    }
-
-    public double headshot() {
-        return getDefault().headshot + item.getCustomHeadshot(stack);
+        return get(GunProp.MAGAZINE) <= 0;
     }
 
     public Set<ReloadType> reloadTypes() {
@@ -274,82 +209,6 @@ public class GunData {
         return getDefault().reloadTypes;
     }
 
-    public int defaultNormalReloadTime() {
-        return getDefault().normalReloadTime;
-    }
-
-    public int defaultEmptyReloadTime() {
-        return getDefault().emptyReloadTime;
-    }
-
-    public int defaultIterativeTime() {
-        return getDefault().iterativeTime;
-    }
-
-    public int iterativeAmmoLoadTime() {
-        return getDefault().iterativeAmmoLoadTime;
-    }
-
-    public int iterativeLoadAmount() {
-        return getDefault().iterativeLoadAmount;
-    }
-
-    public int defaultPrepareTime() {
-        return getDefault().prepareTime;
-    }
-
-    public int defaultPrepareLoadTime() {
-        return getDefault().prepareLoadTime;
-    }
-
-    public int prepareAmmoLoadTime() {
-        return getDefault().prepareAmmoLoadTime;
-    }
-
-
-    public int defaultPrepareEmptyTime() {
-        return getDefault().prepareEmptyTime;
-    }
-
-    public int defaultFinishTime() {
-        return getDefault().finishTime;
-    }
-
-    public int defaultActionTime() {
-        return getDefault().boltActionTime + item.getCustomBoltActionTime(stack());
-    }
-
-    public double soundRadius() {
-        return getDefault().soundRadius + item.getCustomSoundRadius(stack);
-    }
-
-    public double bypassArmor() {
-        return getDefault().bypassArmor + item.getCustomBypassArmor(stack);
-    }
-
-    public double recoilX() {
-        return getDefault().recoilX;
-    }
-
-    public double recoilY() {
-        return getDefault().recoilY;
-    }
-
-    public double recoil() {
-        return getDefault().recoil;
-    }
-
-    public double weight() {
-        return getDefault().weight + customWeight();
-    }
-
-    public double customWeight() {
-        return item.getCustomWeight(stack);
-    }
-
-    public double defaultZoom() {
-        return getDefault().defaultZoom;
-    }
 
     public double minZoom() {
         int scopeType = this.attachment.get(AttachmentType.SCOPE);
@@ -362,29 +221,9 @@ public class GunData {
     }
 
     public double zoom() {
-        if (minZoom() == maxZoom()) return defaultZoom();
+        if (minZoom() == maxZoom()) return get(GunProp.DEFAULT_ZOOM);
 
-        return Mth.clamp(defaultZoom() + item.getCustomZoom(stack), minZoom(), maxZoom());
-    }
-
-    public int rpm() {
-        return Mth.clamp(getDefault().rpm + item.getCustomRPM(stack), 1, 114514);
-    }
-
-    public int burstAmount() {
-        return getDefault().burstAmount;
-    }
-
-    public int shootDelay() {
-        return getDefault().shootDelay;
-    }
-
-    public double heatPerShoot() {
-        return getDefault().heatPerShoot;
-    }
-
-    public enum AmmoConsumeType {
-        PLAYER_AMMO, ITEM, TAG, INVALID,
+        return Mth.clamp(get(GunProp.DEFAULT_ZOOM) + item.getCustomZoom(stack), minZoom(), maxZoom());
     }
 
     public AmmoConsumer selectedAmmoConsumer() {
@@ -535,12 +374,12 @@ public class GunData {
     public void reloadAmmo(@Nullable Entity entity, boolean extraOne) {
         if (useBackpackAmmo()) return;
 
-        int mag = magazine();
+        int mag = get(GunProp.MAGAZINE);
         int ammo = this.ammo.get();
         int ammoNeeded = mag - ammo + (extraOne ? 1 : 0);
 
         // 空仓换弹的栓动武器应该在换弹后取消待上膛标记
-        if (ammo == 0 && defaultActionTime() > 0) {
+        if (ammo == 0 && get(GunProp.BOLT_ACTION_TIME) > 0) {
             bolt.needed.set(false);
         }
 
@@ -625,7 +464,7 @@ public class GunData {
 
     public List<Perk> availablePerks() {
         List<Perk> availablePerks = new ArrayList<>();
-        var perkNames = getDefault().availablePerks.list;
+        var perkNames = get(GunProp.AVAILABLE_PERKS);
         if (perkNames == null || perkNames.isEmpty()) return availablePerks;
 
         List<String> sortedNames = new ArrayList<>(perkNames);
@@ -680,18 +519,8 @@ public class GunData {
         return availablePerks().contains(perk);
     }
 
-    public Set<FireMode> getAvailableFireModes() {
-        if (getDefault().availableFireModes == null) return Set.of();
-
-        return getDefault().availableFireModes;
-    }
-
     public DamageReduce getRawDamageReduce() {
         return getDefault().damageReduce;
-    }
-
-    public double getRawDamageReduceRate() {
-        return getRawDamageReduce().getRate();
     }
 
     public double getDamageReduceRate() {
@@ -702,10 +531,6 @@ public class GunData {
             }
         }
         return getRawDamageReduce().getRate();
-    }
-
-    public double getRawDamageReduceMinDistance() {
-        return getRawDamageReduce().getMinDistance();
     }
 
     public double getDamageReduceMinDistance() {

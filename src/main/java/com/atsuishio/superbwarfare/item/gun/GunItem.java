@@ -5,6 +5,8 @@ import com.atsuishio.superbwarfare.client.PoseTool;
 import com.atsuishio.superbwarfare.client.screens.WeaponEditScreen;
 import com.atsuishio.superbwarfare.client.tooltip.component.GunImageComponent;
 import com.atsuishio.superbwarfare.data.gun.GunData;
+import com.atsuishio.superbwarfare.data.gun.GunProp;
+import com.atsuishio.superbwarfare.data.gun.GunPropertyModifier;
 import com.atsuishio.superbwarfare.data.gun.ProjectileInfo;
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
 import com.atsuishio.superbwarfare.data.launchable.LaunchableEntityTool;
@@ -65,12 +67,13 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
 import static com.atsuishio.superbwarfare.tools.EntityFindUtil.findEntity;
 
 @net.minecraftforge.fml.common.Mod.EventBusSubscriber
-public abstract class GunItem extends Item implements GeoItem, CustomRendererItem, ItemScreenProvider {
+public abstract class GunItem extends Item implements GeoItem, CustomRendererItem, ItemScreenProvider, GunPropertyModifier {
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
@@ -78,6 +81,24 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
         super(properties);
         addReloadTimeBehavior(this.reloadTimeBehaviors);
         SingletonGeoAnimatable.registerSyncedAnimatable(this);
+
+        modifyProperty(GunProp.DAMAGE, (data, v) -> v + getCustomDamage(data.stack));
+        modifyProperty(GunProp.HEADSHOT, (data, v) -> v + getCustomHeadshot(data.stack));
+        modifyProperty(GunProp.BYPASSES_ARMOR, (data, v) -> v + getCustomBypassArmor(data.stack));
+        modifyProperty(GunProp.MAGAZINE, (data, v) -> v + getCustomMagazine(data.stack));
+        modifyProperty(GunProp.DEFAULT_ZOOM, (data, v) -> v + getCustomZoom(data.stack));
+        modifyProperty(GunProp.RPM, (data, v) -> v + getCustomRPM(data.stack));
+        modifyProperty(GunProp.WEIGHT, (data, v) -> v + getCustomWeight(data.stack));
+        modifyProperty(GunProp.VELOCITY, (data, v) -> v + getCustomVelocity(data.stack));
+        modifyProperty(GunProp.SOUND_RADIUS, (data, v) -> v + getCustomSoundRadius(data.stack));
+        modifyProperty(GunProp.BOLT_ACTION_TIME, (data, v) -> v + getCustomBoltActionTime(data.stack));
+    }
+
+    protected final Map<GunProp<?>, BiFunction<GunData, ?, ?>> propertyModifiers = new HashMap<>();
+
+    @Override
+    public @NotNull Map<GunProp<?>, BiFunction<GunData, ?, ?>> getPropModifiers() {
+        return this.propertyModifiers;
     }
 
     @Override
@@ -109,15 +130,6 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
 
         var inMainHand = entity instanceof LivingEntity living && living.getMainHandItem() == stack;
         data.tick(entity, inMainHand);
-
-        if (inMainHand && !data.reloading() && selected) {
-            if (data.ammo.get() <= 5) {
-                data.hideBulletChain.set(true);
-            }
-            if (data.ammo.get() == 0) {
-                data.holdOpen.set(true);
-            }
-        }
     }
 
     @Override
@@ -137,15 +149,15 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
         // 移速
         map.put(Attributes.MOVEMENT_SPEED, new AttributeModifier(
                 uuid, Mod.ATTRIBUTE_MODIFIER,
-                -0.01f - 0.005f * data.weight(),
+                -0.01f - 0.005f * data.get(GunProp.WEIGHT),
                 AttributeModifier.Operation.MULTIPLY_BASE
         ));
 
         // 近战伤害
-        if (data.meleeDamage() > 0) {
+        if (data.get(GunProp.MELEE_DAMAGE) > 0) {
             map.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(
                     BASE_ATTACK_DAMAGE_UUID, Mod.ATTRIBUTE_MODIFIER,
-                    data.meleeDamage(),
+                    data.get(GunProp.MELEE_DAMAGE),
                     AttributeModifier.Operation.ADDITION
             ));
         }
@@ -297,7 +309,7 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
      * @param stack 武器物品
      */
     public boolean hasMeleeAttack(ItemStack stack) {
-        return GunData.from(stack).meleeDamage() > 0;
+        return GunData.from(stack).get(GunProp.MELEE_DAMAGE) > 0;
     }
 
     /**
@@ -426,7 +438,7 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
      * 判断武器能否开火
      */
     public boolean canShoot(GunData data, @Nullable Entity shooter) {
-        return data.projectileAmount() > 0
+        return data.get(GunProp.PROJECTILE_AMOUNT) > 0
                 && !data.overHeat.get()
                 && !data.reloading()
                 && !data.charging()
@@ -452,7 +464,7 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
         }
 
         // 判断是否为栓动武器（BoltActionTime > 0），并在开火后给一个需要上膛的状态
-        if (data.defaultActionTime() > 0 && data.ammo.get() > 1) {
+        if (data.get(GunProp.BOLT_ACTION_TIME) > 0 && data.ammo.get() > 1) {
             data.bolt.needed.set(true);
         }
     }
@@ -526,7 +538,7 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
         // 开火前事件
         data.item.beforeShoot(shooter, level, shootPosition, shootDirection, data, spread, zoom);
 
-        int projectileAmount = data.projectileAmount();
+        int projectileAmount = data.get(GunProp.PROJECTILE_AMOUNT);
         var perk = data.perk.get(Perk.Type.AMMO);
 
         // 生成所有子弹
@@ -535,7 +547,7 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
         }
 
         // 添加热量
-        data.heat.set(Mth.clamp(data.heat.get() + data.heatPerShoot(), 0, 100));
+        data.heat.set(Mth.clamp(data.heat.get() + data.get(GunProp.HEAT_PER_SHOOT), 0, 100));
 
         // 过热
         if (data.heat.get() >= 100 && !data.overHeat.get()) {
@@ -568,7 +580,7 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
             shooter.playSound(ModSounds.HENG.get(), 4f, pitch);
         }
 
-        float soundRadius = (float) data.soundRadius();
+        float soundRadius = data.get(GunProp.SOUND_RADIUS).floatValue();
         int barrelType = data.attachment.get(AttachmentType.BARREL);
 
         SoundEvent sound3p = ForgeRegistries.SOUND_EVENTS.getValue(Mod.loc(name + (barrelType == 2 ? "_fire_3p_s" : "_fire_3p")));
@@ -634,18 +646,18 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
     ) {
         var stack = data.stack;
 
-        float headshot = (float) data.headshot();
-        float damage = (float) data.damage();
-        float velocity = (float) data.velocity();
-        float bypassArmorRate = (float) data.bypassArmor();
+        var headshot = data.get(GunProp.HEADSHOT);
+        var damage = data.get(GunProp.DAMAGE);
+        var velocity = data.get(GunProp.VELOCITY);
+        var bypassArmorRate = data.get(GunProp.BYPASSES_ARMOR);
 
         if (VectorTool.isInLiquid(level, shootPosition)) {
             velocity = 2 + 0.05f * velocity;
         }
 
-        float finalVelocity = velocity;
+        var finalVelocity = velocity;
 
-        var projectileInfo = data.selectedAmmoConsumer().projectile == null ? data.projectileInfo() : data.selectedAmmoConsumer().projectile.value;
+        var projectileInfo = data.get(GunProp.PROJECTILE);
         var projectileType = projectileInfo.type;
 
         AtomicReference<Entity> entityHolder = new AtomicReference<>();
@@ -664,25 +676,25 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
             // SBW子弹弹射物专属属性
             if (entity instanceof ProjectileEntity projectile) {
                 projectile.shooter(shooter)
-                        .damage(damage)
-                        .headShot(headshot)
+                        .damage(damage.floatValue())
+                        .headShot(headshot.floatValue())
                         .zoom(zoom)
-                        .bypassArmorRate(bypassArmorRate)
+                        .bypassArmorRate(bypassArmorRate.floatValue())
                         .setGunItemId(stack)
-                        .velocity(finalVelocity);
+                        .velocity(finalVelocity.floatValue());
             }
 
             // SBW爆炸物专属属性
             if (entity instanceof ExplosiveProjectile explosive) {
-                explosive.setDamage(damage);
-                explosive.setExplosionDamage((float) data.explosionDamage());
-                explosive.setExplosionRadius((float) data.explosionRadius());
+                explosive.setDamage(damage.floatValue());
+                explosive.setExplosionDamage(data.get(GunProp.EXPLOSION_DAMAGE).floatValue());
+                explosive.setExplosionRadius(data.get(GunProp.EXPLOSION_RADIUS).floatValue());
             }
 
             // 填充其他自定义NBT数据
             if (projectileInfo.data != null) {
                 var tag = LaunchableEntityTool.getModifiedTag(projectileInfo,
-                        new ShootData(shooter != null ? shooter.getUUID() : null, damage, data.explosionDamage(), data.explosionRadius(), data.spread())
+                        new ShootData(shooter != null ? shooter.getUUID() : null, damage, data.get(GunProp.EXPLOSION_DAMAGE), data.get(GunProp.EXPLOSION_RADIUS), data.get(GunProp.SPREAD))
                 );
                 if (tag != null) {
                     entity.load(tag);
@@ -695,7 +707,7 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
 
                 var tag = LaunchableEntityTool.getModifiedTag(
                         newInfo,
-                        new ShootData(shooter != null ? shooter.getUUID() : null, damage, data.explosionDamage(), data.explosionRadius(), data.spread())
+                        new ShootData(shooter != null ? shooter.getUUID() : null, damage, data.get(GunProp.EXPLOSION_DAMAGE), data.get(GunProp.EXPLOSION_RADIUS), data.get(GunProp.SPREAD))
                 );
                 if (tag != null) {
                     entity.load(tag);
@@ -716,7 +728,7 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
             if (instance != null) {
                 instance.perk().modifyProjectile(data, instance, entity);
                 if (instance.perk() instanceof AmmoPerk ammoPerk) {
-                    velocity = (float) ammoPerk.getModifiedVelocity(data, instance);
+                    velocity = ammoPerk.getModifiedVelocity(data, instance);
                 }
             }
         }
@@ -736,7 +748,7 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
                 Vec3 targetVec = target.getEyePosition();
                 Vec3 playerVec = shooter.getEyePosition();
                 var hasGravity = gunData.perk.getLevel(ModPerks.MICRO_MISSILE) <= 0;
-                Vec3 toVec = RangeTool.calculateFiringSolution(playerVec, targetVec, Vec3.ZERO, data.velocity(), hasGravity ? 0.03 : 0);
+                Vec3 toVec = RangeTool.calculateFiringSolution(playerVec, targetVec, Vec3.ZERO, data.get(GunProp.VELOCITY), hasGravity ? 0.03 : 0);
                 x = toVec.x;
                 y = toVec.y;
                 z = toVec.z;
@@ -744,7 +756,7 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
         }
 
         if (entity instanceof Projectile projectile) {
-            projectile.shoot(x, y, z, velocity, (float) spread);
+            projectile.shoot(x, y, z, velocity.floatValue(), (float) spread);
         } else {
             var random = RandomSource.create();
             Vec3 vec3 = new Vec3(x, y, z)

@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.client.tooltip;
 import com.atsuishio.superbwarfare.client.tooltip.component.GunImageComponent;
 import com.atsuishio.superbwarfare.data.gun.FireMode;
 import com.atsuishio.superbwarfare.data.gun.GunData;
+import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.init.ModKeyMappings;
 import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.init.ModTags;
@@ -87,7 +88,7 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
      * 获取武器伤害的文本组件
      */
     protected Component getDamageComponent() {
-        double damage = getGunData().damage();
+        double damage = data.get(GunProp.DAMAGE);
         double extraDamage = -1;
         for (var type : Perk.Type.values()) {
             var instance = getGunData().perk.getInstance(type);
@@ -99,11 +100,11 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
             }
         }
         String dmgStr = FormatTool.format1D(damage) + (extraDamage >= 0 ? " + " + FormatTool.format1D(extraDamage) : "");
-        if (getGunData().projectileAmount() > 1) {
+        if (data.get(GunProp.PROJECTILE_AMOUNT) > 1) {
             if (extraDamage >= 0) {
-                dmgStr = "(" + dmgStr + ") * " + getGunData().projectileAmount();
+                dmgStr = "(" + dmgStr + ") * " + data.get(GunProp.PROJECTILE_AMOUNT);
             } else {
-                dmgStr = dmgStr + " * " + getGunData().projectileAmount();
+                dmgStr = dmgStr + " * " + data.get(GunProp.PROJECTILE_AMOUNT);
             }
         }
 
@@ -118,11 +119,11 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
      */
     protected Component getRpmComponent() {
         if (this.stack.getItem() instanceof GunItem &&
-                (GunData.from(this.stack).getAvailableFireModes().contains(FireMode.AUTO)
-                        || GunData.from(this.stack).getAvailableFireModes().contains(FireMode.BURST))) {
+                (GunData.from(this.stack).get(GunProp.AVAILABLE_FIRE_MODES).contains(FireMode.AUTO)
+                        || GunData.from(this.stack).get(GunProp.AVAILABLE_FIRE_MODES).contains(FireMode.BURST))) {
             return Component.translatable("des.superbwarfare.guns.rpm").withStyle(ChatFormatting.GRAY)
                     .append(Component.empty().withStyle(ChatFormatting.RESET))
-                    .append(Component.literal(FormatTool.format0D(getGunData().rpm()))
+                    .append(Component.literal(FormatTool.format0D(data.get(GunProp.RPM)))
                             .withStyle(ChatFormatting.GREEN));
         }
         return Component.empty();
@@ -196,7 +197,7 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
             int level = GunData.from(stack).perk.getLevel(perk);
             perkBypassArmorRate = ammoPerk.bypassArmorRate + (perk == ModPerks.AP_BULLET.get() ? 0.05f * (level - 1) : 0);
         }
-        double bypassRate = Math.max(getGunData().bypassArmor() + perkBypassArmorRate, 0);
+        double bypassRate = Math.max(data.get(GunProp.BYPASSES_ARMOR) + perkBypassArmorRate, 0);
 
         return Component.translatable("des.superbwarfare.guns.bypass").withStyle(ChatFormatting.GRAY)
                 .append(Component.empty().withStyle(ChatFormatting.RESET))
@@ -207,7 +208,7 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
      * 获取武器爆头倍率文本组件
      */
     protected Component getHeadshotComponent() {
-        double headshot = getGunData().headshot();
+        double headshot = data.get(GunProp.HEADSHOT);
         return Component.translatable("des.superbwarfare.guns.headshot").withStyle(ChatFormatting.GRAY)
                 .append(Component.empty().withStyle(ChatFormatting.RESET))
                 .append(Component.literal(FormatTool.format1D(headshot, "x")).withStyle(ChatFormatting.AQUA));

@@ -9,6 +9,7 @@ import com.atsuishio.superbwarfare.config.common.GameplayConfig;
 import com.atsuishio.superbwarfare.config.server.MiscConfig;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.data.gun.GunData;
+import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.data.gun.value.ReloadState;
 import com.atsuishio.superbwarfare.entity.TargetEntity;
 import com.atsuishio.superbwarfare.entity.mixin.ICustomKnockback;
@@ -347,7 +348,7 @@ public class LivingEventHandler {
 
                         var oldData = GunData.from(oldStack);
 
-                        if (oldData.defaultActionTime() > 0) {
+                        if (oldData.get(GunProp.BOLT_ACTION_TIME) > 0) {
                             oldData.bolt.actionTimer.reset();
                         }
 
@@ -355,7 +356,7 @@ public class LivingEventHandler {
 
                         oldData.reload.setState(ReloadState.NOT_RELOADING);
 
-                        if (oldData.defaultIterativeTime() != 0) {
+                        if (oldData.get(GunProp.ITERATIVE_TIME) != 0) {
                             oldData.stopped.set(false);
                             oldData.forceStop.set(false);
                             oldData.reload.setStage(0);
@@ -373,14 +374,14 @@ public class LivingEventHandler {
                     if (newStack.getItem() instanceof GunItem) {
                         var newData = GunData.from(newStack);
 
-                        if (newData.defaultActionTime() > 0) {
+                        if (newData.get(GunProp.BOLT_ACTION_TIME) > 0) {
                             newData.bolt.actionTimer.reset();
                         }
 
                         newData.reload.setState(ReloadState.NOT_RELOADING);
                         newData.reload.reloadTimer.reset();
 
-                        if (newData.defaultIterativeTime() != 0) {
+                        if (newData.get(GunProp.ITERATIVE_TIME) != 0) {
                             newData.forceStop.set(false);
                             newData.stopped.set(false);
                             newData.reload.setStage(0);

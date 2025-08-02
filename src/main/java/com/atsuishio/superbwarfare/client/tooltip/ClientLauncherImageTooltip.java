@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.client.tooltip;
 
 import com.atsuishio.superbwarfare.client.tooltip.component.GunImageComponent;
+import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.tools.FormatTool;
 import net.minecraft.ChatFormatting;
@@ -14,7 +15,7 @@ public class ClientLauncherImageTooltip extends ClientGunImageTooltip {
 
     @Override
     protected Component getDamageComponent() {
-        double damage = getGunData().damage();
+        double damage = data.get(GunProp.DAMAGE);
 
         for (var type : Perk.Type.values()) {
             var instance = getGunData().perk.getInstance(type);
@@ -23,7 +24,7 @@ public class ClientLauncherImageTooltip extends ClientGunImageTooltip {
             }
         }
 
-        double explosionDamage = getGunData().explosionDamage();
+        double explosionDamage = data.get(GunProp.EXPLOSION_DAMAGE);
 
         return Component.translatable("des.superbwarfare.guns.damage").withStyle(ChatFormatting.GRAY)
                 .append(Component.empty().withStyle(ChatFormatting.RESET))

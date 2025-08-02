@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.network.message.send;
 
 import com.atsuishio.superbwarfare.data.gun.GunData;
+import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.data.gun.ReloadType;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import net.minecraft.world.entity.player.Player;
@@ -45,7 +46,7 @@ public enum ReloadMessage {
             if (!data.hasBackupAmmo(player)) return;
 
             if (canReload || clipLoad) {
-                int magazine = data.magazine();
+                int magazine = data.get(GunProp.MAGAZINE);
                 var extra = (gunItem.isOpenBolt(stack) && gunItem.hasBulletInBarrel(stack)) ? 1 : 0;
                 var maxAmmo = magazine + extra;
 
@@ -55,7 +56,7 @@ public enum ReloadMessage {
                 return;
             }
 
-            if (canSingleReload && data.ammo.get() < data.magazine()) {
+            if (canSingleReload && data.ammo.get() < data.get(GunProp.MAGAZINE)) {
                 data.reload.singleReloadStarter.markStart();
             }
         }

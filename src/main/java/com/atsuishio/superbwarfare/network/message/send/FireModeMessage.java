@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.network.message.send;
 
 import com.atsuishio.superbwarfare.data.gun.FireMode;
 import com.atsuishio.superbwarfare.data.gun.GunData;
+import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
@@ -35,7 +36,7 @@ public enum FireModeMessage {
             var tag = data.tag();
             var fireMode = data.fireMode.get();
 
-            var mode = data.getAvailableFireModes();
+            var mode = data.get(GunProp.AVAILABLE_FIRE_MODES);
 
             if (fireMode == FireMode.SEMI) {
                 if (mode.contains(FireMode.BURST)) {

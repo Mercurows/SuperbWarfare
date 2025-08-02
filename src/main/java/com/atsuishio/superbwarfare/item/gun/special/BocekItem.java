@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.renderer.gun.BocekItemRenderer;
 import com.atsuishio.superbwarfare.client.tooltip.component.BocekImageComponent;
 import com.atsuishio.superbwarfare.data.gun.GunData;
+import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModPerks;
@@ -205,20 +206,20 @@ public class BocekItem extends GunItem {
         ItemStack stack = data.stack;
 
         var perk = data.perk.get(Perk.Type.AMMO);
-        float headshot = (float) data.headshot();
+        float headshot = data.get(GunProp.HEADSHOT).floatValue();
         float velocity = (float) (24 * power);
-        float bypassArmorRate = (float) data.bypassArmor();
+        float bypassArmorRate = data.get(GunProp.BYPASSES_ARMOR).floatValue();
         double damage;
 
         float spread;
         if (zoom) {
             spread = 0.01f;
-            damage = 0.08333333 * data.damage() *
+            damage = 0.08333333 * data.get(GunProp.DAMAGE) *
                     12 * power * perkDamage(perk);
         } else {
             spread = perk instanceof AmmoPerk ammoPerk && ammoPerk.slug ? 0.5f : 2.5f;
             damage = (perk instanceof AmmoPerk ammoPerk && ammoPerk.slug ? 0.08333333 : 0.008333333) *
-                    data.damage() * 12 * power * perkDamage(perk);
+                    data.get(GunProp.DAMAGE) * 12 * power * perkDamage(perk);
         }
 
         ProjectileEntity projectile = new ProjectileEntity(player.level())

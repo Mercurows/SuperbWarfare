@@ -7,6 +7,7 @@ import com.atsuishio.superbwarfare.compat.clothconfig.ClothConfigHelper;
 import com.atsuishio.superbwarfare.config.client.ReloadConfig;
 import com.atsuishio.superbwarfare.data.gun.FireMode;
 import com.atsuishio.superbwarfare.data.gun.GunData;
+import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.MortarEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
@@ -459,7 +460,7 @@ public class ClickHandler {
                 ) {
                     if (data.fireMode.get() == FireMode.BURST) {
                         if (ClientEventHandler.burstFireAmount == 0) {
-                            ClientEventHandler.burstFireAmount = data.burstAmount();
+                            ClientEventHandler.burstFireAmount = data.get(GunProp.BURST_AMOUNT);
                         }
                     } else {
                         ClientEventHandler.holdFire = true;
