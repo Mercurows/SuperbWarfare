@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.perk.ammo;
 
 import com.atsuishio.superbwarfare.data.gun.GunData;
+import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity;
 import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
@@ -17,6 +18,6 @@ public class APBullet extends AmmoPerk {
     public void modifyProjectile(GunData data, PerkInstance instance, Entity entity) {
         super.modifyProjectile(data, instance, entity);
         if (!(entity instanceof ProjectileEntity projectile)) return;
-        projectile.bypassArmorRate((float) Math.max(data.bypassArmor() + this.bypassArmorRate + 0.05f * (instance.level() - 1), 0));
+        projectile.bypassArmorRate((float) Math.max(data.get(GunProp.BYPASSES_ARMOR) + this.bypassArmorRate + 0.05f * (instance.level() - 1), 0));
     }
 }

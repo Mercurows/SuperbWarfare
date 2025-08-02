@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.perk.functional;
 
 import com.atsuishio.superbwarfare.data.gun.GunData;
+import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.init.ModAttachments;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.perk.Perk;
@@ -36,7 +37,7 @@ public class Subsistence extends Perk {
 
             var cap = attacker.getData(ModAttachments.PLAYER_VARIABLE).watch();
 
-            int mag = data.magazine();
+            int mag = data.get(GunProp.MAGAZINE);
             int ammo = data.ammo.get();
             int ammoReload = (int) Math.min(mag, mag * rate);
             int ammoNeed = Math.min(mag - ammo, ammoReload);

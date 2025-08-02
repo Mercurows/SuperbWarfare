@@ -8,6 +8,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.Set;
 
+@SuppressWarnings("unused")
 public class DefaultGunData implements IDBasedData {
     @SerializedName("ID")
     public String id = "";
@@ -74,7 +75,7 @@ public class DefaultGunData implements IDBasedData {
     @SerializedName("BurstAmount")
     public int burstAmount;
     @SerializedName("BypassesArmor")
-    public double bypassArmor;
+    public double bypassesArmor;
 
     @SerializedName("AmmoConsumer")
     public ObjectToList<StringToObject<AmmoConsumer>> ammoConsumers = new ObjectToList<>();

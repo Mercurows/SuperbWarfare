@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.client.language.ClientLanguageGetter;
 import com.atsuishio.superbwarfare.config.client.DisplayConfig;
 import com.atsuishio.superbwarfare.data.gun.AmmoConsumer;
 import com.atsuishio.superbwarfare.data.gun.GunData;
+import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModKeyMappings;
@@ -116,7 +117,7 @@ public class AmmoBarOverlay implements LayeredDraw.Layer {
                 // 渲染加特林射速
                 guiGraphics.drawString(
                         Minecraft.getInstance().font,
-                        data.rpm() + " RPM",
+                        data.get(GunProp.RPM) + " RPM",
                         x - 111f,
                         y - 20,
                         0xFFFFFF,

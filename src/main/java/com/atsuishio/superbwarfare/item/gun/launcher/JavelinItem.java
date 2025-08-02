@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.renderer.gun.JavelinItemRenderer;
 import com.atsuishio.superbwarfare.client.tooltip.component.LauncherImageComponent;
 import com.atsuishio.superbwarfare.data.gun.GunData;
+import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.entity.projectile.JavelinMissileEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
@@ -199,9 +200,9 @@ public class JavelinItem extends GunItem {
 
         if (player.level() instanceof ServerLevel serverLevel) {
             JavelinMissileEntity missileEntity = new JavelinMissileEntity(player, level,
-                    (float) data.damage(),
-                    (float) data.explosionDamage(),
-                    (float) data.explosionRadius(),
+                    data.get(GunProp.DAMAGE).floatValue(),
+                    data.get(GunProp.EXPLOSION_DAMAGE).floatValue(),
+                    data.get(GunProp.EXPLOSION_RADIUS).floatValue(),
                     tag.getInt("GuideType"),
                     new Vec3(tag.getDouble("TargetPosX"), tag.getDouble("TargetPosY"), tag.getDouble("TargetPosZ"))
             );

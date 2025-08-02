@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.renderer.gun.TaserItemRenderer;
 import com.atsuishio.superbwarfare.client.tooltip.component.EnergyImageComponent;
 import com.atsuishio.superbwarfare.data.gun.GunData;
+import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.entity.projectile.TaserBulletEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModItems;
@@ -155,7 +156,7 @@ public class TaserItem extends GunItem implements EnergyStorageItem {
 //        shooter.getCooldowns().addCooldown(stack.getItem(), 5);
 
         TaserBulletEntity projectile = new TaserBulletEntity(level,
-                (float) data.damage());
+                data.get(GunProp.DAMAGE).floatValue());
 
         for (Perk.Type type : Perk.Type.values()) {
             var instance = data.perk.getInstance(type);
@@ -165,7 +166,7 @@ public class TaserItem extends GunItem implements EnergyStorageItem {
         }
 
         projectile.setPos(shootPosition.x, shootPosition.y - 0.1, shootPosition.z);
-        projectile.shoot(shootDirection.x, shootDirection.y, shootDirection.z, (float) data.velocity(),
+        projectile.shoot(shootDirection.x, shootDirection.y, shootDirection.z, data.get(GunProp.VELOCITY).floatValue(),
                 (float) (zoom ? 0.1 : spread));
         level.addFreshEntity(projectile);
 

@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.renderer.gun.SentinelItemRenderer;
 import com.atsuishio.superbwarfare.client.tooltip.component.SentinelImageComponent;
 import com.atsuishio.superbwarfare.data.gun.GunData;
+import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.EnergyStorageItem;
@@ -128,7 +129,7 @@ public class SentinelItem extends GunItem implements EnergyStorageItem {
         var data = GunData.from(stack);
         var cap = stack.getCapability(Capabilities.EnergyStorage.ITEM);
         if (cap != null && cap.getEnergyStored() > 0) {
-            return 0.2857142857142857 * data.rawDamage();
+            return 0.2857142857142857 * data.getDefault().damage;
         }
         return 0;
     }
@@ -196,7 +197,7 @@ public class SentinelItem extends GunItem implements EnergyStorageItem {
         var cap = data.stack.getCapability(Capabilities.EnergyStorage.ITEM);
 
         if (cap != null && cap.getEnergyStored() > 0) {
-            float soundRadius = (float) data.soundRadius();
+            float soundRadius = data.get(GunProp.SOUND_RADIUS).floatValue();
 
             shooter.playSound(ModSounds.SENTINEL_CHARGE_FAR.get(), soundRadius * 0.7f, 1f);
             shooter.playSound(ModSounds.SENTINEL_CHARGE_FIRE_3P.get(), soundRadius * 0.4f, 1f);

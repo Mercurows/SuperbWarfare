@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.client.TooltipTool;
 import com.atsuishio.superbwarfare.client.model.item.SecondaryCataclysmModel;
 import com.atsuishio.superbwarfare.client.tooltip.component.SecondaryCataclysmImageComponent;
 import com.atsuishio.superbwarfare.data.gun.GunData;
+import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.entity.projectile.GunGrenadeEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModEnumExtensions;
@@ -228,12 +229,12 @@ public class SecondaryCataclysm extends GunItem implements EnergyStorageItem {
         boolean isChargedFire = zoom && hasEnoughEnergy;
 
         GunGrenadeEntity gunGrenadeEntity = new GunGrenadeEntity(shooter, level,
-                (float) data.damage(),
-                (float) data.explosionDamage(),
-                (float) data.explosionRadius()
+                data.get(GunProp.DAMAGE).floatValue(),
+                data.get(GunProp.EXPLOSION_DAMAGE).floatValue(),
+                data.get(GunProp.EXPLOSION_RADIUS).floatValue()
         );
 
-        float velocity = (float) data.velocity();
+        float velocity = data.get(GunProp.VELOCITY).floatValue();
 
         for (Perk.Type type : Perk.Type.values()) {
             var instance = data.perk.getInstance(type);
@@ -291,7 +292,7 @@ public class SecondaryCataclysm extends GunItem implements EnergyStorageItem {
         var cap = data.stack.getCapability(Capabilities.EnergyStorage.ITEM);
 
         if (cap != null && cap.getEnergyStored() > 3000 && zoom) {
-            float soundRadius = (float) data.soundRadius();
+            float soundRadius = data.get(GunProp.SOUND_RADIUS).floatValue();
 
             shooter.playSound(ModSounds.SECONDARY_CATACLYSM_FIRE_3P_CHARGE.get(), soundRadius * 0.4f, 1f);
             shooter.playSound(ModSounds.SECONDARY_CATACLYSM_FAR_CHARGE.get(), soundRadius * 0.7f, 1f);

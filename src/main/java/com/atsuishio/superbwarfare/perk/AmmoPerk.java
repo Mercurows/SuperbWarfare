@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.perk;
 
 import com.atsuishio.superbwarfare.data.gun.DamageReduce;
 import com.atsuishio.superbwarfare.data.gun.GunData;
+import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity;
 import net.minecraft.core.Holder;
 import net.minecraft.util.Mth;
@@ -29,6 +30,24 @@ public class AmmoPerk extends Perk {
         this.slug = builder.slug;
         this.rgb = builder.rgb;
         this.mobEffects = () -> builder.mobEffects;
+
+        appendModification(GunProp.DAMAGE, (data, damage) -> {
+            if (data.perk.get(Type.AMMO) instanceof AmmoPerk ammoPerk) {
+                if (ammoPerk.slug) {
+                    return damage * ammoPerk.damageRate * data.get(GunProp.PROJECTILE_AMOUNT);
+                }
+                return damage * ammoPerk.damageRate;
+            }
+            return damage;
+        });
+
+        appendModification(GunProp.PROJECTILE_AMOUNT, (data, amount) -> {
+            var perk = data.perk.get(Perk.Type.AMMO);
+            if (perk instanceof AmmoPerk ammoPerk && ammoPerk.slug) {
+                return 1;
+            }
+            return amount;
+        });
     }
 
     public AmmoPerk(String descriptionId, Type type) {
@@ -41,9 +60,9 @@ public class AmmoPerk extends Perk {
     public void modifyProjectile(GunData data, PerkInstance instance, Entity entity) {
         if (!(entity instanceof ProjectileEntity projectile)) return;
         projectile.setRGB(this.rgb);
-        projectile.bypassArmorRate((float) Math.max(this.bypassArmorRate + data.bypassArmor(), 0));
+        projectile.bypassArmorRate((float) Math.max(this.bypassArmorRate + data.get(GunProp.BYPASSES_ARMOR), 0));
         if (this.slug) {
-            projectile.setDamage((float) (data.damage() * data.projectileAmount()));
+            projectile.setDamage((float) (data.get(GunProp.DAMAGE) * data.get(GunProp.PROJECTILE_AMOUNT)));
         }
         if (!this.mobEffects.get().isEmpty()) {
             int amplifier = this.getEffectAmplifier(instance);
@@ -65,7 +84,7 @@ public class AmmoPerk extends Perk {
     }
 
     public double getModifiedVelocity(GunData data, PerkInstance instance) {
-        return data.velocity() * this.speedRate;
+        return data.get(GunProp.VELOCITY) * this.speedRate;
     }
 
     @Override

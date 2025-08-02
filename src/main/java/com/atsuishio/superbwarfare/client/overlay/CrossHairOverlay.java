@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.client.overlay;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.client.DisplayConfig;
 import com.atsuishio.superbwarfare.data.gun.GunData;
+import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.entity.vehicle.Ah6Entity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
@@ -98,7 +99,7 @@ public class CrossHairOverlay implements LayeredDraw.Layer {
         if (shouldRenderCrossHair(player) || (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON && (stack.is(ModItems.MINIGUN.get()) || stack.is(ModItems.AURELIA_SCEPTRE.get()) || stack.is(ModItems.M_2_HB.get()))) || (Minecraft.getInstance().options.getCameraType() == CameraType.THIRD_PERSON_BACK && (ClientEventHandler.zoomTime > 0 || ClientEventHandler.bowPullPos > 0))) {
             preciseBlit(guiGraphics, Mod.loc("textures/screens/point.png"), w / 2f - 7.5f + moveX, h / 2f - 7.5f + moveY, 0, 0, 16, 16, 16, 16);
             if (!player.isSprinting() || ClientEventHandler.cantSprint > 0) {
-                if (data.projectileAmount() > 1) {
+                if (data.get(GunProp.PROJECTILE_AMOUNT) > 1) {
                     shotgunCrossHair(guiGraphics, finPosX, finPosY, finLength);
                 } else {
                     normalCrossHair(guiGraphics, w, h, spread, moveX, moveY);

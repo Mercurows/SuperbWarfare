@@ -7,6 +7,7 @@ import com.atsuishio.superbwarfare.config.server.MiscConfig;
 import com.atsuishio.superbwarfare.data.gun.AmmoConsumer;
 import com.atsuishio.superbwarfare.data.gun.FireMode;
 import com.atsuishio.superbwarfare.data.gun.GunData;
+import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
 import com.atsuishio.superbwarfare.entity.vehicle.Ah6Entity;
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
@@ -239,11 +240,11 @@ public class ClientEventHandler {
             var data = GunData.from(stack);
 
             if (holdFire || (zoom && stack.is(ModItems.MINIGUN.get()))) {
-                shootDelay = Math.min(shootDelay + 2, data.shootDelay() + 1);
+                shootDelay = Math.min(shootDelay + 2, data.get(GunProp.SHOOT_DELAY) + 1);
 
                 // 加特林特有的旋转音效
                 if (stack.is(ModItems.MINIGUN.get())) {
-                    float rpm = (float) data.rpm() / 3600;
+                    float rpm = (float) data.get(GunProp.RPM) / 3600;
                     player.playSound(ModSounds.MINIGUN_ROT.get(), 1, 0.7f + rpm);
                 }
 
@@ -358,7 +359,7 @@ public class ClientEventHandler {
 
         if (stack.getItem() instanceof GunItem) {
             var data = GunData.from(stack);
-            sprintCost = (float) (0.5 + 0.02 * data.weight());
+            sprintCost = (float) (0.5 + 0.02 * data.get(GunProp.WEIGHT));
         } else {
             sprintCost = 0.5f;
         }
@@ -460,10 +461,10 @@ public class ClientEventHandler {
                     && !data.reloading()
                     && !data.charging() && !player.getCooldowns().isOnCooldown(stack.getItem())
             ) {
-                gunMelee = data.meleeDuration();
+                gunMelee = data.get(GunProp.MELEE_DURATION);
                 cantFireTime = gunMelee + 4;
             }
-            if (gunMelee == data.meleeDuration() - data.meleeDamageTime()) {
+            if (gunMelee == data.get(GunProp.MELEE_DURATION) - data.get(GunProp.MELEE_DAMAGE_TIME)) {
                 player.playSound(SoundEvents.PLAYER_ATTACK_SWEEP, 1f, 1);
                 Entity lookingEntity = TraceTool.findMeleeEntity(player, player.entityInteractionRange());
                 if (lookingEntity != null) {
@@ -544,7 +545,7 @@ public class ClientEventHandler {
         // 精准度
         float times = (float) Math.min(Minecraft.getInstance().getTimer().getRealtimeDeltaTicks(), 0.8);
 
-        double basicDev = data.spread();
+        double basicDev = data.get(GunProp.SPREAD);
         double walk = isMoving() ? 0.3 * basicDev : 0;
         double sprint = player.isSprinting() ? 0.25 * basicDev : 0;
         double crouching = player.isCrouching() ? -0.15 * basicDev : 0;
@@ -573,7 +574,7 @@ public class ClientEventHandler {
         gunSpread = Mth.lerp(0.14 * times, gunSpread, spread);
 
         // 开火部分
-        double weight = data.weight();
+        double weight = data.get(GunProp.WEIGHT);
         double speed = 1 - (0.04 * weight);
 
         if (ClientEventHandler.cantSprint == 0 && player.isSprinting() && !zoom && !holdFire) {
@@ -582,7 +583,7 @@ public class ClientEventHandler {
             cantFireTime = Mth.clamp(cantFireTime - 6 * speed * times, 0, 40);
         }
 
-        int rpm = Mth.clamp(data.rpm() + customRpm, 1, 114514);
+        int rpm = Mth.clamp(data.get(GunProp.RPM) + customRpm, 1, 114514);
 
         for (Perk.Type type : Perk.Type.values()) {
             var instance = data.perk.getInstance(type);
@@ -604,7 +605,7 @@ public class ClientEventHandler {
             revolverPreTime = Mth.clamp(revolverPreTime - 1.2 * times, 0, 1);
         }
 
-        if (((holdFire || burstFireAmount > 0) && shootDelay >= data.shootDelay())
+        if (((holdFire || burstFireAmount > 0) && shootDelay >= data.get(GunProp.SHOOT_DELAY))
                 && !(player.getVehicle() instanceof ArmedVehicleEntity iArmedVehicle && iArmedVehicle.banHand(player))
                 && !holdFireVehicle
                 && gunItem.canShoot(data, player)
@@ -730,7 +731,7 @@ public class ClientEventHandler {
             }
 
             // 判断是否为栓动武器（BoltActionTime > 0），并在开火后给一个需要上膛的状态
-            if (data.defaultActionTime() > 0 && data.ammo.get() > 1) {
+            if (data.get(GunProp.BOLT_ACTION_TIME) > 0 && data.ammo.get() > 1) {
                 data.bolt.needed.set(true);
             }
 
@@ -758,11 +759,11 @@ public class ClientEventHandler {
         fireRecoilTime = 10;
 
         // 真实后座（
-        if (data.recoil() != 0) {
-            player.setDeltaMovement(player.getDeltaMovement().add(player.getViewVector(1).scale(-data.recoil())));
+        if (data.get(GunProp.RECOIL) != 0) {
+            player.setDeltaMovement(player.getDeltaMovement().add(player.getViewVector(1).scale(-data.get(GunProp.RECOIL))));
         }
 
-        var gunRecoilY = data.recoilY() * 10;
+        var gunRecoilY = data.get(GunProp.RECOIL_Y) * 10;
 
         recoilY = (float) (2 * Math.random() - 1) * gunRecoilY;
 
@@ -957,7 +958,7 @@ public class ClientEventHandler {
             default -> 0.8;
         };
 
-        double customWeight = data.customWeight();
+        double customWeight = data.get(GunProp.WEIGHT);
 
         if (!breath && zoom) {
             float newPitch = (float) (player.getXRot() - 0.01f * Mth.sin((float) (0.03 * player.tickCount)) * pose * Mth.nextDouble(RandomSource.create(), 0.1, 1) * times * sway * (1 - 0.03 * customWeight));
@@ -1181,7 +1182,7 @@ public class ClientEventHandler {
         var data = GunData.from(stack);
         float times = 5 * Minecraft.getInstance().getTimer().getRealtimeDeltaTicks();
 
-        double weight = data.weight();
+        double weight = data.get(GunProp.WEIGHT);
         double speed = 1.5 - (0.07 * weight);
 
         if (zoom
@@ -1210,7 +1211,7 @@ public class ClientEventHandler {
         ItemStack stack = entity.getMainHandItem();
 
         var data = GunData.from(stack);
-        double amplitude = 15000 * data.recoilY() * data.recoilX();
+        double amplitude = 15000 * data.get(GunProp.RECOIL_Y) * data.get(GunProp.RECOIL_X);
 
         if (fireRecoilTime > 0) {
             firePosTimer = 0.001;
@@ -1244,7 +1245,7 @@ public class ClientEventHandler {
         double rpm = 1;
 
         if (stack.is(ModItems.MINIGUN.get())) {
-            rpm = (double) data.rpm() / 1800;
+            rpm = (double) data.get(GunProp.RPM) / 1800;
         }
 
         float[] shake = {0, 0};
@@ -1328,15 +1329,15 @@ public class ClientEventHandler {
             default -> 2.0;
         };
 
-        double customWeight = data.customWeight();
+        double customWeight = data.get(GunProp.WEIGHT);
 
         double rpm = 1;
 
         if (stack.is(ModItems.MINIGUN.get())) {
-            rpm = (double) data.rpm() / 1800;
+            rpm = (double) data.get(GunProp.RPM) / 1800;
         }
 
-        float gunRecoilX = (float) data.recoilX() * 60;
+        float gunRecoilX = data.get(GunProp.RECOIL_X).floatValue() * 60;
 
         recoilHorizon = Mth.lerp(0.2 * times, recoilHorizon, 0) + recoilY;
         recoilY = 0;
@@ -1553,7 +1554,7 @@ public class ClientEventHandler {
                                     Mth.lerp(event.getPartialTick(), player.zo - 0.1 * player.getViewVector(1).z, player.getZ() - 0.1 * player.getViewVector(1).z));
 
                             var hasGravity = data.perk.getLevel(ModPerks.MICRO_MISSILE) <= 0;
-                            Vec3 toVec = RangeTool.calculateFiringSolution(playerVec, targetVec, entity.getDeltaMovement(), data.velocity(), hasGravity ? 0.03 : 0);
+                            Vec3 toVec = RangeTool.calculateFiringSolution(playerVec, targetVec, entity.getDeltaMovement(), data.get(GunProp.VELOCITY), hasGravity ? 0.03 : 0);
                             look(player, toVec);
 
                             if (player.distanceTo(entity) > seekRange) {
@@ -1678,7 +1679,7 @@ public class ClientEventHandler {
         float times = Minecraft.getInstance().getTimer().getRealtimeDeltaTicks();
         ItemStack stack = entity.getMainHandItem();
         var data = GunData.from(stack);
-        double weight = data.weight();
+        double weight = data.get(GunProp.WEIGHT);
         double speed = 3.2 - (0.13 * weight);
         drawTime = Math.max(drawTime - Math.max(0.2 * speed * times * drawTime, 0.0008), 0);
     }

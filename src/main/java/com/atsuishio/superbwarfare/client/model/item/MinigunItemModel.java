@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.client.model.item;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.data.gun.GunData;
+import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.item.gun.machinegun.MinigunItem;
 import net.minecraft.client.Minecraft;
@@ -59,7 +60,7 @@ public class MinigunItemModel extends CustomGunModel<MinigunItem> {
         double fr = ClientEventHandler.fireRot;
 
         var data = GunData.from(stack);
-        int rpm = data.rpm();
+        int rpm = data.get(GunProp.RPM);
 
         float heat = (float) data.heat.get();
 
