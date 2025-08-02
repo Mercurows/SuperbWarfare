@@ -39,7 +39,7 @@ public class ModPerks {
     public static final DeferredHolder<Perk, SilverBullet> SILVER_BULLET = AMMO_PERKS.register("silver_bullet", SilverBullet::new);
     public static final DeferredHolder<Perk, Perk> POISONOUS_BULLET = AMMO_PERKS.register("poisonous_bullet",
             () -> new AmmoPerk(new AmmoPerk.Builder("poisonous_bullet", Perk.Type.AMMO).bypassArmorRate(0.0f).damageRate(1.0f).speedRate(1.0f).rgb(48, 131, 6)
-                    .mobEffect(MobEffects.POISON::value)));
+                    .mobEffect(() -> MobEffects.POISON)));
     public static final DeferredHolder<Perk, BeastBullet> BEAST_BULLET = AMMO_PERKS.register("beast_bullet", BeastBullet::new);
     public static final DeferredHolder<Perk, LongerWire> LONGER_WIRE = AMMO_PERKS.register("longer_wire", LongerWire::new);
     public static final DeferredHolder<Perk, IncendiaryBullet> INCENDIARY_BULLET = AMMO_PERKS.register("incendiary_bullet", IncendiaryBullet::new);
