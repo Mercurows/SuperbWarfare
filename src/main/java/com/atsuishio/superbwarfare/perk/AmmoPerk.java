@@ -19,7 +19,7 @@ public class AmmoPerk extends Perk {
     public float speedRate;
     public boolean slug;
     public float[] rgb;
-    public Supplier<ArrayList<MobEffect>> mobEffects;
+    public Supplier<ArrayList<Holder<MobEffect>>> mobEffects;
 
     public AmmoPerk(Builder builder) {
         super(builder.descriptionId, builder.type);
@@ -49,8 +49,8 @@ public class AmmoPerk extends Perk {
             int amplifier = this.getEffectAmplifier(instance);
             int duration = this.getEffectDuration(instance);
             ArrayList<MobEffectInstance> mobEffectInstances = new ArrayList<>();
-            for (MobEffect effect : this.mobEffects.get()) {
-                mobEffectInstances.add(new MobEffectInstance(Holder.direct(effect), duration, amplifier));
+            for (var effect : this.mobEffects.get()) {
+                mobEffectInstances.add(new MobEffectInstance(effect, duration, amplifier));
             }
             projectile.effect(mobEffectInstances);
         }
@@ -93,7 +93,7 @@ public class AmmoPerk extends Perk {
         float speedRate = 1.0f;
         boolean slug = false;
         float[] rgb = {1, 222 / 255f, 39 / 255f};
-        public ArrayList<MobEffect> mobEffects = new ArrayList<>();
+        public ArrayList<Holder<MobEffect>> mobEffects = new ArrayList<>();
 
         public Builder(String descriptionId, Type type) {
             this.descriptionId = descriptionId;
@@ -127,7 +127,7 @@ public class AmmoPerk extends Perk {
             return this;
         }
 
-        public Builder mobEffect(Supplier<MobEffect> mobEffect) {
+        public Builder mobEffect(Supplier<Holder<MobEffect>> mobEffect) {
             this.mobEffects.add(mobEffect.get());
             return this;
         }
