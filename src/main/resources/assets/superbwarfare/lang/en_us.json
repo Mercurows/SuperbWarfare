@@ -564,6 +564,9 @@
   "key.superbwarfare.free_camera": "Vehicle Free-Cam",
   "key.superbwarfare.launch": "Launch",
   "key.superbwarfare.mark": "Mark",
+  "key.superbwarfare.unload": "Unload",
+  "key.superbwarfare.change_ammo_forward": "Change Ammo Forward",
+  "key.superbwarfare.change_ammo_backward": "Change Ammo Backward",
 
   "effect.superbwarfare.shock": "Shock",
   "effect.superbwarfare.burn": "Burn",

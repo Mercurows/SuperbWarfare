@@ -251,7 +251,8 @@ public class ClickHandler {
     public static void onKeyPressed(InputEvent.Key event) {
         if (notInGame()) return;
 
-        Player player = Minecraft.getInstance().player;
+        var mc = Minecraft.getInstance();
+        Player player = mc.player;
         if (player == null) return;
         if (player.isSpectator()) return;
 
@@ -279,13 +280,20 @@ public class ClickHandler {
                 PacketDistributor.sendToServer(FireModeMessage.INSTANCE);
             }
             if (key == ModKeyMappings.INTERACT.getKey().getValue()) {
-                var mc = Minecraft.getInstance();
-                if (mc.player.getMainHandItem().getItem() instanceof GunItem) {
+                if (stack.getItem() instanceof GunItem) {
                     KeyMapping.click(mc.options.keyUse.getKey());
-                } else if (mc.player.getMainHandItem().is(ModItems.MONITOR.get())) {
+                } else if (stack.is(ModItems.MONITOR.get())) {
                     PacketDistributor.sendToServer(InteractMessage.INSTANCE);
                 }
             }
+            if (key == ModKeyMappings.UNLOAD.getKey().getValue()) {
+                if (stack.getItem() instanceof GunItem) {
+                    var data = GunData.from(stack);
+                    if (data.useBackpackAmmo() || data.ammo.get() + data.virtualAmmo.get() <= 0) return;
+                    PacketDistributor.sendToServer(UnloadMessage.INSTANCE);
+                }
+            }
+
             if (key == ModKeyMappings.DISMOUNT.getKey().getValue()) {
                 handleDismountPress(player);
             }

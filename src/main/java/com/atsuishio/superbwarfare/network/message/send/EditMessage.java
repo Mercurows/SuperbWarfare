@@ -76,7 +76,6 @@ public record EditMessage(int msgType, boolean add) implements CustomPacketPaylo
                 data.isEmpty.set(true);
                 data.holdOpen.set(true);
                 data.closeHammer.set(false);
-                SoundTool.playLocalSound(player, ModSounds.EDIT.get(), 1f, 1f);
             }
         }
         data.save();

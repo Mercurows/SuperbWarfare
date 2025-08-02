@@ -64,6 +64,7 @@ public class NetworkRegistry {
         playToServer(DogTagFinishEditMessage.TYPE, DogTagFinishEditMessage.STREAM_CODEC, DogTagFinishEditMessage::handler);
         playToServer(MouseMoveMessage.TYPE, MouseMoveMessage.STREAM_CODEC, MouseMoveMessage::handler);
         playToServer(FiringParametersEditMessage.TYPE, FiringParametersEditMessage.STREAM_CODEC, FiringParametersEditMessage::handler);
+        playToServer(UnloadMessage.TYPE, UnloadMessage.STREAM_CODEC, (msg, ctx) -> UnloadMessage.handler(ctx));
     }
 
     private static PayloadRegistrar registrar;
