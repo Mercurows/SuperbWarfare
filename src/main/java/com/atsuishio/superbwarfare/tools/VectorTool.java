@@ -2,7 +2,10 @@ package com.atsuishio.superbwarfare.tools;
 
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.mojang.math.Axis;
+import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Quaternionf;
 
@@ -66,5 +69,24 @@ public class VectorTool {
 
     public static Vec3 randomPos(Vec3 originPos, int radius) {
         return originPos.add(new Vec3(Math.random() * radius, 0, 0).yRot((float) (360 * Math.random()) * Mth.DEG_TO_RAD));
+    }
+
+    public static boolean isInLiquid(Level level, Vec3 position) {
+        // 将 Vec3 转换为 BlockPos（获取所在方块位置）
+        BlockPos blockPos = BlockPos.containing(position);
+
+        // 获取该位置的流体状态
+        FluidState fluidState = level.getFluidState(blockPos);
+
+        // 检查流体是否有效且位置低于流体表面
+        if (!fluidState.isEmpty()) {
+            // 获取流体在方块中的高度（0.0 - 1.0）
+            float fluidHeight = fluidState.getHeight(level, blockPos);
+            // 计算位置相对于当前方块底部的偏移量
+            double yOffset = position.y - blockPos.getY();
+            // 如果位置低于流体表面则返回 true
+            return yOffset < fluidHeight;
+        }
+        return false;
     }
 }
