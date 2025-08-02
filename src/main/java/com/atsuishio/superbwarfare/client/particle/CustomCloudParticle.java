@@ -25,7 +25,7 @@ public class CustomCloudParticle extends TextureSheetParticle {
 
     private final SpriteSet spriteSet;
 
-    protected CustomCloudParticle(ClientLevel world, double x, double y, double z, double vx, double vy, double vz, SpriteSet spriteSet, float rCol, float gCol, float bCol, int life, int size, boolean cooldown, boolean light) {
+    protected CustomCloudParticle(ClientLevel world, double x, double y, double z, double vx, double vy, double vz, SpriteSet spriteSet, float rCol, float gCol, float bCol, int life, float size, boolean cooldown, boolean light) {
         super(world, x, y, z);
         this.spriteSet = spriteSet;
         this.setSize(0.4f, 0.4f);

@@ -2075,6 +2075,34 @@
       }
     ]
   },
+  "hit_water": {
+    "sounds": [
+      {
+        "name": "superbwarfare:bullet/water_01",
+        "stream": false
+      },
+      {
+        "name": "superbwarfare:bullet/water_02",
+        "stream": false
+      },
+      {
+        "name": "superbwarfare:bullet/water_03",
+        "stream": false
+      },
+      {
+        "name": "superbwarfare:bullet/water_04",
+        "stream": false
+      },
+      {
+        "name": "superbwarfare:bullet/water_05",
+        "stream": false
+      },
+      {
+        "name": "superbwarfare:bullet/water_06",
+        "stream": false
+      }
+    ]
+  },
   "headshot": {
     "sounds": [
       {

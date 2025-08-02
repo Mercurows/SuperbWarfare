@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.entity.projectile;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.particle.BulletDecalOption;
+import com.atsuishio.superbwarfare.client.particle.CustomCloudOption;
 import com.atsuishio.superbwarfare.config.server.ProjectileConfig;
 import com.atsuishio.superbwarfare.entity.DPSGeneratorEntity;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
@@ -31,6 +32,7 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.util.Mth;
@@ -300,7 +302,7 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
         if (!this.level().isClientSide()) {
             Vec3 startVec = this.position();
             Vec3 endVec = startVec.add(this.getDeltaMovement());
-            HitResult result = rayTraceBlocks(this.level(), new ClipContext(startVec, endVec, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this),
+            HitResult result = rayTraceBlocks(this.level(), new ClipContext(startVec, endVec, ClipContext.Block.COLLIDER, ClipContext.Fluid.ANY, this),
                     this.penetrating ? state -> true :
                             ProjectileConfig.ALLOW_PROJECTILE_DESTROY_BLOCKS.get() ? IGNORE_LIST.and(input -> !input.is(ModTags.Blocks.BULLET_CAN_DESTROY)) : IGNORE_LIST);
             if (result.getType() != HitResult.Type.MISS) {
@@ -361,8 +363,23 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
             );
         }
 
+        if (this.level() instanceof ServerLevel serverLevel) {
+            if (isInWater()) {
+                double l = getDeltaMovement().length();
+                for (double i = 0; i < l; i ++) {
+                    Vec3 startPos = new Vec3(this.xo, this.yo, this.zo);
+                    Vec3 pos = startPos.add(getDeltaMovement().normalize().scale(i));
+                    ParticleTool.sendParticle(serverLevel, ParticleTypes.BUBBLE_COLUMN_UP, pos.x, pos.y, pos.z,
+                            1, 0, 0, 0, 0.001, true);
+                }
+                this.setDeltaMovement(this.getDeltaMovement().multiply(0.5, 0.5, 0.5));
+            }
+        }
+
         this.syncMotion();
     }
+
+
 
     @Override
     public void syncMotion() {
@@ -493,23 +510,61 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
             double vx = face.getStepX();
             double vy = face.getStepY();
             double vz = face.getStepZ();
+            Vec3 dir = new Vec3(vx, vy, vz);
 
-            if (this.beast) {
-                ParticleTool.sendParticle(serverLevel, ParticleTypes.END_ROD, location.x, location.y, location.z, 15, 0.1, 0.1, 0.1, 0.05, true);
-            } else {
-                BulletDecalOption bulletDecalOption;
-                if (this.entityData.get(COLOR_R) == DEFAULT_R && this.entityData.get(COLOR_G) == DEFAULT_G && this.entityData.get(COLOR_B) == DEFAULT_B) {
-                    bulletDecalOption = new BulletDecalOption(result.getDirection(), result.getBlockPos());
-                } else {
-                    bulletDecalOption = new BulletDecalOption(result.getDirection(), result.getBlockPos(),
-                            this.entityData.get(COLOR_R), this.entityData.get(COLOR_G), this.entityData.get(COLOR_B));
+            if (state.getBlock() == Blocks.WATER) {
+                if (!isInWater()) {
+                    BlockParticleOption particleData = new BlockParticleOption(ParticleTypes.BLOCK, state);
+                    for (int i = 0; i < 7; i++) {
+                        Vec3 vec3 = randomVec(dir, 20);
+                        ParticleTool.sendParticle(serverLevel, particleData, location.x + 0.1 * i * dir.x, location.y + 0.1 * i * dir.y, location.z + 0.1 * i * dir.z, 0, vec3.x, vec3.y, vec3.z, 10, true);
+                    }
+
+                    for (int i = 0; i < 5; i++) {
+                        Vec3 vec3 = randomVec(dir, 20);
+                        sendParticle(serverLevel, new CustomCloudOption(1, 1, 1, 10, 0.6f, false, false), location.x, location.y, location.z, 0, vec3.x, vec3.y, vec3.z, 10 + 4 * Math.random(), true);
+                    }
+                    ParticleTool.spawnBulletHitWaterParticles(serverLevel, location);
+                    serverLevel.playSound(null, new BlockPos((int) location.x, (int) location.y, (int) location.z), ModSounds.HIT_WATER.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
+
+                    // 水下路径气泡
+                    double l = getDeltaMovement().length();
+                    for (double i = 0; i < l; i ++) {
+                        Vec3 p = location.add(getDeltaMovement().normalize().scale(i));
+                        ParticleTool.sendParticle(serverLevel, ParticleTypes.BUBBLE_COLUMN_UP, p.x, p.y, p.z,
+                                1, 0, 0, 0, 0.001, false);
+                    }
                 }
-                ParticleTool.sendParticle(serverLevel, bulletDecalOption, location.x, location.y, location.z, 1, 0, 0, 0, 0, true);
-                summonVectorParticle(serverLevel, state, location, new Vec3(vx, vy, vz));
+            } else if (state.getBlock() == Blocks.LAVA) {
+                if (!isInLava()) {
+                    BlockParticleOption particleData = new BlockParticleOption(ParticleTypes.BLOCK, state);
+                    for (int i = 0; i < 7; i++) {
+                        Vec3 vec3 = randomVec(dir, 20);
+                        ParticleTool.sendParticle(serverLevel, particleData, location.x + 0.1 * i * dir.x, location.y + 0.1 * i * dir.y, location.z + 0.1 * i * dir.z, 0, vec3.x, vec3.y, vec3.z, 10, true);
+                    }
+                    ParticleTool.sendParticle(serverLevel, ParticleTypes.LAVA, location.x, location.y, location.z,
+                            4, 0, 0, 0, 0.6, true);
+                    serverLevel.playSound(null, new BlockPos((int) location.x, (int) location.y, (int) location.z), SoundEvents.LAVA_POP, SoundSource.BLOCKS, 1.0F, 1.0F);
+                    this.discard();
+                }
+            } else {
+                if (this.beast) {
+                    ParticleTool.sendParticle(serverLevel, ParticleTypes.END_ROD, location.x, location.y, location.z, 15, 0.1, 0.1, 0.1, 0.05, true);
+                } else {
+                    BulletDecalOption bulletDecalOption;
+                    if (this.entityData.get(COLOR_R) == DEFAULT_R && this.entityData.get(COLOR_G) == DEFAULT_G && this.entityData.get(COLOR_B) == DEFAULT_B) {
+                        bulletDecalOption = new BulletDecalOption(result.getDirection(), result.getBlockPos());
+                    } else {
+                        bulletDecalOption = new BulletDecalOption(result.getDirection(), result.getBlockPos(),
+                                this.entityData.get(COLOR_R), this.entityData.get(COLOR_G), this.entityData.get(COLOR_B));
+                    }
+                    ParticleTool.sendParticle(serverLevel, bulletDecalOption, location.x, location.y, location.z, 1, 0, 0, 0, 0, true);
+                    summonVectorParticle(serverLevel, state, location, dir);
 
-                this.discard();
+                    this.discard();
+                }
+                serverLevel.playSound(null, new BlockPos((int) location.x, (int) location.y, (int) location.z), ModSounds.LAND.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
             }
-            serverLevel.playSound(null, new BlockPos((int) location.x, (int) location.y, (int) location.z), ModSounds.LAND.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
         }
     }
 
