@@ -195,8 +195,8 @@ public class AmmoBarOverlay implements IGuiOverlay {
                 guiGraphics.drawString(
                         Minecraft.getInstance().font,
                         "+" + data.virtualAmmo.get(),
-                        x - 64,
-                        y - 21,
+                        x - 62 + Minecraft.getInstance().font.width(getGunAmmoString(data, player)) * 1.5f,
+                        y - 46,
                         0x55FFFF,
                         true
                 );
