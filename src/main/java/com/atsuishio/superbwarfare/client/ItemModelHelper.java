@@ -16,10 +16,7 @@ public class ItemModelHelper {
         splitBoneName(bone, name, attachments, AttachmentType.BARREL);
         splitBoneName(bone, name, attachments, AttachmentType.STOCK);
         splitBoneName(bone, name, attachments, AttachmentType.GRIP);
-
-        // TODO 根据选择的弹种切换弹种模型的显示
-
-//        splitBoneName(bone, name, "AmmoType", tag);
+        splitBoneName(bone, name, GunData.from(stack).selectedAmmoType.get());
     }
 
     private static void splitBoneName(GeoBone bone, String boneName, Attachment attachment, AttachmentType type) {
@@ -35,19 +32,44 @@ public class ItemModelHelper {
         }
     }
 
+    private static void splitBoneName(GeoBone bone, String boneName, int ammoType) {
+        try {
+            if (boneName.startsWith("AmmoType")) {
+                String[] parts = boneName.split("(?<=\\D)(?=\\d)");
+                if (parts.length == 2) {
+                    int index = Integer.parseInt(parts[1]);
+                    bone.setHidden(ammoType != index);
+                }
+            }
+        } catch (NumberFormatException ignored) {
+        }
+    }
+
     public static void hideAllAttachments(GeoBone bone, String name) {
         splitAndHideBone(bone, name, "Scope");
         splitAndHideBone(bone, name, "Magazine");
         splitAndHideBone(bone, name, "Barrel");
         splitAndHideBone(bone, name, "Stock");
         splitAndHideBone(bone, name, "Grip");
-
-//        splitAndHideBone(bone, name, "AmmoType");
+        splitAndHideBoneAmmoType(bone, name);
     }
 
     private static void splitAndHideBone(GeoBone bone, String boneName, String tagName) {
         try {
             if (boneName.startsWith(tagName)) {
+                String[] parts = boneName.split("(?<=\\D)(?=\\d)");
+                if (parts.length == 2) {
+                    int index = Integer.parseInt(parts[1]);
+                    bone.setHidden(index != 0);
+                }
+            }
+        } catch (NumberFormatException ignored) {
+        }
+    }
+
+    private static void splitAndHideBoneAmmoType(GeoBone bone, String boneName) {
+        try {
+            if (boneName.startsWith("AmmoType")) {
                 String[] parts = boneName.split("(?<=\\D)(?=\\d)");
                 if (parts.length == 2) {
                     int index = Integer.parseInt(parts[1]);

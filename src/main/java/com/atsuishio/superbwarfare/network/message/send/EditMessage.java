@@ -71,6 +71,9 @@ public record EditMessage(int msgType, boolean add) implements CustomPacketPaylo
                 var diff = message.add ? 1 : -1;
                 var selectedAmmoType = data.selectedAmmoType.get() + diff;
                 data.changeAmmoConsumer(selectedAmmoType);
+                data.isEmpty.set(true);
+                data.holdOpen.set(true);
+                data.closeHammer.set(false);
                 SoundTool.playLocalSound(player, ModSounds.EDIT.get(), 1f, 1f);
             }
         }
