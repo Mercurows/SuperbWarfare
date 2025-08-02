@@ -45,13 +45,6 @@ public class PlayerEventHandler {
             tag.putBoolean("Using", false);
             NBTTool.saveTag(mainStack, tag);
         }
-        for (ItemStack stack : player.getInventory().items) {
-            if (stack.getItem() instanceof GunItem) {
-                var data = GunData.from(stack);
-                data.draw.set(true);
-                data.save();
-            }
-        }
     }
 
     @SubscribeEvent
@@ -60,14 +53,6 @@ public class PlayerEventHandler {
 
         handleRespawnReload(player);
         handleRespawnAutoArmor(player);
-
-        for (ItemStack stack : player.getInventory().items) {
-            if (stack.getItem() instanceof GunItem) {
-                var data = GunData.from(stack);
-                data.draw.set(true);
-                data.save();
-            }
-        }
     }
 
     @SubscribeEvent

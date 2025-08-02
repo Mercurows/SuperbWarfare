@@ -178,8 +178,6 @@ public class GunEventHandler {
         handleCooldown(shooter, data);
         redrawExtraAmmo(shooter, data);
 
-        data.draw.set(false);
-
         if (inMainHand) {
             handleGunBolt(data);
 

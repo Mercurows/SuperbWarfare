@@ -103,8 +103,19 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
             GeoItem.getOrAssignId(stack, serverLevel);
         }
 
+        var data = GunData.from(stack);
+
         var inMainHand = entity instanceof LivingEntity living && living.getMainHandItem() == stack;
-        GunData.from(stack).tick(entity, inMainHand);
+        data.tick(entity, inMainHand);
+
+        if (inMainHand && !data.reloading() && selected) {
+            if (data.ammo.get() <= 5) {
+                data.hideBulletChain.set(true);
+            }
+            if (data.ammo.get() == 0) {
+                data.holdOpen.set(true);
+            }
+        }
     }
 
     @Override

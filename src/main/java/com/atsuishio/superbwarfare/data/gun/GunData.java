@@ -105,7 +105,6 @@ public class GunData {
         loadIndex = new IntValue(data, "LoadIndex");
         holdOpen = new BooleanValue(data, "HoldOpen");
         hideBulletChain = new BooleanValue(data, "HideBulletChain");
-        draw = new BooleanValue(data, "Draw");
         sensitivity = new IntValue(data, "Sensitivity");
         heat = new DoubleValue(data, "Heat");
         overHeat = new BooleanValue(data, "OverHeat");
@@ -777,7 +776,6 @@ public class GunData {
 
     public final BooleanValue holdOpen;
     public final BooleanValue hideBulletChain;
-    public final BooleanValue draw;
     public final IntValue sensitivity;
 
     // 其他子级属性
