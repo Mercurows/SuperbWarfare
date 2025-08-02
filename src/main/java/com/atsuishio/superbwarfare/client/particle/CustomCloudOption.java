@@ -14,6 +14,7 @@ import org.joml.Vector3f;
 
 public class CustomCloudOption implements ParticleOptions {
 
+    // TODO 为啥在服务端生成这个粒子会踢人
     public static final MapCodec<CustomCloudOption> CODEC = RecordCodecBuilder.mapCodec(builder ->
             builder.group(
                     Codec.FLOAT.fieldOf("r").forGetter(option -> option.red),
