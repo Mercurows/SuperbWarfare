@@ -205,6 +205,35 @@ public class ParticleTool {
         }
     }
 
+    public static void spawnBulletHitWaterParticles(Level level, Vec3 pos) {
+        double x = pos.x;
+        double y = pos.y;
+        double z = pos.z;
+
+        if (level instanceof ServerLevel serverLevel) {
+            for (int i = 0; i < 80; i++) {
+                Vec3 v = new Vec3(1, 0, 0).yRot((float) (i * Math.random()));
+                sendParticle(serverLevel, new CustomCloudOption(1, 1, 1, 20, 0.3f, false, false), x, y, z,
+                        0, v.x, v.y, v.z, 8, true);
+            }
+            Mod.queueServerWork(8, () -> {
+                for (int i = 0; i < 60; i++) {
+                    Vec3 v = new Vec3(1, 0, 0).yRot((float) (i * Math.random()));
+                    sendParticle(serverLevel, new CustomCloudOption(1, 1, 1, 17, 0.3f, false, false), x, y, z,
+                            0, v.x, v.y, v.z, 8, true);
+                }
+            });
+            Mod.queueServerWork(14, () -> {
+                for (int i = 0; i < 40; i++) {
+                    Vec3 v = new Vec3(1, 0, 0).yRot((float) (i * Math.random()));
+                    sendParticle(serverLevel, new CustomCloudOption(1, 1, 1, 15, 0.3f, false, false), x, y, z,
+                            0, v.x, v.y, v.z, 4, true);
+                }
+            });
+            sendParticle(serverLevel, ParticleTypes.CLOUD, x, y - 0.2, z, 3, 0.2, 0, 0.2, 0.002, false);
+            sendParticle(serverLevel, ParticleTypes.BUBBLE_COLUMN_UP, x, y - 0.5, z, 5, 0.4, 0.2, 0.4, 0.005, false);
+        }
+    }
 
     public static void cannonHitParticles(Level level, Vec3 pos, Entity entity) {
         double x = pos.x + 0.5 * entity.getDeltaMovement().x;
