@@ -234,21 +234,12 @@ public class GunEventHandler {
         var stack = data.stack();
         var gunItem = data.item();
 
-        if (InventoryTool.hasCreativeAmmoBox(shooter)) {
-            data.ammo.set(data.magazine() + (gunItem.hasBulletInBarrel(stack) ? 1 : 0));
-        } else if (data.selectedAmmoConsumer().type == AmmoConsumer.AmmoConsumeType.PLAYER_AMMO) {
-            data.reloadAmmo(shooter, gunItem.hasBulletInBarrel(stack));
-        }
-        data.reload.setState(ReloadState.NOT_RELOADING);
+        data.reloadAmmo(shooter, gunItem.hasBulletInBarrel(stack));
         MinecraftForge.EVENT_BUS.post(new ReloadEvent.Post(shooter, data));
     }
 
     public static void finishGunEmptyReload(@Nullable Entity shooter, @NotNull GunData data) {
-        if (InventoryTool.hasCreativeAmmoBox(shooter)) {
-            data.ammo.set(data.magazine());
-        } else {
-            data.reloadAmmo(shooter);
-        }
+        data.reloadAmmo(shooter);
         MinecraftForge.EVENT_BUS.post(new ReloadEvent.Post(shooter, data));
     }
 
