@@ -78,7 +78,6 @@ public class EditMessage {
                     data.isEmpty.set(true);
                     data.holdOpen.set(true);
                     data.closeHammer.set(false);
-                    SoundTool.playLocalSound(player, ModSounds.EDIT.get(), 1f, 1f);
                 }
             }
             SoundTool.playLocalSound(player, ModSounds.EDIT.get(), 1f, 1f);

@@ -564,6 +564,9 @@
   "key.superbwarfare.free_camera": "载具自由视角",
   "key.superbwarfare.launch": "发射",
   "key.superbwarfare.mark": "标记",
+  "key.superbwarfare.unload": "卸载子弹",
+  "key.superbwarfare.change_ammo_forward": "向前切换弹种",
+  "key.superbwarfare.change_ammo_backward": "向后切换弹种",
 
   "effect.superbwarfare.shock": "电击",
   "effect.superbwarfare.burn": "点燃",

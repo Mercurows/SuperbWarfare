@@ -72,6 +72,7 @@ public class NetworkRegistry {
         playToServer(DogTagFinishEditMessage.class, DogTagFinishEditMessage::encode, DogTagFinishEditMessage::decode, DogTagFinishEditMessage::handler);
         playToServer(MouseMoveMessage.class, MouseMoveMessage::encode, MouseMoveMessage::decode, MouseMoveMessage::handler);
         playToServer(FiringParametersEditMessage.class, FiringParametersEditMessage::encode, FiringParametersEditMessage::decode, FiringParametersEditMessage::handler);
+        playToServer(UnloadMessage.INSTANCE, UnloadMessage::handler);
 
         var registerContainerEvent = new RegisterContainersEvent();
         FMLJavaModLoadingContext.get().getModEventBus().post(registerContainerEvent);

@@ -25,6 +25,9 @@ public class ModKeyMappings {
             KeyModifier.ALT, InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_O, "key.categories.superbwarfare");
 
     public static final KeyMapping EDIT_MODE = new KeyMapping("key.superbwarfare.edit_mode", GLFW.GLFW_KEY_H, "key.categories.superbwarfare");
+    public static final KeyMapping CHANGE_AMMO_FORWARD = new KeyMapping("key.superbwarfare.change_ammo_forward", GLFW.GLFW_KEY_LEFT, "key.categories.superbwarfare");
+    public static final KeyMapping CHANGE_AMMO_BACKWARD = new KeyMapping("key.superbwarfare.change_ammo_backward", GLFW.GLFW_KEY_RIGHT, "key.categories.superbwarfare");
+    public static final KeyMapping UNLOAD = new KeyMapping("key.superbwarfare.unload", InputConstants.UNKNOWN.getValue(), "key.categories.superbwarfare");
 
     public static final KeyMapping FIRE = new KeyMapping("key.superbwarfare.fire", InputConstants.Type.MOUSE, GLFW.GLFW_MOUSE_BUTTON_LEFT, "key.categories.superbwarfare");
     public static final KeyMapping HOLD_ZOOM = new KeyMapping("key.superbwarfare.hold_zoom", InputConstants.Type.MOUSE, GLFW.GLFW_MOUSE_BUTTON_RIGHT, "key.categories.superbwarfare");
@@ -33,7 +36,6 @@ public class ModKeyMappings {
     public static final KeyMapping FREE_CAMERA = new KeyMapping("key.superbwarfare.free_camera", GLFW.GLFW_KEY_C, "key.categories.superbwarfare");
     public static final KeyMapping MELEE = new KeyMapping("key.superbwarfare.melee", GLFW.GLFW_KEY_V, "key.categories.superbwarfare");
     public static final KeyMapping MARK = new KeyMapping("key.superbwarfare.mark", InputConstants.Type.MOUSE, GLFW.GLFW_MOUSE_BUTTON_MIDDLE, "key.categories.superbwarfare");
-
 
     @SubscribeEvent
     public static void registerKeyMappings(RegisterKeyMappingsEvent event) {
@@ -53,5 +55,8 @@ public class ModKeyMappings {
         event.register(MELEE);
         event.register(FREE_CAMERA);
         event.register(MARK);
+        event.register(CHANGE_AMMO_FORWARD);
+        event.register(CHANGE_AMMO_BACKWARD);
+        event.register(UNLOAD);
     }
 }
