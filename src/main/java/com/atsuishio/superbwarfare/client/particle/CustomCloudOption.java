@@ -12,6 +12,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 public class CustomCloudOption implements ParticleOptions {
 
+    // TODO 为啥在服务端生成这个粒子会踢人
     public static final Codec<CustomCloudOption> CODEC = RecordCodecBuilder.create(builder ->
             builder.group(
                     Codec.FLOAT.fieldOf("r").forGetter(option -> option.red),
