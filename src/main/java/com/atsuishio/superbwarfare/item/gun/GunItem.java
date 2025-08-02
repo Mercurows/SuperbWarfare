@@ -14,7 +14,6 @@ import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.init.ModSounds;
-import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.CustomRendererItem;
 import com.atsuishio.superbwarfare.item.ItemScreenProvider;
 import com.atsuishio.superbwarfare.perk.AmmoPerk;
@@ -54,8 +53,6 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
-import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -107,8 +104,19 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
             GeoItem.getOrAssignId(stack, serverLevel);
         }
 
+        var data = GunData.from(stack);
+
         var inMainHand = entity instanceof LivingEntity living && living.getMainHandItem() == stack;
-        GunData.from(stack).tick(entity, inMainHand);
+        data.tick(entity, inMainHand);
+
+        if (inMainHand && !data.reloading() && selected) {
+            if (data.ammo.get() <= 5) {
+                data.hideBulletChain.set(true);
+            }
+            if (data.ammo.get() == 0) {
+                data.holdOpen.set(true);
+            }
+        }
     }
 
     @Override
@@ -159,13 +167,6 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
     @Override
     public boolean isFoil(@NotNull ItemStack stack) {
         return false;
-    }
-
-    @SubscribeEvent
-    public static void onPickup(EntityItemPickupEvent event) {
-        if (event.getItem().getItem().is(ModTags.Items.GUN)) {
-            GunData.from(event.getItem().getItem()).draw.set(true);
-        }
     }
 
     @Override

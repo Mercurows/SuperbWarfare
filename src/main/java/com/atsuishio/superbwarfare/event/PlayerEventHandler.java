@@ -47,12 +47,6 @@ public class PlayerEventHandler {
         if (stack.is(ModItems.MONITOR.get()) && stack.getOrCreateTag().getBoolean("Using")) {
             stack.getOrCreateTag().putBoolean("Using", false);
         }
-        for (ItemStack pStack : player.getInventory().items) {
-            if (pStack.getItem() instanceof GunItem) {
-                var data = GunData.from(pStack);
-                data.draw.set(true);
-            }
-        }
     }
 
     @SubscribeEvent
@@ -65,12 +59,6 @@ public class PlayerEventHandler {
 
         handleRespawnReload(player);
         handleRespawnAutoArmor(player);
-
-        for (ItemStack pStack : player.getInventory().items) {
-            if (pStack.getItem() instanceof GunItem) {
-                GunData.from(pStack).draw.set(true);
-            }
-        }
     }
 
     @SubscribeEvent

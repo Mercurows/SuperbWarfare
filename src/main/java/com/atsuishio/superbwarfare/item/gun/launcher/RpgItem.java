@@ -21,7 +21,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -103,19 +102,6 @@ public class RpgItem extends GunItem {
     // TODO 实现换弹种功能
 
     @Override
-    public void inventoryTick(@NotNull ItemStack stack, @NotNull Level world, @NotNull Entity entity, int slot, boolean selected) {
-        var data = GunData.from(stack);
-        if (data.draw.get()) {
-            data.draw.set(false);
-
-            if (data.ammo.get() == 0) {
-                data.isEmpty.set(true);
-            }
-        }
-        super.inventoryTick(stack, world, entity, slot, selected);
-    }
-
-    @Override
     public ResourceLocation getGunIcon(ItemStack stack) {
         int i = GunData.from(stack).attachment.get(AttachmentType.BARREL);
         if (i == 0) {
@@ -161,7 +147,6 @@ public class RpgItem extends GunItem {
     @Override
     public void addReloadTimeBehavior(Map<Integer, Consumer<GunData>> behaviors) {
         super.addReloadTimeBehavior(behaviors);
-
         behaviors.put(84, data -> data.isEmpty.set(false));
         behaviors.put(16, data -> data.closeHammer.set(false));
     }

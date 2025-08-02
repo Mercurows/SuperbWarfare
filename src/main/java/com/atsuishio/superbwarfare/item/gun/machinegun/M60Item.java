@@ -17,7 +17,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -29,7 +28,6 @@ import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
 
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -99,19 +97,6 @@ public class M60Item extends GunItem {
     @Override
     public Set<SoundEvent> getReloadSound() {
         return Set.of(ModSounds.M_60_RELOAD_EMPTY.get(), ModSounds.M_60_RELOAD_NORMAL.get());
-    }
-
-    @Override
-    @ParametersAreNonnullByDefault
-    public void inventoryTick(ItemStack stack, Level level, Entity entity, int slot, boolean selected) {
-        var data = GunData.from(stack);
-        if (data.draw.get()) {
-            data.draw.set(false);
-            if (data.ammo.get() <= 5) {
-                data.hideBulletChain.set(true);
-            }
-        }
-        super.inventoryTick(stack, level, entity, slot, selected);
     }
 
     @Override
