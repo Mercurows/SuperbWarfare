@@ -286,11 +286,19 @@ public class ClickHandler {
                     PacketDistributor.sendToServer(InteractMessage.INSTANCE);
                 }
             }
-            if (key == ModKeyMappings.UNLOAD.getKey().getValue()) {
-                if (stack.getItem() instanceof GunItem) {
-                    var data = GunData.from(stack);
+
+            if (stack.getItem() instanceof GunItem) {
+                var data = GunData.from(stack);
+                if (key == ModKeyMappings.UNLOAD.getKey().getValue()) {
                     if (data.useBackpackAmmo() || data.ammo.get() + data.virtualAmmo.get() <= 0) return;
                     PacketDistributor.sendToServer(UnloadMessage.INSTANCE);
+                }
+                if (data.ammoConsumers.size() > 1) {
+                    if (key == ModKeyMappings.CHANGE_AMMO_FORWARD.getKey().getValue()) {
+                        PacketDistributor.sendToServer(new EditMessage(5, true));
+                    } else if (key == ModKeyMappings.CHANGE_AMMO_BACKWARD.getKey().getValue()) {
+                        PacketDistributor.sendToServer(new EditMessage(5, false));
+                    }
                 }
             }
 
