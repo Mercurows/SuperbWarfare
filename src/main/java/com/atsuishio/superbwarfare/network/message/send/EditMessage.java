@@ -69,9 +69,11 @@ public class EditMessage {
                     data.attachment.set(AttachmentType.MAGAZINE, att);
                 }
                 case 5 -> {
-                    data.withdrawAmmo(player);
                     var diff = message.add ? 1 : -1;
                     var selectedAmmoType = data.selectedAmmoType.get() + diff;
+                    if (selectedAmmoType >= 0 && selectedAmmoType <= data.ammoConsumers.size() - 1) {
+                        data.withdrawAmmo(player);
+                    }
                     data.changeAmmoConsumer(selectedAmmoType);
                     data.isEmpty.set(true);
                     data.holdOpen.set(true);
