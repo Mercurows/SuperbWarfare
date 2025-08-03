@@ -295,11 +295,11 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
             Vec3 startVec = this.position();
             Vec3 endVec = startVec.add(this.getDeltaMovement());
             HitResult result = rayTraceBlocks(this.level(), new ClipContext(startVec, endVec, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this),
-                    this.penetrating ? state -> true :
+                    (this.penetrating || this.beast) ? state -> true :
                             ProjectileConfig.ALLOW_PROJECTILE_DESTROY_BLOCKS.get() ? IGNORE_LIST.and(input -> !input.is(ModTags.Blocks.BULLET_CAN_DESTROY)) : IGNORE_LIST);
 
             BlockHitResult fluidResult = rayTraceBlocks(this.level(), new ClipContext(startVec, endVec, ClipContext.Block.COLLIDER, ClipContext.Fluid.ANY, this),
-                    this.penetrating ? state -> true :
+                    (this.penetrating || this.beast) ? state -> true :
                             ProjectileConfig.ALLOW_PROJECTILE_DESTROY_BLOCKS.get() ? IGNORE_LIST.and(input -> !input.is(ModTags.Blocks.BULLET_CAN_DESTROY)) : IGNORE_LIST);
 
             if (result.getType() != HitResult.Type.MISS) {
@@ -368,7 +368,7 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
             }
             if (isInWater()) {
                 double l = getDeltaMovement().length();
-                for (double i = 0; i < l; i ++) {
+                for (double i = 0; i < l; i++) {
                     Vec3 startPos = new Vec3(this.xo, this.yo, this.zo);
                     Vec3 pos = startPos.add(getDeltaMovement().normalize().scale(i));
                     ParticleTool.sendParticle(serverLevel, ParticleTypes.BUBBLE_COLUMN_UP, pos.x, pos.y, pos.z,
@@ -379,7 +379,6 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
 
         this.syncMotion();
     }
-
 
 
     @Override
@@ -527,7 +526,7 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
 
                     // 水下路径气泡
                     double l = getDeltaMovement().length();
-                    for (double i = 0; i < l; i ++) {
+                    for (double i = 0; i < l; i++) {
                         Vec3 p = location.add(getDeltaMovement().normalize().scale(i));
                         ParticleTool.sendParticle(serverLevel, ParticleTypes.BUBBLE_COLUMN_UP, p.x, p.y, p.z,
                                 1, 0, 0, 0, 0.001, false);
