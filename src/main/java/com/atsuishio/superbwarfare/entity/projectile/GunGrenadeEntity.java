@@ -20,7 +20,6 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BellBlock;
@@ -40,11 +39,11 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 public class GunGrenadeEntity extends FastThrowableProjectile implements GeoEntity, ExplosiveProjectile {
 
-    private float monsterMultiplier = 0.0f;
     private float damage = 40.0f;
     private float explosionDamage = 80f;
     private float explosionRadius = 5f;
     private boolean charged = false;
+
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     public GunGrenadeEntity(EntityType<? extends GunGrenadeEntity> type, Level world) {
@@ -126,9 +125,9 @@ public class GunGrenadeEntity extends FastThrowableProjectile implements GeoEnti
 
     @Override
     protected void onHitEntity(EntityHitResult result) {
-        float damageMultiplier = 1 + this.monsterMultiplier;
         Entity entity = result.getEntity();
-        if (this.getOwner() != null && this.getOwner().getVehicle() != null && entity == this.getOwner().getVehicle()) return;
+        if (this.getOwner() != null && this.getOwner().getVehicle() != null && entity == this.getOwner().getVehicle())
+            return;
 
         if (this.getOwner() instanceof LivingEntity living) {
             if (!living.level().isClientSide() && living instanceof ServerPlayer player) {
@@ -142,11 +141,7 @@ public class GunGrenadeEntity extends FastThrowableProjectile implements GeoEnti
             damage *= 1.25f;
         }
 
-        if (entity instanceof Monster monster) {
-            DamageHandler.doDamage(monster, ModDamageTypes.causeCannonFireDamage(this.level().registryAccess(), this, this.getOwner()), 1.2f * this.damage * damageMultiplier);
-        } else {
-            DamageHandler.doDamage(entity, ModDamageTypes.causeCannonFireDamage(this.level().registryAccess(), this, this.getOwner()), damage);
-        }
+        DamageHandler.doDamage(entity, ModDamageTypes.causeCannonFireDamage(this.level().registryAccess(), this, this.getOwner()), damage);
 
         if (entity instanceof LivingEntity) {
             entity.invulnerableTime = 0;
@@ -156,7 +151,7 @@ public class GunGrenadeEntity extends FastThrowableProjectile implements GeoEnti
             if (this.level() instanceof ServerLevel) {
                 ProjectileTool.causeCustomExplode(this,
                         ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(), this, this.getOwner()),
-                        entity, this.explosionDamage, this.explosionRadius, this.monsterMultiplier);
+                        entity, this.explosionDamage, this.explosionRadius);
             }
         }
 
@@ -174,7 +169,7 @@ public class GunGrenadeEntity extends FastThrowableProjectile implements GeoEnti
         if (this.level() instanceof ServerLevel) {
             ProjectileTool.causeCustomExplode(this,
                     ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(), this, this.getOwner()),
-                    this, this.explosionDamage, this.explosionRadius, this.monsterMultiplier);
+                    this, this.explosionDamage, this.explosionRadius);
         }
         this.discard();
     }
@@ -184,7 +179,7 @@ public class GunGrenadeEntity extends FastThrowableProjectile implements GeoEnti
         super.tick();
         if (this.level() instanceof ServerLevel serverLevel && tickCount > 1) {
             double l = getDeltaMovement().length();
-            for (double i = 0; i < l; i ++) {
+            for (double i = 0; i < l; i++) {
                 Vec3 startPos = new Vec3(this.xo, this.yo, this.zo);
                 Vec3 pos = startPos.add(getDeltaMovement().normalize().scale(i));
                 ParticleTool.sendParticle(serverLevel, ParticleTypes.SMOKE, pos.x, pos.y, pos.z,
@@ -196,7 +191,7 @@ public class GunGrenadeEntity extends FastThrowableProjectile implements GeoEnti
             if (this.level() instanceof ServerLevel) {
                 ProjectileTool.causeCustomExplode(this,
                         ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(), this, this.getOwner()),
-                        this, this.explosionDamage, this.explosionRadius, this.monsterMultiplier);
+                        this, this.explosionDamage, this.explosionRadius);
             }
             this.discard();
         }

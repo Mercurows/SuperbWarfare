@@ -27,7 +27,6 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.Pig;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
-import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
@@ -57,8 +56,9 @@ public class JavelinMissileEntity extends FastThrowableProjectile implements Geo
     public static final EntityDataAccessor<Float> TARGET_X = SynchedEntityData.defineId(JavelinMissileEntity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Float> TARGET_Y = SynchedEntityData.defineId(JavelinMissileEntity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Float> TARGET_Z = SynchedEntityData.defineId(JavelinMissileEntity.class, EntityDataSerializers.FLOAT);
+
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-    private float monsterMultiplier = 0.0f;
+
     private float damage = 500.0f;
     private float explosionDamage = 140f;
     private float explosionRadius = 6f;
@@ -86,10 +86,6 @@ public class JavelinMissileEntity extends FastThrowableProjectile implements Geo
 
     public JavelinMissileEntity(PlayMessages.SpawnEntity spawnEntity, Level level) {
         this(ModEntities.JAVELIN_MISSILE.get(), level);
-    }
-
-    public void setMonsterMultiplier(float monsterMultiplier) {
-        this.monsterMultiplier = monsterMultiplier;
     }
 
     @Override
@@ -174,7 +170,6 @@ public class JavelinMissileEntity extends FastThrowableProjectile implements Geo
 
     @Override
     protected void onHitEntity(EntityHitResult result) {
-        float damageMultiplier = 1 + this.monsterMultiplier;
         Entity entity = result.getEntity();
         if (this.getOwner() != null && this.getOwner().getVehicle() != null && entity == this.getOwner().getVehicle())
             return;
@@ -189,11 +184,7 @@ public class JavelinMissileEntity extends FastThrowableProjectile implements Geo
                 }
             }
 
-            if (entity instanceof Monster monster) {
-                DamageHandler.doDamage(monster, ModDamageTypes.causeCannonFireDamage(this.level().registryAccess(), this, this.getOwner()), (entityData.get(TOP) ? 1.25f : 1f) * this.damage * damageMultiplier);
-            } else {
-                DamageHandler.doDamage(entity, ModDamageTypes.causeCannonFireDamage(this.level().registryAccess(), this, this.getOwner()), (entityData.get(TOP) ? 1.25f : 1f) * this.damage);
-            }
+            DamageHandler.doDamage(entity, ModDamageTypes.causeCannonFireDamage(this.level().registryAccess(), this, this.getOwner()), (entityData.get(TOP) ? 1.25f : 1f) * this.damage);
 
             if (entity instanceof LivingEntity) {
                 entity.invulnerableTime = 0;
@@ -240,8 +231,7 @@ public class JavelinMissileEntity extends FastThrowableProjectile implements Geo
                 vec3.y,
                 vec3.z,
                 explosionRadius,
-                ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).
-                setDamageMultiplier(this.monsterMultiplier);
+                ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true);
         explosion.explode();
         net.minecraftforge.event.ForgeEventFactory.onExplosionStart(this.level(), explosion);
         explosion.finalizeExplosion(false);
@@ -254,7 +244,7 @@ public class JavelinMissileEntity extends FastThrowableProjectile implements Geo
 
         if (this.level() instanceof ServerLevel serverLevel && tickCount > 1) {
             double l = getDeltaMovement().length();
-            for (double i = 0; i < l; i ++) {
+            for (double i = 0; i < l; i++) {
                 Vec3 startPos = new Vec3(this.xo, this.yo, this.zo);
                 Vec3 pos = startPos.add(getDeltaMovement().normalize().scale(i));
                 ParticleTool.sendParticle(serverLevel, ParticleTypes.CAMPFIRE_COSY_SMOKE, pos.x, pos.y, pos.z,
@@ -284,7 +274,6 @@ public class JavelinMissileEntity extends FastThrowableProjectile implements Geo
                     }
                 }
             }
-
 
             double px = this.getX();
             double ex = this.entityData.get(TARGET_X);
@@ -356,7 +345,7 @@ public class JavelinMissileEntity extends FastThrowableProjectile implements Geo
             if (this.level() instanceof ServerLevel) {
                 ProjectileTool.causeCustomExplode(this,
                         ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(), this, this.getOwner()),
-                        this, this.explosionDamage, this.explosionRadius, this.monsterMultiplier);
+                        this, this.explosionDamage, this.explosionRadius);
             }
             this.discard();
         }
