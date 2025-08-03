@@ -9,12 +9,12 @@ import java.util.function.Function;
 
 public interface GunPropertyModifier {
     @NotNull
-    Map<GunProp<?>, BiFunction<GunData, ?, ?>> getPropModifiers();
+    Map<GunProp<?>, GunProp.GunPropModifyContext<?>> getPropModifiers();
 
     @Nullable
     @SuppressWarnings("unchecked")
-    default <T> BiFunction<GunData, T, T> getModifier(GunProp<T> prop) {
-        return (BiFunction<GunData, T, T>) getPropModifiers().get(prop);
+    default <T> GunProp.GunPropModifyContext<T> getModifier(GunProp<T> prop) {
+        return (GunProp.GunPropModifyContext<T>) getPropModifiers().get(prop);
     }
 
     /**
@@ -30,7 +30,16 @@ public interface GunPropertyModifier {
      */
     default <T> void modifyProperty(GunProp<T> prop, @Nullable BiFunction<GunData, T, T> modifier) {
         if (modifier == null) return;
-        getPropModifiers().put(prop, modifier);
+        modifyProperty(prop, (data, value, target, source) -> modifier.apply(data, value));
+    }
+
+    /**
+     * 直接修改某个属性的值
+     */
+    @SuppressWarnings("unchecked")
+    default <T> void modifyProperty(GunProp<T> prop, @Nullable GunProp.GunPropModifyContext<T> modifier) {
+        if (modifier == null) return;
+        getPropModifiers().put(prop, (data, value, target, source) -> modifier.apply(data, (T) value, target, source));
     }
 
 
@@ -42,22 +51,27 @@ public interface GunPropertyModifier {
         appendModification(prop, (data, value) -> modifier.apply(value));
     }
 
+    default <T> void appendModification(GunProp<T> prop, @Nullable BiFunction<GunData, T, T> modifier) {
+        if (modifier == null) return;
+        appendModification(prop, (data, value, target, source) -> modifier.apply(data, value));
+    }
+
     /**
      * 在先前修改的基础上继续修改某个属性的值
      */
     @SuppressWarnings("unchecked")
-    default <T> void appendModification(GunProp<T> prop, @Nullable BiFunction<GunData, T, T> modifier) {
+    default <T> void appendModification(GunProp<T> prop, @Nullable GunProp.GunPropModifyContext<T> modifier) {
         if (modifier == null) return;
 
         var modifiers = getPropModifiers();
-        var current = (BiFunction<GunData, T, T>) modifiers.get(prop);
+        var current = (GunProp.GunPropModifyContext<T>) modifiers.get(prop);
 
         if (current == null) {
             modifiers.put(prop, modifier);
         } else {
-            modifiers.put(prop, (data, v) -> {
-                var value = current.apply(data, (T) v);
-                return modifier.apply(data, value);
+            modifiers.put(prop, (data, v, target, source) -> {
+                var value = current.apply(data, (T) v, target, source);
+                return modifier.apply(data, value, target, source);
             });
         }
     }

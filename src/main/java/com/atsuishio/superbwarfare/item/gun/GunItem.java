@@ -67,7 +67,6 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
 import static com.atsuishio.superbwarfare.tools.EntityFindUtil.findEntity;
@@ -94,10 +93,10 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
         modifyProperty(GunProp.BOLT_ACTION_TIME, (data, v) -> v + getCustomBoltActionTime(data.stack));
     }
 
-    protected final Map<GunProp<?>, BiFunction<GunData, ?, ?>> propertyModifiers = new HashMap<>();
+    protected final Map<GunProp<?>, GunProp.GunPropModifyContext<?>> propertyModifiers = new HashMap<>();
 
     @Override
-    public @NotNull Map<GunProp<?>, BiFunction<GunData, ?, ?>> getPropModifiers() {
+    public @NotNull Map<GunProp<?>, GunProp.GunPropModifyContext<?>> getPropModifiers() {
         return this.propertyModifiers;
     }
 

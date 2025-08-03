@@ -17,7 +17,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.function.BiFunction;
 
 // TODO 重写所有Perk的枪械属性修改方法
 public class Perk implements GunPropertyModifier {
@@ -26,10 +25,10 @@ public class Perk implements GunPropertyModifier {
     public final String name;
     public final Type type;
 
-    public Map<GunProp<?>, BiFunction<GunData, ?, ?>> propertyModifiers = new HashMap<>();
+    public Map<GunProp<?>, GunProp.GunPropModifyContext<?>> propertyModifiers = new HashMap<>();
 
     @Override
-    public @NotNull Map<GunProp<?>, BiFunction<GunData, ?, ?>> getPropModifiers() {
+    public @NotNull Map<GunProp<?>, GunProp.GunPropModifyContext<?>> getPropModifiers() {
         return this.propertyModifiers;
     }
 

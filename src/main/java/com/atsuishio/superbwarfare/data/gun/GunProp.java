@@ -5,6 +5,9 @@ import com.atsuishio.superbwarfare.data.ObjectToList;
 import com.atsuishio.superbwarfare.data.StringToObject;
 import com.google.gson.annotations.SerializedName;
 import net.minecraft.util.Mth;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
@@ -12,14 +15,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
-import java.util.function.BiFunction;
 
 public class GunProp<T> {
     // 这b玩意必须放第一个，不然new的时候执行到props.add(this)会NPE（全恼
     private static final List<GunProp<?>> props = new ArrayList<>();
 
     public static final GunProp<Integer> MAX_DURABILITY = new GunProp<Integer>("MaxDurability", true)
-            .withLimiter((data, v) -> Math.max(0, v));
+            .withLimiter((data, v, target, source) -> Math.max(0, v));
 
     public static final GunProp<Double> RECOIL_X = new GunProp<>("RecoilX");
     public static final GunProp<Double> RECOIL_Y = new GunProp<>("RecoilY");
@@ -33,10 +35,10 @@ public class GunProp<T> {
 
     public static final GunProp<Double> MELEE_DAMAGE = new GunProp<>("MeleeDamage");
     public static final GunProp<Integer> MELEE_DURATION = new GunProp<Integer>("MeleeDuration")
-            .withLimiter((data, v) -> Math.max(0, v));
+            .withLimiter((data, v, target, source) -> Math.max(0, v));
 
     public static final GunProp<Integer> MELEE_DAMAGE_TIME = new GunProp<Integer>("MeleeDamageTime")
-            .withLimiter((data, v) -> Math.min(data.get(MELEE_DURATION), v));
+            .withLimiter((data, v, target, source) -> Math.min(data.get(MELEE_DURATION), v));
 
     public static final GunProp<ProjectileInfo> PROJECTILE = new GunProp<>("Projectile");
     public static final GunProp<Integer> PROJECTILE_AMOUNT = new GunProp<>("ProjectileAmount");
@@ -64,7 +66,7 @@ public class GunProp<T> {
     public static final GunProp<Double> SOUND_RADIUS = new GunProp<>("SoundRadius");
 
     public static final GunProp<Integer> RPM = new GunProp<Integer>("RPM")
-            .withLimiter((data, v) -> Mth.clamp(v, 1, 114514));
+            .withLimiter((data, v, target, source) -> Mth.clamp(v, 1, 114514));
 
     public static final GunProp<Double> EXPLOSION_DAMAGE = new GunProp<>("ExplosionDamage");
     public static final GunProp<Double> EXPLOSION_RADIUS = new GunProp<>("ExplosionRadius");
@@ -77,7 +79,7 @@ public class GunProp<T> {
     private final String name;
     private final Field field;
     private final boolean readOnly;
-    public BiFunction<GunData, T, T> limiter;
+    public GunPropModifyContext<T> limiter;
 
     private GunProp(String name) {
         this(name, false);
@@ -104,7 +106,7 @@ public class GunProp<T> {
         props.add(this);
     }
 
-    private GunProp<T> withLimiter(BiFunction<GunData, T, T> limiter) {
+    private GunProp<T> withLimiter(GunPropModifyContext<T> limiter) {
         this.limiter = limiter;
         return this;
     }
@@ -136,22 +138,27 @@ public class GunProp<T> {
         return props.stream().filter(p -> p.name.equals(name)).findFirst().orElse(null);
     }
 
+    @FunctionalInterface
+    public interface GunPropModifyContext<T> {
+        T apply(@NotNull GunData data, @NotNull T value, @Nullable Entity target, @Nullable DamageSource source);
+    }
+
     public static class GunPropModifier<T> {
         private final GunData data;
         private final T value;
-        private final BiFunction<GunData, T, T> limiter;
+        private final GunPropModifyContext<T> limiter;
         private final boolean readOnly;
 
-        private final List<BiFunction<GunData, T, T>> modifiers = new ArrayList<>();
+        private final List<GunPropModifyContext<T>> modifiers = new ArrayList<>();
 
-        private GunPropModifier(GunData data, T value, @Nullable BiFunction<GunData, T, T> limiter, boolean readOnly) {
+        private GunPropModifier(GunData data, T value, @Nullable GunPropModifyContext<T> limiter, boolean readOnly) {
             this.data = data;
             this.value = value;
             this.limiter = limiter;
             this.readOnly = readOnly;
         }
 
-        public GunPropModifier<T> apply(@Nullable List<BiFunction<GunData, T, T>> modifiers) {
+        public GunPropModifier<T> apply(@Nullable List<GunPropModifyContext<T>> modifiers) {
             if (modifiers == null || readOnly) return this;
 
             for (var modifier : modifiers) {
@@ -160,7 +167,7 @@ public class GunProp<T> {
             return this;
         }
 
-        public GunPropModifier<T> apply(@Nullable BiFunction<GunData, T, T> modifier) {
+        public GunPropModifier<T> apply(@Nullable GunPropModifyContext<T> modifier) {
             if (modifier == null || readOnly) return this;
 
             modifiers.add(modifier);
@@ -170,21 +177,25 @@ public class GunProp<T> {
         public GunPropModifier<T> override(@Nullable T value) {
             if (value == null || readOnly) return this;
 
-            modifiers.add((data, v) -> value);
+            modifiers.add((data, v, target, source) -> value);
             return this;
         }
 
-        public T get() {
+        public T compute() {
+            return compute(null, null);
+        }
+
+        public T compute(@Nullable Entity target, @Nullable DamageSource source) {
             if (readOnly) return value;
 
             var result = value;
 
             for (var modifier : modifiers) {
-                result = modifier.apply(data, result);
+                result = modifier.apply(data, result, target, source);
             }
 
             if (limiter != null) {
-                result = limiter.apply(data, result);
+                result = limiter.apply(data, result, target, source);
             }
 
             return result;
