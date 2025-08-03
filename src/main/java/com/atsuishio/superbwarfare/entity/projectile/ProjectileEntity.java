@@ -533,7 +533,7 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
 
                     for (int i = 0; i < 5; i++) {
                         Vec3 vec3 = randomVec(dir, 20);
-                        sendParticle(serverLevel, new CustomCloudOption(1, 1, 1, 10, 0.6f, false, false), location.x, location.y, location.z, 0, vec3.x, vec3.y, vec3.z, 10 + 4 * Math.random(), true);
+                        sendParticle(serverLevel, new CustomCloudOption(0xFFFFFF, 10, 0.6f, false, false), location.x, location.y, location.z, 0, vec3.x, vec3.y, vec3.z, 10 + 4 * Math.random(), true);
                     }
                     ParticleTool.spawnBulletHitWaterParticles(serverLevel, location);
                     serverLevel.playSound(null, new BlockPos((int) location.x, (int) location.y, (int) location.z), ModSounds.HIT_WATER.get(), SoundSource.BLOCKS, 1.0F, 1.0F);

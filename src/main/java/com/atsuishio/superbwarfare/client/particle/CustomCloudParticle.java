@@ -10,6 +10,7 @@ public class CustomCloudParticle extends TextureSheetParticle {
 
     protected boolean cooldown;
     protected boolean light;
+
     @OnlyIn(Dist.CLIENT)
     public static class Provider implements ParticleProvider<CustomCloudOption> {
         private final SpriteSet spriteSet;
@@ -30,7 +31,7 @@ public class CustomCloudParticle extends TextureSheetParticle {
         this.spriteSet = spriteSet;
         this.setSize(0.4f, 0.4f);
         this.quadSize *= size;
-        this.lifetime = Math.max(1, life + (this.random.nextInt(life) - (int)(0.1 * life)));
+        this.lifetime = Math.max(1, life + (this.random.nextInt(life) - (int) (0.1 * life)));
         this.gravity = 0;
         this.hasPhysics = false;
         this.xd = vx * 0.01;

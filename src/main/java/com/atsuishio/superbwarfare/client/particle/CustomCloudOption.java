@@ -15,9 +15,7 @@ public class CustomCloudOption implements ParticleOptions {
     // TODO 为啥在服务端生成这个粒子会踢人
     public static final Codec<CustomCloudOption> CODEC = RecordCodecBuilder.create(builder ->
             builder.group(
-                    Codec.FLOAT.fieldOf("r").forGetter(option -> option.red),
-                    Codec.FLOAT.fieldOf("g").forGetter(option -> option.green),
-                    Codec.FLOAT.fieldOf("b").forGetter(option -> option.blue),
+                    Codec.INT.fieldOf("color").forGetter(option -> option.color),
                     Codec.INT.fieldOf("life").forGetter(option -> option.life),
                     Codec.FLOAT.fieldOf("size").forGetter(option -> option.size),
                     Codec.BOOL.fieldOf("cooldown").forGetter(option -> option.cooldown),
@@ -29,11 +27,7 @@ public class CustomCloudOption implements ParticleOptions {
         @Override
         public CustomCloudOption fromCommand(ParticleType<CustomCloudOption> particleType, StringReader reader) throws CommandSyntaxException {
             reader.expect(' ');
-            float r = reader.readFloat();
-            reader.expect(' ');
-            float g = reader.readFloat();
-            reader.expect(' ');
-            float b = reader.readFloat();
+            int color = reader.readInt();
             reader.expect(' ');
             int life = reader.readInt();
             reader.expect(' ');
@@ -42,27 +36,27 @@ public class CustomCloudOption implements ParticleOptions {
             boolean cooldown = reader.readBoolean();
             reader.expect(' ');
             boolean light = reader.readBoolean();
-            return new CustomCloudOption(r, g, b, life, size, cooldown, light);
+            return new CustomCloudOption(color, life, size, cooldown, light);
         }
 
         @Override
         public CustomCloudOption fromNetwork(ParticleType<CustomCloudOption> particleType, FriendlyByteBuf buffer) {
-            return new CustomCloudOption(buffer.readFloat(), buffer.readFloat(), buffer.readFloat(), buffer.readInt(), buffer.readInt(), buffer.readBoolean(), buffer.readBoolean());
+            return new CustomCloudOption(buffer.readInt(), buffer.readInt(), buffer.readInt(), buffer.readBoolean(), buffer.readBoolean());
         }
     };
 
-    private final float red;
-    private final float green;
-    private final float blue;
+    private final int color;
     private final int life;
     private final float size;
     private final boolean cooldown;
     private final boolean light;
 
     public CustomCloudOption(float r, float g, float b, int life, float size, boolean cooldown, boolean light) {
-        this.red = r;
-        this.green = g;
-        this.blue = b;
+        this(Math.round(r * 255) << 16 | Math.round(g * 255) << 8 | Math.round(b * 255), life, size, cooldown, light);
+    }
+
+    public CustomCloudOption(int color, int life, float size, boolean cooldown, boolean light) {
+        this.color = color;
         this.life = life;
         this.size = size;
         this.cooldown = cooldown;
@@ -70,15 +64,15 @@ public class CustomCloudOption implements ParticleOptions {
     }
 
     public float getRed() {
-        return red;
+        return (this.color >> 16 & 255) / 255f;
     }
 
     public float getGreen() {
-        return green;
+        return (this.color >> 8 & 255) / 255f;
     }
 
     public float getBlue() {
-        return blue;
+        return (this.color & 255) / 255f;
     }
 
     public int getLife() {
@@ -104,9 +98,7 @@ public class CustomCloudOption implements ParticleOptions {
 
     @Override
     public void writeToNetwork(FriendlyByteBuf buffer) {
-        buffer.writeFloat(this.red);
-        buffer.writeFloat(this.green);
-        buffer.writeFloat(this.blue);
+        buffer.writeInt(this.color);
         buffer.writeInt(this.life);
         buffer.writeDouble(this.size);
         buffer.writeBoolean(this.cooldown);
@@ -115,6 +107,6 @@ public class CustomCloudOption implements ParticleOptions {
 
     @Override
     public String writeToString() {
-        return ForgeRegistries.PARTICLE_TYPES.getKey(this.getType()) + " [" + this.red + ", " + this.green + ", " + this.blue + ", " + this.life + ", " + this.size + ", " + this.cooldown + ", " + this.light + "]";
+        return ForgeRegistries.PARTICLE_TYPES.getKey(this.getType()) + " [" + this.color + ", " + this.life + ", " + this.size + ", " + this.cooldown + ", " + this.light + "]";
     }
 }
