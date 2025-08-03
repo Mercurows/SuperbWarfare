@@ -19,7 +19,13 @@
     },
     {
       "Ammo": "superbwarfare:rpg_rocket_standard",
-      "Projectile": "superbwarfare:rpg_rocket"
+      "Projectile": "superbwarfare:rpg_rocket",
+      "Override": {
+        "Damage": 320,
+        "ExplosionDamage": 100,
+        "ExplosionRadius": 6,
+        "Velocity": 6
+      }
     }
   ],
   "AvailablePerks": [
