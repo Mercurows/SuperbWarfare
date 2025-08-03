@@ -14,7 +14,6 @@ import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
-import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
 import com.atsuishio.superbwarfare.tools.RangeTool;
@@ -269,9 +268,6 @@ public class SecondaryCataclysm extends GunItem {
             var instance = data.perk.getInstance(type);
             if (instance != null) {
                 instance.perk().modifyProjectile(data, instance, gunGrenadeEntity);
-                if (instance.perk() instanceof AmmoPerk ammoPerk) {
-                    velocity = (float) ammoPerk.getModifiedVelocity(data, instance);
-                }
             }
         }
 

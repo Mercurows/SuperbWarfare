@@ -727,9 +727,6 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
             var instance = data.perk.getInstance(type);
             if (instance != null) {
                 instance.perk().modifyProjectile(data, instance, entity);
-                if (instance.perk() instanceof AmmoPerk ammoPerk) {
-                    velocity = ammoPerk.getModifiedVelocity(data, instance);
-                }
             }
         }
 

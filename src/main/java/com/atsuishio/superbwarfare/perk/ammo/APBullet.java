@@ -1,23 +1,13 @@
 package com.atsuishio.superbwarfare.perk.ammo;
 
-import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.GunProp;
-import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity;
 import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
-import com.atsuishio.superbwarfare.perk.PerkInstance;
-import net.minecraft.world.entity.Entity;
 
 public class APBullet extends AmmoPerk {
 
     public APBullet() {
-        super(new AmmoPerk.Builder("ap_bullet", Perk.Type.AMMO).bypassArmorRate(0.4f).damageRate(0.9f).speedRate(1.2f).slug(true).rgb(230, 70, 35));
-    }
-
-    @Override
-    public void modifyProjectile(GunData data, PerkInstance instance, Entity entity) {
-        super.modifyProjectile(data, instance, entity);
-        if (!(entity instanceof ProjectileEntity projectile)) return;
-        projectile.bypassArmorRate((float) Math.max(data.get(GunProp.BYPASSES_ARMOR) + this.bypassArmorRate + 0.05f * (instance.level() - 1), 0));
+        super(new AmmoPerk.Builder("ap_bullet", Perk.Type.AMMO).bypassArmorRate(0.4).damageRate(0.9).speedRate(1.2).slug(true).rgb(230, 70, 35));
+        appendModification(GunProp.BYPASSES_ARMOR, (data, v) -> v + Math.max(0, 0.05 * (data.perk.getLevel(this) - 1)));
     }
 }
