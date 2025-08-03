@@ -107,7 +107,7 @@ public class RpgRocketStandard extends Item implements GeoItem, ProjectileItem {
             level.explode(null, source.getX(), source.getY() + 1, source.getZ(), 5, Level.ExplosionInteraction.NONE);
 
             if (!source.level().isClientSide() && source.getServer() != null) {
-                ParticleTool.spawnMediumExplosionParticles(source.level(), source.getPosition(0));
+                ParticleTool.spawnMediumExplosionParticles(source.level(), source.position());
             }
 
             if (source instanceof ServerPlayer player) {

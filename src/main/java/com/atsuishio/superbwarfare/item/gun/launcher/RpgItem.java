@@ -4,7 +4,6 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.renderer.gun.RpgItemRenderer;
 import com.atsuishio.superbwarfare.client.tooltip.component.LauncherImageComponent;
 import com.atsuishio.superbwarfare.data.gun.GunData;
-import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
@@ -39,16 +38,6 @@ public class RpgItem extends GunItem {
 
     public RpgItem() {
         super(new Properties().stacksTo(1).rarity(Rarity.RARE));
-    }
-
-    public String getAmmoDisplayName(GunData data, ItemStack stack) {
-        int i = GunData.from(stack).attachment.get(AttachmentType.BARREL);
-        if (i == 0) {
-            return "PG-7VM";
-        } else if (i == 1) {
-            return "Yasin 105 TBG";
-        }
-        return "RPG-7";
     }
 
     @Override
@@ -96,14 +85,10 @@ public class RpgItem extends GunItem {
         return Set.of(ModSounds.RPG_RELOAD_EMPTY.get());
     }
 
-    // TODO 实现换弹种功能
-
     @Override
     public ResourceLocation getGunIcon(ItemStack stack) {
-        int i = GunData.from(stack).attachment.get(AttachmentType.BARREL);
+        int i = GunData.from(stack).selectedAmmoType.get();
         if (i == 0) {
-            return Mod.loc("textures/gun_icon/rpg_standard_icon.png");
-        } else if (i == 1) {
             return Mod.loc("textures/gun_icon/rpg_tbg_icon.png");
         }
         return Mod.loc("textures/gun_icon/rpg_standard_icon.png");
