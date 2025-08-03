@@ -52,6 +52,7 @@ public class WgMissileEntity extends FastThrowableProjectile implements GeoEntit
     private float damage = 250f;
     private float explosionDamage = 200f;
     private float explosionRadius = 10f;
+    private float gravity = 0f;
 
     public WgMissileEntity(EntityType<? extends WgMissileEntity> type, Level level) {
         super(type, level);
@@ -254,11 +255,6 @@ public class WgMissileEntity extends FastThrowableProjectile implements GeoEntit
     }
 
     @Override
-    protected double getDefaultGravity() {
-        return 0;
-    }
-
-    @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar data) {
         data.add(new AnimationController<>(this, "movement", 0, this::movementPredicate));
     }
@@ -301,5 +297,15 @@ public class WgMissileEntity extends FastThrowableProjectile implements GeoEntit
     @Override
     public void setExplosionRadius(float radius) {
         this.explosionRadius = radius;
+    }
+
+    @Override
+    public double getDefaultGravity() {
+        return this.gravity;
+    }
+
+    @Override
+    public void setGravity(float gravity) {
+        this.gravity = gravity;
     }
 }

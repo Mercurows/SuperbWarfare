@@ -37,6 +37,7 @@ public class RgoGrenadeEntity extends ThrowableItemProjectile implements GeoEnti
     private float explosionDamage = ExplosionConfig.RGO_GRENADE_EXPLOSION_DAMAGE.get();
     private float explosionRadius = ExplosionConfig.RGO_GRENADE_EXPLOSION_RADIUS.get();
     private int fuse = 80;
+    private float gravity = 0.07f;
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     public RgoGrenadeEntity(EntityType<? extends RgoGrenadeEntity> type, Level world) {
@@ -141,11 +142,6 @@ public class RgoGrenadeEntity extends ThrowableItemProjectile implements GeoEnti
     }
 
     @Override
-    protected double getDefaultGravity() {
-        return 0.07F;
-    }
-
-    @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar data) {
     }
 
@@ -166,5 +162,15 @@ public class RgoGrenadeEntity extends ThrowableItemProjectile implements GeoEnti
     @Override
     public void setExplosionRadius(float radius) {
         this.explosionRadius = radius;
+    }
+
+    @Override
+    public double getDefaultGravity() {
+        return this.gravity;
+    }
+
+    @Override
+    public void setGravity(float gravity) {
+        this.gravity = gravity;
     }
 }

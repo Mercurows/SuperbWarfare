@@ -57,6 +57,7 @@ public class MediumRocketEntity extends FastThrowableProjectile implements GeoEn
     private float fireProbability = 0;
     private int fireTime = 0;
     private int sparedAmount = 50;
+    private float gravity = 0.05f;
 
     public MediumRocketEntity(EntityType<? extends MediumRocketEntity> type, Level world) {
         super(type, world);
@@ -302,11 +303,6 @@ public class MediumRocketEntity extends FastThrowableProjectile implements GeoEn
     }
 
     @Override
-    protected double getDefaultGravity() {
-        return 0.05f;
-    }
-
-    @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar data) {
         data.add(new AnimationController<>(this, "movement", 0, this::movementPredicate));
     }
@@ -349,5 +345,15 @@ public class MediumRocketEntity extends FastThrowableProjectile implements GeoEn
     @Override
     public boolean forceLoadChunk() {
         return true;
+    }
+
+    @Override
+    public double getDefaultGravity() {
+        return this.gravity;
+    }
+
+    @Override
+    public void setGravity(float gravity) {
+        this.gravity = gravity;
     }
 }

@@ -51,6 +51,7 @@ public class MortarShellEntity extends FastThrowableProjectile implements GeoEnt
     private float explosionDamage = ExplosionConfig.MORTAR_SHELL_EXPLOSION_DAMAGE.get();
     private int life = 600;
     private float radius = ExplosionConfig.MORTAR_SHELL_EXPLOSION_RADIUS.get();
+    private float gravity = 0.13f;
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     private Potion potion = Potions.WATER.value();
@@ -254,11 +255,6 @@ public class MortarShellEntity extends FastThrowableProjectile implements GeoEnt
         return this.cache;
     }
 
-    @Override
-    protected double getDefaultGravity() {
-        return 0.13;
-    }
-
     private void createAreaCloud(Level level, Vec3 pos) {
         if (this.potion == Potions.WATER.value()) return;
 
@@ -297,5 +293,15 @@ public class MortarShellEntity extends FastThrowableProjectile implements GeoEnt
     @Override
     public void setExplosionRadius(float radius) {
         this.radius = radius;
+    }
+
+    @Override
+    public double getDefaultGravity() {
+        return this.gravity;
+    }
+
+    @Override
+    public void setGravity(float gravity) {
+        this.gravity = gravity;
     }
 }

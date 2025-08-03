@@ -39,6 +39,8 @@ public class HandGrenadeEntity extends ThrowableItemProjectile implements GeoEnt
     private float explosionDamage = ExplosionConfig.M67_GRENADE_EXPLOSION_DAMAGE.get();
     private float explosionRadius = ExplosionConfig.M67_GRENADE_EXPLOSION_RADIUS.get();
     private int fuse = 100;
+    private float gravity = 0.07f;
+
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     public HandGrenadeEntity(EntityType<? extends HandGrenadeEntity> type, Level world) {
@@ -176,11 +178,6 @@ public class HandGrenadeEntity extends ThrowableItemProjectile implements GeoEnt
     }
 
     @Override
-    protected double getDefaultGravity() {
-        return 0.07F;
-    }
-
-    @Override
     public void setDamage(float damage) {
         this.damage = damage;
     }
@@ -193,5 +190,15 @@ public class HandGrenadeEntity extends ThrowableItemProjectile implements GeoEnt
     @Override
     public void setExplosionRadius(float radius) {
         this.explosionRadius = radius;
+    }
+
+    @Override
+    public double getDefaultGravity() {
+        return this.gravity;
+    }
+
+    @Override
+    public void setGravity(float gravity) {
+        this.gravity = gravity;
     }
 }

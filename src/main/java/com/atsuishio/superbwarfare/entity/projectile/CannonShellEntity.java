@@ -292,7 +292,7 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
 
     @Override
     protected double getDefaultGravity() {
-        return gravity;
+        return this.gravity;
     }
 
     @Override
@@ -333,5 +333,10 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
     @Override
     public boolean forceLoadChunk() {
         return true;
+    }
+
+    @Override
+    public void setGravity(float gravity) {
+        this.gravity = gravity;
     }
 }

@@ -27,6 +27,7 @@ public class MelonBombEntity extends FastThrowableProjectile implements Explosiv
 
     private float explosionDamage = 500;
     private float explosionRadius = 10;
+    private float gravity = 0.05f;
 
     public MelonBombEntity(EntityType<? extends MelonBombEntity> type, Level world) {
         super(type, world);
@@ -118,11 +119,6 @@ public class MelonBombEntity extends FastThrowableProjectile implements Explosiv
     }
 
     @Override
-    protected double getDefaultGravity() {
-        return 0.05F;
-    }
-
-    @Override
     public void setDamage(float damage) {
     }
 
@@ -134,5 +130,15 @@ public class MelonBombEntity extends FastThrowableProjectile implements Explosiv
     @Override
     public void setExplosionRadius(float radius) {
         this.explosionRadius = radius;
+    }
+
+    @Override
+    public double getDefaultGravity() {
+        return this.gravity;
+    }
+
+    @Override
+    public void setGravity(float gravity) {
+        this.gravity = gravity;
     }
 }

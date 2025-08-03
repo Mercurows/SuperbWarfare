@@ -51,6 +51,7 @@ public class SwarmDroneEntity extends FastThrowableProjectile implements GeoEnti
 
     private float explosionDamage = 80f;
     private float explosionRadius = 5f;
+    private float gravity = 0.1f;
 
     private float randomFloat;
     private int guideType = 0;
@@ -271,11 +272,6 @@ public class SwarmDroneEntity extends FastThrowableProjectile implements GeoEnti
     }
 
     @Override
-    protected double getDefaultGravity() {
-        return tickCount > 10 ? 0 : 0.1f;
-    }
-
-    @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar data) {
         data.add(new AnimationController<>(this, "movement", 0, this::movementPredicate));
     }
@@ -312,5 +308,15 @@ public class SwarmDroneEntity extends FastThrowableProjectile implements GeoEnti
     @Override
     public void setExplosionRadius(float radius) {
         this.explosionRadius = radius;
+    }
+
+    @Override
+    public double getDefaultGravity() {
+        return tickCount > 10 ? 0 : this.gravity;
+    }
+
+    @Override
+    public void setGravity(float gravity) {
+        this.gravity = gravity;
     }
 }

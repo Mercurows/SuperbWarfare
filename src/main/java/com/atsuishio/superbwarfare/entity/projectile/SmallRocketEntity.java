@@ -44,6 +44,7 @@ public class SmallRocketEntity extends FastThrowableProjectile implements GeoEnt
     private float damage = 140f;
     private float explosionDamage = 60f;
     private float explosionRadius = 5f;
+    private float gravity = 0f;
 
     public SmallRocketEntity(EntityType<? extends SmallRocketEntity> type, Level world) {
         super(type, world);
@@ -216,11 +217,6 @@ public class SmallRocketEntity extends FastThrowableProjectile implements GeoEnt
     }
 
     @Override
-    protected double getDefaultGravity() {
-        return 0;
-    }
-
-    @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar data) {
         data.add(new AnimationController<>(this, "movement", 0, this::movementPredicate));
     }
@@ -258,5 +254,15 @@ public class SmallRocketEntity extends FastThrowableProjectile implements GeoEnt
     @Override
     public void setExplosionRadius(float radius) {
         this.explosionRadius = radius;
+    }
+
+    @Override
+    public double getDefaultGravity() {
+        return this.gravity;
+    }
+
+    @Override
+    public void setGravity(float gravity) {
+        this.gravity = gravity;
     }
 }

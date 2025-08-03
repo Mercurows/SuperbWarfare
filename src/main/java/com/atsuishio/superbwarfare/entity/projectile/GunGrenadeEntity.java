@@ -38,6 +38,7 @@ public class GunGrenadeEntity extends FastThrowableProjectile implements GeoEnti
     private float explosionDamage = 80f;
     private float explosionRadius = 5f;
     private boolean charged = false;
+    private float gravity = 0.03f;
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
@@ -190,5 +191,15 @@ public class GunGrenadeEntity extends FastThrowableProjectile implements GeoEnti
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return this.cache;
+    }
+
+    @Override
+    public double getDefaultGravity() {
+        return this.gravity;
+    }
+
+    @Override
+    public void setGravity(float gravity) {
+        this.gravity = gravity;
     }
 }

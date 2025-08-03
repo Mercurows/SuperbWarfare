@@ -52,6 +52,7 @@ public class JavelinMissileEntity extends FastThrowableProjectile implements Geo
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
+    private float gravity = 0f;
     private float damage = 500.0f;
     private float explosionDamage = 140f;
     private float explosionRadius = 6f;
@@ -355,11 +356,6 @@ public class JavelinMissileEntity extends FastThrowableProjectile implements Geo
     }
 
     @Override
-    protected double getDefaultGravity() {
-        return 0F;
-    }
-
-    @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar data) {
         data.add(new AnimationController<>(this, "movement", 0, this::movementPredicate));
     }
@@ -402,5 +398,15 @@ public class JavelinMissileEntity extends FastThrowableProjectile implements Geo
     @Override
     public void setExplosionRadius(float radius) {
         this.explosionRadius = radius;
+    }
+
+    @Override
+    public double getDefaultGravity() {
+        return this.gravity;
+    }
+
+    @Override
+    public void setGravity(float gravity) {
+        this.gravity = gravity;
     }
 }
