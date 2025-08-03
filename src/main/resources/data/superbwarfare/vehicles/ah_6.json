@@ -103,6 +103,11 @@
     },
     {
       "Type": "Multiply",
+      "Value": 3,
+      "Source": "@superbwarfare:rpg_rocket"
+    },
+    {
+      "Type": "Multiply",
       "Value": 0.8
     },
     {

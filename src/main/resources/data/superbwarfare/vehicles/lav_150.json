@@ -105,6 +105,11 @@
       "Source": "@superbwarfare:gun_grenade"
     },
     {
+      "Type": "Multiply",
+      "Value": 0.8,
+      "Source": "@superbwarfare:javelin_missile"
+    },
+    {
       "Type": "Reduce",
       "Value": 7
     }

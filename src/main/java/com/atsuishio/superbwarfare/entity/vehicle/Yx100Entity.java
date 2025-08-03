@@ -235,7 +235,7 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
     @Override
     public DamageModifier getDamageModifier() {
         return super.getDamageModifier()
-                .custom((source, damage) -> getSourceAngle(source, 0.5f) * damage);
+                .custom((source, damage) -> getSourceAngle(source, 0.3f) * damage);
     }
 
     @Override
