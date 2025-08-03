@@ -15,9 +15,9 @@ import java.util.function.Supplier;
 
 public class AmmoPerk extends Perk {
 
-    public float bypassArmorRate;
-    public float damageRate;
-    public float speedRate;
+    public double bypassArmorRate;
+    public double damageRate;
+    public double speedRate;
     public boolean slug;
     public float[] rgb;
     public Supplier<ArrayList<Holder<MobEffect>>> mobEffects;
@@ -30,6 +30,10 @@ public class AmmoPerk extends Perk {
         this.slug = builder.slug;
         this.rgb = builder.rgb;
         this.mobEffects = () -> builder.mobEffects;
+
+        appendModification(GunProp.BYPASSES_ARMOR, (data, amount) -> Math.max(0, amount + this.bypassArmorRate));
+
+        appendModification(GunProp.VELOCITY, (data, amount) -> amount * this.speedRate);
 
         appendModification(GunProp.DAMAGE, (data, damage) -> {
             if (data.perk.get(Type.AMMO) instanceof AmmoPerk ammoPerk) {
@@ -60,10 +64,6 @@ public class AmmoPerk extends Perk {
     public void modifyProjectile(GunData data, PerkInstance instance, Entity entity) {
         if (!(entity instanceof ProjectileEntity projectile)) return;
         projectile.setRGB(this.rgb);
-        projectile.bypassArmorRate((float) Math.max(this.bypassArmorRate + data.get(GunProp.BYPASSES_ARMOR), 0));
-        if (this.slug) {
-            projectile.setDamage((float) (data.get(GunProp.DAMAGE) * data.get(GunProp.PROJECTILE_AMOUNT)));
-        }
         if (!this.mobEffects.get().isEmpty()) {
             int amplifier = this.getEffectAmplifier(instance);
             int duration = this.getEffectDuration(instance);
@@ -81,10 +81,6 @@ public class AmmoPerk extends Perk {
 
     public int getEffectDuration(PerkInstance instance) {
         return 70 + 30 * instance.level();
-    }
-
-    public double getModifiedVelocity(GunData data, PerkInstance instance) {
-        return data.get(GunProp.VELOCITY) * this.speedRate;
     }
 
     @Override
@@ -107,9 +103,9 @@ public class AmmoPerk extends Perk {
 
         String descriptionId;
         Type type;
-        float bypassArmorRate = 0.0f;
-        float damageRate = 1.0f;
-        float speedRate = 1.0f;
+        double bypassArmorRate = 0.0;
+        double damageRate = 1.0;
+        double speedRate = 1.0;
         boolean slug = false;
         float[] rgb = {1, 222 / 255f, 39 / 255f};
         public ArrayList<Holder<MobEffect>> mobEffects = new ArrayList<>();
@@ -119,17 +115,17 @@ public class AmmoPerk extends Perk {
             this.type = type;
         }
 
-        public Builder bypassArmorRate(float bypassArmorRate) {
+        public AmmoPerk.Builder bypassArmorRate(double bypassArmorRate) {
             this.bypassArmorRate = Mth.clamp(bypassArmorRate, -1, 1);
             return this;
         }
 
-        public Builder damageRate(float damageRate) {
+        public AmmoPerk.Builder damageRate(double damageRate) {
             this.damageRate = Mth.clamp(damageRate, 0, Float.POSITIVE_INFINITY);
             return this;
         }
 
-        public Builder speedRate(float speedRate) {
+        public AmmoPerk.Builder speedRate(double speedRate) {
             this.speedRate = Mth.clamp(speedRate, 0, Float.POSITIVE_INFINITY);
             return this;
         }

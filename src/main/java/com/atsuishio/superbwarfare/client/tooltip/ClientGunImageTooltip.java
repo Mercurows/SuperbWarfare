@@ -5,10 +5,8 @@ import com.atsuishio.superbwarfare.data.gun.FireMode;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.init.ModKeyMappings;
-import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
-import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.tools.FormatTool;
 import net.minecraft.ChatFormatting;
@@ -184,16 +182,7 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
      * 获取武器穿甲比例文本组件
      */
     protected Component getBypassComponent() {
-        double perkBypassArmorRate = 0;
-        var perk = data.perk.get(Perk.Type.AMMO);
-
-        if (perk instanceof AmmoPerk ammoPerk) {
-            var perkInstance = data.perk.getInstance(perk);
-            int level = perkInstance == null ? 0 : perkInstance.level();
-            perkBypassArmorRate = ammoPerk.bypassArmorRate + (perk == ModPerks.AP_BULLET.get() ? 0.05f * (level - 1) : 0);
-        }
-        double bypassRate = Math.max(data.get(GunProp.BYPASSES_ARMOR) + perkBypassArmorRate, 0);
-
+        double bypassRate = Math.max(data.get(GunProp.BYPASSES_ARMOR), 0);
         return Component.translatable("des.superbwarfare.guns.bypass").withStyle(ChatFormatting.GRAY)
                 .append(Component.empty().withStyle(ChatFormatting.RESET))
                 .append(Component.literal(FormatTool.format2D(bypassRate * 100, "%")).withStyle(ChatFormatting.GOLD));
