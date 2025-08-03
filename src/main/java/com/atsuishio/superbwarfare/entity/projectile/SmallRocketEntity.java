@@ -51,6 +51,7 @@ public class SmallRocketEntity extends FastThrowableProjectile implements GeoEnt
     private float damage = 140f;
     private float explosionDamage = 60f;
     private float explosionRadius = 5f;
+    private float gravity = 0f;
 
     public SmallRocketEntity(EntityType<? extends SmallRocketEntity> type, Level world) {
         super(type, world);
@@ -116,7 +117,8 @@ public class SmallRocketEntity extends FastThrowableProjectile implements GeoEnt
     @Override
     protected void onHitEntity(EntityHitResult result) {
         Entity entity = result.getEntity();
-        if (this.getOwner() != null && this.getOwner().getVehicle() != null && entity == this.getOwner().getVehicle()) return;
+        if (this.getOwner() != null && this.getOwner().getVehicle() != null && entity == this.getOwner().getVehicle())
+            return;
         if (this.level() instanceof ServerLevel) {
             if (entity == this.getOwner() || (this.getOwner() != null && entity == this.getOwner().getVehicle()))
                 return;
@@ -190,7 +192,7 @@ public class SmallRocketEntity extends FastThrowableProjectile implements GeoEnt
 
         if (this.level() instanceof ServerLevel serverLevel && tickCount > 1) {
             double l = getDeltaMovement().length();
-            for (double i = 0; i < l; i ++) {
+            for (double i = 0; i < l; i++) {
                 Vec3 startPos = new Vec3(this.xo, this.yo, this.zo);
                 Vec3 pos = startPos.add(getDeltaMovement().normalize().scale(i));
                 ParticleTool.sendParticle(serverLevel, ParticleTypes.CAMPFIRE_COSY_SMOKE, pos.x, pos.y, pos.z,
@@ -231,11 +233,6 @@ public class SmallRocketEntity extends FastThrowableProjectile implements GeoEnt
     }
 
     @Override
-    protected float getGravity() {
-        return 0f;
-    }
-
-    @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar data) {
         data.add(new AnimationController<>(this, "movement", 0, this::movementPredicate));
     }
@@ -273,5 +270,15 @@ public class SmallRocketEntity extends FastThrowableProjectile implements GeoEnt
     @Override
     public void setExplosionRadius(float radius) {
         this.explosionRadius = radius;
+    }
+
+    @Override
+    public float getGravity() {
+        return this.gravity;
+    }
+
+    @Override
+    public void setGravity(float gravity) {
+        this.gravity = gravity;
     }
 }

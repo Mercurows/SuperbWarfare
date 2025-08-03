@@ -59,6 +59,7 @@ public class SwarmDroneEntity extends FastThrowableProjectile implements GeoEnti
 
     private float explosionDamage = 80f;
     private float explosionRadius = 5f;
+    private float gravity = 0.1f;
 
     private float randomFloat;
     private int guideType = 0;
@@ -184,7 +185,8 @@ public class SwarmDroneEntity extends FastThrowableProjectile implements GeoEnti
         if (entity instanceof SwarmDroneEntity) {
             return;
         }
-        if (this.getOwner() != null && this.getOwner().getVehicle() != null && entity == this.getOwner().getVehicle()) return;
+        if (this.getOwner() != null && this.getOwner().getVehicle() != null && entity == this.getOwner().getVehicle())
+            return;
         if (this.getOwner() instanceof LivingEntity living) {
             if (!living.level().isClientSide() && living instanceof ServerPlayer player) {
                 living.level().playSound(null, living.blockPosition(), ModSounds.INDICATION.get(), SoundSource.VOICE, 1, 1);
@@ -286,11 +288,6 @@ public class SwarmDroneEntity extends FastThrowableProjectile implements GeoEnti
     }
 
     @Override
-    protected float getGravity() {
-        return tickCount > 10 ? 0 : 0.1f;
-    }
-
-    @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar data) {
         data.add(new AnimationController<>(this, "movement", 0, this::movementPredicate));
     }
@@ -327,5 +324,15 @@ public class SwarmDroneEntity extends FastThrowableProjectile implements GeoEnti
     @Override
     public void setExplosionRadius(float radius) {
         this.explosionRadius = radius;
+    }
+
+    @Override
+    public float getGravity() {
+        return tickCount > 10 ? 0 : this.gravity;
+    }
+
+    @Override
+    public void setGravity(float gravity) {
+        this.gravity = gravity;
     }
 }

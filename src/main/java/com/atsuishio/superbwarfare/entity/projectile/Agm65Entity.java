@@ -61,6 +61,7 @@ public class Agm65Entity extends FastThrowableProjectile implements GeoEntity, E
     private float explosionRadius = ExplosionConfig.AGM_65_EXPLOSION_RADIUS.get().floatValue();
     private boolean distracted = false;
     private int durability;
+    public float gravity = 0.15f;
 
     public Agm65Entity(EntityType<? extends Agm65Entity> type, Level world) {
         super(type, world);
@@ -295,8 +296,8 @@ public class Agm65Entity extends FastThrowableProjectile implements GeoEntity, E
     }
 
     @Override
-    protected float getGravity() {
-        return tickCount > 8 ? 0 : 0.15F;
+    public float getGravity() {
+        return tickCount > 8 ? 0 : this.gravity;
     }
 
     @Override
@@ -352,5 +353,10 @@ public class Agm65Entity extends FastThrowableProjectile implements GeoEntity, E
     @Override
     public boolean forceLoadChunk() {
         return true;
+    }
+
+    @Override
+    public void setGravity(float gravity) {
+        this.gravity = gravity;
     }
 }

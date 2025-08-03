@@ -49,6 +49,7 @@ public class SmallCannonShellEntity extends FastThrowableProjectile implements G
     private float explosionDamage = 80f;
     private float explosionRadius = 5f;
     private boolean aa;
+    private float gravity = 0.03f;
     private Explosion.BlockInteraction blockInteraction;
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
@@ -250,5 +251,15 @@ public class SmallCannonShellEntity extends FastThrowableProjectile implements G
     @Override
     public void setExplosionRadius(float radius) {
         this.explosionRadius = radius;
+    }
+
+    @Override
+    public float getGravity() {
+        return this.gravity;
+    }
+
+    @Override
+    public void setGravity(float gravity) {
+        this.gravity = gravity;
     }
 }

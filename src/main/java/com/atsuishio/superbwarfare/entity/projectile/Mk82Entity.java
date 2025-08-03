@@ -44,7 +44,7 @@ public class Mk82Entity extends FastThrowableProjectile implements GeoEntity, Ex
 
     private float explosionDamage = ExplosionConfig.MK_82_EXPLOSION_DAMAGE.get();
     private float explosionRadius = ExplosionConfig.MK_82_EXPLOSION_RADIUS.get().floatValue();
-
+    private float gravity = 0.06f;
     public int durability = 1;
 
     public Mk82Entity(EntityType<? extends Mk82Entity> type, Level world) {
@@ -147,11 +147,6 @@ public class Mk82Entity extends FastThrowableProjectile implements GeoEntity, Ex
     }
 
     @Override
-    protected float getGravity() {
-        return 0.06F;
-    }
-
-    @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar data) {
         data.add(new AnimationController<>(this, "movement", 0, this::movementPredicate));
     }
@@ -193,5 +188,15 @@ public class Mk82Entity extends FastThrowableProjectile implements GeoEntity, Ex
     @Override
     public void setExplosionRadius(float radius) {
         this.explosionRadius = radius;
+    }
+
+    @Override
+    public float getGravity() {
+        return this.gravity;
+    }
+
+    @Override
+    public void setGravity(float gravity) {
+        this.gravity = gravity;
     }
 }

@@ -261,12 +261,17 @@ public class RpgRocketEntity extends FastThrowableProjectile implements GeoEntit
     }
 
     @Override
-    public float getGravity() {
-        return gravity;
+    public float getVolume() {
+        return 0.2f;
     }
 
     @Override
-    public float getVolume() {
-        return 0.2f;
+    public float getGravity() {
+        return this.gravity;
+    }
+
+    @Override
+    public void setGravity(float gravity) {
+        this.gravity = gravity;
     }
 }

@@ -59,6 +59,7 @@ public class WgMissileEntity extends FastThrowableProjectile implements GeoEntit
     private float damage = 250f;
     private float explosionDamage = 200f;
     private float explosionRadius = 10f;
+    private float gravity = 0f;
 
     public WgMissileEntity(EntityType<? extends WgMissileEntity> type, Level level) {
         super(type, level);
@@ -216,7 +217,7 @@ public class WgMissileEntity extends FastThrowableProjectile implements GeoEntit
 
         if (this.level() instanceof ServerLevel serverLevel && tickCount > 1) {
             double l = getDeltaMovement().length();
-            for (double i = 0; i < l; i ++) {
+            for (double i = 0; i < l; i++) {
                 Vec3 startPos = new Vec3(this.xo, this.yo, this.zo);
                 Vec3 pos = startPos.add(getDeltaMovement().normalize().scale(i));
                 ParticleTool.sendParticle(serverLevel, ParticleTypes.CAMPFIRE_COSY_SMOKE, pos.x, pos.y, pos.z,
@@ -270,11 +271,6 @@ public class WgMissileEntity extends FastThrowableProjectile implements GeoEntit
     }
 
     @Override
-    protected float getGravity() {
-        return 0;
-    }
-
-    @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar data) {
         data.add(new AnimationController<>(this, "movement", 0, this::movementPredicate));
     }
@@ -317,5 +313,15 @@ public class WgMissileEntity extends FastThrowableProjectile implements GeoEntit
     @Override
     public void setExplosionRadius(float radius) {
         this.explosionRadius = radius;
+    }
+
+    @Override
+    public float getGravity() {
+        return this.gravity;
+    }
+
+    @Override
+    public void setGravity(float gravity) {
+        this.gravity = gravity;
     }
 }

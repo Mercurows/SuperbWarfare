@@ -52,6 +52,7 @@ public class MortarShellEntity extends FastThrowableProjectile implements GeoEnt
     private float explosionDamage = ExplosionConfig.MORTAR_SHELL_EXPLOSION_DAMAGE.get();
     private int life = 600;
     private float radius = ExplosionConfig.MORTAR_SHELL_EXPLOSION_RADIUS.get();
+    private float gravity = 0.13f;
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     private Potion potion = Potions.EMPTY;
@@ -221,7 +222,7 @@ public class MortarShellEntity extends FastThrowableProjectile implements GeoEnt
         super.tick();
         if (this.level() instanceof ServerLevel serverLevel && tickCount > 1) {
             double l = getDeltaMovement().length();
-            for (double i = 0; i < l; i ++) {
+            for (double i = 0; i < l; i++) {
                 Vec3 startPos = new Vec3(this.xo, this.yo, this.zo);
                 Vec3 pos = startPos.add(getDeltaMovement().normalize().scale(i));
                 ParticleTool.sendParticle(serverLevel, ParticleTypes.CAMPFIRE_COSY_SMOKE, pos.x, pos.y, pos.z,
@@ -265,11 +266,6 @@ public class MortarShellEntity extends FastThrowableProjectile implements GeoEnt
         return this.cache;
     }
 
-    @Override
-    protected float getGravity() {
-        return 0.13F;
-    }
-
     private void createAreaCloud(Level level, Vec3 pos) {
         if (this.potion == Potions.EMPTY) return;
 
@@ -306,5 +302,15 @@ public class MortarShellEntity extends FastThrowableProjectile implements GeoEnt
     @Override
     public void setExplosionRadius(float radius) {
         this.radius = radius;
+    }
+
+    @Override
+    public float getGravity() {
+        return this.gravity;
+    }
+
+    @Override
+    public void setGravity(float gravity) {
+        this.gravity = gravity;
     }
 }
