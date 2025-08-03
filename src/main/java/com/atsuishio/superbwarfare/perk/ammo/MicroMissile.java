@@ -11,7 +11,6 @@ public class MicroMissile extends AmmoPerk {
 
     public MicroMissile() {
         super(new AmmoPerk.Builder("micro_missile", Perk.Type.AMMO).speedRate(1.2f));
-        appendModification(GunProp.DAMAGE, (data, damage) -> damage * (1.1 + data.perk.getLevel(this) * 0.1));
         appendModification(GunProp.EXPLOSION_DAMAGE, (data, damage) -> damage * (0.8 + data.perk.getLevel(this) * 0.1));
         appendModification(GunProp.EXPLOSION_RADIUS, radius -> radius * 0.5);
     }

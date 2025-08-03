@@ -24,7 +24,6 @@ public class Perk implements GunPropertyModifier {
     public final String descriptionId;
     public final String name;
     public final Type type;
-    public int level = 1;
 
     public Map<GunProp<?>, GunProp.GunPropModifyContext<?>> propertyModifiers = new HashMap<>();
 
