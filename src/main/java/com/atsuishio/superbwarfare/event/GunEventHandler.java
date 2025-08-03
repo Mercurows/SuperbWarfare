@@ -212,6 +212,7 @@ public class GunEventHandler {
             }
             if (data.ammo.get() == 0) {
                 data.holdOpen.set(true);
+                data.isEmpty.set(true);
             }
         }
 

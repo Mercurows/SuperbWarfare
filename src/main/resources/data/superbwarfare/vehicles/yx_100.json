@@ -54,12 +54,12 @@
     },
     {
       "Type": "Multiply",
-      "Value": 0.75,
+      "Value": 0.65,
       "Source": "superbwarfare:custom_explosion"
     },
     {
       "Type": "Multiply",
-      "Value": 0.75,
+      "Value": 0.65,
       "Source": "superbwarfare:projectile_boom"
     },
     {
@@ -74,13 +74,8 @@
     },
     {
       "Type": "Multiply",
-      "Value": 1.5,
+      "Value": 1.3,
       "Source": "superbwarfare:cannon_fire"
-    },
-    {
-      "Type": "Multiply",
-      "Value": 1.25,
-      "Source": "superbwarfare:laser"
     },
     {
       "Type": "Multiply",
@@ -89,7 +84,7 @@
     },
     {
       "Type": "Multiply",
-      "Value": 0.375,
+      "Value": 0.25,
       "Source": "@superbwarfare:small_cannon_shell"
     },
     {
@@ -99,17 +94,17 @@
     },
     {
       "Type": "Multiply",
-      "Value": 1.5,
+      "Value": 1.1,
       "Source": "@superbwarfare:rpg_rocket"
     },
     {
       "Type": "Multiply",
-      "Value": 2,
+      "Value": 1.25,
       "Source": "@superbwarfare:gun_grenade"
     },
     {
       "Type": "Multiply",
-      "Value": 2,
+      "Value": 1.25,
       "Source": "@superbwarfare:mortar_shell"
     },
     {

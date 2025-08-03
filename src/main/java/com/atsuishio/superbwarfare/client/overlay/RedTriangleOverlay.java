@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.client.overlay;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.RenderHelper;
+import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.tools.SeekTool;
@@ -43,28 +44,29 @@ public class RedTriangleOverlay implements LayeredDraw.Layer {
         if (player == null) return;
 
         ItemStack stack = player.getMainHandItem();
-        if (!stack.is(ModItems.RPG.get())) return;
-        if (player.getVehicle() instanceof ArmedVehicleEntity iArmedVehicle && iArmedVehicle.banHand(player))
-            return;
+        if (stack.is(ModItems.RPG.get()) && GunData.from(stack).selectedAmmoType.get() == 0) {
+            if (player.getVehicle() instanceof ArmedVehicleEntity iArmedVehicle && iArmedVehicle.banHand(player))
+                return;
 
-        Entity idf = SeekTool.seekLivingEntity(player, player.level(), 128, 6);
-        if (idf == null) return;
-        double distance = idf.position().distanceTo(cameraPos);
-        Vec3 pos = new Vec3(Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), idf.xo, idf.getX()), Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), idf.yo + idf.getEyeHeight() + 0.5 + 0.07 * distance, idf.getEyeY() + 0.5 + 0.07 * distance), Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), idf.zo, idf.getZ()));
-        Vec3 point = VectorUtil.worldToScreen(pos);
+            Entity idf = SeekTool.seekLivingEntity(player, player.level(), 128, 6);
+            if (idf == null) return;
+            double distance = idf.position().distanceTo(cameraPos);
+            Vec3 pos = new Vec3(Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), idf.xo, idf.getX()), Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), idf.yo + idf.getEyeHeight() + 0.5 + 0.07 * distance, idf.getEyeY() + 0.5 + 0.07 * distance), Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), idf.zo, idf.getZ()));
+            Vec3 point = VectorUtil.worldToScreen(pos);
 
-        poseStack.pushPose();
-        float x = (float) point.x;
-        float y = (float) point.y;
+            poseStack.pushPose();
+            float x = (float) point.x;
+            float y = (float) point.y;
 
-        RenderHelper.preciseBlit(guiGraphics, TRIANGLE, x - 4, y - 4, 8, 8, 0, 0, 8, 8, 8, 8);
+            RenderHelper.preciseBlit(guiGraphics, TRIANGLE, x - 4, y - 4, 8, 8, 0, 0, 8, 8, 8, 8);
 
-        RenderSystem.depthMask(true);
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.enableDepthTest();
-        RenderSystem.disableBlend();
-        RenderSystem.setShaderColor(1, 1, 1, 1);
+            RenderSystem.depthMask(true);
+            RenderSystem.defaultBlendFunc();
+            RenderSystem.enableDepthTest();
+            RenderSystem.disableBlend();
+            RenderSystem.setShaderColor(1, 1, 1, 1);
 
-        poseStack.popPose();
+            poseStack.popPose();
+        }
     }
 }

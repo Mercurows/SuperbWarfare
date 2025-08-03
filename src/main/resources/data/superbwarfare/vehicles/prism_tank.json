@@ -91,6 +91,11 @@
     },
     {
       "Type": "Multiply",
+      "Value": 1.3,
+      "Source": "@superbwarfare:rpg_rocket"
+    },
+    {
+      "Type": "Multiply",
       "Value": 3,
       "Source": "superbwarfare:vehicle_strike"
     },
