@@ -150,7 +150,6 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
     // TODO 正确处理多发弹药装填情况下的退弹
     public int withdraw(@NotNull Entity shooter, int count) {
         if (type == AmmoConsumeType.INVALID) {
-            Mod.LOGGER.warn("withdraw ammo failed: invalid type");
             return 0;
         }
         if (!initialized) init();
