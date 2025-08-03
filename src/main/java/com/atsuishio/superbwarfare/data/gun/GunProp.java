@@ -11,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -83,6 +84,10 @@ public class GunProp<T> {
 
     private GunProp(String name) {
         this(name, false);
+    }
+
+    public Type getFieldType() {
+        return this.field.getType();
     }
 
     private GunProp(String name, boolean readOnly) {
