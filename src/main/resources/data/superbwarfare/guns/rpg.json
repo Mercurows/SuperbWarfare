@@ -12,6 +12,7 @@
   "Weight": 7,
   "EmptyReloadTime": 107,
   "RPM": 120,
+  "Gravity": 0.03,
   "AmmoConsumer": [
     {
       "Ammo": "superbwarfare:rpg_rocket_tbg",
@@ -24,7 +25,8 @@
         "Damage": 340,
         "ExplosionDamage": 80,
         "ExplosionRadius": 5,
-        "Velocity": 6
+        "Velocity": 6,
+        "Gravity": 0.015
       }
     }
   ],

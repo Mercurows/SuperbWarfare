@@ -688,6 +688,9 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
                 explosive.setDamage(damage.floatValue());
                 explosive.setExplosionDamage(data.get(GunProp.EXPLOSION_DAMAGE).floatValue());
                 explosive.setExplosionRadius(data.get(GunProp.EXPLOSION_RADIUS).floatValue());
+                if (!data.get(GunProp.GRAVITY).isNaN()) {
+                    explosive.setGravity(data.get(GunProp.GRAVITY).floatValue());
+                }
             }
 
             // 填充其他自定义NBT数据
@@ -698,7 +701,6 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
                 if (tag != null) {
                     entity.load(tag);
                 }
-
             } else if (LaunchableEntityTool.launchableEntitiesData.containsKey(projectileType)) {
                 var newInfo = new ProjectileInfo();
                 newInfo.data = LaunchableEntityTool.launchableEntitiesData.get(projectileType).data;
