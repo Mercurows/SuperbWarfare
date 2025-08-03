@@ -296,9 +296,9 @@ public class ClickHandler {
                 }
                 if (data.ammoConsumers.size() > 1) {
                     if (key == ModKeyMappings.CHANGE_AMMO_FORWARD.getKey().getValue()) {
-                        PacketDistributor.sendToServer(new EditMessage(5, true));
-                    } else if (key == ModKeyMappings.CHANGE_AMMO_BACKWARD.getKey().getValue()) {
                         PacketDistributor.sendToServer(new EditMessage(5, false));
+                    } else if (key == ModKeyMappings.CHANGE_AMMO_BACKWARD.getKey().getValue()) {
+                        PacketDistributor.sendToServer(new EditMessage(5, true));
                     }
                 }
             }

@@ -1,31 +1,14 @@
 package com.atsuishio.superbwarfare.perk.damage;
 
-import com.atsuishio.superbwarfare.data.gun.GunData;
-import com.atsuishio.superbwarfare.entity.projectile.GunGrenadeEntity;
-import com.atsuishio.superbwarfare.entity.projectile.JavelinMissileEntity;
-import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity;
-import com.atsuishio.superbwarfare.entity.projectile.RpgRocketEntity;
+import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.perk.Perk;
-import com.atsuishio.superbwarfare.perk.PerkInstance;
-import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.monster.Monster;
 
 public class MonsterHunter extends Perk {
 
     public MonsterHunter() {
         super("monster_hunter", Perk.Type.DAMAGE);
-    }
-
-    @Override
-    public void modifyProjectile(GunData data, PerkInstance instance, Entity entity) {
-        float multiplier = 1.1f + 0.1f * instance.level();
-        if (entity instanceof ProjectileEntity projectile) {
-            projectile.getDamageModifiers().put(ProjectileEntity.MONSTER_PREDICATE, multiplier);
-        } else if (entity instanceof JavelinMissileEntity projectile) {
-            projectile.setMonsterMultiplier(multiplier);
-        } else if (entity instanceof GunGrenadeEntity projectile) {
-            projectile.setMonsterMultiplier(multiplier);
-        } else if (entity instanceof RpgRocketEntity projectile) {
-            projectile.setMonsterMultiplier(multiplier);
-        }
+        appendModification(GunProp.DAMAGE, (data, value, target, source) -> target instanceof Monster ? value * 1.1 + 0.1 * data.perk.getLevel(this) : value);
+        appendModification(GunProp.EXPLOSION_DAMAGE, (data, value, target, source) -> target instanceof Monster ? value * 1.1 + 0.1 * data.perk.getLevel(this) : value);
     }
 }

@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.perk.damage;
 
 import com.atsuishio.superbwarfare.data.gun.GunData;
+import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkInstance;
@@ -13,6 +14,8 @@ public class KillClip extends Perk {
 
     public KillClip() {
         super("kill_clip", Perk.Type.DAMAGE);
+        appendModification(GunProp.DAMAGE, (data, damage) -> data.perk.getTag(this).getInt("KillClipTime") > 0 ?
+                damage * (1.2 + 0.05 * data.perk.getLevel(this)) : damage);
     }
 
     @Override
@@ -50,15 +53,5 @@ public class KillClip extends Perk {
                 data.perk.getTag(this).putInt("KillClipReloadTime", 80);
             }
         }
-    }
-
-    @Override
-    public float getModifiedDamage(float damage, GunData data, PerkInstance instance, @Nullable Entity target, DamageSource source) {
-        if (DamageTypeTool.isGunDamage(source) || source.is(ModDamageTypes.PROJECTILE_BOOM)) {
-            if (data.perk.getTag(this).getInt("KillClipTime") > 0) {
-                return damage * (1.2f + 0.05f * instance.level());
-            }
-        }
-        return super.getModifiedDamage(damage, data, instance, target, source);
     }
 }

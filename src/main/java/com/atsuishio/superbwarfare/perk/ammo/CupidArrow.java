@@ -18,7 +18,6 @@ import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.schedule.Activity;
-import org.jetbrains.annotations.Nullable;
 
 public class CupidArrow extends AmmoPerk {
 
@@ -57,10 +56,5 @@ public class CupidArrow extends AmmoPerk {
             ParticleTool.sendParticle(serverLevel, ParticleTypes.HEART, target.getRandomX(1.0D), target.getRandomY() + 0.5D, target.getRandomZ(1.0D),
                     5, d0, d1, d2, 0.1, false);
         }
-    }
-
-    @Override
-    public float getModifiedDamage(float damage, GunData data, PerkInstance instance, @Nullable Entity target, DamageSource source) {
-        return 0;
     }
 }
