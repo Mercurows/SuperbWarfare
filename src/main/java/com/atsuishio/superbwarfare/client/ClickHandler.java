@@ -430,7 +430,9 @@ public class ClickHandler {
             var data = GunData.from(stack);
 
             if (!(stack.is(ModItems.BOCEK.get()) || stack.is(ModItems.AURELIA_SCEPTRE.get()))) {
-                player.playSound(ModSounds.TRIGGER_CLICK.get(), 1, 1);
+                if (!data.meleeOnly()) {
+                    player.playSound(ModSounds.TRIGGER_CLICK.get(), 1, 1);
+                }
             } else {
                 bowPower = 0;
                 holdFire = true;
@@ -440,7 +442,7 @@ public class ClickHandler {
                 }
             }
 
-            if (!data.useBackpackAmmo() && data.ammo.get() <= 0 && data.reload.time() == 0) {
+            if (!data.useBackpackAmmo() && !data.meleeOnly() && data.ammo.get() <= 0 && data.reload.time() == 0) {
                 if (ReloadConfig.LEFT_CLICK_RELOAD.get()) {
                     PacketDistributor.sendToServer(ReloadMessage.INSTANCE);
                     ClientEventHandler.burstFireAmount = 0;
