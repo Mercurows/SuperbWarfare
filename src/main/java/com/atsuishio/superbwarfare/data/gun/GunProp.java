@@ -69,6 +69,7 @@ public class GunProp<T> {
 
     public static final GunProp<Double> EXPLOSION_DAMAGE = new GunProp<>("ExplosionDamage");
     public static final GunProp<Double> EXPLOSION_RADIUS = new GunProp<>("ExplosionRadius");
+    public static final GunProp<Double> GRAVITY = new GunProp<>("Gravity");
 
     public static final GunProp<Integer> SHOOT_DELAY = new GunProp<>("ShootDelay");
     public static final GunProp<Double> HEAT_PER_SHOOT = new GunProp<>("HeatPerShoot");

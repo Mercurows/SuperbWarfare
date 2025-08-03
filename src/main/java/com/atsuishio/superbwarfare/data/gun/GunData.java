@@ -217,7 +217,6 @@ public class GunData {
         return getDefault().reloadTypes;
     }
 
-
     public double minZoom() {
         int scopeType = this.attachment.get(AttachmentType.SCOPE);
         return scopeType == 3 ? getDefault().minZoom : 1.25;
