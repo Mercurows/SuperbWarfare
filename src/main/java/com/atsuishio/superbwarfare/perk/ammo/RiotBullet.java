@@ -1,17 +1,20 @@
 package com.atsuishio.superbwarfare.perk.ammo;
 
-import com.atsuishio.superbwarfare.data.gun.GunData;
-import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity;
+import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.PerkInstance;
+import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.monster.Vex;
 
 public class RiotBullet extends AmmoPerk {
 
     public RiotBullet() {
         super(new Builder("riot_bullet", Type.AMMO).bypassArmorRate(-0.3f).damageRate(0.9f).speedRate(0.8f).slug().rgb(70, 35, 230)
                 .mobEffect(() -> MobEffects.MOVEMENT_SLOWDOWN).mobEffect(() -> MobEffects.WEAKNESS));
+        appendModification(GunProp.DAMAGE, (data, value, target, source) ->
+                (target != null && target.getType().is(EntityTypeTags.RAIDERS)) || target instanceof Vex ?
+                        value * (1 + 0.5 * data.perk.getLevel(this)) : value);
     }
 
     @Override
@@ -22,12 +25,5 @@ public class RiotBullet extends AmmoPerk {
     @Override
     public int getEffectDuration(PerkInstance instance) {
         return 20 + instance.level() * 10;
-    }
-
-    @Override
-    public void modifyProjectile(GunData data, PerkInstance instance, Entity entity) {
-        super.modifyProjectile(data, instance, entity);
-        if (!(entity instanceof ProjectileEntity projectile)) return;
-        projectile.getDamageModifiers().put(ProjectileEntity.RAIDERS_PREDICATE, 1.0f + 0.5f * instance.level());
     }
 }

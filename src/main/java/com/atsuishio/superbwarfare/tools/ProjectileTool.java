@@ -44,6 +44,14 @@ public class ProjectileTool {
         projectile.discard();
     }
 
+    public static void causeCustomExplode(ThrowableItemProjectile projectile, @Nullable DamageSource source, Entity target, float damage, float radius) {
+        causeCustomExplode(projectile, source, target, damage, radius, 0.0f);
+    }
+
+    public static void causeCustomExplode(ThrowableItemProjectile projectile, Entity target, float damage, float radius) {
+        causeCustomExplode(projectile, target, damage, radius, 0.0f);
+    }
+
     public static void causeCustomExplode(ThrowableItemProjectile projectile, Entity target, float damage, float radius, float damageMultiplier) {
         causeCustomExplode(projectile, ModDamageTypes.causeCustomExplosionDamage(projectile.level().registryAccess(), projectile, projectile.getOwner()),
                 target, damage, radius, damageMultiplier);

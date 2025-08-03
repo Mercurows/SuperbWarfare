@@ -20,7 +20,6 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.projectile.ThrowableItemProjectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Explosion;
@@ -40,14 +39,10 @@ public class RpgRocketEntity extends FastThrowableProjectile implements GeoEntit
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
-    private float monsterMultiplier = 0.0f;
     private float damage = 250f;
-
     private float explosionDamage = 200f;
     private float explosionRadius = 10;
-
     private float gravity = 0.03f;
-
 
     public RpgRocketEntity(EntityType<? extends RpgRocketEntity> type, Level world) {
         super(type, world);
@@ -79,11 +74,6 @@ public class RpgRocketEntity extends FastThrowableProjectile implements GeoEntit
     @Override
     public void setExplosionDamage(float explosionDamage) {
         this.explosionDamage = explosionDamage;
-    }
-
-
-    public void setMonsterMultiplier(float monsterMultiplier) {
-        this.monsterMultiplier = monsterMultiplier;
     }
 
     @Override
@@ -145,7 +135,6 @@ public class RpgRocketEntity extends FastThrowableProjectile implements GeoEntit
 
     @Override
     protected void onHitEntity(EntityHitResult result) {
-        float damageMultiplier = 1 + this.monsterMultiplier;
         Entity entity = result.getEntity();
         if (this.getOwner() != null && this.getOwner().getVehicle() != null && entity == this.getOwner().getVehicle())
             return;
@@ -160,11 +149,7 @@ public class RpgRocketEntity extends FastThrowableProjectile implements GeoEntit
                 }
             }
 
-            if (entity instanceof Monster monster) {
-                DamageHandler.doDamage(monster, ModDamageTypes.causeCannonFireDamage(this.level().registryAccess(), this, this.getOwner()), 1.2f * this.damage * damageMultiplier);
-            } else {
-                DamageHandler.doDamage(entity, ModDamageTypes.causeCannonFireDamage(this.level().registryAccess(), this, this.getOwner()), this.damage);
-            }
+            DamageHandler.doDamage(entity, ModDamageTypes.causeCannonFireDamage(this.level().registryAccess(), this, this.getOwner()), this.damage);
 
             if (entity instanceof LivingEntity) {
                 entity.invulnerableTime = 0;
@@ -186,8 +171,7 @@ public class RpgRocketEntity extends FastThrowableProjectile implements GeoEntit
                 vec3.y,
                 vec3.z,
                 explosionRadius,
-                ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).
-                setDamageMultiplier(this.monsterMultiplier);
+                ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true);
         explosion.explode();
         EventHooks.onExplosionStart(this.level(), explosion);
         explosion.finalizeExplosion(false);
@@ -224,7 +208,7 @@ public class RpgRocketEntity extends FastThrowableProjectile implements GeoEntit
 
         if (this.tickCount > 100 || this.isInWater()) {
             if (this.level() instanceof ServerLevel) {
-                ProjectileTool.causeCustomExplode(this, this.explosionDamage, this.explosionRadius, this.monsterMultiplier);
+                ProjectileTool.causeCustomExplode(this, this.explosionDamage, this.explosionRadius);
             }
             this.discard();
         }

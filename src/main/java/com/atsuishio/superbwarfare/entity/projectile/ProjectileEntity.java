@@ -31,15 +31,12 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.monster.Monster;
-import net.minecraft.world.entity.monster.Vex;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
@@ -121,12 +118,6 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
     private final ArrayList<MobEffectInstance> mobEffects = new ArrayList<>();
     // 发射子弹的武器ID
     private String gunItemId;
-
-    public static final Predicate<Entity> MONSTER_PREDICATE = entity -> entity instanceof Monster;
-    public static final Predicate<Entity> UNDEAD_PREDICATE = entity -> entity.getType().is(EntityTypeTags.UNDEAD);
-    public static final Predicate<Entity> RAIDERS_PREDICATE = entity -> entity.getType().is(EntityTypeTags.RAIDERS) || entity instanceof Vex;
-
-    private final Map<Predicate<Entity>, Float> damageModifiers = new HashMap<>(Map.of(MONSTER_PREDICATE, 1.0f));
 
     public ProjectileEntity(EntityType<? extends ProjectileEntity> entityType, Level level) {
         super(entityType, level);
@@ -272,7 +263,7 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
         }
 
         if (heLevel > 0) {
-            explosionBullet(this, this.damage, heLevel, this.damageModifiers.get(MONSTER_PREDICATE), hitPos);
+            explosionBullet(this, this.damage, heLevel, hitPos);
         }
 
         return new EntityResult(entity, hitPos, headshot, legShot);
@@ -417,7 +408,7 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
 
             this.onHitBlock(hitVec, blockHitResult);
             if (heLevel > 0) {
-                explosionBullet(this, this.damage, heLevel, this.damageModifiers.get(MONSTER_PREDICATE), hitVec);
+                explosionBullet(this, this.damage, heLevel, hitVec);
             }
             if (fireLevel > 0 && this.level() instanceof ServerLevel serverLevel) {
                 ParticleTool.sendParticle(serverLevel, ParticleTypes.LAVA, hitVec.x, hitVec.y, hitVec.z,
@@ -615,12 +606,6 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
             }
         }
 
-        for (var entry : this.damageModifiers.entrySet()) {
-            if (entry.getKey().test(entity)) {
-                this.damage *= entry.getValue();
-            }
-        }
-
         this.damage *= (float) (getDeltaMovement().length() / velocity);
 
         if (headshot) {
@@ -678,10 +663,10 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
         }
     }
 
-    protected void explosionBullet(Entity projectile, float damage, int heLevel, float monsterMultiple, Vec3 hitVec) {
+    protected void explosionBullet(Entity projectile, float damage, int heLevel, Vec3 hitVec) {
         CustomExplosion explosion = new CustomExplosion(projectile.level(), projectile,
                 ModDamageTypes.causeProjectileBoomDamage(projectile.level().registryAccess(), projectile, this.getShooter()), (float) ((0.9 * damage) * (1 + 0.1 * heLevel)),
-                hitVec.x, hitVec.y, hitVec.z, (float) ((1.5 + 0.02 * damage) * (1 + 0.05 * heLevel))).setDamageMultiplier(monsterMultiple).bulletExplode();
+                hitVec.x, hitVec.y, hitVec.z, (float) ((1.5 + 0.02 * damage) * (1 + 0.05 * heLevel))).bulletExplode();
         explosion.explode();
         EventHooks.onExplosionStart(projectile.level(), explosion);
         explosion.finalizeExplosion(false);
@@ -888,10 +873,6 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
     @Nullable
     public String getGunItemId() {
         return this.gunItemId;
-    }
-
-    public Map<Predicate<Entity>, Float> getDamageModifiers() {
-        return damageModifiers;
     }
 
     public boolean isPenetrating() {
