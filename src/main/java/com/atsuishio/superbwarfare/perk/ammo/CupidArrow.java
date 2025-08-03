@@ -28,6 +28,7 @@ public class CupidArrow extends AmmoPerk {
 
     @Override
     public void onHit(float damage, GunData data, PerkInstance instance, Entity target, DamageSource source) {
+        super.onHit(damage, data, instance, target, source);
         Player attacker = null;
         if (source.getEntity() instanceof Player player) {
             attacker = player;
