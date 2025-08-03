@@ -449,10 +449,8 @@ public class ClientEventHandler {
     public static void handleGunMelee(Player player, ItemStack stack) {
         if (stack.getItem() instanceof GunItem gunItem) {
             var data = GunData.from(stack);
-            if (gunItem.hasMeleeAttack(stack)
-                    && gunMelee == 0
-                    && drawTime < 0.01
-                    && ModKeyMappings.MELEE.isDown()
+            if (gunItem.hasMeleeAttack(stack) && gunMelee == 0 && drawTime < 0.01
+                    && (ModKeyMappings.MELEE.isDown() || (data.meleeOnly() && holdFire))
                     && !(player.getVehicle() instanceof ArmedVehicleEntity iArmedVehicle && iArmedVehicle.banHand(player))
                     && !holdFireVehicle
                     && !notInGame()
