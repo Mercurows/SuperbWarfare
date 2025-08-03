@@ -50,12 +50,12 @@ public class AmmoBarOverlay implements IGuiOverlay {
     }
 
     private static String getGunAmmoString(GunData data, Player player) {
-        if (data.useBackpackAmmo() && hasCreativeAmmo()) return "∞";
+        if (data.meleeOnly() || data.useBackpackAmmo() && hasCreativeAmmo()) return "∞";
         return data.useBackpackAmmo() ? data.countBackupAmmo(player) - data.virtualAmmo.get() + "" : data.ammo.get() + "";
     }
 
     private static String getBackupAmmoString(GunData data, Player player) {
-        if (data.useBackpackAmmo()) return "";
+        if (data.meleeOnly() || data.useBackpackAmmo()) return "";
         return hasCreativeAmmo() ? "∞" : data.countBackupAmmo(player) - data.virtualAmmo.get() + "";
     }
 

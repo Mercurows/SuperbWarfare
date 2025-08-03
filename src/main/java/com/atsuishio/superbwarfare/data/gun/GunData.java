@@ -549,6 +549,10 @@ public class GunData {
         return getRawDamageReduce().getMinDistance();
     }
 
+    public boolean meleeOnly() {
+        return get(GunProp.PROJECTILE_AMOUNT) <= 0 && get(GunProp.MELEE_DAMAGE) > 0;
+    }
+
     // 可持久化属性开始
 
     public final IntValue selectedAmmoType;
