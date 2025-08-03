@@ -600,7 +600,6 @@ public class ClientEventHandler {
                 && drawTime < 0.01
                 && !notInGame()
                 && !isEditing
-                && !player.getCooldowns().isOnCooldown(stack.getItem())
         ) {
             if (mode == FireMode.SEMI) {
                 if (clientTimer.getProgress() == 0) {

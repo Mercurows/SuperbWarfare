@@ -20,19 +20,19 @@ public class CustomCloudParticle extends TextureSheetParticle {
         }
 
         public Particle createParticle(CustomCloudOption pType, ClientLevel pLevel, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
-            return new CustomCloudParticle(pLevel, x, y, z, xSpeed, ySpeed, zSpeed, this.spriteSet, pType.getRed(), pType.getGreen(), pType.getBlue(), pType.getLife(), pType.getSize(), pType.getCooldown(), pType.getLight());
+            return new CustomCloudParticle(pLevel, x, y, z, xSpeed, ySpeed, zSpeed, this.spriteSet, pType.getRed(), pType.getGreen(), pType.getBlue(), pType.getLife(), pType.getSize(), pType.getGravity(), pType.getCooldown(), pType.getLight());
         }
     }
 
     private final SpriteSet spriteSet;
 
-    protected CustomCloudParticle(ClientLevel world, double x, double y, double z, double vx, double vy, double vz, SpriteSet spriteSet, float rCol, float gCol, float bCol, int life, float size, boolean cooldown, boolean light) {
+    protected CustomCloudParticle(ClientLevel world, double x, double y, double z, double vx, double vy, double vz, SpriteSet spriteSet, float rCol, float gCol, float bCol, int life, float size, float gravity, boolean cooldown, boolean light) {
         super(world, x, y, z);
         this.spriteSet = spriteSet;
         this.setSize(0.4f, 0.4f);
         this.quadSize *= size;
         this.lifetime = Math.max(1, life + (this.random.nextInt(life) - (int) (0.1 * life)));
-        this.gravity = 0;
+        this.gravity = gravity;
         this.hasPhysics = false;
         this.xd = vx * 0.01;
         this.yd = vy * 0.01;

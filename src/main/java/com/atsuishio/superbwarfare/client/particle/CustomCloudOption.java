@@ -17,6 +17,7 @@ public class CustomCloudOption implements ParticleOptions {
                     Codec.INT.fieldOf("color").forGetter(option -> option.color),
                     Codec.INT.fieldOf("life").forGetter(option -> option.life),
                     Codec.FLOAT.fieldOf("size").forGetter(option -> option.size),
+                    Codec.FLOAT.fieldOf("gravity").forGetter(option -> option.gravity),
                     Codec.BOOL.fieldOf("cooldown").forGetter(option -> option.cooldown),
                     Codec.BOOL.fieldOf("light").forGetter(option -> option.light)
             ).apply(builder, CustomCloudOption::new));
@@ -32,32 +33,36 @@ public class CustomCloudOption implements ParticleOptions {
             reader.expect(' ');
             float size = reader.readFloat();
             reader.expect(' ');
+            float gravity = reader.readFloat();
+            reader.expect(' ');
             boolean cooldown = reader.readBoolean();
             reader.expect(' ');
             boolean light = reader.readBoolean();
-            return new CustomCloudOption(color, life, size, cooldown, light);
+            return new CustomCloudOption(color, life, size, gravity, cooldown, light);
         }
 
         @Override
         public CustomCloudOption fromNetwork(ParticleType<CustomCloudOption> particleType, FriendlyByteBuf buffer) {
-            return new CustomCloudOption(buffer.readInt(), buffer.readInt(), buffer.readFloat(), buffer.readBoolean(), buffer.readBoolean());
+            return new CustomCloudOption(buffer.readInt(), buffer.readInt(), buffer.readFloat(), buffer.readFloat(), buffer.readBoolean(), buffer.readBoolean());
         }
     };
 
     private final int color;
     private final int life;
     private final float size;
+    private final float gravity;
     private final boolean cooldown;
     private final boolean light;
 
-    public CustomCloudOption(float r, float g, float b, int life, float size, boolean cooldown, boolean light) {
-        this(Math.round(r * 255) << 16 | Math.round(g * 255) << 8 | Math.round(b * 255), life, size, cooldown, light);
+    public CustomCloudOption(float r, float g, float b, int life, float size, float gravity, boolean cooldown, boolean light) {
+        this(Math.round(r * 255) << 16 | Math.round(g * 255) << 8 | Math.round(b * 255), life, size, gravity, cooldown, light);
     }
 
-    public CustomCloudOption(int color, int life, float size, boolean cooldown, boolean light) {
+    public CustomCloudOption(int color, int life, float size, float gravity, boolean cooldown, boolean light) {
         this.color = color;
         this.life = life;
         this.size = size;
+        this.gravity = gravity;
         this.cooldown = cooldown;
         this.light = light;
     }
@@ -81,6 +86,9 @@ public class CustomCloudOption implements ParticleOptions {
     public float getSize() {
         return size;
     }
+    public float getGravity() {
+        return gravity;
+    }
 
     public boolean getCooldown() {
         return cooldown;
@@ -100,12 +108,13 @@ public class CustomCloudOption implements ParticleOptions {
         buffer.writeInt(this.color);
         buffer.writeInt(this.life);
         buffer.writeFloat(this.size);
+        buffer.writeFloat(this.gravity);
         buffer.writeBoolean(this.cooldown);
         buffer.writeBoolean(this.light);
     }
 
     @Override
     public String writeToString() {
-        return ForgeRegistries.PARTICLE_TYPES.getKey(this.getType()) + " [" + this.color + ", " + this.life + ", " + this.size + ", " + this.cooldown + ", " + this.light + "]";
+        return ForgeRegistries.PARTICLE_TYPES.getKey(this.getType()) + " [" + this.color + ", " + this.life + ", " + this.size + ", " + this.gravity + ", " + this.cooldown + ", " + this.light + "]";
     }
 }
