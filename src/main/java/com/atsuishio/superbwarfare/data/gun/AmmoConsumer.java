@@ -6,6 +6,9 @@ import com.atsuishio.superbwarfare.data.DeserializeFromString;
 import com.atsuishio.superbwarfare.data.StringToObject;
 import com.atsuishio.superbwarfare.tools.Ammo;
 import com.atsuishio.superbwarfare.tools.InventoryTool;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.core.RegistryAccess;
@@ -23,15 +26,20 @@ import net.neoforged.neoforge.items.ItemHandlerHelper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Pattern;
 
-public class AmmoConsumer implements DeserializeFromString {
+public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier {
     @SerializedName("Ammo")
     public String ammo;
 
     @ServerOnly
     @SerializedName("Projectile")
     public StringToObject<ProjectileInfo> projectile = null;
+
+    @SerializedName("Override")
+    public JsonObject override = null;
 
     public transient AmmoConsumeType type = AmmoConsumeType.INVALID;
     public transient int loadAmount = 1;
@@ -48,6 +56,13 @@ public class AmmoConsumer implements DeserializeFromString {
 
     public boolean initialized() {
         return this.initialized;
+    }
+
+    private final Map<GunProp<?>, GunProp.GunPropModifyContext<?>> modifiers = new HashMap<>();
+
+    @Override
+    public @NotNull Map<GunProp<?>, GunProp.GunPropModifyContext<?>> getPropModifiers() {
+        return this.modifiers;
     }
 
     public enum AmmoConsumeType {
@@ -181,13 +196,41 @@ public class AmmoConsumer implements DeserializeFromString {
     }
 
     private static final Pattern AMMO_PATTERN = Pattern.compile("^(?<count>(\\d+ )?)(?<prefix>[@#]?)(?<id>\\w+(:\\w+)?)(?<data>(\\{.*})?)$");
+    private static final Gson gson = new GsonBuilder()
+            .setLenient()
+            .create();
 
-    public void init() {
-        this.type = AmmoConsumeType.INVALID;
-        if (ammo == null) {
-            Mod.LOGGER.warn("ammo value should not be null!");
-            return;
+    @SuppressWarnings("unchecked")
+    private void parseOverrideValues() {
+        if (override != null) {
+            for (var element : override.entrySet()) {
+                var key = element.getKey();
+                var prop = GunProp.getByName(key);
+                if (prop == null) {
+                    Mod.LOGGER.warn("invalid override key: {}", key);
+                    continue;
+                }
+
+                try {
+                    var parsedValue = gson.fromJson(element.getValue().toString(), prop.getFieldType());
+                    this.modifyProperty((GunProp<Object>) prop, value -> parsedValue);
+                } catch (Exception exception) {
+                    Mod.LOGGER.error("invalid override value for key {}: {}", key, element.getValue());
+                }
+            }
         }
+    }
+
+    @SuppressWarnings("invalid")
+    public void init() {
+        parseOverrideValues();
+
+        if (this.projectile != null) {
+            this.modifyProperty(GunProp.PROJECTILE, value -> projectile.value);
+        }
+
+        this.type = AmmoConsumeType.INVALID;
+        if (ammo == null) return;
 
         var matcher = AMMO_PATTERN.matcher(ammo);
         if (!matcher.matches()) {

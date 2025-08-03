@@ -203,7 +203,8 @@ public class GunData {
             modifier.apply(instance.getModifier(prop));
         }
 
-        // TODO AmmoConsumer
+        // AmmoConsumer
+        modifier.apply(selectedAmmoConsumer().getModifier(prop));
 
         return modifier.compute(target, source);
     }
