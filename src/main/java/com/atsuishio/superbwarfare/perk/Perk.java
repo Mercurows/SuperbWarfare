@@ -84,10 +84,6 @@ public class Perk implements GunPropertyModifier {
     public void onHit(float damage, GunData data, PerkInstance instance, Entity target, DamageSource source) {
     }
 
-    public float getModifiedDamage(float damage, GunData data, PerkInstance instance, @Nullable Entity target, DamageSource source) {
-        return damage;
-    }
-
     public int getModifiedCustomRPM(int rpm, GunData data, PerkInstance instance) {
         return rpm;
     }

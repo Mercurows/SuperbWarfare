@@ -105,10 +105,6 @@ public class GunGrenadeEntity extends FastThrowableProjectile implements GeoEnti
         this.charged = charged;
     }
 
-    public void setMonsterMultiplier(float monsterMultiplier) {
-        this.monsterMultiplier = monsterMultiplier;
-    }
-
     public void charged(boolean charged) {
         this.charged = charged;
     }

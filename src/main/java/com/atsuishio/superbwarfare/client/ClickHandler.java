@@ -297,10 +297,10 @@ public class ClickHandler {
                 }
                 if (data.ammoConsumers.size() > 1) {
                     if (key == ModKeyMappings.CHANGE_AMMO_FORWARD.getKey().getValue()) {
-                        Mod.PACKET_HANDLER.sendToServer(new EditMessage(5, true));
+                        Mod.PACKET_HANDLER.sendToServer(new EditMessage(5, false));
                     }
                     if (key == ModKeyMappings.CHANGE_AMMO_BACKWARD.getKey().getValue()) {
-                        Mod.PACKET_HANDLER.sendToServer(new EditMessage(5, false));
+                        Mod.PACKET_HANDLER.sendToServer(new EditMessage(5, true));
                     }
                 }
             }
