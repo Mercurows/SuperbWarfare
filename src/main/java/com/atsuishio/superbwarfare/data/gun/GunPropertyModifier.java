@@ -4,7 +4,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public interface GunPropertyModifier {
@@ -28,18 +27,10 @@ public interface GunPropertyModifier {
     /**
      * 直接修改某个属性的值
      */
-    default <T> void modifyProperty(GunProp<T> prop, @Nullable BiFunction<GunData, T, T> modifier) {
-        if (modifier == null) return;
-        modifyProperty(prop, (data, value, target, source) -> modifier.apply(data, value));
-    }
-
-    /**
-     * 直接修改某个属性的值
-     */
     @SuppressWarnings("unchecked")
     default <T> void modifyProperty(GunProp<T> prop, @Nullable GunProp.GunPropModifyContext<T> modifier) {
         if (modifier == null) return;
-        getPropModifiers().put(prop, (data, value, target, source) -> modifier.apply(data, (T) value, target, source));
+        getPropModifiers().put(prop, (data, value) -> modifier.apply(data, (T) value));
     }
 
 
@@ -49,11 +40,6 @@ public interface GunPropertyModifier {
     default <T> void appendModification(GunProp<T> prop, @Nullable Function<T, T> modifier) {
         if (modifier == null) return;
         appendModification(prop, (data, value) -> modifier.apply(value));
-    }
-
-    default <T> void appendModification(GunProp<T> prop, @Nullable BiFunction<GunData, T, T> modifier) {
-        if (modifier == null) return;
-        appendModification(prop, (data, value, target, source) -> modifier.apply(data, value));
     }
 
     /**
@@ -69,9 +55,9 @@ public interface GunPropertyModifier {
         if (current == null) {
             modifiers.put(prop, modifier);
         } else {
-            modifiers.put(prop, (data, v, target, source) -> {
-                var value = current.apply(data, (T) v, target, source);
-                return modifier.apply(data, value, target, source);
+            modifiers.put(prop, (data, v) -> {
+                var value = current.apply(data, (T) v);
+                return modifier.apply(data, value);
             });
         }
     }
