@@ -5,8 +5,6 @@ import com.atsuishio.superbwarfare.data.ObjectToList;
 import com.atsuishio.superbwarfare.data.StringToObject;
 import com.google.gson.annotations.SerializedName;
 import net.minecraft.util.Mth;
-import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -22,7 +20,7 @@ public class GunProp<T> {
     private static final List<GunProp<?>> props = new ArrayList<>();
 
     public static final GunProp<Integer> MAX_DURABILITY = new GunProp<Integer>("MaxDurability", true)
-            .withLimiter((data, v, target, source) -> Math.max(0, v));
+            .withLimiter((data, v) -> Math.max(0, v));
 
     public static final GunProp<Double> RECOIL_X = new GunProp<>("RecoilX");
     public static final GunProp<Double> RECOIL_Y = new GunProp<>("RecoilY");
@@ -36,10 +34,10 @@ public class GunProp<T> {
 
     public static final GunProp<Double> MELEE_DAMAGE = new GunProp<>("MeleeDamage");
     public static final GunProp<Integer> MELEE_DURATION = new GunProp<Integer>("MeleeDuration")
-            .withLimiter((data, v, target, source) -> Math.max(0, v));
+            .withLimiter((data, v) -> Math.max(0, v));
 
     public static final GunProp<Integer> MELEE_DAMAGE_TIME = new GunProp<Integer>("MeleeDamageTime")
-            .withLimiter((data, v, target, source) -> Math.min(data.get(MELEE_DURATION), v));
+            .withLimiter((data, v) -> Math.min(data.get(MELEE_DURATION), v));
 
     public static final GunProp<ProjectileInfo> PROJECTILE = new GunProp<>("Projectile");
     public static final GunProp<Integer> PROJECTILE_AMOUNT = new GunProp<>("ProjectileAmount");
@@ -67,7 +65,7 @@ public class GunProp<T> {
     public static final GunProp<Double> SOUND_RADIUS = new GunProp<>("SoundRadius");
 
     public static final GunProp<Integer> RPM = new GunProp<Integer>("RPM")
-            .withLimiter((data, v, target, source) -> Mth.clamp(v, 1, 114514));
+            .withLimiter((data, v) -> Mth.clamp(v, 1, 114514));
 
     public static final GunProp<Double> EXPLOSION_DAMAGE = new GunProp<>("ExplosionDamage");
     public static final GunProp<Double> EXPLOSION_RADIUS = new GunProp<>("ExplosionRadius");
@@ -145,7 +143,7 @@ public class GunProp<T> {
 
     @FunctionalInterface
     public interface GunPropModifyContext<T> {
-        T apply(@NotNull GunData data, @NotNull T value, @Nullable Entity target, @Nullable DamageSource source);
+        T apply(@NotNull GunData data, @NotNull T value);
     }
 
     public static class GunPropModifier<T> {
@@ -182,25 +180,21 @@ public class GunProp<T> {
         public GunPropModifier<T> override(@Nullable T value) {
             if (value == null || readOnly) return this;
 
-            modifiers.add((data, v, target, source) -> value);
+            modifiers.add((data, v) -> value);
             return this;
         }
 
         public T compute() {
-            return compute(null, null);
-        }
-
-        public T compute(@Nullable Entity target, @Nullable DamageSource source) {
             if (readOnly) return value;
 
             var result = value;
 
             for (var modifier : modifiers) {
-                result = modifier.apply(data, result, target, source);
+                result = modifier.apply(data, result);
             }
 
             if (limiter != null) {
-                result = limiter.apply(data, result, target, source);
+                result = limiter.apply(data, result);
             }
 
             return result;

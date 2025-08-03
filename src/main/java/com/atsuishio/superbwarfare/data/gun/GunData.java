@@ -16,7 +16,6 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -186,10 +185,6 @@ public class GunData {
     }
 
     public <T> T get(GunProp<T> prop) {
-        return get(prop, null, null);
-    }
-
-    public <T> T get(GunProp<T> prop, @Nullable Entity target, @Nullable DamageSource source) {
         var modifier = prop.asModifier(this);
 
         // gun modifiers
@@ -206,7 +201,7 @@ public class GunData {
         // AmmoConsumer
         modifier.apply(selectedAmmoConsumer().getModifier(prop));
 
-        return modifier.compute(target, source);
+        return modifier.compute();
     }
 
     /**
