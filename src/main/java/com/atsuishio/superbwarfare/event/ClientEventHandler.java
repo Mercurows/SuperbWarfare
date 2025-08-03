@@ -465,7 +465,7 @@ public class ClientEventHandler {
                 cantFireTime = gunMelee + 4;
             }
             if (gunMelee == data.get(GunProp.MELEE_DURATION) - data.get(GunProp.MELEE_DAMAGE_TIME)) {
-                doGunMelee(player);
+                doGunMeleeAttack(player);
             }
         }
 
@@ -474,7 +474,7 @@ public class ClientEventHandler {
         }
     }
 
-    public static void doGunMelee(Player player) {
+    public static void doGunMeleeAttack(Player player) {
         player.playSound(SoundEvents.PLAYER_ATTACK_SWEEP, 1f, 1);
         Entity lookingEntity = TraceTool.findMeleeEntity(player, player.entityInteractionRange());
         if (lookingEntity != null) {
