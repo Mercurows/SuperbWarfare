@@ -5,6 +5,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 
 public interface GunPropertyModifier {
     @NotNull
@@ -19,8 +20,26 @@ public interface GunPropertyModifier {
     /**
      * 直接修改某个属性的值
      */
-    default <T> void modifyProperty(GunProp<T> prop, BiFunction<GunData, T, T> modifier) {
+    default <T> void modifyProperty(GunProp<T> prop, @Nullable Function<T, T> modifier) {
+        if (modifier == null) return;
+        modifyProperty(prop, (data, value) -> modifier.apply(value));
+    }
+
+    /**
+     * 直接修改某个属性的值
+     */
+    default <T> void modifyProperty(GunProp<T> prop, @Nullable BiFunction<GunData, T, T> modifier) {
+        if (modifier == null) return;
         getPropModifiers().put(prop, modifier);
+    }
+
+
+    /**
+     * 在先前修改的基础上继续修改某个属性的值
+     */
+    default <T> void appendModification(GunProp<T> prop, @Nullable Function<T, T> modifier) {
+        if (modifier == null) return;
+        appendModification(prop, (data, value) -> modifier.apply(value));
     }
 
     /**
