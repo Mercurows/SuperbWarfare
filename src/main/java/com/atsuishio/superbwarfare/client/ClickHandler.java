@@ -428,9 +428,11 @@ public class ClickHandler {
                 && !notInGame()
         ) {
             var data = GunData.from(stack);
-            if (data.meleeOnly() && gunMelee == 0 && drawTime < 0.01) {
-                gunMelee = data.get(GunProp.MELEE_DURATION);
-                cantFireTime = gunMelee + 4;
+            if (data.meleeOnly()) {
+                if (gunMelee == 0 && drawTime < 0.01) {
+                    gunMelee = data.get(GunProp.MELEE_DURATION);
+                    cantFireTime = gunMelee + 4;
+                }
                 return;
             }
 
