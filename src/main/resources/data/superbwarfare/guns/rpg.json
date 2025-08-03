@@ -3,10 +3,10 @@
   "Spread": 5,
   "RecoilX": 0.008,
   "RecoilY": 0.018,
-  "Damage": 270,
+  "Damage": 250,
   "Projectile": "superbwarfare:rpg_rocket",
-  "ExplosionDamage": 130,
-  "ExplosionRadius": 10,
+  "ExplosionDamage": 150,
+  "ExplosionRadius": 11,
   "Velocity": 4,
   "Magazine": 1,
   "Weight": 7,
@@ -21,9 +21,9 @@
       "Ammo": "superbwarfare:rpg_rocket_standard",
       "Projectile": "superbwarfare:rpg_rocket",
       "Override": {
-        "Damage": 320,
-        "ExplosionDamage": 100,
-        "ExplosionRadius": 6,
+        "Damage": 340,
+        "ExplosionDamage": 80,
+        "ExplosionRadius": 5,
         "Velocity": 6
       }
     }
