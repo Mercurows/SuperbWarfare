@@ -584,14 +584,6 @@ public class ClientEventHandler {
         }
 
         int rpm = Mth.clamp(data.get(GunProp.RPM) + customRpm, 1, 114514);
-
-        for (Perk.Type type : Perk.Type.values()) {
-            var instance = data.perk.getInstance(type);
-            if (instance != null) {
-                rpm = instance.perk().getModifiedRPM(rpm, data, instance);
-            }
-        }
-
         double rps = (double) rpm / 60;
 
         // cooldown in ms

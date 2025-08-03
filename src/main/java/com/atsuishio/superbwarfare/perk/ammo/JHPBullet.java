@@ -13,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
 public class JHPBullet extends AmmoPerk {
 
     public JHPBullet() {
-        super(new AmmoPerk.Builder("jhp_bullet", Perk.Type.AMMO).bypassArmorRate(-0.2f).damageRate(1.1f).speedRate(0.95f).slug(true).rgb(230, 131, 65));
+        super(new AmmoPerk.Builder("jhp_bullet", Perk.Type.AMMO).bypassArmorRate(-0.2f).damageRate(1.1f).speedRate(0.95f).slug().rgb(230, 131, 65));
     }
 
     @Override

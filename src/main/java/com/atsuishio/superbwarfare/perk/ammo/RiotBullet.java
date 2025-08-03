@@ -10,7 +10,7 @@ import net.minecraft.world.entity.Entity;
 public class RiotBullet extends AmmoPerk {
 
     public RiotBullet() {
-        super(new Builder("riot_bullet", Type.AMMO).bypassArmorRate(-0.3f).damageRate(0.9f).speedRate(0.8f).slug(true).rgb(70, 35, 230)
+        super(new Builder("riot_bullet", Type.AMMO).bypassArmorRate(-0.3f).damageRate(0.9f).speedRate(0.8f).slug().rgb(70, 35, 230)
                 .mobEffect(() -> MobEffects.MOVEMENT_SLOWDOWN).mobEffect(() -> MobEffects.WEAKNESS));
     }
 

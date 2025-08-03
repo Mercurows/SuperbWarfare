@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.perk.damage;
 
 import com.atsuishio.superbwarfare.data.gun.GunData;
+import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkInstance;
 import com.atsuishio.superbwarfare.tools.DamageTypeTool;
@@ -12,20 +13,18 @@ public class Desperado extends Perk {
 
     public Desperado() {
         super("desperado", Perk.Type.DAMAGE);
+        appendModification(GunProp.RPM, (data, rpm) -> {
+            if (data.perk.getTag(this).getInt("DesperadoTimePost") > 0) {
+                return (int) (rpm * (1.285 + 0.015 * data.perk.getLevel(this)));
+            }
+            return rpm;
+        });
     }
 
     @Override
     public void tick(GunData data, PerkInstance instance, @Nullable Entity living) {
         data.perk.reduceCooldown(this, "DesperadoTime");
         data.perk.reduceCooldown(this, "DesperadoTimePost");
-    }
-
-    @Override
-    public int getModifiedRPM(int rpm, GunData data, PerkInstance instance) {
-        if (data.perk.getTag(this).getInt("DesperadoTimePost") > 0) {
-            return (int) (rpm * (1.285 + 0.015 * instance.level()));
-        }
-        return super.getModifiedRPM(rpm, data, instance);
     }
 
     @Override

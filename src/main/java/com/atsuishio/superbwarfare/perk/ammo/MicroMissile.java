@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.perk.ammo;
 
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.GunProp;
-import com.atsuishio.superbwarfare.entity.projectile.ExplosiveProjectile;
 import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkInstance;
@@ -12,22 +11,13 @@ public class MicroMissile extends AmmoPerk {
 
     public MicroMissile() {
         super(new AmmoPerk.Builder("micro_missile", Perk.Type.AMMO).speedRate(1.2f));
+        appendModification(GunProp.DAMAGE, (data, damage) -> damage * (1.1 + data.perk.getLevel(this) * 0.1));
+        appendModification(GunProp.EXPLOSION_DAMAGE, (data, damage) -> damage * (0.8 + data.perk.getLevel(this) * 0.1));
+        appendModification(GunProp.EXPLOSION_RADIUS, radius -> radius * 0.5);
     }
 
-    // TODO 正确设计和实现伤害修改
     @Override
     public void modifyProjectile(GunData data, PerkInstance instance, Entity entity) {
-        float radius = (float) (data.get(GunProp.EXPLOSION_RADIUS) * 0.5f);
-        float damage = data.get(GunProp.EXPLOSION_DAMAGE).floatValue() * (1.1f + instance.level() * 0.1f);
         entity.setNoGravity(true);
-        if (entity instanceof ExplosiveProjectile projectile) {
-            projectile.setExplosionRadius(radius);
-            projectile.setExplosionDamage(damage);
-        }
-    }
-
-    @Override
-    public double getDisplayDamage(double damage, GunData data, PerkInstance instance) {
-        return damage * (1.1f + instance.level() * 0.1f);
     }
 }

@@ -26,11 +26,6 @@ public class FieldDoctor extends Perk {
         }
     }
 
-    @Override
-    public boolean shouldCancelHurtEvent(float damage, GunData data, PerkInstance instance, Entity target, DamageSource source) {
-        return trigger(target, source);
-    }
-
     public boolean trigger(Entity target, DamageSource source) {
         if (source.getDirectEntity() instanceof ProjectileEntity projectile && !projectile.isZoom()) {
             Player attacker = null;

@@ -483,10 +483,6 @@ public class LivingEventHandler {
             if (instance != null) {
                 damage = instance.perk().getModifiedDamage(damage, data, instance, event.getEntity(), source);
                 instance.perk().onHit(damage, data, instance, event.getEntity(), source);
-                if (instance.perk().shouldCancelHurtEvent(damage, data, instance, event.getEntity(), source)) {
-                    event.setCanceled(true);
-                    return;
-                }
             }
         }
 

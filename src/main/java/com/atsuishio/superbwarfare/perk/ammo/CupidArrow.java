@@ -23,7 +23,7 @@ import org.jetbrains.annotations.Nullable;
 public class CupidArrow extends AmmoPerk {
 
     public CupidArrow() {
-        super(new AmmoPerk.Builder("cupid_arrow", Perk.Type.AMMO).bypassArmorRate(0.0f).damageRate(1.0f).speedRate(1.0f).slug(true).rgb(255, 185, 215));
+        super(new AmmoPerk.Builder("cupid_arrow", Perk.Type.AMMO).damageRate(0.0f).slug().rgb(255, 185, 215));
     }
 
     @Override
@@ -61,10 +61,5 @@ public class CupidArrow extends AmmoPerk {
     @Override
     public float getModifiedDamage(float damage, GunData data, PerkInstance instance, @Nullable Entity target, DamageSource source) {
         return 0;
-    }
-
-    @Override
-    public boolean shouldCancelHurtEvent(float damage, GunData data, PerkInstance instance, Entity target, DamageSource source) {
-        return true;
     }
 }
