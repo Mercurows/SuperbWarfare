@@ -25,7 +25,6 @@ public class ClientSentinelImageTooltip extends ClientEnergyImageTooltip {
             for (var type : Perk.Type.values()) {
                 var instance = getGunData().perk.getInstance(type);
                 if (instance != null) {
-                    damage = instance.perk().getDisplayDamage(damage, getGunData(), instance);
                     if (instance.perk().getExtraDisplayDamage(damage, getGunData(), instance) >= 0) {
                         extraDamage = instance.perk().getExtraDisplayDamage(damage, getGunData(), instance);
                     }

@@ -10,7 +10,7 @@ import net.minecraft.world.entity.Entity;
 public class HEBullet extends AmmoPerk {
 
     public HEBullet() {
-        super(new AmmoPerk.Builder("he_bullet", Perk.Type.AMMO).bypassArmorRate(-0.3f).damageRate(0.5f).speedRate(0.85f).slug(true).rgb(240, 20, 10));
+        super(new AmmoPerk.Builder("he_bullet", Perk.Type.AMMO).bypassArmorRate(-0.3f).damageRate(0.5f).speedRate(0.85f).slug().rgb(240, 20, 10));
     }
 
     @Override

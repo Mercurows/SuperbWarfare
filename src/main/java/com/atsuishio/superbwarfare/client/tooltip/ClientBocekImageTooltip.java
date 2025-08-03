@@ -35,7 +35,6 @@ public class ClientBocekImageTooltip extends ClientGunImageTooltip {
             for (var type : Perk.Type.values()) {
                 var instance = getGunData().perk.getInstance(type);
                 if (instance != null) {
-                    shotDamage = instance.perk().getDisplayDamage(shotDamage, getGunData(), instance);
                     if (instance.perk().getExtraDisplayDamage(shotDamage, getGunData(), instance) >= 0) {
                         extraDamage = instance.perk().getExtraDisplayDamage(shotDamage, getGunData(), instance);
                     }

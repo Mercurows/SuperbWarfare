@@ -90,10 +90,6 @@ public class Perk implements GunPropertyModifier {
         return damage;
     }
 
-    public int getModifiedRPM(int rpm, GunData data, PerkInstance instance) {
-        return rpm;
-    }
-
     public int getModifiedCustomRPM(int rpm, GunData data, PerkInstance instance) {
         return rpm;
     }
@@ -104,18 +100,7 @@ public class Perk implements GunPropertyModifier {
     public void onChangeSlot(GunData data, PerkInstance instance, @Nullable Entity living) {
     }
 
-    public boolean shouldCancelHurtEvent(float damage, GunData data, PerkInstance instance, Entity target, DamageSource source) {
-        return false;
-    }
-
     public void modifyProjectile(GunData data, PerkInstance instance, Entity entity) {
-    }
-
-    /**
-     * 用于武器伤害信息显示
-     */
-    public double getDisplayDamage(double damage, GunData data, PerkInstance instance) {
-        return damage;
     }
 
     /**

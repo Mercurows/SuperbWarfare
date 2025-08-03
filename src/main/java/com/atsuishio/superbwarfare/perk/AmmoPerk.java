@@ -129,8 +129,8 @@ public class AmmoPerk extends Perk {
             return this;
         }
 
-        public AmmoPerk.Builder slug(boolean slug) {
-            this.slug = slug;
+        public AmmoPerk.Builder slug() {
+            this.slug = true;
             return this;
         }
 

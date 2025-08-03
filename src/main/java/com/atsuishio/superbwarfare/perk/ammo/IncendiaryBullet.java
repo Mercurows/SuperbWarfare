@@ -13,7 +13,7 @@ import net.minecraft.world.entity.Entity;
 public class IncendiaryBullet extends AmmoPerk {
 
     public IncendiaryBullet() {
-        super(new AmmoPerk.Builder("incendiary_bullet", Perk.Type.AMMO).bypassArmorRate(-0.4f).damageRate(0.7f).speedRate(0.75f).slug(false).rgb(230, 131, 65)
+        super(new AmmoPerk.Builder("incendiary_bullet", Perk.Type.AMMO).bypassArmorRate(-0.4f).damageRate(0.7f).speedRate(0.75f).slug().rgb(230, 131, 65)
                 .mobEffect(ModMobEffects.BURN));
         appendModification(GunProp.VELOCITY, (data, amount) -> data.stack.is(ModTags.Items.SHOTGUN) ? 4.5f : amount);
     }
