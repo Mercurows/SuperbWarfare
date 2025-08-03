@@ -136,7 +136,7 @@ public class ParticleTool {
             for (int h = 0; h < 4; h++) {
                 for (int i = 0; i < 200; i++) {
                     Vec3 v = new Vec3(1, 0, 0).yRot((float) (i * Math.random()));
-                    sendParticle(serverLevel, new CustomCloudOption(1, 1, 1, 25, 4, false, false), x, y + 0.5, z,
+                    sendParticle(serverLevel, new CustomCloudOption(0xFFFFFF, 25, 4, 0, false, false), x, y + 0.5, z,
                             0, v.x, v.y, v.z, 200 - 2 * h, true);
                 }
             }
@@ -180,7 +180,7 @@ public class ParticleTool {
             for (int h = 0; h < 5; h++) {
                 for (int i = 0; i < 200; i++) {
                     Vec3 v = new Vec3(1, 0, 0).yRot((float) (i * Math.random()));
-                    sendParticle(serverLevel, new CustomCloudOption(1, 1, 1, 25, 4, false, false), x, y + 1, z,
+                    sendParticle(serverLevel, new CustomCloudOption(1, 1, 1, 25, 4, 0, false, false), x, y + 1, z,
                             0, v.x, v.y, v.z, 500 - 3 * h, true);
                 }
             }
@@ -188,17 +188,17 @@ public class ParticleTool {
                 int j = i;
                 Mod.queueServerWork(i, () -> {
                     if (j < 12) {
-                        sendParticle(serverLevel, new CustomCloudOption(1 - ((float) j / 24), 0.5f - ((float) j / 48), 0, 100, 4, true, true), x, y + 2 * j, z, 35, 2 - 0.1 * j, 0.5, 2 - 0.1 * j, 0.005, true);
-                        sendParticle(serverLevel, new CustomCloudOption(0.8f - ((float) j / 24), 0.4f - ((float) j / 48), 0, 100, 4, true, true), x, y + 0.5, z, 55, 3 + 0.5 * j, 0.3, 3 + 0.5 * j, 0.005, true);
+                        sendParticle(serverLevel, new CustomCloudOption(1 - ((float) j / 24), 0.5f - ((float) j / 48), 0, 100, 4, 0, true, true), x, y + 2 * j, z, 35, 2 - 0.1 * j, 0.5, 2 - 0.1 * j, 0.005, true);
+                        sendParticle(serverLevel, new CustomCloudOption(0.8f - ((float) j / 24), 0.4f - ((float) j / 48), 0, 100, 4, 0, true, true), x, y + 0.5, z, 55, 3 + 0.5 * j, 0.3, 3 + 0.5 * j, 0.005, true);
                     }
 
                     if (j >= 8 && j < 16) {
                         int k = j - 8;
-                        sendParticle(serverLevel, new CustomCloudOption(1, 0.5f, 0, 100, 6, true, true), x, y + 20, z, 20 * k, 1 + 0.5 * k, 1 + 0.2 * k, 1 + 0.5 * k, 0.005, true);
-                        sendParticle(serverLevel, new CustomCloudOption(0.5f, 0.25f, 0, 100, 6, true, true), x, y + 20, z, 10 * k, 1 + 0.5 * k, 1 + 0.2 * k, 1 + 0.5 * k, 0.005, true);
-                        sendParticle(serverLevel, new CustomCloudOption(0.25f, 0.125f, 0, 100, 8, true, true), x, y + 20, z, 10 * k, 1 + 0.5 * k, 1 + 0.2 * k, 1 + 0.5 * k, 0.005, true);
+                        sendParticle(serverLevel, new CustomCloudOption(1, 0.5f, 0, 100, 6, 0, true, true), x, y + 20, z, 20 * k, 1 + 0.5 * k, 1 + 0.2 * k, 1 + 0.5 * k, 0.005, true);
+                        sendParticle(serverLevel, new CustomCloudOption(0.5f, 0.25f, 0, 100, 6, 0, true, true), x, y + 20, z, 10 * k, 1 + 0.5 * k, 1 + 0.2 * k, 1 + 0.5 * k, 0.005, true);
+                        sendParticle(serverLevel, new CustomCloudOption(0.25f, 0.125f, 0, 100, 8, 0, true, true), x, y + 20, z, 10 * k, 1 + 0.5 * k, 1 + 0.2 * k, 1 + 0.5 * k, 0.005, true);
                     }
-                    sendParticle(serverLevel, new CustomCloudOption(0.667f, 0.631f, 0.592f, 100, 4, false, false), x, y + 0.2, z, 4 * j, j, 0.1, j, 0.0003 * j, true);
+                    sendParticle(serverLevel, new CustomCloudOption(0.667f, 0.631f, 0.592f, 100, 4, 0, false, false), x, y + 0.2, z, 4 * j, j, 0.1, j, 0.0003 * j, true);
                 });
             }
             ShakeClientMessage.sendToNearbyPlayers(level, x, y, z, 384, 30, 384, 16);
@@ -213,20 +213,20 @@ public class ParticleTool {
         if (level instanceof ServerLevel serverLevel) {
             for (int i = 0; i < 80; i++) {
                 Vec3 v = new Vec3(1, 0, 0).yRot((float) (i * Math.random()));
-                sendParticle(serverLevel, new CustomCloudOption(1, 1, 1, 20, 0.3f, false, false), x, y, z,
+                sendParticle(serverLevel, new CustomCloudOption(1, 1, 1, 20, 0.3f, 0, false, false), x, y, z,
                         0, v.x, v.y, v.z, 8, true);
             }
             Mod.queueServerWork(8, () -> {
                 for (int i = 0; i < 60; i++) {
                     Vec3 v = new Vec3(1, 0, 0).yRot((float) (i * Math.random()));
-                    sendParticle(serverLevel, new CustomCloudOption(1, 1, 1, 17, 0.3f, false, false), x, y, z,
+                    sendParticle(serverLevel, new CustomCloudOption(1, 1, 1, 17, 0.3f, 0, false, false), x, y, z,
                             0, v.x, v.y, v.z, 8, true);
                 }
             });
             Mod.queueServerWork(14, () -> {
                 for (int i = 0; i < 40; i++) {
                     Vec3 v = new Vec3(1, 0, 0).yRot((float) (i * Math.random()));
-                    sendParticle(serverLevel, new CustomCloudOption(1, 1, 1, 15, 0.3f, false, false), x, y, z,
+                    sendParticle(serverLevel, new CustomCloudOption(1, 1, 1, 15, 0.3f, 0, false, false), x, y, z,
                             0, v.x, v.y, v.z, 4, true);
                 }
             });

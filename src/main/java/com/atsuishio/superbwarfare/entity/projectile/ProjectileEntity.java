@@ -494,20 +494,17 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
             double vx = face.getStepX();
             double vy = face.getStepY();
             double vz = face.getStepZ();
-            Vec3 dir = new Vec3(vx, vy, vz);
+            Vec3 dir = new Vec3(vx, vy, vz).add(getDeltaMovement().normalize().scale(-0.1));
 
             if (state.getBlock() == Blocks.WATER) {
                 if (!isInWater()) {
-                    BlockParticleOption particleData = new BlockParticleOption(ParticleTypes.BLOCK, state);
-                    for (int i = 0; i < 7; i++) {
-                        Vec3 vec3 = randomVec(dir, 20);
-                        ParticleTool.sendParticle(serverLevel, particleData, location.x + 0.1 * i * dir.x, location.y + 0.1 * i * dir.y, location.z + 0.1 * i * dir.z, 0, vec3.x, vec3.y, vec3.z, 10, true);
+                    BlockState NewState = Blocks.WHITE_STAINED_GLASS.defaultBlockState();
+                    CustomCloudOption particleData = new CustomCloudOption(1, 1, 1, 80, 0.5f, 1, false, false);
+                    for (int i = 0; i < 10; i++) {
+                        Vec3 vec3 = randomVec(dir, 40);
+                        ParticleTool.sendParticle(serverLevel, particleData, location.x + 0.12 * i * dir.x, location.y + 0.12 * i * dir.y, location.z + 0.12 * i * dir.z, 0, vec3.x, vec3.y, vec3.z, 15, true);
                     }
 
-                    for (int i = 0; i < 5; i++) {
-                        Vec3 vec3 = randomVec(dir, 20);
-                        sendParticle(serverLevel, new CustomCloudOption(1, 1, 1, 10, 0.6f, false, false), location.x, location.y, location.z, 0, vec3.x, vec3.y, vec3.z, 10 + 4 * Math.random(), true);
-                    }
                     ParticleTool.spawnBulletHitWaterParticles(serverLevel, location);
                     serverLevel.playSound(null, new BlockPos((int) location.x, (int) location.y, (int) location.z), ModSounds.HIT_WATER.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
 

@@ -18,6 +18,7 @@ public class CustomCloudOption implements ParticleOptions {
                     Codec.INT.fieldOf("color").forGetter(option -> option.color),
                     Codec.INT.fieldOf("life").forGetter(option -> option.life),
                     Codec.FLOAT.fieldOf("size").forGetter(option -> option.size),
+                    Codec.FLOAT.fieldOf("gravity").forGetter(option -> option.gravity),
                     Codec.BOOL.fieldOf("cooldown").forGetter(option -> option.cooldown),
                     Codec.BOOL.fieldOf("light").forGetter(option -> option.light)
             ).apply(builder, CustomCloudOption::new));
@@ -26,6 +27,7 @@ public class CustomCloudOption implements ParticleOptions {
             ByteBufCodecs.INT, CustomCloudOption::getColor,
             ByteBufCodecs.INT, CustomCloudOption::getLife,
             ByteBufCodecs.FLOAT, CustomCloudOption::getSize,
+            ByteBufCodecs.FLOAT, CustomCloudOption::getGravity,
             ByteBufCodecs.BOOL, CustomCloudOption::getCooldown,
             ByteBufCodecs.BOOL, CustomCloudOption::getLight,
             CustomCloudOption::new
@@ -34,18 +36,20 @@ public class CustomCloudOption implements ParticleOptions {
     private final int color;
     private final int life;
     private final float size;
+    private final float gravity;
     private final boolean cooldown;
     private final boolean light;
 
 
-    public CustomCloudOption(float r, float g, float b, int life, float size, boolean cooldown, boolean light) {
-        this(Math.round(r * 255) << 16 | Math.round(g * 255) << 8 | Math.round(b * 255), life, size, cooldown, light);
+    public CustomCloudOption(float r, float g, float b, int life, float size, float gravity, boolean cooldown, boolean light) {
+        this(Math.round(r * 255) << 16 | Math.round(g * 255) << 8 | Math.round(b * 255), life, size, gravity, cooldown, light);
     }
 
-    public CustomCloudOption(int color, int life, float size, boolean cooldown, boolean light) {
+    public CustomCloudOption(int color, int life, float size, float gravity, boolean cooldown, boolean light) {
         this.color = color;
         this.life = life;
         this.size = size;
+        this.gravity = gravity;
         this.cooldown = cooldown;
         this.light = light;
     }
@@ -72,6 +76,10 @@ public class CustomCloudOption implements ParticleOptions {
 
     public float getSize() {
         return size;
+    }
+
+    public float getGravity() {
+        return gravity;
     }
 
     public boolean getCooldown() {
