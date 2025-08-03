@@ -12,7 +12,6 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 public class CustomCloudOption implements ParticleOptions {
 
-    // TODO 为啥在服务端生成这个粒子会踢人
     public static final Codec<CustomCloudOption> CODEC = RecordCodecBuilder.create(builder ->
             builder.group(
                     Codec.INT.fieldOf("color").forGetter(option -> option.color),
@@ -31,7 +30,7 @@ public class CustomCloudOption implements ParticleOptions {
             reader.expect(' ');
             int life = reader.readInt();
             reader.expect(' ');
-            int size = reader.readInt();
+            float size = reader.readFloat();
             reader.expect(' ');
             boolean cooldown = reader.readBoolean();
             reader.expect(' ');
@@ -41,7 +40,7 @@ public class CustomCloudOption implements ParticleOptions {
 
         @Override
         public CustomCloudOption fromNetwork(ParticleType<CustomCloudOption> particleType, FriendlyByteBuf buffer) {
-            return new CustomCloudOption(buffer.readInt(), buffer.readInt(), buffer.readInt(), buffer.readBoolean(), buffer.readBoolean());
+            return new CustomCloudOption(buffer.readInt(), buffer.readInt(), buffer.readFloat(), buffer.readBoolean(), buffer.readBoolean());
         }
     };
 
@@ -100,7 +99,7 @@ public class CustomCloudOption implements ParticleOptions {
     public void writeToNetwork(FriendlyByteBuf buffer) {
         buffer.writeInt(this.color);
         buffer.writeInt(this.life);
-        buffer.writeDouble(this.size);
+        buffer.writeFloat(this.size);
         buffer.writeBoolean(this.cooldown);
         buffer.writeBoolean(this.light);
     }
