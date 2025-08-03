@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.perk.damage;
 
 import com.atsuishio.superbwarfare.data.gun.GunData;
-import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkInstance;
 import com.atsuishio.superbwarfare.tools.DamageTypeTool;
@@ -13,9 +12,14 @@ public class HeadSeeker extends Perk {
 
     public HeadSeeker() {
         super("head_seeker", Perk.Type.DAMAGE);
-        appendModification(GunProp.DAMAGE,
-                (data, value, target, source) -> source != null && DamageTypeTool.isHeadshotDamage(source) && data.perk.getTag(this).getInt("HeadSeeker") > 0 ?
-                        value * (1.095 + 0.0225 * data.perk.getLevel(this)) : value);
+    }
+
+    @Override
+    public float getModifiedDamage(float damage, GunData data, PerkInstance instance, Entity target, DamageSource source) {
+        if (source != null && DamageTypeTool.isHeadshotDamage(source) && data.perk.getTag(this).getInt("HeadSeeker") > 0) {
+            return damage * (1.095f + 0.0225f * instance.level());
+        }
+        return super.getModifiedDamage(damage, data, instance, target, source);
     }
 
     @Override

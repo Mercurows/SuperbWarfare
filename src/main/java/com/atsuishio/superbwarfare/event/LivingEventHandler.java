@@ -492,10 +492,10 @@ public class LivingEventHandler {
         for (Perk.Type type : Perk.Type.values()) {
             var instance = data.perk.getInstance(type);
             if (instance != null) {
+                damage = instance.perk().getModifiedDamage(damage, data, instance, event.getEntity(), source);
                 instance.perk().onHit(damage, data, instance, event.getEntity(), source);
             }
         }
-        damage = data.get(GunProp.DAMAGE, event.getEntity(), source).floatValue();
 
         event.setAmount(damage);
     }

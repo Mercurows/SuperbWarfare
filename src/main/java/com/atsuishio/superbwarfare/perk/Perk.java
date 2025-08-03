@@ -94,6 +94,10 @@ public class Perk implements GunPropertyModifier {
     public void onChangeSlot(GunData data, PerkInstance instance, @Nullable Entity living) {
     }
 
+    public float getModifiedDamage(float damage, GunData data, PerkInstance instance, Entity target, DamageSource source) {
+        return damage;
+    }
+
     public void modifyProjectile(GunData data, PerkInstance instance, Entity entity) {
     }
 
