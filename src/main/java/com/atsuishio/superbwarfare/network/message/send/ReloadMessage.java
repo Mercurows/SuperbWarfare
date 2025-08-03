@@ -28,7 +28,7 @@ public enum ReloadMessage {
         if (!(stack.getItem() instanceof GunItem gunItem)) return;
 
         var data = GunData.from(stack);
-        if (data.useBackpackAmmo()) return;
+        if (data.useBackpackAmmo() || data.meleeOnly()) return;
 
         if (!player.isSpectator()
                 && stack.getItem() instanceof GunItem
