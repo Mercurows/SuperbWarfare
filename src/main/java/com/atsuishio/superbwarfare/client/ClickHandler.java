@@ -434,6 +434,12 @@ public class ClickHandler {
                 && !notInGame()
         ) {
             var data = GunData.from(stack);
+            if (data.meleeOnly() && gunMelee == 0 && drawTime < 0.01) {
+                gunMelee = data.get(GunProp.MELEE_DURATION);
+                cantFireTime = gunMelee + 4;
+                return;
+            }
+
             if (!(stack.is(ModItems.BOCEK.get()) || stack.is(ModItems.AURELIA_SCEPTRE.get()))) {
                 player.playSound(ModSounds.TRIGGER_CLICK.get(), 1, 1);
             } else {
