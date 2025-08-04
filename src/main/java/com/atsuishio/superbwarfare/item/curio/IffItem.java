@@ -14,6 +14,7 @@ import top.theillusivec4.curios.api.SlotContext;
 import top.theillusivec4.curios.api.type.capability.ICurioItem;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class IffItem extends Item implements ICurioItem {
 
@@ -24,9 +25,9 @@ public class IffItem extends Item implements ICurioItem {
     @Override
     public boolean canEquip(SlotContext slotContext, ItemStack stack) {
         LivingEntity livingEntity = slotContext.entity();
-        return CuriosApi.getCuriosInventory(livingEntity)
-                .map(c -> c.findFirstCurio(this))
-                .isEmpty();
+        AtomicBoolean flag = new AtomicBoolean(true);
+        CuriosApi.getCuriosInventory(livingEntity).ifPresent(c -> c.findFirstCurio(this).ifPresent(s -> flag.set(false)));
+        return flag.get();
     }
 
     @Override
