@@ -500,9 +500,9 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
         var stack = data.stack();
         if (this.getMaxDamage(stack) > 0) {
             if (shooter instanceof LivingEntity living) {
-                stack.hurtAndBreak(1, living, EquipmentSlot.MAINHAND);
+                stack.hurtAndBreak(data.get(GunProp.DURABILITY_PER_SHOOT), living, EquipmentSlot.MAINHAND);
             } else {
-                stack.hurtAndBreak(1, level, (LivingEntity) null, item -> {
+                stack.hurtAndBreak(data.get(GunProp.DURABILITY_PER_SHOOT), level, (LivingEntity) null, item -> {
                 });
             }
         }
