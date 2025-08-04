@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.client.overlay;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.client.language.ClientLanguageGetter;
 import com.atsuishio.superbwarfare.config.client.DisplayConfig;
 import com.atsuishio.superbwarfare.data.gun.AmmoConsumer;
@@ -36,6 +37,9 @@ public class AmmoBarOverlay implements LayeredDraw.Layer {
     private static final ResourceLocation TOP = Mod.loc("textures/gun_icon/fire_mode/top.png");
     private static final ResourceLocation DIR = Mod.loc("textures/gun_icon/fire_mode/dir.png");
     private static final ResourceLocation MOUSE = Mod.loc("textures/gun_icon/fire_mode/mouse.png");
+    private static final ResourceLocation CHOSEN = Mod.loc("textures/gui/attachment/chosen.png");
+    private static final ResourceLocation NOT_CHOSEN = Mod.loc("textures/gui/attachment/not_chosen.png");
+    private static final ResourceLocation AMMO_STACK = Mod.loc("textures/gui/attachment/ammo_stack.png");
 
     private static boolean hasCreativeAmmo() {
         Player player = Minecraft.getInstance().player;
@@ -159,10 +163,20 @@ public class AmmoBarOverlay implements LayeredDraw.Layer {
 
             // 如果当前弹药为物品，渲染备弹物品数量
             if (!data.selectedAmmoConsumer().stack().isEmpty()) {
+                RenderHelper.preciseBlit(guiGraphics, AMMO_STACK,
+                        x - 62,
+                        y - 22,
+                        0,
+                        0,
+                        16,
+                        10,
+                        16,
+                        16);
+
                 poseStack.pushPose();
 
                 // 物品
-                poseStack.translate(x - 80, y - 22, 0);
+                poseStack.translate(x - 57, y - 22, 0);
                 poseStack.scale(0.75f, 0.75f, 1f);
                 guiGraphics.renderFakeItem(data.selectedAmmoConsumer().stack(), 0, 0);
 
@@ -174,13 +188,28 @@ public class AmmoBarOverlay implements LayeredDraw.Layer {
                 guiGraphics.drawString(
                         Minecraft.getInstance().font,
                         text,
-                        0,
+                        4,
                         0,
                         0xFFFFFF,
                         true
                 );
 
                 poseStack.popPose();
+            }
+
+            // 如果弹药种类大于1，渲染弹种信息
+            int size = data.ammoConsumers.size();
+            if (size > 1) {
+                // TODO 想办法让这边保持居中
+                float offset = 49.5f;
+                float posX = size % 2 == 0 ? x - size / 2 * 6 : x - size / 2 * 6 - 4;
+                float posY = y - 8;
+                for (int i = 0; i < size; i++) {
+                    RenderHelper.preciseBlit(guiGraphics,
+                            i == data.selectedAmmoType.get() ? CHOSEN : NOT_CHOSEN,
+                            posX - offset + 6 * i, posY, 0, 0,
+                            4, 4, 4, 4);
+                }
             }
 
             // 渲染当前弹药量
