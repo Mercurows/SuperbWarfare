@@ -20,7 +20,7 @@
   "FinishTime": 22,
   "SoundRadius": 8,
   "RPM": 300,
-  "AmmoConsumer": "superbwarfare:grenade_40mm",
+  "AmmoType": "superbwarfare:grenade_40mm",
   "AvailablePerks": [
     "superbwarfare:powerful_attraction",
     "superbwarfare:intelligent_chip",

@@ -12,7 +12,7 @@
   "RPM": 1200,
   "DefaultFireMode": "Auto",
   "AvailableFireModes": ["Auto"],
-  "AmmoConsumer": "@RifleAmmo",
+  "AmmoType": "@RifleAmmo",
   "ShootDelay": 10,
   "HeatPerShoot": 0.5,
   "DamageReduce": {

@@ -22,7 +22,7 @@
   "DamageReduce": {
     "Type": "Sniper"
   },
-  "AmmoConsumer": "@SniperAmmo",
+  "AmmoType": "@SniperAmmo",
   "AvailablePerks": [
     "@Ammo",
     "superbwarfare:heal_clip",

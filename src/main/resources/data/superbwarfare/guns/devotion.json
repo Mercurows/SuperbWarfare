@@ -21,7 +21,7 @@
   "DamageReduce": {
     "Type": "Rifle"
   },
-  "AmmoConsumer": "@RifleAmmo",
+  "AmmoType": "@RifleAmmo",
   "AvailablePerks": [
     "@Ammo",
     "superbwarfare:fourth_times_charm",

@@ -23,7 +23,7 @@
   "DamageReduce": {
     "Type": "Heavy"
   },
-  "AmmoConsumer": "@HeavyAmmo",
+  "AmmoType": "@HeavyAmmo",
   "AvailablePerks": [
     "@Ammo",
     "superbwarfare:fourth_times_charm",

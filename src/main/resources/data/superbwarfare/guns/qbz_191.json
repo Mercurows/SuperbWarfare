@@ -23,7 +23,7 @@
   "DamageReduce": {
     "Type": "Rifle"
   },
-  "AmmoConsumer": "@RifleAmmo",
+  "AmmoType": "@RifleAmmo",
   "AvailablePerks": [
     "@Ammo",
     "superbwarfare:heal_clip",

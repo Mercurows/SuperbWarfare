@@ -11,7 +11,7 @@
     "Rate": 0.007,
     "MinDistance": 100
   },
-  "AmmoConsumer": "minecraft:arrow",
+  "AmmoType": "minecraft:arrow",
   "AvailablePerks": [
     "@Ammo",
     "superbwarfare:field_doctor",

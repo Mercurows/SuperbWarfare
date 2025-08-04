@@ -24,7 +24,7 @@
   "DamageReduce": {
     "Type": "Shotgun"
   },
-  "AmmoConsumer": "@ShotgunAmmo",
+  "AmmoType": "@ShotgunAmmo",
   "AvailablePerks": [
     "@Ammo",
     "superbwarfare:field_doctor",

@@ -81,7 +81,7 @@ public class DefaultGunData implements IDBasedData {
     @SerializedName("BypassesArmor")
     public double bypassesArmor;
 
-    @SerializedName("AmmoConsumer")
+    @SerializedName("AmmoType")
     public ObjectToList<StringToObject<AmmoConsumer>> ammoConsumers = new ObjectToList<>();
 
     @SerializedName("NormalReloadTime")

@@ -13,7 +13,7 @@
   "EmptyReloadTime": 100,
   "RPM": 120,
   "Gravity": 0.03,
-  "AmmoConsumer": [
+  "AmmoType": [
     {
       "Ammo": "superbwarfare:rpg_rocket_tbg",
       "Projectile": "superbwarfare:rpg_rocket"
