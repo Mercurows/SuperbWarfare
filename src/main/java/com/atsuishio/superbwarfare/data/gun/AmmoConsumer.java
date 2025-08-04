@@ -67,7 +67,12 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
     }
 
     public enum AmmoConsumeType {
-        PLAYER_AMMO, ITEM, INFINITE, INVALID,
+        INVALID,
+        EMPTY,
+        INFINITE,
+
+        PLAYER_AMMO,
+        ITEM,
     }
 
     /**
@@ -114,6 +119,7 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
         if (type == AmmoConsumeType.PLAYER_AMMO
                 || type == AmmoConsumeType.INVALID
                 || type == AmmoConsumeType.INFINITE
+                || type == AmmoConsumeType.EMPTY
                 || count <= 0
         ) return 0;
         if (!initialized) init();
@@ -126,7 +132,7 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
      */
     public int count(@Nullable Entity entity) {
         if (this.type == AmmoConsumeType.INFINITE) return Integer.MAX_VALUE;
-        if (entity == null) return 0;
+        if (entity == null || type == AmmoConsumeType.EMPTY) return 0;
         if (!initialized) init();
 
         if (type == AmmoConsumeType.PLAYER_AMMO && entity instanceof Player player) {
@@ -141,7 +147,7 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
      */
     public int count(@Nullable IItemHandler handler) {
         if (this.type == AmmoConsumeType.INFINITE) return Integer.MAX_VALUE;
-        if (handler == null) return 0;
+        if (handler == null || type == AmmoConsumeType.EMPTY) return 0;
         if (!initialized) init();
 
         if (type == AmmoConsumeType.ITEM) {
@@ -158,7 +164,11 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
      * @return 成功返还的弹药数量
      */
     public int withdraw(@NotNull Entity shooter, int count) {
-        if (type == AmmoConsumeType.INVALID || type == AmmoConsumeType.INFINITE || count <= 0) {
+        if (type == AmmoConsumeType.INVALID
+                || type == AmmoConsumeType.INFINITE
+                || type == AmmoConsumeType.EMPTY
+                || count <= 0
+        ) {
             return 0;
         }
         if (!initialized) init();
@@ -191,7 +201,11 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
     }
 
     public int withdraw(@NotNull IItemHandler handler, int count) {
-        if (type == AmmoConsumeType.INVALID || type == AmmoConsumeType.INFINITE || count <= 0) {
+        if (type == AmmoConsumeType.INVALID
+                || type == AmmoConsumeType.INFINITE
+                || type == AmmoConsumeType.EMPTY
+                || count <= 0
+        ) {
             return 0;
         }
         if (!initialized) init();
@@ -241,7 +255,11 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
         }
 
         this.type = AmmoConsumeType.INVALID;
-        if (ammo == null) return;
+
+        if (ammo == null || ammo.isEmpty() || ammo.toLowerCase(Locale.ROOT).equals("empty")) {
+            this.type = AmmoConsumeType.EMPTY;
+            return;
+        }
 
         if (ammo.toLowerCase(Locale.ROOT).equals("infinity") || ammo.toLowerCase(Locale.ROOT).equals("infinite")) {
             this.type = AmmoConsumeType.INFINITE;
