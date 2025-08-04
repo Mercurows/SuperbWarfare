@@ -202,4 +202,9 @@ public class Qbz95Item extends GunItem {
 
         behaviors.put(14, data -> data.holdOpen.set(false));
     }
+
+    @Override
+    public boolean canEditAttachments(ItemStack stack) {
+        return true;
+    }
 }

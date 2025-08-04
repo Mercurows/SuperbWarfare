@@ -785,6 +785,10 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
         consumer.accept(this.getClientExtensions());
     }
 
+    public boolean canEditAttachments(ItemStack stack) {
+        return stack.getItem() instanceof GunItem && GunData.from(stack).ammoConsumers.size() > 1;
+    }
+
     @OnlyIn(Dist.CLIENT)
     public IClientItemExtensions getClientExtensions() {
         return new IClientItemExtensions() {
@@ -805,7 +809,7 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
     @OnlyIn(Dist.CLIENT)
     @Override
     public @Nullable Screen getItemScreen(ItemStack stack, Player player, InteractionHand hand) {
-        if (ClientEventHandler.canOpenEditScreen(stack, hand)) {
+        if (ClientEventHandler.canOpenEditScreen(stack, hand) && canEditAttachments(stack)) {
             return new WeaponEditScreen(stack);
         }
         return null;

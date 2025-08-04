@@ -169,12 +169,18 @@ public class M98bItem extends GunItem {
         return true;
     }
 
+    @Override
     public boolean hasBipod(ItemStack stack) {
         return true;
     }
 
     @Override
     public boolean hasBulletInBarrel(ItemStack stack) {
+        return true;
+    }
+
+    @Override
+    public boolean canEditAttachments(ItemStack stack) {
         return true;
     }
 }

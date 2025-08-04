@@ -49,8 +49,10 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
             renderBypassAndHeadshotTooltip(font, guiGraphics, x, y + yo);
             yo += 10;
         }
-        renderWeaponEditTooltip(font, guiGraphics, x, y + yo);
-        yo += 20;
+        if (shouldRenderEditTooltip()) {
+            renderWeaponEditTooltip(font, guiGraphics, x, y + yo);
+            yo += 20;
+        }
 
         if (shouldRenderPerks()) {
             if (!Screen.hasShiftDown()) {
@@ -71,6 +73,13 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
         return GunData.from(stack).perk.get(Perk.Type.AMMO) != null
                 || GunData.from(stack).perk.get(Perk.Type.DAMAGE) != null
                 || GunData.from(stack).perk.get(Perk.Type.FUNCTIONAL) != null;
+    }
+
+    protected boolean shouldRenderEditTooltip() {
+        if (this.stack.getItem() instanceof GunItem gunItem) {
+            return gunItem.canEditAttachments(stack);
+        }
+        return false;
     }
 
     /**
@@ -282,7 +291,9 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
         if (shouldRenderBypassAndHeadshotTooltip(stack)) {
             width = Math.max(width, font.width(getBypassComponent().getVisualOrderText()) + font.width(getHeadshotComponent().getVisualOrderText()) + 16);
         }
-        width = Math.max(width, font.width(getEditComponent().getVisualOrderText()) + 16);
+        if (shouldRenderEditTooltip()) {
+            width = Math.max(width, font.width(getEditComponent().getVisualOrderText()) + 16);
+        }
 
         return width + 4;
     }
@@ -310,7 +321,7 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
         int height = Math.max(20, this.height);
 
         if (shouldRenderBypassAndHeadshotTooltip(stack)) height += 10;
-        height += 20;
+        if (shouldRenderEditTooltip()) height += 20;
         if (shouldRenderPerks()) {
             height += 16;
 
@@ -335,5 +346,4 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
             return getDefaultMaxWidth(font);
         }
     }
-
 }

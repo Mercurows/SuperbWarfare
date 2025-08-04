@@ -206,4 +206,9 @@ public class Mk14Item extends GunItem {
 
         behaviors.put(18, data -> data.holdOpen.set(false));
     }
+
+    @Override
+    public boolean canEditAttachments(ItemStack stack) {
+        return true;
+    }
 }

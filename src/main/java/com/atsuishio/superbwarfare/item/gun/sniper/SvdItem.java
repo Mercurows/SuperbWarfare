@@ -166,4 +166,9 @@ public class SvdItem extends GunItem {
 
         behaviors.put(17, data -> data.holdOpen.set(false));
     }
+
+    @Override
+    public boolean canEditAttachments(ItemStack stack) {
+        return true;
+    }
 }

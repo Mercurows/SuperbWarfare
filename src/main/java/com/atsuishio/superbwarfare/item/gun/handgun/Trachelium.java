@@ -47,7 +47,6 @@ public class Trachelium extends GunItem {
         return TracheliumItemRenderer::new;
     }
 
-
     private PlayState fireAnimPredicate(AnimationState<Trachelium> event) {
         LocalPlayer player = Minecraft.getInstance().player;
         if (player == null) return PlayState.STOP;
@@ -298,6 +297,11 @@ public class Trachelium extends GunItem {
 
     @Override
     public boolean hasCustomStock(ItemStack stack) {
+        return true;
+    }
+
+    @Override
+    public boolean canEditAttachments(ItemStack stack) {
         return true;
     }
 }
