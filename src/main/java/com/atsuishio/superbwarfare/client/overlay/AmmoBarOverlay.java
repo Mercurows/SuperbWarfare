@@ -91,10 +91,12 @@ public class AmmoBarOverlay implements IGuiOverlay {
                     64,
                     16);
 
+            var font = Minecraft.getInstance().font;
+
             // 渲染开火模式切换按键
             if (stack.getItem() != ModItems.MINIGUN.get()) {
                 guiGraphics.drawString(
-                        Minecraft.getInstance().font,
+                        font,
                         "[" + ModKeyMappings.FIRE_MODE.getKey().getDisplayName().getString() + "]",
                         x - 111.5f,
                         y - 20,
@@ -114,7 +116,7 @@ public class AmmoBarOverlay implements IGuiOverlay {
                 fireMode = MOUSE;
                 // 渲染加特林射速
                 guiGraphics.drawString(
-                        Minecraft.getInstance().font,
+                        font,
                         data.get(GunProp.RPM) + " RPM",
                         x - 111f,
                         y - 20,
@@ -156,7 +158,8 @@ public class AmmoBarOverlay implements IGuiOverlay {
             }
 
             // 如果当前弹药为物品，渲染备弹物品数量
-            if (!data.selectedAmmoConsumer().stack().isEmpty()) {
+            var ammoConsumer = data.selectedAmmoConsumer();
+            if (ammoConsumer.useItemAsAmmo()) {
                 RenderHelper.preciseBlit(guiGraphics, AMMO_STACK,
                         x - 62,
                         y - 22,
@@ -165,19 +168,20 @@ public class AmmoBarOverlay implements IGuiOverlay {
                         16,
                         10,
                         16,
-                        16);
+                        16
+                );
 
                 poseStack.pushPose();
 
                 // 物品
                 poseStack.translate(x - 57, y - 22, 0);
                 poseStack.scale(0.75f, 0.75f, 1f);
-                guiGraphics.renderFakeItem(data.selectedAmmoConsumer().stack(), 0, 0);
+                guiGraphics.renderFakeItem(ammoConsumer.stack(), 0, 0);
 
                 // 数量
                 var text = "" + data.countBackupAmmoItem(player);
                 guiGraphics.drawString(
-                        Minecraft.getInstance().font,
+                        font,
                         text,
                         18,
                         8,
@@ -203,26 +207,29 @@ public class AmmoBarOverlay implements IGuiOverlay {
                 }
             }
 
-            // 渲染当前弹药量
             poseStack.pushPose();
             poseStack.scale(1.5f, 1.5f, 1f);
 
+            // 渲染当前弹药量
+            var gunAmmoY = data.useBackpackAmmo() ? y - 35 : y + 5 - 48;
+
             guiGraphics.drawString(
-                    Minecraft.getInstance().font,
+                    font,
                     getGunAmmoString(data, player),
                     x / 1.5f - 64 / 1.5f,
-                    (y + 5) / 1.5f - 48 / 1.5f,
+                    gunAmmoY / 1.5F,
                     0xFFFFFF,
                     true
             );
 
             poseStack.popPose();
 
+            // 虚拟弹药备弹
             if (data.virtualAmmo.get() > 0) {
                 guiGraphics.drawString(
-                        Minecraft.getInstance().font,
+                        font,
                         "+" + data.virtualAmmo.get(),
-                        x - 62 + Minecraft.getInstance().font.width(getGunAmmoString(data, player)) * 1.5f,
+                        x - 62 + font.width(getGunAmmoString(data, player)) * 1.5f,
                         y - 46,
                         0x55FFFF,
                         true
@@ -231,7 +238,7 @@ public class AmmoBarOverlay implements IGuiOverlay {
 
             // 渲染备弹量
             guiGraphics.drawString(
-                    Minecraft.getInstance().font,
+                    font,
                     getBackupAmmoString(data, player),
                     x - 64,
                     y - 30,
@@ -245,21 +252,21 @@ public class AmmoBarOverlay implements IGuiOverlay {
             // 渲染物品名称
             String gunName = getGunDisplayName(stack);
             guiGraphics.drawString(
-                    Minecraft.getInstance().font,
+                    font,
                     gunName,
-                    x / 0.9f - (100 + Minecraft.getInstance().font.width(gunName) / 2f) / 0.9f,
+                    x / 0.9f - (100 + font.width(gunName) / 2f) / 0.9f,
                     y / 0.9f - 60 / 0.9f,
                     0xFFFFFF,
                     true
             );
 
             // 渲染弹药类型
-            var ammoName = getAmmoDisplayName(data, data.selectedAmmoConsumer().stack());
+            var ammoName = getAmmoDisplayName(ammoConsumer);
 
             guiGraphics.drawString(
-                    Minecraft.getInstance().font,
+                    font,
                     ammoName,
-                    x / 0.9f - (100 + Minecraft.getInstance().font.width(ammoName) / 2f) / 0.9f,
+                    x / 0.9f - (100 + font.width(ammoName) / 2f) / 0.9f,
                     y / 0.9f - 51 / 0.9f,
                     0xC8A679,
                     true
@@ -277,11 +284,11 @@ public class AmmoBarOverlay implements IGuiOverlay {
         }
     }
 
-    private static String getAmmoDisplayName(GunData data, ItemStack stack) {
-        if (data.selectedAmmoConsumer().type == AmmoConsumer.AmmoConsumeType.PLAYER_AMMO) {
-            return data.selectedAmmoConsumer().getPlayerAmmoType().displayName;
-        } else if (!stack.isEmpty()) {
-            return ClientLanguageGetter.EN_US.getOrDefault(stack.getDescriptionId());
+    private static String getAmmoDisplayName(AmmoConsumer consumer) {
+        if (consumer.type == AmmoConsumer.AmmoConsumeType.PLAYER_AMMO) {
+            return consumer.getPlayerAmmoType().displayName;
+        } else if (!consumer.stack().isEmpty()) {
+            return ClientLanguageGetter.EN_US.getOrDefault(consumer.stack().getDescriptionId());
         } else {
             return "";
         }
