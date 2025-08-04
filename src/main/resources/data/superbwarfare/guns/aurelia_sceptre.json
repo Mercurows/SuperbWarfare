@@ -23,7 +23,7 @@
     "Type": "Handgun"
   },
   "DefaultFireMode": "Auto",
-  "AmmoConsumer": "@HandgunAmmo",
+  "AmmoType": "@HandgunAmmo",
   "AvailablePerks": [
     "@Ammo",
     "superbwarfare:field_doctor",

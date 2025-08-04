@@ -16,7 +16,7 @@
   "DamageReduce": {
     "Type": "Handgun"
   },
-  "AmmoConsumer": "@HandgunAmmo",
+  "AmmoType": "@HandgunAmmo",
   "AvailablePerks": [
     "@Ammo",
     "superbwarfare:heal_clip",
