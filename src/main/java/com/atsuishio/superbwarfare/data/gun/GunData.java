@@ -60,14 +60,7 @@ public class GunData {
         data = getOrPut("GunData");
         perkTag = getOrPut("Perks");
         attachmentTag = getOrPut("Attachments");
-        ammoConsumers = getDefault().ammoConsumers.list.stream()
-                .map(c -> {
-                    if (!c.value.initialized()) {
-                        c.value.init();
-                    }
-                    return c.value;
-                })
-                .toList();
+        ammoConsumers = getDefault().getAmmoConsumers();
 
         // 可持久化属性
         reload = new Reload(this);

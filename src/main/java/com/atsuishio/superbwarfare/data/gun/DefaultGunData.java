@@ -1,11 +1,13 @@
 package com.atsuishio.superbwarfare.data.gun;
 
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.annotation.ServerOnly;
 import com.atsuishio.superbwarfare.data.IDBasedData;
 import com.atsuishio.superbwarfare.data.ObjectToList;
 import com.atsuishio.superbwarfare.data.StringToObject;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.List;
 import java.util.Set;
 
 @SuppressWarnings("unused")
@@ -83,6 +85,30 @@ public class DefaultGunData implements IDBasedData {
 
     @SerializedName("AmmoType")
     public ObjectToList<StringToObject<AmmoConsumer>> ammoConsumers = new ObjectToList<>();
+
+    private transient List<AmmoConsumer> ammoConsumersCache;
+
+    public List<AmmoConsumer> getAmmoConsumers() {
+        if (ammoConsumersCache == null) {
+            this.ammoConsumersCache = this.ammoConsumers.list.stream()
+                    .map(c -> {
+                        if (!c.value.initialized()) {
+                            c.value.init();
+                        }
+                        return c.value;
+                    })
+                    .filter(c -> {
+                        if (c.type == AmmoConsumer.AmmoConsumeType.INVALID) {
+                            Mod.LOGGER.warn("invalid ammo string {} for {}", c.ammo, this.id);
+                            return false;
+                        }
+                        return true;
+                    })
+                    .toList();
+        }
+
+        return this.ammoConsumersCache;
+    }
 
     @SerializedName("NormalReloadTime")
     public int normalReloadTime;
