@@ -10,7 +10,7 @@
   "Velocity": 4,
   "Magazine": 1,
   "Weight": 7,
-  "EmptyReloadTime": 107,
+  "EmptyReloadTime": 100,
   "RPM": 120,
   "Gravity": 0.03,
   "AmmoConsumer": [

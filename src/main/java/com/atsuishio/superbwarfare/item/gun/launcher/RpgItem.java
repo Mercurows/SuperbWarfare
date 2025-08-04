@@ -130,7 +130,7 @@ public class RpgItem extends GunItem {
     public void addReloadTimeBehavior(Map<Integer, Consumer<GunData>> behaviors) {
         super.addReloadTimeBehavior(behaviors);
         behaviors.put(84, data -> data.isEmpty.set(false));
-        behaviors.put(16, data -> data.closeHammer.set(false));
+        behaviors.put(9, data -> data.closeHammer.set(false));
     }
 
     @Override
