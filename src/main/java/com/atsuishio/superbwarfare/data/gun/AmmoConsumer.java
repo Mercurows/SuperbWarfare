@@ -54,6 +54,10 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
         return this.stack;
     }
 
+    public boolean useItemAsAmmo() {
+        return this.type == AmmoConsumeType.ITEM;
+    }
+
     public boolean initialized() {
         return this.initialized;
     }
