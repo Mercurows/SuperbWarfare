@@ -176,14 +176,11 @@ public class AmmoBarOverlay implements IGuiOverlay {
 
                 // 数量
                 var text = "" + data.countBackupAmmoItem(player);
-                var length = Minecraft.getInstance().font.width(text);
-                poseStack.translate(16 - length, 8, 0);
-
                 guiGraphics.drawString(
                         Minecraft.getInstance().font,
                         text,
-                        4,
-                        0,
+                        18,
+                        8,
                         0xFFFFFF,
                         true
                 );
@@ -194,9 +191,9 @@ public class AmmoBarOverlay implements IGuiOverlay {
             // 如果弹药种类大于1，渲染弹种信息
             int size = data.ammoConsumers.size();
             if (size > 1) {
-                // TODO 想办法让这边保持居中
-                float offset = 49.5f;
-                float posX = size % 2 == 0 ? x - size / 2 * 6 : x - size / 2 * 6 - 4;
+                float offset = 50.5f;
+                int count = size / 2;
+                float posX = size % 2 == 0 ? x - count * 6 + 1 : x - count * 6 - 2;
                 float posY = y - 8;
                 for (int i = 0; i < size; i++) {
                     RenderHelper.preciseBlit(guiGraphics,
