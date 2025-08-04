@@ -8,7 +8,6 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.Item;
@@ -26,7 +25,6 @@ import top.theillusivec4.curios.api.type.capability.ICurioItem;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class DogTagItem extends Item implements ICurioItem, ItemScreenProvider {
 
@@ -35,17 +33,16 @@ public class DogTagItem extends Item implements ICurioItem, ItemScreenProvider {
     }
 
     @Override
-    public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, List<Component> pTooltipComponents, TooltipFlag pIsAdvanced) {
+    public void appendHoverText(@NotNull ItemStack pStack, @Nullable Level pLevel, @NotNull List<Component> pTooltipComponents, @NotNull TooltipFlag pIsAdvanced) {
         TooltipTool.addScreenProviderText(pTooltipComponents);
     }
 
     @Override
     public boolean canEquip(SlotContext slotContext, ItemStack stack) {
-        LivingEntity livingEntity = slotContext.entity();
-        AtomicBoolean flag = new AtomicBoolean(true);
-        CuriosApi.getCuriosInventory(livingEntity).ifPresent(c -> c.findFirstCurio(this).ifPresent(s -> flag.set(false)));
-
-        return flag.get();
+        return CuriosApi.getCuriosInventory(slotContext.entity())
+                .resolve()
+                .flatMap(c -> c.findFirstCurio(this))
+                .isEmpty();
     }
 
     @Override
