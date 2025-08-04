@@ -123,11 +123,14 @@ public class WeaponEditScreen extends Screen {
             RenderHelper.preciseBlit(pGuiGraphics, INVALID, posX2, posY3, 0, 0, 24, 24, 24, 24);
         } else {
             int size = currentData.ammoConsumers.size();
-            float tempPos = size % 2 == 0 ? this.width - size / 2 * 6 - 33.5f : this.width - size / 2 * 6 - 4 - 33.5f;
+            float offset = 35f;
+            int count = size / 2;
+
+            float tempPos = size % 2 == 0 ? this.width - count * 6 + 1 : this.width - count * 6 - 2;
             for (int i = 0; i < size; i++) {
                 RenderHelper.preciseBlit(pGuiGraphics,
                         i == currentData.selectedAmmoType.get() ? CHOSEN : NOT_CHOSEN,
-                        tempPos + 6 * i, posY3, 0, 0,
+                        tempPos - offset + 6 * i, posY3, 0, 0,
                         4, 4, 4, 4);
             }
         }
