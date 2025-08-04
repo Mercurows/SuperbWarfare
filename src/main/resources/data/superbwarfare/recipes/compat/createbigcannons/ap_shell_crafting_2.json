@@ -1,0 +1,30 @@
+{
+  "conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "createbigcannons"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "c",
+    "a",
+    "b"
+  ],
+  "key": {
+    "a": {
+      "item": "createbigcannons:ap_shot"
+    },
+    "b": {
+      "tag": "createbigcannons:big_cannon_propellant_bags"
+    },
+    "c": {
+      "item": "createbigcannons:impact_fuze"
+    }
+  },
+  "result": {
+    "item": "superbwarfare:ap_5_inches",
+    "count": 1
+  }
+}
