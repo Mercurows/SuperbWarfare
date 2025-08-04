@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.network.message.send;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.data.gun.GunData;
+import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
@@ -69,10 +70,20 @@ public record EditMessage(int msgType, boolean add) implements CustomPacketPaylo
             case 5 -> {
                 var diff = message.add ? 1 : -1;
                 var selectedAmmoType = data.selectedAmmoType.get() + diff;
-                if (selectedAmmoType >= 0 && selectedAmmoType <= data.ammoConsumers.size() - 1) {
+
+                if (!player.isCreative()
+                        && selectedAmmoType >= 0
+                        && selectedAmmoType <= data.ammoConsumers.size() - 1
+                ) {
                     data.withdrawAmmo(player);
                 }
+
                 data.changeAmmoConsumer(selectedAmmoType);
+
+                if (player.isCreative()) {
+                    data.ammo.set(data.get(GunProp.MAGAZINE));
+                }
+
                 data.isEmpty.set(true);
                 data.holdOpen.set(true);
                 data.closeHammer.set(false);
