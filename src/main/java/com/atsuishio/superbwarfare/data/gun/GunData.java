@@ -177,6 +177,7 @@ public class GunData {
         return id;
     }
 
+    @SuppressWarnings("unchecked")
     public <T> T get(GunProp<T> prop) {
         var modifier = prop.asModifier(this);
 
@@ -194,7 +195,18 @@ public class GunData {
         // AmmoConsumer
         modifier.apply(selectedAmmoConsumer().getModifier(prop));
 
+        if (prop == GunProp.MAGAZINE && meleeOnly()) {
+            modifier.apply((data, value) -> (T) Integer.valueOf(0));
+        }
+
         return modifier.compute();
+    }
+
+    public boolean hasInfiniteBackupAmmo(@Nullable Entity shooter) {
+        return shooter instanceof Player player && player.isCreative()
+                || selectedAmmoConsumer().type == AmmoConsumer.AmmoConsumeType.INFINITE
+                || meleeOnly()
+                || InventoryTool.hasCreativeAmmoBox(shooter);
     }
 
     /**

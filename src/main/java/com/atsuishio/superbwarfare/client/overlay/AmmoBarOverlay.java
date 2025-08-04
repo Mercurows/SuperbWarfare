@@ -11,13 +11,13 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModKeyMappings;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
-import com.atsuishio.superbwarfare.tools.InventoryTool;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.gui.overlay.ForgeGui;
@@ -39,11 +39,7 @@ public class AmmoBarOverlay implements IGuiOverlay {
     private static final ResourceLocation NOT_CHOSEN = Mod.loc("textures/gui/attachment/not_chosen.png");
     private static final ResourceLocation AMMO_STACK = Mod.loc("textures/gui/attachment/ammo_stack.png");
 
-    private static boolean hasCreativeAmmo() {
-        Player player = Minecraft.getInstance().player;
-        if (player == null) return false;
-        return player.isCreative() || InventoryTool.hasCreativeAmmoBox(player);
-    }
+    private static final ItemStack BARRIER_STACK = new ItemStack(Items.BARRIER);
 
     private static ResourceLocation getFireMode(GunData data) {
         return switch (data.fireMode.get()) {
@@ -54,13 +50,13 @@ public class AmmoBarOverlay implements IGuiOverlay {
     }
 
     private static String getGunAmmoString(GunData data, Player player) {
-        if (data.meleeOnly() || data.useBackpackAmmo() && hasCreativeAmmo()) return "∞";
+        if (data.meleeOnly() || data.useBackpackAmmo() && data.hasInfiniteBackupAmmo(player)) return "∞";
         return data.useBackpackAmmo() ? data.countBackupAmmo(player) - data.virtualAmmo.get() + "" : data.ammo.get() + "";
     }
 
     private static String getBackupAmmoString(GunData data, Player player) {
         if (data.meleeOnly() || data.useBackpackAmmo()) return "";
-        return hasCreativeAmmo() ? "∞" : data.countBackupAmmo(player) - data.virtualAmmo.get() + "";
+        return data.hasInfiniteBackupAmmo(player) ? "∞" : data.countBackupAmmo(player) - data.virtualAmmo.get() + "";
     }
 
     @Override
@@ -159,25 +155,29 @@ public class AmmoBarOverlay implements IGuiOverlay {
 
             // 如果当前弹药为物品，渲染备弹物品数量
             var ammoConsumer = data.selectedAmmoConsumer();
-            if (ammoConsumer.useItemAsAmmo()) {
-                RenderHelper.preciseBlit(guiGraphics, AMMO_STACK,
-                        x - 62,
-                        y - 22,
-                        0,
-                        0,
-                        16,
-                        10,
-                        16,
-                        16
-                );
+            RenderHelper.preciseBlit(guiGraphics, AMMO_STACK,
+                    x - 62,
+                    y - 22,
+                    0,
+                    0,
+                    16,
+                    10,
+                    16,
+                    16
+            );
 
-                poseStack.pushPose();
+            poseStack.pushPose();
 
-                // 物品
-                poseStack.translate(x - 57, y - 22, 0);
-                poseStack.scale(0.75f, 0.75f, 1f);
-                guiGraphics.renderFakeItem(ammoConsumer.stack(), 0, 0);
+            // 物品
+            poseStack.translate(x - 57, y - 22, 0);
+            poseStack.scale(0.75f, 0.75f, 1f);
 
+            // TODO 优化物品渲染效果
+            var renderStackCount = ammoConsumer.type == AmmoConsumer.AmmoConsumeType.ITEM;
+            var ammoStack = renderStackCount ? ammoConsumer.stack() : BARRIER_STACK;
+            guiGraphics.renderFakeItem(ammoStack, 0, 0);
+
+            if (renderStackCount) {
                 // 数量
                 var text = "" + data.countBackupAmmoItem(player);
                 guiGraphics.drawString(
@@ -188,9 +188,9 @@ public class AmmoBarOverlay implements IGuiOverlay {
                         0xFFFFFF,
                         true
                 );
-
-                poseStack.popPose();
             }
+
+            poseStack.popPose();
 
             // 如果弹药种类大于1，渲染弹种信息
             int size = data.ammoConsumers.size();
@@ -261,7 +261,7 @@ public class AmmoBarOverlay implements IGuiOverlay {
             );
 
             // 渲染弹药类型
-            var ammoName = getAmmoDisplayName(ammoConsumer);
+            var ammoName = getAmmoDisplayName(data);
 
             guiGraphics.drawString(
                     font,
@@ -284,9 +284,14 @@ public class AmmoBarOverlay implements IGuiOverlay {
         }
     }
 
-    private static String getAmmoDisplayName(AmmoConsumer consumer) {
+    private static String getAmmoDisplayName(GunData data) {
+        var consumer = data.selectedAmmoConsumer();
         if (consumer.type == AmmoConsumer.AmmoConsumeType.PLAYER_AMMO) {
             return consumer.getPlayerAmmoType().displayName;
+        } else if (consumer.type == AmmoConsumer.AmmoConsumeType.INFINITE) {
+            return "Infinity";
+        } else if (data.meleeOnly()) {
+            return "Melee";
         } else if (!consumer.stack().isEmpty()) {
             return ClientLanguageGetter.EN_US.getOrDefault(consumer.stack().getDescriptionId());
         } else {
