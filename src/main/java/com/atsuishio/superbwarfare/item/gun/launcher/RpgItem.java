@@ -132,4 +132,9 @@ public class RpgItem extends GunItem {
         behaviors.put(84, data -> data.isEmpty.set(false));
         behaviors.put(16, data -> data.closeHammer.set(false));
     }
+
+    @Override
+    public boolean canEditAttachments(ItemStack stack) {
+        return true;
+    }
 }

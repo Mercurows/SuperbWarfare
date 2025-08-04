@@ -235,4 +235,9 @@ public class Qbz191Item extends GunItem {
         super.addReloadTimeBehavior(behaviors);
         behaviors.put(14, data -> data.holdOpen.set(false));
     }
+
+    @Override
+    public boolean canEditAttachments(ItemStack stack) {
+        return true;
+    }
 }

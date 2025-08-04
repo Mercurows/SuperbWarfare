@@ -788,6 +788,10 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
         return true;
     }
 
+    public boolean canEditAttachments(ItemStack stack) {
+        return stack.getItem() instanceof GunItem && GunData.from(stack).ammoConsumers.size() > 1;
+    }
+
     @OnlyIn(Dist.CLIENT)
     public HumanoidModel.ArmPose getArmPose(LivingEntity entityLiving, InteractionHand hand, ItemStack stack) {
         return PoseTool.pose(entityLiving, hand, stack);
@@ -818,7 +822,7 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
     @OnlyIn(Dist.CLIENT)
     @Override
     public @Nullable Screen getItemScreen(ItemStack stack, Player player, InteractionHand hand) {
-        if (ClientEventHandler.canOpenEditScreen(stack, hand)) {
+        if (ClientEventHandler.canOpenEditScreen(stack, hand) && canEditAttachments(stack)) {
             return new WeaponEditScreen(stack);
         }
         return null;

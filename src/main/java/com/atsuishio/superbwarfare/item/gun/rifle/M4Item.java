@@ -201,4 +201,9 @@ public class M4Item extends GunItem {
     public boolean canEjectShell(ItemStack stack) {
         return true;
     }
+
+    @Override
+    public boolean canEditAttachments(ItemStack stack) {
+        return true;
+    }
 }

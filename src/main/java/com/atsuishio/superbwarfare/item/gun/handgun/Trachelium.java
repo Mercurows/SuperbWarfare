@@ -296,4 +296,9 @@ public class Trachelium extends GunItem {
     public boolean hasCustomStock(ItemStack stack) {
         return true;
     }
+
+    @Override
+    public boolean canEditAttachments(ItemStack stack) {
+        return true;
+    }
 }
