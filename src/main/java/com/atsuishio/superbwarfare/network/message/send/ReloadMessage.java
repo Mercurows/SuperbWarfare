@@ -29,7 +29,7 @@ public enum ReloadMessage implements CustomPacketPayload {
         if (!(stack.getItem() instanceof GunItem gunItem)) return;
 
         var data = GunData.from(stack);
-        if (data.useBackpackAmmo() || data.meleeOnly()) return;
+        if (data.useBackpackAmmo() || data.get(GunProp.MAGAZINE) <= 0 || data.meleeOnly()) return;
 
         if (!player.isSpectator()
                 && !data.charging()

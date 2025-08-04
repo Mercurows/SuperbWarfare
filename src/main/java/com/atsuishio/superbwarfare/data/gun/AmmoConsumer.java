@@ -27,6 +27,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -54,10 +55,6 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
         return this.stack;
     }
 
-    public boolean useItemAsAmmo() {
-        return this.type == AmmoConsumeType.ITEM;
-    }
-
     public boolean initialized() {
         return this.initialized;
     }
@@ -70,14 +67,17 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
     }
 
     public enum AmmoConsumeType {
-        PLAYER_AMMO, ITEM, INVALID,
+        PLAYER_AMMO, ITEM, INFINITE, INVALID,
     }
 
     /**
      * 消耗指定弹药数量（原始数量，不包括虚拟弹药，不考虑count）
      */
     public int consume(@NotNull Entity shooter, int count) {
-        if (count <= 0 || shooter instanceof Player player && player.isCreative()) return 0;
+        if (count <= 0
+                || this.type == AmmoConsumeType.INFINITE
+                || shooter instanceof Player player && player.isCreative()
+        ) return 0;
         if (!initialized) init();
 
         if (type == AmmoConsumeType.INVALID) {
@@ -111,7 +111,11 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
      * 消耗指定弹药数量（原始数量，不包括虚拟弹药，不考虑count）
      */
     public int consume(@NotNull IItemHandler handler, int count) {
-        if (type == AmmoConsumeType.PLAYER_AMMO || type == AmmoConsumeType.INVALID || count <= 0) return 0;
+        if (type == AmmoConsumeType.PLAYER_AMMO
+                || type == AmmoConsumeType.INVALID
+                || type == AmmoConsumeType.INFINITE
+                || count <= 0
+        ) return 0;
         if (!initialized) init();
 
         return InventoryTool.consumeItem(handler, stack -> ItemStack.isSameItemSameComponents(stack, this.stack), count);
@@ -121,6 +125,7 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
      * 清点不包括虚拟弹药在内的原始弹药数量
      */
     public int count(@Nullable Entity entity) {
+        if (this.type == AmmoConsumeType.INFINITE) return Integer.MAX_VALUE;
         if (entity == null) return 0;
         if (!initialized) init();
 
@@ -135,6 +140,7 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
      * 清点不包括虚拟弹药在内的原始弹药数量
      */
     public int count(@Nullable IItemHandler handler) {
+        if (this.type == AmmoConsumeType.INFINITE) return Integer.MAX_VALUE;
         if (handler == null) return 0;
         if (!initialized) init();
 
@@ -151,7 +157,6 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
      * 注：不会实际消耗枪内弹药
      * @return 成功返还的弹药数量
      */
-    // TODO 正确处理多发弹药装填情况下的退弹
     public int withdraw(@NotNull Entity shooter, int count) {
         if (type == AmmoConsumeType.INVALID) {
             return 0;
@@ -234,6 +239,11 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
 
         this.type = AmmoConsumeType.INVALID;
         if (ammo == null) return;
+
+        if (ammo.toLowerCase(Locale.ROOT).equals("infinity") || ammo.toLowerCase(Locale.ROOT).equals("infinite")) {
+            this.type = AmmoConsumeType.INFINITE;
+            return;
+        }
 
         var matcher = AMMO_PATTERN.matcher(ammo);
         if (!matcher.matches()) {
