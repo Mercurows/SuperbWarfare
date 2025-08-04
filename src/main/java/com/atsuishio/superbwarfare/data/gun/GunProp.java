@@ -19,7 +19,11 @@ public class GunProp<T> {
     // 这b玩意必须放第一个，不然new的时候执行到props.add(this)会NPE（全恼
     private static final List<GunProp<?>> props = new ArrayList<>();
 
+    // 不要动态修改这玩意，很容易出问题
     public static final GunProp<Integer> MAX_DURABILITY = new GunProp<Integer>("MaxDurability", true)
+            .withLimiter((data, v) -> Math.max(0, v));
+
+    public static final GunProp<Integer> DURABILITY_PER_SHOOT = new GunProp<Integer>("DurabilityPerShoot")
             .withLimiter((data, v) -> Math.max(0, v));
 
     public static final GunProp<Double> RECOIL_X = new GunProp<>("RecoilX");

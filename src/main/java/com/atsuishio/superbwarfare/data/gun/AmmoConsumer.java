@@ -156,7 +156,7 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
      * @return 成功返还的弹药数量
      */
     public int withdraw(@NotNull Entity shooter, int count) {
-        if (type == AmmoConsumeType.INVALID) {
+        if (type == AmmoConsumeType.INVALID || type == AmmoConsumeType.INFINITE || count <= 0) {
             return 0;
         }
         if (!initialized) init();
@@ -189,6 +189,9 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
     }
 
     public int withdraw(@NotNull IItemHandler handler, int count) {
+        if (type == AmmoConsumeType.INVALID || type == AmmoConsumeType.INFINITE || count <= 0) {
+            return 0;
+        }
         if (!initialized) init();
 
         var copiedStack = this.stack.copyWithCount(count);

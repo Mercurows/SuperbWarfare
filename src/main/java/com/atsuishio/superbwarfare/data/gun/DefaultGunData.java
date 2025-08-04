@@ -20,8 +20,12 @@ public class DefaultGunData implements IDBasedData {
         return this.id;
     }
 
+    // 不要动态修改这玩意，很容易出问题
     @SerializedName("MaxDurability")
     public int maxDurability = 0;
+
+    @SerializedName("DurabilityPerShoot")
+    public int durabilityPerShoot = 1;
 
     @SerializedName("RecoilX")
     public double recoilX;
