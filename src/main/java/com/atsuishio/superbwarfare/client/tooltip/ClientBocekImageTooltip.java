@@ -47,7 +47,7 @@ public class ClientBocekImageTooltip extends ClientGunImageTooltip {
                                     : FormatTool.format1D(shotDamage, " * 10"))
                             .withStyle(ChatFormatting.GREEN))
                     .append(Component.literal(" / ").withStyle(ChatFormatting.RESET))
-                    .append(Component.literal(FormatTool.format1D(shotDamage)).withStyle(ChatFormatting.GREEN));
+                    .append(Component.literal(FormatTool.format1D(damage)).withStyle(ChatFormatting.GREEN));
         }
     }
 }
