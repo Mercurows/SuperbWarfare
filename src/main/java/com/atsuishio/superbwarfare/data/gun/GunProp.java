@@ -34,7 +34,8 @@ public class GunProp<T> {
     public static final GunProp<Double> DAMAGE = new GunProp<>("Damage");
     public static final GunProp<Double> HEADSHOT = new GunProp<>("Headshot");
     public static final GunProp<Double> VELOCITY = new GunProp<>("Velocity");
-    public static final GunProp<Integer> MAGAZINE = new GunProp<>("Magazine");
+    public static final GunProp<Integer> MAGAZINE = new GunProp<Integer>("Magazine")
+            .withLimiter((data, v) -> data.meleeOnly() ? 0 : Math.max(0, v));
 
     public static final GunProp<Double> MELEE_DAMAGE = new GunProp<>("MeleeDamage");
     public static final GunProp<Integer> MELEE_DURATION = new GunProp<Integer>("MeleeDuration")
@@ -80,9 +81,9 @@ public class GunProp<T> {
 
     public static final GunProp<List<String>> AVAILABLE_PERKS = new GunProp<>("AvailablePerks");
 
-    private final String name;
+    public final String name;
     private final Field field;
-    private final boolean readOnly;
+    public final boolean readOnly;
     public GunPropModifyContext<T> limiter;
 
     private GunProp(String name) {
