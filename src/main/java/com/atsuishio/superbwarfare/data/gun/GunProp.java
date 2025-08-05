@@ -38,10 +38,10 @@ public class GunProp<T> {
 
     public static final GunProp<Double> MELEE_DAMAGE = new GunProp<>("MeleeDamage");
     public static final GunProp<Integer> MELEE_DURATION = new GunProp<Integer>("MeleeDuration")
-            .withLimiter((data, v) -> Math.max(0, v));
+            .withLimiter((data, v) -> Math.max(1, v));
 
     public static final GunProp<Integer> MELEE_DAMAGE_TIME = new GunProp<Integer>("MeleeDamageTime")
-            .withLimiter((data, v) -> Math.min(data.get(MELEE_DURATION), v));
+            .withLimiter((data, v) -> Math.min(data.get(MELEE_DURATION) - 1, v));
 
     public static final GunProp<ProjectileInfo> PROJECTILE = new GunProp<>("Projectile");
     public static final GunProp<Integer> PROJECTILE_AMOUNT = new GunProp<>("ProjectileAmount");
