@@ -275,7 +275,7 @@ public class MediumRocketEntity extends FastThrowableProjectile implements GeoEn
     @Override
     public void causeExplode(Vec3 vec3) {
         CustomExplosion explosion = new CustomExplosion(this.level(), this,
-                ModDamageTypes.causeProjectileExplosionDamage(this.level().registryAccess(),
+                ModDamageTypes.causeCustomExplosionDamage(this.level().registryAccess(),
                         this,
                         this.getOwner()),
                 explosionDamage,

@@ -55,7 +55,7 @@ public record LungeMineAttackMessage(int type, UUID uuid, Vec3 pos) {
                 }
             } else if (message.type == 1) {
                 CustomExplosion explosion = new CustomExplosion(player.level(), null,
-                        ModDamageTypes.causeProjectileExplosionDamage(player.level().registryAccess(), player, player), 60,
+                        ModDamageTypes.causeCustomExplosionDamage(player.level().registryAccess(), player, player), 60,
                         message.pos.x, message.pos.y, message.pos.z, 4f, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).setDamageMultiplier(1.25f);
                 explosion.explode();
                 ForgeEventFactory.onExplosionStart(player.level(), explosion);
@@ -69,7 +69,7 @@ public record LungeMineAttackMessage(int type, UUID uuid, Vec3 pos) {
 
     public static void causeLungeMineExplode(Level pLevel, Entity entity, Entity pLivingEntity) {
         CustomExplosion explosion = new CustomExplosion(pLevel, pLivingEntity,
-                ModDamageTypes.causeProjectileExplosionDamage(pLevel.registryAccess(), pLivingEntity, entity), 60,
+                ModDamageTypes.causeCustomExplosionDamage(pLevel.registryAccess(), pLivingEntity, entity), 60,
                 pLivingEntity.getX(), pLivingEntity.getEyeY(), pLivingEntity.getZ(), 4f, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).setDamageMultiplier(1.25f);
         explosion.explode();
         ForgeEventFactory.onExplosionStart(pLevel, explosion);

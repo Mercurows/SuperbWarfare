@@ -403,7 +403,7 @@ public class AnnihilatorEntity extends VehicleEntity implements GeoEntity, Canno
 
         if (passenger != null) {
             CustomExplosion explosion = new CustomExplosion(this.level(), passenger,
-                    ModDamageTypes.causeProjectileExplosionDamage(this.level().registryAccess(), this, passenger), 300f,
+                    ModDamageTypes.causeCustomExplosionDamage(this.level().registryAccess(), this, passenger), 300f,
                     pos.x, pos.y, pos.z, 15f, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).setDamageMultiplier(1);
             explosion.explode();
             ForgeEventFactory.onExplosionStart(this.level(), explosion);
@@ -412,7 +412,7 @@ public class AnnihilatorEntity extends VehicleEntity implements GeoEntity, Canno
         } else {
             Entity shooter = EntityFindUtil.findEntity(this.level(), this.entityData.get(SHOOTER_UUID));
             CustomExplosion explosion = new CustomExplosion(this.level(), shooter,
-                    ModDamageTypes.causeProjectileExplosionDamage(this.level().registryAccess(), this, shooter), 300f,
+                    ModDamageTypes.causeCustomExplosionDamage(this.level().registryAccess(), this, shooter), 300f,
                     pos.x, pos.y, pos.z, 15f, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).setDamageMultiplier(1);
             explosion.explode();
             ForgeEventFactory.onExplosionStart(this.level(), explosion);

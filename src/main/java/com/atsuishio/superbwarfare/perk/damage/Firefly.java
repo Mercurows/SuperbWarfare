@@ -32,7 +32,7 @@ public class Firefly extends Perk {
         if (attacker == null) return;
 
         CustomExplosion explosion = new CustomExplosion(target.level(), attacker,
-                ModDamageTypes.causeProjectileExplosionDamage(target.level().registryAccess(), null, attacker),
+                ModDamageTypes.causeCustomExplosionDamage(target.level().registryAccess(), null, attacker),
                 6 + instance.level() * 2, target.getX(), target.getY(), target.getZ(),
                 2 + instance.level() * 0.5f, CustomExplosion.BlockInteraction.KEEP, false)
                 .setFireTime(3 + instance.level() / 3);
