@@ -44,7 +44,7 @@ public class DataLoader {
         }
     }
 
-    public static final Gson gson = new GsonBuilder()
+    public static final Gson GSON = new GsonBuilder()
             .setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE)
             .setLenient()
             .registerTypeAdapterFactory(new ObjectToList.AdapterFactory())
@@ -59,7 +59,7 @@ public class DataLoader {
             for (var entry : manager.listResources(name, file -> file.getPath().endsWith(".json")).entrySet()) {
                 var attribute = entry.getValue();
                 try {
-                    var data = (IDBasedData) gson.fromJson(new InputStreamReader(attribute.open()), value.type);
+                    var data = (IDBasedData) GSON.fromJson(new InputStreamReader(attribute.open()), value.type);
 
                     String id;
                     if (!data.getId().isEmpty()) {
@@ -90,6 +90,18 @@ public class DataLoader {
     @SubscribeEvent(priority = EventPriority.HIGH)
     public static void onDataPackSync(OnDatapackSyncEvent event) {
         reloadAllData(event.getPlayerList().getServer().getResourceManager());
+    }
+
+    /**
+     * 将StringToObject和ObjectToList转换为原始值
+     */
+    public static Object processValue(Object value) {
+        if (value instanceof ObjectToList<?> otl) {
+            return otl.list.stream().map(DataLoader::processValue).toList();
+        } else if (value instanceof StringToObject<?> sto) {
+            return processValue(sto.value);
+        }
+        return value;
     }
 
     // read-only custom data map

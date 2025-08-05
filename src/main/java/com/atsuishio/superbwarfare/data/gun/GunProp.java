@@ -1,8 +1,7 @@
 package com.atsuishio.superbwarfare.data.gun;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.data.ObjectToList;
-import com.atsuishio.superbwarfare.data.StringToObject;
+import com.atsuishio.superbwarfare.data.DataLoader;
 import com.google.gson.annotations.SerializedName;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
@@ -14,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 
 public class GunProp<T> {
     // 这b玩意必须放第一个，不然new的时候执行到props.add(this)会NPE（全恼
@@ -55,6 +55,9 @@ public class GunProp<T> {
     public static final GunProp<Integer> BURST_AMOUNT = new GunProp<>("BurstAmount");
     public static final GunProp<Double> BYPASSES_ARMOR = new GunProp<>("BypassesArmor");
 
+    public static final GunProp<List<AmmoConsumer>> AMMO_CONSUMER = new GunProp<List<AmmoConsumer>>("AmmoType")
+            .withSupplier(DefaultGunData::getAmmoConsumers);
+
     public static final GunProp<Integer> NORMAL_RELOAD_TIME = new GunProp<>("NormalReloadTime");
     public static final GunProp<Integer> EMPTY_RELOAD_TIME = new GunProp<>("EmptyReloadTime");
     public static final GunProp<Integer> BOLT_ACTION_TIME = new GunProp<>("BoltActionTime");
@@ -84,6 +87,7 @@ public class GunProp<T> {
     public final String name;
     private final Field field;
     public final boolean readOnly;
+    public Function<DefaultGunData, T> specialSupplier;
     public GunPropModifyContext<T> limiter;
 
     private GunProp(String name) {
@@ -91,7 +95,7 @@ public class GunProp<T> {
     }
 
     public Type getFieldType() {
-        return this.field.getType();
+        return this.field.getGenericType();
     }
 
     private GunProp(String name, boolean readOnly) {
@@ -115,6 +119,11 @@ public class GunProp<T> {
         props.add(this);
     }
 
+    private GunProp<T> withSupplier(Function<DefaultGunData, T> supplier) {
+        this.specialSupplier = supplier;
+        return this;
+    }
+
     private GunProp<T> withLimiter(GunPropModifyContext<T> limiter) {
         this.limiter = limiter;
         return this;
@@ -122,21 +131,16 @@ public class GunProp<T> {
 
     @SuppressWarnings("unchecked")
     public T getDefault(DefaultGunData data) {
+        if (this.specialSupplier != null) {
+            return specialSupplier.apply(data);
+        }
+
         try {
-            return (T) processValue(field.get(data));
+            return (T) DataLoader.processValue(field.get(data));
         } catch (Exception exception) {
             Mod.LOGGER.error("Could not get field {} in DefaultGunData!", name);
             throw new RuntimeException(exception);
         }
-    }
-
-    private static Object processValue(Object value) {
-        if (value instanceof ObjectToList<?> otl) {
-            return otl.list.stream().map(GunProp::processValue).toList();
-        } else if (value instanceof StringToObject<?> sto) {
-            return processValue(sto.value);
-        }
-        return value;
     }
 
     public GunPropModifier<T> asModifier(GunData data) {

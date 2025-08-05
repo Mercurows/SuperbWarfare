@@ -2,12 +2,12 @@ package com.atsuishio.superbwarfare.data.gun;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.annotation.ServerOnly;
+import com.atsuishio.superbwarfare.data.DataLoader;
 import com.atsuishio.superbwarfare.data.DeserializeFromString;
 import com.atsuishio.superbwarfare.data.StringToObject;
 import com.atsuishio.superbwarfare.tools.Ammo;
 import com.atsuishio.superbwarfare.tools.InventoryTool;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
 import net.minecraft.nbt.NbtUtils;
@@ -219,9 +219,7 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
     }
 
     private static final Pattern AMMO_PATTERN = Pattern.compile("^(?<count>(\\d+ )?)(?<prefix>[@#]?)(?<id>\\w+(:\\w+)?)(?<data>(\\{.*})?)$");
-    private static final Gson gson = new GsonBuilder()
-            .setLenient()
-            .create();
+    private static final Gson GSON = DataLoader.GSON;
 
     @SuppressWarnings("unchecked")
     private void parseOverrideValues() {
@@ -235,7 +233,7 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
                 }
 
                 try {
-                    var parsedValue = gson.fromJson(element.getValue().toString(), prop.getFieldType());
+                    var parsedValue = GSON.fromJson(element.getValue().toString(), prop.getFieldType());
                     this.modifyProperty((GunProp<Object>) prop, value -> parsedValue);
                 } catch (Exception exception) {
                     Mod.LOGGER.error("invalid override value for key {}: {}", key, element.getValue());
