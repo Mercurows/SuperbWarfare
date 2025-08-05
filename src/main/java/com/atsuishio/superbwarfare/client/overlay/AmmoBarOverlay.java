@@ -343,7 +343,7 @@ public class AmmoBarOverlay implements LayeredDraw.Layer {
         } else if (data.meleeOnly()) {
             return "Melee";
         } else if (!consumer.stack().isEmpty()) {
-            var nameComponent = consumer.stack().getItem().getName(consumer.stack());
+            var nameComponent = consumer.stack().getHoverName();
             if (nameComponent.getContents() instanceof TranslatableContents translatableComponent) {
                 return ClientLanguageGetter.EN_US.getOrDefault(translatableComponent.getKey());
             }
