@@ -673,6 +673,8 @@
   "config.superbwarfare.client.display.kill_indication.des": "The kill indicator will appear around the cross hair after a creature is killed when turned on",
   "config.superbwarfare.client.display.ammo_hud": "Ammo HUD",
   "config.superbwarfare.client.display.ammo_hud.des": "Display firearm and ammo information in the lower right corner when turned on",
+  "config.superbwarfare.client.display.advanced_ammo_hud": "Advanced Ammo HUD",
+  "config.superbwarfare.client.display.advanced_ammo_hud.des": "Display advanced ammo information in the lower right corner when turned on",
   "config.superbwarfare.client.display.float_cross_hair": "Dynamic Cross Hair",
   "config.superbwarfare.client.display.float_cross_hair.des": "The cross hair will follow the viewpoint to a certain extent when turned on",
   "config.superbwarfare.client.display.camera_rotate": "View Shake",

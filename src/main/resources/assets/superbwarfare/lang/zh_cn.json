@@ -673,6 +673,8 @@
   "config.superbwarfare.client.display.kill_indication.des": "开启时，击杀生物时会在准星周围显示击杀提示",
   "config.superbwarfare.client.display.ammo_hud": "枪械信息",
   "config.superbwarfare.client.display.ammo_hud.des": "开启时，在屏幕右下角显示枪械和弹药信息",
+  "config.superbwarfare.client.display.advanced_ammo_hud": "高级弹药信息",
+  "config.superbwarfare.client.display.advanced_ammo_hud.des": "开启时，在屏幕右下角显示更详细的弹药信息",
   "config.superbwarfare.client.display.float_cross_hair": "浮动准星",
   "config.superbwarfare.client.display.float_cross_hair.des": "开启时，准星会跟随视角进行一定程度的移动",
   "config.superbwarfare.client.display.camera_rotate": "视角摇晃",
