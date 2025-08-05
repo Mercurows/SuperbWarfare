@@ -41,18 +41,30 @@ public class ModDamageTypeTagProvider extends DamageTypeTagsProvider {
         this.tag(ModTags.DamageTypes.VEHICLE_IGNORE)
                 .addOptional(new ResourceLocation("sona", "injury"));
         this.tag(ModTags.DamageTypes.VEHICLE_NOT_ABSORB)
-                .add(DamageTypes.EXPLOSION, DamageTypes.PLAYER_EXPLOSION, ModDamageTypes.CUSTOM_EXPLOSION, ModDamageTypes.MINE, ModDamageTypes.PROJECTILE_BOOM);
+                .add(DamageTypes.EXPLOSION, DamageTypes.PLAYER_EXPLOSION, ModDamageTypes.CUSTOM_EXPLOSION, ModDamageTypes.MINE, ModDamageTypes.PROJECTILE_EXPLOSION);
+        this.tag(ModTags.DamageTypes.GUN_DAMAGE).add(
+                ModDamageTypes.GUN_FIRE,
+                ModDamageTypes.GUN_FIRE_HEADSHOT,
+                ModDamageTypes.GUN_FIRE_ABSOLUTE,
+                ModDamageTypes.GUN_FIRE_HEADSHOT_ABSOLUTE,
+                ModDamageTypes.LASER,
+                ModDamageTypes.LASER_HEADSHOT,
+                ModDamageTypes.SHOCK,
+                ModDamageTypes.BURN,
+                ModDamageTypes.PROJECTILE_HIT,
+                ModDamageTypes.PROJECTILE_EXPLOSION
+        );
 
-        this.tag(DamageTypeTags.ALWAYS_HURTS_ENDER_DRAGONS).add(ModDamageTypes.PROJECTILE_BOOM, ModDamageTypes.CUSTOM_EXPLOSION,
-                ModDamageTypes.CANNON_FIRE, ModDamageTypes.LASER, ModDamageTypes.LASER_HEADSHOT, ModDamageTypes.LASER_STATIC);
+        this.tag(DamageTypeTags.ALWAYS_HURTS_ENDER_DRAGONS).add(ModDamageTypes.PROJECTILE_EXPLOSION, ModDamageTypes.CUSTOM_EXPLOSION,
+                ModDamageTypes.PROJECTILE_HIT, ModDamageTypes.LASER, ModDamageTypes.LASER_HEADSHOT, ModDamageTypes.LASER_STATIC);
         this.tag(DamageTypeTags.BYPASSES_ARMOR).add(ModDamageTypes.GUN_FIRE_ABSOLUTE, ModDamageTypes.GUN_FIRE_HEADSHOT_ABSOLUTE,
-                ModDamageTypes.SHOCK, ModDamageTypes.CANNON_FIRE, ModDamageTypes.LASER, ModDamageTypes.LASER_HEADSHOT, ModDamageTypes.LASER_STATIC,
+                ModDamageTypes.SHOCK, ModDamageTypes.PROJECTILE_HIT, ModDamageTypes.LASER, ModDamageTypes.LASER_HEADSHOT, ModDamageTypes.LASER_STATIC,
                 ModDamageTypes.VEHICLE_STRIKE, ModDamageTypes.VEHICLE_EXPLOSION, ModDamageTypes.AIR_CRASH);
         this.tag(DamageTypeTags.BYPASSES_EFFECTS).add(ModDamageTypes.SHOCK);
         this.tag(DamageTypeTags.BYPASSES_ENCHANTMENTS).add(ModDamageTypes.GUN_FIRE_ABSOLUTE, ModDamageTypes.GUN_FIRE_HEADSHOT_ABSOLUTE,
-                ModDamageTypes.SHOCK, ModDamageTypes.CANNON_FIRE, ModDamageTypes.LASER, ModDamageTypes.LASER_HEADSHOT, ModDamageTypes.LASER_STATIC,
+                ModDamageTypes.SHOCK, ModDamageTypes.PROJECTILE_HIT, ModDamageTypes.LASER, ModDamageTypes.LASER_HEADSHOT, ModDamageTypes.LASER_STATIC,
                 ModDamageTypes.VEHICLE_STRIKE, ModDamageTypes.VEHICLE_EXPLOSION, ModDamageTypes.AIR_CRASH);
-        this.tag(DamageTypeTags.IS_EXPLOSION).add(ModDamageTypes.PROJECTILE_BOOM, ModDamageTypes.CUSTOM_EXPLOSION, ModDamageTypes.LUNGE_MINE);
+        this.tag(DamageTypeTags.IS_EXPLOSION).add(ModDamageTypes.PROJECTILE_EXPLOSION, ModDamageTypes.CUSTOM_EXPLOSION, ModDamageTypes.LUNGE_MINE);
         this.tag(DamageTypeTags.IS_FIRE).add(ModDamageTypes.BURN);
 
         this.tag(otherModTag("cataclysm", "bypasses_hurt_time")).add(
@@ -60,7 +72,7 @@ public class ModDamageTypeTagProvider extends DamageTypeTagsProvider {
                 ModDamageTypes.GUN_FIRE_HEADSHOT_ABSOLUTE,
                 ModDamageTypes.AIR_CRASH,
                 ModDamageTypes.BURN,
-                ModDamageTypes.CANNON_FIRE,
+                ModDamageTypes.PROJECTILE_HIT,
                 ModDamageTypes.CUSTOM_EXPLOSION,
                 ModDamageTypes.DRONE_HIT,
                 ModDamageTypes.LASER,
@@ -68,7 +80,7 @@ public class ModDamageTypeTagProvider extends DamageTypeTagsProvider {
                 ModDamageTypes.LASER_STATIC,
                 ModDamageTypes.LUNGE_MINE,
                 ModDamageTypes.MINE,
-                ModDamageTypes.PROJECTILE_BOOM,
+                ModDamageTypes.PROJECTILE_EXPLOSION,
                 ModDamageTypes.SHOCK,
                 ModDamageTypes.VEHICLE_EXPLOSION,
                 ModDamageTypes.VEHICLE_STRIKE

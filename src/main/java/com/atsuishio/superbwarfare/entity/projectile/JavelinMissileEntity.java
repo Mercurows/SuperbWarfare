@@ -185,7 +185,7 @@ public class JavelinMissileEntity extends FastThrowableProjectile implements Geo
                 }
             }
 
-            DamageHandler.doDamage(entity, ModDamageTypes.causeCannonFireDamage(this.level().registryAccess(), this, this.getOwner()), (entityData.get(TOP) ? 1.25f : 1f) * this.damage);
+            DamageHandler.doDamage(entity, ModDamageTypes.causeProjectileHitDamage(this.level().registryAccess(), this, this.getOwner()), (entityData.get(TOP) ? 1.25f : 1f) * this.damage);
 
             if (entity instanceof LivingEntity) {
                 entity.invulnerableTime = 0;
@@ -224,7 +224,7 @@ public class JavelinMissileEntity extends FastThrowableProjectile implements Geo
     @Override
     public void causeExplode(Vec3 vec3) {
         CustomExplosion explosion = new CustomExplosion(this.level(), this,
-                ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(),
+                ModDamageTypes.causeProjectileExplosionDamage(this.level().registryAccess(),
                         this,
                         this.getOwner()),
                 explosionDamage,
@@ -345,7 +345,7 @@ public class JavelinMissileEntity extends FastThrowableProjectile implements Geo
         if (this.tickCount > 200 || this.isInWater() || this.entityData.get(HEALTH) <= 0) {
             if (this.level() instanceof ServerLevel) {
                 ProjectileTool.causeCustomExplode(this,
-                        ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(), this, this.getOwner()),
+                        ModDamageTypes.causeProjectileExplosionDamage(this.level().registryAccess(), this, this.getOwner()),
                         this, this.explosionDamage, this.explosionRadius);
             }
             this.discard();

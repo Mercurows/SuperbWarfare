@@ -142,7 +142,7 @@ public class GunGrenadeEntity extends FastThrowableProjectile implements GeoEnti
             damage *= 1.25f;
         }
 
-        DamageHandler.doDamage(entity, ModDamageTypes.causeCannonFireDamage(this.level().registryAccess(), this, this.getOwner()), damage);
+        DamageHandler.doDamage(entity, ModDamageTypes.causeProjectileHitDamage(this.level().registryAccess(), this, this.getOwner()), damage);
 
         if (entity instanceof LivingEntity) {
             entity.invulnerableTime = 0;
@@ -151,7 +151,7 @@ public class GunGrenadeEntity extends FastThrowableProjectile implements GeoEnti
         if (this.tickCount > 0) {
             if (this.level() instanceof ServerLevel) {
                 ProjectileTool.causeCustomExplode(this,
-                        ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(), this, this.getOwner()),
+                        ModDamageTypes.causeProjectileExplosionDamage(this.level().registryAccess(), this, this.getOwner()),
                         entity, this.explosionDamage, this.explosionRadius);
             }
         }
@@ -169,7 +169,7 @@ public class GunGrenadeEntity extends FastThrowableProjectile implements GeoEnti
         }
         if (this.level() instanceof ServerLevel) {
             ProjectileTool.causeCustomExplode(this,
-                    ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(), this, this.getOwner()),
+                    ModDamageTypes.causeProjectileExplosionDamage(this.level().registryAccess(), this, this.getOwner()),
                     this, this.explosionDamage, this.explosionRadius);
         }
         this.discard();
@@ -191,7 +191,7 @@ public class GunGrenadeEntity extends FastThrowableProjectile implements GeoEnti
         if (this.tickCount > 200 || this.isInWater()) {
             if (this.level() instanceof ServerLevel) {
                 ProjectileTool.causeCustomExplode(this,
-                        ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(), this, this.getOwner()),
+                        ModDamageTypes.causeProjectileExplosionDamage(this.level().registryAccess(), this, this.getOwner()),
                         this, this.explosionDamage, this.explosionRadius);
             }
             this.discard();

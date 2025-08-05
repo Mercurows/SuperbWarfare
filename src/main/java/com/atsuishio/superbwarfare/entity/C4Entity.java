@@ -428,7 +428,7 @@ public class C4Entity extends Entity implements GeoEntity, OwnableEntity {
         }
 
         CustomExplosion explosion = new CustomExplosion(level(), this,
-                ModDamageTypes.causeProjectileBoomDamage(level().registryAccess(), this, this.getOwner()), ExplosionConfig.C4_EXPLOSION_DAMAGE.get(),
+                ModDamageTypes.causeProjectileExplosionDamage(level().registryAccess(), this, this.getOwner()), ExplosionConfig.C4_EXPLOSION_DAMAGE.get(),
                 pos.x, pos.y, pos.z, ExplosionConfig.C4_EXPLOSION_RADIUS.get(), ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).setDamageMultiplier(1);
         explosion.explode();
         net.minecraftforge.event.ForgeEventFactory.onExplosionStart(level(), explosion);

@@ -182,7 +182,7 @@ public class MortarShellEntity extends FastThrowableProjectile implements GeoEnt
     public void onHitEntity(EntityHitResult entityHitResult) {
         if (this.tickCount > 1) {
             Entity entity = entityHitResult.getEntity();
-            DamageHandler.doDamage(entity, ModDamageTypes.causeCannonFireDamage(this.level().registryAccess(), this, this.getOwner()), this.damage);
+            DamageHandler.doDamage(entity, ModDamageTypes.causeProjectileHitDamage(this.level().registryAccess(), this, this.getOwner()), this.damage);
             if (this.level() instanceof ServerLevel) {
                 causeExplode(entityHitResult.getLocation());
                 this.createAreaCloud(this.level(), entityHitResult.getLocation());
@@ -241,7 +241,7 @@ public class MortarShellEntity extends FastThrowableProjectile implements GeoEnt
     @Override
     public void causeExplode(Vec3 vec3) {
         CustomExplosion explosion = new CustomExplosion(this.level(), this,
-                ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(),
+                ModDamageTypes.causeProjectileExplosionDamage(this.level().registryAccess(),
                         this,
                         this.getOwner()),
                 explosionDamage,

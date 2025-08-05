@@ -560,7 +560,7 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
                     if (data.isKamikaze) {
                         EntityType.byString(attachedEntity).ifPresent(entityType -> {
                             var bomb = entityType.create(this.level());
-                            DamageHandler.doDamage(target, ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(), bomb, player), data.hitDamage);
+                            DamageHandler.doDamage(target, ModDamageTypes.causeProjectileExplosionDamage(this.level().registryAccess(), bomb, player), data.hitDamage);
                             target.invulnerableTime = 0;
                         });
                     } else {
@@ -704,7 +704,7 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
         if (bomb == null) return;
 
         explosion = new CustomExplosion(this.level(), this,
-                ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(), bomb, attacker), data.explosionDamage,
+                ModDamageTypes.causeProjectileExplosionDamage(this.level().registryAccess(), bomb, attacker), data.explosionDamage,
                 this.getX(), this.getY(), this.getZ(), data.explosionRadius, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).setDamageMultiplier(1);
 
         explosion.explode();

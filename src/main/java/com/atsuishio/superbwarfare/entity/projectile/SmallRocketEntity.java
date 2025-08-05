@@ -130,7 +130,7 @@ public class SmallRocketEntity extends FastThrowableProjectile implements GeoEnt
                 }
             }
 
-            DamageHandler.doDamage(entity, ModDamageTypes.causeCannonFireDamage(this.level().registryAccess(), this, this.getOwner()), this.damage);
+            DamageHandler.doDamage(entity, ModDamageTypes.causeProjectileHitDamage(this.level().registryAccess(), this, this.getOwner()), this.damage);
 
             if (entity instanceof LivingEntity) {
                 entity.invulnerableTime = 0;
@@ -169,7 +169,7 @@ public class SmallRocketEntity extends FastThrowableProjectile implements GeoEnt
     @Override
     public void causeExplode(Vec3 vec3) {
         CustomExplosion explosion = new CustomExplosion(this.level(), this,
-                ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(),
+                ModDamageTypes.causeProjectileExplosionDamage(this.level().registryAccess(),
                         this,
                         this.getOwner()),
                 explosionDamage,
@@ -210,7 +210,7 @@ public class SmallRocketEntity extends FastThrowableProjectile implements GeoEnt
         if (this.tickCount > 100 || this.isInWater()) {
             if (this.level() instanceof ServerLevel) {
                 causeRocketExplode(this,
-                        ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(), this, this.getOwner()),
+                        ModDamageTypes.causeProjectileExplosionDamage(this.level().registryAccess(), this, this.getOwner()),
                         this, this.explosionDamage, this.explosionRadius, 1);
             }
             this.discard();

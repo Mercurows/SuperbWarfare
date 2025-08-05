@@ -195,7 +195,7 @@ public class SwarmDroneEntity extends FastThrowableProjectile implements GeoEnti
             }
         }
         if (this.level() instanceof ServerLevel) {
-            causeMissileExplode(ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(), this, this.getOwner()), this.explosionDamage, this.explosionRadius);
+            causeMissileExplode(ModDamageTypes.causeProjectileExplosionDamage(this.level().registryAccess(), this, this.getOwner()), this.explosionDamage, this.explosionRadius);
         }
     }
 
@@ -203,7 +203,7 @@ public class SwarmDroneEntity extends FastThrowableProjectile implements GeoEnti
     public void onHitBlock(@NotNull BlockHitResult blockHitResult) {
         super.onHitBlock(blockHitResult);
         if (this.level() instanceof ServerLevel) {
-            causeMissileExplode(ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(), this, this.getOwner()), this.explosionDamage, this.explosionRadius);
+            causeMissileExplode(ModDamageTypes.causeProjectileExplosionDamage(this.level().registryAccess(), this, this.getOwner()), this.explosionDamage, this.explosionRadius);
         }
     }
 
@@ -255,7 +255,7 @@ public class SwarmDroneEntity extends FastThrowableProjectile implements GeoEnti
 
             if (dis < 0.5) {
                 if (this.level() instanceof ServerLevel) {
-                    causeMissileExplode(ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(), this, this.getOwner()), this.explosionDamage, this.explosionRadius);
+                    causeMissileExplode(ModDamageTypes.causeProjectileExplosionDamage(this.level().registryAccess(), this, this.getOwner()), this.explosionDamage, this.explosionRadius);
                 }
                 this.discard();
             }
@@ -263,7 +263,7 @@ public class SwarmDroneEntity extends FastThrowableProjectile implements GeoEnti
 
         if (this.tickCount > 300 || this.isInWater() || this.entityData.get(HEALTH) <= 0) {
             if (this.level() instanceof ServerLevel) {
-                causeMissileExplode(ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(), this, this.getOwner()), this.explosionDamage, this.explosionRadius);
+                causeMissileExplode(ModDamageTypes.causeProjectileExplosionDamage(this.level().registryAccess(), this, this.getOwner()), this.explosionDamage, this.explosionRadius);
             }
             this.discard();
         }

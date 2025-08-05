@@ -181,7 +181,7 @@ public class WgMissileEntity extends FastThrowableProjectile implements GeoEntit
                 }
             }
 
-            DamageHandler.doDamage(entity, ModDamageTypes.causeCannonFireDamage(this.level().registryAccess(), this, this.getOwner()), this.damage);
+            DamageHandler.doDamage(entity, ModDamageTypes.causeProjectileHitDamage(this.level().registryAccess(), this, this.getOwner()), this.damage);
 
             if (entity instanceof LivingEntity) {
                 entity.invulnerableTime = 0;
@@ -195,7 +195,7 @@ public class WgMissileEntity extends FastThrowableProjectile implements GeoEntit
     @Override
     public void causeExplode(Vec3 vec3) {
         CustomExplosion explosion = new CustomExplosion(this.level(), this,
-                ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(),
+                ModDamageTypes.causeProjectileExplosionDamage(this.level().registryAccess(),
                         this,
                         this.getOwner()),
                 explosionDamage,
