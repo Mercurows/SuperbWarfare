@@ -152,7 +152,7 @@ public class AmmoBarOverlay implements IGuiOverlay {
 
             // 如果弹药种类大于1，渲染弹种信息
             int size = data.ammoConsumers.size();
-            if (size > 1) {
+            if (size > 1 && DisplayConfig.ADVANCED_AMMO_HUD.get()) {
                 // 如果当前弹药为物品，渲染备弹物品数量
                 var ammoConsumer = data.selectedAmmoConsumer();
                 RenderHelper.preciseBlit(guiGraphics, AMMO_STACK,
@@ -172,10 +172,11 @@ public class AmmoBarOverlay implements IGuiOverlay {
                 poseStack.translate(x - 57, y - 21, 0);
                 poseStack.scale(0.75f, 0.75f, 1f);
 
-                var renderStackCount = ammoConsumer.type == AmmoConsumer.AmmoConsumeType.ITEM || ammoConsumer.type == AmmoConsumer.AmmoConsumeType.PLAYER_AMMO;
+                var consumerType = ammoConsumer.type;
+                var renderStackCount = consumerType == AmmoConsumer.AmmoConsumeType.ITEM || consumerType == AmmoConsumer.AmmoConsumeType.PLAYER_AMMO;
                 if (renderStackCount) {
                     ItemStack ammoStack;
-                    if (ammoConsumer.type == AmmoConsumer.AmmoConsumeType.PLAYER_AMMO) {
+                    if (consumerType == AmmoConsumer.AmmoConsumeType.PLAYER_AMMO) {
                         var ammoType = ammoConsumer.getPlayerAmmoType();
                         ammoStack = switch (ammoType) {
                             case HANDGUN -> new ItemStack(ModItems.HANDGUN_AMMO.get());
@@ -208,16 +209,29 @@ public class AmmoBarOverlay implements IGuiOverlay {
 
                 // 这里不能和上面合并
                 if (!renderStackCount) {
-                    RenderHelper.preciseBlit(guiGraphics, AMMO_STACK,
-                            x - 50,
-                            y - 20f,
-                            12,
-                            8.5f,
-                            4,
-                            8,
-                            24,
-                            24
-                    );
+                    if (consumerType == AmmoConsumer.AmmoConsumeType.INVALID) {
+                        RenderHelper.preciseBlit(guiGraphics, AMMO_STACK,
+                                x - 50,
+                                y - 20,
+                                12,
+                                8.5f,
+                                4,
+                                8,
+                                24,
+                                24
+                        );
+                    } else {
+                        RenderHelper.preciseBlit(guiGraphics, AMMO_STACK,
+                                x - 51f,
+                                y - 20,
+                                0,
+                                8.5f,
+                                7,
+                                8,
+                                24,
+                                24
+                        );
+                    }
                 }
 
                 // 渲染弹药种类信息

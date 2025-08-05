@@ -80,6 +80,14 @@ public class DisplayClothConfig {
         );
 
         category.addEntry(entryBuilder
+                .startBooleanToggle(Component.translatable("config.superbwarfare.client.display.advanced_ammo_hud"), DisplayConfig.ADVANCED_AMMO_HUD.get())
+                .setDefaultValue(true)
+                .setSaveConsumer(DisplayConfig.ADVANCED_AMMO_HUD::set)
+                .setTooltip(Component.translatable("config.superbwarfare.client.display.advanced_ammo_hud.des"))
+                .build()
+        );
+
+        category.addEntry(entryBuilder
                 .startBooleanToggle(Component.translatable("config.superbwarfare.client.display.vehicle_info"), DisplayConfig.VEHICLE_INFO.get())
                 .setDefaultValue(true)
                 .setSaveConsumer(DisplayConfig.VEHICLE_INFO::set)

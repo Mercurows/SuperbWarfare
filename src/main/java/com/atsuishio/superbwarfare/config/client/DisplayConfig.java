@@ -12,6 +12,7 @@ public class DisplayConfig {
     public static ForgeConfigSpec.IntValue HEAT_BAR_HUD_Y_OFFSET;
     public static ForgeConfigSpec.BooleanValue KILL_INDICATION;
     public static ForgeConfigSpec.BooleanValue AMMO_HUD;
+    public static ForgeConfigSpec.BooleanValue ADVANCED_AMMO_HUD;
     public static ForgeConfigSpec.BooleanValue VEHICLE_INFO;
     public static ForgeConfigSpec.BooleanValue FLOAT_CROSS_HAIR;
     public static ForgeConfigSpec.BooleanValue CAMERA_ROTATE;
@@ -49,6 +50,9 @@ public class DisplayConfig {
 
         builder.comment("Set true to show ammo and gun info on HUD");
         AMMO_HUD = builder.define("ammo_hud", true);
+
+        builder.comment("Set true to show advanced ammo info on HUD");
+        ADVANCED_AMMO_HUD = builder.define("advanced_ammo_hud", true);
 
         builder.comment("Set true to display vehicle info when aiming at a vehicle");
         VEHICLE_INFO = builder.define("vehicle_info", true);
