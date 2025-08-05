@@ -17,6 +17,7 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.LayeredDraw;
+import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -24,6 +25,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.regex.Pattern;
 
 @OnlyIn(Dist.CLIENT)
 public class AmmoBarOverlay implements LayeredDraw.Layer {
@@ -57,6 +59,8 @@ public class AmmoBarOverlay implements LayeredDraw.Layer {
         if (data.meleeOnly() || data.useBackpackAmmo()) return "";
         return data.hasInfiniteBackupAmmo(player) ? "∞" : data.countBackupAmmo(player) - data.virtualAmmo.get() + "";
     }
+
+    private static final Pattern REPLACE_FORMAT_CODE = Pattern.compile("§.");
 
     @Override
     @ParametersAreNonnullByDefault
@@ -307,7 +311,7 @@ public class AmmoBarOverlay implements LayeredDraw.Layer {
             );
 
             // 渲染弹药类型
-            var ammoName = getAmmoDisplayName(data);
+            var ammoName = REPLACE_FORMAT_CODE.matcher(getAmmoDisplayName(data)).replaceAll("");
 
             guiGraphics.drawString(
                     font,
@@ -339,6 +343,11 @@ public class AmmoBarOverlay implements LayeredDraw.Layer {
         } else if (data.meleeOnly()) {
             return "Melee";
         } else if (!consumer.stack().isEmpty()) {
+            var nameComponent = consumer.stack().getItem().getName(consumer.stack());
+            if (nameComponent.getContents() instanceof TranslatableContents translatableComponent) {
+                return ClientLanguageGetter.EN_US.getOrDefault(translatableComponent.getKey());
+            }
+
             return ClientLanguageGetter.EN_US.getOrDefault(consumer.stack().getDescriptionId());
         } else {
             return "";
