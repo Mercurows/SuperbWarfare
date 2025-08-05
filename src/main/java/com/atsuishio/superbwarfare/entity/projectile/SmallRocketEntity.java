@@ -195,14 +195,14 @@ public class SmallRocketEntity extends FastThrowableProjectile implements GeoEnt
             if (this.level() instanceof ServerLevel) {
                 causeRocketExplode(this,
                         ModDamageTypes.causeCustomExplosionDamage(this.level().registryAccess(), this, this.getOwner()),
-                        this, this.explosionDamage, this.explosionRadius, 1);
+                        this.explosionDamage, this.explosionRadius, 1);
             }
             this.discard();
         }
         destroyBlock();
     }
 
-    public static void causeRocketExplode(ThrowableItemProjectile projectile, @Nullable DamageSource source, Entity target, float damage, float radius, float damageMultiplier) {
+    public static void causeRocketExplode(ThrowableItemProjectile projectile, @Nullable DamageSource source, float damage, float radius, float damageMultiplier) {
         CustomExplosion explosion = new CustomExplosion(projectile.level(), projectile, source, damage,
                 projectile.getX(), projectile.getY(), projectile.getZ(), radius, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).setDamageMultiplier(damageMultiplier);
         explosion.explode();
