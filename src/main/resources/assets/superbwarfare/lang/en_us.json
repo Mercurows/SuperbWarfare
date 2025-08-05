@@ -591,6 +591,7 @@
   "commands.config.explosion_destroy.disabled": "Disabled explosion destruction",
   "commands.config.collision_destroy.none": "Disabled vehicle collision destroy blocks",
   "commands.config.collision_destroy.soft": "Enabled vehicle collision destroy blocks (Soft Mode)",
+  "commands.config.collision_destroy.normal": "Enabled vehicle collision destroy blocks (Normal Mode)",
   "commands.config.collision_destroy.hard": "Enabled vehicle collision destroy blocks (Hard Mode)",
   "commands.config.collision_destroy.beastly": "Enabled vehicle collision destroy blocks (Beastly Mode)",
   "commands.config.tactical_sprint.enabled": "Enabled tactical sprint",

@@ -54,6 +54,7 @@ public class ModTags {
 
     public static class Blocks {
         public static final TagKey<Block> SOFT_COLLISION = tag("soft_collision");
+        public static final TagKey<Block> NORMAL_COLLISION = tag("normal_collision");
         public static final TagKey<Block> HARD_COLLISION = tag("hard_collision");
 
         // 子弹会穿过的方块

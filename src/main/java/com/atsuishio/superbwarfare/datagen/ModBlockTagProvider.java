@@ -42,6 +42,9 @@ public class ModBlockTagProvider extends BlockTagsProvider {
         this.tag(BlockTags.MINEABLE_WITH_SHOVEL).add(ModBlocks.SANDBAG.get());
 
         this.tag(ModTags.Blocks.SOFT_COLLISION)
+                .addTag(BlockTags.LEAVES)
+                .add(Blocks.LILY_PAD, Blocks.COBWEB, Blocks.CACTUS);
+        this.tag(ModTags.Blocks.NORMAL_COLLISION)
                 .addTags(BlockTags.FENCES, BlockTags.FENCE_GATES, BlockTags.DOORS, BlockTags.TRAPDOORS, BlockTags.WALLS, BlockTags.WOOL,
                         BlockTags.STAIRS, BlockTags.SLABS, Tags.Blocks.GLASS_PANES)
                 .add(Blocks.BAMBOO, Blocks.MELON, Blocks.PUMPKIN, Blocks.HAY_BLOCK, Blocks.BELL, Blocks.CHAIN, Blocks.SNOW_BLOCK,

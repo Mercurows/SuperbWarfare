@@ -6,7 +6,8 @@ import java.util.List;
 
 public class VehicleConfig {
 
-    public static ModConfigSpec.BooleanValue COLLISION_DESTROY_BLOCKS;
+    public static ModConfigSpec.BooleanValue COLLISION_DESTROY_SOFT_BLOCKS;
+    public static ModConfigSpec.BooleanValue COLLISION_DESTROY_NORMAL_BLOCKS;
     public static ModConfigSpec.BooleanValue COLLISION_DESTROY_HARD_BLOCKS;
     public static ModConfigSpec.BooleanValue COLLISION_DESTROY_BLOCKS_BEASTLY;
     public static ModConfigSpec.BooleanValue VEHICLE_ITEM_PICKUP;
@@ -109,8 +110,11 @@ public class VehicleConfig {
     public static void init(ModConfigSpec.Builder builder) {
         builder.push("vehicle");
 
-        builder.comment("Allows vehicles to destroy blocks via collision");
-        COLLISION_DESTROY_BLOCKS = builder.define("collision_destroy_blocks", false);
+        builder.comment("Allows vehicles to destroy soft blocks via collision");
+        COLLISION_DESTROY_SOFT_BLOCKS = builder.define("collision_destroy_soft_blocks", false);
+
+        builder.comment("Allows vehicles to destroy normal blocks via collision");
+        COLLISION_DESTROY_NORMAL_BLOCKS = builder.define("collision_destroy_normal_blocks", false);
 
         builder.comment("Allows vehicles to destroy hard blocks via collision");
         COLLISION_DESTROY_HARD_BLOCKS = builder.define("collision_destroy_hard_blocks", false);

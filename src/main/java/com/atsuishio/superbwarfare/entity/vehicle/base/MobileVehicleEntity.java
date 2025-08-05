@@ -22,7 +22,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.tags.BlockTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -33,8 +32,6 @@ import net.minecraft.world.entity.vehicle.Boat;
 import net.minecraft.world.entity.vehicle.Minecart;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.entity.EntityTypeTest;
 import net.minecraft.world.phys.AABB;
@@ -283,7 +280,7 @@ public abstract class MobileVehicleEntity extends VehicleEntity implements Contr
         this.setDeltaMovement(this.getDeltaMovement().add(0.0, -0.06, 0.0));
 
         this.move(MoverType.SELF, this.getDeltaMovement());
-        baseCollideBlock();
+        collideSoftBlock();
 
         this.refreshDimensions();
     }
@@ -499,26 +496,23 @@ public abstract class MobileVehicleEntity extends VehicleEntity implements Contr
         return pos.y + 0.5f * diffY;
     }
 
-    public void baseCollideBlock() {
-        if (level() instanceof ServerLevel) {
-            AABB aabb = getBoundingBox().inflate(0.25, 1, 0.25).expandTowards(0, 0.5, 1).move(this.getDeltaMovement().scale(1.2));
-            BlockPos.betweenClosedStream(aabb).forEach((pos) -> {
-                BlockState blockstate = this.level().getBlockState(pos);
-                if (blockstate.is(Blocks.LILY_PAD) ||
-                        (blockstate.is(BlockTags.LEAVES) && blockstate.hasProperty(LeavesBlock.PERSISTENT) && !blockstate.getValue(LeavesBlock.PERSISTENT)) ||
-                        blockstate.is(Blocks.COBWEB) || blockstate.is(Blocks.CACTUS)) {
-                    this.level().destroyBlock(pos, true);
-                }
-            });
-        }
-    }
-
-    public void collideBlock() {
-        if (!VehicleConfig.COLLISION_DESTROY_BLOCKS.get()) return;
+    public void collideSoftBlock() {
+        if (!VehicleConfig.COLLISION_DESTROY_SOFT_BLOCKS.get()) return;
         AABB aabb = getBoundingBox().inflate(0.25, 1, 0.25).expandTowards(0, 0.5, 1).move(this.getDeltaMovement().scale(1.2));
         BlockPos.betweenClosedStream(aabb).forEach((pos) -> {
             BlockState blockstate = this.level().getBlockState(pos);
             if (blockstate.is(ModTags.Blocks.SOFT_COLLISION)) {
+                this.level().destroyBlock(pos, true);
+            }
+        });
+    }
+
+    public void collideNormalBlock() {
+        if (!VehicleConfig.COLLISION_DESTROY_NORMAL_BLOCKS.get()) return;
+        AABB aabb = getBoundingBox().inflate(0.25, 1, 0.25).expandTowards(0, 0.5, 1).move(this.getDeltaMovement().scale(1.2));
+        BlockPos.betweenClosedStream(aabb).forEach((pos) -> {
+            BlockState blockstate = this.level().getBlockState(pos);
+            if (blockstate.is(ModTags.Blocks.NORMAL_COLLISION)) {
                 this.level().destroyBlock(pos, true);
             }
         });
@@ -568,7 +562,7 @@ public abstract class MobileVehicleEntity extends VehicleEntity implements Contr
         super.move(movementType, movement);
         if (level() instanceof ServerLevel) {
             if (this.horizontalCollision) {
-                collideBlock();
+                collideNormalBlock();
                 if (canCollideHardBlock()) {
                     collideHardBlock();
                 }
@@ -604,8 +598,6 @@ public abstract class MobileVehicleEntity extends VehicleEntity implements Contr
     }
 
     public void bounceHorizontal(Direction direction) {
-        collideBlock();
-        collideHardBlock();
         switch (direction.getAxis()) {
             case X:
                 this.setDeltaMovement(this.getDeltaMovement().multiply(0.8, 0.99, 0.99));
