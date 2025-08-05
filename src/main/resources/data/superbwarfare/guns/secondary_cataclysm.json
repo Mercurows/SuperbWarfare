@@ -5,6 +5,7 @@
   "RecoilY": 0.023,
   "Damage": 30,
   "MeleeDamage": 19,
+  "MeleeDuration": 20,
   "ExplosionDamage": 50,
   "ExplosionRadius": 5,
   "Velocity": 3.75,
@@ -20,7 +21,15 @@
   "FinishTime": 22,
   "SoundRadius": 8,
   "RPM": 300,
-  "AmmoType": "superbwarfare:grenade_40mm",
+  "AmmoType": [
+    "superbwarfare:grenade_40mm",
+    {
+      "Override": {
+        "ProjectileAmount": 0,
+        "MeleeDuration": 15
+      }
+    }
+  ],
   "AvailablePerks": [
     "superbwarfare:powerful_attraction",
     "superbwarfare:intelligent_chip",

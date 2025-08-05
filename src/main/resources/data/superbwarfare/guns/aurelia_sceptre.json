@@ -23,7 +23,15 @@
     "Type": "Handgun"
   },
   "DefaultFireMode": "Auto",
-  "AmmoType": "@HandgunAmmo",
+  "AmmoType": [
+    "@HandgunAmmo",
+    {
+      "Override": {
+        "ProjectileAmount": 0,
+        "MeleeDuration": 12
+      }
+    }
+  ],
   "AvailablePerks": [
     "@Ammo",
     "superbwarfare:field_doctor",
