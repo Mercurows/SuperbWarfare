@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.data.gun;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.data.DataLoader;
 import com.atsuishio.superbwarfare.data.gun.subdata.*;
 import com.atsuishio.superbwarfare.data.gun.value.*;
 import com.atsuishio.superbwarfare.event.GunEventHandler;
@@ -13,7 +14,6 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
@@ -73,7 +73,7 @@ public class GunData {
         attachmentTag = getOrPut("Attachments");
         propertyOverrideString = data.getString("Override");
 
-        ammoConsumers = getDefault().getAmmoConsumers();
+        ammoConsumers = get(GunProp.AMMO_CONSUMER);
 
         // 可持久化属性
         reload = new Reload(this);
@@ -184,9 +184,7 @@ public class GunData {
         return id;
     }
 
-    private static final Gson gson = new GsonBuilder()
-            .setLenient()
-            .create();
+    private static final Gson GSON = DataLoader.GSON;
 
     @SuppressWarnings("unchecked")
     public <T> T get(GunProp<T> prop) {
@@ -195,11 +193,14 @@ public class GunData {
         // gun modifiers
         modifier.apply(this.item.getModifier(prop));
 
+        // AmmoConsumer
+        modifier.apply(selectedAmmoConsumer().getModifier(prop));
+
         // property override tag
         if (propertyOverride != null || !propertyOverrideString.isEmpty()) {
             if (propertyOverride == null) {
                 try {
-                    propertyOverride = gson.fromJson(propertyOverrideString, JsonObject.class);
+                    propertyOverride = GSON.fromJson(propertyOverrideString, JsonObject.class);
                 } catch (Exception exception) {
                     Mod.LOGGER.error("invalid property override string {}", propertyOverrideString);
                     propertyOverride = new JsonObject();
@@ -209,7 +210,8 @@ public class GunData {
             var propJson = propertyOverride.get(prop.name);
             if (propJson != null) {
                 try {
-                    var parsedValue = gson.fromJson(propJson.toString(), prop.getFieldType());
+                    // TODO 无法在这里应用AmmoConsumer的modifier，是否考虑支持？
+                    var parsedValue = DataLoader.processValue(GSON.fromJson(propJson.toString(), prop.getFieldType()));
                     modifier.apply((data, value) -> (T) parsedValue);
                 } catch (Exception exception) {
                     Mod.LOGGER.error("invalid property override type for {}", propertyOverrideString);
@@ -217,11 +219,9 @@ public class GunData {
             }
         }
 
-        // AmmoConsumer
-        modifier.apply(selectedAmmoConsumer().getModifier(prop));
-
         // perk
         for (var type : Perk.Type.values()) {
+            if (perk == null) continue;
             var instance = perk.get(type);
             if (instance == null) continue;
 
@@ -268,7 +268,7 @@ public class GunData {
     }
 
     public AmmoConsumer selectedAmmoConsumer() {
-        if (this.ammoConsumers.isEmpty()) {
+        if (this.ammoConsumers == null || this.ammoConsumers.isEmpty()) {
             return AmmoConsumer.INVALID;
         }
         return this.ammoConsumers.get(Mth.clamp(this.selectedAmmoType.get(), 0, this.ammoConsumers.size() - 1));
