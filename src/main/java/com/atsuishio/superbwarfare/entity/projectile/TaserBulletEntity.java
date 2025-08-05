@@ -47,7 +47,7 @@ public class TaserBulletEntity extends AbstractArrow implements GeoEntity, Custo
     private float damage = 1f;
     private int volt = 0;
     private int wireLength = 0;
-    private boolean stop = false;
+    private boolean stopped = false;
     public static final ItemStack PROJECTILE_ITEM = new ItemStack(Items.AIR);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
@@ -151,12 +151,18 @@ public class TaserBulletEntity extends AbstractArrow implements GeoEntity, Custo
         }
     }
 
+    private Vec3 initialPos;
+
     @Override
     public void tick() {
         super.tick();
 
-        if (this.getOwner() != null && this.position().distanceTo(this.getOwner().position()) > 10 + 4 * wireLength && !stop) {
-            stop = true;
+        if (this.tickCount == 1) {
+            initialPos = this.position();
+        }
+
+        if (initialPos != null && this.position().distanceTo(initialPos) > 10 + 4 * wireLength && !stopped) {
+            stopped = true;
             this.setDeltaMovement(new Vec3(0, 0, 0));
         }
 
