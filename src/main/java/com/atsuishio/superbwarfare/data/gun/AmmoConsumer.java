@@ -10,7 +10,8 @@ import com.atsuishio.superbwarfare.tools.InventoryTool;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
-import net.minecraft.nbt.NbtUtils;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.TagParser;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
@@ -297,7 +298,8 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
             this.stack = new ItemStack(item);
             if (!data.isEmpty()) {
                 try {
-                    var tag = NbtUtils.snbtToStructure(data);
+                    var tag = new CompoundTag();
+                    tag.put("tag", TagParser.parseTag(data));
                     tag.putString("id", location.toString());
                     tag.putInt("Count", 1);
                     this.stack = ItemStack.of(tag);
