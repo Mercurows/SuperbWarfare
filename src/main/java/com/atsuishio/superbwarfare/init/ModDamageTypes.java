@@ -59,10 +59,16 @@ public class ModDamageTypes {
         return new DamageMessages(registryAccess.registry(Registries.DAMAGE_TYPE).get().getHolderOrThrow(BURN), attacker);
     }
 
+    /**
+     * 仅用于枪械可以发射的投射物造成的爆炸伤害
+     */
     public static DamageSource causeProjectileExplosionDamage(RegistryAccess registryAccess, @Nullable Entity directEntity, @Nullable Entity attacker) {
         return new DamageMessages(registryAccess.registry(Registries.DAMAGE_TYPE).get().getHolderOrThrow(PROJECTILE_EXPLOSION), directEntity, attacker);
     }
 
+    /**
+     * 仅用于枪械可以发射的投射物造成的直击伤害
+     */
     public static DamageSource causeProjectileHitDamage(RegistryAccess registryAccess, @Nullable Entity directEntity, @Nullable Entity attacker) {
         return new DamageMessages(registryAccess.registry(Registries.DAMAGE_TYPE).get().getHolderOrThrow(PROJECTILE_HIT), directEntity, attacker);
     }
@@ -75,6 +81,9 @@ public class ModDamageTypes {
         return new DamageMessages(registryAccess.registry(Registries.DAMAGE_TYPE).get().getHolderOrThrow(GUN_FIRE_HEADSHOT_ABSOLUTE), directEntity, attacker);
     }
 
+    /**
+     * 用于其他实体造成的爆炸伤害
+     */
     public static DamageSource causeCustomExplosionDamage(RegistryAccess registryAccess, @Nullable Entity directEntity, @Nullable Entity attacker) {
         return new DamageMessages(registryAccess.registry(Registries.DAMAGE_TYPE).get().getHolderOrThrow(CUSTOM_EXPLOSION), directEntity, attacker);
     }

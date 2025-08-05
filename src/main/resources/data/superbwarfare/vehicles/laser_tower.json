@@ -52,7 +52,7 @@
     {
       "Type": "Multiply",
       "Value": 0.5,
-      "Source": "superbwarfare:projectile_boom"
+      "Source": "superbwarfare:projectile_explosion"
     },
     {
       "Type": "Multiply",
@@ -67,7 +67,7 @@
     {
       "Type": "Multiply",
       "Value": 0.6,
-      "Source": "superbwarfare:cannon_fire"
+      "Source": "superbwarfare:projectile_hit"
     },
     {
       "Type": "Multiply",

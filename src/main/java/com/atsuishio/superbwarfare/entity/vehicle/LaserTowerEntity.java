@@ -347,7 +347,7 @@ public class LaserTowerEntity extends VehicleEntity implements GeoEntity, Ownabl
 
     private void causeAirExplode(Vec3 vec3) {
         CustomExplosion explosion = new CustomExplosion(this.level(), this,
-                ModDamageTypes.causeProjectileExplosionDamage(this.level().registryAccess(),
+                ModDamageTypes.causeCustomExplosionDamage(this.level().registryAccess(),
                         this,
                         this.getOwner()),
                 5,

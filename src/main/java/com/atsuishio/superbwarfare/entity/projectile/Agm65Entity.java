@@ -186,7 +186,7 @@ public class Agm65Entity extends FastThrowableProjectile implements GeoEntity, E
     @Override
     public void causeExplode(Vec3 vec3) {
         CustomExplosion explosion = new CustomExplosion(this.level(), this,
-                ModDamageTypes.causeProjectileExplosionDamage(this.level().registryAccess(),
+                ModDamageTypes.causeCustomExplosionDamage(this.level().registryAccess(),
                         this,
                         this.getOwner()),
                 explosionDamage,
@@ -263,7 +263,7 @@ public class Agm65Entity extends FastThrowableProjectile implements GeoEntity, E
         if (this.tickCount > 600 || this.isInWater() || this.entityData.get(HEALTH) <= 0) {
             if (this.level() instanceof ServerLevel) {
                 ProjectileTool.causeCustomExplode(this,
-                        ModDamageTypes.causeProjectileExplosionDamage(this.level().registryAccess(), this, this.getOwner()),
+                        ModDamageTypes.causeCustomExplosionDamage(this.level().registryAccess(), this, this.getOwner()),
                         this, this.explosionDamage, this.explosionRadius, 1);
             }
             this.discard();

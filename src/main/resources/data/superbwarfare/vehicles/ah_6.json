@@ -54,7 +54,7 @@
     {
       "Type": "Multiply",
       "Value": 0.8,
-      "Source": "superbwarfare:cannon_fire"
+      "Source": "superbwarfare:projectile_hit"
     },
     {
       "Type": "Multiply",

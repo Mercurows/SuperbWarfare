@@ -459,6 +459,7 @@ public class LivingEventHandler {
 
     private static void handleGunPerksWhenHurt(LivingIncomingDamageEvent event) {
         DamageSource source = event.getSource();
+        if (!DamageTypeTool.isGunDamage(source)) return;
 
         Player attacker = null;
         if (source.getEntity() instanceof Player player) {
@@ -475,7 +476,6 @@ public class LivingEventHandler {
         if (!(stack.getItem() instanceof GunItem)) {
             return;
         }
-        if (!DamageTypeTool.isGunDamage(source)) return;
 
         var data = GunData.from(stack);
         float damage = event.getAmount();
@@ -493,6 +493,7 @@ public class LivingEventHandler {
 
     private static void handleGunPerksWhenDeath(LivingDeathEvent event) {
         DamageSource source = event.getSource();
+        if (!DamageTypeTool.isGunDamage(source)) return;
 
         Player attacker = null;
         if (source.getEntity() instanceof Player player) {
@@ -509,7 +510,6 @@ public class LivingEventHandler {
         if (!(stack.getItem() instanceof GunItem)) {
             return;
         }
-        if (!DamageTypeTool.isGunDamage(source)) return;
 
         GunData data = GunData.from(stack);
         for (Perk.Type type : Perk.Type.values()) {
