@@ -157,7 +157,7 @@ public class LivingEventHandler {
             damage *= 1 - 0.2 * Mth.clamp(entity.getAttributeValue(ModAttributes.BULLET_RESISTANCE), 0, 1);
         }
 
-        if (source.is(ModDamageTypes.PROJECTILE_BOOM) || source.is(ModDamageTypes.MINE) || source.is(ModDamageTypes.CANNON_FIRE) || source.is(ModDamageTypes.CUSTOM_EXPLOSION)
+        if (source.is(ModDamageTypes.PROJECTILE_EXPLOSION) || source.is(ModDamageTypes.MINE) || source.is(ModDamageTypes.PROJECTILE_HIT) || source.is(ModDamageTypes.CUSTOM_EXPLOSION)
                 || source.is(DamageTypes.EXPLOSION) || source.is(DamageTypes.PLAYER_EXPLOSION)) {
             damage *= 1 - 0.3 * Mth.clamp(entity.getAttributeValue(ModAttributes.BULLET_RESISTANCE), 0, 1);
         }
@@ -190,8 +190,8 @@ public class LivingEventHandler {
         double amount = Math.min(0.125 * event.getAmount(), event.getEntity().getMaxHealth());
 
         // 先处理发射器类武器或高爆弹的爆炸伤害
-        if (source.is(ModDamageTypes.PROJECTILE_BOOM)) {
-            if (stack.is(ModTags.Items.LAUNCHER) || data.perk.getLevel(ModPerks.HE_BULLET) > 0) {
+        if (source.is(ModDamageTypes.PROJECTILE_EXPLOSION)) {
+            if (stack.is(ModTags.Items.LAUNCHER) || GunData.from(stack).perk.getLevel(ModPerks.HE_BULLET) > 0) {
                 data.exp.set(data.exp.get() + amount);
             }
         }
@@ -215,8 +215,8 @@ public class LivingEventHandler {
         double amount = 20 + 2 * event.getEntity().getMaxHealth();
 
         // 先处理发射器类武器或高爆弹的爆炸伤害
-        if (source.is(ModDamageTypes.PROJECTILE_BOOM)) {
-            if (stack.is(ModTags.Items.LAUNCHER) || data.perk.getLevel(ModPerks.HE_BULLET) > 0) {
+        if (source.is(ModDamageTypes.PROJECTILE_EXPLOSION)) {
+            if (stack.is(ModTags.Items.LAUNCHER) || GunData.from(stack).perk.getLevel(ModPerks.HE_BULLET) > 0) {
                 data.exp.set(data.exp.get() + amount);
             }
         }
@@ -300,7 +300,7 @@ public class LivingEventHandler {
         if (sourceEntity == null) return;
 
         if (sourceEntity instanceof ServerPlayer player && (damagesource.is(DamageTypes.EXPLOSION) || damagesource.is(DamageTypes.PLAYER_EXPLOSION)
-                || damagesource.is(ModDamageTypes.MINE) || damagesource.is(ModDamageTypes.PROJECTILE_BOOM))) {
+                || damagesource.is(ModDamageTypes.MINE) || damagesource.is(ModDamageTypes.PROJECTILE_EXPLOSION))) {
             SoundTool.playLocalSound(player, ModSounds.INDICATION.get(), 1f, 1f);
             PacketDistributor.sendToPlayer(player, new ClientIndicatorMessage(0, 5));
         }
@@ -467,15 +467,17 @@ public class LivingEventHandler {
         if (source.getDirectEntity() instanceof Projectile projectile && projectile.getOwner() instanceof Player player) {
             attacker = player;
         }
-
         if (attacker == null) {
             return;
         }
 
         ItemStack stack = attacker.getMainHandItem();
-        if (!(stack.getItem() instanceof GunItem)) return;
-        var data = GunData.from(stack);
+        if (!(stack.getItem() instanceof GunItem)) {
+            return;
+        }
+        if (!DamageTypeTool.isGunDamage(source)) return;
 
+        var data = GunData.from(stack);
         float damage = event.getAmount();
 
         for (Perk.Type type : Perk.Type.values()) {
@@ -499,7 +501,6 @@ public class LivingEventHandler {
         if (source.getDirectEntity() instanceof Projectile projectile && projectile.getOwner() instanceof Player player) {
             attacker = player;
         }
-
         if (attacker == null) {
             return;
         }
@@ -508,6 +509,7 @@ public class LivingEventHandler {
         if (!(stack.getItem() instanceof GunItem)) {
             return;
         }
+        if (!DamageTypeTool.isGunDamage(source)) return;
 
         GunData data = GunData.from(stack);
         for (Perk.Type type : Perk.Type.values()) {

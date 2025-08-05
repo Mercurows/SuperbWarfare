@@ -118,7 +118,7 @@ public class SmallCannonShellEntity extends FastThrowableProjectile implements G
                 }
             }
 
-            DamageHandler.doDamage(entity, ModDamageTypes.causeCannonFireDamage(this.level().registryAccess(), this, this.getOwner()), damage);
+            DamageHandler.doDamage(entity, ModDamageTypes.causeProjectileHitDamage(this.level().registryAccess(), this, this.getOwner()), damage);
 
             if (entity instanceof LivingEntity) {
                 entity.invulnerableTime = 0;
@@ -159,7 +159,7 @@ public class SmallCannonShellEntity extends FastThrowableProjectile implements G
 
     private void causeExplode(Vec3 vec3, boolean hitEntity) {
         CustomExplosion explosion = new CustomExplosion(this.level(), this,
-                ModDamageTypes.causeProjectileBoomDamage(this.level().registryAccess(),
+                ModDamageTypes.causeProjectileExplosionDamage(this.level().registryAccess(),
                         this,
                         this.getOwner()),
                 explosionDamage,

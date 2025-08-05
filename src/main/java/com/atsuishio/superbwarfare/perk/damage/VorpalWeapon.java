@@ -18,7 +18,7 @@ public class VorpalWeapon extends Perk {
     @Override
     public float getModifiedDamage(float damage, GunData data, PerkInstance instance, Entity target, DamageSource source) {
         if (source == null) return super.getModifiedDamage(damage, data, instance, target, null);
-        if ((DamageTypeTool.isGunDamage(source) || source.is(ModDamageTypes.PROJECTILE_BOOM)) && target instanceof LivingEntity living && living.getHealth() >= 100.0f) {
+        if ((DamageTypeTool.isGunDamage(source) || source.is(ModDamageTypes.PROJECTILE_EXPLOSION)) && target instanceof LivingEntity living && living.getHealth() >= 100.0f) {
             return (float) (damage + living.getHealth() * 0.00002f * Math.pow(instance.level(), 2));
         }
         return super.getModifiedDamage(damage, data, instance, target, source);

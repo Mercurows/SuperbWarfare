@@ -26,7 +26,7 @@ public class HealClip extends Perk {
 
     @Override
     public void onKill(GunData data, PerkInstance instance, Entity target, DamageSource source) {
-        if (DamageTypeTool.isGunDamage(source) || source.is(ModDamageTypes.PROJECTILE_BOOM)) {
+        if (DamageTypeTool.isGunDamage(source) || source.is(ModDamageTypes.PROJECTILE_EXPLOSION)) {
             int healClipLevel = instance.level();
             if (healClipLevel != 0) {
                 data.perk.getTag(this).putInt("HealClipTime", 80 + healClipLevel * 20);

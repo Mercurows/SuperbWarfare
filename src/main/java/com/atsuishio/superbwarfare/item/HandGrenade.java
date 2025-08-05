@@ -79,7 +79,7 @@ public class HandGrenade extends Item implements ProjectileItem {
             HandGrenadeEntity handGrenade = new HandGrenadeEntity(pLivingEntity, pLevel, 100);
 
             CustomExplosion explosion = new CustomExplosion(pLevel, null,
-                    ModDamageTypes.causeProjectileBoomDamage(pLevel.registryAccess(), handGrenade, pLivingEntity), ExplosionConfig.M67_GRENADE_EXPLOSION_DAMAGE.get(),
+                    ModDamageTypes.causeProjectileExplosionDamage(pLevel.registryAccess(), handGrenade, pLivingEntity), ExplosionConfig.M67_GRENADE_EXPLOSION_DAMAGE.get(),
                     pLivingEntity.getX(), pLivingEntity.getY(), pLivingEntity.getZ(), ExplosionConfig.M67_GRENADE_EXPLOSION_RADIUS.get(), ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).setDamageMultiplier(1.25f);
             explosion.explode();
             EventHooks.onExplosionStart(pLevel, explosion);

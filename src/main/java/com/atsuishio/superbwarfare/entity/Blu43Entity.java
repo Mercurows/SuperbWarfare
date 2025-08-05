@@ -75,7 +75,7 @@ public class Blu43Entity extends Entity implements GeoEntity, OwnableEntity {
     private static final DamageModifier DAMAGE_MODIFIER = DamageModifier.createDefaultModifier()
             .multiply(0.02f, ModDamageTypes.CUSTOM_EXPLOSION)
             .multiply(0.02f, ModDamageTypes.MINE)
-            .multiply(0.02f, ModDamageTypes.PROJECTILE_BOOM)
+            .multiply(0.02f, ModDamageTypes.PROJECTILE_EXPLOSION)
             .multiply(0.02f, DamageTypes.EXPLOSION);
 
     @Override

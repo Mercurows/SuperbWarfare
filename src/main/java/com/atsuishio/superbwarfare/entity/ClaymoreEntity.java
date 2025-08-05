@@ -73,7 +73,7 @@ public class ClaymoreEntity extends Entity implements GeoEntity, OwnableEntity {
     private static final DamageModifier DAMAGE_MODIFIER = DamageModifier.createDefaultModifier()
             .multiply(0.2f, ModDamageTypes.CUSTOM_EXPLOSION)
             .multiply(0.2f, ModDamageTypes.MINE)
-            .multiply(0.2f, ModDamageTypes.PROJECTILE_BOOM);
+            .multiply(0.2f, ModDamageTypes.PROJECTILE_EXPLOSION);
 
     @Override
     public boolean hurt(@NotNull DamageSource source, float amount) {

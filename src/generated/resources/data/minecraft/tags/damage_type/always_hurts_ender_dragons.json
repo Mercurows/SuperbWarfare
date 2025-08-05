@@ -1,8 +1,8 @@
 {
   "values": [
-    "superbwarfare:projectile_boom",
+    "superbwarfare:projectile_explosion",
     "superbwarfare:custom_explosion",
-    "superbwarfare:cannon_fire",
+    "superbwarfare:projectile_hit",
     "superbwarfare:laser",
     "superbwarfare:laser_headshot",
     "superbwarfare:laser_static"

@@ -662,7 +662,7 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
 
     protected void explosionBullet(Entity projectile, float damage, int heLevel, Vec3 hitVec) {
         CustomExplosion explosion = new CustomExplosion(projectile.level(), projectile,
-                ModDamageTypes.causeProjectileBoomDamage(projectile.level().registryAccess(), projectile, this.getShooter()), (float) ((0.9 * damage) * (1 + 0.1 * heLevel)),
+                ModDamageTypes.causeProjectileExplosionDamage(projectile.level().registryAccess(), projectile, this.getShooter()), (float) ((0.9 * damage) * (1 + 0.1 * heLevel)),
                 hitVec.x, hitVec.y, hitVec.z, (float) ((1.5 + 0.02 * damage) * (1 + 0.05 * heLevel))).bulletExplode();
         explosion.explode();
         EventHooks.onExplosionStart(projectile.level(), explosion);
