@@ -11,6 +11,8 @@ import com.atsuishio.superbwarfare.data.gun.ProjectileInfo;
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
 import com.atsuishio.superbwarfare.data.launchable.LaunchableEntityTool;
 import com.atsuishio.superbwarfare.data.launchable.ShootData;
+import com.atsuishio.superbwarfare.entity.projectile.CustomDamageProjectile;
+import com.atsuishio.superbwarfare.entity.projectile.CustomGravityEntity;
 import com.atsuishio.superbwarfare.entity.projectile.ExplosiveProjectile;
 import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
@@ -81,16 +83,16 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
         addReloadTimeBehavior(this.reloadTimeBehaviors);
         SingletonGeoAnimatable.registerSyncedAnimatable(this);
 
-        modifyProperty(GunProp.DAMAGE, (data, v) -> v + getCustomDamage(data.stack));
-        modifyProperty(GunProp.HEADSHOT, (data, v) -> v + getCustomHeadshot(data.stack));
-        modifyProperty(GunProp.BYPASSES_ARMOR, (data, v) -> v + getCustomBypassArmor(data.stack));
-        modifyProperty(GunProp.MAGAZINE, (data, v) -> v + getCustomMagazine(data.stack));
-        modifyProperty(GunProp.DEFAULT_ZOOM, (data, v) -> v + getCustomZoom(data.stack));
-        modifyProperty(GunProp.RPM, (data, v) -> v + getCustomRPM(data.stack));
-        modifyProperty(GunProp.WEIGHT, (data, v) -> v + getCustomWeight(data.stack));
-        modifyProperty(GunProp.VELOCITY, (data, v) -> v + getCustomVelocity(data.stack));
-        modifyProperty(GunProp.SOUND_RADIUS, (data, v) -> v + getCustomSoundRadius(data.stack));
-        modifyProperty(GunProp.BOLT_ACTION_TIME, (data, v) -> v + getCustomBoltActionTime(data.stack));
+        setProperty(GunProp.DAMAGE, (data, v) -> v + getCustomDamage(data.stack));
+        setProperty(GunProp.HEADSHOT, (data, v) -> v + getCustomHeadshot(data.stack));
+        setProperty(GunProp.BYPASSES_ARMOR, (data, v) -> v + getCustomBypassArmor(data.stack));
+        setProperty(GunProp.MAGAZINE, (data, v) -> v + getCustomMagazine(data.stack));
+        setProperty(GunProp.DEFAULT_ZOOM, (data, v) -> v + getCustomZoom(data.stack));
+        setProperty(GunProp.RPM, (data, v) -> v + getCustomRPM(data.stack));
+        setProperty(GunProp.WEIGHT, (data, v) -> v + getCustomWeight(data.stack));
+        setProperty(GunProp.VELOCITY, (data, v) -> v + getCustomVelocity(data.stack));
+        setProperty(GunProp.SOUND_RADIUS, (data, v) -> v + getCustomSoundRadius(data.stack));
+        setProperty(GunProp.BOLT_ACTION_TIME, (data, v) -> v + getCustomBoltActionTime(data.stack));
     }
 
     protected final Map<GunProp<?>, GunProp.GunPropModifyContext<?>> propertyModifiers = new HashMap<>();
@@ -498,6 +500,8 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
                 }
             }
         }
+
+        data.clearTempModifications();
     }
 
     public void shoot(@NotNull ServerLevel level, @NotNull Vec3 shootPosition, @NotNull Vec3 shootDirection, @NotNull GunData data, double spread, boolean zoom, @Nullable UUID uuid) {
@@ -683,14 +687,18 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
                         .velocity(finalVelocity.floatValue());
             }
 
-            // SBW爆炸物专属属性
+            // SBW弹射物专属属性
+            if (entity instanceof CustomDamageProjectile customDamageProjectile) {
+                customDamageProjectile.setDamage(damage.floatValue());
+            }
+
+            if (entity instanceof CustomGravityEntity customGravityEntity && !data.get(GunProp.GRAVITY).isNaN()) {
+                customGravityEntity.setGravity(data.get(GunProp.GRAVITY).floatValue());
+            }
+
             if (entity instanceof ExplosiveProjectile explosive) {
-                explosive.setDamage(damage.floatValue());
                 explosive.setExplosionDamage(data.get(GunProp.EXPLOSION_DAMAGE).floatValue());
                 explosive.setExplosionRadius(data.get(GunProp.EXPLOSION_RADIUS).floatValue());
-                if (!data.get(GunProp.GRAVITY).isNaN()) {
-                    explosive.setGravity(data.get(GunProp.GRAVITY).floatValue());
-                }
             }
 
             // 填充其他自定义NBT数据

@@ -179,6 +179,34 @@ public class GunData {
 
     private static final Gson GSON = DataLoader.GSON;
 
+    private final Map<GunProp<?>, GunProp.GunPropModifyContext<?>> tempModifications = new HashMap<>();
+
+    @SuppressWarnings("unchecked")
+    public <T> void appendTempModification(GunProp<T> prop, @Nullable GunProp.GunPropModifyContext<T> modifier) {
+        if (modifier == null) return;
+
+        var current = (GunProp.GunPropModifyContext<T>) tempModifications.get(prop);
+
+        if (current == null) {
+            setTempProperty(prop, modifier);
+        } else {
+            tempModifications.put(prop, (data, v) -> {
+                var value = current.apply(data, (T) v);
+                return modifier.apply(data, value);
+            });
+        }
+    }
+
+    public <T> void setTempProperty(GunProp<T> prop, @Nullable GunProp.GunPropModifyContext<T> modifier) {
+        if (modifier == null) return;
+
+        tempModifications.put(prop, modifier);
+    }
+
+    public void clearTempModifications() {
+        tempModifications.clear();
+    }
+
     @SuppressWarnings("unchecked")
     public <T> T get(GunProp<T> prop) {
         var modifier = prop.asModifier(this);
@@ -221,6 +249,9 @@ public class GunData {
                 modifier.apply(instance.getModifier(prop));
             }
         }
+
+        // 临时属性修改
+        modifier.apply((GunProp.GunPropModifyContext<T>) tempModifications.get(prop));
 
         return modifier.compute();
     }

@@ -19,16 +19,16 @@ public interface GunPropertyModifier {
     /**
      * 直接修改某个属性的值
      */
-    default <T> void modifyProperty(GunProp<T> prop, @Nullable Function<T, T> modifier) {
+    default <T> void setProperty(GunProp<T> prop, @Nullable Function<T, T> modifier) {
         if (modifier == null) return;
-        modifyProperty(prop, (data, value) -> modifier.apply(value));
+        setProperty(prop, (data, value) -> modifier.apply(value));
     }
 
     /**
      * 直接修改某个属性的值
      */
     @SuppressWarnings("unchecked")
-    default <T> void modifyProperty(GunProp<T> prop, @Nullable GunProp.GunPropModifyContext<T> modifier) {
+    default <T> void setProperty(GunProp<T> prop, @Nullable GunProp.GunPropModifyContext<T> modifier) {
         if (modifier == null) return;
         getPropModifiers().put(prop, (data, value) -> modifier.apply(data, (T) value));
     }
@@ -53,7 +53,7 @@ public interface GunPropertyModifier {
         var current = (GunProp.GunPropModifyContext<T>) modifiers.get(prop);
 
         if (current == null) {
-            modifiers.put(prop, modifier);
+            setProperty(prop, modifier);
         } else {
             modifiers.put(prop, (data, v) -> {
                 var value = current.apply(data, (T) v);

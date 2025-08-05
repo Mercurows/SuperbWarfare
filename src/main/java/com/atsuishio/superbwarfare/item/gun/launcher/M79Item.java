@@ -104,7 +104,6 @@ public class M79Item extends GunItem {
             boolean zoom,
             @Nullable UUID uuid
     ) {
-        if (data.reloading()) return false;
         if (!super.shootBullet(shooter, level, shootPosition, shootDirection, data, spread, zoom, uuid)) return false;
 
         if (shooter != null) {
