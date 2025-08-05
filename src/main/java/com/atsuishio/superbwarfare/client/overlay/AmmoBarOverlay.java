@@ -195,9 +195,9 @@ public class AmmoBarOverlay implements LayeredDraw.Layer {
                         ammoStack = ammoConsumer.stack();
                     }
 
-                    poseStack.translate(1.5, 0, 0);
+                    poseStack.translate(1.75f, 0, 0);
                     guiGraphics.renderFakeItem(ammoStack, 3, -1);
-                    poseStack.translate(-1.5, 0, 0);
+                    poseStack.translate(-1.75f, 0, 0);
 
                     // 数量
                     var text = "" + data.countBackupAmmoItem(player);
