@@ -220,12 +220,13 @@ public class GunData {
         }
 
         // perk
-        for (var type : Perk.Type.values()) {
-            if (perk == null) continue;
-            var instance = perk.get(type);
-            if (instance == null) continue;
+        if (perk != null) {
+            for (var type : Perk.Type.values()) {
+                var instance = perk.get(type);
+                if (instance == null) continue;
 
-            modifier.apply(instance.getModifier(prop));
+                modifier.apply(instance.getModifier(prop));
+            }
         }
 
         return modifier.compute();
