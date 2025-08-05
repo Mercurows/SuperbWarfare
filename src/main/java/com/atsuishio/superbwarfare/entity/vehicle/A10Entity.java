@@ -619,7 +619,7 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
         super.move(movementType, movement);
         if (level() instanceof ServerLevel) {
             if (this.horizontalCollision) {
-                collideBlock();
+                collideNormalBlock();
                 if (canCollideHardBlock()) {
                     collideHardBlock();
                 }

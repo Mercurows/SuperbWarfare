@@ -1,0 +1,23 @@
+{
+  "values": [
+    "#minecraft:fences",
+    "#minecraft:fence_gates",
+    "#minecraft:doors",
+    "#minecraft:trapdoors",
+    "#minecraft:walls",
+    "#minecraft:wool",
+    "#minecraft:stairs",
+    "#minecraft:slabs",
+    "#forge:glass_panes",
+    "minecraft:bamboo",
+    "minecraft:melon",
+    "minecraft:pumpkin",
+    "minecraft:hay_block",
+    "minecraft:bell",
+    "minecraft:chain",
+    "minecraft:snow_block",
+    "minecraft:mushroom_stem",
+    "minecraft:brown_mushroom_block",
+    "minecraft:red_mushroom_block"
+  ]
+}

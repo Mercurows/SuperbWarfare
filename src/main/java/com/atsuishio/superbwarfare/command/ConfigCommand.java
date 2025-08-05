@@ -27,49 +27,56 @@ public class ConfigCommand {
                 })))
                 .then(Commands.literal("collisionDestroy").requires(s -> s.hasPermission(2))
                         .then(Commands.literal("none").executes(context -> {
-                            VehicleConfig.COLLISION_DESTROY_BLOCKS.set(false);
+                            VehicleConfig.COLLISION_DESTROY_SOFT_BLOCKS.set(false);
+                            VehicleConfig.COLLISION_DESTROY_NORMAL_BLOCKS.set(false);
                             VehicleConfig.COLLISION_DESTROY_HARD_BLOCKS.set(false);
                             VehicleConfig.COLLISION_DESTROY_BLOCKS_BEASTLY.set(false);
 
-                            VehicleConfig.COLLISION_DESTROY_BLOCKS.save();
-                            VehicleConfig.COLLISION_DESTROY_HARD_BLOCKS.save();
-                            VehicleConfig.COLLISION_DESTROY_BLOCKS_BEASTLY.save();
+                            saveCollisionConfigs();
 
                             context.getSource().sendSuccess(() -> Component.translatable("commands.config.collision_destroy.none"), true);
                             return 0;
                         }))
                         .then(Commands.literal("soft").executes(context -> {
-                            VehicleConfig.COLLISION_DESTROY_BLOCKS.set(true);
+                            VehicleConfig.COLLISION_DESTROY_SOFT_BLOCKS.set(true);
+                            VehicleConfig.COLLISION_DESTROY_NORMAL_BLOCKS.set(false);
                             VehicleConfig.COLLISION_DESTROY_HARD_BLOCKS.set(false);
                             VehicleConfig.COLLISION_DESTROY_BLOCKS_BEASTLY.set(false);
 
-                            VehicleConfig.COLLISION_DESTROY_BLOCKS.save();
-                            VehicleConfig.COLLISION_DESTROY_HARD_BLOCKS.save();
-                            VehicleConfig.COLLISION_DESTROY_BLOCKS_BEASTLY.save();
+                            saveCollisionConfigs();
 
                             context.getSource().sendSuccess(() -> Component.translatable("commands.config.collision_destroy.soft"), true);
                             return 0;
                         }))
+                        .then(Commands.literal("normal").executes(context -> {
+                            VehicleConfig.COLLISION_DESTROY_SOFT_BLOCKS.set(true);
+                            VehicleConfig.COLLISION_DESTROY_NORMAL_BLOCKS.set(true);
+                            VehicleConfig.COLLISION_DESTROY_HARD_BLOCKS.set(false);
+                            VehicleConfig.COLLISION_DESTROY_BLOCKS_BEASTLY.set(false);
+
+                            saveCollisionConfigs();
+
+                            context.getSource().sendSuccess(() -> Component.translatable("commands.config.collision_destroy.normal"), true);
+                            return 0;
+                        }))
                         .then(Commands.literal("hard").executes(context -> {
-                            VehicleConfig.COLLISION_DESTROY_BLOCKS.set(true);
+                            VehicleConfig.COLLISION_DESTROY_SOFT_BLOCKS.set(true);
+                            VehicleConfig.COLLISION_DESTROY_NORMAL_BLOCKS.set(true);
                             VehicleConfig.COLLISION_DESTROY_HARD_BLOCKS.set(true);
                             VehicleConfig.COLLISION_DESTROY_BLOCKS_BEASTLY.set(false);
 
-                            VehicleConfig.COLLISION_DESTROY_BLOCKS.save();
-                            VehicleConfig.COLLISION_DESTROY_HARD_BLOCKS.save();
-                            VehicleConfig.COLLISION_DESTROY_BLOCKS_BEASTLY.save();
+                            saveCollisionConfigs();
 
                             context.getSource().sendSuccess(() -> Component.translatable("commands.config.collision_destroy.hard"), true);
                             return 0;
                         }))
                         .then(Commands.literal("beastly").executes(context -> {
-                            VehicleConfig.COLLISION_DESTROY_BLOCKS.set(true);
+                            VehicleConfig.COLLISION_DESTROY_SOFT_BLOCKS.set(true);
+                            VehicleConfig.COLLISION_DESTROY_NORMAL_BLOCKS.set(true);
                             VehicleConfig.COLLISION_DESTROY_HARD_BLOCKS.set(true);
                             VehicleConfig.COLLISION_DESTROY_BLOCKS_BEASTLY.set(true);
 
-                            VehicleConfig.COLLISION_DESTROY_BLOCKS.save();
-                            VehicleConfig.COLLISION_DESTROY_HARD_BLOCKS.save();
-                            VehicleConfig.COLLISION_DESTROY_BLOCKS_BEASTLY.save();
+                            saveCollisionConfigs();
 
                             context.getSource().sendSuccess(() -> Component.translatable("commands.config.collision_destroy.beastly"), true);
                             return 0;
@@ -101,5 +108,12 @@ public class ConfigCommand {
                     context.getSource().sendSuccess(() -> Component.translatable(value ? "commands.config.force_damage.enabled" : "commands.config.force_damage.disabled"), true);
                     return 0;
                 })));
+    }
+
+    private static void saveCollisionConfigs() {
+        VehicleConfig.COLLISION_DESTROY_SOFT_BLOCKS.save();
+        VehicleConfig.COLLISION_DESTROY_NORMAL_BLOCKS.save();
+        VehicleConfig.COLLISION_DESTROY_HARD_BLOCKS.save();
+        VehicleConfig.COLLISION_DESTROY_BLOCKS_BEASTLY.save();
     }
 }
