@@ -236,7 +236,7 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
 
                 try {
                     var parsedValue = GSON.fromJson(element.getValue().toString(), prop.getFieldType());
-                    this.modifyProperty((GunProp<Object>) prop, value -> parsedValue);
+                    this.setProperty((GunProp<Object>) prop, value -> parsedValue);
                 } catch (Exception exception) {
                     Mod.LOGGER.error("invalid override value for key {}: {}", key, element.getValue());
                 }
@@ -249,7 +249,7 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
         parseOverrideValues();
 
         if (this.projectile != null) {
-            this.modifyProperty(GunProp.PROJECTILE, value -> projectile.value);
+            this.setProperty(GunProp.PROJECTILE, value -> projectile.value);
         }
 
         this.type = AmmoConsumeType.INVALID;

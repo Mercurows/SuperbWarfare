@@ -37,7 +37,6 @@ public class GunGrenadeEntity extends FastThrowableProjectile implements GeoEnti
     private float damage = 40.0f;
     private float explosionDamage = 80f;
     private float explosionRadius = 5f;
-    private boolean charged = false;
     private float gravity = 0.03f;
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
@@ -92,13 +91,6 @@ public class GunGrenadeEntity extends FastThrowableProjectile implements GeoEnti
         this.explosionRadius = explosionRadius;
     }
 
-    public void setCharged(boolean charged) {
-        this.charged = charged;
-    }
-
-    public void charged(boolean charged) {
-        this.charged = charged;
-    }
 
     @Override
     protected @NotNull Item getDefaultItem() {
@@ -122,10 +114,6 @@ public class GunGrenadeEntity extends FastThrowableProjectile implements GeoEnti
 
                 PacketDistributor.sendToPlayer(player, new ClientIndicatorMessage(0, 5));
             }
-        }
-
-        if (charged) {
-            damage *= 1.25f;
         }
 
         DamageHandler.doDamage(entity, ModDamageTypes.causeProjectileHitDamage(this.level().registryAccess(), this, this.getOwner()), damage);

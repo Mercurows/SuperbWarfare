@@ -7,17 +7,13 @@ import com.atsuishio.superbwarfare.client.model.item.SecondaryCataclysmModel;
 import com.atsuishio.superbwarfare.client.tooltip.component.SecondaryCataclysmImageComponent;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.GunProp;
-import com.atsuishio.superbwarfare.entity.projectile.GunGrenadeEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModEnumExtensions;
 import com.atsuishio.superbwarfare.init.ModItems;
-import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.EnergyStorageItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
-import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
-import com.atsuishio.superbwarfare.tools.RangeTool;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -47,8 +43,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Supplier;
-
-import static com.atsuishio.superbwarfare.tools.EntityFindUtil.findEntity;
 
 public class SecondaryCataclysm extends GunItem implements EnergyStorageItem {
 
@@ -207,7 +201,6 @@ public class SecondaryCataclysm extends GunItem implements EnergyStorageItem {
         return Optional.of(new SecondaryCataclysmImageComponent(pStack));
     }
 
-    // TODO 这玩意能提取吗
     @Override
     public boolean shootBullet(
             @Nullable Entity shooter,
@@ -219,7 +212,6 @@ public class SecondaryCataclysm extends GunItem implements EnergyStorageItem {
             boolean zoom,
             @Nullable UUID uuid
     ) {
-        if (data.reloading()) return false;
         var stack = data.stack;
 
         var stackCap = stack.getCapability(Capabilities.EnergyStorage.ITEM);
@@ -227,46 +219,12 @@ public class SecondaryCataclysm extends GunItem implements EnergyStorageItem {
 
         boolean isChargedFire = zoom && hasEnoughEnergy;
 
-        GunGrenadeEntity gunGrenadeEntity = new GunGrenadeEntity(shooter, level,
-                data.get(GunProp.DAMAGE).floatValue(),
-                data.get(GunProp.EXPLOSION_DAMAGE).floatValue(),
-                data.get(GunProp.EXPLOSION_RADIUS).floatValue()
-        );
-
-        float velocity = data.get(GunProp.VELOCITY).floatValue();
-
-        for (Perk.Type type : Perk.Type.values()) {
-            var instance = data.perk.getInstance(type);
-            if (instance != null) {
-                instance.perk().modifyProjectile(data, instance, gunGrenadeEntity);
-            }
+        if (isChargedFire) {
+            data.setTempProperty(GunProp.DAMAGE, (d, v) -> v * 1.25);
+            data.setTempProperty(GunProp.VELOCITY, (d, v) -> v * 4);
         }
 
-        gunGrenadeEntity.charged(isChargedFire);
-
-        var x = shootDirection.x;
-        var y = shootDirection.y + 0.001f;
-        var z = shootDirection.z;
-
-        if (uuid != null && zoom && shooter != null && !shooter.isShiftKeyDown()) {
-            Entity target = findEntity(shooter.level(), String.valueOf(uuid));
-            var gunData = GunData.from(stack);
-            int intelligentChipLevel = gunData.perk.getLevel(ModPerks.INTELLIGENT_CHIP);
-            if (intelligentChipLevel > 0 && target != null) {
-                Vec3 targetVec = target.getEyePosition();
-                Vec3 playerVec = shooter.getEyePosition();
-                var hasGravity = gunData.perk.getLevel(ModPerks.MICRO_MISSILE) <= 0;
-                Vec3 toVec = RangeTool.calculateFiringSolution(playerVec, targetVec, Vec3.ZERO, (isChargedFire ? 4 : 1) * velocity, hasGravity ? 0.05 : 0);
-                x = toVec.x;
-                y = toVec.y;
-                z = toVec.z;
-            }
-        }
-
-        gunGrenadeEntity.setPos(shootPosition.x, shootPosition.y - 0.1, shootPosition.z);
-        gunGrenadeEntity.shoot(x, y, z, (isChargedFire ? 4 : 1) * velocity,
-                (float) (zoom ? 0.1 : spread));
-        level.addFreshEntity(gunGrenadeEntity);
+        if (!super.shootBullet(shooter, level, shootPosition, shootDirection, data, spread, zoom, uuid)) return false;
 
         ParticleTool.sendParticle(level, ParticleTypes.CLOUD, shootPosition.x + 1.8 * shootDirection.x,
                 shootPosition.y - 0.35 + 1.8 * shootDirection.y,

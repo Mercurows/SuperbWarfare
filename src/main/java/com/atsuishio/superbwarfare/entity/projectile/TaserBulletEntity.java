@@ -37,7 +37,7 @@ import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 @OnlyIn(value = Dist.CLIENT, _interface = ItemSupplier.class)
-public class TaserBulletEntity extends AbstractArrow implements GeoEntity {
+public class TaserBulletEntity extends AbstractArrow implements GeoEntity, CustomDamageProjectile {
 
     private float damage = 1f;
     private int volt = 0;

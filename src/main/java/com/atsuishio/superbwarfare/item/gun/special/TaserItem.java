@@ -4,15 +4,12 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.renderer.gun.TaserItemRenderer;
 import com.atsuishio.superbwarfare.client.tooltip.component.EnergyImageComponent;
 import com.atsuishio.superbwarfare.data.gun.GunData;
-import com.atsuishio.superbwarfare.data.gun.GunProp;
-import com.atsuishio.superbwarfare.entity.projectile.TaserBulletEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.EnergyStorageItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
-import com.atsuishio.superbwarfare.perk.Perk;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.ResourceLocation;
@@ -143,37 +140,6 @@ public class TaserItem extends GunItem implements EnergyStorageItem {
     }
 
     @Override
-    public boolean shootBullet(
-            @Nullable Entity shooter,
-            @NotNull ServerLevel level,
-            @NotNull Vec3 shootPosition,
-            @NotNull Vec3 shootDirection,
-            @NotNull GunData data,
-            double spread,
-            boolean zoom,
-            @Nullable UUID uuid
-    ) {
-//        shooter.getCooldowns().addCooldown(stack.getItem(), 5);
-
-        TaserBulletEntity projectile = new TaserBulletEntity(level,
-                data.get(GunProp.DAMAGE).floatValue());
-
-        for (Perk.Type type : Perk.Type.values()) {
-            var instance = data.perk.getInstance(type);
-            if (instance != null) {
-                instance.perk().modifyProjectile(data, instance, projectile);
-            }
-        }
-
-        projectile.setPos(shootPosition.x, shootPosition.y - 0.1, shootPosition.z);
-        projectile.shoot(shootDirection.x, shootDirection.y, shootDirection.z, data.get(GunProp.VELOCITY).floatValue(),
-                (float) (zoom ? 0.1 : spread));
-        level.addFreshEntity(projectile);
-
-        return true;
-    }
-
-    @Override
     public void afterShoot(
             @Nullable Entity shooter,
             @NotNull ServerLevel level,
@@ -197,15 +163,13 @@ public class TaserItem extends GunItem implements EnergyStorageItem {
 
     @Override
     public boolean canShoot(GunData data, @Nullable Entity shooter) {
-        var stack = data.stack;
-
         int perkLevel = data.perk.getLevel(ModPerks.VOLT_OVERLOAD);
 
-        var energyStorage = stack.getCapability(Capabilities.EnergyStorage.ITEM);
+        var energyStorage = data.stack.getCapability(Capabilities.EnergyStorage.ITEM);
         var hasEnoughEnergy = energyStorage != null && energyStorage.getEnergyStored() >= 400 + 100 * perkLevel;
 
         if (!hasEnoughEnergy) return false;
-        if (data.reloading()) return false;
+
         return super.canShoot(data, shooter);
     }
 
