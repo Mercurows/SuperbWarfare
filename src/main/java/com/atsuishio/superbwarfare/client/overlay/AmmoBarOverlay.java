@@ -163,7 +163,7 @@ public class AmmoBarOverlay implements LayeredDraw.Layer {
                 var ammoConsumer = data.selectedAmmoConsumer();
                 RenderHelper.preciseBlit(guiGraphics, AMMO_STACK,
                         x - 62,
-                        y - 21.5f,
+                        y - 20.5f,
                         0,
                         0,
                         24,
@@ -175,18 +175,35 @@ public class AmmoBarOverlay implements LayeredDraw.Layer {
                 poseStack.pushPose();
 
                 // 物品
-                poseStack.translate(x - 57, y - 22, 0);
+                poseStack.translate(x - 57, y - 21, 0);
                 poseStack.scale(0.75f, 0.75f, 1f);
 
-                var renderStackCount = ammoConsumer.type == AmmoConsumer.AmmoConsumeType.ITEM;
+                var renderStackCount = ammoConsumer.type == AmmoConsumer.AmmoConsumeType.ITEM || ammoConsumer.type == AmmoConsumer.AmmoConsumeType.PLAYER_AMMO;
                 if (renderStackCount) {
-                    guiGraphics.renderFakeItem(ammoConsumer.stack(), 4, -1);
+                    ItemStack ammoStack;
+                    if (ammoConsumer.type == AmmoConsumer.AmmoConsumeType.PLAYER_AMMO) {
+                        var ammoType = ammoConsumer.getPlayerAmmoType();
+                        ammoStack = switch (ammoType) {
+                            case HANDGUN -> new ItemStack(ModItems.HANDGUN_AMMO.get());
+                            case RIFLE -> new ItemStack(ModItems.RIFLE_AMMO.get());
+                            case SHOTGUN -> new ItemStack(ModItems.SHOTGUN_AMMO.get());
+                            case SNIPER -> new ItemStack(ModItems.SNIPER_AMMO.get());
+                            case HEAVY -> new ItemStack(ModItems.HEAVY_AMMO.get());
+                        };
+                    } else {
+                        ammoStack = ammoConsumer.stack();
+                    }
+
+                    poseStack.translate(1.5, 0, 0);
+                    guiGraphics.renderFakeItem(ammoStack, 3, -1);
+                    poseStack.translate(-1.5, 0, 0);
+
                     // 数量
                     var text = "" + data.countBackupAmmoItem(player);
                     guiGraphics.drawString(
                             font,
                             text,
-                            23,
+                            24,
                             8,
                             0xFFFFFF,
                             true
@@ -199,7 +216,7 @@ public class AmmoBarOverlay implements LayeredDraw.Layer {
                 if (!renderStackCount) {
                     RenderHelper.preciseBlit(guiGraphics, AMMO_STACK,
                             x - 50,
-                            y - 21f,
+                            y - 20f,
                             12,
                             8.5f,
                             4,
@@ -210,7 +227,7 @@ public class AmmoBarOverlay implements LayeredDraw.Layer {
                 }
 
                 // 渲染弹药种类信息
-                float offset = 48f;
+                float offset = 47f;
                 int count = size / 2;
                 float posX = size % 2 == 0 ? x - count * 6 + 1 : x - count * 6 - 2;
                 float posY = y - 8;
