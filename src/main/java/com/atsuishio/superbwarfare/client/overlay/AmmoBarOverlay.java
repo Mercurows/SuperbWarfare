@@ -20,7 +20,6 @@ import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
@@ -40,8 +39,6 @@ public class AmmoBarOverlay implements LayeredDraw.Layer {
     private static final ResourceLocation CHOSEN = Mod.loc("textures/gui/attachment/chosen.png");
     private static final ResourceLocation NOT_CHOSEN = Mod.loc("textures/gui/attachment/not_chosen.png");
     private static final ResourceLocation AMMO_STACK = Mod.loc("textures/gui/attachment/ammo_stack.png");
-
-    private static final ItemStack BARRIER_STACK = new ItemStack(Items.BARRIER);
 
     private static ResourceLocation getFireMode(GunData data) {
         return switch (data.fireMode.get()) {
@@ -159,49 +156,61 @@ public class AmmoBarOverlay implements LayeredDraw.Layer {
                         8);
             }
 
-            // 如果当前弹药为物品，渲染备弹物品数量
-            var ammoConsumer = data.selectedAmmoConsumer();
-            RenderHelper.preciseBlit(guiGraphics, AMMO_STACK,
-                    x - 62,
-                    y - 22,
-                    0,
-                    0,
-                    16,
-                    10,
-                    16,
-                    16
-            );
-
-            poseStack.pushPose();
-
-            // 物品
-            poseStack.translate(x - 57, y - 22, 0);
-            poseStack.scale(0.75f, 0.75f, 1f);
-
-            // TODO 优化物品渲染效果
-            var renderStackCount = ammoConsumer.type == AmmoConsumer.AmmoConsumeType.ITEM;
-            var ammoStack = renderStackCount ? ammoConsumer.stack() : BARRIER_STACK;
-            guiGraphics.renderFakeItem(ammoStack, 0, 0);
-
-            if (renderStackCount) {
-                // 数量
-                var text = "" + data.countBackupAmmoItem(player);
-                guiGraphics.drawString(
-                        font,
-                        text,
-                        18,
-                        8,
-                        0xFFFFFF,
-                        true
-                );
-            }
-
-            poseStack.popPose();
-
             // 如果弹药种类大于1，渲染弹种信息
             int size = data.ammoConsumers.size();
             if (size > 1) {
-                float offset = 50.5f;
+                // 如果当前弹药为物品，渲染备弹物品数量
+                var ammoConsumer = data.selectedAmmoConsumer();
+                RenderHelper.preciseBlit(guiGraphics, AMMO_STACK,
+                        x - 62,
+                        y - 21.5f,
+                        0,
+                        0,
+                        24,
+                        8.5f,
+                        24,
+                        24
+                );
+
+                poseStack.pushPose();
+
+                // 物品
+                poseStack.translate(x - 57, y - 22, 0);
+                poseStack.scale(0.75f, 0.75f, 1f);
+
+                var renderStackCount = ammoConsumer.type == AmmoConsumer.AmmoConsumeType.ITEM;
+                if (renderStackCount) {
+                    guiGraphics.renderFakeItem(ammoConsumer.stack(), 4, -1);
+                    // 数量
+                    var text = "" + data.countBackupAmmoItem(player);
+                    guiGraphics.drawString(
+                            font,
+                            text,
+                            23,
+                            8,
+                            0xFFFFFF,
+                            true
+                    );
+                }
+
+                poseStack.popPose();
+
+                // 这里不能和上面合并
+                if (!renderStackCount) {
+                    RenderHelper.preciseBlit(guiGraphics, AMMO_STACK,
+                            x - 50,
+                            y - 21f,
+                            12,
+                            8.5f,
+                            4,
+                            8,
+                            24,
+                            24
+                    );
+                }
+
+                // 渲染弹药种类信息
+                float offset = 48f;
                 int count = size / 2;
                 float posX = size % 2 == 0 ? x - count * 6 + 1 : x - count * 6 - 2;
                 float posY = y - 8;
@@ -231,7 +240,7 @@ public class AmmoBarOverlay implements LayeredDraw.Layer {
             poseStack.popPose();
 
             // 虚拟弹药备弹
-            if (data.virtualAmmo.get() > 0) {
+            if (data.virtualAmmo.get() > 0 && !data.meleeOnly()) {
                 guiGraphics.drawString(
                         font,
                         "+" + data.virtualAmmo.get(),
