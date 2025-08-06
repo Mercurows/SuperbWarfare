@@ -293,7 +293,6 @@ public class JavelinItem extends GunItem {
         tag.putInt("SeekTime", 0);
     }
 
-    // TODO 正确处理标枪瞄准时被丢出后的问题
     @Override
     public void onChangeSlot(ItemStack stack, Player player) {
         super.onChangeSlot(stack, player);
