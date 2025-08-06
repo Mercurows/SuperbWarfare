@@ -800,6 +800,15 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
         return stack.getItem() instanceof GunItem && GunData.from(stack).ammoConsumers.size() > 1;
     }
 
+    /**
+     * 在切枪之后触发
+     *
+     * @param stack  被切走的枪
+     * @param player 玩家
+     */
+    public void onChangeSlot(ItemStack stack, Player player) {
+    }
+
     @OnlyIn(Dist.CLIENT)
     public HumanoidModel.ArmPose getArmPose(LivingEntity entityLiving, InteractionHand hand, ItemStack stack) {
         return PoseTool.pose(entityLiving, hand, stack);

@@ -357,6 +357,8 @@ public class LivingEventHandler {
                             oldData.charge.timer.reset();
                         }
 
+                        oldGun.onChangeSlot(oldStack, player);
+
                         oldData.save();
                     }
 
