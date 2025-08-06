@@ -162,7 +162,9 @@ public class AmmoBarOverlay implements LayeredDraw.Layer {
 
             // 如果弹药种类大于1，渲染弹种信息
             int size = data.ammoConsumers.size();
-            if (size > 1 && DisplayConfig.ADVANCED_AMMO_HUD.get()) {
+            if (DisplayConfig.ADVANCED_AMMO_HUD.get()
+                    && (size > 1 || size == 1 && data.selectedAmmoConsumer().type != AmmoConsumer.AmmoConsumeType.PLAYER_AMMO)
+            ) {
                 // 如果当前弹药为物品，渲染备弹物品数量
                 var ammoConsumer = data.selectedAmmoConsumer();
                 RenderHelper.preciseBlit(guiGraphics, AMMO_STACK,
