@@ -171,7 +171,7 @@ public class DroneHudOverlay implements LayeredDraw.Layer {
                         float x = (float) point.x;
                         float y = (float) point.y;
 
-                        RenderHelper.preciseBlit(guiGraphics, FRAME, x - 12, y - 12, 0, 0, 24, 24, 24, 24, 1f);
+                        RenderHelper.preciseBlit(guiGraphics, FRAME, x - 12, y - 12, 24, 24, 0, 0, 24, 24, 24, 24);
                         poseStack.popPose();
                     }
                 }
