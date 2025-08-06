@@ -261,7 +261,7 @@ public class JavelinItem extends GunItem {
         tag.putInt("SeekTime", 0);
         tag.putString("TargetEntity", "none");
         if (player instanceof ServerPlayer serverPlayer) {
-            var clientboundstopsoundpacket = new ClientboundStopSoundPacket(new ResourceLocation(Mod.MODID, "javelin_lock"), SoundSource.PLAYERS);
+            var clientboundstopsoundpacket = new ClientboundStopSoundPacket(Mod.loc("javelin_lock"), SoundSource.PLAYERS);
             serverPlayer.connection.send(clientboundstopsoundpacket);
         }
     }
@@ -291,5 +291,25 @@ public class JavelinItem extends GunItem {
         }
         tag.putBoolean("Seeking", true);
         tag.putInt("SeekTime", 0);
+    }
+
+    // TODO 正确处理标枪瞄准时被丢出后的问题
+    @Override
+    public void onChangeSlot(ItemStack stack, Player player) {
+        super.onChangeSlot(stack, player);
+        GunData data = GunData.from(stack);
+        var tag = data.tag();
+        tag.remove("Seeking");
+        tag.remove("SeekTime");
+        tag.remove("GuideType");
+        tag.remove("TargetPosX");
+        tag.remove("TargetPosY");
+        tag.remove("TargetPosZ");
+        tag.putString("TargetEntity", "none");
+
+        if (player instanceof ServerPlayer serverPlayer) {
+            var clientboundstopsoundpacket = new ClientboundStopSoundPacket(Mod.loc("javelin_lock"), SoundSource.PLAYERS);
+            serverPlayer.connection.send(clientboundstopsoundpacket);
+        }
     }
 }
