@@ -501,6 +501,11 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
             }
         }
 
+        // 真实后座（
+        if (shooter != null && data.get(GunProp.RECOIL) != 0) {
+            shooter.setDeltaMovement(shooter.getDeltaMovement().add(shooter.getViewVector(1).scale(-data.get(GunProp.RECOIL))));
+        }
+
         data.clearTempModifications();
     }
 

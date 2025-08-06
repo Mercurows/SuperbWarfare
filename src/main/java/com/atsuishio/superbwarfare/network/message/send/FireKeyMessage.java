@@ -74,7 +74,7 @@ public class FireKeyMessage {
                 && !data.charging()
         ) {
             if (!player.getCooldowns().isOnCooldown(stack.getItem()) && data.bolt.needed.get()) {
-                data.bolt.actionTimer.set(data.get(GunProp.BOLT_ACTION_TIME) + 1);
+                data.startBolt();
                 GunEventHandler.playGunBoltSounds(player, data);
             }
         }

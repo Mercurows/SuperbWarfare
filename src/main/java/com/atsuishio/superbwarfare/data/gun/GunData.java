@@ -124,6 +124,10 @@ public class GunData {
         data.putUUID("UUID", UUID.randomUUID());
     }
 
+    public static GunData from(Item item) {
+        return from(new ItemStack(item));
+    }
+
     public static GunData from(ItemStack stack) {
         return dataCache.getUnchecked(stack);
     }
@@ -307,7 +311,7 @@ public class GunData {
 
     /*
      * 开火相关流程描述
-     * 1. 调用hasEnoughAmmoToShoot(@Nullable Entity shooter)查看是否拥有足够的枪内弹药开火，没有弹药时可以尝试调用startReload()开始换弹流程
+     * 1. 调用shouldStartReloading和shouldStartBolt查看当前状态是否应该开始换弹或拉栓，是则调用startReloading或startBolt开始换弹/拉栓流程
      * 2. 调用canShoot(@Nullable Entity shooter)查看当前状态是否能够开火，如果能够开火则调用shootBullet进行开火
      * 3. 调用tick(@Nullable Entity shooter)执行枪械tick任务，包括换弹流程、过热计算、拉栓等
      *
@@ -316,6 +320,34 @@ public class GunData {
      * 2. 传入带有IItemHandler能力的任意Entity来提供额外弹药
      *
      */
+
+    /**
+     * 是否应该开始换弹
+     */
+    public boolean shouldStartReloading(@Nullable Entity entity) {
+        return !reloading() && !useBackpackAmmo() && this.ammo.get() == 0 && hasBackupAmmo(entity);
+    }
+
+    /**
+     * 是否应该开始换弹
+     */
+    public boolean shouldStartBolt() {
+        return this.bolt.actionTimer.get() == 0 && this.bolt.needed.get();
+    }
+
+    /**
+     * 开始换弹流程，换弹将在tick内被执行
+     */
+    public void startReload() {
+        this.reload.reloadStarter.markStart();
+    }
+
+    /**
+     * 开始拉栓流程，换弹将在tick内被执行
+     */
+    public void startBolt() {
+        this.bolt.actionTimer.set(this.get(GunProp.BOLT_ACTION_TIME) + 1);
+    }
 
     /**
      * 是否还有剩余弹药（不考虑枪内弹药）
@@ -418,13 +450,6 @@ public class GunData {
      */
     public boolean hasEnoughAmmoToShoot(@Nullable Entity entity) {
         return useBackpackAmmo() ? hasBackupAmmo(entity) : this.ammo.get() > 0;
-    }
-
-    /**
-     * 开始换弹流程，换弹将在tick内被执行
-     */
-    public void startReload() {
-        this.reload.reloadStarter.markStart();
     }
 
     /**
