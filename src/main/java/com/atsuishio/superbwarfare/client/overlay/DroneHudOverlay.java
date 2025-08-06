@@ -100,7 +100,7 @@ public class DroneHudOverlay implements LayeredDraw.Layer {
 
                 if (entity != null) {
                     boolean lookAtEntity = false;
-                    double distance = player.distanceTo(entity);
+                    double distance = player.position().subtract(entity.position()).horizontalDistance();
 
                     BlockHitResult result = entity.level().clip(new ClipContext(cameraPos, cameraPos.add(entity.getViewVector(1).scale(512)),
                             ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, entity));
