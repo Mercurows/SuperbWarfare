@@ -48,7 +48,6 @@ public class JavelinItemModel extends CustomGunModel<JavelinItem> {
 
         GeoBone gun = getAnimationProcessor().getBone("bone");
         GeoBone shen = getAnimationProcessor().getBone("shen");
-        GeoBone javelin = getAnimationProcessor().getBone("javelin");
 
         float times = 0.6f * (float) Math.min(Minecraft.getInstance().getTimer().getRealtimeDeltaTicks(), 0.8);
         double zp = ClientEventHandler.zoomPos;
@@ -63,8 +62,6 @@ public class JavelinItemModel extends CustomGunModel<JavelinItem> {
         gun.setPosZ(15.9f * (float) zp);
         gun.setScaleZ(1f - (0.8f * (float) zp));
         gun.setRotZ(-4.75f * Mth.DEG_TO_RAD * (float) zp + (float) (0.02f * zpz));
-
-        javelin.setHidden(zp > 0.8);
 
         shen.setPosX((float) (0.75f * ClientEventHandler.recoilHorizon * fpz * fp));
         shen.setPosY((float) (-0.03f * fp - 0.06f * fr));
