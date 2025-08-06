@@ -434,7 +434,7 @@ public class AnnihilatorEntity extends VehicleEntity implements GeoEntity, Canno
             explosion.explode();
             EventHooks.onExplosionStart(this.level(), explosion);
             explosion.finalizeExplosion(false);
-            ParticleTool.spawnHugeExplosionParticles(this.level(), this.position());
+            ParticleTool.spawnGiantExplosionParticles(this.level(), this.position());
         }
 
         explodePassengers();
