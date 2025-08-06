@@ -308,6 +308,8 @@ public class JavelinItem extends GunItem {
         tag.remove("TargetPosZ");
         tag.putString("TargetEntity", "none");
 
+        data.save();
+
         if (player instanceof ServerPlayer serverPlayer) {
             var clientboundstopsoundpacket = new ClientboundStopSoundPacket(Mod.loc("javelin_lock"), SoundSource.PLAYERS);
             serverPlayer.connection.send(clientboundstopsoundpacket);
