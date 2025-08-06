@@ -246,16 +246,19 @@ public class AmmoBarOverlay implements LayeredDraw.Layer {
                     }
                 }
 
-                // 渲染弹药种类信息
-                float offset = 47f;
-                int count = size / 2;
-                float posX = size % 2 == 0 ? x - count * 6 + 1 : x - count * 6 - 2;
-                float posY = y - 8;
-                for (int i = 0; i < size; i++) {
-                    RenderHelper.preciseBlit(guiGraphics,
-                            i == data.selectedAmmoType.get() ? CHOSEN : NOT_CHOSEN,
-                            posX - offset + 6 * i, posY, 0, 0,
-                            4, 4, 4, 4);
+                // 渲染弹药种类切换提示
+                if (size > 1) {
+                    float offset = 47f;
+                    int count = size / 2;
+                    float posX = size % 2 == 0 ? x - count * 6 + 1 : x - count * 6 - 2;
+                    float posY = y - 8;
+
+                    for (int i = 0; i < size; i++) {
+                        RenderHelper.preciseBlit(guiGraphics,
+                                i == data.selectedAmmoType.get() ? CHOSEN : NOT_CHOSEN,
+                                posX - offset + 6 * i, posY, 0, 0,
+                                4, 4, 4, 4);
+                    }
                 }
             }
 
