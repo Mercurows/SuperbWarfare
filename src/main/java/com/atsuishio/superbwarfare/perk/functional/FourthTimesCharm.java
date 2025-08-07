@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.perk.functional;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity;
@@ -31,16 +30,8 @@ public class FourthTimesCharm extends Perk {
             int mag = data.get(GunProp.MAGAZINE);
             if (mag > 0) {
                 data.ammo.set(Math.min(mag, data.ammo.get() + 2));
-            } else if (living != null) {
-                int countToWithdraw = 2;
-
-                // TODO 这里不太对，得改
-                var consumer = data.selectedAmmoConsumer();
-                countToWithdraw -= consumer.withdraw(living, countToWithdraw);
-
-                if (countToWithdraw > 0) {
-                    Mod.LOGGER.warn("Failed to withdraw ammo of amount {} for FourthTimesCharm", countToWithdraw);
-                }
+            } else {
+                data.virtualAmmo.add(2);
             }
         }
     }
