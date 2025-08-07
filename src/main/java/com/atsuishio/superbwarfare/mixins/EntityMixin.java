@@ -4,12 +4,14 @@ import com.atsuishio.superbwarfare.entity.mixin.OBBHitter;
 import com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.tools.OBB;
+import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Math;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -95,16 +97,25 @@ public abstract class EntityMixin implements OBBHitter {
     @Inject(method = "turn(DD)V", at = @At("HEAD"), cancellable = true)
     public void turn(double pYRot, double pXRot, CallbackInfo ci) {
         var entity = (Entity) (Object) this;
-        if (entity instanceof Player player && player.getMainHandItem().getItem() instanceof GunItem && isProne(player)) {
+        if (entity instanceof Player player && player.getMainHandItem().getItem() instanceof GunItem && isProne(player) && !player.isSwimming()) {
             ci.cancel();
             float f = (float) pXRot * 0.15F;
             float f1 = (float) pYRot * 0.15F;
             player.setXRot(player.getXRot() + f);
             player.setYRot(player.getYRot() + f1);
-            player.setXRot(Mth.clamp(player.getXRot(), -45.0F, 30.0F));
+            Vec3 forward = new Vec3(player.getLookAngle().x, 0, player.getLookAngle().z).normalize();
+            if (player.level().getBlockState(BlockPos.containing(player.getX() + 0.25 * forward.x, player.getY() - 0.1, player.getZ() + 0.25 * forward.z)).canOcclude()) {
+                player.setXRot(Mth.clamp(player.getXRot(), -45.0F, 30.0F));
+            } else {
+                player.setXRot(Mth.clamp(player.getXRot(), -45.0F, 89.0F));
+            }
             player.xRotO += f;
             player.yRotO += f1;
             player.xRotO = Mth.clamp(player.xRotO, -90.0F, 90.0F);
+
+            float diffY = Math.clamp(-90f, 90f, Mth.wrapDegrees(player.getYHeadRot() - player.yBodyRot));
+            player.setYBodyRot(player.yBodyRot + 0.5f * diffY);
+
             if (player.getVehicle() != null) {
                 player.getVehicle().onPassengerTurned(player);
             }
