@@ -78,10 +78,16 @@ public class PlayerModelMixin<T extends LivingEntity> {
                 model.leftSleeve.yRot = 0 * Mth.DEG_TO_RAD;
                 model.rightSleeve.yRot = 0 * Mth.DEG_TO_RAD;
 
-                model.leftArm.zRot = 0 * Mth.DEG_TO_RAD;
+                model.leftArm.zRot = -30 * Mth.DEG_TO_RAD;
                 model.rightArm.zRot = 0 * Mth.DEG_TO_RAD;
-                model.leftSleeve.zRot = 0 * Mth.DEG_TO_RAD;
+                model.leftSleeve.zRot = -30 * Mth.DEG_TO_RAD;
                 model.rightSleeve.zRot = 0 * Mth.DEG_TO_RAD;
+
+                model.rightArm.x = -3f;
+                model.rightSleeve.x = -3f;
+
+                model.leftArm.x = 3f;
+                model.leftSleeve.x = 3f;
             }
         }
     }

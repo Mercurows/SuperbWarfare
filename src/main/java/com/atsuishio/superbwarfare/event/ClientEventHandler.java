@@ -440,10 +440,11 @@ public class ClientEventHandler {
 
     public static boolean isProne(Player player) {
         Level level = player.level();
+        if (player.isSwimming()) return false;
         if (player.getBbHeight() <= 1) return true;
-
-        return player.isCrouching() && level.getBlockState(BlockPos.containing(player.getX() + 0.7 * player.getLookAngle().x, player.getY() + 0.5, player.getZ() + 0.7 * player.getLookAngle().z)).canOcclude()
-                && !level.getBlockState(BlockPos.containing(player.getX() + 0.7 * player.getLookAngle().x, player.getY() + 1.5, player.getZ() + 0.7 * player.getLookAngle().z)).canOcclude();
+        Vec3 forward = new Vec3(player.getLookAngle().x, 0, player.getLookAngle().z).normalize();
+        return player.isCrouching() && level.getBlockState(BlockPos.containing(player.getX() + 0.7 * forward.x, player.getY() + 0.5, player.getZ() + 0.7 * forward.z)).canOcclude()
+                && !level.getBlockState(BlockPos.containing(player.getX() + 0.7 * forward.x, player.getY() + 1.5, player.getZ() + 0.7 * forward.z)).canOcclude();
     }
 
     public static void handleGunMelee(Player player, ItemStack stack) {
