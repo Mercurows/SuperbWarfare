@@ -263,7 +263,7 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
         boolean legShot = false;
         float eyeHeight = entity.getEyeHeight();
         float bodyHeight = entity.getBbHeight();
-        if ((eyeHeight - 0.35) < hitBoxPos.y && hitBoxPos.y < (eyeHeight + 0.4) && entity instanceof LivingEntity) {
+        if ((eyeHeight - 0.25) < hitBoxPos.y && hitBoxPos.y < (eyeHeight + 0.3) && entity instanceof LivingEntity) {
             headshot = true;
         }
         if (hitBoxPos.y < (0.33 * bodyHeight) && entity instanceof LivingEntity) {

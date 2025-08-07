@@ -63,6 +63,11 @@ public class TargetEntity extends LivingEntity implements GeoEntity {
     }
 
     @Override
+    protected float getStandingEyeHeight(@NotNull Pose pPose, @NotNull EntityDimensions pSize) {
+        return 1.57F;
+    }
+
+    @Override
     public @NotNull MobType getMobType() {
         return super.getMobType();
     }

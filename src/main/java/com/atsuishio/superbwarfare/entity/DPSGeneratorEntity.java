@@ -93,6 +93,11 @@ public class DPSGeneratorEntity extends LivingEntity implements GeoEntity {
     }
 
     @Override
+    protected float getStandingEyeHeight(@NotNull Pose pPose, @NotNull EntityDimensions pSize) {
+        return 1.57F;
+    }
+
+    @Override
     public boolean causeFallDamage(float l, float d, @NotNull DamageSource source) {
         return false;
     }
