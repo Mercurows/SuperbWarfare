@@ -15,6 +15,7 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.mojang.datafixers.util.Pair;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
@@ -38,8 +39,9 @@ public class GunData {
     public final CompoundTag data;
     public final CompoundTag perkTag;
     public final CompoundTag attachmentTag;
-    public final String propertyOverrideString;
-    private JsonObject propertyOverride;
+    public final StringValue propertyOverrideString;
+    private Pair<String, JsonObject> propertyOverrideCache = new Pair<>("", null);
+    private boolean isOverrideValid = true;
     public final String id;
     public final List<AmmoConsumer> ammoConsumers;
 
@@ -65,7 +67,7 @@ public class GunData {
         data = getOrPut("GunData");
         perkTag = getOrPut("Perks");
         attachmentTag = getOrPut("Attachments");
-        propertyOverrideString = data.getString("Override");
+        propertyOverrideString = new StringValue(this.data, "Override");
 
         ammoConsumers = get(GunProp.AMMO_CONSUMER);
 
@@ -222,18 +224,19 @@ public class GunData {
         modifier.apply(selectedAmmoConsumer().getModifier(prop));
 
         // property override tag
-        if (propertyOverride != null || !propertyOverrideString.isEmpty()) {
-            if (propertyOverride == null) {
+        if (!propertyOverrideString.get().isEmpty()) {
+            if (!propertyOverrideCache.getFirst().equals(propertyOverrideString.get())) {
                 try {
-                    propertyOverride = GSON.fromJson(propertyOverrideString, JsonObject.class);
+                    propertyOverrideCache = new Pair<>(propertyOverrideString.get(), GSON.fromJson(propertyOverrideString.get(), JsonObject.class));
+                    isOverrideValid = true;
                 } catch (Exception exception) {
                     Mod.LOGGER.error("invalid property override string {}", propertyOverrideString);
-                    propertyOverride = new JsonObject();
+                    isOverrideValid = false;
                 }
             }
 
-            var propJson = propertyOverride.get(prop.name);
-            if (propJson != null) {
+            var propJson = propertyOverrideCache.getSecond();
+            if (propJson != null && isOverrideValid) {
                 try {
                     // TODO 无法在这里应用AmmoConsumer的modifier，是否考虑支持？
                     var parsedValue = DataLoader.processValue(GSON.fromJson(propJson.toString(), prop.getFieldType()));
