@@ -236,13 +236,14 @@ public class GunData {
             }
 
             var propJson = propertyOverrideCache.getSecond();
-            if (propJson != null && isOverrideValid) {
+            if (propJson != null && propJson.has(prop.name) && isOverrideValid) {
                 try {
                     // TODO 无法在这里应用AmmoConsumer的modifier，是否考虑支持？
-                    var parsedValue = DataLoader.processValue(GSON.fromJson(propJson.toString(), prop.getFieldType()));
+                    var parsedValue = DataLoader.processValue(GSON.fromJson(propJson.get(prop.name).toString(), prop.getFieldType()));
                     modifier.apply((data, value) -> (T) parsedValue);
                 } catch (Exception exception) {
-                    Mod.LOGGER.error("invalid property override type for {}", propertyOverrideString);
+                    Mod.LOGGER.error("invalid property override type for prop {}: {}", prop.name, propJson.get(prop.name).toString());
+                    isOverrideValid = false;
                 }
             }
         }
