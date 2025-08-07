@@ -1,0 +1,12 @@
+{
+  "ID": "minecraft:skeleton",
+  "GunID": "superbwarfare:m_79",
+  "Probability": 1,
+  "SpawnWithLoadedAmmo": false,
+  "BackupAmmo": 20,
+  "Override": {
+    "Damage": 1,
+    "ExplosionDamage": 0,
+    "ExplosionRadius": 1
+  }
+}
