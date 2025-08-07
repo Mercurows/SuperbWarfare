@@ -45,7 +45,7 @@ public class LivingEntityRendererMixin<T extends LivingEntity> {
             }
         }
         if (entity instanceof Player player && player.getMainHandItem().getItem() instanceof GunItem && isProne(player) && !player.isSwimming()) {
-            matrices.translate(0, -0.18, 0);
+            poseStack.translate(0, -0.18, 0);
         }
     }
 }
