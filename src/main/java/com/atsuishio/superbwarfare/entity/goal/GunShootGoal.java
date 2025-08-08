@@ -19,7 +19,7 @@ public class GunShootGoal<T extends Mob> extends Goal {
 
     public boolean canUse() {
         return this.mob.getTarget() != null
-                && this.mob.getWeaponItem().getItem() instanceof GunItem
+                && this.mob.getMainHandItem().getItem() instanceof GunItem
                 && this.data.getGunData() != null
                 && (this.data.getGunData().countBackupAmmo(mob) > 0 || this.data.getGunData().ammo.get() > 0);
     }
@@ -27,7 +27,7 @@ public class GunShootGoal<T extends Mob> extends Goal {
     @Override
     public boolean canContinueToUse() {
         return (this.canUse() || !this.mob.getNavigation().isDone())
-                && this.mob.getWeaponItem().getItem() instanceof GunItem
+                && this.mob.getMainHandItem().getItem() instanceof GunItem
                 && this.data.getGunData() != null
                 && (this.data.getGunData().countBackupAmmo(mob) > 0 || this.data.getGunData().ammo.get() > 0);
     }
@@ -66,7 +66,7 @@ public class GunShootGoal<T extends Mob> extends Goal {
             this.mob.getNavigation().stop();
         }
 
-        var data = GunData.from(this.mob.getWeaponItem());
+        var data = GunData.from(this.mob.getMainHandItem());
         data.tick(this.mob, true);
 
         if (data.shouldStartReloading(this.mob)) {

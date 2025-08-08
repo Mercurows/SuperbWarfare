@@ -5,18 +5,17 @@ import com.atsuishio.superbwarfare.data.CustomData;
 import com.atsuishio.superbwarfare.data.DataLoader;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
-import com.atsuishio.superbwarfare.tools.NBTTool;
 import com.atsuishio.superbwarfare.tools.TagDataParser;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -79,7 +78,7 @@ public class MobGunData {
             return null;
         }
 
-        var item = BuiltInRegistries.ITEM.get(location);
+        var item = ForgeRegistries.ITEMS.getValue(location);
         if (item == Items.AIR || !(item instanceof GunItem)) {
             Mod.LOGGER.warn("invalid gun item {} for id {}", item, gunID);
             return null;
@@ -88,7 +87,7 @@ public class MobGunData {
         var stack = new ItemStack(item);
 
         if (selectedData.data != null) {
-            NBTTool.saveTag(stack, TagDataParser.parse(selectedData.data));
+            stack.setTag(TagDataParser.parse(selectedData.data));
         }
 
         var data = GunData.from(stack);
@@ -96,7 +95,6 @@ public class MobGunData {
         if (selectedData.override != null) {
             data.propertyOverrideString.set(DataLoader.GSON.toJson(selectedData.override));
         }
-        data.save();
         this.gunData = data;
 
         return data;
