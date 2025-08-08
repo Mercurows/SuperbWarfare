@@ -119,4 +119,12 @@ public class MobGunData {
     public int backupAmmoCount() {
         return selectedData.backupAmmo;
     }
+
+    public int aimTime() {
+        return Math.max(0, data.aimTime);
+    }
+
+    public boolean clearAimTimeWhenLostSight() {
+        return data.clearAimTimeWhenLostSight;
+    }
 }

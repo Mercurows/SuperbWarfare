@@ -7,10 +7,11 @@ import com.atsuishio.superbwarfare.item.gun.GunItem;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
 
-// TODO 攻击冷却，正确处理追踪距离，正确计算开枪冷却等
+// TODO 正确处理追踪距离，正确计算开枪冷却等
 public class GunShootGoal<T extends Mob> extends Goal {
     private final T mob;
     private final MobGunData data;
+    private int aimTime = 0;
 
     public GunShootGoal(T mob, MobGunData data) {
         this.mob = mob;
@@ -55,7 +56,17 @@ public class GunShootGoal<T extends Mob> extends Goal {
         if (target == null) return;
 
         double distance = this.mob.distanceToSqr(target.getX(), target.getY(), target.getZ());
-//        boolean canSeeTarget = this.mob.getSensing().hasLineOfSight(target);
+        boolean canSeeTarget = this.mob.getSensing().hasLineOfSight(target);
+
+        if (canSeeTarget) {
+            aimTime = Math.min(data.aimTime(), aimTime + 1);
+        } else {
+            if (data.clearAimTimeWhenLostSight()) {
+                aimTime = 0;
+            } else {
+                aimTime--;
+            }
+        }
 
         this.mob.lookAt(target, 30.0F, 30.0F);
 //            this.mob.getLookControl().setLookAt(target, 30.0F, 30.0F);
@@ -66,20 +77,20 @@ public class GunShootGoal<T extends Mob> extends Goal {
             this.mob.getNavigation().stop();
         }
 
-        var data = GunData.from(this.mob.getMainHandItem());
-        data.tick(this.mob, true);
+        var gunData = GunData.from(this.mob.getMainHandItem());
+        gunData.tick(this.mob, true);
 
-        if (data.shouldStartReloading(this.mob)) {
-            data.startReload();
+        if (gunData.shouldStartReloading(this.mob)) {
+            gunData.startReload();
         }
 
-        if (data.shouldStartBolt()) {
-            data.startBolt();
+        if (gunData.shouldStartBolt()) {
+            gunData.startBolt();
         }
 
-        if (data.canShoot(this.mob)) {
+        if (gunData.canShoot(this.mob) && aimTime >= this.data.aimTime()) {
             var currentTime = System.currentTimeMillis();
-            double rps = (double) data.get(GunProp.RPM) / 60;
+            double rps = (double) gunData.get(GunProp.RPM) / 60;
 
             // cooldown in ms
             int cooldown = (int) Math.round(1000 / rps);
@@ -90,7 +101,7 @@ public class GunShootGoal<T extends Mob> extends Goal {
 
             lastShootTime = currentTime;
 
-            data.shoot(this.mob, 1, true, target.getUUID());
+            gunData.shoot(this.mob, 1, true, target.getUUID());
         }
 
     }
