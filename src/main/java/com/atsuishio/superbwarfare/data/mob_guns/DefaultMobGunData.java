@@ -19,7 +19,7 @@ public class DefaultMobGunData implements IDBasedData {
     @SerializedName("GoalWeight")
     public int goalWeight = 3;
     @SerializedName("AimTime")
-    public int aimTime = 20;
+    public int aimTime = 30;
     @SerializedName("ClearAimTimeWhenLostSight")
     public boolean clearAimTimeWhenLostSight = true;
 
