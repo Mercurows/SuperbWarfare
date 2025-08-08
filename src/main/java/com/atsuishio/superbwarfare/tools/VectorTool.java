@@ -89,4 +89,22 @@ public class VectorTool {
         }
         return false;
     }
+
+    /**
+     * 计算镜面反射向量。
+     *
+     * @param v1 入射向量（弹射物的方向向量，如运动向量）。
+     * @param v0 平面法向量（朝向向量）。
+     * @return 反射向量 v2。
+     */
+    public static Vec3 calculateReflection(Vec3 v1, Vec3 v0) {
+        // 归一化法向量（确保单位长度）
+
+        // 计算点积 v1 · n
+        double dot = v1.dot(v0);
+
+        // 计算反射向量: v2 = v1 - 2 * (v1 · n) * n
+
+        return v1.subtract(v0.scale(2 * dot));
+    }
 }

@@ -30,14 +30,14 @@ public class FireStarParticle extends TextureSheetParticle {
     protected FireStarParticle(ClientLevel world, double x, double y, double z, double vx, double vy, double vz, SpriteSet spriteSet) {
         super(world, x, y, z);
         this.spriteSet = spriteSet;
-        this.setSize(0.2f, 0.2f);
-        this.quadSize *= 0.5f;
+        this.setSize(0.35f, 0.35f);
+        this.quadSize *= 0.75f;
         this.lifetime = Math.max(1, 40 + (this.random.nextInt(40) - 20));
         this.gravity = 1f;
         this.hasPhysics = true;
-        this.xd = vx * 1;
-        this.yd = vy * 1;
-        this.zd = vz * 1;
+        this.xd = vx * 0.98;
+        this.yd = vy * 0.98;
+        this.zd = vz * 0.98;
         this.setSpriteFromAge(spriteSet);
     }
 
