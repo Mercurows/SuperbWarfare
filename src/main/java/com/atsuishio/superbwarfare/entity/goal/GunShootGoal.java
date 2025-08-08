@@ -101,7 +101,7 @@ public class GunShootGoal<T extends Mob> extends Goal {
 
             lastShootTime = currentTime;
 
-            gunData.shoot(this.mob, 1, true, target.getUUID());
+            gunData.shoot(this.mob, data.spread(), data.zoom(), target.getUUID());
         }
 
     }

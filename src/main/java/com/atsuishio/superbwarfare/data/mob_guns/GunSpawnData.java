@@ -19,6 +19,11 @@ public class GunSpawnData implements DeserializeFromString {
     @SerializedName("ShootDistance")
     public double shootDistance = 30;
 
+    @SerializedName("Zoom")
+    public boolean zoom = true;
+    @SerializedName("Spread")
+    public double spread = 1;
+
     // NBT data
     @SerializedName("Data")
     public JsonObject data;

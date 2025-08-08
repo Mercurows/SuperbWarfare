@@ -129,4 +129,12 @@ public class MobGunData {
     public boolean clearAimTimeWhenLostSight() {
         return data.clearAimTimeWhenLostSight;
     }
+
+    public boolean zoom() {
+        return selectedData.zoom;
+    }
+
+    public double spread() {
+        return selectedData.spread;
+    }
 }
