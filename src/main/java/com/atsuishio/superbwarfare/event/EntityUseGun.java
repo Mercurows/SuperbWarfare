@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.event;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.config.server.SpawnConfig;
 import com.atsuishio.superbwarfare.data.mob_guns.MobGunData;
 import com.atsuishio.superbwarfare.entity.goal.GunShootGoal;
 import net.minecraft.world.InteractionHand;
@@ -14,7 +15,7 @@ public class EntityUseGun {
 
     @SubscribeEvent
     public static void entityJoin(EntityJoinLevelEvent event) {
-        if (event.loadedFromDisk()) return;
+        if (event.loadedFromDisk() || !SpawnConfig.SPAWN_MOB_WITH_GUNS.get()) return;
 
         var entity = event.getEntity();
         if (!(entity instanceof Mob mob)) return;
