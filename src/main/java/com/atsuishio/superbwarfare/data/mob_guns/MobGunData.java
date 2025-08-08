@@ -22,37 +22,57 @@ import org.jetbrains.annotations.Nullable;
 
 public class MobGunData {
 
-    // TODO 这里不应该这么缓存，修改为正确的处理方法
-    public static final LoadingCache<String, MobGunData> dataCache = CacheBuilder.newBuilder()
+    public static final LoadingCache<Mob, MobGunData> dataCache = CacheBuilder.newBuilder()
             .weakKeys()
             .build(new CacheLoader<>() {
-                public @NotNull MobGunData load(@NotNull String id) {
-                    return new MobGunData(id);
+                public @NotNull MobGunData load(@NotNull Mob mob) {
+                    return new MobGunData(mob);
                 }
             });
 
     public final boolean isDefault;
     public final DefaultMobGunData data;
+    private final Mob mob;
     private GunData gunData;
+    private GunSpawnData selectedData;
 
-    private MobGunData(String id) {
-        this.isDefault = CustomData.MOB_GUNS.containsKey(id);
-        this.data = CustomData.MOB_GUNS.getOrDefault(id, new DefaultMobGunData());
+    private MobGunData(Mob mob) {
+        var mobId = EntityType.getKey(mob.getType()).toString();
+        this.isDefault = CustomData.MOB_GUNS.containsKey(mobId);
+        this.data = CustomData.MOB_GUNS.getOrDefault(mobId, new DefaultMobGunData());
+        this.mob = mob;
     }
 
-    public static MobGunData from(Mob entity) {
-        return from(entity.getType());
-    }
-
-    public static MobGunData from(EntityType<?> type) {
-        return dataCache.getUnchecked(EntityType.getKey(type).toString());
+    public static MobGunData from(Mob mob) {
+        return dataCache.getUnchecked(mob);
     }
 
     public @Nullable GunData getGunData() {
         if (this.gunData != null) return gunData;
 
-        var gunID = this.data.gunID;
+        var guns = this.data.guns.list.stream().map(d -> d.value).toList();
+        var totalWeight = guns.stream().mapToInt(g -> Math.max(0, g.weight)).sum();
 
+        if (totalWeight <= 0) {
+            return null;
+        }
+
+        var random = this.mob.level().random.nextInt(totalWeight);
+
+        int currentWeight = 0;
+        for (var gun : guns) {
+            currentWeight += gun.weight;
+            if (random < currentWeight) {
+                this.selectedData = gun;
+                break;
+            }
+        }
+
+        if (this.selectedData == null) {
+            return null;
+        }
+
+        var gunID = selectedData.id;
         var location = ResourceLocation.tryParse(gunID);
         if (location == null) {
             Mod.LOGGER.warn("invalid gun id: {}", gunID);
@@ -67,14 +87,14 @@ public class MobGunData {
 
         var stack = new ItemStack(item);
 
-        if (data.data != null) {
-            NBTTool.saveTag(stack, TagDataParser.parse(data.data));
+        if (selectedData.data != null) {
+            NBTTool.saveTag(stack, TagDataParser.parse(selectedData.data));
         }
 
         var data = GunData.from(stack);
 
-        if (this.data.override != null) {
-            data.propertyOverrideString.set(DataLoader.GSON.toJson(this.data.override));
+        if (selectedData.override != null) {
+            data.propertyOverrideString.set(DataLoader.GSON.toJson(selectedData.override));
         }
         data.save();
         this.gunData = data;
@@ -91,14 +111,14 @@ public class MobGunData {
     }
 
     public boolean spawnWithLoadedAmmo() {
-        return data.spawnWithLoadedAmmo;
+        return selectedData.spawnWithLoadedAmmo;
     }
 
     public double shootDistance() {
-        return data.shootDistance;
+        return selectedData.shootDistance;
     }
 
     public int backupAmmoCount() {
-        return data.backupAmmo;
+        return selectedData.backupAmmo;
     }
 }
