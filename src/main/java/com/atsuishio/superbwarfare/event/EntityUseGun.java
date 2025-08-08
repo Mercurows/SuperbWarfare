@@ -1,20 +1,21 @@
 package com.atsuishio.superbwarfare.event;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.config.server.SpawnConfig;
 import com.atsuishio.superbwarfare.data.mob_guns.MobGunData;
 import com.atsuishio.superbwarfare.entity.goal.GunShootGoal;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Mob;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 
-@EventBusSubscriber(modid = Mod.MODID)
+
+@net.minecraftforge.fml.common.Mod.EventBusSubscriber(modid = Mod.MODID)
 public class EntityUseGun {
 
     @SubscribeEvent
     public static void entityJoin(EntityJoinLevelEvent event) {
-        if (event.loadedFromDisk()) return;
+        if (event.loadedFromDisk() || !SpawnConfig.SPAWN_MOB_WITH_GUNS.get()) return;
 
         var entity = event.getEntity();
         if (!(entity instanceof Mob mob)) return;
@@ -40,8 +41,6 @@ public class EntityUseGun {
         if (data.spawnWithLoadedAmmo()) {
             gunData.reloadAmmo(mob);
         }
-
-        gunData.save();
 
         mob.setItemInHand(InteractionHand.MAIN_HAND, gunData.stack);
     }
