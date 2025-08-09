@@ -10,6 +10,8 @@ import software.bernie.geckolib.constant.DataTickets;
 import software.bernie.geckolib.model.GeoModel;
 import software.bernie.geckolib.model.data.EntityModelData;
 
+import java.util.UUID;
+
 public class Bl132Model extends GeoModel<Bl132Entity> {
 
     @Override
@@ -24,6 +26,10 @@ public class Bl132Model extends GeoModel<Bl132Entity> {
 
     @Override
     public ResourceLocation getTextureResource(Bl132Entity entity) {
+        UUID uuid = entity.getUUID();
+        if (uuid.getLeastSignificantBits() % 50 == 0) {
+            return Mod.loc("textures/entity/bl_132_black.png");
+        }
         return Mod.loc("textures/entity/bl_132.png");
     }
 
