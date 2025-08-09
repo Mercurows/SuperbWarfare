@@ -329,6 +329,9 @@ public class KillMessageOverlay implements IGuiOverlay {
         } else {
             if (DamageTypeTool.isCompatGunDamage(record.damageType, record.target.level().registryAccess())) {
                 icon = null;
+                if (record.damageType == ModDamageTypes.PROJECTILE_HIT) {
+                    icon = GENERIC;
+                }
                 if (TACZGunEventHandler.hasMod() && !TACZGunEventHandler.compatCondition()) {
                     icon = GENERIC;
                 }
