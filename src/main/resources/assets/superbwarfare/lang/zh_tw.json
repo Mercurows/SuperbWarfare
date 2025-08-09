@@ -675,7 +675,7 @@
   "config.superbwarfare.client.display.ammo_hud": "槍械資訊",
   "config.superbwarfare.client.display.ammo_hud.des": "開啟時，在螢幕右下角顯示槍械和彈藥資訊",
   "config.superbwarfare.client.display.advanced_ammo_hud": "進階彈藥資訊",
-  "config.superbwarfare.client.display.advanced_ammo_hud.des": "開啟時，在螢幕右下角顯示更詳細的彈藥資訊"
+  "config.superbwarfare.client.display.advanced_ammo_hud.des": "開啟時，在螢幕右下角顯示更詳細的彈藥資訊",
   "config.superbwarfare.client.display.float_cross_hair": "浮動准星",
   "config.superbwarfare.client.display.float_cross_hair.des": "開啟時，准星會隨視角進行一定程度的移動",
   "config.superbwarfare.client.display.camera_rotate": "視角晃動",
