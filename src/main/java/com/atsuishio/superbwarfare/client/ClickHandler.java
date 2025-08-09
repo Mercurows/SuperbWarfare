@@ -455,8 +455,7 @@ public class ClickHandler {
                 }
             } else {
                 Mod.PACKET_HANDLER.sendToServer(new FireKeyMessage(0, bowPower, zoom));
-                if ((!(data.reload.normal() || data.reload.empty())
-                        && !data.reloading()
+                if ((!data.reloading()
                         && !data.charging()
                         && !data.bolt.needed.get())
                         && drawTime < 0.01
