@@ -334,6 +334,9 @@ public class KillMessageOverlay implements LayeredDraw.Layer {
         } else {
             if (DamageTypeTool.isCompatGunDamage(record.damageType, record.target.level().registryAccess())) {
                 icon = null;
+                if (record.damageType == ModDamageTypes.PROJECTILE_HIT) {
+                    icon = GENERIC;
+                }
             } else {
                 // 如果是其他伤害，则渲染对应图标
                 if (record.damageType == DamageTypes.EXPLOSION || record.damageType == DamageTypes.PLAYER_EXPLOSION || record.damageType == ModDamageTypes.PROJECTILE_EXPLOSION || record.damageType == DamageTypes.FIREWORKS) {
