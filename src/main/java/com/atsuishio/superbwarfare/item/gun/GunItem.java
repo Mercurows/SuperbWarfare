@@ -496,7 +496,7 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
             data.consumeBackupAmmo(shooter, data.get(GunProp.AMMO_COST_PER_SHOOT));
         }
 
-        if (data.ammo.get() == 0) {
+        if (data.ammo.get() <= 0) {
             data.burstAmount.reset();
         }
 
