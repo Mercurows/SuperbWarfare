@@ -448,7 +448,7 @@ public class ClickHandler {
                 }
             }
 
-            if (!data.useBackpackAmmo() && !data.meleeOnly() && data.ammo.get() <= 0 && data.reload.time() == 0) {
+            if (!data.useBackpackAmmo() && !data.meleeOnly() && !data.hasEnoughAmmoToShoot(player) && data.reload.time() == 0) {
                 if (ReloadConfig.LEFT_CLICK_RELOAD.get()) {
                     Mod.PACKET_HANDLER.sendToServer(ReloadMessage.INSTANCE);
                     ClientEventHandler.burstFireAmount = 0;

@@ -65,6 +65,8 @@ public class DefaultGunData implements IDBasedData {
     @SerializedName("Projectile")
     public StringToObject<ProjectileInfo> projectile = new StringToObject<>(new ProjectileInfo());
 
+    @SerializedName("AmmoCostPerShoot")
+    public int ammoCostPerShoot = 1;
     @SerializedName("ProjectileAmount")
     public int projectileAmount = 1;
     @SerializedName("Weight")

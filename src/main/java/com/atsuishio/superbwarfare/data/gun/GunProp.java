@@ -45,14 +45,18 @@ public class GunProp<T> {
             .withLimiter((data, v) -> Math.min(data.get(MELEE_DURATION) - 1, v));
 
     public static final GunProp<ProjectileInfo> PROJECTILE = new GunProp<>("Projectile");
-    public static final GunProp<Integer> PROJECTILE_AMOUNT = new GunProp<>("ProjectileAmount");
+    public static final GunProp<Integer> AMMO_COST_PER_SHOOT = new GunProp<Integer>("AmmoCostPerShoot")
+            .withLimiter((data, v) -> Math.max(0, v));
+    public static final GunProp<Integer> PROJECTILE_AMOUNT = new GunProp<Integer>("ProjectileAmount")
+            .withLimiter((data, v) -> Math.max(0, v));
     public static final GunProp<Double> WEIGHT = new GunProp<>("Weight");
     public static final GunProp<FireMode> DEFAULT_FIRE_MODE = new GunProp<>("DefaultFireMode");
     public static final GunProp<Set<FireMode>> AVAILABLE_FIRE_MODES = new GunProp<>("AvailableFireModes");
 
     public static final GunProp<Double> DEFAULT_ZOOM = new GunProp<>("DefaultZoom");
 
-    public static final GunProp<Integer> BURST_AMOUNT = new GunProp<>("BurstAmount");
+    public static final GunProp<Integer> BURST_AMOUNT = new GunProp<Integer>("BurstAmount")
+            .withLimiter((data, v) -> Math.max(0, v));
     public static final GunProp<Double> BYPASSES_ARMOR = new GunProp<>("BypassesArmor");
 
     public static final GunProp<List<AmmoConsumer>> AMMO_CONSUMER = new GunProp<List<AmmoConsumer>>("AmmoType")

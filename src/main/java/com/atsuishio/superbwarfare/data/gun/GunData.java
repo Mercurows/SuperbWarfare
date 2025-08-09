@@ -329,7 +329,10 @@ public class GunData {
      * 是否应该开始换弹
      */
     public boolean shouldStartReloading(@Nullable Entity entity) {
-        return !reloading() && !useBackpackAmmo() && this.ammo.get() == 0 && hasBackupAmmo(entity);
+        return !reloading()
+                && !useBackpackAmmo()
+                && !hasEnoughAmmoToShoot(entity)
+                && hasBackupAmmo(entity);
     }
 
     /**
@@ -453,7 +456,7 @@ public class GunData {
      * 是否拥有足够的弹药进行开火
      */
     public boolean hasEnoughAmmoToShoot(@Nullable Entity entity) {
-        return useBackpackAmmo() ? hasBackupAmmo(entity) : this.ammo.get() > 0;
+        return get(GunProp.AMMO_COST_PER_SHOOT) <= (useBackpackAmmo() ? countBackupAmmo(entity) : this.ammo.get());
     }
 
     /**

@@ -484,10 +484,10 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
             @Nullable UUID uuid
     ) {
         if (!data.useBackpackAmmo()) {
-            data.ammo.set(data.ammo.get() - 1);
+            data.ammo.set(data.ammo.get() - data.get(GunProp.AMMO_COST_PER_SHOOT));
             data.isEmpty.set(true);
         } else {
-            data.consumeBackupAmmo(shooter, 1);
+            data.consumeBackupAmmo(shooter, data.get(GunProp.AMMO_COST_PER_SHOOT));
         }
 
         var stack = data.stack();
@@ -547,10 +547,9 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
         data.item.beforeShoot(shooter, level, shootPosition, shootDirection, data, spread, zoom);
 
         int projectileAmount = data.get(GunProp.PROJECTILE_AMOUNT);
-        var perk = data.perk.get(Perk.Type.AMMO);
 
         // 生成所有子弹
-        for (int index0 = 0; index0 < (perk instanceof AmmoPerk ammoPerk && ammoPerk.slug ? 1 : projectileAmount); index0++) {
+        for (int index0 = 0; index0 < projectileAmount; index0++) {
             if (!shootBullet(shooter, level, shootPosition, shootDirection, data, spread, zoom, uuid)) return;
         }
 
