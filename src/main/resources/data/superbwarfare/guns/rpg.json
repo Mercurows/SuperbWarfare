@@ -14,13 +14,9 @@
   "RPM": 120,
   "Gravity": 0.03,
   "AmmoType": [
-    {
-      "Ammo": "superbwarfare:rpg_rocket_tbg",
-      "Projectile": "superbwarfare:rpg_rocket"
-    },
+    "superbwarfare:rpg_rocket_tbg",
     {
       "Ammo": "superbwarfare:rpg_rocket_standard",
-      "Projectile": "superbwarfare:rpg_rocket",
       "Override": {
         "Damage": 340,
         "ExplosionDamage": 80,
