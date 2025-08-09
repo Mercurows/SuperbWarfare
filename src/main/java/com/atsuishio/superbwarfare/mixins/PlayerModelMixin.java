@@ -38,6 +38,11 @@ public class PlayerModelMixin<T extends LivingEntity> {
                 model.leftLeg.yRot = 0;
                 model.rightLeg.yRot = 0;
 
+                model.leftPants.xRot = 0;
+                model.rightPants.xRot = 0;
+                model.leftPants.yRot = 0;
+                model.rightPants.yRot = 0;
+
                 model.body.xRot = 0;
                 model.body.yRot = 0;
                 model.body.zRot = 0;
@@ -61,7 +66,6 @@ public class PlayerModelMixin<T extends LivingEntity> {
             }
 
             // 趴下持枪
-
             if (player.getMainHandItem().is(ModTags.Items.GUN) && isProne(player)) {
                 model.hat.xRot = (player.getViewXRot(1) - 90) * Mth.DEG_TO_RAD;
                 model.head.xRot = (player.getViewXRot(1) - 90) * Mth.DEG_TO_RAD;
@@ -85,7 +89,6 @@ public class PlayerModelMixin<T extends LivingEntity> {
 
                 model.rightArm.x = -3f;
                 model.rightSleeve.x = -3f;
-
                 model.leftArm.x = 3f;
                 model.leftSleeve.x = 3f;
             }
