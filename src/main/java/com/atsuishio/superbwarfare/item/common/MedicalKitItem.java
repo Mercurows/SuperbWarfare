@@ -50,6 +50,11 @@ public class MedicalKitItem extends Item {
                 entity.setDeltaMovement(0.8 * player.getLookAngle().x, 0.8 * player.getLookAngle().y, 0.8 * player.getLookAngle().z);
                 level.addFreshEntity(entity);
             }
+
+            if (!player.isCreative()) {
+                stack.shrink(1);
+            }
+
             player.getCooldowns().addCooldown(this, 25);
             return InteractionResultHolder.success(stack);
         } else if (player.getHealth() < player.getMaxHealth()) {
@@ -78,7 +83,7 @@ public class MedicalKitItem extends Item {
                 player.getCooldowns().addCooldown(pStack.getItem(), 25);
             }
 
-            if (pLivingEntity instanceof Player player && !player.isCreative()) {
+            if (!(pLivingEntity instanceof Player player) || !player.isCreative()) {
                 pStack.shrink(1);
             }
         }
