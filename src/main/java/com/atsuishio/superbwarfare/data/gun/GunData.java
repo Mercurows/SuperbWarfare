@@ -225,9 +225,6 @@ public class GunData {
         // gun modifiers
         modifier.apply(this.item.getModifier(prop));
 
-        // AmmoConsumer
-        modifier.apply(selectedAmmoConsumer().getModifier(prop));
-
         // property override tag
         if (!propertyOverrideString.get().isEmpty()) {
             if (!propertyOverrideCache.getFirst().equals(propertyOverrideString.get())) {
@@ -243,7 +240,6 @@ public class GunData {
             var propJson = propertyOverrideCache.getSecond();
             if (propJson != null && propJson.has(prop.name) && isOverrideValid) {
                 try {
-                    // TODO 无法在这里应用AmmoConsumer的modifier，是否考虑支持？
                     var parsedValue = DataLoader.processValue(GSON.fromJson(propJson.get(prop.name).toString(), prop.getFieldType()));
                     modifier.apply((data, value) -> (T) parsedValue);
                 } catch (Exception exception) {
@@ -252,6 +248,9 @@ public class GunData {
                 }
             }
         }
+
+        // AmmoConsumer
+        modifier.apply(selectedAmmoConsumer().getModifier(prop));
 
         // perk
         if (perk != null) {
