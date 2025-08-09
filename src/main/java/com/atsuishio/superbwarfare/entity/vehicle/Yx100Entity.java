@@ -76,7 +76,6 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 import java.util.List;
 
 import static com.atsuishio.superbwarfare.client.RenderHelper.preciseBlit;
-import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 
 public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEntity, LandArmorEntity, WeaponVehicleEntity, OBBEntity {
 
@@ -302,25 +301,6 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
             }
 
             this.handleAmmo();
-        }
-
-        if (this.onGround()) {
-            float f0 = 0.54f + 0.25f * Mth.abs(90 - (float) calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90;
-            this.setDeltaMovement(this.getDeltaMovement().add(this.getViewVector(1).normalize().scale(0.05 * getDeltaMovement().dot(getViewVector(1)))));
-            this.setDeltaMovement(this.getDeltaMovement().multiply(f0, 0.99, f0));
-        } else {
-            this.setDeltaMovement(this.getDeltaMovement().multiply(0.99, 0.99, 0.99));
-        }
-
-        if (this.isInWater()) {
-            float f1 = (float) (0.7f - (0.04f * Math.min(getSubmergedHeight(this), this.getBbHeight())) + 0.08f * Mth.abs(90 - (float) calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90);
-            this.setDeltaMovement(this.getDeltaMovement().add(this.getViewVector(1).normalize().scale(0.04 * getDeltaMovement().dot(getViewVector(1)))));
-            this.setDeltaMovement(this.getDeltaMovement().multiply(f1, 0.85, f1));
-        }
-
-        if (this.level() instanceof ServerLevel serverLevel && this.isInWater() && this.getDeltaMovement().length() > 0.1) {
-            sendParticle(serverLevel, ParticleTypes.CLOUD, this.getX() + 0.5 * this.getDeltaMovement().x, this.getY() + getSubmergedHeight(this) - 0.2, this.getZ() + 0.5 * this.getDeltaMovement().z, (int) (2 + 4 * this.getDeltaMovement().length()), 0.65, 0, 0.65, 0, true);
-            sendParticle(serverLevel, ParticleTypes.BUBBLE_COLUMN_UP, this.getX() + 0.5 * this.getDeltaMovement().x, this.getY() + getSubmergedHeight(this) - 0.2, this.getZ() + 0.5 * this.getDeltaMovement().z, (int) (2 + 10 * this.getDeltaMovement().length()), 0.65, 0, 0.65, 0, true);
         }
 
         turretAngle(5, 5);
@@ -643,75 +623,7 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
 
     @Override
     public void travel() {
-        Entity passenger0 = this.getFirstPassenger();
-
-        if (this.getEnergy() <= 0) return;
-
-        if (!(passenger0 instanceof Player)) {
-            this.leftInputDown = false;
-            this.rightInputDown = false;
-            this.forwardInputDown = false;
-            this.backInputDown = false;
-            this.entityData.set(POWER, 0f);
-        }
-
-        if (forwardInputDown) {
-            this.entityData.set(POWER, Math.min(this.entityData.get(POWER) + (this.entityData.get(POWER) < 0 ? 0.004f : 0.0024f) * (1 + getXRot() / 55), 0.21f));
-        }
-
-        if (backInputDown) {
-            this.entityData.set(POWER, Math.max(this.entityData.get(POWER) - (this.entityData.get(POWER) > 0 ? 0.004f : 0.0024f) * (1 - getXRot() / 55), -0.16f));
-            if (rightInputDown) {
-                this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) + 0.1f);
-            } else if (this.leftInputDown) {
-                this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) - 0.1f);
-            }
-        } else {
-            if (rightInputDown) {
-                this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) - 0.1f);
-            } else if (this.leftInputDown) {
-                this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) + 0.1f);
-            }
-        }
-
-        if (this.forwardInputDown || this.backInputDown) {
-            this.consumeEnergy(VehicleConfig.YX_100_ENERGY_COST.get());
-        }
-
-        this.entityData.set(POWER, this.entityData.get(POWER) * (upInputDown ? 0.5f : (rightInputDown || leftInputDown) ? 0.947f : 0.96f));
-        this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) * (float) Math.max(0.76f - 0.1f * this.getDeltaMovement().horizontalDistance(), 0.3));
-
-        double s0 = getDeltaMovement().dot(this.getViewVector(1));
-
-        this.setLeftWheelRot((float) ((this.getLeftWheelRot() - 1.25 * s0) + Mth.clamp(0.75f * this.entityData.get(DELTA_ROT), -5f, 5f)));
-        this.setRightWheelRot((float) ((this.getRightWheelRot() - 1.25 * s0) - Mth.clamp(0.75f * this.entityData.get(DELTA_ROT), -5f, 5f)));
-
-        setLeftTrack((float) ((getLeftTrack() - 1.5 * Math.PI * s0) + Mth.clamp(0.4f * Math.PI * this.entityData.get(DELTA_ROT), -5f, 5f)));
-        setRightTrack((float) ((getRightTrack() - 1.5 * Math.PI * s0) - Mth.clamp(0.4f * Math.PI * this.entityData.get(DELTA_ROT), -5f, 5f)));
-
-        int i;
-
-        if (entityData.get(L_WHEEL_DAMAGED) && entityData.get(R_WHEEL_DAMAGED)) {
-            this.entityData.set(POWER, this.entityData.get(POWER) * 0.93f);
-            i = 0;
-        } else if (entityData.get(L_WHEEL_DAMAGED)) {
-            this.entityData.set(POWER, this.entityData.get(POWER) * 0.975f);
-            i = 3;
-        } else if (entityData.get(R_WHEEL_DAMAGED)) {
-            this.entityData.set(POWER, this.entityData.get(POWER) * 0.975f);
-            i = -3;
-        } else {
-            i = 0;
-        }
-
-        if (entityData.get(ENGINE1_DAMAGED)) {
-            this.entityData.set(POWER, this.entityData.get(POWER) * 0.85f);
-        }
-
-        this.setYRot((float) (this.getYRot() - (isInWater() && !onGround() ? 2.5 : 6) * entityData.get(DELTA_ROT) - i * s0));
-        if (this.isInWater() || onGround()) {
-            this.setDeltaMovement(this.getDeltaMovement().add(getViewVector(1).scale((!isInWater() && !onGround() ? 0.13f : (isInWater() && !onGround() ? 2 : 2.4f)) * this.entityData.get(POWER))));
-        }
+        trackEngine(false, 0, VehicleConfig.YX_100_ENERGY_COST.get(), 1.25, 0.75, 1.3, 0.6, 0.25f, -0.2f, 0.0026f, 0.002f, 0.1f);
     }
 
     @Override
