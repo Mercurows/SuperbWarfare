@@ -4,10 +4,7 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.PoseTool;
 import com.atsuishio.superbwarfare.client.screens.WeaponEditScreen;
 import com.atsuishio.superbwarfare.client.tooltip.component.GunImageComponent;
-import com.atsuishio.superbwarfare.data.gun.GunData;
-import com.atsuishio.superbwarfare.data.gun.GunProp;
-import com.atsuishio.superbwarfare.data.gun.GunPropertyModifier;
-import com.atsuishio.superbwarfare.data.gun.ProjectileInfo;
+import com.atsuishio.superbwarfare.data.gun.*;
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
 import com.atsuishio.superbwarfare.data.launchable.LaunchableEntityTool;
 import com.atsuishio.superbwarfare.data.launchable.ShootData;
@@ -499,6 +496,10 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
             data.consumeBackupAmmo(shooter, data.get(GunProp.AMMO_COST_PER_SHOOT));
         }
 
+        if (data.ammo.get() == 0) {
+            data.burstAmount.reset();
+        }
+
         var stack = data.stack();
         if (this.getMaxDamage(stack) > 0) {
             if (shooter instanceof LivingEntity living) {
@@ -559,6 +560,12 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
         // 生成所有子弹
         for (int index0 = 0; index0 < projectileAmount; index0++) {
             if (!shootBullet(shooter, level, shootPosition, shootDirection, data, spread, zoom, uuid)) return;
+        }
+
+        // n连发模式开火数据设置
+        if (data.fireMode.get() == FireMode.BURST) {
+            var amount = data.burstAmount.get();
+            data.burstAmount.set(amount == 0 ? data.get(GunProp.BURST_AMOUNT) - 1 : Math.max(0, amount - 1));
         }
 
         // 添加热量

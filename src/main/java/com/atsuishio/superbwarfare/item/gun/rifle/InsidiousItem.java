@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.item.gun.rifle;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.renderer.gun.InsidiousItemRenderer;
 import com.atsuishio.superbwarfare.data.gun.GunData;
+import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
@@ -25,6 +26,7 @@ public class InsidiousItem extends GunItem {
 
     public InsidiousItem() {
         super(new Properties().stacksTo(1).rarity(Rarity.EPIC));
+        appendModification(GunProp.AMMO_COST_PER_SHOOT, (data, v) -> data.burstAmount.get() == data.get(GunProp.BURST_AMOUNT) - 1 ? v : 0);
     }
 
     @Override

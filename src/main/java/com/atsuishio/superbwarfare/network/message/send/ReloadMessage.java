@@ -37,13 +37,15 @@ public enum ReloadMessage implements CustomPacketPayload {
                 && data.reload.time() == 0
                 && data.bolt.actionTimer.get() == 0
         ) {
+            // 检查备弹
+            if (!data.hasBackupAmmo(player)) return;
+
             var reloadTypes = data.reloadTypes();
             boolean canSingleReload = reloadTypes.contains(ReloadType.ITERATIVE);
             boolean canReload = reloadTypes.contains(ReloadType.MAGAZINE) && !reloadTypes.contains(ReloadType.CLIP);
             boolean clipLoad = data.ammo.get() == 0 && reloadTypes.contains(ReloadType.CLIP);
 
-            // 检查备弹
-            if (!data.hasBackupAmmo(player)) return;
+            data.burstAmount.reset();
 
             if (canReload || clipLoad) {
                 int magazine = data.get(GunProp.MAGAZINE);
