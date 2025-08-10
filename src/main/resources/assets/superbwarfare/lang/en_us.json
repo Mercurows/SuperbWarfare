@@ -59,6 +59,7 @@
   "des.superbwarfare.secondary_cataclysm_2": "Hiru",
   "item.superbwarfare.insidious": "Insidious",
   "item.superbwarfare.qbz_191": "QBZ-191",
+  "item.superbwarfare.awm": "AWM",
 
   "des.superbwarfare.guns.damage": "Damage: ",
   "des.superbwarfare.guns.level": "Level: ",
@@ -93,6 +94,7 @@
   "item.superbwarfare.marlin_blueprint": "MARLIN-1894 Blueprint",
   "item.superbwarfare.bocek_blueprint": "BOCEK Blueprint",
   "item.superbwarfare.trachelium_blueprint": "TRACHELIUM Blueprint",
+  "item.superbwarfare.awm_blueprint": "AWM Blueprint",
   "item.superbwarfare.m_98b_blueprint": "M98B Blueprint",
   "item.superbwarfare.ak_47_blueprint": "AK-47 Blueprint",
   "item.superbwarfare.ak_12_blueprint": "AK-12 Blueprint",

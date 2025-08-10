@@ -80,6 +80,7 @@ public class ModCustomLootProvider implements LootTableSubProvider {
                                 new ItemEntry(ModItems.M_60_BLUEPRINT.get(), 1),
                                 new ItemEntry(ModItems.SVD_BLUEPRINT.get(), 1),
                                 new ItemEntry(ModItems.M_98B_BLUEPRINT.get(), 1),
+                                new ItemEntry(ModItems.AWM_BLUEPRINT.get(), 1),
                                 new ItemEntry(ModItems.DEVOTION_BLUEPRINT.get(), 1),
                                 new ItemEntry(ModItems.INSIDIOUS_BLUEPRINT.get(), 1),
                                 new ItemEntry(ModItems.QBZ_191_BLUEPRINT.get(), 1)
@@ -135,6 +136,7 @@ public class ModCustomLootProvider implements LootTableSubProvider {
                                 new ItemEntry(ModItems.M_60_BLUEPRINT.get(), 10),
                                 new ItemEntry(ModItems.SVD_BLUEPRINT.get(), 10),
                                 new ItemEntry(ModItems.M_98B_BLUEPRINT.get(), 10),
+                                new ItemEntry(ModItems.AWM_BLUEPRINT.get(), 10),
                                 new ItemEntry(ModItems.DEVOTION_BLUEPRINT.get(), 10),
                                 new ItemEntry(ModItems.INSIDIOUS_BLUEPRINT.get(), 10),
                                 new ItemEntry(ModItems.QBZ_191_BLUEPRINT.get(), 10),
@@ -182,6 +184,7 @@ public class ModCustomLootProvider implements LootTableSubProvider {
                                 new ItemEntry(ModItems.M_60_BLUEPRINT.get(), 10),
                                 new ItemEntry(ModItems.SVD_BLUEPRINT.get(), 10),
                                 new ItemEntry(ModItems.M_98B_BLUEPRINT.get(), 10),
+                                new ItemEntry(ModItems.AWM_BLUEPRINT.get(), 10),
                                 new ItemEntry(ModItems.DEVOTION_BLUEPRINT.get(), 10),
                                 new ItemEntry(ModItems.INSIDIOUS_BLUEPRINT.get(), 10),
                                 new ItemEntry(ModItems.QBZ_191_BLUEPRINT.get(), 10),
@@ -254,6 +257,7 @@ public class ModCustomLootProvider implements LootTableSubProvider {
                         new ItemEntry(ModItems.M_60_BLUEPRINT.get(), 15),
                         new ItemEntry(ModItems.SVD_BLUEPRINT.get(), 15),
                         new ItemEntry(ModItems.M_98B_BLUEPRINT.get(), 15),
+                        new ItemEntry(ModItems.AWM_BLUEPRINT.get(), 15),
                         new ItemEntry(ModItems.DEVOTION_BLUEPRINT.get(), 15),
                         new ItemEntry(ModItems.INSIDIOUS_BLUEPRINT.get(), 15),
 
@@ -323,6 +327,7 @@ public class ModCustomLootProvider implements LootTableSubProvider {
                         new ItemEntry(ModItems.VECTOR_BLUEPRINT.get(), 2),
                         new ItemEntry(ModItems.DEVOTION_BLUEPRINT.get(), 2),
                         new ItemEntry(ModItems.M_98B_BLUEPRINT.get(), 2),
+                        new ItemEntry(ModItems.AWM_BLUEPRINT.get(), 2),
 
                         new ItemEntry(ModItems.AA_12_BLUEPRINT.get(), 1),
                         new ItemEntry(ModItems.NTW_20_BLUEPRINT.get(), 1),

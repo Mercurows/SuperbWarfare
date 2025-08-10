@@ -233,6 +233,16 @@ public class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> SVD_RELOAD_NORMAL = REGISTRY.register("svd_reload_normal", () -> SoundEvent.createVariableRangeEvent(Mod.loc("svd_reload_normal")));
     public static final DeferredHolder<SoundEvent, SoundEvent> SVD_RELOAD_EMPTY = REGISTRY.register("svd_reload_empty", () -> SoundEvent.createVariableRangeEvent(Mod.loc("svd_reload_empty")));
 
+    public static final DeferredHolder<SoundEvent, SoundEvent> AWM_FIRE_1P = REGISTRY.register("awm_fire_1p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("awm_fire_1p")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> AWM_FIRE_3P = REGISTRY.register("awm_fire_3p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("awm_fire_3p")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> AWM_FIRE_1P_S = REGISTRY.register("awm_fire_1p_s", () -> SoundEvent.createVariableRangeEvent(Mod.loc("awm_fire_1p_s")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> AWM_FIRE_3P_S = REGISTRY.register("awm_fire_3p_s", () -> SoundEvent.createVariableRangeEvent(Mod.loc("awm_fire_3p_s")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> AWM_FAR = REGISTRY.register("awm_far", () -> SoundEvent.createVariableRangeEvent(Mod.loc("awm_far")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> AWM_VERYFAR = REGISTRY.register("awm_veryfar", () -> SoundEvent.createVariableRangeEvent(Mod.loc("awm_veryfar")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> AWM_RELOAD_NORMAL = REGISTRY.register("awm_reload_normal", () -> SoundEvent.createVariableRangeEvent(Mod.loc("awm_reload_normal")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> AWM_RELOAD_EMPTY = REGISTRY.register("awm_reload_empty", () -> SoundEvent.createVariableRangeEvent(Mod.loc("awm_reload_empty")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> AWM_BOLT = REGISTRY.register("awm_bolt", () -> SoundEvent.createVariableRangeEvent(Mod.loc("awm_bolt")));
+
     public static final DeferredHolder<SoundEvent, SoundEvent> M_98B_FIRE_1P = REGISTRY.register("m_98b_fire_1p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("m_98b_fire_1p")));
     public static final DeferredHolder<SoundEvent, SoundEvent> M_98B_FIRE_3P = REGISTRY.register("m_98b_fire_3p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("m_98b_fire_3p")));
     public static final DeferredHolder<SoundEvent, SoundEvent> M_98B_FIRE_1P_S = REGISTRY.register("m_98b_fire_1p_s", () -> SoundEvent.createVariableRangeEvent(Mod.loc("m_98b_fire_1p_s")));

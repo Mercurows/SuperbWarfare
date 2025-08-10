@@ -91,6 +91,11 @@
         },
         {
           "type": "minecraft:item",
+          "name": "superbwarfare:awm_blueprint",
+          "weight": 2
+        },
+        {
+          "type": "minecraft:item",
           "name": "superbwarfare:aa_12_blueprint"
         },
         {

@@ -66,6 +66,7 @@ public class ModItemModelProvider extends ItemModelProvider {
         gunItem(ModItems.MP_5);
         gunItem(ModItems.M_2_HB);
         gunItem(ModItems.QBZ_191);
+        gunItem(ModItems.AWM);
 
         simpleItem(ModItems.EMPTY_PERK, "perk/");
 
@@ -186,6 +187,7 @@ public class ModItemModelProvider extends ItemModelProvider {
         gunBlueprintItem(ModItems.SVD_BLUEPRINT);
         gunBlueprintItem(ModItems.MARLIN_BLUEPRINT);
         gunBlueprintItem(ModItems.M_870_BLUEPRINT);
+        gunBlueprintItem(ModItems.AWM_BLUEPRINT);
         gunBlueprintItem(ModItems.M_98B_BLUEPRINT);
         gunBlueprintItem(ModItems.AK_12_BLUEPRINT);
         gunBlueprintItem(ModItems.AK_47_BLUEPRINT);
