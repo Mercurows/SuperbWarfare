@@ -25,7 +25,7 @@ import java.util.function.Supplier;
 public class Aa12Item extends GunItem {
 
     public Aa12Item() {
-        super(new Properties().stacksTo(1).rarity(ModEnumExtensions.getLegendary()));
+        super(new Properties().rarity(ModEnumExtensions.getLegendary()));
     }
 
     @Override

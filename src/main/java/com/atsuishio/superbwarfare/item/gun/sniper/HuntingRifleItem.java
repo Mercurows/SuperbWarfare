@@ -25,7 +25,7 @@ import java.util.function.Supplier;
 public class HuntingRifleItem extends GunItem {
 
     public HuntingRifleItem() {
-        super(new Item.Properties().stacksTo(1).rarity(Rarity.RARE));
+        super(new Item.Properties().rarity(Rarity.RARE));
     }
 
     @Override

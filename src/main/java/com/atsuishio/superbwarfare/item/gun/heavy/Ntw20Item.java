@@ -27,7 +27,7 @@ import java.util.function.Supplier;
 public class Ntw20Item extends GunItem {
 
     public Ntw20Item() {
-        super(new Properties().stacksTo(1).rarity(ModEnumExtensions.getLegendary()));
+        super(new Properties().rarity(ModEnumExtensions.getLegendary()));
     }
 
     @Override

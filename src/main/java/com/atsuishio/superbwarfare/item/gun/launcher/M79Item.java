@@ -36,7 +36,7 @@ import java.util.function.Supplier;
 public class M79Item extends GunItem {
 
     public M79Item() {
-        super(new Item.Properties().stacksTo(1).fireResistant().rarity(Rarity.RARE));
+        super(new Item.Properties().fireResistant().rarity(Rarity.RARE));
     }
 
     @Override

@@ -56,7 +56,7 @@ import java.util.function.Supplier;
 public class JavelinItem extends GunItem {
 
     public JavelinItem() {
-        super(new Properties().stacksTo(1).rarity(ModEnumExtensions.getLegendary()));
+        super(new Properties().rarity(ModEnumExtensions.getLegendary()));
     }
 
     @Override

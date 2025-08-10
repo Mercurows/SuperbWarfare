@@ -45,7 +45,7 @@ import java.util.function.Supplier;
 public class BocekItem extends GunItem {
 
     public BocekItem() {
-        super(new Properties().stacksTo(1).rarity(Rarity.EPIC));
+        super(new Properties().rarity(Rarity.EPIC));
     }
 
     @Override

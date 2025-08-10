@@ -37,7 +37,7 @@ import java.util.function.Supplier;
 public class RpgItem extends GunItem {
 
     public RpgItem() {
-        super(new Properties().stacksTo(1).rarity(Rarity.RARE));
+        super(new Properties().rarity(Rarity.RARE));
     }
 
     @Override

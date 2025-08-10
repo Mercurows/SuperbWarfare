@@ -26,7 +26,7 @@ import java.util.function.Supplier;
 public class M98bItem extends GunItem {
 
     public M98bItem() {
-        super(new Properties().stacksTo(1).rarity(Rarity.EPIC));
+        super(new Properties().rarity(Rarity.EPIC));
     }
 
     @Override

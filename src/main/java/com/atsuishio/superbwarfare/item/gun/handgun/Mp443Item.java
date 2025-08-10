@@ -27,7 +27,7 @@ import java.util.function.Supplier;
 public class Mp443Item extends GunItem {
 
     public Mp443Item() {
-        super(new Properties().stacksTo(1).rarity(Rarity.COMMON));
+        super(new Properties().rarity(Rarity.COMMON));
     }
 
     @Override

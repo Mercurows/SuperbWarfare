@@ -42,7 +42,7 @@ public class TaserItem extends GunItem implements EnergyStorageItem {
     public static final int MAX_ENERGY = 6000;
 
     public TaserItem() {
-        super(new Properties().stacksTo(1).rarity(Rarity.COMMON));
+        super(new Properties().rarity(Rarity.COMMON));
     }
 
     @Override

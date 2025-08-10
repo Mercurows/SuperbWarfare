@@ -24,7 +24,7 @@ import java.util.function.Supplier;
 public class InsidiousItem extends GunItem {
 
     public InsidiousItem() {
-        super(new Properties().stacksTo(1).rarity(Rarity.EPIC));
+        super(new Properties().rarity(Rarity.EPIC));
     }
 
     @Override

@@ -47,7 +47,7 @@ import java.util.function.Supplier;
 public class SecondaryCataclysm extends GunItem implements EnergyStorageItem {
 
     public SecondaryCataclysm() {
-        super(new Properties().stacksTo(1).fireResistant().rarity(ModEnumExtensions.getLegendary()));
+        super(new Properties().fireResistant().rarity(ModEnumExtensions.getLegendary()));
     }
 
     @Override

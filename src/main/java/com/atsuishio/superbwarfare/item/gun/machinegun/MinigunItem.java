@@ -26,7 +26,7 @@ import java.util.function.Supplier;
 public class MinigunItem extends GunItem {
 
     public MinigunItem() {
-        super(new Properties().stacksTo(1).rarity(ModEnumExtensions.getLegendary()));
+        super(new Properties().rarity(ModEnumExtensions.getLegendary()));
     }
 
     @Override
