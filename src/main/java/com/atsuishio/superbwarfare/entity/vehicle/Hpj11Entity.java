@@ -56,7 +56,7 @@ import java.util.function.Consumer;
 
 import static com.atsuishio.superbwarfare.tools.SeekTool.smokeFilter;
 
-public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEntity, CannonEntity, OwnableEntity, AutoAimable {
+public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEntity, CannonEntity, OwnableEntity, AutoAimable, DefenseEntity {
 
     public static Consumer<MobileVehicleEntity> fireSound = vehicle -> {
     };

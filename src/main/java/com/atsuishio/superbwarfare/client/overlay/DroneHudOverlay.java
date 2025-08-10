@@ -33,7 +33,8 @@ import net.minecraftforge.client.gui.overlay.IGuiOverlay;
 import java.util.List;
 
 import static com.atsuishio.superbwarfare.client.RenderHelper.preciseBlit;
-import static com.atsuishio.superbwarfare.client.overlay.SpyglassRangeOverlay.FRIENDLY_INDICATOR;
+import static com.atsuishio.superbwarfare.client.overlay.IFFOverlay.FRIENDLY_ARTILLERY;
+import static com.atsuishio.superbwarfare.client.overlay.IFFOverlay.FRIENDLY_INDICATOR;
 import static com.atsuishio.superbwarfare.client.overlay.SpyglassRangeOverlay.INDICATOR;
 import static com.atsuishio.superbwarfare.entity.vehicle.DroneEntity.*;
 import static com.atsuishio.superbwarfare.item.ArtilleryIndicator.TAG_CANNON;
@@ -204,7 +205,7 @@ public class DroneHudOverlay implements IGuiOverlay {
                                 float xf = (float) pointF.x;
                                 float yf = (float) pointF.y;
 
-                                preciseBlit(guiGraphics, FRIENDLY_INDICATOR, Mth.clamp(xf - 6, 0, screenWidth - 12), Mth.clamp(yf - 6, 0, screenHeight - 12), 0, 0, 12, 12, 12, 12);
+                                preciseBlit(guiGraphics, FRIENDLY_ARTILLERY, Mth.clamp(xf - 6, 0, screenWidth - 12), Mth.clamp(yf - 6, 0, screenHeight - 12), 0, 0, 12, 12, 12, 12);
                             }
                         }
                     }
