@@ -69,6 +69,7 @@ public class GunData {
         attachmentTag = getOrPut("Attachments");
         propertyOverrideString = new StringValue(this.data, "Override");
 
+        selectedAmmoType = new IntValue(data, "SelectedAmmoType");
         ammoConsumers = get(GunProp.AMMO_CONSUMER);
 
         // 可持久化属性
@@ -78,7 +79,6 @@ public class GunData {
         attachment = new Attachment(this);
         perk = new Perks(this);
 
-        selectedAmmoType = new IntValue(data, "SelectedAmmoType");
 
         ammo = new IntValue(data, "Ammo");
         virtualAmmo = new IntValue(data, "VirtualAmmo");
@@ -228,7 +228,8 @@ public class GunData {
                     propertyOverrideCache = new Pair<>(propertyOverrideString.get(), GSON.fromJson(propertyOverrideString.get(), JsonObject.class));
                     isOverrideValid = true;
                 } catch (Exception exception) {
-                    Mod.LOGGER.error("invalid property override string {}", propertyOverrideString);
+                    Mod.LOGGER.error("invalid property override string {}", propertyOverrideString.get());
+                    propertyOverrideCache = new Pair<>(propertyOverrideString.get(), new JsonObject());
                     isOverrideValid = false;
                 }
             }
@@ -246,7 +247,17 @@ public class GunData {
         }
 
         // AmmoConsumer
-        modifier.apply(selectedAmmoConsumer().getModifier(prop));
+        if (prop == GunProp.AMMO_CONSUMER) {
+            var consumers = (List<AmmoConsumer>) modifier.compute();
+            consumers.forEach(c -> {
+                if (!c.initialized()) {
+                    c.init();
+                }
+            });
+            modifier.apply(selectedAmmoConsumer(consumers).getModifier(prop));
+        } else {
+            modifier.apply(selectedAmmoConsumer().getModifier(prop));
+        }
 
         // perk
         if (perk != null) {
@@ -261,7 +272,7 @@ public class GunData {
         // 临时属性修改
         modifier.apply((GunProp.GunPropModifyContext<T>) tempModifications.get(prop));
 
-        return modifier.compute();
+        return (T) DataLoader.processValue(modifier.compute());
     }
 
     public boolean hasInfiniteBackupAmmo(@Nullable Entity shooter) {
@@ -300,11 +311,15 @@ public class GunData {
         return Mth.clamp(get(GunProp.DEFAULT_ZOOM) + item.getCustomZoom(stack), minZoom(), maxZoom());
     }
 
-    public AmmoConsumer selectedAmmoConsumer() {
-        if (this.ammoConsumers == null || this.ammoConsumers.isEmpty()) {
+    public AmmoConsumer selectedAmmoConsumer(List<AmmoConsumer> consumers) {
+        if (consumers == null || consumers.isEmpty()) {
             return AmmoConsumer.INVALID;
         }
-        return this.ammoConsumers.get(Mth.clamp(this.selectedAmmoType.get(), 0, this.ammoConsumers.size() - 1));
+        return consumers.get(Mth.clamp(this.selectedAmmoType.get(), 0, consumers.size() - 1));
+    }
+
+    public AmmoConsumer selectedAmmoConsumer() {
+        return selectedAmmoConsumer(this.ammoConsumers);
     }
 
     public void changeAmmoConsumer(int index) {
