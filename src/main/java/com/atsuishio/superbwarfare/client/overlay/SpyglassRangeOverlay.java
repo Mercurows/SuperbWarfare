@@ -35,6 +35,7 @@ import net.neoforged.api.distmarker.OnlyIn;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 import static com.atsuishio.superbwarfare.client.RenderHelper.preciseBlit;
+import static com.atsuishio.superbwarfare.client.overlay.IFFOverlay.FRIENDLY_ARTILLERY;
 import static com.atsuishio.superbwarfare.item.ArtilleryIndicator.TAG_CANNON;
 
 @OnlyIn(Dist.CLIENT)
@@ -42,7 +43,6 @@ public class SpyglassRangeOverlay implements LayeredDraw.Layer {
 
     public static final ResourceLocation ID = Mod.loc("spyglass_range");
     public static final ResourceLocation INDICATOR = Mod.loc("textures/screens/indicator.png");
-    public static final ResourceLocation FRIENDLY_INDICATOR = Mod.loc("textures/screens/friendly_indicator.png");
     private static float scopeScale = 1;
 
     private static float lerpHoldArtilleryIndicator;
@@ -116,7 +116,7 @@ public class SpyglassRangeOverlay implements LayeredDraw.Layer {
                         if (VectorUtil.canSee(posF)) {
                             float xf = (float) pointF.x;
                             float yf = (float) pointF.y;
-                            preciseBlit(guiGraphics, FRIENDLY_INDICATOR, Mth.clamp(xf - 6, 0, screenWidth - 12), Mth.clamp(yf - 6, 0, screenHeight - 12), 0, 0, 12, 12, 12, 12);
+                            preciseBlit(guiGraphics, FRIENDLY_ARTILLERY, Mth.clamp(xf - 6, 0, screenWidth - 12), Mth.clamp(yf - 6, 0, screenHeight - 12), 0, 0, 12, 12, 12, 12);
                         }
                     }
                 }
