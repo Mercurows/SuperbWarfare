@@ -30,7 +30,7 @@ import java.util.function.Supplier;
 public class AK12Item extends GunItem {
 
     public AK12Item() {
-        super(new Properties().stacksTo(1).rarity(Rarity.RARE));
+        super(new Properties().rarity(Rarity.RARE));
     }
 
     @Override

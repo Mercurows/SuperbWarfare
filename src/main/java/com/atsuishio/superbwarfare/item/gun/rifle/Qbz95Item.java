@@ -32,7 +32,7 @@ import java.util.function.Supplier;
 public class Qbz95Item extends GunItem {
 
     public Qbz95Item() {
-        super(new Properties().stacksTo(1).rarity(Rarity.RARE));
+        super(new Properties().rarity(Rarity.RARE));
     }
 
     @Override

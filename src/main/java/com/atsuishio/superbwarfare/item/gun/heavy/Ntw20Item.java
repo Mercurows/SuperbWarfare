@@ -30,7 +30,7 @@ import java.util.function.Supplier;
 public class Ntw20Item extends GunItem {
 
     public Ntw20Item() {
-        super(new Item.Properties().stacksTo(1).rarity(RarityTool.LEGENDARY));
+        super(new Item.Properties().rarity(RarityTool.LEGENDARY));
     }
 
     @Override

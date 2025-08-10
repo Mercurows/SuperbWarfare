@@ -51,7 +51,7 @@ public class TaserItem extends GunItem {
     private final Supplier<Integer> energyCapacity;
 
     public TaserItem() {
-        super(new Item.Properties().stacksTo(1).rarity(Rarity.COMMON));
+        super(new Item.Properties().rarity(Rarity.COMMON));
         this.energyCapacity = () -> MAX_ENERGY;
     }
 

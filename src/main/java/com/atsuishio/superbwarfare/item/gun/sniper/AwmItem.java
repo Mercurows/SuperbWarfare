@@ -30,7 +30,7 @@ import java.util.function.Supplier;
 public class AwmItem extends GunItem {
 
     public AwmItem() {
-        super(new Properties().stacksTo(1).rarity(Rarity.EPIC));
+        super(new Properties().rarity(Rarity.EPIC));
     }
 
     @Override

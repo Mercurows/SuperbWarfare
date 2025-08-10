@@ -29,7 +29,7 @@ import java.util.function.Supplier;
 public class MarlinItem extends GunItem {
 
     public MarlinItem() {
-        super(new Item.Properties().stacksTo(1).rarity(Rarity.COMMON));
+        super(new Item.Properties().rarity(Rarity.COMMON));
     }
 
     @Override

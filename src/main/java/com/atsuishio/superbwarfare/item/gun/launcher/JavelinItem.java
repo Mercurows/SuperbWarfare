@@ -59,7 +59,7 @@ import java.util.function.Supplier;
 public class JavelinItem extends GunItem {
 
     public JavelinItem() {
-        super(new Properties().stacksTo(1).rarity(RarityTool.LEGENDARY));
+        super(new Properties().rarity(RarityTool.LEGENDARY));
     }
 
     @Override

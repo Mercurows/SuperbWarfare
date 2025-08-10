@@ -31,7 +31,7 @@ import java.util.function.Supplier;
 public class M1911Item extends GunItem {
 
     public M1911Item() {
-        super(new Properties().stacksTo(1).rarity(Rarity.COMMON));
+        super(new Properties().rarity(Rarity.COMMON));
     }
 
     @Override

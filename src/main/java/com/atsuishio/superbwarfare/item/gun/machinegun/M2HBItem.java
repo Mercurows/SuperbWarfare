@@ -45,7 +45,7 @@ import java.util.function.Supplier;
 public class M2HBItem extends GunItem {
 
     public M2HBItem() {
-        super(new Properties().stacksTo(1).rarity(Rarity.RARE));
+        super(new Properties().rarity(Rarity.RARE));
     }
 
     @Override

@@ -31,7 +31,7 @@ import java.util.function.Supplier;
 public class Glock17Item extends GunItem {
 
     public Glock17Item() {
-        super(new Properties().stacksTo(1).rarity(Rarity.COMMON));
+        super(new Properties().rarity(Rarity.COMMON));
     }
 
     @Override

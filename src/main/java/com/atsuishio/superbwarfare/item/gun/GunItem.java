@@ -77,6 +77,7 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
 
     public GunItem(Properties properties) {
         super(properties);
+
         addReloadTimeBehavior(this.reloadTimeBehaviors);
         SingletonGeoAnimatable.registerSyncedAnimatable(this);
 

@@ -56,7 +56,7 @@ public class SecondaryCataclysm extends GunItem {
     private final Supplier<Integer> energyCapacity = () -> 24000;
 
     public SecondaryCataclysm() {
-        super(new Properties().stacksTo(1).fireResistant().rarity(RarityTool.LEGENDARY));
+        super(new Properties().fireResistant().rarity(RarityTool.LEGENDARY));
     }
 
     @Override

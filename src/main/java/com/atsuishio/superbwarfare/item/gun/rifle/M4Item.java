@@ -30,7 +30,7 @@ import java.util.function.Supplier;
 public class M4Item extends GunItem {
 
     public M4Item() {
-        super(new Item.Properties().stacksTo(1).rarity(Rarity.RARE));
+        super(new Item.Properties().rarity(Rarity.RARE));
     }
 
     @Override

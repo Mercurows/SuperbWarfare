@@ -34,7 +34,7 @@ import java.util.function.Supplier;
 public class MinigunItem extends GunItem {
 
     public MinigunItem() {
-        super(new Item.Properties().stacksTo(1).rarity(RarityTool.LEGENDARY));
+        super(new Item.Properties().rarity(RarityTool.LEGENDARY));
     }
 
     @Override

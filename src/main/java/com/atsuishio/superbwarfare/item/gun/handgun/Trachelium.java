@@ -34,7 +34,7 @@ import java.util.function.Supplier;
 public class Trachelium extends GunItem {
 
     public Trachelium() {
-        super(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+        super(new Item.Properties().rarity(Rarity.EPIC));
     }
 
     @Override

@@ -29,7 +29,7 @@ import java.util.function.Supplier;
 public class VectorItem extends GunItem {
 
     public VectorItem() {
-        super(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+        super(new Item.Properties().rarity(Rarity.EPIC));
     }
 
     private PlayState idlePredicate(AnimationState<VectorItem> event) {

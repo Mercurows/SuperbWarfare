@@ -36,7 +36,7 @@ import java.util.function.Supplier;
 public class M60Item extends GunItem {
 
     public M60Item() {
-        super(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+        super(new Item.Properties().rarity(Rarity.EPIC));
     }
 
     @Override

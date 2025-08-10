@@ -29,7 +29,7 @@ import java.util.function.Supplier;
 public class Aa12Item extends GunItem {
 
     public Aa12Item() {
-        super(new Item.Properties().stacksTo(1).rarity(RarityTool.LEGENDARY));
+        super(new Item.Properties().rarity(RarityTool.LEGENDARY));
     }
 
     @Override

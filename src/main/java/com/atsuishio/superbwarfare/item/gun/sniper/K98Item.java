@@ -29,7 +29,7 @@ import java.util.function.Supplier;
 public class K98Item extends GunItem {
 
     public K98Item() {
-        super(new Properties().stacksTo(1).rarity(Rarity.RARE));
+        super(new Properties().rarity(Rarity.RARE));
     }
 
     @Override

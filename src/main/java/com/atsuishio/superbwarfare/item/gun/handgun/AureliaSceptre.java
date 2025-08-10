@@ -46,7 +46,7 @@ import java.util.function.Supplier;
 public class AureliaSceptre extends GunItem {
 
     public AureliaSceptre() {
-        super(new Properties().stacksTo(1).rarity(RarityTool.LEGENDARY));
+        super(new Properties().rarity(RarityTool.LEGENDARY));
     }
 
     @Override
