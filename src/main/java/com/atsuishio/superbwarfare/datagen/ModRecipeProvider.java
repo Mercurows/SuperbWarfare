@@ -203,6 +203,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
         gunSmithing(writer, ModItems.M_1911_BLUEPRINT.get(), GunRarity.COMMON, ModTags.Items.INGOTS_STEEL, ModItems.M_1911.get());
         gunSmithing(writer, ModItems.QBZ_95_BLUEPRINT.get(), GunRarity.RARE, ModTags.Items.INGOTS_STEEL, ModItems.QBZ_95.get());
         gunSmithing(writer, ModItems.QBZ_191_BLUEPRINT.get(), GunRarity.EPIC, ModTags.Items.INGOTS_CEMENTED_CARBIDE, ModItems.QBZ_191.get());
+        gunSmithing(writer, ModItems.AWM_BLUEPRINT.get(), GunRarity.EPIC, Items.SPYGLASS, ModItems.AWM.get());
         gunSmithing(writer, ModItems.K_98_BLUEPRINT.get(), GunRarity.RARE, ItemTags.LOGS, ModItems.K_98.get());
         gunSmithing(writer, ModItems.MOSIN_NAGANT_BLUEPRINT.get(), GunRarity.RARE, ItemTags.LOGS, ModItems.MOSIN_NAGANT.get());
         gunSmithing(writer, ModItems.JAVELIN_BLUEPRINT.get(), GunRarity.LEGENDARY, ModItems.ANCIENT_CPU.get(), ModItems.JAVELIN.get());
@@ -235,6 +236,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
         copyBlueprint(writer, ModItems.SVD_BLUEPRINT.get());
         copyBlueprint(writer, ModItems.MARLIN_BLUEPRINT.get());
         copyBlueprint(writer, ModItems.M_870_BLUEPRINT.get());
+        copyBlueprint(writer, ModItems.AWM_BLUEPRINT.get());
         copyBlueprint(writer, ModItems.M_98B_BLUEPRINT.get());
         copyBlueprint(writer, ModItems.AK_47_BLUEPRINT.get());
         copyBlueprint(writer, ModItems.AK_12_BLUEPRINT.get());

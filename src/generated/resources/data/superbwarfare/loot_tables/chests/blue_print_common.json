@@ -142,6 +142,10 @@
         },
         {
           "type": "minecraft:item",
+          "name": "superbwarfare:awm_blueprint"
+        },
+        {
+          "type": "minecraft:item",
           "name": "superbwarfare:devotion_blueprint"
         },
         {

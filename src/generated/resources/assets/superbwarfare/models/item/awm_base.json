@@ -1,0 +1,6 @@
+{
+  "parent": "superbwarfare:displaysettings/awm.item",
+  "textures": {
+    "layer0": "superbwarfare:item/awm"
+  }
+}
