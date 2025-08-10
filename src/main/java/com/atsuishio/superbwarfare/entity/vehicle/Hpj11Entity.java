@@ -579,7 +579,7 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
 
     @Override
     public ResourceLocation getVehicleIcon() {
-        return Mod.loc("textures/vehicle_icon/hpj_11.png");
+        return Mod.loc("textures/vehicle_icon/hpj_11_icon.png");
     }
 
     @Override
