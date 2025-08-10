@@ -13,7 +13,7 @@
   "Weight": 6,
   "NormalReloadTime": 62,
   "EmptyReloadTime": 80,
-  "BypassesArmor": 0.6,
+  "BypassesArmor": 0.8,
   "SoundRadius": 18,
   "DamageReduce": {
     "Type": "Sniper"

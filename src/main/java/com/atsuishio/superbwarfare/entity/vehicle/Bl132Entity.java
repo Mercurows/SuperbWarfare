@@ -724,7 +724,7 @@ public class Bl132Entity extends VehicleEntity implements GeoEntity, CannonEntit
 
     @Override
     public ResourceLocation getVehicleIcon() {
-        return Mod.loc("textures/vehicle_icon/sherman_icon.png");
+        return Mod.loc("textures/vehicle_icon/bl_132_icon.png");
     }
 
     @Override
