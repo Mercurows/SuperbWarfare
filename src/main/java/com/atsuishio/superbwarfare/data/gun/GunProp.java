@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 
-public class GunProp<T> {
+public final class GunProp<T> {
     // 这b玩意必须放第一个，不然new的时候执行到props.add(this)会NPE（全恼
     private static final List<GunProp<?>> props = new ArrayList<>();
 

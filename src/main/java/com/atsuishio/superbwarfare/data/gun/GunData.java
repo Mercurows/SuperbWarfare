@@ -214,9 +214,18 @@ public class GunData {
         tempModifications.clear();
     }
 
+    private final Set<GunProp<?>> operatingProps = new HashSet<>();
+
     @SuppressWarnings("unchecked")
     public <T> T get(GunProp<T> prop) {
         var modifier = prop.asModifier(this);
+
+        if (operatingProps.contains(prop)) {
+            Mod.LOGGER.warn("recursive computation for property {}", prop.name);
+            return (T) DataLoader.processValue(modifier.compute());
+        }
+
+        operatingProps.add(prop);
 
         // gun modifiers
         modifier.apply(this.item.getModifier(prop));
@@ -272,6 +281,7 @@ public class GunData {
         // 临时属性修改
         modifier.apply((GunProp.GunPropModifyContext<T>) tempModifications.get(prop));
 
+        operatingProps.remove(prop);
         return (T) DataLoader.processValue(modifier.compute());
     }
 
