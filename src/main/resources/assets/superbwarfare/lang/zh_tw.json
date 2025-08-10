@@ -445,8 +445,8 @@
 
   "item.superbwarfare.empty_perk": "空白模組",
   "item.superbwarfare.shortcut_pack": "捷徑包",
-  "des.superbwarfare.tips.shortcut_pack": "真的嗎？",
-  "des.superbwarfare.use_tip.shortcut_pack": "將槍械和捷徑包在鐵砧合成，可直接獲得一個升級點數",
+  "des.superbwarfare.shortcut_pack_1": "真的嗎？",
+  "des.superbwarfare.shortcut_pack_2": "將槍械和捷徑包在鐵砧合成，可直接獲得一個升級點數",
 
   "perk.superbwarfare.tips": "[武器模組]",
   "perk.superbwarfare.slot": "類型：",
