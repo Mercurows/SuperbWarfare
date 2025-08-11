@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.mixins;
 
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
+import com.atsuishio.superbwarfare.item.curio.ParachuteItem;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.AbstractClientPlayer;
@@ -23,6 +24,9 @@ public class ClientPlayerEntityMixin extends AbstractClientPlayer {
     @Inject(method = "isCrouching()Z", at = @At("HEAD"), cancellable = true)
     public void sbw$isCrouching(CallbackInfoReturnable<Boolean> cir) {
         if (getRootVehicle() instanceof VehicleEntity) {
+            cir.setReturnValue(false);
+        }
+        if (ParachuteItem.isParachuteOpen(this)) {
             cir.setReturnValue(false);
         }
     }

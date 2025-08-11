@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.mixins;
 
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
+import com.atsuishio.superbwarfare.item.curio.ParachuteItem;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Pose;
@@ -32,6 +33,10 @@ public abstract class PlayerMixin extends Entity {
     @Inject(method = "updatePlayerPose()V", at = @At("TAIL"))
     public void updatePostInjection(CallbackInfo ci) {
         if (getRootVehicle() instanceof VehicleEntity) {
+            this.setPose(Pose.STANDING);
+        }
+        var player = (Player) (Object) this;
+        if (ParachuteItem.isParachuteOpen(player)) {
             this.setPose(Pose.STANDING);
         }
     }
