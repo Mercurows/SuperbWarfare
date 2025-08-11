@@ -256,7 +256,23 @@
             }
           ],
           "name": "superbwarfare:rpg_rocket_tbg",
-          "weight": 4
+          "weight": 2
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "type": "minecraft:uniform",
+                "max": 2.0,
+                "min": 1.0
+              },
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "superbwarfare:rpg_rocket_standard",
+          "weight": 2
         },
         {
           "type": "minecraft:item",
