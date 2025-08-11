@@ -96,7 +96,9 @@ public class ModCustomLootProvider implements LootTableSubProvider {
                                         .setCountBetween(1, 2),
                                 new ItemEntry(ModItems.GRENADE_40MM.get(), 6)
                                         .setCountBetween(1, 3),
-                                new ItemEntry(ModItems.RPG_ROCKET_TBG.get(), 4)
+                                new ItemEntry(ModItems.RPG_ROCKET_TBG.get(), 2)
+                                        .setCountBetween(1, 2),
+                                new ItemEntry(ModItems.RPG_ROCKET_STANDARD.get(), 2)
                                         .setCountBetween(1, 2),
                                 new ItemEntry(ModItems.MORTAR_SHELL.get(), 6)
                                         .setCountBetween(1, 4),
@@ -164,7 +166,9 @@ public class ModCustomLootProvider implements LootTableSubProvider {
                                         .setCountBetween(1, 3),
                                 new ItemEntry(ModItems.GRENADE_40MM.get(), 6)
                                         .setCountBetween(2, 6),
-                                new ItemEntry(ModItems.RPG_ROCKET_TBG.get(), 4)
+                                new ItemEntry(ModItems.RPG_ROCKET_TBG.get(), 2)
+                                        .setCountBetween(2, 4),
+                                new ItemEntry(ModItems.RPG_ROCKET_STANDARD.get(), 2)
                                         .setCountBetween(2, 4),
                                 new ItemEntry(ModItems.MORTAR_SHELL.get(), 6)
                                         .setCountBetween(2, 8),
@@ -214,7 +218,9 @@ public class ModCustomLootProvider implements LootTableSubProvider {
                                         .setCountBetween(10, 24),
                                 new ItemEntry(ModItems.GRENADE_40MM.get(), 6)
                                         .setCountBetween(4, 12),
-                                new ItemEntry(ModItems.RPG_ROCKET_TBG.get(), 4)
+                                new ItemEntry(ModItems.RPG_ROCKET_TBG.get(), 2)
+                                        .setCountBetween(4, 8),
+                                new ItemEntry(ModItems.RPG_ROCKET_STANDARD.get(), 2)
                                         .setCountBetween(4, 8),
                                 new ItemEntry(ModItems.MORTAR_SHELL.get(), 6)
                                         .setCountBetween(4, 8),
@@ -247,6 +253,7 @@ public class ModCustomLootProvider implements LootTableSubProvider {
                         new ItemEntry(ModItems.QBZ_95_BLUEPRINT.get(), 42),
                         new ItemEntry(ModItems.RPG_BLUEPRINT.get(), 42),
                         new ItemEntry(ModItems.HUNTING_RIFLE_BLUEPRINT.get(), 42),
+                        new ItemEntry(ModItems.M_2_HB_BLUEPRINT.get(), 42),
 
                         new ItemEntry(ModItems.TRACHELIUM_BLUEPRINT.get(), 15),
                         new ItemEntry(ModItems.SENTINEL_BLUEPRINT.get(), 15),
@@ -260,6 +267,7 @@ public class ModCustomLootProvider implements LootTableSubProvider {
                         new ItemEntry(ModItems.AWM_BLUEPRINT.get(), 15),
                         new ItemEntry(ModItems.DEVOTION_BLUEPRINT.get(), 15),
                         new ItemEntry(ModItems.INSIDIOUS_BLUEPRINT.get(), 15),
+                        new ItemEntry(ModItems.QBZ_191_BLUEPRINT.get(), 15),
 
                         new ItemEntry(ModItems.AA_12_BLUEPRINT.get(), 5),
                         new ItemEntry(ModItems.NTW_20_BLUEPRINT.get(), 5),

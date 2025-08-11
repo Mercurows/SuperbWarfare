@@ -96,6 +96,11 @@
         },
         {
           "type": "minecraft:item",
+          "name": "superbwarfare:m_2_hb_blueprint",
+          "weight": 42
+        },
+        {
+          "type": "minecraft:item",
           "name": "superbwarfare:trachelium_blueprint",
           "weight": 15
         },
@@ -152,6 +157,11 @@
         {
           "type": "minecraft:item",
           "name": "superbwarfare:insidious_blueprint",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:qbz_191_blueprint",
           "weight": 15
         },
         {
