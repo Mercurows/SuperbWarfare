@@ -25,6 +25,7 @@
   "AmmoType": [
     "superbwarfare:grenade_40mm",
     {
+      "AmmoSlot": "Melee",
       "Override": {
         "ProjectileAmount": 0,
         "MeleeDuration": 15

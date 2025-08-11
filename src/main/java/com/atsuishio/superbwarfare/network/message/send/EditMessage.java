@@ -75,7 +75,27 @@ public record EditMessage(int msgType, boolean add) implements CustomPacketPaylo
                         && selectedAmmoType >= 0
                         && selectedAmmoType <= data.ammoConsumers.size() - 1
                 ) {
-                    data.withdrawAmmo(player);
+                    var currentConsumer = data.selectedAmmoConsumer();
+                    var targetConsumer = data.ammoConsumers.get(selectedAmmoType);
+                    if (currentConsumer == targetConsumer) return;
+
+                    var currentSlot = currentConsumer.ammoSlot;
+                    var targetSlot = targetConsumer.ammoSlot;
+
+                    if (currentSlot == null) currentSlot = "Default";
+                    if (targetSlot == null) targetSlot = "Default";
+
+                    if (currentSlot.equals(targetSlot)) {
+                        data.withdrawAmmo(player);
+                    } else {
+                        var ammo = data.ammo.get();
+                        var virtualAmmo = data.virtualAmmo.get();
+                        data.ammoSlot.set(currentSlot, ammo, virtualAmmo);
+
+                        data.ammo.set(data.ammoSlot.getAmmo(targetSlot));
+                        data.virtualAmmo.set(data.ammoSlot.getVirtualAmmo(targetSlot));
+                        data.ammoSlot.reset(targetSlot);
+                    }
                 }
 
                 data.changeAmmoConsumer(selectedAmmoType);
