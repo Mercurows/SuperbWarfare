@@ -6,13 +6,12 @@ import com.atsuishio.superbwarfare.item.curio.ParachuteItem;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.player.Player;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import static com.atsuishio.superbwarfare.event.ClientEventHandler.isProne;
 
 @Mixin(PlayerModel.class)
 public class PlayerModelMixin<T extends LivingEntity> {
@@ -66,7 +65,7 @@ public class PlayerModelMixin<T extends LivingEntity> {
             }
 
             // 趴下持枪
-            if (player.getMainHandItem().is(ModTags.Items.GUN) && isProne(player)) {
+            if (player.getMainHandItem().is(ModTags.Items.GUN) && player.getPose() == Pose.SWIMMING && !player.isSwimming()) {
                 model.hat.xRot = (player.getViewXRot(1) - 90) * Mth.DEG_TO_RAD;
                 model.head.xRot = (player.getViewXRot(1) - 90) * Mth.DEG_TO_RAD;
                 model.hat.yRot = 0;
