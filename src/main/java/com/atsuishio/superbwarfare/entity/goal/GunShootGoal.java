@@ -22,7 +22,7 @@ public class GunShootGoal<T extends Mob> extends Goal {
         return this.mob.getTarget() != null
                 && this.mob.getMainHandItem().getItem() instanceof GunItem
                 && this.data.getGunData() != null
-                && (this.data.getGunData().countBackupAmmo(mob) > 0 || this.data.getGunData().ammo.get() > 0);
+                && (this.data.getGunData().countBackupAmmo(mob) > 0 || this.data.getGunData().hasEnoughAmmoToShoot(this.mob));
     }
 
     @Override
@@ -30,7 +30,7 @@ public class GunShootGoal<T extends Mob> extends Goal {
         return (this.canUse() || !this.mob.getNavigation().isDone())
                 && this.mob.getMainHandItem().getItem() instanceof GunItem
                 && this.data.getGunData() != null
-                && (this.data.getGunData().countBackupAmmo(mob) > 0 || this.data.getGunData().ammo.get() > 0);
+                && (this.data.getGunData().countBackupAmmo(mob) > 0 || this.data.getGunData().hasEnoughAmmoToShoot(this.mob));
     }
 
     @Override

@@ -140,7 +140,7 @@ public class M2HBItem extends GunItem {
     ) {
         super.beforeShoot(shooter, level, shootPosition, shootDirection, data, spread, zoom);
 
-        if (data.ammo.get() <= 5) {
+        if (data.currentAvailableShots(shooter) <= 5) {
             data.hideBulletChain.set(true);
         }
     }

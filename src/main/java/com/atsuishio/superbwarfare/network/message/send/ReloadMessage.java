@@ -43,7 +43,7 @@ public enum ReloadMessage {
             var reloadTypes = data.reloadTypes();
             boolean canSingleReload = reloadTypes.contains(ReloadType.ITERATIVE);
             boolean canReload = reloadTypes.contains(ReloadType.MAGAZINE) && !reloadTypes.contains(ReloadType.CLIP);
-            boolean clipLoad = data.ammo.get() == 0 && reloadTypes.contains(ReloadType.CLIP);
+            boolean clipLoad = !data.hasEnoughAmmoToShoot(player) && reloadTypes.contains(ReloadType.CLIP);
 
             data.burstAmount.reset();
 

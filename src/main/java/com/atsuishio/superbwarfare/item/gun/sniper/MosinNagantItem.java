@@ -50,11 +50,11 @@ public class MosinNagantItem extends GunItem {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.mosin_nagant.shift"));
         }
 
-        if (data.reload.stage() == 1 && GunData.from(stack).ammo.get() == 0) {
+        if (data.reload.stage() == 1 && !GunData.from(stack).hasEnoughAmmoToShoot(player)) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.mosin_nagant.prepare_empty"));
         }
 
-        if (data.reload.stage() == 1 && GunData.from(stack).ammo.get() > 0) {
+        if (data.reload.stage() == 1 && GunData.from(stack).hasEnoughAmmoToShoot(player)) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.mosin_nagant.prepare"));
         }
 

@@ -234,7 +234,7 @@ public class JavelinItem extends GunItem {
         }
 
         player.getCooldowns().addCooldown(stack.getItem(), 10);
-        data.ammo.set(data.ammo.get() - 1);
+        data.ammo.set(data.ammo.get() - data.get(GunProp.AMMO_COST_PER_SHOOT));
     }
 
     @Override
@@ -270,7 +270,7 @@ public class JavelinItem extends GunItem {
     public void onFireKeyPress(GunData data, Player player, boolean zoom) {
         super.onFireKeyPress(data, player, zoom);
 
-        if (!zoom || data.ammo.get() <= 0) return;
+        if (!zoom || !data.hasEnoughAmmoToShoot(player)) return;
 
         var tag = data.tag();
 

@@ -443,7 +443,7 @@ public class ClickHandler {
                 bowPower = 0;
                 holdFire = true;
                 player.setSprinting(false);
-                if (data.ammo.get() > 0) {
+                if (data.hasEnoughAmmoToShoot(player)) {
                     return;
                 }
             }

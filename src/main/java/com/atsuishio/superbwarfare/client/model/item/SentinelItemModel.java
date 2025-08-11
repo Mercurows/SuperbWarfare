@@ -71,6 +71,8 @@ public class SentinelItemModel extends CustomGunModel<SentinelItem> {
         scope.setScaleZ(1f - (0.8f * (float) zp));
         cb.setRotZ((float) (cb.getRotZ() + times * 10 * ClientEventHandler.chamberRot));
 
+        var data = GunData.from(stack);
+
         shen.setPosX((float) (0.95f * ClientEventHandler.recoilHorizon * fpz * fp));
         shen.setPosY((float) (0.4f * fp + 0.44f * fr));
         shen.setPosZ((float) (3.325 * fp + 0.34f * fr + 2.35 * fpz));
@@ -88,8 +90,8 @@ public class SentinelItemModel extends CustomGunModel<SentinelItem> {
         CrossHairOverlay.gunRot = shen.getRotZ();
         ClientEventHandler.gunRootMove(getAnimationProcessor());
 
-        if (GunData.from(stack).ammo.get() <= 5) {
-            ammo.setScaleX((float) GunData.from(stack).ammo.get() / 5);
+        if (data.currentAvailableShots(player) <= 5) {
+            ammo.setScaleX((float) data.currentAvailableShots(player) / 5);
         }
 
         CoreGeoBone camera = getAnimationProcessor().getBone("camera");
