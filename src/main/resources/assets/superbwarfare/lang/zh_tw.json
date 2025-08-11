@@ -59,6 +59,7 @@
   "des.superbwarfare.secondary_cataclysm_2": "燈瑠Hiru",
   "item.superbwarfare.insidious": "陰險",
   "item.superbwarfare.qbz_191": "QBZ-191突擊步槍",
+  "item.superbwarfare.awm": "AWM狙擊步槍",
 
   "des.superbwarfare.guns.upgrade_point": "升級點數: ",
   "des.superbwarfare.guns.damage": "傷害: ",
@@ -80,7 +81,7 @@
   "des.superbwarfare.ammo_box.type.shotgun": "已選擇霰彈彈藥",
   "des.superbwarfare.ammo_box.type.sniper": "已選擇狙擊彈藥",
   "des.superbwarfare.ammo_box.type.heavy": "已選擇重型彈藥",
-  "des.superbwarfare.ammo_box": "潛行時左擊選擇彈藥類型，右擊存入該類型的彈藥，非潛行時右擊取出對應類型的彈藥",
+  "des.superbwarfare.ammo_box": "潛行時左鍵選擇彈藥類型，右鍵存入該類型的彈藥，非潛行時右鍵取出對應類型的彈藥",
 
   "item.superbwarfare.vector_blueprint": "短劍衝鋒槍藍圖",
   "item.superbwarfare.m_60_blueprint": "M60通用機槍藍圖",
@@ -93,6 +94,7 @@
   "item.superbwarfare.marlin_blueprint": "馬林1894槓桿步槍藍圖",
   "item.superbwarfare.bocek_blueprint": "BOCEK複合弓藍圖",
   "item.superbwarfare.trachelium_blueprint": "「夕霧花」藍圖",
+  "item.superbwarfare.awm_blueprint": "AWM狙擊步槍藍圖",
   "item.superbwarfare.m_98b_blueprint": "M98B狙擊步槍藍圖",
   "item.superbwarfare.ak_47_blueprint": "AK-47突擊步槍藍圖",
   "item.superbwarfare.ak_12_blueprint": "AK-12突擊步槍藍圖",
@@ -445,8 +447,8 @@
 
   "item.superbwarfare.empty_perk": "空白模組",
   "item.superbwarfare.shortcut_pack": "捷徑包",
-  "des.superbwarfare.shortcut_pack_1": "真的嗎？",
-  "des.superbwarfare.shortcut_pack_2": "將槍械和捷徑包在鐵砧合成，可直接獲得一個升級點數",
+  "des.superbwarfare.tips.shortcut_pack": "真的嗎？",
+  "des.superbwarfare.use_tip.shortcut_pack": "將槍械和捷徑包在鐵砧合成，可直接獲得一個升級點數",
 
   "perk.superbwarfare.tips": "[武器模組]",
   "perk.superbwarfare.slot": "類型：",
@@ -801,8 +803,8 @@
 
   "superbwarfare.entry.vehicle.intro": "載具基礎",
   "superbwarfare.page.vehicle.intro1": "卓越前線的載具平時被儲存在$(item)集裝箱$()中，需使用$(item)撬棍$()開啟。$(p)開啟集裝箱需要足夠的空間，手持撬棍時瞄準集裝箱，即可查看集裝箱所需空間大小。",
-  "superbwarfare.page.vehicle.intro2": "使用撬棍對準無人的載具$(thing)潛行右擊$()，即可將載具回收至集裝箱中。",
-  "superbwarfare.page.vehicle.intro3": "絕大部分載具需要能量，可透過$(item)充電站$()進行充能。$(p)右擊充電站可開啟GUI，在左側的格子中放入$(thing)燃料或食物$()進行發電，充電站會自動為範圍內的所有載具充能，右側的格子能為物品充電。",
+  "superbwarfare.page.vehicle.intro2": "使用撬棍對準無人的載具$(thing)潛行右鍵$()，即可將載具回收至集裝箱中。",
+  "superbwarfare.page.vehicle.intro3": "絕大部分載具需要能量，可透過$(item)充電站$()進行充能。$(p)右鍵充電站可開啟GUI，在左側的格子中放入$(thing)燃料或食物$()進行發電，充電站會自動為範圍內的所有載具充能，右側的格子能為物品充電。",
   "superbwarfare.page.vehicle.intro4": "充電站也能接收其他模組提供的$(thing)FE$()。",
   "superbwarfare.entry.vehicle.control": "載具駕駛",
   "superbwarfare.page.vehicle.control1": "$(o)「司機一定要會開車！」$()$(br)——作者$(p)本章節會對卓越前線的載具操作進行簡單介紹，讓你了解如何駕駛載具。",
