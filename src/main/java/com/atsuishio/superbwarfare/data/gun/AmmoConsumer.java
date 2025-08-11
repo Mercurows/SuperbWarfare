@@ -34,6 +34,9 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
     @SerializedName("Ammo")
     public String ammo;
 
+    @SerializedName("AmmoSlot")
+    public String ammoSlot = "Default";
+
     @ServerOnly
     @SerializedName("Projectile")
     public StringToObject<ProjectileInfo> projectile = null;

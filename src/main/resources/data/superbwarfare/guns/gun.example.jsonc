@@ -92,6 +92,12 @@
        * "Ammo": "1 tacz:ammo{AmmoId:\"tacz:40mm\"}"
        */
       "Ammo": "@HandgunAmmo",
+      /*
+       * What slot will the current ammo type use
+       * Different ammo type with the same slot will conflict with each other
+       * And you have to withdraw ammo and then reload
+       */
+      "AmmoSlot": "Default",
       // Projectile info override, same as defined above
       "Projectile": "superbwarfare:projectile",
       // Gun property override, check out GunProp.java for mor info

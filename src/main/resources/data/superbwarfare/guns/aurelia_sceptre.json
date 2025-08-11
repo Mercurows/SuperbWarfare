@@ -26,6 +26,7 @@
   "AmmoType": [
     "@HandgunAmmo",
     {
+      "AmmoSlot": "Melee",
       "Override": {
         "ProjectileAmount": 0,
         "MeleeDuration": 12

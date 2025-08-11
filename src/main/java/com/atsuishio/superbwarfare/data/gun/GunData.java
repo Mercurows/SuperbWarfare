@@ -82,6 +82,7 @@ public class GunData {
 
         ammo = new IntValue(data, "Ammo");
         virtualAmmo = new IntValue(data, "VirtualAmmo");
+        ammoSlot = new AmmoSlot(data);
         burstAmount = new IntValue(data, "BurstAmount");
 
         var defaultFireMode = get(GunProp.DEFAULT_FIRE_MODE);
@@ -691,6 +692,8 @@ public class GunData {
 
     public final IntValue ammo;
     public final IntValue virtualAmmo;
+    public final AmmoSlot ammoSlot;
+
     public final IntValue burstAmount;
     public final StringEnumValue<FireMode> fireMode;
     public final IntValue level;
