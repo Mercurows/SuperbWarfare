@@ -79,6 +79,7 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
         super(properties);
 
         addReloadTimeBehavior(this.reloadTimeBehaviors);
+        addBoltTimeBehavior(this.boltTimeBehaviors);
         SingletonGeoAnimatable.registerSyncedAnimatable(this);
 
         setProperty(GunProp.DAMAGE, (data, v) -> v + getCustomDamage(data.stack));
@@ -430,11 +431,18 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
     }
 
     public final Map<Integer, Consumer<GunData>> reloadTimeBehaviors = new HashMap<>();
+    public final Map<Integer, Consumer<GunData>> boltTimeBehaviors = new HashMap<>();
 
     /**
      * 添加达到指定换弹时间时的额外行为
      */
     public void addReloadTimeBehavior(Map<Integer, Consumer<GunData>> behaviors) {
+    }
+
+    /**
+     * 添加达到指定拉栓/泵动时间时的额外行为
+     */
+    public void addBoltTimeBehavior(Map<Integer, Consumer<GunData>> behaviors) {
     }
 
     /**
@@ -488,6 +496,7 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
         if (!data.useBackpackAmmo()) {
             data.ammo.set(data.ammo.get() - data.get(GunProp.AMMO_COST_PER_SHOOT));
             data.isEmpty.set(true);
+            data.closeStrike.set(true);
         } else {
             data.consumeBackupAmmo(shooter, data.get(GunProp.AMMO_COST_PER_SHOOT));
         }

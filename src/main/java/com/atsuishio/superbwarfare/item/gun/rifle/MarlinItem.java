@@ -23,7 +23,9 @@ import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
 
+import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class MarlinItem extends GunItem {
@@ -109,6 +111,12 @@ public class MarlinItem extends GunItem {
                 ModSounds.MARLIN_PREPARE.get(),
                 ModSounds.MARLIN_END.get(),
                 ModSounds.MARLIN_BOLT.get());
+    }
+
+    @Override
+    public void addBoltTimeBehavior(Map<Integer, Consumer<GunData>> behaviors) {
+        super.addBoltTimeBehavior(behaviors);
+        behaviors.put(9, data -> data.closeStrike.set(false));
     }
 
     @Override

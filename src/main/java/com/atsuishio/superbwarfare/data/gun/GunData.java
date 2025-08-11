@@ -96,6 +96,7 @@ public class GunData {
 
         isEmpty = new BooleanValue(data, "IsEmpty");
         closeHammer = new BooleanValue(data, "CloseHammer");
+        closeStrike = new BooleanValue(data, "CloseStrike");
         stopped = new BooleanValue(data, "Stopped");
         forceStop = new BooleanValue(data, "ForceStop");
         loadIndex = new IntValue(data, "LoadIndex");
@@ -724,6 +725,7 @@ public class GunData {
 
     public final BooleanValue isEmpty;
     public final BooleanValue closeHammer;
+    public final BooleanValue closeStrike;
     public final BooleanValue stopped;
     public final BooleanValue forceStop;
     public final IntValue loadIndex;

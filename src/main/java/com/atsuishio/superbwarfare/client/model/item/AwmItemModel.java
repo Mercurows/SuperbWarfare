@@ -65,7 +65,7 @@ public class AwmItemModel extends CustomGunModel<AwmItem> {
         CoreGeoBone button = getAnimationProcessor().getBone("button");
         CoreGeoBone button6 = getAnimationProcessor().getBone("button6");
         CoreGeoBone button7 = getAnimationProcessor().getBone("button7");
-        CoreGeoBone jizhen = getAnimationProcessor().getBone("jizhen");
+        CoreGeoBone strike = getAnimationProcessor().getBone("jizhen");
 
         int type = GunData.from(stack).attachment.get(AttachmentType.SCOPE);
 
@@ -143,6 +143,10 @@ public class AwmItemModel extends CustomGunModel<AwmItem> {
         rotXSight = Mth.lerp(1.5f * times, rotXSight, type == 0 ? 0 : 90);
         sight1fold.setRotX(rotXSight * Mth.DEG_TO_RAD);
         sight2fold.setRotX(rotXSight * Mth.DEG_TO_RAD);
+
+        if (GunData.from(stack).closeStrike.get()) {
+            strike.setPosZ(-0.2f);
+        }
 
         float numR = (float) (1 - 0.92 * zt);
         float numP = (float) (1 - 0.82 * zt);
