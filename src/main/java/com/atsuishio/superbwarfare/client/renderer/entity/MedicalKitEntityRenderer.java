@@ -37,8 +37,10 @@ public class MedicalKitEntityRenderer extends GeoEntityRenderer<MedicalKitEntity
     @Override
     public void render(MedicalKitEntity entityIn, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource bufferIn, int packedLightIn) {
         poseStack.pushPose();
-        poseStack.mulPose(Axis.YP.rotationDegrees(-entityYaw));
-        poseStack.mulPose(Axis.XP.rotationDegrees(Mth.lerp(partialTicks, entityIn.xRotO, entityIn.getXRot()) + 90));
+        if (entityIn.getDeltaMovement().lengthSqr() > 0) {
+            poseStack.mulPose(Axis.YP.rotationDegrees(-entityYaw));
+            poseStack.mulPose(Axis.XP.rotationDegrees(Mth.lerp(partialTicks, entityIn.xRotO, entityIn.getXRot()) + 90));
+        }
         super.render(entityIn, entityYaw, partialTicks, poseStack, bufferIn, packedLightIn);
         poseStack.popPose();
     }

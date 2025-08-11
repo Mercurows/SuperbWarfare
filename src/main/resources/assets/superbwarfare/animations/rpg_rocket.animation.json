@@ -120,6 +120,14 @@
 					}
 				}
 			}
+		},
+		"animation.rpg.none": {
+			"loop": true,
+			"bones": {
+				"flare": {
+					"scale": 0
+				}
+			}
 		}
 	}
 }

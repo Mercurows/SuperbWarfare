@@ -134,8 +134,8 @@ public class DroneRenderer extends GeoEntityRenderer<DroneEntity> {
 			poseStack.pushPose();
 			poseStack.translate(x + offset[0], offset[1], z + offset[2]);
 			poseStack.scale(scale[0], scale[1], scale[2]);
-			poseStack.mulPose(Axis.XP.rotationDegrees(rotation[0]));
 			poseStack.mulPose(Axis.YP.rotationDegrees(rotation[2]));
+			poseStack.mulPose(Axis.XP.rotationDegrees(rotation[0]));
 			poseStack.mulPose(Axis.ZP.rotationDegrees(rotation[1]));
 
 			entityRenderDispatcher.render(renderEntity, 0, 0, 0, entityYaw, partialTicks, poseStack, buffer, packedLight);
