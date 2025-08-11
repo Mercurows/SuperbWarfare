@@ -38,8 +38,10 @@ public class GunEventHandler {
         if (stack.is(ModTags.Items.NORMAL_GUN)) {
             data.bolt.actionTimer.reduce();
 
-            if (stack.getItem() == ModItems.MARLIN.get() && data.bolt.actionTimer.get() == 9) {
-                data.isEmpty.set(false);
+            // 执行拉栓期间额外行为
+            var behavior = data.item.boltTimeBehaviors.get(data.bolt.actionTimer.get());
+            if (behavior != null) {
+                behavior.accept(data);
             }
 
             if (data.bolt.actionTimer.get() == 1) {

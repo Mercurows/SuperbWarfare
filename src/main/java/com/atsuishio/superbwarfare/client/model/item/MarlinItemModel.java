@@ -84,7 +84,7 @@ public class MarlinItemModel extends CustomGunModel<MarlinItem> {
 
         CrossHairOverlay.gunRot = shen.getRotZ();
 
-        if (GunData.from(stack).isEmpty.get()) {
+        if (GunData.from(stack).closeStrike.get()) {
             jichui.setRotX(-0.52f);
         }
 

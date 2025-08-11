@@ -20,7 +20,9 @@ import software.bernie.geckolib.animation.*;
 import software.bernie.geckolib.constant.DataTickets;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
 
+import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class AwmItem extends GunItem {
@@ -138,6 +140,18 @@ public class AwmItem extends GunItem {
     @Override
     public boolean canAdjustZoom(ItemStack stack) {
         return GunData.from(stack).attachment.get(AttachmentType.SCOPE) == 3;
+    }
+
+    @Override
+    public void addReloadTimeBehavior(Map<Integer, Consumer<GunData>> behaviors) {
+        super.addReloadTimeBehavior(behaviors);
+        behaviors.put(18, data -> data.closeStrike.set(false));
+    }
+
+    @Override
+    public void addBoltTimeBehavior(Map<Integer, Consumer<GunData>> behaviors) {
+        super.addBoltTimeBehavior(behaviors);
+        behaviors.put(18, data -> data.closeStrike.set(false));
     }
 
     @Override
