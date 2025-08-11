@@ -191,14 +191,18 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
         return false;
     }
 
+    private boolean isDamageable = false;
+
     @Override
     public int getMaxDamage(@NotNull ItemStack stack) {
-        return GunData.getDefault(stack).maxDurability;
+        var maxDurability = GunData.from(stack).get(GunProp.MAX_DURABILITY);
+        isDamageable = maxDurability > 0;
+        return maxDurability;
     }
 
     @Override
     public boolean isDamageable(ItemStack stack) {
-        return getMaxDamage(stack) > 0;
+        return isDamageable;
     }
 
     /**
