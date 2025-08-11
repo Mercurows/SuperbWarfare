@@ -1,0 +1,39 @@
+// Mob using guns, check out DefaultMobGunData.java for more info
+{
+  // Entity ID, MUST not be null or empty
+  "ID": "minecraft:skeleton",
+  // Probability for spawning this mob with guns
+  "Probability": 1,
+  // Goal weight for mob to use guns
+  "GoalWeight": 3,
+  // Aim time in ticks for mobs to aim before shoot
+  "AimTime": 30,
+  // Clear aim time when lost sight, otherwise aim time will reduce by 1 per tick
+  "ClearAimTimeWhenLostSight": true,
+  // Guns data, check out GunSpawnData.java for more info
+  "Guns": [
+    {
+      // Gun item's registry ID, MUST NOT be null and MUST be GunItem
+      "ID": "superbwarfare:m_79",
+      // Roll weight for this gun
+      "Weight": 1,
+      // Backup ammo count for this gun
+      "BackupAmmo": 0,
+      // Should guns be loaded when mobs spawn
+      "SpawnWithLoadedAmmo": false,
+      "ShootDistance": 30,
+      // Will mobs be considered as zooming when shoot
+      "Zoom": true,
+      // Fire spread
+      "Spread": 1,
+      // Custom NBT data override for gun items
+      "Data": {},
+      // Gun property override, check out GunProp.java for more info
+      "Override": {
+        "Damage": 1,
+        "ExplosionDamage": 0,
+        "ExplosionRadius": 1
+      }
+    }
+  ]
+}

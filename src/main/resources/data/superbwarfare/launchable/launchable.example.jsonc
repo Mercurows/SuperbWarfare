@@ -1,0 +1,11 @@
+// default launchable entity data for guns, check out LaunchableEntityTool.java for more info
+{
+  // Entity id, MUST not be null or empty
+  "Type": "minecraft:arrow",
+  // Custom NBT data override
+  "Data": {
+    "damage": "@sbw:damage",
+    "pickup": 2,
+    "crit": false
+  }
+}
