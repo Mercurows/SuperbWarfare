@@ -1,0 +1,56 @@
+// Example drone attachment data, check out DroneAttachmentData.java for more info
+{
+  // Attachment item id, MUST not be null or empty
+  "Item": "superbwarfare:grenade_40mm",
+  // Entity to spawn and display
+  "Entity": "superbwarfare:gun_grenade",
+  // Entity to display, fall back to Entity if this is null or empty
+  "DisplayEntity": "superbwarfare:gun_grenade",
+  // Entity to spawn, fall back to Entity if this is null or empty
+  "DropEntity": "superbwarfare:gun_grenade",
+  // Relative x, y, z position to drop entity
+  "DropPosition": [
+    0,
+    -0.09,
+    0
+  ],
+  // Custom NBT data replacer for the drop entity
+  "Data": {},
+  // Custom NBT data replacer for the display entity, fall back to Data if this is null
+  "DisplayData": {},
+  // Custom NBT data replacer for the drop entity, fall back to Data if this is null
+  "DropData": {},
+  // Attachment count for drop mode
+  "Count": 4,
+  "IsKamikaze": true,
+  // Direct hit damage
+  "HitDamage": 20,
+  // Explosion damage
+  "ExplosionDamage": 50,
+  // Explosion radius
+  "ExplosionRadius": 5,
+  // x, y, z offset for display entity
+  "Offset": [
+    0,
+    -0.35,
+    0.08
+  ],
+  // x, y, z rotation for display entity
+  "Rotation": [
+    90,
+    0,
+    0
+  ],
+  // x, y, z scale for display entity
+  "Scale": [
+    0.5,
+    0.5,
+    0.5
+  ],
+  // Display position interval in X axis for display entity
+  "XLength": 0.1,
+  // Display position interval in Z axis for display entity
+  "ZLength": 0.35,
+  // Tick count for rendering display entity, set this to -1 to make tick increase automatically
+  "TickCount": -1
+}
