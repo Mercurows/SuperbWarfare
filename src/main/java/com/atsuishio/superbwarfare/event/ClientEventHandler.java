@@ -692,13 +692,8 @@ public class ClientEventHandler {
                 holdFire = false;
             }
 
-            if (mode == FireMode.BURST) {
-                if (data.currentAvailableShots(player) == 1) {
-                    burstFireAmount = 1;
-                }
-                if (burstFireAmount == 1) {
-                    cantFireTime = 30;
-                }
+            if (mode == FireMode.BURST && burstFireAmount == 1) {
+                cantFireTime = 30;
             }
 
             if (burstFireAmount > 0) {
