@@ -29,6 +29,7 @@
   // Magazine, set this to zero to make guns use backpack ammo directly
   "Magazine": 0,
   // Melee damage, when this is greater than zero, you can perform melee attacks by pressing V
+  // When MeleeDamage is greater than zero and ProjectileAmount equals zero, gun will be considered melee only, and you can perform melee attack by holding fire key
   "MeleeDamage": 0,
   // Melee attack duration in ticks
   "MeleeDuration": 16,
@@ -51,7 +52,7 @@
   },
   // Ammo cost per shoot
   "AmmoCostPerShoot": 1,
-  // Projectile amount spawned per shoot
+  // Projectile amount spawned per shoot, set this to zero will prevent gun from shooting
   "ProjectileAmount": 1,
   // Gun weight, affects movement speed, projectile velocity, tactical sprint cost, etc
   "Weight": 7,
