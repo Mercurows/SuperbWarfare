@@ -216,7 +216,11 @@ public class RpgRocketEntity extends FastThrowableProjectile implements GeoEntit
     }
 
     private PlayState movementPredicate(AnimationState<RpgRocketEntity> event) {
-        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.rpg.idle"));
+        if (getDeltaMovement().lengthSqr() > 0) {
+            return event.setAndContinue(RawAnimation.begin().thenLoop("animation.rpg.idle"));
+        } else {
+            return event.setAndContinue(RawAnimation.begin().thenLoop("animation.rpg.none"));
+        }
     }
 
     @Override
