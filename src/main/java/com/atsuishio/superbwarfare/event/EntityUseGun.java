@@ -22,7 +22,7 @@ public class EntityUseGun {
 
         var data = MobGunData.from(mob);
 
-        if (data.probability() <= 0 || data.probability() < entity.level().random.nextDouble()) {
+        if (data == null || data.probability() <= 0 || data.probability() < entity.level().random.nextDouble()) {
             return;
         }
 

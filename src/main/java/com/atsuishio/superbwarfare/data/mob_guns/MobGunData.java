@@ -30,20 +30,20 @@ public class MobGunData {
                 }
             });
 
-    public final boolean isDefault;
     public final DefaultMobGunData data;
     private final Mob mob;
     private GunData gunData;
     private GunSpawnData selectedData;
 
     private MobGunData(Mob mob) {
-        var mobId = EntityType.getKey(mob.getType()).toString();
-        this.isDefault = CustomData.MOB_GUNS.containsKey(mobId);
-        this.data = CustomData.MOB_GUNS.getOrDefault(mobId, new DefaultMobGunData());
         this.mob = mob;
+        this.data = CustomData.MOB_GUNS.get(EntityType.getKey(mob.getType()).toString());
     }
 
-    public static MobGunData from(Mob mob) {
+    public static @Nullable MobGunData from(Mob mob) {
+        var mobId = EntityType.getKey(mob.getType()).toString();
+        if (!CustomData.MOB_GUNS.containsKey(mobId)) return null;
+
         return dataCache.getUnchecked(mob);
     }
 
