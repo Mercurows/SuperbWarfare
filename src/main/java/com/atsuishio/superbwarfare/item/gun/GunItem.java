@@ -76,7 +76,7 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     public GunItem(Properties properties) {
-        super(properties);
+        super(properties.stacksTo(1));
 
         addReloadTimeBehavior(this.reloadTimeBehaviors);
         addBoltTimeBehavior(this.boltTimeBehaviors);
