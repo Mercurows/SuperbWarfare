@@ -236,7 +236,6 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
         Entity passenger3 = getNthEntity(2);
         Entity passenger4 = getNthEntity(3);
         float diffX;
-        float diffY;
         float diffZ;
 
         if (getHealth() > 0.1f * getMaxHealth()) {
