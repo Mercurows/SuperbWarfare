@@ -467,12 +467,12 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
             boolean zoom
     ) {
         // 空仓挂机
-        if (data.ammo.get() == 1) {
+        if (data.currentAvailableShots(shooter) == 1) {
             data.holdOpen.set(true);
         }
 
         // 判断是否为栓动武器（BoltActionTime > 0），并在开火后给一个需要上膛的状态
-        if (data.get(GunProp.BOLT_ACTION_TIME) > 0 && data.ammo.get() > 1) {
+        if (data.get(GunProp.BOLT_ACTION_TIME) > 0 && data.hasEnoughAmmoToShoot(shooter)) {
             data.bolt.needed.set(true);
         }
     }
@@ -497,7 +497,7 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
             data.consumeBackupAmmo(shooter, data.get(GunProp.AMMO_COST_PER_SHOOT));
         }
 
-        if (data.ammo.get() <= 0) {
+        if (!data.hasEnoughAmmoToShoot(shooter)) {
             data.burstAmount.reset();
         }
 

@@ -83,11 +83,11 @@ public class BocekItemRenderer extends CustomGunRenderer<BocekItem> {
                 if (this.renderPerspective == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND) {
                     if (name.equals("arrow")) {
                         var data = GunData.from(itemStack);
-                        bone.setHidden(data.ammo.get() == 0);
+                        bone.setHidden(!data.hasEnoughAmmoToShoot(player));
                     }
                     if (name.equals("arrow2")) {
                         var data = GunData.from(itemStack);
-                        bone.setHidden(data.ammo.get() != 0);
+                        bone.setHidden(data.hasEnoughAmmoToShoot(player));
                     }
 
                     AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0.002, 0.1790625, 0.13, 0.08f, 255, 0, 0, 255, "dot", false);

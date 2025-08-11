@@ -484,10 +484,24 @@ public class GunData {
     }
 
     /**
-     * 是否拥有足够的弹药进行开火
+     * 当前状态在换弹前的可用射击次数
+     */
+    public int currentAvailableShots(@Nullable Entity entity) {
+        return currentAvailableAmmo(entity) / get(GunProp.AMMO_COST_PER_SHOOT);
+    }
+
+    /**
+     * 当前枪内可用弹药数量
+     */
+    public int currentAvailableAmmo(@Nullable Entity entity) {
+        return useBackpackAmmo() ? countBackupAmmo(entity) : this.ammo.get();
+    }
+
+    /**
+     * 当前状态枪内是否拥有足够的弹药进行开火
      */
     public boolean hasEnoughAmmoToShoot(@Nullable Entity entity) {
-        return get(GunProp.AMMO_COST_PER_SHOOT) <= (useBackpackAmmo() ? countBackupAmmo(entity) : this.ammo.get());
+        return get(GunProp.AMMO_COST_PER_SHOOT) <= currentAvailableAmmo(entity);
     }
 
     /**

@@ -90,8 +90,8 @@ public class SentinelItemModel extends CustomGunModel<SentinelItem> {
         CrossHairOverlay.gunRot = shen.getRotZ();
         ClientEventHandler.gunRootMove(getAnimationProcessor());
 
-        if (data.ammo.get() <= 5) {
-            ammo.setScaleX((float) data.ammo.get() / 5);
+        if (data.currentAvailableShots(player) <= 5) {
+            ammo.setScaleX((float) data.currentAvailableShots(player) / 5);
         }
 
         GeoBone camera = getAnimationProcessor().getBone("camera");

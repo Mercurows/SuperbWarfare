@@ -75,7 +75,7 @@ public class PlayerEventHandler {
 
         var data = GunData.from(stack);
 
-        if ((stack.is(ModItems.RPG.get()) || stack.is(ModItems.BOCEK.get())) && data.ammo.get() == 1) {
+        if ((stack.is(ModItems.RPG.get()) || stack.is(ModItems.BOCEK.get())) && data.hasEnoughAmmoToShoot(player)) {
             data.isEmpty.set(false);
         }
     }

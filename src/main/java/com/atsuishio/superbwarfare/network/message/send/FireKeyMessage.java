@@ -59,9 +59,8 @@ public record FireKeyMessage(int msgType, double power, boolean zoom) implements
         var data = GunData.from(stack);
 
         if (data.get(GunProp.BOLT_ACTION_TIME) > 0
-                && data.ammo.get() > 0
+                && data.hasEnoughAmmoToShoot(player)
                 && data.bolt.actionTimer.get() == 0
-                && !(data.reload.normal() || data.reload.empty())
                 && !data.reloading()
                 && !data.charging()
         ) {

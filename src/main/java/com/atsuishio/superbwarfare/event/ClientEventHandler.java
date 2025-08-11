@@ -693,7 +693,7 @@ public class ClientEventHandler {
             }
 
             if (mode == FireMode.BURST) {
-                if (data.ammo.get() == 1) {
+                if (data.currentAvailableShots(player) == 1) {
                     burstFireAmount = 1;
                 }
                 if (burstFireAmount == 1) {
@@ -725,7 +725,7 @@ public class ClientEventHandler {
             }
 
             // 判断是否为栓动武器（BoltActionTime > 0），并在开火后给一个需要上膛的状态
-            if (data.get(GunProp.BOLT_ACTION_TIME) > 0 && data.ammo.get() > 1) {
+            if (data.get(GunProp.BOLT_ACTION_TIME) > 0 && data.hasEnoughAmmoToShoot(player)) {
                 data.bolt.needed.set(true);
             }
 
@@ -1455,7 +1455,7 @@ public class ClientEventHandler {
 
         var data = GunData.from(stack);
 
-        if (holdFire && data.ammo.get() > 0 && !bowPull && stack.is(ModItems.BOCEK.get())) {
+        if (holdFire && data.hasEnoughAmmoToShoot(entity) && !bowPull && stack.is(ModItems.BOCEK.get())) {
             entity.playSound(ModSounds.BOCEK_PULL_1P.get(), 1, 1);
             bowPull = true;
         }

@@ -87,7 +87,7 @@ public class GunEventHandler {
      */
     private static void finishReload(@Nullable Entity shooter, @NotNull GunData data) {
         if (data.item.isOpenBolt(data.stack)) {
-            if (data.ammo.get() == 0) {
+            if (!data.hasEnoughAmmoToShoot(shooter)) {
                 finishGunEmptyReload(shooter, data);
             } else {
                 finishGunNormalReload(shooter, data);
@@ -207,10 +207,10 @@ public class GunEventHandler {
         }
 
         if (inMainHand && !data.reloading()) {
-            if (data.ammo.get() <= 5) {
+            if (data.currentAvailableShots(shooter) <= 5) {
                 data.hideBulletChain.set(true);
             }
-            if (data.ammo.get() == 0) {
+            if (!data.hasEnoughAmmoToShoot(shooter)) {
                 data.holdOpen.set(true);
                 data.isEmpty.set(true);
             }
@@ -223,7 +223,7 @@ public class GunEventHandler {
         var reload = data.reload;
 
         if (data.item.isOpenBolt(data.stack)) {
-            if (data.ammo.get() == 0) {
+            if (!data.hasEnoughAmmoToShoot(shooter)) {
                 reload.setTime(data.get(GunProp.EMPTY_RELOAD_TIME) + 1);
                 reload.setState(ReloadState.EMPTY_RELOADING);
                 playGunEmptyReloadSounds(shooter, data);
@@ -298,12 +298,12 @@ public class GunEventHandler {
         if (reload.singleReloadStarter.start()) {
             NeoForge.EVENT_BUS.post(new ReloadEvent.Pre(shooter, data));
 
-            if (data.get(GunProp.PREPARE_LOAD_TIME) != 0 && (data.ammo.get() == 0 || stack.is(ModItems.SECONDARY_CATACLYSM.get()))) {
+            if (data.get(GunProp.PREPARE_LOAD_TIME) != 0 && (!data.hasEnoughAmmoToShoot(shooter) || stack.is(ModItems.SECONDARY_CATACLYSM.get()))) {
                 // 此处判断空仓换弹的时候，是否在准备阶段就需要装填一发，如M870
                 playGunPrepareLoadReloadSounds(shooter, data);
                 int prepareLoadTime = data.get(GunProp.PREPARE_LOAD_TIME);
                 reload.prepareLoadTimer.set(prepareLoadTime + 1);
-            } else if (data.get(GunProp.PREPARE_EMPTY_TIME) != 0 && data.ammo.get() == 0) {
+            } else if (data.get(GunProp.PREPARE_EMPTY_TIME) != 0 && !data.hasEnoughAmmoToShoot(shooter)) {
                 // 此处判断空仓换弹，如莫辛纳甘
                 playGunEmptyPrepareSounds(shooter, data);
                 int prepareEmptyTime = data.get(GunProp.PREPARE_EMPTY_TIME);

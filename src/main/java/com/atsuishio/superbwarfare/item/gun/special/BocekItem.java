@@ -153,7 +153,7 @@ public class BocekItem extends GunItem {
     public void onFireKeyRelease(GunData data, Player player, double power, boolean zoom) {
         super.onFireKeyRelease(data, player, power, zoom);
 
-        if (data.ammo.get() == 0) return;
+        if (!data.hasEnoughAmmoToShoot(player)) return;
 
         var perk = data.perk.get(Perk.Type.AMMO);
 
@@ -187,7 +187,7 @@ public class BocekItem extends GunItem {
             }
 
             GunsTool.setGunIntTag(data.tag, "ArrowEmpty", 7);
-            data.ammo.set(data.ammo.get() - 1);
+            data.ammo.set(data.ammo.get() - data.get(GunProp.AMMO_COST_PER_SHOOT));
             data.save();
         }
     }
