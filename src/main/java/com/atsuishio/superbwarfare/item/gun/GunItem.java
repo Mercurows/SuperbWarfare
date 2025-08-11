@@ -201,11 +201,9 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
         if (maxDurability > 0) {
             if (!stack.has(DataComponents.MAX_DAMAGE) || !stack.has(DataComponents.DAMAGE)) {
                 stack.set(DataComponents.MAX_DAMAGE, maxDurability);
-                stack.set(DataComponents.DAMAGE, 0);
             }
         } else {
             stack.remove(DataComponents.MAX_DAMAGE);
-            stack.remove(DataComponents.DAMAGE);
         }
         return maxDurability;
     }
