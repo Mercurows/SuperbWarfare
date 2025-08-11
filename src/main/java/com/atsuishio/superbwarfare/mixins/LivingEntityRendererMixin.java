@@ -7,13 +7,12 @@ import com.mojang.math.Axis;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.player.Player;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import static com.atsuishio.superbwarfare.event.ClientEventHandler.isProne;
 
 // From Immersive_Aircraft
 @Mixin(LivingEntityRenderer.class)
@@ -44,7 +43,7 @@ public class LivingEntityRendererMixin<T extends LivingEntity> {
                 poseStack.mulPose(Axis.ZP.rotationDegrees(r * vehicle.getRoll(partialTick) + r2 * vehicle.getViewXRot(partialTick)));
             }
         }
-        if (entity instanceof Player player && player.getMainHandItem().getItem() instanceof GunItem && isProne(player) && !player.isSwimming()) {
+        if (entity instanceof Player player && player.getMainHandItem().getItem() instanceof GunItem && player.getPose() == Pose.SWIMMING && !player.isSwimming()) {
             poseStack.translate(0, -0.18, 0);
         }
     }

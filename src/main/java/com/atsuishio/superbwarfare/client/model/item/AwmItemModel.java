@@ -65,6 +65,7 @@ public class AwmItemModel extends CustomGunModel<AwmItem> {
         GeoBone button = getAnimationProcessor().getBone("button");
         GeoBone button6 = getAnimationProcessor().getBone("button6");
         GeoBone button7 = getAnimationProcessor().getBone("button7");
+        GeoBone jizhen = getAnimationProcessor().getBone("jizhen");
 
         int type = GunData.from(stack).attachment.get(AttachmentType.SCOPE);
 
