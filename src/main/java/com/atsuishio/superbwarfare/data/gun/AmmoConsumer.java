@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.annotation.ServerOnly;
 import com.atsuishio.superbwarfare.data.DataLoader;
 import com.atsuishio.superbwarfare.data.DeserializeFromString;
+import com.atsuishio.superbwarfare.data.Prop;
 import com.atsuishio.superbwarfare.data.StringToObject;
 import com.atsuishio.superbwarfare.tools.Ammo;
 import com.atsuishio.superbwarfare.tools.InventoryTool;
@@ -62,10 +63,11 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
         return this.initialized;
     }
 
-    private final Map<GunProp<?>, GunProp.GunPropModifyContext<?>> modifiers = new HashMap<>();
+    private final Map<GunProp<?>, Prop.PropModifyContext<GunData, ?>> modifiers = new HashMap<>();
 
     @Override
-    public @NotNull Map<GunProp<?>, GunProp.GunPropModifyContext<?>> getPropModifiers() {
+    @SuppressWarnings("unchecked")
+    public @NotNull Map<GunProp<?>, Prop.PropModifyContext<GunData, ?>> getPropModifiers() {
         return this.modifiers;
     }
 

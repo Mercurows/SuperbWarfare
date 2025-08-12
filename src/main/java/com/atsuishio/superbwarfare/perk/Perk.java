@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.perk;
 
+import com.atsuishio.superbwarfare.data.Prop;
 import com.atsuishio.superbwarfare.data.gun.DamageReduce;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.GunProp;
@@ -18,17 +19,17 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-// TODO 重写所有Perk的枪械属性修改方法
 public class Perk implements GunPropertyModifier {
 
     public final String descriptionId;
     public final String name;
     public final Type type;
 
-    public Map<GunProp<?>, GunProp.GunPropModifyContext<?>> propertyModifiers = new HashMap<>();
+    public Map<GunProp<?>, Prop.PropModifyContext<GunData, ?>> propertyModifiers = new HashMap<>();
 
     @Override
-    public @NotNull Map<GunProp<?>, GunProp.GunPropModifyContext<?>> getPropModifiers() {
+    @SuppressWarnings("unchecked")
+    public @NotNull Map<GunProp<?>, Prop.PropModifyContext<GunData, ?>> getPropModifiers() {
         return this.propertyModifiers;
     }
 

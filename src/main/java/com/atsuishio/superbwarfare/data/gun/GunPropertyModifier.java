@@ -1,64 +1,6 @@
 package com.atsuishio.superbwarfare.data.gun;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import com.atsuishio.superbwarfare.data.PropertyModifier;
 
-import java.util.Map;
-import java.util.function.Function;
-
-public interface GunPropertyModifier {
-    @NotNull
-    Map<GunProp<?>, GunProp.GunPropModifyContext<?>> getPropModifiers();
-
-    @Nullable
-    @SuppressWarnings("unchecked")
-    default <T> GunProp.GunPropModifyContext<T> getModifier(GunProp<T> prop) {
-        return (GunProp.GunPropModifyContext<T>) getPropModifiers().get(prop);
-    }
-
-    /**
-     * 直接修改某个属性的值
-     */
-    default <T> void setProperty(GunProp<T> prop, @Nullable Function<T, T> modifier) {
-        if (modifier == null) return;
-        setProperty(prop, (data, value) -> modifier.apply(value));
-    }
-
-    /**
-     * 直接修改某个属性的值
-     */
-    @SuppressWarnings("unchecked")
-    default <T> void setProperty(GunProp<T> prop, @Nullable GunProp.GunPropModifyContext<T> modifier) {
-        if (modifier == null) return;
-        getPropModifiers().put(prop, (data, value) -> modifier.apply(data, (T) value));
-    }
-
-
-    /**
-     * 在先前修改的基础上继续修改某个属性的值
-     */
-    default <T> void appendModification(GunProp<T> prop, @Nullable Function<T, T> modifier) {
-        if (modifier == null) return;
-        appendModification(prop, (data, value) -> modifier.apply(value));
-    }
-
-    /**
-     * 在先前修改的基础上继续修改某个属性的值
-     */
-    @SuppressWarnings("unchecked")
-    default <T> void appendModification(GunProp<T> prop, @Nullable GunProp.GunPropModifyContext<T> modifier) {
-        if (modifier == null) return;
-
-        var modifiers = getPropModifiers();
-        var current = (GunProp.GunPropModifyContext<T>) modifiers.get(prop);
-
-        if (current == null) {
-            setProperty(prop, modifier);
-        } else {
-            modifiers.put(prop, (data, v) -> {
-                var value = current.apply(data, (T) v);
-                return modifier.apply(data, value);
-            });
-        }
-    }
+public interface GunPropertyModifier extends PropertyModifier<GunData, DefaultGunData> {
 }
