@@ -983,6 +983,30 @@ public abstract class MobileVehicleEntity extends VehicleEntity implements Contr
     }
 
     public void trackEngine(boolean amphibious, double buoyancy, int EnergyConsume, double wheelRotSpeed, double wheelDifferential, double trackSpeed, double trackDifferential, float maxPower, float minPower, float powerAdd, float powerReduce, float steeringSpeed) {
+        if (amphibious) {
+            double fluidFloat = buoyancy * getSubmergedHeight(this);
+            this.setDeltaMovement(this.getDeltaMovement().add(0.0, fluidFloat, 0.0));
+        }
+
+        if (this.onGround()) {
+            float f0 = 0.54f + 0.25f * Mth.abs(90 - (float) calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90;
+            this.setDeltaMovement(this.getDeltaMovement().add(this.getViewVector(1).normalize().scale(0.05 * getDeltaMovement().dot(getViewVector(1)))));
+            this.setDeltaMovement(this.getDeltaMovement().multiply(f0, 0.99, f0));
+        } else {
+            this.setDeltaMovement(this.getDeltaMovement().multiply(0.99, 0.99, 0.99));
+        }
+
+        if (this.isInWater()) {
+            float f1 = (float) (0.7f - (0.04f * Math.min(getSubmergedHeight(this), this.getBbHeight())) + 0.08f * Mth.abs(90 - (float) calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90);
+            this.setDeltaMovement(this.getDeltaMovement().add(this.getViewVector(1).normalize().scale(0.04 * getDeltaMovement().dot(getViewVector(1)))));
+            this.setDeltaMovement(this.getDeltaMovement().multiply(f1, 0.85, f1));
+
+            if (this.level() instanceof ServerLevel serverLevel && this.getDeltaMovement().lengthSqr() > 0.01) {
+                sendParticle(serverLevel, ParticleTypes.CLOUD, this.getX() + 0.5 * this.getDeltaMovement().x, this.getY() + getSubmergedHeight(this) - 0.2, this.getZ() + 0.5 * this.getDeltaMovement().z, (int) (2 + 4 * this.getDeltaMovement().length()), 0.65, 0, 0.65, 0, true);
+                sendParticle(serverLevel, ParticleTypes.BUBBLE_COLUMN_UP, this.getX() + 0.5 * this.getDeltaMovement().x, this.getY() + getSubmergedHeight(this) - 0.2, this.getZ() + 0.5 * this.getDeltaMovement().z, (int) (2 + 10 * this.getDeltaMovement().length()), 0.65, 0, 0.65, 0, true);
+            }
+        }
+
         Entity passenger0 = this.getFirstPassenger();
 
         if (this.getEnergy() <= 0) return;
@@ -1052,6 +1076,9 @@ public abstract class MobileVehicleEntity extends VehicleEntity implements Contr
         if (this.isInWater() || onGround()) {
             this.setDeltaMovement(this.getDeltaMovement().add(getViewVector(1).scale((!isInWater() && !onGround() ? 0.13f : (isInWater() && !onGround() ? 2 : 2.4f)) * this.entityData.get(POWER))));
         }
+    }
+
+    public void wheelEngine(boolean amphibious, double buoyancy, int EnergyConsume, double wheelRotSpeed, double wheelDifferential, float maxPower, float minPower, float powerAdd, float powerReduce, float steeringSpeed) {
 
         if (amphibious) {
             double fluidFloat = buoyancy * getSubmergedHeight(this);
@@ -1062,23 +1089,20 @@ public abstract class MobileVehicleEntity extends VehicleEntity implements Contr
             float f0 = 0.54f + 0.25f * Mth.abs(90 - (float) calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90;
             this.setDeltaMovement(this.getDeltaMovement().add(this.getViewVector(1).normalize().scale(0.05 * getDeltaMovement().dot(getViewVector(1)))));
             this.setDeltaMovement(this.getDeltaMovement().multiply(f0, 0.99, f0));
+
+        } else if (this.isInWater()) {
+            float f1 = 0.74f + 0.09f * Mth.abs(90 - (float) calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90;
+            this.setDeltaMovement(this.getDeltaMovement().add(this.getViewVector(1).normalize().scale(0.04 * getDeltaMovement().dot(getViewVector(1)))));
+            this.setDeltaMovement(this.getDeltaMovement().multiply(f1, 0.85, f1));
         } else {
             this.setDeltaMovement(this.getDeltaMovement().multiply(0.99, 0.99, 0.99));
         }
 
-        if (this.isInWater()) {
-            float f1 = (float) (0.7f - (0.04f * Math.min(getSubmergedHeight(this), this.getBbHeight())) + 0.08f * Mth.abs(90 - (float) calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90);
-            this.setDeltaMovement(this.getDeltaMovement().add(this.getViewVector(1).normalize().scale(0.04 * getDeltaMovement().dot(getViewVector(1)))));
-            this.setDeltaMovement(this.getDeltaMovement().multiply(f1, 0.85, f1));
-
-            if (this.level() instanceof ServerLevel serverLevel && this.getDeltaMovement().lengthSqr() > 0.01) {
-                sendParticle(serverLevel, ParticleTypes.CLOUD, this.getX() + 0.5 * this.getDeltaMovement().x, this.getY() + getSubmergedHeight(this) - 0.2, this.getZ() + 0.5 * this.getDeltaMovement().z, (int) (2 + 4 * this.getDeltaMovement().length()), 0.65, 0, 0.65, 0, true);
-                sendParticle(serverLevel, ParticleTypes.BUBBLE_COLUMN_UP, this.getX() + 0.5 * this.getDeltaMovement().x, this.getY() + getSubmergedHeight(this) - 0.2, this.getZ() + 0.5 * this.getDeltaMovement().z, (int) (2 + 10 * this.getDeltaMovement().length()), 0.65, 0, 0.65, 0, true);
-            }
+        if (this.level() instanceof ServerLevel serverLevel && this.isInWater() && this.getDeltaMovement().length() > 0.1) {
+            sendParticle(serverLevel, ParticleTypes.CLOUD, this.getX() + 0.5 * this.getDeltaMovement().x, this.getY() + getSubmergedHeight(this) - 0.2, this.getZ() + 0.5 * this.getDeltaMovement().z, (int) (2 + 4 * this.getDeltaMovement().length()), 0.65, 0, 0.65, 0, true);
+            sendParticle(serverLevel, ParticleTypes.BUBBLE_COLUMN_UP, this.getX() + 0.5 * this.getDeltaMovement().x, this.getY() + getSubmergedHeight(this) - 0.2, this.getZ() + 0.5 * this.getDeltaMovement().z, (int) (2 + 10 * this.getDeltaMovement().length()), 0.65, 0, 0.65, 0, true);
         }
-    }
 
-    public void wheelEngine(boolean amphibious, double buoyancy, int EnergyConsume, double wheelRotSpeed, double wheelDifferential, float maxPower, float minPower, float powerAdd, float powerReduce, float steeringSpeed) {
         Entity passenger0 = this.getFirstPassenger();
 
         if (this.getEnergy() <= 0) return;
@@ -1141,29 +1165,6 @@ public abstract class MobileVehicleEntity extends VehicleEntity implements Contr
         this.setYRot((float) (this.getYRot() - Math.max((isInWater() && !onGround() ? 5 : 10) * this.getDeltaMovement().horizontalDistance(), 0) * this.getRudderRot() * (this.entityData.get(POWER) > 0 ? 1 : -1) - i * s0));
         if (this.isInWater() || onGround()) {
             this.setDeltaMovement(this.getDeltaMovement().add(getViewVector(1).scale((!isInWater() && !onGround() ? 0.05f : (isInWater() && !onGround() ? 0.3f : 1)) * this.entityData.get(POWER))));
-        }
-
-        if (amphibious) {
-            double fluidFloat = buoyancy * getSubmergedHeight(this);
-            this.setDeltaMovement(this.getDeltaMovement().add(0.0, fluidFloat, 0.0));
-        }
-
-        if (this.onGround()) {
-            float f0 = 0.54f + 0.25f * Mth.abs(90 - (float) calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90;
-            this.setDeltaMovement(this.getDeltaMovement().add(this.getViewVector(1).normalize().scale(0.05 * getDeltaMovement().dot(getViewVector(1)))));
-            this.setDeltaMovement(this.getDeltaMovement().multiply(f0, 0.99, f0));
-
-        } else if (this.isInWater()) {
-            float f1 = 0.74f + 0.09f * Mth.abs(90 - (float) calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90;
-            this.setDeltaMovement(this.getDeltaMovement().add(this.getViewVector(1).normalize().scale(0.04 * getDeltaMovement().dot(getViewVector(1)))));
-            this.setDeltaMovement(this.getDeltaMovement().multiply(f1, 0.85, f1));
-        } else {
-            this.setDeltaMovement(this.getDeltaMovement().multiply(0.99, 0.99, 0.99));
-        }
-
-        if (this.level() instanceof ServerLevel serverLevel && this.isInWater() && this.getDeltaMovement().length() > 0.1) {
-            sendParticle(serverLevel, ParticleTypes.CLOUD, this.getX() + 0.5 * this.getDeltaMovement().x, this.getY() + getSubmergedHeight(this) - 0.2, this.getZ() + 0.5 * this.getDeltaMovement().z, (int) (2 + 4 * this.getDeltaMovement().length()), 0.65, 0, 0.65, 0, true);
-            sendParticle(serverLevel, ParticleTypes.BUBBLE_COLUMN_UP, this.getX() + 0.5 * this.getDeltaMovement().x, this.getY() + getSubmergedHeight(this) - 0.2, this.getZ() + 0.5 * this.getDeltaMovement().z, (int) (2 + 10 * this.getDeltaMovement().length()), 0.65, 0, 0.65, 0, true);
         }
     }
 }
