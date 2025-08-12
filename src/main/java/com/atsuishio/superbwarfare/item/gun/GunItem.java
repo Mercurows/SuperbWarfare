@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.PoseTool;
 import com.atsuishio.superbwarfare.client.screens.WeaponEditScreen;
 import com.atsuishio.superbwarfare.client.tooltip.component.GunImageComponent;
+import com.atsuishio.superbwarfare.data.Prop;
 import com.atsuishio.superbwarfare.data.gun.*;
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
 import com.atsuishio.superbwarfare.data.launchable.LaunchableEntityTool;
@@ -94,10 +95,11 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
         setProperty(GunProp.BOLT_ACTION_TIME, (data, v) -> v + getCustomBoltActionTime(data.stack));
     }
 
-    protected final Map<GunProp<?>, GunProp.GunPropModifyContext<?>> propertyModifiers = new HashMap<>();
+    protected final Map<GunProp<?>, Prop.PropModifyContext<GunData, ?>> propertyModifiers = new HashMap<>();
 
     @Override
-    public @NotNull Map<GunProp<?>, GunProp.GunPropModifyContext<?>> getPropModifiers() {
+    @SuppressWarnings("unchecked")
+    public @NotNull Map<GunProp<?>, Prop.PropModifyContext<GunData, ?>> getPropModifiers() {
         return this.propertyModifiers;
     }
 

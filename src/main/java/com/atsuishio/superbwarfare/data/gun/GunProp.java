@@ -1,23 +1,12 @@
 package com.atsuishio.superbwarfare.data.gun;
 
-import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.data.DataLoader;
-import com.google.gson.annotations.SerializedName;
+import com.atsuishio.superbwarfare.data.Prop;
 import net.minecraft.util.Mth;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Function;
 
-public final class GunProp<T> {
-    // 这b玩意必须放第一个，不然new的时候执行到props.add(this)会NPE（全恼
-    private static final List<GunProp<?>> props = new ArrayList<>();
+public final class GunProp<T> extends Prop<GunData, DefaultGunData, T> {
 
     public static final GunProp<Integer> MAX_DURABILITY = new GunProp<Integer>("MaxDurability")
             .withLimiter((data, v) -> Math.max(0, v));
@@ -87,131 +76,7 @@ public final class GunProp<T> {
 
     public static final GunProp<List<String>> AVAILABLE_PERKS = new GunProp<>("AvailablePerks");
 
-    public final String name;
-    private final Field field;
-    public final boolean readOnly;
-    public Function<DefaultGunData, T> specialSupplier;
-    public GunPropModifyContext<T> limiter;
-
     private GunProp(String name) {
-        this(name, false);
+        super(DefaultGunData.class, name);
     }
-
-    public Type getFieldType() {
-        return this.field.getGenericType();
-    }
-
-    private GunProp(String name, boolean readOnly) {
-        this.name = name;
-        this.readOnly = readOnly;
-
-        try {
-            this.field = Arrays.stream(DefaultGunData.class.getFields())
-                    .filter(f -> {
-                        var annotation = f.getAnnotation(SerializedName.class);
-                        return annotation != null && annotation.value().equals(this.name);
-                    })
-                    .findFirst()
-                    .orElseThrow();
-            this.field.setAccessible(true);
-        } catch (Exception exception) {
-            Mod.LOGGER.error("Could not find field {} in DefaultGunData!", name);
-            throw new RuntimeException(exception);
-        }
-
-        props.add(this);
-    }
-
-    private GunProp<T> withSupplier(Function<DefaultGunData, T> supplier) {
-        this.specialSupplier = supplier;
-        return this;
-    }
-
-    private GunProp<T> withLimiter(GunPropModifyContext<T> limiter) {
-        this.limiter = limiter;
-        return this;
-    }
-
-    @SuppressWarnings("unchecked")
-    public T getDefault(DefaultGunData data) {
-        if (this.specialSupplier != null) {
-            return specialSupplier.apply(data);
-        }
-
-        try {
-            return (T) DataLoader.processValue(field.get(data));
-        } catch (Exception exception) {
-            Mod.LOGGER.error("Could not get field {} in DefaultGunData!", name);
-            throw new RuntimeException(exception);
-        }
-    }
-
-    public GunPropModifier<T> asModifier(GunData data) {
-        return new GunPropModifier<>(data, this.getDefault(data.getDefault()), limiter, readOnly);
-    }
-
-    public static @Nullable GunProp<?> getByName(String name) {
-        return props.stream().filter(p -> p.name.equals(name)).findFirst().orElse(null);
-    }
-
-    @FunctionalInterface
-    public interface GunPropModifyContext<T> {
-        T apply(@NotNull GunData data, @NotNull T value);
-    }
-
-    public static class GunPropModifier<T> {
-        private final GunData data;
-        private final T value;
-        private final GunPropModifyContext<T> limiter;
-        private final boolean readOnly;
-
-        private final List<GunPropModifyContext<T>> modifiers = new ArrayList<>();
-
-        private GunPropModifier(GunData data, T value, @Nullable GunPropModifyContext<T> limiter, boolean readOnly) {
-            this.data = data;
-            this.value = value;
-            this.limiter = limiter;
-            this.readOnly = readOnly;
-        }
-
-        public GunPropModifier<T> apply(@Nullable List<GunPropModifyContext<T>> modifiers) {
-            if (modifiers == null || readOnly) return this;
-
-            for (var modifier : modifiers) {
-                apply(modifier);
-            }
-            return this;
-        }
-
-        public GunPropModifier<T> apply(@Nullable GunPropModifyContext<T> modifier) {
-            if (modifier == null || readOnly) return this;
-
-            modifiers.add(modifier);
-            return this;
-        }
-
-        public GunPropModifier<T> override(@Nullable T value) {
-            if (value == null || readOnly) return this;
-
-            modifiers.add((data, v) -> value);
-            return this;
-        }
-
-        public T compute() {
-            if (readOnly) return value;
-
-            var result = value;
-
-            for (var modifier : modifiers) {
-                result = modifier.apply(data, result);
-            }
-
-            if (limiter != null) {
-                result = limiter.apply(data, result);
-            }
-
-            return result;
-        }
-    }
-
 }

@@ -2,6 +2,8 @@ package com.atsuishio.superbwarfare.data.gun;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.data.DataLoader;
+import com.atsuishio.superbwarfare.data.DefaultDataSupplier;
+import com.atsuishio.superbwarfare.data.Prop;
 import com.atsuishio.superbwarfare.data.gun.subdata.*;
 import com.atsuishio.superbwarfare.data.gun.value.*;
 import com.atsuishio.superbwarfare.event.GunEventHandler;
@@ -31,7 +33,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 import java.util.*;
 
-public class GunData {
+public class GunData implements DefaultDataSupplier<DefaultGunData> {
 
     public final ItemStack stack;
     public final GunItem item;
@@ -188,13 +190,13 @@ public class GunData {
 
     private static final Gson GSON = DataLoader.GSON;
 
-    private final Map<GunProp<?>, GunProp.GunPropModifyContext<?>> tempModifications = new HashMap<>();
+    private final Map<GunProp<?>, Prop.PropModifyContext<GunData, ?>> tempModifications = new HashMap<>();
 
     @SuppressWarnings("unchecked")
-    public <T> void appendTempModification(GunProp<T> prop, @Nullable GunProp.GunPropModifyContext<T> modifier) {
+    public <T> void appendTempModification(GunProp<T> prop, @Nullable Prop.PropModifyContext<GunData, T> modifier) {
         if (modifier == null) return;
 
-        var current = (GunProp.GunPropModifyContext<T>) tempModifications.get(prop);
+        var current = (Prop.PropModifyContext<GunData, T>) tempModifications.get(prop);
 
         if (current == null) {
             setTempProperty(prop, modifier);
@@ -206,7 +208,7 @@ public class GunData {
         }
     }
 
-    public <T> void setTempProperty(GunProp<T> prop, @Nullable GunProp.GunPropModifyContext<T> modifier) {
+    public <T> void setTempProperty(GunProp<T> prop, @Nullable Prop.PropModifyContext<GunData, T> modifier) {
         if (modifier == null) return;
 
         tempModifications.put(prop, modifier);
@@ -281,7 +283,7 @@ public class GunData {
         }
 
         // 临时属性修改
-        modifier.apply((GunProp.GunPropModifyContext<T>) tempModifications.get(prop));
+        modifier.apply((Prop.PropModifyContext<GunData, T>) tempModifications.get(prop));
 
         operatingProps.remove(prop);
         return (T) DataLoader.processValue(modifier.compute());
