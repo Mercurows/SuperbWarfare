@@ -420,7 +420,7 @@
   "item.superbwarfare.turbo_charger": "Turbocharger",
   "des.superbwarfare.turbo_charger": "Reduces wind-up time for compatible weapons",
   "item.superbwarfare.powerful_attraction": "Powerful Attraction",
-  "des.superbwarfare.powerful_attraction": "Experience and items dropped by slain mods will instantly be transferred to your inventory.",
+  "des.superbwarfare.powerful_attraction": "Experience and items dropped by slain mobs will instantly be transferred to your inventory.",
   "item.superbwarfare.intelligent_chip": "Intelligent Chip",
   "des.superbwarfare.intelligent_chip": "Aims at enemies automatically (Do not use this in PVP mode)",
 
