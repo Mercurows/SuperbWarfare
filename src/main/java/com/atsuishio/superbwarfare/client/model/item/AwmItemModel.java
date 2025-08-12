@@ -37,17 +37,15 @@ public class AwmItemModel extends CustomGunModel<AwmItem> {
         return Mod.loc("textures/item/awm.png");
     }
 
-    //TODO LOD模型和贴图
+    @Override
+    public ResourceLocation getLODModelResource(AwmItem animatable) {
+        return Mod.loc("geo/lod/awm.geo.json");
+    }
 
-//    @Override
-//    public ResourceLocation getLODModelResource(AwmItem animatable) {
-//        return Mod.loc("geo/lod/awm.geo.json");
-//    }
-//
-//    @Override
-//    public ResourceLocation getLODTextureResource(AwmItem animatable) {
-//        return Mod.loc("textures/item/lod/awm.png");
-//    }
+    @Override
+    public ResourceLocation getLODTextureResource(AwmItem animatable) {
+        return Mod.loc("textures/item/lod/awm.png");
+    }
 
     @Override
     public void setCustomAnimations(AwmItem animatable, long instanceId, AnimationState<AwmItem> animationState) {
