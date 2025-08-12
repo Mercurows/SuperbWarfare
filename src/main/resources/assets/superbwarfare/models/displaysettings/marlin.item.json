@@ -13,6 +13,18 @@
         -0.5
       ]
     },
+    "firstperson_lefthand": {
+      "translation": [
+        80,
+        -80,
+        80
+      ],
+      "scale": [
+        0,
+        0,
+        0
+      ]
+    },
     "thirdperson_righthand": {
       "translation": [
         -0.75,
