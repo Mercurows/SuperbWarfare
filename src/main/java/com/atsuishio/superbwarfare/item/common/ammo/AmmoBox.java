@@ -37,15 +37,15 @@ public class AmmoBox extends Item {
 
         CompoundTag tag = stack.getOrCreateTag();
         player.getCooldowns().addCooldown(this, 10);
-        String type = stack.getOrCreateTag().getString("Type");
+        String type = tag.getString("Type").isEmpty() ? "All" : tag.getString("Type");
 
         PlayerVariable.modify(player, cap -> {
-            var types = type.equals("All") ? Ammo.values() : new Ammo[]{Ammo.getType(type)};
+            var types = (type.equals("All") || tag.getBoolean("IsDrop")) ? Ammo.values() : new Ammo[]{Ammo.getType(type)};
 
             for (var ammoType : types) {
                 if (ammoType == null) return;
 
-                if (player.isCrouching()) {
+                if (player.isCrouching() && !tag.getBoolean("IsDrop")) {
                     // 存入弹药
                     ammoType.add(tag, ammoType.get(cap));
                     ammoType.set(cap, 0);
@@ -61,7 +61,7 @@ public class AmmoBox extends Item {
             }
 
             // 取出弹药时，若弹药盒为掉落物版本，则移除弹药盒物品
-            if (!player.isCrouching() && tag.getBoolean("IsDrop")) {
+            if (tag.getBoolean("IsDrop")) {
                 stack.shrink(1);
             }
         });
@@ -86,6 +86,8 @@ public class AmmoBox extends Item {
     public boolean onEntitySwing(ItemStack stack, LivingEntity entity) {
         if (entity instanceof Player player && player.isCrouching()) {
             var tag = stack.getOrCreateTag();
+            if (tag.getBoolean("IsDrop")) return false;
+
             var index = Math.max(0, ammoTypeList.indexOf(tag.getString("Type")));
             var typeString = ammoTypeList.get((index + 1) % ammoTypeList.size());
 
