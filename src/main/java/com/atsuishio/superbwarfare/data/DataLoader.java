@@ -44,12 +44,16 @@ public class DataLoader {
         }
     }
 
-    public static final Gson GSON = new GsonBuilder()
-            .setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE)
-            .setLenient()
-            .registerTypeAdapterFactory(new ObjectToList.AdapterFactory())
-            .registerTypeAdapterFactory(new StringToObject.AdapterFactory())
-            .create();
+    // 务必在所有需要序列化GSON数据的地方调用，避免报错
+    public static GsonBuilder createCommonBuilder() {
+        return new GsonBuilder()
+                .setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE)
+                .setLenient()
+                .registerTypeAdapterFactory(new ObjectToList.AdapterFactory())
+                .registerTypeAdapterFactory(new StringToObject.AdapterFactory());
+    }
+
+    public static final Gson GSON = createCommonBuilder().create();
 
     private static void reloadAllData(ResourceManager manager) {
         loadedData.forEach((name, value) -> {

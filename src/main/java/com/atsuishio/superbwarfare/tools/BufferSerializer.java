@@ -2,10 +2,10 @@ package com.atsuishio.superbwarfare.tools;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.annotation.ServerOnly;
+import com.atsuishio.superbwarfare.data.DataLoader;
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import io.netty.buffer.Unpooled;
 import net.minecraft.network.FriendlyByteBuf;
 
@@ -43,7 +43,7 @@ public class BufferSerializer {
         return fields;
     }
 
-    private static final Gson gson = new GsonBuilder()
+    private static final Gson gson = DataLoader.createCommonBuilder()
             .addSerializationExclusionStrategy(new ExclusionStrategy() {
                 @Override
                 public boolean shouldSkipField(FieldAttributes f) {
