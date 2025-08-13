@@ -1036,10 +1036,17 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
         var typeIndex = isScroll ? (value + getWeaponIndex(index) + count) % count : value;
 
         if (typeIndex == 0 || typeIndex == 1 || typeIndex == 2) {
+            boolean hasCreativeAmmo = false;
+            for (int i = 0; i < getMaxPassengers(); i++) {
+                if (getNthEntity(i) instanceof Player pPlayer && InventoryTool.hasCreativeAmmoBox(pPlayer)) {
+                    hasCreativeAmmo = true;
+                }
+            }
+
             if (typeIndex != entityData.get(SELECTED_AMMO_TYPE)) {
                 this.reloadCoolDown = 80;
-                Item item = BuiltInRegistries.ITEM.get(ResourceLocation.parse(entityData.get(LOADED_SHELL)));
-                if (!this.entityData.get(LOADED_SHELL).equals("null")) {
+                Item item = BuiltInRegistries.ITEM.get(ResourceLocation.tryParse(entityData.get(LOADED_SHELL)));
+                if (!this.entityData.get(LOADED_SHELL).equals("null") && !hasCreativeAmmo) {
                     this.insertItem(new ItemStack(item).getItem(), 1);
                 }
                 entityData.set(LOADED_SHELL, "null");
