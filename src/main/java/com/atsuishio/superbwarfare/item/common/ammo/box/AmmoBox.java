@@ -43,12 +43,12 @@ public class AmmoBox extends Item {
 
         var cap = player.getData(ModAttachments.PLAYER_VARIABLE).watch();
         if (!level.isClientSide()) {
-            var types = selectedType.equals("All") ? Ammo.values() : new Ammo[]{Ammo.getType(selectedType)};
+            var types = (selectedType.equals("All") || info.isDrop()) ? Ammo.values() : new Ammo[]{Ammo.getType(selectedType)};
 
             for (var type : types) {
                 if (type == null) continue;
 
-                if (player.isCrouching()) {
+                if (player.isCrouching() && !info.isDrop()) {
                     // 存入弹药
                     type.add(stack, type.get(cap));
                     type.set(cap, 0);
@@ -63,7 +63,7 @@ public class AmmoBox extends Item {
             level.playSound(null, player.blockPosition(), SoundEvents.ARROW_HIT_PLAYER, SoundSource.PLAYERS, 1, 1);
 
             // 取出弹药时，若弹药盒为掉落物版本，则移除弹药盒物品
-            if (!player.isCrouching() && info.isDrop()) {
+            if (info.isDrop()) {
                 stack.shrink(1);
             }
         }
@@ -90,10 +90,12 @@ public class AmmoBox extends Item {
             var info = stack.get(ModDataComponents.AMMO_BOX_INFO) == null ? new AmmoBoxInfo("All", false) : stack.get(ModDataComponents.AMMO_BOX_INFO);
             assert info != null;
 
+            if (info.isDrop()) return false;
+
             var index = Math.max(0, ammoTypeList.indexOf(info.type()));
             var typeString = ammoTypeList.get((index + 1) % ammoTypeList.size());
 
-            stack.set(ModDataComponents.AMMO_BOX_INFO, new AmmoBoxInfo(typeString, info.isDrop()));
+            stack.set(ModDataComponents.AMMO_BOX_INFO, new AmmoBoxInfo(typeString, false));
             entity.playSound(ModSounds.FIRE_RATE.get(), 1f, 1f);
 
             var type = Ammo.getType(typeString);
