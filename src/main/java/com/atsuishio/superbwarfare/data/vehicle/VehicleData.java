@@ -44,21 +44,11 @@ public class VehicleData implements DefaultDataSupplier<DefaultVehicleData> {
             return (T) DataLoader.processValue(modifier.compute());
         }
 
-        // TODO 为什么这b玩意能为空，能不能正确初始化，底下的为什么也会为空
-        if (this.vehicle.getEntityData() == null) {
-            Mod.LOGGER.warn("Entity data for vehicle entity {} is null!", this.vehicle.getType());
-            return (T) DataLoader.processValue(modifier.compute());
-        }
-
-        operatingProps.add(prop);
-
-        // property override tag
-        try {
+        if (this.vehicle.isInitialized()) {
+            // property override tag
             var propertyOverrideString = this.vehicle.getEntityData().get(VehicleEntity.OVERRIDE);
             stringPropModifier.modifyPropertyByString(propertyOverrideString, prop);
             modifier.apply(stringPropModifier.getModifier(prop));
-        } catch (Exception ignored) {
-            Mod.LOGGER.warn("Failed to get property {}", prop.name);
         }
 
         operatingProps.remove(prop);

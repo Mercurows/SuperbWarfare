@@ -157,6 +157,8 @@ public abstract class VehicleEntity extends Entity implements Container {
         if (this.hasEnergyStorage()) {
             this.energyStorage = new VehicleEnergyStorage(this);
         }
+
+        this.isInitialized = true;
     }
 
     public void mouseInput(double x, double y) {
@@ -511,6 +513,12 @@ public abstract class VehicleEntity extends Entity implements Container {
 
     protected SyncedEntityEnergyStorage energyStorage = null;
     protected LazyOptional<IEnergyStorage> energy = LazyOptional.of(() -> energyStorage);
+
+    protected boolean isInitialized = false;
+
+    public boolean isInitialized() {
+        return this.isInitialized;
+    }
 
     public EntityDataAccessor<Integer> getEnergyDataAccessor() {
         return ENERGY;
