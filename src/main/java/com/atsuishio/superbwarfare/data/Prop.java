@@ -59,6 +59,10 @@ public abstract class Prop<DATA extends DefaultDataSupplier<DEFAULT_DATA>, DEFAU
         return (T) this;
     }
 
+    protected <T extends Prop<DATA, DEFAULT_DATA, FIELD>> T withLimiter(Function<FIELD, FIELD> limiter) {
+        return withLimiter((data, value) -> limiter.apply(value));
+    }
+
     @SuppressWarnings("unchecked")
     public FIELD getDefault(DEFAULT_DATA data) {
         if (this.specialSupplier != null) {
