@@ -11,8 +11,8 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.item.CreativeChargingStationBlockItem;
 import com.atsuishio.superbwarfare.item.EnergyStorageItem;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.item.Item;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.capabilities.Capabilities;
@@ -21,9 +21,6 @@ import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.wrapper.InvWrapper;
 import net.neoforged.neoforge.items.wrapper.SidedInvWrapper;
-import net.neoforged.neoforge.registries.DeferredHolder;
-
-import java.util.ArrayList;
 
 @EventBusSubscriber(modid = Mod.MODID, bus = EventBusSubscriber.Bus.MOD)
 public class ModCapabilities {
@@ -61,36 +58,29 @@ public class ModCapabilities {
         // FuMO25
         event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, ModBlockEntities.FUMO_25.value(), FuMO25BlockEntity::getEnergyStorage);
 
-        // 所有能存能量的物品
-        var list = new ArrayList<DeferredHolder<Item, ? extends Item>>();
-        list.addAll(ModItems.ITEMS.getEntries());
-        list.addAll(ModItems.GUNS.getEntries());
-
-        for (var item : list) {
-            if (item.get() instanceof EnergyStorageItem) {
+        for (var item : BuiltInRegistries.ITEM) {
+            if (item instanceof EnergyStorageItem) {
                 event.registerItem(
                         Capabilities.EnergyStorage.ITEM,
                         (stack, ctx) -> new ItemEnergyStorage(stack, ((EnergyStorageItem) stack.getItem()).getMaxEnergy()),
-                        item.get()
+                        item
                 );
             }
         }
 
         // 载具
-        for (var entity : ModEntities.REGISTRY.getEntries()) {
-            if (entity.get().getBaseClass().isAssignableFrom(VehicleEntity.class)) {
-                // 能量
-                event.registerEntity(Capabilities.EnergyStorage.ENTITY,
-                        entity.get(),
-                        (obj, ctx) -> (obj instanceof VehicleEntity vehicle && vehicle.hasEnergyStorage()) ? vehicle.getEnergyStorage() : null
-                );
+        for (var entity : BuiltInRegistries.ENTITY_TYPE) {
+            // 能量
+            event.registerEntity(Capabilities.EnergyStorage.ENTITY,
+                    entity,
+                    (obj, ctx) -> (obj instanceof VehicleEntity vehicle && vehicle.hasEnergyStorage()) ? vehicle.getEnergyStorage() : null
+            );
 
-                // 物品
-                event.registerEntity(Capabilities.ItemHandler.ENTITY,
-                        entity.get(),
-                        (obj, ctx) -> (obj instanceof VehicleEntity vehicle && vehicle.hasContainer()) ? new InvWrapper(vehicle) : null
-                );
-            }
+            // 物品
+            event.registerEntity(Capabilities.ItemHandler.ENTITY,
+                    entity,
+                    (obj, ctx) -> (obj instanceof VehicleEntity vehicle && vehicle.hasContainer()) ? new InvWrapper(vehicle) : null
+            );
         }
 
         // DPS发电机
@@ -104,32 +94,5 @@ public class ModCapabilities {
                 ModBlockEntities.SUPERB_ITEM_INTERFACE.get(),
                 (object, context) -> new InvWrapper(object)
         );
-
-        // 自动引导发射用
-
-        // 迫击炮实体
-        event.registerEntity(Capabilities.ItemHandler.ENTITY,
-                ModEntities.MORTAR.get(),
-                (obj, ctx) -> new InvWrapper(obj)
-        );
-
-        // Type63
-        event.registerEntity(Capabilities.ItemHandler.ENTITY,
-                ModEntities.TYPE_63.get(),
-                (obj, ctx) -> new InvWrapper(obj)
-        );
-
-        // Mk42
-        event.registerEntity(Capabilities.ItemHandler.ENTITY,
-                ModEntities.MK_42.get(),
-                (obj, ctx) -> new InvWrapper(obj)
-        );
-
-        // Mle1934
-        event.registerEntity(Capabilities.ItemHandler.ENTITY,
-                ModEntities.MLE_1934.get(),
-                (obj, ctx) -> new InvWrapper(obj)
-        );
-
     }
 }
