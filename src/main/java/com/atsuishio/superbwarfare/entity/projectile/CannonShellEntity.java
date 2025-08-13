@@ -225,7 +225,7 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
             this.discard();
         }
 
-        if (type == Type.CM) {
+        if (type == Type.CM && tickCount > 1) {
             // 使用Minecraft内置的光线追踪进行碰撞检测
             BlockHitResult hitResult = level().clip(new ClipContext(
                     position(),
