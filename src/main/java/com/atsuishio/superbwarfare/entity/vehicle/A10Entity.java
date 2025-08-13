@@ -73,7 +73,6 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
     public static final EntityDataAccessor<Integer> LOADED_BOMB = SynchedEntityData.defineId(A10Entity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> LOADED_MISSILE = SynchedEntityData.defineId(A10Entity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> FIRE_TIME = SynchedEntityData.defineId(A10Entity.class, EntityDataSerializers.INT);
-    public static final EntityDataAccessor<String> TARGET_UUID = SynchedEntityData.defineId(A10Entity.class, EntityDataSerializers.STRING);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     public int fireIndex;
     public int reloadCoolDownBomb;
@@ -156,7 +155,6 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
         this.entityData.define(LOADED_BOMB, 0);
         this.entityData.define(LOADED_MISSILE, 0);
         this.entityData.define(FIRE_TIME, 0);
-        this.entityData.define(TARGET_UUID, "none");
     }
 
     @Override
