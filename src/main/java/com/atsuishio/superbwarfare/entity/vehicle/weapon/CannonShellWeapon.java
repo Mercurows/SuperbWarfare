@@ -5,7 +5,8 @@ import net.minecraft.world.entity.player.Player;
 
 public class CannonShellWeapon extends VehicleWeapon {
     public float hitDamage, explosionRadius, explosionDamage, fireProbability, velocity, gravity;
-    public int fireTime, durability, spreadAmount;
+    public int fireTime, durability, spreadAmount, spreadAngle, spreadTime;
+
 
     public CannonShellEntity.Type type;
 
@@ -59,6 +60,16 @@ public class CannonShellWeapon extends VehicleWeapon {
         return this;
     }
 
+    public CannonShellWeapon spreadAngle(int spreadAngle) {
+        this.spreadAngle = spreadAngle;
+        return this;
+    }
+
+    public CannonShellWeapon spreadTime(int spreadTime) {
+        this.spreadTime = spreadTime;
+        return this;
+    }
+
     public CannonShellEntity create(Player player) {
         return new CannonShellEntity(player,
                 player.level(),
@@ -69,7 +80,9 @@ public class CannonShellWeapon extends VehicleWeapon {
                 this.fireTime,
                 this.gravity,
                 this.type,
-                this.spreadAmount
+                this.spreadAmount,
+                this.spreadTime,
+                this.spreadAngle
         ).durability(this.durability);
     }
 }

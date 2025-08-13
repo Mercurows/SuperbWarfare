@@ -12,6 +12,7 @@ import com.atsuishio.superbwarfare.network.message.receive.ClientMotionSyncMessa
 import com.atsuishio.superbwarfare.tools.CustomExplosion;
 import com.atsuishio.superbwarfare.tools.DamageHandler;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
+import com.atsuishio.superbwarfare.tools.TraceTool;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -61,13 +62,15 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
     }
     private Type type = Type.AP;
     private int sparedAmount = 50;
+    private int sparedAngle = 15;
+    private int sparedTime = 7;
 
     public CannonShellEntity(EntityType<? extends CannonShellEntity> type, Level world) {
         super(type, world);
         this.noCulling = true;
     }
 
-    public CannonShellEntity(LivingEntity entity, Level world, float damage, float radius, float explosionDamage, float fireProbability, int fireTime, float gravity, Type type, int sparedAmount) {
+    public CannonShellEntity(LivingEntity entity, Level world, float damage, float radius, float explosionDamage, float fireProbability, int fireTime, float gravity, Type type, int sparedAmount, int sparedTime , int sparedAngle) {
         super(ModEntities.CANNON_SHELL.get(), entity, world);
         this.noCulling = true;
         this.damage = damage;
@@ -78,6 +81,8 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
         this.gravity = gravity;
         this.type = type;
         this.sparedAmount = sparedAmount;
+        this.sparedTime = sparedTime;
+        this.sparedAngle = sparedAngle;
     }
 
     public CannonShellEntity(PlayMessages.SpawnEntity spawnEntity, Level level) {
@@ -235,13 +240,19 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
             // 使用Minecraft内置的光线追踪进行碰撞检测
             BlockHitResult hitResult = level().clip(new ClipContext(
                     position(),
-                    position().add(getDeltaMovement().scale(7)),
+                    position().add(getDeltaMovement().scale(sparedTime)),
                     ClipContext.Block.OUTLINE,
                     ClipContext.Fluid.ANY,
                     this
             ));
 
             if (hitResult.getType() == HitResult.Type.BLOCK) {
+                releaseClusterMunitions((LivingEntity) getOwner());
+            }
+
+            Entity target = TraceTool.findLookingEntity(this, getDeltaMovement().scale(sparedTime).length());
+
+            if (target != null) {
                 releaseClusterMunitions((LivingEntity) getOwner());
             }
         }
@@ -259,7 +270,7 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
 
                 gunGrenadeEntity.setPos(position().x, position().y, position().z);
                 gunGrenadeEntity.shoot(getDeltaMovement().x, getDeltaMovement().y, getDeltaMovement().z, (float) (random.nextFloat() * 0.2f + 0.4f * getDeltaMovement().length()),
-                        15);
+                        sparedAngle);
                 serverLevel.addFreshEntity(gunGrenadeEntity);
             }
             discard();

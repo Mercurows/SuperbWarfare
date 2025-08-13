@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
+import com.atsuishio.superbwarfare.entity.projectile.CannonShellEntity;
 import com.atsuishio.superbwarfare.entity.projectile.SwarmDroneEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ContainerMobileVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.LandArmorEntity;
@@ -48,6 +49,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Explosion;
@@ -60,6 +62,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.network.PlayMessages;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Math;
@@ -80,9 +83,8 @@ import static com.atsuishio.superbwarfare.client.RenderHelper.preciseBlit;
 public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEntity, LandArmorEntity, WeaponVehicleEntity, OBBEntity {
 
     public static final EntityDataAccessor<Integer> MG_AMMO = SynchedEntityData.defineId(Yx100Entity.class, EntityDataSerializers.INT);
-    public static final EntityDataAccessor<Integer> LOADED_AP = SynchedEntityData.defineId(Yx100Entity.class, EntityDataSerializers.INT);
-    public static final EntityDataAccessor<Integer> LOADED_HE = SynchedEntityData.defineId(Yx100Entity.class, EntityDataSerializers.INT);
-    public static final EntityDataAccessor<Integer> LOADED_AMMO_TYPE = SynchedEntityData.defineId(Yx100Entity.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<String> LOADED_SHELL = SynchedEntityData.defineId(Yx100Entity.class, EntityDataSerializers.STRING);
+    public static final EntityDataAccessor<Integer> SELECTED_AMMO_TYPE = SynchedEntityData.defineId(Yx100Entity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> GUN_FIRE_TIME = SynchedEntityData.defineId(Yx100Entity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> LOADED_DRONE = SynchedEntityData.defineId(Yx100Entity.class, EntityDataSerializers.INT);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
@@ -131,7 +133,8 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
                                 .sound1p(ModSounds.YX_100_FIRE_1P.get())
                                 .sound3p(ModSounds.YX_100_FIRE_3P.get())
                                 .sound3pFar(ModSounds.YX_100_FAR.get())
-                                .sound3pVeryFar(ModSounds.YX_100_VERYFAR.get()),
+                                .sound3pVeryFar(ModSounds.YX_100_VERYFAR.get())
+                                .mainGun(true),
                         // HE
                         new CannonShellWeapon()
                                 .hitDamage(VehicleConfig.YX_100_HE_CANNON_DAMAGE.get())
@@ -148,7 +151,30 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
                                 .sound1p(ModSounds.YX_100_FIRE_1P.get())
                                 .sound3p(ModSounds.YX_100_FIRE_3P.get())
                                 .sound3pFar(ModSounds.YX_100_FAR.get())
-                                .sound3pVeryFar(ModSounds.YX_100_VERYFAR.get()),
+                                .sound3pVeryFar(ModSounds.YX_100_VERYFAR.get())
+                                .mainGun(true),
+                        // CM
+                        new CannonShellWeapon()
+                                .hitDamage(VehicleConfig.YX_100_HE_CANNON_DAMAGE.get())
+                                .explosionRadius(VehicleConfig.YX_100_HE_CANNON_EXPLOSION_RADIUS.get().floatValue())
+                                .explosionDamage(VehicleConfig.YX_100_HE_CANNON_EXPLOSION_DAMAGE.get())
+                                .fireProbability(0.18F)
+                                .fireTime(2)
+                                .durability(1)
+                                .velocity(25)
+                                .gravity(0.1f)
+                                .type(CannonShellEntity.Type.CM)
+                                .spreadAmount(15)
+                                .spreadTime(4)
+                                .spreadAngle(5)
+                                .sound(ModSounds.INTO_CANNON.get())
+                                .ammo(ModItems.CM_5_INCHES.get())
+                                .icon(Mod.loc("textures/screens/vehicle_weapon/cm_shell.png"))
+                                .sound1p(ModSounds.YX_100_FIRE_1P.get())
+                                .sound3p(ModSounds.YX_100_FIRE_3P.get())
+                                .sound3pFar(ModSounds.YX_100_FAR.get())
+                                .sound3pVeryFar(ModSounds.YX_100_VERYFAR.get())
+                                .mainGun(true),
                         // 同轴重机枪
                         new ProjectileWeapon()
                                 .damage(VehicleConfig.HEAVY_MACHINE_GUN_DAMAGE.get())
@@ -200,20 +226,18 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
     protected void defineSynchedData() {
         super.defineSynchedData();
         this.entityData.define(MG_AMMO, 0);
-        this.entityData.define(LOADED_AP, 0);
-        this.entityData.define(LOADED_HE, 0);
+        this.entityData.define(LOADED_SHELL, "null");
         this.entityData.define(LOADED_DRONE, 0);
-        this.entityData.define(LOADED_AMMO_TYPE, 0);
+        this.entityData.define(SELECTED_AMMO_TYPE, 0);
         this.entityData.define(GUN_FIRE_TIME, 0);
     }
 
     @Override
     public void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
-        compound.putInt("LoadedAP", this.entityData.get(LOADED_AP));
-        compound.putInt("LoadedHE", this.entityData.get(LOADED_HE));
+        compound.putString("LoadedShell", this.entityData.get(LOADED_SHELL));
         compound.putInt("LoadedDrone", this.entityData.get(LOADED_DRONE));
-        compound.putInt("LoadedAmmoType", this.entityData.get(LOADED_AMMO_TYPE));
+        compound.putInt("SelectedAmmoType", this.entityData.get(SELECTED_AMMO_TYPE));
         compound.putInt("WeaponType", getWeaponIndex(0));
         compound.putInt("PassengerWeaponType", getWeaponIndex(1));
         compound.putInt("ThirdPassengerWeaponType", getWeaponIndex(2));
@@ -222,10 +246,9 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
     @Override
     public void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
-        this.entityData.set(LOADED_AP, compound.getInt("LoadedAP"));
-        this.entityData.set(LOADED_HE, compound.getInt("LoadedHE"));
+        this.entityData.set(LOADED_SHELL, compound.getString("LoadedShell"));
         this.entityData.set(LOADED_DRONE, compound.getInt("LoadedDrone"));
-        this.entityData.set(LOADED_AMMO_TYPE, compound.getInt("LoadedAmmoType"));
+        this.entityData.set(SELECTED_AMMO_TYPE, compound.getInt("SelectedAmmoType"));
         setWeaponIndex(0, compound.getInt("WeaponType"));
         setWeaponIndex(1, compound.getInt("PassengerWeaponType"));
         setWeaponIndex(2, compound.getInt("ThirdPassengerWeaponType"));
@@ -280,10 +303,7 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
                 }
             }
 
-            if (reloadCoolDown > 0 && (
-                    (entityData.get(LOADED_AMMO_TYPE) == 0 && (hasCreativeAmmo || countItem(ModItems.AP_5_INCHES.get()) > 0)) ||
-                            (entityData.get(LOADED_AMMO_TYPE) == 1 && (hasCreativeAmmo || countItem(ModItems.HE_5_INCHES.get()) > 0))
-            )) {
+            if (reloadCoolDown > 0 && getWeapon(0).mainGun && (hasCreativeAmmo || countItem(getWeapon(0).ammo) > 0)) {
                 reloadCoolDown--;
             }
 
@@ -327,8 +347,8 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
     }
 
     private void handleAmmo() {
-        if (getWeaponIndex(0) == 0 || getWeaponIndex(0) == 1) {
-            entityData.set(LOADED_AMMO_TYPE, getWeaponIndex(0));
+        if (getWeapon(0).mainGun) {
+            entityData.set(SELECTED_AMMO_TYPE, getWeaponIndex(0));
         }
 
         boolean hasCreativeAmmo = false;
@@ -346,23 +366,10 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
             this.entityData.set(MG_AMMO, countItem(getWeapon(1).ammo));
         }
 
-        if ((this.getEntityData().get(LOADED_AP) == 0 || this.getEntityData().get(LOADED_HE) == 0)
-                && reloadCoolDown <= 0
-                && (hasCreativeAmmo || hasItem(getWeapon(0).ammo))
-        ) {
-
-            if (entityData.get(LOADED_AMMO_TYPE) == 0 && entityData.get(LOADED_AP) == 0) {
-                this.entityData.set(LOADED_AP, 1);
-                if (!hasCreativeAmmo) {
-                    consumeItem(ModItems.AP_5_INCHES.get(), 1);
-                }
-            }
-
-            if (entityData.get(LOADED_AMMO_TYPE) == 1 && entityData.get(LOADED_HE) == 0) {
-                this.entityData.set(LOADED_HE, 1);
-                if (!hasCreativeAmmo) {
-                    consumeItem(ModItems.HE_5_INCHES.get(), 1);
-                }
+        if (this.getEntityData().get(LOADED_SHELL).equals("null") && reloadCoolDown <= 0 && (hasCreativeAmmo || hasItem(getWeapon(0).ammo))) {
+            this.entityData.set(LOADED_SHELL, String.valueOf(ForgeRegistries.ITEMS.getKey(getWeapon(0).ammo)));
+            if (!hasCreativeAmmo) {
+                consumeItem(getWeapon(0).ammo, 1);
             }
         }
     }
@@ -385,7 +392,7 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
         }
 
         if (type == 0) {
-            if (reloadCoolDown == 0 && (getWeaponIndex(0) == 0 || getWeaponIndex(0) == 1)) {
+            if (reloadCoolDown == 0 && getWeapon(0).mainGun) {
                 if (!this.canConsume(VehicleConfig.YX_100_SHOOT_COST.get())) {
                     player.displayClientMessage(Component.translatable("tips.superbwarfare.annihilator.energy_not_enough").withStyle(ChatFormatting.RED), true);
                     return;
@@ -406,12 +413,7 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
                 }
 
                 this.entityData.set(CANNON_RECOIL_TIME, 40);
-
-                if (getWeaponIndex(0) == 0) {
-                    this.entityData.set(LOADED_AP, 0);
-                } else if (getWeaponIndex(0) == 1) {
-                    this.entityData.set(LOADED_HE, 0);
-                }
+                this.entityData.set(LOADED_SHELL, "null");
 
                 this.consumeEnergy(10000);
                 this.entityData.set(YAW, getTurretYRot());
@@ -461,7 +463,7 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
                 }
 
                 ShakeClientMessage.sendToNearbyPlayers(this, 8, 10, 8, 60);
-            } else if (getWeaponIndex(0) == 2) {
+            } else if (getWeaponIndex(0) == 3) {
                 if (this.cannotFireCoax) return;
 
                 Matrix4f transform = getBarrelTransform(1);
@@ -939,9 +941,9 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
     @Override
     public int mainGunRpm(Player player) {
         if (player == getNthEntity(0)) {
-            if (getWeaponIndex(0) == 0 || getWeaponIndex(0) == 1) {
+            if (getWeapon(0).mainGun) {
                 return 15;
-            } else if (getWeaponIndex(0) == 2) {
+            } else if (getWeaponIndex(0) == 3) {
                 return 500;
             }
         }
@@ -960,11 +962,9 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
     @Override
     public boolean canShoot(Player player) {
         if (player == getNthEntity(0)) {
-            if (getWeaponIndex(0) == 0) {
-                return this.entityData.get(LOADED_AP) > 0 && getEnergy() > VehicleConfig.YX_100_SHOOT_COST.get();
-            } else if (getWeaponIndex(0) == 1) {
-                return this.entityData.get(LOADED_HE) > 0 && getEnergy() > VehicleConfig.YX_100_SHOOT_COST.get();
-            } else if (getWeaponIndex(0) == 2) {
+            if (getWeapon(0).mainGun) {
+                return !this.entityData.get(LOADED_SHELL).equals("null") && getEnergy() > VehicleConfig.YX_100_SHOOT_COST.get();
+            } else if (getWeaponIndex(0) == 3) {
                 return (this.entityData.get(MG_AMMO) > 0 || InventoryTool.hasCreativeAmmoBox(player)) && !cannotFireCoax;
             }
         }
@@ -982,11 +982,9 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
     @Override
     public int getAmmoCount(Player player) {
         if (player == getNthEntity(0)) {
-            if (getWeaponIndex(0) == 0) {
-                return this.entityData.get(LOADED_AP);
-            } else if (getWeaponIndex(0) == 1) {
-                return this.entityData.get(LOADED_HE);
-            } else if (getWeaponIndex(0) == 2) {
+            if (getWeapon(0).mainGun) {
+                return this.entityData.get(LOADED_SHELL).equals("null") ? 0 : 1;
+            } else if (getWeaponIndex(0) == 3) {
                 return this.entityData.get(MG_AMMO);
             }
         }
@@ -1047,23 +1045,17 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
 
         var typeIndex = isScroll ? (value + getWeaponIndex(index) + count) % count : value;
 
-        if (typeIndex == 0 || typeIndex == 1) {
-            if (entityData.get(LOADED_AP) > 0 && typeIndex == 1) {
-                if (this.getFirstPassenger() instanceof Player player && !InventoryTool.hasCreativeAmmoBox(player)) {
-                    this.insertItem(ModItems.AP_5_INCHES.get(), 1);
-                }
-                entityData.set(LOADED_AP, 0);
-            }
-
-            if (entityData.get(LOADED_HE) > 0 && typeIndex == 0) {
-                if (this.getFirstPassenger() instanceof Player player && !InventoryTool.hasCreativeAmmoBox(player)) {
-                    this.insertItem(ModItems.HE_5_INCHES.get(), 1);
-                }
-                entityData.set(LOADED_HE, 0);
-            }
-
-            if (typeIndex != entityData.get(LOADED_AMMO_TYPE)) {
+        if (typeIndex == 0 || typeIndex == 1 || typeIndex == 2) {
+            if (typeIndex != entityData.get(SELECTED_AMMO_TYPE)) {
                 this.reloadCoolDown = 80;
+                Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(entityData.get(LOADED_SHELL)));
+                if (item == null) {
+                    return;
+                }
+                if (!this.entityData.get(LOADED_SHELL).equals("null")) {
+                    this.insertItem(new ItemStack(item).getItem(), 1);
+                }
+                entityData.set(LOADED_SHELL, "null");
             }
 
             if (this.getFirstPassenger() instanceof ServerPlayer player) {
@@ -1105,9 +1097,9 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
         } else if (this.getWeaponIndex(0) == 1) {
             preciseBlit(guiGraphics, Mod.loc("textures/screens/land/tank_cannon_cross_he.png"), centerW, centerH, 0, 0.0F, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH);
         } else if (this.getWeaponIndex(0) == 2) {
-            preciseBlit(guiGraphics, Mod.loc("textures/screens/land/lav_gun_cross.png"), centerW, centerH, 0, 0.0F, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH);
+            preciseBlit(guiGraphics, Mod.loc("textures/screens/land/tank_cannon_cross_cm.png"), centerW, centerH, 0, 0.0F, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH);
         } else if (this.getWeaponIndex(0) == 3) {
-            preciseBlit(guiGraphics, Mod.loc("textures/screens/land/lav_missile_cross.png"), centerW, centerH, 0, 0.0F, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH);
+            preciseBlit(guiGraphics, Mod.loc("textures/screens/land/lav_gun_cross.png"), centerW, centerH, 0, 0.0F, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH);
         }
 
         // 武器名称
@@ -1116,6 +1108,8 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
         } else if (this.getWeaponIndex(0) == 1) {
             guiGraphics.drawString(font, Component.literal("HE SHELL  " + this.getAmmoCount(player) + " " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getEntityData().get(AMMO))), screenWidth / 2 - 33, screenHeight - 65, 0x66FF00, false);
         } else if (this.getWeaponIndex(0) == 2) {
+            guiGraphics.drawString(font, Component.literal("CM SHELL  " + this.getAmmoCount(player) + " " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getEntityData().get(AMMO))), screenWidth / 2 - 33, screenHeight - 65, 0x66FF00, false);
+        } else if (this.getWeaponIndex(0) == 3) {
             double heat = 1 - this.getEntityData().get(COAX_HEAT) / 100.0F;
             guiGraphics.drawString(font, Component.literal(" 12.7MM HMG " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getAmmoCount(player))), screenWidth / 2 - 33, screenHeight - 65, Mth.hsvToRgb((float) heat / 3.745318352059925F, 1.0F, 1.0F), false);
         }
@@ -1129,6 +1123,8 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
         } else if (this.getWeaponIndex(0) == 1) {
             guiGraphics.drawString(font, Component.literal("HE SHELL " + this.getAmmoCount(player) + " " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getEntityData().get(AMMO))), 30, -9, -1, false);
         } else if (this.getWeaponIndex(0) == 2) {
+            guiGraphics.drawString(font, Component.literal("CM SHELL " + this.getAmmoCount(player) + " " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getEntityData().get(AMMO))), 30, -9, -1, false);
+        } else if (this.getWeaponIndex(0) == 3) {
             double heat2 = this.getEntityData().get(COAX_HEAT) / 100.0F;
             guiGraphics.drawString(font, Component.literal("12.7MM HMG " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getAmmoCount(player))), 30, -9, Mth.hsvToRgb(0F, (float) heat2, 1.0F), false);
         }
