@@ -511,7 +511,7 @@ public abstract class VehicleEntity extends Entity implements Container {
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         builder.define(HEALTH, this.getMaxHealth())
-                .define(OVERRIDE, "{}")
+                .define(OVERRIDE, "")
                 .define(LAST_ATTACKER_UUID, "undefined")
                 .define(LAST_DRIVER_UUID, "undefined")
                 .define(DELTA_ROT, 0f)
