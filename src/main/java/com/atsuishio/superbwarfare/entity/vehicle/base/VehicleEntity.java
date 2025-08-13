@@ -500,6 +500,8 @@ public abstract class VehicleEntity extends Entity implements Container {
 
     public VehicleEntity(EntityType<?> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
+        this.isInitialized = true;
+
         this.setHealth(this.getMaxHealth());
 
         if (this instanceof WeaponVehicleEntity weaponVehicle && weaponVehicle.getAllWeapons().length > 0) {
@@ -508,8 +510,6 @@ public abstract class VehicleEntity extends Entity implements Container {
         if (this.hasEnergyStorage()) {
             this.energyStorage = new VehicleEnergyStorage(this);
         }
-
-        this.isInitialized = true;
     }
 
     public EntityDataAccessor<Integer> getEnergyDataAccessor() {
