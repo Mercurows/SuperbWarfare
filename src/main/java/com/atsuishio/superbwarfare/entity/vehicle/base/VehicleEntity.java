@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.entity.vehicle.base;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.capability.energy.SyncedEntityEnergyStorage;
 import com.atsuishio.superbwarfare.data.vehicle.VehicleData;
+import com.atsuishio.superbwarfare.data.vehicle.VehicleProp;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
 import com.atsuishio.superbwarfare.entity.mixin.OBBHitter;
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
@@ -90,6 +91,7 @@ public abstract class VehicleEntity extends Entity implements Container {
     public static final String TAG_SEAT_INDEX = "SBWSeatIndex";
 
     public static final EntityDataAccessor<Float> HEALTH = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.FLOAT);
+    public static final EntityDataAccessor<String> OVERRIDE = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.STRING);
     public static final EntityDataAccessor<String> LAST_ATTACKER_UUID = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.STRING);
     public static final EntityDataAccessor<String> LAST_DRIVER_UUID = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.STRING);
     public static final EntityDataAccessor<Float> DELTA_ROT = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.FLOAT);
@@ -367,7 +369,7 @@ public abstract class VehicleEntity extends Entity implements Container {
 
     @Override
     public float maxUpStep() {
-        return data().upStep();
+        return data().get(VehicleProp.UP_STEP);
     }
 
     @Nullable
@@ -504,6 +506,7 @@ public abstract class VehicleEntity extends Entity implements Container {
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         builder.define(HEALTH, this.getMaxHealth())
+                .define(OVERRIDE, "{}")
                 .define(LAST_ATTACKER_UUID, "undefined")
                 .define(LAST_DRIVER_UUID, "undefined")
                 .define(DELTA_ROT, 0f)
@@ -586,7 +589,7 @@ public abstract class VehicleEntity extends Entity implements Container {
             Mod.LOGGER.warn("Trying to get max energy of vehicle {}, but it has no energy storage", this.getName());
             return Integer.MAX_VALUE;
         }
-        return data().maxEnergy();
+        return data().get(VehicleProp.MAX_ENERGY);
     }
 
     public boolean hasEnergyStorage() {
@@ -611,6 +614,8 @@ public abstract class VehicleEntity extends Entity implements Container {
     protected void readAdditionalSaveData(CompoundTag compound) {
         this.entityData.set(LAST_ATTACKER_UUID, compound.getString("LastAttacker"));
         this.entityData.set(LAST_DRIVER_UUID, compound.getString("LastDriver"));
+
+        this.entityData.set(OVERRIDE, compound.getString("Override"));
 
         if (compound.contains("Health")) {
             this.entityData.set(HEALTH, compound.getFloat("Health"));
@@ -649,6 +654,7 @@ public abstract class VehicleEntity extends Entity implements Container {
     @Override
     public void addAdditionalSaveData(CompoundTag compound) {
         compound.putFloat("Health", this.entityData.get(HEALTH));
+        compound.putString("Override", this.entityData.get(OVERRIDE));
         compound.putString("LastAttacker", this.entityData.get(LAST_ATTACKER_UUID));
         compound.putString("LastDriver", this.entityData.get(LAST_DRIVER_UUID));
 
@@ -704,7 +710,7 @@ public abstract class VehicleEntity extends Entity implements Container {
                 && data.canRepairManually()
                 && data.isRepairMaterial(stack)
         ) {
-            this.heal(Math.min(data.repairMaterialHealAmount(), this.getMaxHealth()));
+            this.heal(Math.min(data.get(VehicleProp.REPAIR_MATERIAL_HEAL_AMOUNT), this.getMaxHealth()));
             stack.shrink(1);
             if (!this.level().isClientSide) {
                 this.level().playSound(null, this, SoundEvents.IRON_GOLEM_REPAIR, this.getSoundSource(), 0.5f, 1);
@@ -857,7 +863,7 @@ public abstract class VehicleEntity extends Entity implements Container {
     }
 
     public float getMaxHealth() {
-        return data().maxHealth();
+        return data().get(VehicleProp.MAX_HEALTH);
     }
 
     public float getTurretMaxHealth() {
@@ -914,14 +920,14 @@ public abstract class VehicleEntity extends Entity implements Container {
      * 呼吸回血冷却时长(单位:tick)，设为小于0的值以禁用呼吸回血
      */
     public int maxRepairCoolDown() {
-        return data().repairCooldown();
+        return data().get(VehicleProp.REPAIR_COOLDOWN);
     }
 
     /**
      * 呼吸回血回血量
      */
     public float repairAmount() {
-        return data().repairAmount();
+        return data().get(VehicleProp.REPAIR_AMOUNT);
     }
 
     @Override
@@ -990,9 +996,9 @@ public abstract class VehicleEntity extends Entity implements Container {
         Entity attacker = EntityFindUtil.findEntity(this.level(), this.entityData.get(LAST_ATTACKER_UUID));
 
         var data = data();
-        if (this.getHealth() <= data.selfHurtPercent() * this.getMaxHealth()) {
+        if (this.getHealth() <= data.get(VehicleProp.SELF_HURT_PERCENT) * this.getMaxHealth()) {
             // 血量过低时自动扣血
-            this.onHurt(data.selfHurtAmount(), attacker, false);
+            this.onHurt(data.get(VehicleProp.SELF_HURT_AMOUNT), attacker, false);
         } else {
             // 呼吸回血
             if (repairCoolDown == 0) {
@@ -1463,7 +1469,7 @@ public abstract class VehicleEntity extends Entity implements Container {
     }
 
     public boolean allowFreeCam() {
-        return data().allowFreeCam();
+        return data().get(VehicleProp.ALLOW_FREE_CAM);
     }
 
     // 本方法留空
@@ -1584,7 +1590,7 @@ public abstract class VehicleEntity extends Entity implements Container {
     }
 
     public float getMass() {
-        return data().mass();
+        return data().get(VehicleProp.MASS);
     }
 
     @Override
