@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.capability.energy;
 
 import com.atsuishio.superbwarfare.data.vehicle.VehicleData;
+import com.atsuishio.superbwarfare.data.vehicle.VehicleProp;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 
 public class VehicleEnergyStorage extends SyncedEntityEnergyStorage {
@@ -43,6 +44,6 @@ public class VehicleEnergyStorage extends SyncedEntityEnergyStorage {
 
     @Override
     public int getMaxEnergyStored() {
-        return VehicleData.from(vehicle).maxEnergy();
+        return VehicleData.from(vehicle).get(VehicleProp.MAX_ENERGY);
     }
 }
