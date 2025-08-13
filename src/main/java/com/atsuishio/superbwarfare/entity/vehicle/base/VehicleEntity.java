@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.entity.vehicle.base;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.capability.energy.SyncedEntityEnergyStorage;
+import com.atsuishio.superbwarfare.capability.energy.VehicleEnergyStorage;
 import com.atsuishio.superbwarfare.data.vehicle.VehicleData;
 import com.atsuishio.superbwarfare.data.vehicle.VehicleProp;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
@@ -499,8 +500,12 @@ public abstract class VehicleEntity extends Entity implements Container {
             this.entityData.set(SELECTED_WEAPON, IntList.of(initSelectedWeaponArray(weaponVehicle)));
         }
         if (this.hasEnergyStorage()) {
-            this.energyStorage = new SyncedEntityEnergyStorage(this.getMaxEnergy(), this.entityData, ENERGY);
+            this.energyStorage = new VehicleEnergyStorage(this);
         }
+    }
+
+    public EntityDataAccessor<Integer> getEnergyDataAccessor() {
+        return ENERGY;
     }
 
     @Override
