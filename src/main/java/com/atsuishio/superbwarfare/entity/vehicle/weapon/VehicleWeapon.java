@@ -14,6 +14,8 @@ public abstract class VehicleWeapon {
     public Component name;
     // 武器使用的弹药类型
     public Item ammo;
+    // 是否是主炮
+    public boolean mainGun;
     // 装弹类型
     public AmmoType ammoType = AmmoType.INDIRECT;
     // 最大装弹量（对直接读取备弹的武器无效）
@@ -50,6 +52,11 @@ public abstract class VehicleWeapon {
 
     public VehicleWeapon ammo(Item ammo) {
         this.ammo = ammo;
+        return this;
+    }
+
+    public VehicleWeapon mainGun(boolean mainGun) {
+        this.mainGun = mainGun;
         return this;
     }
 

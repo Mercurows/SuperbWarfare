@@ -115,7 +115,9 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
                                 .durability(1)
                                 .gravity(projectileGravity())
                                 .type(CannonShellEntity.Type.CM)
-                                .spreadAmount(50)
+                                .spreadAmount(30)
+                                .spreadTime(7)
+                                .spreadAngle(15)
                                 .sound(ModSounds.CANNON_RELOAD.get())
                                 .icon(Mod.loc("textures/screens/vehicle_weapon/cm_shell.png")),
                 }

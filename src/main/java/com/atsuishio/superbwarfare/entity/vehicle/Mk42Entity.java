@@ -126,6 +126,8 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
                                 .gravity(projectileGravity())
                                 .type(CannonShellEntity.Type.CM)
                                 .spreadAmount(30)
+                                .spreadTime(7)
+                                .spreadAngle(15)
                                 .sound(ModSounds.CANNON_RELOAD.get())
                                 .icon(Mod.loc("textures/screens/vehicle_weapon/cm_shell.png")),
                 }
