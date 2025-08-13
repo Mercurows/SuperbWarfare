@@ -492,6 +492,12 @@ public abstract class VehicleEntity extends Entity implements Container {
     public static final EntityDataAccessor<Integer> ENERGY = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.INT);
     protected IEnergyStorage energyStorage = null;
 
+    protected boolean isInitialized = false;
+
+    public boolean isInitialized() {
+        return this.isInitialized;
+    }
+
     public VehicleEntity(EntityType<?> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
         this.setHealth(this.getMaxHealth());
@@ -502,6 +508,8 @@ public abstract class VehicleEntity extends Entity implements Container {
         if (this.hasEnergyStorage()) {
             this.energyStorage = new VehicleEnergyStorage(this);
         }
+
+        this.isInitialized = true;
     }
 
     public EntityDataAccessor<Integer> getEnergyDataAccessor() {

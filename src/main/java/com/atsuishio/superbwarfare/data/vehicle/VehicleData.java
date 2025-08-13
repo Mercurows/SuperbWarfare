@@ -43,8 +43,7 @@ public class VehicleData implements DefaultDataSupplier<DefaultVehicleData> {
             return (T) DataLoader.processValue(modifier.compute());
         }
 
-        // TODO 为什么这b玩意能为空，能不能正确初始化
-        if (this.vehicle.getEntityData() != null) {
+        if (this.vehicle.isInitialized()) {
             // property override tag
             var propertyOverrideString = this.vehicle.getEntityData().get(VehicleEntity.OVERRIDE);
             stringPropModifier.modifyPropertyByString(propertyOverrideString, prop);
