@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.data.DataLoader;
 import com.atsuishio.superbwarfare.data.DefaultDataSupplier;
 import com.atsuishio.superbwarfare.data.Prop;
+import com.atsuishio.superbwarfare.data.StringPropModifier;
 import com.atsuishio.superbwarfare.data.gun.subdata.*;
 import com.atsuishio.superbwarfare.data.gun.value.*;
 import com.atsuishio.superbwarfare.event.GunEventHandler;
@@ -15,9 +16,6 @@ import com.atsuishio.superbwarfare.tools.InventoryTool;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
@@ -44,8 +42,6 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
     public final CompoundTag perkTag;
     public final CompoundTag attachmentTag;
     public final StringValue propertyOverrideString;
-    private Pair<String, JsonObject> propertyOverrideCache = new Pair<>("", null);
-    private boolean isOverrideValid = true;
     public final String id;
     public final List<AmmoConsumer> ammoConsumers;
 
@@ -192,8 +188,6 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
         return id;
     }
 
-    private static final Gson GSON = DataLoader.GSON;
-
     private final Map<GunProp<?>, Prop.PropModifyContext<GunData, ?>> tempModifications = new HashMap<>();
 
     @SuppressWarnings("unchecked")
@@ -224,6 +218,8 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
 
     private final Set<GunProp<?>> operatingProps = new HashSet<>();
 
+    private final StringPropModifier<GunData, DefaultGunData> stringPropModifier = new StringPropModifier<>();
+
     @SuppressWarnings("unchecked")
     public <T> T get(GunProp<T> prop) {
         var modifier = prop.asModifier(this);
@@ -239,29 +235,8 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
         modifier.apply(this.item.getModifier(prop));
 
         // property override tag
-        if (!propertyOverrideString.get().isEmpty()) {
-            if (!propertyOverrideCache.getFirst().equals(propertyOverrideString.get())) {
-                try {
-                    propertyOverrideCache = new Pair<>(propertyOverrideString.get(), GSON.fromJson(propertyOverrideString.get(), JsonObject.class));
-                    isOverrideValid = true;
-                } catch (Exception exception) {
-                    Mod.LOGGER.error("invalid property override string {}", propertyOverrideString.get());
-                    propertyOverrideCache = new Pair<>(propertyOverrideString.get(), new JsonObject());
-                    isOverrideValid = false;
-                }
-            }
-
-            var propJson = propertyOverrideCache.getSecond();
-            if (propJson != null && propJson.has(prop.name) && isOverrideValid) {
-                try {
-                    var parsedValue = DataLoader.processValue(GSON.fromJson(propJson.get(prop.name).toString(), prop.getFieldType()));
-                    modifier.apply((data, value) -> (T) parsedValue);
-                } catch (Exception exception) {
-                    Mod.LOGGER.error("invalid property override type for prop {}: {}", prop.name, propJson.get(prop.name).toString());
-                    isOverrideValid = false;
-                }
-            }
-        }
+        stringPropModifier.modifyPropertyByString(propertyOverrideString.get(), prop);
+        modifier.apply(stringPropModifier.getModifier(prop));
 
         // AmmoConsumer
         if (prop == GunProp.AMMO_CONSUMER) {
