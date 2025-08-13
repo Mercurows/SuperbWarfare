@@ -25,10 +25,8 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
@@ -124,29 +122,7 @@ public class SpeedboatEntity extends ContainerMobileVehicleEntity implements Geo
             this.handleAmmo();
         }
 
-        if (getFirstPassenger() instanceof Player player) {
-            BlockHitResult result = player.level().clip(new ClipContext(player.getEyePosition(), player.getEyePosition().add(player.getViewVector(1).scale(512)),
-                    ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, player));
-
-            Vec3 hitPos;
-            Entity lookingEntity = TraceTool.findLookingEntity(player, 520);
-
-            Matrix4f transform = getBarrelTransform(1);
-
-            Vector4f worldPosition = transformPosition(transform, 0, 0.20106875f, 1.9117f);
-            Vec3 shootPos = new Vec3(worldPosition.x + 0.5 * this.getDeltaMovement().x, worldPosition.y, worldPosition.z + 0.5 * this.getDeltaMovement().z);
-
-
-            if (lookingEntity != null) {
-                hitPos = TraceTool.playerFindLookingPos(player, lookingEntity, 512);
-            } else {
-                hitPos = result.getLocation();
-            }
-
-            if (hitPos != null) {
-                this.turretAutoAimFormVector(40, 40, -25, 50, shootPos.vectorTo(hitPos).normalize());
-            }
-        }
+        this.turretAngle(40, 40);
         this.lowHealthWarning();
         this.inertiaRotate(2);
         this.terrainCompact(2f, 3f);
@@ -183,7 +159,7 @@ public class SpeedboatEntity extends ContainerMobileVehicleEntity implements Geo
 
         float x = 0f;
         float y = 0.20106875f;
-        float z = 1.9117f;
+        float z = 0f;
 
         Vector4f worldPosition = transformPosition(transform, x, y, z);
 
