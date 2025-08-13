@@ -43,7 +43,7 @@ public class BufferSerializer {
         return fields;
     }
 
-    private static final Gson gson = DataLoader.createCommonBuilder()
+    private static final Gson GSON = DataLoader.createCommonBuilder()
             .addSerializationExclusionStrategy(new ExclusionStrategy() {
                 @Override
                 public boolean shouldSkipField(FieldAttributes f) {
@@ -77,7 +77,7 @@ public class BufferSerializer {
             } else if (value instanceof Boolean b) {
                 buffer.writeBoolean(b);
             } else {
-                buffer.writeUtf(gson.toJson(value));
+                buffer.writeUtf(GSON.toJson(value));
             }
         });
 
@@ -101,7 +101,7 @@ public class BufferSerializer {
             } else if (field.getType().isAssignableFrom(Boolean.class) || field.getType().getName().equals("boolean")) {
                 setField(object, field, buffer.readBoolean());
             } else {
-                setField(object, field, gson.fromJson(buffer.readUtf(), field.getGenericType()));
+                setField(object, field, DataLoader.processValue(GSON.fromJson(buffer.readUtf(), field.getGenericType())));
             }
         });
 
