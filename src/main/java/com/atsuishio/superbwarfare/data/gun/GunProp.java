@@ -9,10 +9,10 @@ import java.util.Set;
 public final class GunProp<T> extends Prop<GunData, DefaultGunData, T> {
 
     public static final GunProp<Integer> MAX_DURABILITY = new GunProp<Integer>("MaxDurability")
-            .withLimiter((data, v) -> Math.max(0, v));
+            .withLimiter(v -> Math.max(0, v));
 
     public static final GunProp<Integer> DURABILITY_PER_SHOOT = new GunProp<Integer>("DurabilityPerShoot")
-            .withLimiter((data, v) -> Math.max(0, v));
+            .withLimiter(v -> Math.max(0, v));
 
     public static final GunProp<Double> RECOIL_X = new GunProp<>("RecoilX");
     public static final GunProp<Double> RECOIL_Y = new GunProp<>("RecoilY");
@@ -27,16 +27,16 @@ public final class GunProp<T> extends Prop<GunData, DefaultGunData, T> {
 
     public static final GunProp<Double> MELEE_DAMAGE = new GunProp<>("MeleeDamage");
     public static final GunProp<Integer> MELEE_DURATION = new GunProp<Integer>("MeleeDuration")
-            .withLimiter((data, v) -> Math.max(1, v));
+            .withLimiter(v -> Math.max(1, v));
 
     public static final GunProp<Integer> MELEE_DAMAGE_TIME = new GunProp<Integer>("MeleeDamageTime")
             .withLimiter((data, v) -> Math.min(data.get(MELEE_DURATION) - 1, v));
 
     public static final GunProp<ProjectileInfo> PROJECTILE = new GunProp<>("Projectile");
     public static final GunProp<Integer> AMMO_COST_PER_SHOOT = new GunProp<Integer>("AmmoCostPerShoot")
-            .withLimiter((data, v) -> Math.max(0, v));
+            .withLimiter(v -> Math.max(0, v));
     public static final GunProp<Integer> PROJECTILE_AMOUNT = new GunProp<Integer>("ProjectileAmount")
-            .withLimiter((data, v) -> Math.max(0, v));
+            .withLimiter(v -> Math.max(0, v));
     public static final GunProp<Double> WEIGHT = new GunProp<>("Weight");
     public static final GunProp<FireMode> DEFAULT_FIRE_MODE = new GunProp<>("DefaultFireMode");
     public static final GunProp<Set<FireMode>> AVAILABLE_FIRE_MODES = new GunProp<>("AvailableFireModes");
@@ -44,7 +44,7 @@ public final class GunProp<T> extends Prop<GunData, DefaultGunData, T> {
     public static final GunProp<Double> DEFAULT_ZOOM = new GunProp<>("DefaultZoom");
 
     public static final GunProp<Integer> BURST_AMOUNT = new GunProp<Integer>("BurstAmount")
-            .withLimiter((data, v) -> Math.max(0, v));
+            .withLimiter(v -> Math.max(0, v));
     public static final GunProp<Double> BYPASSES_ARMOR = new GunProp<>("BypassesArmor");
 
     public static final GunProp<List<AmmoConsumer>> AMMO_CONSUMER = new GunProp<List<AmmoConsumer>>("AmmoType")
@@ -65,7 +65,7 @@ public final class GunProp<T> extends Prop<GunData, DefaultGunData, T> {
     public static final GunProp<Double> SOUND_RADIUS = new GunProp<>("SoundRadius");
 
     public static final GunProp<Integer> RPM = new GunProp<Integer>("RPM")
-            .withLimiter((data, v) -> Mth.clamp(v, 1, 114514));
+            .withLimiter(v -> Mth.clamp(v, 1, 114514));
 
     public static final GunProp<Double> EXPLOSION_DAMAGE = new GunProp<>("ExplosionDamage");
     public static final GunProp<Double> EXPLOSION_RADIUS = new GunProp<>("ExplosionRadius");
