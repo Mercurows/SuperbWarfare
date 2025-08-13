@@ -519,7 +519,7 @@ public abstract class VehicleEntity extends Entity implements Container {
     @Override
     protected void defineSynchedData() {
         this.entityData.define(HEALTH, this.getMaxHealth());
-        this.entityData.define(OVERRIDE, "{}");
+        this.entityData.define(OVERRIDE, "");
         this.entityData.define(LAST_ATTACKER_UUID, "undefined");
         this.entityData.define(LAST_DRIVER_UUID, "undefined");
         this.entityData.define(DELTA_ROT, 0f);
