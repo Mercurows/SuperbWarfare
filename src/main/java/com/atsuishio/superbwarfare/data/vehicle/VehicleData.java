@@ -3,15 +3,13 @@ package com.atsuishio.superbwarfare.data.vehicle;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.data.DataLoader;
 import com.atsuishio.superbwarfare.data.DefaultDataSupplier;
+import com.atsuishio.superbwarfare.data.StringPropModifier;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.mojang.datafixers.util.Pair;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.entity.EntityType;
@@ -33,12 +31,9 @@ public class VehicleData implements DefaultDataSupplier<DefaultVehicleData> {
         this.vehicle = entity;
     }
 
-    private Pair<String, JsonObject> propertyOverrideCache = new Pair<>("", null);
-    private boolean isOverrideValid = true;
-
     private final Set<VehicleProp<?>> operatingProps = new HashSet<>();
 
-    private static final Gson GSON = DataLoader.GSON;
+    private final StringPropModifier<VehicleData, DefaultVehicleData> stringPropModifier = new StringPropModifier<>();
 
     @SuppressWarnings("unchecked")
     public <T> T get(VehicleProp<T> prop) {
@@ -58,31 +53,9 @@ public class VehicleData implements DefaultDataSupplier<DefaultVehicleData> {
         operatingProps.add(prop);
 
         // property override tag
-        // TODO 重写这b玩意
         var propertyOverrideString = this.vehicle.getEntityData().get(VehicleEntity.OVERRIDE);
-        if (!propertyOverrideString.isEmpty()) {
-            if (!propertyOverrideCache.getFirst().equals(propertyOverrideString)) {
-                try {
-                    propertyOverrideCache = new Pair<>(propertyOverrideString, GSON.fromJson(propertyOverrideString, JsonObject.class));
-                    isOverrideValid = true;
-                } catch (Exception exception) {
-                    Mod.LOGGER.error("invalid property override string {}", propertyOverrideString);
-                    propertyOverrideCache = new Pair<>(propertyOverrideString, new JsonObject());
-                    isOverrideValid = false;
-                }
-            }
-
-            var propJson = propertyOverrideCache.getSecond();
-            if (propJson != null && propJson.has(prop.name) && isOverrideValid) {
-                try {
-                    var parsedValue = DataLoader.processValue(GSON.fromJson(propJson.get(prop.name).toString(), prop.getFieldType()));
-                    modifier.apply((data, value) -> (T) parsedValue);
-                } catch (Exception exception) {
-                    Mod.LOGGER.error("invalid property override type for prop {}: {}", prop.name, propJson.get(prop.name).toString());
-                    isOverrideValid = false;
-                }
-            }
-        }
+        stringPropModifier.modifyPropertyByString(propertyOverrideString, prop);
+        modifier.apply(stringPropModifier.getModifier(prop));
 
         operatingProps.remove(prop);
         return (T) DataLoader.processValue(modifier.compute());
