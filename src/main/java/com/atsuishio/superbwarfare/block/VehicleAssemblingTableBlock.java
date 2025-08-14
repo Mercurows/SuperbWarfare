@@ -20,7 +20,7 @@ import org.jetbrains.annotations.Nullable;
 public class VehicleAssemblingTableBlock extends BaseEntityBlock {
 
     public VehicleAssemblingTableBlock() {
-        super(BlockBehaviour.Properties.of().strength(2f).requiresCorrectToolForDrops());
+        super(BlockBehaviour.Properties.of().strength(2f).requiresCorrectToolForDrops().noOcclusion());
     }
 
     @Override
