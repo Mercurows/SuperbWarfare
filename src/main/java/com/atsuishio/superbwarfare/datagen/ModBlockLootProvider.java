@@ -42,6 +42,7 @@ public class ModBlockLootProvider extends BlockLootSubProvider {
         this.dropSelf(ModBlocks.AIRCRAFT_CATAPULT.get());
         this.dropSelf(ModBlocks.SUPERB_ITEM_INTERFACE.get());
         this.dropSelf(ModBlocks.CREATIVE_SUPERB_ITEM_INTERFACE.get());
+        this.dropSelf(ModBlocks.VEHICLE_ASSEMBLING_TABLE.get());
 
         this.add(ModBlocks.CHARGING_STATION.get(), createCopyNBTDrops(ModBlocks.CHARGING_STATION.get(),
                 List.of(Pair.of("Energy", "BlockEntityTag.Energy"),

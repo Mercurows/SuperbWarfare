@@ -27,4 +27,7 @@ public class ModMenuTypes {
     public static final RegistryObject<MenuType<FuMO25Menu>> FUMO_25_MENU =
             REGISTRY.register("fumo_25_menu",
                     () -> IForgeMenuType.create((windowId, inv, data) -> new FuMO25Menu(windowId, inv)));
+    public static final RegistryObject<MenuType<VehicleAssemblingMenu>> VEHICLE_ASSEMBLING_MENU =
+            REGISTRY.register("vehicle_assembling_menu",
+                    () -> IForgeMenuType.create((windowId, inv, data) -> new VehicleAssemblingMenu(windowId, inv)));
 }

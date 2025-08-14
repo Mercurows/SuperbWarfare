@@ -109,6 +109,7 @@ public class ModTabs {
                     .icon(() -> new ItemStack(ModItems.CONTAINER.get()))
                     .withTabsBefore(BLOCK_TAB.getKey())
                     .displayItems((param, output) -> {
+                        output.accept(ModItems.VEHICLE_ASSEMBLING_TABLE.get());
                         output.accept(ModItems.CROWBAR.get());
                         RegisterContainersEvent.CONTAINERS.forEach(output::accept);
                         output.accept(ModItems.LUCKY_CONTAINER.get());
