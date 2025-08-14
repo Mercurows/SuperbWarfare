@@ -51,8 +51,8 @@ public class VehicleAssemblingTableBlock extends BaseEntityBlock {
     }
 
     @Override
-    public @NotNull RenderShape getRenderShape(@NotNull BlockState state) {
-        return RenderShape.MODEL;
+    public @NotNull RenderShape getRenderShape(@NotNull BlockState pState) {
+        return RenderShape.ENTITYBLOCK_ANIMATED;
     }
 
     @Nullable

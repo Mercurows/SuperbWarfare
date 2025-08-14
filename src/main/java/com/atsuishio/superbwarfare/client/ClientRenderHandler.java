@@ -43,6 +43,7 @@ public class ClientRenderHandler {
         event.registerBlockEntityRenderer(ModBlockEntities.CHARGING_STATION.get(), context -> new ChargingStationBlockEntityRenderer());
         event.registerBlockEntityRenderer(ModBlockEntities.SMALL_CONTAINER.get(), context -> new SmallContainerBlockEntityRenderer());
         event.registerBlockEntityRenderer(ModBlockEntities.LUCKY_CONTAINER.get(), context -> new LuckyContainerBlockEntityRenderer());
+        event.registerBlockEntityRenderer(ModBlockEntities.VEHICLE_ASSEMBLING_TABLE.get(), context -> new VehicleAssemblingTableBlockEntityRenderer());
     }
 
     @SubscribeEvent

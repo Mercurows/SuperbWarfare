@@ -12,10 +12,16 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import software.bernie.geckolib.animatable.GeoBlockEntity;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
-public class VehicleAssemblingTableBlockEntity extends BlockEntity implements MenuProvider {
+public class VehicleAssemblingTableBlockEntity extends BlockEntity implements MenuProvider, GeoBlockEntity {
+
+    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     public VehicleAssemblingTableBlockEntity(BlockPos pPos, BlockState pBlockState) {
         super(ModBlockEntities.VEHICLE_ASSEMBLING_TABLE.get(), pPos, pBlockState);
@@ -31,5 +37,14 @@ public class VehicleAssemblingTableBlockEntity extends BlockEntity implements Me
     @Override
     public AbstractContainerMenu createMenu(int pContainerId, Inventory pPlayerInventory, Player pPlayer) {
         return new VehicleAssemblingMenu(pContainerId, pPlayerInventory);
+    }
+
+    @Override
+    public void registerControllers(AnimatableManager.ControllerRegistrar data) {
+    }
+
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return this.cache;
     }
 }
