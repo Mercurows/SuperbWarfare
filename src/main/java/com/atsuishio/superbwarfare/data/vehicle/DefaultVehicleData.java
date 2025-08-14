@@ -4,9 +4,11 @@ import com.atsuishio.superbwarfare.annotation.ServerOnly;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.data.IDBasedData;
 import com.atsuishio.superbwarfare.data.ObjectToList;
+import com.atsuishio.superbwarfare.data.StringToObject;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModify;
 import com.google.gson.annotations.SerializedName;
 
+@SuppressWarnings("unused")
 public class DefaultVehicleData implements IDBasedData {
     @SerializedName("ID")
     public String id = "";
@@ -66,7 +68,7 @@ public class DefaultVehicleData implements IDBasedData {
 
     @ServerOnly
     @SerializedName("DamageModifiers")
-    public ObjectToList<DamageModify> damageModifiers = new ObjectToList<>();
+    public ObjectToList<StringToObject<DamageModify>> damageModifiers = new ObjectToList<>();
 
     @ServerOnly
     @SerializedName("Mass")

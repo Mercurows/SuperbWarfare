@@ -4,100 +4,26 @@
   "MaxEnergy": 20000000,
   "Mass": 2774,
   "DamageModifiers": [
-    {
-      "Type": "Multiply",
-      "Value": 0.1
-    },
-    {
-      "Type": "Immunity",
-      "Source": "minecraft:arrow"
-    },
-    {
-      "Type": "Immunity",
-      "Source": "minecraft:trident"
-    },
-    {
-      "Type": "Immunity",
-      "Source": "minecraft:mob_attack"
-    },
-    {
-      "Type": "Immunity",
-      "Source": "minecraft:mob_attack_no_aggro"
-    },
-    {
-      "Type": "Immunity",
-      "Source": "minecraft:mob_projectile"
-    },
-    {
-      "Type": "Immunity",
-      "Source": "minecraft:player_attack"
-    },
-    {
-      "Type": "Immunity",
-      "Source": "#superbwarfare:projectile"
-    },
-    {
-      "Type": "Immunity",
-      "Source": "superbwarfare:vehicle_strike"
-    },
-    {
-      "Type": "Multiply",
-      "Value": 0.7,
-      "Source": "minecraft:explosion"
-    },
-    {
-      "Type": "Multiply",
-      "Value": 0.2,
-      "Source": "superbwarfare:custom_explosion"
-    },
-    {
-      "Type": "Multiply",
-      "Value": 0.2,
-      "Source": "superbwarfare:projectile_explosion"
-    },
-    {
-      "Type": "Multiply",
-      "Value": 0.2,
-      "Source": "superbwarfare:mine"
-    },
-    {
-      "Type": "Multiply",
-      "Value": 0.24,
-      "Source": "superbwarfare:lunge_mine"
-    },
-    {
-      "Type": "Multiply",
-      "Value": 0.3,
-      "Source": "superbwarfare:projectile_hit"
-    },
-    {
-      "Type": "Multiply",
-      "Value": 8,
-      "Source": "@#superbwarfare:aerial_bomb"
-    },
-    {
-      "Type": "Multiply",
-      "Value": 0.04,
-      "Source": "#superbwarfare:projectile_absolute"
-    },
-    {
-      "Type": "Multiply",
-      "Value": 10,
-      "Source": "@superbwarfare:c4"
-    },
-    {
-      "Type": "Multiply",
-      "Value": 3,
-      "Source": "@superbwarfare:gun_grenade"
-    },
-    {
-      "Type": "Multiply",
-      "Value": 3,
-      "Source": "@superbwarfare:cannon_shell"
-    },
-    {
-      "Type": "Reduce",
-      "Value": 12
-    }
+    "All * 0.1",
+    "minecraft:arrow 0",
+    "minecraft:trident 0",
+    "minecraft:mob_attack 0",
+    "minecraft:mob_attack_no_aggro 0",
+    "minecraft:mob_projectile 0",
+    "minecraft:player_attack 0",
+    "#superbwarfare:projectile 0",
+    "superbwarfare:vehicle_strike 0",
+    "minecraft:explosion * 0.7",
+    "superbwarfare:custom_explosion * 0.2",
+    "superbwarfare:projectile_explosion * 0.2",
+    "superbwarfare:mine * 0.2",
+    "superbwarfare:lunge_mine * 0.24",
+    "superbwarfare:projectile_hit * 0.3",
+    "@#superbwarfare:aerial_bomb * 8",
+    "#superbwarfare:projectile_absolute * 0.04",
+    "@superbwarfare:c4 * 10",
+    "@superbwarfare:gun_grenade * 3",
+    "@superbwarfare:cannon_shell * 3",
+    "All - 12"
   ]
 }

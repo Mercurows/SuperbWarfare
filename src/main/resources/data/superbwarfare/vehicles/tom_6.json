@@ -6,10 +6,6 @@
   "Mass": 0.02,
   "AllowFreeCam": true,
   "DamageModifiers": [
-    {
-      "Type": "Multiply",
-      "Value": 2,
-      "Source": "superbwarfare:vehicle_strike"
-    }
+    "superbwarfare:vehicle_strike * 2"
   ]
 }

@@ -5,10 +5,6 @@
   "UpStep": 1.1,
   "Mass": 0.03,
   "DamageModifiers": [
-    {
-      "Type": "Multiply",
-      "Value": 2,
-      "Source": "superbwarfare:vehicle_strike"
-    }
+    "superbwarfare:vehicle_strike * 2"
   ]
 }

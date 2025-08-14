@@ -1,5 +1,7 @@
 package com.atsuishio.superbwarfare.entity.vehicle.damage;
 
+import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.data.DeserializeFromString;
 import com.google.gson.annotations.SerializedName;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
@@ -10,8 +12,41 @@ import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.EntityType;
 
 import java.util.function.Function;
+import java.util.regex.Pattern;
 
-public class DamageModify {
+public class DamageModify implements DeserializeFromString {
+    private static final Pattern MODIFY_PATTERN = Pattern.compile("^(?<prefix>(@#|#|@)?)(?<id>\\w+(:\\w+)?) *(?<operator>[-*]?) *(?<value>([+-]?\\d+(\\.\\d*)?)?)$");
+
+    @Override
+    public void deserializeFromString(String str) {
+        var matcher = MODIFY_PATTERN.matcher(str.trim());
+        if (!matcher.matches()) {
+            Mod.LOGGER.warn("invalid damage modify: {}", str);
+            return;
+        }
+
+        var prefix = matcher.group("prefix").trim();
+        var id = matcher.group("id").trim();
+        var operator = matcher.group("operator").trim();
+        var value = matcher.group("value").trim();
+
+        this.source = prefix + id;
+        generateSourceType();
+
+        this.type = switch (operator) {
+            case "-" -> ModifyType.REDUCE;
+            case "*" -> ModifyType.MULTIPLY;
+            default -> value.equals("0") ? ModifyType.IMMUNITY : ModifyType.INVALID;
+        };
+
+        if (this.type == ModifyType.INVALID) {
+            Mod.LOGGER.warn("invalid damage modify: {}", str);
+            return;
+        }
+
+        this.value = value.isEmpty() ? 0 : Float.parseFloat(value);
+    }
+
     public enum ModifyType {
         @SerializedName("Immunity")
         IMMUNITY,   // 完全免疫
@@ -19,6 +54,8 @@ public class DamageModify {
         REDUCE,     // 固定数值减伤
         @SerializedName("Multiply")
         MULTIPLY,   // 乘以指定倍数
+        @SerializedName("Invalid")
+        INVALID     // 解析无效
     }
 
     @SerializedName("Value")
@@ -48,6 +85,7 @@ public class DamageModify {
     public transient TagKey<EntityType<?>> entityTag = null;
     public transient Function<DamageSource, Boolean> condition = null;
 
+    @SuppressWarnings("unused")
     public DamageModify() {
     }
 
@@ -176,6 +214,7 @@ public class DamageModify {
             case IMMUNITY -> 0;
             case REDUCE -> Math.max(damage - value, 0);
             case MULTIPLY -> damage * value;
+            case INVALID -> damage;
         };
     }
 }

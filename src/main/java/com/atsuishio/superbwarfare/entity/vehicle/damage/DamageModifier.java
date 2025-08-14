@@ -300,6 +300,7 @@ public class DamageModifier {
                 case MULTIPLY -> Component.literal(" * ").withStyle(ChatFormatting.YELLOW)
                         .append(Component.literal("" + modify.value).withStyle(ChatFormatting.RESET))
                         .append(Component.literal(" = " + FormatTool.format2D(damage)).withStyle(ChatFormatting.WHITE));
+                case INVALID -> Component.literal("INVALID!").withStyle(ChatFormatting.RED);
             };
             var component = Component.translatable("tips.superbwarfare.modify_result." + modify.sourceType.name().toLowerCase(Locale.ENGLISH), sourceString)
                     .withStyle(style -> style.withColor(color));

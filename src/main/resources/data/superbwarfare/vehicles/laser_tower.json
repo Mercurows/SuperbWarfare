@@ -4,89 +4,22 @@
   "MaxEnergy": 500000,
   "Mass": 0.5,
   "DamageModifiers": [
-    {
-      "Type": "Multiply",
-      "Value": 0.1,
-      "Source": "minecraft:arrow"
-    },
-    {
-      "Type": "Multiply",
-      "Value": 0.2,
-      "Source": "minecraft:trident"
-    },
-    {
-      "Type": "Multiply",
-      "Value": 0.2,
-      "Source": "minecraft:mob_attack"
-    },
-    {
-      "Type": "Multiply",
-      "Value": 0.2,
-      "Source": "minecraft:mob_attack_no_aggro"
-    },
-    {
-      "Type": "Multiply",
-      "Value": 0.4,
-      "Source": "minecraft:mob_projectile"
-    },
-    {
-      "Type": "Multiply",
-      "Value": 0.4,
-      "Source": "minecraft:player_attack"
-    },
-    {
-      "Type": "Multiply",
-      "Value": 1.5,
-      "Source": "minecraft:explosion"
-    },
-    {
-      "Type": "Multiply",
-      "Value": 1.5,
-      "Source": "minecraft:player_explosion"
-    },
-    {
-      "Type": "Multiply",
-      "Value": 0.5,
-      "Source": "superbwarfare:custom_explosion"
-    },
-    {
-      "Type": "Multiply",
-      "Value": 0.5,
-      "Source": "superbwarfare:projectile_explosion"
-    },
-    {
-      "Type": "Multiply",
-      "Value": 0.5,
-      "Source": "superbwarfare:mine"
-    },
-    {
-      "Type": "Multiply",
-      "Value": 0.5,
-      "Source": "superbwarfare:lunge_mine"
-    },
-    {
-      "Type": "Multiply",
-      "Value": 0.6,
-      "Source": "superbwarfare:projectile_hit"
-    },
-    {
-      "Type": "Multiply",
-      "Value": 0.5,
-      "Source": "#superbwarfare:projectile"
-    },
-    {
-      "Type": "Multiply",
-      "Value": 0.8,
-      "Source": "#superbwarfare:projectile_absolute"
-    },
-    {
-      "Type": "Multiply",
-      "Value": 5,
-      "Source": "superbwarfare:vehicle_strike"
-    },
-    {
-      "Type": "Reduce",
-      "Value": 1
-    }
+    "minecraft:arrow * 0.1",
+    "minecraft:trident * 0.2",
+    "minecraft:mob_attack * 0.2",
+    "minecraft:mob_attack_no_aggro * 0.2",
+    "minecraft:mob_projectile * 0.4",
+    "minecraft:player_attack * 0.4",
+    "minecraft:explosion * 1.5",
+    "minecraft:player_explosion * 1.5",
+    "superbwarfare:custom_explosion * 0.5",
+    "superbwarfare:projectile_explosion * 0.5",
+    "superbwarfare:mine * 0.5",
+    "superbwarfare:lunge_mine * 0.5",
+    "superbwarfare:projectile_hit * 0.6",
+    "#superbwarfare:projectile * 0.5",
+    "#superbwarfare:projectile_absolute * 0.8",
+    "superbwarfare:vehicle_strike * 5",
+    "All - 1"
   ]
 }
