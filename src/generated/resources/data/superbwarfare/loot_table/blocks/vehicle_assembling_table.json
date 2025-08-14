@@ -1,17 +1,35 @@
 {
   "type": "minecraft:block",
+  "functions": [
+    {
+      "function": "minecraft:explosion_decay"
+    }
+  ],
   "pools": [
     {
       "bonus_rolls": 0.0,
-      "conditions": [
-        {
-          "condition": "minecraft:survives_explosion"
-        }
-      ],
       "entries": [
         {
-          "type": "minecraft:item",
-          "name": "superbwarfare:vehicle_assembling_table"
+          "type": "minecraft:alternatives",
+          "children": [
+            {
+              "type": "minecraft:item",
+              "conditions": [
+                {
+                  "block": "superbwarfare:vehicle_assembling_table",
+                  "condition": "minecraft:block_state_property",
+                  "properties": {
+                    "block_part": "frb"
+                  }
+                }
+              ],
+              "name": "superbwarfare:vehicle_assembling_table"
+            },
+            {
+              "type": "minecraft:item",
+              "name": "minecraft:air"
+            }
+          ]
         }
       ],
       "rolls": 1.0

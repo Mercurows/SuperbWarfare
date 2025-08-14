@@ -1,18 +1,23 @@
 package com.atsuishio.superbwarfare.datagen;
 
+import com.atsuishio.superbwarfare.block.VehicleAssemblingTableBlock;
+import com.atsuishio.superbwarfare.block.property.BlockPart;
 import com.atsuishio.superbwarfare.component.ModDataComponents;
 import com.atsuishio.superbwarfare.init.ModBlocks;
 import com.atsuishio.superbwarfare.init.ModItems;
+import net.minecraft.advancements.critereon.StatePropertiesPredicate;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.data.loot.BlockLootSubProvider;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
 import net.minecraft.world.level.storage.loot.functions.CopyComponentsFunction;
+import net.minecraft.world.level.storage.loot.predicates.LootItemBlockStatePropertyCondition;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import org.jetbrains.annotations.NotNull;
 
@@ -43,7 +48,12 @@ public class ModBlockLootProvider extends BlockLootSubProvider {
         this.dropSelf(ModBlocks.AIRCRAFT_CATAPULT.get());
         this.dropSelf(ModBlocks.SUPERB_ITEM_INTERFACE.get());
         this.dropSelf(ModBlocks.CREATIVE_SUPERB_ITEM_INTERFACE.get());
-        this.dropSelf(ModBlocks.VEHICLE_ASSEMBLING_TABLE.get());
+        this.add(ModBlocks.VEHICLE_ASSEMBLING_TABLE.get(),
+                this.applyExplosionDecay(ModBlocks.VEHICLE_ASSEMBLING_TABLE.get(), LootTable.lootTable().withPool(LootPool.lootPool().add(
+                        LootItem.lootTableItem(ModBlocks.VEHICLE_ASSEMBLING_TABLE.get()).when(LootItemBlockStatePropertyCondition.hasBlockStateProperties(ModBlocks.VEHICLE_ASSEMBLING_TABLE.get())
+                                .setProperties(StatePropertiesPredicate.Builder.properties().hasProperty(VehicleAssemblingTableBlock.BLOCK_PART, BlockPart.FRB))).otherwise(LootItem.lootTableItem(Blocks.AIR)))
+                ))
+        );
 
         this.add(ModBlocks.CHARGING_STATION.get(), createCopyComponentsDrops(
                 ModBlocks.CHARGING_STATION.get(),
