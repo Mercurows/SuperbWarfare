@@ -41,7 +41,6 @@ public class AmmoBoxAddAmmoRecipe extends CustomRecipe {
         return hasAmmoBox && hasAmmo;
     }
 
-
     private void addAmmo(HashMap<Ammo, Integer> map, Ammo type, int count) {
         map.put(type, map.getOrDefault(type, 0) + count);
     }
