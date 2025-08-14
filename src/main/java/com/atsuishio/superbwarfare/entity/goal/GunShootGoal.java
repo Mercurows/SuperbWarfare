@@ -4,14 +4,16 @@ import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.data.mob_guns.MobGunData;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
+import com.atsuishio.superbwarfare.tools.MillisTimer;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
 
-// TODO 正确处理追踪距离，正确计算开枪冷却等
+// TODO 正确处理追踪距离
 public class GunShootGoal<T extends Mob> extends Goal {
     private final T mob;
     private final MobGunData data;
     private int aimTime = 0;
+    private final MillisTimer shootTimer = new MillisTimer();
 
     public GunShootGoal(T mob, MobGunData data) {
         this.mob = mob;
@@ -48,8 +50,6 @@ public class GunShootGoal<T extends Mob> extends Goal {
     public boolean requiresUpdateEveryTick() {
         return true;
     }
-
-    private long lastShootTime = 0;
 
     public void tick() {
         var target = this.mob.getTarget();
@@ -89,19 +89,30 @@ public class GunShootGoal<T extends Mob> extends Goal {
         }
 
         if (gunData.canShoot(this.mob) && aimTime >= this.data.aimTime()) {
-            var currentTime = System.currentTimeMillis();
             double rps = (double) gunData.get(GunProp.RPM) / 60;
 
             // cooldown in ms
-            int cooldown = (int) Math.round(1000 / rps);
+            long cooldown = Math.round(1000 / rps);
 
-            if (currentTime - lastShootTime < cooldown) {
-                return;
+            if (!shootTimer.started()) {
+                shootTimer.start();
+                // 首发瞬间发射
+                shootTimer.setProgress(cooldown + 1);
             }
 
-            lastShootTime = currentTime;
+            if (shootTimer.getProgress() >= cooldown) {
+                var newProgress = shootTimer.getProgress();
 
-            gunData.shoot(this.mob, data.spread(), data.zoom(), target.getUUID());
+                // 低帧率下的开火次数补偿
+                do {
+                    gunData.shoot(this.mob, data.spread(), data.zoom(), target.getUUID());
+                    newProgress -= cooldown;
+                } while (newProgress - cooldown > 0);
+
+                shootTimer.setProgress(newProgress);
+            }
+        } else {
+            shootTimer.stop();
         }
 
     }
