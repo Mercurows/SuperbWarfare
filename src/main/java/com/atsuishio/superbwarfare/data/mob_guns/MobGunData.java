@@ -121,11 +121,15 @@ public class MobGunData {
     }
 
     public int aimTime() {
-        return Math.max(0, data.aimTime);
+        return Math.max(0, selectedData.aimTime);
+    }
+
+    public long semiFireInterval() {
+        return Math.max(0, selectedData.semiFireInterval);
     }
 
     public boolean clearAimTimeWhenLostSight() {
-        return data.clearAimTimeWhenLostSight;
+        return selectedData.clearAimTimeWhenLostSight;
     }
 
     public boolean zoom() {

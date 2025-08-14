@@ -6,10 +6,6 @@
   "Probability": 1,
   // Goal weight for mob to use guns
   "GoalWeight": 3,
-  // Aim time in ticks for mobs to aim before shoot
-  "AimTime": 30,
-  // Clear aim time when lost sight, otherwise aim time will reduce by 1 per tick
-  "ClearAimTimeWhenLostSight": true,
   // Guns data, check out GunSpawnData.java for more info
   "Guns": [
     {
@@ -17,6 +13,12 @@
       "ID": "superbwarfare:m_79",
       // Roll weight for this gun
       "Weight": 1,
+      // Aim time in ticks for mobs to aim before shoot
+      "AimTime": 30,
+      // Clear aim time when lost sight, otherwise aim time will reduce by 1 per tick
+      "ClearAimTimeWhenLostSight": true,
+      // Extra cooldown in microseconds for semi and burst fire mode
+      "SemiFireInterval": 200,
       // Backup ammo count for this gun
       "BackupAmmo": 0,
       // Should guns be loaded when mobs spawn

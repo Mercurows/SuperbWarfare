@@ -18,10 +18,6 @@ public class DefaultMobGunData implements IDBasedData {
     public double probability = 0;
     @SerializedName("GoalWeight")
     public int goalWeight = 3;
-    @SerializedName("AimTime")
-    public int aimTime = 30;
-    @SerializedName("ClearAimTimeWhenLostSight")
-    public boolean clearAimTimeWhenLostSight = true;
 
     ObjectToList<StringToObject<GunSpawnData>> guns;
 }

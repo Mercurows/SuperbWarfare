@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.entity.goal;
 
+import com.atsuishio.superbwarfare.data.gun.FireMode;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.data.mob_guns.MobGunData;
@@ -93,6 +94,12 @@ public class GunShootGoal<T extends Mob> extends Goal {
 
             // cooldown in ms
             long cooldown = Math.round(1000 / rps);
+
+            var fireMode = gunData.fireMode.get();
+            // 半自动或连发开火时，添加额外的开火冷却时间
+            if (fireMode == FireMode.SEMI || fireMode == FireMode.BURST && gunData.burstAmount.get() == 0) {
+                cooldown += data.semiFireInterval();
+            }
 
             if (!shootTimer.started()) {
                 shootTimer.start();
