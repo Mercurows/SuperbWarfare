@@ -19,8 +19,9 @@
   },
   "result": {
     "item": "superbwarfare:container",
-    "nbt": {
-      "BlockEntityTag": {
+    "components": {
+      "minecraft:block_entity_data": {
+        "id": "superbwarfare:container",
         "EntityType": "superbwarfare:tom_6"
       }
     }
