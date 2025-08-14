@@ -31,6 +31,7 @@ public class ModBlockStateProvider extends BlockStateProvider {
         horizontalBlock(ModBlocks.VEHICLE_DEPLOYER.get(), models().cubeBottomTop("vehicle_deployer", Mod.loc("block/vehicle_deployer_side"),
                         Mod.loc("block/vehicle_deployer_bottom"), Mod.loc("block/vehicle_deployer_top"))
                 .texture("particle", Mod.loc("block/vehicle_deployer_bottom")));
+        horizontalBlock(ModBlocks.VEHICLE_ASSEMBLING_TABLE.get(), new ModelFile.UncheckedModelFile(modLoc("block/vehicle_assembling_table")));
 
         horizontalBlock(ModBlocks.AIRCRAFT_CATAPULT.get(), models().cube("aircraft_catapult",
                         Mod.loc("block/vehicle_deployer_bottom"),
