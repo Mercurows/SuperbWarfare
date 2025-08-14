@@ -1,11 +1,14 @@
 package com.atsuishio.superbwarfare.item;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.block.property.BlockPart;
 import com.atsuishio.superbwarfare.client.renderer.item.VehicleAssemblingTableBlockItemRenderer;
 import com.atsuishio.superbwarfare.init.ModBlocks;
 import com.atsuishio.superbwarfare.init.ModItems;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.context.BlockPlaceContext;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
@@ -23,6 +26,21 @@ public class VehicleAssemblingTableBlockItem extends BlockItem implements GeoIte
 
     public VehicleAssemblingTableBlockItem() {
         super(ModBlocks.VEHICLE_ASSEMBLING_TABLE.get(), new Properties());
+    }
+
+    @Override
+    public @NotNull InteractionResult place(@NotNull BlockPlaceContext context) {
+        var pos = context.getClickedPos();
+        var direction = context.getHorizontalDirection().getOpposite();
+
+        for (var part : BlockPart.values()) {
+            var detectPos = part.relative(pos, direction);
+            if (!context.getLevel().getBlockState(detectPos).canBeReplaced(context)) {
+                return InteractionResult.FAIL;
+            }
+        }
+
+        return super.place(context);
     }
 
     @Override
