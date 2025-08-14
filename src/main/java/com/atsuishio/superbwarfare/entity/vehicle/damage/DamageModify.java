@@ -15,7 +15,7 @@ import java.util.function.Function;
 import java.util.regex.Pattern;
 
 public class DamageModify implements DeserializeFromString {
-    private static final Pattern MODIFY_PATTERN = Pattern.compile("^(?<prefix>(@#|#|@)?)(?<id>\\w+(:\\w+)?) *(?<operator>[-*]?) *(?<value>([+-]?\\d+(\\.\\d*)?)?)$");
+    private static final Pattern MODIFY_PATTERN = Pattern.compile("^(?<prefix>(@#|#|@)?)(?<id>\\w+(:\\w+)?)\\s*(?<operator>[-*]?)\\s*(?<value>([+-]?\\d+(\\.\\d*)?)?)$");
 
     @Override
     public void deserializeFromString(String str) {

@@ -224,7 +224,7 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
         return inserted;
     }
 
-    private static final Pattern AMMO_PATTERN = Pattern.compile("^(?<count>(\\d+ )?)(?<prefix>[@#]?)(?<id>\\w+(:\\w+)?)(?<data>(\\{.*})?)$");
+    private static final Pattern AMMO_PATTERN = Pattern.compile("^(?<count>(\\d+)?)\\s*(?<prefix>[@#]?)(?<id>\\w+(:\\w+)?)\\s*(?<data>(\\{.*})?)$");
     private static final Gson GSON = DataLoader.GSON;
 
     @SuppressWarnings("unchecked")
@@ -268,7 +268,7 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
             return;
         }
 
-        var matcher = AMMO_PATTERN.matcher(ammo);
+        var matcher = AMMO_PATTERN.matcher(ammo.trim());
         if (!matcher.matches()) {
             Mod.LOGGER.warn("invalid ammo value: {}", ammo);
             return;
