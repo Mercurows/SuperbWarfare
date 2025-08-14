@@ -234,16 +234,7 @@ public class GrapeshotEntity extends FastThrowableProjectile {
 
                     ParticleTool.spawnBulletHitWaterParticles(serverLevel, location);
                     serverLevel.playSound(null, new BlockPos((int) location.x, (int) location.y, (int) location.z), ModSounds.HIT_WATER.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
-
-                    // 水下路径气泡
-                    double l = getDeltaMovement().length();
-                    for (double i = 0; i < l; i++) {
-                        Vec3 p = location.add(getDeltaMovement().normalize().scale(i));
-                        ParticleTool.sendParticle(serverLevel, ParticleTypes.BUBBLE_COLUMN_UP, p.x, p.y, p.z,
-                                1, 0, 0, 0, 0.001, false);
-                    }
-
-                    this.setDeltaMovement(this.getDeltaMovement().multiply(0.1, 0.1, 0.1));
+                    this.discard();
                 }
             } else if (state.getBlock() == Blocks.LAVA) {
                 if (!isInLava()) {
