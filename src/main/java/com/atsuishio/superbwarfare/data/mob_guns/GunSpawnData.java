@@ -11,6 +11,13 @@ public class GunSpawnData implements DeserializeFromString {
     @SerializedName("Weight")
     public int weight = 1;
 
+    @SerializedName("AimTime")
+    public int aimTime = 30;
+    @SerializedName("ClearAimTimeWhenLostSight")
+    public boolean clearAimTimeWhenLostSight = true;
+    @SerializedName("SemiFireInterval")
+    public long semiFireInterval = 500;
+
     @SerializedName("BackupAmmo")
     public int backupAmmo;
     @SerializedName("SpawnWithLoadedAmmo")
