@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.client.renderer.block;
 import com.atsuishio.superbwarfare.block.VehicleAssemblingTableBlock;
 import com.atsuishio.superbwarfare.block.entity.VehicleAssemblingTableBlockEntity;
 import com.atsuishio.superbwarfare.block.property.BlockPart;
+import com.atsuishio.superbwarfare.client.layer.block.VehicleAssemblingTableBlockLayer;
 import com.atsuishio.superbwarfare.client.model.block.VehicleAssemblingTableBlockModel;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -13,9 +14,10 @@ import software.bernie.geckolib.renderer.GeoBlockRenderer;
 
 public class VehicleAssemblingTableBlockEntityRenderer extends GeoBlockRenderer<VehicleAssemblingTableBlockEntity> {
 
-    public VehicleAssemblingTableBlockEntityRenderer() {
-        super(new VehicleAssemblingTableBlockModel());
-    }
+	public VehicleAssemblingTableBlockEntityRenderer() {
+		super(new VehicleAssemblingTableBlockModel());
+		this.addRenderLayer(new VehicleAssemblingTableBlockLayer(this));
+	}
 
     @Override
     public RenderType getRenderType(VehicleAssemblingTableBlockEntity animatable, ResourceLocation texture, MultiBufferSource bufferSource, float partialTick) {
