@@ -314,7 +314,7 @@ public class ModItems {
     public static final RegistryObject<Item> AIRCRAFT_CATAPULT = block(ModBlocks.AIRCRAFT_CATAPULT);
     public static final RegistryObject<Item> SUPERB_ITEM_INTERFACE = block(ModBlocks.SUPERB_ITEM_INTERFACE);
     public static final RegistryObject<Item> CREATIVE_SUPERB_ITEM_INTERFACE = block(ModBlocks.CREATIVE_SUPERB_ITEM_INTERFACE, Rarity.EPIC);
-    public static final RegistryObject<Item> VEHICLE_ASSEMBLING_TABLE = block(ModBlocks.VEHICLE_ASSEMBLING_TABLE);
+    public static final RegistryObject<Item> VEHICLE_ASSEMBLING_TABLE = BLOCKS.register("vehicle_assembling_table", VehicleAssemblingTableBlockItem::new);
 
     /**
      * Vehicle
