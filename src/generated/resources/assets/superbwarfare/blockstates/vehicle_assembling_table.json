@@ -1,17 +1,122 @@
 {
   "variants": {
-    "facing=east": {
+    "block_part=blb,facing=east": {
       "model": "superbwarfare:block/vehicle_assembling_table",
       "y": 90
     },
-    "facing=north": {
+    "block_part=blb,facing=north": {
       "model": "superbwarfare:block/vehicle_assembling_table"
     },
-    "facing=south": {
+    "block_part=blb,facing=south": {
       "model": "superbwarfare:block/vehicle_assembling_table",
       "y": 180
     },
-    "facing=west": {
+    "block_part=blb,facing=west": {
+      "model": "superbwarfare:block/vehicle_assembling_table",
+      "y": 270
+    },
+    "block_part=blu,facing=east": {
+      "model": "superbwarfare:block/vehicle_assembling_table",
+      "y": 90
+    },
+    "block_part=blu,facing=north": {
+      "model": "superbwarfare:block/vehicle_assembling_table"
+    },
+    "block_part=blu,facing=south": {
+      "model": "superbwarfare:block/vehicle_assembling_table",
+      "y": 180
+    },
+    "block_part=blu,facing=west": {
+      "model": "superbwarfare:block/vehicle_assembling_table",
+      "y": 270
+    },
+    "block_part=brb,facing=east": {
+      "model": "superbwarfare:block/vehicle_assembling_table",
+      "y": 90
+    },
+    "block_part=brb,facing=north": {
+      "model": "superbwarfare:block/vehicle_assembling_table"
+    },
+    "block_part=brb,facing=south": {
+      "model": "superbwarfare:block/vehicle_assembling_table",
+      "y": 180
+    },
+    "block_part=brb,facing=west": {
+      "model": "superbwarfare:block/vehicle_assembling_table",
+      "y": 270
+    },
+    "block_part=bru,facing=east": {
+      "model": "superbwarfare:block/vehicle_assembling_table",
+      "y": 90
+    },
+    "block_part=bru,facing=north": {
+      "model": "superbwarfare:block/vehicle_assembling_table"
+    },
+    "block_part=bru,facing=south": {
+      "model": "superbwarfare:block/vehicle_assembling_table",
+      "y": 180
+    },
+    "block_part=bru,facing=west": {
+      "model": "superbwarfare:block/vehicle_assembling_table",
+      "y": 270
+    },
+    "block_part=flb,facing=east": {
+      "model": "superbwarfare:block/vehicle_assembling_table",
+      "y": 90
+    },
+    "block_part=flb,facing=north": {
+      "model": "superbwarfare:block/vehicle_assembling_table"
+    },
+    "block_part=flb,facing=south": {
+      "model": "superbwarfare:block/vehicle_assembling_table",
+      "y": 180
+    },
+    "block_part=flb,facing=west": {
+      "model": "superbwarfare:block/vehicle_assembling_table",
+      "y": 270
+    },
+    "block_part=flu,facing=east": {
+      "model": "superbwarfare:block/vehicle_assembling_table",
+      "y": 90
+    },
+    "block_part=flu,facing=north": {
+      "model": "superbwarfare:block/vehicle_assembling_table"
+    },
+    "block_part=flu,facing=south": {
+      "model": "superbwarfare:block/vehicle_assembling_table",
+      "y": 180
+    },
+    "block_part=flu,facing=west": {
+      "model": "superbwarfare:block/vehicle_assembling_table",
+      "y": 270
+    },
+    "block_part=frb,facing=east": {
+      "model": "superbwarfare:block/vehicle_assembling_table",
+      "y": 90
+    },
+    "block_part=frb,facing=north": {
+      "model": "superbwarfare:block/vehicle_assembling_table"
+    },
+    "block_part=frb,facing=south": {
+      "model": "superbwarfare:block/vehicle_assembling_table",
+      "y": 180
+    },
+    "block_part=frb,facing=west": {
+      "model": "superbwarfare:block/vehicle_assembling_table",
+      "y": 270
+    },
+    "block_part=fru,facing=east": {
+      "model": "superbwarfare:block/vehicle_assembling_table",
+      "y": 90
+    },
+    "block_part=fru,facing=north": {
+      "model": "superbwarfare:block/vehicle_assembling_table"
+    },
+    "block_part=fru,facing=south": {
+      "model": "superbwarfare:block/vehicle_assembling_table",
+      "y": 180
+    },
+    "block_part=fru,facing=west": {
       "model": "superbwarfare:block/vehicle_assembling_table",
       "y": 270
     }
