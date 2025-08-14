@@ -128,6 +128,7 @@ public class ModItems {
     public static final RegistryObject<Item> HE_5_INCHES = AMMO.register("he_5_inches", () -> new CannonShellItem(new Item.Properties().rarity(Rarity.RARE)));
     public static final RegistryObject<Item> AP_5_INCHES = AMMO.register("ap_5_inches", () -> new CannonShellItem(new Item.Properties().rarity(Rarity.RARE)));
     public static final RegistryObject<Item> CM_5_INCHES = AMMO.register("cm_5_inches", () -> new CannonShellItem(new Item.Properties().rarity(Rarity.RARE)));
+    public static final RegistryObject<Item> GS_5_INCHES = AMMO.register("gs_5_inches", () -> new CannonShellItem(new Item.Properties().rarity(Rarity.RARE)));
     public static final RegistryObject<Item> HAND_GRENADE = AMMO.register("hand_grenade", HandGrenade::new);
     public static final RegistryObject<Item> RGO_GRENADE = AMMO.register("rgo_grenade", RgoGrenade::new);
     public static final RegistryObject<Item> M18_SMOKE_GRENADE = AMMO.register("m18_smoke_grenade", M18SmokeGrenade::new);
@@ -193,6 +194,7 @@ public class ModItems {
     public static final RegistryObject<Item> AP_HEAD = ITEMS.register("ap_head", () -> new Item(new Item.Properties()));
     public static final RegistryObject<Item> HE_HEAD = ITEMS.register("he_head", () -> new Item(new Item.Properties()));
     public static final RegistryObject<Item> CM_HEAD = ITEMS.register("cm_head", () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> GS_HEAD = ITEMS.register("gs_head", () -> new Item(new Item.Properties()));
     public static final RegistryObject<Item> CANNON_CORE = ITEMS.register("cannon_core", () -> new Item(new Item.Properties()));
     public static final RegistryObject<Item> COPPER_PLATE = ITEMS.register("copper_plate", () -> new Item(new Item.Properties()));
     public static final RegistryObject<Item> STEEL_INGOT = ITEMS.register("steel_ingot", () -> new Item(new Item.Properties()));

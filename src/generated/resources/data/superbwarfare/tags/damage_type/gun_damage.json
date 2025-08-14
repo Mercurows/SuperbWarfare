@@ -9,6 +9,7 @@
     "superbwarfare:shock",
     "superbwarfare:burn",
     "superbwarfare:projectile_hit",
+    "superbwarfare:grapeshot_hit",
     "superbwarfare:projectile_explosion"
   ]
 }

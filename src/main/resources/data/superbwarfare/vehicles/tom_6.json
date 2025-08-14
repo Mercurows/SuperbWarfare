@@ -6,6 +6,7 @@
   "Mass": 0.02,
   "AllowFreeCam": true,
   "DamageModifiers": [
-    "superbwarfare:vehicle_strike * 2"
+    "superbwarfare:vehicle_strike * 2",
+    "superbwarfare:grapeshot_hit * 0.5"
   ]
 }

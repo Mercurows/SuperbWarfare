@@ -17,6 +17,7 @@
     "superbwarfare:mine * 0.5",
     "superbwarfare:lunge_mine * 0.5",
     "superbwarfare:projectile_hit * 0.6",
+    "superbwarfare:grapeshot_hit * 0.4",
     "#superbwarfare:projectile * 0.5",
     "#superbwarfare:projectile_absolute * 0.8",
     "superbwarfare:vehicle_strike * 5",

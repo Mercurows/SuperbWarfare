@@ -59,5 +59,6 @@ public class ModEntityRenderers {
         event.registerEntityRenderer(ModEntities.TYPE_63.get(), Type63Renderer::new);
         event.registerEntityRenderer(ModEntities.MEDICAL_KIT.get(), MedicalKitEntityRenderer::new);
         event.registerEntityRenderer(ModEntities.BL_132.get(), Bl132Renderer::new);
+        event.registerEntityRenderer(ModEntities.GRAPESHOT.get(), GrapeshotRenderer::new);
     }
 }
