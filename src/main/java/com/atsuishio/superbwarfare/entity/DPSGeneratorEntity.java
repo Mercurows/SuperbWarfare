@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.entity;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.capability.energy.SyncedEntityEnergyStorage;
+import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
@@ -203,8 +204,9 @@ public class DPSGeneratorEntity extends LivingEntity implements GeoEntity {
                     if (getLastDamageSource() != null) {
                         var attacker = getLastDamageSource().getEntity();
                         if (attacker instanceof Player player && !this.level().isClientSide) {
+                            var displayDamage = getLastDamageSource().is(ModDamageTypes.BEAST) ? Float.POSITIVE_INFINITY : damageDealt;
                             player.displayClientMessage(Component.translatable("tips.superbwarfare.dps_generator.dps",
-                                    FormatTool.format1DZ(damageDealt)), true);
+                                    FormatTool.format1DZ(displayDamage)), true);
                         }
                     }
 
@@ -353,11 +355,13 @@ public class DPSGeneratorEntity extends LivingEntity implements GeoEntity {
     }
 
     public void beastCharge() {
-        this.entityData.set(LEVEL, 7);
-        if (this.getCapability(Capabilities.EnergyStorage.ENTITY, null) instanceof SyncedEntityEnergyStorage storage) {
-            storage.setCapacity(this.getMaxEnergy());
-            storage.setMaxExtract(this.getMaxTransfer());
-            storage.setEnergy(this.getMaxEnergy());
+        if (this.entityData.get(LEVEL) < 7) {
+            this.entityData.set(LEVEL, 7);
+            if (this.getCapability(Capabilities.EnergyStorage.ENTITY, null) instanceof SyncedEntityEnergyStorage storage) {
+                storage.setCapacity(this.getMaxEnergy());
+                storage.setMaxExtract(this.getMaxTransfer());
+                storage.setEnergy(this.getMaxEnergy());
+            }
         }
     }
 

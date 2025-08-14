@@ -165,6 +165,10 @@ public class LivingEventHandler {
         event.setAmount((float) damage);
 
         if (entity instanceof TargetEntity && sourceEntity instanceof Player player) {
+            if (event.getSource().is(ModDamageTypes.BEAST)) {
+                damage = Float.POSITIVE_INFINITY;
+            }
+
             player.displayClientMessage(Component.translatable("tips.superbwarfare.target.damage",
                     FormatTool.format2D(damage),
                     FormatTool.format1D(entity.position().distanceTo(sourceEntity.position()), "m")), false);

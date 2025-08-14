@@ -121,6 +121,10 @@ public class ModDamageTypes {
         return new DamageMessages(registryAccess.registry(Registries.DAMAGE_TYPE).get().getHolderOrThrow(VEHICLE_EXPLOSION), directEntity, attacker);
     }
 
+    public static DamageSource causeBeastDamage(RegistryAccess registryAccess, @Nullable Entity directEntity, @Nullable Entity attacker) {
+        return new DamageMessages(registryAccess.registry(Registries.DAMAGE_TYPE).get().getHolderOrThrow(BEAST), directEntity, attacker);
+    }
+
     private static class DamageMessages extends DamageSource {
 
         public DamageMessages(Holder.Reference<DamageType> typeReference) {
