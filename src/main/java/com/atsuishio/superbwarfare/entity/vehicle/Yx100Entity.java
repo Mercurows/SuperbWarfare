@@ -165,6 +165,23 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
                                 .sound3pFar(ModSounds.YX_100_FAR.get())
                                 .sound3pVeryFar(ModSounds.YX_100_VERYFAR.get())
                                 .mainGun(true),
+                        // GRAPESHOT
+                        new CannonShellWeapon()
+                                .hitDamage(1000)
+                                .explosionRadius(VehicleConfig.YX_100_AP_CANNON_EXPLOSION_RADIUS.get().floatValue())
+                                .explosionDamage(VehicleConfig.YX_100_AP_CANNON_EXPLOSION_DAMAGE.get())
+                                .velocity(30)
+                                .type(CannonShellEntity.Type.GRAPE)
+                                .spreadAmount(40)
+                                .spreadAngle(3)
+                                .sound(ModSounds.INTO_CANNON.get())
+                                .ammo(ModItems.GS_5_INCHES.get())
+                                .icon(Mod.loc("textures/screens/vehicle_weapon/grape_shell.png"))
+                                .sound1p(ModSounds.YX_100_FIRE_1P.get())
+                                .sound3p(ModSounds.YX_100_FIRE_3P.get())
+                                .sound3pFar(ModSounds.YX_100_FAR.get())
+                                .sound3pVeryFar(ModSounds.YX_100_VERYFAR.get())
+                                .mainGun(true),
                         // 同轴重机枪
                         new ProjectileWeapon()
                                 .damage(VehicleConfig.HEAVY_MACHINE_GUN_DAMAGE.get())
@@ -452,7 +469,7 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
                 }
 
                 ShakeClientMessage.sendToNearbyPlayers(this, 8, 10, 8, 60);
-            } else if (getWeaponIndex(0) == 3) {
+            } else if (getWeaponIndex(0) == 4) {
                 if (this.cannotFireCoax) return;
 
                 Matrix4f transform = getBarrelTransform(1);
@@ -933,7 +950,7 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
         if (player == getNthEntity(0)) {
             if (getWeapon(0).mainGun) {
                 return 15;
-            } else if (getWeaponIndex(0) == 3) {
+            } else if (getWeaponIndex(0) == 4) {
                 return 500;
             }
         }
@@ -954,7 +971,7 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
         if (player == getNthEntity(0)) {
             if (getWeapon(0).mainGun) {
                 return !this.entityData.get(LOADED_SHELL).equals("null") && getEnergy() > VehicleConfig.YX_100_SHOOT_COST.get();
-            } else if (getWeaponIndex(0) == 3) {
+            } else if (getWeaponIndex(0) == 4) {
                 return (this.entityData.get(MG_AMMO) > 0 || InventoryTool.hasCreativeAmmoBox(player)) && !cannotFireCoax;
             }
         }
@@ -974,7 +991,7 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
         if (player == getNthEntity(0)) {
             if (getWeapon(0).mainGun) {
                 return this.entityData.get(LOADED_SHELL).equals("null") ? 0 : 1;
-            } else if (getWeaponIndex(0) == 3) {
+            } else if (getWeaponIndex(0) == 4) {
                 return this.entityData.get(MG_AMMO);
             }
         }
@@ -1035,7 +1052,7 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
 
         var typeIndex = isScroll ? (value + getWeaponIndex(index) + count) % count : value;
 
-        if (typeIndex == 0 || typeIndex == 1 || typeIndex == 2) {
+        if (typeIndex == 0 || typeIndex == 1 || typeIndex == 2 || typeIndex == 3) {
             boolean hasCreativeAmmo = false;
             for (int i = 0; i < getMaxPassengers(); i++) {
                 if (getNthEntity(i) instanceof Player pPlayer && InventoryTool.hasCreativeAmmoBox(pPlayer)) {
@@ -1086,13 +1103,9 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
         RenderSystem.setShaderColor(1, 1, 1, 1);
 
         // 准心
-        if (this.getWeaponIndex(0) == 0) {
-            preciseBlit(guiGraphics, Mod.loc("textures/screens/land/tank_cannon_cross_ap.png"), centerW, centerH, 0, 0.0F, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH);
-        } else if (this.getWeaponIndex(0) == 1) {
-            preciseBlit(guiGraphics, Mod.loc("textures/screens/land/tank_cannon_cross_he.png"), centerW, centerH, 0, 0.0F, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH);
-        } else if (this.getWeaponIndex(0) == 2) {
-            preciseBlit(guiGraphics, Mod.loc("textures/screens/land/tank_cannon_cross_cm.png"), centerW, centerH, 0, 0.0F, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH);
-        } else if (this.getWeaponIndex(0) == 3) {
+        if (this.getWeapon(0).mainGun) {
+            preciseBlit(guiGraphics, Mod.loc("textures/screens/land/tank_cannon_cross.png"), centerW, centerH, 0, 0.0F, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH);
+        } else {
             preciseBlit(guiGraphics, Mod.loc("textures/screens/land/lav_gun_cross.png"), centerW, centerH, 0, 0.0F, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH);
         }
 
@@ -1104,6 +1117,8 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
         } else if (this.getWeaponIndex(0) == 2) {
             guiGraphics.drawString(font, Component.literal("CM SHELL  " + this.getAmmoCount(player) + " " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getEntityData().get(AMMO))), screenWidth / 2 - 33, screenHeight - 65, 0x66FF00, false);
         } else if (this.getWeaponIndex(0) == 3) {
+            guiGraphics.drawString(font, Component.literal("GRAPESHOT " + this.getAmmoCount(player) + " " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getEntityData().get(AMMO))), screenWidth / 2 - 33, screenHeight - 65, 0x66FF00, false);
+        } else if (this.getWeaponIndex(0) == 4) {
             double heat = 1 - this.getEntityData().get(COAX_HEAT) / 100.0F;
             guiGraphics.drawString(font, Component.literal(" 12.7MM HMG " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getAmmoCount(player))), screenWidth / 2 - 33, screenHeight - 65, Mth.hsvToRgb((float) heat / 3.745318352059925F, 1.0F, 1.0F), false);
         }
@@ -1119,6 +1134,8 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
         } else if (this.getWeaponIndex(0) == 2) {
             guiGraphics.drawString(font, Component.literal("CM SHELL " + this.getAmmoCount(player) + " " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getEntityData().get(AMMO))), 30, -9, -1, false);
         } else if (this.getWeaponIndex(0) == 3) {
+            guiGraphics.drawString(font, Component.literal("GRAPESHOT" + this.getAmmoCount(player) + " " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getEntityData().get(AMMO))), 30, -9, -1, false);
+        } else if (this.getWeaponIndex(0) == 4) {
             double heat2 = this.getEntityData().get(COAX_HEAT) / 100.0F;
             guiGraphics.drawString(font, Component.literal("12.7MM HMG " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getAmmoCount(player))), 30, -9, Mth.hsvToRgb(0F, (float) heat2, 1.0F), false);
         }

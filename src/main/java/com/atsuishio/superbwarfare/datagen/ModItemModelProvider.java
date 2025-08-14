@@ -99,6 +99,7 @@ public class ModItemModelProvider extends ItemModelProvider {
         simpleItem(ModItems.AP_HEAD);
         simpleItem(ModItems.HE_HEAD);
         simpleItem(ModItems.CM_HEAD);
+        simpleItem(ModItems.GS_HEAD);
         simpleItem(ModItems.CANNON_CORE);
         simpleItem(ModItems.COPPER_PLATE);
         simpleItem(ModItems.STEEL_INGOT);

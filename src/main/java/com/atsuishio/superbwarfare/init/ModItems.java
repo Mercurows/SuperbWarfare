@@ -126,6 +126,7 @@ public class ModItems {
     public static final DeferredHolder<Item, Item> HE_5_INCHES = AMMO.register("he_5_inches", () -> new CannonShellItem(new Item.Properties().rarity(Rarity.RARE)));
     public static final DeferredHolder<Item, Item> AP_5_INCHES = AMMO.register("ap_5_inches", () -> new CannonShellItem(new Item.Properties().rarity(Rarity.RARE)));
     public static final DeferredHolder<Item, Item> CM_5_INCHES = AMMO.register("cm_5_inches", () -> new CannonShellItem(new Item.Properties().rarity(Rarity.RARE)));
+    public static final DeferredHolder<Item, Item> GS_5_INCHES = AMMO.register("gs_5_inches", () -> new CannonShellItem(new Item.Properties().rarity(Rarity.RARE)));
     public static final DeferredHolder<Item, HandGrenade> HAND_GRENADE = AMMO.register("hand_grenade", HandGrenade::new);
     public static final DeferredHolder<Item, RgoGrenade> RGO_GRENADE = AMMO.register("rgo_grenade", RgoGrenade::new);
     public static final DeferredHolder<Item, M18SmokeGrenade> M18_SMOKE_GRENADE = AMMO.register("m18_smoke_grenade", M18SmokeGrenade::new);
@@ -194,6 +195,7 @@ public class ModItems {
     public static final DeferredHolder<Item, Item> AP_HEAD = ITEMS.register("ap_head", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> HE_HEAD = ITEMS.register("he_head", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> CM_HEAD = ITEMS.register("cm_head", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> GS_HEAD = ITEMS.register("gs_head", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> CANNON_CORE = ITEMS.register("cannon_core", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> COPPER_PLATE = ITEMS.register("copper_plate", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> STEEL_INGOT = ITEMS.register("steel_ingot", () -> new Item(new Item.Properties()));

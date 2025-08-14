@@ -498,7 +498,6 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
 
             if (state.getBlock() == Blocks.WATER) {
                 if (!isInWater()) {
-                    BlockState NewState = Blocks.WHITE_STAINED_GLASS.defaultBlockState();
                     CustomCloudOption particleData = new CustomCloudOption(1, 1, 1, 80, 0.5f, 1, false, false);
                     for (int i = 0; i < 10; i++) {
                         Vec3 vec3 = randomVec(dir, 40);
@@ -691,7 +690,7 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
     }
 
     @SuppressWarnings("SameParameterValue")
-    private static BlockHitResult rayTraceBlocks(Level world, ClipContext context, Predicate<BlockState> ignorePredicate) {
+    public static BlockHitResult rayTraceBlocks(Level world, ClipContext context, Predicate<BlockState> ignorePredicate) {
         return performRayTrace(context, (rayTraceContext, blockPos) -> {
             BlockState blockState = world.getBlockState(blockPos);
             if (ignorePredicate.test(blockState)) return null;

@@ -16,6 +16,7 @@
     "minecraft:explosion * 4",
     "minecraft:player_explosion * 4",
     "superbwarfare:projectile_hit * 0.8",
+    "superbwarfare:grapeshot_hit * 0.75",
     "#superbwarfare:projectile * 0.16",
     "superbwarfare:vehicle_strike * 7",
     "superbwarfare:laser * 0.4",

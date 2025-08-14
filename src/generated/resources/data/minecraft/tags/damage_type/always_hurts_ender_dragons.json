@@ -3,6 +3,7 @@
     "superbwarfare:projectile_explosion",
     "superbwarfare:custom_explosion",
     "superbwarfare:projectile_hit",
+    "superbwarfare:grapeshot_hit",
     "superbwarfare:laser",
     "superbwarfare:laser_headshot",
     "superbwarfare:laser_static"

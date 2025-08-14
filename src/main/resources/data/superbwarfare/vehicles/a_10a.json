@@ -18,6 +18,7 @@
     "superbwarfare:projectile_explosion * 2",
     "superbwarfare:mine * 0.75",
     "superbwarfare:projectile_hit * 1.5",
+    "superbwarfare:grapeshot_hit * 0.75",
     "superbwarfare:laser * 0.75",
     "#superbwarfare:projectile * 0.25",
     "#superbwarfare:projectile_absolute * 0.85",

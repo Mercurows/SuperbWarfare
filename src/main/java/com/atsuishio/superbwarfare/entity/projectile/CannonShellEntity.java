@@ -54,7 +54,7 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
     private float gravity = 0.1f;
 
     public enum Type {
-        AP, HE, CM
+        AP, HE, CM, GRAPE
     }
 
     private Type type = Type.AP;
@@ -147,7 +147,7 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
     @Override
     public void onHitBlock(@NotNull BlockHitResult blockHitResult) {
         if (this.level() instanceof ServerLevel) {
-            if (type == Type.HE || type == Type.CM) {
+            if (type != Type.AP) {
                 causeExplode(blockHitResult.getLocation());
                 this.discard();
                 return;
@@ -180,7 +180,12 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
             Entity entity = entityHitResult.getEntity();
             if (this.getOwner() != null && entity == this.getOwner().getVehicle())
                 return;
-            DamageHandler.doDamage(entity, ModDamageTypes.causeProjectileHitDamage(this.level().registryAccess(), this, this.getOwner()), this.damage);
+
+            if (type == Type.GRAPE) {
+                DamageHandler.doDamage(entity, ModDamageTypes.causeGrapeShotHitDamage(this.level().registryAccess(), this, this.getOwner()), 0.5f * this.damage);
+            } else {
+                DamageHandler.doDamage(entity, ModDamageTypes.causeProjectileHitDamage(this.level().registryAccess(), this, this.getOwner()), this.damage);
+            }
 
             if (entity instanceof LivingEntity) {
                 entity.invulnerableTime = 0;
@@ -205,6 +210,9 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
 
     @Override
     public void tick() {
+        if (type == Type.GRAPE) {
+            releaseGrapeShot((LivingEntity) getOwner());
+        }
         super.tick();
         if (this.level() instanceof ServerLevel serverLevel && tickCount > 1) {
             double l = getDeltaMovement().length();
@@ -247,7 +255,7 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
         }
     }
 
-    private void releaseClusterMunitions(LivingEntity shooter) {
+    public void releaseClusterMunitions(LivingEntity shooter) {
         if (level() instanceof ServerLevel serverLevel) {
             ParticleTool.spawnMediumExplosionParticles(serverLevel, position());
             for (int index0 = 0; index0 < sparedAmount; index0++) {
@@ -261,6 +269,19 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
                 gunGrenadeEntity.shoot(getDeltaMovement().x, getDeltaMovement().y, getDeltaMovement().z, (float) (random.nextFloat() * 0.2f + 0.4f * getDeltaMovement().length()),
                         sparedAngle);
                 serverLevel.addFreshEntity(gunGrenadeEntity);
+            }
+            discard();
+        }
+    }
+
+    public void releaseGrapeShot(LivingEntity shooter) {
+        if (level() instanceof ServerLevel serverLevel) {
+            for (int index0 = 0; index0 < sparedAmount; index0++) {
+                GrapeshotEntity grapeProjectileEntity = new GrapeshotEntity(shooter, serverLevel, damage / sparedAmount);
+                grapeProjectileEntity.setPos(this.xo, this.yo, this.zo);
+                grapeProjectileEntity.shoot(getDeltaMovement().x, getDeltaMovement().y, getDeltaMovement().z, (float) (random.nextFloat() * 0.2f + 0.9f * getDeltaMovement().length()),
+                        sparedAngle);
+                serverLevel.addFreshEntity(grapeProjectileEntity);
             }
             discard();
         }

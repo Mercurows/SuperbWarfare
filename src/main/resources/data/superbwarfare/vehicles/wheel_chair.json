@@ -5,6 +5,7 @@
   "UpStep": 1.1,
   "Mass": 0.03,
   "DamageModifiers": [
-    "superbwarfare:vehicle_strike * 2"
+    "superbwarfare:vehicle_strike * 2",
+    "superbwarfare:grapeshot_hit * 0.75"
   ]
 }

@@ -28,6 +28,7 @@ public class ModDamageTypes {
     public static final ResourceKey<DamageType> SHOCK = ResourceKey.create(Registries.DAMAGE_TYPE, Mod.loc("shock"));
     public static final ResourceKey<DamageType> PROJECTILE_HIT = ResourceKey.create(Registries.DAMAGE_TYPE, Mod.loc("projectile_hit"));
     public static final ResourceKey<DamageType> PROJECTILE_EXPLOSION = ResourceKey.create(Registries.DAMAGE_TYPE, Mod.loc("projectile_explosion"));
+    public static final ResourceKey<DamageType> GRAPESHOT_HIT = ResourceKey.create(Registries.DAMAGE_TYPE, Mod.loc("grapeshot_hit"));
 
     // Other Damage Types
     public static final ResourceKey<DamageType> MINE = ResourceKey.create(Registries.DAMAGE_TYPE, Mod.loc("mine"));
@@ -80,6 +81,10 @@ public class ModDamageTypes {
 
     public static DamageSource causeGunFireHeadshotAbsoluteDamage(RegistryAccess registryAccess, @Nullable Entity directEntity, @Nullable Entity attacker) {
         return new DamageMessages(registryAccess.registry(Registries.DAMAGE_TYPE).get().getHolderOrThrow(GUN_FIRE_HEADSHOT_ABSOLUTE), directEntity, attacker);
+    }
+
+    public static DamageSource causeGrapeShotHitDamage(RegistryAccess registryAccess, @Nullable Entity directEntity, @Nullable Entity attacker) {
+        return new DamageMessages(registryAccess.registry(Registries.DAMAGE_TYPE).get().getHolderOrThrow(GRAPESHOT_HIT), directEntity, attacker);
     }
 
     /**
