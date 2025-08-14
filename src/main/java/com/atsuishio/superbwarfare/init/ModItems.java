@@ -315,6 +315,7 @@ public class ModItems {
     public static final DeferredHolder<Item, BlockItem> AIRCRAFT_CATAPULT = block(ModBlocks.AIRCRAFT_CATAPULT);
     public static final DeferredHolder<Item, BlockItem> SUPERB_ITEM_INTERFACE = block(ModBlocks.SUPERB_ITEM_INTERFACE);
     public static final DeferredHolder<Item, BlockItem> CREATIVE_SUPERB_ITEM_INTERFACE = block(ModBlocks.CREATIVE_SUPERB_ITEM_INTERFACE, Rarity.EPIC);
+    public static final DeferredHolder<Item, BlockItem> VEHICLE_ASSEMBLING_TABLE = block(ModBlocks.VEHICLE_ASSEMBLING_TABLE, Rarity.EPIC);
 
     /**
      * Vehicle

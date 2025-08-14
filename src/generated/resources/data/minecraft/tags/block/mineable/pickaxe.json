@@ -22,6 +22,7 @@
     "superbwarfare:aircraft_catapult",
     "superbwarfare:superb_item_interface",
     "superbwarfare:creative_superb_item_interface",
-    "superbwarfare:lucky_container"
+    "superbwarfare:lucky_container",
+    "superbwarfare:vehicle_assembling_table"
   ]
 }

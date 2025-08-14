@@ -28,4 +28,7 @@ public class ModMenuTypes {
     public static final Supplier<MenuType<FuMO25Menu>> FUMO_25_MENU =
             REGISTRY.register("fumo_25_menu",
                     () -> IMenuTypeExtension.create((windowId, inv, data) -> new FuMO25Menu(windowId, inv)));
+    public static final Supplier<MenuType<VehicleAssemblingMenu>> VEHICLE_ASSEMBLING_MENU =
+            REGISTRY.register("vehicle_assembling_menu",
+                    () -> IMenuTypeExtension.create((windowId, inv, data) -> new VehicleAssemblingMenu(windowId, inv)));
 }
