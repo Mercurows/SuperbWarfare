@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "superbwarfare:block/vehicle_assembling_table",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "superbwarfare:block/vehicle_assembling_table"
+    },
+    "facing=south": {
+      "model": "superbwarfare:block/vehicle_assembling_table",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "superbwarfare:block/vehicle_assembling_table",
+      "y": 270
+    }
+  }
+}
