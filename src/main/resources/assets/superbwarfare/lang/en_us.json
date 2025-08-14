@@ -347,6 +347,7 @@
   "des.superbwarfare.lucky_container.location.land_vehicles": "Land Vehicles",
   "des.superbwarfare.lucky_container.location.aircraft": "Aircraft",
   "des.superbwarfare.lucky_container.location.controllable_turrets": "Controllable Turrets",
+  "block.superbwarfare.vehicle_assembling_table": "Vehicle Assembling Table",
 
   "item.superbwarfare.high_energy_explosives": "High Energy Explosives",
   "item.superbwarfare.grain": "Grain",
