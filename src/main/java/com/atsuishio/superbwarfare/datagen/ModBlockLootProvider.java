@@ -50,7 +50,7 @@ public class ModBlockLootProvider extends BlockLootSubProvider {
         this.add(ModBlocks.VEHICLE_ASSEMBLING_TABLE.get(),
                 this.applyExplosionDecay(ModBlocks.VEHICLE_ASSEMBLING_TABLE.get(), LootTable.lootTable().withPool(LootPool.lootPool().add(
                         LootItem.lootTableItem(ModBlocks.VEHICLE_ASSEMBLING_TABLE.get()).when(LootItemBlockStatePropertyCondition.hasBlockStateProperties(ModBlocks.VEHICLE_ASSEMBLING_TABLE.get())
-                                .setProperties(StatePropertiesPredicate.Builder.properties().hasProperty(VehicleAssemblingTableBlock.BLOCK_PART, BlockPart.FRB))).otherwise(LootItem.lootTableItem(Blocks.AIR)))
+                                .setProperties(StatePropertiesPredicate.Builder.properties().hasProperty(VehicleAssemblingTableBlock.BLOCK_PART, BlockPart.FLB))).otherwise(LootItem.lootTableItem(Blocks.AIR)))
                 ))
         );
 
