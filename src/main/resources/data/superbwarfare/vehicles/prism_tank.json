@@ -5,108 +5,26 @@
   "UpStep": 2.25,
   "Mass": 25,
   "DamageModifiers": [
-    {
-      "Type": "Multiply",
-      "Value": 0.17
-    },
-    {
-      "Type": "Multiply",
-      "Value": 1.5,
-      "Source": "minecraft:arrow"
-    },
-    {
-      "Type": "Multiply",
-      "Value": 1.5,
-      "Source": "minecraft:trident"
-    },
-    {
-      "Type": "Multiply",
-      "Value": 2.5,
-      "Source": "minecraft:mob_attack"
-    },
-    {
-      "Type": "Multiply",
-      "Value": 2,
-      "Source": "minecraft:mob_attack_no_aggro"
-    },
-    {
-      "Type": "Multiply",
-      "Value": 1.5,
-      "Source": "minecraft:mob_projectile"
-    },
-    {
-      "Type": "Multiply",
-      "Value": 12.5,
-      "Source": "minecraft:lava"
-    },
-    {
-      "Type": "Multiply",
-      "Value": 6,
-      "Source": "minecraft:explosion"
-    },
-    {
-      "Type": "Multiply",
-      "Value": 6,
-      "Source": "minecraft:player_explosion"
-    },
-    {
-      "Type": "Multiply",
-      "Value": 2,
-      "Source": "superbwarfare:custom_explosion"
-    },
-    {
-      "Type": "Multiply",
-      "Value": 2,
-      "Source": "superbwarfare:projectile_explosion"
-    },
-    {
-      "Type": "Multiply",
-      "Value": 0.7,
-      "Source": "superbwarfare:mine"
-    },
-    {
-      "Type": "Multiply",
-      "Value": 0.9,
-      "Source": "superbwarfare:lunge_mine"
-    },
-    {
-      "Type": "Multiply",
-      "Value": 1.5,
-      "Source": "superbwarfare:projectile_hit"
-    },
-    {
-      "Type": "Multiply",
-      "Value": 2,
-      "Source": "@#superbwarfare:aerial_bomb"
-    },
-    {
-      "Type": "Multiply",
-      "Value": 0.1,
-      "Source": "#superbwarfare:projectile"
-    },
-    {
-      "Type": "Multiply",
-      "Value": 0.7,
-      "Source": "#superbwarfare:projectile_absolute"
-    },
-    {
-      "Type": "Multiply",
-      "Value": 1.3,
-      "Source": "@superbwarfare:rpg_rocket"
-    },
-    {
-      "Type": "Multiply",
-      "Value": 3,
-      "Source": "superbwarfare:vehicle_strike"
-    },
-    {
-      "Type": "Multiply",
-      "Value": 1.5,
-      "Source": "@superbwarfare:gun_grenade"
-    },
-    {
-      "Type": "Reduce",
-      "Value": 9
-    }
+    "All * 0.17",
+    "minecraft:arrow * 1.5",
+    "minecraft:trident * 1.5",
+    "minecraft:mob_attack * 2.5",
+    "minecraft:mob_attack_no_aggro * 2",
+    "minecraft:mob_projectile * 1.5",
+    "minecraft:lava * 12.5",
+    "minecraft:explosion * 6",
+    "minecraft:player_explosion * 6",
+    "superbwarfare:custom_explosion * 2",
+    "superbwarfare:projectile_explosion * 2",
+    "superbwarfare:mine * 0.7",
+    "superbwarfare:lunge_mine * 0.9",
+    "superbwarfare:projectile_hit * 1.5",
+    "@#superbwarfare:aerial_bomb * 2",
+    "#superbwarfare:projectile * 0.1",
+    "#superbwarfare:projectile_absolute * 0.7",
+    "@superbwarfare:rpg_rocket * 1.3",
+    "superbwarfare:vehicle_strike * 3",
+    "@superbwarfare:gun_grenade * 1.5",
+    "All - 9"
   ]
 }
