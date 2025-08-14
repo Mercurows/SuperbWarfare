@@ -1,0 +1,21 @@
+{
+  "inputs": [
+    {
+      "ingredient": "minecraft:stick",
+      "count": 5
+    },
+    {
+      "ingredient": "minecraft:iron_ingot",
+      "count": 1
+    },
+    {
+      "ingredient": "superbwarfare:steel_ingot",
+      "count": 4
+    }
+  ],
+  "category": "land",
+  "result": {
+    "entityType": "superbwarfare:yx_100"
+  },
+  "type": "superbwarfare:vehicle_assembling"
+}

@@ -1,15 +1,23 @@
 package com.atsuishio.superbwarfare.client.screens;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.init.ModRecipes;
 import com.atsuishio.superbwarfare.menu.VehicleAssemblingMenu;
+import com.atsuishio.superbwarfare.recipe.vehicle.VehicleAssemblingRecipe;
+import com.google.common.collect.Maps;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
+import java.util.Map;
 
 @OnlyIn(Dist.CLIENT)
 public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAssemblingMenu> {
@@ -17,10 +25,33 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
     private static final ResourceLocation TEXTURE = Mod.loc("textures/gui/vehicle_assembling_table.png");
     private static final int IMAGE_SIZE = 324;
 
+    private final Map<ResourceLocation, List<ResourceLocation>> recipes = Maps.newLinkedHashMap();
+
     public VehicleAssemblingScreen(VehicleAssemblingMenu pMenu, Inventory pPlayerInventory, Component pTitle) {
         super(pMenu, pPlayerInventory, pTitle);
         imageWidth = 322;
         imageHeight = 178;
+    }
+
+    @Override
+    protected void init() {
+        super.init();
+        this.initRecipes();
+    }
+
+    public void initRecipes() {
+        this.recipes.clear();
+
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.level == null) return;
+
+        RecipeManager recipeManager = Minecraft.getInstance().level.getRecipeManager();
+        List<VehicleAssemblingRecipe> recipeList = recipeManager.getAllRecipesFor(ModRecipes.VEHICLE_ASSEMBLING_TYPE.get());
+
+        // TODO 看test/yx_100.json，为什么没法解析
+        for (VehicleAssemblingRecipe recipe : recipeList) {
+            System.out.println(recipe);
+        }
     }
 
     @Override

@@ -9,9 +9,9 @@ public class VehicleAssemblingResult {
 
     private ItemStack result = ItemStack.EMPTY;
     @Nullable
-    private ItemStack item = null;
+    public ItemStack item = null;
     @Nullable
-    private EntityType<?> entityType = null;
+    public EntityType<?> entityType = null;
 
     public VehicleAssemblingResult(ItemStack item) {
         this.item = item;
