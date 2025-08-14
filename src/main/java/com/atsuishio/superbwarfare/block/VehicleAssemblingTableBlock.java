@@ -1,14 +1,16 @@
 package com.atsuishio.superbwarfare.block;
 
-import com.atsuishio.superbwarfare.menu.VehicleAssemblingMenu;
+import com.atsuishio.superbwarfare.block.entity.VehicleAssemblingTableBlockEntity;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.MenuProvider;
-import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
@@ -17,7 +19,7 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
-public class VehicleAssemblingTableBlock extends Block {
+public class VehicleAssemblingTableBlock extends BaseEntityBlock {
 
     public VehicleAssemblingTableBlock() {
         super(BlockBehaviour.Properties.of().strength(2f).requiresCorrectToolForDrops());
@@ -29,7 +31,9 @@ public class VehicleAssemblingTableBlock extends Block {
         if (level.isClientSide) {
             return InteractionResult.SUCCESS;
         } else {
-            player.openMenu(state.getMenuProvider(level, pos));
+            if (level.getBlockEntity(pos) instanceof VehicleAssemblingTableBlockEntity blockEntity) {
+                player.openMenu(blockEntity);
+            }
             return InteractionResult.CONSUME;
         }
     }
@@ -37,8 +41,24 @@ public class VehicleAssemblingTableBlock extends Block {
     @Nullable
     @ParametersAreNonnullByDefault
     @Override
-    public MenuProvider getMenuProvider(BlockState pState, Level level, BlockPos pPos) {
-        return new SimpleMenuProvider((i, inventory, player) ->
-                new VehicleAssemblingMenu(i, inventory), Component.literal("哼哼啊啊啊啊啊啊阿"));
+    public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
+        return new VehicleAssemblingTableBlockEntity(pPos, pState);
+    }
+    
+    @Override
+    protected @NotNull MapCodec<? extends BaseEntityBlock> codec() {
+        return simpleCodec(prop -> new VehicleAssemblingTableBlock());
+    }
+
+    @Override
+    public @NotNull RenderShape getRenderShape(@NotNull BlockState state) {
+        return RenderShape.MODEL;
+    }
+
+    @Nullable
+    @ParametersAreNonnullByDefault
+    @Override
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level pLevel, BlockState pState, BlockEntityType<T> pBlockEntityType) {
+        return super.getTicker(pLevel, pState, pBlockEntityType);
     }
 }
