@@ -26,6 +26,6 @@ public class VehicleAssemblingTableBlockEntityRenderer extends GeoBlockRenderer<
 
     @Override
     public boolean shouldRender(VehicleAssemblingTableBlockEntity blockEntity, @NotNull Vec3 cameraPos) {
-        return blockEntity.getBlockState().getValue(VehicleAssemblingTableBlock.BLOCK_PART) == BlockPart.FRB;
+        return blockEntity.getBlockState().getValue(VehicleAssemblingTableBlock.BLOCK_PART) == BlockPart.FLB;
     }
 }
