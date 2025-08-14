@@ -13,8 +13,8 @@ public class ContainerBlockEntityRenderer extends GeoBlockRenderer<ContainerBloc
         super(new ContainerBlockModel());
     }
 
-    @Override
-    public RenderType getRenderType(ContainerBlockEntity animatable, ResourceLocation texture, MultiBufferSource bufferSource, float partialTick) {
-        return RenderType.entityTranslucent(getTextureLocation(animatable));
-    }
+	@Override
+	public RenderType getRenderType(ContainerBlockEntity animatable, ResourceLocation texture, MultiBufferSource bufferSource, float partialTick) {
+		return RenderType.entityCutout(getTextureLocation(animatable));
+	}
 }
