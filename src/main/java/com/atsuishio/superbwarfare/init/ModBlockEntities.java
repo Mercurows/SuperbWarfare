@@ -29,4 +29,6 @@ public class ModBlockEntities {
             () -> BlockEntityType.Builder.of(CreativeSuperbItemInterfaceBlockEntity::new, ModBlocks.CREATIVE_SUPERB_ITEM_INTERFACE.get()).build(null));
     public static final RegistryObject<BlockEntityType<LuckyContainerBlockEntity>> LUCKY_CONTAINER = REGISTRY.register("lucky_container",
             () -> BlockEntityType.Builder.of(LuckyContainerBlockEntity::new, ModBlocks.LUCKY_CONTAINER.get()).build(null));
+    public static final RegistryObject<BlockEntityType<VehicleAssemblingTableBlockEntity>> VEHICLE_ASSEMBLING_TABLE = REGISTRY.register("vehicle_assembling_table",
+            () -> BlockEntityType.Builder.of(VehicleAssemblingTableBlockEntity::new, ModBlocks.VEHICLE_ASSEMBLING_TABLE.get()).build(null));
 }
