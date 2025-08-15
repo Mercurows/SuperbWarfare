@@ -10,6 +10,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.*;
@@ -22,6 +23,8 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,6 +38,14 @@ public class VehicleAssemblingTableBlock extends BaseEntityBlock {
     public VehicleAssemblingTableBlock() {
         super(BlockBehaviour.Properties.of().strength(2f).requiresCorrectToolForDrops().noOcclusion());
         this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(BLOCK_PART, BlockPart.FLB));
+    }
+
+    @Override
+    public VoxelShape getShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
+        if (pState.getValue(BLOCK_PART) == BlockPart.FLU || pState.getValue(BLOCK_PART) == BlockPart.FRU || pState.getValue(BLOCK_PART) == BlockPart.BLU || pState.getValue(BLOCK_PART) == BlockPart.BRU) {
+            return Block.box(0, 0, 0, 16, 14, 16);
+        }
+        return super.getShape(pState, pLevel, pPos, pContext);
     }
 
     @Override
