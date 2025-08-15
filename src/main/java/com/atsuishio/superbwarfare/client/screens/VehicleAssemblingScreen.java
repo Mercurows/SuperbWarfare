@@ -100,7 +100,7 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
                 this.currentRecipes = this.recipes.get(category);
                 this.currentRecipe = this.getRecipeById(this.currentRecipes == null || this.currentRecipes.isEmpty() ? null : this.currentRecipes.get(0));
                 this.pageIndex = 0;
-
+                this.calculateMaterialCount(this.currentRecipe);
                 this.init();
             });
             if (this.currentCategory.equals(category)) {
@@ -180,7 +180,7 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
 
                 RecipeButton button = this.addRenderableWidget(new RecipeButton(posX + 26, posY + 21 + i * 17, recipe.getResult().getResult(), (b) -> {
                     this.currentRecipe = recipe;
-
+                    this.calculateMaterialCount(recipe);
                     this.init();
                 }));
                 if (this.currentRecipe != null && recipe.getId().equals(this.currentRecipe.getId())) {
@@ -231,5 +231,12 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
             }
             Mod.PACKET_HANDLER.sendToServer(new AssembleVehicleMessage(this.currentRecipe.getId(), this.menu.containerId));
         }));
+    }
+
+    public void finishAssembling() {
+        if (this.currentRecipe != null) {
+            this.calculateMaterialCount(this.currentRecipe);
+        }
+        this.init();
     }
 }

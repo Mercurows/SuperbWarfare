@@ -19,11 +19,11 @@ public class AssembleVehicleMessage {
 
     public static void encode(AssembleVehicleMessage message, FriendlyByteBuf byteBuf) {
         byteBuf.writeResourceLocation(message.id);
-        byteBuf.writeInt(message.containerId);
+        byteBuf.writeVarInt(message.containerId);
     }
 
     public static AssembleVehicleMessage decode(FriendlyByteBuf byteBuf) {
-        return new AssembleVehicleMessage(byteBuf.readResourceLocation(), byteBuf.readInt());
+        return new AssembleVehicleMessage(byteBuf.readResourceLocation(), byteBuf.readVarInt());
     }
 
     public static void handler(AssembleVehicleMessage message, Supplier<NetworkEvent.Context> ctx) {

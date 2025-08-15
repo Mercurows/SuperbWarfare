@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.network;
 
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.client.screens.FuMO25ScreenHelper;
+import com.atsuishio.superbwarfare.client.screens.VehicleAssemblingScreen;
 import com.atsuishio.superbwarfare.config.client.KillMessageConfig;
 import com.atsuishio.superbwarfare.config.server.MiscConfig;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
@@ -97,6 +98,18 @@ public class ClientPacketHandler {
             Player player = minecraft.player;
             if (player != null) {
                 player.setDeltaMovement(message.motion().x, message.motion().y, message.motion().z);
+            }
+        }
+    }
+
+    public static void handleFinishAssemblingVehicleMessage(FinishAssemblingVehicleMessage message, Supplier<NetworkEvent.Context> ctx) {
+        if (ctx.get().getDirection().getReceptionSide() == LogicalSide.CLIENT) {
+            Minecraft minecraft = Minecraft.getInstance();
+            Player player = minecraft.player;
+            if (player == null) return;
+            if (player.containerMenu.containerId != message.containerId()) return;
+            if (minecraft.screen instanceof VehicleAssemblingScreen screen) {
+                screen.finishAssembling();
             }
         }
     }
