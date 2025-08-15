@@ -5,20 +5,35 @@ import com.atsuishio.superbwarfare.client.screens.component.AssembleButton;
 import com.atsuishio.superbwarfare.client.screens.component.CategoryButton;
 import com.atsuishio.superbwarfare.client.screens.component.PageButton;
 import com.atsuishio.superbwarfare.client.screens.component.RecipeButton;
+import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModRecipes;
 import com.atsuishio.superbwarfare.menu.VehicleAssemblingMenu;
 import com.atsuishio.superbwarfare.network.message.send.AssembleVehicleMessage;
 import com.atsuishio.superbwarfare.recipe.vehicle.VehicleAssemblingRecipe;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.platform.Lighting;
+import com.mojang.blaze3d.platform.Window;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
 import it.unimi.dsi.fastutil.ints.Int2IntArrayMap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeManager;
@@ -51,6 +66,10 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
     @Nullable
     private Int2IntArrayMap materialCount;
     private int pageIndex = 0;
+    private float modelScale = 50f;
+
+    private String entityNameCache = "";
+    private Entity entityCache = null;
 
     public VehicleAssemblingScreen(VehicleAssemblingMenu pMenu, Inventory pPlayerInventory, Component pTitle) {
         super(pMenu, pPlayerInventory, pTitle);
@@ -116,6 +135,10 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
         this.renderBackground(guiGraphics);
         super.render(guiGraphics, mouseX, mouseY, partialTick);
         this.renderTooltip(guiGraphics, mouseX, mouseY);
+
+        if (this.currentRecipe != null) {
+            this.renderModel(this.currentRecipe, guiGraphics, partialTick);
+        }
 
         this.renderables.stream().filter(w -> w instanceof RecipeButton)
                 .forEach(w -> ((RecipeButton) w).renderTooltips(guiGraphics, mouseX, mouseY));
@@ -255,5 +278,87 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
             this.calculateMaterialCount(this.currentRecipe);
         }
         this.init();
+    }
+
+    @SuppressWarnings("deprecation")
+    public void renderModel(VehicleAssemblingRecipe recipe, GuiGraphics guiGraphics, float partialTicks) {
+        Minecraft mc = Minecraft.getInstance();
+        var level = mc.level;
+        if (level == null) return;
+
+        float rotationPeriod = 8.0F;
+        int xPos = this.leftPos + 200;
+        int yPos = this.topPos + 50;
+        int startX = this.leftPos + 125;
+        int startY = this.topPos + 15;
+        int width = 128;
+        int height = 85;
+        float rotPitch = 15.0F;
+        Window window = Minecraft.getInstance().getWindow();
+        double windowGuiScale = window.getGuiScale();
+        int scissorX = (int) (startX * windowGuiScale);
+        int scissorY = (int) (window.getHeight() - (startY + height) * windowGuiScale);
+        int scissorW = (int) (width * windowGuiScale);
+        int scissorH = (int) (height * windowGuiScale);
+        RenderSystem.enableScissor(scissorX, scissorY, scissorW, scissorH);
+        Minecraft.getInstance().textureManager.getTexture(TextureAtlas.LOCATION_BLOCKS).setFilter(false, false);
+        RenderSystem.setShaderTexture(0, TextureAtlas.LOCATION_BLOCKS);
+        RenderSystem.enableBlend();
+        RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+
+        PoseStack posestack = RenderSystem.getModelViewStack();
+        posestack.pushPose();
+        posestack.translate((float) xPos, (float) yPos, 200.0F);
+        posestack.translate(8.0, 8.0, 0.0);
+        posestack.scale(1.0F, -1.0F, 1.0F);
+        posestack.scale(this.modelScale, this.modelScale, this.modelScale);
+
+        float rot = (float) (System.currentTimeMillis() % (long) ((int) (rotationPeriod * 1000.0F))) * (360.0F / (rotationPeriod * 1000.0F));
+
+        posestack.mulPose(Axis.XP.rotationDegrees(rotPitch));
+        posestack.mulPose(Axis.YP.rotationDegrees(rot));
+        RenderSystem.applyModelViewMatrix();
+        PoseStack tmpPose = new PoseStack();
+        MultiBufferSource.BufferSource bufferSource = Minecraft.getInstance().renderBuffers().bufferSource();
+        Lighting.setupForFlatItems();
+
+        ItemStack stack = recipe.getResult().getResult();
+        boolean useItemRenderer = true;
+
+        if (stack.is(ModItems.CONTAINER.get())) {
+            CompoundTag tag = BlockItem.getBlockEntityData(stack);
+            typeFlag:
+            if (tag != null && tag.contains("EntityType")) {
+                String key = tag.getString("EntityType");
+
+                Entity renderEntity;
+                if (entityNameCache.equals(key) && entityCache != null) {
+                    renderEntity = entityCache;
+                } else {
+                    renderEntity = EntityType.byString(key)
+                            .map(type -> type.create(level))
+                            .orElse(null);
+                    if (renderEntity == null) break typeFlag;
+
+                    entityNameCache = key;
+                    entityCache = renderEntity;
+                }
+
+                useItemRenderer = false;
+                // TODO 这块怎么渲染实体模型上去？
+                mc.getEntityRenderDispatcher().render(renderEntity, 0, 0, 0, 0, partialTicks, posestack, guiGraphics.bufferSource(), 15728880);
+            }
+        }
+        if (useItemRenderer) {
+            Minecraft.getInstance().getItemRenderer().renderStatic(recipe.getResult().getResult(), ItemDisplayContext.FIXED, 15728880, OverlayTexture.NO_OVERLAY, tmpPose, bufferSource, null, 0);
+        }
+
+        bufferSource.endBatch();
+        RenderSystem.enableDepthTest();
+        Lighting.setupFor3DItems();
+        posestack.popPose();
+        RenderSystem.applyModelViewMatrix();
+        RenderSystem.disableScissor();
     }
 }
