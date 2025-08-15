@@ -1,20 +1,19 @@
 package com.atsuishio.superbwarfare.client.screens;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.client.screens.component.CategoryButton;
+import com.atsuishio.superbwarfare.client.screens.component.RecipeButton;
 import com.atsuishio.superbwarfare.init.ModRecipes;
 import com.atsuishio.superbwarfare.menu.VehicleAssemblingMenu;
 import com.atsuishio.superbwarfare.recipe.vehicle.VehicleAssemblingRecipe;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraftforge.api.distmarker.Dist;
@@ -32,8 +31,8 @@ import java.util.Map;
 @OnlyIn(Dist.CLIENT)
 public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAssemblingMenu> {
 
-    private static final ResourceLocation TEXTURE = Mod.loc("textures/gui/vehicle_assembling_table.png");
-    private static final int IMAGE_SIZE = 324;
+    public static final ResourceLocation TEXTURE = Mod.loc("textures/gui/vehicle_assembling_table.png");
+    public static final int IMAGE_SIZE = 324;
 
     private final Map<VehicleAssemblingRecipe.Category, List<ResourceLocation>> recipes = Maps.newLinkedHashMap();
 
@@ -56,6 +55,8 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
     protected void init() {
         super.init();
         this.initRecipes();
+        this.clearWidgets();
+
         this.addCategoryButtons();
         this.addRecipeButtons();
     }
@@ -152,77 +153,6 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
                     button.setSelected(true);
                 }
             }
-        }
-    }
-
-    public class CategoryButton extends Button {
-
-        public VehicleAssemblingRecipe.Category category;
-        private boolean isSelected = false;
-
-        public CategoryButton(int x, int y, VehicleAssemblingRecipe.Category category, Button.OnPress onPress) {
-            super(x, y, 20, 22, Component.literal("114"), onPress, DEFAULT_NARRATION);
-            this.category = category;
-        }
-
-        @Override
-        protected void renderWidget(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
-            pGuiGraphics.pose().pushPose();
-            RenderSystem.enableDepthTest();
-
-            if (VehicleAssemblingScreen.this.currentCategory != this.category) {
-                this.isSelected = false;
-            }
-
-            if (this.isSelected) {
-                pGuiGraphics.blit(TEXTURE, this.getX(), this.getY(), 179, 182, 23, this.height, IMAGE_SIZE, IMAGE_SIZE);
-            } else {
-                pGuiGraphics.blit(TEXTURE, this.getX(), this.getY(), 179, 205, 20, this.height, IMAGE_SIZE, IMAGE_SIZE);
-            }
-
-            pGuiGraphics.pose().popPose();
-        }
-
-        @Override
-        public void onPress() {
-            this.isSelected = true;
-            this.onPress.onPress(this);
-        }
-
-        public void setSelected(boolean selected) {
-            this.isSelected = selected;
-        }
-    }
-
-    public class RecipeButton extends Button {
-
-        private final ItemStack stack;
-        private boolean isSelected = false;
-
-        public RecipeButton(int x, int y, ItemStack stack, Button.OnPress onPress) {
-            super(x, y, 80, 18, Component.literal("114"), onPress, DEFAULT_NARRATION);
-            this.stack = stack;
-        }
-
-        @Override
-        protected void renderWidget(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
-            if (this.isSelected) {
-                pGuiGraphics.blit(TEXTURE, this.getX(), this.getY(), 6, 220, this.width, this.height, IMAGE_SIZE, IMAGE_SIZE);
-            } else {
-                if (this.isHovered) {
-                    pGuiGraphics.blit(TEXTURE, this.getX(), this.getY(), 6, 201, this.width, this.height, IMAGE_SIZE, IMAGE_SIZE);
-                } else {
-                    pGuiGraphics.blit(TEXTURE, this.getX(), this.getY(), 6, 182, this.width, this.height, IMAGE_SIZE, IMAGE_SIZE);
-                }
-            }
-
-            pGuiGraphics.renderFakeItem(this.stack, this.getX() + 1, this.getY() + 1);
-            Component hoverName = this.stack.getHoverName();
-            renderScrollingString(pGuiGraphics, Minecraft.getInstance().font, hoverName, this.getX() + 20, this.getY() + 4, this.getX() + 92, this.getY() + 13, 16777215);
-        }
-
-        public void setSelected(boolean selected) {
-            this.isSelected = selected;
         }
     }
 }
