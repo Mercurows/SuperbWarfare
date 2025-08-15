@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.entity.vehicle;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
+import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.mojang.math.Axis;
@@ -50,8 +51,12 @@ public class VehicleAssemblingTableVehicleEntity extends MobileVehicleEntity imp
     public float deltaX;
     public float deltaY;
 
-    public VehicleAssemblingTableVehicleEntity(EntityType<VehicleAssemblingTableVehicleEntity> type, Level world) {
+    public VehicleAssemblingTableVehicleEntity(EntityType<?> type, Level world) {
         super(type, world);
+    }
+
+    public VehicleAssemblingTableVehicleEntity(Level world) {
+        this(ModEntities.VEHICLE_ASSEMBLING_TABLE.get(), world);
     }
 
     @Override
