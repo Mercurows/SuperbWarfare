@@ -10,6 +10,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoBlockEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
@@ -41,5 +42,19 @@ public class VehicleAssemblingTableBlockEntity extends BlockEntity implements Me
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return this.cache;
+    }
+
+    @Override
+    public AABB getRenderBoundingBox() {
+        // 创建一个更大的边界框（示例：覆盖从方块底部到顶部上方2格的范围）
+        double expansion = 2.0; // 根据模型实际大小调整
+        return new AABB(
+                worldPosition.getX() - 1,
+                worldPosition.getY(),
+                worldPosition.getZ() - 1,
+                worldPosition.getX() + 2,
+                worldPosition.getY() + expansion,
+                worldPosition.getZ() + 2
+        );
     }
 }
