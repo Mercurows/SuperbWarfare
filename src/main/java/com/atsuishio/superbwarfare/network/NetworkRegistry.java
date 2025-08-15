@@ -73,6 +73,7 @@ public class NetworkRegistry {
         playToServer(MouseMoveMessage.class, MouseMoveMessage::encode, MouseMoveMessage::decode, MouseMoveMessage::handler);
         playToServer(FiringParametersEditMessage.class, FiringParametersEditMessage::encode, FiringParametersEditMessage::decode, FiringParametersEditMessage::handler);
         playToServer(UnloadMessage.INSTANCE, UnloadMessage::handler);
+        playToServer(AssembleVehicleMessage.class, AssembleVehicleMessage::encode, AssembleVehicleMessage::decode, AssembleVehicleMessage::handler);
 
         var registerContainerEvent = new RegisterContainersEvent();
         FMLJavaModLoadingContext.get().getModEventBus().post(registerContainerEvent);

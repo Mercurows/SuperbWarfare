@@ -28,6 +28,10 @@ public class VehicleAssemblingIngredient implements DeserializeFromString {
         return ingredientObject;
     }
 
+    public int getCount() {
+        return count;
+    }
+
     @Override
     public void deserializeFromString(String str) {
         var matcher = INGREDIENT_PATTERN.matcher(str);
