@@ -75,7 +75,7 @@ public class VehicleAssemblingRecipe implements Recipe<RecipeWrapper> {
         AIRCRAFT("aircraft"),
         CIVILIAN("civilian"),
         WATER("water"),
-        EMPTY("empty");
+        MISC("misc");
 
         private final String name;
 
@@ -93,7 +93,7 @@ public class VehicleAssemblingRecipe implements Recipe<RecipeWrapper> {
                     return category;
                 }
             }
-            return Category.EMPTY;
+            return Category.MISC;
         }
     }
 }

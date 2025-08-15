@@ -654,6 +654,13 @@
   "tips.superbwarfare.modify_result.entity_type": "[Entity Type] <%1$s>",
   "tips.superbwarfare.modify_result.entity_id": "[Entity ID] <%1$s>",
 
+  "tips.superbwarfare.category.land": "Land Vehicles",
+  "tips.superbwarfare.category.defense": "Defense Towers",
+  "tips.superbwarfare.category.aircraft": "Aircraft",
+  "tips.superbwarfare.category.civilian": "Civilian Vehicles",
+  "tips.superbwarfare.category.water": "Water Vehicles",
+  "tips.superbwarfare.category.misc": "Miscellaneous",
+
   "container.superbwarfare.reforging_table": "Gun Reforge Table",
   "container.superbwarfare.charging_station": "Charging Station",
   "container.superbwarfare.charging_station.show_range": "Show Range",
