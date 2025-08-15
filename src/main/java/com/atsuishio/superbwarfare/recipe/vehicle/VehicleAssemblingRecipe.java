@@ -87,7 +87,7 @@ public class VehicleAssemblingRecipe implements Recipe<Inventory> {
         AIRCRAFT("aircraft"),
         CIVILIAN("civilian"),
         WATER("water"),
-        EMPTY("empty");
+        MISC("misc");
 
         private final String name;
 
@@ -105,7 +105,7 @@ public class VehicleAssemblingRecipe implements Recipe<Inventory> {
                     return category;
                 }
             }
-            return Category.EMPTY;
+            return Category.MISC;
         }
     }
 }

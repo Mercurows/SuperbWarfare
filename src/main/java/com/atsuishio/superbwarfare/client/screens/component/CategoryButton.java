@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.client.screens.component;
 import com.atsuishio.superbwarfare.client.screens.VehicleAssemblingScreen;
 import com.atsuishio.superbwarfare.recipe.vehicle.VehicleAssemblingRecipe;
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
@@ -37,6 +38,10 @@ public class CategoryButton extends Button {
             default -> 262;
         };
         pGuiGraphics.blit(VehicleAssemblingScreen.TEXTURE, this.getX() + 3, this.getY() + 3, 203, vOffset, 16, 16, VehicleAssemblingScreen.IMAGE_SIZE, VehicleAssemblingScreen.IMAGE_SIZE);
+
+        if (this.isHovered()) {
+            pGuiGraphics.renderTooltip(Minecraft.getInstance().font, Component.translatable("tips.superbwarfare.category." + this.category.getName()), pMouseX, pMouseY);
+        }
 
         pGuiGraphics.pose().popPose();
     }
