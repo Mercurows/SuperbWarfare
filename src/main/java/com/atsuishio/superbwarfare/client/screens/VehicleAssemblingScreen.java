@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.client.screens;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.client.screens.component.AssembleButton;
 import com.atsuishio.superbwarfare.client.screens.component.CategoryButton;
 import com.atsuishio.superbwarfare.client.screens.component.PageButton;
 import com.atsuishio.superbwarfare.client.screens.component.RecipeButton;
@@ -8,12 +9,15 @@ import com.atsuishio.superbwarfare.init.ModRecipes;
 import com.atsuishio.superbwarfare.menu.VehicleAssemblingMenu;
 import com.atsuishio.superbwarfare.recipe.vehicle.VehicleAssemblingRecipe;
 import com.google.common.collect.Maps;
+import it.unimi.dsi.fastutil.ints.Int2IntArrayMap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -41,6 +45,8 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
     private List<ResourceLocation> currentRecipes = new ArrayList<>();
     @Nullable
     private VehicleAssemblingRecipe currentRecipe = null;
+    @Nullable
+    private Int2IntArrayMap materialCount;
     private int pageIndex = 0;
 
     public VehicleAssemblingScreen(VehicleAssemblingMenu pMenu, Inventory pPlayerInventory, Component pTitle) {
@@ -50,6 +56,7 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
         this.initRecipes();
         this.pageIndex = 0;
         this.currentRecipe = this.getRecipeById(this.currentRecipes == null || this.currentRecipes.isEmpty() ? null : this.currentRecipes.get(0));
+        this.calculateMaterialCount(this.currentRecipe);
     }
 
     @Override
@@ -64,6 +71,7 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
         this.addCategoryButtons(posX, posY);
         this.addRecipeButtons(posX, posY);
         this.addPageButtons(posX, posY);
+        this.addAssembleButton(posX, posY);
     }
 
     public void initRecipes() {
@@ -136,6 +144,28 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
         return null;
     }
 
+    public void calculateMaterialCount(@Nullable VehicleAssemblingRecipe recipe) {
+        LocalPlayer player = Minecraft.getInstance().player;
+        if (player == null || recipe == null) return;
+
+        var ingredients = recipe.getInputs();
+        int size = ingredients.size();
+        this.materialCount = new Int2IntArrayMap(size);
+
+        for (int i = 0; i < size; ++i) {
+            var ingredient = ingredients.get(i);
+            int count = 0;
+
+            for (ItemStack stack : player.getInventory().items) {
+                if (!stack.isEmpty() && ingredient.getIngredient().test(stack)) {
+                    count += stack.getCount();
+                }
+            }
+
+            this.materialCount.put(i, count);
+        }
+    }
+
     public void addRecipeButtons(int posX, int posY) {
         if (this.currentRecipes != null && !this.currentRecipes.isEmpty()) {
             for (int i = 0; i < 9; i++) {
@@ -177,5 +207,29 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
             left.active = false;
             right.active = false;
         }
+    }
+
+    public void addAssembleButton(int posX, int posY) {
+        this.addRenderableWidget(new AssembleButton(posX + 282, posY + 163, b -> {
+            if (this.currentRecipe == null || this.materialCount == null) return;
+
+            var inputs = this.currentRecipe.getInputs();
+            int size = inputs.size();
+
+            for (int i = 0; i < size; ++i) {
+                if (i >= this.materialCount.size()) {
+                    return;
+                }
+
+                int hasCount = this.materialCount.get(i);
+                int needCount = inputs.get(i).getCount();
+                boolean isCreative = Minecraft.getInstance().player != null && Minecraft.getInstance().player.isCreative();
+                if (hasCount < needCount && !isCreative) {
+                    return;
+                }
+            }
+            // TODO getId
+//            PacketDistributor.sendToServer(new AssembleVehicleMessage(this.currentRecipe.getId(), this.menu.containerId));
+        }));
     }
 }

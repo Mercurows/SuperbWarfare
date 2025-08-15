@@ -65,6 +65,7 @@ public class NetworkRegistry {
         playToServer(MouseMoveMessage.TYPE, MouseMoveMessage.STREAM_CODEC, MouseMoveMessage::handler);
         playToServer(FiringParametersEditMessage.TYPE, FiringParametersEditMessage.STREAM_CODEC, FiringParametersEditMessage::handler);
         playToServer(UnloadMessage.TYPE, UnloadMessage.STREAM_CODEC, (msg, ctx) -> UnloadMessage.handler(ctx));
+        playToServer(AssembleVehicleMessage.TYPE, AssembleVehicleMessage.STREAM_CODEC, AssembleVehicleMessage::handler);
     }
 
     private static PayloadRegistrar registrar;
