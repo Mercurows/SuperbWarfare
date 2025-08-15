@@ -159,6 +159,7 @@ public class VehicleAssemblingTableVehicleEntity extends MobileVehicleEntity imp
     public void travel() {
         Entity passenger = this.getFirstPassenger();
 
+        this.entityData.set(POWER, this.entityData.get(POWER) * 0.95f);
         if (passenger == null || isInWater()) {
             this.leftInputDown = false;
             this.rightInputDown = false;
@@ -166,7 +167,6 @@ public class VehicleAssemblingTableVehicleEntity extends MobileVehicleEntity imp
             this.backInputDown = false;
             this.setDeltaMovement(this.getDeltaMovement().multiply(0.96, 1, 0.96));
         } else if (passenger instanceof Player) {
-            this.entityData.set(POWER, this.entityData.get(POWER) * 0.95f);
 
             if (forwardInputDown) {
                 this.entityData.set(POWER, Math.min(this.entityData.get(POWER) + 0.1f, 1f));
