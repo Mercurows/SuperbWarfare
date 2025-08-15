@@ -1,9 +1,12 @@
 package com.atsuishio.superbwarfare.block;
 
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.block.entity.VehicleAssemblingTableBlockEntity;
 import com.atsuishio.superbwarfare.block.property.BlockPart;
+import com.atsuishio.superbwarfare.entity.vehicle.VehicleAssemblingTableVehicleEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
@@ -25,12 +28,15 @@ import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @SuppressWarnings("deprecation")
+@net.minecraftforge.fml.common.Mod.EventBusSubscriber(modid = Mod.MODID)
 public class VehicleAssemblingTableBlock extends BaseEntityBlock {
 
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
@@ -42,7 +48,8 @@ public class VehicleAssemblingTableBlock extends BaseEntityBlock {
     }
 
     @Override
-    public VoxelShape getShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
+    @ParametersAreNonnullByDefault
+    public @NotNull VoxelShape getShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
         if (pState.getValue(BLOCK_PART) == BlockPart.FLU || pState.getValue(BLOCK_PART) == BlockPart.FRU || pState.getValue(BLOCK_PART) == BlockPart.BLU || pState.getValue(BLOCK_PART) == BlockPart.BRU) {
             return Block.box(0, 0, 0, 16, 14, 16);
         }
@@ -101,6 +108,55 @@ public class VehicleAssemblingTableBlock extends BaseEntityBlock {
         }
 
         super.playerWillDestroy(level, pos, state, player);
+    }
+
+    @SubscribeEvent
+    public static void interact(PlayerInteractEvent.RightClickBlock event) {
+        if (event.getLevel() instanceof ServerLevel server) {
+            var pos = event.getHitVec().getBlockPos();
+            var state = server.getBlockState(pos);
+            if (state.getBlock() instanceof VehicleAssemblingTableBlock) {
+                var facing = state.getValue(FACING);
+                var part = state.getValue(BLOCK_PART);
+                var originalPos = part.relativeNegative(pos, facing);
+
+                var vehicle = createVehicle(server, facing, originalPos);
+                server.addFreshEntity(vehicle);
+
+                for (var p : BlockPart.values()) {
+                    server.destroyBlock(p.relative(originalPos, facing), false);
+                }
+
+                event.setCancellationResult(InteractionResult.SUCCESS);
+            }
+        }
+    }
+
+    private static @NotNull VehicleAssemblingTableVehicleEntity createVehicle(ServerLevel server, Direction facing, BlockPos originalPos) {
+        var vehicle = new VehicleAssemblingTableVehicleEntity(server);
+
+        var xOffset = switch (facing) {
+            case WEST, UP, DOWN, SOUTH -> 1;
+            case NORTH, EAST -> 0;
+        };
+
+        var zOffset = switch (facing) {
+            case UP, DOWN, SOUTH, EAST -> 0;
+            case NORTH, WEST -> 1;
+        };
+
+        vehicle.setPos(originalPos.getX() + xOffset, originalPos.getY(), originalPos.getZ() + zOffset);
+        var deg = vehicle.rotate(switch (facing) {
+            case SOUTH, UP, DOWN -> Rotation.NONE;
+            case WEST -> Rotation.CLOCKWISE_90;
+            case NORTH -> Rotation.CLOCKWISE_180;
+            case EAST -> Rotation.COUNTERCLOCKWISE_90;
+        });
+
+        vehicle.yRotO = deg;
+        vehicle.setYRot(deg);
+
+        return vehicle;
     }
 
     @Override

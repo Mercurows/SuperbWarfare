@@ -52,12 +52,16 @@ public class VehicleAssemblingTableVehicleEntity extends MobileVehicleEntity imp
     public float deltaX;
     public float deltaY;
 
-    public VehicleAssemblingTableVehicleEntity(EntityType<VehicleAssemblingTableVehicleEntity> type, Level world) {
+    public VehicleAssemblingTableVehicleEntity(EntityType<?> type, Level world) {
         super(type, world);
     }
 
     public VehicleAssemblingTableVehicleEntity(PlayMessages.SpawnEntity packet, Level level) {
         this(ModEntities.VEHICLE_ASSEMBLING_TABLE.get(), level);
+    }
+
+    public VehicleAssemblingTableVehicleEntity(Level world) {
+        this(ModEntities.VEHICLE_ASSEMBLING_TABLE.get(), world);
     }
 
     @Override
