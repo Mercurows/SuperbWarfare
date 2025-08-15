@@ -1,13 +1,19 @@
 package com.atsuishio.superbwarfare.menu;
 
 import com.atsuishio.superbwarfare.init.ModMenuTypes;
+import com.atsuishio.superbwarfare.network.message.receive.FinishAssemblingVehicleMessage;
 import com.atsuishio.superbwarfare.recipe.vehicle.VehicleAssemblingRecipe;
+import it.unimi.dsi.fastutil.ints.Int2IntArrayMap;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeManager;
+import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,12 +33,55 @@ public class VehicleAssemblingMenu extends AbstractContainerMenu {
         return pPlayer.isAlive();
     }
 
-    public void assembleVehicle(ResourceLocation id, Player player) {
+    /**
+     * Code based on TaC-Z
+     */
+    public void assembleVehicle(ResourceLocation id, ServerPlayer player) {
         var recipe = this.getRecipeById(id, player.level().getRecipeManager());
         if (recipe == null) return;
-//        player.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(handler -> {
-//
-//        });
+        var handler = player.getCapability(Capabilities.ItemHandler.ENTITY);
+        if (handler != null) {
+            if (!player.isCreative()) {
+                Int2IntArrayMap recordCount = new Int2IntArrayMap();
+                var ingredients = recipe.getInputs();
+
+                for (var ingredient : ingredients) {
+                    int count = 0;
+
+                    for (int i = 0; i < handler.getSlots(); ++i) {
+                        ItemStack stack = handler.getStackInSlot(i);
+                        int stackCount = stack.getCount();
+                        if (!stack.isEmpty() && ingredient.getIngredient().test(stack)) {
+                            count += stackCount;
+                            if (count > ingredient.getCount()) {
+                                int remaining = count - ingredient.getCount();
+                                recordCount.put(i, stackCount - remaining);
+                                break;
+                            }
+                            recordCount.put(i, stackCount);
+                        }
+                    }
+
+                    if (count < ingredient.getCount()) {
+                        return;
+                    }
+                }
+
+                for (int slotIndex : recordCount.keySet()) {
+                    handler.extractItem(slotIndex, recordCount.get(slotIndex), false);
+                }
+            }
+
+            Level level = player.level();
+            if (!level.isClientSide) {
+                ItemEntity itemEntity = new ItemEntity(level, player.getX(), player.getY() + 0.5, player.getZ(), recipe.getResultItem(player.level().registryAccess()).copy());
+                itemEntity.setPickUpDelay(0);
+                level.addFreshEntity(itemEntity);
+            }
+
+            player.inventoryMenu.broadcastFullState();
+            net.neoforged.neoforge.network.PacketDistributor.sendToPlayer(player, new FinishAssemblingVehicleMessage(this.containerId));
+        }
     }
 
     // TODO
