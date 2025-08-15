@@ -1,16 +1,21 @@
 package com.atsuishio.superbwarfare.entity.vehicle;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.block.VehicleAssemblingTableBlock;
+import com.atsuishio.superbwarfare.block.property.BlockPart;
 import com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity;
-import com.atsuishio.superbwarfare.init.ModDamageTypes;
-import com.atsuishio.superbwarfare.init.ModEntities;
-import com.atsuishio.superbwarfare.init.ModItems;
-import com.atsuishio.superbwarfare.init.ModSounds;
+import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
+import com.atsuishio.superbwarfare.event.ClientMouseHandler;
+import com.atsuishio.superbwarfare.init.*;
 import com.mojang.math.Axis;
 import it.unimi.dsi.fastutil.Pair;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -70,15 +75,55 @@ public class VehicleAssemblingTableVehicleEntity extends MobileVehicleEntity imp
         this.playSound(ModSounds.WHEEL_STEP.get(), (float) (getDeltaMovement().length() * 0.3), random.nextFloat() * 0.1f + 1f);
     }
 
-    // TODO 重新部署为方块？
+    // 变回方块
     @Override
     public @NotNull InteractionResult interact(Player player, @NotNull InteractionHand hand) {
-//        if (player.getMainHandItem().is(Items.MELON) && !entityData.get(MELON)) {
-//            entityData.set(MELON, true);
-//            player.getMainHandItem().shrink(1);
-//            player.level().playSound(player, this.getOnPos(), SoundEvents.WOOD_PLACE, SoundSource.PLAYERS, 1, 1);
-//            return InteractionResult.SUCCESS;
-//        }
+        if (!this.level().isClientSide
+                && this.getPassengers().isEmpty()
+                && player.getMainHandItem().is(ModTags.Items.CROWBAR)
+                && !player.isCrouching()
+        ) {
+            var facing = getDirection();
+            var currentPos = this.position();
+            var targetPos = switch (facing) {
+                case WEST -> currentPos.add(-0.5, 0, -0.5);
+                case EAST -> currentPos.add(0.5, 0, 0.5);
+                case NORTH -> currentPos.add(0.5, 0, -0.5);
+                case SOUTH -> currentPos.add(-0.5, 0, 0.5);
+                default -> currentPos;  // this should never happen
+            };
+            var targetBlockPos = BlockPos.containing(targetPos);
+
+            var canPlace = true;
+            for (var part : BlockPart.values()) {
+                var blockPos = part.relative(targetBlockPos, facing);
+                var blockState = this.level().getBlockState(blockPos);
+                if (!blockState.canBeReplaced()) {
+                    canPlace = false;
+                    break;
+                }
+            }
+
+            if (canPlace) {
+                for (var part : BlockPart.values()) {
+                    var blockPos = part.relative(targetBlockPos, facing);
+                    var state = ModBlocks.VEHICLE_ASSEMBLING_TABLE.get().defaultBlockState()
+                            .setValue(VehicleAssemblingTableBlock.FACING, facing)
+                            .setValue(VehicleAssemblingTableBlock.BLOCK_PART, part);
+
+                    this.level().setBlock(blockPos, state, 3);
+                }
+
+                this.discard();
+
+                return InteractionResult.SUCCESS;
+            } else {
+                // TODO 优化提示
+                player.displayClientMessage(Component.literal("Cannot place!"), true);
+                return InteractionResult.FAIL;
+            }
+        }
+
         return super.interact(player, hand);
     }
 
@@ -89,13 +134,15 @@ public class VehicleAssemblingTableVehicleEntity extends MobileVehicleEntity imp
         super.baseTick();
 
         deltaX = entityData.get(MOUSE_SPEED_Y);
-        deltaY = entityData.get(MOUSE_SPEED_X);
+        if (this.leftInputDown && this.rightInputDown) {
+            deltaX = 0;
+        } else if (this.leftInputDown) {
+            deltaX = -1;
+        } else if (this.rightInputDown) {
+            deltaX = 1;
+        }
 
-        float f = (float) Mth.clamp(0.69f + 0.101f * Mth.abs(90 - (float) calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90, 0.01, 0.99);
-
-        boolean forward = Mth.abs((float) calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) < 90;
-
-        this.setDeltaMovement(this.getDeltaMovement().add(this.getViewVector(1).scale((forward ? 0.24 : -0.24) * this.getDeltaMovement().length())));
+        float f = onGround() ? 0.85f : 0.9f;
         this.setDeltaMovement(this.getDeltaMovement().multiply(f, f, f));
 
         if (this.isInWater() && this.tickCount % 4 == 0) {
@@ -110,7 +157,7 @@ public class VehicleAssemblingTableVehicleEntity extends MobileVehicleEntity imp
         this.refreshDimensions();
     }
 
-    // TODO 正确实现操控
+    // TODO 调整鼠标转向灵敏度？
     @Override
     public void travel() {
         Entity passenger = this.getFirstPassenger();
@@ -120,19 +167,33 @@ public class VehicleAssemblingTableVehicleEntity extends MobileVehicleEntity imp
             this.rightInputDown = false;
             this.forwardInputDown = false;
             this.backInputDown = false;
-            this.entityData.set(POWER, this.entityData.get(POWER) * 0.95f);
             this.setDeltaMovement(this.getDeltaMovement().multiply(0.96, 1, 0.96));
         } else if (passenger instanceof Player) {
-//            if (level().isClientSide && this.getEnergy() > 0) {
-//                level().playLocalSound(this.getX(), this.getY() + this.getBbHeight() * 0.5, this.getZ(), this.getEngineSound(), this.getSoundSource(), Math.min((this.forwardInputDown ? 7.5f : 5f) * 2 * Mth.abs(this.entityData.get(POWER)), 0.25f), (random.nextFloat() * 0.1f + 1.2f), false);
-//            }
+            this.entityData.set(POWER, this.entityData.get(POWER) * 0.95f);
 
             if (forwardInputDown) {
                 this.entityData.set(POWER, Math.min(this.entityData.get(POWER) + 0.1f, 1f));
             }
 
-            if (backInputDown || downInputDown) {
+            if (backInputDown) {
                 this.entityData.set(POWER, Math.max(this.entityData.get(POWER) - (this.entityData.get(POWER) > 0 ? 0.1f : 0.01f), onGround() ? -0.2f : 0.2f));
+            }
+
+            // Shift刹车
+            if (downInputDown) {
+                this.entityData.set(POWER, 0f);
+            }
+
+            // 跳
+            if (upInputDown && onGround()) {
+                if (this.level() instanceof ServerLevel server) {
+                    server.playSound(null, this.getOnPos(), ModSounds.WHEEL_CHAIR_JUMP.get(), SoundSource.PLAYERS, 1, 1);
+                }
+                var movement = this.getForward()
+                        .multiply(1, 0, 1)
+                        .normalize()
+                        .scale(0.7);
+                this.setDeltaMovement(getDeltaMovement().add(movement.x, 1, movement.z));
             }
 
             float diffY = Math.clamp(-90f, 90f, Mth.wrapDegrees(passenger.getYHeadRot() - this.getYRot()));
@@ -153,21 +214,12 @@ public class VehicleAssemblingTableVehicleEntity extends MobileVehicleEntity imp
             this.setZRot(this.getRoll() - addZ * (1 - Mth.abs(i)));
         }
 
-        this.entityData.set(POWER, this.entityData.get(POWER) * 0.995f);
-        this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) * 0.95f);
-
-        this.setDeltaMovement(this.getDeltaMovement().add(getViewVector(1).scale(0.04 * this.entityData.get(POWER))));
-
-        setDeltaMovement(getDeltaMovement().add(0.0f, Mth.clamp(Math.sin((onGround() ? 45 : -(getXRot() - 20)) * Mth.DEG_TO_RAD) * Math.sin((90 - this.getXRot()) * Mth.DEG_TO_RAD) * getDeltaMovement().dot(getViewVector(1)) * 0.04, -0.04, 0.09), 0.0f));
-
-//        Vector3f direction = getRightDirection().mul(-Math.sin(this.getRoll() * Mth.DEG_TO_RAD) * this.entityData.get(POWER));
-//        setDeltaMovement(getDeltaMovement().add(new Vec3(direction.x, direction.y, direction.z).scale(3)));
-//
-//        this.setDeltaMovement(this.getDeltaMovement().add(
-//                Mth.sin(-this.getYRot() * 0.017453292F) * 0.19 * this.entityData.get(POWER),
-//                Mth.clamp(Math.sin((onGround() ? 45 : -(getXRot() - 30)) * Mth.DEG_TO_RAD) * getDeltaMovement().dot(getViewVector(1)) * 0.067, -0.04, 0.09),
-//                Mth.cos(this.getYRot() * 0.017453292F) * 0.19 * this.entityData.get(POWER)
-//        ));
+        double powerValue = 0.05 * this.entityData.get(POWER);
+        this.setDeltaMovement(this.getDeltaMovement().add(getForward()
+                .multiply(1, 0, 1)
+                .normalize()
+                .multiply(powerValue, powerValue, powerValue))
+        );
     }
 
     @Override
@@ -178,7 +230,7 @@ public class VehicleAssemblingTableVehicleEntity extends MobileVehicleEntity imp
     // TODO 音效？
     @Override
     public SoundEvent getEngineSound() {
-        return ModSounds.FLY_LOOP.get();
+        return SoundEvents.EMPTY;
     }
 
     @Override
@@ -310,6 +362,11 @@ public class VehicleAssemblingTableVehicleEntity extends MobileVehicleEntity imp
     @Override
     public @NotNull List<ItemStack> getRetrieveItems() {
         return List.of(new ItemStack(ModItems.VEHICLE_ASSEMBLING_TABLE.get()));
+    }
+
+    @Override
+    public @Nullable ThirdPersonCameraPosition getThirdPersonCameraPosition(int seatIndex) {
+        return new ThirdPersonCameraPosition(1.5 * ClientMouseHandler.custom3pDistanceLerp, 0, 0);
     }
 
     @Override
