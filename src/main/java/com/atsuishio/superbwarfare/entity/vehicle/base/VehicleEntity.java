@@ -3,8 +3,10 @@ package com.atsuishio.superbwarfare.entity.vehicle.base;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.capability.energy.SyncedEntityEnergyStorage;
 import com.atsuishio.superbwarfare.capability.energy.VehicleEnergyStorage;
+import com.atsuishio.superbwarfare.data.Prop;
 import com.atsuishio.superbwarfare.data.vehicle.VehicleData;
 import com.atsuishio.superbwarfare.data.vehicle.VehicleProp;
+import com.atsuishio.superbwarfare.data.vehicle.VehiclePropertyModifier;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
 import com.atsuishio.superbwarfare.entity.mixin.OBBHitter;
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
@@ -87,15 +89,13 @@ import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector4f;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Function;
 
 import static com.atsuishio.superbwarfare.client.RenderHelper.preciseBlit;
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 
-public abstract class VehicleEntity extends Entity implements Container {
+public abstract class VehicleEntity extends Entity implements Container, VehiclePropertyModifier {
 
     public static final String TAG_SEAT_INDEX = "SBWSeatIndex";
 
@@ -159,6 +159,14 @@ public abstract class VehicleEntity extends Entity implements Container {
         if (this.hasEnergyStorage()) {
             this.energyStorage = new VehicleEnergyStorage(this);
         }
+    }
+
+    protected final Map<VehicleProp<?>, Prop.PropModifyContext<VehicleData, ?>> propertyModifiers = new HashMap<>();
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public @NotNull Map<VehicleProp<?>, Prop.PropModifyContext<VehicleData, ?>> getPropModifiers() {
+        return this.propertyModifiers;
     }
 
     public void mouseInput(double x, double y) {
@@ -514,7 +522,7 @@ public abstract class VehicleEntity extends Entity implements Container {
     protected SyncedEntityEnergyStorage energyStorage = null;
     protected LazyOptional<IEnergyStorage> energy = LazyOptional.of(() -> energyStorage);
 
-    protected boolean isInitialized = false;
+    protected boolean isInitialized;
 
     public boolean isInitialized() {
         return this.isInitialized;
