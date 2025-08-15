@@ -118,7 +118,7 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
         this.renderTooltip(guiGraphics, mouseX, mouseY);
 
         this.renderables.stream().filter(w -> w instanceof RecipeButton)
-                .forEach(w -> ((RecipeButton) w).renderTooltips(stack -> guiGraphics.renderTooltip(this.font, stack, mouseX, mouseY)));
+                .forEach(w -> ((RecipeButton) w).renderTooltips(guiGraphics, mouseX, mouseY));
     }
 
     @Override
@@ -188,6 +188,23 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
                 }
             }
         }
+    }
+
+    @Override
+    public boolean mouseScrolled(double pMouseX, double pMouseY, double pDelta) {
+        if (pMouseX >= this.leftPos + 26 && pMouseX <= this.leftPos + 106 && pMouseY >= this.topPos + 21 && pMouseY <= this.topPos + 175) {
+            if (pDelta > 0) {
+                this.pageIndex = Math.max(0, this.pageIndex - 1);
+            } else {
+                if (this.currentRecipes != null && !this.currentRecipes.isEmpty()) {
+                    this.pageIndex = Math.min((this.currentRecipes.size() - 1) / PAGE_SIZE, this.pageIndex + 1);
+                }
+            }
+
+            this.init();
+            return true;
+        }
+        return super.mouseScrolled(pMouseX, pMouseY, pDelta);
     }
 
     public void addPageButtons(int posX, int posY) {

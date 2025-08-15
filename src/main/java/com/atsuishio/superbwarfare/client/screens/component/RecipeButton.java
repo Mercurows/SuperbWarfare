@@ -12,8 +12,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 
-import java.util.function.Consumer;
-
 public class RecipeButton extends Button {
 
     private final ItemStack stack;
@@ -70,9 +68,11 @@ public class RecipeButton extends Button {
         this.isSelected = selected;
     }
 
-    public void renderTooltips(Consumer<ItemStack> consumer) {
+    public void renderTooltips(GuiGraphics pGuiGraphics, int mouseX, int mouseY) {
         if (this.isHoveredOrFocused() && !this.stack.isEmpty()) {
-            consumer.accept(this.stack);
+            if (mouseX > this.getX() + 1 && mouseY > this.getY() + 1 && mouseX < this.getX() + this.width - 1 && mouseY < this.getY() + this.height - 1) {
+                pGuiGraphics.renderTooltip(Minecraft.getInstance().font, this.stack, mouseX, mouseY);
+            }
         }
     }
 }
