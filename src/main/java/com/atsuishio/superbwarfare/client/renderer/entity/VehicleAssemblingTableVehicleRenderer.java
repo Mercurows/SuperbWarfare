@@ -38,7 +38,7 @@ public class VehicleAssemblingTableVehicleRenderer extends GeoEntityRenderer<Veh
     @Override
     public void render(VehicleAssemblingTableVehicleEntity entityIn, float entityYaw, float partialTicks, PoseStack poseStack, @NotNull MultiBufferSource bufferIn, int packedLightIn) {
         poseStack.pushPose();
-        poseStack.translate(-0.5, 0, 0.5);
+        poseStack.translate(-0.5, -0.01, 0.5);
 
         Vec3 root = new Vec3(0.5, 0.5, -0.5);
         poseStack.rotateAround(Axis.YP.rotationDegrees(-entityYaw), (float) root.x, (float) root.y, (float) root.z);

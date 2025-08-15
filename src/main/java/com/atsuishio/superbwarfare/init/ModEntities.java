@@ -144,7 +144,7 @@ public class ModEntities {
             EntityType.Builder.<MortarEntity>of(MortarEntity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).setCustomClientFactory(MortarEntity::new).fireImmune().sized(0.8f, 1.4f));
 
     public static final RegistryObject<EntityType<VehicleAssemblingTableVehicleEntity>> VEHICLE_ASSEMBLING_TABLE = register("vehicle_assembling_table",
-            EntityType.Builder.<VehicleAssemblingTableVehicleEntity>of(VehicleAssemblingTableVehicleEntity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).setCustomClientFactory(VehicleAssemblingTableVehicleEntity::new).fireImmune().sized(2, 2));
+            EntityType.Builder.<VehicleAssemblingTableVehicleEntity>of(VehicleAssemblingTableVehicleEntity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).setCustomClientFactory(VehicleAssemblingTableVehicleEntity::new).fireImmune().sized(2, 1.875f));
 
     private static <T extends Entity> RegistryObject<EntityType<T>> register(String name, EntityType.Builder<T> entityTypeBuilder) {
         return REGISTRY.register(name, () -> entityTypeBuilder.build(name));
