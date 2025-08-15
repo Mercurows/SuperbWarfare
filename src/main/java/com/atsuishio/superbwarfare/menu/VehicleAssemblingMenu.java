@@ -84,13 +84,13 @@ public class VehicleAssemblingMenu extends AbstractContainerMenu {
         }
     }
 
-    // TODO
     @Nullable
     public VehicleAssemblingRecipe getRecipeById(ResourceLocation id, RecipeManager recipeManager) {
-//        Recipe<?> recipe = recipeManager.byKey(id).orElse(null);
-//        if (recipe instanceof VehicleAssemblingRecipe assemblingRecipe) {
-//            return assemblingRecipe;
-//        }
+        var recipe = recipeManager.byKey(id).orElse(null);
+        if (recipe == null) return null;
+        if (recipe.value() instanceof VehicleAssemblingRecipe assemblingRecipe) {
+            return assemblingRecipe;
+        }
         return null;
     }
 }

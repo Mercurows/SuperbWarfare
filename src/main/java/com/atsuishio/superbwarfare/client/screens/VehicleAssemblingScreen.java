@@ -7,7 +7,9 @@ import com.atsuishio.superbwarfare.client.screens.component.PageButton;
 import com.atsuishio.superbwarfare.client.screens.component.RecipeButton;
 import com.atsuishio.superbwarfare.init.ModRecipes;
 import com.atsuishio.superbwarfare.menu.VehicleAssemblingMenu;
+import com.atsuishio.superbwarfare.network.message.send.AssembleVehicleMessage;
 import com.atsuishio.superbwarfare.recipe.vehicle.VehicleAssemblingRecipe;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import it.unimi.dsi.fastutil.ints.Int2IntArrayMap;
 import net.minecraft.client.Minecraft;
@@ -18,9 +20,11 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -44,7 +48,7 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
     @Nullable
     private List<ResourceLocation> currentRecipes = new ArrayList<>();
     @Nullable
-    private VehicleAssemblingRecipe currentRecipe = null;
+    private RecipeHolder<VehicleAssemblingRecipe> currentRecipe = null;
     @Nullable
     private Int2IntArrayMap materialCount;
     private int pageIndex = 0;
@@ -83,9 +87,9 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
         RecipeManager recipeManager = Minecraft.getInstance().level.getRecipeManager();
         var recipeList = recipeManager.getAllRecipesFor(ModRecipes.VEHICLE_ASSEMBLING_TYPE.get());
 
-//        for (var recipe : recipeList) {
-//            this.recipes.computeIfAbsent(recipe.getCategory(), k -> Lists.newArrayList()).add(recipe.getId());
-//        }
+        for (var recipe : recipeList) {
+            this.recipes.computeIfAbsent(recipe.value().getCategory(), k -> Lists.newArrayList()).add(recipe.id());
+        }
         this.currentRecipes = this.recipes.get(this.currentCategory);
     }
 
@@ -131,22 +135,23 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
     }
 
     @Nullable
-    private VehicleAssemblingRecipe getRecipeById(ResourceLocation recipeId) {
+    private RecipeHolder<VehicleAssemblingRecipe> getRecipeById(ResourceLocation recipeId) {
         if (recipeId == null) return null;
         if (Minecraft.getInstance().level != null) {
             RecipeManager recipeManager = Minecraft.getInstance().level.getRecipeManager();
-            // TODO recipe
-//            Recipe<?> recipe = recipeManager.byKey(recipeId).orElse(null);
-//            if (recipe instanceof VehicleAssemblingRecipe assemblingRecipe) {
-//                return assemblingRecipe;
-//            }
+            var recipe = recipeManager.byKey(recipeId).orElse(null);
+            if (recipe == null) return null;
+            if (recipe.value() instanceof VehicleAssemblingRecipe) {
+                return (RecipeHolder<VehicleAssemblingRecipe>) recipe;
+            }
         }
         return null;
     }
 
-    public void calculateMaterialCount(@Nullable VehicleAssemblingRecipe recipe) {
+    public void calculateMaterialCount(@Nullable RecipeHolder<VehicleAssemblingRecipe> holder) {
         LocalPlayer player = Minecraft.getInstance().player;
-        if (player == null || recipe == null) return;
+        if (player == null || holder == null) return;
+        var recipe = holder.value();
 
         var ingredients = recipe.getInputs();
         int size = ingredients.size();
@@ -176,15 +181,14 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
                 var recipe = this.getRecipeById(id);
                 if (recipe == null) break;
 
-                RecipeButton button = this.addRenderableWidget(new RecipeButton(posX + 26, posY + 21 + i * 17, recipe.getResult().getResult(), (b) -> {
+                RecipeButton button = this.addRenderableWidget(new RecipeButton(posX + 26, posY + 21 + i * 17, recipe.value().getResult().getResult(), (b) -> {
                     this.currentRecipe = recipe;
                     this.calculateMaterialCount(recipe);
                     this.init();
                 }));
-                // TODO recipe
-//            if (this.currentRecipe != null && recipe.getId().equals(this.currentRecipe.getId())) {
-//                button.setSelected(true);
-//            }
+                if (recipe.equals(this.currentRecipe)) {
+                    button.setSelected(true);
+                }
             }
         }
     }
@@ -213,7 +217,7 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
         this.addRenderableWidget(new AssembleButton(posX + 272, posY + 163, b -> {
             if (this.currentRecipe == null || this.materialCount == null) return;
 
-            var inputs = this.currentRecipe.getInputs();
+            var inputs = this.currentRecipe.value().getInputs();
             int size = inputs.size();
 
             for (int i = 0; i < size; ++i) {
@@ -229,7 +233,7 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
                 }
             }
             // TODO getId
-//            PacketDistributor.sendToServer(new AssembleVehicleMessage(this.currentRecipe.getId(), this.menu.containerId));
+            PacketDistributor.sendToServer(new AssembleVehicleMessage(this.currentRecipe.id(), this.menu.containerId));
         }));
     }
 
