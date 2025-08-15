@@ -1,9 +1,9 @@
 package com.atsuishio.superbwarfare.block;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.block.entity.VehicleAssemblingTableBlockEntity;
 import com.atsuishio.superbwarfare.block.property.BlockPart;
 import com.atsuishio.superbwarfare.entity.vehicle.VehicleAssemblingTableVehicleEntity;
+import com.atsuishio.superbwarfare.init.ModTags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -28,15 +28,12 @@ import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @SuppressWarnings("deprecation")
-@net.minecraftforge.fml.common.Mod.EventBusSubscriber(modid = Mod.MODID)
 public class VehicleAssemblingTableBlock extends BaseEntityBlock {
 
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
@@ -110,28 +107,6 @@ public class VehicleAssemblingTableBlock extends BaseEntityBlock {
         super.playerWillDestroy(level, pos, state, player);
     }
 
-    @SubscribeEvent
-    public static void interact(PlayerInteractEvent.RightClickBlock event) {
-        if (event.getLevel() instanceof ServerLevel server) {
-            var pos = event.getHitVec().getBlockPos();
-            var state = server.getBlockState(pos);
-            if (state.getBlock() instanceof VehicleAssemblingTableBlock) {
-                var facing = state.getValue(FACING);
-                var part = state.getValue(BLOCK_PART);
-                var originalPos = part.relativeNegative(pos, facing);
-
-                var vehicle = createVehicle(server, facing, originalPos);
-                server.addFreshEntity(vehicle);
-
-                for (var p : BlockPart.values()) {
-                    server.destroyBlock(p.relative(originalPos, facing), false);
-                }
-
-                event.setCancellationResult(InteractionResult.SUCCESS);
-            }
-        }
-    }
-
     private static @NotNull VehicleAssemblingTableVehicleEntity createVehicle(ServerLevel server, Direction facing, BlockPos originalPos) {
         var vehicle = new VehicleAssemblingTableVehicleEntity(server);
 
@@ -165,6 +140,22 @@ public class VehicleAssemblingTableBlock extends BaseEntityBlock {
         if (pLevel.isClientSide) {
             return InteractionResult.SUCCESS;
         } else {
+            ItemStack stack = pPlayer.getItemInHand(pHand);
+            if (stack.is(ModTags.Items.CROWBAR) && pLevel instanceof ServerLevel serverLevel) {
+                var facing = pState.getValue(FACING);
+                var part = pState.getValue(BLOCK_PART);
+                var originalPos = part.relativeNegative(pPos, facing);
+
+                var vehicle = createVehicle(serverLevel, facing, originalPos);
+                serverLevel.addFreshEntity(vehicle);
+
+                for (var p : BlockPart.values()) {
+                    serverLevel.destroyBlock(p.relative(originalPos, facing), false);
+                }
+
+                return InteractionResult.SUCCESS;
+            }
+
             if (pLevel.getBlockEntity(pPos) instanceof VehicleAssemblingTableBlockEntity blockEntity) {
                 pPlayer.openMenu(blockEntity);
             }
