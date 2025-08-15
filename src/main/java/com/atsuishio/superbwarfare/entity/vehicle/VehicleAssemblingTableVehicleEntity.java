@@ -78,52 +78,49 @@ public class VehicleAssemblingTableVehicleEntity extends MobileVehicleEntity imp
     // 变回方块
     @Override
     public @NotNull InteractionResult interact(Player player, @NotNull InteractionHand hand) {
-        if (!this.level().isClientSide
-                && this.getPassengers().isEmpty()
-                && player.getMainHandItem().is(ModTags.Items.CROWBAR)
-                && !player.isCrouching()
-        ) {
-            var facing = getDirection();
-            var currentPos = this.position();
-            var targetPos = switch (facing) {
-                case WEST -> currentPos.add(-0.5, 0, -0.5);
-                case EAST -> currentPos.add(0.5, 0, 0.5);
-                case NORTH -> currentPos.add(0.5, 0, -0.5);
-                case SOUTH -> currentPos.add(-0.5, 0, 0.5);
-                default -> currentPos;  // this should never happen
-            };
-            var targetBlockPos = BlockPos.containing(targetPos);
+        if (player.getMainHandItem().is(ModTags.Items.CROWBAR) && !player.isCrouching()) {
+            if (!this.level().isClientSide && this.getPassengers().isEmpty()) {
+                var facing = getDirection();
+                var currentPos = this.position();
+                var targetPos = switch (facing) {
+                    case WEST -> currentPos.add(-0.5, 0, -0.5);
+                    case EAST -> currentPos.add(0.5, 0, 0.5);
+                    case NORTH -> currentPos.add(0.5, 0, -0.5);
+                    case SOUTH -> currentPos.add(-0.5, 0, 0.5);
+                    default -> currentPos;  // this should never happen
+                };
+                var targetBlockPos = BlockPos.containing(targetPos);
 
-            var canPlace = true;
-            for (var part : BlockPart.values()) {
-                var blockPos = part.relative(targetBlockPos, facing);
-                var blockState = this.level().getBlockState(blockPos);
-                if (!blockState.canBeReplaced()) {
-                    canPlace = false;
-                    break;
-                }
-            }
-
-            if (canPlace) {
+                var canPlace = true;
                 for (var part : BlockPart.values()) {
                     var blockPos = part.relative(targetBlockPos, facing);
-                    var state = ModBlocks.VEHICLE_ASSEMBLING_TABLE.get().defaultBlockState()
-                            .setValue(VehicleAssemblingTableBlock.FACING, facing)
-                            .setValue(VehicleAssemblingTableBlock.BLOCK_PART, part);
-
-                    this.level().setBlock(blockPos, state, 3);
+                    var blockState = this.level().getBlockState(blockPos);
+                    if (!blockState.canBeReplaced()) {
+                        canPlace = false;
+                        break;
+                    }
                 }
 
-                this.discard();
+                if (canPlace) {
+                    for (var part : BlockPart.values()) {
+                        var blockPos = part.relative(targetBlockPos, facing);
+                        var state = ModBlocks.VEHICLE_ASSEMBLING_TABLE.get().defaultBlockState()
+                                .setValue(VehicleAssemblingTableBlock.FACING, facing)
+                                .setValue(VehicleAssemblingTableBlock.BLOCK_PART, part);
 
-                return InteractionResult.SUCCESS;
-            } else {
-                // TODO 优化提示
-                player.displayClientMessage(Component.literal("Cannot place!"), true);
-                return InteractionResult.FAIL;
+                        this.level().setBlock(blockPos, state, 3);
+                    }
+
+                    this.discard();
+                    return InteractionResult.SUCCESS;
+                } else {
+                    // TODO 优化提示
+                    player.displayClientMessage(Component.literal("Cannot place!"), true);
+                    return InteractionResult.FAIL;
+                }
             }
+            return InteractionResult.PASS;
         }
-
         return super.interact(player, hand);
     }
 
