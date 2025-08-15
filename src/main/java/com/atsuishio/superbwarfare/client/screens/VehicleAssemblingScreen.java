@@ -211,7 +211,7 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
     }
 
     public void addAssembleButton(int posX, int posY) {
-        this.addRenderableWidget(new AssembleButton(posX + 282, posY + 163, b -> {
+        this.addRenderableWidget(new AssembleButton(posX + 272, posY + 163, b -> {
             if (this.currentRecipe == null || this.materialCount == null) return;
 
             var inputs = this.currentRecipe.getInputs();
