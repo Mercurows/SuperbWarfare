@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.client.screens;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.screens.component.CategoryButton;
+import com.atsuishio.superbwarfare.client.screens.component.PageButton;
 import com.atsuishio.superbwarfare.client.screens.component.RecipeButton;
 import com.atsuishio.superbwarfare.init.ModRecipes;
 import com.atsuishio.superbwarfare.menu.VehicleAssemblingMenu;
@@ -33,6 +34,7 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
 
     public static final ResourceLocation TEXTURE = Mod.loc("textures/gui/vehicle_assembling_table.png");
     public static final int IMAGE_SIZE = 324;
+    public static final int PAGE_SIZE = 9;
 
     private final Map<VehicleAssemblingRecipe.Category, List<ResourceLocation>> recipes = Maps.newLinkedHashMap();
 
@@ -48,6 +50,7 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
         imageWidth = 322;
         imageHeight = 181;
         this.initRecipes();
+        this.pageIndex = 0;
         this.currentRecipe = this.getRecipeById(this.currentRecipes == null || this.currentRecipes.isEmpty() ? null : this.currentRecipes.get(0));
     }
 
@@ -57,8 +60,12 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
         this.initRecipes();
         this.clearWidgets();
 
-        this.addCategoryButtons();
-        this.addRecipeButtons();
+        int posX = (this.width - this.imageWidth) / 2;
+        int posY = (this.height - this.imageHeight) / 2;
+
+        this.addCategoryButtons(posX, posY);
+        this.addRecipeButtons(posX, posY);
+        this.addPageButtons(posX, posY);
     }
 
     public void initRecipes() {
@@ -76,16 +83,14 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
         this.currentRecipes = this.recipes.get(this.currentCategory);
     }
 
-    public void addCategoryButtons() {
-        int posX = (this.width - this.imageWidth) / 2;
-        int posY = (this.height - this.imageHeight) / 2 + 2;
-
+    public void addCategoryButtons(int posX, int posY) {
         int i = 0;
         for (var category : VehicleAssemblingRecipe.Category.values()) {
-            CategoryButton button = new CategoryButton(posX, posY + i * 23, category, b -> {
+            CategoryButton button = new CategoryButton(posX, posY + 2 + i * 23, category, b -> {
                 this.currentCategory = category;
                 this.currentRecipes = this.recipes.get(category);
                 this.currentRecipe = this.getRecipeById(this.currentRecipes == null || this.currentRecipes.isEmpty() ? null : this.currentRecipes.get(0));
+                this.pageIndex = 0;
 
                 this.init();
             });
@@ -129,13 +134,10 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
         return null;
     }
 
-    public void addRecipeButtons() {
+    public void addRecipeButtons(int posX, int posY) {
         if (this.currentRecipes != null && !this.currentRecipes.isEmpty()) {
-            int posX = (this.width - this.imageWidth) / 2;
-            int posY = (this.height - this.imageHeight) / 2;
-
             for (int i = 0; i < 9; i++) {
-                int index = i + this.pageIndex * 8;
+                int index = i + this.pageIndex * PAGE_SIZE;
                 if (index >= this.currentRecipes.size()) break;
 
                 ResourceLocation id = this.currentRecipes.get(index);
@@ -151,6 +153,26 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
                     button.setSelected(true);
                 }
             }
+        }
+    }
+
+    public void addPageButtons(int posX, int posY) {
+        PageButton left = this.addRenderableWidget(new PageButton(posX + 70, posY + 4, true, b -> {
+            this.pageIndex = Math.max(0, this.pageIndex - 1);
+            this.init();
+        }));
+        PageButton right = this.addRenderableWidget(new PageButton(posX + 97, posY + 4, false, b -> {
+            if (this.currentRecipes != null && !this.currentRecipes.isEmpty()) {
+                this.pageIndex = Math.min((this.currentRecipes.size() - 1) / PAGE_SIZE, this.pageIndex + 1);
+                this.init();
+            }
+        }));
+        if (this.currentRecipes != null && !this.currentRecipes.isEmpty()) {
+            left.active = this.pageIndex > 0;
+            right.active = this.pageIndex < (this.currentRecipes.size() - 1) / PAGE_SIZE;
+        } else {
+            left.active = false;
+            right.active = false;
         }
     }
 }
