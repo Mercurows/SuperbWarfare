@@ -82,10 +82,10 @@ public class VehicleAssemblingRecipe implements Recipe<Inventory> {
     }
 
     public enum Category {
+        LAND("land"),
+        DEFENSE("defense"),
         AIRCRAFT("aircraft"),
         CIVILIAN("civilian"),
-        DEFENSE("defense"),
-        LAND("land"),
         WATER("water"),
         EMPTY("empty");
 
