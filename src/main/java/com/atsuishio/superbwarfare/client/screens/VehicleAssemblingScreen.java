@@ -105,6 +105,9 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
         this.renderBackground(guiGraphics, mouseX, mouseY, partialTick);
         super.render(guiGraphics, mouseX, mouseY, partialTick);
         this.renderTooltip(guiGraphics, mouseX, mouseY);
+
+        this.renderables.stream().filter(w -> w instanceof RecipeButton)
+                .forEach(w -> ((RecipeButton) w).renderTooltips(stack -> guiGraphics.renderTooltip(this.font, stack, mouseX, mouseY)));
     }
 
     @Override
