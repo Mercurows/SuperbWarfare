@@ -13,7 +13,7 @@ public class CategoryButton extends Button {
     private boolean isSelected = false;
 
     public CategoryButton(int x, int y, VehicleAssemblingRecipe.Category category, OnPress onPress) {
-        super(x, y, 20, 22, Component.literal("114"), onPress, DEFAULT_NARRATION);
+        super(x, y, 20, 22, Component.empty(), onPress, DEFAULT_NARRATION);
         this.category = category;
     }
 
