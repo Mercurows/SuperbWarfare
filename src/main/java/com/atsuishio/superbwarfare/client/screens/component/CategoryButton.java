@@ -28,6 +28,16 @@ public class CategoryButton extends Button {
             pGuiGraphics.blit(VehicleAssemblingScreen.TEXTURE, this.getX(), this.getY(), 179, 205, 20, this.height, VehicleAssemblingScreen.IMAGE_SIZE, VehicleAssemblingScreen.IMAGE_SIZE);
         }
 
+        int vOffset = switch (this.category) {
+            case LAND -> 182;
+            case DEFENSE -> 198;
+            case AIRCRAFT -> 214;
+            case CIVILIAN -> 230;
+            case WATER -> 246;
+            default -> 262;
+        };
+        pGuiGraphics.blit(VehicleAssemblingScreen.TEXTURE, this.getX() + 3, this.getY() + 3, 203, vOffset, 16, 16, VehicleAssemblingScreen.IMAGE_SIZE, VehicleAssemblingScreen.IMAGE_SIZE);
+
         pGuiGraphics.pose().popPose();
     }
 
