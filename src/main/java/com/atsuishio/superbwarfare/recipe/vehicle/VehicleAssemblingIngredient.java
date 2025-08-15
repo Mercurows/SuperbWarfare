@@ -22,6 +22,7 @@ public class VehicleAssemblingIngredient implements DeserializeFromString {
     @SerializedName("Count")
     public int count = 1;
 
+    // TODO 什么时候这个能用自己的解析就行了
     public static final Codec<VehicleAssemblingIngredient> CODEC = RecordCodecBuilder.<VehicleAssemblingIngredient>mapCodec(builder ->
             builder.group(
                     Codec.STRING.fieldOf("Ingredient").forGetter(i -> i.ingredientString),

@@ -25,6 +25,12 @@ public class VehicleAssemblingRecipe implements Recipe<RecipeWrapper> {
         this.inputs = inputs;
     }
 
+    public VehicleAssemblingRecipe(List<VehicleAssemblingIngredient> inputs, Category recipeCategory, VehicleAssemblingResult result) {
+        this.category = recipeCategory;
+        this.result = result;
+        this.inputs = inputs;
+    }
+
     @Override
     @ParametersAreNonnullByDefault
     public boolean matches(RecipeWrapper pContainer, Level pLevel) {

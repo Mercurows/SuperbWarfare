@@ -1,8 +1,9 @@
 {
   "Inputs": [
-    "5 minecraft:stick",
-    "minecraft:iron_ingot",
-    "4 superbwarfare:steel_ingot"
+    {
+      "Ingredient": "minecraft:iron_ingot",
+      "Count": 1
+    }
   ],
   "Category": "land",
   "Result": {

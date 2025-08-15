@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.recipe.vehicle;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.item.common.container.ContainerBlockItem;
 import com.google.gson.annotations.SerializedName;
 import com.mojang.serialization.Codec;
@@ -22,9 +23,9 @@ public class VehicleAssemblingResult {
     public int count = 1;
 
     public static final Codec<VehicleAssemblingResult> CODEC = RecordCodecBuilder.<VehicleAssemblingResult>mapCodec(builder -> builder.group(
-            Codec.STRING.fieldOf("item").forGetter(r -> r.itemString),
-            Codec.STRING.fieldOf("entity_type").forGetter(r -> r.entityTypeString),
-            Codec.INT.fieldOf("count").forGetter(r -> r.count)
+            Codec.STRING.fieldOf("Item").orElse(ModItems.CONTAINER.toString()).forGetter(r -> r.itemString),
+            Codec.STRING.fieldOf("EntityType").orElse("").forGetter(r -> r.entityTypeString),
+            Codec.INT.fieldOf("Count").orElse(1).forGetter(r -> r.count)
     ).apply(builder, VehicleAssemblingResult::new)).codec();
 
     public static final StreamCodec<RegistryFriendlyByteBuf, VehicleAssemblingResult> STREAM_CODEC = StreamCodec.composite(

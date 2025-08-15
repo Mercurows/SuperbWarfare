@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.recipe.vehicle;
 
-import com.mojang.serialization.Codec;
+import com.atsuishio.superbwarfare.data.EnumCodec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -11,13 +11,11 @@ import org.jetbrains.annotations.NotNull;
 
 public class VehicleAssemblingRecipeSerializer implements RecipeSerializer<VehicleAssemblingRecipe> {
 
-    // TODO from JSON???
-
     public static final MapCodec<VehicleAssemblingRecipe> CODEC = RecordCodecBuilder.mapCodec(builder ->
             builder.group(
-                    VehicleAssemblingIngredient.CODEC.listOf().fieldOf("ingredient").forGetter(VehicleAssemblingRecipe::getInputs),
-                    Codec.STRING.fieldOf("category").forGetter(r -> r.getCategory().toString()),
-                    VehicleAssemblingResult.CODEC.fieldOf("result").forGetter(VehicleAssemblingRecipe::getResult)
+                    VehicleAssemblingIngredient.CODEC.listOf().fieldOf("Inputs").forGetter(VehicleAssemblingRecipe::getInputs),
+                    EnumCodec.create(VehicleAssemblingRecipe.Category.class).fieldOf("Category").orElse(VehicleAssemblingRecipe.Category.LAND).forGetter(VehicleAssemblingRecipe::getCategory),
+                    VehicleAssemblingResult.CODEC.fieldOf("Result").forGetter(VehicleAssemblingRecipe::getResult)
             ).apply(builder, VehicleAssemblingRecipe::new));
 
     public static final StreamCodec<RegistryFriendlyByteBuf, VehicleAssemblingRecipe> STREAM_CODEC = StreamCodec.composite(
