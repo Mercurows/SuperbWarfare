@@ -128,6 +128,7 @@ public abstract class Prop<DATA extends DefaultDataSupplier<DEFAULT_DATA>, DEFAU
             return this;
         }
 
+        @SuppressWarnings("unchecked")
         public FIELD compute() {
             var result = value;
 
@@ -139,7 +140,7 @@ public abstract class Prop<DATA extends DefaultDataSupplier<DEFAULT_DATA>, DEFAU
                 result = limiter.apply(data, result);
             }
 
-            return result;
+            return (FIELD) DataLoader.processValue(result);
         }
     }
 }

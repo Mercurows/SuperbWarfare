@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.data.gun;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.data.DataLoader;
 import com.atsuishio.superbwarfare.data.DefaultDataSupplier;
 import com.atsuishio.superbwarfare.data.Prop;
 import com.atsuishio.superbwarfare.data.StringPropModifier;
@@ -226,7 +225,7 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
 
         if (operatingProps.contains(prop)) {
             Mod.LOGGER.warn("recursive computation for property {}", prop.name);
-            return (T) DataLoader.processValue(modifier.compute());
+            return modifier.compute();
         }
 
         operatingProps.add(prop);
@@ -265,7 +264,7 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
         modifier.apply((Prop.PropModifyContext<GunData, T>) tempModifications.get(prop));
 
         operatingProps.remove(prop);
-        return (T) DataLoader.processValue(modifier.compute());
+        return modifier.compute();
     }
 
     public boolean hasInfiniteBackupAmmo(@Nullable Entity shooter) {

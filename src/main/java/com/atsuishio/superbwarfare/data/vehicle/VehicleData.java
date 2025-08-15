@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.data.vehicle;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.data.DataLoader;
 import com.atsuishio.superbwarfare.data.DefaultDataSupplier;
 import com.atsuishio.superbwarfare.data.StringPropModifier;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
@@ -34,13 +33,12 @@ public class VehicleData implements DefaultDataSupplier<DefaultVehicleData> {
 
     private final StringPropModifier<VehicleData, DefaultVehicleData> stringPropModifier = new StringPropModifier<>();
 
-    @SuppressWarnings("unchecked")
     public <T> T get(VehicleProp<T> prop) {
         var modifier = prop.asModifier(this);
 
         if (operatingProps.contains(prop)) {
             Mod.LOGGER.warn("recursive computation for property {}", prop.name);
-            return (T) DataLoader.processValue(modifier.compute());
+            return modifier.compute();
         }
 
         if (this.vehicle.isInitialized()) {
@@ -54,7 +52,7 @@ public class VehicleData implements DefaultDataSupplier<DefaultVehicleData> {
 
 
         operatingProps.remove(prop);
-        return (T) DataLoader.processValue(modifier.compute());
+        return modifier.compute();
     }
 
     public static DefaultVehicleData getDefault(String id) {
