@@ -11,7 +11,6 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoBlockEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.AnimatableManager;
@@ -32,9 +31,8 @@ public class VehicleAssemblingTableBlockEntity extends BlockEntity implements Me
         return Component.empty();
     }
 
-    @Nullable
-    @ParametersAreNonnullByDefault
     @Override
+    @ParametersAreNonnullByDefault
     public AbstractContainerMenu createMenu(int pContainerId, Inventory pPlayerInventory, Player pPlayer) {
         return new VehicleAssemblingMenu(pContainerId, pPlayerInventory);
     }

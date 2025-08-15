@@ -65,7 +65,7 @@ public class Mod {
         ModPotions.POTIONS.register(bus);
         ModMenuTypes.REGISTRY.register(bus);
         ModVillagers.register(bus);
-        ModRecipes.RECIPE_SERIALIZERS.register(bus);
+        ModRecipes.register(bus);
         ModArmorMaterials.MATERIALS.register(bus);
         ModAttributes.ATTRIBUTES.register(bus);
         ModCriteriaTriggers.REGISTRY.register(bus);
