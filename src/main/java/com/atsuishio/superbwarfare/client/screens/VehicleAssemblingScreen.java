@@ -74,7 +74,6 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
             this.recipes.computeIfAbsent(recipe.getCategory(), k -> Lists.newArrayList()).add(recipe.getId());
         }
         this.currentRecipes = this.recipes.get(this.currentCategory);
-        this.currentRecipe = this.getRecipeById(this.currentRecipes == null || this.currentRecipes.isEmpty() ? null : this.currentRecipes.get(0));
     }
 
     public void addCategoryButtons() {
@@ -83,7 +82,6 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
 
         int i = 0;
         for (var category : VehicleAssemblingRecipe.Category.values()) {
-            // TODO 这里配方选择有点问题
             CategoryButton button = new CategoryButton(posX, posY + i * 23, category, b -> {
                 this.currentCategory = category;
                 this.currentRecipes = this.recipes.get(category);
