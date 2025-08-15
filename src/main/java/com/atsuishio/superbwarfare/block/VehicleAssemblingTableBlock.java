@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.block.entity.VehicleAssemblingTableBlockEntity;
 import com.atsuishio.superbwarfare.block.property.BlockPart;
 import com.atsuishio.superbwarfare.entity.vehicle.VehicleAssemblingTableVehicleEntity;
+import com.atsuishio.superbwarfare.init.ModTags;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -112,7 +113,7 @@ public class VehicleAssemblingTableBlock extends BaseEntityBlock {
 
     @SubscribeEvent
     public static void interact(PlayerInteractEvent.RightClickBlock event) {
-        if (event.getLevel() instanceof ServerLevel server) {
+        if (event.getLevel() instanceof ServerLevel server && event.getEntity().getMainHandItem().is(ModTags.Items.CROWBAR)) {
             var pos = event.getHitVec().getBlockPos();
             var state = server.getBlockState(pos);
             if (state.getBlock() instanceof VehicleAssemblingTableBlock) {
