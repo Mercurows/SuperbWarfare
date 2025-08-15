@@ -12,6 +12,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 
+import java.util.function.Consumer;
+
 public class RecipeButton extends Button {
 
     private final ItemStack stack;
@@ -28,7 +30,11 @@ public class RecipeButton extends Button {
         RenderSystem.enableDepthTest();
 
         if (this.isSelected) {
-            pGuiGraphics.blit(VehicleAssemblingScreen.TEXTURE, this.getX(), this.getY(), 6, 220, this.width, this.height, VehicleAssemblingScreen.IMAGE_SIZE, VehicleAssemblingScreen.IMAGE_SIZE);
+            if (this.isHoveredOrFocused()) {
+                pGuiGraphics.blit(VehicleAssemblingScreen.TEXTURE, this.getX(), this.getY(), 6, 239, this.width, this.height, VehicleAssemblingScreen.IMAGE_SIZE, VehicleAssemblingScreen.IMAGE_SIZE);
+            } else {
+                pGuiGraphics.blit(VehicleAssemblingScreen.TEXTURE, this.getX(), this.getY(), 6, 220, this.width, this.height, VehicleAssemblingScreen.IMAGE_SIZE, VehicleAssemblingScreen.IMAGE_SIZE);
+            }
         } else {
             if (this.isHoveredOrFocused()) {
                 pGuiGraphics.blit(VehicleAssemblingScreen.TEXTURE, this.getX(), this.getY(), 6, 201, this.width, this.height, VehicleAssemblingScreen.IMAGE_SIZE, VehicleAssemblingScreen.IMAGE_SIZE);
@@ -37,7 +43,7 @@ public class RecipeButton extends Button {
             }
         }
 
-        pGuiGraphics.renderFakeItem(this.stack, this.getX() + 1, this.getY() + 1);
+        pGuiGraphics.renderItem(this.stack, this.getX() + 1, this.getY() + 1);
         Component hoverName;
         if (this.stack.is(ModItems.CONTAINER.get())) {
             CompoundTag tag = BlockItem.getBlockEntityData(this.stack);
@@ -62,5 +68,11 @@ public class RecipeButton extends Button {
 
     public void setSelected(boolean selected) {
         this.isSelected = selected;
+    }
+
+    public void renderTooltips(Consumer<ItemStack> consumer) {
+        if (this.isHoveredOrFocused() && !this.stack.isEmpty()) {
+            consumer.accept(this.stack);
+        }
     }
 }
