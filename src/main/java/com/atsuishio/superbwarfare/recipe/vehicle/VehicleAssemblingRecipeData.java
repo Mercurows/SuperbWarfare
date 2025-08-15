@@ -1,22 +1,26 @@
 package com.atsuishio.superbwarfare.recipe.vehicle;
 
+import com.atsuishio.superbwarfare.data.DataLoader;
+import com.atsuishio.superbwarfare.data.ObjectToList;
+import com.atsuishio.superbwarfare.data.StringToObject;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
 public class VehicleAssemblingRecipeData {
 
-    @SerializedName("inputs")
-    private List<VehicleAssemblingIngredient> inputs;
+    @SerializedName("Inputs")
+    private ObjectToList<StringToObject<VehicleAssemblingIngredient>> inputs;
 
-    @SerializedName("result")
+    @SerializedName("Result")
     private VehicleAssemblingResult result;
 
-    @SerializedName("category")
+    @SerializedName("Category")
     private String category = "empty";
 
+    @SuppressWarnings("unchecked")
     public List<VehicleAssemblingIngredient> getInputs() {
-        return inputs;
+        return (List<VehicleAssemblingIngredient>) DataLoader.processValue(inputs);
     }
 
     public VehicleAssemblingResult getResult() {

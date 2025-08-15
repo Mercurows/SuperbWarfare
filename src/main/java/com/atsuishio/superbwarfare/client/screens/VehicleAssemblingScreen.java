@@ -48,7 +48,6 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
         RecipeManager recipeManager = Minecraft.getInstance().level.getRecipeManager();
         List<VehicleAssemblingRecipe> recipeList = recipeManager.getAllRecipesFor(ModRecipes.VEHICLE_ASSEMBLING_TYPE.get());
 
-        // TODO 看test/yx_100.json，为什么没法解析
         for (VehicleAssemblingRecipe recipe : recipeList) {
             System.out.println(recipe);
         }

@@ -9,7 +9,9 @@ import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 
 public class VehicleAssemblingRecipe implements Recipe<Inventory> {
@@ -31,12 +33,14 @@ public class VehicleAssemblingRecipe implements Recipe<Inventory> {
     }
 
     @Override
+    @ParametersAreNonnullByDefault
     public boolean matches(Inventory pContainer, Level pLevel) {
         return false;
     }
 
     @Override
-    public ItemStack assemble(Inventory pContainer, RegistryAccess pRegistryAccess) {
+    @ParametersAreNonnullByDefault
+    public @NotNull ItemStack assemble(Inventory pContainer, RegistryAccess pRegistryAccess) {
         return ItemStack.EMPTY;
     }
 
@@ -46,22 +50,22 @@ public class VehicleAssemblingRecipe implements Recipe<Inventory> {
     }
 
     @Override
-    public ItemStack getResultItem(RegistryAccess pRegistryAccess) {
+    public @NotNull ItemStack getResultItem(@NotNull RegistryAccess pRegistryAccess) {
         return this.result.getResult().copy();
     }
 
     @Override
-    public ResourceLocation getId() {
+    public @NotNull ResourceLocation getId() {
         return this.id;
     }
 
     @Override
-    public RecipeSerializer<?> getSerializer() {
+    public @NotNull RecipeSerializer<?> getSerializer() {
         return ModRecipes.VEHICLE_ASSEMBLING_SERIALIZER.get();
     }
 
     @Override
-    public RecipeType<?> getType() {
+    public @NotNull RecipeType<?> getType() {
         return ModRecipes.VEHICLE_ASSEMBLING_TYPE.get();
     }
 
