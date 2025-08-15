@@ -26,13 +26,13 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeHolder;
@@ -138,7 +138,7 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
         this.renderTooltip(guiGraphics, mouseX, mouseY);
 
         if (this.currentRecipe != null) {
-            this.renderModel(this.currentRecipe, guiGraphics, partialTick);
+            this.renderModel(this.currentRecipe.value(), guiGraphics, partialTick);
         }
 
         this.renderables.stream().filter(w -> w instanceof RecipeButton)
@@ -305,23 +305,23 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
         int scissorW = (int) (width * windowGuiScale);
         int scissorH = (int) (height * windowGuiScale);
         RenderSystem.enableScissor(scissorX, scissorY, scissorW, scissorH);
-        Minecraft.getInstance().textureManager.getTexture(TextureAtlas.LOCATION_BLOCKS).setFilter(false, false);
+        Minecraft.getInstance().getTextureManager().getTexture(TextureAtlas.LOCATION_BLOCKS).setFilter(false, false);
         RenderSystem.setShaderTexture(0, TextureAtlas.LOCATION_BLOCKS);
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 
-        PoseStack posestack = RenderSystem.getModelViewStack();
-        posestack.pushPose();
+        var posestack = RenderSystem.getModelViewStack();
+        posestack.pushMatrix();
         posestack.translate((float) xPos, (float) yPos, 200.0F);
-        posestack.translate(8.0, 8.0, 0.0);
+        posestack.translate(8.0f, 8.0f, 0.0f);
         posestack.scale(1.0F, -1.0F, 1.0F);
         posestack.scale(this.modelScale, this.modelScale, this.modelScale);
 
         float rot = (float) (System.currentTimeMillis() % (long) ((int) (rotationPeriod * 1000.0F))) * (360.0F / (rotationPeriod * 1000.0F));
 
-        posestack.mulPose(Axis.XP.rotationDegrees(rotPitch));
-        posestack.mulPose(Axis.YP.rotationDegrees(rot));
+        posestack.rotate(Axis.XP.rotationDegrees(rotPitch));
+        posestack.rotate(Axis.YP.rotationDegrees(rot));
         RenderSystem.applyModelViewMatrix();
         PoseStack tmpPose = new PoseStack();
         MultiBufferSource.BufferSource bufferSource = Minecraft.getInstance().renderBuffers().bufferSource();
@@ -331,7 +331,8 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
         boolean useItemRenderer = true;
 
         if (stack.is(ModItems.CONTAINER.get())) {
-            CompoundTag tag = BlockItem.getBlockEntityData(stack);
+            var data = stack.get(DataComponents.BLOCK_ENTITY_DATA);
+            CompoundTag tag = data != null ? data.copyTag() : null;
             typeFlag:
             if (tag != null && tag.contains("EntityType")) {
                 String key = tag.getString("EntityType");
@@ -351,7 +352,7 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
 
                 useItemRenderer = false;
                 // TODO 这块怎么渲染实体模型上去？
-                mc.getEntityRenderDispatcher().render(renderEntity, 0, 0, 0, 0, partialTicks, posestack, guiGraphics.bufferSource(), 15728880);
+//                mc.getEntityRenderDispatcher().render(renderEntity, 0, 0, 0, 0, partialTicks, posestack, guiGraphics.bufferSource(), 15728880);
             }
         }
         if (useItemRenderer) {
@@ -361,7 +362,7 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
         bufferSource.endBatch();
         RenderSystem.enableDepthTest();
         Lighting.setupFor3DItems();
-        posestack.popPose();
+        posestack.popMatrix();
         RenderSystem.applyModelViewMatrix();
         RenderSystem.disableScissor();
     }
