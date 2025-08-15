@@ -554,6 +554,7 @@
   "entity.superbwarfare.type_63": "63式107mm多管火箭炮",
   "entity.superbwarfare.medical_kit": "医疗包",
   "entity.superbwarfare.grapeshot": "葡萄弹",
+  "entity.superbwarfare.vehicle_assembling_table": "载具装配台",
 
   "key.categories.superbwarfare": "卓越前线",
   "key.superbwarfare.hold_zoom": "瞄准(按住)",

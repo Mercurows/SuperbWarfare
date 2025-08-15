@@ -49,7 +49,7 @@ public class ModEntities {
             EntityType.Builder.<C4Entity>of(C4Entity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).sized(0.5f, 0.5f));
 
     public static final RegistryObject<EntityType<MedicalKitEntity>> MEDICAL_KIT = register("medical_kit",
-            EntityType.Builder.<MedicalKitEntity>of(MedicalKitEntity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).sized(0.4f, 0.2f));
+            EntityType.Builder.of(MedicalKitEntity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).sized(0.4f, 0.2f));
     public static final RegistryObject<EntityType<WaterMaskEntity>> WATER_MASK = register("water_mask",
             EntityType.Builder.of(WaterMaskEntity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(3).sized(1f, 1f).noSave().noSummon().fireImmune());
 
@@ -142,6 +142,9 @@ public class ModEntities {
             EntityType.Builder.<DroneEntity>of(DroneEntity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).setCustomClientFactory(DroneEntity::new).sized(0.6f, 0.2f));
     public static final RegistryObject<EntityType<MortarEntity>> MORTAR = register("mortar",
             EntityType.Builder.<MortarEntity>of(MortarEntity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).setCustomClientFactory(MortarEntity::new).fireImmune().sized(0.8f, 1.4f));
+
+    public static final RegistryObject<EntityType<VehicleAssemblingTableVehicleEntity>> VEHICLE_ASSEMBLING_TABLE = register("vehicle_assembling_table",
+            EntityType.Builder.<VehicleAssemblingTableVehicleEntity>of(VehicleAssemblingTableVehicleEntity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).setCustomClientFactory(VehicleAssemblingTableVehicleEntity::new).fireImmune().sized(2, 2));
 
     private static <T extends Entity> RegistryObject<EntityType<T>> register(String name, EntityType.Builder<T> entityTypeBuilder) {
         return REGISTRY.register(name, () -> entityTypeBuilder.build(name));

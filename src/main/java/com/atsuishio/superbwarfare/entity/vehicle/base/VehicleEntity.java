@@ -1429,7 +1429,7 @@ public abstract class VehicleEntity extends Entity implements Container {
     }
 
     @Override
-    public @NotNull Vec3 getDismountLocationForPassenger(LivingEntity passenger) {
+    public @NotNull Vec3 getDismountLocationForPassenger(@NotNull LivingEntity passenger) {
         int index = this.getTagSeatIndex(passenger);
         if (index < 0) {
             return super.getDismountLocationForPassenger(passenger);

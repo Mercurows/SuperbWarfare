@@ -1,0 +1,10 @@
+{
+  "ID": "superbwarfare:vehicle_assembling_table",
+  "MaxHealth": 100,
+  "UpStep": 1.1,
+  "Mass": 1,
+  "DamageModifiers": [
+    "superbwarfare:vehicle_strike * 2",
+    "superbwarfare:grapeshot_hit * 0.5"
+  ]
+}
