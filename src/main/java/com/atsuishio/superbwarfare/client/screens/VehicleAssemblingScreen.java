@@ -59,7 +59,7 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
         imageHeight = 181;
         this.initRecipes();
         this.pageIndex = 0;
-        this.currentRecipe = this.getRecipeById(this.currentRecipes == null || this.currentRecipes.isEmpty() ? null : this.currentRecipes.get(0));
+        this.currentRecipe = this.getRecipeById(this.currentRecipes == null || this.currentRecipes.isEmpty() ? null : this.currentRecipes.getFirst());
         this.calculateMaterialCount(this.currentRecipe);
     }
 
@@ -99,7 +99,7 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
             CategoryButton button = new CategoryButton(posX, posY + 2 + i * 23, category, b -> {
                 this.currentCategory = category;
                 this.currentRecipes = this.recipes.get(category);
-                this.currentRecipe = this.getRecipeById(this.currentRecipes == null || this.currentRecipes.isEmpty() ? null : this.currentRecipes.get(0));
+                this.currentRecipe = this.getRecipeById(this.currentRecipes == null || this.currentRecipes.isEmpty() ? null : this.currentRecipes.getFirst());
                 this.pageIndex = 0;
                 this.calculateMaterialCount(this.currentRecipe);
                 this.init();
@@ -194,9 +194,9 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
     }
 
     @Override
-    public boolean mouseScrolled(double pMouseX, double pMouseY, double pDelta) {
+    public boolean mouseScrolled(double pMouseX, double pMouseY, double scrollX, double scrollY) {
         if (pMouseX >= this.leftPos + 26 && pMouseX <= this.leftPos + 106 && pMouseY >= this.topPos + 21 && pMouseY <= this.topPos + 175) {
-            if (pDelta > 0) {
+            if (scrollY > 0) {
                 this.pageIndex = Math.max(0, this.pageIndex - 1);
             } else {
                 if (this.currentRecipes != null && !this.currentRecipes.isEmpty()) {
@@ -207,7 +207,7 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
             this.init();
             return true;
         }
-        return super.mouseScrolled(pMouseX, pMouseY, pDelta);
+        return super.mouseScrolled(pMouseX, pMouseY, scrollX, scrollY);
     }
 
     public void addPageButtons(int posX, int posY) {
