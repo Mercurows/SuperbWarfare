@@ -666,6 +666,7 @@
   "container.superbwarfare.charging_station.show_range": "Show Range",
   "container.superbwarfare.charging_station.hide_range": "Hide Range",
   "container.superbwarfare.superb_item_interface": "Superb Item Interface",
+  "container.superbwarfare.vehicle_assembling_table.assemble": "Assemble",
 
   "config.superbwarfare.title": "SuperbWarfare: Config",
   "config.superbwarfare.client.reload": "Reload Config",
