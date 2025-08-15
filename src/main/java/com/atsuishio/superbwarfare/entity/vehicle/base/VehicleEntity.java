@@ -1674,6 +1674,9 @@ public abstract class VehicleEntity extends Entity implements Container {
     @Override
     @Nullable
     public ItemStack getPickResult() {
+        if (!getRetrieveItems().isEmpty()) {
+            return getRetrieveItems().getFirst();
+        }
         return ContainerBlockItem.createInstance(this.getType());
     }
 
