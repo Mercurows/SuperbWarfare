@@ -40,12 +40,14 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
     private List<ResourceLocation> currentRecipes = new ArrayList<>();
     @Nullable
     private VehicleAssemblingRecipe currentRecipe = null;
-    private int scrollOffset = 0;
+    private int pageIndex = 0;
 
     public VehicleAssemblingScreen(VehicleAssemblingMenu pMenu, Inventory pPlayerInventory, Component pTitle) {
         super(pMenu, pPlayerInventory, pTitle);
         imageWidth = 322;
-        imageHeight = 178;
+        imageHeight = 181;
+        this.initRecipes();
+        this.currentRecipe = this.getRecipeById(this.currentRecipes == null || this.currentRecipes.isEmpty() ? null : this.currentRecipes.get(0));
     }
 
     @Override
@@ -128,32 +130,32 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
     }
 
     public void addRecipeButtons() {
-        if (this.currentRecipes == null || this.currentRecipes.isEmpty()) return;
+        if (this.currentRecipes != null && !this.currentRecipes.isEmpty()) {
+            int posX = (this.width - this.imageWidth) / 2;
+            int posY = (this.height - this.imageHeight) / 2;
 
-        int posX = (this.width - this.imageWidth) / 2;
-        int posY = (this.height - this.imageHeight) / 2;
+            for (int i = 0; i < 9; i++) {
+                int index = i + this.pageIndex * 8;
+                if (index >= this.currentRecipes.size()) break;
 
-        for (int i = 0; i < 9; i++) {
-            int index = i + this.scrollOffset;
-            if (index >= this.currentRecipes.size()) break;
+                ResourceLocation id = this.currentRecipes.get(index);
+                var recipe = this.getRecipeById(id);
+                if (recipe == null) break;
 
-            ResourceLocation id = this.currentRecipes.get(index);
-            var recipe = this.getRecipeById(id);
-            if (recipe == null) break;
+                RecipeButton button = this.addRenderableWidget(new RecipeButton(posX + 26, posY + 21 + i * 17, recipe.getResult().getResult(), (b) -> {
+                    this.currentRecipe = recipe;
 
-            RecipeButton button = this.addRenderableWidget(new RecipeButton(posX + 26, posY + 21 + i * 15, recipe.getResult().getResult(), (b) -> {
-                this.currentRecipe = recipe;
-
-                this.init();
-            }));
-            // TODO recipe
+                    this.init();
+                }));
+                // TODO recipe
 //            if (this.currentRecipe != null && recipe.getId().equals(this.currentRecipe.getId())) {
 //                button.setSelected(true);
 //            }
+            }
         }
     }
 
-    public class CategoryButton extends Button {
+    class CategoryButton extends Button {
 
         public VehicleAssemblingRecipe.Category category;
         private boolean isSelected = false;
@@ -173,9 +175,9 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
             }
 
             if (this.isSelected) {
-                pGuiGraphics.blit(TEXTURE, this.getX(), this.getY(), 179, 179, 23, this.height, IMAGE_SIZE, IMAGE_SIZE);
+                pGuiGraphics.blit(TEXTURE, this.getX(), this.getY(), 179, 182, 23, this.height, IMAGE_SIZE, IMAGE_SIZE);
             } else {
-                pGuiGraphics.blit(TEXTURE, this.getX(), this.getY(), 179, 202, 20, this.height, IMAGE_SIZE, IMAGE_SIZE);
+                pGuiGraphics.blit(TEXTURE, this.getX(), this.getY(), 179, 205, 20, this.height, IMAGE_SIZE, IMAGE_SIZE);
             }
 
             pGuiGraphics.pose().popPose();
@@ -192,25 +194,29 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
         }
     }
 
-    public static class RecipeButton extends Button {
+    class RecipeButton extends Button {
 
         private final ItemStack stack;
         private boolean isSelected = false;
 
         public RecipeButton(int x, int y, ItemStack stack, Button.OnPress onPress) {
-            super(x, y, 73, 16, Component.literal("114"), onPress, DEFAULT_NARRATION);
+            super(x, y, 80, 18, Component.literal("114"), onPress, DEFAULT_NARRATION);
             this.stack = stack;
         }
 
         @Override
         protected void renderWidget(@NotNull GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
-            if (this.isHovered) {
-                pGuiGraphics.blit(TEXTURE, this.getX(), this.getY(), 13, 196, this.width, this.height, IMAGE_SIZE, IMAGE_SIZE);
+            if (this.isSelected) {
+                pGuiGraphics.blit(TEXTURE, this.getX(), this.getY(), 6, 220, this.width, this.height, IMAGE_SIZE, IMAGE_SIZE);
             } else {
-                pGuiGraphics.blit(TEXTURE, this.getX(), this.getY(), 13, 179, this.width, this.height, IMAGE_SIZE, IMAGE_SIZE);
+                if (this.isHovered) {
+                    pGuiGraphics.blit(TEXTURE, this.getX(), this.getY(), 6, 201, this.width, this.height, IMAGE_SIZE, IMAGE_SIZE);
+                } else {
+                    pGuiGraphics.blit(TEXTURE, this.getX(), this.getY(), 6, 182, this.width, this.height, IMAGE_SIZE, IMAGE_SIZE);
+                }
             }
 
-            pGuiGraphics.renderFakeItem(this.stack, this.getX() + 1, this.getY());
+            pGuiGraphics.renderFakeItem(this.stack, this.getX() + 1, this.getY() + 1);
             Component hoverName = this.stack.getHoverName();
             renderScrollingString(pGuiGraphics, Minecraft.getInstance().font, hoverName, this.getX() + 20, this.getY() + 4, this.getX() + 92, this.getY() + 13, 16777215);
         }
