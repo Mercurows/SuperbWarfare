@@ -7,6 +7,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
 import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.init.*;
+import com.atsuishio.superbwarfare.menu.VehicleAssemblingMenu;
 import com.mojang.math.Axis;
 import it.unimi.dsi.fastutil.Pair;
 import net.minecraft.core.BlockPos;
@@ -19,10 +20,14 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.HasCustomInventoryScreen;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -48,7 +53,7 @@ import static com.atsuishio.superbwarfare.event.ClientEventHandler.isFreeCam;
 import static com.atsuishio.superbwarfare.event.ClientMouseHandler.freeCameraPitch;
 import static com.atsuishio.superbwarfare.event.ClientMouseHandler.freeCameraYaw;
 
-public class VehicleAssemblingTableVehicleEntity extends MobileVehicleEntity implements GeoEntity {
+public class VehicleAssemblingTableVehicleEntity extends MobileVehicleEntity implements GeoEntity, HasCustomInventoryScreen, MenuProvider {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private float yRotSync;
 
@@ -381,5 +386,16 @@ public class VehicleAssemblingTableVehicleEntity extends MobileVehicleEntity imp
     @Override
     public boolean hasEnergyStorage() {
         return false;
+    }
+
+    @Override
+    public void openCustomInventoryScreen(@NotNull Player player) {
+        player.openMenu(this);
+    }
+
+    @Override
+    @ParametersAreNonnullByDefault
+    public @Nullable AbstractContainerMenu createMenu(int i, Inventory inventory, Player player) {
+        return new VehicleAssemblingMenu(i, inventory);
     }
 }
