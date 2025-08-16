@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.client.model.entity;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.entity.vehicle.LaserTowerEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
@@ -20,6 +21,10 @@ public class LaserTowerModel extends GeoModel<LaserTowerEntity> {
 
     @Override
     public ResourceLocation getModelResource(LaserTowerEntity entity) {
+        if (RenderHelper.isInGui()) {
+            return Mod.loc("geo/laser_tower.geo.json");
+        }
+
         Player player = Minecraft.getInstance().player;
 
         int distance = 0;

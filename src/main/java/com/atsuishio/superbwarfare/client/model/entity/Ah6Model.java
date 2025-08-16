@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.client.model.entity;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.entity.vehicle.Ah6Entity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
@@ -12,11 +13,14 @@ public class Ah6Model extends GeoModel<Ah6Entity> {
     @Override
     public ResourceLocation getAnimationResource(Ah6Entity entity) {
         return null;
-//        return ModUtils.loc("animations/wheel_chair.animation.json");
     }
 
     @Override
     public ResourceLocation getModelResource(Ah6Entity entity) {
+        if (RenderHelper.isInGui()) {
+            return Mod.loc("geo/ah_6.geo.json");
+        }
+
         Player player = Minecraft.getInstance().player;
 
         int distance = 0;

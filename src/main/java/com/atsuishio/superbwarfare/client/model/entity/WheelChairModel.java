@@ -10,7 +10,6 @@ public class WheelChairModel extends GeoModel<WheelChairEntity> {
     @Override
     public ResourceLocation getAnimationResource(WheelChairEntity entity) {
         return null;
-//        return ModUtils.loc("animations/wheel_chair.animation.json");
     }
 
     @Override

@@ -15,19 +15,6 @@ public class PrismTankModel extends GeoModel<PrismTankEntity> {
     @Override
     public ResourceLocation getModelResource(PrismTankEntity entity) {
         return Mod.loc("geo/prism_tank.geo.json");
-//        Player player = Minecraft.getInstance().player;
-//
-//        int distance = 0;
-//
-//        if (player != null) {
-//            distance = (int) player.position().distanceTo(entity.position());
-//        }
-//
-//        if (distance < 32) {
-//            return ModUtils.loc("geo/PrismTank.geo.json");
-//        } else {
-//            return ModUtils.loc("geo/speedboat.lod1.geo.json");
-//        }
     }
 
     @Override

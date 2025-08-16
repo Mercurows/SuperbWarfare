@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.client.model.entity;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.entity.vehicle.SpeedboatEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
@@ -16,6 +17,10 @@ public class SpeedboatModel extends GeoModel<SpeedboatEntity> {
 
     @Override
     public ResourceLocation getModelResource(SpeedboatEntity entity) {
+        if (RenderHelper.isInGui()) {
+            return Mod.loc("geo/speedboat.geo.json");
+        }
+
         Player player = Minecraft.getInstance().player;
 
         int distance = 0;

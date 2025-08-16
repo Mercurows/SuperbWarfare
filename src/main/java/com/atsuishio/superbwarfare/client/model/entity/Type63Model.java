@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.client.model.entity;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.entity.vehicle.Type63Entity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
@@ -16,6 +17,10 @@ public class Type63Model extends GeoModel<Type63Entity> {
 
     @Override
     public ResourceLocation getModelResource(Type63Entity entity) {
+        if (RenderHelper.isInGui()) {
+            return Mod.loc("geo/type_63.geo.json");
+        }
+
         Player player = Minecraft.getInstance().player;
 
         int distance = 0;

@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.client.screens;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.client.screens.component.AssembleButton;
 import com.atsuishio.superbwarfare.client.screens.component.CategoryButton;
 import com.atsuishio.superbwarfare.client.screens.component.PageButton;
@@ -287,6 +288,7 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
         var level = mc.level;
         if (level == null) return;
 
+        RenderHelper.markGuiRenderTimestamp();
         ItemStack stack = recipe.getResult().getResult();
         Entity renderEntity = null;
 

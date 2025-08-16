@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.client.model.entity;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.entity.vehicle.Lav150Entity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
@@ -16,6 +17,10 @@ public class Lav150Model extends GeoModel<Lav150Entity> {
 
     @Override
     public ResourceLocation getModelResource(Lav150Entity entity) {
+        if (RenderHelper.isInGui()) {
+            return Mod.loc("geo/lav150.geo.json");
+        }
+
         Player player = Minecraft.getInstance().player;
 
         int distance = 0;
