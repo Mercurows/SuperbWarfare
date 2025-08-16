@@ -507,7 +507,7 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
         Lighting.setupForEntityInInventory();
         EntityRenderDispatcher entityrenderdispatcher = Minecraft.getInstance().getEntityRenderDispatcher();
 
-        float rotationPeriod = 8.0F;
+        float rotationPeriod = 12.0F;
         float rotPitch = 195F;
         float rot = (float) (System.currentTimeMillis() % (long) ((int) (rotationPeriod * 1000.0F))) * (360.0F / (rotationPeriod * 1000.0F));
 
@@ -550,7 +550,7 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
         }
 
         var modName = Component.translatableWithFallback("info." + holder.id().getNamespace() + ".mod_id", holder.id().getNamespace());
-        var modInfo = Component.translatable("container.superbwarfare.mod_info", modName.withStyle(ChatFormatting.ITALIC).withStyle(ChatFormatting.BLUE));
+        var modInfo = Component.translatable("container.superbwarfare.mod_info", modName.withStyle(ChatFormatting.ITALIC).withStyle(ChatFormatting.AQUA));
 
         guiGraphics.drawString(this.font, modInfo, (int) ((this.leftPos + 122) / 0.75f), (int) ((this.topPos + 167) / 0.75f), 0xFFFFFF, false);
 

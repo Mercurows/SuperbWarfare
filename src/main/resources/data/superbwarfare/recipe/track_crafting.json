@@ -3,7 +3,7 @@
   "category": "equipment",
   "pattern": [
     "aaa",
-    "bcb",
+    "b b",
     "aaa"
   ],
   "key": {
@@ -12,9 +12,6 @@
     },
     "b": {
       "item": "superbwarfare:wheel"
-    },
-    "c": {
-      "tag": "superbwarfare:storage_blocks/steel"
     }
   },
   "result": {

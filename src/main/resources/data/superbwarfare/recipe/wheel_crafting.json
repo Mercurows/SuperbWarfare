@@ -11,11 +11,11 @@
       "item": "minecraft:black_wool"
     },
     "b": {
-      "tag": "c:ingots/iron"
+      "tag": "forge:ingots/iron"
     }
   },
   "result": {
-    "id": "superbwarfare:wheel",
-    "count": 1
+    "item": "superbwarfare:wheel",
+    "count": 2
   }
 }
