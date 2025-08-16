@@ -308,13 +308,13 @@ public class VehicleAssemblingTableVehicleEntity extends MobileVehicleEntity imp
 
     @Override
     public void destroy() {
+        super.destroy();
+
         if (level() instanceof ServerLevel) {
             var item = new ItemEntity(level(), this.getX(), this.getY(), this.getZ(), new ItemStack(ModItems.VEHICLE_ASSEMBLING_TABLE.get()));
             item.setPickUpDelay(50);
             this.level().addFreshEntity(item);
         }
-
-        super.destroy();
     }
 
     @Override
