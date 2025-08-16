@@ -3,10 +3,7 @@ package com.atsuishio.superbwarfare.client.screens;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.block.ContainerBlock;
 import com.atsuishio.superbwarfare.client.RenderHelper;
-import com.atsuishio.superbwarfare.client.screens.component.AssembleButton;
-import com.atsuishio.superbwarfare.client.screens.component.CategoryButton;
-import com.atsuishio.superbwarfare.client.screens.component.PageButton;
-import com.atsuishio.superbwarfare.client.screens.component.RecipeButton;
+import com.atsuishio.superbwarfare.client.screens.component.*;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModRecipes;
 import com.atsuishio.superbwarfare.menu.VehicleAssemblingMenu;
@@ -182,6 +179,7 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
     protected void renderLabels(@NotNull GuiGraphics pGuiGraphics, int pMouseX, int pMouseY) {
     }
 
+    @SuppressWarnings("unchecked")
     @Nullable
     private RecipeHolder<VehicleAssemblingRecipe> getRecipeById(ResourceLocation recipeId) {
         if (recipeId == null) return null;
@@ -367,7 +365,6 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
                     return;
                 }
             }
-            // TODO getId
             PacketDistributor.sendToServer(new AssembleVehicleMessage(this.currentRecipe.id(), this.menu.containerId));
         }));
     }
@@ -380,20 +377,16 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
     }
 
     public void addScaleButtons(int posX, int posY) {
-        // TODO 正确创建按钮
-//        this.addRenderableWidget(new ImageButton(posX + 324, posY + 90, 9, 9, 149, 182, 10,
-//                TEXTURE, IMAGE_SIZE, IMAGE_SIZE,
-//                b -> {
-//                    this.modelScale = DEFAULT_MODEL_SCALE;
-//                    this.modelPosX = DEFAULT_MODEL_X;
-//                    this.modelPosY = DEFAULT_MODEL_Y;
-//                }));
-//        this.addRenderableWidget(new ImageButton(posX + 334, posY + 90, 9, 9, 159, 182, 10,
-//                TEXTURE, IMAGE_SIZE, IMAGE_SIZE,
-//                b -> this.modelScale = Math.max(this.modelScale - 20, MIN_MODEL_SCALE)));
-//        this.addRenderableWidget(new ImageButton(posX + 344, posY + 90, 9, 9, 169, 182, 10,
-//                TEXTURE, IMAGE_SIZE, IMAGE_SIZE,
-//                b -> this.modelScale = Math.min(this.modelScale + 20, MAX_MODEL_SCALE)));
+        this.addRenderableWidget(new ScaleButton(posX + 324, posY + 90, 149, 182,
+                b -> {
+                    this.modelScale = DEFAULT_MODEL_SCALE;
+                    this.modelPosX = DEFAULT_MODEL_X;
+                    this.modelPosY = DEFAULT_MODEL_Y;
+                }));
+        this.addRenderableWidget(new ScaleButton(posX + 334, posY + 90, 159, 182,
+                b -> this.modelScale = Math.max(this.modelScale - 20, MIN_MODEL_SCALE)));
+        this.addRenderableWidget(new ScaleButton(posX + 344, posY + 90, 169, 182,
+                b -> this.modelScale = Math.min(this.modelScale + 20, MAX_MODEL_SCALE)));
     }
 
     public void renderModel(RecipeHolder<VehicleAssemblingRecipe> holder, GuiGraphics guiGraphics) {
