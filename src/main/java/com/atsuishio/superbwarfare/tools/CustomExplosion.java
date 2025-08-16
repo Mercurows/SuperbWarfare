@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.tools;
 
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
+import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage;
 import com.google.common.collect.Sets;
 import net.minecraft.core.BlockPos;
@@ -18,11 +19,14 @@ import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.event.ForgeEventFactory;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Supplier;
 
 public class CustomExplosion extends Explosion {
 
@@ -181,6 +185,85 @@ public class CustomExplosion extends Explosion {
                     }
                 }
             }
+        }
+    }
+
+    public static class Builder {
+        private final Level level;
+        private final Entity directSource;
+        private @Nullable Entity sourceEntity;
+        private @Nullable Entity attackerEntity;
+        private float damage;
+        private float radius;
+        private ParticleTool.ParticleType particleType = ParticleTool.ParticleType.MINI;
+        private Supplier<BlockInteraction> destroyBlock = () -> ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP;
+        private boolean causeVanillaExplosion = false;
+        public Vec3 position;
+
+        public Builder(@NotNull Entity source) {
+            this.level = source.level();
+            this.directSource = source;
+            this.sourceEntity = source;
+            this.attackerEntity = source;
+            this.position = new Vec3(source.getX(), source.getEyeY(), source.getZ());
+        }
+
+        public Builder source(Entity source) {
+            this.sourceEntity = source;
+            return this;
+        }
+
+        public Builder attacker(Entity attacker) {
+            this.attackerEntity = attacker;
+            return this;
+        }
+
+        public Builder damage(float damage) {
+            this.damage = damage;
+            return this;
+        }
+
+        public Builder radius(float radius) {
+            this.radius = radius;
+            return this;
+        }
+
+        public Builder withParticleType(@NotNull ParticleTool.ParticleType particleType) {
+            this.particleType = particleType;
+            return this;
+        }
+
+        public Builder destroyBlock() {
+            this.destroyBlock = () -> Explosion.BlockInteraction.DESTROY;
+            return this;
+        }
+
+        public Builder keepBlock() {
+            this.destroyBlock = () -> Explosion.BlockInteraction.KEEP;
+            return this;
+        }
+
+        public Builder causeVanillaExplosion() {
+            this.causeVanillaExplosion = true;
+            return this;
+        }
+
+        public Builder position(Vec3 position) {
+            this.position = position;
+            return this;
+        }
+
+        public void explode() {
+            if (level.isClientSide) return;
+
+            CustomExplosion explosion = new CustomExplosion(level, directSource,
+                    ModDamageTypes.causeCustomExplosionDamage(level.registryAccess(), sourceEntity, attackerEntity), damage,
+                    position.x, position.y, position.z, radius, destroyBlock.get(), causeVanillaExplosion);
+            explosion.explode();
+            ForgeEventFactory.onExplosionStart(directSource.level(), explosion);
+            explosion.finalizeExplosion(false);
+
+            ParticleTool.spawnExplosionParticles(particleType, directSource.level(), directSource.position());
         }
     }
 }

@@ -1284,6 +1284,11 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
         this.discard();
     }
 
+    public CustomExplosion.Builder createCustomExplosion() {
+        return new CustomExplosion.Builder(this)
+                .attacker(getAttacker());
+    }
+
     protected Entity getAttacker() {
         return EntityFindUtil.findEntity(this.level(), this.entityData.get(LAST_ATTACKER_UUID));
     }

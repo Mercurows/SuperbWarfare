@@ -30,6 +30,20 @@ public class ParticleTool {
         level.sendParticles(viewer, particle, force, x, y, z, count, xOffset, yOffset, zOffset, speed);
     }
 
+    public enum ParticleType {
+        MINI, SMALL, MEDIUM, HUGE, GIANT
+    }
+
+    public static void spawnExplosionParticles(ParticleType type, Level level, Vec3 pos) {
+        switch (type) {
+            case MINI -> ParticleTool.spawnMiniExplosionParticles(level, pos);
+            case SMALL -> ParticleTool.spawnSmallExplosionParticles(level, pos);
+            case MEDIUM -> ParticleTool.spawnMediumExplosionParticles(level, pos);
+            case HUGE -> ParticleTool.spawnHugeExplosionParticles(level, pos);
+            case GIANT -> ParticleTool.spawnGiantExplosionParticles(level, pos);
+        }
+    }
+
     public static void spawnMiniExplosionParticles(Level level, Vec3 pos) {
         double x = pos.x;
         double y = pos.y;
