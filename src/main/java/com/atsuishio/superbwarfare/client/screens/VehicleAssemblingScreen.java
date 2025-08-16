@@ -164,7 +164,7 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
         }
 
         if (this.currentRecipes != null && !this.currentRecipes.isEmpty()) {
-            this.renderIngredients(guiGraphics);
+            this.renderIngredients(guiGraphics, mouseX, mouseY);
         }
 
         this.renderables.stream().filter(w -> w instanceof RecipeButton)
@@ -240,7 +240,7 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
         }
     }
 
-    private void renderIngredients(GuiGraphics guiGraphics) {
+    private void renderIngredients(GuiGraphics guiGraphics, int mouseX, int mouseY) {
         if (this.currentRecipe == null) return;
         var inputs = this.currentRecipe.getInputs();
 
@@ -269,6 +269,10 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
                 pose.scale(0.8F, 0.8F, 1.0F);
                 guiGraphics.renderFakeItem(itemStack, (int) (posX * 1.25f), (int) (posY * 1.25f));
                 pose.popPose();
+
+                if (mouseX >= posX && mouseY >= posY && mouseX < posX + 16 * 0.8f && mouseY < posY + 16 * 0.8f) {
+                    guiGraphics.renderTooltip(this.font, itemStack, mouseX, mouseY);
+                }
 
                 pose.pushPose();
                 pose.scale(0.5F, 0.5F, 1.0F);
