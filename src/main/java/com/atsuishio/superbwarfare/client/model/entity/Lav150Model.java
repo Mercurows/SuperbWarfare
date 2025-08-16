@@ -40,6 +40,10 @@ public class Lav150Model extends GeoModel<Lav150Entity> {
 
     @Override
     public ResourceLocation getTextureResource(Lav150Entity entity) {
+        if (RenderHelper.isInGui()) {
+            return Mod.loc("textures/entity/lav150.png");
+        }
+
         Player player = Minecraft.getInstance().player;
 
         int distance = 0;
