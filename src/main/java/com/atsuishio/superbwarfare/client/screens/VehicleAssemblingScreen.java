@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.client.screens;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.block.ContainerBlock;
 import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.client.screens.component.AssembleButton;
 import com.atsuishio.superbwarfare.client.screens.component.CategoryButton;
@@ -20,6 +21,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import it.unimi.dsi.fastutil.ints.Int2IntArrayMap;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -30,7 +32,9 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.FormattedText;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -153,7 +157,8 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
         guiGraphics.drawString(this.font, Component.translatable("container.superbwarfare.vehicle_assembling_table.ingredient"), this.leftPos + 214, this.topPos + 105, 5592405, false);
 
         if (this.currentRecipe != null) {
-            this.renderModel(this.currentRecipe.value(), guiGraphics);
+            this.renderModel(this.currentRecipe, guiGraphics);
+            this.renderRecipeInfo(this.currentRecipe, guiGraphics);
             guiGraphics.drawString(this.font, Component.translatable("container.superbwarfare.vehicle_assembling_table.count", this.currentRecipe.value().getResult().getResult().getCount()), this.leftPos + 214, this.topPos + 164, 5592405, false);
         }
 
@@ -390,13 +395,13 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
 //                b -> this.modelScale = Math.min(this.modelScale + 20, MAX_MODEL_SCALE)));
     }
 
-    public void renderModel(VehicleAssemblingRecipe recipe, GuiGraphics guiGraphics) {
+    public void renderModel(RecipeHolder<VehicleAssemblingRecipe> holder, GuiGraphics guiGraphics) {
         Minecraft mc = Minecraft.getInstance();
         var level = mc.level;
         if (level == null) return;
 
         RenderHelper.markGuiRenderTimestamp();
-        ItemStack stack = recipe.getResult().getResult();
+        ItemStack stack = holder.value().getResult().getResult();
         Entity renderEntity = null;
 
         if (stack.is(ModItems.CONTAINER.get())) {
@@ -516,5 +521,64 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
         posestack.popPose();
         Lighting.setupFor3DItems();
         RenderSystem.disableScissor();
+    }
+
+    public void renderRecipeInfo(RecipeHolder<VehicleAssemblingRecipe> holder, GuiGraphics guiGraphics) {
+        ItemStack stack = holder.value().getResult().getResult();
+
+        boolean renderItemName = true;
+        if (stack.is(ModItems.CONTAINER.get())) {
+            var data = stack.get(DataComponents.BLOCK_ENTITY_DATA);
+            var tag = data != null ? data.copyTag() : null;
+            if (tag != null && tag.contains("EntityType")) {
+                String key = tag.getString("EntityType");
+                var entityType = EntityType.byString(key).orElse(null);
+                if (entityType != null) {
+                    this.renderContainerInfo(key, guiGraphics);
+                    renderItemName = false;
+                }
+            }
+        }
+
+        var pose = guiGraphics.pose();
+        pose.pushPose();
+
+        pose.scale(0.75f, 0.75f, 1.0f);
+
+        if (renderItemName) {
+            guiGraphics.drawString(this.font, Component.empty().append(stack.getHoverName()).withStyle(ChatFormatting.UNDERLINE).withStyle(ChatFormatting.YELLOW), (int) ((this.leftPos + 122) / 0.75f), (int) ((this.topPos + 119) / 0.75f), 0xFFFFFF, false);
+        }
+
+        var modName = Component.translatableWithFallback("info." + holder.id().getNamespace() + ".mod_id", holder.id().getNamespace());
+        var modInfo = Component.translatable("container.superbwarfare.mod_info", modName.withStyle(ChatFormatting.ITALIC).withStyle(ChatFormatting.BLUE));
+
+        guiGraphics.drawString(this.font, modInfo, (int) ((this.leftPos + 122) / 0.75f), (int) ((this.topPos + 167) / 0.75f), 0xFFFFFF, false);
+
+        pose.popPose();
+    }
+
+    private void renderContainerInfo(String typeName, GuiGraphics guiGraphics) {
+        var pose = guiGraphics.pose();
+
+        String key = ContainerBlock.getEntityTranslationKey(typeName);
+        if (key == null) return;
+        if (typeName.split(":").length < 2) return;
+
+        pose.pushPose();
+        pose.scale(0.75f, 0.75f, 1.0f);
+
+        var hoverName = Component.translatable(key).withStyle(ChatFormatting.UNDERLINE).withStyle(ChatFormatting.YELLOW);
+        guiGraphics.drawString(this.font, hoverName, (int) ((this.leftPos + 122) / 0.75f), (int) ((this.topPos + 119) / 0.75f), 0xFFFFFF, false);
+
+        var info = Component.translatable("info." + typeName.split(":")[0] + "." + typeName.split(":")[1]);
+
+        List<FormattedCharSequence> infoComponents = this.font.split(FormattedText.of(info.getString()), 100);
+
+        for (int j = 0; j < infoComponents.size(); j++) {
+            var cachedComponent = infoComponents.get(j);
+            guiGraphics.drawString(this.font, cachedComponent, (int) ((this.leftPos + 122) / 0.75f), (int) ((this.topPos + 129 + j * 7.5f) / 0.75f), 0xFFFFFF);
+        }
+
+        pose.popPose();
     }
 }
