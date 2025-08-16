@@ -449,6 +449,9 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
 
                     entityNameCache = key;
                     entityCache = renderEntity;
+
+                    scaleAnimator.update(DEFAULT_MODEL_SCALE);
+                    modelPosAnimator.update(new Vec2(DEFAULT_MODEL_X, DEFAULT_MODEL_Y));
                 }
             }
         }
