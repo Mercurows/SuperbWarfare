@@ -1,7 +1,11 @@
 package com.atsuishio.superbwarfare.recipe.vehicle;
 
+import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModRecipes;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -11,7 +15,9 @@ import net.neoforged.neoforge.items.wrapper.RecipeWrapper;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class VehicleAssemblingRecipe implements Recipe<RecipeWrapper> {
 
@@ -29,6 +35,23 @@ public class VehicleAssemblingRecipe implements Recipe<RecipeWrapper> {
         this.category = recipeCategory;
         this.result = result;
         this.inputs = inputs;
+    }
+
+    public static VehicleAssemblingRecipe create(Map<String, Integer> ingredients, Category recipeCategory, EntityType<?> type) {
+        List<VehicleAssemblingIngredient> inputs = new ArrayList<>();
+        for (var entry : ingredients.entrySet()) {
+            inputs.add(new VehicleAssemblingIngredient(entry.getKey(), entry.getValue()));
+        }
+        var result = new VehicleAssemblingResult(ModItems.CONTAINER.getId().toString(), BuiltInRegistries.ENTITY_TYPE.getKey(type).toString(), 1);
+        return new VehicleAssemblingRecipe(inputs, recipeCategory, result);
+    }
+
+    public static VehicleAssemblingRecipe create(Map<String, Integer> ingredients, Category recipeCategory, Item result, int count) {
+        List<VehicleAssemblingIngredient> inputs = new ArrayList<>();
+        for (var entry : ingredients.entrySet()) {
+            inputs.add(new VehicleAssemblingIngredient(entry.getKey(), entry.getValue()));
+        }
+        return new VehicleAssemblingRecipe(inputs, recipeCategory, new VehicleAssemblingResult(result.getDescriptionId(), "", count));
     }
 
     @Override

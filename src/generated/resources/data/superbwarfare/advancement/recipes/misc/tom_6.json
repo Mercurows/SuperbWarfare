@@ -1,11 +1,11 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_light_armament_module": {
+    "has_minecart": {
       "conditions": {
         "items": [
           {
-            "items": "superbwarfare:light_armament_module"
+            "items": "minecraft:minecart"
           }
         ]
       },
@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "superbwarfare:ah_6_container"
+        "recipe": "superbwarfare:tom_6"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -21,12 +21,12 @@
   "requirements": [
     [
       "has_the_recipe",
-      "has_light_armament_module"
+      "has_minecart"
     ]
   ],
   "rewards": {
     "recipes": [
-      "superbwarfare:ah_6_container"
+      "superbwarfare:tom_6"
     ]
   }
 }

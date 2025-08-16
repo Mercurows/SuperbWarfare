@@ -23,9 +23,9 @@ public class VehicleAssemblingResult {
     public int count = 1;
 
     public static final Codec<VehicleAssemblingResult> CODEC = RecordCodecBuilder.<VehicleAssemblingResult>mapCodec(builder -> builder.group(
-            Codec.STRING.fieldOf("item").orElse(ModItems.CONTAINER.toString()).forGetter(r -> r.itemString),
-            Codec.STRING.fieldOf("entity").orElse("").forGetter(r -> r.entityTypeString),
-            Codec.INT.fieldOf("count").orElse(1).forGetter(r -> r.count)
+            Codec.STRING.optionalFieldOf("item", BuiltInRegistries.ITEM.getKey(ModItems.CONTAINER.value()).toString()).forGetter(r -> r.itemString),
+            Codec.STRING.optionalFieldOf("entity", "").forGetter(r -> r.entityTypeString),
+            Codec.INT.optionalFieldOf("count", 1).forGetter(r -> r.count)
     ).apply(builder, VehicleAssemblingResult::new)).codec();
 
     public static final StreamCodec<RegistryFriendlyByteBuf, VehicleAssemblingResult> STREAM_CODEC = StreamCodec.composite(

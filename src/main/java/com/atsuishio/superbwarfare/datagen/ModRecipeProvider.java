@@ -1,14 +1,15 @@
 package com.atsuishio.superbwarfare.datagen;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.datagen.builder.VehicleAssemblingRecipeBuilder;
 import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModTags;
-import com.atsuishio.superbwarfare.item.common.container.ContainerBlockItem;
 import com.atsuishio.superbwarfare.recipe.AmmoBoxAddAmmoRecipe;
 import com.atsuishio.superbwarfare.recipe.AmmoBoxExtractAmmoRecipe;
 import com.atsuishio.superbwarfare.recipe.PotionMortarShellRecipe;
 import com.atsuishio.superbwarfare.recipe.SmokeDyeRecipe;
+import com.atsuishio.superbwarfare.recipe.vehicle.VehicleAssemblingRecipe;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentMap;
@@ -26,7 +27,6 @@ import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
-import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.crafting.DataComponentIngredient;
 import org.jetbrains.annotations.NotNull;
 
@@ -136,45 +136,12 @@ public class ModRecipeProvider extends RecipeProvider {
                 .save(writer, Mod.loc(getItemName(ModItems.SUPERB_ITEM_INTERFACE.get())));
 
         // vehicles
-        containerRecipe(ModEntities.A_10A.get())
-                .pattern("dad")
-                .pattern("ece")
-                .pattern("fbf")
-                .define('a', ModItems.MEDIUM_ARMAMENT_MODULE.get())
-                .define('b', ModTags.Items.STORAGE_BLOCK_STEEL)
-                .define('c', ModItems.HEAVY_ARMAMENT_MODULE.get())
-                .define('d', ModItems.LARGE_PROPELLER.get())
-                .define('e', ModItems.LARGE_MOTOR.get())
-                .define('f', ModItems.MEDIUM_BATTERY_PACK.get())
-                .unlockedBy(getHasName(ModItems.HEAVY_ARMAMENT_MODULE.get()), has(ModItems.HEAVY_ARMAMENT_MODULE.get()))
-                .save(writer, Mod.loc(getContainerRecipeName(ModEntities.A_10A.get())));
-        containerRecipe(ModEntities.AH_6.get())
-                .pattern("abc")
-                .pattern("def")
-                .pattern("hgh")
-                .define('a', ModItems.LARGE_PROPELLER.get())
-                .define('b', ModItems.LARGE_MOTOR.get())
-                .define('c', ModItems.PROPELLER.get())
-                .define('d', Items.COMPASS)
-                .define('e', ModTags.Items.STORAGE_BLOCK_STEEL)
-                .define('f', Tags.Items.CHESTS)
-                .define('g', ModItems.MEDIUM_BATTERY_PACK.get())
-                .define('h', ModItems.LIGHT_ARMAMENT_MODULE.get())
-                .unlockedBy(getHasName(ModItems.LIGHT_ARMAMENT_MODULE.get()), has(ModItems.LIGHT_ARMAMENT_MODULE.get()))
-                .save(writer, Mod.loc(getContainerRecipeName(ModEntities.AH_6.get())));
-        containerRecipe(ModEntities.SPEEDBOAT.get())
-                .pattern(" b ")
-                .pattern("def")
-                .pattern("gca")
-                .define('a', ModItems.LARGE_PROPELLER.get())
-                .define('b', ModItems.M_2_HB.get())
-                .define('c', ModItems.LARGE_MOTOR.get())
-                .define('d', Items.COMPARATOR)
-                .define('e', ItemTags.BOATS)
-                .define('f', Tags.Items.CHESTS)
-                .define('g', ModItems.SMALL_BATTERY_PACK.get())
-                .unlockedBy(getHasName(ModItems.M_2_HB.get()), has(ModItems.M_2_HB.get()))
-                .save(writer, Mod.loc(getContainerRecipeName(ModEntities.SPEEDBOAT.get())));
+        VehicleAssemblingRecipeBuilder.entity(ModEntities.TOM_6.get(), VehicleAssemblingRecipe.Category.AIRCRAFT)
+                .require(ItemTags.PLANKS, 5)
+                .require(ModItems.BATTERY.get())
+                .require(Items.MINECART)
+                .unlockedBy(getHasName(Items.MINECART), has(Items.MINECART))
+                .save(writer, Mod.loc(getEntityTypeName(ModEntities.TOM_6.get())));
 
         // guns
         gunSmithing(writer, ModItems.TRACHELIUM_BLUEPRINT.get(), GunRarity.EPIC, ModTags.Items.INGOTS_CEMENTED_CARBIDE, ModItems.TRACHELIUM.get());
@@ -302,16 +269,8 @@ public class ModRecipeProvider extends RecipeProvider {
         LEGENDARY,
     }
 
-    public static ShapedRecipeBuilder containerRecipe(EntityType<?> type) {
-        return ShapedRecipeBuilder.shaped(RecipeCategory.TRANSPORTATION, ContainerBlockItem.createInstance(type));
-    }
-
     protected static String getEntityTypeName(EntityType<?> entityType) {
         return BuiltInRegistries.ENTITY_TYPE.getKey(entityType).getPath();
-    }
-
-    public static String getContainerRecipeName(EntityType<?> entityType) {
-        return getEntityTypeName(entityType) + "_container";
     }
 
     // 生成材料包所有材料的配方

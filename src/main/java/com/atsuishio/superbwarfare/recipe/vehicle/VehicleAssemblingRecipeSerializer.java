@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.recipe.vehicle;
 
-import com.atsuishio.superbwarfare.data.EnumCodec;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
@@ -33,7 +32,10 @@ public class VehicleAssemblingRecipeSerializer implements RecipeSerializer<Vehic
                                     }
                             ).toList())
                     ).forGetter(VehicleAssemblingRecipe::getInputs),
-                    EnumCodec.create(VehicleAssemblingRecipe.Category.class).fieldOf("category").orElse(VehicleAssemblingRecipe.Category.LAND).forGetter(VehicleAssemblingRecipe::getCategory),
+                    Codec.STRING.flatXmap(
+                            name -> DataResult.success(VehicleAssemblingRecipe.Category.getCategory(name)),
+                            e -> DataResult.success(e.getName())
+                    ).fieldOf("category").orElse(VehicleAssemblingRecipe.Category.LAND).forGetter(VehicleAssemblingRecipe::getCategory),
                     VehicleAssemblingResult.CODEC.fieldOf("result").forGetter(VehicleAssemblingRecipe::getResult)
             ).apply(builder, VehicleAssemblingRecipe::new));
 
