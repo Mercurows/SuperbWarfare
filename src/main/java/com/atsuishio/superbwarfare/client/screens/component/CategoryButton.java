@@ -39,10 +39,6 @@ public class CategoryButton extends Button {
         };
         pGuiGraphics.blit(VehicleAssemblingScreen.TEXTURE, this.getX() + 3, this.getY() + 3, 203, vOffset, 16, 16, VehicleAssemblingScreen.IMAGE_SIZE, VehicleAssemblingScreen.IMAGE_SIZE);
 
-        if (this.isHovered()) {
-            pGuiGraphics.renderTooltip(Minecraft.getInstance().font, Component.translatable("tips.superbwarfare.category." + this.category.getName()), pMouseX, pMouseY);
-        }
-
         pGuiGraphics.pose().popPose();
     }
 
@@ -54,5 +50,11 @@ public class CategoryButton extends Button {
 
     public void setSelected(boolean selected) {
         this.isSelected = selected;
+    }
+
+    public void renderTooltips(GuiGraphics pGuiGraphics, int mouseX, int mouseY) {
+        if (this.isHovered()) {
+            pGuiGraphics.renderTooltip(Minecraft.getInstance().font, Component.translatable("tips.superbwarfare.category." + this.category.getName()), mouseX, mouseY);
+        }
     }
 }

@@ -164,8 +164,15 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
             this.renderIngredients(guiGraphics, mouseX, mouseY);
         }
 
-        this.renderables.stream().filter(w -> w instanceof RecipeButton)
-                .forEach(w -> ((RecipeButton) w).renderTooltips(guiGraphics, mouseX, mouseY));
+        this.renderables.stream().filter(w -> w instanceof RecipeButton || w instanceof CategoryButton)
+                .forEach(w -> {
+                    if (w instanceof RecipeButton recipeButton) {
+                        recipeButton.renderTooltips(guiGraphics, mouseX, mouseY);
+                    }
+                    if (w instanceof CategoryButton categoryButton) {
+                        categoryButton.renderTooltips(guiGraphics, mouseX, mouseY);
+                    }
+                });
     }
 
     @Override
@@ -620,8 +627,9 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
 
         guiGraphics.enableScissor(this.leftPos + 120, this.topPos + 129, this.leftPos + 198, this.topPos + 165);
 
+        // TODO 这里有时候会显示不全，漏一行
         List<FormattedCharSequence> infoComponents = this.font.split(FormattedText.of(info.getString()), 100);
-        float height = infoComponents.size() * 7.5f;
+        float height = (infoComponents.size() + 1) * 7.5f;
 
         if (height > 36) {
             float l = height - 36;
