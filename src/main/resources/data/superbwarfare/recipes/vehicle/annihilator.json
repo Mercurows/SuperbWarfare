@@ -1,0 +1,13 @@
+{
+  "inputs": [
+    "24 #superbwarfare:storage_blocks/steel",
+    "3 minecraft:netherite_block",
+    "superbwarfare:annihilator_blueprint",
+    "3 minecraft:beacon"
+  ],
+  "category": "defense",
+  "result": {
+    "entity": "superbwarfare:annihilator"
+  },
+  "type": "superbwarfare:vehicle_assembling"
+}
