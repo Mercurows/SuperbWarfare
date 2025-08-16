@@ -33,8 +33,8 @@ public class CategoryButton extends Button {
             case LAND -> 182;
             case DEFENSE -> 198;
             case AIRCRAFT -> 214;
-            case CIVILIAN -> 230;
-            case WATER -> 246;
+            case WATER -> 230;
+            case CIVILIAN -> 246;
             default -> 262;
         };
         pGuiGraphics.blit(VehicleAssemblingScreen.TEXTURE, this.getX() + 3, this.getY() + 3, 203, vOffset, 16, 16, VehicleAssemblingScreen.IMAGE_SIZE, VehicleAssemblingScreen.IMAGE_SIZE);

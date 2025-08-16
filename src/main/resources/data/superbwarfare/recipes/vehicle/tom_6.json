@@ -1,0 +1,12 @@
+{
+  "inputs": [
+    "5 #minecraft:planks",
+    "superbwarfare:battery",
+    "minecraft:minecart"
+  ],
+  "category": "aircraft",
+  "result": {
+    "entity": "superbwarfare:tom_6"
+  },
+  "type": "superbwarfare:vehicle_assembling"
+}
