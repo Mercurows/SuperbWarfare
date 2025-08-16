@@ -576,7 +576,9 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
         pose.scale(0.75f, 0.75f, 1.0f);
 
         if (renderItemName) {
-            RenderHelper.renderScrollingString(guiGraphics, this.font, Component.empty().append(stack.getHoverName()).withStyle(ChatFormatting.UNDERLINE).withStyle(ChatFormatting.YELLOW),
+            RenderHelper.renderScrollingString(guiGraphics, this.font,
+                    Component.empty().append(stack.getHoverName()).withStyle(ChatFormatting.UNDERLINE).withStyle(ChatFormatting.YELLOW),
+                    0.75f,
                     (int) ((this.leftPos + 122) / 0.75f), (int) ((this.topPos + 119) / 0.75f),
                     (int) ((this.leftPos + 198) / 0.75f), (int) ((this.topPos + 130) / 0.75f),
                     0xFFFFFF);
@@ -585,7 +587,12 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
         var modName = Component.translatableWithFallback("info." + holder.id().getNamespace() + ".mod_id", holder.id().getNamespace());
         var modInfo = Component.translatable("container.superbwarfare.mod_info", modName.withStyle(ChatFormatting.ITALIC).withStyle(ChatFormatting.AQUA));
 
-        guiGraphics.drawString(this.font, modInfo, (int) ((this.leftPos + 122) / 0.75f), (int) ((this.topPos + 167) / 0.75f), 0xFFFFFF, false);
+        RenderHelper.renderScrollingString(guiGraphics, this.font,
+                modInfo,
+                0.75f,
+                (int) ((this.leftPos + 122) / 0.75f), (int) ((this.topPos + 167) / 0.75f),
+                (int) ((this.leftPos + 198) / 0.75f), (int) ((this.topPos + 178) / 0.75f),
+                0xFFFFFF);
 
         pose.popPose();
     }
@@ -601,7 +608,9 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
         pose.scale(0.75f, 0.75f, 1.0f);
 
         var hoverName = Component.translatable(key).withStyle(ChatFormatting.UNDERLINE).withStyle(ChatFormatting.YELLOW);
-        RenderHelper.renderScrollingString(guiGraphics, this.font, hoverName,
+        RenderHelper.renderScrollingString(guiGraphics, this.font,
+                hoverName,
+                0.75f,
                 (int) ((this.leftPos + 122) / 0.75f), (int) ((this.topPos + 119) / 0.75f),
                 (int) ((this.leftPos + 198) / 0.75f), (int) ((this.topPos + 130) / 0.75f),
                 0xFFFFFF);
