@@ -43,7 +43,6 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Quaternionf;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -372,26 +371,22 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
 
         PoseStack posestack = guiGraphics.pose();
 
-        // TODO 正确调整渲染的角度和大小
-        int posX = this.leftPos + 200;
-        int posY = this.topPos + 50;
-
-        Quaternionf pPose = new Quaternionf();
-        Quaternionf pCameraOrientation = new Quaternionf();
+        // TODO 正确调整渲染的角度和大小，光棱渲染不出来
+        int posX = this.leftPos + 220;
+        int posY = this.topPos + 80;
 
         posestack.pushPose();
         posestack.translate(posX, posY, 50.0D);
         posestack.scale(this.modelScale, this.modelScale, -this.modelScale);
-        posestack.mulPose(pPose);
+
+        float size = (float) renderEntity.getBoundingBox().getSize();
+        posestack.scale(1f / size, 1f / size, 1f / size);
+
         Lighting.setupForEntityInInventory();
         EntityRenderDispatcher entityrenderdispatcher = Minecraft.getInstance().getEntityRenderDispatcher();
-        if (pCameraOrientation != null) {
-            pCameraOrientation.conjugate();
-            entityrenderdispatcher.overrideCameraOrientation(pCameraOrientation);
-        }
 
         float rotationPeriod = 8.0F;
-        float rotPitch = 15.0F;
+        float rotPitch = 180F;
         float rot = (float) (System.currentTimeMillis() % (long) ((int) (rotationPeriod * 1000.0F))) * (360.0F / (rotationPeriod * 1000.0F));
 
         posestack.mulPose(Axis.XP.rotationDegrees(rotPitch));
