@@ -14,7 +14,7 @@
   ],
   "key": {
     "a": {
-      "item": "createbigcannons:ap_shot"
+      "item": "createbigcannons:he_shell"
     },
     "b": {
       "tag": "createbigcannons:big_cannon_propellant_bags"
@@ -24,7 +24,7 @@
     }
   },
   "result": {
-    "item": "superbwarfare:ap_5_inches",
+    "id": "superbwarfare:he_5_inches",
     "count": 1
   }
 }

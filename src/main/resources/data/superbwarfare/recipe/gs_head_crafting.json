@@ -17,11 +17,11 @@
       "tag": "superbwarfare:ingots/steel"
     },
     "d": {
-      "tag": "forge:ingots/lead"
+      "tag": "c:ingots/lead"
     }
   },
   "result": {
-    "item": "superbwarfare:gs_head",
+    "id": "superbwarfare:gs_head",
     "count": 2
   }
 }
