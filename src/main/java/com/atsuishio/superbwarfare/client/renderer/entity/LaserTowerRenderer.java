@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.client.renderer.entity;
 
+import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.client.layer.vehicle.LaserTowerLaserLayer;
 import com.atsuishio.superbwarfare.client.layer.vehicle.LaserTowerPowerLayer;
 import com.atsuishio.superbwarfare.client.model.entity.LaserTowerModel;
@@ -60,7 +61,7 @@ public class LaserTowerRenderer extends GeoEntityRenderer<LaserTowerEntity> {
         }
 
         if (name.equals("root")) {
-            bone.setHidden(!pCamera.isVisible(aabb));
+            bone.setHidden(!pCamera.isVisible(aabb) && !RenderHelper.isInGui());
         }
 
         if (name.equals("turret") || name.equals("turret2")) {

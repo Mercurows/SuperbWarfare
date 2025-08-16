@@ -1,15 +1,14 @@
 {
+  "type": "superbwarfare:vehicle_assembling",
+  "category": "land",
   "inputs": [
-    "minecraft:beacon",
     "9 #superbwarfare:storage_blocks/steel",
-    "superbwarfare:medium_armament_module",
+    "minecraft:beacon",
     "superbwarfare:large_battery_pack",
     "2 superbwarfare:track",
     "superbwarfare:large_motor"
   ],
-  "category": "land",
   "result": {
     "entity": "superbwarfare:prism_tank"
-  },
-  "type": "superbwarfare:vehicle_assembling"
+  }
 }

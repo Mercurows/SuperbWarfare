@@ -1,4 +1,6 @@
 {
+  "type": "superbwarfare:vehicle_assembling",
+  "category": "land",
   "inputs": [
     "6 #superbwarfare:storage_blocks/steel",
     "superbwarfare:light_armament_module",
@@ -6,9 +8,7 @@
     "4 superbwarfare:wheel",
     "superbwarfare:large_motor"
   ],
-  "category": "land",
   "result": {
     "entity": "superbwarfare:lav_150"
-  },
-  "type": "superbwarfare:vehicle_assembling"
+  }
 }

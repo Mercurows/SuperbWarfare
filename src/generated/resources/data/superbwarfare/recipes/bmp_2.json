@@ -1,4 +1,6 @@
 {
+  "type": "superbwarfare:vehicle_assembling",
+  "category": "land",
   "inputs": [
     "8 #superbwarfare:storage_blocks/steel",
     "superbwarfare:medium_armament_module",
@@ -6,9 +8,7 @@
     "2 superbwarfare:track",
     "superbwarfare:large_motor"
   ],
-  "category": "land",
   "result": {
     "entity": "superbwarfare:bmp_2"
-  },
-  "type": "superbwarfare:vehicle_assembling"
+  }
 }
