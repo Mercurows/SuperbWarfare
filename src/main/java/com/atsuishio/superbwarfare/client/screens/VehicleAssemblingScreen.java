@@ -9,6 +9,8 @@ import com.atsuishio.superbwarfare.init.ModRecipes;
 import com.atsuishio.superbwarfare.menu.VehicleAssemblingMenu;
 import com.atsuishio.superbwarfare.network.message.send.AssembleVehicleMessage;
 import com.atsuishio.superbwarfare.recipe.vehicle.VehicleAssemblingRecipe;
+import com.atsuishio.superbwarfare.tools.animation.AnimationCurves;
+import com.atsuishio.superbwarfare.tools.animation.ValueAnimator;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mojang.blaze3d.platform.GlStateManager;
@@ -40,6 +42,7 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
+import net.minecraft.world.phys.Vec2;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -77,9 +80,6 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
     @Nullable
     private Int2IntArrayMap materialCount;
     private int pageIndex = 0;
-    private float modelScale = DEFAULT_MODEL_SCALE;
-    private double modelPosX = DEFAULT_MODEL_X;
-    private double modelPosY = DEFAULT_MODEL_Y;
 
     private String entityNameCache = "";
     private Entity entityCache = null;
@@ -295,11 +295,21 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
         }
     }
 
+    @SuppressWarnings("unchecked")
+    private final ValueAnimator<Float> scaleAnimator = (ValueAnimator<Float>) new ValueAnimator<>(300, DEFAULT_MODEL_SCALE)
+            .animation(AnimationCurves.EASE_OUT_EXPO);
+
+    @SuppressWarnings("unchecked")
+    private final ValueAnimator<Vec2> modelPosAnimator = (ValueAnimator<Vec2>) new ValueAnimator<>(300, new Vec2(DEFAULT_MODEL_X, DEFAULT_MODEL_Y))
+            .animation(AnimationCurves.EASE_OUT_EXPO);
+
     @Override
     public boolean mouseDragged(double pMouseX, double pMouseY, int pButton, double pDragX, double pDragY) {
         if (pMouseX >= this.leftPos + 114 && pMouseX <= this.leftPos + 354 && pMouseY >= this.topPos && pMouseY <= this.topPos + 99) {
-            this.modelPosX = Mth.clamp(this.modelPosX + pDragX, DEFAULT_MODEL_X - 200, DEFAULT_MODEL_X + 200);
-            this.modelPosY = Mth.clamp(this.modelPosY + pDragY, DEFAULT_MODEL_Y - 150, DEFAULT_MODEL_Y + 150);
+            var newVec = modelPosAnimator.newValue();
+            var posX = Mth.clamp(newVec.x + pDragX, DEFAULT_MODEL_X - 200, DEFAULT_MODEL_X + 200);
+            var posY = Mth.clamp(newVec.y + pDragY, DEFAULT_MODEL_Y - 150, DEFAULT_MODEL_Y + 150);
+            modelPosAnimator.update(new Vec2((float) posX, (float) posY));
             return true;
         }
         return super.mouseDragged(pMouseX, pMouseY, pButton, pDragX, pDragY);
@@ -320,11 +330,16 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
             return true;
         }
         if (pMouseX >= this.leftPos + 114 && pMouseX <= this.leftPos + 354 && pMouseY >= this.topPos && pMouseY <= this.topPos + 99) {
+            float targetScale;
             if (scrollY > 0) {
-                this.modelScale = Math.min(this.modelScale + 20, MAX_MODEL_SCALE);
+                targetScale = Math.min(scaleAnimator.lerp(scaleAnimator.oldValue(), scaleAnimator.newValue(), System.currentTimeMillis()) + 20, MAX_MODEL_SCALE);
             } else {
-                this.modelScale = Math.max(this.modelScale - 20, MIN_MODEL_SCALE);
+                targetScale = Math.max(scaleAnimator.lerp(scaleAnimator.oldValue(), scaleAnimator.newValue(), System.currentTimeMillis()) - 20, MIN_MODEL_SCALE);
             }
+
+            scaleAnimator.update(targetScale);
+            scaleAnimator.beginForward(System.currentTimeMillis());
+
             return true;
         }
         return super.mouseScrolled(pMouseX, pMouseY, scrollX, scrollY);
@@ -383,14 +398,22 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
     public void addScaleButtons(int posX, int posY) {
         this.addRenderableWidget(new ScaleButton(posX + 324, posY + 90, 149, 182,
                 b -> {
-                    this.modelScale = DEFAULT_MODEL_SCALE;
-                    this.modelPosX = DEFAULT_MODEL_X;
-                    this.modelPosY = DEFAULT_MODEL_Y;
+                    long time = System.currentTimeMillis();
+                    scaleAnimator.update(DEFAULT_MODEL_SCALE);
+                    scaleAnimator.beginForward(time);
+                    modelPosAnimator.update(new Vec2(DEFAULT_MODEL_X, DEFAULT_MODEL_Y));
+                    modelPosAnimator.beginForward(time);
                 }));
         this.addRenderableWidget(new ScaleButton(posX + 334, posY + 90, 159, 182,
-                b -> this.modelScale = Math.max(this.modelScale - 20, MIN_MODEL_SCALE)));
+                b -> {
+                    scaleAnimator.update(Math.max(scaleAnimator.lerp(scaleAnimator.oldValue(), scaleAnimator.newValue(), System.currentTimeMillis()) - 20, MIN_MODEL_SCALE));
+                    scaleAnimator.beginForward(System.currentTimeMillis());
+                }));
         this.addRenderableWidget(new ScaleButton(posX + 344, posY + 90, 169, 182,
-                b -> this.modelScale = Math.min(this.modelScale + 20, MAX_MODEL_SCALE)));
+                b -> {
+                    scaleAnimator.update(Math.min(scaleAnimator.lerp(scaleAnimator.oldValue(), scaleAnimator.newValue(), System.currentTimeMillis()) + 20, MAX_MODEL_SCALE));
+                    scaleAnimator.beginForward(System.currentTimeMillis());
+                }));
     }
 
     public void renderModel(RecipeHolder<VehicleAssemblingRecipe> holder, GuiGraphics guiGraphics) {
@@ -452,10 +475,15 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
 
         var posestack = RenderSystem.getModelViewStack();
         posestack.pushMatrix();
-        posestack.translate((float) (this.leftPos + this.modelPosX), (float) (this.topPos + this.modelPosY - 20), 200.0F);
+        var oldVec = modelPosAnimator.oldValue();
+        var newVec = modelPosAnimator.newValue();
+        var xOffset = modelPosAnimator.lerp(oldVec.x, newVec.x, System.currentTimeMillis());
+        var yOffset = modelPosAnimator.lerp(oldVec.y, newVec.y, System.currentTimeMillis());
+        posestack.translate(this.leftPos + xOffset, this.topPos + yOffset - 20, 200.0F);
         posestack.translate(8.0f, 8.0f, 0.0f);
         posestack.scale(1.0F, -1.0F, 1.0F);
-        posestack.scale(this.modelScale, this.modelScale, this.modelScale);
+        var currentScale = scaleAnimator.lerp(scaleAnimator.oldValue(), scaleAnimator.newValue(), System.currentTimeMillis());
+        posestack.scale(currentScale, currentScale, currentScale);
 
         float rot = (float) (System.currentTimeMillis() % (long) ((int) (rotationPeriod * 1000.0F))) * (360.0F / (rotationPeriod * 1000.0F));
 
@@ -494,8 +522,13 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
         RenderSystem.enableScissor(scissorX, scissorY, scissorW, scissorH);
 
         posestack.pushPose();
-        posestack.translate(this.leftPos + this.modelPosX, this.topPos + this.modelPosY, 50.0D);
-        posestack.scale(this.modelScale, this.modelScale, -this.modelScale);
+        var oldVec = modelPosAnimator.oldValue();
+        var newVec = modelPosAnimator.newValue();
+        var xOffset = modelPosAnimator.lerp(oldVec.x, newVec.x, System.currentTimeMillis());
+        var yOffset = modelPosAnimator.lerp(oldVec.y, newVec.y, System.currentTimeMillis());
+        posestack.translate(this.leftPos + xOffset, this.topPos + yOffset, 50.0D);
+        var currentScale = scaleAnimator.lerp(scaleAnimator.oldValue(), scaleAnimator.newValue(), System.currentTimeMillis());
+        posestack.scale(currentScale, currentScale, -currentScale);
 
         float size = (float) renderEntity.getBoundingBox().getSize();
         float resizeScale = 1f / Math.max(size, 1.25f);
