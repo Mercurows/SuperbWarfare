@@ -41,7 +41,7 @@ side = "BOTH"
 [[dependencies.superbwarfare]]
 modId = "geckoanimfix"
 mandatory = false
-versionRange = "[114.\\n\\n\\n§r§l§eRemove §nIris/Oculus & GeckoLib Compat || GeckoLibOculusCompat§r§f as it is incompatible with Superb Warfare and §cit does nothing along with the latest version of GeckoLib§f!!!\\n\\n§r§l§e删除§nIris/Oculus & GeckoLib Compat（GeckoLibOculusCompat）§r§f，该mod§c对于新版GeckoLib没有任何作用§f且和卓越前线冲突！\\n\\n\\n.514,)"
+versionRange = "[114.514.Remove Iris/Oculus & GeckoLib Compat as it is incompatible with Superb Warfare and does nothing along with the latest version of GeckoLib!,)"
 ordering = "NONE"
 side = "BOTH"
 
