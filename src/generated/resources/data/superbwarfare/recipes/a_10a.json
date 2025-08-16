@@ -1,0 +1,15 @@
+{
+  "type": "superbwarfare:vehicle_assembling",
+  "category": "aircraft",
+  "inputs": [
+    "10 #superbwarfare:storage_blocks/steel",
+    "superbwarfare:heavy_armament_module",
+    "superbwarfare:large_battery_pack",
+    "2 superbwarfare:large_propeller",
+    "2 superbwarfare:large_motor",
+    "3 superbwarfare:wheel"
+  ],
+  "result": {
+    "entity": "superbwarfare:a_10a"
+  }
+}

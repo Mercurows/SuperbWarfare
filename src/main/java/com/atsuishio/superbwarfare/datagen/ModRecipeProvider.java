@@ -175,6 +175,32 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .unlockedBy(getHasName(ModItems.MORTAR_BARREL.get()), has(ModItems.MORTAR_BARREL.get()))
                 .save(writer, Mod.loc(getEntityTypeName(ModEntities.TYPE_63.get())));
 
+        VehicleAssemblingRecipeBuilder.entity(ModEntities.HPJ_11.get(), VehicleAssemblingRecipe.Category.DEFENSE)
+                .require(ModTags.Items.STORAGE_BLOCK_STEEL, 5)
+                .require(ModItems.HPJ_11_BLUEPRINT.get())
+                .require(ModItems.CANNON_CORE.get())
+                .require(ModItems.MEDIUM_BATTERY_PACK.get())
+                .require(ModItems.LARGE_MOTOR.get())
+                .require(Items.OBSERVER)
+                .unlockedBy(getHasName(ModItems.HPJ_11_BLUEPRINT.get()), has(ModItems.HPJ_11_BLUEPRINT.get()))
+                .save(writer, Mod.loc(getEntityTypeName(ModEntities.HPJ_11.get())));
+
+        VehicleAssemblingRecipeBuilder.entity(ModEntities.LASER_TOWER.get(), VehicleAssemblingRecipe.Category.DEFENSE)
+                .require(ModTags.Items.STORAGE_BLOCK_STEEL, 1)
+                .require(Items.BEACON)
+                .require(ModItems.SMALL_BATTERY_PACK.get())
+                .require(ModItems.MOTOR.get())
+                .unlockedBy(getHasName(Items.BEACON), has(Items.BEACON))
+                .save(writer, Mod.loc(getEntityTypeName(ModEntities.LASER_TOWER.get())));
+
+        VehicleAssemblingRecipeBuilder.entity(ModEntities.WHEEL_CHAIR.get(), VehicleAssemblingRecipe.Category.CIVILIAN)
+                .require(ModItems.WHEEL.get(), 2)
+                .require(ModItems.CELL.get())
+                .require(ModItems.MOTOR.get())
+                .require(Items.MINECART)
+                .unlockedBy(getHasName(Items.MINECART), has(Items.MINECART))
+                .save(writer, Mod.loc(getEntityTypeName(ModEntities.WHEEL_CHAIR.get())));
+
         VehicleAssemblingRecipeBuilder.entity(ModEntities.LAV_150.get(), VehicleAssemblingRecipe.Category.LAND)
                 .require(ModTags.Items.STORAGE_BLOCK_STEEL, 6)
                 .require(ModItems.LIGHT_ARMAMENT_MODULE.get())
@@ -211,6 +237,35 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .require(ModItems.LARGE_MOTOR.get())
                 .unlockedBy(getHasName(ModItems.LARGE_MOTOR.get()), has(ModItems.LARGE_MOTOR.get()))
                 .save(writer, Mod.loc(getEntityTypeName(ModEntities.YX_100.get())));
+
+        VehicleAssemblingRecipeBuilder.entity(ModEntities.SPEEDBOAT.get(), VehicleAssemblingRecipe.Category.WATER)
+                .require(ModTags.Items.STORAGE_BLOCK_STEEL, 2)
+                .require(ItemTags.BOATS)
+                .require(ModItems.M_2_HB.get())
+                .require(ModItems.SMALL_BATTERY_PACK.get())
+                .require(ModItems.LARGE_PROPELLER.get())
+                .require(ModItems.LARGE_MOTOR.get())
+                .unlockedBy(getHasName(ModItems.M_2_HB.get()), has(ModItems.M_2_HB.get()))
+                .save(writer, Mod.loc(getEntityTypeName(ModEntities.SPEEDBOAT.get())));
+
+        VehicleAssemblingRecipeBuilder.entity(ModEntities.AH_6.get(), VehicleAssemblingRecipe.Category.AIRCRAFT)
+                .require(ModTags.Items.STORAGE_BLOCK_STEEL, 3)
+                .require(ModItems.LIGHT_ARMAMENT_MODULE.get())
+                .require(ModItems.MEDIUM_BATTERY_PACK.get())
+                .require(ModItems.LARGE_PROPELLER.get(), 2)
+                .require(ModItems.LARGE_MOTOR.get())
+                .unlockedBy(getHasName(ModItems.LARGE_PROPELLER.get()), has(ModItems.LARGE_PROPELLER.get()))
+                .save(writer, Mod.loc(getEntityTypeName(ModEntities.AH_6.get())));
+
+        VehicleAssemblingRecipeBuilder.entity(ModEntities.A_10A.get(), VehicleAssemblingRecipe.Category.AIRCRAFT)
+                .require(ModTags.Items.STORAGE_BLOCK_STEEL, 10)
+                .require(ModItems.HEAVY_ARMAMENT_MODULE.get())
+                .require(ModItems.LARGE_BATTERY_PACK.get())
+                .require(ModItems.LARGE_PROPELLER.get(), 2)
+                .require(ModItems.LARGE_MOTOR.get(), 2)
+                .require(ModItems.WHEEL.get(), 3)
+                .unlockedBy(getHasName(ModItems.LARGE_PROPELLER.get()), has(ModItems.LARGE_PROPELLER.get()))
+                .save(writer, Mod.loc(getEntityTypeName(ModEntities.A_10A.get())));
 
 
         // guns
