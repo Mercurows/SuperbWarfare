@@ -26,7 +26,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSoundPacket;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -130,16 +129,6 @@ public class PrismTankEntity extends ContainerMobileVehicleEntity implements Geo
         this.entityData.define(LASER_LENGTH, 0f);
         this.entityData.define(LASER_SCALE, 0f);
         this.entityData.define(LASER_SCALE_O, 0f);
-    }
-
-    @Override
-    public void addAdditionalSaveData(CompoundTag compound) {
-        super.addAdditionalSaveData(compound);
-    }
-
-    @Override
-    public void readAdditionalSaveData(CompoundTag compound) {
-        super.readAdditionalSaveData(compound);
     }
 
     @Override
@@ -535,19 +524,6 @@ public class PrismTankEntity extends ContainerMobileVehicleEntity implements Geo
     @Override
     public float rotateYOffset() {
         return 3.5f;
-    }
-
-    @Override
-    public void destroy() {
-        createCustomExplosion()
-                .damage(160)
-                .radius(8)
-                .causeVanillaExplosion()
-                .withParticleType(ParticleTool.ParticleType.HUGE)
-                .explode();
-
-        explodePassengers();
-        super.destroy();
     }
 
     protected void clampRotation(Entity entity) {

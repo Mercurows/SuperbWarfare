@@ -16,7 +16,10 @@ import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage;
-import com.atsuishio.superbwarfare.tools.*;
+import com.atsuishio.superbwarfare.tools.Ammo;
+import com.atsuishio.superbwarfare.tools.InventoryTool;
+import com.atsuishio.superbwarfare.tools.OBB;
+import com.atsuishio.superbwarfare.tools.VectorTool;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -384,19 +387,6 @@ public class Lav150Entity extends ContainerMobileVehicleEntity implements GeoEnt
     @Override
     public float rotateYOffset() {
         return 2.2f;
-    }
-
-    @Override
-    public void destroy() {
-        createCustomExplosion()
-                .damage(120)
-                .radius(7)
-                .withParticleType(ParticleTool.ParticleType.HUGE)
-                .causeVanillaExplosion()
-                .explode();
-
-        explodePassengers();
-        super.destroy();
     }
 
     protected void clampRotation(Entity entity) {

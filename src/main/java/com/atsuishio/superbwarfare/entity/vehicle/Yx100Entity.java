@@ -246,7 +246,7 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundTag compound) {
+    public void addAdditionalSaveData(@NotNull CompoundTag compound) {
         super.addAdditionalSaveData(compound);
         compound.putString("LoadedShell", this.entityData.get(LOADED_SHELL));
         compound.putInt("LoadedDrone", this.entityData.get(LOADED_DRONE));
@@ -257,7 +257,7 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundTag compound) {
+    public void readAdditionalSaveData(@NotNull CompoundTag compound) {
         super.readAdditionalSaveData(compound);
         this.entityData.set(LOADED_SHELL, compound.getString("LoadedShell"));
         this.entityData.set(LOADED_DRONE, compound.getInt("LoadedDrone"));
@@ -805,19 +805,6 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
     @Override
     public float rotateYOffset() {
         return 3.5f;
-    }
-
-    @Override
-    public void destroy() {
-        createCustomExplosion()
-                .damage(200)
-                .radius(16)
-                .withParticleType(ParticleTool.ParticleType.GIANT)
-                .causeVanillaExplosion()
-                .explode();
-
-        explodePassengers();
-        super.destroy();
     }
 
     protected void clampRotation(Entity entity) {

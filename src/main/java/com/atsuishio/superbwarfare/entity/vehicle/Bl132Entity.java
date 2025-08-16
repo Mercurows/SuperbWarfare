@@ -15,7 +15,10 @@ import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.ArtilleryIndicator;
 import com.atsuishio.superbwarfare.item.common.ammo.CannonShellItem;
 import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage;
-import com.atsuishio.superbwarfare.tools.*;
+import com.atsuishio.superbwarfare.tools.FormatTool;
+import com.atsuishio.superbwarfare.tools.InventoryTool;
+import com.atsuishio.superbwarfare.tools.SoundTool;
+import com.atsuishio.superbwarfare.tools.VectorTool;
 import com.mojang.math.Axis;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.particles.ParticleTypes;
@@ -395,19 +398,6 @@ public class Bl132Entity extends VehicleEntity implements GeoEntity, CannonEntit
         serverYRot = yaw;
         serverXRot = pitch;
         this.interpolationSteps = 10;
-    }
-
-    @Override
-    public void destroy() {
-        createCustomExplosion()
-                .damage(160)
-                .radius(8)
-                .withParticleType(ParticleTool.ParticleType.HUGE)
-                .causeVanillaExplosion()
-                .explode();
-
-        explodePassengers();
-        super.destroy();
     }
 
     public Matrix4f getBarrelTransform(float ticks) {

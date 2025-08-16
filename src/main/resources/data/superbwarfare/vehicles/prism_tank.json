@@ -27,5 +27,8 @@
     "superbwarfare:vehicle_strike * 3",
     "@superbwarfare:gun_grenade * 1.5",
     "All - 9"
-  ]
+  ],
+  "ExplosionDamage": 160,
+  "ExplosionRadius": 8,
+  "ExplosionParticleType": "Huge"
 }

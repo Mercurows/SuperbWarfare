@@ -7,7 +7,6 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
 import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.init.*;
-import com.atsuishio.superbwarfare.tools.ParticleTool;
 import com.mojang.math.Axis;
 import it.unimi.dsi.fastutil.Pair;
 import net.minecraft.core.BlockPos;
@@ -314,12 +313,6 @@ public class VehicleAssemblingTableVehicleEntity extends MobileVehicleEntity imp
 
     @Override
     public void destroy() {
-        createCustomExplosion()
-                .damage(20)
-                .radius(3)
-                .withParticleType(ParticleTool.ParticleType.SMALL)
-                .explode();
-
         if (level() instanceof ServerLevel) {
             var item = new ItemEntity(level(), this.getX(), this.getY(), this.getZ(), new ItemStack(ModItems.VEHICLE_ASSEMBLING_TABLE.get()));
             item.setPickUpDelay(50);

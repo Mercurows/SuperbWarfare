@@ -155,7 +155,7 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundTag compound) {
+    public void addAdditionalSaveData(@NotNull CompoundTag compound) {
         super.addAdditionalSaveData(compound);
         compound.putInt("LoadedRocket", this.entityData.get(LOADED_ROCKET));
         compound.putInt("LoadedBomb", this.entityData.get(LOADED_BOMB));
@@ -163,7 +163,7 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundTag compound) {
+    public void readAdditionalSaveData(@NotNull CompoundTag compound) {
         super.readAdditionalSaveData(compound);
         this.entityData.set(LOADED_ROCKET, compound.getInt("LoadedRocket"));
         this.entityData.set(LOADED_BOMB, compound.getInt("LoadedBomb"));
@@ -726,24 +726,6 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
         transform.rotate(Axis.XP.rotationDegrees(Mth.lerp(ticks, xRotO, getXRot())));
         transform.rotate(Axis.ZP.rotationDegrees(Mth.lerp(ticks, prevRoll, getRoll())));
         return transform;
-    }
-
-    @Override
-    public void destroy() {
-        if (this.crash) {
-            crashPassengers();
-        } else {
-            explodePassengers();
-        }
-
-        createCustomExplosion()
-                .damage(800)
-                .radius(16f)
-                .causeVanillaExplosion()
-                .withParticleType(ParticleTool.ParticleType.GIANT)
-                .explode();
-
-        super.destroy();
     }
 
     @Override

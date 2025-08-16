@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.data.vehicle;
 
 import com.atsuishio.superbwarfare.data.Prop;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModify;
+import com.atsuishio.superbwarfare.tools.ParticleTool;
 
 import java.util.List;
 
@@ -28,6 +29,15 @@ public class VehicleProp<T> extends Prop<VehicleData, DefaultVehicleData, T> {
 
     public static final VehicleProp<Float> MASS = new VehicleProp<>("Mass");
 
+    public static final VehicleProp<Boolean> CRASH_PASSENGERS_ON_DESTROY = new VehicleProp<>("CrashPassengersOnDestroy");
+    public static final VehicleProp<Boolean> EXPLODE_PASSENGERS_ON_DESTROY = new VehicleProp<>("ExplodePassengersOnDestroy");
+    public static final VehicleProp<Boolean> EXPLOSION_DESTROY_BLOCK_ON_DESTROY = new VehicleProp<>("ExplosionDestroyBlockOnDestroy");
+
+    public static final VehicleProp<Float> EXPLOSION_DAMAGE = new VehicleProp<>("ExplosionDamage");
+    public static final VehicleProp<Float> EXPLOSION_RADIUS = new VehicleProp<>("ExplosionRadius");
+    public static final VehicleProp<Boolean> CAUSE_VANILLA_EXPLOSION = new VehicleProp<>("CauseVanillaExplosion");
+
+    public static final VehicleProp<ParticleTool.ParticleType> EXPLOSION_PARTICLE_TYPE = new VehicleProp<>("ExplosionParticleType");
 
     private VehicleProp(String name) {
         super(DefaultVehicleData.class, name);

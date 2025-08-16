@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.client.particle.CustomCloudOption;
 import com.atsuishio.superbwarfare.init.ModParticleTypes;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage;
+import com.google.gson.annotations.SerializedName;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
@@ -31,10 +32,18 @@ public class ParticleTool {
     }
 
     public enum ParticleType {
-        MINI, SMALL, MEDIUM, HUGE, GIANT
+        @SerializedName("Mini") MINI,
+        @SerializedName("Small") SMALL,
+        @SerializedName("Medium") MEDIUM,
+        @SerializedName("Huge") HUGE,
+        @SerializedName("Giant") GIANT,
     }
 
     public static void spawnExplosionParticles(ParticleType type, Level level, Vec3 pos) {
+        if (type == null) {
+            type = ParticleType.MINI;
+        }
+
         switch (type) {
             case MINI -> ParticleTool.spawnMiniExplosionParticles(level, pos);
             case SMALL -> ParticleTool.spawnSmallExplosionParticles(level, pos);

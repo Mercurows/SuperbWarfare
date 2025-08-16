@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.entity.vehicle;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
+import com.atsuishio.superbwarfare.data.vehicle.VehicleProp;
 import com.atsuishio.superbwarfare.entity.projectile.MelonBombEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
@@ -71,6 +72,10 @@ public class Tom6Entity extends MobileVehicleEntity implements GeoEntity {
 
     public Tom6Entity(EntityType<Tom6Entity> type, Level world) {
         super(type, world);
+
+        appendModification(VehicleProp.EXPLOSION_DAMAGE, (data, v) -> data.vehicle.getEntityData().get(MELON) ? VehicleConfig.TOM_6_BOMB_EXPLOSION_DAMAGE.get() : v);
+        appendModification(VehicleProp.EXPLOSION_RADIUS, (data, v) -> data.vehicle.getEntityData().get(MELON) ? VehicleConfig.TOM_6_BOMB_EXPLOSION_RADIUS.get().floatValue() : v);
+        appendModification(VehicleProp.EXPLOSION_PARTICLE_TYPE, (data, v) -> data.vehicle.getEntityData().get(MELON) ? ParticleTool.ParticleType.HUGE : v);
     }
 
     @Override
@@ -85,13 +90,13 @@ public class Tom6Entity extends MobileVehicleEntity implements GeoEntity {
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundTag compound) {
+    public void addAdditionalSaveData(@NotNull CompoundTag compound) {
         super.addAdditionalSaveData(compound);
         compound.putBoolean("Melon", this.entityData.get(MELON));
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundTag compound) {
+    public void readAdditionalSaveData(@NotNull CompoundTag compound) {
         super.readAdditionalSaveData(compound);
         this.entityData.set(MELON, compound.getBoolean("Melon"));
     }
@@ -304,31 +309,6 @@ public class Tom6Entity extends MobileVehicleEntity implements GeoEntity {
         transform.rotate(Axis.XP.rotationDegrees(Mth.lerp(ticks, xRotO, getXRot())));
         transform.rotate(Axis.ZP.rotationDegrees(Mth.lerp(ticks, prevRoll, getRoll())));
         return transform;
-    }
-
-    @Override
-    public void destroy() {
-        if (this.crash) {
-            crashPassengers();
-        } else {
-            explodePassengers();
-        }
-
-        var builder = createCustomExplosion();
-
-        if (entityData.get(MELON)) {
-            builder.damage(VehicleConfig.TOM_6_BOMB_EXPLOSION_DAMAGE.get())
-                    .radius(VehicleConfig.TOM_6_BOMB_EXPLOSION_RADIUS.get().floatValue())
-                    .withParticleType(ParticleTool.ParticleType.HUGE);
-        } else {
-            builder.damage(15)
-                    .radius(2)
-                    .withParticleType(ParticleTool.ParticleType.MEDIUM);
-        }
-
-        builder.explode();
-
-        super.destroy();
     }
 
     @Override

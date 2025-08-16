@@ -422,19 +422,6 @@ public class AnnihilatorEntity extends VehicleEntity implements GeoEntity, Canno
     }
 
     @Override
-    public void destroy() {
-        createCustomExplosion()
-                .damage(600)
-                .radius(15)
-                .causeVanillaExplosion()
-                .withParticleType(ParticleTool.ParticleType.GIANT)
-                .explode();
-
-        explodePassengers();
-        super.destroy();
-    }
-
-    @Override
     public void vehicleShoot(Player player, int type) {
         if (this.entityData.get(COOL_DOWN) > 0) {
             return;
