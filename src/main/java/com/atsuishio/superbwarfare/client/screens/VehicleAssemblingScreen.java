@@ -32,6 +32,7 @@ import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Inventory;
@@ -58,6 +59,8 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
     public static final ResourceLocation TEXTURE = Mod.loc("textures/gui/vehicle_assembling_table.png");
     public static final int IMAGE_SIZE = 324;
     public static final int PAGE_SIZE = 9;
+    public static final int DEFAULT_MODEL_X = 218;
+    public static final int DEFAULT_MODEL_Y = 80;
 
     private final Map<VehicleAssemblingRecipe.Category, List<ResourceLocation>> recipes = Maps.newLinkedHashMap();
 
@@ -70,8 +73,8 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
     private Int2IntArrayMap materialCount;
     private int pageIndex = 0;
     private float modelScale = 50f;
-    private double modelPosX = 218;
-    private double modelPosY = 80;
+    private double modelPosX = DEFAULT_MODEL_X;
+    private double modelPosY = DEFAULT_MODEL_Y;
 
     private String entityNameCache = "";
     private Entity entityCache = null;
@@ -217,6 +220,16 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
                 }
             }
         }
+    }
+
+    @Override
+    public boolean mouseDragged(double pMouseX, double pMouseY, int pButton, double pDragX, double pDragY) {
+        if (pMouseX >= this.leftPos + 114 && pMouseX <= this.leftPos + 322 && pMouseY >= this.topPos && pMouseY <= this.topPos + 99) {
+            this.modelPosX = Mth.clamp(this.modelPosX + pDragX, DEFAULT_MODEL_X - 200, DEFAULT_MODEL_X + 200);
+            this.modelPosY = Mth.clamp(this.modelPosY + pDragY, DEFAULT_MODEL_Y - 150, DEFAULT_MODEL_Y + 150);
+            return true;
+        }
+        return super.mouseDragged(pMouseX, pMouseY, pButton, pDragX, pDragY);
     }
 
     @Override
