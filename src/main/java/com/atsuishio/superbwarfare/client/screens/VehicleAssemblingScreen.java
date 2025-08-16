@@ -340,7 +340,7 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
         }
         if (pMouseX >= this.leftPos + 114 && pMouseX <= this.leftPos + 354 && pMouseY >= this.topPos && pMouseY <= this.topPos + 99) {
             float targetScale;
-            if (pMouseY > 0) {
+            if (pDelta > 0) {
                 targetScale = Math.min(scaleAnimator.lerp(scaleAnimator.oldValue(), scaleAnimator.newValue(), System.currentTimeMillis()) + 20, MAX_MODEL_SCALE);
             } else {
                 targetScale = Math.max(scaleAnimator.lerp(scaleAnimator.oldValue(), scaleAnimator.newValue(), System.currentTimeMillis()) - 20, MIN_MODEL_SCALE);
