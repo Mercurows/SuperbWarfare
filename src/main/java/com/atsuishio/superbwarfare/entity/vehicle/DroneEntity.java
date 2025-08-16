@@ -705,7 +705,7 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
 
         explosion = new CustomExplosion(this.level(), this,
                 ModDamageTypes.causeCustomExplosionDamage(this.level().registryAccess(), bomb, attacker), data.explosionDamage,
-                this.getX(), this.getY(), this.getZ(), data.explosionRadius, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).setDamageMultiplier(1);
+                this.getX(), this.getY(), this.getZ(), data.explosionRadius, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true);
 
         explosion.explode();
         ForgeEventFactory.onExplosionStart(this.level(), explosion);

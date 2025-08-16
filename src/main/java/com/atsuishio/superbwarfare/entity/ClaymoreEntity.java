@@ -233,7 +233,7 @@ public class ClaymoreEntity extends Entity implements GeoEntity, OwnableEntity, 
             Entity attacker = EntityFindUtil.findEntity(this.level(), this.entityData.get(LAST_ATTACKER_UUID));
             CustomExplosion explosion = new CustomExplosion(this.level(), attacker == null ? this : attacker,
                     ModDamageTypes.causeCustomExplosionDamage(this.level().registryAccess(), attacker == null ? this : attacker, attacker == null ? this : attacker), 25.0f,
-                    this.getX(), this.getY(), this.getZ(), 5f, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).setDamageMultiplier(1);
+                    this.getX(), this.getY(), this.getZ(), 5f, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true);
             explosion.explode();
             net.minecraftforge.event.ForgeEventFactory.onExplosionStart(this.level(), explosion);
             explosion.finalizeExplosion(false);
@@ -245,7 +245,7 @@ public class ClaymoreEntity extends Entity implements GeoEntity, OwnableEntity, 
     private void triggerExplode() {
         CustomExplosion explosion = new CustomExplosion(this.level(), this,
                 ModDamageTypes.causeMineDamage(this.level().registryAccess(), this.getOwner()), 140f,
-                this.getX(), this.getEyeY(), this.getZ(), 4f, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).setDamageMultiplier(1);
+                this.getX(), this.getEyeY(), this.getZ(), 4f, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true);
         explosion.explode();
         net.minecraftforge.event.ForgeEventFactory.onExplosionStart(this.level(), explosion);
         explosion.finalizeExplosion(false);

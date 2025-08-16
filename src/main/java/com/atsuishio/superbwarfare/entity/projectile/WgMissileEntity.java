@@ -203,8 +203,7 @@ public class WgMissileEntity extends FastThrowableProjectile implements GeoEntit
                 vec3.y,
                 vec3.z,
                 explosionRadius,
-                ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).
-                setDamageMultiplier(1);
+                ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true);
         explosion.explode();
         net.minecraftforge.event.ForgeEventFactory.onExplosionStart(this.level(), explosion);
         explosion.finalizeExplosion(false);

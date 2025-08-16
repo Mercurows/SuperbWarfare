@@ -205,8 +205,7 @@ public class Agm65Entity extends FastThrowableProjectile implements GeoEntity, E
                 vec3.y,
                 vec3.z,
                 explosionRadius,
-                ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).
-                setDamageMultiplier(1);
+                ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true);
         explosion.explode();
         ForgeEventFactory.onExplosionStart(this.level(), explosion);
         explosion.finalizeExplosion(false);

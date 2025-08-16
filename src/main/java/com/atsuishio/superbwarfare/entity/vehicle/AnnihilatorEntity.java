@@ -405,7 +405,7 @@ public class AnnihilatorEntity extends VehicleEntity implements GeoEntity, Canno
         if (passenger != null) {
             CustomExplosion explosion = new CustomExplosion(this.level(), passenger,
                     ModDamageTypes.causeCustomExplosionDamage(this.level().registryAccess(), this, passenger), 300f,
-                    pos.x, pos.y, pos.z, 15f, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).setDamageMultiplier(1);
+                    pos.x, pos.y, pos.z, 15f, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true);
             explosion.explode();
             ForgeEventFactory.onExplosionStart(this.level(), explosion);
             explosion.finalizeExplosion(false);
@@ -414,7 +414,7 @@ public class AnnihilatorEntity extends VehicleEntity implements GeoEntity, Canno
             Entity shooter = EntityFindUtil.findEntity(this.level(), this.entityData.get(SHOOTER_UUID));
             CustomExplosion explosion = new CustomExplosion(this.level(), shooter,
                     ModDamageTypes.causeCustomExplosionDamage(this.level().registryAccess(), this, shooter), 300f,
-                    pos.x, pos.y, pos.z, 15f, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).setDamageMultiplier(1);
+                    pos.x, pos.y, pos.z, 15f, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true);
             explosion.explode();
             ForgeEventFactory.onExplosionStart(this.level(), explosion);
             explosion.finalizeExplosion(false);
@@ -427,7 +427,7 @@ public class AnnihilatorEntity extends VehicleEntity implements GeoEntity, Canno
         if (level() instanceof ServerLevel) {
             CustomExplosion explosion = new CustomExplosion(this.level(), this,
                     ModDamageTypes.causeCustomExplosionDamage(this.level().registryAccess(), getAttacker(), getAttacker()), 600f,
-                    this.getX(), this.getY(), this.getZ(), 15f, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).setDamageMultiplier(1);
+                    this.getX(), this.getY(), this.getZ(), 15f, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true);
             explosion.explode();
             ForgeEventFactory.onExplosionStart(this.level(), explosion);
             explosion.finalizeExplosion(false);
