@@ -154,6 +154,7 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
 
         if (this.currentRecipe != null) {
             this.renderModel(this.currentRecipe.value(), guiGraphics);
+            guiGraphics.drawString(this.font, Component.translatable("container.superbwarfare.vehicle_assembling_table.count", this.currentRecipe.value().getResult().getResult().getCount()), this.leftPos + 214, this.topPos + 164, 5592405, false);
         }
 
         if (this.currentRecipes != null && !this.currentRecipes.isEmpty()) {
