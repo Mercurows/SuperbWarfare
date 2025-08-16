@@ -3,10 +3,13 @@ package com.atsuishio.superbwarfare.entity.vehicle;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.block.VehicleAssemblingTableBlock;
 import com.atsuishio.superbwarfare.block.property.BlockPart;
+import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
 import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.init.*;
+import com.atsuishio.superbwarfare.tools.CustomExplosion;
+import com.atsuishio.superbwarfare.tools.ParticleTool;
 import com.mojang.math.Axis;
 import it.unimi.dsi.fastutil.Pair;
 import net.minecraft.core.BlockPos;
@@ -21,13 +24,16 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec2;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -56,6 +62,8 @@ public class VehicleAssemblingTableVehicleEntity extends MobileVehicleEntity imp
 
     public float deltaX;
     public float deltaY;
+
+    public int jumpCooldown;
 
     public VehicleAssemblingTableVehicleEntity(EntityType<?> type, Level world) {
         super(type, world);
@@ -130,6 +138,10 @@ public class VehicleAssemblingTableVehicleEntity extends MobileVehicleEntity imp
         deltaYo = deltaY;
         super.baseTick();
 
+        if (jumpCooldown > 0) {
+            jumpCooldown--;
+        }
+
         deltaX = entityData.get(MOUSE_SPEED_Y);
         if (this.leftInputDown && this.rightInputDown) {
             deltaX = 0;
@@ -182,7 +194,8 @@ public class VehicleAssemblingTableVehicleEntity extends MobileVehicleEntity imp
             }
 
             // 跳
-            if (upInputDown && onGround()) {
+            if (upInputDown && onGround() && jumpCooldown == 0) {
+                jumpCooldown = 50;
                 if (this.level() instanceof ServerLevel server) {
                     server.playSound(null, this.getOnPos(), ModSounds.WHEEL_CHAIR_JUMP.get(), SoundSource.PLAYERS, 1, 1);
                 }
@@ -303,14 +316,21 @@ public class VehicleAssemblingTableVehicleEntity extends MobileVehicleEntity imp
         return transform;
     }
 
-    // TODO 爆炸、掉落物品等
     @Override
     public void destroy() {
-//        if (this.crash) {
-//            crashPassengers();
-//        } else {
-//            explodePassengers();
-//        }
+        if (level() instanceof ServerLevel) {
+            CustomExplosion explosion = new CustomExplosion(this.level(), this,
+                    ModDamageTypes.causeCustomExplosionDamage(this.level().registryAccess(), this, getAttacker()), 20,
+                    this.getX(), this.getY(), this.getZ(), 3, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP).setDamageMultiplier(1);
+            explosion.explode();
+            ForgeEventFactory.onExplosionStart(this.level(), explosion);
+            explosion.finalizeExplosion(false);
+            ParticleTool.spawnSmallExplosionParticles(this.level(), this.position());
+
+            var item = new ItemEntity(level(), this.getX(), this.getY(), this.getZ(), new ItemStack(ModItems.VEHICLE_ASSEMBLING_TABLE.get()));
+            item.setPickUpDelay(50);
+            this.level().addFreshEntity(item);
+        }
 
         super.destroy();
     }
