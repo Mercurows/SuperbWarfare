@@ -21,6 +21,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import it.unimi.dsi.fastutil.ints.Int2IntArrayMap;
 import net.minecraft.ChatFormatting;
+import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -617,12 +618,26 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
 
         var info = Component.translatable("info." + typeName.split(":")[0] + "." + typeName.split(":")[1]);
 
+        guiGraphics.enableScissor(this.leftPos + 120, this.topPos + 129, this.leftPos + 198, this.topPos + 165);
+
         List<FormattedCharSequence> infoComponents = this.font.split(FormattedText.of(info.getString()), 100);
+        float height = infoComponents.size() * 7.5f;
+
+        if (height > 36) {
+            float l = height - 36;
+            double rate = (double) Util.getMillis() / 1000.0D;
+            double d1 = Math.max((double) l * 0.5D, 3.0D);
+            double d2 = Math.sin((Math.PI / 2D) * Math.cos((Math.PI * 2D) * rate / d1)) / 2.0D + 0.5D;
+            double d3 = Mth.lerp(d2, 0.0D, l);
+            pose.translate(0, -d3, 0);
+        }
 
         for (int j = 0; j < infoComponents.size(); j++) {
             var cachedComponent = infoComponents.get(j);
             guiGraphics.drawString(this.font, cachedComponent, (int) ((this.leftPos + 122) / 0.75f), (int) ((this.topPos + 129 + j * 7.5f) / 0.75f), 0xFFFFFF);
         }
+
+        guiGraphics.disableScissor();
 
         pose.popPose();
     }

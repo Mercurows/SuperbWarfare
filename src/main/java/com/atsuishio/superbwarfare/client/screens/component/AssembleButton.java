@@ -25,7 +25,7 @@ public class AssembleButton extends Button {
         }
 
         Component name = Component.translatable("container.superbwarfare.vehicle_assembling_table.assemble");
-        pGuiGraphics.drawString(Minecraft.getInstance().font, name, this.getX() + this.width / 2 - Minecraft.getInstance().font.width(name) / 2, this.getY() + 3, -1);
+        renderScrollingString(pGuiGraphics, Minecraft.getInstance().font, name, this.getX() + 3, this.getY() + 3, this.getX() + 42, this.getY() + 10, -1);
 
         pGuiGraphics.pose().popPose();
     }
