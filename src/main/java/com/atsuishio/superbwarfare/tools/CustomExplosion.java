@@ -43,7 +43,7 @@ public class CustomExplosion extends Explosion {
     private final ExplosionDamageCalculator damageCalculator;
     private final float damage;
     private int fireTime;
-    private float damageMultiplier;
+    private float damageMultiplier = 1;
 
     public CustomExplosion(Level pLevel, @Nullable Entity pSource, @Nullable DamageSource source,
                            @Nullable ExplosionDamageCalculator pDamageCalculator,

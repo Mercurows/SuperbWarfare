@@ -329,7 +329,7 @@ public class Tom6Entity extends MobileVehicleEntity implements GeoEntity {
             if (entityData.get(MELON)) {
                 CustomExplosion explosion = new CustomExplosion(this.level(), this,
                         ModDamageTypes.causeCustomExplosionDamage(this.level().registryAccess(), this, getAttacker()), VehicleConfig.TOM_6_BOMB_EXPLOSION_DAMAGE.get(),
-                        this.getX(), this.getY(), this.getZ(), VehicleConfig.TOM_6_BOMB_EXPLOSION_RADIUS.get().floatValue(), ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP).setDamageMultiplier(1);
+                        this.getX(), this.getY(), this.getZ(), VehicleConfig.TOM_6_BOMB_EXPLOSION_RADIUS.get().floatValue(), ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP);
                 explosion.explode();
                 EventHooks.onExplosionStart(this.level(), explosion);
                 explosion.finalizeExplosion(false);
@@ -337,7 +337,7 @@ public class Tom6Entity extends MobileVehicleEntity implements GeoEntity {
             } else {
                 CustomExplosion explosion = new CustomExplosion(this.level(), this,
                         ModDamageTypes.causeCustomExplosionDamage(this.level().registryAccess(), this, getAttacker()), 15.0f,
-                        this.getX(), this.getY(), this.getZ(), 2f, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP).setDamageMultiplier(1);
+                        this.getX(), this.getY(), this.getZ(), 2f, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP);
                 explosion.explode();
                 EventHooks.onExplosionStart(this.level(), explosion);
                 explosion.finalizeExplosion(false);

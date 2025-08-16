@@ -219,7 +219,7 @@ public class LaserTowerEntity extends VehicleEntity implements GeoEntity, Ownabl
         if (level() instanceof ServerLevel) {
             CustomExplosion explosion = new CustomExplosion(this.level(), this,
                     ModDamageTypes.causeCustomExplosionDamage(this.level().registryAccess(), attacker, attacker), 10f,
-                    this.getX(), this.getY(), this.getZ(), 3f, Explosion.BlockInteraction.KEEP).setDamageMultiplier(1);
+                    this.getX(), this.getY(), this.getZ(), 3f, Explosion.BlockInteraction.KEEP);
             explosion.explode();
             EventHooks.onExplosionStart(this.level(), explosion);
             explosion.finalizeExplosion(false);
@@ -356,8 +356,7 @@ public class LaserTowerEntity extends VehicleEntity implements GeoEntity, Ownabl
                 vec3.y,
                 vec3.z,
                 1,
-                Explosion.BlockInteraction.KEEP).
-                setDamageMultiplier(1);
+                Explosion.BlockInteraction.KEEP);
         explosion.explode();
         EventHooks.onExplosionStart(this.level(), explosion);
         explosion.finalizeExplosion(false);
