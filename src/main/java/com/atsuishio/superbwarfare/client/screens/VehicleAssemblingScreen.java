@@ -56,14 +56,14 @@ import java.util.Map;
 public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAssemblingMenu> {
 
     public static final ResourceLocation TEXTURE = Mod.loc("textures/gui/vehicle_assembling_table.png");
-    public static final int IMAGE_SIZE = 324;
+    public static final int IMAGE_SIZE = 356;
     public static final int PAGE_SIZE = 9;
 
     public static final float DEFAULT_MODEL_SCALE = 50f;
     public static final float MIN_MODEL_SCALE = 10f;
     public static final float MAX_MODEL_SCALE = 200f;
 
-    public static final int DEFAULT_MODEL_X = 218;
+    public static final int DEFAULT_MODEL_X = 234;
     public static final int DEFAULT_MODEL_Y = 80;
 
     private final Map<VehicleAssemblingRecipe.Category, List<ResourceLocation>> recipes = Maps.newLinkedHashMap();
@@ -85,7 +85,7 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
 
     public VehicleAssemblingScreen(VehicleAssemblingMenu pMenu, Inventory pPlayerInventory, Component pTitle) {
         super(pMenu, pPlayerInventory, pTitle);
-        imageWidth = 322;
+        imageWidth = 356;
         imageHeight = 181;
         this.initRecipes();
         this.pageIndex = 0;
@@ -148,6 +148,9 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
         this.renderBackground(guiGraphics, mouseX, mouseY, partialTick);
         super.render(guiGraphics, mouseX, mouseY, partialTick);
         this.renderTooltip(guiGraphics, mouseX, mouseY);
+
+        guiGraphics.drawString(this.font, Component.translatable("container.superbwarfare.vehicle_assembling_table.information"), this.leftPos + 119, this.topPos + 105, 5592405, false);
+        guiGraphics.drawString(this.font, Component.translatable("container.superbwarfare.vehicle_assembling_table.ingredient"), this.leftPos + 213, this.topPos + 105, 5592405, false);
 
         if (this.currentRecipe != null) {
             this.renderModel(this.currentRecipe.value(), guiGraphics);
@@ -239,13 +242,12 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
         int x = (this.width - this.imageWidth) / 2;
         int y = (this.height - this.imageHeight) / 2;
 
-        // TODO 完成数量渲染
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 4; j++) {
                 int index = i * 4 + j;
                 if (index >= inputs.size()) return;
 
-                int posX = x + 215 + j * 25;
+                int posX = x + 215 + j * 34;
                 int posY = y + 118 + i * 14;
 
                 var input = inputs.get(index);
@@ -257,22 +259,19 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
                 var itemStack = items[itemIndex];
 
                 var pose = guiGraphics.pose();
-                pose.pushPose();
 
                 pose.pushPose();
                 pose.scale(0.8F, 0.8F, 1.0F);
                 guiGraphics.renderFakeItem(itemStack, (int) (posX * 1.25f), (int) (posY * 1.25f));
                 pose.popPose();
 
-                int count = input.getCount();
                 pose.pushPose();
-
                 pose.translate(0.0F, 0.0F, 200.0F);
-                pose.scale(0.5F, 0.5F, 1.0F);
 
+                int count = input.getCount();
                 if (Minecraft.getInstance().player != null && Minecraft.getInstance().player.isCreative()) {
                     Component text = Component.literal(count + "/∞");
-                    guiGraphics.drawString(this.font, text, (posX + 13) * 2, (posY + 8) * 2, 0x9dffa5, false);
+                    guiGraphics.drawString(this.font, text, posX + 14, posY + 5, 0x9dffa5, false);
                 } else {
                     int hasCount = 0;
                     if (this.materialCount != null && index < this.materialCount.size()) {
@@ -280,10 +279,8 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
                     }
                     int color = hasCount >= count ? 0x80ff58 : 0xf44d61;
                     Component text = Component.literal(count + "/" + hasCount);
-                    guiGraphics.drawString(this.font, text, (posX + 13) * 2, (posY + 8) * 2, color, false);
+                    guiGraphics.drawString(this.font, text, posX + 14, posY + 5, color, false);
                 }
-
-                pose.popPose();
                 pose.popPose();
             }
         }
@@ -291,7 +288,7 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
 
     @Override
     public boolean mouseDragged(double pMouseX, double pMouseY, int pButton, double pDragX, double pDragY) {
-        if (pMouseX >= this.leftPos + 114 && pMouseX <= this.leftPos + 322 && pMouseY >= this.topPos && pMouseY <= this.topPos + 99) {
+        if (pMouseX >= this.leftPos + 114 && pMouseX <= this.leftPos + 354 && pMouseY >= this.topPos && pMouseY <= this.topPos + 99) {
             this.modelPosX = Mth.clamp(this.modelPosX + pDragX, DEFAULT_MODEL_X - 200, DEFAULT_MODEL_X + 200);
             this.modelPosY = Mth.clamp(this.modelPosY + pDragY, DEFAULT_MODEL_Y - 150, DEFAULT_MODEL_Y + 150);
             return true;
@@ -313,7 +310,7 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
             this.init();
             return true;
         }
-        if (pMouseX >= this.leftPos + 114 && pMouseX <= this.leftPos + 322 && pMouseY >= this.topPos && pMouseY <= this.topPos + 99) {
+        if (pMouseX >= this.leftPos + 114 && pMouseX <= this.leftPos + 354 && pMouseY >= this.topPos && pMouseY <= this.topPos + 99) {
             if (scrollY > 0) {
                 this.modelScale = Math.min(this.modelScale + 20, MAX_MODEL_SCALE);
             } else {
@@ -345,7 +342,7 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
     }
 
     public void addAssembleButton(int posX, int posY) {
-        this.addRenderableWidget(new AssembleButton(posX + 272, posY + 163, b -> {
+        this.addRenderableWidget(new AssembleButton(posX + 306, posY + 163, b -> {
             if (this.currentRecipe == null || this.materialCount == null) return;
 
             var inputs = this.currentRecipe.value().getInputs();
@@ -377,17 +374,17 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
 
     public void addScaleButtons(int posX, int posY) {
         // TODO 正确创建按钮
-//        this.addRenderableWidget(new ImageButton(posX + 290, posY + 90, 9, 9, 149, 182, 10,
+//        this.addRenderableWidget(new ImageButton(posX + 324, posY + 90, 9, 9, 149, 182, 10,
 //                TEXTURE, IMAGE_SIZE, IMAGE_SIZE,
 //                b -> {
 //                    this.modelScale = DEFAULT_MODEL_SCALE;
 //                    this.modelPosX = DEFAULT_MODEL_X;
 //                    this.modelPosY = DEFAULT_MODEL_Y;
 //                }));
-//        this.addRenderableWidget(new ImageButton(posX + 300, posY + 90, 9, 9, 159, 182, 10,
+//        this.addRenderableWidget(new ImageButton(posX + 334, posY + 90, 9, 9, 159, 182, 10,
 //                TEXTURE, IMAGE_SIZE, IMAGE_SIZE,
 //                b -> this.modelScale = Math.max(this.modelScale - 20, MIN_MODEL_SCALE)));
-//        this.addRenderableWidget(new ImageButton(posX + 310, posY + 90, 9, 9, 169, 182, 10,
+//        this.addRenderableWidget(new ImageButton(posX + 344, posY + 90, 9, 9, 169, 182, 10,
 //                TEXTURE, IMAGE_SIZE, IMAGE_SIZE,
 //                b -> this.modelScale = Math.min(this.modelScale + 20, MAX_MODEL_SCALE)));
     }
@@ -431,7 +428,7 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
     @SuppressWarnings("deprecation")
     private void renderDefaultItemModel(ItemStack stack) {
         float rotationPeriod = 8.0F;
-        int width = 208;
+        int width = 240;
         int height = 99;
         float rotPitch = 15.0F;
 
@@ -481,7 +478,7 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
 
         PoseStack posestack = guiGraphics.pose();
 
-        int width = 208;
+        int width = 240;
         int height = 99;
 
         Window window = Minecraft.getInstance().getWindow();
