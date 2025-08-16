@@ -450,10 +450,9 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
         RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 
-        // TODO 这是个啥？
         var posestack = RenderSystem.getModelViewStack();
         posestack.pushMatrix();
-//        posestack.translate((float) xPos, (float) yPos, 200.0F);
+        posestack.translate((float) (this.leftPos + this.modelPosX), (float) (this.topPos + this.modelPosY - 20), 200.0F);
         posestack.translate(8.0f, 8.0f, 0.0f);
         posestack.scale(1.0F, -1.0F, 1.0F);
         posestack.scale(this.modelScale, this.modelScale, this.modelScale);

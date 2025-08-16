@@ -59,6 +59,7 @@ public class VehicleAssemblingIngredient implements DeserializeFromString {
 
     @Override
     public void deserializeFromString(String str) {
+        this.ingredientString = str;
         var matcher = INGREDIENT_PATTERN.matcher(str);
         if (!matcher.matches()) {
             Mod.LOGGER.warn("invalid vehicle assembling ingredient: {}", str);
