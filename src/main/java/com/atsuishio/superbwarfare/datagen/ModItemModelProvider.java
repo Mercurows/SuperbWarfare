@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.datagen;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.datagen.builder.CustomSeparateModelBuilder;
 import com.atsuishio.superbwarfare.init.ModBlocks;
 import com.atsuishio.superbwarfare.init.ModItems;
 import net.minecraft.client.renderer.block.model.BlockModel;

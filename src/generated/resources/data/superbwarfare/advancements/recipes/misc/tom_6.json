@@ -1,12 +1,12 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_heavy_armament_module": {
+    "has_minecart": {
       "conditions": {
         "items": [
           {
             "items": [
-              "superbwarfare:heavy_armament_module"
+              "minecraft:minecart"
             ]
           }
         ]
@@ -15,20 +15,20 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "superbwarfare:a_10a_container"
+        "recipe": "superbwarfare:tom_6"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
   },
   "requirements": [
     [
-      "has_heavy_armament_module",
+      "has_minecart",
       "has_the_recipe"
     ]
   ],
   "rewards": {
     "recipes": [
-      "superbwarfare:a_10a_container"
+      "superbwarfare:tom_6"
     ]
   },
   "sends_telemetry_event": false

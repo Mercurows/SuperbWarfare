@@ -1,4 +1,4 @@
-package com.atsuishio.superbwarfare.datagen;
+package com.atsuishio.superbwarfare.datagen.builder;
 
 import com.google.common.base.Preconditions;
 import com.google.gson.JsonObject;
