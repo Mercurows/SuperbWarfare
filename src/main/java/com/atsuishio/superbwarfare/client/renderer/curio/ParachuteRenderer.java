@@ -62,6 +62,7 @@ public class ParachuteRenderer implements ICurioRenderer {
         var player = Minecraft.getInstance().player;
         if (player == null) return;
         if (!ParachuteItem.isParachuteOpen(player)) return;
+        if (!ParachuteItem.isParachuteVisible(player)) return;
         PoseStack stack = event.getPoseStack();
 
         if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_TRANSLUCENT_BLOCKS
