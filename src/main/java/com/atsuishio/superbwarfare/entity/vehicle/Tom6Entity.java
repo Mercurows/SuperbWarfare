@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.entity.vehicle;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.entity.projectile.MelonBombEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity;
@@ -10,7 +9,6 @@ import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.tools.CameraTool;
-import com.atsuishio.superbwarfare.tools.CustomExplosion;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
 import com.mojang.math.Axis;
 import it.unimi.dsi.fastutil.Pair;
@@ -20,7 +18,6 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -31,14 +28,12 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.event.EventHooks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Math;
@@ -325,25 +320,19 @@ public class Tom6Entity extends MobileVehicleEntity implements GeoEntity {
             explodePassengers();
         }
 
-        if (level() instanceof ServerLevel) {
-            if (entityData.get(MELON)) {
-                CustomExplosion explosion = new CustomExplosion(this.level(), this,
-                        ModDamageTypes.causeCustomExplosionDamage(this.level().registryAccess(), this, getAttacker()), VehicleConfig.TOM_6_BOMB_EXPLOSION_DAMAGE.get(),
-                        this.getX(), this.getY(), this.getZ(), VehicleConfig.TOM_6_BOMB_EXPLOSION_RADIUS.get().floatValue(), ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP);
-                explosion.explode();
-                EventHooks.onExplosionStart(this.level(), explosion);
-                explosion.finalizeExplosion(false);
-                ParticleTool.spawnHugeExplosionParticles(this.level(), this.position());
-            } else {
-                CustomExplosion explosion = new CustomExplosion(this.level(), this,
-                        ModDamageTypes.causeCustomExplosionDamage(this.level().registryAccess(), this, getAttacker()), 15.0f,
-                        this.getX(), this.getY(), this.getZ(), 2f, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP);
-                explosion.explode();
-                EventHooks.onExplosionStart(this.level(), explosion);
-                explosion.finalizeExplosion(false);
-                ParticleTool.spawnMediumExplosionParticles(this.level(), this.position());
-            }
+        var builder = createCustomExplosion();
+
+        if (entityData.get(MELON)) {
+            builder.damage(VehicleConfig.TOM_6_BOMB_EXPLOSION_DAMAGE.get())
+                    .radius(VehicleConfig.TOM_6_BOMB_EXPLOSION_RADIUS.get().floatValue())
+                    .withParticleType(ParticleTool.ParticleType.HUGE);
+        } else {
+            builder.damage(15)
+                    .radius(2)
+                    .withParticleType(ParticleTool.ParticleType.MEDIUM);
         }
+
+        builder.explode();
 
         super.destroy();
     }

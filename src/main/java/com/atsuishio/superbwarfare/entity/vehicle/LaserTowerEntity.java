@@ -11,7 +11,10 @@ import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.common.container.ContainerBlockItem;
-import com.atsuishio.superbwarfare.tools.*;
+import com.atsuishio.superbwarfare.tools.DamageHandler;
+import com.atsuishio.superbwarfare.tools.EntityFindUtil;
+import com.atsuishio.superbwarfare.tools.ParticleTool;
+import com.atsuishio.superbwarfare.tools.VectorTool;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -30,10 +33,8 @@ import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.event.EventHooks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Math;
@@ -216,15 +217,15 @@ public class LaserTowerEntity extends VehicleEntity implements GeoEntity, Ownabl
     @Override
     public void destroy() {
         Entity attacker = EntityFindUtil.findEntity(this.level(), this.entityData.get(LAST_ATTACKER_UUID));
-        if (level() instanceof ServerLevel) {
-            CustomExplosion explosion = new CustomExplosion(this.level(), this,
-                    ModDamageTypes.causeCustomExplosionDamage(this.level().registryAccess(), attacker, attacker), 10f,
-                    this.getX(), this.getY(), this.getZ(), 3f, Explosion.BlockInteraction.KEEP);
-            explosion.explode();
-            EventHooks.onExplosionStart(this.level(), explosion);
-            explosion.finalizeExplosion(false);
-            ParticleTool.spawnMediumExplosionParticles(this.level(), this.position());
-        }
+
+        createCustomExplosion()
+                .damage(10)
+                .radius(3f)
+                .keepBlock()
+                .withParticleType(ParticleTool.ParticleType.MEDIUM)
+                .source(attacker)
+                .attacker(attacker)
+                .explode();
 
         super.destroy();
     }
@@ -347,20 +348,14 @@ public class LaserTowerEntity extends VehicleEntity implements GeoEntity, Ownabl
     }
 
     private void causeAirExplode(Vec3 vec3) {
-        CustomExplosion explosion = new CustomExplosion(this.level(), this,
-                ModDamageTypes.causeCustomExplosionDamage(this.level().registryAccess(),
-                        this,
-                        this.getOwner()),
-                5,
-                vec3.x,
-                vec3.y,
-                vec3.z,
-                1,
-                Explosion.BlockInteraction.KEEP);
-        explosion.explode();
-        EventHooks.onExplosionStart(this.level(), explosion);
-        explosion.finalizeExplosion(false);
-        ParticleTool.spawnMediumExplosionParticles(this.level(), vec3);
+        createCustomExplosion()
+                .damage(5)
+                .radius(1)
+                .keepBlock()
+                .attacker(getOwner())
+                .position(vec3)
+                .withParticleType(ParticleTool.ParticleType.MEDIUM)
+                .explode();
     }
 
     private PlayState movementPredicate(AnimationState<LaserTowerEntity> event) {

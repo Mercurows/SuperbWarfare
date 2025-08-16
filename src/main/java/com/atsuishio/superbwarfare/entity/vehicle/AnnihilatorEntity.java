@@ -42,14 +42,12 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ClipContext;
-import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.phys.*;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.event.EventHooks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.*;
@@ -407,36 +405,34 @@ public class AnnihilatorEntity extends VehicleEntity implements GeoEntity, Canno
         Entity passenger = this.getFirstPassenger();
 
         if (passenger != null) {
-            CustomExplosion explosion = new CustomExplosion(this.level(), passenger,
-                    ModDamageTypes.causeCustomExplosionDamage(this.level().registryAccess(), this, passenger), 300f,
-                    pos.x, pos.y, pos.z, 15f, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true);
-            explosion.explode();
-            EventHooks.onExplosionStart(this.level(), explosion);
-            explosion.finalizeExplosion(false);
-            ParticleTool.spawnHugeExplosionParticles(this.level(), pos);
+            createCustomExplosion()
+                    .damage(300)
+                    .radius(15)
+                    .position(pos)
+                    .causeVanillaExplosion()
+                    .withParticleType(ParticleTool.ParticleType.HUGE)
+                    .explode();
         } else {
             Entity shooter = EntityFindUtil.findEntity(this.level(), this.entityData.get(SHOOTER_UUID));
-            CustomExplosion explosion = new CustomExplosion(this.level(), shooter,
-                    ModDamageTypes.causeCustomExplosionDamage(this.level().registryAccess(), this, shooter), 300f,
-                    pos.x, pos.y, pos.z, 15f, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true);
-            explosion.explode();
-            EventHooks.onExplosionStart(this.level(), explosion);
-            explosion.finalizeExplosion(false);
-            ParticleTool.spawnHugeExplosionParticles(this.level(), pos);
+            createCustomExplosion()
+                    .damage(300)
+                    .radius(15)
+                    .attacker(shooter)
+                    .causeVanillaExplosion()
+                    .withParticleType(ParticleTool.ParticleType.HUGE)
+                    .position(pos)
+                    .explode();
         }
     }
 
     @Override
     public void destroy() {
-        if (level() instanceof ServerLevel) {
-            CustomExplosion explosion = new CustomExplosion(this.level(), this,
-                    ModDamageTypes.causeCustomExplosionDamage(this.level().registryAccess(), getAttacker(), getAttacker()), 600f,
-                    this.getX(), this.getY(), this.getZ(), 15f, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true);
-            explosion.explode();
-            EventHooks.onExplosionStart(this.level(), explosion);
-            explosion.finalizeExplosion(false);
-            ParticleTool.spawnGiantExplosionParticles(this.level(), this.position());
-        }
+        createCustomExplosion()
+                .damage(600)
+                .radius(15)
+                .causeVanillaExplosion()
+                .withParticleType(ParticleTool.ParticleType.GIANT)
+                .explode();
 
         explodePassengers();
         super.destroy();

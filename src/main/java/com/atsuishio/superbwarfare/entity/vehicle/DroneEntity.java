@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.entity.vehicle;
 
-import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.data.CustomData;
 import com.atsuishio.superbwarfare.data.drone_attachment.DroneAttachmentData;
 import com.atsuishio.superbwarfare.entity.projectile.C4Entity;
@@ -41,14 +40,12 @@ import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
-import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -692,7 +689,6 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
         Player controller = EntityFindUtil.findPlayer(this.level(), this.entityData.get(CONTROLLER));
 
         assert controller != null;
-        CustomExplosion explosion;
 
         // 挂载实体的数据
         var attachedEntity = this.entityData.get(DISPLAY_ENTITY);
@@ -706,14 +702,14 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
                 .orElse(null);
         if (bomb == null) return;
 
-        explosion = new CustomExplosion(this.level(), this,
-                ModDamageTypes.causeCustomExplosionDamage(this.level().registryAccess(), bomb, attacker), data.explosionDamage,
-                this.getX(), this.getY(), this.getZ(), data.explosionRadius, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true);
-
-        explosion.explode();
-        EventHooks.onExplosionStart(this.level(), explosion);
-        explosion.finalizeExplosion(false);
-        ParticleTool.spawnHugeExplosionParticles(this.level(), this.position());
+        createCustomExplosion()
+                .source(bomb)
+                .attacker(attacker)
+                .damage(data.explosionDamage)
+                .radius(data.explosionRadius)
+                .causeVanillaExplosion()
+                .withParticleType(ParticleTool.ParticleType.HUGE)
+                .explode();
 
         // TODO 药水迫击炮炮弹
 //        if (mode == 1) {
