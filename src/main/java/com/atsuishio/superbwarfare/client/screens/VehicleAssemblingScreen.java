@@ -272,12 +272,13 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
                 pose.popPose();
 
                 pose.pushPose();
+                pose.scale(0.5F, 0.5F, 1.0F);
                 pose.translate(0.0F, 0.0F, 200.0F);
 
                 int count = input.getCount();
                 if (Minecraft.getInstance().player != null && Minecraft.getInstance().player.isCreative()) {
                     Component text = Component.literal(count + "/∞");
-                    guiGraphics.drawString(this.font, text, posX + 14, posY + 5, 0x9dffa5, false);
+                    guiGraphics.drawString(this.font, text, (posX + 14) * 2, (posY + 8) * 2, 0x9dffa5, false);
                 } else {
                     int hasCount = 0;
                     if (this.materialCount != null && index < this.materialCount.size()) {
@@ -285,7 +286,7 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
                     }
                     int color = hasCount >= count ? 0x80ff58 : 0xf44d61;
                     Component text = Component.literal(count + "/" + hasCount);
-                    guiGraphics.drawString(this.font, text, posX + 14, posY + 5, color, false);
+                    guiGraphics.drawString(this.font, text, (posX + 14) * 2, (posY + 8) * 2, color, false);
                 }
                 pose.popPose();
             }
