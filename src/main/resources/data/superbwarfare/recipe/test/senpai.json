@@ -4,9 +4,9 @@
     "minecraft:iron_ingot",
     "4 superbwarfare:steel_ingot"
   ],
-  "Category": "civilian",
+  "Category": "misc",
   "Result": {
-    "EntityType": "superbwarfare:wheel_chair"
+    "EntityType": "superbwarfare:senpai"
   },
   "type": "superbwarfare:vehicle_assembling"
 }

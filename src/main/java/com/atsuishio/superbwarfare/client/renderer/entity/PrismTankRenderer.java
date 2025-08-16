@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.client.renderer.entity;
 
+import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.client.layer.vehicle.PrismTankLaserLayer;
 import com.atsuishio.superbwarfare.client.layer.vehicle.PrismTankLightLayer;
 import com.atsuishio.superbwarfare.client.model.entity.PrismTankModel;
@@ -70,7 +71,7 @@ public class PrismTankRenderer extends GeoEntityRenderer<PrismTankEntity> {
         }
 
         if (name.equals("root")) {
-            bone.setHidden(!pCamera.isVisible(aabb));
+            bone.setHidden(!pCamera.isVisible(aabb) && !RenderHelper.isInGui());
         }
 
         for (int i = 0; i < 8; i++) {

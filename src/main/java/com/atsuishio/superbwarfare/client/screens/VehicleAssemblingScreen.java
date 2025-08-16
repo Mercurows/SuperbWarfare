@@ -375,7 +375,7 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
 
         PoseStack posestack = guiGraphics.pose();
 
-        // TODO 正确调整渲染的角度和大小，光棱渲染不出来
+        // TODO 正确调整渲染的角度和大小
         int posX = this.leftPos + 220;
         int posY = this.topPos + 80;
 
@@ -390,7 +390,7 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
         EntityRenderDispatcher entityrenderdispatcher = Minecraft.getInstance().getEntityRenderDispatcher();
 
         float rotationPeriod = 8.0F;
-        float rotPitch = 180F;
+        float rotPitch = 195F;
         float rot = (float) (System.currentTimeMillis() % (long) ((int) (rotationPeriod * 1000.0F))) * (360.0F / (rotationPeriod * 1000.0F));
 
         posestack.mulPose(Axis.XP.rotationDegrees(rotPitch));
