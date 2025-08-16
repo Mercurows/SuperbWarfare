@@ -24,10 +24,10 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
@@ -42,6 +42,7 @@ import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Quaternionf;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -138,7 +139,7 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
         this.renderTooltip(guiGraphics, mouseX, mouseY);
 
         if (this.currentRecipe != null) {
-            this.renderModel(this.currentRecipe.value(), guiGraphics, partialTick);
+            this.renderModel(this.currentRecipe.value(), guiGraphics);
         }
 
         this.renderables.stream().filter(w -> w instanceof RecipeButton)
@@ -284,12 +285,43 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
         this.init();
     }
 
-    @SuppressWarnings("deprecation")
-    public void renderModel(VehicleAssemblingRecipe recipe, GuiGraphics guiGraphics, float partialTicks) {
+    public void renderModel(VehicleAssemblingRecipe recipe, GuiGraphics guiGraphics) {
         Minecraft mc = Minecraft.getInstance();
         var level = mc.level;
         if (level == null) return;
 
+        ItemStack stack = recipe.getResult().getResult();
+        Entity renderEntity = null;
+
+        if (stack.is(ModItems.CONTAINER.get())) {
+            var data = stack.get(DataComponents.BLOCK_ENTITY_DATA);
+            var tag = data != null ? data.copyTag() : null;
+            typeFlag:
+            if (tag != null && tag.contains("EntityType")) {
+                String key = tag.getString("EntityType");
+                if (entityNameCache.equals(key) && entityCache != null) {
+                    renderEntity = entityCache;
+                } else {
+                    renderEntity = EntityType.byString(key)
+                            .map(type -> type.create(level))
+                            .orElse(null);
+                    if (renderEntity == null) break typeFlag;
+
+                    entityNameCache = key;
+                    entityCache = renderEntity;
+                }
+            }
+        }
+
+        if (renderEntity == null) {
+            renderDefaultItemModel(stack);
+        } else {
+            renderEntityModel(guiGraphics, renderEntity);
+        }
+    }
+
+    @SuppressWarnings("deprecation")
+    private void renderDefaultItemModel(ItemStack stack) {
         float rotationPeriod = 8.0F;
         int xPos = this.leftPos + 200;
         int yPos = this.topPos + 50;
@@ -327,37 +359,7 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
         MultiBufferSource.BufferSource bufferSource = Minecraft.getInstance().renderBuffers().bufferSource();
         Lighting.setupForFlatItems();
 
-        ItemStack stack = recipe.getResult().getResult();
-        boolean useItemRenderer = true;
-
-        if (stack.is(ModItems.CONTAINER.get())) {
-            var data = stack.get(DataComponents.BLOCK_ENTITY_DATA);
-            CompoundTag tag = data != null ? data.copyTag() : null;
-            typeFlag:
-            if (tag != null && tag.contains("EntityType")) {
-                String key = tag.getString("EntityType");
-
-                Entity renderEntity;
-                if (entityNameCache.equals(key) && entityCache != null) {
-                    renderEntity = entityCache;
-                } else {
-                    renderEntity = EntityType.byString(key)
-                            .map(type -> type.create(level))
-                            .orElse(null);
-                    if (renderEntity == null) break typeFlag;
-
-                    entityNameCache = key;
-                    entityCache = renderEntity;
-                }
-
-                useItemRenderer = false;
-                // TODO 这块怎么渲染实体模型上去？
-//                mc.getEntityRenderDispatcher().render(renderEntity, 0, 0, 0, 0, partialTicks, posestack, guiGraphics.bufferSource(), 15728880);
-            }
-        }
-        if (useItemRenderer) {
-            Minecraft.getInstance().getItemRenderer().renderStatic(recipe.getResult().getResult(), ItemDisplayContext.FIXED, 15728880, OverlayTexture.NO_OVERLAY, tmpPose, bufferSource, null, 0);
-        }
+        Minecraft.getInstance().getItemRenderer().renderStatic(stack, ItemDisplayContext.FIXED, 15728880, OverlayTexture.NO_OVERLAY, tmpPose, bufferSource, null, 0);
 
         bufferSource.endBatch();
         RenderSystem.enableDepthTest();
@@ -365,5 +367,43 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
         posestack.popMatrix();
         RenderSystem.applyModelViewMatrix();
         RenderSystem.disableScissor();
+    }
+
+    private void renderEntityModel(GuiGraphics guiGraphics, Entity renderEntity) {
+        if (renderEntity == null) return;
+
+        PoseStack posestack = guiGraphics.pose();
+
+        // TODO 正确调整渲染的角度和大小
+        int posX = this.leftPos + 200;
+        int posY = this.topPos + 50;
+
+        Quaternionf pPose = new Quaternionf();
+        Quaternionf pCameraOrientation = new Quaternionf();
+
+        posestack.pushPose();
+        posestack.translate(posX, posY, 50.0D);
+        posestack.scale(this.modelScale, this.modelScale, -this.modelScale);
+        posestack.mulPose(pPose);
+        Lighting.setupForEntityInInventory();
+        EntityRenderDispatcher entityrenderdispatcher = Minecraft.getInstance().getEntityRenderDispatcher();
+        if (pCameraOrientation != null) {
+            pCameraOrientation.conjugate();
+            entityrenderdispatcher.overrideCameraOrientation(pCameraOrientation);
+        }
+
+        float rotationPeriod = 8.0F;
+        float rotPitch = 15.0F;
+        float rot = (float) (System.currentTimeMillis() % (long) ((int) (rotationPeriod * 1000.0F))) * (360.0F / (rotationPeriod * 1000.0F));
+
+        posestack.mulPose(Axis.XP.rotationDegrees(rotPitch));
+        posestack.mulPose(Axis.YP.rotationDegrees(rot));
+
+        entityrenderdispatcher.setRenderShadow(false);
+        entityrenderdispatcher.render(renderEntity, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F, posestack, guiGraphics.bufferSource(), 15728880);
+        guiGraphics.flush();
+        entityrenderdispatcher.setRenderShadow(true);
+        posestack.popPose();
+        Lighting.setupFor3DItems();
     }
 }
