@@ -67,4 +67,12 @@ public class ParachuteItem extends Item implements ICurioItem {
                         .orElse(false)
                 ).orElse(false);
     }
+
+    public static boolean isParachuteVisible(LivingEntity entity) {
+        return CuriosApi.getCuriosInventory(entity)
+                .map(c -> c.findFirstCurio(ModItems.PARACHUTE.get())
+                        .map(slotResult -> slotResult.slotContext().visible())
+                        .orElse(false)
+                ).orElse(false);
+    }
 }
