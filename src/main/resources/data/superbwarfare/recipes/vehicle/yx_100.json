@@ -1,7 +1,7 @@
 {
   "inputs": [
-    "3 superbwarfare:cemented_carbide_block",
-    "24 #superbwarfare:storage_blocks/steel",
+    "2 superbwarfare:cemented_carbide_block",
+    "12 #superbwarfare:storage_blocks/steel",
     "superbwarfare:medium_armament_module",
     "superbwarfare:heavy_armament_module",
     "superbwarfare:large_battery_pack",
