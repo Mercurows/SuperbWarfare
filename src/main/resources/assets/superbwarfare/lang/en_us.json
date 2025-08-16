@@ -670,6 +670,10 @@
   "container.superbwarfare.vehicle_assembling_table.information": "Information",
   "container.superbwarfare.vehicle_assembling_table.ingredient": "Required Ingredient",
   "container.superbwarfare.vehicle_assembling_table.count": "Result Count: %1$s",
+  "container.superbwarfare.mod_info": "Added by %1$s",
+
+  "info.superbwarfare.mod_id": "Superb Warfare",
+  "info.superbwarfare.prism_tank": "Prism Tank is one one one one one one one one Tank",
 
   "config.superbwarfare.title": "SuperbWarfare: Config",
   "config.superbwarfare.client.reload": "Reload Config",
