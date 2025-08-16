@@ -153,6 +153,10 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
             this.renderModel(this.currentRecipe.value(), guiGraphics);
         }
 
+        if (this.currentRecipes != null && !this.currentRecipes.isEmpty()) {
+            this.renderIngredients(guiGraphics);
+        }
+
         this.renderables.stream().filter(w -> w instanceof RecipeButton)
                 .forEach(w -> ((RecipeButton) w).renderTooltips(guiGraphics, mouseX, mouseY));
     }
@@ -224,6 +228,43 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
                 if (recipe.equals(this.currentRecipe)) {
                     button.setSelected(true);
                 }
+            }
+        }
+    }
+
+    private void renderIngredients(GuiGraphics guiGraphics) {
+        if (this.currentRecipe == null) return;
+        var inputs = this.currentRecipe.value().getInputs();
+
+        int x = (this.width - this.imageWidth) / 2;
+        int y = (this.height - this.imageHeight) / 2;
+
+        // TODO 完成数量渲染
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 4; j++) {
+                int index = i * 4 + j;
+                if (index >= inputs.size()) return;
+
+                int posX = x + 215 + j * 25;
+                int posY = y + 118 + i * 14;
+
+                var input = inputs.get(index);
+                var ingredient = input.getIngredient();
+                var items = ingredient.getItems();
+                if (items.length == 0) continue;
+
+                int itemIndex = (int) (System.currentTimeMillis() / 1000L) % items.length;
+                var itemStack = items[itemIndex];
+
+                var pose = guiGraphics.pose();
+                pose.pushPose();
+
+                pose.translate(0.0F, 0.0F, 200.0F);
+                pose.scale(0.8F, 0.8F, 1.0F);
+
+                guiGraphics.renderFakeItem(itemStack, (int) (posX * 1.25f), (int) (posY * 1.25f));
+
+                pose.popPose();
             }
         }
     }

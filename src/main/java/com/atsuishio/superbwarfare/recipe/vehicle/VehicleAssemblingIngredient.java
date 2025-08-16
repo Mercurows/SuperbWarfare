@@ -45,7 +45,7 @@ public class VehicleAssemblingIngredient implements DeserializeFromString {
 
     public transient Ingredient ingredientObject;
 
-    private static final Pattern INGREDIENT_PATTERN = Pattern.compile("^(?<count>(\\d+)?)\\s*(x\\s*)?(?<prefix>#?)(?<id>\\w+:\\w+)$");
+    private static final Pattern INGREDIENT_PATTERN = Pattern.compile("^(?<count>(\\d+)?)\\s*(x\\s*)?(?<prefix>#?)(?<id>\\w+:\\S+)$");
 
     public Ingredient getIngredient() {
         if (ingredientObject == null) {
