@@ -543,7 +543,10 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
         pose.scale(0.75f, 0.75f, 1.0f);
 
         if (renderItemName) {
-            guiGraphics.drawString(this.font, Component.empty().append(stack.getHoverName()).withStyle(ChatFormatting.UNDERLINE).withStyle(ChatFormatting.YELLOW), (int) ((this.leftPos + 122) / 0.75f), (int) ((this.topPos + 119) / 0.75f), 0xFFFFFF, false);
+            RenderHelper.renderScrollingString(guiGraphics, this.font, Component.empty().append(stack.getHoverName()).withStyle(ChatFormatting.UNDERLINE).withStyle(ChatFormatting.YELLOW),
+                    (int) ((this.leftPos + 122) / 0.75f), (int) ((this.topPos + 119) / 0.75f),
+                    (int) ((this.leftPos + 198) / 0.75f), (int) ((this.topPos + 130) / 0.75f),
+                    0xFFFFFF);
         }
 
         var modName = Component.translatableWithFallback("info." + holder.id().getNamespace() + ".mod_id", holder.id().getNamespace());
@@ -565,7 +568,10 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
         pose.scale(0.75f, 0.75f, 1.0f);
 
         var hoverName = Component.translatable(key).withStyle(ChatFormatting.UNDERLINE).withStyle(ChatFormatting.YELLOW);
-        guiGraphics.drawString(this.font, hoverName, (int) ((this.leftPos + 122) / 0.75f), (int) ((this.topPos + 119) / 0.75f), 0xFFFFFF, false);
+        RenderHelper.renderScrollingString(guiGraphics, this.font, hoverName,
+                (int) ((this.leftPos + 122) / 0.75f), (int) ((this.topPos + 119) / 0.75f),
+                (int) ((this.leftPos + 198) / 0.75f), (int) ((this.topPos + 130) / 0.75f),
+                0xFFFFFF);
 
         var info = Component.translatable("info." + typeName.split(":")[0] + "." + typeName.split(":")[1]);
 

@@ -2,10 +2,14 @@ package com.atsuishio.superbwarfare.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
+import net.minecraft.Util;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import org.joml.Matrix4f;
 
 public class RenderHelper {
@@ -282,5 +286,23 @@ public class RenderHelper {
         vertexconsumer.addVertex(matrix4f, maxX, minY, z).setColor(color);
 
         guiGraphics.flush();
+    }
+
+    // TODO 实现左对齐的滚动字符串渲染
+    public static void renderScrollingString(GuiGraphics pGuiGraphics, Font pFont, Component pText, int pMinX, int pMinY, int pMaxX, int pMaxY, int pColor) {
+        int width = pFont.width(pText);
+        int borderWidth = pMaxX - pMinX;
+        if (width > borderWidth) {
+            int l = width - borderWidth;
+            double rate = (double) Util.getMillis() / 1000.0D;
+            double d1 = Math.max((double) l * 0.5D, 3.0D);
+            double d2 = Math.sin((Math.PI / 2D) * Math.cos((Math.PI * 2D) * rate / d1)) / 2.0D + 0.5D;
+            double d3 = Mth.lerp(d2, 0.0D, l);
+            pGuiGraphics.enableScissor(pMinX, pMinY, pMaxX, pMaxY);
+            pGuiGraphics.drawString(pFont, pText, pMinX - (int) d3, pMinY, pColor);
+            pGuiGraphics.disableScissor();
+        } else {
+            pGuiGraphics.drawCenteredString(pFont, pText, (pMinX + pMaxX) / 2, pMinY, pColor);
+        }
     }
 }
