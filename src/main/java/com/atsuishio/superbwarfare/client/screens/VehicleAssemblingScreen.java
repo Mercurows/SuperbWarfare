@@ -58,6 +58,11 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
     public static final ResourceLocation TEXTURE = Mod.loc("textures/gui/vehicle_assembling_table.png");
     public static final int IMAGE_SIZE = 324;
     public static final int PAGE_SIZE = 9;
+
+    public static final float DEFAULT_MODEL_SCALE = 50f;
+    public static final float MIN_MODEL_SCALE = 10f;
+    public static final float MAX_MODEL_SCALE = 200f;
+
     public static final int DEFAULT_MODEL_X = 218;
     public static final int DEFAULT_MODEL_Y = 80;
 
@@ -71,7 +76,7 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
     @Nullable
     private Int2IntArrayMap materialCount;
     private int pageIndex = 0;
-    private float modelScale = 50f;
+    private float modelScale = DEFAULT_MODEL_SCALE;
     private double modelPosX = DEFAULT_MODEL_X;
     private double modelPosY = DEFAULT_MODEL_Y;
 
@@ -249,9 +254,9 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
         }
         if (pMouseX >= this.leftPos + 114 && pMouseX <= this.leftPos + 322 && pMouseY >= this.topPos && pMouseY <= this.topPos + 99) {
             if (scrollY > 0) {
-                this.modelScale = Math.min(this.modelScale + 20, 150);
+                this.modelScale = Math.min(this.modelScale + 20, MAX_MODEL_SCALE);
             } else {
-                this.modelScale = Math.max(this.modelScale - 20, 10);
+                this.modelScale = Math.max(this.modelScale - 20, MIN_MODEL_SCALE);
             }
             return true;
         }
@@ -314,16 +319,16 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
 //        this.addRenderableWidget(new ImageButton(posX + 290, posY + 90, 9, 9, 149, 182, 10,
 //                TEXTURE, IMAGE_SIZE, IMAGE_SIZE,
 //                b -> {
-//                    this.modelScale = 50;
-//                    this.modelPosX = 218;
-//                    this.modelPosY = 80;
+//                    this.modelScale = DEFAULT_MODEL_SCALE;
+//                    this.modelPosX = DEFAULT_MODEL_X;
+//                    this.modelPosY = DEFAULT_MODEL_Y;
 //                }));
 //        this.addRenderableWidget(new ImageButton(posX + 300, posY + 90, 9, 9, 159, 182, 10,
 //                TEXTURE, IMAGE_SIZE, IMAGE_SIZE,
-//                b -> this.modelScale = Math.max(this.modelScale - 20, 10)));
+//                b -> this.modelScale = Math.max(this.modelScale - 20, MIN_MODEL_SCALE)));
 //        this.addRenderableWidget(new ImageButton(posX + 310, posY + 90, 9, 9, 169, 182, 10,
 //                TEXTURE, IMAGE_SIZE, IMAGE_SIZE,
-//                b -> this.modelScale = Math.min(this.modelScale + 20, 150)));
+//                b -> this.modelScale = Math.min(this.modelScale + 20, MAX_MODEL_SCALE)));
     }
 
     public void renderModel(VehicleAssemblingRecipe recipe, GuiGraphics guiGraphics) {
