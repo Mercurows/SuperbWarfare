@@ -12,9 +12,9 @@ import net.minecraftforge.registries.ForgeRegistries;
 import java.util.regex.Pattern;
 
 public class VehicleAssemblingIngredient implements DeserializeFromString {
-    @SerializedName("Ingredient")
+    @SerializedName("ingredient")
     String ingredientString = "";
-    @SerializedName("Count")
+    @SerializedName("count")
     int count = 1;
 
     public transient Ingredient ingredientObject;

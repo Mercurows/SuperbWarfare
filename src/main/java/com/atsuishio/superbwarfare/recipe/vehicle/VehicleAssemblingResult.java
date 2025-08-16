@@ -9,11 +9,11 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.registries.ForgeRegistries;
 
 public class VehicleAssemblingResult {
-    @SerializedName("Item")
+    @SerializedName("item")
     public String itemString = "";
-    @SerializedName("EntityType")
+    @SerializedName("entity")
     public String entityTypeString = "";
-    @SerializedName("Count")
+    @SerializedName("count")
     public int count = 1;
 
     public transient ItemStack result = null;
