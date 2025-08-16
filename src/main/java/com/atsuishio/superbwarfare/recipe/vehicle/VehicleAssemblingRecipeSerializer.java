@@ -1,6 +1,8 @@
 package com.atsuishio.superbwarfare.recipe.vehicle;
 
 import com.atsuishio.superbwarfare.data.EnumCodec;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -13,9 +15,26 @@ public class VehicleAssemblingRecipeSerializer implements RecipeSerializer<Vehic
 
     public static final MapCodec<VehicleAssemblingRecipe> CODEC = RecordCodecBuilder.mapCodec(builder ->
             builder.group(
-                    VehicleAssemblingIngredient.CODEC.listOf().fieldOf("Inputs").forGetter(VehicleAssemblingRecipe::getInputs),
-                    EnumCodec.create(VehicleAssemblingRecipe.Category.class).fieldOf("Category").orElse(VehicleAssemblingRecipe.Category.LAND).forGetter(VehicleAssemblingRecipe::getCategory),
-                    VehicleAssemblingResult.CODEC.fieldOf("Result").forGetter(VehicleAssemblingRecipe::getResult)
+                    Codec.STRING.listOf().fieldOf("inputs").flatXmap(
+                            str -> DataResult.success(str.stream().map(
+                                    s -> {
+                                        var ingredient = new VehicleAssemblingIngredient();
+                                        ingredient.deserializeFromString(s);
+                                        return ingredient;
+                                    }
+                            ).toList()),
+                            list -> DataResult.success(list.stream().map(
+                                    ingredient -> {
+                                        if (ingredient.getCount() > 1) {
+                                            return ingredient.getCount() + " " + ingredient.ingredientString;
+                                        } else {
+                                            return ingredient.ingredientString;
+                                        }
+                                    }
+                            ).toList())
+                    ).forGetter(VehicleAssemblingRecipe::getInputs),
+                    EnumCodec.create(VehicleAssemblingRecipe.Category.class).fieldOf("category").orElse(VehicleAssemblingRecipe.Category.LAND).forGetter(VehicleAssemblingRecipe::getCategory),
+                    VehicleAssemblingResult.CODEC.fieldOf("result").forGetter(VehicleAssemblingRecipe::getResult)
             ).apply(builder, VehicleAssemblingRecipe::new));
 
     public static final StreamCodec<RegistryFriendlyByteBuf, VehicleAssemblingRecipe> STREAM_CODEC = StreamCodec.composite(
