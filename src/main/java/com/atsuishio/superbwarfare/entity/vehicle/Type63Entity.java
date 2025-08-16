@@ -12,7 +12,6 @@ import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.common.ammo.MediumRocketItem;
 import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage;
 import com.atsuishio.superbwarfare.tools.OBB;
-import com.atsuishio.superbwarfare.tools.ParticleTool;
 import com.atsuishio.superbwarfare.tools.VectorTool;
 import com.mojang.math.Axis;
 import net.minecraft.core.particles.ParticleTypes;
@@ -361,19 +360,6 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
         setYRot(getYRot() + entityData.get(BODY_YAW));
 
         this.refreshDimensions();
-    }
-
-    @Override
-    public void destroy() {
-        createCustomExplosion()
-                .damage(20)
-                .radius(2)
-                .causeVanillaExplosion()
-                .withParticleType(ParticleTool.ParticleType.MEDIUM)
-                .explode();
-
-        explodePassengers();
-        super.destroy();
     }
 
     @Override

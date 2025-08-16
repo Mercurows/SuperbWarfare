@@ -214,22 +214,6 @@ public class LaserTowerEntity extends VehicleEntity implements GeoEntity, Ownabl
         this.interpolationSteps = 10;
     }
 
-    @Override
-    public void destroy() {
-        Entity attacker = EntityFindUtil.findEntity(this.level(), this.entityData.get(LAST_ATTACKER_UUID));
-
-        createCustomExplosion()
-                .damage(10)
-                .radius(3f)
-                .keepBlock()
-                .withParticleType(ParticleTool.ParticleType.MEDIUM)
-                .source(attacker)
-                .attacker(attacker)
-                .explode();
-
-        super.destroy();
-    }
-
     public void autoAim() {
         if (this.getEnergy() <= 0 || !entityData.get(ACTIVE)) {
             return;

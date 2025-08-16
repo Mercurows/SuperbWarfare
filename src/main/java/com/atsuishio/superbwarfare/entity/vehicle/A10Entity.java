@@ -725,24 +725,6 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
     }
 
     @Override
-    public void destroy() {
-        if (this.crash) {
-            crashPassengers();
-        } else {
-            explodePassengers();
-        }
-
-        createCustomExplosion()
-                .damage(800)
-                .radius(16f)
-                .causeVanillaExplosion()
-                .withParticleType(ParticleTool.ParticleType.GIANT)
-                .explode();
-
-        super.destroy();
-    }
-
-    @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar data) {
     }
 

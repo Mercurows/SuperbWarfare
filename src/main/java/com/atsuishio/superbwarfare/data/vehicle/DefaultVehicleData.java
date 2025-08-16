@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.data.IDBasedData;
 import com.atsuishio.superbwarfare.data.ObjectToList;
 import com.atsuishio.superbwarfare.data.StringToObject;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModify;
+import com.atsuishio.superbwarfare.tools.ParticleTool;
 import com.google.gson.annotations.SerializedName;
 
 @SuppressWarnings("unused")
@@ -73,4 +74,32 @@ public class DefaultVehicleData implements IDBasedData {
     @ServerOnly
     @SerializedName("Mass")
     public float mass = 1;
+
+    @ServerOnly
+    @SerializedName("CrashPassengersOnDestroy")
+    public boolean crashPassengersOnDestroy = false;
+
+    @ServerOnly
+    @SerializedName("ExplodePassengersOnDestroy")
+    public boolean explodePassengersOnDestroy = true;
+
+    @ServerOnly
+    @SerializedName("ExplosionDamage")
+    public float explosionDamage = 0;
+
+    @ServerOnly
+    @SerializedName("ExplosionRadius")
+    public float explosionRadius = 0;
+
+    @ServerOnly
+    @SerializedName("ExplosionDestroyBlockOnDestroy")
+    public boolean explosionDestroyBlockOnDestroy = true;
+
+    @ServerOnly
+    @SerializedName("CauseVanillaExplosion")
+    public boolean causeVanillaExplosion = true;
+
+    @ServerOnly
+    @SerializedName("ExplosionParticleType")
+    public ParticleTool.ParticleType explosionParticleType = ParticleTool.ParticleType.MINI;
 }

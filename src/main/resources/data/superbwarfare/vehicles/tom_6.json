@@ -8,5 +8,9 @@
   "DamageModifiers": [
     "superbwarfare:vehicle_strike * 2",
     "superbwarfare:grapeshot_hit * 0.5"
-  ]
+  ],
+  "ExplosionDamage": 15,
+  "ExplosionRadius": 2,
+  "ExplosionParticleType": "Medium",
+  "CrashPassengersOnDestroy": true
 }

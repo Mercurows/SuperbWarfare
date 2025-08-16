@@ -26,5 +26,8 @@
     "@superbwarfare:hand_grenade * 5",
     "@superbwarfare:mortar_shell * 4",
     "All - 2"
-  ]
+  ],
+  "ExplosionDamage": 80,
+  "ExplosionRadius": 5,
+  "ExplosionParticleType": "Medium"
 }

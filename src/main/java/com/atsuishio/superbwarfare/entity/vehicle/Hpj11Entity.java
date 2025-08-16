@@ -11,7 +11,10 @@ import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.common.container.ContainerBlockItem;
-import com.atsuishio.superbwarfare.tools.*;
+import com.atsuishio.superbwarfare.tools.EntityFindUtil;
+import com.atsuishio.superbwarfare.tools.InventoryTool;
+import com.atsuishio.superbwarfare.tools.RangeTool;
+import com.atsuishio.superbwarfare.tools.VectorTool;
 import com.mojang.math.Axis;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -394,18 +397,6 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
         serverYRot = yRot;
         serverXRot = xRot;
         this.interpolationSteps = 10;
-    }
-
-    @Override
-    public void destroy() {
-        createCustomExplosion()
-                .damage(100)
-                .radius(7)
-                .withParticleType(ParticleTool.ParticleType.MEDIUM)
-                .explode();
-
-        explodePassengers();
-        super.destroy();
     }
 
     @Override

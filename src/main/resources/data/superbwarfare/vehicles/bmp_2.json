@@ -29,5 +29,8 @@
     "@superbwarfare:gun_grenade * 1.5",
     "@superbwarfare:javelin_missile * 0.8",
     "All - 8"
-  ]
+  ],
+  "ExplosionDamage": 160,
+  "ExplosionRadius": 8,
+  "ExplosionParticleType": "Huge"
 }

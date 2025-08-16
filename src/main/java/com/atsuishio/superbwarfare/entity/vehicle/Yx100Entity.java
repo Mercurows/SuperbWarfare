@@ -796,19 +796,6 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
         return 3.5f;
     }
 
-    @Override
-    public void destroy() {
-        createCustomExplosion()
-                .damage(200)
-                .radius(16)
-                .withParticleType(ParticleTool.ParticleType.GIANT)
-                .causeVanillaExplosion()
-                .explode();
-
-        explodePassengers();
-        super.destroy();
-    }
-
     protected void clampRotation(Entity entity) {
         Minecraft mc = Minecraft.getInstance();
         if (entity.level().isClientSide && entity == getFirstPassenger()) {

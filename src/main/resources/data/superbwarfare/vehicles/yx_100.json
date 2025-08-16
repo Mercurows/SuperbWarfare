@@ -30,5 +30,8 @@
     "@superbwarfare:mortar_shell * 1.25",
     "@superbwarfare:tm_62 * 2.5",
     "All - 9"
-  ]
+  ],
+  "ExplosionDamage": 200,
+  "ExplosionRadius": 16,
+  "ExplosionParticleType": "Giant"
 }

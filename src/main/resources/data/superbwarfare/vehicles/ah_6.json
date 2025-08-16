@@ -29,5 +29,9 @@
     "@superbwarfare:rpg_rocket * 3",
     "All * 0.8",
     "All - 2"
-  ]
+  ],
+  "ExplosionDamage": 300,
+  "ExplosionRadius": 8,
+  "ExplosionParticleType": "Huge",
+  "CrashPassengersOnDestroy": true
 }

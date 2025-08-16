@@ -10,7 +10,10 @@ import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage;
-import com.atsuishio.superbwarfare.tools.*;
+import com.atsuishio.superbwarfare.tools.Ammo;
+import com.atsuishio.superbwarfare.tools.InventoryTool;
+import com.atsuishio.superbwarfare.tools.OBB;
+import com.atsuishio.superbwarfare.tools.VectorTool;
 import com.mojang.math.Axis;
 import it.unimi.dsi.fastutil.Pair;
 import net.minecraft.core.particles.ParticleTypes;
@@ -309,19 +312,6 @@ public class SpeedboatEntity extends ContainerMobileVehicleEntity implements Geo
         entity.setYRot(entity.getYRot() + g - f);
         entity.setYHeadRot(entity.getYRot());
         entity.setYBodyRot(getYRot());
-    }
-
-    @Override
-    public void destroy() {
-        createCustomExplosion()
-                .damage(80)
-                .radius(5)
-                .causeVanillaExplosion()
-                .withParticleType(ParticleTool.ParticleType.MEDIUM)
-                .explode();
-
-        explodePassengers();
-        super.destroy();
     }
 
     protected void clampRotation(Entity entity) {

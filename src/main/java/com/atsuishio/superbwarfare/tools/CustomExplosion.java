@@ -209,7 +209,7 @@ public class CustomExplosion extends Explosion {
         private @Nullable Entity attackerEntity;
         private float damage;
         private float radius;
-        private ParticleTool.ParticleType particleType = ParticleTool.ParticleType.MINI;
+        private @Nullable ParticleTool.ParticleType particleType = ParticleTool.ParticleType.MINI;
         private Supplier<BlockInteraction> destroyBlock = () -> ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP;
         private boolean causeVanillaExplosion = false;
         public Vec3 position;
@@ -242,13 +242,8 @@ public class CustomExplosion extends Explosion {
             return this;
         }
 
-        public Builder withParticleType(@NotNull ParticleTool.ParticleType particleType) {
+        public Builder withParticleType(@Nullable ParticleTool.ParticleType particleType) {
             this.particleType = particleType;
-            return this;
-        }
-
-        public Builder destroyBlock() {
-            this.destroyBlock = () -> Explosion.BlockInteraction.DESTROY;
             return this;
         }
 

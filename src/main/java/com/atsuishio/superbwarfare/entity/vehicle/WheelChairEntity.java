@@ -8,7 +8,6 @@ import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.init.ModCriteriaTriggers;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
-import com.atsuishio.superbwarfare.tools.ParticleTool;
 import com.mojang.math.Axis;
 import it.unimi.dsi.fastutil.Pair;
 import net.minecraft.client.Minecraft;
@@ -277,17 +276,6 @@ public class WheelChairEntity extends MobileVehicleEntity implements GeoEntity {
         transform.rotate(Axis.XP.rotationDegrees(Mth.lerp(ticks, xRotO, getXRot())));
         transform.rotate(Axis.ZP.rotationDegrees(Mth.lerp(ticks, prevRoll, getRoll())));
         return transform;
-    }
-
-    @Override
-    public void destroy() {
-        createCustomExplosion()
-                .damage(10)
-                .radius(2)
-                .withParticleType(ParticleTool.ParticleType.SMALL)
-                .explode();
-
-        super.destroy();
     }
 
     @Override

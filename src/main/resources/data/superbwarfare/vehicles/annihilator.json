@@ -26,5 +26,8 @@
     "@superbwarfare:gun_grenade * 3",
     "@superbwarfare:cannon_shell * 3",
     "All - 12"
-  ]
+  ],
+  "ExplosionDamage": 600,
+  "ExplosionRadius": 15,
+  "ExplosionParticleType": "Giant"
 }

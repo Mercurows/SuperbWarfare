@@ -527,19 +527,6 @@ public class PrismTankEntity extends ContainerMobileVehicleEntity implements Geo
         return 3.5f;
     }
 
-    @Override
-    public void destroy() {
-        createCustomExplosion()
-                .damage(160)
-                .radius(8)
-                .causeVanillaExplosion()
-                .withParticleType(ParticleTool.ParticleType.HUGE)
-                .explode();
-
-        explodePassengers();
-        super.destroy();
-    }
-
     protected void clampRotation(Entity entity) {
         if (entity == getNthEntity(0)) {
             float a = getTurretYaw(1);
