@@ -1,0 +1,13 @@
+{
+  "type": "superbwarfare:vehicle_assembling",
+  "category": "civilian",
+  "inputs": [
+    "2 superbwarfare:wheel",
+    "superbwarfare:cell",
+    "superbwarfare:motor",
+    "minecraft:minecart"
+  ],
+  "result": {
+    "entity": "superbwarfare:wheel_chair"
+  }
+}

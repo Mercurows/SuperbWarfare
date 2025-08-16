@@ -1,0 +1,12 @@
+{
+  "type": "superbwarfare:vehicle_assembling",
+  "category": "defense",
+  "inputs": [
+    "10 #superbwarfare:storage_blocks/steel",
+    "superbwarfare:bl_132_blueprint",
+    "4 superbwarfare:cannon_core"
+  ],
+  "result": {
+    "entity": "superbwarfare:bl_132"
+  }
+}

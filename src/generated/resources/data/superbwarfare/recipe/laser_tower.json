@@ -1,0 +1,13 @@
+{
+  "type": "superbwarfare:vehicle_assembling",
+  "category": "defense",
+  "inputs": [
+    "#superbwarfare:storage_blocks/steel",
+    "minecraft:beacon",
+    "superbwarfare:small_battery_pack",
+    "superbwarfare:motor"
+  ],
+  "result": {
+    "entity": "superbwarfare:laser_tower"
+  }
+}

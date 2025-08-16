@@ -143,6 +143,135 @@ public class ModRecipeProvider extends RecipeProvider {
                 .unlockedBy(getHasName(Items.MINECART), has(Items.MINECART))
                 .save(writer, Mod.loc(getEntityTypeName(ModEntities.TOM_6.get())));
 
+        VehicleAssemblingRecipeBuilder.entity(ModEntities.ANNIHILATOR.get(), VehicleAssemblingRecipe.Category.DEFENSE)
+                .require(ModTags.Items.STORAGE_BLOCK_STEEL, 24)
+                .require(Items.NETHERITE_BLOCK, 3)
+                .require(Items.BEACON, 3)
+                .require(ModItems.LARGE_BATTERY_PACK.get())
+                .require(ModItems.ANNIHILATOR_BLUEPRINT.get())
+                .unlockedBy(getHasName(ModItems.ANNIHILATOR_BLUEPRINT.get()), has(ModItems.ANNIHILATOR_BLUEPRINT.get()))
+                .save(writer, Mod.loc(getEntityTypeName(ModEntities.ANNIHILATOR.get())));
+
+        VehicleAssemblingRecipeBuilder.entity(ModEntities.BL_132.get(), VehicleAssemblingRecipe.Category.DEFENSE)
+                .require(ModTags.Items.STORAGE_BLOCK_STEEL, 10)
+                .require(ModItems.BL_132_BLUEPRINT.get())
+                .require(ModItems.CANNON_CORE.get(), 4)
+                .unlockedBy(getHasName(ModItems.BL_132_BLUEPRINT.get()), has(ModItems.BL_132_BLUEPRINT.get()))
+                .save(writer, Mod.loc(getEntityTypeName(ModEntities.BL_132.get())));
+
+        VehicleAssemblingRecipeBuilder.entity(ModEntities.MLE_1934.get(), VehicleAssemblingRecipe.Category.DEFENSE)
+                .require(ModTags.Items.STORAGE_BLOCK_STEEL, 8)
+                .require(ModItems.MLE_1934_BLUEPRINT.get())
+                .require(ModItems.CANNON_CORE.get(), 2)
+                .unlockedBy(getHasName(ModItems.MLE_1934_BLUEPRINT.get()), has(ModItems.MLE_1934_BLUEPRINT.get()))
+                .save(writer, Mod.loc(getEntityTypeName(ModEntities.MLE_1934.get())));
+
+        VehicleAssemblingRecipeBuilder.entity(ModEntities.MK_42.get(), VehicleAssemblingRecipe.Category.DEFENSE)
+                .require(ModTags.Items.STORAGE_BLOCK_STEEL, 6)
+                .require(ModItems.MK_42_BLUEPRINT.get())
+                .require(ModItems.CANNON_CORE.get())
+                .unlockedBy(getHasName(ModItems.MK_42_BLUEPRINT.get()), has(ModItems.MK_42_BLUEPRINT.get()))
+                .save(writer, Mod.loc(getEntityTypeName(ModEntities.MK_42.get())));
+
+        VehicleAssemblingRecipeBuilder.entity(ModEntities.TYPE_63.get(), VehicleAssemblingRecipe.Category.DEFENSE)
+                .require(ModTags.Items.STORAGE_BLOCK_STEEL, 1)
+                .require(ModItems.MORTAR_BARREL.get(), 12)
+                .require(ModItems.WHEEL.get(), 2)
+                .unlockedBy(getHasName(ModItems.MORTAR_BARREL.get()), has(ModItems.MORTAR_BARREL.get()))
+                .save(writer, Mod.loc(getEntityTypeName(ModEntities.TYPE_63.get())));
+
+        VehicleAssemblingRecipeBuilder.entity(ModEntities.HPJ_11.get(), VehicleAssemblingRecipe.Category.DEFENSE)
+                .require(ModTags.Items.STORAGE_BLOCK_STEEL, 5)
+                .require(ModItems.HPJ_11_BLUEPRINT.get())
+                .require(ModItems.CANNON_CORE.get())
+                .require(ModItems.MEDIUM_BATTERY_PACK.get())
+                .require(ModItems.LARGE_MOTOR.get())
+                .require(Items.OBSERVER)
+                .unlockedBy(getHasName(ModItems.HPJ_11_BLUEPRINT.get()), has(ModItems.HPJ_11_BLUEPRINT.get()))
+                .save(writer, Mod.loc(getEntityTypeName(ModEntities.HPJ_11.get())));
+
+        VehicleAssemblingRecipeBuilder.entity(ModEntities.LASER_TOWER.get(), VehicleAssemblingRecipe.Category.DEFENSE)
+                .require(ModTags.Items.STORAGE_BLOCK_STEEL, 1)
+                .require(Items.BEACON)
+                .require(ModItems.SMALL_BATTERY_PACK.get())
+                .require(ModItems.MOTOR.get())
+                .unlockedBy(getHasName(Items.BEACON), has(Items.BEACON))
+                .save(writer, Mod.loc(getEntityTypeName(ModEntities.LASER_TOWER.get())));
+
+        VehicleAssemblingRecipeBuilder.entity(ModEntities.WHEEL_CHAIR.get(), VehicleAssemblingRecipe.Category.CIVILIAN)
+                .require(ModItems.WHEEL.get(), 2)
+                .require(ModItems.CELL.get())
+                .require(ModItems.MOTOR.get())
+                .require(Items.MINECART)
+                .unlockedBy(getHasName(Items.MINECART), has(Items.MINECART))
+                .save(writer, Mod.loc(getEntityTypeName(ModEntities.WHEEL_CHAIR.get())));
+
+        VehicleAssemblingRecipeBuilder.entity(ModEntities.LAV_150.get(), VehicleAssemblingRecipe.Category.LAND)
+                .require(ModTags.Items.STORAGE_BLOCK_STEEL, 6)
+                .require(ModItems.LIGHT_ARMAMENT_MODULE.get())
+                .require(ModItems.MEDIUM_BATTERY_PACK.get())
+                .require(ModItems.WHEEL.get(), 4)
+                .require(ModItems.LARGE_MOTOR.get())
+                .unlockedBy(getHasName(ModItems.LARGE_MOTOR.get()), has(ModItems.LARGE_MOTOR.get()))
+                .save(writer, Mod.loc(getEntityTypeName(ModEntities.LAV_150.get())));
+
+        VehicleAssemblingRecipeBuilder.entity(ModEntities.BMP_2.get(), VehicleAssemblingRecipe.Category.LAND)
+                .require(ModTags.Items.STORAGE_BLOCK_STEEL, 8)
+                .require(ModItems.MEDIUM_ARMAMENT_MODULE.get())
+                .require(ModItems.MEDIUM_BATTERY_PACK.get())
+                .require(ModItems.TRACK.get(), 2)
+                .require(ModItems.LARGE_MOTOR.get())
+                .unlockedBy(getHasName(ModItems.LARGE_MOTOR.get()), has(ModItems.LARGE_MOTOR.get()))
+                .save(writer, Mod.loc(getEntityTypeName(ModEntities.BMP_2.get())));
+
+        VehicleAssemblingRecipeBuilder.entity(ModEntities.PRISM_TANK.get(), VehicleAssemblingRecipe.Category.LAND)
+                .require(ModTags.Items.STORAGE_BLOCK_STEEL, 9)
+                .require(Items.BEACON)
+                .require(ModItems.LARGE_BATTERY_PACK.get())
+                .require(ModItems.TRACK.get(), 2)
+                .require(ModItems.LARGE_MOTOR.get())
+                .unlockedBy(getHasName(ModItems.LARGE_MOTOR.get()), has(ModItems.LARGE_MOTOR.get()))
+                .save(writer, Mod.loc(getEntityTypeName(ModEntities.PRISM_TANK.get())));
+
+        VehicleAssemblingRecipeBuilder.entity(ModEntities.YX_100.get(), VehicleAssemblingRecipe.Category.LAND)
+                .require(ModTags.Items.STORAGE_BLOCK_STEEL, 12)
+                .require(ModItems.CEMENTED_CARBIDE_BLOCK.get(), 2)
+                .require(ModItems.HEAVY_ARMAMENT_MODULE.get())
+                .require(ModItems.LARGE_BATTERY_PACK.get())
+                .require(ModItems.TRACK.get(), 2)
+                .require(ModItems.LARGE_MOTOR.get())
+                .unlockedBy(getHasName(ModItems.LARGE_MOTOR.get()), has(ModItems.LARGE_MOTOR.get()))
+                .save(writer, Mod.loc(getEntityTypeName(ModEntities.YX_100.get())));
+
+        VehicleAssemblingRecipeBuilder.entity(ModEntities.SPEEDBOAT.get(), VehicleAssemblingRecipe.Category.WATER)
+                .require(ModTags.Items.STORAGE_BLOCK_STEEL, 2)
+                .require(ItemTags.BOATS)
+                .require(ModItems.M_2_HB.get())
+                .require(ModItems.SMALL_BATTERY_PACK.get())
+                .require(ModItems.LARGE_PROPELLER.get())
+                .require(ModItems.LARGE_MOTOR.get())
+                .unlockedBy(getHasName(ModItems.M_2_HB.get()), has(ModItems.M_2_HB.get()))
+                .save(writer, Mod.loc(getEntityTypeName(ModEntities.SPEEDBOAT.get())));
+
+        VehicleAssemblingRecipeBuilder.entity(ModEntities.AH_6.get(), VehicleAssemblingRecipe.Category.AIRCRAFT)
+                .require(ModTags.Items.STORAGE_BLOCK_STEEL, 3)
+                .require(ModItems.LIGHT_ARMAMENT_MODULE.get())
+                .require(ModItems.MEDIUM_BATTERY_PACK.get())
+                .require(ModItems.LARGE_PROPELLER.get(), 2)
+                .require(ModItems.LARGE_MOTOR.get())
+                .unlockedBy(getHasName(ModItems.LARGE_PROPELLER.get()), has(ModItems.LARGE_PROPELLER.get()))
+                .save(writer, Mod.loc(getEntityTypeName(ModEntities.AH_6.get())));
+
+        VehicleAssemblingRecipeBuilder.entity(ModEntities.A_10A.get(), VehicleAssemblingRecipe.Category.AIRCRAFT)
+                .require(ModTags.Items.STORAGE_BLOCK_STEEL, 10)
+                .require(ModItems.HEAVY_ARMAMENT_MODULE.get())
+                .require(ModItems.LARGE_BATTERY_PACK.get())
+                .require(ModItems.LARGE_PROPELLER.get(), 2)
+                .require(ModItems.LARGE_MOTOR.get(), 2)
+                .require(ModItems.WHEEL.get(), 3)
+                .unlockedBy(getHasName(ModItems.LARGE_PROPELLER.get()), has(ModItems.LARGE_PROPELLER.get()))
+                .save(writer, Mod.loc(getEntityTypeName(ModEntities.A_10A.get())));
+
         // guns
         gunSmithing(writer, ModItems.TRACHELIUM_BLUEPRINT.get(), GunRarity.EPIC, ModTags.Items.INGOTS_CEMENTED_CARBIDE, ModItems.TRACHELIUM.get());
         gunSmithing(writer, ModItems.GLOCK_17_BLUEPRINT.get(), GunRarity.COMMON, Items.IRON_INGOT, ModItems.GLOCK_17.get());

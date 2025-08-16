@@ -1,0 +1,15 @@
+{
+  "type": "superbwarfare:vehicle_assembling",
+  "category": "defense",
+  "inputs": [
+    "5 #superbwarfare:storage_blocks/steel",
+    "superbwarfare:hpj_11_blueprint",
+    "superbwarfare:cannon_core",
+    "superbwarfare:medium_battery_pack",
+    "superbwarfare:large_motor",
+    "minecraft:observer"
+  ],
+  "result": {
+    "entity": "superbwarfare:hpj_11"
+  }
+}

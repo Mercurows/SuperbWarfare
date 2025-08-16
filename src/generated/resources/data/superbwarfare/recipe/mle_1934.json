@@ -1,0 +1,12 @@
+{
+  "type": "superbwarfare:vehicle_assembling",
+  "category": "defense",
+  "inputs": [
+    "8 #superbwarfare:storage_blocks/steel",
+    "superbwarfare:mle_1934_blueprint",
+    "2 superbwarfare:cannon_core"
+  ],
+  "result": {
+    "entity": "superbwarfare:mle_1934"
+  }
+}

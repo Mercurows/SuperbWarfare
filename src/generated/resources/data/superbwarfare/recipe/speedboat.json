@@ -1,0 +1,15 @@
+{
+  "type": "superbwarfare:vehicle_assembling",
+  "category": "water",
+  "inputs": [
+    "2 #superbwarfare:storage_blocks/steel",
+    "#minecraft:boats",
+    "superbwarfare:m_2_hb",
+    "superbwarfare:small_battery_pack",
+    "superbwarfare:large_propeller",
+    "superbwarfare:large_motor"
+  ],
+  "result": {
+    "entity": "superbwarfare:speedboat"
+  }
+}
