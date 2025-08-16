@@ -1,0 +1,12 @@
+{
+  "Inputs": [
+    "5 minecraft:stick",
+    "minecraft:iron_ingot",
+    "4 superbwarfare:steel_ingot"
+  ],
+  "Category": "aircraft",
+  "Result": {
+    "EntityType": "minecraft:phantom"
+  },
+  "type": "superbwarfare:vehicle_assembling"
+}

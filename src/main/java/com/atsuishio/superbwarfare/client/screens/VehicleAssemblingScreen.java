@@ -22,6 +22,7 @@ import com.mojang.math.Axis;
 import it.unimi.dsi.fastutil.ints.Int2IntArrayMap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -96,6 +97,7 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
         this.addRecipeButtons(posX, posY);
         this.addPageButtons(posX, posY);
         this.addAssembleButton(posX, posY);
+        this.addScaleButtons(posX, posY);
     }
 
     public void initRecipes() {
@@ -282,6 +284,18 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
         this.init();
     }
 
+    public void addScaleButtons(int posX, int posY) {
+        this.addRenderableWidget(new ImageButton(posX + 290, posY + 90, 9, 9, 149, 182, 10,
+                TEXTURE, IMAGE_SIZE, IMAGE_SIZE,
+                b -> this.modelScale = 50));
+        this.addRenderableWidget(new ImageButton(posX + 300, posY + 90, 9, 9, 159, 182, 10,
+                TEXTURE, IMAGE_SIZE, IMAGE_SIZE,
+                b -> this.modelScale = Math.max(this.modelScale - 20, 10)));
+        this.addRenderableWidget(new ImageButton(posX + 310, posY + 90, 9, 9, 169, 182, 10,
+                TEXTURE, IMAGE_SIZE, IMAGE_SIZE,
+                b -> this.modelScale = Math.min(this.modelScale + 20, 150)));
+    }
+
     public void renderModel(VehicleAssemblingRecipe recipe, GuiGraphics guiGraphics) {
         Minecraft mc = Minecraft.getInstance();
         var level = mc.level;
@@ -374,6 +388,17 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
         // TODO 正确调整渲染的角度和大小
         int posX = this.leftPos + 220;
         int posY = this.topPos + 80;
+        int width = 208;
+        int height = 99;
+
+        Window window = Minecraft.getInstance().getWindow();
+        double windowGuiScale = window.getGuiScale();
+
+        int scissorX = (int) ((this.leftPos + 114) * windowGuiScale);
+        int scissorY = (int) (window.getHeight() - (this.topPos + height) * windowGuiScale);
+        int scissorW = (int) (width * windowGuiScale);
+        int scissorH = (int) (height * windowGuiScale);
+        RenderSystem.enableScissor(scissorX, scissorY, scissorW, scissorH);
 
         posestack.pushPose();
         posestack.translate(posX, posY, 50.0D);
@@ -398,5 +423,6 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
         entityrenderdispatcher.setRenderShadow(true);
         posestack.popPose();
         Lighting.setupFor3DItems();
+        RenderSystem.disableScissor();
     }
 }
