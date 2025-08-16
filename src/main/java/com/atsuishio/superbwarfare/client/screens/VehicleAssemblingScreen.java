@@ -259,11 +259,31 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
                 var pose = guiGraphics.pose();
                 pose.pushPose();
 
-                pose.translate(0.0F, 0.0F, 200.0F);
+                pose.pushPose();
                 pose.scale(0.8F, 0.8F, 1.0F);
-
                 guiGraphics.renderFakeItem(itemStack, (int) (posX * 1.25f), (int) (posY * 1.25f));
+                pose.popPose();
 
+                int count = input.getCount();
+                pose.pushPose();
+
+                pose.translate(0.0F, 0.0F, 200.0F);
+                pose.scale(0.5F, 0.5F, 1.0F);
+
+                if (Minecraft.getInstance().player != null && Minecraft.getInstance().player.isCreative()) {
+                    Component text = Component.literal(count + "/∞");
+                    guiGraphics.drawString(this.font, text, (posX + 13) * 2, (posY + 8) * 2, 0x9dffa5, false);
+                } else {
+                    int hasCount = 0;
+                    if (this.materialCount != null && index < this.materialCount.size()) {
+                        hasCount = this.materialCount.get(index);
+                    }
+                    int color = hasCount >= count ? 0x80ff58 : 0xf44d61;
+                    Component text = Component.literal(count + "/" + hasCount);
+                    guiGraphics.drawString(this.font, text, (posX + 13) * 2, (posY + 8) * 2, color, false);
+                }
+
+                pose.popPose();
                 pose.popPose();
             }
         }
