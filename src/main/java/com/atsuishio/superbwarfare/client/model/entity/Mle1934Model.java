@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.client.model.entity;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.entity.vehicle.Mle1934Entity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
@@ -21,6 +22,10 @@ public class Mle1934Model extends GeoModel<Mle1934Entity> {
 
     @Override
     public ResourceLocation getModelResource(Mle1934Entity entity) {
+        if (RenderHelper.isInGui()) {
+            return Mod.loc("geo/mle1934.geo.json");
+        }
+
         Player player = Minecraft.getInstance().player;
 
         int distance = 0;

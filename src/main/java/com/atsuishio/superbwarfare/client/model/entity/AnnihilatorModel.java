@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.client.model.entity;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.entity.vehicle.AnnihilatorEntity;
 import net.minecraft.client.Minecraft;
@@ -21,6 +22,10 @@ public class AnnihilatorModel extends GeoModel<AnnihilatorEntity> {
 
     @Override
     public ResourceLocation getModelResource(AnnihilatorEntity entity) {
+        if (RenderHelper.isInGui()) {
+            return Mod.loc("geo/annihilator.geo.json");
+        }
+
         Player player = Minecraft.getInstance().player;
 
         int distance = 0;

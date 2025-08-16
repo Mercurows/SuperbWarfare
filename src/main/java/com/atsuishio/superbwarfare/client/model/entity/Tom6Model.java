@@ -10,7 +10,6 @@ public class Tom6Model extends GeoModel<Tom6Entity> {
     @Override
     public ResourceLocation getAnimationResource(Tom6Entity entity) {
         return null;
-//        return ModUtils.loc("animations/wheel_chair.animation.json");
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.client.model.entity;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.entity.vehicle.MortarEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
@@ -21,6 +22,10 @@ public class MortarModel extends GeoModel<MortarEntity> {
 
     @Override
     public ResourceLocation getModelResource(MortarEntity entity) {
+        if (RenderHelper.isInGui()) {
+            return Mod.loc("geo/mortar.geo.json");
+        }
+
         Player player = Minecraft.getInstance().player;
 
         int distance = 0;

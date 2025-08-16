@@ -9,6 +9,17 @@ import net.minecraft.resources.ResourceLocation;
 import org.joml.Matrix4f;
 
 public class RenderHelper {
+
+    private static long GUI_RENDER_TIMESTAMP = -1L;
+
+    public static void markGuiRenderTimestamp() {
+        GUI_RENDER_TIMESTAMP = System.currentTimeMillis();
+    }
+
+    public static boolean isInGui() {
+        return System.currentTimeMillis() - GUI_RENDER_TIMESTAMP < 100L;
+    }
+
     // code from GuiGraphics
 
     /**

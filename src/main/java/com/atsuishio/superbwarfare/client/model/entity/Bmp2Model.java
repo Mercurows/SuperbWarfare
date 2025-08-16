@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.client.model.entity;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.entity.vehicle.Bmp2Entity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
@@ -16,6 +17,10 @@ public class Bmp2Model extends GeoModel<Bmp2Entity> {
 
     @Override
     public ResourceLocation getModelResource(Bmp2Entity entity) {
+        if (RenderHelper.isInGui()) {
+            return Mod.loc("geo/bmp2.geo.json");
+        }
+
         Player player = Minecraft.getInstance().player;
 
         int distance = 0;
