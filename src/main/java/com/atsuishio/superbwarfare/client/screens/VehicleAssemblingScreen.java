@@ -149,8 +149,8 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
         super.render(guiGraphics, mouseX, mouseY, partialTick);
         this.renderTooltip(guiGraphics, mouseX, mouseY);
 
-        guiGraphics.drawString(this.font, Component.translatable("container.superbwarfare.vehicle_assembling_table.information"), this.leftPos + 119, this.topPos + 105, 5592405, false);
-        guiGraphics.drawString(this.font, Component.translatable("container.superbwarfare.vehicle_assembling_table.ingredient"), this.leftPos + 213, this.topPos + 105, 5592405, false);
+        guiGraphics.drawString(this.font, Component.translatable("container.superbwarfare.vehicle_assembling_table.information"), this.leftPos + 120, this.topPos + 105, 5592405, false);
+        guiGraphics.drawString(this.font, Component.translatable("container.superbwarfare.vehicle_assembling_table.ingredient"), this.leftPos + 214, this.topPos + 105, 5592405, false);
 
         if (this.currentRecipe != null) {
             this.renderModel(this.currentRecipe.value(), guiGraphics);

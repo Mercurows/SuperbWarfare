@@ -17,10 +17,10 @@ import net.minecraft.world.item.crafting.Ingredient;
 import java.util.regex.Pattern;
 
 public class VehicleAssemblingIngredient implements DeserializeFromString {
-    @SerializedName("Ingredient")
-    public String ingredientString = "";
-    @SerializedName("Count")
-    public int count = 1;
+    @SerializedName("ingredient")
+    String ingredientString = "";
+    @SerializedName("count")
+    int count = 1;
 
     // TODO 什么时候这个能用自己的解析就行了
     public static final Codec<VehicleAssemblingIngredient> CODEC = RecordCodecBuilder.<VehicleAssemblingIngredient>mapCodec(builder ->

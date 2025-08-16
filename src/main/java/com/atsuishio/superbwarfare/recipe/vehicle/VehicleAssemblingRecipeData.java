@@ -9,13 +9,13 @@ import java.util.List;
 
 public class VehicleAssemblingRecipeData {
 
-    @SerializedName("Inputs")
+    @SerializedName("inputs")
     private ObjectToList<StringToObject<VehicleAssemblingIngredient>> inputs;
 
-    @SerializedName("Result")
+    @SerializedName("result")
     private VehicleAssemblingResult result;
 
-    @SerializedName("Category")
+    @SerializedName("category")
     private String category = "empty";
 
     @SuppressWarnings("unchecked")

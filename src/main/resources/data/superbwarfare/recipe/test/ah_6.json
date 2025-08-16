@@ -1,5 +1,5 @@
 {
-  "Inputs": [
+  "inputs": [
     "superbwarfare:large_propeller",
     "superbwarfare:propeller",
     "2 superbwarfare:large_motor",
@@ -10,9 +10,9 @@
     "minecraft:compass",
     "superbwarfare:medium_battery_pack"
   ],
-  "Category": "aircraft",
-  "Result": {
-    "EntityType": "superbwarfare:ah_6"
+  "category": "aircraft",
+  "result": {
+    "entity": "superbwarfare:ah_6"
   },
   "type": "superbwarfare:vehicle_assembling"
 }

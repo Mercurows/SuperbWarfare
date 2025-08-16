@@ -15,11 +15,11 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
 
 public class VehicleAssemblingResult {
-    @SerializedName("Item")
+    @SerializedName("item")
     public String itemString = "";
-    @SerializedName("EntityType")
+    @SerializedName("entity")
     public String entityTypeString = "";
-    @SerializedName("Count")
+    @SerializedName("count")
     public int count = 1;
 
     public static final Codec<VehicleAssemblingResult> CODEC = RecordCodecBuilder.<VehicleAssemblingResult>mapCodec(builder -> builder.group(
