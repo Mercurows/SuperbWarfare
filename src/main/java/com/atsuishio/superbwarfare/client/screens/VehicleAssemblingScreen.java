@@ -70,6 +70,8 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
     private Int2IntArrayMap materialCount;
     private int pageIndex = 0;
     private float modelScale = 50f;
+    private double modelPosX = 218;
+    private double modelPosY = 80;
 
     private String entityNameCache = "";
     private Entity entityCache = null;
@@ -231,6 +233,14 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
             this.init();
             return true;
         }
+        if (pMouseX >= this.leftPos + 114 && pMouseX <= this.leftPos + 322 && pMouseY >= this.topPos && pMouseY <= this.topPos + 99) {
+            if (pDelta > 0) {
+                this.modelScale = Math.min(this.modelScale + 20, 150);
+            } else {
+                this.modelScale = Math.max(this.modelScale - 20, 10);
+            }
+            return true;
+        }
         return super.mouseScrolled(pMouseX, pMouseY, pDelta);
     }
 
@@ -287,7 +297,11 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
     public void addScaleButtons(int posX, int posY) {
         this.addRenderableWidget(new ImageButton(posX + 290, posY + 90, 9, 9, 149, 182, 10,
                 TEXTURE, IMAGE_SIZE, IMAGE_SIZE,
-                b -> this.modelScale = 50));
+                b -> {
+                    this.modelScale = 50;
+                    this.modelPosX = 218;
+                    this.modelPosY = 80;
+                }));
         this.addRenderableWidget(new ImageButton(posX + 300, posY + 90, 9, 9, 159, 182, 10,
                 TEXTURE, IMAGE_SIZE, IMAGE_SIZE,
                 b -> this.modelScale = Math.max(this.modelScale - 20, 10)));
@@ -334,20 +348,18 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
     @SuppressWarnings("deprecation")
     private void renderDefaultItemModel(ItemStack stack) {
         float rotationPeriod = 8.0F;
-        int xPos = this.leftPos + 200;
-        int yPos = this.topPos + 50;
-        int startX = this.leftPos + 125;
-        int startY = this.topPos + 15;
-        int width = 128;
-        int height = 85;
+        int width = 208;
+        int height = 99;
         float rotPitch = 15.0F;
+
         Window window = Minecraft.getInstance().getWindow();
         double windowGuiScale = window.getGuiScale();
-        int scissorX = (int) (startX * windowGuiScale);
-        int scissorY = (int) (window.getHeight() - (startY + height) * windowGuiScale);
+        int scissorX = (int) ((this.leftPos + 114) * windowGuiScale);
+        int scissorY = (int) (window.getHeight() - (this.topPos + height) * windowGuiScale);
         int scissorW = (int) (width * windowGuiScale);
         int scissorH = (int) (height * windowGuiScale);
         RenderSystem.enableScissor(scissorX, scissorY, scissorW, scissorH);
+
         Minecraft.getInstance().textureManager.getTexture(TextureAtlas.LOCATION_BLOCKS).setFilter(false, false);
         RenderSystem.setShaderTexture(0, TextureAtlas.LOCATION_BLOCKS);
         RenderSystem.enableBlend();
@@ -356,7 +368,7 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
 
         PoseStack posestack = RenderSystem.getModelViewStack();
         posestack.pushPose();
-        posestack.translate((float) xPos, (float) yPos, 200.0F);
+        posestack.translate(this.leftPos + this.modelPosX, this.topPos + this.modelPosY - 20, 200.0F);
         posestack.translate(8.0, 8.0, 0.0);
         posestack.scale(1.0F, -1.0F, 1.0F);
         posestack.scale(this.modelScale, this.modelScale, this.modelScale);
@@ -385,9 +397,6 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
 
         PoseStack posestack = guiGraphics.pose();
 
-        // TODO 正确调整渲染的角度和大小
-        int posX = this.leftPos + 220;
-        int posY = this.topPos + 80;
         int width = 208;
         int height = 99;
 
@@ -401,11 +410,12 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
         RenderSystem.enableScissor(scissorX, scissorY, scissorW, scissorH);
 
         posestack.pushPose();
-        posestack.translate(posX, posY, 50.0D);
+        posestack.translate(this.leftPos + this.modelPosX, this.topPos + this.modelPosY, 50.0D);
         posestack.scale(this.modelScale, this.modelScale, -this.modelScale);
 
         float size = (float) renderEntity.getBoundingBox().getSize();
-        posestack.scale(1f / size, 1f / size, 1f / size);
+        float resizeScale = 1f / Math.max(size, 1.25f);
+        posestack.scale(resizeScale, resizeScale, resizeScale);
 
         Lighting.setupForEntityInInventory();
         EntityRenderDispatcher entityrenderdispatcher = Minecraft.getInstance().getEntityRenderDispatcher();
