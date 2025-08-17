@@ -175,18 +175,20 @@ public class VehicleAssemblingTableVehicleEntity extends MobileVehicleEntity imp
                 this.entityData.set(POWER, Math.min(this.entityData.get(POWER) + 0.1f, 1f));
             }
 
+            this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) * 0.8f);
+
             if (backInputDown) {
                 this.entityData.set(POWER, Math.max(this.entityData.get(POWER) - (this.entityData.get(POWER) > 0 ? 0.1f : 0.01f), onGround() ? -0.2f : 0.2f));
                 if (rightInputDown) {
-                    this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) + 0.2f);
+                    this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) + 0.4f);
                 } else if (leftInputDown) {
-                    this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) - 0.2f);
+                    this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) - 0.4f);
                 }
             } else {
                 if (rightInputDown) {
-                    this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) - 0.2f);
+                    this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) - 0.4f);
                 } else if (this.leftInputDown) {
-                    this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) + 0.2f);
+                    this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) + 0.4f);
                 }
             }
 
@@ -207,8 +209,6 @@ public class VehicleAssemblingTableVehicleEntity extends MobileVehicleEntity imp
                         .scale(0.7);
                 this.setDeltaMovement(getDeltaMovement().add(movement.x, 1, movement.z));
             }
-
-            this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) * 0.9f);
 
             float diffY = Math.clamp(-90f, 90f, Mth.wrapDegrees(passenger.getYHeadRot() - this.getYRot()));
             float diffX = Math.clamp(-60f, 60f, Mth.wrapDegrees(passenger.getXRot() - this.getXRot()));
@@ -266,6 +266,9 @@ public class VehicleAssemblingTableVehicleEntity extends MobileVehicleEntity imp
         if (!this.hasPassenger(passenger)) {
             return;
         }
+
+        passenger.setYRot(passenger.getYRot() + this.getYRot() - this.yRotO);
+        passenger.setYHeadRot(passenger.getYHeadRot() + this.getYRot() - this.yRotO);
 
         Matrix4f transform = getVehicleTransform(1);
 
