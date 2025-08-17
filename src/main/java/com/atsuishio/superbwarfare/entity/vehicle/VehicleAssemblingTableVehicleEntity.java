@@ -393,6 +393,6 @@ public class VehicleAssemblingTableVehicleEntity extends MobileVehicleEntity imp
     @Override
     @ParametersAreNonnullByDefault
     public @Nullable AbstractContainerMenu createMenu(int i, Inventory inventory, Player player) {
-        return new VehicleAssemblingMenu(i, inventory);
+        return new VehicleAssemblingMenu(i, inventory, true);
     }
 }
