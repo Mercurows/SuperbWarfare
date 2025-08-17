@@ -27,7 +27,7 @@ public class Ptkm1rRenderer extends GeoEntityRenderer<Ptkm1rEntity> {
     public void renderRecursively(PoseStack poseStack, Ptkm1rEntity entityIn, GeoBone bone, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
         String name = bone.getName();
         if (name.equals("body")) {
-            bone.setRotY(-Mth.lerp(partialTick, animatable.yRotO, animatable.getYRot()) * Mth.DEG_TO_RAD);
+            bone.setRotY(-animatable.getYRot() * Mth.DEG_TO_RAD);
         }
         if (name.equals("zhu2")) {
             bone.setRotX(0.5f * Mth.lerp(partialTick, animatable.xRotO, animatable.getXRot()) * Mth.DEG_TO_RAD);

@@ -2,18 +2,22 @@ package com.atsuishio.superbwarfare.entity;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.entity.projectile.MineEntity;
+import com.atsuishio.superbwarfare.entity.projectile.PtkmProjectileEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.tools.CustomExplosion;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
+import com.atsuishio.superbwarfare.tools.SeekTool;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.players.OldUsersConverter;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
@@ -27,6 +31,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.items.ItemHandlerHelper;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Math;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -53,6 +58,8 @@ public class Ptkm1rEntity extends Entity implements GeoEntity, OwnableEntity, Mi
     public Ptkm1rEntity(EntityType<Ptkm1rEntity> type, Level world) {
         super(type, world);
     }
+
+    public int aimingTime;
 
     public Ptkm1rEntity(LivingEntity owner, Level level) {
         super(ModEntities.PTKM_1R.get(), level);
@@ -101,6 +108,11 @@ public class Ptkm1rEntity extends Entity implements GeoEntity, OwnableEntity, Mi
 
     public boolean isOwnedBy(LivingEntity pEntity) {
         return pEntity == this.getOwner();
+    }
+
+    @Override
+    protected float getEyeHeight(@NotNull Pose pPose, @NotNull EntityDimensions pSize) {
+        return 0.2F;
     }
 
     @Override
@@ -194,7 +206,7 @@ public class Ptkm1rEntity extends Entity implements GeoEntity, OwnableEntity, Mi
             triggerExplode();
         }
 
-        if (tickCount > 10 && onGround()) {
+        if (tickCount > 20 && onGround()) {
             findTarget();
         }
 
@@ -202,12 +214,80 @@ public class Ptkm1rEntity extends Entity implements GeoEntity, OwnableEntity, Mi
     }
 
     public void findTarget() {
-        Entity target = this.getOwner();
-        if (target != null && target.distanceTo(this) < 3) {
-            this.setXRot(-60);
-            this.look(target.position());
-        } else {
-            this.setXRot(0);
+        int range = 60;
+        Entity target = null;
+
+        for (var entity : SeekTool.getEntityWithinRange(this, level(), range)) {
+            var condition =
+                    entity.onGround()
+                    && this.getOwner() != entity
+                    && (this.getOwner() != null && entity != this.getOwner().getVehicle())
+                    && !(entity instanceof TargetEntity)
+                    && !(entity instanceof Player player && (player.isCreative() || player.isSpectator()))
+                    && (this.getOwner() != null && !this.getOwner().isAlliedTo(entity) || entity.getTeam() == null || entity.getTeam().getName().equals("TDM"))
+                    && !entity.isShiftKeyDown()
+                    && (entity.getBoundingBox().getSize() > 1.5 && entity.getDeltaMovement().lengthSqr() > 0.01);
+            if (!condition) continue;
+
+            target = entity;
+            break;
+        }
+
+        if (target != null) {
+            float targetXRot;
+            double distance = target.distanceTo(this);
+
+
+            if (distance < range) {
+                targetXRot = -60;
+                this.look(target.position());
+                if (distance < range - 10) {
+                    aimingTime++;
+
+                } else if (aimingTime > 0) {
+                    aimingTime--;
+                }
+            } else {
+                this.setXRot(0);
+                targetXRot = 0;
+            }
+
+            float diffX = Math.clamp(-60f, 60f, Mth.wrapDegrees(targetXRot - this.getXRot()));
+            this.setXRot(getXRot() + 0.25f * diffX);
+
+            if (aimingTime > 10) {
+                shoot(target, distance);
+            }
+
+        } else if (aimingTime > 0) {
+            aimingTime--;
+        }
+    }
+
+    private void shoot(Entity entity, double distance) {
+        if (this.level() instanceof ServerLevel serverLevel) {
+            PtkmProjectileEntity ptkmProjectile = new PtkmProjectileEntity(this.getOwner(), serverLevel);
+            ptkmProjectile.setDamage(750);
+            ptkmProjectile.setExplosionDamage(150);
+            ptkmProjectile.setExplosionRadius(7);
+            ptkmProjectile.setTarget(entity);
+            ptkmProjectile.setShootTime((int) (0.4f * distance));
+            ptkmProjectile.setPos(position().x, getEyePosition().y, position().z);
+            ptkmProjectile.shoot(getLookAngle().x, getLookAngle().y, getLookAngle().z, 5, 0);
+            serverLevel.addFreshEntity(ptkmProjectile);
+
+            int count = 6;
+
+            for (float i = 1f; i < 14; i += .5f) {
+                serverLevel.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE,
+                        position().x + i * getLookAngle().x,
+                        getEyePosition().y + i * getLookAngle().y,
+                        position().z + i * getLookAngle().z,
+                        Mth.clamp(count--, 1, 3), 0.15, 0.15, 0.15, 0.0025);
+            }
+
+            ParticleTool.spawnSmallExplosionParticles(serverLevel, position());
+            this.discard();
         }
     }
 
@@ -215,13 +295,14 @@ public class Ptkm1rEntity extends Entity implements GeoEntity, OwnableEntity, Mi
         Vec3 vec3 = EntityAnchorArgument.Anchor.EYES.apply(this);
         double d0 = (pTarget.x - vec3.x) * 0.2;
         double d2 = (pTarget.z - vec3.z) * 0.2;
-        this.setYRot(Mth.wrapDegrees((float) (Mth.atan2(d2, d0) * 57.2957763671875) - 90.0F));
+        float diffY = Mth.wrapDegrees(Mth.wrapDegrees((float) (Mth.atan2(d2, d0) * 57.2957763671875) - 90.0F) - this.getYRot());
+        this.setYRot(getYRot() + 0.5f * diffY);
     }
 
     private void triggerExplode() {
         new CustomExplosion.Builder(this)
-                .damage(450)
-                .radius(13)
+                .damage(100)
+                .radius(6)
                 .attacker(this.getOwner())
                 .causeVanillaExplosion()
                 .withParticleType(ParticleTool.ParticleType.HUGE)
