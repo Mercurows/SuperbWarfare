@@ -3,9 +3,12 @@ package com.atsuishio.superbwarfare.recipe.vehicle;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.item.common.container.ContainerBlockItem;
+import com.atsuishio.superbwarfare.tools.TagDataParser;
+import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -21,6 +24,8 @@ public class VehicleAssemblingResult {
     public String entityTypeString = "";
     @SerializedName("count")
     public int count = 1;
+    @SerializedName("nbt")
+    public JsonObject nbt;
 
     public static final Codec<VehicleAssemblingResult> CODEC = RecordCodecBuilder.<VehicleAssemblingResult>mapCodec(builder -> builder.group(
             Codec.STRING.optionalFieldOf("item", BuiltInRegistries.ITEM.getKey(ModItems.CONTAINER.value()).toString()).forGetter(r -> r.itemString),
@@ -58,8 +63,16 @@ public class VehicleAssemblingResult {
                 this.result = ContainerBlockItem.createInstance(type).copyWithCount(count);
             }
         } else if (!itemString.isEmpty()) {
-            var item = BuiltInRegistries.ITEM.get(ResourceLocation.parse(itemString));
-            this.result = new ItemStack(item, count);
+            var location = ResourceLocation.parse(itemString);
+            var item = BuiltInRegistries.ITEM.get(location);
+            if (nbt != null) {
+                var tag = TagDataParser.parse(nbt);
+                tag.putString("id", location.toString());
+                tag.putInt("count", 1);
+                ItemStack.parse(RegistryAccess.EMPTY, tag).ifPresent(stack -> this.result = stack);
+            } else {
+                this.result = new ItemStack(item, count);
+            }
         } else {
             this.result = ItemStack.EMPTY;
         }
