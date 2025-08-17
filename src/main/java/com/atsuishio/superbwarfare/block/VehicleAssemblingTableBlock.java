@@ -1,9 +1,11 @@
 package com.atsuishio.superbwarfare.block;
 
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.block.entity.VehicleAssemblingTableBlockEntity;
 import com.atsuishio.superbwarfare.block.property.BlockPart;
 import com.atsuishio.superbwarfare.entity.vehicle.VehicleAssemblingTableVehicleEntity;
 import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.item.VehicleAssemblingTableBlockItem;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -51,11 +53,12 @@ public class VehicleAssemblingTableBlock extends BaseEntityBlock {
     }
 
     @Override
-    public void appendHoverText(ItemStack pStack, @Nullable BlockGetter pLevel, List<Component> pTooltip, TooltipFlag pFlag) {
+    public void appendHoverText(@NotNull ItemStack pStack, @Nullable BlockGetter pLevel, List<Component> pTooltip, @NotNull TooltipFlag pFlag) {
         pTooltip.add(Component.translatable("des.superbwarfare.vehicle_assembly_table").withStyle(ChatFormatting.GRAY));
     }
 
     @Override
+    @ParametersAreNonnullByDefault
     public boolean isPathfindable(BlockState pState, BlockGetter pLevel, BlockPos pPos, PathComputationType pType) {
         return false;
     }
@@ -74,14 +77,29 @@ public class VehicleAssemblingTableBlock extends BaseEntityBlock {
     public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
         super.setPlacedBy(level, pos, state, placer, stack);
 
-        if (!level.isClientSide) {
-            var facing = state.getValue(FACING);
-            for (var part : BlockPart.values()) {
-                var blockPos = part.relative(pos, facing);
-                level.setBlock(blockPos, state.setValue(BLOCK_PART, part), 3);
-                level.blockUpdated(pos, Blocks.AIR);
-                state.updateNeighbourShapes(level, pos, 3);
+        var facing = state.getValue(FACING);
+
+        BlockPos initialPos = null;
+        for (var part : BlockPart.values()) {
+            var blockPos = part.relativeNegative(pos, facing);
+
+            if (VehicleAssemblingTableBlockItem.canPlace(level, blockPos, facing, pos)) {
+                initialPos = blockPos;
+                break;
             }
+        }
+
+        if (initialPos == null) {
+            Mod.LOGGER.error("Unable to find valid position for vehicle assembling table at {}", pos);
+            return;
+        }
+
+        for (var part : BlockPart.values()) {
+            var blockPos = part.relative(initialPos, facing);
+
+            level.setBlock(blockPos, state.setValue(BLOCK_PART, part), 3);
+            level.blockUpdated(initialPos, Blocks.AIR);
+            state.updateNeighbourShapes(level, initialPos, 3);
         }
     }
 
