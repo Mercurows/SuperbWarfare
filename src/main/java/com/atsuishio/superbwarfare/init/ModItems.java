@@ -132,6 +132,7 @@ public class ModItems {
     public static final DeferredHolder<Item, M18SmokeGrenade> M18_SMOKE_GRENADE = AMMO.register("m18_smoke_grenade", M18SmokeGrenade::new);
     public static final DeferredHolder<Item, ClaymoreMine> CLAYMORE_MINE = AMMO.register("claymore_mine", ClaymoreMine::new);
     public static final DeferredHolder<Item, Tm62Item> TM_62 = AMMO.register("tm_62", Tm62Item::new);
+    public static final DeferredHolder<Item, Ptkm1rItem> PTKM_1R = AMMO.register("ptkm_1r", Ptkm1rItem::new);
     public static final DeferredHolder<Item, C4BombItem> C4_BOMB = AMMO.register("c4_bomb", C4BombItem::new);
     public static final DeferredHolder<Item, Blu43MineItem> BLU_43_MINE = AMMO.register("blu_43_mine", Blu43MineItem::new);
     public static final DeferredHolder<Item, Item> SMALL_SHELL = AMMO.register("small_shell", SmallShellItem::new);
