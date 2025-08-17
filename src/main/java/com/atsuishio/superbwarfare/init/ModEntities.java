@@ -46,7 +46,7 @@ public class ModEntities {
     public static final RegistryObject<EntityType<Tm62Entity>> TM_62 = register("tm_62",
             EntityType.Builder.<Tm62Entity>of(Tm62Entity::new, MobCategory.MISC).setTrackingRange(32).setUpdateInterval(1).sized(0.5f, 0.15f));
     public static final RegistryObject<EntityType<Ptkm1rEntity>> PTKM_1R = register("ptkm_1r",
-            EntityType.Builder.<Ptkm1rEntity>of(Ptkm1rEntity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).sized(0.2f, 4f));
+            EntityType.Builder.<Ptkm1rEntity>of(Ptkm1rEntity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).sized(0.25f, 1f));
     public static final RegistryObject<EntityType<C4Entity>> C_4 = register("c4",
             EntityType.Builder.<C4Entity>of(C4Entity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).sized(0.5f, 0.5f));
 
