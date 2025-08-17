@@ -219,13 +219,13 @@ public class Ptkm1rEntity extends Entity implements GeoEntity, OwnableEntity, Mi
         for (var entity : SeekTool.getEntityWithinRange(this, level(), range)) {
             var condition =
                     entity.onGround()
-                            && this.getOwner() != entity
-                            && (this.getOwner() != null && entity != this.getOwner().getVehicle())
-                            && !(entity instanceof TargetEntity)
-                            && !(entity instanceof Player player && (player.isCreative() || player.isSpectator()))
-                            && (this.getOwner() != null && !this.getOwner().isAlliedTo(entity) || entity.getTeam() == null || entity.getTeam().getName().equals("TDM"))
-                            && !entity.isShiftKeyDown()
-                            && ((entity.getBoundingBox().getSize() > 1.5 || entity instanceof VehicleEntity) && entity.getDeltaMovement().lengthSqr() > 0.01);
+                    && this.getOwner() != entity
+                    && (this.getOwner() != null && entity != this.getOwner().getVehicle())
+                    && !(entity instanceof TargetEntity)
+                    && !(entity instanceof Player player && (player.isCreative() || player.isSpectator()))
+                    && (this.getOwner() != null && !this.getOwner().isAlliedTo(entity) || entity.getTeam() == null || entity.getTeam().getName().equals("TDM"))
+                    && !entity.isShiftKeyDown()
+                    && ((entity.getBoundingBox().getSize() > 1.5 || entity instanceof VehicleEntity || entity instanceof SenpaiEntity) && entity.getDeltaMovement().lengthSqr() > 0.009);
             if (!condition) continue;
 
             target = entity;
