@@ -78,7 +78,7 @@ public static final DeferredHolder<EntityType<?>, EntityType<C4Entity>> C_4 = re
     public static final DeferredHolder<EntityType<?>, EntityType<MelonBombEntity>> MELON_BOMB = register("melon_bomb",
             EntityType.Builder.<MelonBombEntity>of(MelonBombEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).noSave().sized(1f, 1f));
     public static final DeferredHolder<EntityType<?>, EntityType<PtkmProjectileEntity>> PTKM_PROJECTILE = register("ptkm_projectile",
-            EntityType.Builder.<PtkmProjectileEntity>of(PtkmProjectileEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).noSave().sized(1, 1));
+            EntityType.Builder.<PtkmProjectileEntity>of(PtkmProjectileEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).noSave().sized(0.5f, 0.5f));
     public static final DeferredHolder<EntityType<?>, EntityType<HandGrenadeEntity>> HAND_GRENADE = register("hand_grenade",
             EntityType.Builder.<HandGrenadeEntity>of(HandGrenadeEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(true).setTrackingRange(64).setUpdateInterval(1).noSave().sized(0.3f, 0.3f));
     public static final DeferredHolder<EntityType<?>, EntityType<RgoGrenadeEntity>> RGO_GRENADE = register("rgo_grenade",

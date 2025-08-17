@@ -3594,5 +3594,13 @@
         "stream": false
       }
     ]
+  },
+  "ptkm_1r_deploy": {
+    "sounds": [
+      {
+        "name": "superbwarfare:ptkm_1r_deploy",
+        "stream": false
+      }
+    ]
   }
 }
