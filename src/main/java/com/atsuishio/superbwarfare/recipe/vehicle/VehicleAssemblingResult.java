@@ -2,7 +2,10 @@ package com.atsuishio.superbwarfare.recipe.vehicle;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.item.common.container.ContainerBlockItem;
+import com.atsuishio.superbwarfare.tools.TagDataParser;
+import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
@@ -15,6 +18,8 @@ public class VehicleAssemblingResult {
     public String entityTypeString = "";
     @SerializedName("count")
     public int count = 1;
+    @SerializedName("nbt")
+    public JsonObject nbt;
 
     public transient ItemStack result = null;
 
@@ -35,7 +40,21 @@ public class VehicleAssemblingResult {
                 Mod.LOGGER.warn("invalid item: {}", itemString);
                 this.result = ItemStack.EMPTY;
             } else {
-                this.result = new ItemStack(item, count);
+                if (nbt != null) {
+                    var tag = TagDataParser.parse(nbt);
+                    CompoundTag tmp = new CompoundTag();
+                    if (tag.contains("ForgeCaps")) {
+                        tmp.put("ForgeCaps", tag.get("ForgeCaps"));
+                        tag.remove("ForgeCaps");
+                    }
+
+                    tmp.put("tag", tag);
+                    tmp.putString("id", itemString);
+                    tmp.putInt("Count", count);
+                    this.result = ItemStack.of(tmp);
+                } else {
+                    this.result = new ItemStack(item, count);
+                }
             }
         } else {
             this.result = ItemStack.EMPTY;
