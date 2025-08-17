@@ -1,0 +1,6 @@
+{
+  "parent": "superbwarfare:displaysettings/ptkm_1r.item",
+  "textures": {
+    "layer0": "superbwarfare:item/ptkm_1r"
+  }
+}

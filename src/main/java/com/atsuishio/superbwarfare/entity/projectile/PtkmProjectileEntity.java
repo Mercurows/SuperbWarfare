@@ -28,7 +28,7 @@ import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-public class PtkmProjectileEntity extends FastThrowableProjectile implements ExplosiveProjectile, GeoEntity {
+public class PtkmProjectileEntity extends FastThrowableProjectile implements ExplosiveProjectile, GeoEntity, MineEntity {
     private float damage = 750;
     private float explosionDamage = 200;
     private float explosionRadius = 10;

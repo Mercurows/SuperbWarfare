@@ -1,6 +1,10 @@
 package com.atsuishio.superbwarfare.item;
 
+import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.client.renderer.item.Ptkm1rItemRenderer;
 import com.atsuishio.superbwarfare.entity.Ptkm1rEntity;
+import com.atsuishio.superbwarfare.init.ModItems;
+import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -24,17 +28,50 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
+import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
+import org.jetbrains.annotations.NotNull;
+import software.bernie.geckolib.animatable.GeoItem;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.util.GeckoLibUtil;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Objects;
 
-public class Ptkm1rItem extends Item {
+@EventBusSubscriber(modid = Mod.MODID, bus = EventBusSubscriber.Bus.MOD)
+public class Ptkm1rItem extends Item implements GeoItem {
+    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     public Ptkm1rItem() {
-        super(new Properties().rarity(Rarity.RARE));
+        super(new Properties().rarity(Rarity.RARE).stacksTo(2));
+    }
+
+    @SubscribeEvent
+    private static void registerGunExtensions(RegisterClientExtensionsEvent event) {
+        event.registerItem(new IClientItemExtensions() {
+            private final BlockEntityWithoutLevelRenderer renderer = new Ptkm1rItemRenderer();
+
+            @Override
+            public @NotNull BlockEntityWithoutLevelRenderer getCustomRenderer() {
+                return renderer;
+            }
+        }, ModItems.PTKM_1R.get());
     }
 
     @Override
-    public InteractionResult useOn(UseOnContext pContext) {
+    public void registerControllers(AnimatableManager.ControllerRegistrar data) {
+    }
+
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return this.cache;
+    }
+
+    @Override
+    public @NotNull InteractionResult useOn(UseOnContext pContext) {
         Level level = pContext.getLevel();
         if (!(level instanceof ServerLevel)) {
             return InteractionResult.SUCCESS;
@@ -81,7 +118,8 @@ public class Ptkm1rItem extends Item {
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level pLevel, Player pPlayer, InteractionHand pHand) {
+    @ParametersAreNonnullByDefault
+    public @NotNull InteractionResultHolder<ItemStack> use(Level pLevel, Player pPlayer, InteractionHand pHand) {
         ItemStack itemstack = pPlayer.getItemInHand(pHand);
         BlockHitResult blockhitresult = getPlayerPOVHitResult(pLevel, pPlayer, ClipContext.Fluid.SOURCE_ONLY);
         if (blockhitresult.getType() != HitResult.Type.BLOCK) {

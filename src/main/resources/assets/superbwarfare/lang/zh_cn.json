@@ -183,6 +183,7 @@
   "item.superbwarfare.lunge_mine": "突刺爆雷",
   "item.superbwarfare.blu_43_mine": "BLU-43蝴蝶雷",
   "item.superbwarfare.tm_62": "TM-62反坦克地雷",
+  "item.superbwarfare.ptkm_1r": "PTKM-1R反坦克地雷",
   "item.superbwarfare.small_rocket": "小口径火箭弹",
   "item.superbwarfare.medium_rocket_ap": "中口径穿甲火箭弹",
   "item.superbwarfare.medium_rocket_he": "中口径高爆火箭弹",
@@ -556,6 +557,8 @@
   "entity.superbwarfare.medical_kit": "医疗包",
   "entity.superbwarfare.grapeshot": "葡萄弹",
   "entity.superbwarfare.vehicle_assembling_table": "载具装配台",
+  "entity.superbwarfare.ptkm_1r": "PTKM-1R反坦克地雷",
+  "entity.superbwarfare.ptkm_projectile": "PTKM-1R反坦克地雷",
 
   "key.categories.superbwarfare": "卓越前线",
   "key.superbwarfare.hold_zoom": "瞄准(按住)",

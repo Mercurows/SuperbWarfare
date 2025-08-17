@@ -183,6 +183,7 @@
   "item.superbwarfare.lunge_mine": "Lunge Mine",
   "item.superbwarfare.blu_43_mine": "BLU-43B DragonTooth",
   "item.superbwarfare.tm_62": "TM-62 Anti-tank Mine",
+  "item.superbwarfare.ptkm_1r": "PTKM-1R Anti-tank Mine",
   "item.superbwarfare.small_rocket": "Small Caliber Rocket",
   "item.superbwarfare.medium_rocket_ap": "Medium Caliber AP Rocket",
   "item.superbwarfare.medium_rocket_he": "Medium Caliber HE Rocket",
@@ -556,6 +557,8 @@
   "entity.superbwarfare.medical_kit": "Medical Kit",
   "entity.superbwarfare.grapeshot": "Grapeshot",
   "entity.superbwarfare.vehicle_assembling_table": "Vehicle Assembling Table",
+  "entity.superbwarfare.ptkm_1r": "PTKM-1R Anti-tank Mine",
+  "entity.superbwarfare.ptkm_projectile": "PTKM-1R Anti-tank Mine",
 
   "key.categories.superbwarfare": "Superb Warfare",
   "key.superbwarfare.hold_zoom": "Zoom (Hold)",
