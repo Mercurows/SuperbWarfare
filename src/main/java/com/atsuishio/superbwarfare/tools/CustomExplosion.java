@@ -190,7 +190,7 @@ public class CustomExplosion extends Explosion {
 
     public static class Builder {
         private final Level level;
-        private final Entity directSource;
+        private Entity directSource;
         private @Nullable Entity sourceEntity;
         private @Nullable Entity attackerEntity;
         private float damage;
@@ -198,14 +198,25 @@ public class CustomExplosion extends Explosion {
         private @Nullable ParticleTool.ParticleType particleType = ParticleTool.ParticleType.MINI;
         private Supplier<BlockInteraction> destroyBlock = () -> ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP;
         private boolean causeVanillaExplosion = false;
+        private int fireTime = 0;
+        private float damageMultiplier = 1;
+        private DamageSource damageSource = null;
+        private Vec3 particlePosition = null;
+
         public Vec3 position;
 
-        public Builder(@NotNull Entity source) {
-            this.level = source.level();
-            this.directSource = source;
-            this.sourceEntity = source;
-            this.attackerEntity = source;
-            this.position = new Vec3(source.getX(), source.getEyeY(), source.getZ());
+
+        public Builder(@NotNull Entity target) {
+            this.level = target.level();
+            this.directSource = target;
+            this.sourceEntity = target;
+            this.attackerEntity = target;
+            this.position = new Vec3(target.getX(), target.getEyeY(), target.getZ());
+        }
+
+        public Builder directSource(Entity directSource) {
+            this.directSource = directSource;
+            return this;
         }
 
         public Builder source(Entity source) {
@@ -233,6 +244,11 @@ public class CustomExplosion extends Explosion {
             return this;
         }
 
+        public Builder destroyBlock(Supplier<BlockInteraction> destroyBlock) {
+            this.destroyBlock = destroyBlock;
+            return this;
+        }
+
         public Builder keepBlock() {
             this.destroyBlock = () -> Explosion.BlockInteraction.KEEP;
             return this;
@@ -243,22 +259,46 @@ public class CustomExplosion extends Explosion {
             return this;
         }
 
+        public Builder fireTime(int fireTime) {
+            this.fireTime = fireTime;
+            return this;
+        }
+
+        public Builder damageMultiplier(float damageMultiplier) {
+            this.damageMultiplier = damageMultiplier;
+            return this;
+        }
+
+        public Builder damageSource(DamageSource damageSource) {
+            this.damageSource = damageSource;
+            return this;
+        }
+
         public Builder position(Vec3 position) {
             this.position = position;
+            return this;
+        }
+
+        public Builder particlePosition(Vec3 particlePosition) {
+            this.particlePosition = particlePosition;
             return this;
         }
 
         public void explode() {
             if (level.isClientSide) return;
 
-            CustomExplosion explosion = new CustomExplosion(level, directSource,
-                    ModDamageTypes.causeCustomExplosionDamage(level.registryAccess(), sourceEntity, attackerEntity), damage,
-                    position.x, position.y, position.z, radius, destroyBlock.get(), causeVanillaExplosion);
-            explosion.explode();
-            ForgeEventFactory.onExplosionStart(directSource.level(), explosion);
-            explosion.finalizeExplosion(false);
+            var source = this.damageSource != null ? this.damageSource : ModDamageTypes.causeCustomExplosionDamage(level.registryAccess(), sourceEntity, attackerEntity);
 
-            ParticleTool.spawnExplosionParticles(particleType, directSource.level(), directSource.position());
+            var customExplosion = new CustomExplosion(level, directSource,
+                    source, damage,
+                    position.x, position.y, position.z, radius, destroyBlock.get(), causeVanillaExplosion)
+                    .setFireTime(fireTime)
+                    .setDamageMultiplier(damageMultiplier);
+            customExplosion.explode();
+            ForgeEventFactory.onExplosionStart(directSource.level(), customExplosion);
+            customExplosion.finalizeExplosion(false);
+
+            ParticleTool.spawnExplosionParticles(particleType, directSource.level(), particlePosition != null ? particlePosition : position);
         }
     }
 }

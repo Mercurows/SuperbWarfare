@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.item;
 
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.entity.projectile.RgoGrenadeEntity;
-import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.tools.CustomExplosion;
@@ -22,7 +21,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.UseAnim;
-import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
@@ -82,13 +80,16 @@ public class RgoGrenade extends Item implements DispenserLaunchable {
     public @NotNull ItemStack finishUsingItem(ItemStack pStack, Level pLevel, LivingEntity pLivingEntity) {
         if (!pLevel.isClientSide) {
             RgoGrenadeEntity rgoGrenade = new RgoGrenadeEntity(pLivingEntity, pLevel, 100);
-            CustomExplosion explosion = new CustomExplosion(pLevel, null,
-                    ModDamageTypes.causeCustomExplosionDamage(pLevel.registryAccess(), rgoGrenade, pLivingEntity), ExplosionConfig.RGO_GRENADE_EXPLOSION_DAMAGE.get(),
-                    pLivingEntity.getX(), pLivingEntity.getY(), pLivingEntity.getZ(), ExplosionConfig.RPG_EXPLOSION_RADIUS.get(), ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).setDamageMultiplier(1.25f);
-            explosion.explode();
-            net.minecraftforge.event.ForgeEventFactory.onExplosionStart(pLevel, explosion);
-            explosion.finalizeExplosion(false);
-            ParticleTool.spawnMediumExplosionParticles(pLevel, pLivingEntity.position());
+
+            new CustomExplosion.Builder(rgoGrenade)
+                    .directSource(null)
+                    .attacker(pLivingEntity)
+                    .damage(ExplosionConfig.RGO_GRENADE_EXPLOSION_DAMAGE.get())
+                    .radius(ExplosionConfig.RGO_GRENADE_EXPLOSION_RADIUS.get())
+                    .causeVanillaExplosion()
+                    .damageMultiplier(1.25F)
+                    .withParticleType(ParticleTool.ParticleType.MEDIUM)
+                    .explode();
 
             if (pLivingEntity instanceof Player player) {
                 player.getCooldowns().addCooldown(pStack.getItem(), 20);
@@ -117,7 +118,7 @@ public class RgoGrenade extends Item implements DispenserLaunchable {
             }
 
             @Override
-            protected void playSound(BlockSource pSource) {
+            protected void playSound(@NotNull BlockSource pSource) {
                 pSource.getLevel().playSound(null, pSource.getPos(), ModSounds.GRENADE_THROW.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
             }
         };

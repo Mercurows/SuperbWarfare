@@ -25,7 +25,6 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.ThrowableItemProjectile;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
@@ -78,7 +77,7 @@ public class SmallRocketEntity extends FastThrowableProjectile implements GeoEnt
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundTag pCompound) {
+    public void addAdditionalSaveData(@NotNull CompoundTag pCompound) {
         super.addAdditionalSaveData(pCompound);
         pCompound.putFloat("Damage", this.damage);
         pCompound.putFloat("ExplosionDamage", this.explosionDamage);
@@ -86,7 +85,7 @@ public class SmallRocketEntity extends FastThrowableProjectile implements GeoEnt
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundTag pCompound) {
+    public void readAdditionalSaveData(@NotNull CompoundTag pCompound) {
         super.readAdditionalSaveData(pCompound);
         if (pCompound.contains("Damage")) {
             this.damage = pCompound.getFloat("Damage");
@@ -100,12 +99,12 @@ public class SmallRocketEntity extends FastThrowableProjectile implements GeoEnt
     }
 
     @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
+    public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
     @Override
-    protected Item getDefaultItem() {
+    protected @NotNull Item getDefaultItem() {
         return ModItems.SMALL_ROCKET.get();
     }
 
@@ -142,7 +141,7 @@ public class SmallRocketEntity extends FastThrowableProjectile implements GeoEnt
     }
 
     @Override
-    public void onHitBlock(BlockHitResult blockHitResult) {
+    public void onHitBlock(@NotNull BlockHitResult blockHitResult) {
         if (this.level() instanceof ServerLevel) {
             BlockPos resultPos = blockHitResult.getBlockPos();
             float hardness = this.level().getBlockState(resultPos).getBlock().defaultDestroyTime();
@@ -168,20 +167,14 @@ public class SmallRocketEntity extends FastThrowableProjectile implements GeoEnt
 
     @Override
     public void causeExplode(Vec3 vec3) {
-        CustomExplosion explosion = new CustomExplosion(this.level(), this,
-                ModDamageTypes.causeCustomExplosionDamage(this.level().registryAccess(),
-                        this,
-                        this.getOwner()),
-                explosionDamage,
-                vec3.x,
-                vec3.y,
-                vec3.z,
-                explosionRadius,
-                ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true);
-        explosion.explode();
-        net.minecraftforge.event.ForgeEventFactory.onExplosionStart(this.level(), explosion);
-        explosion.finalizeExplosion(false);
-        ParticleTool.spawnMediumExplosionParticles(this.level(), vec3);
+        new CustomExplosion.Builder(this)
+                .attacker(this.getOwner())
+                .damage(explosionDamage)
+                .radius(explosionRadius)
+                .position(vec3)
+                .causeVanillaExplosion()
+                .withParticleType(ParticleTool.ParticleType.MEDIUM)
+                .explode();
     }
 
 
@@ -218,12 +211,15 @@ public class SmallRocketEntity extends FastThrowableProjectile implements GeoEnt
     }
 
     public static void causeRocketExplode(ThrowableItemProjectile projectile, @Nullable DamageSource source, float damage, float radius, float damageMultiplier) {
-        CustomExplosion explosion = new CustomExplosion(projectile.level(), projectile, source, damage,
-                projectile.getX(), projectile.getY(), projectile.getZ(), radius, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).setDamageMultiplier(damageMultiplier);
-        explosion.explode();
-        net.minecraftforge.event.ForgeEventFactory.onExplosionStart(projectile.level(), explosion);
-        explosion.finalizeExplosion(false);
-        ParticleTool.spawnMediumExplosionParticles(projectile.level(), projectile.position());
+        new CustomExplosion.Builder(projectile)
+                .damageSource(source)
+                .damage(damage)
+                .radius(radius)
+                .causeVanillaExplosion()
+                .damageMultiplier(damageMultiplier)
+                .withParticleType(ParticleTool.ParticleType.MEDIUM)
+                .explode();
+
         projectile.discard();
     }
 

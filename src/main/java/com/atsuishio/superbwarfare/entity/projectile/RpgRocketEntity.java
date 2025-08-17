@@ -25,7 +25,6 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.ThrowableItemProjectile;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
@@ -88,7 +87,7 @@ public class RpgRocketEntity extends FastThrowableProjectile implements GeoEntit
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundTag pCompound) {
+    public void addAdditionalSaveData(@NotNull CompoundTag pCompound) {
         super.addAdditionalSaveData(pCompound);
         pCompound.putFloat("Damage", this.damage);
         pCompound.putFloat("ExplosionDamage", this.explosionDamage);
@@ -96,7 +95,7 @@ public class RpgRocketEntity extends FastThrowableProjectile implements GeoEntit
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundTag pCompound) {
+    public void readAdditionalSaveData(@NotNull CompoundTag pCompound) {
         super.readAdditionalSaveData(pCompound);
         if (pCompound.contains("Damage")) {
             this.damage = pCompound.getFloat("Damage");
@@ -125,7 +124,7 @@ public class RpgRocketEntity extends FastThrowableProjectile implements GeoEntit
     }
 
     @Override
-    public void onHitBlock(BlockHitResult blockHitResult) {
+    public void onHitBlock(@NotNull BlockHitResult blockHitResult) {
         if (this.level() instanceof ServerLevel) {
             BlockPos resultPos = blockHitResult.getBlockPos();
             float hardness = this.level().getBlockState(resultPos).getBlock().defaultDestroyTime();
@@ -178,24 +177,14 @@ public class RpgRocketEntity extends FastThrowableProjectile implements GeoEntit
 
     @Override
     public void causeExplode(Vec3 vec3) {
-        CustomExplosion explosion = new CustomExplosion(this.level(), this,
-                ModDamageTypes.causeProjectileExplosionDamage(this.level().registryAccess(),
-                        this,
-                        this.getOwner()),
-                explosionDamage,
-                vec3.x,
-                vec3.y,
-                vec3.z,
-                explosionRadius,
-                ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true);
-        explosion.explode();
-        net.minecraftforge.event.ForgeEventFactory.onExplosionStart(this.level(), explosion);
-        explosion.finalizeExplosion(false);
-        if (explosionRadius >= 10) {
-            ParticleTool.spawnHugeExplosionParticles(this.level(), vec3);
-        } else {
-            ParticleTool.spawnMediumExplosionParticles(this.level(), vec3);
-        }
+        new CustomExplosion.Builder(this)
+                .attacker(this.getOwner())
+                .damage(explosionDamage)
+                .radius(explosionRadius)
+                .position(vec3)
+                .causeVanillaExplosion()
+                .withParticleType(explosionRadius >= 10 ? ParticleTool.ParticleType.HUGE : ParticleTool.ParticleType.MEDIUM)
+                .explode();
     }
 
     @Override
@@ -255,12 +244,12 @@ public class RpgRocketEntity extends FastThrowableProjectile implements GeoEntit
     }
 
     @Override
-    public SoundEvent getCloseSound() {
+    public @NotNull SoundEvent getCloseSound() {
         return ModSounds.ROCKET_ENGINE.get();
     }
 
     @Override
-    public SoundEvent getSound() {
+    public @NotNull SoundEvent getSound() {
         return ModSounds.ROCKET_FLY.get();
     }
 

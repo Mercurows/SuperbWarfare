@@ -6,7 +6,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.projectile.ThrowableItemProjectile;
-import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
@@ -15,24 +14,26 @@ import javax.annotation.Nullable;
 public class ProjectileTool {
 
     public static void causeCustomExplode(ThrowableItemProjectile projectile, @Nullable DamageSource source, Entity target, float damage, float radius, float damageMultiplier) {
-        CustomExplosion explosion = new CustomExplosion(projectile.level(), projectile, source, damage,
-                target.getX(),
-                target.getY() + 0.5 * target.getBbHeight(),
-                target.getZ(),
-                radius, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP).setDamageMultiplier(damageMultiplier);
-        explosion.explode();
-        net.minecraftforge.event.ForgeEventFactory.onExplosionStart(projectile.level(), explosion);
-        explosion.finalizeExplosion(false);
-
+        ParticleTool.ParticleType particleType;
         if (radius <= 4) {
-            ParticleTool.spawnSmallExplosionParticles(projectile.level(), projectile.position().add(projectile.getDeltaMovement().scale(0.5)));
+            particleType = ParticleTool.ParticleType.SMALL;
         } else if (radius > 4 && radius < 10) {
-            ParticleTool.spawnMediumExplosionParticles(projectile.level(), projectile.position().add(projectile.getDeltaMovement().scale(0.5)));
+            particleType = ParticleTool.ParticleType.MEDIUM;
         } else if (radius >= 10 && radius < 16) {
-            ParticleTool.spawnHugeExplosionParticles(projectile.level(), projectile.position().add(projectile.getDeltaMovement().scale(0.5)));
+            particleType = ParticleTool.ParticleType.HUGE;
         } else {
-            ParticleTool.spawnGiantExplosionParticles(projectile.level(), projectile.position().add(projectile.getDeltaMovement().scale(0.5)));
+            particleType = ParticleTool.ParticleType.GIANT;
         }
+
+        new CustomExplosion.Builder(projectile)
+                .damageSource(source)
+                .damage(damage)
+                .radius(radius)
+                .position(new Vec3(target.getX(), target.getY() + 0.5 * target.getBbHeight(), target.getZ()))
+                .damageMultiplier(damageMultiplier)
+                .withParticleType(particleType)
+                .particlePosition(projectile.position().add(projectile.getDeltaMovement().scale(0.5)))
+                .explode();
 
         Vec3 pos = projectile.position().add(projectile.getDeltaMovement().scale(0.5));
 

@@ -28,12 +28,10 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.Pig;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.PlayMessages;
@@ -196,20 +194,14 @@ public class Agm65Entity extends FastThrowableProjectile implements GeoEntity, E
 
     @Override
     public void causeExplode(Vec3 vec3) {
-        CustomExplosion explosion = new CustomExplosion(this.level(), this,
-                ModDamageTypes.causeCustomExplosionDamage(this.level().registryAccess(),
-                        this,
-                        this.getOwner()),
-                explosionDamage,
-                vec3.x,
-                vec3.y,
-                vec3.z,
-                explosionRadius,
-                ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true);
-        explosion.explode();
-        ForgeEventFactory.onExplosionStart(this.level(), explosion);
-        explosion.finalizeExplosion(false);
-        ParticleTool.spawnHugeExplosionParticles(this.level(), vec3);
+        new CustomExplosion.Builder(this)
+                .attacker(this.getOwner())
+                .damage(explosionDamage)
+                .radius(explosionRadius)
+                .position(vec3)
+                .causeVanillaExplosion()
+                .withParticleType(ParticleTool.ParticleType.HUGE)
+                .explode();
     }
 
     @Override

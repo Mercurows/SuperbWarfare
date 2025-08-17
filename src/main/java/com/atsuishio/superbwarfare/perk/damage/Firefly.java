@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.perk.damage;
 
 import com.atsuishio.superbwarfare.data.gun.GunData;
-import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkInstance;
 import com.atsuishio.superbwarfare.tools.CustomExplosion;
@@ -31,14 +30,14 @@ public class Firefly extends Perk {
         }
         if (attacker == null) return;
 
-        CustomExplosion explosion = new CustomExplosion(target.level(), attacker,
-                ModDamageTypes.causeCustomExplosionDamage(target.level().registryAccess(), null, attacker),
-                6 + instance.level() * 2, target.getX(), target.getY(), target.getZ(),
-                2 + instance.level() * 0.5f, CustomExplosion.BlockInteraction.KEEP, false)
-                .setFireTime(3 + instance.level() / 3);
-        explosion.explode();
-        net.minecraftforge.event.ForgeEventFactory.onExplosionStart(target.level(), explosion);
-        explosion.finalizeExplosion(false);
-        ParticleTool.spawnSmallExplosionParticles(target.level(), target.position());
+        new CustomExplosion.Builder(target)
+                .damage(6 + instance.level() * 2)
+                .radius(2 + instance.level() * 0.5f)
+                .directSource(attacker)
+                .source(null)
+                .keepBlock()
+                .fireTime(3 + instance.level() / 3)
+                .withParticleType(ParticleTool.ParticleType.SMALL)
+                .explode();
     }
 }

@@ -26,7 +26,6 @@ import net.minecraft.world.entity.decoration.HangingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.entity.EntityTypeTest;
 import net.minecraft.world.phys.Vec3;
@@ -239,13 +238,14 @@ public class Blu43Entity extends Entity implements GeoEntity, OwnableEntity, Min
     }
 
     private void triggerExplode() {
-        CustomExplosion explosion = new CustomExplosion(this.level(), this,
-                ModDamageTypes.causeCustomExplosionDamage(this.level().registryAccess(), this, this.getOwner()), 10f,
-                this.getX(), this.getEyeY(), this.getZ(), 2f, Explosion.BlockInteraction.KEEP, false);
-        explosion.explode();
-        net.minecraftforge.event.ForgeEventFactory.onExplosionStart(this.level(), explosion);
-        explosion.finalizeExplosion(false);
-        ParticleTool.spawnSmallExplosionParticles(this.level(), this.position());
+        new CustomExplosion.Builder(this)
+                .attacker(this.getOwner())
+                .damage(10)
+                .radius(2f)
+                .keepBlock()
+                .withParticleType(ParticleTool.ParticleType.SMALL)
+                .explode();
+
         this.discard();
     }
 

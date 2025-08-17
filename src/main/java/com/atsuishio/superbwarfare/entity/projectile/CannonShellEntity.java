@@ -27,17 +27,16 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.ClipContext;
-import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.PlayMessages;
+import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -46,6 +45,8 @@ import software.bernie.geckolib.core.animation.AnimationState;
 import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
+
+import javax.annotation.ParametersAreNonnullByDefault;
 
 public class CannonShellEntity extends FastThrowableProjectile implements GeoEntity, ExplosiveProjectile {
 
@@ -60,6 +61,7 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
     public enum Type {
         AP, HE, CM, GRAPE
     }
+
     private Type type = Type.AP;
     private int sparedAmount = 50;
     private int sparedAngle = 15;
@@ -70,7 +72,7 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
         this.noCulling = true;
     }
 
-    public CannonShellEntity(LivingEntity entity, Level world, float damage, float radius, float explosionDamage, float fireProbability, int fireTime, float gravity, Type type, int sparedAmount, int sparedTime , int sparedAngle) {
+    public CannonShellEntity(LivingEntity entity, Level world, float damage, float radius, float explosionDamage, float fireProbability, int fireTime, float gravity, Type type, int sparedAmount, int sparedTime, int sparedAngle) {
         super(ModEntities.CANNON_SHELL.get(), entity, world);
         this.noCulling = true;
         this.damage = damage;
@@ -95,12 +97,13 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
     }
 
     @Override
+    @ParametersAreNonnullByDefault
     public boolean isColliding(BlockPos pPos, BlockState pState) {
         return true;
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundTag pCompound) {
+    public void addAdditionalSaveData(@NotNull CompoundTag pCompound) {
         super.addAdditionalSaveData(pCompound);
 
         pCompound.putFloat("Damage", this.damage);
@@ -112,7 +115,7 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundTag pCompound) {
+    public void readAdditionalSaveData(@NotNull CompoundTag pCompound) {
         super.readAdditionalSaveData(pCompound);
 
         if (pCompound.contains("Damage")) {
@@ -141,12 +144,12 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
     }
 
     @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
+    public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
     @Override
-    protected Item getDefaultItem() {
+    protected @NotNull Item getDefaultItem() {
         return ModItems.HE_5_INCHES.get();
     }
 
@@ -156,7 +159,7 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
     }
 
     @Override
-    public void onHitBlock(BlockHitResult blockHitResult) {
+    public void onHitBlock(@NotNull BlockHitResult blockHitResult) {
         if (this.level() instanceof ServerLevel) {
             if (type != Type.AP) {
                 causeExplode(blockHitResult.getLocation());
@@ -186,7 +189,7 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
     }
 
     @Override
-    public void onHitEntity(EntityHitResult entityHitResult) {
+    public void onHitEntity(@NotNull EntityHitResult entityHitResult) {
         if (this.level() instanceof ServerLevel) {
             Entity entity = entityHitResult.getEntity();
             if (this.getOwner() != null && entity == this.getOwner().getVehicle())
@@ -227,7 +230,7 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
         super.tick();
         if (this.level() instanceof ServerLevel serverLevel && tickCount > 1) {
             double l = getDeltaMovement().length();
-            for (double i = 0; i < l; i ++) {
+            for (double i = 0; i < l; i++) {
                 Vec3 startPos = new Vec3(this.xo, this.yo, this.zo);
                 Vec3 pos = startPos.add(getDeltaMovement().normalize().scale(-i));
                 ParticleTool.sendParticle(serverLevel, ParticleTypes.CAMPFIRE_COSY_SMOKE, pos.x, pos.y, pos.z,
@@ -307,24 +310,15 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
 
     @Override
     public void causeExplode(Vec3 vec3) {
-        CustomExplosion explosion = new CustomExplosion(this.level(), this,
-                ModDamageTypes.causeCustomExplosionDamage(this.level().registryAccess(),
-                        this,
-                        this.getOwner()),
-                explosionDamage,
-                vec3.x,
-                vec3.y,
-                vec3.z,
-                radius,
-                ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true);
-        explosion.explode();
-        ForgeEventFactory.onExplosionStart(this.level(), explosion);
-        explosion.finalizeExplosion(false);
-        if (radius > 9) {
-            ParticleTool.spawnHugeExplosionParticles(this.level(), vec3);
-        } else {
-            ParticleTool.spawnMediumExplosionParticles(this.level(), vec3);
-        }
+        new CustomExplosion.Builder(this)
+                .attacker(this.getOwner())
+                .damage(explosionDamage)
+                .radius(radius)
+                .position(vec3)
+                .causeVanillaExplosion()
+                .withParticleType(radius > 9 ? ParticleTool.ParticleType.HUGE : ParticleTool.ParticleType.MEDIUM)
+                .explode();
+
         discard();
     }
 
@@ -348,7 +342,7 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
     }
 
     @Override
-    public SoundEvent getSound() {
+    public @NotNull SoundEvent getSound() {
         return ModSounds.SHELL_FLY.get();
     }
 

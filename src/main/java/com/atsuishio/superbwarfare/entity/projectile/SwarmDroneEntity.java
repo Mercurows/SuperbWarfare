@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.entity.projectile;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
@@ -26,7 +25,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
@@ -274,12 +272,15 @@ public class SwarmDroneEntity extends FastThrowableProjectile implements GeoEnti
     }
 
     public void causeMissileExplode(@Nullable DamageSource source, float damage, float radius) {
-        CustomExplosion explosion = new CustomExplosion(level(), this, source, damage,
-                this.getX(), this.getY(), this.getZ(), radius, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).setDamageMultiplier(1.25f);
-        explosion.explode();
-        net.minecraftforge.event.ForgeEventFactory.onExplosionStart(level(), explosion);
-        explosion.finalizeExplosion(false);
-        ParticleTool.spawnMediumExplosionParticles(level(), position());
+        new CustomExplosion.Builder(this)
+                .damageSource(source)
+                .damage(damage)
+                .radius(radius)
+                .causeVanillaExplosion()
+                .damageMultiplier(1.25F)
+                .withParticleType(ParticleTool.ParticleType.MEDIUM)
+                .explode();
+
         discard();
     }
 

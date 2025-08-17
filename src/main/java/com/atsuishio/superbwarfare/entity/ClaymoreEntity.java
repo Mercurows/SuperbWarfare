@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.entity;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.entity.projectile.MineEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
@@ -23,7 +22,6 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -231,24 +229,27 @@ public class ClaymoreEntity extends Entity implements GeoEntity, OwnableEntity, 
     public void destroy() {
         if (level() instanceof ServerLevel) {
             Entity attacker = EntityFindUtil.findEntity(this.level(), this.entityData.get(LAST_ATTACKER_UUID));
-            CustomExplosion explosion = new CustomExplosion(this.level(), attacker == null ? this : attacker,
-                    ModDamageTypes.causeCustomExplosionDamage(this.level().registryAccess(), attacker == null ? this : attacker, attacker == null ? this : attacker), 25.0f,
-                    this.getX(), this.getY(), this.getZ(), 5f, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true);
-            explosion.explode();
-            net.minecraftforge.event.ForgeEventFactory.onExplosionStart(this.level(), explosion);
-            explosion.finalizeExplosion(false);
-            ParticleTool.spawnMediumExplosionParticles(this.level(), this.position());
+
+            new CustomExplosion.Builder(attacker == null ? this : attacker)
+                    .damage(25)
+                    .radius(5)
+                    .position(this.position())
+                    .causeVanillaExplosion()
+                    .withParticleType(ParticleTool.ParticleType.MEDIUM)
+                    .explode();
+
             this.discard();
         }
     }
 
     private void triggerExplode() {
-        CustomExplosion explosion = new CustomExplosion(this.level(), this,
-                ModDamageTypes.causeMineDamage(this.level().registryAccess(), this.getOwner()), 140f,
-                this.getX(), this.getEyeY(), this.getZ(), 4f, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true);
-        explosion.explode();
-        net.minecraftforge.event.ForgeEventFactory.onExplosionStart(this.level(), explosion);
-        explosion.finalizeExplosion(false);
+        new CustomExplosion.Builder(this)
+                .attacker(this.getOwner())
+                .damage(140)
+                .radius(4)
+                .causeVanillaExplosion()
+                .withParticleType(ParticleTool.ParticleType.MEDIUM)
+                .explode();
     }
 
     @Override

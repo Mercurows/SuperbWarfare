@@ -27,7 +27,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.alchemy.Potions;
-import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BellBlock;
 import net.minecraft.world.level.block.state.BlockState;
@@ -37,6 +36,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.network.PlayMessages;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -108,7 +108,7 @@ public class MortarShellEntity extends FastThrowableProjectile implements GeoEnt
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundTag pCompound) {
+    public void addAdditionalSaveData(@NotNull CompoundTag pCompound) {
         super.addAdditionalSaveData(pCompound);
         pCompound.putFloat("Damage", this.damage);
         pCompound.putFloat("ExplosionDamage", this.explosionDamage);
@@ -129,7 +129,7 @@ public class MortarShellEntity extends FastThrowableProjectile implements GeoEnt
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundTag pCompound) {
+    public void readAdditionalSaveData(@NotNull CompoundTag pCompound) {
         super.readAdditionalSaveData(pCompound);
 
         if (pCompound.contains("Damage")) {
@@ -164,12 +164,12 @@ public class MortarShellEntity extends FastThrowableProjectile implements GeoEnt
     }
 
     @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
+    public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
     @Override
-    protected Item getDefaultItem() {
+    protected @NotNull Item getDefaultItem() {
         return ModItems.MORTAR_SHELL.get();
     }
 
@@ -179,7 +179,7 @@ public class MortarShellEntity extends FastThrowableProjectile implements GeoEnt
     }
 
     @Override
-    public void onHitEntity(EntityHitResult entityHitResult) {
+    public void onHitEntity(@NotNull EntityHitResult entityHitResult) {
         if (this.tickCount > 1) {
             Entity entity = entityHitResult.getEntity();
             DamageHandler.doDamage(entity, ModDamageTypes.causeProjectileHitDamage(this.level().registryAccess(), this, this.getOwner()), this.damage);
@@ -240,21 +240,16 @@ public class MortarShellEntity extends FastThrowableProjectile implements GeoEnt
 
     @Override
     public void causeExplode(Vec3 vec3) {
-        CustomExplosion explosion = new CustomExplosion(this.level(), this,
-                ModDamageTypes.causeCustomExplosionDamage(this.level().registryAccess(),
-                        this,
-                        this.getOwner()),
-                explosionDamage,
-                vec3.x,
-                vec3.y,
-                vec3.z,
-                radius,
-                ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).
-                setDamageMultiplier(1.25f);
-        explosion.explode();
-        net.minecraftforge.event.ForgeEventFactory.onExplosionStart(this.level(), explosion);
-        explosion.finalizeExplosion(false);
-        ParticleTool.spawnMediumExplosionParticles(this.level(), vec3);
+        new CustomExplosion.Builder(this)
+                .attacker(this.getOwner())
+                .damage(explosionDamage)
+                .radius(radius)
+                .position(vec3)
+                .causeVanillaExplosion()
+                .withParticleType(ParticleTool.ParticleType.MEDIUM)
+                .damageMultiplier(1.25F)
+                .explode();
+
     }
 
     @Override
@@ -280,7 +275,7 @@ public class MortarShellEntity extends FastThrowableProjectile implements GeoEnt
     }
 
     @Override
-    public SoundEvent getSound() {
+    public @NotNull SoundEvent getSound() {
         return ModSounds.SHELL_FLY.get();
     }
 

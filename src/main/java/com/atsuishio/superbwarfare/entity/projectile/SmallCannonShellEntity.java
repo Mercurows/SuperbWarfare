@@ -35,6 +35,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.PlayMessages;
+import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -81,7 +82,7 @@ public class SmallCannonShellEntity extends FastThrowableProjectile implements G
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundTag pCompound) {
+    public void addAdditionalSaveData(@NotNull CompoundTag pCompound) {
         super.addAdditionalSaveData(pCompound);
         pCompound.putFloat("Damage", this.damage);
         pCompound.putFloat("ExplosionDamage", this.explosionDamage);
@@ -89,7 +90,7 @@ public class SmallCannonShellEntity extends FastThrowableProjectile implements G
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundTag pCompound) {
+    public void readAdditionalSaveData(@NotNull CompoundTag pCompound) {
         super.readAdditionalSaveData(pCompound);
         if (pCompound.contains("Damage")) {
             this.damage = pCompound.getFloat("Damage");
@@ -103,12 +104,12 @@ public class SmallCannonShellEntity extends FastThrowableProjectile implements G
     }
 
     @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
+    public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
     @Override
-    protected Item getDefaultItem() {
+    protected @NotNull Item getDefaultItem() {
         return ModItems.SMALL_SHELL.get();
     }
 
@@ -121,7 +122,8 @@ public class SmallCannonShellEntity extends FastThrowableProjectile implements G
     protected void onHitEntity(EntityHitResult result) {
         Entity entity = result.getEntity();
 
-        if (this.getOwner() != null && this.getOwner().getVehicle() != null && entity == this.getOwner().getVehicle()) return;
+        if (this.getOwner() != null && this.getOwner().getVehicle() != null && entity == this.getOwner().getVehicle())
+            return;
         if (this.level() instanceof ServerLevel) {
 
             if (this.getOwner() instanceof LivingEntity living) {
@@ -153,7 +155,7 @@ public class SmallCannonShellEntity extends FastThrowableProjectile implements G
             float hardness = this.level().getBlockState(resultPos).getBlock().defaultDestroyTime();
             if (hardness != -1) {
                 if (ExplosionConfig.EXPLOSION_DESTROY.get() && this.blockInteraction == null) {
-                    boolean destroy = Math.random() < Mth.clamp(1 - (hardness / 50), 0.1 , 1);
+                    boolean destroy = Math.random() < Mth.clamp(1 - (hardness / 50), 0.1, 1);
                     if (destroy) {
                         this.level().destroyBlock(resultPos, true);
                     }
@@ -171,21 +173,16 @@ public class SmallCannonShellEntity extends FastThrowableProjectile implements G
     }
 
     private void causeExplode(Vec3 vec3, boolean hitEntity) {
-        CustomExplosion explosion = new CustomExplosion(this.level(), this,
-                ModDamageTypes.causeCustomExplosionDamage(this.level().registryAccess(),
-                        this,
-                        this.getOwner()),
-                explosionDamage,
-                vec3.x,
-                vec3.y,
-                vec3.z,
-                explosionRadius,
-                hitEntity ? Explosion.BlockInteraction.KEEP : (ExplosionConfig.EXPLOSION_DESTROY.get() ? (this.blockInteraction != null ? this.blockInteraction : Explosion.BlockInteraction.DESTROY) : Explosion.BlockInteraction.KEEP)
-        ).setDamageMultiplier(1.25f);
-        explosion.explode();
-        net.minecraftforge.event.ForgeEventFactory.onExplosionStart(this.level(), explosion);
-        explosion.finalizeExplosion(false);
-        ParticleTool.spawnSmallExplosionParticles(this.level(), vec3);
+        new CustomExplosion.Builder(this)
+                .attacker(this.getOwner())
+                .damage(explosionDamage)
+                .radius(explosionRadius)
+                .position(vec3)
+                .causeVanillaExplosion()
+                .withParticleType(ParticleTool.ParticleType.SMALL)
+                .destroyBlock(() -> hitEntity ? Explosion.BlockInteraction.KEEP : (ExplosionConfig.EXPLOSION_DESTROY.get() ? (this.blockInteraction != null ? this.blockInteraction : Explosion.BlockInteraction.DESTROY) : Explosion.BlockInteraction.KEEP))
+                .damageMultiplier(1.25F)
+                .explode();
     }
 
     @Override
