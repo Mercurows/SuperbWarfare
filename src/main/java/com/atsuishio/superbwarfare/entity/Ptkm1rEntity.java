@@ -173,7 +173,7 @@ public class Ptkm1rEntity extends Entity implements GeoEntity, OwnableEntity, Mi
             }
 
             if (!player.getAbilities().instabuild) {
-                ItemHandlerHelper.giveItemToPlayer(player, new ItemStack(ModItems.TM_62.get()));
+                ItemHandlerHelper.giveItemToPlayer(player, new ItemStack(ModItems.PTKM_1R.get()));
             }
         }
 
@@ -217,20 +217,22 @@ public class Ptkm1rEntity extends Entity implements GeoEntity, OwnableEntity, Mi
         int range = 60;
         Entity target = null;
 
-        for (var entity : SeekTool.getEntityWithinRange(this, level(), range)) {
-            var condition =
-                    entity.onGround()
-                    && this.getOwner() != entity
-                    && (this.getOwner() != null && entity != this.getOwner().getVehicle())
-                    && !(entity instanceof TargetEntity)
-                    && !(entity instanceof Player player && (player.isCreative() || player.isSpectator()))
-                    && (this.getOwner() != null && !this.getOwner().isAlliedTo(entity) || entity.getTeam() == null || entity.getTeam().getName().equals("TDM"))
-                    && !entity.isShiftKeyDown()
-                    && (entity.getBoundingBox().getSize() > 1.5 && entity.getDeltaMovement().lengthSqr() > 0.01);
-            if (!condition) continue;
+        if (tickCount %5 == 0) {
+            for (var entity : SeekTool.getEntityWithinRange(this, level(), range)) {
+                var condition =
+                        entity.onGround()
+                                && this.getOwner() != entity
+                                && (this.getOwner() != null && entity != this.getOwner().getVehicle())
+                                && !(entity instanceof TargetEntity)
+                                && !(entity instanceof Player player && (player.isCreative() || player.isSpectator()))
+                                && (this.getOwner() != null && !this.getOwner().isAlliedTo(entity) || entity.getTeam() == null || entity.getTeam().getName().equals("TDM"))
+                                && !entity.isShiftKeyDown()
+                                && (entity.getBoundingBox().getSize() > 1.5 && entity.getDeltaMovement().lengthSqr() > 0.008);
+                if (!condition) continue;
 
-            target = entity;
-            break;
+                target = entity;
+                break;
+            }
         }
 
         if (target != null) {

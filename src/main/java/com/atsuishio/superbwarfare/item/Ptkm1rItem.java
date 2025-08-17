@@ -1,6 +1,8 @@
 package com.atsuishio.superbwarfare.item;
 
+import com.atsuishio.superbwarfare.client.renderer.item.Ptkm1rItemRenderer;
 import com.atsuishio.superbwarfare.entity.Ptkm1rEntity;
+import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -24,13 +26,42 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraftforge.client.extensions.common.IClientItemExtensions;
+import org.jetbrains.annotations.NotNull;
+import software.bernie.geckolib.animatable.GeoItem;
+import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.core.animation.AnimatableManager;
+import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.Objects;
+import java.util.function.Consumer;
 
-public class Ptkm1rItem extends Item {
-
+public class Ptkm1rItem extends Item implements GeoItem {
+    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     public Ptkm1rItem() {
-        super(new Properties().rarity(Rarity.RARE));
+        super(new Properties().rarity(Rarity.RARE).stacksTo(2));
+    }
+
+    @Override
+    public void initializeClient(@NotNull Consumer<IClientItemExtensions> consumer) {
+        super.initializeClient(consumer);
+        consumer.accept(new IClientItemExtensions() {
+            private final BlockEntityWithoutLevelRenderer renderer = new Ptkm1rItemRenderer();
+
+            @Override
+            public BlockEntityWithoutLevelRenderer getCustomRenderer() {
+                return renderer;
+            }
+        });
+    }
+
+    @Override
+    public void registerControllers(AnimatableManager.ControllerRegistrar data) {
+    }
+
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return this.cache;
     }
 
     @Override

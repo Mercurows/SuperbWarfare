@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " a ",
+    "dbd",
+    "ece"
+  ],
+  "key": {
+    "a": {
+      "item": "superbwarfare:grain"
+    },
+    "b": {
+      "item": "superbwarfare:ap_5_inches"
+    },
+    "c": {
+      "item": "minecraft:calibrated_sculk_sensor"
+    },
+    "d": {
+      "item": "minecraft:iron_ingot"
+    },
+    "e": {
+      "item": "minecraft:iron_bars"
+    }
+  },
+  "result": {
+    "item": "superbwarfare:ptkm_1r",
+    "count": 1
+  }
+}
