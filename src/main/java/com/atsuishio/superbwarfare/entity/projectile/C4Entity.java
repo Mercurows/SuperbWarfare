@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.entity.projectile;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
-import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
@@ -31,12 +30,10 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ClipContext;
-import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.*;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
@@ -432,13 +429,14 @@ public class C4Entity extends Entity implements GeoEntity, OwnableEntity {
             });
         }
 
-        CustomExplosion explosion = new CustomExplosion(level(), this,
-                ModDamageTypes.causeCustomExplosionDamage(level().registryAccess(), this, this.getOwner()), ExplosionConfig.C4_EXPLOSION_DAMAGE.get(),
-                pos.x, pos.y, pos.z, ExplosionConfig.C4_EXPLOSION_RADIUS.get(), ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true);
-        explosion.explode();
-        EventHooks.onExplosionStart(level(), explosion);
-        ParticleTool.spawnHugeExplosionParticles(level(), position());
-        explosion.finalizeExplosion(false);
+        new CustomExplosion.Builder(this)
+                .attacker(this.getOwner())
+                .damage(ExplosionConfig.C4_EXPLOSION_DAMAGE.get())
+                .radius(ExplosionConfig.C4_EXPLOSION_RADIUS.get())
+                .position(pos)
+                .causeVanillaExplosion()
+                .withParticleType(ParticleTool.ParticleType.HUGE)
+                .explode();
 
         this.discard();
     }

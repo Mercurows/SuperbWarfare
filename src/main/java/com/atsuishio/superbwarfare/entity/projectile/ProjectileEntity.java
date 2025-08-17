@@ -51,7 +51,6 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.*;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.entity.PartEntity;
-import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
@@ -660,13 +659,13 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
     }
 
     protected void explosionBullet(Entity projectile, float damage, int heLevel, Vec3 hitVec) {
-        CustomExplosion explosion = new CustomExplosion(projectile.level(), projectile,
-                ModDamageTypes.causeProjectileExplosionDamage(projectile.level().registryAccess(), projectile, this.getShooter()), (float) ((0.9 * damage) * (1 + 0.1 * heLevel)),
-                hitVec.x, hitVec.y, hitVec.z, (float) ((1.5 + 0.02 * damage) * (1 + 0.05 * heLevel))).bulletExplode();
-        explosion.explode();
-        EventHooks.onExplosionStart(projectile.level(), explosion);
-        explosion.finalizeExplosion(false);
-        ParticleTool.spawnMiniExplosionParticles(this.level(), hitVec);
+        new CustomExplosion.Builder(projectile)
+                .attacker(this.getShooter())
+                .damage((float) ((0.9 * damage) * (1 + 0.1 * heLevel)))
+                .radius((float) ((1.5 + 0.02 * damage) * (1 + 0.05 * heLevel)))
+                .position(hitVec)
+//                .bulletExplode()
+                .explode();
     }
 
     public void setDamage(float damage) {

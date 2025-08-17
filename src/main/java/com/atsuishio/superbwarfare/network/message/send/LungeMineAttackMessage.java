@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.network.message.send;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModItems;
@@ -18,10 +17,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Explosion;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.NotNull;
 
@@ -57,33 +53,37 @@ public record LungeMineAttackMessage(int msgType, UUID uuid, Vec3 pos) implement
                 Entity lookingEntity = EntityFindUtil.findEntity(player.level(), String.valueOf(message.uuid));
                 if (lookingEntity != null) {
                     DamageHandler.doDamage(lookingEntity, ModDamageTypes.causeLungeMineDamage(player.level().registryAccess(), player, player), lookingEntity instanceof VehicleEntity ? 600 : 150);
-                    causeLungeMineExplode(player.level(), player, lookingEntity);
+                    causeLungeMineExplode(player, lookingEntity);
                 }
             } else if (message.msgType == 1) {
                 if (!player.isCreative()) {
                     stack.shrink(1);
                 }
-                CustomExplosion explosion = new CustomExplosion(player.level(), null,
-                        ModDamageTypes.causeCustomExplosionDamage(player.level().registryAccess(), player, player), 60,
-                        message.pos.x, message.pos.y, message.pos.z, 4f, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).setDamageMultiplier(1.25f);
-                explosion.explode();
-                EventHooks.onExplosionStart(player.level(), explosion);
-                explosion.finalizeExplosion(false);
-                ParticleTool.spawnMediumExplosionParticles(player.level(), message.pos);
 
+                new CustomExplosion.Builder(player)
+                        .damage(60)
+                        .radius(4)
+                        .causeVanillaExplosion()
+                        .damageMultiplier(1.25f)
+                        .withParticleType(ParticleTool.ParticleType.MEDIUM)
+                        .position(message.pos)
+                        .explode();
             }
             player.swing(InteractionHand.MAIN_HAND);
         }
     }
 
-    public static void causeLungeMineExplode(Level pLevel, Entity entity, Entity pLivingEntity) {
-        CustomExplosion explosion = new CustomExplosion(pLevel, pLivingEntity,
-                ModDamageTypes.causeCustomExplosionDamage(pLevel.registryAccess(), pLivingEntity, entity), 60,
-                pLivingEntity.getX(), pLivingEntity.getEyeY(), pLivingEntity.getZ(), 4f, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).setDamageMultiplier(1.25f);
-        explosion.explode();
-        EventHooks.onExplosionStart(pLevel, explosion);
-        explosion.finalizeExplosion(false);
-        ParticleTool.spawnMediumExplosionParticles(pLevel, pLivingEntity.position());
+    public static void causeLungeMineExplode(Entity attacker, Entity target) {
+        new CustomExplosion.Builder(target)
+                .damage(60)
+                .radius(4)
+                .attacker(attacker)
+                .causeVanillaExplosion()
+                .damageMultiplier(1.25f)
+                .causeVanillaExplosion()
+                .damageMultiplier(1.25F)
+                .withParticleType(ParticleTool.ParticleType.MEDIUM)
+                .explode();
     }
 
     @Override

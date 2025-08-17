@@ -29,7 +29,6 @@ import net.minecraft.world.level.entity.EntityTypeTest;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
@@ -158,21 +157,16 @@ public class SmallCannonShellEntity extends FastThrowableProjectile implements G
     }
 
     private void causeExplode(Vec3 vec3, boolean hitEntity) {
-        CustomExplosion explosion = new CustomExplosion(this.level(), this,
-                ModDamageTypes.causeCustomExplosionDamage(this.level().registryAccess(),
-                        this,
-                        this.getOwner()),
-                explosionDamage,
-                vec3.x,
-                vec3.y,
-                vec3.z,
-                explosionRadius,
-                hitEntity ? Explosion.BlockInteraction.KEEP : (ExplosionConfig.EXPLOSION_DESTROY.get() ? (this.blockInteraction != null ? this.blockInteraction : Explosion.BlockInteraction.DESTROY) : Explosion.BlockInteraction.KEEP)
-        ).setDamageMultiplier(1.25f);
-        explosion.explode();
-        EventHooks.onExplosionStart(this.level(), explosion);
-        explosion.finalizeExplosion(false);
-        ParticleTool.spawnSmallExplosionParticles(this.level(), vec3);
+        new CustomExplosion.Builder(this)
+                .attacker(this.getOwner())
+                .damage(explosionDamage)
+                .radius(explosionRadius)
+                .position(vec3)
+                .causeVanillaExplosion()
+                .withParticleType(ParticleTool.ParticleType.SMALL)
+                .destroyBlock(() -> hitEntity ? Explosion.BlockInteraction.KEEP : (ExplosionConfig.EXPLOSION_DESTROY.get() ? (this.blockInteraction != null ? this.blockInteraction : Explosion.BlockInteraction.DESTROY) : Explosion.BlockInteraction.KEEP))
+                .damageMultiplier(1.25F)
+                .explode();
     }
 
     @Override

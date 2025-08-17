@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.item;
 
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.entity.projectile.RgoGrenadeEntity;
-import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
@@ -20,9 +19,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.*;
-import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.event.EventHooks;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -80,13 +77,16 @@ public class RgoGrenade extends Item implements ProjectileItem {
     public @NotNull ItemStack finishUsingItem(ItemStack pStack, Level pLevel, LivingEntity pLivingEntity) {
         if (!pLevel.isClientSide) {
             RgoGrenadeEntity rgoGrenade = new RgoGrenadeEntity(pLivingEntity, pLevel, 100);
-            CustomExplosion explosion = new CustomExplosion(pLevel, null,
-                    ModDamageTypes.causeCustomExplosionDamage(pLevel.registryAccess(), rgoGrenade, pLivingEntity), ExplosionConfig.RGO_GRENADE_EXPLOSION_DAMAGE.get(),
-                    pLivingEntity.getX(), pLivingEntity.getY(), pLivingEntity.getZ(), ExplosionConfig.RPG_EXPLOSION_RADIUS.get(), ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).setDamageMultiplier(1.25f);
-            explosion.explode();
-            EventHooks.onExplosionStart(pLevel, explosion);
-            explosion.finalizeExplosion(false);
-            ParticleTool.spawnMediumExplosionParticles(pLevel, pLivingEntity.position());
+
+            new CustomExplosion.Builder(rgoGrenade)
+                    .directSource(null)
+                    .attacker(pLivingEntity)
+                    .damage(ExplosionConfig.RGO_GRENADE_EXPLOSION_DAMAGE.get())
+                    .radius(ExplosionConfig.RGO_GRENADE_EXPLOSION_RADIUS.get())
+                    .causeVanillaExplosion()
+                    .damageMultiplier(1.25F)
+                    .withParticleType(ParticleTool.ParticleType.MEDIUM)
+                    .explode();
 
             if (pLivingEntity instanceof Player player) {
                 player.getCooldowns().addCooldown(pStack.getItem(), 20);
