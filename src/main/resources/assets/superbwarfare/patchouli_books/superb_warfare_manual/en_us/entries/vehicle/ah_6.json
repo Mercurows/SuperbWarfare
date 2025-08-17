@@ -5,20 +5,15 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "superbwarfare.page.vehicle.ah_61"
-    },
-    {
-      "type": "patchouli:crafting",
-      "recipe": "superbwarfare:ah_6_container",
-      "text": "superbwarfare.page.vehicle.ah_62"
+      "text": "superbwarfare.page.vehicle.ah_6.1"
     },
     {
       "type": "patchouli:text",
-      "text": "superbwarfare.page.vehicle.ah_63"
+      "text": "superbwarfare.page.vehicle.ah_6.2"
     },
     {
       "type": "patchouli:text",
-      "text": "superbwarfare.page.vehicle.ah_64"
+      "text": "superbwarfare.page.vehicle.ah_6.3"
     }
   ],
   "sortnum": 20301

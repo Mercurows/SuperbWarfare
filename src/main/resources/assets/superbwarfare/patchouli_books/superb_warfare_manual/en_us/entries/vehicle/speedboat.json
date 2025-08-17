@@ -5,20 +5,15 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "superbwarfare.page.vehicle.speedboat1"
-    },
-    {
-      "type": "patchouli:crafting",
-      "recipe": "superbwarfare:speedboat_container",
-      "text": "superbwarfare.page.vehicle.speedboat2"
+      "text": "superbwarfare.page.vehicle.speedboat.1"
     },
     {
       "type": "patchouli:text",
-      "text": "superbwarfare.page.vehicle.speedboat3"
+      "text": "superbwarfare.page.vehicle.speedboat.2"
     },
     {
       "type": "patchouli:text",
-      "text": "superbwarfare.page.vehicle.speedboat4"
+      "text": "superbwarfare.page.vehicle.speedboat.3"
     }
   ],
   "sortnum": 20201
