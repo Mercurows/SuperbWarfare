@@ -159,7 +159,7 @@ public class VehicleAssemblingTableVehicleEntity extends MobileVehicleEntity imp
             }
         }
 
-        this.terrainCompact(2f, 2f);
+        this.terrainCompact(1.95f, 1.95f);
         this.refreshDimensions();
     }
 
