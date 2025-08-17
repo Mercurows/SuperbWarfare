@@ -5,15 +5,15 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "superbwarfare.page.vehicle.control1"
+      "text": "superbwarfare.page.vehicle.control.1"
     },
     {
       "type": "patchouli:text",
-      "text": "superbwarfare.page.vehicle.control2"
+      "text": "superbwarfare.page.vehicle.control.2"
     },
     {
       "type": "patchouli:text",
-      "text": "superbwarfare.page.vehicle.control3"
+      "text": "superbwarfare.page.vehicle.control.3"
     }
   ],
   "sortnum": 20001

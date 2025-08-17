@@ -5,21 +5,30 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "superbwarfare.page.vehicle.intro1"
+      "text": "superbwarfare.page.vehicle.intro.1"
     },
     {
       "type": "patchouli:crafting",
       "recipe": "superbwarfare:crowbar_crafting",
-      "text": "superbwarfare.page.vehicle.intro2"
+      "text": "superbwarfare.page.vehicle.intro.2"
     },
     {
       "type": "patchouli:text",
-      "text": "superbwarfare.page.vehicle.intro3"
+      "text": "superbwarfare.page.vehicle.intro.3"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "superbwarfare:vehicle_assembling_table",
+      "text": "superbwarfare.page.vehicle.intro.4"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "superbwarfare.page.vehicle.intro.5"
     },
     {
       "type": "patchouli:crafting",
       "recipe": "superbwarfare:charging_station_crafting",
-      "text": "superbwarfare.page.vehicle.intro4"
+      "text": "superbwarfare.page.vehicle.intro.6"
     }
   ],
   "sortnum": 20000

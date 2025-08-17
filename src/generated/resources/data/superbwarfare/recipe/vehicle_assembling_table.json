@@ -1,17 +1,12 @@
 {
   "type": "minecraft:crafting_shaped",
-  "category": "misc",
-  "pattern": [
-    "aaa",
-    "bcd",
-    "eee"
-  ],
+  "category": "redstone",
   "key": {
     "a": {
       "item": "minecraft:iron_ingot"
     },
     "b": {
-      "item": "minecraft:iron_block"
+      "tag": "c:storage_blocks/iron"
     },
     "c": {
       "item": "minecraft:smithing_table"
@@ -23,8 +18,13 @@
       "tag": "superbwarfare:ingots/steel"
     }
   },
+  "pattern": [
+    "aaa",
+    "bcd",
+    "eee"
+  ],
   "result": {
-    "id": "superbwarfare:vehicle_assembling_table",
-    "count": 1
+    "count": 1,
+    "id": "superbwarfare:vehicle_assembling_table"
   }
 }

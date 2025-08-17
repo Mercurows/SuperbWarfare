@@ -5,20 +5,15 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "superbwarfare.page.vehicle.prism_tank1"
-    },
-    {
-      "type": "patchouli:crafting",
-      "recipe": "superbwarfare:prism_tank_crafting",
-      "text": "superbwarfare.page.vehicle.prism_tank2"
+      "text": "superbwarfare.page.vehicle.prism_tank.1"
     },
     {
       "type": "patchouli:text",
-      "text": "superbwarfare.page.vehicle.prism_tank3"
+      "text": "superbwarfare.page.vehicle.prism_tank.2"
     },
     {
       "type": "patchouli:text",
-      "text": "superbwarfare.page.vehicle.prism_tank4"
+      "text": "superbwarfare.page.vehicle.prism_tank.3"
     }
   ],
   "sortnum": 20104

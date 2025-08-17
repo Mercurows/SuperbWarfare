@@ -27,6 +27,7 @@ import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
+import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.crafting.DataComponentIngredient;
 import org.jetbrains.annotations.NotNull;
 
@@ -134,6 +135,17 @@ public class ModRecipeProvider extends RecipeProvider {
                 .define('c', ModTags.Items.INGOTS_STEEL)
                 .unlockedBy(getHasName(Items.HOPPER), has(Items.DROPPER))
                 .save(writer, Mod.loc(getItemName(ModItems.SUPERB_ITEM_INTERFACE.get())));
+        ShapedRecipeBuilder.shaped(RecipeCategory.REDSTONE, ModItems.VEHICLE_ASSEMBLING_TABLE.get())
+                .pattern("aaa")
+                .pattern("bcd")
+                .pattern("eee")
+                .define('a', Items.IRON_INGOT)
+                .define('b', Tags.Items.STORAGE_BLOCKS_IRON)
+                .define('c', Items.SMITHING_TABLE)
+                .define('d', Tags.Items.GLASS_PANES)
+                .define('e', ModTags.Items.INGOTS_STEEL)
+                .unlockedBy(getHasName(Items.SMITHING_TABLE), has(Items.SMITHING_TABLE))
+                .save(writer, Mod.loc(getItemName(ModItems.VEHICLE_ASSEMBLING_TABLE.get())));
 
         // vehicles
         VehicleAssemblingRecipeBuilder.entity(ModEntities.TOM_6.get(), VehicleAssemblingRecipe.Category.AIRCRAFT)

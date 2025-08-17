@@ -5,20 +5,15 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "superbwarfare.page.vehicle.lav_1501"
-    },
-    {
-      "type": "patchouli:crafting",
-      "recipe": "superbwarfare:lav_150_crafting",
-      "text": "superbwarfare.page.vehicle.lav_1502"
+      "text": "superbwarfare.page.vehicle.lav_150.1"
     },
     {
       "type": "patchouli:text",
-      "text": "superbwarfare.page.vehicle.lav_1503"
+      "text": "superbwarfare.page.vehicle.lav_150.2"
     },
     {
       "type": "patchouli:text",
-      "text": "superbwarfare.page.vehicle.lav_1504"
+      "text": "superbwarfare.page.vehicle.lav_150.3"
     }
   ],
   "sortnum": 20101
