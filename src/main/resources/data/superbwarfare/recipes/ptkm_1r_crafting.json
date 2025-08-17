@@ -2,13 +2,13 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "pattern": [
-    " a ",
-    "dbd",
+    " b ",
+    "dad",
     "ece"
   ],
   "key": {
     "a": {
-      "item": "superbwarfare:grain"
+      "item": "minecraft:gunpowder"
     },
     "b": {
       "item": "superbwarfare:ap_5_inches"

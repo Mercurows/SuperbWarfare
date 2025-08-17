@@ -217,22 +217,20 @@ public class Ptkm1rEntity extends Entity implements GeoEntity, OwnableEntity, Mi
         int range = 60;
         Entity target = null;
 
-        if (tickCount %5 == 0) {
-            for (var entity : SeekTool.getEntityWithinRange(this, level(), range)) {
-                var condition =
-                        entity.onGround()
-                                && this.getOwner() != entity
-                                && (this.getOwner() != null && entity != this.getOwner().getVehicle())
-                                && !(entity instanceof TargetEntity)
-                                && !(entity instanceof Player player && (player.isCreative() || player.isSpectator()))
-                                && (this.getOwner() != null && !this.getOwner().isAlliedTo(entity) || entity.getTeam() == null || entity.getTeam().getName().equals("TDM"))
-                                && !entity.isShiftKeyDown()
-                                && (entity.getBoundingBox().getSize() > 1.5 && entity.getDeltaMovement().lengthSqr() > 0.008);
-                if (!condition) continue;
+        for (var entity : SeekTool.getEntityWithinRange(this, level(), range)) {
+            var condition =
+                    entity.onGround()
+                    && this.getOwner() != entity
+                    && (this.getOwner() != null && entity != this.getOwner().getVehicle())
+                    && !(entity instanceof TargetEntity)
+                    && !(entity instanceof Player player && (player.isCreative() || player.isSpectator()))
+                    && (this.getOwner() != null && !this.getOwner().isAlliedTo(entity) || entity.getTeam() == null || entity.getTeam().getName().equals("TDM"))
+                    && !entity.isShiftKeyDown()
+                    && (entity.getBoundingBox().getSize() > 1.5 && entity.getDeltaMovement().lengthSqr() > 0.01);
+            if (!condition) continue;
 
-                target = entity;
-                break;
-            }
+            target = entity;
+            break;
         }
 
         if (target != null) {
