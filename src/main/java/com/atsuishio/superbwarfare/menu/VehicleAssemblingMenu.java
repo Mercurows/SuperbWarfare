@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.menu;
 
+import com.atsuishio.superbwarfare.entity.vehicle.VehicleAssemblingTableVehicleEntity;
 import com.atsuishio.superbwarfare.init.ModMenuTypes;
 import com.atsuishio.superbwarfare.network.message.receive.FinishAssemblingVehicleMessage;
 import com.atsuishio.superbwarfare.recipe.vehicle.VehicleAssemblingRecipe;
@@ -19,8 +20,16 @@ import org.jetbrains.annotations.Nullable;
 
 public class VehicleAssemblingMenu extends AbstractContainerMenu {
 
+    private final boolean isVehicleMenu;
+
     public VehicleAssemblingMenu(int pContainerId, Inventory inventory) {
         super(ModMenuTypes.VEHICLE_ASSEMBLING_MENU.get(), pContainerId);
+        this.isVehicleMenu = false;
+    }
+
+    public VehicleAssemblingMenu(int pContainerId, Inventory inventory, boolean isVehicleMenu) {
+        super(ModMenuTypes.VEHICLE_ASSEMBLING_MENU.get(), pContainerId);
+        this.isVehicleMenu = isVehicleMenu;
     }
 
     @Override
@@ -30,7 +39,7 @@ public class VehicleAssemblingMenu extends AbstractContainerMenu {
 
     @Override
     public boolean stillValid(Player pPlayer) {
-        return pPlayer.isAlive();
+        return (pPlayer.isAlive() && !this.isVehicleMenu) || (this.isVehicleMenu && pPlayer.getVehicle() instanceof VehicleAssemblingTableVehicleEntity);
     }
 
     /**
