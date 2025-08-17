@@ -66,16 +66,6 @@ public interface ArmedVehicleEntity {
     }
 
     /**
-     * 是否隐藏载具上的玩家
-     *
-     * @return 是否隐藏
-     */
-    @Deprecated(forRemoval = true)
-    default boolean hidePassenger(Entity entity) {
-        return false;
-    }
-
-    /**
      * 瞄准时的放大倍率
      *
      * @return 放大倍率
