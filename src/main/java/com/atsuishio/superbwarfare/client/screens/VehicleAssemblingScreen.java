@@ -613,6 +613,9 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
         if (key == null) return;
         if (typeName.split(":").length < 2) return;
 
+        var info = Component.translatable("info." + typeName.split(":")[0] + "." + typeName.split(":")[1]);
+        List<FormattedCharSequence> infoComponents = this.font.split(FormattedText.of(info.getString()), 100);
+
         pose.pushPose();
         pose.scale(0.75f, 0.75f, 1.0f);
 
@@ -624,11 +627,7 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
                 (int) ((this.leftPos + 198) / 0.75f), (int) ((this.topPos + 130) / 0.75f),
                 0xFFFFFF);
 
-        var info = Component.translatable("info." + typeName.split(":")[0] + "." + typeName.split(":")[1]);
-
         guiGraphics.enableScissor(this.leftPos + 120, this.topPos + 129, this.leftPos + 198, this.topPos + 165);
-
-        List<FormattedCharSequence> infoComponents = this.font.split(FormattedText.of(info.getString()), 100);
         for (int j = 0; j < infoComponents.size(); j++) {
             var cachedComponent = j > 3 ? Component.literal("...").getVisualOrderText() : infoComponents.get(j);
             guiGraphics.drawString(this.font, cachedComponent, (int) ((this.leftPos + 122) / 0.75f), (int) ((this.topPos + 129 + j * 7.5f) / 0.75f), 0xFFFFFF);
@@ -638,7 +637,7 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
         pose.popPose();
 
         if (mouseX >= this.leftPos + 120 && mouseX <= this.leftPos + 200 && mouseY >= this.topPos + 117 && mouseY <= this.topPos + 175) {
-            guiGraphics.renderTooltip(this.font, info, mouseX, mouseY);
+            guiGraphics.renderTooltip(this.font, this.font.split(FormattedText.of(info.getString()), 200), mouseX, mouseY);
         }
     }
 }
