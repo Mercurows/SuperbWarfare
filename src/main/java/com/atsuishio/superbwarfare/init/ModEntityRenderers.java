@@ -56,6 +56,7 @@ public class ModEntityRenderers {
         event.registerEntityRenderer(ModEntities.AGM_65.get(), Agm65Renderer::new);
         event.registerEntityRenderer(ModEntities.BLU_43.get(), Blu43Renderer::new);
         event.registerEntityRenderer(ModEntities.TM_62.get(), Tm62Renderer::new);
+        event.registerEntityRenderer(ModEntities.PTKM_1R.get(), Ptkm1rRenderer::new);
         event.registerEntityRenderer(ModEntities.TYPE_63.get(), Type63Renderer::new);
         event.registerEntityRenderer(ModEntities.MEDICAL_KIT.get(), MedicalKitEntityRenderer::new);
         event.registerEntityRenderer(ModEntities.BL_132.get(), Bl132Renderer::new);
