@@ -10,6 +10,7 @@ import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.menu.VehicleAssemblingMenu;
 import com.mojang.math.Axis;
 import it.unimi.dsi.fastutil.Pair;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -115,8 +116,7 @@ public class VehicleAssemblingTableVehicleEntity extends MobileVehicleEntity imp
                     this.discard();
                     return InteractionResult.SUCCESS;
                 } else {
-                    // TODO 优化提示
-                    player.displayClientMessage(Component.literal("Cannot place!"), true);
+                    player.displayClientMessage(Component.translatable("tips.superbwarfare.vehicle_assembling_table.warn").withStyle(ChatFormatting.RED), true);
                     return InteractionResult.FAIL;
                 }
             }
