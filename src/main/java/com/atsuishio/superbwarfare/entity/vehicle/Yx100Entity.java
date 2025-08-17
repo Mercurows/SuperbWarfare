@@ -1005,8 +1005,8 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
     }
 
     @Override
-    public boolean hidePassenger(Entity entity) {
-        return entity == getNthEntity(0) || entity == getNthEntity(1);
+    public boolean hidePassenger(int index) {
+        return index == 0 || index == 1;
     }
 
     @Override

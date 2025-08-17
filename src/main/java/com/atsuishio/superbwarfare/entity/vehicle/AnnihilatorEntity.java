@@ -570,7 +570,7 @@ public class AnnihilatorEntity extends VehicleEntity implements GeoEntity, Canno
     }
 
     @Override
-    public boolean hidePassenger(Entity entity) {
+    public boolean hidePassenger(int index) {
         return true;
     }
 

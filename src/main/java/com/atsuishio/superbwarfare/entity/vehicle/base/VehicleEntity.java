@@ -1720,12 +1720,30 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
     }
 
     /**
-     * 判断每个位置上是否是封闭载具（封闭载具座位具有免疫负面效果等功能）
+     * 判断一个座位是否是封闭的（封闭载具座位具有免疫负面效果等功能）
+     * 默认认为隐藏乘客的座位均为封闭座位
      *
      * @param index 位置
      */
     public boolean isEnclosed(int index) {
+        return hidePassenger(index);
+    }
+
+    public boolean isEnclosed(Entity passenger) {
+        return isEnclosed(getSeatIndex(passenger));
+    }
+
+    /**
+     * 是否隐藏载具上的玩家
+     *
+     * @return 是否隐藏
+     */
+    public boolean hidePassenger(int index) {
         return false;
+    }
+
+    public boolean hidePassenger(Entity passenger) {
+        return hidePassenger(getSeatIndex(passenger));
     }
 
     @Override

@@ -539,7 +539,7 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
     }
 
     @Override
-    public boolean hidePassenger(Entity entity) {
+    public boolean hidePassenger(int index) {
         return true;
     }
 
