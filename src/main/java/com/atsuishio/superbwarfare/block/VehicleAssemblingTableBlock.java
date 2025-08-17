@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.block.entity.VehicleAssemblingTableBlockEntit
 import com.atsuishio.superbwarfare.block.property.BlockPart;
 import com.atsuishio.superbwarfare.entity.vehicle.VehicleAssemblingTableVehicleEntity;
 import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.item.VehicleAssemblingTableBlockItem;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -70,14 +71,29 @@ public class VehicleAssemblingTableBlock extends BaseEntityBlock {
     public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
         super.setPlacedBy(level, pos, state, placer, stack);
 
-        if (!level.isClientSide) {
-            var facing = state.getValue(FACING);
-            for (var part : BlockPart.values()) {
-                var blockPos = part.relative(pos, facing);
-                level.setBlock(blockPos, state.setValue(BLOCK_PART, part), 3);
-                level.blockUpdated(pos, Blocks.AIR);
-                state.updateNeighbourShapes(level, pos, 3);
+        var facing = state.getValue(FACING);
+
+        BlockPos initialPos = null;
+        for (var part : BlockPart.values()) {
+            var blockPos = part.relativeNegative(pos, facing);
+
+            if (VehicleAssemblingTableBlockItem.canPlace(level, blockPos, facing, pos)) {
+                initialPos = blockPos;
+                break;
             }
+        }
+
+        if (initialPos == null) {
+            Mod.LOGGER.error("Unable to find valid position for vehicle assembling table at {}", pos);
+            return;
+        }
+
+        for (var part : BlockPart.values()) {
+            var blockPos = part.relative(initialPos, facing);
+
+            level.setBlock(blockPos, state.setValue(BLOCK_PART, part), 3);
+            level.blockUpdated(initialPos, Blocks.AIR);
+            state.updateNeighbourShapes(level, initialPos, 3);
         }
     }
 
