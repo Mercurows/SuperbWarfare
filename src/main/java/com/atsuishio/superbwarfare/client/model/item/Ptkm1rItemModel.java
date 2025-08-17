@@ -14,7 +14,7 @@ public class Ptkm1rItemModel extends GeoModel<Ptkm1rItem> {
 
     @Override
     public ResourceLocation getModelResource(Ptkm1rItem animatable) {
-        return Mod.loc("geo/ptkm_1r.geo.json");
+        return Mod.loc("geo/ptkm_1r_item.geo.json");
     }
 
     @Override

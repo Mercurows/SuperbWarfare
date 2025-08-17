@@ -233,7 +233,7 @@ public class Ptkm1rEntity extends Entity implements GeoEntity, OwnableEntity, Mi
                     && !(entity instanceof Player player && (player.isCreative() || player.isSpectator()))
                     && (this.getOwner() != null && !this.getOwner().isAlliedTo(entity) || entity.getTeam() == null || entity.getTeam().getName().equals("TDM"))
                     && !entity.isShiftKeyDown()
-                    && ((entity.getBoundingBox().getSize() > 1.5 || entity instanceof VehicleEntity) && entity.getDeltaMovement().lengthSqr() > 0.01);
+                    && ((entity.getBoundingBox().getSize() > 1.5 || entity instanceof VehicleEntity || entity instanceof SenpaiEntity) && entity.getDeltaMovement().lengthSqr() > 0.009);
             if (!condition) continue;
 
             target = entity;
