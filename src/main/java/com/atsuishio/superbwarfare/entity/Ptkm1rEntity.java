@@ -3,10 +3,12 @@ package com.atsuishio.superbwarfare.entity;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.entity.projectile.MineEntity;
 import com.atsuishio.superbwarfare.entity.projectile.PtkmProjectileEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModItems;
+import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.tools.CustomExplosion;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
 import com.atsuishio.superbwarfare.tools.SeekTool;
@@ -19,6 +21,7 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.players.OldUsersConverter;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -206,6 +209,10 @@ public class Ptkm1rEntity extends Entity implements GeoEntity, OwnableEntity, Mi
             triggerExplode();
         }
 
+        if (tickCount == 1) {
+            level().playSound(null, BlockPos.containing(position()), ModSounds.PTKM_1R_DEPLOY.get(), SoundSource.PLAYERS, 1, 1);
+        }
+
         if (tickCount > 20 && onGround()) {
             findTarget();
         }
@@ -226,7 +233,7 @@ public class Ptkm1rEntity extends Entity implements GeoEntity, OwnableEntity, Mi
                     && !(entity instanceof Player player && (player.isCreative() || player.isSpectator()))
                     && (this.getOwner() != null && !this.getOwner().isAlliedTo(entity) || entity.getTeam() == null || entity.getTeam().getName().equals("TDM"))
                     && !entity.isShiftKeyDown()
-                    && (entity.getBoundingBox().getSize() > 1.5 && entity.getDeltaMovement().lengthSqr() > 0.01);
+                    && ((entity.getBoundingBox().getSize() > 1.5 || entity instanceof VehicleEntity) && entity.getDeltaMovement().lengthSqr() > 0.01);
             if (!condition) continue;
 
             target = entity;
@@ -271,14 +278,14 @@ public class Ptkm1rEntity extends Entity implements GeoEntity, OwnableEntity, Mi
             ptkmProjectile.setExplosionDamage(150);
             ptkmProjectile.setExplosionRadius(7);
             ptkmProjectile.setTarget(entity);
-            ptkmProjectile.setShootTime((int) (0.4f * distance));
+            ptkmProjectile.setShootTime((int) (0.5f * distance));
             ptkmProjectile.setPos(position().x, getEyePosition().y, position().z);
-            ptkmProjectile.shoot(getLookAngle().x, getLookAngle().y, getLookAngle().z, 5, 0);
+            ptkmProjectile.shoot(getLookAngle().x, getLookAngle().y, getLookAngle().z, 4f, 0.4f);
             serverLevel.addFreshEntity(ptkmProjectile);
 
             int count = 6;
 
-            for (float i = 1f; i < 14; i += .5f) {
+            for (float i = 1f; i < 8; i += .5f) {
                 serverLevel.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE,
                         position().x + i * getLookAngle().x,
                         getEyePosition().y + i * getLookAngle().y,

@@ -78,7 +78,7 @@ public class ModEntities {
     public static final RegistryObject<EntityType<MelonBombEntity>> MELON_BOMB = register("melon_bomb",
             EntityType.Builder.<MelonBombEntity>of(MelonBombEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).setCustomClientFactory(MelonBombEntity::new).noSave().sized(1f, 1f));
     public static final RegistryObject<EntityType<PtkmProjectileEntity>> PTKM_PROJECTILE = register("ptkm_projectile",
-            EntityType.Builder.<PtkmProjectileEntity>of(PtkmProjectileEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).setCustomClientFactory(PtkmProjectileEntity::new).noSave().sized(1f, 1f));
+            EntityType.Builder.<PtkmProjectileEntity>of(PtkmProjectileEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).setCustomClientFactory(PtkmProjectileEntity::new).noSave().sized(0.5f, 0.5f));
     public static final RegistryObject<EntityType<HandGrenadeEntity>> HAND_GRENADE = register("hand_grenade",
             EntityType.Builder.<HandGrenadeEntity>of(HandGrenadeEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(true).setTrackingRange(64).setUpdateInterval(1).setCustomClientFactory(HandGrenadeEntity::new).noSave().sized(0.3f, 0.3f));
     public static final RegistryObject<EntityType<RgoGrenadeEntity>> RGO_GRENADE = register("rgo_grenade",

@@ -518,5 +518,6 @@ public class ModSounds {
     public static final RegistryObject<SoundEvent> BL_132_FIRE_3P = REGISTRY.register("bl_132_fire_3p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("bl_132_fire_3p")));
     public static final RegistryObject<SoundEvent> BL_132_RELOAD = REGISTRY.register("bl_132_reload", () -> SoundEvent.createVariableRangeEvent(Mod.loc("bl_132_reload")));
 
+    public static final RegistryObject<SoundEvent> PTKM_1R_DEPLOY = REGISTRY.register("ptkm_1r_deploy", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ptkm_1r_deploy")));
 }
 

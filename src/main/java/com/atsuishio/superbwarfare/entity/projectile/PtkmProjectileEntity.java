@@ -6,9 +6,10 @@ import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
+import com.atsuishio.superbwarfare.tools.CustomExplosion;
 import com.atsuishio.superbwarfare.tools.DamageHandler;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
-import com.atsuishio.superbwarfare.tools.ProjectileTool;
+import com.atsuishio.superbwarfare.tools.RangeTool;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
@@ -117,8 +118,7 @@ public class PtkmProjectileEntity extends FastThrowableProjectile implements Exp
                 }
             }
 
-            ParticleTool.cannonHitParticles(this.level(), this.position(), this);
-            ProjectileTool.causeCustomExplode(this, this.explosionDamage, this.explosionRadius);
+            explode(entityHitResult.getLocation());
             this.discard();
         }
     }
@@ -126,7 +126,7 @@ public class PtkmProjectileEntity extends FastThrowableProjectile implements Exp
     @Override
     public void onHitBlock(@NotNull BlockHitResult blockHitResult) {
         if (this.level() instanceof ServerLevel) {
-            ProjectileTool.causeCustomExplode(this, this.explosionDamage, this.explosionRadius);
+            explode(blockHitResult.getLocation());
             this.discard();
         }
     }
@@ -149,16 +149,27 @@ public class PtkmProjectileEntity extends FastThrowableProjectile implements Exp
                 if (this.level() instanceof ServerLevel serverLevel) {
                     ParticleTool.spawnMediumExplosionParticles(serverLevel, position());
                 }
-                this.setDeltaMovement(this.position().vectorTo(target.position()).normalize().scale(15));
+                Vec3 targetVel = target.getDeltaMovement();
+                Vec3 targetVec = RangeTool.calculateFiringSolution(position(), target.getBoundingBox().getCenter(), targetVel, 15, 0.05);
+                this.setDeltaMovement(targetVec.scale(15));
             }
-
-
         } else {
             if (tickCount > 100) {
-                ProjectileTool.causeCustomExplode(this, this.explosionDamage, this.explosionRadius);
+                explode(position());
             }
         }
 
+    }
+
+    public void explode(Vec3 pos) {
+        new CustomExplosion.Builder(this)
+                .damageSource(ModDamageTypes.causeCustomExplosionDamage(level().registryAccess(), this, this.getOwner()))
+                .damage(explosionDamage)
+                .radius(explosionRadius)
+                .position(pos)
+                .withParticleType(ParticleTool.ParticleType.MEDIUM)
+                .particlePosition(pos)
+                .explode();
     }
 
     @Override
