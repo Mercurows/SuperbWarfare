@@ -40,19 +40,15 @@ public record AdjustZoomFovMessage(double scroll) implements CustomPacketPayload
             double maxRpm = 2400 - 1200;
 
             var customRPM = data.getInt("CustomRPM");
-            data.putInt("CustomRPM", (int) Mth.clamp(customRPM + 50 * message.scroll, minRpm, maxRpm));
+            var targetCustomRPM = (int) Mth.clamp(customRPM + 50 * message.scroll, minRpm, maxRpm);
 
-            if (customRPM == 1150 - 1200) {
-                data.putInt("CustomRPM", 1145 - 1200);
+            if (targetCustomRPM == 1150 - 1200) {
+                targetCustomRPM = 1145 - 1200;
+            } else {
+                targetCustomRPM = Math.toIntExact(Math.round(targetCustomRPM / 50.0) * 50);
             }
 
-            if (customRPM == 1195 - 1200) {
-                data.putInt("CustomRPM", 0);
-            }
-
-            if (customRPM == 1095 - 1200) {
-                data.putInt("CustomRPM", 1100 - 1200);
-            }
+            data.putInt("CustomRPM", targetCustomRPM);
 
             player.displayClientMessage(Component.literal("RPM: " + FormatTool.format0D(customRPM + 1200)), true);
             if (customRPM > minRpm && customRPM < maxRpm) {
