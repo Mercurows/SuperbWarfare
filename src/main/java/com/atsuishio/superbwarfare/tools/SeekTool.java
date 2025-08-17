@@ -43,6 +43,12 @@ public class SeekTool {
                 .toList();
     }
 
+    public static List<Entity> getEntityWithinRange(Entity entity, Level level, double range) {
+        return StreamSupport.stream(EntityFindUtil.getEntities(level).getAll().spliterator(), false)
+                .filter(e -> e.position().distanceTo(entity.getEyePosition()) <= range)
+                .toList();
+    }
+
     public static List<Entity> getTeammate(Player player, Level level) {
         return StreamSupport.stream(EntityFindUtil.getEntities(level).getAll().spliterator(), false)
                 .filter(e -> (e instanceof Player && e.getTeam() != null && !e.getTeam().getName().equals("TDM") && e.getTeam() == player.getTeam())

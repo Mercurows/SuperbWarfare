@@ -46,7 +46,7 @@ public class ModEntities {
     public static final DeferredHolder<EntityType<?>, EntityType<Tm62Entity>> TM_62 = register("tm_62",
             EntityType.Builder.<Tm62Entity>of(Tm62Entity::new, MobCategory.MISC).setTrackingRange(32).setUpdateInterval(1).sized(0.5f, 0.15f));
     public static final DeferredHolder<EntityType<?>, EntityType<Ptkm1rEntity>> PTKM_1R = register("ptkm_1r",
-            EntityType.Builder.<Ptkm1rEntity>of(Ptkm1rEntity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).sized(0.25f, 1));
+            EntityType.Builder.<Ptkm1rEntity>of(Ptkm1rEntity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).sized(0.2f, 0.7f).eyeHeight(0.2F));
 public static final DeferredHolder<EntityType<?>, EntityType<C4Entity>> C_4 = register("c4",
             EntityType.Builder.<C4Entity>of(C4Entity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).sized(0.5f, 0.5f));
 
@@ -77,6 +77,8 @@ public static final DeferredHolder<EntityType<?>, EntityType<C4Entity>> C_4 = re
             EntityType.Builder.<GrapeshotEntity>of(GrapeshotEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).noSave().sized(0.5f, 0.5f));
     public static final DeferredHolder<EntityType<?>, EntityType<MelonBombEntity>> MELON_BOMB = register("melon_bomb",
             EntityType.Builder.<MelonBombEntity>of(MelonBombEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).noSave().sized(1f, 1f));
+    public static final DeferredHolder<EntityType<?>, EntityType<PtkmProjectileEntity>> PTKM_PROJECTILE = register("ptkm_projectile",
+            EntityType.Builder.<PtkmProjectileEntity>of(PtkmProjectileEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).noSave().sized(1, 1));
     public static final DeferredHolder<EntityType<?>, EntityType<HandGrenadeEntity>> HAND_GRENADE = register("hand_grenade",
             EntityType.Builder.<HandGrenadeEntity>of(HandGrenadeEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(true).setTrackingRange(64).setUpdateInterval(1).noSave().sized(0.3f, 0.3f));
     public static final DeferredHolder<EntityType<?>, EntityType<RgoGrenadeEntity>> RGO_GRENADE = register("rgo_grenade",
