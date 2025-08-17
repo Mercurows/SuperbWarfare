@@ -646,6 +646,7 @@
   "tips.superbwarfare.target.pitch": "目标俯仰角: ",
   "tips.superbwarfare.barrel_empty": "空",
   "tips.superbwarfare.mortar.out_of_range": "超出射程",
+  "tips.superbwarfare.vehicle_assembling_table.warn": "没有足够的空间拆卸载具",
 
   "tips.superbwarfare.modify_result.function": "[自定计算]",
   "tips.superbwarfare.modify_result.all": "[全局减伤]",
