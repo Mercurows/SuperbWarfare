@@ -952,11 +952,6 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
     }
 
     @Override
-    public boolean hidePassenger(Entity entity) {
-        return false;
-    }
-
-    @Override
     public int zoomFov() {
         return 3;
     }

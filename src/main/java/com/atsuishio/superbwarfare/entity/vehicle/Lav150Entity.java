@@ -464,7 +464,7 @@ public class Lav150Entity extends ContainerMobileVehicleEntity implements GeoEnt
     }
 
     @Override
-    public boolean hidePassenger(Entity entity) {
+    public boolean hidePassenger(int index) {
         return true;
     }
 

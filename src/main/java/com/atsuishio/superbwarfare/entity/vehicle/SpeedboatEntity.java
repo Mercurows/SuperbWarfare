@@ -460,11 +460,6 @@ public class SpeedboatEntity extends ContainerMobileVehicleEntity implements Geo
     }
 
     @Override
-    public boolean hidePassenger(Entity entity) {
-        return false;
-    }
-
-    @Override
     public int zoomFov() {
         return 1;
     }

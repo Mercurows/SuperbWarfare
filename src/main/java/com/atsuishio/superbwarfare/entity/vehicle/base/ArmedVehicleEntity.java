@@ -5,6 +5,10 @@ import net.minecraft.world.entity.player.Player;
 
 public interface ArmedVehicleEntity {
 
+    default VehicleEntity getVehicleEntity() {
+        return (VehicleEntity) this;
+    }
+
     /**
      * 载具开火
      *
@@ -66,7 +70,10 @@ public interface ArmedVehicleEntity {
      *
      * @return 是否隐藏
      */
-    boolean hidePassenger(Entity entity);
+    @Deprecated(forRemoval = true)
+    default boolean hidePassenger(Entity entity) {
+        return false;
+    }
 
     /**
      * 瞄准时的放大倍率

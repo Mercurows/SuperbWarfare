@@ -614,8 +614,8 @@ public class PrismTankEntity extends ContainerMobileVehicleEntity implements Geo
     }
 
     @Override
-    public boolean hidePassenger(Entity entity) {
-        return entity == getFirstPassenger();
+    public boolean hidePassenger(int index) {
+        return index == 0;
     }
 
     @Override

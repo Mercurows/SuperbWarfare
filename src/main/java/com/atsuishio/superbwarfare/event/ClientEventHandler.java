@@ -925,7 +925,7 @@ public class ClientEventHandler {
         if (!(stack.getItem() instanceof GunItem gunItem)) return;
         var data = GunData.from(stack);
 
-        if (player.getVehicle() instanceof ArmedVehicleEntity iArmedVehicle && iArmedVehicle.isDriver(player) && iArmedVehicle.hidePassenger(player))
+        if (player.getVehicle() instanceof ArmedVehicleEntity iArmedVehicle && iArmedVehicle.isDriver(player) && iArmedVehicle.getVehicleEntity().hidePassenger(player))
             return;
 
         float pose;
@@ -1596,7 +1596,7 @@ public class ClientEventHandler {
     public static void setPlayerInvisible(RenderPlayerEvent.Pre event) {
         var otherPlayer = event.getEntity();
 
-        if (otherPlayer.getVehicle() instanceof ArmedVehicleEntity iArmedVehicle && iArmedVehicle.hidePassenger(otherPlayer)) {
+        if (otherPlayer.getVehicle() instanceof ArmedVehicleEntity iArmedVehicle && iArmedVehicle.getVehicleEntity().hidePassenger(otherPlayer)) {
             event.setCanceled(true);
         }
     }
