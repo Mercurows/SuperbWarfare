@@ -77,6 +77,7 @@ public class ModPerks {
     public static final DeferredHolder<Perk, VorpalWeapon> VORPAL_WEAPON = DAMAGE_PERKS.register("vorpal_weapon", VorpalWeapon::new);
     public static final DeferredHolder<Perk, MagnificentHowl> MAGNIFICENT_HOWL = DAMAGE_PERKS.register("magnificent_howl", MagnificentHowl::new);
     public static final DeferredHolder<Perk, Firefly> FIREFLY = DAMAGE_PERKS.register("firefly", Firefly::new);
+    public static final DeferredHolder<Perk, FairMeans> FAIR_MEANS = DAMAGE_PERKS.register("fair_means", FairMeans::new);
 
 //    public static void registerCompatPerks() {
 //        if (ModList.get().isLoaded(CompatHolder.DMV)) {

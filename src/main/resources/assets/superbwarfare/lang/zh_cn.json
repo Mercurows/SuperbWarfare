@@ -449,6 +449,8 @@
   "des.superbwarfare.magnificent_howl": "填装前精准最后一击的次数会影响伤害增加的子弹总数",
   "item.superbwarfare.firefly": "萤火虫",
   "des.superbwarfare.firefly": "完成精准击杀可以使目标产生一次燃烧爆炸",
+  "item.superbwarfare.fair_means": "先礼后兵",
+  "des.superbwarfare.fair_means": "第一次攻击造成部分伤害，第二次攻击造成高额伤害",
 
   "item.superbwarfare.empty_perk": "空白模组",
   "item.superbwarfare.shortcut_pack": "捷径包",
