@@ -24,7 +24,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import it.unimi.dsi.fastutil.ints.Int2IntArrayMap;
 import net.minecraft.ChatFormatting;
-import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ImageButton;
@@ -160,7 +159,7 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
 
         if (this.currentRecipe != null) {
             this.renderModel(this.currentRecipe, guiGraphics);
-            this.renderRecipeInfo(this.currentRecipe, guiGraphics);
+            this.renderRecipeInfo(this.currentRecipe, guiGraphics, mouseX, mouseY);
             guiGraphics.drawString(this.font, Component.translatable("container.superbwarfare.vehicle_assembling_table.count", this.currentRecipe.getResult().getResult().getCount()), this.leftPos + 214, this.topPos + 164, 5592405, false);
         }
 
@@ -564,7 +563,7 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
         RenderSystem.disableScissor();
     }
 
-    public void renderRecipeInfo(VehicleAssemblingRecipe recipe, GuiGraphics guiGraphics) {
+    public void renderRecipeInfo(VehicleAssemblingRecipe recipe, GuiGraphics guiGraphics, int mouseX, int mouseY) {
         ItemStack stack = recipe.getResult().getResult();
 
         boolean renderItemName = true;
@@ -574,7 +573,7 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
                 String key = tag.getString("EntityType");
                 var entityType = EntityType.byString(key).orElse(null);
                 if (entityType != null) {
-                    this.renderContainerInfo(key, guiGraphics);
+                    this.renderContainerInfo(key, guiGraphics, mouseX, mouseY);
                     renderItemName = false;
                 }
             }
@@ -607,7 +606,7 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
         pose.popPose();
     }
 
-    private void renderContainerInfo(String typeName, GuiGraphics guiGraphics) {
+    private void renderContainerInfo(String typeName, GuiGraphics guiGraphics, int mouseX, int mouseY) {
         var pose = guiGraphics.pose();
 
         String key = ContainerBlock.getEntityTranslationKey(typeName);
@@ -629,26 +628,17 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
 
         guiGraphics.enableScissor(this.leftPos + 120, this.topPos + 129, this.leftPos + 198, this.topPos + 165);
 
-        // TODO 这里有时候会显示不全，漏一行
         List<FormattedCharSequence> infoComponents = this.font.split(FormattedText.of(info.getString()), 100);
-        float height = (infoComponents.size() + 1) * 7.5f;
-
-        if (height > 36) {
-            float l = height - 36;
-            double rate = (double) Util.getMillis() / 1000.0D;
-            double d1 = Math.max((double) l * 0.5D, 3.0D);
-            double d2 = Math.sin((Math.PI / 2D) * Math.cos((Math.PI * 2D) * rate / d1)) / 2.0D + 0.5D;
-            double d3 = Mth.lerp(d2, 0.0D, l);
-            pose.translate(0, -d3, 0);
-        }
-
         for (int j = 0; j < infoComponents.size(); j++) {
-            var cachedComponent = infoComponents.get(j);
+            var cachedComponent = j > 3 ? Component.literal("...").getVisualOrderText() : infoComponents.get(j);
             guiGraphics.drawString(this.font, cachedComponent, (int) ((this.leftPos + 122) / 0.75f), (int) ((this.topPos + 129 + j * 7.5f) / 0.75f), 0xFFFFFF);
         }
-
         guiGraphics.disableScissor();
 
         pose.popPose();
+
+        if (mouseX >= this.leftPos + 120 && mouseX <= this.leftPos + 200 && mouseY >= this.topPos + 117 && mouseY <= this.topPos + 175) {
+            guiGraphics.renderTooltip(this.font, info, mouseX, mouseY);
+        }
     }
 }
