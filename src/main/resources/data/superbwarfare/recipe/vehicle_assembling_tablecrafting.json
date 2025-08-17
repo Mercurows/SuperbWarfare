@@ -17,14 +17,14 @@
       "item": "minecraft:smithing_table"
     },
     "d": {
-      "tag": "forge:glass_panes"
+      "tag": "c:glass_panes"
     },
     "e": {
       "tag": "superbwarfare:ingots/steel"
     }
   },
   "result": {
-    "item": "superbwarfare:vehicle_assembling_table",
+    "id": "superbwarfare:vehicle_assembling_table",
     "count": 1
   }
 }
