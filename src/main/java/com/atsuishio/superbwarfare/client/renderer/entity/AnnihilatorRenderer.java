@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.client.renderer.entity;
 
+import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.client.layer.vehicle.*;
 import com.atsuishio.superbwarfare.client.model.entity.AnnihilatorModel;
 import com.atsuishio.superbwarfare.entity.vehicle.AnnihilatorEntity;
@@ -60,7 +61,7 @@ public class AnnihilatorRenderer extends GeoEntityRenderer<AnnihilatorEntity> {
         }
 
         if (name.equals("bone")) {
-            bone.setHidden(!pCamera.isVisible(aabb));
+            bone.setHidden(!pCamera.isVisible(aabb) && !RenderHelper.isInGui());
         }
 
         if (name.equals("main") || name.equals("main2")) {
