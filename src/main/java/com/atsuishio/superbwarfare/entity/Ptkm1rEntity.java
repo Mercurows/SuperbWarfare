@@ -229,7 +229,7 @@ public class Ptkm1rEntity extends Entity implements GeoEntity, OwnableEntity, Mi
 
     private PlayState movementPredicate(AnimationState<Ptkm1rEntity> event) {
         if (onGround()) {
-            return event.setAndContinue(RawAnimation.begin().thenLoop("animation.ptkm.deploy"));
+            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.ptkm.deploy"));
         } else {
             return PlayState.STOP;
         }
@@ -238,11 +238,6 @@ public class Ptkm1rEntity extends Entity implements GeoEntity, OwnableEntity, Mi
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar data) {
         data.add(new AnimationController<>(this, "movement", 0, this::movementPredicate));
-    }
-
-    @Override
-    public boolean isPushable() {
-        return false;
     }
 
     @Override
