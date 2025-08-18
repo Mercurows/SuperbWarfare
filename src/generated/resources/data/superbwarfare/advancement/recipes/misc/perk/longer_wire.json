@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "superbwarfare:firefly"
+        "recipe": "superbwarfare:perk/longer_wire"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -26,7 +26,7 @@
   ],
   "rewards": {
     "recipes": [
-      "superbwarfare:firefly"
+      "superbwarfare:perk/longer_wire"
     ]
   }
 }

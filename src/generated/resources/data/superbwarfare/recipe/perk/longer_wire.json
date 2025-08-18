@@ -3,22 +3,19 @@
   "category": "misc",
   "key": {
     "a": {
-      "item": "minecraft:paper"
+      "item": "superbwarfare:empty_perk"
     },
     "b": {
-      "item": "minecraft:lapis_lazuli"
-    },
-    "c": {
-      "tag": "c:ingots/iron"
+      "item": "minecraft:string"
     }
   },
   "pattern": [
-    "cbc",
+    "bbb",
     "bab",
-    "cbc"
+    "bbb"
   ],
   "result": {
     "count": 1,
-    "id": "superbwarfare:empty_perk"
+    "id": "superbwarfare:longer_wire"
   }
 }

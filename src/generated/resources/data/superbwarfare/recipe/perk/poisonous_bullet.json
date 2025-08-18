@@ -3,13 +3,13 @@
   "category": "misc",
   "key": {
     "a": {
-      "item": "minecraft:paper"
+      "item": "superbwarfare:empty_perk"
     },
     "b": {
-      "item": "minecraft:lapis_lazuli"
+      "tag": "c:storage_blocks/lead"
     },
     "c": {
-      "tag": "c:ingots/iron"
+      "item": "minecraft:spider_eye"
     }
   },
   "pattern": [
@@ -19,6 +19,6 @@
   ],
   "result": {
     "count": 1,
-    "id": "superbwarfare:empty_perk"
+    "id": "superbwarfare:poisonous_bullet"
   }
 }

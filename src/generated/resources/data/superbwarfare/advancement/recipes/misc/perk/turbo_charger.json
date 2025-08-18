@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "superbwarfare:cupid_arrow"
+        "recipe": "superbwarfare:perk/turbo_charger"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -26,7 +26,7 @@
   ],
   "rewards": {
     "recipes": [
-      "superbwarfare:cupid_arrow"
+      "superbwarfare:perk/turbo_charger"
     ]
   }
 }

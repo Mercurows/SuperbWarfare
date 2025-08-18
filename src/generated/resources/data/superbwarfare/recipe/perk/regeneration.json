@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "a": {
+      "item": "superbwarfare:empty_perk"
+    },
+    "b": {
+      "item": "superbwarfare:cell"
+    },
+    "c": {
+      "item": "minecraft:daylight_detector"
+    },
+    "d": {
+      "tag": "c:ingots/gold"
+    }
+  },
+  "pattern": [
+    "ccc",
+    "bab",
+    "ddd"
+  ],
+  "result": {
+    "count": 1,
+    "id": "superbwarfare:regeneration"
+  }
+}

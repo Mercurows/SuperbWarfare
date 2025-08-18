@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "superbwarfare:incendiary_bullet"
+        "recipe": "superbwarfare:perk/silver_bullet"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -26,7 +26,7 @@
   ],
   "rewards": {
     "recipes": [
-      "superbwarfare:incendiary_bullet"
+      "superbwarfare:perk/silver_bullet"
     ]
   }
 }
