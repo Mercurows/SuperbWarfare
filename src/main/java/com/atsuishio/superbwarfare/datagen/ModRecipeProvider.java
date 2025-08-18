@@ -373,6 +373,15 @@ public class ModRecipeProvider extends RecipeProvider {
         copyBlueprint(writer, ModItems.ANNIHILATOR_BLUEPRINT.get());
 
         // perks
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.EMPTY_PERK.get())
+                .pattern("cbc")
+                .pattern("bab")
+                .pattern("cbc")
+                .define('a', Items.PAPER)
+                .define('b', Items.LAPIS_LAZULI)
+                .define('c', Items.IRON_INGOT)
+                .unlockedBy(getHasName(Items.PAPER), has(Items.PAPER))
+                .save(writer, Mod.loc(getItemName(ModItems.EMPTY_PERK.get())));
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.PERK_ITEMS.get(ModPerks.AP_BULLET).get())
                 .pattern("cbc")
                 .pattern("bab")
@@ -392,6 +401,41 @@ public class ModRecipeProvider extends RecipeProvider {
                 .define('d', getPotionIngredient(Potions.HEALING))
                 .unlockedBy(getHasName(ModItems.EMPTY_PERK.get()), has(ModItems.EMPTY_PERK.get()))
                 .save(writer, Mod.loc(getItemName(ModItems.PERK_ITEMS.get(ModPerks.CUPID_ARROW).get())));
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.PERK_ITEMS.get(ModPerks.FIREFLY).get())
+                .pattern("cbc")
+                .pattern("bab")
+                .pattern("cbc")
+                .define('a', ModItems.EMPTY_PERK.get())
+                .define('b', Ingredient.of(Items.OCHRE_FROGLIGHT, Items.VERDANT_FROGLIGHT, Items.PEARLESCENT_FROGLIGHT))
+                .define('c', ModItems.HIGH_ENERGY_EXPLOSIVES.get())
+                .unlockedBy(getHasName(ModItems.EMPTY_PERK.get()), has(ModItems.EMPTY_PERK.get()))
+                .save(writer, Mod.loc(getItemName(ModItems.PERK_ITEMS.get(ModPerks.FIREFLY).get())));
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.PERK_ITEMS.get(ModPerks.HE_BULLET).get())
+                .pattern("cbc")
+                .pattern("bab")
+                .pattern("cbc")
+                .define('a', ModItems.EMPTY_PERK.get())
+                .define('b', Items.TNT)
+                .define('c', ModItems.HIGH_ENERGY_EXPLOSIVES.get())
+                .unlockedBy(getHasName(ModItems.EMPTY_PERK.get()), has(ModItems.EMPTY_PERK.get()))
+                .save(writer, Mod.loc(getItemName(ModItems.PERK_ITEMS.get(ModPerks.HE_BULLET).get())));
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.PERK_ITEMS.get(ModPerks.INCENDIARY_BULLET).get())
+                .pattern("bbb")
+                .pattern("cac")
+                .pattern("bbb")
+                .define('a', ModItems.EMPTY_PERK.get())
+                .define('b', Items.BLAZE_POWDER)
+                .define('c', Items.DRAGON_BREATH)
+                .unlockedBy(getHasName(ModItems.EMPTY_PERK.get()), has(ModItems.EMPTY_PERK.get()))
+                .save(writer, Mod.loc(getItemName(ModItems.PERK_ITEMS.get(ModPerks.INCENDIARY_BULLET).get())));
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.PERK_ITEMS.get(ModPerks.INTELLIGENT_CHIP).get())
+                .pattern("bbb")
+                .pattern("bab")
+                .pattern("bbb")
+                .define('a', ModItems.EMPTY_PERK.get())
+                .define('b', ModItems.ANCIENT_CPU.get())
+                .unlockedBy(getHasName(ModItems.EMPTY_PERK.get()), has(ModItems.EMPTY_PERK.get()))
+                .save(writer, Mod.loc(getItemName(ModItems.PERK_ITEMS.get(ModPerks.INTELLIGENT_CHIP).get())));
     }
 
     public static void copyBlueprint(RecipeOutput writer, ItemLike result) {

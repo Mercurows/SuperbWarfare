@@ -1,11 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
-  "category": "equipment",
-  "pattern": [
-    "cbc",
-    "bab",
-    "cbc"
-  ],
+  "category": "misc",
   "key": {
     "a": {
       "item": "minecraft:paper"
@@ -17,8 +12,13 @@
       "item": "minecraft:iron_ingot"
     }
   },
+  "pattern": [
+    "cbc",
+    "bab",
+    "cbc"
+  ],
   "result": {
-    "id": "superbwarfare:empty_perk",
-    "count": 1
+    "count": 1,
+    "id": "superbwarfare:empty_perk"
   }
 }
