@@ -349,7 +349,7 @@
   "des.superbwarfare.lucky_container.location.aircraft": "Aircraft",
   "des.superbwarfare.lucky_container.location.controllable_turrets": "Controllable Turrets",
   "block.superbwarfare.vehicle_assembling_table": "Vehicle Assembling Table",
-  "des.superbwarfare.vehicle_assembly_table": "Used to make vehicles, requires a 2x2x2 space to be placed",
+  "des.superbwarfare.vehicle_assembly_table": "Used to make vehicles, requires a 2 x 2 x 2 space to be placed",
 
   "item.superbwarfare.high_energy_explosives": "High Energy Explosives",
   "item.superbwarfare.grain": "Grain",
@@ -845,6 +845,8 @@
   "superbwarfare.category.perk.des": "Understand the function of Superb Warfare's perks",
   "superbwarfare.category.misc": "Misc",
   "superbwarfare.category.misc.des": "Understand how to use Superb Warfare's misc items",
+  "superbwarfare.category.resources": "Resources",
+  "superbwarfare.category.resources.des": "Understand how to get Superb Warfare's resources",
 
   "superbwarfare.entry.vehicle.intro": "Basic Knowledge",
   "superbwarfare.page.vehicle.intro.1": "The vehicles in Superb Warfare are stored in $(item)Containers$() and need to be opened by a $(item)Crowbar$().$(p)Opening a container requires sufficient space. You can check the required space by aiming at the container when holding a crowbar.",
@@ -887,5 +889,24 @@
   "superbwarfare.page.vehicle.a_10a.1": "$(thing)A-10A Thunderbolt II$() is a single seat attacker with medium armor protection. Carries 4 flare countermeasures to disrupt guided targeting, automatically replenishing flares one by one over time.$(p)Press $(thing)$(k:key.jump)$() to operate landing gears, $(thing)$(k:key.sneak)$() to open speed brake, $(thing)$(k:key.sprint)$() to enable boost.",
   "superbwarfare.page.vehicle.a_10a.2": "$(l)Basic Attributes: $()$(p)Durability - 350$(br)Max Passengers - 1$(br)Climbing Height - 0.5m$(br)Max Energy - 1,000,000FE$(br)Energy Cost - 256FE/tick$(br)Max Speed - 180km/h (No boost) / 300km/h (Boost)",
   "superbwarfare.page.vehicle.a_10a.3": "$(l)Weapon Attributes: $()$(p)Position 1: $(p)(1) 30mm Cannon$(br)Fire Rate - 1200RPM$(br)Direct Damage - 30$(br)Explosion Damage - 10$(br)Explosion Radius - 4m$(br)Ammo - $(item)Small Caliber Shells$()$(br)(2) Small Caliber Rocket$(br)Fire Rate - 120RPM$(br)Direct Damage - 90$(br)Explosion Damage - 50$(br)Explosion Radius - 6m$(br)Ammo - $(item)Small Caliber Rocket$()",
-  "superbwarfare.page.vehicle.a_10a.4": "(3) MK-82 Aerial Bomb$(br)Explosion Damage - 650$(br)Explosion Radius - 11m$(br)Ammo - $(item)Medium Aerial Bomb$()$(br)(4) AGM-65 Air-to-ground Missile$(br)Direct Damage - 1100$(br)Explosion Damage - 150$(br)Explosion Radius - 9m$(br)Ammo - $(item)Air-to-ground Missile$()"
+  "superbwarfare.page.vehicle.a_10a.4": "(3) MK-82 Aerial Bomb$(br)Explosion Damage - 650$(br)Explosion Radius - 11m$(br)Ammo - $(item)Medium Aerial Bomb$()$(br)(4) AGM-65 Air-to-ground Missile$(br)Direct Damage - 1100$(br)Explosion Damage - 150$(br)Explosion Radius - 9m$(br)Ammo - $(item)Air-to-ground Missile$()",
+  "superbwarfare.entry.vehicle.tom_6": "Tom F6F",
+  "superbwarfare.page.vehicle.tom_6.1": "$(thing)Tom F6F$() is extremely simple plane with weak armor protection. It can carry a $(thing)Melon$() as weapon.",
+  "superbwarfare.page.vehicle.tom_6.2": "$(l)Basic Attributes: $()$(p)Durability - 40$(br)Max Passengers - 1$$(br)Max Energy - 100,000FE$(br)Energy Cost - 16FE/tick",
+  "superbwarfare.page.vehicle.tom_6.3": "$(l)Weapon Attributes: $()$(p)Position 1: $(p)(1) Melon Bomb$(br)Explosion Damage - 500$(br)Explosion Radius - 10m$(br)Ammo - $(item)Melon$()",
+  "superbwarfare.entry.vehicle.wheel_chair": "Wheelchair",
+  "superbwarfare.page.vehicle.wheel_chair.1": "$(thing)Wheelchair$() is a small vehicle with no armor protection.$(p)Repeat clicking $(thing)$(k:key.forward)$() to move forward when there is no energy.$(br)Hold $(thing)$(k:key.forward)$() to move forward rapidly when there is enough energy. Press $(thing)$(k:key.jump)$() to jump.",
+  "superbwarfare.page.vehicle.wheel_chair.2": "$(l)Basic Attributes: $()$(p)Durability - 10$(br)Max Passengers - 1$(br)Climbing Height - 1.1m$(br)Max Energy - 24,000FE$(br)Energy Cost - 1FE/tick$(br)",
+  "superbwarfare.page.vehicle.wheel_chair.3": "$(o)“Rush! Rush! Run!”$()",
+
+  "superbwarfare.entry.resources.galena": "Galena Ore",
+  "superbwarfare.page.resources.galena.1": "$(thing)Galena Ore$() is generated in the overworld $(thing)from Y=36 to Y=1$().",
+  "superbwarfare.page.resources.galena.2": "$(thing)Deepslate Galena Ore$() is generated in the overworld $(thing)from Y=0 to Y=-64$().",
+  "superbwarfare.entry.resources.scheelite": "Scheelite Ore",
+  "superbwarfare.page.resources.scheelite.1": "$(thing)Scheelite Ore$() is generated in the overworld $(thing)from Y=48 to Y=1$().",
+  "superbwarfare.page.resources.scheelite.2": "$(thing)Deepslate Scheelite Ore() is generated in the overworld $(thing)from Y=0 to Y=-64$().",
+  "superbwarfare.page.resources.scheelite.3": "$(thing)Tungsten Ingot$() can only be blasted by $(thing)Blast Furnace$().",
+  "superbwarfare.entry.resources.silver": "Silver Ore",
+  "superbwarfare.page.resources.silver.1": "$(thing)Silver Ore$() is generated in the overworld $(thing)from Y=48 to Y=1$().",
+  "superbwarfare.page.resources.silver.2": "$(thing)Deepslate Silver Ore() is generated in the overworld $(thing)from Y=0 to Y=-64$()."
 }

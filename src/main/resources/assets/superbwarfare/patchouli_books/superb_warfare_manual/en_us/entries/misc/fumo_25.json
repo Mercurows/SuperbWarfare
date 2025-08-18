@@ -1,0 +1,21 @@
+{
+  "name": "superbwarfare.entry.misc.fumo_25",
+  "icon": "superbwarfare:fumo_25",
+  "category": "superbwarfare:misc",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "superbwarfare.page.misc.fumo_251"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "superbwarfare.page.misc.fumo_252"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "superbwarfare:fumo_25_crafting",
+      "text": "superbwarfare.page.misc.fumo_253"
+    }
+  ],
+  "sortnum": 40003
+}

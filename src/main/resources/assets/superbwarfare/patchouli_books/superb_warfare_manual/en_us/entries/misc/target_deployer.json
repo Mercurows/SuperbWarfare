@@ -1,0 +1,26 @@
+{
+  "name": "superbwarfare.entry.misc.target_deployer",
+  "icon": "superbwarfare:target_deployer",
+  "category": "superbwarfare:misc",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "superbwarfare.page.misc.target_deployer1"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "superbwarfare:target_deployer_crafting",
+      "text": "superbwarfare.page.misc.target_deployer2"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "superbwarfare:dps_generator_deployer",
+      "text": "superbwarfare.page.misc.target_deployer3"
+    },{
+      "type": "patchouli:crafting",
+      "recipe": "superbwarfare:dps_generator_deployer_crafting",
+      "text": "superbwarfare.page.misc.target_deployer4"
+    }
+  ],
+  "sortnum": 40005
+}

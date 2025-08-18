@@ -1,0 +1,17 @@
+{
+  "name": "superbwarfare.entry.weapon.aurelia_sceptre",
+  "icon": "superbwarfare:aurelia_sceptre",
+  "category": "superbwarfare:weapon",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "superbwarfare.page.weapon.aurelia_sceptre1"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "superbwarfare:aurelia_sceptre_smithing",
+      "text": "superbwarfare.page.weapon.aurelia_sceptre2"
+    }
+  ],
+  "sortnum": 10005
+}

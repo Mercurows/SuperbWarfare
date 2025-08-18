@@ -1,0 +1,26 @@
+{
+  "name": "superbwarfare.entry.misc.drone",
+  "icon": "superbwarfare:drone",
+  "category": "superbwarfare:misc",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "superbwarfare.page.misc.drone1"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "superbwarfare.page.misc.drone2"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "superbwarfare.page.misc.drone3"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "superbwarfare:drone_crafting",
+      "text": "superbwarfare.page.misc.drone4"
+    }
+
+  ],
+  "sortnum": 40006
+}

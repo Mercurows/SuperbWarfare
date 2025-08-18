@@ -1,0 +1,17 @@
+{
+  "name": "superbwarfare.entry.weapon.mk_14",
+  "icon": "superbwarfare:mk_14",
+  "category": "superbwarfare:weapon",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "superbwarfare.page.weapon.mk_141"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "superbwarfare:mk_14_smithing",
+      "text": "superbwarfare.page.weapon.mk_142"
+    }
+  ],
+  "sortnum": 10025
+}

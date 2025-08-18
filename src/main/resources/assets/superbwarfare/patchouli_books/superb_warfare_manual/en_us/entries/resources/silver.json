@@ -1,0 +1,17 @@
+{
+  "name": "superbwarfare.entry.resources.silver",
+  "icon": "superbwarfare:raw_silver",
+  "category": "superbwarfare:resources",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "superbwarfare.page.resources.silver.1"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "superbwarfare:deepslate_silver_ore",
+      "text": "superbwarfare.page.resources.silver.2"
+    }
+  ],
+  "sortnum": 50003
+}

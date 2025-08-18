@@ -349,7 +349,7 @@
   "des.superbwarfare.lucky_container.location.aircraft": "飞行器",
   "des.superbwarfare.lucky_container.location.controllable_turrets": "可操控炮塔",
   "block.superbwarfare.vehicle_assembling_table": "载具装配台",
-  "des.superbwarfare.vehicle_assembly_table": "用于制作载具的站点，需要2x2x2的空间放置",
+  "des.superbwarfare.vehicle_assembly_table": "用于制作载具的站点，需要2 x 2 x 2的空间放置",
 
   "item.superbwarfare.high_energy_explosives": "高能炸药",
   "item.superbwarfare.grain": "推进药柱",
@@ -845,6 +845,8 @@
   "superbwarfare.category.perk.des": "了解卓越前线的武器模组的作用",
   "superbwarfare.category.misc": "杂项",
   "superbwarfare.category.misc.des": "了解卓越前线的其他物品用法",
+  "superbwarfare.category.resources": "资源",
+  "superbwarfare.category.resources.des": "了解如何获取卓越前线的资源材料",
 
   "superbwarfare.entry.vehicle.intro": "载具基础",
   "superbwarfare.page.vehicle.intro.1": "卓越前线的载具平时被储存在$(item)集装箱$()中，需要使用$(item)撬棍$()打开。$(p)开启集装箱需要足够的空间，手持撬棍时瞄准集装箱，即可查看集装箱所需空间大小。集装箱可以直接放置在水面上。",
@@ -887,5 +889,24 @@
   "superbwarfare.page.vehicle.a_10a.1": "$(thing)A-10“雷电II”攻击机$()是一款单座攻击机，装甲防护一般。携带4发可干扰制导锁定的热诱弹，每隔一段时间自动逐发补充。$(p)按下$(thing)$(k:key.jump)$()收放起落架，$(thing)$(k:key.sneak)$()打开减速板，$(thing)$(k:key.sprint)$()开启加速。",
   "superbwarfare.page.vehicle.a_10a.2": "$(l)基础属性：$()$(p)耐久值 - 350$(br)最大乘员数 - 1$(br)爬坡高度 - 0.5m$(br)最大能量 - 1,000,000FE$(br)能耗 - 256FE/tick$(br)最大速度 - 180km/h（未开启加速） / 300km/h（开启加速）",
   "superbwarfare.page.vehicle.a_10a.3": "$(l)武器属性：$()$(p)1号位：$(p)(1) 30mm机炮$(br)射速 - 1200RPM$(br)直击伤害 - 30$(br)爆炸伤害 - 10$(br)爆炸半径 - 4m$(br)弹药 - $(item)小口径炮弹$()$(br)(2) 小口径火箭弹$(br)射速 - 120RPM$(br)直击伤害 - 90$(br)爆炸伤害 - 50$(br)爆炸半径 - 6m$(br)弹药 - $(item)小口径火箭弹$()",
-  "superbwarfare.page.vehicle.a_10a.4": "(3) MK-82航空炸弹$(br)爆炸伤害 - 650$(br)爆炸半径 - 11m$(br)弹药 - $(item)中型航空炸弹$()$(br)(4) AGM-65空对地导弹$(br)直击伤害 - 1100$(br)爆炸伤害 - 150$(br)爆炸半径 - 9m$(br)弹药 - $(item)空对地导弹$()"
+  "superbwarfare.page.vehicle.a_10a.4": "(3) MK-82航空炸弹$(br)爆炸伤害 - 650$(br)爆炸半径 - 11m$(br)弹药 - $(item)中型航空炸弹$()$(br)(4) AGM-65空对地导弹$(br)直击伤害 - 1100$(br)爆炸伤害 - 150$(br)爆炸半径 - 9m$(br)弹药 - $(item)空对地导弹$()",
+  "superbwarfare.entry.vehicle.tom_6": "汤姆 F6F",
+  "superbwarfare.page.vehicle.tom_6.1": "$(thing)汤姆 F6F$()是一款极致简化的单兵固定翼飞机，几乎没有装甲防护。可手动安装一枚$(thing)西瓜$()用作武备。",
+  "superbwarfare.page.vehicle.tom_6.2": "$(l)基础属性：$()$(p)耐久值 - 40$(br)最大乘员数 - 1$$(br)最大能量 - 100,000FE$(br)能耗 - 16FE/tick",
+  "superbwarfare.page.vehicle.tom_6.3": "$(l)武器属性：$()$(p)1号位：$(p)(1) 西瓜航弹$(br)爆炸伤害 - 500$(br)爆炸半径 - 10m$(br)弹药 - $(item)西瓜$()",
+  "superbwarfare.entry.vehicle.wheel_chair": "轮椅",
+  "superbwarfare.page.vehicle.wheel_chair.1": "$(thing)轮椅$()是一款轻型代步工具，几乎没有装甲防护。$(p)没有能量时可以点按 $(thing)$(k:key.forward)$() 前进。$(br)有能量时按住 $(thing)$(k:key.forward)$() 快速冲刺,按 $(thing)$(k:key.jump)$() 跳跃。",
+  "superbwarfare.page.vehicle.wheel_chair.2": "$(l)基础属性：$()$(p)耐久值 - 10$(br)最大乘员数 - 1$(br)爬坡高度 - 1.1m$(br)最大能量 - 24,000FE$(br)能耗 - 1FE/tick$(br)",
+  "superbwarfare.page.vehicle.wheel_chair.3": "$(o)“冲！冲刺！冲！”$()",
+
+  "superbwarfare.entry.resources.galena": "方铅矿石",
+  "superbwarfare.page.resources.galena.1": "$(thing)方铅矿石$()生成于主世界的$(thing)36 ~ 1$()层。",
+  "superbwarfare.page.resources.galena.2": "$(thing)深层方铅矿石$()生成于主世界的$(thing)0 ~ -64$()层。",
+  "superbwarfare.entry.resources.scheelite": "白钨矿石",
+  "superbwarfare.page.resources.scheelite.1": "$(thing)白钨矿石$()生成于主世界的$(thing)48 ~ 1$()层。",
+  "superbwarfare.page.resources.scheelite.2": "$(thing)深层白钨矿石$()生成于主世界的$(thing)0 ~ -64$()层。",
+  "superbwarfare.page.resources.scheelite.3": "$(thing)钨锭$()只能使用$(thing)高炉$()进行熔炼。",
+  "superbwarfare.entry.resources.silver": "银矿石",
+  "superbwarfare.page.resources.silver.1": "$(thing)银矿石$()生成于主世界的$(thing)48 ~ 1$()层。",
+  "superbwarfare.page.resources.silver.2": "$(thing)深层银矿石$()生成于主世界的$(thing)0 ~ -64$()层。"
 }

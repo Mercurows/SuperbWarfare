@@ -1,0 +1,17 @@
+{
+  "name": "superbwarfare.entry.weapon.secondary_cataclysm",
+  "icon": "superbwarfare:secondary_cataclysm",
+  "category": "superbwarfare:weapon",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "superbwarfare.page.weapon.secondary_cataclysm1"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "superbwarfare:secondary_cataclysm_smithing",
+      "text": "superbwarfare.page.weapon.secondary_cataclysm2"
+    }
+  ],
+  "sortnum": 10033
+}

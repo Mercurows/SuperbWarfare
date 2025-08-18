@@ -1,0 +1,17 @@
+{
+  "name": "superbwarfare.entry.misc.superb_item_interface",
+  "icon": "superbwarfare:superb_item_interface",
+  "category": "superbwarfare:misc",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "superbwarfare.page.misc.superb_item_interface1"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "superbwarfare:superb_item_interface",
+      "text": "superbwarfare.page.misc.superb_item_interface2"
+    }
+  ],
+  "sortnum": 40001
+}

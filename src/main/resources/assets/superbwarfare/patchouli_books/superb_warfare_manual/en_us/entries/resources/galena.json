@@ -1,0 +1,17 @@
+{
+  "name": "superbwarfare.entry.resources.galena",
+  "icon": "superbwarfare:galena",
+  "category": "superbwarfare:resources",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "superbwarfare.page.resources.galena.1"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "superbwarfare:deepslate_galena_ore",
+      "text": "superbwarfare.page.resources.galena.2"
+    }
+  ],
+  "sortnum": 50001
+}

@@ -1,0 +1,17 @@
+{
+  "name": "superbwarfare.entry.weapon.glock_17",
+  "icon": "superbwarfare:glock_17",
+  "category": "superbwarfare:weapon",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "superbwarfare.page.weapon.glock_171"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "superbwarfare:glock_17_smithing",
+      "text": "superbwarfare.page.weapon.glock_172"
+    }
+  ],
+  "sortnum": 10008
+}

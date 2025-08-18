@@ -1,0 +1,17 @@
+{
+  "name": "superbwarfare.entry.perk.intelligent_chip",
+  "icon": "superbwarfare:intelligent_chip",
+  "category": "superbwarfare:perk",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "superbwarfare.page.perk.intelligent_chip1"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "superbwarfare:shortcut_pack_crafting",
+      "text": "superbwarfare.page.perk.intelligent_chip2"
+    }
+  ],
+  "sortnum": 30013
+}

@@ -1,0 +1,17 @@
+{
+  "name": "superbwarfare.entry.perk.killing_tally",
+  "icon": "superbwarfare:killing_tally",
+  "category": "superbwarfare:perk",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "superbwarfare.page.perk.killing_tally1"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "superbwarfare:shortcut_pack_crafting",
+      "text": "superbwarfare.page.perk.killing_tally2"
+    }
+  ],
+  "sortnum": 30016
+}

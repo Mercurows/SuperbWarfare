@@ -1,0 +1,17 @@
+{
+  "name": "superbwarfare.entry.weapon.m_870",
+  "icon": "superbwarfare:m_870",
+  "category": "superbwarfare:weapon",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "superbwarfare.page.weapon.m_8701"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "superbwarfare:m_870_smithing",
+      "text": "superbwarfare.page.weapon.m_8702"
+    }
+  ],
+  "sortnum": 10021
+}
