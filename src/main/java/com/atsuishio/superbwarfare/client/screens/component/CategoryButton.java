@@ -2,10 +2,12 @@ package com.atsuishio.superbwarfare.client.screens.component;
 
 import com.atsuishio.superbwarfare.client.screens.VehicleAssemblingScreen;
 import com.atsuishio.superbwarfare.recipe.vehicle.VehicleAssemblingRecipe;
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 
 public class CategoryButton extends Button {
@@ -29,6 +31,11 @@ public class CategoryButton extends Button {
             pGuiGraphics.blit(VehicleAssemblingScreen.TEXTURE, this.getX(), this.getY(), 179, 205, 20, this.height, VehicleAssemblingScreen.IMAGE_SIZE, VehicleAssemblingScreen.IMAGE_SIZE);
         }
 
+        RenderSystem.depthMask(false);
+        RenderSystem.enableBlend();
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+
         int vOffset = switch (this.category) {
             case LAND -> 182;
             case DEFENSE -> 198;
@@ -37,7 +44,12 @@ public class CategoryButton extends Button {
             case CIVILIAN -> 246;
             default -> 262;
         };
-        pGuiGraphics.blit(VehicleAssemblingScreen.TEXTURE, this.getX() + 3, this.getY() + 3, 203, vOffset, 16, 16, VehicleAssemblingScreen.IMAGE_SIZE, VehicleAssemblingScreen.IMAGE_SIZE);
+        pGuiGraphics.blit(VehicleAssemblingScreen.TEXTURE, this.getX() + 3, this.getY() + 3, this.isSelected ? 203 : 221, vOffset, 16, 16, VehicleAssemblingScreen.IMAGE_SIZE, VehicleAssemblingScreen.IMAGE_SIZE);
+
+        RenderSystem.depthMask(true);
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.disableBlend();
+        RenderSystem.setShaderColor(1, 1, 1, 1);
 
         pGuiGraphics.pose().popPose();
     }

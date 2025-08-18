@@ -674,8 +674,6 @@
   "container.superbwarfare.charging_station.hide_range": "Hide Range",
   "container.superbwarfare.superb_item_interface": "Superb Item Interface",
   "container.superbwarfare.vehicle_assembling_table.assemble": "Assemble",
-  "container.superbwarfare.vehicle_assembling_table.information": "Information",
-  "container.superbwarfare.vehicle_assembling_table.ingredient": "Required Ingredient",
   "container.superbwarfare.vehicle_assembling_table.count": "Result Count: %1$s",
   "container.superbwarfare.mod_info": "Added by %1$s",
   "info.superbwarfare.mod_id": "Superb Warfare",

@@ -128,7 +128,7 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
     public void addCategoryButtons(int posX, int posY) {
         int i = 0;
         for (var category : VehicleAssemblingRecipe.Category.values()) {
-            CategoryButton button = new CategoryButton(posX, posY + 2 + i * 23, category, b -> {
+            CategoryButton button = new CategoryButton(posX, posY + 21 + i * 23, category, b -> {
                 this.currentCategory = category;
                 this.currentRecipes = this.recipes.get(category);
                 this.currentRecipe = this.getRecipeById(this.currentRecipes == null || this.currentRecipes.isEmpty() ? null : this.currentRecipes.getFirst());
@@ -149,9 +149,6 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
         this.renderBackground(guiGraphics, mouseX, mouseY, partialTick);
         super.render(guiGraphics, mouseX, mouseY, partialTick);
         this.renderTooltip(guiGraphics, mouseX, mouseY);
-
-        guiGraphics.drawString(this.font, Component.translatable("container.superbwarfare.vehicle_assembling_table.information"), this.leftPos + 120, this.topPos + 105, 5592405, false);
-        guiGraphics.drawString(this.font, Component.translatable("container.superbwarfare.vehicle_assembling_table.ingredient"), this.leftPos + 214, this.topPos + 105, 5592405, false);
 
         if (this.currentRecipe != null) {
             this.renderModel(this.currentRecipe, guiGraphics);
@@ -353,11 +350,11 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
     }
 
     public void addPageButtons(int posX, int posY) {
-        PageButton left = this.addRenderableWidget(new PageButton(posX + 70, posY + 4, true, b -> {
+        PageButton left = this.addRenderableWidget(new PageButton(posX + 95, posY - 1, true, b -> {
             this.pageIndex = Math.max(0, this.pageIndex - 1);
             this.init();
         }));
-        PageButton right = this.addRenderableWidget(new PageButton(posX + 97, posY + 4, false, b -> {
+        PageButton right = this.addRenderableWidget(new PageButton(posX + 103, posY - 1, false, b -> {
             if (this.currentRecipes != null && !this.currentRecipes.isEmpty()) {
                 this.pageIndex = Math.min((this.currentRecipes.size() - 1) / PAGE_SIZE, this.pageIndex + 1);
                 this.init();
@@ -373,7 +370,7 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
     }
 
     public void addAssembleButton(int posX, int posY) {
-        this.addRenderableWidget(new AssembleButton(posX + 306, posY + 163, b -> {
+        this.addRenderableWidget(new AssembleButton(posX + 295, posY + 163, b -> {
             if (this.currentRecipe == null || this.materialCount == null) return;
 
             var inputs = this.currentRecipe.value().getInputs();

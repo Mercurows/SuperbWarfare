@@ -674,8 +674,6 @@
   "container.superbwarfare.charging_station.hide_range": "隐藏范围",
   "container.superbwarfare.superb_item_interface": "卓越物品接口",
   "container.superbwarfare.vehicle_assembling_table.assemble": "组装",
-  "container.superbwarfare.vehicle_assembling_table.information": "详情",
-  "container.superbwarfare.vehicle_assembling_table.ingredient": "所需材料",
   "container.superbwarfare.vehicle_assembling_table.count": "制作数量：%1$s",
   "container.superbwarfare.mod_info": "由%1$s添加",
   "info.superbwarfare.mod_id": "卓越前线",
