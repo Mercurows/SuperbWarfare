@@ -381,11 +381,9 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
         return data().get(VehicleProp.UP_STEP);
     }
 
-    @Nullable
     @Override
-    public Entity getFirstPassenger() {
+    public @Nullable Entity getFirstPassenger() {
         if (orderedPassengers.isEmpty()) {
-            Mod.LOGGER.warn("getFirstPassenger() called on vehicle {} with no passengers", this);
             return null;
         }
         return orderedPassengers.getFirst();
@@ -397,7 +395,10 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
      * @param index 目标座位
      * @return 目标座位的乘客
      */
-    public Entity getNthEntity(int index) {
+    public @Nullable Entity getNthEntity(int index) {
+        if (index >= orderedPassengers.size() || index < 0) {
+            return null;
+        }
         return orderedPassengers.get(index);
     }
 
