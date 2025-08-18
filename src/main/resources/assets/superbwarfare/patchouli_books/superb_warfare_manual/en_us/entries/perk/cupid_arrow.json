@@ -5,12 +5,11 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "superbwarfare.page.perk.cupid_arrow1"
+      "text": "superbwarfare.page.perk.cupid_arrow.1"
     },
     {
       "type": "patchouli:crafting",
-      "recipe": "superbwarfare:shortcut_pack_crafting",
-      "text": "superbwarfare.page.perk.cupid_arrow2"
+      "recipe": "superbwarfare:perk/cupid_arrow"
     }
   ],
   "sortnum": 30003

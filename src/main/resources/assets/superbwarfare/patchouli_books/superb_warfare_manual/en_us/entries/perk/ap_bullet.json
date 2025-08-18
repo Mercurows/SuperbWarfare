@@ -9,7 +9,7 @@
     },
     {
       "type": "patchouli:crafting",
-      "recipe": "superbwarfare:ap_bullet"
+      "recipe": "superbwarfare:perk/ap_bullet"
     }
   ],
   "sortnum": 30001
