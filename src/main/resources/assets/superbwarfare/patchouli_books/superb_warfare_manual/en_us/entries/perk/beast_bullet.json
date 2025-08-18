@@ -5,12 +5,12 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "superbwarfare.page.perk.beast_bullet1"
+      "text": "superbwarfare.page.perk.beast_bullet.1"
     },
     {
       "type": "patchouli:spotlight",
-      "item": "superbwarfare:shortcut_pack",
-      "text": "superbwarfare.page.perk.beast_bullet2"
+      "item": "superbwarfare:beast_bullet",
+      "text": "superbwarfare.page.creative_only"
     }
   ],
   "sortnum": 30002

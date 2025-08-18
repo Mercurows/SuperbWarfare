@@ -1,31 +1,31 @@
 {
   "name": "superbwarfare.entry.weapon.intro",
-  "icon": "superbwarfare:crowbar",
+  "icon": "superbwarfare:glock_17_blueprint",
   "category": "superbwarfare:weapon",
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "superbwarfare.page.weapon.intro1",
+      "text": "superbwarfare.page.weapon.intro.1",
       "recipe":"superbwarfare:glock_17_smithing"
     },
     {
       "type": "patchouli:smithing",
       "recipe":"superbwarfare:glock_17_smithing",
-      "text": "superbwarfare.page.weapon.intro2"
+      "text": "superbwarfare.page.weapon.intro.2"
     },
     {
       "type": "patchouli:spotlight",
       "item": "superbwarfare:glock_17_blueprint",
-      "text": "superbwarfare.page.weapon.intro3"
+      "text": "superbwarfare.page.weapon.intro.3"
     },
     {
       "type": "patchouli:text",
-      "text": "superbwarfare.page.weapon.intro4"
+      "text": "superbwarfare.page.weapon.intro.4"
     },
     {
       "type": "patchouli:crafting",
       "recipe": "superbwarfare:ammo_box_crafting",
-      "text": "superbwarfare.page.weapon.intro5"
+      "text": "superbwarfare.page.weapon.intro.5"
     }
   ],
   "sortnum": 10000
