@@ -1,11 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
-  "category": "equipment",
-  "pattern": [
-    "cbc",
-    "dad",
-    "cdc"
-  ],
+  "category": "misc",
   "key": {
     "a": {
       "item": "superbwarfare:empty_perk"
@@ -26,8 +21,13 @@
       "items": "minecraft:potion"
     }
   },
+  "pattern": [
+    "cbc",
+    "dad",
+    "cbc"
+  ],
   "result": {
-    "id": "superbwarfare:cupid_arrow",
-    "count": 1
+    "count": 1,
+    "id": "superbwarfare:cupid_arrow"
   }
 }
