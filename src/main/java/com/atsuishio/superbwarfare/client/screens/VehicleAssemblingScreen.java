@@ -285,13 +285,13 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
                 int count = input.getCount();
                 if (Minecraft.getInstance().player != null && Minecraft.getInstance().player.isCreative()) {
                     Component text = Component.literal(count + "/∞");
-                    guiGraphics.drawString(this.font, text, (posX + 14) * 2, (posY + 8) * 2, 0x9dffa5, false);
+                    guiGraphics.drawString(this.font, text, (posX + 14) * 2, (posY + 8) * 2, 0x2C3141, false);
                 } else {
                     int hasCount = 0;
                     if (this.materialCount != null && index < this.materialCount.size()) {
                         hasCount = this.materialCount.get(index);
                     }
-                    int color = hasCount >= count ? 0x80ff58 : 0xf44d61;
+                    int color = hasCount >= count ? 0x2C3141 : 0xf44d61;
                     Component text = Component.literal(count + "/" + hasCount);
                     guiGraphics.drawString(this.font, text, (posX + 14) * 2, (posY + 8) * 2, color, false);
                 }
@@ -627,7 +627,7 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
         guiGraphics.enableScissor(this.leftPos + 120, this.topPos + 129, this.leftPos + 198, this.topPos + 165);
         for (int j = 0; j < infoComponents.size(); j++) {
             var cachedComponent = j > 3 ? Component.literal("...").getVisualOrderText() : infoComponents.get(j);
-            guiGraphics.drawString(this.font, cachedComponent, (int) ((this.leftPos + 122) / 0.75f), (int) ((this.topPos + 129 + j * 7.5f) / 0.75f), 0xFFFFFF);
+            guiGraphics.drawString(this.font, cachedComponent, (int) ((this.leftPos + 122) / 0.75f), (int) ((this.topPos + 129 + j * 7.5f) / 0.75f), 0x2C3141, false);
         }
         guiGraphics.disableScissor();
 
