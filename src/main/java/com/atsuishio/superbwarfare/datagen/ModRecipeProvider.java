@@ -27,7 +27,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
 
-import static com.atsuishio.superbwarfare.datagen.ModItemTagProvider.forgeTag;
+import static com.atsuishio.superbwarfare.datagen.ModItemTagProvider.commonTag;
 
 public class ModRecipeProvider extends RecipeProvider implements IConditionBuilder {
 
@@ -82,7 +82,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .pattern("aba")
                 .define('a', Items.STRING)
                 .define('b', ItemTags.WOOL_CARPETS)
-                .define('c', getPotionStack(Potions.REGENERATION))
+                .define('c', getPotionIngredient(Potions.REGENERATION))
                 .unlockedBy(getHasName(Items.STRING), has(Items.STRING))
                 .save(writer, Mod.loc(getItemName(ModItems.MEDICAL_KIT.get())));
 
@@ -113,7 +113,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .pattern("ede")
                 .define('a', ModItems.FUSEE.get())
                 .define('b', Items.IRON_INGOT)
-                .define('c', forgeTag("plates/copper"))
+                .define('c', commonTag("plates/copper"))
                 .define('d', ModItems.GRAIN.get())
                 .define('e', Items.GUNPOWDER)
                 .unlockedBy(getHasName(ModItems.FUSEE.get()), has(ModItems.FUSEE.get()))
@@ -381,8 +381,8 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .pattern("bab")
                 .pattern("cbc")
                 .define('a', ModItems.EMPTY_PERK.get())
-                .define('b', forgeTag("storage_blocks/tungsten"))
-                .define('c', forgeTag("ingots/tungsten"))
+                .define('b', commonTag("storage_blocks/tungsten"))
+                .define('c', commonTag("ingots/tungsten"))
                 .unlockedBy(getHasName(ModItems.EMPTY_PERK.get()), has(ModItems.EMPTY_PERK.get()))
                 .save(writer, perkLoc(ModPerks.AP_BULLET));
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.PERK_ITEMS.get(ModPerks.CUPID_ARROW).get())
@@ -392,7 +392,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .define('a', ModItems.EMPTY_PERK.get())
                 .define('b', Items.BOW)
                 .define('c', ItemTags.ARROWS)
-                .define('d', getPotionStack(Potions.HEALING))
+                .define('d', getPotionIngredient(Potions.HEALING))
                 .unlockedBy(getHasName(ModItems.EMPTY_PERK.get()), has(ModItems.EMPTY_PERK.get()))
                 .save(writer, perkLoc(ModPerks.CUPID_ARROW));
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.PERK_ITEMS.get(ModPerks.FIREFLY).get())
@@ -470,7 +470,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .pattern("bab")
                 .pattern("cbc")
                 .define('a', ModItems.EMPTY_PERK.get())
-                .define('b', forgeTag("storage_blocks/lead"))
+                .define('b', commonTag("storage_blocks/lead"))
                 .define('c', Items.SPIDER_EYE)
                 .unlockedBy(getHasName(ModItems.EMPTY_PERK.get()), has(ModItems.EMPTY_PERK.get()))
                 .save(writer, perkLoc(ModPerks.POISONOUS_BULLET));
@@ -509,8 +509,8 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .pattern("bab")
                 .pattern("cbc")
                 .define('a', ModItems.EMPTY_PERK.get())
-                .define('b', forgeTag("storage_blocks/silver"))
-                .define('c', forgeTag("ingots/silver"))
+                .define('b', commonTag("storage_blocks/silver"))
+                .define('c', commonTag("ingots/silver"))
                 .unlockedBy(getHasName(ModItems.EMPTY_PERK.get()), has(ModItems.EMPTY_PERK.get()))
                 .save(writer, perkLoc(ModPerks.SILVER_BULLET));
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.PERK_ITEMS.get(ModPerks.TURBO_CHARGER).get())
@@ -519,7 +519,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .pattern("cbc")
                 .define('a', ModItems.EMPTY_PERK.get())
                 .define('b', Items.PISTON)
-                .define('c', forgeTag("ingots/steel"))
+                .define('c', commonTag("ingots/steel"))
                 .unlockedBy(getHasName(ModItems.EMPTY_PERK.get()), has(ModItems.EMPTY_PERK.get()))
                 .save(writer, perkLoc(ModPerks.TURBO_CHARGER));
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.PERK_ITEMS.get(ModPerks.VOLT_OVERLOAD).get())
@@ -529,7 +529,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .define('a', ModItems.EMPTY_PERK.get())
                 .define('b', ModItems.CELL.get())
                 .define('c', Items.LIGHTNING_ROD)
-                .define('d', forgeTag("dusts/coal_coke"))
+                .define('d', commonTag("dusts/coal_coke"))
                 .define('e', Tags.Items.INGOTS_IRON)
                 .unlockedBy(getHasName(ModItems.EMPTY_PERK.get()), has(ModItems.EMPTY_PERK.get()))
                 .save(writer, perkLoc(ModPerks.VOLT_OVERLOAD));
@@ -672,7 +672,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .save(writer, Mod.loc(getItemName(pack)));
     }
 
-    public static StrictNBTIngredient getPotionStack(Potion potion) {
+    public static StrictNBTIngredient getPotionIngredient(Potion potion) {
         var stack = new ItemStack(Items.POTION);
         PotionUtils.setPotion(stack, potion);
         return StrictNBTIngredient.of(stack);
