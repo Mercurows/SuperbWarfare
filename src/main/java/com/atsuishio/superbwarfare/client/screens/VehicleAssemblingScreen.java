@@ -611,7 +611,8 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
         if (key == null) return;
         if (typeName.split(":").length < 2) return;
 
-        var info = Component.translatable("info." + typeName.split(":")[0] + "." + typeName.split(":")[1]);
+        var info = Component.translatableWithFallback("info." + typeName.split(":")[0] + "." + typeName.split(":")[1],
+                Component.translatable("info.superbwarfare.no_info").getString());
         List<FormattedCharSequence> infoComponents = this.font.split(FormattedText.of(info.getString()), 100);
 
         pose.pushPose();
