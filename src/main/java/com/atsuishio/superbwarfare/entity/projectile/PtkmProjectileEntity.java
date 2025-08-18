@@ -10,13 +10,16 @@ import com.atsuishio.superbwarfare.tools.CustomExplosion;
 import com.atsuishio.superbwarfare.tools.DamageHandler;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
 import com.atsuishio.superbwarfare.tools.RangeTool;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -137,8 +140,7 @@ public class PtkmProjectileEntity extends FastThrowableProjectile implements Exp
         if (this.level() instanceof ServerLevel serverLevel && tickCount > 0) {
             double l = getDeltaMovement().length();
             for (double i = 0; i < l; i++) {
-                Vec3 startPos = position();
-                Vec3 pos = startPos.add(getDeltaMovement().normalize().scale(-i));
+                Vec3 pos = position().add(getDeltaMovement().normalize().scale(-i));
                 ParticleTool.sendParticle(serverLevel, ParticleTypes.CAMPFIRE_COSY_SMOKE, pos.x, pos.y, pos.z,
                         1, 0, 0, 0, 0.001, true);
             }
@@ -146,12 +148,43 @@ public class PtkmProjectileEntity extends FastThrowableProjectile implements Exp
 
         if (target != null) {
             if (tickCount == shootTime) {
-                if (this.level() instanceof ServerLevel serverLevel) {
-                    ParticleTool.spawnMediumExplosionParticles(serverLevel, position());
-                }
                 Vec3 targetVel = target.getDeltaMovement();
                 Vec3 targetVec = RangeTool.calculateFiringSolution(position(), target.getBoundingBox().getCenter(), targetVel, 15, 0.05);
                 this.setDeltaMovement(targetVec.scale(15));
+                if (this.level() instanceof ServerLevel serverLevel) {
+                    serverLevel.playSound(null, BlockPos.containing(position()), ModSounds.EXPLOSION_AIR.get(), SoundSource.BLOCKS, 8, 1);
+                    ParticleTool.spawnSmallExplosionParticles(serverLevel, position());
+                    ParticleTool.sendParticle(serverLevel, ParticleTypes.LARGE_SMOKE, position().x, position().y, position().z,
+                            40, 0.5, 0.25, 0.5, 0.01, true);
+                    ParticleTool.sendParticle(serverLevel, ParticleTypes.CAMPFIRE_COSY_SMOKE, position().x, position().y, position().z,
+                            30, 0.5, 0.25, 0.5, 0.005, true);
+                    spawnDirectionalParticles(this, 55, 3.25, serverLevel, ParticleTypes.CAMPFIRE_COSY_SMOKE);
+                    spawnDirectionalParticles(this, 50, 3, serverLevel, ParticleTypes.CAMPFIRE_COSY_SMOKE);
+                    spawnDirectionalParticles(this, 45, 2.75, serverLevel, ParticleTypes.CAMPFIRE_COSY_SMOKE);
+                    spawnDirectionalParticles(this, 40, 2.5, serverLevel, ParticleTypes.CAMPFIRE_COSY_SMOKE);
+                    int count = 8;
+
+                    for (float i = 0; i < this.distanceTo(target); i += .5f) {
+                        ParticleTool.sendParticle(serverLevel, ParticleTypes.CLOUD,
+                                position().x + i * getDeltaMovement().normalize().x,
+                                position().y + i * getDeltaMovement().normalize().y,
+                                position().z + i * getDeltaMovement().normalize().z,
+                                Mth.clamp(count--, 2, 8), 0.25, 0.25, 0.25, 0.0025, true);
+                        ParticleTool.sendParticle(serverLevel, ParticleTypes.FLAME,
+                                position().x + i * getDeltaMovement().normalize().x,
+                                position().y + i * getDeltaMovement().normalize().y,
+                                position().z + i * getDeltaMovement().normalize().z,
+                                Mth.clamp(count--, 2, 8), 0.25, 0.25, 0.25, 0.0025, true);
+                    }
+
+                    for (float i = 0; i < 16; i += .5f) {
+                        ParticleTool.sendParticle(serverLevel, ParticleTypes.CAMPFIRE_COSY_SMOKE,
+                                position().x + i * getDeltaMovement().scale(-1).normalize().x,
+                                position().y + i * getDeltaMovement().scale(-1).normalize().y,
+                                position().z + i * getDeltaMovement().scale(-1).normalize().z,
+                                Mth.clamp(count--, 2, 8), 0.25, 0.25, 0.25, 0.0025, true);
+                    }
+                }
             }
         } else {
             if (tickCount > 100) {
@@ -212,5 +245,44 @@ public class PtkmProjectileEntity extends FastThrowableProjectile implements Exp
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return this.cache;
+    }
+
+
+
+    public static void spawnDirectionalParticles(Entity projectile, int count, double radius, ServerLevel level, SimpleParticleType particle) {
+        Vec3 deltaMovement = projectile.getDeltaMovement();
+
+        Vec3 direction = deltaMovement.normalize();
+        Vec3 position = projectile.position();
+
+        // 构建垂直正交基
+        Vec3 randomPerp = getRandomPerpendicular(direction);
+        Vec3 u = randomPerp.normalize();
+        Vec3 v = direction.cross(u).normalize();
+
+        spawnCircularParticles(level, position, u, v, count, radius, particle);
+    }
+
+    private static Vec3 getRandomPerpendicular(Vec3 dir) {
+        Vec3 candidate1 = new Vec3(dir.y, -dir.x, 0); // 在XY平面垂直
+        if (candidate1.lengthSqr() > 1e-4) return candidate1;
+        return new Vec3(0, dir.z, -dir.y); // 备用垂直向量
+    }
+
+    private static void spawnCircularParticles(ServerLevel level, Vec3 center, Vec3 u, Vec3 v, int count, double radius, SimpleParticleType particle) {
+        for (int i = 0; i < count; i++) {
+            double theta = 2 * Math.PI * i / count;
+            double xOffset = radius * (Math.cos(theta) * u.x + Math.sin(theta) * v.x);
+            double yOffset = radius * (Math.cos(theta) * u.y + Math.sin(theta) * v.y);
+            double zOffset = radius * (Math.cos(theta) * u.z + Math.sin(theta) * v.z);
+
+            Vec3 pos = center.add(xOffset, yOffset, zOffset);
+            spawnParticle(level, pos, particle);
+        }
+    }
+
+    private static void spawnParticle(ServerLevel level, Vec3 pos, SimpleParticleType particle) {
+        ParticleTool.sendParticle(level, particle, pos.x, pos.y, pos.z,
+                1, 0.02, 0.02, 0.02, 0.0001, true);
     }
 }

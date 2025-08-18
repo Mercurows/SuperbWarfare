@@ -45,6 +45,7 @@ public class ModSounds {
     public static final RegistryObject<SoundEvent> HUGE_EXPLOSION_FAR = REGISTRY.register("huge_explosion_far", () -> SoundEvent.createVariableRangeEvent(Mod.loc("huge_explosion_far")));
     public static final RegistryObject<SoundEvent> HUGE_EXPLOSION_VERY_FAR = REGISTRY.register("huge_explosion_very_far", () -> SoundEvent.createVariableRangeEvent(Mod.loc("huge_explosion_very_far")));
     public static final RegistryObject<SoundEvent> EXPLOSION_WATER = REGISTRY.register("explosion_water", () -> SoundEvent.createVariableRangeEvent(Mod.loc("explosion_water")));
+    public static final RegistryObject<SoundEvent> EXPLOSION_AIR = REGISTRY.register("explosion_air", () -> SoundEvent.createVariableRangeEvent(Mod.loc("explosion_air")));
 
     public static final RegistryObject<SoundEvent> HUNTING_RIFLE_FIRE_1P = REGISTRY.register("hunting_rifle_fire_1p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("hunting_rifle_fire_1p")));
     public static final RegistryObject<SoundEvent> HUNTING_RIFLE_FIRE_3P = REGISTRY.register("hunting_rifle_fire_3p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("hunting_rifle_fire_3p")));
