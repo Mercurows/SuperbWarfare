@@ -1,11 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
-  "category": "equipment",
-  "pattern": [
-    "cbc",
-    "dad",
-    "cdc"
-  ],
+  "category": "misc",
   "key": {
     "a": {
       "item": "superbwarfare:empty_perk"
@@ -18,12 +13,18 @@
     },
     "d": {
       "type": "forge:nbt",
+      "count": 1,
       "item": "minecraft:potion",
-      "nbt": "{\"Potion\": \"minecraft:healing\"}"
+      "nbt": "{Potion:\"minecraft:healing\"}"
     }
   },
+  "pattern": [
+    "cbc",
+    "dad",
+    "cbc"
+  ],
   "result": {
-    "item": "superbwarfare:cupid_arrow",
-    "count": 1
-  }
+    "item": "superbwarfare:cupid_arrow"
+  },
+  "show_notification": true
 }

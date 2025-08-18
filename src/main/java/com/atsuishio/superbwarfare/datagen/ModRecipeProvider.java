@@ -2,10 +2,7 @@ package com.atsuishio.superbwarfare.datagen;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.datagen.builder.VehicleAssemblingRecipeBuilder;
-import com.atsuishio.superbwarfare.init.ModEntities;
-import com.atsuishio.superbwarfare.init.ModItems;
-import com.atsuishio.superbwarfare.init.ModRecipes;
-import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.recipe.vehicle.VehicleAssemblingRecipe;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.*;
@@ -366,6 +363,27 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
         copyBlueprint(writer, ModItems.BL_132_BLUEPRINT.get());
         copyBlueprint(writer, ModItems.HPJ_11_BLUEPRINT.get());
         copyBlueprint(writer, ModItems.ANNIHILATOR_BLUEPRINT.get());
+
+        // perks
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.PERK_ITEMS.get(ModPerks.AP_BULLET).get())
+                .pattern("cbc")
+                .pattern("bab")
+                .pattern("cbc")
+                .define('a', ModItems.EMPTY_PERK.get())
+                .define('b', forgeTag("storage_blocks/tungsten"))
+                .define('c', forgeTag("ingots/tungsten"))
+                .unlockedBy(getHasName(ModItems.EMPTY_PERK.get()), has(ModItems.EMPTY_PERK.get()))
+                .save(writer, Mod.loc(getItemName(ModItems.PERK_ITEMS.get(ModPerks.AP_BULLET).get())));
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.PERK_ITEMS.get(ModPerks.CUPID_ARROW).get())
+                .pattern("cbc")
+                .pattern("dad")
+                .pattern("cbc")
+                .define('a', ModItems.EMPTY_PERK.get())
+                .define('b', Items.BOW)
+                .define('c', ItemTags.ARROWS)
+                .define('d', getPotionStack(Potions.HEALING))
+                .unlockedBy(getHasName(ModItems.EMPTY_PERK.get()), has(ModItems.EMPTY_PERK.get()))
+                .save(writer, Mod.loc(getItemName(ModItems.PERK_ITEMS.get(ModPerks.CUPID_ARROW).get())));
     }
 
     public static void copyBlueprint(Consumer<FinishedRecipe> writer, ItemLike result) {

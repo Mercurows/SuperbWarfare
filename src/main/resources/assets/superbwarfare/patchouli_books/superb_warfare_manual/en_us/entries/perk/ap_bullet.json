@@ -5,12 +5,11 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "superbwarfare.page.perk.ap_bullet1"
+      "text": "superbwarfare.page.perk.ap_bullet.1"
     },
     {
       "type": "patchouli:crafting",
-      "recipe": "superbwarfare:shortcut_pack_crafting",
-      "text": "superbwarfare.page.perk.ap_bullet2"
+      "recipe": "superbwarfare:ap_bullet"
     }
   ],
   "sortnum": 30001

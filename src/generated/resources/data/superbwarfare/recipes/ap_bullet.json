@@ -1,11 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
-  "category": "equipment",
-  "pattern": [
-    "cbc",
-    "bab",
-    "cbc"
-  ],
+  "category": "misc",
   "key": {
     "a": {
       "item": "superbwarfare:empty_perk"
@@ -17,8 +12,13 @@
       "tag": "forge:ingots/tungsten"
     }
   },
+  "pattern": [
+    "cbc",
+    "bab",
+    "cbc"
+  ],
   "result": {
-    "item": "superbwarfare:ap_bullet",
-    "count": 1
-  }
+    "item": "superbwarfare:ap_bullet"
+  },
+  "show_notification": true
 }
