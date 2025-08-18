@@ -1,0 +1,22 @@
+{
+  "name": "superbwarfare.entry.resources.scheelite",
+  "icon": "superbwarfare:scheelite",
+  "category": "superbwarfare:resources",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "superbwarfare.page.resources.scheelite.1"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "superbwarfare:deepslate_scheelite_ore",
+      "text": "superbwarfare.page.resources.scheelite.2"
+    },
+    {
+      "type": "patchouli:blasting",
+      "recipe": "superbwarfare:tungsten_ingot_blasting",
+      "text": "superbwarfare.page.resources.scheelite.3"
+    }
+  ],
+  "sortnum": 50002
+}

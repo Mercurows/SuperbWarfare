@@ -1,0 +1,17 @@
+{
+  "name": "superbwarfare.entry.perk.poisonous_bullet",
+  "icon": "superbwarfare:poisonous_bullet",
+  "category": "superbwarfare:perk",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "superbwarfare.page.perk.poisonous_bullet1"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "superbwarfare:shortcut_pack_crafting",
+      "text": "superbwarfare.page.perk.poisonous_bullet2"
+    }
+  ],
+  "sortnum": 30021
+}

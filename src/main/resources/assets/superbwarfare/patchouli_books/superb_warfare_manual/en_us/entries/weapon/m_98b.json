@@ -1,0 +1,17 @@
+{
+  "name": "superbwarfare.entry.weapon.m_98b",
+  "icon": "superbwarfare:m_98b",
+  "category": "superbwarfare:weapon",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "superbwarfare.page.weapon.m_98b1"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "superbwarfare:m_98b_smithing",
+      "text": "superbwarfare.page.weapon.m_98b2"
+    }
+  ],
+  "sortnum": 10020
+}

@@ -1,0 +1,17 @@
+{
+  "name": "superbwarfare.entry.weapon.mp_5",
+  "icon": "superbwarfare:mp_5",
+  "category": "superbwarfare:weapon",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "superbwarfare.page.weapon.mp_51"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "superbwarfare:mp_5_smithing",
+      "text": "superbwarfare.page.weapon.mp_52"
+    }
+  ],
+  "sortnum": 10026
+}

@@ -1,0 +1,17 @@
+{
+  "name": "superbwarfare.entry.perk.head_seeker",
+  "icon": "superbwarfare:head_seeker",
+  "category": "superbwarfare:perk",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "superbwarfare.page.perk.head_seeker1"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "superbwarfare:shortcut_pack",
+      "text": "superbwarfare.page.perk.head_seeker2"
+    }
+  ],
+  "sortnum": 30010
+}

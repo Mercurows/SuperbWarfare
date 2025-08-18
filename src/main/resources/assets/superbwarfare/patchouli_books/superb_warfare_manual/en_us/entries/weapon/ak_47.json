@@ -1,0 +1,17 @@
+{
+  "name": "superbwarfare.entry.weapon.ak_47",
+  "icon": "superbwarfare:ak_47",
+  "category": "superbwarfare:weapon",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "superbwarfare.page.weapon.ak_471"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "superbwarfare:ak_47_smithing",
+      "text": "superbwarfare.page.weapon.ak_472"
+    }
+  ],
+  "sortnum": 10004
+}

@@ -1,0 +1,17 @@
+{
+  "name": "superbwarfare.entry.perk.cupid_arrow",
+  "icon": "superbwarfare:cupid_arrow",
+  "category": "superbwarfare:perk",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "superbwarfare.page.perk.cupid_arrow1"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "superbwarfare:shortcut_pack_crafting",
+      "text": "superbwarfare.page.perk.cupid_arrow2"
+    }
+  ],
+  "sortnum": 30003
+}

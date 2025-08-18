@@ -1,0 +1,17 @@
+{
+  "name": "superbwarfare.entry.weapon.minigun",
+  "icon": "superbwarfare:minigun",
+  "category": "superbwarfare:weapon",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "superbwarfare.page.weapon.minigun1"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "superbwarfare:minigun_smithing",
+      "text": "superbwarfare.page.weapon.minigun2"
+    }
+  ],
+  "sortnum": 10024
+}

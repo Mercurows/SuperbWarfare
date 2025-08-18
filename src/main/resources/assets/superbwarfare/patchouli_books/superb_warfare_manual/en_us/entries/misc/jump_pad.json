@@ -1,0 +1,21 @@
+{
+  "name": "superbwarfare.entry.misc.jump_pad",
+  "icon": "superbwarfare:jump_pad",
+  "category": "superbwarfare:misc",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "superbwarfare.page.misc.jump_pad1"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "superbwarfare.page.misc.jump_pad2"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "superbwarfare:jump_pad_crafting",
+      "text": "superbwarfare.page.misc.jump_pad3"
+    }
+  ],
+  "sortnum": 40002
+}
