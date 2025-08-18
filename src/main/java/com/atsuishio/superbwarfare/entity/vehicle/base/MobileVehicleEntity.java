@@ -667,7 +667,7 @@ public abstract class MobileVehicleEntity extends VehicleEntity implements Contr
             if (this instanceof OBBEntity obbEntity) {
                 var frontBox = getBoundingBox().move(velocity).inflate(4);
                 entities = level().getEntities(EntityTypeTest.forClass(Entity.class), frontBox,
-                                entity -> entity != this && (!entity.getPassengers().isEmpty() && entity != getFirstPassenger()) && entity.getVehicle() == null)
+                                entity -> entity != this && entity != getFirstPassenger() && entity.getVehicle() == null)
                         .stream().filter(entity -> {
                                     if (entity.isAlive() && isInObb(obbEntity, entity, velocity)) {
                                         var type = ForgeRegistries.ENTITY_TYPES.getKey(entity.getType());
