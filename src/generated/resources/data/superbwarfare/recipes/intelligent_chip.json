@@ -1,11 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
-  "category": "equipment",
-  "pattern": [
-    "bbb",
-    "bab",
-    "bbb"
-  ],
+  "category": "misc",
   "key": {
     "a": {
       "item": "superbwarfare:empty_perk"
@@ -14,8 +9,13 @@
       "item": "superbwarfare:ancient_cpu"
     }
   },
+  "pattern": [
+    "bbb",
+    "bab",
+    "bbb"
+  ],
   "result": {
-    "item": "superbwarfare:intelligent_chip",
-    "count": 1
-  }
+    "item": "superbwarfare:intelligent_chip"
+  },
+  "show_notification": true
 }

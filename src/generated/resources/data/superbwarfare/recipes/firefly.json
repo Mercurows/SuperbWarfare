@@ -1,11 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
-  "category": "equipment",
-  "pattern": [
-    "cbc",
-    "bab",
-    "cbc"
-  ],
+  "category": "misc",
   "key": {
     "a": {
       "item": "superbwarfare:empty_perk"
@@ -25,8 +20,13 @@
       "item": "superbwarfare:high_energy_explosives"
     }
   },
+  "pattern": [
+    "cbc",
+    "bab",
+    "cbc"
+  ],
   "result": {
-    "item": "superbwarfare:firefly",
-    "count": 1
-  }
+    "item": "superbwarfare:firefly"
+  },
+  "show_notification": true
 }

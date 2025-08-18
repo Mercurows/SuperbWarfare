@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "a": {
+      "item": "superbwarfare:empty_perk"
+    },
+    "b": {
+      "item": "minecraft:blaze_powder"
+    },
+    "c": {
+      "item": "minecraft:dragon_breath"
+    }
+  },
+  "pattern": [
+    "bbb",
+    "cac",
+    "bbb"
+  ],
+  "result": {
+    "item": "superbwarfare:incendiary_bullet"
+  },
+  "show_notification": true
+}
