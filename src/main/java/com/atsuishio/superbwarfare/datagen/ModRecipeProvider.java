@@ -37,7 +37,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.CompletableFuture;
 
-import static com.atsuishio.superbwarfare.datagen.ModItemTagProvider.cTag;
+import static com.atsuishio.superbwarfare.datagen.ModItemTagProvider.commonTag;
 
 public class ModRecipeProvider extends RecipeProvider {
 
@@ -123,7 +123,7 @@ public class ModRecipeProvider extends RecipeProvider {
                 .pattern("ede")
                 .define('a', ModItems.FUSEE.get())
                 .define('b', Items.IRON_INGOT)
-                .define('c', cTag("plates/copper"))
+                .define('c', commonTag("plates/copper"))
                 .define('d', ModItems.GRAIN.get())
                 .define('e', Items.GUNPOWDER)
                 .unlockedBy(getHasName(ModItems.FUSEE.get()), has(ModItems.FUSEE.get()))
@@ -390,8 +390,8 @@ public class ModRecipeProvider extends RecipeProvider {
                 .pattern("bab")
                 .pattern("cbc")
                 .define('a', ModItems.EMPTY_PERK.get())
-                .define('b', cTag("storage_blocks/tungsten"))
-                .define('c', cTag("ingots/tungsten"))
+                .define('b', commonTag("storage_blocks/tungsten"))
+                .define('c', commonTag("ingots/tungsten"))
                 .unlockedBy(getHasName(ModItems.EMPTY_PERK.get()), has(ModItems.EMPTY_PERK.get()))
                 .save(writer, perkLoc(ModPerks.AP_BULLET));
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.PERK_ITEMS.get(ModPerks.CUPID_ARROW).get())
@@ -479,7 +479,7 @@ public class ModRecipeProvider extends RecipeProvider {
                 .pattern("bab")
                 .pattern("cbc")
                 .define('a', ModItems.EMPTY_PERK.get())
-                .define('b', cTag("storage_blocks/lead"))
+                .define('b', commonTag("storage_blocks/lead"))
                 .define('c', Items.SPIDER_EYE)
                 .unlockedBy(getHasName(ModItems.EMPTY_PERK.get()), has(ModItems.EMPTY_PERK.get()))
                 .save(writer, perkLoc(ModPerks.POISONOUS_BULLET));
@@ -518,8 +518,8 @@ public class ModRecipeProvider extends RecipeProvider {
                 .pattern("bab")
                 .pattern("cbc")
                 .define('a', ModItems.EMPTY_PERK.get())
-                .define('b', cTag("storage_blocks/silver"))
-                .define('c', cTag("ingots/silver"))
+                .define('b', commonTag("storage_blocks/silver"))
+                .define('c', commonTag("ingots/silver"))
                 .unlockedBy(getHasName(ModItems.EMPTY_PERK.get()), has(ModItems.EMPTY_PERK.get()))
                 .save(writer, perkLoc(ModPerks.SILVER_BULLET));
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.PERK_ITEMS.get(ModPerks.TURBO_CHARGER).get())
@@ -528,7 +528,7 @@ public class ModRecipeProvider extends RecipeProvider {
                 .pattern("cbc")
                 .define('a', ModItems.EMPTY_PERK.get())
                 .define('b', Items.PISTON)
-                .define('c', cTag("ingots/steel"))
+                .define('c', commonTag("ingots/steel"))
                 .unlockedBy(getHasName(ModItems.EMPTY_PERK.get()), has(ModItems.EMPTY_PERK.get()))
                 .save(writer, perkLoc(ModPerks.TURBO_CHARGER));
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.PERK_ITEMS.get(ModPerks.VOLT_OVERLOAD).get())
@@ -538,7 +538,7 @@ public class ModRecipeProvider extends RecipeProvider {
                 .define('a', ModItems.EMPTY_PERK.get())
                 .define('b', ModItems.CELL.get())
                 .define('c', Items.LIGHTNING_ROD)
-                .define('d', cTag("dusts/coal_coke"))
+                .define('d', commonTag("dusts/coal_coke"))
                 .define('e', Tags.Items.INGOTS_IRON)
                 .unlockedBy(getHasName(ModItems.EMPTY_PERK.get()), has(ModItems.EMPTY_PERK.get()))
                 .save(writer, perkLoc(ModPerks.VOLT_OVERLOAD));
