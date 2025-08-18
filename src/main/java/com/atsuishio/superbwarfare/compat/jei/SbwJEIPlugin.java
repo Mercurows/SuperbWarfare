@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.compat.jei;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.init.ModItems;
+import com.atsuishio.superbwarfare.init.ModRecipes;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.tools.NBTTool;
 import mezz.jei.api.IModPlugin;
@@ -13,6 +14,7 @@ import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
 import mezz.jei.api.registration.ISubtypeRegistration;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -22,6 +24,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.PotionContents;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.RecipeManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -38,18 +42,25 @@ public class SbwJEIPlugin implements IModPlugin {
     @Override
     public void registerCategories(IRecipeCategoryRegistration registration) {
         registration.addRecipeCategories(new GunPerksCategory(registration.getJeiHelpers().getGuiHelper()));
+        registration.addRecipeCategories(new VehicleAssemblingCategory(registration.getJeiHelpers().getGuiHelper()));
     }
 
     @Override
     public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
         registration.addRecipeCatalyst(new ItemStack(ModItems.REFORGING_TABLE.get()), GunPerksCategory.TYPE);
+        registration.addRecipeCatalyst(new ItemStack(ModItems.VEHICLE_ASSEMBLING_TABLE.get()), VehicleAssemblingCategory.TYPE);
     }
 
     // TODO 正确注册subtypes
     @Override
     public void registerRecipes(@NotNull IRecipeRegistration registration) {
+        var level = Minecraft.getInstance().level;
+        if (level == null) return;
+        RecipeManager recipeManager = level.getRecipeManager();
+
         var guns = BuiltInRegistries.ITEM.stream().filter(item -> item instanceof GunItem).map(Item::getDefaultInstance).toList();
         registration.addRecipes(GunPerksCategory.TYPE, guns);
+        registration.addRecipes(VehicleAssemblingCategory.TYPE, recipeManager.getAllRecipesFor(ModRecipes.VEHICLE_ASSEMBLING_TYPE.get()).stream().map(RecipeHolder::value).toList());
 
         registration.addItemStackInfo(new ItemStack(ModItems.ANCIENT_CPU.get()), Component.translatable("jei.superbwarfare.ancient_cpu"));
         registration.addItemStackInfo(new ItemStack(ModItems.CHARGING_STATION.get()), Component.translatable("jei.superbwarfare.charging_station"));
