@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "superbwarfare:ap_bullet"
+        "recipe": "superbwarfare:perk/volt_overload"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -28,7 +28,7 @@
   ],
   "rewards": {
     "recipes": [
-      "superbwarfare:ap_bullet"
+      "superbwarfare:perk/volt_overload"
     ]
   },
   "sends_telemetry_event": false

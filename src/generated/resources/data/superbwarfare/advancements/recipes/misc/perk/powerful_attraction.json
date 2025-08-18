@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "superbwarfare:firefly"
+        "recipe": "superbwarfare:perk/powerful_attraction"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -28,7 +28,7 @@
   ],
   "rewards": {
     "recipes": [
-      "superbwarfare:firefly"
+      "superbwarfare:perk/powerful_attraction"
     ]
   },
   "sends_telemetry_event": false

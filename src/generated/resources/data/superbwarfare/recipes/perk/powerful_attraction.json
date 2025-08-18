@@ -1,11 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
-  "category": "equipment",
-  "pattern": [
-    "dbe",
-    "cac",
-    " c "
-  ],
+  "category": "misc",
   "key": {
     "a": {
       "item": "superbwarfare:empty_perk"
@@ -23,8 +18,13 @@
       "tag": "forge:gems/lapis"
     }
   },
+  "pattern": [
+    "dbe",
+    "cac",
+    " c "
+  ],
   "result": {
-    "item": "superbwarfare:powerful_attraction",
-    "count": 1
-  }
+    "item": "superbwarfare:powerful_attraction"
+  },
+  "show_notification": true
 }

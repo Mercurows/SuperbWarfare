@@ -1,11 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
-  "category": "equipment",
-  "pattern": [
-    "cec",
-    "bab",
-    "bdb"
-  ],
+  "category": "misc",
   "key": {
     "a": {
       "item": "superbwarfare:empty_perk"
@@ -20,11 +15,16 @@
       "tag": "forge:dusts/coal_coke"
     },
     "e": {
-      "item": "minecraft:iron_ingot"
+      "tag": "forge:ingots/iron"
     }
   },
+  "pattern": [
+    "cec",
+    "bab",
+    "bdb"
+  ],
   "result": {
-    "item": "superbwarfare:volt_overload",
-    "count": 1
-  }
+    "item": "superbwarfare:volt_overload"
+  },
+  "show_notification": true
 }

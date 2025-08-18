@@ -3,13 +3,13 @@
   "category": "misc",
   "key": {
     "a": {
-      "item": "minecraft:paper"
+      "item": "superbwarfare:empty_perk"
     },
     "b": {
-      "item": "minecraft:lapis_lazuli"
+      "tag": "forge:storage_blocks/silver"
     },
     "c": {
-      "tag": "forge:ingots/iron"
+      "tag": "forge:ingots/silver"
     }
   },
   "pattern": [
@@ -18,7 +18,7 @@
     "cbc"
   ],
   "result": {
-    "item": "superbwarfare:empty_perk"
+    "item": "superbwarfare:silver_bullet"
   },
   "show_notification": true
 }

@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "superbwarfare:intelligent_chip"
+        "recipe": "superbwarfare:perk/phase_penetrating_bullet"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -28,7 +28,7 @@
   ],
   "rewards": {
     "recipes": [
-      "superbwarfare:intelligent_chip"
+      "superbwarfare:perk/phase_penetrating_bullet"
     ]
   },
   "sends_telemetry_event": false

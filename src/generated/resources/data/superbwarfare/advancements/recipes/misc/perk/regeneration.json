@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "superbwarfare:incendiary_bullet"
+        "recipe": "superbwarfare:perk/regeneration"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -28,7 +28,7 @@
   ],
   "rewards": {
     "recipes": [
-      "superbwarfare:incendiary_bullet"
+      "superbwarfare:perk/regeneration"
     ]
   },
   "sends_telemetry_event": false

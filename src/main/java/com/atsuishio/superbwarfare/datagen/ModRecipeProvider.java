@@ -3,10 +3,11 @@ package com.atsuishio.superbwarfare.datagen;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.datagen.builder.VehicleAssemblingRecipeBuilder;
 import com.atsuishio.superbwarfare.init.*;
+import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.recipe.vehicle.VehicleAssemblingRecipe;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.*;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
@@ -21,6 +22,7 @@ import net.minecraft.world.level.ItemLike;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.crafting.StrictNBTIngredient;
 import net.minecraftforge.common.crafting.conditions.IConditionBuilder;
+import net.minecraftforge.registries.RegistryObject;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
@@ -371,7 +373,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .pattern("cbc")
                 .define('a', Items.PAPER)
                 .define('b', Items.LAPIS_LAZULI)
-                .define('c', Items.IRON_INGOT)
+                .define('c', Tags.Items.INGOTS_IRON)
                 .unlockedBy(getHasName(Items.PAPER), has(Items.PAPER))
                 .save(writer, Mod.loc(getItemName(ModItems.EMPTY_PERK.get())));
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.PERK_ITEMS.get(ModPerks.AP_BULLET).get())
@@ -382,7 +384,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .define('b', forgeTag("storage_blocks/tungsten"))
                 .define('c', forgeTag("ingots/tungsten"))
                 .unlockedBy(getHasName(ModItems.EMPTY_PERK.get()), has(ModItems.EMPTY_PERK.get()))
-                .save(writer, Mod.loc(getItemName(ModItems.PERK_ITEMS.get(ModPerks.AP_BULLET).get())));
+                .save(writer, perkLoc(ModPerks.AP_BULLET));
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.PERK_ITEMS.get(ModPerks.CUPID_ARROW).get())
                 .pattern("cbc")
                 .pattern("dad")
@@ -392,7 +394,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .define('c', ItemTags.ARROWS)
                 .define('d', getPotionStack(Potions.HEALING))
                 .unlockedBy(getHasName(ModItems.EMPTY_PERK.get()), has(ModItems.EMPTY_PERK.get()))
-                .save(writer, Mod.loc(getItemName(ModItems.PERK_ITEMS.get(ModPerks.CUPID_ARROW).get())));
+                .save(writer, perkLoc(ModPerks.CUPID_ARROW));
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.PERK_ITEMS.get(ModPerks.FIREFLY).get())
                 .pattern("cbc")
                 .pattern("bab")
@@ -401,7 +403,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .define('b', Ingredient.of(Items.OCHRE_FROGLIGHT, Items.VERDANT_FROGLIGHT, Items.PEARLESCENT_FROGLIGHT))
                 .define('c', ModItems.HIGH_ENERGY_EXPLOSIVES.get())
                 .unlockedBy(getHasName(ModItems.EMPTY_PERK.get()), has(ModItems.EMPTY_PERK.get()))
-                .save(writer, Mod.loc(getItemName(ModItems.PERK_ITEMS.get(ModPerks.FIREFLY).get())));
+                .save(writer, perkLoc(ModPerks.FIREFLY));
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.PERK_ITEMS.get(ModPerks.HE_BULLET).get())
                 .pattern("cbc")
                 .pattern("bab")
@@ -410,7 +412,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .define('b', Items.TNT)
                 .define('c', ModItems.HIGH_ENERGY_EXPLOSIVES.get())
                 .unlockedBy(getHasName(ModItems.EMPTY_PERK.get()), has(ModItems.EMPTY_PERK.get()))
-                .save(writer, Mod.loc(getItemName(ModItems.PERK_ITEMS.get(ModPerks.HE_BULLET).get())));
+                .save(writer, perkLoc(ModPerks.HE_BULLET));
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.PERK_ITEMS.get(ModPerks.INCENDIARY_BULLET).get())
                 .pattern("bbb")
                 .pattern("cac")
@@ -419,7 +421,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .define('b', Items.BLAZE_POWDER)
                 .define('c', Items.DRAGON_BREATH)
                 .unlockedBy(getHasName(ModItems.EMPTY_PERK.get()), has(ModItems.EMPTY_PERK.get()))
-                .save(writer, Mod.loc(getItemName(ModItems.PERK_ITEMS.get(ModPerks.INCENDIARY_BULLET).get())));
+                .save(writer, perkLoc(ModPerks.INCENDIARY_BULLET));
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.PERK_ITEMS.get(ModPerks.INTELLIGENT_CHIP).get())
                 .pattern("bbb")
                 .pattern("bab")
@@ -427,7 +429,110 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .define('a', ModItems.EMPTY_PERK.get())
                 .define('b', ModItems.ANCIENT_CPU.get())
                 .unlockedBy(getHasName(ModItems.EMPTY_PERK.get()), has(ModItems.EMPTY_PERK.get()))
-                .save(writer, Mod.loc(getItemName(ModItems.PERK_ITEMS.get(ModPerks.INTELLIGENT_CHIP).get())));
+                .save(writer, perkLoc(ModPerks.INTELLIGENT_CHIP));
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.PERK_ITEMS.get(ModPerks.JHP_BULLET).get())
+                .pattern("cbc")
+                .pattern("bab")
+                .pattern("cbc")
+                .define('a', ModItems.EMPTY_PERK.get())
+                .define('b', Tags.Items.STORAGE_BLOCKS_COPPER)
+                .define('c', Tags.Items.INGOTS_COPPER)
+                .unlockedBy(getHasName(ModItems.EMPTY_PERK.get()), has(ModItems.EMPTY_PERK.get()))
+                .save(writer, perkLoc(ModPerks.JHP_BULLET));
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.PERK_ITEMS.get(ModPerks.LONGER_WIRE).get())
+                .pattern("bbb")
+                .pattern("bab")
+                .pattern("bbb")
+                .define('a', ModItems.EMPTY_PERK.get())
+                .define('b', Items.STRING)
+                .unlockedBy(getHasName(ModItems.EMPTY_PERK.get()), has(ModItems.EMPTY_PERK.get()))
+                .save(writer, perkLoc(ModPerks.LONGER_WIRE));
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.PERK_ITEMS.get(ModPerks.MICRO_MISSILE).get())
+                .pattern("cbc")
+                .pattern("bab")
+                .pattern("cbc")
+                .define('a', ModItems.EMPTY_PERK.get())
+                .define('b', ModItems.GRAIN.get())
+                .define('c', Items.FIREWORK_ROCKET)
+                .unlockedBy(getHasName(ModItems.EMPTY_PERK.get()), has(ModItems.EMPTY_PERK.get()))
+                .save(writer, perkLoc(ModPerks.MICRO_MISSILE));
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.PERK_ITEMS.get(ModPerks.PHASE_PENETRATING_BULLET).get())
+                .pattern("cbc")
+                .pattern("bab")
+                .pattern("cbc")
+                .define('a', ModItems.EMPTY_PERK.get())
+                .define('b', Tags.Items.INGOTS_NETHERITE)
+                .define('c', ModItems.AP_HEAD.get())
+                .unlockedBy(getHasName(ModItems.EMPTY_PERK.get()), has(ModItems.EMPTY_PERK.get()))
+                .save(writer, perkLoc(ModPerks.PHASE_PENETRATING_BULLET));
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.PERK_ITEMS.get(ModPerks.POISONOUS_BULLET).get())
+                .pattern("cbc")
+                .pattern("bab")
+                .pattern("cbc")
+                .define('a', ModItems.EMPTY_PERK.get())
+                .define('b', forgeTag("storage_blocks/lead"))
+                .define('c', Items.SPIDER_EYE)
+                .unlockedBy(getHasName(ModItems.EMPTY_PERK.get()), has(ModItems.EMPTY_PERK.get()))
+                .save(writer, perkLoc(ModPerks.POISONOUS_BULLET));
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.PERK_ITEMS.get(ModPerks.POWERFUL_ATTRACTION).get())
+                .pattern("dbe")
+                .pattern("cac")
+                .pattern(" c ")
+                .define('a', ModItems.EMPTY_PERK.get())
+                .define('b', Tags.Items.ENDER_PEARLS)
+                .define('c', Tags.Items.INGOTS_IRON)
+                .define('d', Tags.Items.DUSTS_REDSTONE)
+                .define('e', Tags.Items.GEMS_LAPIS)
+                .unlockedBy(getHasName(ModItems.EMPTY_PERK.get()), has(ModItems.EMPTY_PERK.get()))
+                .save(writer, perkLoc(ModPerks.POWERFUL_ATTRACTION));
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.PERK_ITEMS.get(ModPerks.REGENERATION).get())
+                .pattern("ccc")
+                .pattern("bab")
+                .pattern("ddd")
+                .define('a', ModItems.EMPTY_PERK.get())
+                .define('b', ModItems.CELL.get())
+                .define('c', Items.DAYLIGHT_DETECTOR)
+                .define('d', Tags.Items.INGOTS_GOLD)
+                .unlockedBy(getHasName(ModItems.EMPTY_PERK.get()), has(ModItems.EMPTY_PERK.get()))
+                .save(writer, perkLoc(ModPerks.REGENERATION));
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.PERK_ITEMS.get(ModPerks.RIOT_BULLET).get())
+                .pattern("cbc")
+                .pattern("bab")
+                .pattern("cbc")
+                .define('a', ModItems.EMPTY_PERK.get())
+                .define('b', Items.SLIME_BLOCK)
+                .define('c', Items.COBWEB)
+                .unlockedBy(getHasName(ModItems.EMPTY_PERK.get()), has(ModItems.EMPTY_PERK.get()))
+                .save(writer, perkLoc(ModPerks.RIOT_BULLET));
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.PERK_ITEMS.get(ModPerks.SILVER_BULLET).get())
+                .pattern("cbc")
+                .pattern("bab")
+                .pattern("cbc")
+                .define('a', ModItems.EMPTY_PERK.get())
+                .define('b', forgeTag("storage_blocks/silver"))
+                .define('c', forgeTag("ingots/silver"))
+                .unlockedBy(getHasName(ModItems.EMPTY_PERK.get()), has(ModItems.EMPTY_PERK.get()))
+                .save(writer, perkLoc(ModPerks.SILVER_BULLET));
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.PERK_ITEMS.get(ModPerks.TURBO_CHARGER).get())
+                .pattern("cbc")
+                .pattern("bab")
+                .pattern("cbc")
+                .define('a', ModItems.EMPTY_PERK.get())
+                .define('b', Items.PISTON)
+                .define('c', forgeTag("ingots/steel"))
+                .unlockedBy(getHasName(ModItems.EMPTY_PERK.get()), has(ModItems.EMPTY_PERK.get()))
+                .save(writer, perkLoc(ModPerks.TURBO_CHARGER));
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.PERK_ITEMS.get(ModPerks.VOLT_OVERLOAD).get())
+                .pattern("cec")
+                .pattern("bab")
+                .pattern("bdb")
+                .define('a', ModItems.EMPTY_PERK.get())
+                .define('b', ModItems.CELL.get())
+                .define('c', Items.LIGHTNING_ROD)
+                .define('d', forgeTag("dusts/coal_coke"))
+                .define('e', Tags.Items.INGOTS_IRON)
+                .unlockedBy(getHasName(ModItems.EMPTY_PERK.get()), has(ModItems.EMPTY_PERK.get()))
+                .save(writer, perkLoc(ModPerks.VOLT_OVERLOAD));
     }
 
     public static void copyBlueprint(Consumer<FinishedRecipe> writer, ItemLike result) {
@@ -468,12 +573,8 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
         LEGENDARY,
     }
 
-    public static CompoundTag createContainerTag(EntityType<?> type) {
-        CompoundTag tag = new CompoundTag();
-        tag.putString("EntityType", EntityType.getKey(type).toString());
-        CompoundTag beTag = new CompoundTag();
-        beTag.put("BlockEntityTag", tag);
-        return beTag;
+    public static ResourceLocation perkLoc(RegistryObject<Perk> perk) {
+        return Mod.loc("perk/" + getItemName(ModItems.PERK_ITEMS.get(perk).get()));
     }
 
     protected static String getEntityTypeName(EntityType<?> entityType) {
