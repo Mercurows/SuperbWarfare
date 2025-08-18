@@ -10,7 +10,7 @@ import net.minecraft.network.chat.Component;
 public class AssembleButton extends Button {
 
     public AssembleButton(int x, int y, OnPress onPress) {
-        super(x, y, 45, 13, Component.empty(), onPress, DEFAULT_NARRATION);
+        super(x, y, 56, 13, Component.empty(), onPress, DEFAULT_NARRATION);
     }
 
     @Override
@@ -19,13 +19,13 @@ public class AssembleButton extends Button {
         RenderSystem.enableDepthTest();
 
         if (this.isHovered()) {
-            pGuiGraphics.blit(VehicleAssemblingScreen.TEXTURE, this.getX(), this.getY(), 306, 196, this.width, this.height, VehicleAssemblingScreen.IMAGE_SIZE, VehicleAssemblingScreen.IMAGE_SIZE);
+            pGuiGraphics.blit(VehicleAssemblingScreen.TEXTURE, this.getX(), this.getY(), 295, 196, this.width, this.height, VehicleAssemblingScreen.IMAGE_SIZE, VehicleAssemblingScreen.IMAGE_SIZE);
         } else {
-            pGuiGraphics.blit(VehicleAssemblingScreen.TEXTURE, this.getX(), this.getY(), 306, 182, this.width, this.height, VehicleAssemblingScreen.IMAGE_SIZE, VehicleAssemblingScreen.IMAGE_SIZE);
+            pGuiGraphics.blit(VehicleAssemblingScreen.TEXTURE, this.getX(), this.getY(), 295, 182, this.width, this.height, VehicleAssemblingScreen.IMAGE_SIZE, VehicleAssemblingScreen.IMAGE_SIZE);
         }
 
         Component name = Component.translatable("container.superbwarfare.vehicle_assembling_table.assemble");
-        renderScrollingString(pGuiGraphics, Minecraft.getInstance().font, name, this.getX() + 3, this.getY() + 3, this.getX() + 42, this.getY() + 10, -1);
+        renderScrollingString(pGuiGraphics, Minecraft.getInstance().font, name, this.getX() + 13, this.getY() + 3, this.getX() + 56, this.getY() + 10, -1);
 
         pGuiGraphics.pose().popPose();
     }

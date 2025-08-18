@@ -22,6 +22,8 @@ public class PageButton extends Button {
 
         int vOffset = this.left ? 212 : 196;
 
+        pGuiGraphics.pose().translate(0, 0.25f, 0);
+
         if (!this.active) {
             pGuiGraphics.blit(VehicleAssemblingScreen.TEXTURE, this.getX(), this.getY(), 109, vOffset, this.width, this.height, VehicleAssemblingScreen.IMAGE_SIZE, VehicleAssemblingScreen.IMAGE_SIZE);
         } else {
