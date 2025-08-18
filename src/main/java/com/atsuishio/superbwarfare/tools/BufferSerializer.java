@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.data.DataLoader;
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
+import com.mojang.datafixers.util.Pair;
 import io.netty.buffer.Unpooled;
 import net.minecraft.network.FriendlyByteBuf;
 
@@ -28,14 +29,14 @@ public class BufferSerializer {
         return sortedFields(object.getClass());
     }
 
-    public static List<Object> fieldValuesList(Object object) {
-        var fields = new ArrayList<>();
+    public static List<Pair<Object, Field>> fieldValuesList(Object object) {
+        var fields = new ArrayList<Pair<Object, Field>>();
 
         for (var field : sortedFields(object)) {
             try {
                 field.setAccessible(true);
                 Object value = field.get(object);
-                fields.add(value);
+                fields.add(new Pair<>(value, field));
             } catch (IllegalAccessException e) {
                 Mod.LOGGER.error("BufferSerializer read error: {}", e.getMessage());
             }
@@ -59,9 +60,11 @@ public class BufferSerializer {
 
     public static FriendlyByteBuf serialize(Object object) {
         var buffer = new FriendlyByteBuf(Unpooled.buffer());
-        var fields = fieldValuesList(object);
 
-        fields.forEach(value -> {
+        fieldValuesList(object).forEach(fieldValue -> {
+            var value = fieldValue.getFirst();
+            var field = fieldValue.getSecond();
+
             if (value instanceof Byte b) {
                 buffer.writeByte(b);
             } else if (value instanceof Integer i) {
@@ -77,7 +80,7 @@ public class BufferSerializer {
             } else if (value instanceof Boolean b) {
                 buffer.writeBoolean(b);
             } else {
-                buffer.writeUtf(GSON.toJson(value));
+                buffer.writeUtf(GSON.toJson(value, field.getGenericType()));
             }
         });
 
@@ -101,7 +104,7 @@ public class BufferSerializer {
             } else if (field.getType().isAssignableFrom(Boolean.class) || field.getType().getName().equals("boolean")) {
                 setField(object, field, buffer.readBoolean());
             } else {
-                setField(object, field, DataLoader.processValue(GSON.fromJson(buffer.readUtf(), field.getGenericType())));
+                setField(object, field, GSON.fromJson(buffer.readUtf(), field.getGenericType()));
             }
         });
 
