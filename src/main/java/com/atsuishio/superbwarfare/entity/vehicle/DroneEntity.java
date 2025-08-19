@@ -347,7 +347,7 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
                 }
             }
         } else if (player.isCrouching()) {
-            if (stack.is(ModTags.Items.CROWBAR)) {
+            if (stack.isEmpty() || stack.is(ModTags.Items.CROWBAR)) {
                 // 无人机拆除
                 ItemHandlerHelper.giveItemToPlayer(player, new ItemStack(ModItems.DRONE.get()));
 
@@ -367,7 +367,9 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
                 if (!this.level().isClientSide()) {
                     this.discard();
                 }
-            } else {
+            }
+        } else {
+            if (stack.isEmpty()) {
                 // 返还单个弹药
                 int ammo = this.entityData.get(AMMO);
                 if (ammo > 0) {
@@ -380,69 +382,68 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
                         this.currentItem = ItemStack.EMPTY;
                     }
                 }
-            }
-        } else {
-            // 自定义挂载
-            var itemID = getItemId(stack);
-            var attachmentData = CustomData.DRONE_ATTACHMENT.get(itemID);
+            } else {
+                // 自定义挂载
+                var itemID = getItemId(stack);
+                var attachmentData = CustomData.DRONE_ATTACHMENT.get(itemID);
 
-            // 是否能挂载该物品
-            if (attachmentData != null && this.entityData.get(AMMO) < attachmentData.count()) {
-                if (this.entityData.get(DISPLAY_ENTITY).equals(attachmentData.displayEntity())
-                        && ItemStack.matches(this.currentItem, stack.copyWithCount(1))
-                ) {
-                    // 同种物品挂载
-                    this.entityData.set(AMMO, this.entityData.get(AMMO) + 1);
+                // 是否能挂载该物品
+                if (attachmentData != null && this.entityData.get(AMMO) < attachmentData.count()) {
+                    if (this.entityData.get(DISPLAY_ENTITY).equals(attachmentData.displayEntity())
+                            && ItemStack.matches(this.currentItem, stack.copyWithCount(1))
+                    ) {
+                        // 同种物品挂载
+                        this.entityData.set(AMMO, this.entityData.get(AMMO) + 1);
 
-                    if (!player.isCreative()) {
-                        stack.shrink(1);
+                        if (!player.isCreative()) {
+                            stack.shrink(1);
+                        }
+                        if (player instanceof ServerPlayer serverPlayer) {
+                            serverPlayer.level().playSound(null, serverPlayer.getOnPos(), ModSounds.BULLET_SUPPLY.get(), SoundSource.PLAYERS, 0.5F, 1);
+                        }
+                    } else if (this.entityData.get(AMMO) == 0) {
+                        // 不同种物品挂载
+                        this.currentItem = stack.copyWithCount(1);
+                        this.entityData.set(DISPLAY_ENTITY, attachmentData.displayEntity());
+                        this.entityData.set(AMMO, this.entityData.get(AMMO) + 1);
+                        this.entityData.set(IS_KAMIKAZE, attachmentData.isKamikaze);
+                        this.entityData.set(MAX_AMMO, attachmentData.count());
+
+                        if (!player.isCreative()) {
+                            stack.shrink(1);
+                        }
+                        if (player instanceof ServerPlayer serverPlayer) {
+                            serverPlayer.level().playSound(null, serverPlayer.getOnPos(), ModSounds.BULLET_SUPPLY.get(), SoundSource.PLAYERS, 0.5F, 1);
+                        }
+
+                        var scale = attachmentData.scale();
+                        var offset = attachmentData.offset();
+                        var rotation = attachmentData.rotation();
+
+                        if (attachmentData.displayData() != null) {
+                            this.entityData.set(DISPLAY_ENTITY_TAG, TagDataParser.parse(attachmentData.displayData(), name -> {
+                                var uuid = player.getUUID();
+                                return switch (name) {
+                                    case "@sbw:owner" -> NbtUtils.createUUID(uuid);
+                                    case "@sbw:owner_string_lower" ->
+                                            StringTag.valueOf(uuid.toString().replace("-", "").toLowerCase(Locale.ENGLISH));
+                                    case "@sbw:owner_string_upper" ->
+                                            StringTag.valueOf(uuid.toString().replace("-", "").toUpperCase(Locale.ENGLISH));
+                                    default -> StringTag.valueOf(name);
+                                };
+                            }));
+                        }
+
+                        this.entityData.set(DISPLAY_DATA, List.of(
+                                scale[0], scale[1], scale[2],
+                                offset[0], offset[1], offset[2],
+                                rotation[0], rotation[1], rotation[2],
+                                attachmentData.xLength, attachmentData.zLength,
+                                (float) attachmentData.tickCount
+                        ));
                     }
-                    if (player instanceof ServerPlayer serverPlayer) {
-                        serverPlayer.level().playSound(null, serverPlayer.getOnPos(), ModSounds.BULLET_SUPPLY.get(), SoundSource.PLAYERS, 0.5F, 1);
-                    }
-                } else if (this.entityData.get(AMMO) == 0) {
-                    // 不同种物品挂载
-                    this.currentItem = stack.copyWithCount(1);
-                    this.entityData.set(DISPLAY_ENTITY, attachmentData.displayEntity());
-                    this.entityData.set(AMMO, this.entityData.get(AMMO) + 1);
-                    this.entityData.set(IS_KAMIKAZE, attachmentData.isKamikaze);
-                    this.entityData.set(MAX_AMMO, attachmentData.count());
-
-                    if (!player.isCreative()) {
-                        stack.shrink(1);
-                    }
-                    if (player instanceof ServerPlayer serverPlayer) {
-                        serverPlayer.level().playSound(null, serverPlayer.getOnPos(), ModSounds.BULLET_SUPPLY.get(), SoundSource.PLAYERS, 0.5F, 1);
-                    }
-
-                    var scale = attachmentData.scale();
-                    var offset = attachmentData.offset();
-                    var rotation = attachmentData.rotation();
-
-                    if (attachmentData.displayData() != null) {
-                        this.entityData.set(DISPLAY_ENTITY_TAG, TagDataParser.parse(attachmentData.displayData(), name -> {
-                            var uuid = player.getUUID();
-                            return switch (name) {
-                                case "@sbw:owner" -> NbtUtils.createUUID(uuid);
-                                case "@sbw:owner_string_lower" ->
-                                        StringTag.valueOf(uuid.toString().replace("-", "").toLowerCase(Locale.ENGLISH));
-                                case "@sbw:owner_string_upper" ->
-                                        StringTag.valueOf(uuid.toString().replace("-", "").toUpperCase(Locale.ENGLISH));
-                                default -> StringTag.valueOf(name);
-                            };
-                        }));
-                    }
-
-                    this.entityData.set(DISPLAY_DATA, List.of(
-                            scale[0], scale[1], scale[2],
-                            offset[0], offset[1], offset[2],
-                            rotation[0], rotation[1], rotation[2],
-                            attachmentData.xLength, attachmentData.zLength,
-                            (float) attachmentData.tickCount
-                    ));
                 }
             }
-
         }
 
         return InteractionResult.sidedSuccess(this.level().isClientSide());
