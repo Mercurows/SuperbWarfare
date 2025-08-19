@@ -1,0 +1,16 @@
+{
+  "name": "superbwarfare.entry.perk.phase_penetrating_bullet",
+  "icon": "superbwarfare:phase_penetrating_bullet",
+  "category": "superbwarfare:perk",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "superbwarfare.page.perk.phase_penetrating_bullet.1"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "superbwarfare:perk/phase_penetrating_bullet"
+    }
+  ],
+  "sortnum": 30112
+}
