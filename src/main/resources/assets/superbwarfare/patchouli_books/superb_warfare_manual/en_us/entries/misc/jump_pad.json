@@ -5,16 +5,16 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "superbwarfare.page.misc.jump_pad1"
+      "text": "superbwarfare.page.misc.jump_pad.1"
     },
     {
       "type": "patchouli:text",
-      "text": "superbwarfare.page.misc.jump_pad2"
+      "text": "superbwarfare.page.misc.jump_pad.2"
     },
     {
       "type": "patchouli:crafting",
       "recipe": "superbwarfare:jump_pad_crafting",
-      "text": "superbwarfare.page.misc.jump_pad3"
+      "text": "superbwarfare.page.misc.jump_pad.3"
     }
   ],
   "sortnum": 40002

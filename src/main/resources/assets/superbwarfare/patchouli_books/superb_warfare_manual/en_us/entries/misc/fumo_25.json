@@ -5,16 +5,15 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "superbwarfare.page.misc.fumo_251"
+      "text": "superbwarfare.page.misc.fumo_25.1"
     },
     {
       "type": "patchouli:text",
-      "text": "superbwarfare.page.misc.fumo_252"
+      "text": "superbwarfare.page.misc.fumo_25.2"
     },
     {
       "type": "patchouli:crafting",
-      "recipe": "superbwarfare:fumo_25_crafting",
-      "text": "superbwarfare.page.misc.fumo_253"
+      "recipe": "superbwarfare:fumo_25_crafting"
     }
   ],
   "sortnum": 40003
