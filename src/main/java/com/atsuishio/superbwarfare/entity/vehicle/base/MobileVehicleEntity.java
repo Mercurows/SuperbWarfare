@@ -1114,11 +1114,11 @@ public abstract class MobileVehicleEntity extends VehicleEntity implements Contr
         }
 
         if (forwardInputDown) {
-            this.entityData.set(POWER, Math.min(this.entityData.get(POWER) + (this.entityData.get(POWER) < 0 ? powerAdd * 0.5f : powerAdd) * (1 + getXRot() / 55), maxPower));
+            this.entityData.set(POWER, Math.min(this.entityData.get(POWER) + (this.entityData.get(POWER) < 0 ? powerAdd * 2f : powerAdd) * (1 + getXRot() / 55), maxPower));
         }
 
         if (backInputDown) {
-            this.entityData.set(POWER, Math.max(this.entityData.get(POWER) - (this.entityData.get(POWER) > 0 ? powerReduce * 0.5f : powerReduce) * (1 - getXRot() / 55), minPower));
+            this.entityData.set(POWER, Math.max(this.entityData.get(POWER) - (this.entityData.get(POWER) > 0 ? powerReduce * 2f : powerReduce) * (1 - getXRot() / 55), minPower));
         }
 
         if (rightInputDown) {

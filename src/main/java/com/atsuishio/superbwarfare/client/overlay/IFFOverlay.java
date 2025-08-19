@@ -64,7 +64,7 @@ public class IFFOverlay implements IGuiOverlay {
                         s -> {
                             List<Entity> entities = SeekTool.getTeammate(player, player.level());
                             for (var e : entities) {
-                                if (e != null && e != player && VectorUtil.canSee(e.position())) {
+                                if (e != null && e != player && VectorUtil.canSee(e.position()) && e != player.getVehicle()) {
                                     Entity team = e;
                                     if (e.getVehicle() != null) {
                                         team = e.getVehicle();
