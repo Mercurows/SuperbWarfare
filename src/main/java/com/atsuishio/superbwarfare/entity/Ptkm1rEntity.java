@@ -264,8 +264,8 @@ public class Ptkm1rEntity extends Entity implements GeoEntity, OwnableEntity, Mi
     private void shoot(Entity entity, double distance) {
         if (this.level() instanceof ServerLevel serverLevel) {
             PtkmProjectileEntity ptkmProjectile = new PtkmProjectileEntity(this.getOwner(), serverLevel);
-            ptkmProjectile.setDamage(750);
-            ptkmProjectile.setExplosionDamage(150);
+            ptkmProjectile.setDamage(500);
+            ptkmProjectile.setExplosionDamage(80);
             ptkmProjectile.setExplosionRadius(7);
             ptkmProjectile.setTarget(entity);
             ptkmProjectile.setShootTime((int) (0.5f * distance));

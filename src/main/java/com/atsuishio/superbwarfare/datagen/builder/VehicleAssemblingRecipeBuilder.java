@@ -17,8 +17,10 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.ItemLike;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -40,7 +42,7 @@ public class VehicleAssemblingRecipeBuilder implements RecipeBuilder {
         this.category = category;
     }
 
-    public VehicleAssemblingRecipeBuilder(EntityType<?> type, VehicleAssemblingRecipe.Category category) {
+    public VehicleAssemblingRecipeBuilder(@Nullable EntityType<?> type, VehicleAssemblingRecipe.Category category) {
         this.result = ModItems.CONTAINER.get();
         this.entityType = type;
         this.count = 1;
@@ -74,23 +76,24 @@ public class VehicleAssemblingRecipeBuilder implements RecipeBuilder {
     }
 
     @Override
-    public RecipeBuilder unlockedBy(String s, Criterion<?> criterion) {
+    @ParametersAreNonnullByDefault
+    public @NotNull RecipeBuilder unlockedBy(String s, Criterion<?> criterion) {
         this.criteria.put(s, criterion);
         return this;
     }
 
     @Override
-    public RecipeBuilder group(@Nullable String s) {
+    public @NotNull RecipeBuilder group(@Nullable String s) {
         return this;
     }
 
     @Override
-    public Item getResult() {
+    public @NotNull Item getResult() {
         return this.result;
     }
 
     @Override
-    public void save(RecipeOutput recipeOutput, ResourceLocation pRecipeId) {
+    public void save(RecipeOutput recipeOutput, @NotNull ResourceLocation pRecipeId) {
         this.ensureValid(pRecipeId);
         Advancement.Builder builder = recipeOutput.advancement().addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(pRecipeId)).rewards(AdvancementRewards.Builder.recipe(pRecipeId)).requirements(AdvancementRequirements.Strategy.OR);
         Objects.requireNonNull(builder);
