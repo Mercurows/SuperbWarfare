@@ -5,12 +5,11 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "superbwarfare.page.misc.barbed_wire1"
+      "text": "superbwarfare.page.misc.barbed_wire.1"
     },
     {
       "type": "patchouli:crafting",
-      "recipe": "superbwarfare:barbed_wire_crafting",
-      "text": "superbwarfare.page.misc.barbed_wire2"
+      "recipe": "superbwarfare:barbed_wire_crafting"
     }
   ],
   "sortnum": 40004
