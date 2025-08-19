@@ -49,7 +49,6 @@ type = "discouraged"
 [[dependencies.superbwarfare]]
 modId = "geckoanimfix"
 type = "incompatible"
-reason = "\\n§r§l§eRemove §nIris/Oculus & GeckoLib Compat(GeckoLibOculusCompat)§r§f as it is incompatible with Superb Warfare and §cit does nothing along with the latest version of GeckoLib§f!!!\\n\\n§r§l§e删除§nIris/Oculus & GeckoLib Compat（GeckoLibOculusCompat）§r§f，该mod§c对于新版GeckoLib没有任何作用§f且和卓越前线冲突！\\n"
 
 [features.superbwarfare]
 openGLVersion = "[3.2,)"

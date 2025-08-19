@@ -8,6 +8,6 @@
     "4 minecraft:iron_ingot"
   ],
   "result": {
-    "item": "item.superbwarfare.small_battery_pack"
+    "item": "superbwarfare:small_battery_pack"
   }
 }

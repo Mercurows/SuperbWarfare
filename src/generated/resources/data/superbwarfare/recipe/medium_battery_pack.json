@@ -8,6 +8,6 @@
     "36 minecraft:iron_ingot"
   ],
   "result": {
-    "item": "item.superbwarfare.medium_battery_pack"
+    "item": "superbwarfare:medium_battery_pack"
   }
 }

@@ -51,7 +51,7 @@ public class VehicleAssemblingRecipe implements Recipe<RecipeWrapper> {
         for (var entry : ingredients.entrySet()) {
             inputs.add(new VehicleAssemblingIngredient(entry.getKey(), entry.getValue()));
         }
-        return new VehicleAssemblingRecipe(inputs, recipeCategory, new VehicleAssemblingResult(result.getDescriptionId(), "", count));
+        return new VehicleAssemblingRecipe(inputs, recipeCategory, new VehicleAssemblingResult(BuiltInRegistries.ITEM.getKey(result).toString(), "", count));
     }
 
     @Override
