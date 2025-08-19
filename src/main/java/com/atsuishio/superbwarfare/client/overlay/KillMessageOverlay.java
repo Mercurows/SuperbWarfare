@@ -331,6 +331,8 @@ public class KillMessageOverlay implements IGuiOverlay {
                 icon = null;
                 if (record.damageType == ModDamageTypes.PROJECTILE_HIT) {
                     icon = GENERIC;
+                } else if (record.damageType == ModDamageTypes.LASER || record.damageType == ModDamageTypes.LASER_HEADSHOT) {
+                    icon = LASER;
                 }
                 if (TACZGunEventHandler.hasMod() && !TACZGunEventHandler.compatCondition()) {
                     icon = GENERIC;
@@ -355,7 +357,7 @@ public class KillMessageOverlay implements IGuiOverlay {
                     icon = BURN;
                 } else if (record.damageType == ModDamageTypes.DRONE_HIT) {
                     icon = DRONE;
-                } else if (record.damageType == ModDamageTypes.LASER || record.damageType == ModDamageTypes.LASER_HEADSHOT || record.damageType == ModDamageTypes.LASER_STATIC) {
+                } else if (record.damageType == ModDamageTypes.LASER_STATIC) {
                     icon = LASER;
                 } else if (record.damageType == ModDamageTypes.VEHICLE_STRIKE) {
                     icon = VEHICLE;

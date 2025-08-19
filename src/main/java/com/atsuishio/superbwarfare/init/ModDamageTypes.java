@@ -27,7 +27,6 @@ public class ModDamageTypes {
     public static final ResourceKey<DamageType> SHOCK = ResourceKey.create(Registries.DAMAGE_TYPE, Mod.loc("shock"));
     public static final ResourceKey<DamageType> PROJECTILE_HIT = ResourceKey.create(Registries.DAMAGE_TYPE, Mod.loc("projectile_hit"));
     public static final ResourceKey<DamageType> PROJECTILE_EXPLOSION = ResourceKey.create(Registries.DAMAGE_TYPE, Mod.loc("projectile_explosion"));
-    public static final ResourceKey<DamageType> GRAPESHOT_HIT = ResourceKey.create(Registries.DAMAGE_TYPE, Mod.loc("grapeshot_hit"));
 
     // Other Damage Types
     public static final ResourceKey<DamageType> MINE = ResourceKey.create(Registries.DAMAGE_TYPE, Mod.loc("mine"));
@@ -39,6 +38,7 @@ public class ModDamageTypes {
     public static final ResourceKey<DamageType> AIR_CRASH = ResourceKey.create(Registries.DAMAGE_TYPE, Mod.loc("air_crash"));
     public static final ResourceKey<DamageType> LUNGE_MINE = ResourceKey.create(Registries.DAMAGE_TYPE, Mod.loc("lunge_mine"));
     public static final ResourceKey<DamageType> VEHICLE_EXPLOSION = ResourceKey.create(Registries.DAMAGE_TYPE, Mod.loc("vehicle_explosion"));
+    public static final ResourceKey<DamageType> GRAPESHOT_HIT = ResourceKey.create(Registries.DAMAGE_TYPE, Mod.loc("grapeshot_hit"));
 
     public static DamageSource causeGunFireDamage(RegistryAccess registryAccess, @Nullable Entity directEntity, @Nullable Entity attacker) {
         return new DamageMessages(registryAccess.registry(Registries.DAMAGE_TYPE).get().getHolderOrThrow(GUN_FIRE), directEntity, attacker);
