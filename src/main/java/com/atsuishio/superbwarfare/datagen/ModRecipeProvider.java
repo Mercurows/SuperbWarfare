@@ -288,6 +288,31 @@ public class ModRecipeProvider extends RecipeProvider {
                 .unlockedBy(getHasName(ModItems.LARGE_PROPELLER.get()), has(ModItems.LARGE_PROPELLER.get()))
                 .save(writer, Mod.loc(getEntityTypeName(ModEntities.A_10A.get())));
 
+        VehicleAssemblingRecipeBuilder.item(ModItems.SMALL_BATTERY_PACK.get(), 1, VehicleAssemblingRecipe.Category.MISC)
+                .require(commonTag("plates/copper"), 4)
+                .require(commonTag("glass_panes"), 8)
+                .require(Items.REDSTONE, 4)
+                .require(Items.IRON_INGOT, 4)
+                .unlockedBy(getHasName(ModItems.COPPER_PLATE.get()), has(ModItems.COPPER_PLATE.get()))
+                .save(writer, Mod.loc(getItemName(ModItems.SMALL_BATTERY_PACK.get())));
+
+        VehicleAssemblingRecipeBuilder.item(ModItems.MEDIUM_BATTERY_PACK.get(), 1, VehicleAssemblingRecipe.Category.MISC)
+                .require(commonTag("plates/copper"), 36)
+                .require(commonTag("glass_panes"), 72)
+                .require(Items.REDSTONE, 36)
+                .require(Items.IRON_INGOT, 36)
+                .unlockedBy(getHasName(ModItems.COPPER_PLATE.get()), has(ModItems.COPPER_PLATE.get()))
+                .save(writer, Mod.loc(getItemName(ModItems.MEDIUM_BATTERY_PACK.get())));
+
+        VehicleAssemblingRecipeBuilder.item(ModItems.LARGE_BATTERY_PACK.get(), 1, VehicleAssemblingRecipe.Category.MISC)
+                .require(commonTag("plates/copper"), 144)
+                .require(commonTag("glass_panes"), 288)
+                .require(Items.REDSTONE, 144)
+                .require(Items.IRON_INGOT, 144)
+                .unlockedBy(getHasName(ModItems.COPPER_PLATE.get()), has(ModItems.COPPER_PLATE.get()))
+                .save(writer, Mod.loc(getItemName(ModItems.LARGE_BATTERY_PACK.get())));
+
+
         // guns
         gunSmithing(writer, ModItems.TRACHELIUM_BLUEPRINT.get(), GunRarity.EPIC, ModTags.Items.INGOTS_CEMENTED_CARBIDE, ModItems.TRACHELIUM.get());
         gunSmithing(writer, ModItems.GLOCK_17_BLUEPRINT.get(), GunRarity.COMMON, Items.IRON_INGOT, ModItems.GLOCK_17.get());

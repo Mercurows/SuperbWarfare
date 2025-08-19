@@ -1,0 +1,13 @@
+{
+  "type": "superbwarfare:vehicle_assembling",
+  "category": "misc",
+  "inputs": [
+    "36 #c:plates/copper",
+    "72 #c:glass_panes",
+    "36 minecraft:redstone",
+    "36 minecraft:iron_ingot"
+  ],
+  "result": {
+    "item": "item.superbwarfare.medium_battery_pack"
+  }
+}

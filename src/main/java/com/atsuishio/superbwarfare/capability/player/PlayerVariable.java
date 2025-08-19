@@ -16,6 +16,7 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,7 +25,7 @@ import java.util.Map;
 public class PlayerVariable implements INBTSerializable<CompoundTag> {
     private PlayerVariable old = null;
 
-    public Map<Ammo, Integer> ammo = new HashMap<>();
+    public Map<Ammo, Integer> ammo = new EnumMap<>(Ammo.class);
     public boolean tacticalSprint = false;
 
     public void sync(Entity entity) {

@@ -86,6 +86,7 @@ import java.util.function.Function;
 
 import static com.atsuishio.superbwarfare.client.RenderHelper.preciseBlit;
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
+import static com.atsuishio.superbwarfare.tools.SeekTool.teamFilter;
 
 public abstract class VehicleEntity extends Entity implements Container, VehiclePropertyModifier {
 
@@ -139,6 +140,8 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
     public float gunXRotO;
 
     public boolean cannotFire;
+
+    public int noPassengerTime;
 
     public @Nullable Player damageDebugResultReceiver = null;
 
@@ -739,6 +742,19 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
             }
             return InteractionResult.SUCCESS;
         } else if (!player.isShiftKeyDown() && this.getMaxPassengers() > 0) {
+
+            List<Entity> entities = getPassengers();
+            for (var passenger : entities) {
+                if (passenger.getTeam() != null && (passenger.getTeam().getName().equals("TDM") || passenger.getTeam() != player.getTeam())) {
+                    return InteractionResult.PASS;
+                }
+            }
+
+            Entity lastDriver = EntityFindUtil.findEntity(level(), entityData.get(LAST_DRIVER_UUID));
+            if (lastDriver != null && !teamFilter(player, lastDriver)) {
+                return InteractionResult.PASS;
+            }
+
             if (this.getFirstPassenger() == null) {
                 if (player instanceof FakePlayer) return InteractionResult.PASS;
                 setDriverAngle(player);
@@ -1030,6 +1046,15 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
 
         if (this.getMaxPassengers() > 0 && getFirstPassenger() != null) {
             this.entityData.set(LAST_DRIVER_UUID, getFirstPassenger().getStringUUID());
+        }
+
+        if (getPassengers().isEmpty()) {
+            noPassengerTime++;
+            if (noPassengerTime > 200) {
+                this.entityData.set(LAST_DRIVER_UUID, "undefined");
+            }
+        } else {
+            noPassengerTime = 0;
         }
 
         this.clearArrow();
