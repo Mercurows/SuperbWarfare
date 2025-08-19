@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.entity.projectile;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.network.message.receive.ClientMotionSyncMessage;
+import com.atsuishio.superbwarfare.tools.ChunkLoadManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerLevel;
@@ -42,8 +43,8 @@ public abstract class FastThrowableProjectile extends ThrowableItemProjectile im
 
     private boolean isFastMoving = false;
 
-    private static final int CHUNK_RADIUS = 1; // 加载3x3区块区域
-    private final Set<ChunkPos> forcedChunks = new HashSet<>();
+    private static final int CHUNK_RADIUS = 1; // 3x3区块
+    private final Set<ChunkPos> currentChunks = new HashSet<>();
     private ChunkPos lastChunkPos;
 
     public FastThrowableProjectile(EntityType<? extends ThrowableItemProjectile> pEntityType, Level pLevel) {
@@ -93,8 +94,8 @@ public abstract class FastThrowableProjectile extends ThrowableItemProjectile im
         this.syncMotion();
 
         // 更新区块加载位置
-        if (!level().isClientSide && forceLoadChunk()) {
-            updateChunkLoading();
+        if (!level().isClientSide && level() instanceof ServerLevel serverLevel && forceLoadChunk()) {
+            updateChunkLoading(serverLevel);
         }
     }
 
@@ -130,9 +131,7 @@ public abstract class FastThrowableProjectile extends ThrowableItemProjectile im
     public void causeExplode(Vec3 vec3) {
     }
 
-    private void updateChunkLoading() {
-        if (!(level() instanceof ServerLevel serverLevel)) return;
-
+    private void updateChunkLoading(ServerLevel serverLevel) {
         ChunkPos currentPos = new ChunkPos(blockPosition());
 
         // 检查是否需要更新
@@ -141,31 +140,42 @@ public abstract class FastThrowableProjectile extends ThrowableItemProjectile im
         }
 
         // 计算需要加载的新区块
-        Set<ChunkPos> newChunks = new HashSet<>();
+        Set<ChunkPos> neededChunks = new HashSet<>();
         for (int x = -CHUNK_RADIUS; x <= CHUNK_RADIUS; x++) {
             for (int z = -CHUNK_RADIUS; z <= CHUNK_RADIUS; z++) {
-                newChunks.add(new ChunkPos(currentPos.x + x, currentPos.z + z));
+                neededChunks.add(new ChunkPos(currentPos.x + x, currentPos.z + z));
             }
         }
 
-        // 卸载不再需要的区块
-        Set<ChunkPos> toUnload = new HashSet<>(forcedChunks);
-        toUnload.removeAll(newChunks);
-
-        for (ChunkPos pos : toUnload) {
-            serverLevel.setChunkForced(pos.x, pos.z, false);
-            forcedChunks.remove(pos);
+        // 释放不再需要的区块
+        Set<ChunkPos> toRelease = new HashSet<>(currentChunks);
+        toRelease.removeAll(neededChunks);
+        for (ChunkPos pos : toRelease) {
+            ChunkLoadManager.releaseChunk(serverLevel, pos);
+            currentChunks.remove(pos);
         }
 
         // 加载新区块
-        for (ChunkPos pos : newChunks) {
-            if (!forcedChunks.contains(pos)) {
-                serverLevel.setChunkForced(pos.x, pos.z, true);
-                forcedChunks.add(pos);
+        for (ChunkPos pos : neededChunks) {
+            if (!currentChunks.contains(pos)) {
+                ChunkLoadManager.forceChunk(serverLevel, pos);
+                currentChunks.add(pos);
             }
         }
 
         lastChunkPos = currentPos;
+    }
+
+    @Override
+    public void remove(Entity.RemovalReason reason) {
+        if (!level().isClientSide && level() instanceof ServerLevel serverLevel) {
+            // 释放所有加载的区块
+            for (ChunkPos pos : currentChunks) {
+                ChunkLoadManager.releaseChunk(serverLevel, pos);
+            }
+            currentChunks.clear();
+        }
+        super.remove(reason);
     }
 
     @Override
@@ -198,18 +208,6 @@ public abstract class FastThrowableProjectile extends ThrowableItemProjectile im
     @Override
     public void readSpawnData(FriendlyByteBuf additionalData) {
         this.setDeltaMovement(additionalData.readFloat(), additionalData.readFloat(), additionalData.readFloat());
-    }
-
-    @Override
-    public void remove(Entity.@NotNull RemovalReason reason) {
-        // 释放所有加载的区块
-        if (!level().isClientSide && level() instanceof ServerLevel serverLevel) {
-            for (ChunkPos pos : forcedChunks) {
-                serverLevel.setChunkForced(pos.x, pos.z, false);
-            }
-            forcedChunks.clear();
-        }
-        super.remove(reason);
     }
 
     @NotNull
