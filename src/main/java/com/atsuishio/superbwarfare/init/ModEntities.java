@@ -36,7 +36,7 @@ public class ModEntities {
     public static final RegistryObject<EntityType<FlareDecoyEntity>> FLARE_DECOY = register("flare_decoy",
             EntityType.Builder.<FlareDecoyEntity>of(FlareDecoyEntity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).noSave().setCustomClientFactory(FlareDecoyEntity::new).sized(1f, 1f));
     public static final RegistryObject<EntityType<SmokeDecoyEntity>> SMOKE_DECOY = register("smoke_decoy",
-            EntityType.Builder.<SmokeDecoyEntity>of(SmokeDecoyEntity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).noSave().setCustomClientFactory(SmokeDecoyEntity::new).sized(3f, 3f));
+            EntityType.Builder.<SmokeDecoyEntity>of(SmokeDecoyEntity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).noSave().setCustomClientFactory(SmokeDecoyEntity::new).sized(4.5f, 4.5f));
     public static final RegistryObject<EntityType<ClaymoreEntity>> CLAYMORE = register("claymore",
             EntityType.Builder.<ClaymoreEntity>of(ClaymoreEntity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).sized(0.25f, 0.25f));
 
