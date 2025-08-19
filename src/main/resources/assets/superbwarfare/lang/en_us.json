@@ -914,6 +914,10 @@
   "superbwarfare.page.perk.reforging_table.1": "$(item)Gun Reforge Table$() allows adding perks for guns in Superb Warfare to enhance their strength. $(p)Every gun can be added 3 types of perks: $(thing)Ammo Perk$(), $(thing)Functional Perk$() and $(thing)Damage Perk$().",
   "superbwarfare.page.perk.reforging_table.2": "Guns possess $(thing)Level$() and $(thing)Upgrade Points$(). Shooting or killing living entities grants experience. For every 2 levels gained, 1 Upgrade Point is obtained. Upgrade Points are used to upgrade $(thing)Perks$(). The max level of each perk is 20.",
   "superbwarfare.page.perk.reforging_table.3": "Combine a $(thing)Gun$() with a $(item)Shortcut Pack$() on an anvil to gain 1 Upgrade Point. $(p)$(o)Too Expensive!$()",
+  "superbwarfare.entry.perk.ap_bullet": "AP Bullet",
+  "superbwarfare.page.perk.ap_bullet.1": "$(l)Damage: $()-10%%$(br)$(l)Velocity: $()+20%%$(br)$(l)Armor Piercing: $()+(35 + 5 x $(thing)Perk Level$())%%$(br)Converts shotguns to fire slugs$(br)$(l)Bullet Color: $()$(#E64623)#E64623$()",
+  "superbwarfare.entry.perk.jhp_bullet": "JHP Bullet",
+  "superbwarfare.page.perk.jhp_bullet.1": "$(l)Damage: $()+10%%$(br)$(l)Velocity: $()-5%%$(br)$(l)Armor Piercing: $()-20%%$(br)Converts shotguns to fire slugs$(br)$(l)Bullet Color: $()$(#E68341)#E68341$()$(br)$(l)Effect: $()Deals bonus damage scaling inversely with target's armor upon hitting entities.",
 
   "superbwarfare.entry.misc.aircraft_catapult": "Aircraft Catapult",
   "superbwarfare.page.misc.aircraft_catapult.1": "$(item)Aircraft Catapult$() transports entities standing on it. Direction depends on the arrow orientation on the block.$(p)Requires redstone signal to activate. Higher signal strength increases transport speed.$(p)$(l)Redstone signal must be applied at the front end of the entire device!$()",

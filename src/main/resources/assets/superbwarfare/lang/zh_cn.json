@@ -914,6 +914,10 @@
   "superbwarfare.page.perk.reforging_table.1": "$(item)枪械重铸台$()可以为卓越前线的枪械安装模组，提升枪械的强度。$(p)每个枪械可以安装三种不同的模组，分别为$(thing)子弹模组$()、$(thing)功能模组$()和$(thing)伤害模组$()。",
   "superbwarfare.page.perk.reforging_table.2": "枪械拥有$(thing)等级$()和$(thing)升级点数$()属性，射击生物或击杀生物时会获得经验值，每提升2级可以获得1点升级点数。升级点数用于提升$(thing)枪械模组$()的等级，最高提升至20级。",
   "superbwarfare.page.perk.reforging_table.3": "将$(thing)枪械$()和$(item)捷径包$()在铁砧上合成，可获得1点升级点数。$(p)$(o)贵死了！$()",
+  "superbwarfare.entry.perk.ap_bullet": "穿甲弹",
+  "superbwarfare.page.perk.ap_bullet.1": "$(l)武器伤害：$()-10%%$(br)$(l)子弹初速：$()+20%%$(br)$(l)护甲穿透：$()+(35 + 5 x $(thing)模组等级$())%%$(br)使霰弹枪发射独头弹$(br)$(l)子弹颜色：$()$(#E64623)#E64623$()",
+  "superbwarfare.entry.perk.jhp_bullet": "空尖弹",
+  "superbwarfare.page.perk.jhp_bullet.1": "$(l)武器伤害：$()+10%%$(br)$(l)子弹初速：$()-5%%$(br)$(l)护甲穿透：$()-20%%$(br)使霰弹枪发射独头弹$(br)$(l)子弹颜色：$()$(#E68341)#E68341$()$(br)$(l)功能：$()命中生物时，根据目标的盔甲造成额外的伤害，盔甲越低伤害越高。",
 
   "superbwarfare.entry.misc.aircraft_catapult": "飞行器弹射装置",
   "superbwarfare.page.misc.aircraft_catapult.1": "$(item)飞行器弹射装置$()是一个能够运输站在上面的$(thing)实体$()的方块，运输方向和方块上方箭头的朝向有关。$(p)需要红石信号激活才有运输能力，红石信号强度越高，运输速度越快。$(p)$(l)红石信号需要在整条装置的最前端！$()",
