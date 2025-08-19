@@ -29,6 +29,8 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.StreamSupport;
 
+import static com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.LAST_DRIVER_UUID;
+
 public class SeekTool {
 
     public static List<Entity> getVehicleWithinRange(Player player, Level level, double range) {
@@ -52,16 +54,33 @@ public class SeekTool {
 
     public static List<Entity> getTeammate(Player player, Level level) {
         return StreamSupport.stream(EntityFindUtil.getEntities(level).getAll().spliterator(), false)
-                .filter(e -> (e instanceof Player && e.getTeam() != null && !e.getTeam().getName().equals("TDM") && e.getTeam() == player.getTeam())
-                        || teammatePet(e, player) || teammateDrone(e, player)
+                .filter(e -> friendlyToPlayer(player, e)
                 )
                 .toList();
     }
 
-    public static boolean teammatePet(Entity e, Player player) {
-        return e instanceof OwnableEntity ownableEntity
-                && ownableEntity.getOwner() != null
-                && ownableEntity.getOwner().getTeam() != null && !ownableEntity.getOwner().getTeam().getName().equals("TDM") && ownableEntity.getOwner().getTeam() == player.getTeam();
+    public static boolean friendlyToPlayer(Entity e, Entity entity) {
+        if (teamFilter(e, entity)) return true;
+        if (entity instanceof OwnableEntity ownableEntity && ownableEntity.getOwner() != null && teamFilter(e, ownableEntity.getOwner())) return true;
+        if (e instanceof Player player && teammateDrone(entity, player)) return true;
+
+        List<Entity> entities = entity.getPassengers();
+        for (var passenger : entities) {
+            if (teamFilter(e, passenger)) {
+                return true;
+            }
+        }
+
+        if (entity instanceof VehicleEntity vehicle) {
+            Entity lastDriver = EntityFindUtil.findEntity(vehicle.level(), vehicle.getEntityData().get(LAST_DRIVER_UUID));
+            return lastDriver != null && teamFilter(e, lastDriver);
+        }
+
+        return false;
+    }
+
+    public static boolean teamFilter(Entity e, Entity entity) {
+        return e == entity || (entity.getTeam() != null && !entity.getTeam().getName().equals("TDM") && entity.getTeam() == e.getTeam());
     }
 
     public static boolean teammateDrone(Entity e, Player player) {
@@ -74,7 +93,7 @@ public class SeekTool {
         return e instanceof DroneEntity drone
                 && drone != drone2
                 && drone.getController() != null
-                && drone.getController().getTeam() != null && !drone.getController().getTeam().getName().equals("TDM") && drone.getController().getTeam() == player.getTeam();
+                && teamFilter(e, drone.getController());
     }
 
     public static Entity seekEntity(Entity entity, Level level, double seekRange, double seekAngle) {
@@ -120,7 +139,7 @@ public class SeekTool {
                             && smokeFilter(e)
                             && e.getVehicle() == null
                             && !(e instanceof SwarmDroneEntity swarmDrone && swarmDrone.getOwner() != entity)
-                            && (!e.isAlliedTo(entity) || e.getTeam() == null || e.getTeam().getName().equals("TDM"))) {
+                            && !friendlyToPlayer(entity, e)) {
                         return level.clip(new ClipContext(entity.getEyePosition(), e.getEyePosition(),
                                 ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, entity)).getType() != HitResult.Type.BLOCK;
                     }
@@ -136,7 +155,7 @@ public class SeekTool {
                             && baseFilter(e)
                             && smokeFilter(e)
                             && e.getVehicle() == null
-                            && (!e.isAlliedTo(entity) || e.getTeam() == null || e.getTeam().getName().equals("TDM"))) {
+                            && !friendlyToPlayer(entity, e)) {
                         return level.clip(new ClipContext(entity.getEyePosition(), e.getEyePosition(),
                                 ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, entity)).getType() != HitResult.Type.BLOCK;
                     }
@@ -154,7 +173,7 @@ public class SeekTool {
                             && (!checkOnGround || isOnGround(e, 10))
                             && smokeFilter(e)
                             && e.getVehicle() == null
-                            && (!e.isAlliedTo(entity) || e.getTeam() == null || e.getTeam().getName().equals("TDM"))) {
+                            && !friendlyToPlayer(entity, e)) {
                         return level.clip(new ClipContext(entity.getEyePosition(), e.getEyePosition(),
                                 ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, entity)).getType() != HitResult.Type.BLOCK;
                     }
@@ -170,7 +189,7 @@ public class SeekTool {
                             && baseFilter(e)
                             && smokeFilter(e)
                             && e.getVehicle() == null
-                            && (!e.isAlliedTo(vehicle) || e.getTeam() == null || e.getTeam().getName().equals("TDM"))) {
+                            && !friendlyToPlayer(vehicle, e)) {
                         return level.clip(new ClipContext(vehicle.getNewEyePos(1), vehicle.getNewEyePos(1),
                                 ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, vehicle)).getType() != HitResult.Type.BLOCK;
                     }
@@ -184,7 +203,7 @@ public class SeekTool {
                         && e != entity
                         && baseFilter(e)
                         && e.getVehicle() == null
-                        && (!e.isAlliedTo(entity) || e.getTeam() == null || e.getTeam().getName().equals("TDM"))).toList();
+                        && !friendlyToPlayer(entity, e)).toList();
     }
 
     public static Entity seekEntityThroughWall(Entity entity, Level level, double seekRange, double seekAngle) {
