@@ -53,7 +53,6 @@ public class ModDamageTypeTagProvider extends DamageTypeTagsProvider {
                 ModDamageTypes.SHOCK,
                 ModDamageTypes.BURN,
                 ModDamageTypes.PROJECTILE_HIT,
-                ModDamageTypes.GRAPESHOT_HIT,
                 ModDamageTypes.PROJECTILE_EXPLOSION
         );
 
