@@ -3,7 +3,7 @@ package com.atsuishio.superbwarfare.client.renderer.special;
 import com.atsuishio.superbwarfare.block.ContainerBlock;
 import com.atsuishio.superbwarfare.block.entity.ContainerBlockEntity;
 import com.atsuishio.superbwarfare.client.renderer.ModRenderTypes;
-import com.atsuishio.superbwarfare.item.Crowbar;
+import com.atsuishio.superbwarfare.init.ModTags;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.AABB;
@@ -26,7 +26,7 @@ public class ContainerBlockPreview {
 
         // 仅在手持撬棍时检测
         var item = player.getMainHandItem();
-        if (!(item.getItem() instanceof Crowbar)) return;
+        if (!item.is(ModTags.Items.CROWBAR)) return;
 
         var level = player.level();
         var look = player.getLookAngle();
