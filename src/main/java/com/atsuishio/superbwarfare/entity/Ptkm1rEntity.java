@@ -76,7 +76,7 @@ public class Ptkm1rEntity extends Entity implements GeoEntity, OwnableEntity, Mi
         this.entityData.define(OWNER_UUID, Optional.empty());
         this.entityData.define(LAST_ATTACKER_UUID, "undefined");
         this.entityData.define(TARGET_UUID, "undefined");
-        this.entityData.define(HEALTH, 100f);
+        this.entityData.define(HEALTH, 40f);
     }
 
     @Override
