@@ -131,8 +131,9 @@ public class AwmItem extends GunItem {
         var data = GunData.from(stack);
         int scopeType = data.attachment.get(AttachmentType.SCOPE);
         return switch (scopeType) {
-            case 2 -> data.tag.getBoolean("ScopeAlt") ? 0 : 2.15;
-            case 3 -> GunsTool.getGunDoubleTag(data.tag, "CustomZoom");
+            //TODO 见鬼了，在这里乘0.5就是正确的倍率
+            case 2 -> 0.5 * 2.15;
+            case 3 -> 0.5 * GunsTool.getGunDoubleTag(data.tag, "CustomZoom");
             default -> 0;
         };
     }
