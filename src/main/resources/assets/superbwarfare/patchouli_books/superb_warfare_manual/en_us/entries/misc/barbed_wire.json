@@ -9,7 +9,7 @@
     },
     {
       "type": "patchouli:crafting",
-      "recipe": "superbwarfare:barbed_wire_crafting"
+      "recipe": "superbwarfare:barbed_wire"
     }
   ],
   "sortnum": 40004
