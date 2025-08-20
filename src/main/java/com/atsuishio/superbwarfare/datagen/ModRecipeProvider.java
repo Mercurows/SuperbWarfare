@@ -47,9 +47,9 @@ public class ModRecipeProvider extends RecipeProvider {
 
     @Override
     protected void buildRecipes(@NotNull RecipeOutput writer) {
-        buildMaterialRecipes(writer);
         buildToolRecipes(writer);
         buildAmmoRecipes(writer);
+        buildMaterialRecipes(writer);
         buildBlockRecipes(writer);
         buildVehicleRecipes(writer);
         buildGunRecipes(writer);
@@ -89,6 +89,25 @@ public class ModRecipeProvider extends RecipeProvider {
     }
 
     private static void buildAmmoRecipes(@NotNull RecipeOutput writer) {
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.AMMO_BOX.get())
+                .pattern("aba")
+                .pattern("aaa")
+                .define('a', Tags.Items.INGOTS_IRON)
+                .define('b', Tags.Items.DYES_GREEN)
+                .unlockedBy(getHasName(Items.IRON_INGOT), has(Items.IRON_INGOT))
+                .save(writer, Mod.loc(getItemName(ModItems.AMMO_BOX.get())));
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.AGM.get())
+                .pattern(" b ")
+                .pattern("ada")
+                .pattern("cec")
+                .define('a', commonItemTag("plates/copper"))
+                .define('b', ModItems.SEEKER.get())
+                .define('c', ModItems.HIGH_ENERGY_EXPLOSIVES.get())
+                .define('d', Items.TNT)
+                .define('e', ModItems.MISSILE_ENGINE.get())
+                .unlockedBy(getHasName(ModItems.MISSILE_ENGINE.get()), has(ModItems.MISSILE_ENGINE.get()))
+                .save(writer, Mod.loc(getItemName(ModItems.AGM.get())));
         ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.SMALL_ROCKET.get(), 4)
                 .pattern(" a ")
                 .pattern("bcb")
@@ -120,6 +139,33 @@ public class ModRecipeProvider extends RecipeProvider {
                 .define('e', Items.GUNPOWDER)
                 .unlockedBy(getHasName(ModItems.FUSEE.get()), has(ModItems.FUSEE.get()))
                 .save(writer, Mod.loc(getItemName(ModItems.RPG_ROCKET_STANDARD.get())));
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.C4_BOMB.get(), 2)
+                .pattern("aaa")
+                .pattern("aba")
+                .pattern("aaa")
+                .define('a', ModItems.HIGH_ENERGY_EXPLOSIVES.get())
+                .define('b', Items.CLOCK)
+                .unlockedBy(getHasName(ModItems.HIGH_ENERGY_EXPLOSIVES.get()), has(ModItems.HIGH_ENERGY_EXPLOSIVES.get()))
+                .save(writer, Mod.loc(getItemName(ModItems.C4_BOMB.get())));
+        // TODO 这玩意怎么写
+//        NBTShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.C4_BOMB.get(), 2)
+//                .withNBT(tag -> tag.putBoolean("Control", true))
+//                .pattern("aaa")
+//                .pattern("aba")
+//                .pattern("aaa")
+//                .define('a', ModItems.HIGH_ENERGY_EXPLOSIVES.get())
+//                .define('b', Items.COMPARATOR)
+//                .unlockedBy(getHasName(ModItems.HIGH_ENERGY_EXPLOSIVES.get()), has(ModItems.HIGH_ENERGY_EXPLOSIVES.get()))
+//                .save(writer, Mod.loc(getItemName(ModItems.C4_BOMB.get()) + "_rc"));
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.AP_5_INCHES.get())
+                .pattern("c")
+                .pattern("a")
+                .pattern("b")
+                .define('a', ModItems.AP_HEAD.get())
+                .define('b', ModItems.GRAIN.get())
+                .define('c', ModItems.FUSEE.get())
+                .unlockedBy(getHasName(ModItems.AP_HEAD.get()), has(ModItems.AP_HEAD.get()))
+                .save(writer, Mod.loc(getItemName(ModItems.AP_5_INCHES.get())));
     }
 
     private static void buildMaterialRecipes(@NotNull RecipeOutput writer) {
@@ -132,9 +178,39 @@ public class ModRecipeProvider extends RecipeProvider {
         generateMaterialPackRecipe(writer, ModItems.STEEL_MATERIALS, ModItems.RARE_MATERIAL_PACK.get());
         generateMaterialPackRecipe(writer, ModItems.CEMENTED_CARBIDE_MATERIALS, ModItems.EPIC_MATERIAL_PACK.get());
         generateMaterialPackRecipe(writer, ModItems.NETHERITE_MATERIALS, ModItems.LEGENDARY_MATERIAL_PACK.get());
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.ANCIENT_CPU.get(), 2)
+                .pattern("bcb")
+                .pattern("cac")
+                .pattern("bcb")
+                .define('a', ModItems.ANCIENT_CPU.get())
+                .define('b', Tags.Items.GEMS_DIAMOND)
+                .define('c', Tags.Items.ORES_NETHERITE_SCRAP)
+                .unlockedBy(getHasName(ModItems.ANCIENT_CPU.get()), has(ModItems.ANCIENT_CPU.get()))
+                .save(writer, Mod.loc(getItemName(ModItems.ANCIENT_CPU.get()) + "_copy"));
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.AP_HEAD.get(), 2)
+                .pattern(" b ")
+                .pattern("bdb")
+                .pattern("cac")
+                .define('a', ModItems.HIGH_ENERGY_EXPLOSIVES.get())
+                .define('b', Tags.Items.INGOTS_IRON)
+                .define('c', commonItemTag("ingots/steel"))
+                .define('d', ModItems.TUNGSTEN_ROD.get())
+                .unlockedBy(getHasName(ModItems.HIGH_ENERGY_EXPLOSIVES.get()), has(ModItems.HIGH_ENERGY_EXPLOSIVES.get()))
+                .save(writer, Mod.loc(getItemName(ModItems.AP_HEAD.get())));
     }
 
     private static void buildBlockRecipes(@NotNull RecipeOutput writer) {
+        ShapedRecipeBuilder.shaped(RecipeCategory.REDSTONE, ModItems.AIRCRAFT_CATAPULT.get(), 8)
+                .pattern("aaa")
+                .pattern("cbc")
+                .pattern("ddd")
+                .define('a', Items.POWERED_RAIL)
+                .define('b', Tags.Items.STORAGE_BLOCKS_REDSTONE)
+                .define('c', Tags.Items.INGOTS_COPPER)
+                .define('d', Tags.Items.INGOTS_IRON)
+                .unlockedBy(getHasName(Items.POWERED_RAIL), has(Items.POWERED_RAIL))
+                .save(writer, Mod.loc(getItemName(ModItems.AIRCRAFT_CATAPULT.get())));
         ShapedRecipeBuilder.shaped(RecipeCategory.REDSTONE, ModItems.SUPERB_ITEM_INTERFACE.get())
                 .pattern("cac")
                 .pattern("aba")

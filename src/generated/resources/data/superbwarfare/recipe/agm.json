@@ -1,12 +1,10 @@
 {
   "type": "minecraft:crafting_shaped",
-  "category": "misc",
-  "pattern": [
-    " b ",
-    "fdf",
-    "cec"
-  ],
+  "category": "equipment",
   "key": {
+    "a": {
+      "tag": "c:plates/copper"
+    },
     "b": {
       "item": "superbwarfare:seeker"
     },
@@ -14,17 +12,19 @@
       "item": "superbwarfare:high_energy_explosives"
     },
     "d": {
-      "item":"minecraft:tnt"
+      "item": "minecraft:tnt"
     },
     "e": {
       "item": "superbwarfare:missile_engine"
-    },
-    "f": {
-      "tag": "c:plates/copper"
     }
   },
+  "pattern": [
+    " b ",
+    "ada",
+    "cec"
+  ],
   "result": {
-    "id": "superbwarfare:agm",
-    "count": 1
+    "count": 1,
+    "id": "superbwarfare:agm"
   }
 }

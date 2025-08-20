@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "a": {
+      "tag": "c:ingots/iron"
+    },
+    "b": {
+      "tag": "c:dyes/green"
+    }
+  },
+  "pattern": [
+    "aba",
+    "aaa"
+  ],
+  "result": {
+    "count": 1,
+    "id": "superbwarfare:ammo_box"
+  }
+}

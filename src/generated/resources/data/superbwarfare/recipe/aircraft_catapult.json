@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "key": {
+    "a": {
+      "item": "minecraft:powered_rail"
+    },
+    "b": {
+      "tag": "c:storage_blocks/redstone"
+    },
+    "c": {
+      "tag": "c:ingots/copper"
+    },
+    "d": {
+      "tag": "c:ingots/iron"
+    }
+  },
+  "pattern": [
+    "aaa",
+    "cbc",
+    "ddd"
+  ],
+  "result": {
+    "count": 8,
+    "id": "superbwarfare:aircraft_catapult"
+  }
+}

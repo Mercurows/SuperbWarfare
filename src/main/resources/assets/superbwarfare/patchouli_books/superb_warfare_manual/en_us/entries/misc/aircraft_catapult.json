@@ -9,7 +9,7 @@
     },
     {
       "type": "patchouli:crafting",
-      "recipe": "superbwarfare:aircraft_catapult_crafting",
+      "recipe": "superbwarfare:aircraft_catapult",
       "text": "superbwarfare.page.misc.aircraft_catapult.2"
     }
   ],

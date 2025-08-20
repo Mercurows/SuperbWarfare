@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_ap_head": {
+      "conditions": {
+        "items": [
+          {
+            "items": "superbwarfare:ap_head"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "superbwarfare:ap_5_inches"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_ap_head"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "superbwarfare:ap_5_inches"
+    ]
+  }
+}
