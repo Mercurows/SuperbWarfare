@@ -13,7 +13,7 @@ import net.minecraft.world.level.block.Block;
 
 public class ModTags {
 
-    public static TagKey<Item> commonItemTag(String name) {
+    public static TagKey<Item> forgeItemTag(String name) {
         return ItemTags.create(new ResourceLocation("forge", name));
     }
 
@@ -46,9 +46,9 @@ public class ModTags {
         public static final TagKey<Item> LEGENDARY_BLUEPRINT = modItemTag("blueprint/legendary");
         public static final TagKey<Item> CANNON_BLUEPRINT = modItemTag("blueprint/cannon");
 
-        public static final TagKey<Item> WRENCHES = commonItemTag("wrenches");
-        public static final TagKey<Item> WRENCH = commonItemTag("tools/wrench");
-        public static final TagKey<Item> CROWBAR = commonItemTag("tools/crowbar");
+        public static final TagKey<Item> WRENCHES = forgeItemTag("wrenches");
+        public static final TagKey<Item> WRENCH = forgeItemTag("tools/wrench");
+        public static final TagKey<Item> CROWBAR = forgeItemTag("tools/crowbar");
     }
 
     public static TagKey<Item> modItemTag(String name) {
