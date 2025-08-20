@@ -27,7 +27,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
 
-import static com.atsuishio.superbwarfare.init.ModTags.commonItemTag;
+import static com.atsuishio.superbwarfare.init.ModTags.forgeItemTag;
 
 public class ModRecipeProvider extends RecipeProvider implements IConditionBuilder {
 
@@ -37,25 +37,18 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
 
     @Override
     protected void buildRecipes(@NotNull Consumer<FinishedRecipe> writer) {
-        // special
-        SpecialRecipeBuilder.special(ModRecipes.POTION_MORTAR_SHELL_SERIALIZER.get()).save(writer, "potion_mortar_shell");
-        SpecialRecipeBuilder.special(ModRecipes.AMMO_BOX_ADD_AMMO_SERIALIZER.get()).save(writer, "ammo_box_add_ammo");
-        SpecialRecipeBuilder.special(ModRecipes.AMMO_BOX_EXTRACT_AMMO_SERIALIZER.get()).save(writer, "ammo_box_extract_ammo");
-        SpecialRecipeBuilder.special(ModRecipes.SMOKE_DYE_SERIALIZER.get()).save(writer, "smoke_dye");
+        buildMaterialRecipes(writer);
+        buildToolRecipes(writer);
+        buildAmmoRecipes(writer);
+        buildBlockRecipes(writer);
+        buildVehicleRecipes(writer);
+        buildGunRecipes(writer);
+        buildBlueprintRecipes(writer);
+        buildPerkRecipes(writer);
+        buildSpecialRecipes(writer);
+    }
 
-        // items
-        // 材料
-        generateMaterialRecipes(writer, ModItems.IRON_MATERIALS, Items.IRON_INGOT);
-        generateMaterialRecipes(writer, ModItems.STEEL_MATERIALS, ModItems.STEEL_INGOT.get());
-        generateMaterialRecipes(writer, ModItems.CEMENTED_CARBIDE_MATERIALS, ModItems.CEMENTED_CARBIDE_INGOT.get());
-        generateSmithingMaterialRecipe(writer, ModItems.CEMENTED_CARBIDE_MATERIALS, ModItems.NETHERITE_MATERIALS, Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE, Items.NETHERITE_INGOT);
-
-        // 材料包
-        generateMaterialPackRecipe(writer, ModItems.IRON_MATERIALS, ModItems.COMMON_MATERIAL_PACK.get());
-        generateMaterialPackRecipe(writer, ModItems.STEEL_MATERIALS, ModItems.RARE_MATERIAL_PACK.get());
-        generateMaterialPackRecipe(writer, ModItems.CEMENTED_CARBIDE_MATERIALS, ModItems.EPIC_MATERIAL_PACK.get());
-        generateMaterialPackRecipe(writer, ModItems.NETHERITE_MATERIALS, ModItems.LEGENDARY_MATERIAL_PACK.get());
-
+    private static void buildToolRecipes(Consumer<FinishedRecipe> writer) {
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.ARTILLERY_INDICATOR.get())
                 .pattern(" b ")
                 .pattern("aca")
@@ -68,14 +61,12 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .requires(ModItems.ARTILLERY_INDICATOR.get())
                 .unlockedBy(getHasName(ModItems.ARTILLERY_INDICATOR.get()), has(ModItems.ARTILLERY_INDICATOR.get()))
                 .save(writer, Mod.loc(getItemName(ModItems.ARTILLERY_INDICATOR.get()) + "_clear"));
-
         ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.STEEL_PIPE.get())
                 .pattern(" a")
                 .pattern("a ")
                 .define('a', ModItems.STEEL_MATERIALS.barrel().get())
                 .unlockedBy(getHasName(ModItems.STEEL_MATERIALS.barrel().get()), has(ModItems.STEEL_MATERIALS.barrel().get()))
                 .save(writer, Mod.loc(getItemName(ModItems.STEEL_PIPE.get())));
-
         ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.MEDICAL_KIT.get(), 2)
                 .pattern("aba")
                 .pattern("bcb")
@@ -85,8 +76,9 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .define('c', getPotionIngredient(Potions.REGENERATION))
                 .unlockedBy(getHasName(Items.STRING), has(Items.STRING))
                 .save(writer, Mod.loc(getItemName(ModItems.MEDICAL_KIT.get())));
+    }
 
-        // 弹药
+    private static void buildAmmoRecipes(Consumer<FinishedRecipe> writer) {
         ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.SMALL_ROCKET.get(), 4)
                 .pattern(" a ")
                 .pattern("bcb")
@@ -113,13 +105,26 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .pattern("ede")
                 .define('a', ModItems.FUSEE.get())
                 .define('b', Items.IRON_INGOT)
-                .define('c', commonItemTag("plates/copper"))
+                .define('c', forgeItemTag("plates/copper"))
                 .define('d', ModItems.GRAIN.get())
                 .define('e', Items.GUNPOWDER)
                 .unlockedBy(getHasName(ModItems.FUSEE.get()), has(ModItems.FUSEE.get()))
                 .save(writer, Mod.loc(getItemName(ModItems.RPG_ROCKET_STANDARD.get())));
+    }
 
-        // 方块
+    private static void buildMaterialRecipes(Consumer<FinishedRecipe> writer) {
+        generateMaterialRecipes(writer, ModItems.IRON_MATERIALS, Items.IRON_INGOT);
+        generateMaterialRecipes(writer, ModItems.STEEL_MATERIALS, ModItems.STEEL_INGOT.get());
+        generateMaterialRecipes(writer, ModItems.CEMENTED_CARBIDE_MATERIALS, ModItems.CEMENTED_CARBIDE_INGOT.get());
+        generateSmithingMaterialRecipe(writer, ModItems.CEMENTED_CARBIDE_MATERIALS, ModItems.NETHERITE_MATERIALS, Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE, Items.NETHERITE_INGOT);
+
+        generateMaterialPackRecipe(writer, ModItems.IRON_MATERIALS, ModItems.COMMON_MATERIAL_PACK.get());
+        generateMaterialPackRecipe(writer, ModItems.STEEL_MATERIALS, ModItems.RARE_MATERIAL_PACK.get());
+        generateMaterialPackRecipe(writer, ModItems.CEMENTED_CARBIDE_MATERIALS, ModItems.EPIC_MATERIAL_PACK.get());
+        generateMaterialPackRecipe(writer, ModItems.NETHERITE_MATERIALS, ModItems.LEGENDARY_MATERIAL_PACK.get());
+    }
+
+    private static void buildBlockRecipes(Consumer<FinishedRecipe> writer) {
         ShapedRecipeBuilder.shaped(RecipeCategory.REDSTONE, ModItems.SUPERB_ITEM_INTERFACE.get())
                 .pattern("cac")
                 .pattern("aba")
@@ -140,15 +145,15 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .define('e', ModTags.Items.INGOTS_STEEL)
                 .unlockedBy(getHasName(Items.SMITHING_TABLE), has(Items.SMITHING_TABLE))
                 .save(writer, Mod.loc(getItemName(ModItems.VEHICLE_ASSEMBLING_TABLE.get())));
+    }
 
-        // vehicles
+    private static void buildVehicleRecipes(Consumer<FinishedRecipe> writer) {
         VehicleAssemblingRecipeBuilder.entity(ModEntities.TOM_6.get(), VehicleAssemblingRecipe.Category.AIRCRAFT)
                 .require(ItemTags.PLANKS, 5)
                 .require(ModItems.BATTERY.get())
                 .require(Items.MINECART)
                 .unlockedBy(getHasName(Items.MINECART), has(Items.MINECART))
                 .save(writer, Mod.loc(getEntityTypeName(ModEntities.TOM_6.get())));
-
         VehicleAssemblingRecipeBuilder.entity(ModEntities.ANNIHILATOR.get(), VehicleAssemblingRecipe.Category.DEFENSE)
                 .require(ModTags.Items.STORAGE_BLOCK_STEEL, 24)
                 .require(Items.NETHERITE_BLOCK, 3)
@@ -157,35 +162,30 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .require(ModItems.ANNIHILATOR_BLUEPRINT.get())
                 .unlockedBy(getHasName(ModItems.ANNIHILATOR_BLUEPRINT.get()), has(ModItems.ANNIHILATOR_BLUEPRINT.get()))
                 .save(writer, Mod.loc(getEntityTypeName(ModEntities.ANNIHILATOR.get())));
-
         VehicleAssemblingRecipeBuilder.entity(ModEntities.BL_132.get(), VehicleAssemblingRecipe.Category.DEFENSE)
                 .require(ModTags.Items.STORAGE_BLOCK_STEEL, 10)
                 .require(ModItems.BL_132_BLUEPRINT.get())
                 .require(ModItems.CANNON_CORE.get(), 4)
                 .unlockedBy(getHasName(ModItems.BL_132_BLUEPRINT.get()), has(ModItems.BL_132_BLUEPRINT.get()))
                 .save(writer, Mod.loc(getEntityTypeName(ModEntities.BL_132.get())));
-
         VehicleAssemblingRecipeBuilder.entity(ModEntities.MLE_1934.get(), VehicleAssemblingRecipe.Category.DEFENSE)
                 .require(ModTags.Items.STORAGE_BLOCK_STEEL, 8)
                 .require(ModItems.MLE_1934_BLUEPRINT.get())
                 .require(ModItems.CANNON_CORE.get(), 2)
                 .unlockedBy(getHasName(ModItems.MLE_1934_BLUEPRINT.get()), has(ModItems.MLE_1934_BLUEPRINT.get()))
                 .save(writer, Mod.loc(getEntityTypeName(ModEntities.MLE_1934.get())));
-
         VehicleAssemblingRecipeBuilder.entity(ModEntities.MK_42.get(), VehicleAssemblingRecipe.Category.DEFENSE)
                 .require(ModTags.Items.STORAGE_BLOCK_STEEL, 6)
                 .require(ModItems.MK_42_BLUEPRINT.get())
                 .require(ModItems.CANNON_CORE.get())
                 .unlockedBy(getHasName(ModItems.MK_42_BLUEPRINT.get()), has(ModItems.MK_42_BLUEPRINT.get()))
                 .save(writer, Mod.loc(getEntityTypeName(ModEntities.MK_42.get())));
-
         VehicleAssemblingRecipeBuilder.entity(ModEntities.TYPE_63.get(), VehicleAssemblingRecipe.Category.DEFENSE)
                 .require(ModTags.Items.STORAGE_BLOCK_STEEL, 1)
                 .require(ModItems.MORTAR_BARREL.get(), 12)
                 .require(ModItems.WHEEL.get(), 2)
                 .unlockedBy(getHasName(ModItems.MORTAR_BARREL.get()), has(ModItems.MORTAR_BARREL.get()))
                 .save(writer, Mod.loc(getEntityTypeName(ModEntities.TYPE_63.get())));
-
         VehicleAssemblingRecipeBuilder.entity(ModEntities.HPJ_11.get(), VehicleAssemblingRecipe.Category.DEFENSE)
                 .require(ModTags.Items.STORAGE_BLOCK_STEEL, 5)
                 .require(ModItems.HPJ_11_BLUEPRINT.get())
@@ -195,7 +195,6 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .require(Items.OBSERVER)
                 .unlockedBy(getHasName(ModItems.HPJ_11_BLUEPRINT.get()), has(ModItems.HPJ_11_BLUEPRINT.get()))
                 .save(writer, Mod.loc(getEntityTypeName(ModEntities.HPJ_11.get())));
-
         VehicleAssemblingRecipeBuilder.entity(ModEntities.LASER_TOWER.get(), VehicleAssemblingRecipe.Category.DEFENSE)
                 .require(ModTags.Items.STORAGE_BLOCK_STEEL, 1)
                 .require(Items.BEACON)
@@ -203,7 +202,6 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .require(ModItems.MOTOR.get())
                 .unlockedBy(getHasName(Items.BEACON), has(Items.BEACON))
                 .save(writer, Mod.loc(getEntityTypeName(ModEntities.LASER_TOWER.get())));
-
         VehicleAssemblingRecipeBuilder.entity(ModEntities.WHEEL_CHAIR.get(), VehicleAssemblingRecipe.Category.CIVILIAN)
                 .require(ModItems.WHEEL.get(), 2)
                 .require(ModItems.CELL.get())
@@ -211,7 +209,6 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .require(Items.MINECART)
                 .unlockedBy(getHasName(Items.MINECART), has(Items.MINECART))
                 .save(writer, Mod.loc(getEntityTypeName(ModEntities.WHEEL_CHAIR.get())));
-
         VehicleAssemblingRecipeBuilder.entity(ModEntities.LAV_150.get(), VehicleAssemblingRecipe.Category.LAND)
                 .require(ModTags.Items.STORAGE_BLOCK_STEEL, 6)
                 .require(ModItems.LIGHT_ARMAMENT_MODULE.get())
@@ -220,7 +217,6 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .require(ModItems.LARGE_MOTOR.get())
                 .unlockedBy(getHasName(ModItems.LARGE_MOTOR.get()), has(ModItems.LARGE_MOTOR.get()))
                 .save(writer, Mod.loc(getEntityTypeName(ModEntities.LAV_150.get())));
-
         VehicleAssemblingRecipeBuilder.entity(ModEntities.BMP_2.get(), VehicleAssemblingRecipe.Category.LAND)
                 .require(ModTags.Items.STORAGE_BLOCK_STEEL, 8)
                 .require(ModItems.MEDIUM_ARMAMENT_MODULE.get())
@@ -229,7 +225,6 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .require(ModItems.LARGE_MOTOR.get())
                 .unlockedBy(getHasName(ModItems.LARGE_MOTOR.get()), has(ModItems.LARGE_MOTOR.get()))
                 .save(writer, Mod.loc(getEntityTypeName(ModEntities.BMP_2.get())));
-
         VehicleAssemblingRecipeBuilder.entity(ModEntities.PRISM_TANK.get(), VehicleAssemblingRecipe.Category.LAND)
                 .require(ModTags.Items.STORAGE_BLOCK_STEEL, 9)
                 .require(Items.BEACON)
@@ -238,7 +233,6 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .require(ModItems.LARGE_MOTOR.get())
                 .unlockedBy(getHasName(ModItems.LARGE_MOTOR.get()), has(ModItems.LARGE_MOTOR.get()))
                 .save(writer, Mod.loc(getEntityTypeName(ModEntities.PRISM_TANK.get())));
-
         VehicleAssemblingRecipeBuilder.entity(ModEntities.YX_100.get(), VehicleAssemblingRecipe.Category.LAND)
                 .require(ModTags.Items.STORAGE_BLOCK_STEEL, 12)
                 .require(ModItems.CEMENTED_CARBIDE_BLOCK.get(), 2)
@@ -248,7 +242,6 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .require(ModItems.LARGE_MOTOR.get())
                 .unlockedBy(getHasName(ModItems.LARGE_MOTOR.get()), has(ModItems.LARGE_MOTOR.get()))
                 .save(writer, Mod.loc(getEntityTypeName(ModEntities.YX_100.get())));
-
         VehicleAssemblingRecipeBuilder.entity(ModEntities.SPEEDBOAT.get(), VehicleAssemblingRecipe.Category.WATER)
                 .require(ModTags.Items.STORAGE_BLOCK_STEEL, 2)
                 .require(ItemTags.BOATS)
@@ -258,7 +251,6 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .require(ModItems.LARGE_MOTOR.get())
                 .unlockedBy(getHasName(ModItems.M_2_HB.get()), has(ModItems.M_2_HB.get()))
                 .save(writer, Mod.loc(getEntityTypeName(ModEntities.SPEEDBOAT.get())));
-
         VehicleAssemblingRecipeBuilder.entity(ModEntities.AH_6.get(), VehicleAssemblingRecipe.Category.AIRCRAFT)
                 .require(ModTags.Items.STORAGE_BLOCK_STEEL, 3)
                 .require(ModItems.LIGHT_ARMAMENT_MODULE.get())
@@ -267,7 +259,6 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .require(ModItems.LARGE_MOTOR.get())
                 .unlockedBy(getHasName(ModItems.LARGE_PROPELLER.get()), has(ModItems.LARGE_PROPELLER.get()))
                 .save(writer, Mod.loc(getEntityTypeName(ModEntities.AH_6.get())));
-
         VehicleAssemblingRecipeBuilder.entity(ModEntities.A_10A.get(), VehicleAssemblingRecipe.Category.AIRCRAFT)
                 .require(ModTags.Items.STORAGE_BLOCK_STEEL, 10)
                 .require(ModItems.HEAVY_ARMAMENT_MODULE.get())
@@ -279,31 +270,29 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .save(writer, Mod.loc(getEntityTypeName(ModEntities.A_10A.get())));
 
         VehicleAssemblingRecipeBuilder.item(ModItems.SMALL_BATTERY_PACK.get(), 1, VehicleAssemblingRecipe.Category.MISC)
-                .require(commonItemTag("plates/copper"), 4)
-                .require(commonItemTag("glass_panes"), 8)
+                .require(forgeItemTag("plates/copper"), 4)
+                .require(forgeItemTag("glass_panes"), 8)
                 .require(Items.REDSTONE, 4)
                 .require(Items.IRON_INGOT, 4)
                 .unlockedBy(getHasName(ModItems.COPPER_PLATE.get()), has(ModItems.COPPER_PLATE.get()))
                 .save(writer, Mod.loc(getItemName(ModItems.SMALL_BATTERY_PACK.get())));
-
         VehicleAssemblingRecipeBuilder.item(ModItems.MEDIUM_BATTERY_PACK.get(), 1, VehicleAssemblingRecipe.Category.MISC)
-                .require(commonItemTag("plates/copper"), 36)
-                .require(commonItemTag("glass_panes"), 72)
+                .require(forgeItemTag("plates/copper"), 36)
+                .require(forgeItemTag("glass_panes"), 72)
                 .require(Items.REDSTONE, 36)
                 .require(Items.IRON_INGOT, 36)
                 .unlockedBy(getHasName(ModItems.COPPER_PLATE.get()), has(ModItems.COPPER_PLATE.get()))
                 .save(writer, Mod.loc(getItemName(ModItems.MEDIUM_BATTERY_PACK.get())));
-
         VehicleAssemblingRecipeBuilder.item(ModItems.LARGE_BATTERY_PACK.get(), 1, VehicleAssemblingRecipe.Category.MISC)
-                .require(commonItemTag("plates/copper"), 144)
-                .require(commonItemTag("glass_panes"), 288)
+                .require(forgeItemTag("plates/copper"), 144)
+                .require(forgeItemTag("glass_panes"), 288)
                 .require(Items.REDSTONE, 144)
                 .require(Items.IRON_INGOT, 144)
                 .unlockedBy(getHasName(ModItems.COPPER_PLATE.get()), has(ModItems.COPPER_PLATE.get()))
                 .save(writer, Mod.loc(getItemName(ModItems.LARGE_BATTERY_PACK.get())));
+    }
 
-
-        // guns
+    private static void buildGunRecipes(Consumer<FinishedRecipe> writer) {
         gunSmithing(writer, ModItems.TRACHELIUM_BLUEPRINT.get(), GunRarity.EPIC, ModTags.Items.INGOTS_CEMENTED_CARBIDE, ModItems.TRACHELIUM.get());
         gunSmithing(writer, ModItems.GLOCK_17_BLUEPRINT.get(), GunRarity.COMMON, Items.IRON_INGOT, ModItems.GLOCK_17.get());
         gunSmithing(writer, ModItems.MP_443_BLUEPRINT.get(), GunRarity.COMMON, Items.IRON_INGOT, ModItems.MP_443.get());
@@ -343,8 +332,9 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
         gunSmithing(writer, ModItems.SECONDARY_CATACLYSM_BLUEPRINT.get(), GunRarity.LEGENDARY, ModItems.KNIFE.get(), ModItems.SECONDARY_CATACLYSM.get());
         gunSmithing(writer, ModItems.INSIDIOUS_BLUEPRINT.get(), GunRarity.EPIC, ModTags.Items.INGOTS_CEMENTED_CARBIDE, ModItems.INSIDIOUS.get());
         gunSmithing(writer, ModItems.AURELIA_SCEPTRE_BLUEPRINT.get(), GunRarity.LEGENDARY, Items.END_CRYSTAL, ModItems.AURELIA_SCEPTRE.get());
+    }
 
-        // blueprints
+    private static void buildBlueprintRecipes(Consumer<FinishedRecipe> writer) {
         copyBlueprint(writer, ModItems.TRACHELIUM_BLUEPRINT.get());
         copyBlueprint(writer, ModItems.GLOCK_17_BLUEPRINT.get());
         copyBlueprint(writer, ModItems.MP_443_BLUEPRINT.get());
@@ -389,8 +379,9 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
         copyBlueprint(writer, ModItems.BL_132_BLUEPRINT.get());
         copyBlueprint(writer, ModItems.HPJ_11_BLUEPRINT.get());
         copyBlueprint(writer, ModItems.ANNIHILATOR_BLUEPRINT.get());
+    }
 
-        // perks
+    private static void buildPerkRecipes(Consumer<FinishedRecipe> writer) {
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.EMPTY_PERK.get())
                 .pattern("cbc")
                 .pattern("bab")
@@ -405,8 +396,8 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .pattern("bab")
                 .pattern("cbc")
                 .define('a', ModItems.EMPTY_PERK.get())
-                .define('b', commonItemTag("storage_blocks/tungsten"))
-                .define('c', commonItemTag("ingots/tungsten"))
+                .define('b', forgeItemTag("storage_blocks/tungsten"))
+                .define('c', forgeItemTag("ingots/tungsten"))
                 .unlockedBy(getHasName(ModItems.EMPTY_PERK.get()), has(ModItems.EMPTY_PERK.get()))
                 .save(writer, perkLoc(ModPerks.AP_BULLET));
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.PERK_ITEMS.get(ModPerks.CUPID_ARROW).get())
@@ -494,7 +485,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .pattern("bab")
                 .pattern("cbc")
                 .define('a', ModItems.EMPTY_PERK.get())
-                .define('b', commonItemTag("storage_blocks/lead"))
+                .define('b', forgeItemTag("storage_blocks/lead"))
                 .define('c', Items.SPIDER_EYE)
                 .unlockedBy(getHasName(ModItems.EMPTY_PERK.get()), has(ModItems.EMPTY_PERK.get()))
                 .save(writer, perkLoc(ModPerks.POISONOUS_BULLET));
@@ -533,8 +524,8 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .pattern("bab")
                 .pattern("cbc")
                 .define('a', ModItems.EMPTY_PERK.get())
-                .define('b', commonItemTag("storage_blocks/silver"))
-                .define('c', commonItemTag("ingots/silver"))
+                .define('b', forgeItemTag("storage_blocks/silver"))
+                .define('c', forgeItemTag("ingots/silver"))
                 .unlockedBy(getHasName(ModItems.EMPTY_PERK.get()), has(ModItems.EMPTY_PERK.get()))
                 .save(writer, perkLoc(ModPerks.SILVER_BULLET));
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.PERK_ITEMS.get(ModPerks.TURBO_CHARGER).get())
@@ -543,7 +534,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .pattern("cbc")
                 .define('a', ModItems.EMPTY_PERK.get())
                 .define('b', Items.PISTON)
-                .define('c', commonItemTag("ingots/steel"))
+                .define('c', forgeItemTag("ingots/steel"))
                 .unlockedBy(getHasName(ModItems.EMPTY_PERK.get()), has(ModItems.EMPTY_PERK.get()))
                 .save(writer, perkLoc(ModPerks.TURBO_CHARGER));
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.PERK_ITEMS.get(ModPerks.VOLT_OVERLOAD).get())
@@ -553,10 +544,17 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .define('a', ModItems.EMPTY_PERK.get())
                 .define('b', ModItems.CELL.get())
                 .define('c', Items.LIGHTNING_ROD)
-                .define('d', commonItemTag("dusts/coal_coke"))
+                .define('d', forgeItemTag("dusts/coal_coke"))
                 .define('e', Tags.Items.INGOTS_IRON)
                 .unlockedBy(getHasName(ModItems.EMPTY_PERK.get()), has(ModItems.EMPTY_PERK.get()))
                 .save(writer, perkLoc(ModPerks.VOLT_OVERLOAD));
+    }
+
+    private static void buildSpecialRecipes(Consumer<FinishedRecipe> writer) {
+        SpecialRecipeBuilder.special(ModRecipes.POTION_MORTAR_SHELL_SERIALIZER.get()).save(writer, "potion_mortar_shell");
+        SpecialRecipeBuilder.special(ModRecipes.AMMO_BOX_ADD_AMMO_SERIALIZER.get()).save(writer, "ammo_box_add_ammo");
+        SpecialRecipeBuilder.special(ModRecipes.AMMO_BOX_EXTRACT_AMMO_SERIALIZER.get()).save(writer, "ammo_box_extract_ammo");
+        SpecialRecipeBuilder.special(ModRecipes.SMOKE_DYE_SERIALIZER.get()).save(writer, "smoke_dye");
     }
 
     public static void copyBlueprint(Consumer<FinishedRecipe> writer, ItemLike result) {
