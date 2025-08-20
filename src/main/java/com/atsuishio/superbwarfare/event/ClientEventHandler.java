@@ -29,6 +29,7 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
@@ -1508,6 +1509,9 @@ public class ClientEventHandler {
             var data = GunData.from(stack);
 
             customZoom = Mth.lerp(0.6 * times, customZoom, data.zoom() + (breath ? 0.75 : 0));
+
+            //瞄准笑传之测测倍
+            player.displayClientMessage(Component.literal(FormatTool.format2D(customZoom) + " "), true);
 
             if (mc.options.getCameraType().isFirstPerson()) {
                 event.setFOV(event.getFOV() / (1.0 + p * (customZoom - 1)));

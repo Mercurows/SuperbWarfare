@@ -285,7 +285,7 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
 
     public double minZoom() {
         int scopeType = this.attachment.get(AttachmentType.SCOPE);
-        return scopeType == 3 ? getDefault().minZoom : 1.25;
+        return scopeType == 3 ? Math.max(getDefault().minZoom, 1.25) : 1.25;
     }
 
     public double maxZoom() {
@@ -295,7 +295,7 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
 
     public double zoom() {
         if (minZoom() == maxZoom()) return get(GunProp.DEFAULT_ZOOM);
-
+        // TODO 这里的getCustomZoom疑似被算了两次，但直接乘0.5还是不对
         return Mth.clamp(get(GunProp.DEFAULT_ZOOM) + item.getCustomZoom(stack), minZoom(), maxZoom());
     }
 
