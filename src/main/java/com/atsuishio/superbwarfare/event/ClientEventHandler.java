@@ -1577,19 +1577,15 @@ public class ClientEventHandler {
         double d3 = Math.sqrt(d0 * d0 + d2 * d2);
 
         float fromX = lastX;
-        float fromY = lastY;
+        float fromY = Mth.wrapDegrees(lastY);
         float toX = (float) Mth.wrapDegrees(-(Mth.atan2(d1, d3) * 57.2957763671875));
         float toY = (float) Mth.wrapDegrees((Mth.atan2(d2, d0) * 57.2957763671875) - 90.0F);
 
-        if (fromY > 135 && toY < -135) {
-            toY += 360;
-        }
-        if (fromY < -135 && toY > 135) {
-            fromY += 360;
-        }
+        var diffY = Mth.wrapDegrees(toY - fromY);
+        var finalY = Mth.wrapDegrees(fromY + diffY * 0.2F);
 
         player.setXRot(Mth.wrapDegrees(Mth.lerp(0.2F, fromX, toX)));
-        player.setYRot(Mth.wrapDegrees(Mth.lerp(0.2F, fromY, toY)));
+        player.setYRot(Mth.wrapDegrees(finalY));
     }
 
     @SubscribeEvent
