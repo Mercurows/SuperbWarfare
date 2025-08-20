@@ -5,10 +5,12 @@ import com.atsuishio.superbwarfare.init.ModBlockEntities;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -135,13 +137,32 @@ public class ContainerBlock extends BaseEntityBlock {
         super.appendHoverText(pStack, pLevel, pTooltip, pFlag);
         CompoundTag tag = BlockItem.getBlockEntityData(pStack);
         if (tag != null && tag.contains("EntityType")) {
-            String s = getEntityTranslationKey(tag.getString("EntityType"));
-            pTooltip.add(Component.translatable(s == null ? "des.superbwarfare.container.empty" : s).withStyle(ChatFormatting.GRAY));
+            var type = tag.getString("EntityType");
+            var location = ResourceLocation.tryParse(type);
+            if (location == null) return;
 
-            var entityType = EntityType.byString(tag.getString("EntityType")).orElse(null);
+            var info = Component.translatableWithFallback("info." + location.getNamespace() + "." + location.getPath(), "");
+            var hasDescription = !info.getString().isEmpty();
+
+            if (Screen.hasShiftDown() && hasDescription) {
+                // 详细描述
+                pTooltip.add(info.withStyle(ChatFormatting.GRAY));
+                pTooltip.add(Component.empty());
+                pTooltip.add(Component.translatableWithFallback("info." + location.getNamespace() + ".mod_id", location.getNamespace())
+                        .withStyle(ChatFormatting.ITALIC)
+                        .withStyle(ChatFormatting.AQUA));
+            } else {
+                // 实体名称
+                var entityTranslationKey = getEntityTranslationKey(type);
+                pTooltip.add(Component.translatable(entityTranslationKey == null ? "des.superbwarfare.container.empty" : entityTranslationKey).withStyle(ChatFormatting.GRAY));
+            }
+
+            var entityType = EntityType.byString(type).orElse(null);
             if (entityType != null) {
                 float w = 0;
                 int h = 0;
+
+                // N * N * N
                 if (pLevel instanceof Level level && tag.contains("Entity")) {
                     var entity = entityType.create(level);
                     if (entity != null) {
