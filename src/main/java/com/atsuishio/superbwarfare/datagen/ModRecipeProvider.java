@@ -27,7 +27,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
 
-import static com.atsuishio.superbwarfare.init.ModTags.forgeItemTag;
+import static com.atsuishio.superbwarfare.init.ModTags.commonItemTag;
 
 public class ModRecipeProvider extends RecipeProvider implements IConditionBuilder {
 
@@ -105,7 +105,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .pattern("ede")
                 .define('a', ModItems.FUSEE.get())
                 .define('b', Items.IRON_INGOT)
-                .define('c', forgeItemTag("plates/copper"))
+                .define('c', commonItemTag("plates/copper"))
                 .define('d', ModItems.GRAIN.get())
                 .define('e', Items.GUNPOWDER)
                 .unlockedBy(getHasName(ModItems.FUSEE.get()), has(ModItems.FUSEE.get()))
@@ -270,22 +270,22 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .save(writer, Mod.loc(getEntityTypeName(ModEntities.A_10A.get())));
 
         VehicleAssemblingRecipeBuilder.item(ModItems.SMALL_BATTERY_PACK.get(), 1, VehicleAssemblingRecipe.Category.MISC)
-                .require(forgeItemTag("plates/copper"), 4)
-                .require(forgeItemTag("glass_panes"), 8)
+                .require(commonItemTag("plates/copper"), 4)
+                .require(commonItemTag("glass_panes"), 8)
                 .require(Items.REDSTONE, 4)
                 .require(Items.IRON_INGOT, 4)
                 .unlockedBy(getHasName(ModItems.COPPER_PLATE.get()), has(ModItems.COPPER_PLATE.get()))
                 .save(writer, Mod.loc(getItemName(ModItems.SMALL_BATTERY_PACK.get())));
         VehicleAssemblingRecipeBuilder.item(ModItems.MEDIUM_BATTERY_PACK.get(), 1, VehicleAssemblingRecipe.Category.MISC)
-                .require(forgeItemTag("plates/copper"), 36)
-                .require(forgeItemTag("glass_panes"), 72)
+                .require(commonItemTag("plates/copper"), 36)
+                .require(commonItemTag("glass_panes"), 72)
                 .require(Items.REDSTONE, 36)
                 .require(Items.IRON_INGOT, 36)
                 .unlockedBy(getHasName(ModItems.COPPER_PLATE.get()), has(ModItems.COPPER_PLATE.get()))
                 .save(writer, Mod.loc(getItemName(ModItems.MEDIUM_BATTERY_PACK.get())));
         VehicleAssemblingRecipeBuilder.item(ModItems.LARGE_BATTERY_PACK.get(), 1, VehicleAssemblingRecipe.Category.MISC)
-                .require(forgeItemTag("plates/copper"), 144)
-                .require(forgeItemTag("glass_panes"), 288)
+                .require(commonItemTag("plates/copper"), 144)
+                .require(commonItemTag("glass_panes"), 288)
                 .require(Items.REDSTONE, 144)
                 .require(Items.IRON_INGOT, 144)
                 .unlockedBy(getHasName(ModItems.COPPER_PLATE.get()), has(ModItems.COPPER_PLATE.get()))
@@ -396,8 +396,8 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .pattern("bab")
                 .pattern("cbc")
                 .define('a', ModItems.EMPTY_PERK.get())
-                .define('b', forgeItemTag("storage_blocks/tungsten"))
-                .define('c', forgeItemTag("ingots/tungsten"))
+                .define('b', commonItemTag("storage_blocks/tungsten"))
+                .define('c', commonItemTag("ingots/tungsten"))
                 .unlockedBy(getHasName(ModItems.EMPTY_PERK.get()), has(ModItems.EMPTY_PERK.get()))
                 .save(writer, perkLoc(ModPerks.AP_BULLET));
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.PERK_ITEMS.get(ModPerks.CUPID_ARROW).get())
@@ -485,7 +485,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .pattern("bab")
                 .pattern("cbc")
                 .define('a', ModItems.EMPTY_PERK.get())
-                .define('b', forgeItemTag("storage_blocks/lead"))
+                .define('b', commonItemTag("storage_blocks/lead"))
                 .define('c', Items.SPIDER_EYE)
                 .unlockedBy(getHasName(ModItems.EMPTY_PERK.get()), has(ModItems.EMPTY_PERK.get()))
                 .save(writer, perkLoc(ModPerks.POISONOUS_BULLET));
@@ -524,8 +524,8 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .pattern("bab")
                 .pattern("cbc")
                 .define('a', ModItems.EMPTY_PERK.get())
-                .define('b', forgeItemTag("storage_blocks/silver"))
-                .define('c', forgeItemTag("ingots/silver"))
+                .define('b', commonItemTag("storage_blocks/silver"))
+                .define('c', commonItemTag("ingots/silver"))
                 .unlockedBy(getHasName(ModItems.EMPTY_PERK.get()), has(ModItems.EMPTY_PERK.get()))
                 .save(writer, perkLoc(ModPerks.SILVER_BULLET));
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.PERK_ITEMS.get(ModPerks.TURBO_CHARGER).get())
@@ -534,7 +534,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .pattern("cbc")
                 .define('a', ModItems.EMPTY_PERK.get())
                 .define('b', Items.PISTON)
-                .define('c', forgeItemTag("ingots/steel"))
+                .define('c', commonItemTag("ingots/steel"))
                 .unlockedBy(getHasName(ModItems.EMPTY_PERK.get()), has(ModItems.EMPTY_PERK.get()))
                 .save(writer, perkLoc(ModPerks.TURBO_CHARGER));
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.PERK_ITEMS.get(ModPerks.VOLT_OVERLOAD).get())
@@ -544,7 +544,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .define('a', ModItems.EMPTY_PERK.get())
                 .define('b', ModItems.CELL.get())
                 .define('c', Items.LIGHTNING_ROD)
-                .define('d', forgeItemTag("dusts/coal_coke"))
+                .define('d', commonItemTag("dusts/coal_coke"))
                 .define('e', Tags.Items.INGOTS_IRON)
                 .unlockedBy(getHasName(ModItems.EMPTY_PERK.get()), has(ModItems.EMPTY_PERK.get()))
                 .save(writer, perkLoc(ModPerks.VOLT_OVERLOAD));
