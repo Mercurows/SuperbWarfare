@@ -10,10 +10,12 @@ import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.ingredients.subtypes.ISubtypeInterpreter;
 import mezz.jei.api.ingredients.subtypes.UidContext;
+import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
 import mezz.jei.api.registration.ISubtypeRegistration;
+import mezz.jei.api.runtime.IJeiRuntime;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
@@ -30,13 +32,25 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.Optional;
 
 @JeiPlugin
 public class SbwJEIPlugin implements IModPlugin {
 
+    private static IJeiRuntime jeiRuntime;
+
     @Override
     public @NotNull ResourceLocation getPluginUid() {
         return Mod.loc("jei_plugin");
+    }
+
+    @Override
+    public void onRuntimeAvailable(IJeiRuntime jeiRuntime) {
+        SbwJEIPlugin.jeiRuntime = jeiRuntime;
+    }
+
+    public static Optional<IJeiRuntime> getJeiRuntime() {
+        return Optional.ofNullable(jeiRuntime);
     }
 
     @Override
@@ -126,5 +140,17 @@ public class SbwJEIPlugin implements IModPlugin {
                 return getSubtypeData(ingredient, context).toString();
             }
         });
+    }
+
+    public static boolean showRecipes(ItemStack itemStack) {
+        final boolean[] result = {false};
+        SbwJEIPlugin.getJeiRuntime().ifPresent(jeiRuntime -> jeiRuntime.getIngredientManager().getIngredientTypeChecked(itemStack)
+                .ifPresent(type -> {
+                    jeiRuntime.getRecipesGui().show(
+                            jeiRuntime.getJeiHelpers().getFocusFactory().createFocus(RecipeIngredientRole.OUTPUT, type, itemStack)
+                    );
+                    result[0] = true;
+                }));
+        return result[0];
     }
 }
