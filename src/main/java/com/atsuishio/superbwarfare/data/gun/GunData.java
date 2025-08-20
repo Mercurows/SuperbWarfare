@@ -298,9 +298,8 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
     }
 
     public double zoom() {
-        if (minZoom() == maxZoom()) return get(GunProp.DEFAULT_ZOOM);
-        // TODO 这里的getCustomZoom疑似被算了两次，但直接乘0.5还是不对
-        return Mth.clamp(get(GunProp.DEFAULT_ZOOM) + item.getCustomZoom(stack), minZoom(), maxZoom());
+        if (minZoom() >= maxZoom()) return get(GunProp.DEFAULT_ZOOM);
+        return Mth.clamp(get(GunProp.DEFAULT_ZOOM), minZoom(), maxZoom());
     }
 
     public AmmoConsumer selectedAmmoConsumer(List<AmmoConsumer> consumers) {
