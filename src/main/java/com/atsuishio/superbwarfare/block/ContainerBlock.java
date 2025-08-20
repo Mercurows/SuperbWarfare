@@ -11,6 +11,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.ItemInteractionResult;
@@ -137,10 +138,27 @@ public class ContainerBlock extends BaseEntityBlock {
         var data = stack.get(DataComponents.BLOCK_ENTITY_DATA);
         CompoundTag tag = data != null ? data.copyTag() : new CompoundTag();
         if (tag.contains("EntityType")) {
-            String s = getEntityTranslationKey(tag.getString("EntityType"));
-            tooltipComponents.add(Component.translatable(s == null ? "des.superbwarfare.container.empty" : s).withStyle(ChatFormatting.GRAY));
+            var type = tag.getString("EntityType");
+            var location = ResourceLocation.tryParse(type);
+            if (location == null) return;
 
-            var entityType = EntityType.byString(tag.getString("EntityType")).orElse(null);
+            var info = Component.translatableWithFallback("info." + location.getNamespace() + "." + location.getPath(), "");
+            var hasDescription = !info.getString().isEmpty();
+
+            if (tooltipFlag.hasShiftDown() && hasDescription) {
+                // 详细描述
+                tooltipComponents.add(info.withStyle(ChatFormatting.GRAY));
+                tooltipComponents.add(Component.empty());
+                tooltipComponents.add(Component.translatableWithFallback("info." + location.getNamespace() + ".mod_id", location.getNamespace())
+                        .withStyle(ChatFormatting.ITALIC)
+                        .withStyle(ChatFormatting.AQUA));
+            } else {
+                // 实体名称
+                var entityTranslationKey = getEntityTranslationKey(type);
+                tooltipComponents.add(Component.translatable(entityTranslationKey == null ? "des.superbwarfare.container.empty" : entityTranslationKey).withStyle(ChatFormatting.GRAY));
+            }
+
+            var entityType = EntityType.byString(type).orElse(null);
             if (entityType != null) {
                 float w = 0;
                 int h = 0;
@@ -151,6 +169,7 @@ public class ContainerBlock extends BaseEntityBlock {
                 } catch (Exception ignored) {
                 }
 
+                // N * N * N
                 if (level instanceof Level && tag.contains("Entity")) {
                     var entity = entityType.create(level);
                     if (entity != null) {
