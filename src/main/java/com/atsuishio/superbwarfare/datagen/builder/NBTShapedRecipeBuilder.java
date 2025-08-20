@@ -1,4 +1,4 @@
-package com.atsuishio.superbwarfare.recipe;
+package com.atsuishio.superbwarfare.datagen.builder;
 
 import com.atsuishio.superbwarfare.tools.NBTTool;
 import com.google.common.collect.Lists;
@@ -55,6 +55,13 @@ public class NBTShapedRecipeBuilder extends CraftingRecipeBuilder implements Rec
 
     public NBTShapedRecipeBuilder withNBT(CompoundTag nbt) {
         this.nbt = nbt;
+        return this;
+    }
+
+    public NBTShapedRecipeBuilder withNBT(Consumer<CompoundTag> consumer) {
+        CompoundTag tag = new CompoundTag();
+        consumer.accept(tag);
+        this.nbt = tag;
         return this;
     }
 

@@ -1,11 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
-  "category": "misc",
-  "pattern": [
-    "c",
-    "a",
-    "b"
-  ],
+  "category": "equipment",
   "key": {
     "a": {
       "item": "superbwarfare:ap_head"
@@ -17,8 +12,13 @@
       "item": "superbwarfare:fusee"
     }
   },
+  "pattern": [
+    "c",
+    "a",
+    "b"
+  ],
   "result": {
-    "item": "superbwarfare:ap_5_inches",
-    "count": 1
-  }
+    "item": "superbwarfare:ap_5_inches"
+  },
+  "show_notification": true
 }
