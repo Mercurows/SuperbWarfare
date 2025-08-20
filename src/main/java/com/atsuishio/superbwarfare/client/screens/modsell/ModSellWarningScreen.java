@@ -6,6 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.client.gui.screens.multiplayer.JoinMultiplayerScreen;
 import net.minecraft.client.gui.screens.multiplayer.WarningScreen;
 import net.minecraft.network.chat.CommonComponents;
@@ -98,7 +99,7 @@ public class ModSellWarningScreen extends WarningScreen {
 
     @SubscribeEvent(priority = EventPriority.HIGH)
     public static void onGuiOpen(ScreenEvent.Opening event) {
-        if (!(event.getNewScreen() instanceof JoinMultiplayerScreen && !(event.getCurrentScreen() instanceof ModSellWarningScreen)))
+        if (!(event.getNewScreen() instanceof JoinMultiplayerScreen && event.getCurrentScreen() instanceof TitleScreen))
             return;
 
         if (EnvironmentChecksumConfig.ENVIRONMENT_CHECKSUM.get().equals(ENVIRONMENT_CHECKSUM)) return;
