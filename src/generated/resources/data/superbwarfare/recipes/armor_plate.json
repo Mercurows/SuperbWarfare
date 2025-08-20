@@ -1,11 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
   "category": "misc",
-  "pattern": [
-    "aba",
-    "ccc",
-    "ada"
-  ],
   "key": {
     "a": {
       "item": "minecraft:string"
@@ -20,8 +15,14 @@
       "tag": "minecraft:wool"
     }
   },
+  "pattern": [
+    "aba",
+    "ccc",
+    "ada"
+  ],
   "result": {
-    "item": "superbwarfare:armor_plate",
-    "count": 4
-  }
+    "count": 4,
+    "item": "superbwarfare:armor_plate"
+  },
+  "show_notification": true
 }

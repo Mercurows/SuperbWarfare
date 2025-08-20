@@ -77,6 +77,16 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .define('c', getPotionIngredient(Potions.REGENERATION))
                 .unlockedBy(getHasName(Items.STRING), has(Items.STRING))
                 .save(writer, Mod.loc(getItemName(ModItems.MEDICAL_KIT.get())));
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.ARMOR_PLATE.get(), 4)
+                .pattern("aba")
+                .pattern("ccc")
+                .pattern("ada")
+                .define('a', Items.STRING)
+                .define('b', ItemTags.TERRACOTTA)
+                .define('c', ModTags.Items.INGOTS_STEEL)
+                .define('d', ItemTags.WOOL)
+                .unlockedBy(getHasName(Items.STRING), has(Items.STRING))
+                .save(writer, Mod.loc(getItemName(ModItems.ARMOR_PLATE.get())));
     }
 
     private static void buildAmmoRecipes(Consumer<FinishedRecipe> writer) {
@@ -221,6 +231,12 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .define('e', ModTags.Items.INGOTS_STEEL)
                 .unlockedBy(getHasName(Items.SMITHING_TABLE), has(Items.SMITHING_TABLE))
                 .save(writer, Mod.loc(getItemName(ModItems.VEHICLE_ASSEMBLING_TABLE.get())));
+        ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, ModItems.BARBED_WIRE.get(), 2)
+                .pattern("aba")
+                .define('a', ItemTags.PLANKS)
+                .define('b', Items.IRON_BARS)
+                .unlockedBy(getHasName(Items.IRON_BARS), has(Items.IRON_BARS))
+                .save(writer, Mod.loc(getItemName(ModItems.BARBED_WIRE.get())));
     }
 
     private static void buildVehicleRecipes(Consumer<FinishedRecipe> writer) {
