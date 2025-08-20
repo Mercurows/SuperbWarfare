@@ -7,6 +7,8 @@ import com.atsuishio.superbwarfare.client.screens.component.AssembleButton;
 import com.atsuishio.superbwarfare.client.screens.component.CategoryButton;
 import com.atsuishio.superbwarfare.client.screens.component.PageButton;
 import com.atsuishio.superbwarfare.client.screens.component.RecipeButton;
+import com.atsuishio.superbwarfare.compat.jei.JeiCompatHolder;
+import com.atsuishio.superbwarfare.compat.jei.SbwJEIPlugin;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModRecipes;
 import com.atsuishio.superbwarfare.menu.VehicleAssemblingMenu;
@@ -45,6 +47,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.phys.Vec2;
@@ -350,6 +353,21 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
         return super.mouseScrolled(pMouseX, pMouseY, pDelta);
     }
 
+    @Override
+    public boolean mouseClicked(double pMouseX, double pMouseY, int pButton) {
+        var list = this.getIngredientAreas();
+        if (!list.isEmpty() && pMouseX >= this.leftPos + 214 && pMouseY >= this.topPos + 117 && pMouseX <= this.leftPos + 350 && pMouseY <= this.topPos + 160) {
+            if (JeiCompatHolder.hasJEI()) {
+                var ingredientArea = list.stream().filter(area -> area.contains(pMouseX, pMouseY)).findFirst();
+                if (ingredientArea.isPresent()) {
+                    SbwJEIPlugin.showRecipes(ingredientArea.get().ingredient.getItems()[0]);
+                    return true;
+                }
+            }
+        }
+        return super.mouseClicked(pMouseX, pMouseY, pButton);
+    }
+
     public void addPageButtons(int posX, int posY) {
         PageButton left = this.addRenderableWidget(new PageButton(posX + 95, posY - 1, true, b -> {
             this.pageIndex = Math.max(0, this.pageIndex - 1);
@@ -636,6 +654,38 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
 
         if (mouseX >= this.leftPos + 120 && mouseX <= this.leftPos + 200 && mouseY >= this.topPos + 117 && mouseY <= this.topPos + 175) {
             guiGraphics.renderTooltip(this.font, this.font.split(FormattedText.of(info.getString()), 200), mouseX, mouseY);
+        }
+    }
+
+    @Nullable
+    public VehicleAssemblingRecipe getCurrentRecipe() {
+        return this.currentRecipe;
+    }
+
+    public List<IngredientArea> getIngredientAreas() {
+        List<IngredientArea> areas = new ArrayList<>();
+        if (this.currentRecipe != null) {
+            var inputs = this.currentRecipe.getInputs();
+            for (int i = 0; i < 3; i++) {
+                for (int j = 0; j < 4; j++) {
+                    int index = i * 4 + j;
+                    if (index >= inputs.size()) return areas;
+                    var input = inputs.get(index);
+                    var ingredient = input.getIngredient();
+                    var items = ingredient.getItems();
+                    if (items.length == 0) continue;
+                    int x = this.leftPos + 215 + j * 34;
+                    int y = this.topPos + 118 + i * 14;
+                    areas.add(new IngredientArea(ingredient, x, y, 12.8, 12.8));
+                }
+            }
+        }
+        return areas;
+    }
+
+    public record IngredientArea(Ingredient ingredient, double x, double y, double width, double height) {
+        public boolean contains(double mouseX, double mouseY) {
+            return mouseX >= x && mouseX <= x + width && mouseY >= y && mouseY <= y + height;
         }
     }
 }
