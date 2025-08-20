@@ -107,6 +107,9 @@ public class SbwJEIPlugin implements IModPlugin {
         }));
     }
 
+    /**
+     * Code based on @Mafuyu404's <a href=https://github.com/Mafuyu404/TACZ-addon>TACZ-addon</a>
+     */
     public static boolean showRecipes(ItemStack itemStack) {
         final boolean[] result = {false};
         SbwJEIPlugin.getJeiRuntime().ifPresent(jeiRuntime -> jeiRuntime.getIngredientManager().getIngredientTypeChecked(itemStack)

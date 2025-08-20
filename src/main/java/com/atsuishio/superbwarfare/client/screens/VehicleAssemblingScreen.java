@@ -360,7 +360,9 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
             if (JeiCompatHolder.hasJEI()) {
                 var ingredientArea = list.stream().filter(area -> area.contains(pMouseX, pMouseY)).findFirst();
                 if (ingredientArea.isPresent()) {
-                    SbwJEIPlugin.showRecipes(ingredientArea.get().ingredient.getItems()[0]);
+                    var items = ingredientArea.get().ingredient.getItems();
+                    int itemIndex = (int) (System.currentTimeMillis() / 1000L) % items.length;
+                    SbwJEIPlugin.showRecipes(items[itemIndex]);
                     return true;
                 }
             }
