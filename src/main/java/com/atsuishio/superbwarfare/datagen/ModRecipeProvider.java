@@ -12,6 +12,7 @@ import com.atsuishio.superbwarfare.recipe.AmmoBoxExtractAmmoRecipe;
 import com.atsuishio.superbwarfare.recipe.PotionMortarShellRecipe;
 import com.atsuishio.superbwarfare.recipe.SmokeDyeRecipe;
 import com.atsuishio.superbwarfare.recipe.vehicle.VehicleAssemblingRecipe;
+import com.atsuishio.superbwarfare.tools.NBTTool;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentMap;
@@ -157,16 +158,14 @@ public class ModRecipeProvider extends RecipeProvider {
                 .define('b', Items.CLOCK)
                 .unlockedBy(getHasName(ModItems.HIGH_ENERGY_EXPLOSIVES.get()), has(ModItems.HIGH_ENERGY_EXPLOSIVES.get()))
                 .save(writer, Mod.loc(getItemName(ModItems.C4_BOMB.get())));
-        // TODO 这玩意怎么写
-//        NBTShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.C4_BOMB.get(), 2)
-//                .withNBT(tag -> tag.putBoolean("Control", true))
-//                .pattern("aaa")
-//                .pattern("aba")
-//                .pattern("aaa")
-//                .define('a', ModItems.HIGH_ENERGY_EXPLOSIVES.get())
-//                .define('b', Items.COMPARATOR)
-//                .unlockedBy(getHasName(ModItems.HIGH_ENERGY_EXPLOSIVES.get()), has(ModItems.HIGH_ENERGY_EXPLOSIVES.get()))
-//                .save(writer, Mod.loc(getItemName(ModItems.C4_BOMB.get()) + "_rc"));
+        new ShapedRecipeBuilder(RecipeCategory.COMBAT, NBTTool.withTag(ModItems.C4_BOMB, 2, tag -> tag.putBoolean("Control", true)))
+                .pattern("aaa")
+                .pattern("aba")
+                .pattern("aaa")
+                .define('a', ModItems.HIGH_ENERGY_EXPLOSIVES.get())
+                .define('b', Items.COMPARATOR)
+                .unlockedBy(getHasName(ModItems.HIGH_ENERGY_EXPLOSIVES.get()), has(ModItems.HIGH_ENERGY_EXPLOSIVES.get()))
+                .save(writer, Mod.loc(getItemName(ModItems.C4_BOMB.get()) + "_rc"));
         ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.AP_5_INCHES.get())
                 .pattern("c")
                 .pattern("a")

@@ -2,10 +2,13 @@ package com.atsuishio.superbwarfare.tools;
 
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
+import net.neoforged.neoforge.registries.DeferredHolder;
 
-// From Botania
+import java.util.function.Consumer;
+
 public final class NBTTool {
     public static CompoundTag getTag(ItemStack stack) {
         var data = stack.get(DataComponents.CUSTOM_DATA);
@@ -22,5 +25,20 @@ public final class NBTTool {
         var oldTag = data != null ? data.copyTag() : new CompoundTag();
         var newTag = oldTag.merge(tag);
         stack.set(DataComponents.CUSTOM_DATA, CustomData.of(newTag));
+    }
+
+    public static ItemStack withTag(DeferredHolder<Item, ? extends Item> item, int count, Consumer<CompoundTag> setter) {
+        return withTag(new ItemStack(item, count), setter);
+    }
+
+    public static ItemStack withTag(DeferredHolder<Item, ? extends Item> item, Consumer<CompoundTag> setter) {
+        return withTag(item, 1, setter);
+    }
+
+    public static ItemStack withTag(ItemStack stack, Consumer<CompoundTag> setter) {
+        var tag = new CompoundTag();
+        setter.accept(tag);
+        saveTag(stack, tag);
+        return stack;
     }
 }
