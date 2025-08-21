@@ -9,10 +9,10 @@
   "results": [
     {
       "count": 1,
-      "item": "superbwarfare:iron_powder"
+      "id": "superbwarfare:iron_powder"
     }
   ],
-  "conditions": [
+  "neoforge:conditions": [
     {
       "type": "neoforge:mod_loaded",
       "modid": "create"

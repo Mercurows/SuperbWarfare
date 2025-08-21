@@ -9,10 +9,10 @@
   "results": [
     {
       "count": 1,
-      "item": "superbwarfare:tungsten_powder"
+      "id": "superbwarfare:tungsten_powder"
     }
   ],
-  "conditions": [
+  "neoforge:conditions": [
     {
       "type": "neoforge:mod_loaded",
       "modid": "create"

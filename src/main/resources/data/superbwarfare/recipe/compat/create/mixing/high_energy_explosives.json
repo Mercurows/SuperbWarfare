@@ -16,11 +16,11 @@
   ],
   "results": [
     {
-      "item": "superbwarfare:high_energy_explosives",
+      "id": "superbwarfare:high_energy_explosives",
       "count": 3
     }
   ],
-  "conditions": [
+  "neoforge:conditions": [
     {
       "type": "neoforge:mod_loaded",
       "modid": "create"

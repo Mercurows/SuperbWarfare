@@ -9,7 +9,7 @@
   "result": {
     "id": "superbwarfare:lead_ingot"
   },
-  "conditions": [
+  "neoforge:conditions": [
     {
       "type": "neoforge:mod_loaded",
       "modid": "create"
