@@ -87,6 +87,16 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .define('d', ItemTags.WOOL)
                 .unlockedBy(getHasName(Items.STRING), has(Items.STRING))
                 .save(writer, Mod.loc(getItemName(ModItems.ARMOR_PLATE.get())));
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.VEHICLE_DAMAGE_ANALYZER.get())
+                .pattern("aba")
+                .pattern("aca")
+                .pattern("ada")
+                .define('a', Tags.Items.INGOTS_GOLD)
+                .define('b', Items.OBSERVER)
+                .define('c', Items.NOTE_BLOCK)
+                .define('d', Tags.Items.INGOTS_IRON)
+                .unlockedBy(getHasName(Items.OBSERVER), has(Items.OBSERVER))
+                .save(writer, Mod.loc(getItemName(ModItems.VEHICLE_DAMAGE_ANALYZER.get())));
     }
 
     private static void buildAmmoRecipes(Consumer<FinishedRecipe> writer) {
