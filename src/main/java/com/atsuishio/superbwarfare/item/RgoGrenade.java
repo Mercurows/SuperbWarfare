@@ -79,7 +79,6 @@ public class RgoGrenade extends Item implements ProjectileItem {
             RgoGrenadeEntity rgoGrenade = new RgoGrenadeEntity(pLivingEntity, pLevel, 100);
 
             new CustomExplosion.Builder(rgoGrenade)
-                    .directSource(null)
                     .attacker(pLivingEntity)
                     .damage(ExplosionConfig.RGO_GRENADE_EXPLOSION_DAMAGE.get())
                     .radius(ExplosionConfig.RGO_GRENADE_EXPLOSION_RADIUS.get())

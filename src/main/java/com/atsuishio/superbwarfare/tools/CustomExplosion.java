@@ -216,9 +216,7 @@ public class CustomExplosion extends Explosion {
         private float damageMultiplier = 1;
         private DamageSource damageSource = null;
         private Vec3 particlePosition = null;
-
         public Vec3 position;
-
 
         public Builder(@NotNull Entity target) {
             this.level = target.level();
@@ -228,7 +226,7 @@ public class CustomExplosion extends Explosion {
             this.position = new Vec3(target.getX(), target.getEyeY(), target.getZ());
         }
 
-        public Builder directSource(Entity directSource) {
+        public Builder directSource(@NotNull Entity directSource) {
             this.directSource = directSource;
             return this;
         }
