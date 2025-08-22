@@ -54,7 +54,10 @@ public class WheelChairEntity extends MobileVehicleEntity implements GeoEntity {
     @Override
     public void playerTouch(Player pPlayer) {
         if (this.position().distanceTo(pPlayer.position()) > 1.4 || pPlayer == this.getFirstPassenger()) return;
-        if (!this.level().isClientSide) {
+        if (!this.level().isClientSide
+                && pPlayer.getY() < this.getY() + this.getBbHeight()
+                && pPlayer.getY() + pPlayer.getBbHeight() > this.getY()
+        ) {
             double entitySize = pPlayer.getBbWidth() * pPlayer.getBbHeight();
             double thisSize = this.getBbWidth() * this.getBbHeight();
             double f = Math.min(entitySize / thisSize, 2);
