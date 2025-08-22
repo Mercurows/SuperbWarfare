@@ -167,7 +167,11 @@ public abstract class MobileVehicleEntity extends VehicleEntity implements Contr
 
     @Override
     public void playerTouch(Player pPlayer) {
-        if (pPlayer.isCrouching() && !this.level().isClientSide) {
+        if (pPlayer.isCrouching()
+                && !this.level().isClientSide
+                && pPlayer.getY() < this.getY() + this.getBbHeight()
+                && pPlayer.getY() + pPlayer.getBbHeight() > this.getY()
+        ) {
             double entitySize = pPlayer.getBbWidth() * pPlayer.getBbHeight();
             double thisSize = this.getBbWidth() * this.getBbHeight();
             double f = Math.min(entitySize / thisSize, 2);
@@ -628,11 +632,12 @@ public abstract class MobileVehicleEntity extends VehicleEntity implements Contr
      * 防止载具堆叠
      */
     public void preventStacking() {
-        var Box = getBoundingBox();
 
-        var entities = level().getEntities(EntityTypeTest.forClass(Entity.class), Box, entity -> entity != this && entity != getFirstPassenger() && entity.getVehicle() == null)
-                .stream().filter(entity -> entity instanceof VehicleEntity)
-                .toList();
+        var entities = level().getEntities(
+                EntityTypeTest.forClass(VehicleEntity.class),
+                getBoundingBox(),
+                entity -> entity != this && entity != getFirstPassenger() && entity.getVehicle() == null
+        );
 
         for (var entity : entities) {
             Vec3 toVec = this.position().add(new Vec3(1, 1, 1).scale(random.nextFloat() * 0.01f + 1f)).vectorTo(entity.position());
