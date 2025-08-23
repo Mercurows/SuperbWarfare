@@ -18,7 +18,7 @@
     },
     {
       "type": "patchouli:crafting",
-      "recipe": "superbwarfare:reforging_table_crafting",
+      "recipe": "superbwarfare:reforging_table",
       "recipe2": "superbwarfare:empty_perk"
     }
   ],

@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "a": {
+      "tag": "forge:ingots/tungsten"
+    },
+    "b": {
+      "item": "superbwarfare:tungsten_ingot"
+    }
+  },
+  "pattern": [
+    "aaa",
+    "aba",
+    "aaa"
+  ],
+  "result": {
+    "item": "superbwarfare:tungsten_block"
+  },
+  "show_notification": true
+}

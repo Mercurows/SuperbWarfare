@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "a": {
+      "tag": "forge:ingots/silver"
+    },
+    "b": {
+      "item": "superbwarfare:silver_ingot"
+    }
+  },
+  "pattern": [
+    "aaa",
+    "aba",
+    "aaa"
+  ],
+  "result": {
+    "item": "superbwarfare:silver_block"
+  },
+  "show_notification": true
+}
