@@ -4,10 +4,10 @@
   "cookingtime": 100,
   "experience": 0.7,
   "ingredient": {
-    "item": "minecraft:iron_ingot"
+    "item": "superbwarfare:iron_powder"
   },
   "result": {
     "count": 1,
-    "id": "superbwarfare:iron_powder"
+    "id": "minecraft:iron_ingot"
   }
 }

@@ -720,24 +720,98 @@ public class ModRecipeProvider extends RecipeProvider {
                 .define('c', Tags.Items.SANDS)
                 .unlockedBy(getHasName(Items.GUNPOWDER), has(Items.GUNPOWDER))
                 .save(writer, Mod.loc(getItemName(ModItems.HIGH_ENERGY_EXPLOSIVES.get())));
-        SimpleCookingRecipeBuilder.generic(Ingredient.of(Items.IRON_INGOT),
+        SimpleCookingRecipeBuilder.generic(Ingredient.of(ModItems.IRON_POWDER.get()),
                         RecipeCategory.MISC,
-                        ModItems.IRON_POWDER.get(),
+                        Items.IRON_INGOT,
                         0.7f,
                         100,
                         RecipeSerializer.BLASTING_RECIPE,
                         BlastingRecipe::new)
                 .unlockedBy(getHasName(ModItems.IRON_POWDER.get()), has(ModItems.IRON_POWDER.get()))
                 .save(writer, Mod.loc(getItemName(Items.IRON_INGOT) + "_blasting_from_powder"));
-        SimpleCookingRecipeBuilder.generic(Ingredient.of(Items.IRON_INGOT),
+        SimpleCookingRecipeBuilder.generic(Ingredient.of(ModItems.IRON_POWDER.get()),
                         RecipeCategory.MISC,
-                        ModItems.IRON_POWDER.get(),
+                        Items.IRON_INGOT,
                         0.7f,
-                        100,
+                        200,
                         RecipeSerializer.SMELTING_RECIPE,
                         SmeltingRecipe::new)
                 .unlockedBy(getHasName(ModItems.IRON_POWDER.get()), has(ModItems.IRON_POWDER.get()))
                 .save(writer, Mod.loc(getItemName(Items.IRON_INGOT) + "_smelting_from_powder"));
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.LARGE_BATTERY_PACK.get())
+                .pattern("aa")
+                .pattern("aa")
+                .define('a', ModItems.MEDIUM_BATTERY_PACK.get())
+                .unlockedBy(getHasName(ModItems.MEDIUM_BATTERY_PACK.get()), has(ModItems.MEDIUM_BATTERY_PACK.get()))
+                .save(writer, Mod.loc(getItemName(ModItems.LARGE_BATTERY_PACK.get())));
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.LARGE_MOTOR.get())
+                .pattern(" a ")
+                .pattern("bcd")
+                .pattern("bcd")
+                .define('a', Tags.Items.INGOTS_IRON)
+                .define('b', Tags.Items.STORAGE_BLOCKS_LAPIS)
+                .define('c', Tags.Items.STORAGE_BLOCKS_COPPER)
+                .define('d', Tags.Items.STORAGE_BLOCKS_REDSTONE)
+                .unlockedBy(getHasName(Items.COPPER_BLOCK), has(Items.COPPER_BLOCK))
+                .save(writer, Mod.loc(getItemName(ModItems.LARGE_MOTOR.get())));
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.LARGE_PROPELLER.get())
+                .pattern(" a ")
+                .pattern("aba")
+                .pattern(" a ")
+                .define('a', Tags.Items.INGOTS_IRON)
+                .define('b', ModTags.Items.INGOTS_CEMENTED_CARBIDE)
+                .unlockedBy(getHasName(ModItems.CEMENTED_CARBIDE_INGOT.get()), has(ModItems.CEMENTED_CARBIDE_INGOT.get()))
+                .save(writer, Mod.loc(getItemName(ModItems.LARGE_PROPELLER.get())));
+        SimpleCookingRecipeBuilder.generic(Ingredient.of(ModItems.GALENA.get()),
+                        RecipeCategory.MISC,
+                        ModItems.LEAD_INGOT.get(),
+                        0.7f,
+                        100,
+                        RecipeSerializer.BLASTING_RECIPE,
+                        BlastingRecipe::new)
+                .unlockedBy(getHasName(ModItems.GALENA.get()), has(ModItems.GALENA.get()))
+                .save(writer, Mod.loc(getItemName(ModItems.LEAD_INGOT.get()) + "_blasting"));
+        SimpleCookingRecipeBuilder.generic(Ingredient.of(ModItems.GALENA_ORE.get(), ModItems.DEEPSLATE_GALENA_ORE.get()),
+                        RecipeCategory.MISC,
+                        ModItems.LEAD_INGOT.get(),
+                        0.7f,
+                        100,
+                        RecipeSerializer.BLASTING_RECIPE,
+                        BlastingRecipe::new)
+                .unlockedBy(getHasName(ModItems.GALENA_ORE.get()), has(commonItemTag("ores/lead")))
+                .save(writer, Mod.loc(getItemName(Items.IRON_INGOT) + "_blasting_from_ore"));
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ModItems.LEAD_INGOT.get())
+                .requires(ModItems.LEAD_BLOCK.get())
+                .unlockedBy(getHasName(ModItems.LEAD_BLOCK.get()), has(ModItems.LEAD_BLOCK.get()))
+                .save(writer, Mod.loc(getItemName(ModItems.LEAD_INGOT.get()) + "_from_block"));
+        SimpleCookingRecipeBuilder.generic(Ingredient.of(ModItems.GALENA.get()),
+                        RecipeCategory.MISC,
+                        ModItems.LEAD_INGOT.get(),
+                        0.7f,
+                        200,
+                        RecipeSerializer.SMELTING_RECIPE,
+                        SmeltingRecipe::new)
+                .unlockedBy(getHasName(ModItems.GALENA.get()), has(ModItems.GALENA.get()))
+                .save(writer, Mod.loc(getItemName(ModItems.LEAD_INGOT.get()) + "_smelting"));
+        SimpleCookingRecipeBuilder.generic(Ingredient.of(ModItems.GALENA_ORE.get(), ModItems.DEEPSLATE_GALENA_ORE.get()),
+                        RecipeCategory.MISC,
+                        ModItems.LEAD_INGOT.get(),
+                        0.7f,
+                        200,
+                        RecipeSerializer.SMELTING_RECIPE,
+                        SmeltingRecipe::new)
+                .unlockedBy(getHasName(ModItems.GALENA_ORE.get()), has(commonItemTag("ores/lead")))
+                .save(writer, Mod.loc(getItemName(Items.IRON_INGOT) + "_smelting_from_ore"));
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.LIGHT_ARMAMENT_MODULE.get())
+                .pattern("ddd")
+                .pattern("abc")
+                .pattern("ddd")
+                .define('a', ModItems.STEEL_MATERIALS.barrel().get())
+                .define('b', ModItems.RARE_MATERIAL_PACK.get())
+                .define('c', Items.DISPENSER)
+                .define('d', ModTags.Items.INGOTS_STEEL)
+                .unlockedBy(getHasName(ModItems.RARE_MATERIAL_PACK.get()), has(ModItems.RARE_MATERIAL_PACK.get()))
+                .save(writer, Mod.loc(getItemName(ModItems.LIGHT_ARMAMENT_MODULE.get())));
     }
 
     private static void buildBlockRecipes(@NotNull RecipeOutput writer) {

@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "a": {
+      "tag": "c:ingots/iron"
+    },
+    "b": {
+      "tag": "c:storage_blocks/lapis"
+    },
+    "c": {
+      "tag": "c:storage_blocks/copper"
+    },
+    "d": {
+      "tag": "c:storage_blocks/redstone"
+    }
+  },
+  "pattern": [
+    " a ",
+    "bcd",
+    "bcd"
+  ],
+  "result": {
+    "count": 1,
+    "id": "superbwarfare:large_motor"
+  }
+}
