@@ -51,6 +51,7 @@ public class ModRecipeProvider extends RecipeProvider {
     @Override
     protected void buildRecipes(@NotNull RecipeOutput writer) {
         buildToolRecipes(writer);
+        buildArmorRecipes(writer);
         buildAmmoRecipes(writer);
         buildMaterialRecipes(writer);
         buildBlockRecipes(writer);
@@ -144,6 +145,61 @@ public class ModRecipeProvider extends RecipeProvider {
                 .define('c', Tags.Items.INGOTS_IRON)
                 .unlockedBy(getHasName(Items.REDSTONE_TORCH), has(Items.REDSTONE_TORCH))
                 .save(writer, Mod.loc(getItemName(ModItems.DETONATOR.get())));
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.ELECTRIC_BATON.get())
+                .pattern("  a")
+                .pattern(" b ")
+                .pattern("c  ")
+                .define('a', Items.LIGHTNING_ROD)
+                .define('b', ModItems.BATTERY.get())
+                .define('c', ModTags.Items.INGOTS_STEEL)
+                .unlockedBy(getHasName(Items.LIGHTNING_ROD), has(Items.LIGHTNING_ROD))
+                .unlockedBy(getHasName(ModItems.BATTERY.get()), has(ModItems.BATTERY.get()))
+                .save(writer, Mod.loc(getItemName(ModItems.ELECTRIC_BATON.get())));
+    }
+
+    private static void buildArmorRecipes(@NotNull RecipeOutput writer) {
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.GE_HELMET_M_35.get())
+                .pattern("aca")
+                .pattern("aba")
+                .define('a', ModTags.Items.INGOTS_STEEL)
+                .define('b', Tags.Items.DYES_BLACK)
+                .define('c', ModItems.STEEL_INGOT.get())
+                .unlockedBy(getHasName(ModItems.STEEL_INGOT.get()), has(ModItems.STEEL_INGOT.get()))
+                .save(writer, Mod.loc(getItemName(ModItems.GE_HELMET_M_35.get())));
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.RU_HELMET_6B47.get())
+                .pattern("aca")
+                .pattern("aba")
+                .define('a', ModTags.Items.INGOTS_CEMENTED_CARBIDE)
+                .define('b', Tags.Items.DYES_GREEN)
+                .define('c', ModItems.CEMENTED_CARBIDE_INGOT.get())
+                .unlockedBy(getHasName(ModItems.CEMENTED_CARBIDE_INGOT.get()), has(ModItems.CEMENTED_CARBIDE_INGOT.get()))
+                .save(writer, Mod.loc(getItemName(ModItems.RU_HELMET_6B47.get())));
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.RU_CHEST_6B43.get())
+                .pattern("aba")
+                .pattern("aca")
+                .pattern("aaa")
+                .define('a', ModTags.Items.INGOTS_CEMENTED_CARBIDE)
+                .define('b', Tags.Items.DYES_GREEN)
+                .define('c', ModItems.CEMENTED_CARBIDE_INGOT.get())
+                .unlockedBy(getHasName(ModItems.CEMENTED_CARBIDE_INGOT.get()), has(ModItems.CEMENTED_CARBIDE_INGOT.get()))
+                .save(writer, Mod.loc(getItemName(ModItems.RU_CHEST_6B43.get())));
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.US_HELMET_PASTG.get())
+                .pattern("aca")
+                .pattern("aba")
+                .define('a', ModTags.Items.INGOTS_CEMENTED_CARBIDE)
+                .define('b', Tags.Items.SANDS)
+                .define('c', ModItems.CEMENTED_CARBIDE_INGOT.get())
+                .unlockedBy(getHasName(ModItems.CEMENTED_CARBIDE_INGOT.get()), has(ModItems.CEMENTED_CARBIDE_INGOT.get()))
+                .save(writer, Mod.loc(getItemName(ModItems.US_HELMET_PASTG.get())));
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.US_CHEST_IOTV.get())
+                .pattern("aba")
+                .pattern("aca")
+                .pattern("aaa")
+                .define('a', ModTags.Items.INGOTS_CEMENTED_CARBIDE)
+                .define('b', Tags.Items.SANDS)
+                .define('c', ModItems.CEMENTED_CARBIDE_INGOT.get())
+                .unlockedBy(getHasName(ModItems.CEMENTED_CARBIDE_INGOT.get()), has(ModItems.CEMENTED_CARBIDE_INGOT.get()))
+                .save(writer, Mod.loc(getItemName(ModItems.US_CHEST_IOTV.get())));
     }
 
     private static void buildAmmoRecipes(@NotNull RecipeOutput writer) {
@@ -595,6 +651,15 @@ public class ModRecipeProvider extends RecipeProvider {
                 .requires(ModItems.HAMMER.get())
                 .unlockedBy(getHasName(ModItems.HAMMER.get()), has(ModItems.HAMMER.get()))
                 .save(writer, Mod.loc(getItemName(ModItems.COPPER_PLATE.get())));
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.FUSEE.get(), 4)
+                .pattern("a")
+                .pattern("b")
+                .pattern("c")
+                .define('a', Items.STONE_BUTTON)
+                .define('b', Tags.Items.DUSTS_REDSTONE)
+                .define('c', Tags.Items.NUGGETS_IRON)
+                .unlockedBy(getHasName(Items.STONE_BUTTON), has(Items.STONE_BUTTON))
+                .save(writer, Mod.loc(getItemName(ModItems.FUSEE.get())));
     }
 
     private static void buildBlockRecipes(@NotNull RecipeOutput writer) {
@@ -1134,7 +1199,43 @@ public class ModRecipeProvider extends RecipeProvider {
     }
 
     private static void buildMiscRecipes(@NotNull RecipeOutput writer) {
-
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.DOG_TAG.get())
+                .pattern("a")
+                .pattern("b")
+                .define('a', Items.CHAIN)
+                .define('b', Items.NAME_TAG)
+                .unlockedBy(getHasName(Items.NAME_TAG), has(Items.NAME_TAG))
+                .save(writer, Mod.loc(getItemName(ModItems.DOG_TAG.get())));
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.DPS_GENERATOR_DEPLOYER.get())
+                .pattern("a")
+                .pattern("b")
+                .pattern("c")
+                .define('a', ModItems.TARGET_DEPLOYER.get())
+                .define('b', ModItems.LARGE_MOTOR.get())
+                .define('c', ModItems.CHARGING_STATION.get())
+                .unlockedBy(getHasName(ModItems.CHARGING_STATION.get()), has(ModItems.CHARGING_STATION.get()))
+                .save(writer, Mod.loc(getItemName(ModItems.DPS_GENERATOR_DEPLOYER.get())));
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.DRONE.get(), 4)
+                .pattern("a a")
+                .pattern("bcb")
+                .pattern("ded")
+                .define('a', ModItems.PROPELLER.get())
+                .define('b', ModItems.MOTOR.get())
+                .define('c', Items.COMPASS)
+                .define('d', Tags.Items.NUGGETS_IRON)
+                .define('e', ModItems.CELL.get())
+                .unlockedBy(getHasName(ModItems.PROPELLER.get()), has(ModItems.PROPELLER.get()))
+                .unlockedBy(getHasName(ModItems.MOTOR.get()), has(ModItems.MOTOR.get()))
+                .save(writer, Mod.loc(getItemName(ModItems.DRONE.get())));
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.FIRING_PARAMETERS.get())
+                .pattern("a")
+                .pattern("b")
+                .pattern("c")
+                .define('a', Items.TARGET)
+                .define('b', Items.PAPER)
+                .define('c', ItemTags.PLANKS)
+                .unlockedBy(getHasName(Items.TARGET), has(Items.TARGET))
+                .save(writer, Mod.loc(getItemName(ModItems.FIRING_PARAMETERS.get())));
     }
 
     private static void buildSpecialRecipes(@NotNull RecipeOutput writer) {

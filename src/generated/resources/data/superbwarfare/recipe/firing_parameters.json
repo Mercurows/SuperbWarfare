@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "a": {
+      "item": "minecraft:target"
+    },
+    "b": {
+      "item": "minecraft:paper"
+    },
+    "c": {
+      "tag": "minecraft:planks"
+    }
+  },
+  "pattern": [
+    "a",
+    "b",
+    "c"
+  ],
+  "result": {
+    "count": 1,
+    "id": "superbwarfare:firing_parameters"
+  }
+}

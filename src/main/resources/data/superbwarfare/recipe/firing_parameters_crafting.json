@@ -1,11 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
   "category": "misc",
-  "pattern": [
-    "a",
-    "b",
-    "c"
-  ],
   "key": {
     "a": {
       "item": "minecraft:target"
@@ -17,8 +12,20 @@
       "tag": "minecraft:planks"
     }
   },
+  "pattern": [
+    "a",
+    "b",
+    "c"
+  ],
   "result": {
+    <<<<<<<<
+    HEAD: src/main/resources/data/superbwarfare/recipe/firing_parameters_crafting.json
     "id": "superbwarfare:firing_parameters",
     "count": 1
   }
+  ========
+  "item": "superbwarfare:firing_parameters"
+},
+"show_notification": true
+>>>>>>>> dbb2ab932 (添加护甲和部分其他配方datagen): src/generated/resources/data/superbwarfare/recipe/firing_parameters.json
 }

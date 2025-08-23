@@ -12,7 +12,7 @@
       "item": "minecraft:compass"
     },
     "d": {
-      "tag": "forge:nuggets/iron"
+      "tag": "c:nuggets/iron"
     },
     "e": {
       "item": "superbwarfare:cell"
@@ -24,15 +24,7 @@
     "ded"
   ],
   "result": {
-    <<<<<<<<
-    HEAD: src/main/resources/data/superbwarfare/recipe/drone_crafting.json
-    "id": "superbwarfare:drone",
-    "count": 4
+    "count": 4,
+    "id": "superbwarfare:drone"
   }
-  ========
-  "count": 4,
-  "item": "superbwarfare:drone"
-},
-"show_notification": true
->>>>>>>> dbb2ab932 (添加护甲和部分其他配方datagen): src/generated/resources/data/superbwarfare/recipe/drone.json
 }

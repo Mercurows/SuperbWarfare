@@ -1,24 +1,32 @@
 {
   "type": "minecraft:crafting_shaped",
   "category": "misc",
-  "pattern": [
-    "a",
-    "b",
-    "c"
-  ],
   "key": {
     "a": {
       "item": "minecraft:stone_button"
     },
     "b": {
-      "item": "minecraft:redstone"
+      "tag": "forge:dusts/redstone"
     },
     "c": {
-      "item": "minecraft:iron_nugget"
+      "tag": "forge:nuggets/iron"
     }
   },
+  "pattern": [
+    "a",
+    "b",
+    "c"
+  ],
   "result": {
+    <<<<<<<<
+    HEAD: src/main/resources/data/superbwarfare/recipe/fusee_crafting.json
     "id": "superbwarfare:fusee",
     "count": 4
   }
+  ========
+  "count": 4,
+  "item": "superbwarfare:fusee"
+},
+"show_notification": true
+>>>>>>>> dbb2ab932 (添加护甲和部分其他配方datagen): src/generated/resources/data/superbwarfare/recipe/fusee.json
 }

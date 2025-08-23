@@ -9,7 +9,7 @@
     },
     {
       "type": "patchouli:crafting",
-      "recipe": "superbwarfare:target_deployer_crafting",
+      "recipe": "superbwarfare:target_deployer",
       "text": "superbwarfare.page.misc.target_deployer.2"
     },
     {
@@ -19,7 +19,7 @@
     },
     {
       "type": "patchouli:crafting",
-      "recipe": "superbwarfare:dps_generator_deployer_crafting",
+      "recipe": "superbwarfare:dps_generator_deployer",
       "text": "superbwarfare.page.misc.target_deployer.4"
     }
   ],

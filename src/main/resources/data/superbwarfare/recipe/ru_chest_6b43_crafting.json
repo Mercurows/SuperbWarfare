@@ -1,11 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
-  "category": "misc",
-  "pattern": [
-    "aba",
-    "aca",
-    "aaa"
-  ],
+  "category": "equipment",
   "key": {
     "a": {
       "tag": "superbwarfare:ingots/cemented_carbide"
@@ -17,8 +12,20 @@
       "item": "superbwarfare:cemented_carbide_ingot"
     }
   },
+  "pattern": [
+    "aba",
+    "aca",
+    "aaa"
+  ],
   "result": {
+    <<<<<<<<
+    HEAD: src/main/resources/data/superbwarfare/recipe/ru_chest_6b43_crafting.json
     "id": "superbwarfare:ru_chest_6b43",
     "count": 1
   }
+  ========
+  "item": "superbwarfare:ru_chest_6b43"
+},
+"show_notification": true
+>>>>>>>> dbb2ab932 (添加护甲和部分其他配方datagen): src/generated/resources/data/superbwarfare/recipe/ru_chest_6b43.json
 }

@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "a": {
+      "item": "minecraft:lightning_rod"
+    },
+    "b": {
+      "item": "superbwarfare:battery"
+    },
+    "c": {
+      "tag": "superbwarfare:ingots/steel"
+    }
+  },
+  "pattern": [
+    "  a",
+    " b ",
+    "c  "
+  ],
+  "result": {
+    "count": 1,
+    "id": "superbwarfare:electric_baton"
+  }
+}
