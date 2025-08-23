@@ -1,13 +1,12 @@
 {
   "type": "minecraft:crafting_shapeless",
-  "category": "misc",
+  "category": "equipment",
   "ingredients": [
     {
       "item": "superbwarfare:wire_guide_missile"
     }
   ],
   "result": {
-    "item": "superbwarfare:javelin_missile",
-    "count": 1
+    "item": "superbwarfare:javelin_missile"
   }
 }

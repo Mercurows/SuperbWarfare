@@ -1,0 +1,48 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_fusee": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "superbwarfare:fusee"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_high_energy_explosives": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "superbwarfare:high_energy_explosives"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "superbwarfare:grenade_40mm"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_high_energy_explosives",
+      "has_fusee",
+      "has_the_recipe"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "superbwarfare:grenade_40mm"
+    ]
+  },
+  "sends_telemetry_event": false
+}

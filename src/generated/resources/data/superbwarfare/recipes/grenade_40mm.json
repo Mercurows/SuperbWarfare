@@ -1,17 +1,12 @@
 {
   "type": "minecraft:crafting_shaped",
-  "category": "misc",
-  "pattern": [
-    " a ",
-    "bcb",
-    " d "
-  ],
+  "category": "equipment",
   "key": {
     "a": {
       "item": "superbwarfare:fusee"
     },
     "b": {
-      "item": "minecraft:iron_ingot"
+      "tag": "forge:ingots/iron"
     },
     "c": {
       "item": "superbwarfare:high_energy_explosives"
@@ -20,8 +15,14 @@
       "item": "superbwarfare:primer"
     }
   },
+  "pattern": [
+    " a ",
+    "bcb",
+    " d "
+  ],
   "result": {
-    "item": "superbwarfare:grenade_40mm",
-    "count": 6
-  }
+    "count": 6,
+    "item": "superbwarfare:grenade_40mm"
+  },
+  "show_notification": true
 }
