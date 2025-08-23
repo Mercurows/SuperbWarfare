@@ -1,11 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
   "category": "equipment",
-  "pattern": [
-    " a ",
-    "bcb",
-    " d "
-  ],
   "key": {
     "a": {
       "item": "superbwarfare:fusee"
@@ -20,8 +15,13 @@
       "item": "superbwarfare:grain"
     }
   },
+  "pattern": [
+    " a ",
+    "bcb",
+    " d "
+  ],
   "result": {
-    "id": "superbwarfare:mortar_shell",
-    "count": 4
+    "count": 4,
+    "id": "superbwarfare:mortar_shell"
   }
 }

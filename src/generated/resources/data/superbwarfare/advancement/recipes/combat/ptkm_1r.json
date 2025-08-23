@@ -1,0 +1,43 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_ap_5_inches": {
+      "conditions": {
+        "items": [
+          {
+            "items": "superbwarfare:ap_5_inches"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_calibrated_sculk_sensor": {
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:calibrated_sculk_sensor"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "superbwarfare:ptkm_1r"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_ap_5_inches",
+      "has_calibrated_sculk_sensor"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "superbwarfare:ptkm_1r"
+    ]
+  }
+}

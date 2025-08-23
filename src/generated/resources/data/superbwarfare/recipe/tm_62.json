@@ -1,11 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
-  "category": "misc",
-  "pattern": [
-    "cac",
-    "bbb",
-    "bbb"
-  ],
+  "category": "equipment",
   "key": {
     "a": {
       "item": "minecraft:stone_pressure_plate"
@@ -17,8 +12,13 @@
       "item": "minecraft:green_concrete"
     }
   },
+  "pattern": [
+    "cac",
+    "bbb",
+    "bbb"
+  ],
   "result": {
-    "id": "superbwarfare:tm_62",
-    "count": 2
+    "count": 2,
+    "id": "superbwarfare:tm_62"
   }
 }

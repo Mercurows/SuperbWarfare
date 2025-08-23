@@ -1,11 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
-  "category": "misc",
-  "pattern": [
-    " a ",
-    "bcb",
-    "ded"
-  ],
+  "category": "equipment",
   "key": {
     "a": {
       "item": "superbwarfare:seeker"
@@ -23,8 +18,13 @@
       "item": "superbwarfare:cell"
     }
   },
+  "pattern": [
+    " a ",
+    "bcb",
+    "ded"
+  ],
   "result": {
-    "id": "superbwarfare:swarm_drone",
-    "count": 4
+    "count": 4,
+    "id": "superbwarfare:swarm_drone"
   }
 }
