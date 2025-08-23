@@ -7,6 +7,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.ItemTagsProvider;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
@@ -37,6 +38,15 @@ public class ModItemTagProvider extends ItemTagsProvider {
         this.tag(commonItemTag("ingots/steel")).add(ModItems.STEEL_INGOT.get());
         this.tag(commonItemTag("ingots/tungsten")).add(ModItems.TUNGSTEN_INGOT.get());
         this.tag(commonItemTag("ingots/silver")).add(ModItems.SILVER_INGOT.get());
+
+        this.tag(ItemTags.ARMOR_ENCHANTABLE).add(ModItems.GE_HELMET_M_35.get(), ModItems.RU_CHEST_6B43.get(), ModItems.RU_HELMET_6B47.get(), ModItems.US_CHEST_IOTV.get(), ModItems.US_HELMET_PASTG.get());
+        this.tag(ItemTags.HEAD_ARMOR).add(ModItems.GE_HELMET_M_35.get(), ModItems.RU_HELMET_6B47.get(), ModItems.US_HELMET_PASTG.get());
+        this.tag(ItemTags.HEAD_ARMOR_ENCHANTABLE).add(ModItems.GE_HELMET_M_35.get(), ModItems.RU_HELMET_6B47.get(), ModItems.US_HELMET_PASTG.get());
+        this.tag(ItemTags.CHEST_ARMOR).add(ModItems.RU_CHEST_6B43.get(), ModItems.US_CHEST_IOTV.get());
+        this.tag(ItemTags.CHEST_ARMOR_ENCHANTABLE).add(ModItems.RU_CHEST_6B43.get(), ModItems.US_CHEST_IOTV.get());
+
+        this.tag(ItemTags.SWORD_ENCHANTABLE).add(ModItems.CROWBAR.get(), ModItems.HAMMER.get(), ModItems.KNIFE.get(), ModItems.T_BATON.get(),
+                ModItems.ELECTRIC_BATON.get(), ModItems.STEEL_PIPE.get());
 
         this.tag(ModTags.Items.INGOTS_STEEL).addTag(commonItemTag("ingots/steel"))
                 .addOptional(ResourceLocation.fromNamespaceAndPath("dreamaticvoyage", "fukamizu_bread_ingot"));
