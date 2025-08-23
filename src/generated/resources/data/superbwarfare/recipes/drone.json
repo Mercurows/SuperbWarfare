@@ -1,11 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
   "category": "misc",
-  "pattern": [
-    "a a",
-    "bcb",
-    "ded"
-  ],
   "key": {
     "a": {
       "item": "superbwarfare:propeller"
@@ -17,14 +12,20 @@
       "item": "minecraft:compass"
     },
     "d": {
-      "item": "minecraft:iron_nugget"
+      "tag": "forge:nuggets/iron"
     },
     "e": {
       "item": "superbwarfare:cell"
     }
   },
+  "pattern": [
+    "a a",
+    "bcb",
+    "ded"
+  ],
   "result": {
-    "item": "superbwarfare:drone",
-    "count": 4
-  }
+    "count": 4,
+    "item": "superbwarfare:drone"
+  },
+  "show_notification": true
 }

@@ -1,24 +1,23 @@
 {
   "type": "minecraft:crafting_shaped",
-  "category": "misc",
-  "pattern": [
-    "aba",
-    "aca",
-    "aaa"
-  ],
+  "category": "equipment",
   "key": {
     "a": {
       "tag": "superbwarfare:ingots/cemented_carbide"
     },
     "b": {
-      "item": "minecraft:sand"
+      "tag": "forge:dyes/green"
     },
     "c": {
       "item": "superbwarfare:cemented_carbide_ingot"
     }
   },
+  "pattern": [
+    "aca",
+    "aba"
+  ],
   "result": {
-    "item": "superbwarfare:us_chest_iotv",
-    "count": 1
-  }
+    "item": "superbwarfare:ru_helmet_6b47"
+  },
+  "show_notification": true
 }

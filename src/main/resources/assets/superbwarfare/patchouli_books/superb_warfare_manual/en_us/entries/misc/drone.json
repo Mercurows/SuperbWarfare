@@ -17,7 +17,7 @@
     },
     {
       "type": "patchouli:crafting",
-      "recipe": "superbwarfare:drone_crafting",
+      "recipe": "superbwarfare:drone",
       "text": "superbwarfare.page.misc.drone.4"
     }
   ],

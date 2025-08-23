@@ -1,11 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
   "category": "misc",
-  "pattern": [
-    "a",
-    "b",
-    "c"
-  ],
   "key": {
     "a": {
       "item": "minecraft:target"
@@ -17,8 +12,13 @@
       "tag": "minecraft:planks"
     }
   },
+  "pattern": [
+    "a",
+    "b",
+    "c"
+  ],
   "result": {
-    "item": "superbwarfare:firing_parameters",
-    "count": 1
-  }
+    "item": "superbwarfare:firing_parameters"
+  },
+  "show_notification": true
 }
