@@ -6,10 +6,7 @@ import com.atsuishio.superbwarfare.entity.TargetEntity;
 import com.atsuishio.superbwarfare.entity.projectile.FlareDecoyEntity;
 import com.atsuishio.superbwarfare.entity.projectile.SmokeDecoyEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
-import com.atsuishio.superbwarfare.init.ModDamageTypes;
-import com.atsuishio.superbwarfare.init.ModMobEffects;
-import com.atsuishio.superbwarfare.init.ModSounds;
-import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.tools.DamageHandler;
 import com.atsuishio.superbwarfare.tools.EntityFindUtil;
 import com.atsuishio.superbwarfare.tools.OBB;
@@ -49,6 +46,7 @@ import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.StreamSupport;
 
@@ -290,6 +288,7 @@ public abstract class MobileVehicleEntity extends VehicleEntity implements Contr
 
         this.move(MoverType.SELF, this.getDeltaMovement());
         collideSoftBlock();
+        moveOnDragonTeeth();
 
         this.refreshDimensions();
     }
@@ -505,6 +504,19 @@ public abstract class MobileVehicleEntity extends VehicleEntity implements Contr
 
         double diffY = targetY - pos.y;
         return pos.y + 0.5f * diffY;
+    }
+
+    public void moveOnDragonTeeth() {
+        AABB aabb = this.getBoundingBox();
+        AABB aabb1 = new AABB(aabb.minX, aabb.minY - 1.0E-6D, aabb.minZ, aabb.maxX, aabb.minY, aabb.maxZ);
+        Optional<BlockPos> optional = this.level().findSupportingBlock(this, aabb1);
+        if (optional.isPresent()) {
+            BlockState state = level().getBlockState(optional.get());
+            if (state.is(ModBlocks.DRAGON_TEETH.get())) {
+                entityData.set(POWER, entityData.get(POWER) * 0.8f);
+                setDeltaMovement(getDeltaMovement().multiply(-0.1, 0, -0.1));
+            }
+        }
     }
 
     public void collideSoftBlock() {
