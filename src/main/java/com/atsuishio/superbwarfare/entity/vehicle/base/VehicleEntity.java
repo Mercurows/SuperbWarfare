@@ -760,7 +760,7 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
             }
 
             Entity lastDriver = EntityFindUtil.findEntity(level(), entityData.get(LAST_DRIVER_UUID));
-            if (lastDriver != null && !teamFilter(player, lastDriver)) {
+            if (lastDriver != null && !teamFilter(player, lastDriver) && lastDriver.getTeam() != null) {
                 return InteractionResult.PASS;
             }
 
