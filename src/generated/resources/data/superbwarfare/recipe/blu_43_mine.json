@@ -1,11 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
-  "category": "misc",
-  "pattern": [
-    "a",
-    "b",
-    "c"
-  ],
+  "category": "equipment",
   "key": {
     "a": {
       "item": "minecraft:stone_pressure_plate"
@@ -17,8 +12,13 @@
       "item": "minecraft:green_concrete"
     }
   },
+  "pattern": [
+    "a",
+    "b",
+    "c"
+  ],
   "result": {
-    "id": "superbwarfare:blu_43_mine",
-    "count": 8
+    "count": 8,
+    "id": "superbwarfare:blu_43_mine"
   }
 }

@@ -1,11 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
   "category": "misc",
-  "pattern": [
-    "aaa",
-    "bcd",
-    "aaa"
-  ],
   "key": {
     "a": {
       "tag": "superbwarfare:ingots/steel"
@@ -20,8 +15,13 @@
       "item": "minecraft:piston"
     }
   },
+  "pattern": [
+    "aaa",
+    "bcd",
+    "aaa"
+  ],
   "result": {
-    "id": "superbwarfare:cannon_core",
-    "count": 1
+    "count": 1,
+    "id": "superbwarfare:cannon_core"
   }
 }
