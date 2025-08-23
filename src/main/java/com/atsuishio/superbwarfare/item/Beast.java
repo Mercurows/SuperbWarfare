@@ -60,9 +60,7 @@ public class Beast extends SwordItem {
     }
 
     public static void beastKill(@Nullable Entity attacker, @NotNull Entity target) {
-        if (target.level().isClientSide ||
-                (target instanceof LivingEntity living && living.isDeadOrDying())
-        ) return;
+        if (target.level().isClientSide) return;
 
         if (target instanceof TargetEntity) {
             target.hurt(ModDamageTypes.causeBeastDamage(target.level().registryAccess(), attacker, attacker), 114514.1919810F);
