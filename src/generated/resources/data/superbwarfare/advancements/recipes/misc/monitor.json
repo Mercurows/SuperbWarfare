@@ -1,11 +1,13 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_copper_block": {
+    "has_lightning_rod": {
       "conditions": {
         "items": [
           {
-            "tag": "forge:storage_blocks/copper"
+            "items": [
+              "minecraft:lightning_rod"
+            ]
           }
         ]
       },
@@ -13,20 +15,20 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "superbwarfare:large_motor"
+        "recipe": "superbwarfare:monitor"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
   },
   "requirements": [
     [
-      "has_copper_block",
+      "has_lightning_rod",
       "has_the_recipe"
     ]
   ],
   "rewards": {
     "recipes": [
-      "superbwarfare:large_motor"
+      "superbwarfare:monitor"
     ]
   },
   "sends_telemetry_event": false

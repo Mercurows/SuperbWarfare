@@ -1,11 +1,13 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_copper_block": {
+    "has_grain": {
       "conditions": {
         "items": [
           {
-            "tag": "forge:storage_blocks/copper"
+            "items": [
+              "superbwarfare:grain"
+            ]
           }
         ]
       },
@@ -13,20 +15,20 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "superbwarfare:large_motor"
+        "recipe": "superbwarfare:missile_engine"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
   },
   "requirements": [
     [
-      "has_copper_block",
+      "has_grain",
       "has_the_recipe"
     ]
   ],
   "rewards": {
     "recipes": [
-      "superbwarfare:large_motor"
+      "superbwarfare:missile_engine"
     ]
   },
   "sends_telemetry_event": false

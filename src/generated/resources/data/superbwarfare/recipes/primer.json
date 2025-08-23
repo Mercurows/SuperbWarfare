@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "a": {
+      "item": "minecraft:flint"
+    },
+    "b": {
+      "tag": "forge:plates/copper"
+    }
+  },
+  "pattern": [
+    "a",
+    "b"
+  ],
+  "result": {
+    "count": 4,
+    "item": "superbwarfare:primer"
+  },
+  "show_notification": true
+}

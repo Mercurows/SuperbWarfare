@@ -1,11 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
   "category": "misc",
-  "pattern": [
-    "ddd",
-    "abc",
-    "ddd"
-  ],
   "key": {
     "a": {
       "item": "superbwarfare:cemented_carbide_barrel"
@@ -20,8 +15,13 @@
       "tag": "superbwarfare:ingots/cemented_carbide"
     }
   },
+  "pattern": [
+    "ddd",
+    "abc",
+    "ddd"
+  ],
   "result": {
-    "item": "superbwarfare:medium_armament_module",
-    "count": 1
-  }
+    "item": "superbwarfare:medium_armament_module"
+  },
+  "show_notification": true
 }

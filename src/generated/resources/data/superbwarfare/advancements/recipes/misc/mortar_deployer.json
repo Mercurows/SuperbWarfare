@@ -1,0 +1,61 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_mortar_barrel": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "superbwarfare:mortar_barrel"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_mortar_base_plate": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "superbwarfare:mortar_base_plate"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_mortar_bipod": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "superbwarfare:mortar_bipod"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "superbwarfare:mortar_deployer"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_mortar_barrel",
+      "has_mortar_bipod",
+      "has_mortar_base_plate",
+      "has_the_recipe"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "superbwarfare:mortar_deployer"
+    ]
+  },
+  "sends_telemetry_event": false
+}

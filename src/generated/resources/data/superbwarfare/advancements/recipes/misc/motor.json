@@ -1,11 +1,11 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_copper_block": {
+    "has_copper_ingot": {
       "conditions": {
         "items": [
           {
-            "tag": "forge:storage_blocks/copper"
+            "tag": "forge:ingots/copper"
           }
         ]
       },
@@ -13,20 +13,20 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "superbwarfare:large_motor"
+        "recipe": "superbwarfare:motor"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
   },
   "requirements": [
     [
-      "has_copper_block",
+      "has_copper_ingot",
       "has_the_recipe"
     ]
   ],
   "rewards": {
     "recipes": [
-      "superbwarfare:large_motor"
+      "superbwarfare:motor"
     ]
   },
   "sends_telemetry_event": false

@@ -1,11 +1,13 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_copper_block": {
+    "has_monitor": {
       "conditions": {
         "items": [
           {
-            "tag": "forge:storage_blocks/copper"
+            "items": [
+              "superbwarfare:monitor"
+            ]
           }
         ]
       },
@@ -13,20 +15,20 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "superbwarfare:large_motor"
+        "recipe": "superbwarfare:monitor_clear"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
   },
   "requirements": [
     [
-      "has_copper_block",
+      "has_monitor",
       "has_the_recipe"
     ]
   ],
   "rewards": {
     "recipes": [
-      "superbwarfare:large_motor"
+      "superbwarfare:monitor_clear"
     ]
   },
   "sends_telemetry_event": false

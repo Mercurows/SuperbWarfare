@@ -1,11 +1,13 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_copper_block": {
+    "has_flint": {
       "conditions": {
         "items": [
           {
-            "tag": "forge:storage_blocks/copper"
+            "items": [
+              "minecraft:flint"
+            ]
           }
         ]
       },
@@ -13,20 +15,20 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "superbwarfare:large_motor"
+        "recipe": "superbwarfare:primer"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
   },
   "requirements": [
     [
-      "has_copper_block",
+      "has_flint",
       "has_the_recipe"
     ]
   ],
   "rewards": {
     "recipes": [
-      "superbwarfare:large_motor"
+      "superbwarfare:primer"
     ]
   },
   "sends_telemetry_event": false
