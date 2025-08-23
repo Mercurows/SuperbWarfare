@@ -127,10 +127,14 @@ public class JavelinHudOverlay implements LayeredDraw.Layer {
                 boolean lockOn = tag.getInt("SeekTime") > 20;
 
                 Vec3 point = VectorUtil.worldToScreen(pos);
-                float x = (float) point.x;
-                float y = (float) point.y;
+                if (VectorUtil.canSee(pos)) {
+                    poseStack.pushPose();
+                    float x = (float) point.x;
+                    float y = (float) point.y;
 
-                RenderHelper.preciseBlit(guiGraphics, lockOn ? FRAME_LOCK : FRAME_TARGET, x - 12, y - 12, 24, 24, 0, 0, 24, 24, 24, 24);
+                    RenderHelper.preciseBlit(guiGraphics, lockOn ? FRAME_LOCK : FRAME_TARGET, x - 12, y - 12, 24, 24, 0, 0, 24, 24, 24, 24);
+                    poseStack.popPose();
+                }
             }
             poseStack.popPose();
         } else {
