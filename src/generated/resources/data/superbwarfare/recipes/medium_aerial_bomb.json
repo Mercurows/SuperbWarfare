@@ -1,17 +1,12 @@
 {
   "type": "minecraft:crafting_shaped",
-  "category": "misc",
-  "pattern": [
-    " c ",
-    "dad",
-    " b "
-  ],
+  "category": "equipment",
   "key": {
     "a": {
-      "item":"minecraft:tnt"
+      "item": "minecraft:tnt"
     },
     "b": {
-      "item": "minecraft:iron_ingot"
+      "tag": "forge:ingots/iron"
     },
     "c": {
       "item": "superbwarfare:fusee"
@@ -20,8 +15,13 @@
       "item": "superbwarfare:high_energy_explosives"
     }
   },
+  "pattern": [
+    " c ",
+    "dad",
+    " b "
+  ],
   "result": {
-    "item": "superbwarfare:medium_aerial_bomb",
-    "count": 1
-  }
+    "item": "superbwarfare:medium_aerial_bomb"
+  },
+  "show_notification": true
 }

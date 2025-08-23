@@ -1,11 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
-  "category": "misc",
-  "pattern": [
-    " a ",
-    "bcb",
-    " d "
-  ],
+  "category": "equipment",
   "key": {
     "a": {
       "tag": "superbwarfare:ingots/steel"
@@ -20,8 +15,14 @@
       "item": "superbwarfare:primer"
     }
   },
+  "pattern": [
+    " a ",
+    "bcb",
+    " d "
+  ],
   "result": {
-    "item": "superbwarfare:rifle_ammo",
-    "count": 48
-  }
+    "count": 48,
+    "item": "superbwarfare:rifle_ammo"
+  },
+  "show_notification": true
 }

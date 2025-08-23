@@ -1,11 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
-  "category": "misc",
-  "pattern": [
-    " a ",
-    "bcb",
-    " d "
-  ],
+  "category": "equipment",
   "key": {
     "a": {
       "tag": "forge:ingots/tungsten"
@@ -20,8 +15,14 @@
       "item": "superbwarfare:primer"
     }
   },
+  "pattern": [
+    " a ",
+    "bcb",
+    " d "
+  ],
   "result": {
-    "item": "superbwarfare:sniper_ammo",
-    "count": 16
-  }
+    "count": 16,
+    "item": "superbwarfare:sniper_ammo"
+  },
+  "show_notification": true
 }

@@ -1,11 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
-  "category": "misc",
-  "pattern": [
-    " b ",
-    "dad",
-    "ece"
-  ],
+  "category": "equipment",
   "key": {
     "a": {
       "item": "minecraft:gunpowder"
@@ -17,14 +12,19 @@
       "item": "minecraft:calibrated_sculk_sensor"
     },
     "d": {
-      "item": "minecraft:iron_ingot"
+      "tag": "forge:ingots/iron"
     },
     "e": {
       "item": "minecraft:iron_bars"
     }
   },
+  "pattern": [
+    " b ",
+    "dad",
+    "ece"
+  ],
   "result": {
-    "item": "superbwarfare:ptkm_1r",
-    "count": 1
-  }
+    "item": "superbwarfare:ptkm_1r"
+  },
+  "show_notification": true
 }

@@ -1,11 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
-  "category": "misc",
-  "pattern": [
-    "ea ",
-    "bcb",
-    " d "
-  ],
+  "category": "equipment",
   "key": {
     "a": {
       "tag": "superbwarfare:ingots/steel"
@@ -23,8 +18,14 @@
       "item": "superbwarfare:high_energy_explosives"
     }
   },
+  "pattern": [
+    "ea ",
+    "bcb",
+    " d "
+  ],
   "result": {
-    "item": "superbwarfare:small_shell",
-    "count": 4
-  }
+    "count": 4,
+    "item": "superbwarfare:small_shell"
+  },
+  "show_notification": true
 }

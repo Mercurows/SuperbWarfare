@@ -1,14 +1,9 @@
 {
   "type": "minecraft:crafting_shaped",
-  "category": "misc",
-  "pattern": [
-    "abc",
-    "aba",
-    " da"
-  ],
+  "category": "equipment",
   "key": {
     "a": {
-      "item": "minecraft:iron_ingot"
+      "tag": "forge:ingots/iron"
     },
     "b": {
       "item": "superbwarfare:high_energy_explosives"
@@ -20,8 +15,14 @@
       "item": "minecraft:stone_button"
     }
   },
+  "pattern": [
+    "abc",
+    "aba",
+    " da"
+  ],
   "result": {
-    "item": "superbwarfare:rgo_grenade",
-    "count": 4
-  }
+    "count": 4,
+    "item": "superbwarfare:rgo_grenade"
+  },
+  "show_notification": true
 }

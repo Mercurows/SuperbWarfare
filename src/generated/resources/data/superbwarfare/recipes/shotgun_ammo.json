@@ -1,11 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
-  "category": "misc",
-  "pattern": [
-    " a ",
-    "bcb",
-    " d "
-  ],
+  "category": "equipment",
   "key": {
     "a": {
       "tag": "forge:ingots/lead"
@@ -20,8 +15,14 @@
       "item": "superbwarfare:primer"
     }
   },
+  "pattern": [
+    " a ",
+    "bcb",
+    " d "
+  ],
   "result": {
-    "item": "superbwarfare:shotgun_ammo",
-    "count": 24
-  }
+    "count": 24,
+    "item": "superbwarfare:shotgun_ammo"
+  },
+  "show_notification": true
 }
