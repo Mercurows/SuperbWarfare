@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "superbwarfare:tungsten_ingot_blasting_from_powder"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    },
+    "has_tungsten_powder": {
+      "conditions": {
+        "items": [
+          {
+            "items": "superbwarfare:tungsten_powder"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_tungsten_powder"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "superbwarfare:tungsten_ingot_blasting_from_powder"
+    ]
+  }
+}

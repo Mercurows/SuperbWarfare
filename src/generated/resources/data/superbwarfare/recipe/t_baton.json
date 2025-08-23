@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "a": {
+      "tag": "c:ingots/iron"
+    },
+    "b": {
+      "tag": "superbwarfare:ingots/steel"
+    }
+  },
+  "pattern": [
+    "  a",
+    " a ",
+    "ab "
+  ],
+  "result": {
+    "count": 1,
+    "id": "superbwarfare:t_baton"
+  }
+}

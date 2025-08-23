@@ -3,11 +3,11 @@
   "category": "misc",
   "ingredients": [
     {
-      "item": "superbwarfare:lead_block"
+      "item": "superbwarfare:silver_block"
     }
   ],
   "result": {
     "count": 9,
-    "id": "superbwarfare:lead_ingot"
+    "id": "superbwarfare:silver_ingot"
   }
 }

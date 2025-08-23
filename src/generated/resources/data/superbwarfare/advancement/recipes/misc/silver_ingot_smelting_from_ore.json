@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_galena_ore": {
+      "conditions": {
+        "items": [
+          {
+            "items": "#c:ores/silver"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "superbwarfare:silver_ingot_smelting_from_ore"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_galena_ore"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "superbwarfare:silver_ingot_smelting_from_ore"
+    ]
+  }
+}

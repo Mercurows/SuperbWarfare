@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "a": {
+      "item": "minecraft:target"
+    },
+    "b": {
+      "tag": "superbwarfare:ingots/steel"
+    },
+    "c": {
+      "item": "minecraft:armor_stand"
+    }
+  },
+  "pattern": [
+    "a",
+    "b",
+    "c"
+  ],
+  "result": {
+    "count": 1,
+    "id": "superbwarfare:target_deployer"
+  }
+}
