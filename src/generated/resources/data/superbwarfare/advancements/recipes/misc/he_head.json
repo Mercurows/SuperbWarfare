@@ -1,12 +1,12 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_copper_plate": {
+    "has_high_energy_explosives": {
       "conditions": {
         "items": [
           {
             "items": [
-              "superbwarfare:copper_plate"
+              "superbwarfare:high_energy_explosives"
             ]
           }
         ]
@@ -15,20 +15,20 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "superbwarfare:medium_battery_pack"
+        "recipe": "superbwarfare:he_head"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
   },
   "requirements": [
     [
-      "has_copper_plate",
+      "has_high_energy_explosives",
       "has_the_recipe"
     ]
   ],
   "rewards": {
     "recipes": [
-      "superbwarfare:medium_battery_pack"
+      "superbwarfare:he_head"
     ]
   },
   "sends_telemetry_event": false

@@ -33,6 +33,11 @@ import static com.atsuishio.superbwarfare.init.ModTags.commonItemTag;
 
 public class ModRecipeProvider extends RecipeProvider implements IConditionBuilder {
 
+    public static final TagKey<Item> PLATES_COPPER = commonItemTag("plates/copper");
+    public static final TagKey<Item> INGOTS_LEAD = commonItemTag("ingots/lead");
+    public static final TagKey<Item> INGOTS_SILVER = commonItemTag("ingots/silver");
+    public static final TagKey<Item> INGOTS_TUNGSTEN = commonItemTag("ingots/tungsten");
+
     public ModRecipeProvider(PackOutput pOutput) {
         super(pOutput);
     }
@@ -144,6 +149,13 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .unlockedBy(getHasName(Items.LIGHTNING_ROD), has(Items.LIGHTNING_ROD))
                 .unlockedBy(getHasName(ModItems.BATTERY.get()), has(ModItems.BATTERY.get()))
                 .save(writer, Mod.loc(getItemName(ModItems.ELECTRIC_BATON.get())));
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.KNIFE.get())
+                .pattern(" a")
+                .pattern("b ")
+                .define('a', ModTags.Items.INGOTS_STEEL)
+                .define('b', Items.STICK)
+                .unlockedBy(getHasName(ModItems.STEEL_INGOT.get()), has(ModItems.STEEL_INGOT.get()))
+                .save(writer, Mod.loc(getItemName(ModItems.KNIFE.get())));
     }
 
     private static void buildArmorRecipes(Consumer<FinishedRecipe> writer) {
@@ -203,7 +215,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .pattern(" b ")
                 .pattern("ada")
                 .pattern("cec")
-                .define('a', commonItemTag("plates/copper"))
+                .define('a', PLATES_COPPER)
                 .define('b', ModItems.SEEKER.get())
                 .define('c', ModItems.HIGH_ENERGY_EXPLOSIVES.get())
                 .define('d', Items.TNT)
@@ -236,7 +248,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .pattern("ede")
                 .define('a', ModItems.FUSEE.get())
                 .define('b', Items.IRON_INGOT)
-                .define('c', commonItemTag("plates/copper"))
+                .define('c', PLATES_COPPER)
                 .define('d', ModItems.GRAIN.get())
                 .define('e', Items.GUNPOWDER)
                 .unlockedBy(getHasName(ModItems.FUSEE.get()), has(ModItems.FUSEE.get()))
@@ -329,7 +341,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .pattern("bcb")
                 .pattern(" d ")
                 .define('a', Tags.Items.INGOTS_COPPER)
-                .define('b', commonItemTag("plates/copper"))
+                .define('b', PLATES_COPPER)
                 .define('c', Items.GUNPOWDER)
                 .define('d', ModItems.PRIMER.get())
                 .unlockedBy(getHasName(ModItems.PRIMER.get()), has(ModItems.PRIMER.get()))
@@ -348,7 +360,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .pattern("bcb")
                 .pattern(" d ")
                 .define('a', ModTags.Items.INGOTS_STEEL)
-                .define('b', commonItemTag("plates/copper"))
+                .define('b', PLATES_COPPER)
                 .define('c', Items.GUNPOWDER)
                 .define('d', ModItems.PRIMER.get())
                 .unlockedBy(getHasName(ModItems.PRIMER.get()), has(ModItems.PRIMER.get()))
@@ -464,7 +476,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .pattern("bcb")
                 .pattern(" d ")
                 .define('a', ModTags.Items.INGOTS_STEEL)
-                .define('b', commonItemTag("plates/copper"))
+                .define('b', PLATES_COPPER)
                 .define('c', Items.GUNPOWDER)
                 .define('d', ModItems.PRIMER.get())
                 .unlockedBy(getHasName(ModItems.PRIMER.get()), has(ModItems.PRIMER.get()))
@@ -473,8 +485,8 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .pattern(" a ")
                 .pattern("bcb")
                 .pattern(" d ")
-                .define('a', commonItemTag("ingots/lead"))
-                .define('b', commonItemTag("plates/copper"))
+                .define('a', INGOTS_LEAD)
+                .define('b', PLATES_COPPER)
                 .define('c', Items.GUNPOWDER)
                 .define('d', ModItems.PRIMER.get())
                 .unlockedBy(getHasName(ModItems.PRIMER.get()), has(ModItems.PRIMER.get()))
@@ -483,8 +495,8 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .pattern(" a ")
                 .pattern("bcb")
                 .pattern(" d ")
-                .define('a', commonItemTag("ingots/tungsten"))
-                .define('b', commonItemTag("plates/copper"))
+                .define('a', INGOTS_TUNGSTEN)
+                .define('b', PLATES_COPPER)
                 .define('c', Items.GUNPOWDER)
                 .define('d', ModItems.PRIMER.get())
                 .unlockedBy(getHasName(ModItems.PRIMER.get()), has(ModItems.PRIMER.get()))
@@ -567,7 +579,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .pattern("cac")
                 .pattern(" d ")
                 .define('a', Tags.Items.DUSTS_REDSTONE)
-                .define('b', commonItemTag("plates/copper"))
+                .define('b', PLATES_COPPER)
                 .define('c', Tags.Items.GLASS_PANES)
                 .define('d', Tags.Items.INGOTS_IRON)
                 .unlockedBy(getHasName(Items.REDSTONE), has(Items.REDSTONE))
@@ -649,6 +661,69 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .define('c', Tags.Items.NUGGETS_IRON)
                 .unlockedBy(getHasName(Items.STONE_BUTTON), has(Items.STONE_BUTTON))
                 .save(writer, Mod.loc(getItemName(ModItems.FUSEE.get())));
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.GRAIN.get(), 8)
+                .pattern("aba")
+                .pattern("aba")
+                .pattern(" c ")
+                .define('a', PLATES_COPPER)
+                .define('b', Items.GUNPOWDER)
+                .define('c', ModItems.PRIMER.get())
+                .unlockedBy(getHasName(ModItems.PRIMER.get()), has(ModItems.PRIMER.get()))
+                .save(writer, Mod.loc(getItemName(ModItems.GRAIN.get())));
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.GS_HEAD.get(), 2)
+                .pattern("ddd")
+                .pattern("bdb")
+                .pattern("cac")
+                .define('a', Items.GUNPOWDER)
+                .define('b', Tags.Items.INGOTS_IRON)
+                .define('c', ModTags.Items.INGOTS_STEEL)
+                .define('d', INGOTS_LEAD)
+                .unlockedBy(getHasName(Items.GUNPOWDER), has(Items.GUNPOWDER))
+                .save(writer, Mod.loc(getItemName(ModItems.GS_HEAD.get())));
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.HE_HEAD.get(), 2)
+                .pattern(" b ")
+                .pattern("bab")
+                .pattern("cac")
+                .define('a', ModItems.HIGH_ENERGY_EXPLOSIVES.get())
+                .define('b', Tags.Items.INGOTS_IRON)
+                .define('c', ModTags.Items.INGOTS_STEEL)
+                .unlockedBy(getHasName(ModItems.HIGH_ENERGY_EXPLOSIVES.get()), has(ModItems.HIGH_ENERGY_EXPLOSIVES.get()))
+                .save(writer, Mod.loc(getItemName(ModItems.HE_HEAD.get())));
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.HEAVY_ARMAMENT_MODULE.get())
+                .pattern("ddd")
+                .pattern("abc")
+                .pattern("ddd")
+                .define('a', ModItems.CANNON_CORE.get())
+                .define('b', ModItems.LEGENDARY_MATERIAL_PACK.get())
+                .define('c', ModItems.MEDIUM_ARMAMENT_MODULE.get())
+                .define('d', Tags.Items.INGOTS_NETHERITE)
+                .unlockedBy(getHasName(ModItems.MEDIUM_ARMAMENT_MODULE.get()), has(ModItems.MEDIUM_ARMAMENT_MODULE.get()))
+                .save(writer, Mod.loc(getItemName(ModItems.HEAVY_ARMAMENT_MODULE.get())));
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.HIGH_ENERGY_EXPLOSIVES.get(), 4)
+                .pattern("aba")
+                .pattern("cac")
+                .pattern("aba")
+                .define('a', Items.GUNPOWDER)
+                .define('b', Items.SUGAR)
+                .define('c', Tags.Items.SAND)
+                .unlockedBy(getHasName(Items.GUNPOWDER), has(Items.GUNPOWDER))
+                .save(writer, Mod.loc(getItemName(ModItems.HIGH_ENERGY_EXPLOSIVES.get())));
+        SimpleCookingRecipeBuilder.generic(Ingredient.of(Items.IRON_INGOT),
+                        RecipeCategory.MISC,
+                        ModItems.IRON_POWDER.get(),
+                        0.7f,
+                        100,
+                        RecipeSerializer.BLASTING_RECIPE)
+                .unlockedBy(getHasName(ModItems.IRON_POWDER.get()), has(ModItems.IRON_POWDER.get()))
+                .save(writer, Mod.loc(getItemName(Items.IRON_INGOT) + "_blasting_from_powder"));
+        SimpleCookingRecipeBuilder.generic(Ingredient.of(Items.IRON_INGOT),
+                        RecipeCategory.MISC,
+                        ModItems.IRON_POWDER.get(),
+                        0.7f,
+                        100,
+                        RecipeSerializer.SMELTING_RECIPE)
+                .unlockedBy(getHasName(ModItems.IRON_POWDER.get()), has(ModItems.IRON_POWDER.get()))
+                .save(writer, Mod.loc(getItemName(Items.IRON_INGOT) + "_smelting_from_powder"));
     }
 
     private static void buildBlockRecipes(Consumer<FinishedRecipe> writer) {
@@ -699,7 +774,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .pattern("ada")
                 .pattern("dcd")
                 .pattern("aba")
-                .define('a', commonItemTag("plates/copper"))
+                .define('a', PLATES_COPPER)
                 .define('b', Tags.Items.INGOTS_IRON)
                 .define('c', Items.BLAST_FURNACE)
                 .define('d', ModItems.CELL.get())
@@ -726,7 +801,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .pattern("aaa")
                 .pattern("aba")
                 .pattern("aaa")
-                .define('a', commonItemTag("ingots/lead"))
+                .define('a', INGOTS_LEAD)
                 .define('b', ModItems.LEAD_INGOT.get())
                 .unlockedBy(getHasName(ModItems.LEAD_INGOT.get()), has(ModItems.LEAD_INGOT.get()))
                 .save(writer, Mod.loc(getItemName(ModItems.LEAD_BLOCK.get())));
@@ -751,7 +826,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .pattern("aaa")
                 .pattern("aba")
                 .pattern("aaa")
-                .define('a', commonItemTag("ingots/silver"))
+                .define('a', INGOTS_SILVER)
                 .define('b', ModItems.SILVER_INGOT.get())
                 .unlockedBy(getHasName(ModItems.SILVER_INGOT.get()), has(ModItems.SILVER_INGOT.get()))
                 .save(writer, Mod.loc(getItemName(ModItems.SILVER_BLOCK.get())));
@@ -767,7 +842,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .pattern("aaa")
                 .pattern("aba")
                 .pattern("aaa")
-                .define('a', commonItemTag("ingots/tungsten"))
+                .define('a', INGOTS_TUNGSTEN)
                 .define('b', ModItems.TUNGSTEN_INGOT.get())
                 .unlockedBy(getHasName(ModItems.TUNGSTEN_INGOT.get()), has(ModItems.TUNGSTEN_INGOT.get()))
                 .save(writer, Mod.loc(getItemName(ModItems.TUNGSTEN_BLOCK.get())));
@@ -907,26 +982,26 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .save(writer, Mod.loc(getEntityTypeName(ModEntities.A_10A.get())));
 
         VehicleAssemblingRecipeBuilder.item(ModItems.SMALL_BATTERY_PACK.get(), 1, VehicleAssemblingRecipe.Category.MISC)
-                .require(commonItemTag("plates/copper"), 4)
-                .require(commonItemTag("glass_panes"), 8)
+                .require(PLATES_COPPER, 4)
+                .require(Tags.Items.GLASS_PANES, 8)
                 .require(Items.REDSTONE, 4)
                 .require(Items.IRON_INGOT, 4)
                 .unlockedBy(getHasName(ModItems.COPPER_PLATE.get()), has(ModItems.COPPER_PLATE.get()))
-                .save(writer, Mod.loc(getItemName(ModItems.SMALL_BATTERY_PACK.get())));
+                .save(writer, Mod.loc(getItemName(ModItems.SMALL_BATTERY_PACK.get()) + "_assembling"));
         VehicleAssemblingRecipeBuilder.item(ModItems.MEDIUM_BATTERY_PACK.get(), 1, VehicleAssemblingRecipe.Category.MISC)
-                .require(commonItemTag("plates/copper"), 36)
-                .require(commonItemTag("glass_panes"), 72)
+                .require(PLATES_COPPER, 36)
+                .require(Tags.Items.GLASS_PANES, 72)
                 .require(Items.REDSTONE, 36)
                 .require(Items.IRON_INGOT, 36)
                 .unlockedBy(getHasName(ModItems.COPPER_PLATE.get()), has(ModItems.COPPER_PLATE.get()))
-                .save(writer, Mod.loc(getItemName(ModItems.MEDIUM_BATTERY_PACK.get())));
+                .save(writer, Mod.loc(getItemName(ModItems.MEDIUM_BATTERY_PACK.get()) + "_assembling"));
         VehicleAssemblingRecipeBuilder.item(ModItems.LARGE_BATTERY_PACK.get(), 1, VehicleAssemblingRecipe.Category.MISC)
-                .require(commonItemTag("plates/copper"), 144)
-                .require(commonItemTag("glass_panes"), 288)
+                .require(PLATES_COPPER, 144)
+                .require(Tags.Items.GLASS_PANES, 288)
                 .require(Items.REDSTONE, 144)
                 .require(Items.IRON_INGOT, 144)
                 .unlockedBy(getHasName(ModItems.COPPER_PLATE.get()), has(ModItems.COPPER_PLATE.get()))
-                .save(writer, Mod.loc(getItemName(ModItems.LARGE_BATTERY_PACK.get())));
+                .save(writer, Mod.loc(getItemName(ModItems.LARGE_BATTERY_PACK.get()) + "_assembling"));
     }
 
     private static void buildGunRecipes(Consumer<FinishedRecipe> writer) {
@@ -969,6 +1044,17 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
         gunSmithing(writer, ModItems.SECONDARY_CATACLYSM_BLUEPRINT.get(), GunRarity.LEGENDARY, ModItems.KNIFE.get(), ModItems.SECONDARY_CATACLYSM.get());
         gunSmithing(writer, ModItems.INSIDIOUS_BLUEPRINT.get(), GunRarity.EPIC, ModTags.Items.INGOTS_CEMENTED_CARBIDE, ModItems.INSIDIOUS.get());
         gunSmithing(writer, ModItems.AURELIA_SCEPTRE_BLUEPRINT.get(), GunRarity.LEGENDARY, Items.END_CRYSTAL, ModItems.AURELIA_SCEPTRE.get());
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.HOMEMADE_SHOTGUN.get())
+                .pattern("aab")
+                .pattern("ccc")
+                .pattern(" dc")
+                .define('a', ModItems.IRON_MATERIALS.barrel().get())
+                .define('b', Items.FLINT_AND_STEEL)
+                .define('c', ItemTags.PLANKS)
+                .define('d', Tags.Items.DUSTS_REDSTONE)
+                .unlockedBy(getHasName(ModItems.IRON_MATERIALS.barrel().get()), has(ModItems.IRON_MATERIALS.barrel().get()))
+                .save(writer, Mod.loc(getItemName(ModItems.HOMEMADE_SHOTGUN.get())));
     }
 
     private static void buildBlueprintRecipes(Consumer<FinishedRecipe> writer) {
@@ -1034,7 +1120,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .pattern("cbc")
                 .define('a', ModItems.EMPTY_PERK.get())
                 .define('b', commonItemTag("storage_blocks/tungsten"))
-                .define('c', commonItemTag("ingots/tungsten"))
+                .define('c', INGOTS_TUNGSTEN)
                 .unlockedBy(getHasName(ModItems.EMPTY_PERK.get()), has(ModItems.EMPTY_PERK.get()))
                 .save(writer, perkLoc(ModPerks.AP_BULLET));
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.PERK_ITEMS.get(ModPerks.CUPID_ARROW).get())
@@ -1162,7 +1248,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .pattern("cbc")
                 .define('a', ModItems.EMPTY_PERK.get())
                 .define('b', commonItemTag("storage_blocks/silver"))
-                .define('c', commonItemTag("ingots/silver"))
+                .define('c', INGOTS_SILVER)
                 .unlockedBy(getHasName(ModItems.EMPTY_PERK.get()), has(ModItems.EMPTY_PERK.get()))
                 .save(writer, perkLoc(ModPerks.SILVER_BULLET));
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.PERK_ITEMS.get(ModPerks.TURBO_CHARGER).get())
@@ -1225,6 +1311,14 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .define('c', ItemTags.PLANKS)
                 .unlockedBy(getHasName(Items.TARGET), has(Items.TARGET))
                 .save(writer, Mod.loc(getItemName(ModItems.FIRING_PARAMETERS.get())));
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.IFF.get())
+                .pattern("ab")
+                .pattern("c ")
+                .define('a', Tags.Items.DUSTS_REDSTONE)
+                .define('b', Tags.Items.GEMS_LAPIS)
+                .define('c', PLATES_COPPER)
+                .unlockedBy(getHasName(Items.LAPIS_LAZULI), has(Items.LAPIS_LAZULI))
+                .save(writer, Mod.loc(getItemName(ModItems.IFF.get())));
     }
 
     private static void buildSpecialRecipes(Consumer<FinishedRecipe> writer) {
