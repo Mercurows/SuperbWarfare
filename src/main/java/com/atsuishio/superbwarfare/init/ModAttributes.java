@@ -25,6 +25,7 @@ public class ModAttributes {
     public static void addAttributes(EntityAttributeModificationEvent event) {
         List<EntityType<? extends LivingEntity>> entityTypes = event.getTypes();
         entityTypes.forEach((e) -> {
+            // TODO 正确实现添加属性
             Class<? extends Entity> baseClass = e.getBaseClass();
             if (baseClass.isAssignableFrom(LivingEntity.class)) {
                 event.add(e, BULLET_RESISTANCE);

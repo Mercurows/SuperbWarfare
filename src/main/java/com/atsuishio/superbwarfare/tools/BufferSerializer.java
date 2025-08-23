@@ -87,20 +87,21 @@ public class BufferSerializer {
 
     public static <T> T deserialize(FriendlyByteBuf buffer, T object) {
         sortedFields(object).forEach(field -> {
-            if (field.getType().isAssignableFrom(Byte.class) || field.getType().getName().equals("byte")) {
+            var classType = field.getType();
+            if (byte.class.isAssignableFrom(classType) || Byte.class.isAssignableFrom(classType)) {
                 setField(object, field, buffer.readByte());
-            } else if (field.getType().isAssignableFrom(Integer.class) || field.getType().getName().equals("int")) {
+            } else if (int.class.isAssignableFrom(classType) || Integer.class.isAssignableFrom(classType)) {
                 setField(object, field, buffer.readVarInt());
-            } else if (field.getType().isAssignableFrom(Long.class) || field.getType().getName().equals("long")) {
+            } else if (long.class.isAssignableFrom(classType) || Long.class.isAssignableFrom(classType)) {
                 setField(object, field, buffer.readLong());
-            } else if (field.getType().isAssignableFrom(Float.class) || field.getType().getName().equals("float")) {
+            } else if (float.class.isAssignableFrom(classType) || Float.class.isAssignableFrom(classType)) {
                 setField(object, field, buffer.readFloat());
-            } else if (field.getType().isAssignableFrom(Double.class) || field.getType().getName().equals("double")) {
+            } else if (double.class.isAssignableFrom(classType) || Double.class.isAssignableFrom(classType)) {
                 setField(object, field, buffer.readDouble());
-            } else if (field.getType().isAssignableFrom(String.class)) {
-                setField(object, field, buffer.readUtf());
-            } else if (field.getType().isAssignableFrom(Boolean.class) || field.getType().getName().equals("boolean")) {
+            } else if (boolean.class.isAssignableFrom(classType) || Boolean.class.isAssignableFrom(classType)) {
                 setField(object, field, buffer.readBoolean());
+            } else if (String.class.isAssignableFrom(classType)) {
+                setField(object, field, buffer.readUtf());
             } else {
                 setField(object, field, GSON.fromJson(buffer.readUtf(), field.getGenericType()));
             }
