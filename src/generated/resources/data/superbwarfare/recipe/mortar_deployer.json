@@ -1,10 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
-  "category": "equipment",
-  "pattern": [
-    "a ",
-    "bc"
-  ],
+  "category": "misc",
   "key": {
     "a": {
       "item": "superbwarfare:mortar_barrel"
@@ -16,8 +12,12 @@
       "item": "superbwarfare:mortar_base_plate"
     }
   },
+  "pattern": [
+    "a ",
+    "bc"
+  ],
   "result": {
-    "id": "superbwarfare:mortar_deployer",
-    "count": 1
+    "count": 1,
+    "id": "superbwarfare:mortar_deployer"
   }
 }

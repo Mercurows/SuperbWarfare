@@ -16,9 +16,9 @@
     }
   },
   "pattern": [
-    "abc",
+    " cd",
     "aba",
-    " da"
+    "aba"
   ],
   "result": {
     "count": 4,

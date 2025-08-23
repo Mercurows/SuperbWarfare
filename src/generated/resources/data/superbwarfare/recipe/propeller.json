@@ -1,21 +1,21 @@
 {
   "type": "minecraft:crafting_shaped",
   "category": "misc",
-  "pattern": [
-    " a ",
-    "aba",
-    " a "
-  ],
   "key": {
     "a": {
       "tag": "minecraft:planks"
     },
     "b": {
-      "item": "minecraft:iron_nugget"
+      "tag": "c:nuggets/iron"
     }
   },
+  "pattern": [
+    " a ",
+    "aba",
+    " a "
+  ],
   "result": {
-    "id": "superbwarfare:propeller",
-    "count": 2
+    "count": 2,
+    "id": "superbwarfare:propeller"
   }
 }

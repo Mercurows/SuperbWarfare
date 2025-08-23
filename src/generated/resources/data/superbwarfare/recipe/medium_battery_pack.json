@@ -1,18 +1,18 @@
 {
   "type": "minecraft:crafting_shaped",
-  "category": "equipment",
-  "pattern": [
-    "aaa",
-    "aaa",
-    "aaa"
-  ],
+  "category": "misc",
   "key": {
     "a": {
       "item": "superbwarfare:small_battery_pack"
     }
   },
+  "pattern": [
+    "aaa",
+    "aaa",
+    "aaa"
+  ],
   "result": {
-    "id": "superbwarfare:medium_battery_pack",
-    "count": 1
+    "count": 1,
+    "id": "superbwarfare:medium_battery_pack"
   }
 }

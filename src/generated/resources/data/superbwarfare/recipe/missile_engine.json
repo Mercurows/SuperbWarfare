@@ -1,27 +1,27 @@
 {
   "type": "minecraft:crafting_shaped",
   "category": "misc",
-  "pattern": [
-    "aba",
-    "cbc",
-    " e "
-  ],
   "key": {
     "a": {
-      "item": "minecraft:copper_ingot"
+      "tag": "c:ingots/copper"
     },
     "b": {
       "item": "superbwarfare:grain"
     },
     "c": {
-      "item": "minecraft:iron_ingot"
+      "tag": "c:ingots/iron"
     },
-    "e": {
+    "d": {
       "item": "minecraft:firework_rocket"
     }
   },
+  "pattern": [
+    "aba",
+    "cbc",
+    " d "
+  ],
   "result": {
-    "id": "superbwarfare:missile_engine",
-    "count": 4
+    "count": 4,
+    "id": "superbwarfare:missile_engine"
   }
 }

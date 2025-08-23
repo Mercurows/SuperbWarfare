@@ -7,7 +7,7 @@
     }
   ],
   "result": {
-    "id": "superbwarfare:monitor",
-    "count": 1
+    "count": 1,
+    "id": "superbwarfare:monitor"
   }
 }

@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "a": {
+      "tag": "c:ingots/iron"
+    },
+    "b": {
+      "tag": "c:dyes/green"
+    }
+  },
+  "pattern": [
+    " b ",
+    "aaa"
+  ],
+  "result": {
+    "count": 1,
+    "id": "superbwarfare:mortar_base_plate"
+  }
+}
