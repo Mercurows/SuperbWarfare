@@ -310,7 +310,6 @@ public class Agm65Entity extends FastThrowableProjectile implements GeoEntity, E
         return 0.7f;
     }
 
-    // TODO setter
     @Override
     public void setDamage(float damage) {
         this.damage = damage;

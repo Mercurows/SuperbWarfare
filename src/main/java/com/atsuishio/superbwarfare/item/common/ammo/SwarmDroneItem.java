@@ -67,8 +67,6 @@ public class SwarmDroneItem extends Item implements ProjectileItem {
         }
     }
 
-    // TODO 怎么发射？
-
     @Override
     @ParametersAreNonnullByDefault
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
