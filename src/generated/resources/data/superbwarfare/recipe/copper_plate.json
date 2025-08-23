@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "tag": "c:ingots/copper"
+    },
+    {
+      "item": "superbwarfare:hammer"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "superbwarfare:copper_plate"
+  }
+}

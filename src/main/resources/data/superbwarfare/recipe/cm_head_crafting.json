@@ -1,17 +1,12 @@
 {
   "type": "minecraft:crafting_shaped",
   "category": "misc",
-  "pattern": [
-    "ddd",
-    "bdb",
-    "cac"
-  ],
   "key": {
     "a": {
       "item": "minecraft:gunpowder"
     },
     "b": {
-      "item": "minecraft:iron_ingot"
+      "tag": "forge:ingots/iron"
     },
     "c": {
       "tag": "superbwarfare:ingots/steel"
@@ -20,8 +15,21 @@
       "item": "superbwarfare:grenade_40mm"
     }
   },
+  "pattern": [
+    "ddd",
+    "bdb",
+    "cac"
+  ],
   "result": {
+    <<<<<<<<
+    HEAD: src/main/resources/data/superbwarfare/recipe/cm_head_crafting.json
     "id": "superbwarfare:cm_head",
     "count": 2
   }
+  ========
+  "count": 2,
+  "item": "superbwarfare:cm_head"
+},
+"show_notification": true
+>>>>>>>> 1aad83bce (添加部分工具和弹药配方datagen): src/generated/resources/data/superbwarfare/recipe/cm_head.json
 }

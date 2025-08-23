@@ -10,7 +10,14 @@
     }
   ],
   "result": {
+    <<<<<<<<
+    HEAD: src/main/resources/data/superbwarfare/recipe/coal_powder_crafting.json
     "id": "superbwarfare:coal_powder",
     "count": 1
+    ========
+    "item": "superbwarfare:coal_powder"
+    >>>>>>>>
+    1aad83bce
+    (添加部分工具和弹药配方datagen): src/generated/resources/data/superbwarfare/recipe/coal_powder.json
   }
 }

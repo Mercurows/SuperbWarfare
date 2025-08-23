@@ -1,11 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
-  "category": "misc",
-  "pattern": [
-    "c",
-    "a",
-    "b"
-  ],
+  "category": "equipment",
   "key": {
     "a": {
       "item": "superbwarfare:gs_head"
@@ -17,8 +12,20 @@
       "item": "superbwarfare:fusee"
     }
   },
+  "pattern": [
+    "c",
+    "a",
+    "b"
+  ],
   "result": {
+    <<<<<<<<
+    HEAD: src/main/resources/data/superbwarfare/recipe/gs_shell_crafting.json
     "id": "superbwarfare:gs_5_inches",
     "count": 1
   }
+  ========
+  "item": "superbwarfare:gs_5_inches"
+},
+"show_notification": true
+>>>>>>>> 1aad83bce (添加部分工具和弹药配方datagen): src/generated/resources/data/superbwarfare/recipe/gs_5_inches.json
 }

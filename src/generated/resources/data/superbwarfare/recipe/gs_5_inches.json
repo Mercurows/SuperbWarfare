@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "a": {
+      "item": "superbwarfare:gs_head"
+    },
+    "b": {
+      "item": "superbwarfare:grain"
+    },
+    "c": {
+      "item": "superbwarfare:fusee"
+    }
+  },
+  "pattern": [
+    "c",
+    "a",
+    "b"
+  ],
+  "result": {
+    "count": 1,
+    "id": "superbwarfare:gs_5_inches"
+  }
+}

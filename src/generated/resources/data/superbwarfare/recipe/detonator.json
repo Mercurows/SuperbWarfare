@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "a": {
+      "item": "minecraft:redstone_torch"
+    },
+    "b": {
+      "item": "minecraft:stone_button"
+    },
+    "c": {
+      "tag": "c:ingots/iron"
+    }
+  },
+  "pattern": [
+    " a",
+    "bc"
+  ],
+  "result": {
+    "count": 1,
+    "id": "superbwarfare:detonator"
+  }
+}

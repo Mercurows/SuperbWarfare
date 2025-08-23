@@ -1,21 +1,28 @@
 {
   "type": "minecraft:crafting_shaped",
   "category": "equipment",
-  "pattern": [
-    "  a",
-    " b ",
-    "b  "
-  ],
   "key": {
     "a": {
       "tag": "superbwarfare:ingots/steel"
     },
     "b": {
-      "item": "minecraft:iron_ingot"
+      "tag": "forge:ingots/iron"
     }
   },
+  "pattern": [
+    "  a",
+    " b ",
+    "b  "
+  ],
   "result": {
+    <<<<<<<<
+    HEAD: src/main/resources/data/superbwarfare/recipe/crowbar_crafting.json
     "id": "superbwarfare:crowbar",
     "count": 1
   }
+  ========
+  "item": "superbwarfare:crowbar"
+},
+"show_notification": true
+>>>>>>>> 1aad83bce (添加部分工具和弹药配方datagen): src/generated/resources/data/superbwarfare/recipe/crowbar.json
 }
