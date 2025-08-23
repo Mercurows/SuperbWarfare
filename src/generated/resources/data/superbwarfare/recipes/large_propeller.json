@@ -1,21 +1,21 @@
 {
   "type": "minecraft:crafting_shaped",
   "category": "misc",
-  "pattern": [
-    " a ",
-    "aba",
-    " a "
-  ],
   "key": {
     "a": {
-      "item": "minecraft:iron_ingot"
+      "tag": "forge:ingots/iron"
     },
     "b": {
       "tag": "superbwarfare:ingots/cemented_carbide"
     }
   },
+  "pattern": [
+    " a ",
+    "aba",
+    " a "
+  ],
   "result": {
-    "item": "superbwarfare:large_propeller",
-    "count": 1
-  }
+    "item": "superbwarfare:large_propeller"
+  },
+  "show_notification": true
 }
