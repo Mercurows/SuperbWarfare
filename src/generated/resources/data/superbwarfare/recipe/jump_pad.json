@@ -1,11 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
-  "category": "building",
-  "pattern": [
-    " a ",
-    "bcb",
-    "bbb"
-  ],
+  "category": "misc",
   "key": {
     "a": {
       "item": "minecraft:stone_pressure_plate"
@@ -17,8 +12,13 @@
       "item": "minecraft:piston"
     }
   },
+  "pattern": [
+    " a ",
+    "bcb",
+    "bcb"
+  ],
   "result": {
-    "id": "superbwarfare:jump_pad",
-    "count": 1
+    "count": 1,
+    "id": "superbwarfare:jump_pad"
   }
 }

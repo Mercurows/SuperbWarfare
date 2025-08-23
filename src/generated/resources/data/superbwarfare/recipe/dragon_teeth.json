@@ -1,21 +1,21 @@
 {
   "type": "minecraft:crafting_shaped",
   "category": "misc",
-  "pattern": [
-    " a ",
-    "bbb",
-    "bbb"
-  ],
   "key": {
     "a": {
-      "item": "minecraft:iron_nugget"
+      "tag": "c:nuggets/iron"
     },
     "b": {
       "item": "minecraft:smooth_stone"
     }
   },
+  "pattern": [
+    " a ",
+    "bbb",
+    "bbb"
+  ],
   "result": {
-    "id": "superbwarfare:dragon_teeth",
-    "count": 4
+    "count": 4,
+    "id": "superbwarfare:dragon_teeth"
   }
 }

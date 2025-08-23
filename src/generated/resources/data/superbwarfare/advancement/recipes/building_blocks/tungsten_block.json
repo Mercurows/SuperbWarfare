@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "superbwarfare:tungsten_block"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    },
+    "has_tungsten_ingot": {
+      "conditions": {
+        "items": [
+          {
+            "items": "superbwarfare:tungsten_ingot"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_tungsten_ingot"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "superbwarfare:tungsten_block"
+    ]
+  }
+}

@@ -27,7 +27,7 @@
     },
     {
       "type": "patchouli:crafting",
-      "recipe": "superbwarfare:charging_station_crafting",
+      "recipe": "superbwarfare:charging_station",
       "text": "superbwarfare.page.vehicle.intro.6"
     }
   ],

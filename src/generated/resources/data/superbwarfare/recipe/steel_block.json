@@ -1,11 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
-  "category": "equipment",
-  "pattern": [
-    "aaa",
-    "aba",
-    "aaa"
-  ],
+  "category": "building",
   "key": {
     "a": {
       "tag": "c:ingots/steel"
@@ -14,8 +9,13 @@
       "item": "superbwarfare:steel_ingot"
     }
   },
+  "pattern": [
+    "aaa",
+    "aba",
+    "aaa"
+  ],
   "result": {
-    "id": "superbwarfare:steel_block",
-    "count": 1
+    "count": 1,
+    "id": "superbwarfare:steel_block"
   }
 }

@@ -13,7 +13,7 @@
     },
     {
       "type": "patchouli:crafting",
-      "recipe": "superbwarfare:jump_pad_crafting",
+      "recipe": "superbwarfare:jump_pad",
       "text": "superbwarfare.page.misc.jump_pad.3"
     }
   ],
