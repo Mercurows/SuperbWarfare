@@ -5,10 +5,8 @@
   "ingredient": {
     "tag": "c:dusts/lead"
   },
-  "result": {
-    "id": "superbwarfare:lead_ingot"
-  },
-  "conditions": [
+  "result": "superbwarfare:lead_ingot",
+  "neoforge:conditions": [
     {
       "type": "neoforge:not",
       "value": {

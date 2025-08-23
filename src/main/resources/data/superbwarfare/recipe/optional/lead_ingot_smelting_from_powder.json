@@ -3,15 +3,15 @@
   "cookingtime": 200,
   "experience": 0.3,
   "ingredient": {
-    "tag": "forge:dusts/lead"
+    "tag": "c:dusts/lead"
   },
   "result": "superbwarfare:lead_ingot",
-  "conditions": [
+  "neoforge:conditions": [
     {
-      "type": "forge:not",
+      "type": "neoforge:not",
       "value": {
-        "type": "forge:tag_empty",
-        "tag": "forge:dusts/lead"
+        "type": "neoforge:tag_empty",
+        "tag": "c:dusts/lead"
       }
     }
   ]
