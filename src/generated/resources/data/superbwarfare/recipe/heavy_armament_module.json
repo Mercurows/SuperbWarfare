@@ -1,11 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
   "category": "misc",
-  "pattern": [
-    "ddd",
-    "abc",
-    "ddd"
-  ],
   "key": {
     "a": {
       "item": "superbwarfare:cannon_core"
@@ -17,11 +12,16 @@
       "item": "superbwarfare:medium_armament_module"
     },
     "d": {
-      "item": "minecraft:netherite_ingot"
+      "tag": "c:ingots/netherite"
     }
   },
+  "pattern": [
+    "ddd",
+    "abc",
+    "ddd"
+  ],
   "result": {
-    "id": "superbwarfare:heavy_armament_module",
-    "count": 1
+    "count": 1,
+    "id": "superbwarfare:heavy_armament_module"
   }
 }

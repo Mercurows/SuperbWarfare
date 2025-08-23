@@ -1,20 +1,20 @@
 {
   "type": "minecraft:crafting_shaped",
   "category": "equipment",
-  "pattern": [
-    " a",
-    "b "
-  ],
   "key": {
     "a": {
-      "tag": "c:ingots/steel"
+      "tag": "superbwarfare:ingots/steel"
     },
     "b": {
       "item": "minecraft:stick"
     }
   },
+  "pattern": [
+    " a",
+    "b "
+  ],
   "result": {
-    "id": "superbwarfare:knife",
-    "count": 1
+    "count": 1,
+    "id": "superbwarfare:knife"
   }
 }

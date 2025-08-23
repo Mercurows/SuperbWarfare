@@ -1,17 +1,12 @@
 {
   "type": "minecraft:crafting_shaped",
   "category": "misc",
-  "pattern": [
-    "ddd",
-    "bdb",
-    "cac"
-  ],
   "key": {
     "a": {
       "item": "minecraft:gunpowder"
     },
     "b": {
-      "item": "minecraft:iron_ingot"
+      "tag": "c:ingots/iron"
     },
     "c": {
       "tag": "superbwarfare:ingots/steel"
@@ -20,8 +15,13 @@
       "tag": "c:ingots/lead"
     }
   },
+  "pattern": [
+    "ddd",
+    "bdb",
+    "cac"
+  ],
   "result": {
-    "id": "superbwarfare:gs_head",
-    "count": 2
+    "count": 2,
+    "id": "superbwarfare:gs_head"
   }
 }

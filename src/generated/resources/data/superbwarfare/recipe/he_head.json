@@ -1,24 +1,24 @@
 {
   "type": "minecraft:crafting_shaped",
   "category": "misc",
-  "pattern": [
-    " b ",
-    "bab",
-    "cac"
-  ],
   "key": {
     "a": {
       "item": "superbwarfare:high_energy_explosives"
     },
     "b": {
-      "item": "minecraft:iron_ingot"
+      "tag": "c:ingots/iron"
     },
     "c": {
       "tag": "superbwarfare:ingots/steel"
     }
   },
+  "pattern": [
+    " b ",
+    "bab",
+    "cac"
+  ],
   "result": {
-    "id": "superbwarfare:he_head",
-    "count": 2
+    "count": 2,
+    "id": "superbwarfare:he_head"
   }
 }

@@ -1,10 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
-  "category": "equipment",
-  "pattern": [
-    "ab",
-    "c "
-  ],
+  "category": "misc",
   "key": {
     "a": {
       "tag": "c:dusts/redstone"
@@ -16,8 +12,12 @@
       "tag": "c:plates/copper"
     }
   },
+  "pattern": [
+    "ab",
+    "c "
+  ],
   "result": {
-    "id": "superbwarfare:iff",
-    "count": 1
+    "count": 1,
+    "id": "superbwarfare:iff"
   }
 }

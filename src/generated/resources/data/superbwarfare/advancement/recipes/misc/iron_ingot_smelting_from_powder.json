@@ -1,11 +1,11 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_copper_plate": {
+    "has_iron_powder": {
       "conditions": {
         "items": [
           {
-            "items": "superbwarfare:copper_plate"
+            "items": "superbwarfare:iron_powder"
           }
         ]
       },
@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "superbwarfare:small_battery_pack"
+        "recipe": "superbwarfare:iron_ingot_smelting_from_powder"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -21,12 +21,12 @@
   "requirements": [
     [
       "has_the_recipe",
-      "has_copper_plate"
+      "has_iron_powder"
     ]
   ],
   "rewards": {
     "recipes": [
-      "superbwarfare:small_battery_pack"
+      "superbwarfare:iron_ingot_smelting_from_powder"
     ]
   }
 }
