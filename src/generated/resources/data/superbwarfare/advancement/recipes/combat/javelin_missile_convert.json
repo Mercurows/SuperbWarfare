@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "superbwarfare:javelin_missile_convert"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    },
+    "has_wire_guide_missile": {
+      "conditions": {
+        "items": [
+          {
+            "items": "superbwarfare:wire_guide_missile"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_wire_guide_missile"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "superbwarfare:javelin_missile_convert"
+    ]
+  }
+}

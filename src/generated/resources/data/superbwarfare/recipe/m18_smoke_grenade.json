@@ -1,17 +1,12 @@
 {
   "type": "minecraft:crafting_shaped",
-  "category": "misc",
-  "pattern": [
-    " a ",
-    "bcb",
-    "bdb"
-  ],
+  "category": "equipment",
   "key": {
     "a": {
       "item": "minecraft:tripwire_hook"
     },
     "b": {
-      "item": "minecraft:iron_nugget"
+      "tag": "c:nuggets/iron"
     },
     "c": {
       "item": "minecraft:wheat"
@@ -20,8 +15,13 @@
       "item": "minecraft:gunpowder"
     }
   },
+  "pattern": [
+    " a ",
+    "bcb",
+    "bdb"
+  ],
   "result": {
-    "id": "superbwarfare:m18_smoke_grenade",
-    "count": 2
+    "count": 2,
+    "id": "superbwarfare:m18_smoke_grenade"
   }
 }

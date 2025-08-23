@@ -1,14 +1,9 @@
 {
   "type": "minecraft:crafting_shaped",
-  "category": "misc",
-  "pattern": [
-    " a ",
-    "bcb",
-    " d "
-  ],
+  "category": "equipment",
   "key": {
     "a": {
-      "item": "minecraft:copper_ingot"
+      "tag": "c:ingots/copper"
     },
     "b": {
       "tag": "c:plates/copper"
@@ -20,8 +15,13 @@
       "item": "superbwarfare:primer"
     }
   },
+  "pattern": [
+    " a ",
+    "bcb",
+    " d "
+  ],
   "result": {
-    "id": "superbwarfare:handgun_ammo",
-    "count": 64
+    "count": 64,
+    "id": "superbwarfare:handgun_ammo"
   }
 }

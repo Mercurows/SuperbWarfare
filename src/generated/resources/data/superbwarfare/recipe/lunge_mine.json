@@ -1,11 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
-  "category": "misc",
-  "pattern": [
-    " ba",
-    " cb",
-    "c  "
-  ],
+  "category": "equipment",
   "key": {
     "a": {
       "item": "minecraft:tnt"
@@ -17,8 +12,13 @@
       "item": "minecraft:stick"
     }
   },
+  "pattern": [
+    " ba",
+    " cb",
+    "c  "
+  ],
   "result": {
-    "id": "superbwarfare:lunge_mine",
-    "count": 2
+    "count": 2,
+    "id": "superbwarfare:lunge_mine"
   }
 }

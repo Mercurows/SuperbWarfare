@@ -1,24 +1,24 @@
 {
   "type": "minecraft:crafting_shaped",
-  "category": "misc",
-  "pattern": [
-    " a ",
-    "bcb",
-    "bcb"
-  ],
+  "category": "equipment",
   "key": {
     "a": {
       "item": "minecraft:tripwire_hook"
     },
     "b": {
-      "item": "minecraft:iron_ingot"
+      "tag": "c:ingots/iron"
     },
     "c": {
       "item": "superbwarfare:high_energy_explosives"
     }
   },
+  "pattern": [
+    " a ",
+    "bcb",
+    "bcb"
+  ],
   "result": {
-    "id": "superbwarfare:hand_grenade",
-    "count": 4
+    "count": 4,
+    "id": "superbwarfare:hand_grenade"
   }
 }
