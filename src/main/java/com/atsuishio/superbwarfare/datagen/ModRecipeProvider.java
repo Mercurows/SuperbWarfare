@@ -19,6 +19,7 @@ import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.ItemLike;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.crafting.StrictNBTIngredient;
@@ -97,6 +98,15 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .define('d', Tags.Items.INGOTS_IRON)
                 .unlockedBy(getHasName(Items.OBSERVER), has(Items.OBSERVER))
                 .save(writer, Mod.loc(getItemName(ModItems.VEHICLE_DAMAGE_ANALYZER.get())));
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.HAMMER.get())
+                .pattern("aba")
+                .pattern(" c ")
+                .pattern(" c ")
+                .define('a', Tags.Items.INGOTS_IRON)
+                .define('b', Tags.Items.STORAGE_BLOCKS_IRON)
+                .define('c', Items.STICK)
+                .unlockedBy(getHasName(Items.STICK), has(Items.STICK))
+                .save(writer, Mod.loc(getItemName(ModItems.HAMMER.get())));
     }
 
     private static void buildAmmoRecipes(Consumer<FinishedRecipe> writer) {
@@ -176,6 +186,15 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .define('c', ModItems.FUSEE.get())
                 .unlockedBy(getHasName(ModItems.AP_HEAD.get()), has(ModItems.AP_HEAD.get()))
                 .save(writer, Mod.loc(getItemName(ModItems.AP_5_INCHES.get())));
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.BLU_43_MINE.get(), 8)
+                .pattern("a")
+                .pattern("b")
+                .pattern("c")
+                .define('a', Items.STONE_PRESSURE_PLATE)
+                .define('b', ModItems.HIGH_ENERGY_EXPLOSIVES.get())
+                .define('c', Items.GREEN_CONCRETE)
+                .unlockedBy(getHasName(ModItems.HIGH_ENERGY_EXPLOSIVES.get()), has(ModItems.HIGH_ENERGY_EXPLOSIVES.get()))
+                .save(writer, Mod.loc(getItemName(ModItems.BLU_43_MINE.get())));
     }
 
     private static void buildMaterialRecipes(Consumer<FinishedRecipe> writer) {
@@ -208,6 +227,53 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .define('d', ModItems.TUNGSTEN_ROD.get())
                 .unlockedBy(getHasName(ModItems.HIGH_ENERGY_EXPLOSIVES.get()), has(ModItems.HIGH_ENERGY_EXPLOSIVES.get()))
                 .save(writer, Mod.loc(getItemName(ModItems.AP_HEAD.get())));
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.BATTERY.get())
+                .pattern(" b ")
+                .pattern("cac")
+                .pattern(" d ")
+                .define('a', Tags.Items.DUSTS_REDSTONE)
+                .define('b', commonItemTag("plates/copper"))
+                .define('c', Tags.Items.GLASS_PANES)
+                .define('d', Tags.Items.INGOTS_IRON)
+                .unlockedBy(getHasName(Items.REDSTONE), has(Items.REDSTONE))
+                .save(writer, Mod.loc(getItemName(ModItems.BATTERY.get())));
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.BATTERY.get())
+                .pattern("aa")
+                .pattern("aa")
+                .define('a', ModItems.CELL.get())
+                .unlockedBy(getHasName(ModItems.CELL.get()), has(ModItems.CELL.get()))
+                .save(writer, Mod.loc(getItemName(ModItems.BATTERY.get()) + "_assemble"));
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.CANNON_CORE.get())
+                .pattern("aaa")
+                .pattern("bcd")
+                .pattern("aaa")
+                .define('a', ModTags.Items.INGOTS_STEEL)
+                .define('b', Items.DISPENSER)
+                .define('c', ModItems.CEMENTED_CARBIDE_MATERIALS.action().get())
+                .define('d', Items.PISTON)
+                .unlockedBy(getHasName(ModItems.CEMENTED_CARBIDE_MATERIALS.action().get()), has(ModItems.CEMENTED_CARBIDE_MATERIALS.action().get()))
+                .save(writer, Mod.loc(getItemName(ModItems.CANNON_CORE.get())));
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.CELL.get())
+                .pattern("a")
+                .pattern("b")
+                .pattern("c")
+                .define('a', Tags.Items.NUGGETS_GOLD)
+                .define('b', Tags.Items.DUSTS_REDSTONE)
+                .define('c', Tags.Items.NUGGETS_IRON)
+                .unlockedBy(getHasName(Items.GOLD_NUGGET), has(Items.GOLD_NUGGET))
+                .save(writer, Mod.loc(getItemName(ModItems.CELL.get())));
+        SimpleCookingRecipeBuilder.generic(Ingredient.of(ModItems.RAW_CEMENTED_CARBIDE_POWDER.get()),
+                        RecipeCategory.MISC,
+                        ModItems.CEMENTED_CARBIDE_INGOT.get(),
+                        8,
+                        800,
+                        RecipeSerializer.BLASTING_RECIPE)
+                .unlockedBy(getHasName(ModItems.RAW_CEMENTED_CARBIDE_POWDER.get()), has(ModItems.RAW_CEMENTED_CARBIDE_POWDER.get()))
+                .save(writer, Mod.loc(getItemName(ModItems.CEMENTED_CARBIDE_INGOT.get()) + "_blasting"));
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ModItems.CEMENTED_CARBIDE_INGOT.get(), 9)
+                .requires(ModItems.CEMENTED_CARBIDE_BLOCK.get())
+                .unlockedBy(getHasName(ModItems.CEMENTED_CARBIDE_BLOCK.get()), has(ModItems.CEMENTED_CARBIDE_BLOCK.get()))
+                .save(writer, Mod.loc(getItemName(ModItems.CEMENTED_CARBIDE_INGOT.get()) + "_from_block"));
     }
 
     private static void buildBlockRecipes(Consumer<FinishedRecipe> writer) {
@@ -247,6 +313,13 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .define('b', Items.IRON_BARS)
                 .unlockedBy(getHasName(Items.IRON_BARS), has(Items.IRON_BARS))
                 .save(writer, Mod.loc(getItemName(ModItems.BARBED_WIRE.get())));
+        ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, ModItems.CEMENTED_CARBIDE_BLOCK.get())
+                .pattern("aaa")
+                .pattern("aaa")
+                .pattern("aaa")
+                .define('a', ModItems.CEMENTED_CARBIDE_INGOT.get())
+                .unlockedBy(getHasName(ModItems.CEMENTED_CARBIDE_INGOT.get()), has(ModItems.CEMENTED_CARBIDE_INGOT.get()))
+                .save(writer, Mod.loc(getItemName(ModItems.CEMENTED_CARBIDE_BLOCK.get())));
     }
 
     private static void buildVehicleRecipes(Consumer<FinishedRecipe> writer) {

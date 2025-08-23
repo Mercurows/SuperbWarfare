@@ -1,0 +1,35 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_high_energy_explosives": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "superbwarfare:high_energy_explosives"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "superbwarfare:blu_43_mine"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_high_energy_explosives",
+      "has_the_recipe"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "superbwarfare:blu_43_mine"
+    ]
+  },
+  "sends_telemetry_event": false
+}

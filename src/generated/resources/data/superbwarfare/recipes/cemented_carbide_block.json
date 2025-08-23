@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "a": {
+      "item": "superbwarfare:cemented_carbide_ingot"
+    }
+  },
+  "pattern": [
+    "aaa",
+    "aaa",
+    "aaa"
+  ],
+  "result": {
+    "item": "superbwarfare:cemented_carbide_block"
+  },
+  "show_notification": true
+}

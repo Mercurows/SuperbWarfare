@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "a": {
+      "tag": "forge:nuggets/gold"
+    },
+    "b": {
+      "tag": "forge:dusts/redstone"
+    },
+    "c": {
+      "tag": "forge:nuggets/iron"
+    }
+  },
+  "pattern": [
+    "a",
+    "b",
+    "c"
+  ],
+  "result": {
+    "item": "superbwarfare:cell"
+  },
+  "show_notification": true
+}

@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "a": {
+      "tag": "forge:dusts/redstone"
+    },
+    "b": {
+      "tag": "forge:plates/copper"
+    },
+    "c": {
+      "tag": "forge:glass_panes"
+    },
+    "d": {
+      "tag": "forge:ingots/iron"
+    }
+  },
+  "pattern": [
+    " b ",
+    "cac",
+    " d "
+  ],
+  "result": {
+    "item": "superbwarfare:battery"
+  },
+  "show_notification": true
+}
