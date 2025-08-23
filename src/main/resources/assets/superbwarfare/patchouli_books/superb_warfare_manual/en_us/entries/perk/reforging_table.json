@@ -13,7 +13,7 @@
     },
     {
       "type": "patchouli:crafting",
-      "recipe": "superbwarfare:shortcut_pack_crafting",
+      "recipe": "superbwarfare:shortcut_pack",
       "text": "superbwarfare.page.perk.reforging_table.3"
     },
     {
