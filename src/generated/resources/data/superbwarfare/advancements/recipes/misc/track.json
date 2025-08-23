@@ -1,0 +1,35 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "superbwarfare:track"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    },
+    "has_wheel": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "superbwarfare:wheel"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "requirements": [
+    [
+      "has_wheel",
+      "has_the_recipe"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "superbwarfare:track"
+    ]
+  },
+  "sends_telemetry_event": false
+}

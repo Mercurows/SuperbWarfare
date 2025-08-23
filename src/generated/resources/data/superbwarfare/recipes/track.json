@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "a": {
+      "tag": "superbwarfare:ingots/steel"
+    },
+    "b": {
+      "item": "superbwarfare:wheel"
+    }
+  },
+  "pattern": [
+    "aaa",
+    "b b",
+    "aaa"
+  ],
+  "result": {
+    "item": "superbwarfare:track"
+  },
+  "show_notification": true
+}

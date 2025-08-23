@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "a": {
+      "tag": "forge:nuggets/iron"
+    },
+    "b": {
+      "item": "minecraft:paper"
+    },
+    "c": {
+      "tag": "minecraft:planks"
+    }
+  },
+  "pattern": [
+    "a",
+    "b",
+    "c"
+  ],
+  "result": {
+    "item": "superbwarfare:transcript"
+  },
+  "show_notification": true
+}
