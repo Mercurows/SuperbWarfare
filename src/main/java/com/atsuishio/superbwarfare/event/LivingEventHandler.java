@@ -145,6 +145,7 @@ public class LivingEventHandler {
         if (armor != ItemStack.EMPTY && tag.contains("ArmorPlate")) {
             double armorValue = tag.getDouble("ArmorPlate");
             tag.putDouble("ArmorPlate", Math.max(armorValue - damage, 0));
+            NBTTool.saveTag(armor, tag);
             damage = Math.max(damage - armorValue, 0);
         }
 
