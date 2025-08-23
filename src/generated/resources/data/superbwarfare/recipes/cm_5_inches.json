@@ -1,14 +1,9 @@
 {
   "type": "minecraft:crafting_shaped",
-  "category": "misc",
-  "pattern": [
-    "c",
-    "a",
-    "b"
-  ],
+  "category": "equipment",
   "key": {
     "a": {
-      "item": "superbwarfare:he_head"
+      "item": "superbwarfare:cm_head"
     },
     "b": {
       "item": "superbwarfare:grain"
@@ -17,8 +12,13 @@
       "item": "superbwarfare:fusee"
     }
   },
+  "pattern": [
+    "c",
+    "a",
+    "b"
+  ],
   "result": {
-    "item": "superbwarfare:he_5_inches",
-    "count": 1
-  }
+    "item": "superbwarfare:cm_5_inches"
+  },
+  "show_notification": true
 }

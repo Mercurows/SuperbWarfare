@@ -1,21 +1,24 @@
 {
   "type": "minecraft:crafting_shaped",
-  "category": "building",
+  "category": "misc",
   "key": {
     "a": {
       "tag": "superbwarfare:ingots/steel"
     },
     "b": {
-      "item": "superbwarfare:steel_ingot"
+      "tag": "forge:nuggets/iron"
+    },
+    "c": {
+      "item": "minecraft:stick"
     }
   },
   "pattern": [
-    "aaa",
-    "aba",
-    "aaa"
+    "  a",
+    "cb ",
+    " c "
   ],
   "result": {
-    "item": "superbwarfare:steel_block"
+    "item": "superbwarfare:defuser"
   },
   "show_notification": true
 }

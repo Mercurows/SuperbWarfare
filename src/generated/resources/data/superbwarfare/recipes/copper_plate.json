@@ -3,14 +3,13 @@
   "category": "misc",
   "ingredients": [
     {
-      "item": "minecraft:copper_ingot"
+      "tag": "forge:ingots/copper"
     },
     {
       "item": "superbwarfare:hammer"
     }
   ],
   "result": {
-    "item": "superbwarfare:copper_plate",
-    "count": 1
+    "item": "superbwarfare:copper_plate"
   }
 }

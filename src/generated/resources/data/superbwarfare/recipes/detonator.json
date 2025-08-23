@@ -1,10 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
   "category": "misc",
-  "pattern": [
-    " a",
-    "bc"
-  ],
   "key": {
     "a": {
       "item": "minecraft:redstone_torch"
@@ -13,11 +9,15 @@
       "item": "minecraft:stone_button"
     },
     "c": {
-      "item": "minecraft:iron_ingot"
+      "tag": "forge:ingots/iron"
     }
   },
+  "pattern": [
+    " a",
+    "bc"
+  ],
   "result": {
-    "item": "superbwarfare:detonator",
-    "count": 1
-  }
+    "item": "superbwarfare:detonator"
+  },
+  "show_notification": true
 }

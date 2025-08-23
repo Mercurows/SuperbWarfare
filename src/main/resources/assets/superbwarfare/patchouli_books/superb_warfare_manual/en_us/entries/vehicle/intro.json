@@ -9,7 +9,7 @@
     },
     {
       "type": "patchouli:crafting",
-      "recipe": "superbwarfare:crowbar_crafting",
+      "recipe": "superbwarfare:crowbar",
       "text": "superbwarfare.page.vehicle.intro.2"
     },
     {

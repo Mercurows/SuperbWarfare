@@ -1,0 +1,48 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_coal_powder": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "superbwarfare:coal_powder"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_iron_powder": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "superbwarfare:iron_powder"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "superbwarfare:coal_iron_powder"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_iron_powder",
+      "has_coal_powder",
+      "has_the_recipe"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "superbwarfare:coal_iron_powder"
+    ]
+  },
+  "sends_telemetry_event": false
+}
