@@ -46,7 +46,8 @@ public class ModItemTagProvider extends ItemTagsProvider {
         this.tag(ItemTags.CHEST_ARMOR_ENCHANTABLE).add(ModItems.RU_CHEST_6B43.get(), ModItems.US_CHEST_IOTV.get());
 
         this.tag(ItemTags.SWORD_ENCHANTABLE).add(ModItems.CROWBAR.get(), ModItems.HAMMER.get(), ModItems.KNIFE.get(), ModItems.T_BATON.get(),
-                ModItems.ELECTRIC_BATON.get(), ModItems.STEEL_PIPE.get());
+                ModItems.ELECTRIC_BATON.get(), ModItems.STEEL_PIPE.get(), ModItems.GOLDEN_HAMMER.get(), ModItems.STEEL_HAMMER.get(), ModItems.DIAMOND_HAMMER.get(),
+                ModItems.CEMENTED_CARBIDE_HAMMER.get(), ModItems.NETHERITE_HAMMER.get());
 
         this.tag(ModTags.Items.INGOTS_STEEL).addTag(commonItemTag("ingots/steel"))
                 .addOptional(ResourceLocation.fromNamespaceAndPath("dreamaticvoyage", "fukamizu_bread_ingot"));
