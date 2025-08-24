@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.item;
 
-import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
+import com.atsuishio.superbwarfare.init.ModTags;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
@@ -54,10 +54,10 @@ public class Hammer extends SwordItem {
 
         if (player.level().isClientSide) return;
 
-        if (item.is(ModItems.HAMMER.get())) {
+        if (item.is(ModTags.Items.HAMMER)) {
             int count = 0;
             for (int i = 0; i < container.getContainerSize(); i++) {
-                if (container.getItem(i).is(ModItems.HAMMER.get())) count++;
+                if (container.getItem(i).is(ModTags.Items.HAMMER)) count++;
             }
             if (count == 2) {
                 container.clearContent();

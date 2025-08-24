@@ -7,7 +7,7 @@ import net.minecraft.world.item.Tiers;
 public class NetheriteHammer extends Hammer {
 
     public NetheriteHammer() {
-        super(Tiers.NETHERITE, 7, -3.2f, new Item.Properties().durability(2800).fireResistant());
+        super(Tiers.NETHERITE, 13, -3.2f, new Item.Properties().durability(2800).fireResistant());
     }
 
     @Override
