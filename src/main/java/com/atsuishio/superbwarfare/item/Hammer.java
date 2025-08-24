@@ -7,7 +7,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SwordItem;
-import net.minecraft.world.item.Tiers;
+import net.minecraft.world.item.Tier;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -15,8 +15,8 @@ import net.minecraftforge.fml.common.Mod;
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class Hammer extends SwordItem {
 
-    public Hammer() {
-        super(Tiers.IRON, 11, -3.2f, new Item.Properties().durability(400));
+    public Hammer(Tier tier, int attackDamage, float attackSpeed, Item.Properties properties) {
+        super(tier, attackDamage, attackSpeed, properties);
     }
 
     @Override

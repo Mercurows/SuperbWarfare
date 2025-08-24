@@ -1,7 +1,7 @@
 {
-  "parent": "superbwarfare:custom/gungranade",
+  "parent": "superbwarfare:custom/grenade_40mm",
   "textures": {
-    "0": "superbwarfare:block/gungranade",
-    "particle": "superbwarfare:item/gungranade"
+    "0": "superbwarfare:item/grenade_40mm",
+    "particle": "superbwarfare:item/grenade_40mm"
   }
 }

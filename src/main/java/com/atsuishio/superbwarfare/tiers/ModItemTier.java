@@ -9,7 +9,7 @@ import java.util.function.Supplier;
 
 public enum ModItemTier implements Tier {
     STEEL(2, 400, 6.0f, 5.0f, 15, () -> Ingredient.of(ModItems.STEEL_INGOT.get())),
-    ;
+    CEMENTED_CARBIDE(4, 2000, 8.0f, 8.0f, 18, () -> Ingredient.of(ModItems.CEMENTED_CARBIDE_INGOT.get()));
 
     private final int level;
     private final int uses;
