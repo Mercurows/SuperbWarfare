@@ -33,8 +33,7 @@ public class ElectricBaton extends SwordItem implements EnergyStorageItem {
     public static final String TAG_OPEN = "Open";
 
     public ElectricBaton() {
-        super(ModItemTier.STEEL, new Properties()
-                .durability(1114)
+        super(ModItemTier.STEEL, new CustomDamageProperty(1114)
                 .attributes(SwordItem.createAttributes(ModItemTier.STEEL, 2, -2.5f))
         );
     }

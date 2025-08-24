@@ -11,8 +11,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 public class TBaton extends SwordItem {
     public TBaton() {
-        super(ModItemTier.STEEL, new Properties()
-                .durability(1115)
+        super(ModItemTier.STEEL, new CustomDamageProperty(1115)
                 .attributes(SwordItem.createAttributes(ModItemTier.STEEL, 3, -2))
         );
     }

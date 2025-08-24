@@ -18,7 +18,11 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @EventBusSubscriber(bus = EventBusSubscriber.Bus.GAME)
 public class Hammer extends SwordItem {
 
-    public Hammer(Tier tier, int attackDamage, float attackSpeed, Item.Properties properties) {
+    public Hammer(Tier tier, int attackDamage, float attackSpeed, int maxDamage) {
+        this(tier, attackDamage, attackSpeed, new CustomDamageProperty(maxDamage));
+    }
+
+    protected Hammer(Tier tier, int attackDamage, float attackSpeed, Item.Properties properties) {
         super(tier, properties.attributes(SwordItem.createAttributes(tier, attackDamage, attackSpeed)));
     }
 

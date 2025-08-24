@@ -39,11 +39,10 @@ import java.util.List;
 public class Beast extends SwordItem {
 
     public Beast() {
-        super(Tiers.NETHERITE, new Properties()
+        super(Tiers.NETHERITE, new CustomDamageProperty(false)
                 .stacksTo(1)
                 .rarity(ModEnumExtensions.getLegendary())
                 .setNoRepair()
-                .durability(114514)
         );
     }
 
