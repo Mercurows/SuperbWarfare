@@ -457,7 +457,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .pattern("bcb")
                 .pattern(" d ")
                 .define('a', ModTags.Items.INGOTS_STEEL)
-                .define('b', PLATES_COPPER)
+                .define('b', Tags.Items.INGOTS_COPPER)
                 .define('c', Items.GUNPOWDER)
                 .define('d', ModItems.PRIMER.get())
                 .unlockedBy(getHasName(ModItems.PRIMER.get()), has(ModItems.PRIMER.get()))
