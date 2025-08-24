@@ -112,8 +112,54 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .define('a', Tags.Items.INGOTS_IRON)
                 .define('b', Tags.Items.STORAGE_BLOCKS_IRON)
                 .define('c', Items.STICK)
-                .unlockedBy(getHasName(Items.STICK), has(Items.STICK))
+                .unlockedBy(getHasName(Items.IRON_BLOCK), has(Tags.Items.STORAGE_BLOCKS_IRON))
                 .save(writer, Mod.loc(getItemName(ModItems.HAMMER.get())));
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.GOLDEN_HAMMER.get())
+                .pattern("aba")
+                .pattern(" c ")
+                .pattern(" c ")
+                .define('a', Tags.Items.INGOTS_GOLD)
+                .define('b', Tags.Items.STORAGE_BLOCKS_GOLD)
+                .define('c', Items.STICK)
+                .unlockedBy(getHasName(Items.GOLD_BLOCK), has(Tags.Items.STORAGE_BLOCKS_GOLD))
+                .save(writer, Mod.loc(getItemName(ModItems.GOLDEN_HAMMER.get())));
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.STEEL_HAMMER.get())
+                .pattern("aba")
+                .pattern(" c ")
+                .pattern(" c ")
+                .define('a', ModTags.Items.INGOTS_STEEL)
+                .define('b', ModTags.Items.STORAGE_BLOCK_STEEL)
+                .define('c', Items.STICK)
+                .unlockedBy(getHasName(ModItems.STEEL_BLOCK.get()), has(ModTags.Items.STORAGE_BLOCK_STEEL))
+                .save(writer, Mod.loc(getItemName(ModItems.STEEL_HAMMER.get())));
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.DIAMOND_HAMMER.get())
+                .pattern("aba")
+                .pattern(" c ")
+                .pattern(" c ")
+                .define('a', Tags.Items.GEMS_DIAMOND)
+                .define('b', Tags.Items.STORAGE_BLOCKS_DIAMOND)
+                .define('c', Items.STICK)
+                .unlockedBy(getHasName(Items.DIAMOND_BLOCK), has(Tags.Items.STORAGE_BLOCKS_DIAMOND))
+                .save(writer, Mod.loc(getItemName(ModItems.DIAMOND_HAMMER.get())));
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.CEMENTED_CARBIDE_HAMMER.get())
+                .pattern("aba")
+                .pattern(" c ")
+                .pattern(" c ")
+                .define('a', ModTags.Items.INGOTS_CEMENTED_CARBIDE)
+                .define('b', ModTags.Items.STORAGE_BLOCK_CEMENTED_CARBIDE)
+                .define('c', Items.STICK)
+                .unlockedBy(getHasName(ModItems.CEMENTED_CARBIDE_BLOCK.get()), has(ModTags.Items.STORAGE_BLOCK_CEMENTED_CARBIDE))
+                .save(writer, Mod.loc(getItemName(ModItems.CEMENTED_CARBIDE_HAMMER.get())));
+        SmithingTransformRecipeBuilder.smithing(
+                        Ingredient.of(Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE),
+                        Ingredient.of(ModItems.CEMENTED_CARBIDE_HAMMER.get()),
+                        Ingredient.of(Tags.Items.STORAGE_BLOCKS_NETHERITE),
+                        RecipeCategory.MISC,
+                        ModItems.NETHERITE_HAMMER.get()
+                )
+                .unlocks(getHasName(Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE), has(Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE))
+                .unlocks(getHasName(ModItems.CEMENTED_CARBIDE_HAMMER.get()), has(ModItems.CEMENTED_CARBIDE_HAMMER.get()))
+                .save(writer, Mod.loc(getItemName(ModItems.NETHERITE_HAMMER.get())));
         ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.CROWBAR.get())
                 .pattern("  a")
                 .pattern(" b ")
@@ -690,18 +736,18 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .save(writer, Mod.loc(getItemName(ModItems.COAL_IRON_POWDER.get())));
         ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ModItems.COAL_POWDER.get())
                 .requires(ItemTags.COALS)
-                .requires(ModItems.HAMMER.get())
-                .unlockedBy(getHasName(ModItems.HAMMER.get()), has(ModItems.HAMMER.get()))
+                .requires(ModTags.Items.HAMMER)
+                .unlockedBy(getHasName(ModItems.HAMMER.get()), has(ModTags.Items.HAMMER))
                 .save(writer, Mod.loc(getItemName(ModItems.COAL_POWDER.get())));
         ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ModItems.IRON_POWDER.get())
                 .requires(Tags.Items.INGOTS_IRON)
-                .requires(ModItems.HAMMER.get())
-                .unlockedBy(getHasName(ModItems.HAMMER.get()), has(ModItems.HAMMER.get()))
+                .requires(ModTags.Items.HAMMER)
+                .unlockedBy(getHasName(ModItems.HAMMER.get()), has(ModTags.Items.HAMMER))
                 .save(writer, Mod.loc(getItemName(ModItems.IRON_POWDER.get())));
         ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ModItems.COPPER_PLATE.get())
                 .requires(Tags.Items.INGOTS_COPPER)
-                .requires(ModItems.HAMMER.get())
-                .unlockedBy(getHasName(ModItems.HAMMER.get()), has(ModItems.HAMMER.get()))
+                .requires(ModTags.Items.HAMMER)
+                .unlockedBy(getHasName(ModItems.HAMMER.get()), has(ModTags.Items.HAMMER))
                 .save(writer, Mod.loc(getItemName(ModItems.COPPER_PLATE.get())));
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.FUSEE.get(), 4)
                 .pattern("a")
@@ -1038,8 +1084,8 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .save(writer, Mod.loc(getItemName(ModItems.TUNGSTEN_INGOT.get()) + "_from_block"));
         ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ModItems.TUNGSTEN_POWDER.get())
                 .requires(INGOTS_TUNGSTEN)
-                .requires(ModItems.HAMMER.get())
-                .unlockedBy(getHasName(ModItems.HAMMER.get()), has(ModItems.HAMMER.get()))
+                .requires(ModTags.Items.HAMMER)
+                .unlockedBy(getHasName(ModItems.HAMMER.get()), has(ModTags.Items.HAMMER))
                 .save(writer, Mod.loc(getItemName(ModItems.TUNGSTEN_POWDER.get())));
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.TUNGSTEN_ROD.get())
                 .pattern("a")

@@ -76,6 +76,10 @@ public class ModItemTagProvider extends ItemTagsProvider {
 
         this.tag(commonItemTag("tools/crowbar")).add(ModItems.CROWBAR.get());
 
+        this.tag(ModTags.Items.HAMMER).add(ModItems.HAMMER.get(), ModItems.GOLDEN_HAMMER.get(), ModItems.STEEL_HAMMER.get(), ModItems.DIAMOND_HAMMER.get(),
+                ModItems.CEMENTED_CARBIDE_HAMMER.get(), ModItems.NETHERITE_HAMMER.get());
+        this.tag(ModTags.Items.TOOLS_HAMMER).addTag(ModTags.Items.HAMMER);
+
         // TODO 清理枪械Tag
         ModItems.GUNS.getEntries().forEach(registryObject -> this.tag(ModTags.Items.GUN).add(registryObject.get()));
 
@@ -126,5 +130,4 @@ public class ModItemTagProvider extends ItemTagsProvider {
         this.tag(ModTags.Items.CANNON_BLUEPRINT).add(ModItems.MK_42_BLUEPRINT.get(), ModItems.MLE_1934_BLUEPRINT.get(), ModItems.ANNIHILATOR_BLUEPRINT.get(),
                 ModItems.HPJ_11_BLUEPRINT.get(), ModItems.BL_132_BLUEPRINT.get());
     }
-
 }
