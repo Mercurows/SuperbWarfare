@@ -167,11 +167,16 @@ public class ModItems {
     public static final DeferredHolder<Item, Detonator> DETONATOR = ITEMS.register("detonator", Detonator::new);
     public static final DeferredHolder<Item, TargetDeployer> TARGET_DEPLOYER = ITEMS.register("target_deployer", TargetDeployer::new);
     public static final DeferredHolder<Item, DPSGeneratorDeployer> DPS_GENERATOR_DEPLOYER = ITEMS.register("dps_generator_deployer", DPSGeneratorDeployer::new);
-    public static final DeferredHolder<Item, Item> KNIFE = ITEMS.register("knife", () -> new SwordItem(ModItemTier.STEEL, new Item.Properties()
+    public static final DeferredHolder<Item, SwordItem> KNIFE = ITEMS.register("knife", () -> new SwordItem(ModItemTier.STEEL, new Item.Properties()
             .attributes(SwordItem.createAttributes(ModItemTier.STEEL, 0, -1.8f))
             .durability(1200)
     ));
-    public static final DeferredHolder<Item, Hammer> HAMMER = ITEMS.register("hammer", Hammer::new);
+    public static final DeferredHolder<Item, Hammer> HAMMER = ITEMS.register("hammer", () -> new Hammer(Tiers.IRON, 11, -3.2f, new Item.Properties().durability(400)));
+    public static final DeferredHolder<Item, Hammer> GOLDEN_HAMMER = ITEMS.register("golden_hammer", () -> new Hammer(Tiers.GOLD, 7, -3.2f, new Item.Properties().durability(150)));
+    public static final DeferredHolder<Item, Hammer> STEEL_HAMMER = ITEMS.register("steel_hammer", () -> new Hammer(ModItemTier.STEEL, 7, -3.2f, new Item.Properties().durability(600)));
+    public static final DeferredHolder<Item, Hammer> DIAMOND_HAMMER = ITEMS.register("diamond_hammer", () -> new Hammer(Tiers.DIAMOND, 7, -3.2f, new Item.Properties().durability(1500)));
+    public static final DeferredHolder<Item, Hammer> CEMENTED_CARBIDE_HAMMER = ITEMS.register("cemented_carbide_hammer", () -> new Hammer(ModItemTier.CEMENTED_CARBIDE, 7, -3.2f, new Item.Properties().durability(2000)));
+    public static final DeferredHolder<Item, Hammer> NETHERITE_HAMMER = ITEMS.register("netherite_hammer", NetheriteHammer::new);
     public static final DeferredHolder<Item, TBaton> T_BATON = ITEMS.register("t_baton", TBaton::new);
     public static final DeferredHolder<Item, ElectricBaton> ELECTRIC_BATON = ITEMS.register("electric_baton", ElectricBaton::new);
     public static final DeferredHolder<Item, SteelPipe> STEEL_PIPE = ITEMS.register("steel_pipe", SteelPipe::new);

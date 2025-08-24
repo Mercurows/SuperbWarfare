@@ -7,7 +7,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SwordItem;
-import net.minecraft.world.item.Tiers;
+import net.minecraft.world.item.Tier;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
@@ -18,11 +18,8 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @EventBusSubscriber(bus = EventBusSubscriber.Bus.GAME)
 public class Hammer extends SwordItem {
 
-    public Hammer() {
-        super(Tiers.IRON, new Item.Properties()
-                .durability(400)
-                .attributes(SwordItem.createAttributes(Tiers.IRON, 11, -3.2f))
-        );
+    public Hammer(Tier tier, int attackDamage, float attackSpeed, Item.Properties properties) {
+        super(tier, properties.attributes(SwordItem.createAttributes(tier, attackDamage, attackSpeed)));
     }
 
     @Override
