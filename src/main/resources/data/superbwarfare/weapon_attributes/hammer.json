@@ -3,7 +3,6 @@
     "attack_range": 4.0,
     "two_handed": false,
     "pose": "bettercombat:pose_two_handed_heavy",
-    "category": "big_spoon",
     "attacks": [
       {
         "hitbox": "HORIZONTAL_PLANE",
