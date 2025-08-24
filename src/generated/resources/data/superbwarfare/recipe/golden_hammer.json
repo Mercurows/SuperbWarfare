@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "a": {
+      "tag": "c:ingots/gold"
+    },
+    "b": {
+      "tag": "c:storage_blocks/gold"
+    },
+    "c": {
+      "item": "minecraft:stick"
+    }
+  },
+  "pattern": [
+    "aba",
+    " c ",
+    " c "
+  ],
+  "result": {
+    "count": 1,
+    "id": "superbwarfare:golden_hammer"
+  }
+}

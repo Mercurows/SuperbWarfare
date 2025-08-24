@@ -1,11 +1,11 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_iron_block": {
+    "has_gold_block": {
       "conditions": {
         "items": [
           {
-            "items": "#c:storage_blocks/iron"
+            "items": "#c:storage_blocks/gold"
           }
         ]
       },
@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "superbwarfare:hammer"
+        "recipe": "superbwarfare:golden_hammer"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -21,12 +21,12 @@
   "requirements": [
     [
       "has_the_recipe",
-      "has_iron_block"
+      "has_gold_block"
     ]
   ],
   "rewards": {
     "recipes": [
-      "superbwarfare:hammer"
+      "superbwarfare:golden_hammer"
     ]
   }
 }

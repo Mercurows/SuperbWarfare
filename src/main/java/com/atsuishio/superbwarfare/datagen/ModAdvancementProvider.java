@@ -54,7 +54,7 @@ public class ModAdvancementProvider implements DataProvider {
             .parent(MAIN_ROOT)),
 
     HAMMER = advancement("hammer", builder -> builder.icon(ModItems.HAMMER.get())
-            .whenIconCollected()
+            .whenItemCollected(ModTags.Items.HAMMER)
             .parent(MAIN_ROOT)),
 
     PHYSICS_EXCALIBUR = advancement("physics_excalibur", builder -> builder.icon(ModItems.CROWBAR.get())

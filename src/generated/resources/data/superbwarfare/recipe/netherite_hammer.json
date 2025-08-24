@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:smithing_transform",
+  "addition": {
+    "tag": "c:storage_blocks/netherite"
+  },
+  "base": {
+    "item": "superbwarfare:cemented_carbide_hammer"
+  },
+  "result": {
+    "count": 1,
+    "id": "superbwarfare:netherite_hammer"
+  },
+  "template": {
+    "item": "minecraft:netherite_upgrade_smithing_template"
+  }
+}

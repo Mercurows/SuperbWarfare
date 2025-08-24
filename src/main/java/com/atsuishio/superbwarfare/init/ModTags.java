@@ -47,9 +47,12 @@ public class ModTags {
         public static final TagKey<Item> LEGENDARY_BLUEPRINT = modItemTag("blueprint/legendary");
         public static final TagKey<Item> CANNON_BLUEPRINT = modItemTag("blueprint/cannon");
 
+        public static final TagKey<Item> HAMMER = modItemTag("hammer");
+
         public static final TagKey<Item> WRENCHES = commonItemTag("wrenches");
         public static final TagKey<Item> WRENCH = commonItemTag("tools/wrench");
         public static final TagKey<Item> CROWBAR = commonItemTag("tools/crowbar");
+        public static final TagKey<Item> TOOLS_HAMMER = commonItemTag("tools/hammer");
     }
 
     public static TagKey<Item> modItemTag(String name) {

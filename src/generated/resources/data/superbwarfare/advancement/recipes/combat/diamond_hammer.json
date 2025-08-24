@@ -1,11 +1,11 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_iron_block": {
+    "has_diamond_block": {
       "conditions": {
         "items": [
           {
-            "items": "#c:storage_blocks/iron"
+            "items": "#c:storage_blocks/diamond"
           }
         ]
       },
@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "superbwarfare:hammer"
+        "recipe": "superbwarfare:diamond_hammer"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -21,12 +21,12 @@
   "requirements": [
     [
       "has_the_recipe",
-      "has_iron_block"
+      "has_diamond_block"
     ]
   ],
   "rewards": {
     "recipes": [
-      "superbwarfare:hammer"
+      "superbwarfare:diamond_hammer"
     ]
   }
 }
