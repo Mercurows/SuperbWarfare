@@ -277,12 +277,6 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
         return get(GunProp.MAGAZINE) <= 0;
     }
 
-    public Set<ReloadType> reloadTypes() {
-        if (getDefault().reloadTypes == null) return Set.of();
-
-        return getDefault().reloadTypes;
-    }
-
     public double minZoom() {
         int scopeType = this.attachment.get(AttachmentType.SCOPE);
         return scopeType == 3 ? Math.max(getDefault().minZoom, 1.25) : 1.25;

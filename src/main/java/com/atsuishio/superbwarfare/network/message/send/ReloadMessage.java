@@ -1,8 +1,7 @@
 package com.atsuishio.superbwarfare.network.message.send;
 
 import com.atsuishio.superbwarfare.data.gun.GunData;
-import com.atsuishio.superbwarfare.data.gun.GunProp;
-import com.atsuishio.superbwarfare.data.gun.ReloadType;
+import com.atsuishio.superbwarfare.event.GunEventHandler;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -25,42 +24,8 @@ public enum ReloadMessage {
 
     public static void pressAction(Player player) {
         ItemStack stack = player.getMainHandItem();
-        if (!(stack.getItem() instanceof GunItem gunItem)) return;
+        if (!(stack.getItem() instanceof GunItem)) return;
 
-        var data = GunData.from(stack);
-        if (data.useBackpackAmmo() || data.get(GunProp.MAGAZINE) <= 0 || data.meleeOnly()) return;
-
-        if (!player.isSpectator()
-                && stack.getItem() instanceof GunItem
-                && !GunData.from(stack).charging()
-                && GunData.from(stack).reload.time() == 0
-                && GunData.from(stack).bolt.actionTimer.get() == 0
-                && !GunData.from(stack).reloading()
-        ) {
-            // 检查备弹
-            if (!data.hasBackupAmmo(player)) return;
-
-            var reloadTypes = data.reloadTypes();
-            boolean canSingleReload = reloadTypes.contains(ReloadType.ITERATIVE);
-            boolean canReload = reloadTypes.contains(ReloadType.MAGAZINE) && !reloadTypes.contains(ReloadType.CLIP);
-            boolean clipLoad = !data.hasEnoughAmmoToShoot(player) && reloadTypes.contains(ReloadType.CLIP);
-
-            data.burstAmount.reset();
-
-            if (canReload || clipLoad) {
-                int magazine = data.get(GunProp.MAGAZINE);
-                var extra = (gunItem.isOpenBolt(stack) && gunItem.hasBulletInBarrel(stack)) ? 1 : 0;
-                var maxAmmo = magazine + extra;
-
-                if (data.ammo.get() < maxAmmo) {
-                    data.startReload();
-                }
-                return;
-            }
-
-            if (canSingleReload && data.ammo.get() < data.get(GunProp.MAGAZINE)) {
-                data.reload.singleReloadStarter.markStart();
-            }
-        }
+        GunEventHandler.tryStartReload(player, GunData.from(stack));
     }
 }
