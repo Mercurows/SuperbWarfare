@@ -11,11 +11,6 @@ public class NetheriteHammer extends Hammer {
     }
 
     @Override
-    public ItemStack getCraftingRemainingItem(ItemStack itemstack) {
-        return new ItemStack(this);
-    }
-
-    @Override
     public boolean isDamageable(ItemStack stack) {
         return false;
     }
