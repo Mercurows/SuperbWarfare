@@ -41,6 +41,9 @@
    * Can also be overridden by AmmoType
    */
   "Projectile": {
+    /*
+     * Projectile entity's registry ID, can be "empty"
+     */
     "Type": "superbwarfare:projectile",
     /* NBT data replacer
      * You can write anything here, Json data will be parsed to NBT data, then been set into the projectile entity

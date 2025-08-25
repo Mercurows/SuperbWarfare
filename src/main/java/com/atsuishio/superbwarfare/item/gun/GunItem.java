@@ -690,6 +690,10 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
         var projectileInfo = data.get(GunProp.PROJECTILE);
         var projectileType = projectileInfo.type;
 
+        if (projectileType.trim().toLowerCase(Locale.ROOT).equals("empty")) {
+            return true;
+        }
+
         AtomicReference<Entity> entityHolder = new AtomicReference<>();
 
         EntityType.byString(projectileType).ifPresent(entityType -> {
