@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.api.event.ReloadEvent;
 import com.atsuishio.superbwarfare.data.gun.AmmoConsumer;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.GunProp;
+import com.atsuishio.superbwarfare.data.gun.ReloadType;
 import com.atsuishio.superbwarfare.data.gun.value.ReloadState;
 import com.atsuishio.superbwarfare.init.ModAttachments;
 import com.atsuishio.superbwarfare.init.ModItems;
@@ -127,6 +128,49 @@ public class GunEventHandler {
         }
     }
 
+    public static void autoReload(@Nullable Entity shooter, GunData data) {
+        if (data.get(GunProp.AUTO_RELOAD) && !data.hasEnoughAmmoToShoot(shooter)) {
+            tryStartReload(shooter, data);
+        }
+    }
+
+    public static void tryStartReload(@Nullable Entity shooter, GunData data) {
+        if (data.useBackpackAmmo() || data.meleeOnly()) return;
+
+        if ((shooter == null || !shooter.isSpectator())
+                && !data.charging()
+                && !data.reloading()
+                && data.reload.time() == 0
+                && data.bolt.actionTimer.get() == 0
+        ) {
+            // 检查备弹
+            if (!data.hasBackupAmmo(shooter)) return;
+
+            var reloadTypes = data.get(GunProp.RELOAD_TYPES);
+            boolean canSingleReload = reloadTypes.contains(ReloadType.ITERATIVE);
+            boolean canReload = reloadTypes.contains(ReloadType.MAGAZINE) && !reloadTypes.contains(ReloadType.CLIP);
+            boolean clipLoad = !data.hasEnoughAmmoToShoot(shooter) && reloadTypes.contains(ReloadType.CLIP);
+
+            data.burstAmount.reset();
+
+            if (canReload || clipLoad) {
+                int magazine = data.get(GunProp.MAGAZINE);
+                var extra = (data.item.isOpenBolt(data.stack) && data.item.hasBulletInBarrel(data.stack)) ? 1 : 0;
+                var maxAmmo = magazine + extra;
+
+                if (data.ammo.get() < maxAmmo) {
+                    data.startReload();
+                }
+                return;
+            }
+
+            if (canSingleReload && data.ammo.get() < data.get(GunProp.MAGAZINE)) {
+                data.reload.singleReloadStarter.markStart();
+            }
+            data.save();
+        }
+    }
+
     /**
      * 减少过热值
      */
@@ -177,6 +221,7 @@ public class GunEventHandler {
 
     public static void gunTick(@Nullable Entity shooter, @NotNull GunData data, boolean inMainHand) {
         init(shooter, data);
+        autoReload(shooter, data);
         tickPerk(shooter, data);
         handleCooldown(shooter, data);
         redrawExtraAmmo(shooter, data);

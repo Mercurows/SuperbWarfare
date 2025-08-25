@@ -70,6 +70,8 @@
   "ReloadTypes": [
     "Magazine"
   ],
+  // Should guns start reloading automatically when needed
+  "AutoReload": false,
   // Shoots per click when fire mode is "Burst"
   "BurstAmount": 0,
   // Bypasses armor rate, only available for superbwarfare:projectile
