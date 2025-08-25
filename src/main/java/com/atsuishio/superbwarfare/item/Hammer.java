@@ -33,7 +33,9 @@ public class Hammer extends SwordItem {
 
     @Override
     public @NotNull ItemStack getCraftingRemainingItem(ItemStack itemstack) {
-        ItemStack stack = new ItemStack(this);
+        if (!itemstack.isDamageableItem()) return itemstack;
+
+        var stack = itemstack.copy();
         stack.setDamageValue(itemstack.getDamageValue() + 1);
         if (stack.getDamageValue() >= stack.getMaxDamage()) {
             return ItemStack.EMPTY;
