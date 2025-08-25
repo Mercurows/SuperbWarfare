@@ -146,14 +146,13 @@ public class GunEventHandler {
             // 检查备弹
             if (!data.hasBackupAmmo(shooter)) return;
 
+            // Clip > Magazine > Iterative
             var reloadTypes = data.get(GunProp.RELOAD_TYPES);
+            boolean canMagazineReload = reloadTypes.contains(ReloadType.MAGAZINE) && !reloadTypes.contains(ReloadType.CLIP);
+            boolean canClipLoad = !data.hasEnoughAmmoToShoot(shooter) && reloadTypes.contains(ReloadType.CLIP);
             boolean canSingleReload = reloadTypes.contains(ReloadType.ITERATIVE);
-            boolean canReload = reloadTypes.contains(ReloadType.MAGAZINE) && !reloadTypes.contains(ReloadType.CLIP);
-            boolean clipLoad = !data.hasEnoughAmmoToShoot(shooter) && reloadTypes.contains(ReloadType.CLIP);
 
-            data.burstAmount.reset();
-
-            if (canReload || clipLoad) {
+            if (canMagazineReload || canClipLoad) {
                 int magazine = data.get(GunProp.MAGAZINE);
                 var extra = (data.item.isOpenBolt(data.stack) && data.item.hasBulletInBarrel(data.stack)) ? 1 : 0;
                 var maxAmmo = magazine + extra;
@@ -161,12 +160,13 @@ public class GunEventHandler {
                 if (data.ammo.get() < maxAmmo) {
                     data.startReload();
                 }
+            } else if (canSingleReload && data.ammo.get() < data.get(GunProp.MAGAZINE)) {
+                data.reload.singleReloadStarter.markStart();
+            } else {
                 return;
             }
 
-            if (canSingleReload && data.ammo.get() < data.get(GunProp.MAGAZINE)) {
-                data.reload.singleReloadStarter.markStart();
-            }
+            data.burstAmount.reset();
             data.save();
         }
     }
