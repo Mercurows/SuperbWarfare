@@ -6,6 +6,7 @@
   "mixins": [
     "BeastMixin",
     "ClientboundSetPassengersPacketMixin",
+    "EnchantedCountIncreaseFunctionMixin",
     "EntityMixin",
     "FishingHookMixin",
     "LevelMixin",
