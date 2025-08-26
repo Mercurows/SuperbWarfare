@@ -39,6 +39,7 @@ public record EditMessage(int msgType, boolean add) implements CustomPacketPaylo
         ItemStack stack = player.getMainHandItem();
         if (!(stack.getItem() instanceof GunItem gunItem)) return;
         var data = GunData.from(stack);
+        data.clearDefaultCache();
 
         switch (message.msgType) {
             case 0 -> {

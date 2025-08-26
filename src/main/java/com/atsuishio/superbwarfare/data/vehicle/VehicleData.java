@@ -45,12 +45,12 @@ public class VehicleData implements DefaultDataSupplier<DefaultVehicleData> {
 
         if (this.vehicle.isInitialized()) {
             // vehicle modifiers
-            modifier.apply(this.vehicle.getModifier(prop));
+            modifier.apply(this.vehicle);
 
             // property override tag
             var propertyOverrideString = this.vehicle.getEntityData().get(VehicleEntity.OVERRIDE);
             stringPropModifier.modifyPropertyByString(propertyOverrideString, prop);
-            modifier.apply(stringPropModifier.getModifier(prop));
+            modifier.apply(stringPropModifier);
         }
 
         operatingProps.remove(prop);
