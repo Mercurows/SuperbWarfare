@@ -28,7 +28,7 @@ public class HeadSeeker extends Perk {
     }
 
     @Override
-    public void onHit(float damage, GunData data, PerkInstance instance, Entity target, DamageSource source) {
+    public void onHurtEntity(float damage, GunData data, PerkInstance instance, Entity target, DamageSource source) {
         if (DamageTypeTool.isGunFireDamage(source)) {
             data.perk.getTag(this).putInt("HeadSeeker", 11 + instance.level() * 2);
         }

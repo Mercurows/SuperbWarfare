@@ -17,8 +17,8 @@ public class FieldDoctor extends Perk {
     }
 
     @Override
-    public void onHit(float damage, GunData data, PerkInstance instance, Entity target, DamageSource source) {
-        super.onHit(damage, data, instance, target, source);
+    public void onHurtEntity(float damage, GunData data, PerkInstance instance, Entity target, DamageSource source) {
+        super.onHurtEntity(damage, data, instance, target, source);
         if (!trigger(target, source)) {
             return;
         }

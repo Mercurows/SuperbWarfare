@@ -10,6 +10,7 @@ import com.atsuishio.superbwarfare.item.PerkItem;
 import net.minecraft.ChatFormatting;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import org.jetbrains.annotations.NotNull;
@@ -82,7 +83,10 @@ public class Perk implements GunPropertyModifier {
     public void onKill(GunData data, PerkInstance instance, Entity target, DamageSource source) {
     }
 
-    public void onHit(float damage, GunData data, PerkInstance instance, Entity target, DamageSource source) {
+    public void onHurtEntity(float damage, GunData data, PerkInstance instance, Entity target, DamageSource source) {
+    }
+
+    public void onHit(LivingEntity attacker, GunData data, PerkInstance instance, Entity target) {
     }
 
     public int getModifiedCustomRPM(int rpm, GunData data, PerkInstance instance) {

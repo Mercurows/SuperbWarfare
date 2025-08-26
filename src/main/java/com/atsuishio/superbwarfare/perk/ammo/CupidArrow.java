@@ -10,14 +10,13 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.AgeableMob;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.behavior.VillagerMakeLove;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.schedule.Activity;
 
 public class CupidArrow extends AmmoPerk {
@@ -27,21 +26,15 @@ public class CupidArrow extends AmmoPerk {
     }
 
     @Override
-    public void onHit(float damage, GunData data, PerkInstance instance, Entity target, DamageSource source) {
-        super.onHit(damage, data, instance, target, source);
-        Player attacker = null;
-        if (source.getEntity() instanceof Player player) {
-            attacker = player;
-        }
-        if (source.getDirectEntity() instanceof Projectile p && p.getOwner() instanceof Player player) {
-            attacker = player;
-        }
+    public void onHit(LivingEntity attacker, GunData data, PerkInstance instance, Entity target) {
+        super.onHit(attacker, data, instance, target);
+
         int perkLevel = instance.level();
-        var list = target.level().getEntities(target, target.getBoundingBox().inflate(perkLevel * 0.25));
+        var list = target.level().getEntities((Entity) null, target.getBoundingBox().inflate(perkLevel * 0.25), e -> e instanceof AgeableMob);
 
         for (var entity : list) {
-            if (entity instanceof Animal animal && animal.canFallInLove()) {
-                animal.setInLove(attacker);
+            if (entity instanceof Animal animal && animal.canFallInLove() && attacker instanceof Player player) {
+                animal.setInLove(player);
             }
             if (entity instanceof Villager villager && !villager.isBaby()) {
                 CupidLove cupidLove = CupidLove.getInstance(villager);
@@ -55,7 +48,7 @@ public class CupidArrow extends AmmoPerk {
 
             if (perkLevel >= 10) {
                 if (entity instanceof AgeableMob ageableMob && ageableMob.isBaby()) {
-                    ageableMob.ageUp(AgeableMob.getSpeedUpSecondsWhenFeeding(-ageableMob.getAge()), true);
+                    ageableMob.ageUp(AgeableMob.getSpeedUpSecondsWhenFeeding(-ageableMob.getAge()) * (int) (Math.max(1, perkLevel - 10) / 5d), true);
                 }
             }
 
