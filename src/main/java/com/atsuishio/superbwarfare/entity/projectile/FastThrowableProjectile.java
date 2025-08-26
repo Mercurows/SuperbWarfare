@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.entity.projectile;
 
+import com.atsuishio.superbwarfare.api.event.ProjectileHitEvent;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.network.message.receive.ClientMotionSyncMessage;
 import com.atsuishio.superbwarfare.tools.ChunkLoadManager;
@@ -16,7 +17,10 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
@@ -36,13 +40,12 @@ public abstract class FastThrowableProjectile extends ThrowableItemProjectile im
     public static Consumer<FastThrowableProjectile> nearFlySound = projectile -> {
     };
 
+    private static final int CHUNK_RADIUS = 1; // 3x3区块
+
     public int durability = 50;
-
     public boolean firstHit = true;
-
     private boolean isFastMoving = false;
 
-    private static final int CHUNK_RADIUS = 1; // 3x3区块
     private final Set<ChunkPos> currentChunks = new HashSet<>();
     private ChunkPos lastChunkPos;
 
@@ -93,6 +96,32 @@ public abstract class FastThrowableProjectile extends ThrowableItemProjectile im
         if (!level().isClientSide && level() instanceof ServerLevel serverLevel && forceLoadChunk()) {
             updateChunkLoading(serverLevel);
         }
+    }
+
+    @Override
+    protected void onHitEntity(@NotNull EntityHitResult pResult) {
+        super.onHitEntity(pResult);
+        NeoForge.EVENT_BUS.post(
+                new ProjectileHitEvent.HitEntity(
+                        pResult.getEntity(),
+                        this.getOwner(),
+                        this
+                )
+        );
+    }
+
+    @Override
+    protected void onHitBlock(@NotNull BlockHitResult pResult) {
+        super.onHitBlock(pResult);
+        NeoForge.EVENT_BUS.post(
+                new ProjectileHitEvent.HitBlock(
+                        pResult.getBlockPos(),
+                        this.level().getBlockState(pResult.getBlockPos()),
+                        pResult.getDirection(),
+                        this.getOwner(),
+                        this
+                )
+        );
     }
 
     public void destroyBlock() {
@@ -163,7 +192,7 @@ public abstract class FastThrowableProjectile extends ThrowableItemProjectile im
     }
 
     @Override
-    public void remove(Entity.RemovalReason reason) {
+    public void remove(Entity.@NotNull RemovalReason reason) {
         if (!level().isClientSide && level() instanceof ServerLevel serverLevel) {
             // 释放所有加载的区块
             for (ChunkPos pos : currentChunks) {

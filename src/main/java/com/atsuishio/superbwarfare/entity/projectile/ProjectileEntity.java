@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.entity.projectile;
 
+import com.atsuishio.superbwarfare.api.event.ProjectileHitEvent;
 import com.atsuishio.superbwarfare.client.particle.BulletDecalOption;
 import com.atsuishio.superbwarfare.client.particle.CustomCloudOption;
 import com.atsuishio.superbwarfare.component.ModDataComponents;
@@ -50,6 +51,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.*;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.entity.PartEntity;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
@@ -538,6 +540,9 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
             Direction face = result.getDirection();
             BlockState state = level().getBlockState(pos);
 
+            if (NeoForge.EVENT_BUS.post(new ProjectileHitEvent.HitBlock(pos, state, face, this.shooter, this)).isCanceled())
+                return;
+
             double vx = face.getStepX();
             double vy = face.getStepY();
             double vz = face.getStepZ();
@@ -572,7 +577,8 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
             Vec3 vec3 = randomVec(dir, 20);
             ParticleTool.sendParticle(serverLevel, ParticleTypes.SMOKE, pos.x, pos.y, pos.z, 0, vec3.x, vec3.y, vec3.z, 0.05, true);
         }
-        if (state.getSoundType() == SoundType.METAL || state.getSoundType() == SoundType.ANVIL || state.getSoundType() == SoundType.CHAIN || state.getSoundType() == SoundType.COPPER || state.getSoundType() == SoundType.NETHERITE_BLOCK) {
+        var blockPos = BlockPos.containing(pos);
+        if (state.getSoundType(serverLevel, blockPos, null) == SoundType.METAL || state.getSoundType(serverLevel, blockPos, null) == SoundType.ANVIL || state.getSoundType(serverLevel, blockPos, null) == SoundType.CHAIN || state.getSoundType(serverLevel, blockPos, null) == SoundType.COPPER || state.getSoundType(serverLevel, blockPos, null) == SoundType.NETHERITE_BLOCK) {
             serverLevel.playSound(null, pos.x, pos.y, pos.z, ModSounds.HIT.get(), SoundSource.BLOCKS, 2, 1);
             for (int i = 0; i < 3; i++) {
                 Vec3 vec3 = randomVec(dir, 80);
@@ -587,6 +593,7 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
 
     protected void onHitEntity(Entity entity, boolean headshot, boolean legShot) {
         if (entity == null) return;
+        if (NeoForge.EVENT_BUS.post(new ProjectileHitEvent.HitEntity(entity, this.shooter, this)).isCanceled()) return;
 
         if (entity instanceof PartEntity<?> part) {
             entity = part.getParent();
@@ -664,7 +671,6 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
                 .damage((float) ((0.9 * damage) * (1 + 0.1 * heLevel)))
                 .radius((float) ((1.5 + 0.02 * damage) * (1 + 0.05 * heLevel)))
                 .position(hitVec)
-//                .bulletExplode()
                 .explode();
     }
 

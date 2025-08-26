@@ -76,7 +76,7 @@ public class GrapeshotEntity extends FastThrowableProjectile {
     }
 
     @Override
-    protected void onHitEntity(EntityHitResult result) {
+    protected void onHitEntity(@NotNull EntityHitResult result) {
         Entity entity = result.getEntity();
         if (this.getOwner() != null && this.getOwner().getVehicle() != null && entity == this.getOwner().getVehicle())
             return;
@@ -101,7 +101,7 @@ public class GrapeshotEntity extends FastThrowableProjectile {
     }
 
     @Override
-    public void onHitBlock(BlockHitResult result) {
+    public void onHitBlock(@NotNull BlockHitResult result) {
         BlockPos resultPos = result.getBlockPos();
         BlockState state = this.level().getBlockState(resultPos);
 
@@ -117,7 +117,7 @@ public class GrapeshotEntity extends FastThrowableProjectile {
             bell.attemptToRing(this.level(), resultPos, result.getDirection());
         }
 
-        if (ProjectileConfig.ALLOW_PROJECTILE_DESTROY_BLOCKS.get() && (state.is(ModTags.Blocks.BULLET_CAN_DESTROY) || canDestroyBlock(state))) {
+        if (ProjectileConfig.ALLOW_PROJECTILE_DESTROY_BLOCKS.get() && (state.is(ModTags.Blocks.BULLET_CAN_DESTROY) || canDestroyBlock(state, resultPos))) {
             this.level().destroyBlock(resultPos, false, this.getOwner());
         }
 
@@ -126,21 +126,21 @@ public class GrapeshotEntity extends FastThrowableProjectile {
         this.discard();
     }
 
-    public boolean canDestroyBlock(BlockState state) {
-        return state.getSoundType() == SoundType.WOOD
-                || state.getSoundType() == SoundType.CHERRY_LEAVES
-                || state.getSoundType() == SoundType.AZALEA_LEAVES
-                || state.getSoundType() == SoundType.BAMBOO
-                || state.getSoundType() == SoundType.BAMBOO_SAPLING
-                || state.getSoundType() == SoundType.BAMBOO_WOOD
-                || state.getSoundType() == SoundType.BAMBOO_WOOD_HANGING_SIGN
-                || state.getSoundType() == SoundType.GLASS
-                || state.getSoundType() == SoundType.WOOL
-                || state.getSoundType() == SoundType.LANTERN
-                || state.getSoundType() == SoundType.CHAIN
-                || state.getSoundType() == SoundType.CHERRY_SAPLING
-                || state.getSoundType() == SoundType.CHERRY_WOOD
-                || state.getSoundType() == SoundType.CHERRY_WOOD_HANGING_SIGN
+    public boolean canDestroyBlock(BlockState state, BlockPos hitPos) {
+        return state.getSoundType(this.level(), hitPos, null) == SoundType.WOOD
+                || state.getSoundType(this.level(), hitPos, null) == SoundType.CHERRY_LEAVES
+                || state.getSoundType(this.level(), hitPos, null) == SoundType.AZALEA_LEAVES
+                || state.getSoundType(this.level(), hitPos, null) == SoundType.BAMBOO
+                || state.getSoundType(this.level(), hitPos, null) == SoundType.BAMBOO_SAPLING
+                || state.getSoundType(this.level(), hitPos, null) == SoundType.BAMBOO_WOOD
+                || state.getSoundType(this.level(), hitPos, null) == SoundType.BAMBOO_WOOD_HANGING_SIGN
+                || state.getSoundType(this.level(), hitPos, null) == SoundType.GLASS
+                || state.getSoundType(this.level(), hitPos, null) == SoundType.WOOL
+                || state.getSoundType(this.level(), hitPos, null) == SoundType.LANTERN
+                || state.getSoundType(this.level(), hitPos, null) == SoundType.CHAIN
+                || state.getSoundType(this.level(), hitPos, null) == SoundType.CHERRY_SAPLING
+                || state.getSoundType(this.level(), hitPos, null) == SoundType.CHERRY_WOOD
+                || state.getSoundType(this.level(), hitPos, null) == SoundType.CHERRY_WOOD_HANGING_SIGN
                 || state.is(BlockTags.LEAVES);
     }
 
@@ -171,7 +171,8 @@ public class GrapeshotEntity extends FastThrowableProjectile {
             Vec3 vec3 = randomVec(dir, 20);
             ParticleTool.sendParticle(serverLevel, ParticleTypes.SMOKE, pos.x, pos.y, pos.z, 0, vec3.x, vec3.y, vec3.z, 0.05, true);
         }
-        if (state.getSoundType() == SoundType.METAL || state.getSoundType() == SoundType.ANVIL || state.getSoundType() == SoundType.CHAIN || state.getSoundType() == SoundType.COPPER || state.getSoundType() == SoundType.NETHERITE_BLOCK) {
+        var blockPos = BlockPos.containing(pos);
+        if (state.getSoundType(serverLevel, blockPos, null) == SoundType.METAL || state.getSoundType(serverLevel, blockPos, null) == SoundType.ANVIL || state.getSoundType(serverLevel, blockPos, null) == SoundType.CHAIN || state.getSoundType(serverLevel, blockPos, null) == SoundType.COPPER || state.getSoundType(serverLevel, blockPos, null) == SoundType.NETHERITE_BLOCK) {
             serverLevel.playSound(null, pos.x, pos.y, pos.z, ModSounds.HIT.get(), SoundSource.BLOCKS, 2, 1);
             for (int i = 0; i < 3; i++) {
                 Vec3 vec3 = randomVec(dir, 80);
