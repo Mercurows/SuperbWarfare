@@ -771,7 +771,7 @@ public class ClientEventHandler {
             shellIndex++;
         }
 
-        cantSprint = 10;
+        cantSprint = 7;
 
         shellIndexTime[shellIndex] = 0.001;
 
@@ -1114,14 +1114,18 @@ public class ClientEventHandler {
     private static void handleWeaponMove(LivingEntity entity) {
         if (entity.getMainHandItem().is(ModTags.Items.GUN) && entity instanceof Player player) {
             float times = 3.7f * (float) Math.min(Minecraft.getInstance().getDeltaFrameTime(), 0.8);
-            double moveSpeed = (float) Mth.clamp(entity.getDeltaMovement().horizontalDistanceSqr(), 0, 0.02);
+            double moveSpeed = entity.getDeltaMovement().horizontalDistance();
             double animSpeed;
 
             ItemStack stack = player.getMainHandItem();
             var data = GunData.from(stack);
 
             if (entity.onGround()) {
-                animSpeed = 2.0;
+                if (entity.isSprinting()) {
+                    animSpeed = 1.8;
+                } else {
+                    animSpeed = 2.0;
+                }
             } else {
                 animSpeed = 0.005;
             }
@@ -1141,9 +1145,9 @@ public class ClientEventHandler {
                     sprintBasicPosY = Mth.lerp(0.1f * times, sprintBasicPosY, 1) * (1 - zoomTime);
                     sprintBasicPosZ = Mth.lerp(0.1f * times, sprintBasicPosZ, 1) * (1 - zoomTime);
                 } else {
-                    sprintBasicRotX = Mth.lerp(0.2f * times, sprintBasicRotX, 0) * (1 - zoomTime);
-                    sprintBasicRotY = Mth.lerp(0.12f * times, sprintBasicRotY, 0) * (1 - zoomTime);
-                    sprintBasicRotZ = Mth.lerp(0.2f * times, sprintBasicRotZ, 0) * (1 - zoomTime);
+                    sprintBasicRotX = Mth.lerp(0.35f * times, sprintBasicRotX, 0) * (1 - zoomTime);
+                    sprintBasicRotY = Mth.lerp(0.24f * times, sprintBasicRotY, 0) * (1 - zoomTime);
+                    sprintBasicRotZ = Mth.lerp(0.35f * times, sprintBasicRotZ, 0) * (1 - zoomTime);
 
                     sprintBasicPosX = Mth.lerp(0.2f * times, sprintBasicPosX, 0) * (1 - zoomTime);
                     sprintBasicPosY = Mth.lerp(0.2f * times, sprintBasicPosY, 0) * (1 - zoomTime);
@@ -1152,14 +1156,19 @@ public class ClientEventHandler {
             }
 
             if (isMoving() && firePosTimer == 0) {
-                moveTime += 1.2 * animSpeed * times * moveSpeed;
+                moveTime += 0.15 * animSpeed * times * moveSpeed;
                 moveFadeTime = Mth.lerp(0.13 * times, moveFadeTime, 1);
             } else {
                 moveFadeTime = Mth.lerp(0.1 * times, moveFadeTime, 0);
             }
 
             if (entity.isSprinting() && !data.reloading() && firePosTimer == 0 && !ModKeyMappings.FIRE.isDown() && cantSprint == 0) {
-                sprintFadeTime = Mth.lerp(0.08 * times, sprintFadeTime, 1);
+                if (entity.onGround()) {
+                    sprintFadeTime = Mth.lerp(0.08 * times, sprintFadeTime, 1);
+                } else {
+                    sprintFadeTime = Mth.lerp(0.15 * times, sprintFadeTime, 0);
+                }
+
 
                 movePosX = Mth.lerp(0.1 * times, movePosX, 0);
                 movePosY = Mth.lerp(0.1 * times, movePosY, 0);
