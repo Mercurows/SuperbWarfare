@@ -144,6 +144,7 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
 
     @Override
     public void onHitBlock(@NotNull BlockHitResult blockHitResult) {
+        super.onHitBlock(blockHitResult);
         if (this.level() instanceof ServerLevel) {
             if (type != Type.AP) {
                 causeExplode(blockHitResult.getLocation());
@@ -174,6 +175,7 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
 
     @Override
     public void onHitEntity(@NotNull EntityHitResult entityHitResult) {
+        super.onHitEntity(entityHitResult);
         if (this.level() instanceof ServerLevel) {
             Entity entity = entityHitResult.getEntity();
             if (this.getOwner() != null && entity == this.getOwner().getVehicle())

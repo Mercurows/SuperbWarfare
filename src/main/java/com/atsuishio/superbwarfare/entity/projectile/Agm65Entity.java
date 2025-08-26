@@ -132,6 +132,7 @@ public class Agm65Entity extends FastThrowableProjectile implements GeoEntity, E
 
     @Override
     protected void onHitEntity(@NotNull EntityHitResult result) {
+        super.onHitEntity(result);
         Entity entity = result.getEntity();
         if (entity == this.getOwner() || (this.getOwner() != null && entity == this.getOwner().getVehicle()))
             return;
@@ -158,6 +159,7 @@ public class Agm65Entity extends FastThrowableProjectile implements GeoEntity, E
 
     @Override
     public void onHitBlock(@NotNull BlockHitResult blockHitResult) {
+        super.onHitBlock(blockHitResult);
         if (this.level() instanceof ServerLevel) {
             BlockPos resultPos = blockHitResult.getBlockPos();
             float hardness = this.level().getBlockState(resultPos).getBlock().defaultDestroyTime();

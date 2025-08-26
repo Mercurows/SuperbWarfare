@@ -150,6 +150,7 @@ public class MediumRocketEntity extends FastThrowableProjectile implements GeoEn
 
     @Override
     public void onHitBlock(@NotNull BlockHitResult blockHitResult) {
+        super.onHitBlock(blockHitResult);
         if (this.level() instanceof ServerLevel) {
             if (type == Type.HE || type == Type.CM) {
                 causeExplode(blockHitResult.getLocation());
@@ -180,6 +181,7 @@ public class MediumRocketEntity extends FastThrowableProjectile implements GeoEn
 
     @Override
     public void onHitEntity(@NotNull EntityHitResult entityHitResult) {
+        super.onHitEntity(entityHitResult);
         if (tickCount < 2) return;
         if (this.level() instanceof ServerLevel) {
             Entity entity = entityHitResult.getEntity();

@@ -93,6 +93,7 @@ public class MelonBombEntity extends FastThrowableProjectile implements Explosiv
 
     @Override
     public void onHitBlock(@NotNull BlockHitResult blockHitResult) {
+        super.onHitBlock(blockHitResult);
         if (this.level() instanceof ServerLevel) {
             AABB aabb = new AABB(blockHitResult.getLocation(), blockHitResult.getLocation()).inflate(5);
             BlockPos.betweenClosedStream(aabb).forEach((pos) -> {

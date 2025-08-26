@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.api.event.ReloadEvent;
 import com.atsuishio.superbwarfare.config.server.ProjectileConfig;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.GunProp;
+import com.atsuishio.superbwarfare.entity.projectile.GrapeshotEntity;
 import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
@@ -89,17 +90,24 @@ public class CustomEventHandler {
         var pos = event.getPos();
         var face = event.getFace();
 
-        if (projectile instanceof ProjectileEntity p) {
-            if (state.getBlock() instanceof BellBlock bell) {
-                bell.attemptToRing(p.level(), pos, face);
+        if (state.getBlock() instanceof BellBlock bell) {
+            if (projectile instanceof ProjectileEntity || projectile instanceof GrapeshotEntity) {
+                bell.attemptToRing(projectile.level(), pos, face);
             }
+        }
 
+        if (projectile instanceof ProjectileEntity p) {
             if (ProjectileConfig.ALLOW_PROJECTILE_DESTROY_BLOCKS.get() && state.is(ModTags.Blocks.BULLET_CAN_DESTROY)) {
                 p.level().destroyBlock(pos, false, p.getShooter());
             }
 
             if (state.getBlock() instanceof TargetBlock) {
                 p.recordHitScore(face, event.getHitVec());
+            }
+        }
+        if (projectile instanceof GrapeshotEntity grapeshotEntity) {
+            if (ProjectileConfig.ALLOW_PROJECTILE_DESTROY_BLOCKS.get() && state.is(ModTags.Blocks.CANNON_SHOT_CAN_DESTROY)) {
+                grapeshotEntity.level().destroyBlock(pos, false, grapeshotEntity.getOwner());
             }
         }
     }

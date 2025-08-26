@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.entity.projectile;
 
 import com.atsuishio.superbwarfare.client.particle.CustomCloudOption;
-import com.atsuishio.superbwarfare.config.server.ProjectileConfig;
 import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
 import com.atsuishio.superbwarfare.tools.DamageHandler;
@@ -16,14 +15,12 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.BellBlock;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -77,6 +74,7 @@ public class GrapeshotEntity extends FastThrowableProjectile {
 
     @Override
     protected void onHitEntity(@NotNull EntityHitResult result) {
+        super.onHitEntity(result);
         Entity entity = result.getEntity();
         if (this.getOwner() != null && this.getOwner().getVehicle() != null && entity == this.getOwner().getVehicle())
             return;
@@ -102,46 +100,16 @@ public class GrapeshotEntity extends FastThrowableProjectile {
 
     @Override
     public void onHitBlock(@NotNull BlockHitResult result) {
+        super.onHitBlock(result);
         BlockPos resultPos = result.getBlockPos();
         BlockState state = this.level().getBlockState(resultPos);
-
-        if (state.getBlock() instanceof BellBlock bell) {
-            bell.attemptToRing(this.level(), resultPos, result.getDirection());
-        }
 
         SoundEvent event = state.getBlock().getSoundType(state, this.level(), resultPos, this).getBreakSound();
         this.level().playSound(null, result.getLocation().x, result.getLocation().y, result.getLocation().z, event, SoundSource.AMBIENT, 1.0F, 1.0F);
         Vec3 hitVec = result.getLocation();
 
-        if (state.getBlock() instanceof BellBlock bell) {
-            bell.attemptToRing(this.level(), resultPos, result.getDirection());
-        }
-
-        if (ProjectileConfig.ALLOW_PROJECTILE_DESTROY_BLOCKS.get() && (state.is(ModTags.Blocks.BULLET_CAN_DESTROY) || canDestroyBlock(state, resultPos))) {
-            this.level().destroyBlock(resultPos, false, this.getOwner());
-        }
-
         this.hitBlock(hitVec, result);
-
         this.discard();
-    }
-
-    public boolean canDestroyBlock(BlockState state, BlockPos hitPos) {
-        return state.getSoundType(this.level(), hitPos, null) == SoundType.WOOD
-                || state.getSoundType(this.level(), hitPos, null) == SoundType.CHERRY_LEAVES
-                || state.getSoundType(this.level(), hitPos, null) == SoundType.AZALEA_LEAVES
-                || state.getSoundType(this.level(), hitPos, null) == SoundType.BAMBOO
-                || state.getSoundType(this.level(), hitPos, null) == SoundType.BAMBOO_SAPLING
-                || state.getSoundType(this.level(), hitPos, null) == SoundType.BAMBOO_WOOD
-                || state.getSoundType(this.level(), hitPos, null) == SoundType.BAMBOO_WOOD_HANGING_SIGN
-                || state.getSoundType(this.level(), hitPos, null) == SoundType.GLASS
-                || state.getSoundType(this.level(), hitPos, null) == SoundType.WOOL
-                || state.getSoundType(this.level(), hitPos, null) == SoundType.LANTERN
-                || state.getSoundType(this.level(), hitPos, null) == SoundType.CHAIN
-                || state.getSoundType(this.level(), hitPos, null) == SoundType.CHERRY_SAPLING
-                || state.getSoundType(this.level(), hitPos, null) == SoundType.CHERRY_WOOD
-                || state.getSoundType(this.level(), hitPos, null) == SoundType.CHERRY_WOOD_HANGING_SIGN
-                || state.is(BlockTags.LEAVES);
     }
 
     protected void hitBlock(Vec3 location, BlockHitResult result) {
