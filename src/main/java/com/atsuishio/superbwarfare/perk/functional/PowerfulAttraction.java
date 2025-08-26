@@ -29,13 +29,25 @@ public class PowerfulAttraction extends Perk {
         if (!(sourceEntity instanceof Player player)) return;
         ItemStack stack = player.getMainHandItem();
 
-        if (stack.getItem() instanceof GunItem && GunData.from(stack).perk.getLevel(ModPerks.POWERFUL_ATTRACTION) > 0
+        int level = GunData.from(stack).perk.getLevel(ModPerks.POWERFUL_ATTRACTION);
+        if (stack.getItem() instanceof GunItem && level > 0
                 && (DamageTypeTool.isGunDamage(source) || DamageTypeTool.isExplosionDamage(source))) {
             var drops = event.getDrops();
             drops.forEach(itemEntity -> {
                 ItemStack item = itemEntity.getItem();
-                if (!player.addItem(item)) {
+                if (!player.addItem(item.copy())) {
                     player.drop(item, false);
+                }
+                double random = Math.random();
+                if (random < level * 0.1 - 0.5) {
+                    if (!player.addItem(item.copy())) {
+                        player.drop(item, false);
+                    }
+                }
+                if (random < level * 0.05 - 0.8) {
+                    if (!player.addItem(item.copy())) {
+                        player.drop(item, false);
+                    }
                 }
             });
             event.setCanceled(true);
