@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.network.message.send;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.data.gun.FireMode;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.init.ModItems;
@@ -34,54 +33,12 @@ public enum FireModeMessage implements CustomPacketPayload {
         if (stack.getItem() instanceof GunItem) {
             var data = GunData.from(stack);
             var tag = data.tag();
-            var fireMode = data.fireMode.get();
 
-            var mode = data.get(GunProp.AVAILABLE_FIRE_MODES);
+            var index = data.selectedFireModeIndex.get();
+            index = (index + 1) % data.get(GunProp.AVAILABLE_FIRE_MODES).size();
+            data.selectedFireModeIndex.set(index);
 
-            if (fireMode == FireMode.SEMI) {
-                if (mode.contains(FireMode.BURST)) {
-                    data.fireMode.set(FireMode.BURST);
-                    playChangeModeSound(player);
-                    data.save();
-                    return;
-                }
-                if (mode.contains(FireMode.AUTO)) {
-                    data.fireMode.set(FireMode.AUTO);
-                    playChangeModeSound(player);
-                    data.save();
-                    return;
-                }
-            }
-
-            if (fireMode == FireMode.BURST) {
-                if (mode.contains(FireMode.AUTO)) {
-                    data.fireMode.set(FireMode.AUTO);
-                    playChangeModeSound(player);
-                    data.save();
-                    return;
-                }
-                if (mode.contains(FireMode.SEMI)) {
-                    data.fireMode.set(FireMode.SEMI);
-                    playChangeModeSound(player);
-                    data.save();
-                    return;
-                }
-            }
-
-            if (fireMode == FireMode.AUTO) {
-                if (mode.contains(FireMode.SEMI)) {
-                    data.fireMode.set(FireMode.SEMI);
-                    playChangeModeSound(player);
-                    data.save();
-                    return;
-                }
-                if (mode.contains(FireMode.BURST)) {
-                    data.fireMode.set(FireMode.BURST);
-                    playChangeModeSound(player);
-                    data.save();
-                    return;
-                }
-            }
+            playChangeModeSound(player);
 
             if (stack.getItem() == ModItems.SENTINEL.get()
                     && !player.isSpectator()
@@ -99,13 +56,15 @@ public enum FireModeMessage implements CustomPacketPayload {
                 }
             }
 
+            // TODO 优化这个
             if (stack.getItem() == ModItems.JAVELIN.get()) {
                 tag.putBoolean("TopMode", !tag.getBoolean("TopMode"));
-                data.save();
                 if (player instanceof ServerPlayer serverPlayer) {
                     SoundTool.playLocalSound(serverPlayer, ModSounds.CANNON_ZOOM_OUT.get());
                 }
             }
+
+            data.save();
         }
     }
 

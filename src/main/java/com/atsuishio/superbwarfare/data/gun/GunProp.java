@@ -38,9 +38,8 @@ public final class GunProp<T> extends Prop<GunData, DefaultGunData, T> {
     public static final GunProp<Integer> PROJECTILE_AMOUNT = new GunProp<Integer>("ProjectileAmount")
             .withLimiter(v -> Math.max(0, v));
     public static final GunProp<Double> WEIGHT = new GunProp<>("Weight");
-    public static final GunProp<FireMode> DEFAULT_FIRE_MODE = new GunProp<>("DefaultFireMode");
-    public static final GunProp<Set<FireMode>> AVAILABLE_FIRE_MODES = new GunProp<Set<FireMode>>("AvailableFireModes")
-            .withLimiter(v -> v == null ? Set.of() : v);
+    public static final GunProp<List<FireModeInfo>> AVAILABLE_FIRE_MODES = new GunProp<List<FireModeInfo>>("AvailableFireModes")
+            .withLimiter(v -> v == null || v.isEmpty() ? List.of(FireModeInfo.DEFAULT) : v);
 
     public static final GunProp<Set<ReloadType>> RELOAD_TYPES = new GunProp<Set<ReloadType>>("ReloadTypes")
             .withLimiter(v -> v == null ? Set.of() : v);

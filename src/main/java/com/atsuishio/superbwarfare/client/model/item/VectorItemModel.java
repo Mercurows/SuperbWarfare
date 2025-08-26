@@ -58,7 +58,7 @@ public class VectorItemModel extends CustomGunModel<VectorItem> {
 
         var data = GunData.from(stack);
 
-        switch (data.fireMode.get()) {
+        switch (data.selectedFireMode().mode) {
             case SEMI -> kmj.setRotX(-120 * Mth.DEG_TO_RAD);
             case BURST -> kmj.setRotX(-60 * Mth.DEG_TO_RAD);
             case AUTO -> kmj.setRotX(0);

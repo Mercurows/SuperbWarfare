@@ -57,7 +57,7 @@ public class Glock18ItemModel extends CustomGunModel<Glock18Item> {
         GeoBone switch_ = getAnimationProcessor().getBone("kuaimanji");
 
         var data = GunData.from(stack);
-        var mode = data.fireMode.get();
+        var mode = data.selectedFireMode().mode;
         if (mode == FireMode.SEMI) {
             switch_.setRotX(35 * Mth.DEG_TO_RAD);
         }
