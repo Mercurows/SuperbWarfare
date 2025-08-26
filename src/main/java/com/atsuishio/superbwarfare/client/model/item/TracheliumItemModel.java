@@ -123,7 +123,7 @@ public class TracheliumItemModel extends CustomGunModel<Trachelium> {
             };
         }
 
-        ClientEventHandler.handleShootAnimation(shen, 1.25f, -2f, 1.35f, 3.5f, 1.3f, 1f, 0.2f, 0.75f);
+        ClientEventHandler.handleShootAnimation(shen, 1.25f, -2f, 1.85f, 3.5f, 1.3f, 1f, 0.2f, 0.75f);
 
         CrossHairOverlay.gunRot = shen.getRotZ();
 
@@ -140,7 +140,7 @@ public class TracheliumItemModel extends CustomGunModel<Trachelium> {
             ammohole.setRotZ(0);
         }
 
-        ClientEventHandler.gunRootMove(getAnimationProcessor());
+        ClientEventHandler.gunRootMove(getAnimationProcessor(), 2, 0, 3, false);
 
         GeoBone l = getAnimationProcessor().getBone("l");
         GeoBone r = getAnimationProcessor().getBone("r");

@@ -74,11 +74,21 @@ public class ClientEventHandler {
     public static double swayTime = 0;
     public static double swayX = 0;
     public static double swayY = 0;
-    public static double moveXTime = 0;
-    public static double moveYTime = 0;
+    public static double moveTime = 0;
     public static double movePosX = 0;
     public static double movePosY = 0;
     public static double moveRotZ = 0;
+
+    public static double sprintBasicRotX = 0;
+    public static double sprintBasicRotY = 0;
+    public static double sprintBasicRotZ = 0;
+    public static double sprintPosX = 0;
+    public static double sprintPosY = 0;
+
+    public static double sprintBasicPosX = 0;
+    public static double sprintBasicPosY = 0;
+    public static double sprintBasicPosZ = 0;
+
     public static double movePosHorizon = 0;
     public static double velocityY = 0;
 
@@ -138,6 +148,7 @@ public class ClientEventHandler {
     public static float stamina = 0;
     public static double switchTime = 0;
     public static double moveFadeTime = 0;
+    public static double sprintFadeTime = 0;
 
     public static boolean exhaustion = false;
     public static boolean holdFireVehicle = false;
@@ -612,6 +623,7 @@ public class ClientEventHandler {
                 && gunItem.canShoot(data, player)
                 && stack.is(ModTags.Items.NORMAL_GUN)
                 && cantFireTime == 0
+                && sprintBasicRotX * sprintBasicRotY * sprintBasicRotZ < 0.0001
                 && drawTime < 0.01
                 && !notInGame()
                 && !isEditing
@@ -1104,39 +1116,71 @@ public class ClientEventHandler {
     }
 
     private static void handleWeaponMove(LivingEntity entity) {
-        if (entity.getMainHandItem().is(ModTags.Items.GUN)) {
+        if (entity.getMainHandItem().is(ModTags.Items.GUN) && entity instanceof Player player) {
             float times = 3.7f * (float) Math.min(Minecraft.getInstance().getTimer().getRealtimeDeltaTicks(), 0.8);
             double moveSpeed = (float) Mth.clamp(entity.getDeltaMovement().horizontalDistanceSqr(), 0, 0.02);
-            double onGround;
+            double animSpeed;
+
+            ItemStack stack = player.getMainHandItem();
+            var data = GunData.from(stack);
 
             if (entity.onGround()) {
-                if (entity.isSprinting()) {
-                    onGround = 1.35;
-                } else {
-                    onGround = 2.0;
-                }
+                animSpeed = 2.0;
             } else {
-                onGround = 0.001;
+                animSpeed = 0.005;
             }
 
             if (!isEditing) {
-                if (Minecraft.getInstance().options.keyUp.isDown() && firePosTimer == 0) {
+                if (!entity.isSprinting() && Minecraft.getInstance().options.keyUp.isDown() && firePosTimer == 0) {
                     moveRotZ = Mth.lerp(0.2f * times, moveRotZ, 0.14) * (1 - zoomTime);
                 } else {
                     moveRotZ = Mth.lerp(0.2f * times, moveRotZ, 0) * (1 - zoomTime);
                 }
+                if (entity.isSprinting() && !data.reloading() && firePosTimer == 0 && !ModKeyMappings.FIRE.isDown() && cantSprint == 0) {
+                    sprintBasicRotX = Mth.lerp(0.1f * times, sprintBasicRotX, 1) * (1 - zoomTime);
+                    sprintBasicRotY = Mth.lerp(0.05f * times, sprintBasicRotY, 1) * (1 - zoomTime);
+                    sprintBasicRotZ = Mth.lerp(0.1f * times, sprintBasicRotZ, 1) * (1 - zoomTime);
+
+                    sprintBasicPosX = Mth.lerp(0.1f * times, sprintBasicPosX, 1) * (1 - zoomTime);
+                    sprintBasicPosY = Mth.lerp(0.1f * times, sprintBasicPosY, 1) * (1 - zoomTime);
+                    sprintBasicPosZ = Mth.lerp(0.1f * times, sprintBasicPosZ, 1) * (1 - zoomTime);
+                } else {
+                    sprintBasicRotX = Mth.lerp(0.2f * times, sprintBasicRotX, 0) * (1 - zoomTime);
+                    sprintBasicRotY = Mth.lerp(0.12f * times, sprintBasicRotY, 0) * (1 - zoomTime);
+                    sprintBasicRotZ = Mth.lerp(0.2f * times, sprintBasicRotZ, 0) * (1 - zoomTime);
+
+                    sprintBasicPosX = Mth.lerp(0.2f * times, sprintBasicPosX, 0) * (1 - zoomTime);
+                    sprintBasicPosY = Mth.lerp(0.2f * times, sprintBasicPosY, 0) * (1 - zoomTime);
+                    sprintBasicPosZ = Mth.lerp(0.2f * times, sprintBasicPosZ, 0) * (1 - zoomTime);
+                }
             }
 
-            if (isMoving() && !entity.isSprinting() && firePosTimer == 0) {
-                moveYTime += 1.2 * onGround * times * moveSpeed;
-                moveXTime += 1.2 * onGround * times * moveSpeed;
+            if (isMoving() && firePosTimer == 0) {
+                moveTime += 1.2 * animSpeed * times * moveSpeed;
                 moveFadeTime = Mth.lerp(0.13 * times, moveFadeTime, 1);
             } else {
                 moveFadeTime = Mth.lerp(0.1 * times, moveFadeTime, 0);
             }
 
-            movePosX = 0.2 * Math.sin(1 * Math.PI * moveXTime) * (1 - 0.95 * zoomTime) * moveFadeTime;
-            movePosY = -0.135 * Math.sin(2 * Math.PI * (moveYTime - 0.25)) * (1 - 0.95 * zoomTime) * moveFadeTime;
+            if (entity.isSprinting() && !data.reloading() && firePosTimer == 0 && !ModKeyMappings.FIRE.isDown() && cantSprint == 0) {
+                sprintFadeTime = Mth.lerp(0.08 * times, sprintFadeTime, 1);
+
+                movePosX = Mth.lerp(0.1 * times, movePosX, 0);
+                movePosY = Mth.lerp(0.1 * times, movePosY, 0);
+
+                sprintPosX = 2 * Math.sin(1 * Math.PI * moveTime) * (1 - 0.95 * zoomTime) * sprintFadeTime;
+                sprintPosY = 1 * Math.sin(2 * Math.PI * moveTime) * (1 - 0.95 * zoomTime) * sprintFadeTime;
+            } else {
+                if (!data.reloading() && firePosTimer == 0 && !ModKeyMappings.FIRE.isDown() && cantSprint == 0) {
+                    movePosX = 0.2 * Math.sin(1 * Math.PI * moveTime) * (1 - 0.95 * zoomTime) * moveFadeTime;
+                    movePosY = -0.135 * Math.sin(2 * Math.PI * (moveTime - 0.25)) * (1 - 0.95 * zoomTime) * moveFadeTime;
+                }
+
+                sprintPosX = Mth.lerp(0.1 * times, sprintPosX, 0);
+                sprintPosY = Mth.lerp(0.1 * times, sprintPosY, 0);
+
+                sprintFadeTime = Mth.lerp(0.1 * times, sprintFadeTime, 0);
+            }
 
             boolean left = Minecraft.getInstance().options.keyLeft.isDown();
             boolean right = Minecraft.getInstance().options.keyRight.isDown();
@@ -1162,13 +1206,31 @@ public class ClientEventHandler {
         }
     }
 
-    public static void gunRootMove(AnimationProcessor<?> animationProcessor) {
+    public static void gunRootMove(AnimationProcessor<?> animationProcessor, float customX, float customY, float customZ, boolean useCustomAnim) {
         GeoBone root = animationProcessor.getBone("root");
-        root.setPosX((float) (movePosX + 20 * drawTime + 9.3f * movePosHorizon));
-        root.setPosY((float) (swayY + movePosY - 40 * drawTime - 2f * velocityY));
-        root.setRotX((float) (swayX - Mth.DEG_TO_RAD * 60 * drawTime + Mth.DEG_TO_RAD * turnRot[0] - 0.15f * velocityY));
-        root.setRotY((float) (0.2f * movePosX + Mth.DEG_TO_RAD * 300 * drawTime + Mth.DEG_TO_RAD * turnRot[1]));
-        root.setRotZ((float) (0.2f * movePosX + moveRotZ + Mth.DEG_TO_RAD * 90 * drawTime + 2.7f * movePosHorizon + Mth.DEG_TO_RAD * turnRot[2]));
+        float walkPosX = (float) movePosX;
+        float walkPosY = (float) (swayY + movePosY);
+        float walkPosZ = 0;
+        float walkRotX = (float) swayX;
+        float walkRotY = (float) (0.2f * movePosX);
+        float walkRotZ = (float) (0.2f * movePosX);
+
+        int i = useCustomAnim ? 0 : 1;
+
+        float basicSprintPosX = (float) (sprintBasicPosX * (1 + customX)) * i;
+        float basicSprintPosY = (float) (sprintBasicPosY * (-2.35 + customY)) * i;
+        float basicSprintPosZ = (float) (sprintBasicPosZ * (-0.55 + customZ)) * i;
+
+        float basicSprintRotX = (float) (sprintBasicRotX * 39 * Mth.DEG_TO_RAD) * i;
+        float basicSprintRotY = (float) (sprintBasicRotY * 35.6 * Mth.DEG_TO_RAD) * i;
+        float basicSprintRotZ = (float) (sprintBasicRotZ * 34.7 * Mth.DEG_TO_RAD) * i;
+
+        root.setPosX((float) (walkPosX + basicSprintPosX + sprintPosX * i + 20 * drawTime + 9.3f * movePosHorizon) * (float) (1 - 1 * zoomTime));
+        root.setPosY((float) (walkPosY + basicSprintPosY + sprintPosY * i - 40 * drawTime - 2f * velocityY) * (float) (1 - 1 * zoomTime));
+        root.setPosZ((walkPosZ + basicSprintPosZ) * (float) (1 - 1 * zoomTime));
+        root.setRotX((float) (walkRotX + basicSprintRotX - Mth.DEG_TO_RAD * 60 * drawTime + Mth.DEG_TO_RAD * turnRot[0] - 0.15f * velocityY) * (float) (1 - 1 * zoomTime));
+        root.setRotY((float) (walkRotY + basicSprintRotY + (0.2f * sprintBasicPosX * i) + Mth.DEG_TO_RAD * 300 * drawTime + Mth.DEG_TO_RAD * turnRot[1]) * (float) (1 - 1 * zoomTime));
+        root.setRotZ((float) (walkRotZ + basicSprintRotZ + moveRotZ + Mth.DEG_TO_RAD * 90 * drawTime + 2.7f * movePosHorizon + Mth.DEG_TO_RAD * turnRot[2]) * (float) (1 - 1 * zoomTime));
     }
 
     private static void handleWeaponZoom(LivingEntity entity) {
@@ -1232,15 +1294,15 @@ public class ClientEventHandler {
             fireRotTimer = 0;
         }
 
-        firePos = MathTool.decayingOscillation(2.5f,2,0.5f, (float) firePosTimer);
-        fireRot = MathTool.decayingOscillation(0.2f,3,0.5f, (float) fireRotTimer) * Mth.sin((float) fireRotTimer);
+        firePos = MathTool.decayingOscillation(2.5f, 2, 0.5f, (float) firePosTimer);
+        fireRot = MathTool.decayingOscillation(0.2f, 3, 0.5f, (float) fireRotTimer) * Mth.sin((float) fireRotTimer);
 
         if (fireRot < 0) {
             fireRot *= 0.5;
         }
 
-        fireRotZ = MathTool.decayingOscillation((float) (1f * recoilHorizon),3,0.5f, (float) fireRotTimer);
-        fireRotY = MathTool.decayingOscillation((float) (0.1f * recoilHorizon),3,0.5f, (float) fireRotTimer);
+        fireRotZ = MathTool.decayingOscillation((float) (1f * recoilHorizon), 3, 0.5f, (float) fireRotTimer);
+        fireRotY = MathTool.decayingOscillation((float) (0.1f * recoilHorizon), 3, 0.5f, (float) fireRotTimer);
 
         if (entity instanceof Player player && player.isSpectator()) return;
 
@@ -1248,7 +1310,7 @@ public class ClientEventHandler {
         float pitch = event.getPitch();
 
         if (0 < fireRotTimer) {
-            float shake = (float) (MathTool.decayingOscillation(0.5f,3,0.75f, (float) fireRotTimer) * (1 + amplitude) * (float) (DisplayConfig.WEAPON_SCREEN_SHAKE.get() / 100.0));
+            float shake = (float) (MathTool.decayingOscillation(0.5f, 3, 0.75f, (float) fireRotTimer) * (1 + amplitude) * (float) (DisplayConfig.WEAPON_SCREEN_SHAKE.get() / 100.0));
             if (recoilY > 0) {
                 event.setYaw(yaw - 0.5f * shake);
                 event.setPitch(pitch + shake);

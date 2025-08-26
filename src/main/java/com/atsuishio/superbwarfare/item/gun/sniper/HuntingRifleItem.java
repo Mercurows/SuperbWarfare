@@ -4,7 +4,6 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.GunRendererBuilder;
 import com.atsuishio.superbwarfare.client.model.item.HuntingRifleItemModel;
 import com.atsuishio.superbwarfare.data.gun.GunData;
-import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import net.minecraft.client.Minecraft;
@@ -50,13 +49,6 @@ public class HuntingRifleItem extends GunItem {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.hunting_rifle.reload"));
         }
 
-        if (player.isSprinting() && player.onGround() && ClientEventHandler.cantSprint == 0 && ClientEventHandler.drawTime < 0.01) {
-            if (ClientEventHandler.tacticalSprint) {
-                return event.setAndContinue(RawAnimation.begin().thenLoop("animation.hunting_rifle.run_fast"));
-            } else {
-                return event.setAndContinue(RawAnimation.begin().thenLoop("animation.hunting_rifle.run"));
-            }
-        }
         return event.setAndContinue(RawAnimation.begin().thenLoop("animation.hunting_rifle.idle"));
     }
 

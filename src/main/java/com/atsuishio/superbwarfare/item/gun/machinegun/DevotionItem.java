@@ -3,7 +3,6 @@ package com.atsuishio.superbwarfare.item.gun.machinegun;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.renderer.gun.DevotionItemRenderer;
 import com.atsuishio.superbwarfare.data.gun.GunData;
-import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import net.minecraft.client.Minecraft;
@@ -46,14 +45,6 @@ public class DevotionItem extends GunItem {
 
         if (GunData.from(stack).reload.normal()) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.devotion.reload_normal"));
-        }
-
-        if (player.isSprinting() && player.onGround() && ClientEventHandler.cantSprint == 0 && ClientEventHandler.drawTime < 0.01) {
-            if (ClientEventHandler.tacticalSprint) {
-                return event.setAndContinue(RawAnimation.begin().thenLoop("animation.devotion.run_fast"));
-            } else {
-                return event.setAndContinue(RawAnimation.begin().thenLoop("animation.devotion.run"));
-            }
         }
 
         return event.setAndContinue(RawAnimation.begin().thenLoop("animation.devotion.idle"));

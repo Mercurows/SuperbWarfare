@@ -75,7 +75,7 @@ public class Mp443ItemModel extends CustomGunModel<Mp443Item> {
             huatao.setPosZ(1.5f);
         }
 
-        ClientEventHandler.gunRootMove(getAnimationProcessor());
+        ClientEventHandler.gunRootMove(getAnimationProcessor(), 2, 2, 3, false);
 
         GeoBone camera = getAnimationProcessor().getBone("camera");
         GeoBone main = getAnimationProcessor().getBone("0");

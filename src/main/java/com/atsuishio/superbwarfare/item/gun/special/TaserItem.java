@@ -4,7 +4,6 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.renderer.gun.TaserItemRenderer;
 import com.atsuishio.superbwarfare.client.tooltip.component.EnergyImageComponent;
 import com.atsuishio.superbwarfare.data.gun.GunData;
-import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.init.ModSounds;
@@ -82,14 +81,6 @@ public class TaserItem extends GunItem implements EnergyStorageItem {
 
         if (GunData.from(stack).reload.empty()) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.taser.reload"));
-        }
-
-        if (player.isSprinting() && player.onGround() && ClientEventHandler.cantSprint == 0 && ClientEventHandler.drawTime < 0.01) {
-            if (ClientEventHandler.tacticalSprint) {
-                return event.setAndContinue(RawAnimation.begin().thenLoop("animation.taser.run_fast"));
-            } else {
-                return event.setAndContinue(RawAnimation.begin().thenLoop("animation.taser.run"));
-            }
         }
 
         return event.setAndContinue(RawAnimation.begin().thenLoop("animation.taser.idle"));

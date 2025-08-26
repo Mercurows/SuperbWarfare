@@ -76,7 +76,7 @@ public class MinigunItemModel extends CustomGunModel<MinigunItem> {
 
         CrossHairOverlay.gunRot = shen.getRotZ();
 
-        ClientEventHandler.gunRootMove(getAnimationProcessor());
+        ClientEventHandler.gunRootMove(getAnimationProcessor(), 7, 1, 3, false);
 
         GeoBone camera = getAnimationProcessor().getBone("camera");
         ClientEventHandler.handleReloadShake(Mth.RAD_TO_DEG * camera.getRotX(), Mth.RAD_TO_DEG * camera.getRotY(), Mth.RAD_TO_DEG * camera.getRotZ());

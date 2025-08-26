@@ -76,18 +76,6 @@ public class AK12Item extends GunItem {
             }
         }
 
-        if (player.isSprinting() && player.onGround() && ClientEventHandler.cantSprint == 0 && ClientEventHandler.drawTime < 0.01) {
-            if (ClientEventHandler.tacticalSprint) {
-                return event.setAndContinue(RawAnimation.begin().thenLoop("animation.ak_12.run_fast"));
-            } else {
-                if (grip) {
-                    return event.setAndContinue(RawAnimation.begin().thenPlay("animation.ak_12.run_grip"));
-                } else {
-                    return event.setAndContinue(RawAnimation.begin().thenLoop("animation.ak_12.run"));
-                }
-            }
-        }
-
         if (grip) {
             return event.setAndContinue(RawAnimation.begin().thenLoop("animation.ak_12.idle_grip"));
         } else {

@@ -111,7 +111,7 @@ public class Ntw20Model extends CustomGunModel<Ntw20Item> {
         l.setRotX(rotXBipod * Mth.DEG_TO_RAD);
         r.setRotX(rotXBipod * Mth.DEG_TO_RAD);
 
-        ClientEventHandler.gunRootMove(getAnimationProcessor());
+        ClientEventHandler.gunRootMove(getAnimationProcessor(), 0, 0, 2, false);
 
         GeoBone camera = getAnimationProcessor().getBone("camera");
         GeoBone main = getAnimationProcessor().getBone("0");

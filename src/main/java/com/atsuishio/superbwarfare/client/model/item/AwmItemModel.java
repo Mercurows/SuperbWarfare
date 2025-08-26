@@ -104,7 +104,7 @@ public class AwmItemModel extends CustomGunModel<AwmItem> {
         button6.setScaleX(1f - (0.8f * (float) zp));
         button7.setScaleX(1f - (0.8f * (float) zp));
 
-        ClientEventHandler.gunRootMove(getAnimationProcessor());
+        ClientEventHandler.gunRootMove(getAnimationProcessor(), 0, 0, 0, false);
 
         GeoBone shen = getAnimationProcessor().getBone("fire");
 

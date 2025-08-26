@@ -75,7 +75,7 @@ public class K98ItemModel extends CustomGunModel<K98Item> {
 
         CrossHairOverlay.gunRot = shen.getRotZ();
 
-        ClientEventHandler.gunRootMove(getAnimationProcessor());
+        ClientEventHandler.gunRootMove(getAnimationProcessor(), 0, 0, 0, false);
 
         GeoBone camera = getAnimationProcessor().getBone("camera");
         GeoBone main = getAnimationProcessor().getBone("0");

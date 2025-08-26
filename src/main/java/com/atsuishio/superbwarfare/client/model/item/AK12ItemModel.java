@@ -125,7 +125,7 @@ public class AK12ItemModel extends CustomGunModel<AK12Item> {
         l.setRotX(rotXBipod * Mth.DEG_TO_RAD);
         r.setRotX(rotXBipod * Mth.DEG_TO_RAD);
 
-        ClientEventHandler.gunRootMove(getAnimationProcessor());
+        ClientEventHandler.gunRootMove(getAnimationProcessor(), 0, 0, 0, false);
 
         GeoBone camera = getAnimationProcessor().getBone("camera");
         GeoBone main = getAnimationProcessor().getBone("0");

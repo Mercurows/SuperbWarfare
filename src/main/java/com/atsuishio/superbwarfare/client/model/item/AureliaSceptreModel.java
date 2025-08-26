@@ -43,7 +43,7 @@ public class AureliaSceptreModel extends CustomGunModel<AureliaSceptre> {
 
         float times = 0.2f * (float) Math.min(Minecraft.getInstance().getTimer().getRealtimeDeltaTicks(), 0.8);
 
-        ClientEventHandler.gunRootMove(getAnimationProcessor());
+        ClientEventHandler.gunRootMove(getAnimationProcessor(), 0, 0, 0, true);
 
         GeoBone rootLeftHand = getAnimationProcessor().getBone("rootLeftHand");
 

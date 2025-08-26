@@ -125,7 +125,7 @@ public class Hk416ItemModel extends CustomGunModel<Hk416Item> {
 
         kuaimanji.setRotX(mode == FireMode.AUTO ? 90 * Mth.DEG_TO_RAD : 0);
 
-        ClientEventHandler.gunRootMove(getAnimationProcessor());
+        ClientEventHandler.gunRootMove(getAnimationProcessor(), 2, 0, 0, false);
 
         GeoBone camera = getAnimationProcessor().getBone("camera");
         GeoBone main = getAnimationProcessor().getBone("0");

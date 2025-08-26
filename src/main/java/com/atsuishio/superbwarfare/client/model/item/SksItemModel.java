@@ -72,7 +72,7 @@ public class SksItemModel extends CustomGunModel<SksItem> {
 
         shuan.setPosZ(2f * (float) fp);
 
-        ClientEventHandler.gunRootMove(getAnimationProcessor());
+        ClientEventHandler.gunRootMove(getAnimationProcessor(), 0, 0, 0, false);
 
         GeoBone camera = getAnimationProcessor().getBone("camera");
         GeoBone main = getAnimationProcessor().getBone("0");

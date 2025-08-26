@@ -63,7 +63,7 @@ public class HomemadeShotgunItemModel extends CustomGunModel<HomemadeShotgunItem
 
         CrossHairOverlay.gunRot = fireRoot.getRotZ();
 
-        ClientEventHandler.gunRootMove(getAnimationProcessor());
+        ClientEventHandler.gunRootMove(getAnimationProcessor(), 1, 0, 0, false);
 
         GeoBone camera = getAnimationProcessor().getBone("camera");
         GeoBone main = getAnimationProcessor().getBone("0");

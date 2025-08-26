@@ -114,7 +114,7 @@ public class Mk14ItemModel extends CustomGunModel<Mk14Item> {
 
         action.setPosZ(2.5f * (float) fp);
 
-        ClientEventHandler.gunRootMove(getAnimationProcessor());
+        ClientEventHandler.gunRootMove(getAnimationProcessor(), 0, 0, 0, false);
 
         GeoBone camera = getAnimationProcessor().getBone("camera");
         GeoBone main = getAnimationProcessor().getBone("0");

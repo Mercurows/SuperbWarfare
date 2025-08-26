@@ -126,7 +126,7 @@ public class RpkItemModel extends CustomGunModel<RpkItem> {
 
         shuan.setPosZ(2.4f * (float) fp);
 
-        ClientEventHandler.gunRootMove(getAnimationProcessor());
+        ClientEventHandler.gunRootMove(getAnimationProcessor(), 0, 0, 0, false);
 
         GeoBone camera = getAnimationProcessor().getBone("camera");
         GeoBone main = getAnimationProcessor().getBone("0");

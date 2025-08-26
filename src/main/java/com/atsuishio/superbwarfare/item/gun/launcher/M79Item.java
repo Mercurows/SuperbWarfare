@@ -5,7 +5,6 @@ import com.atsuishio.superbwarfare.client.GunRendererBuilder;
 import com.atsuishio.superbwarfare.client.model.item.M79ItemModel;
 import com.atsuishio.superbwarfare.client.tooltip.component.LauncherImageComponent;
 import com.atsuishio.superbwarfare.data.gun.GunData;
-import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
@@ -62,20 +61,12 @@ public class M79Item extends GunItem {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m_79.reload"));
         }
 
-        if (player.isSprinting() && player.onGround() && ClientEventHandler.cantSprint == 0 && ClientEventHandler.drawTime < 0.01) {
-            if (ClientEventHandler.tacticalSprint) {
-                return event.setAndContinue(RawAnimation.begin().thenLoop("animation.m_79.run_fast"));
-            } else {
-                return event.setAndContinue(RawAnimation.begin().thenLoop("animation.m_79.run"));
-            }
-        }
-
         return event.setAndContinue(RawAnimation.begin().thenLoop("animation.m_79.idle"));
     }
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar data) {
-        var idleController = new AnimationController<>(this, "idleController", 3, this::idlePredicate);
+        var idleController = new AnimationController<>(this, "idleController", 0, this::idlePredicate);
         data.add(idleController);
     }
 

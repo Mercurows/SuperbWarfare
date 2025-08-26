@@ -67,13 +67,13 @@ public class DevotionItemModel extends CustomGunModel<DevotionItem> {
 
         GeoBone shen = getAnimationProcessor().getBone("shen");
 
-        ClientEventHandler.handleShootAnimation(shen, 1, -1, 1, 0.6f, 1, 1, 0.5f, 0.8f);
+        ClientEventHandler.handleShootAnimation(shen, 1, -1, 1, 0.6f, 1, 1, 0.7f, 0.8f);
 
         CrossHairOverlay.gunRot = shen.getRotZ();
 
         bolt.setPosZ(-2f * (float) fp);
 
-        ClientEventHandler.gunRootMove(getAnimationProcessor());
+        ClientEventHandler.gunRootMove(getAnimationProcessor(), 0, 0, 0, false);
 
         if (isProne(player)) {
             l.setRotX(1.5f);

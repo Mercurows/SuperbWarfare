@@ -69,7 +69,7 @@ public class SecondaryCataclysmModel extends CustomGunModel<SecondaryCataclysm> 
         bolt.setPosZ(6f * (float) fp);
         lun.setRotZ(45f * (float) (Mth.clamp(ClientEventHandler.firePosTimer, 0, 1)) * Mth.DEG_TO_RAD);
 
-        ClientEventHandler.gunRootMove(getAnimationProcessor());
+        ClientEventHandler.gunRootMove(getAnimationProcessor(), 0, 0, 0, false);
 
         GeoBone camera = getAnimationProcessor().getBone("camera");
         GeoBone main = getAnimationProcessor().getBone("0");

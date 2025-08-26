@@ -103,7 +103,7 @@ public class VectorItemModel extends CustomGunModel<VectorItem> {
         sight1fold.setRotX(rotXSight * Mth.DEG_TO_RAD);
         sight2fold.setRotX(rotXSight * Mth.DEG_TO_RAD);
 
-        ClientEventHandler.gunRootMove(getAnimationProcessor());
+        ClientEventHandler.gunRootMove(getAnimationProcessor(), 1, 0, 3, false);
 
         GeoBone camera = getAnimationProcessor().getBone("camera");
         GeoBone main = getAnimationProcessor().getBone("0");

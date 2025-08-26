@@ -53,14 +53,6 @@ public class SvdItem extends GunItem {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.svd.reload_normal"));
         }
 
-        if (player.isSprinting() && player.onGround() && ClientEventHandler.cantSprint == 0 && ClientEventHandler.drawTime < 0.01) {
-            if (ClientEventHandler.tacticalSprint) {
-                return event.setAndContinue(RawAnimation.begin().thenLoop("animation.svd.run_fast"));
-            } else {
-                return event.setAndContinue(RawAnimation.begin().thenLoop("animation.svd.run"));
-            }
-        }
-
         return event.setAndContinue(RawAnimation.begin().thenLoop("animation.svd.idle"));
     }
 
