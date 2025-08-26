@@ -31,7 +31,7 @@ public class MagnificentHowl extends Perk {
     }
 
     @Override
-    public void onHit(float damage, GunData data, PerkInstance instance, Entity target, DamageSource source) {
+    public void onHurtEntity(float damage, GunData data, PerkInstance instance, Entity target, DamageSource source) {
         if (data.perk.getTag(this).getInt("MagnificentHowlDamageCount") > 0) {
             data.perk.reduceCooldown(this, "MagnificentHowlDamageCount");
         }

@@ -21,7 +21,7 @@ public class FairMeans extends Perk {
     }
 
     @Override
-    public void onHit(float damage, GunData data, PerkInstance instance, Entity target, DamageSource source) {
+    public void onHurtEntity(float damage, GunData data, PerkInstance instance, Entity target, DamageSource source) {
         if (data.get(GunProp.BYPASSES_ARMOR) > 0) {
             if (source.is(ModTags.DamageTypes.PROJECTILE_ABSOLUTE)) {
                 data.perk.getTag(this).putBoolean("FairMeans", !data.perk.getTag(this).getBoolean("FairMeans"));

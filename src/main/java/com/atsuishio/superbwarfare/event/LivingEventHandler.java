@@ -499,7 +499,7 @@ public class LivingEventHandler {
             var instance = data.perk.getInstance(type);
             if (instance != null) {
                 damage = instance.perk().getModifiedDamage(damage, data, instance, event.getEntity(), source);
-                instance.perk().onHit(damage, data, instance, event.getEntity(), source);
+                instance.perk().onHurtEntity(damage, data, instance, event.getEntity(), source);
             }
         }
 
