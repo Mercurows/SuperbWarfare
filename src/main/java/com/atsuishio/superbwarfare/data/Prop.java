@@ -1,6 +1,8 @@
 package com.atsuishio.superbwarfare.data;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -77,8 +79,17 @@ public abstract class Prop<DATA extends DefaultDataSupplier<DEFAULT_DATA>, DEFAU
         }
     }
 
+    public FIELD deserializeFrom(JsonObject obj) {
+        return deserializeFrom(obj.get(this.name));
+    }
+
+    @SuppressWarnings("unchecked")
+    public FIELD deserializeFrom(JsonElement element) {
+        return (FIELD) DataLoader.processValue(DataLoader.GSON.fromJson(element, getFieldType()));
+    }
+
     public PropModifier asModifier(DATA data) {
-        return new PropModifier(data, this.getDefault(data.getDefault()), limiter);
+        return new PropModifier(this, data, this.getDefault(data.getDefault()), limiter);
     }
 
     @SuppressWarnings("unchecked")
@@ -93,25 +104,22 @@ public abstract class Prop<DATA extends DefaultDataSupplier<DEFAULT_DATA>, DEFAU
     }
 
     public class PropModifier {
+        private final Prop<DATA, DEFAULT_DATA, FIELD> prop;
         private final DATA data;
         private final FIELD value;
         private final PropModifyContext<DATA, FIELD> limiter;
 
         private final List<PropModifyContext<DATA, FIELD>> modifiers = new ArrayList<>();
 
-        private PropModifier(DATA data, FIELD value, @Nullable PropModifyContext<DATA, FIELD> limiter) {
+        private PropModifier(Prop<DATA, DEFAULT_DATA, FIELD> prop, DATA data, FIELD value, @Nullable PropModifyContext<DATA, FIELD> limiter) {
+            this.prop = prop;
             this.data = data;
             this.value = value;
             this.limiter = limiter;
         }
 
-        public PropModifier apply(@Nullable List<PropModifyContext<DATA, FIELD>> modifiers) {
-            if (modifiers == null) return this;
-
-            for (var modifier : modifiers) {
-                apply(modifier);
-            }
-            return this;
+        public PropModifier apply(@NotNull PropertyModifier<DATA, DEFAULT_DATA> modifier) {
+            return apply(modifier.getModifier(this.prop));
         }
 
         public PropModifier apply(@Nullable PropModifyContext<DATA, FIELD> modifier) {
