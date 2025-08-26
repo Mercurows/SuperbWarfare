@@ -1,19 +1,21 @@
 package com.atsuishio.superbwarfare.item;
 
+import com.atsuishio.superbwarfare.client.TooltipTool;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.tools.NBTTool;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.SwordItem;
-import net.minecraft.world.item.Tier;
+import net.minecraft.world.item.*;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.List;
 
 @EventBusSubscriber(bus = EventBusSubscriber.Bus.GAME)
 public class Hammer extends SwordItem {
@@ -27,16 +29,28 @@ public class Hammer extends SwordItem {
     }
 
     @Override
+    @ParametersAreNonnullByDefault
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
+        TooltipTool.addHideText(tooltipComponents, Component.translatable("des.superbwarfare.hammer", NBTTool.getTag(stack).getInt("CraftCount")).withStyle(ChatFormatting.GRAY));
+    }
+
+    @Override
     public boolean hasCraftingRemainingItem(@NotNull ItemStack stack) {
         return true;
     }
 
     @Override
     public @NotNull ItemStack getCraftingRemainingItem(ItemStack itemstack) {
-        if (!itemstack.isDamageableItem()) return itemstack;
-
         var stack = itemstack.copy();
+
+        var tag = NBTTool.getTag(stack);
+        tag.putInt("CraftCount", tag.getInt("CraftCount") + 1);
+        NBTTool.saveTag(stack, tag);
+
+        if (!itemstack.isDamageableItem()) return stack;
+
         stack.setDamageValue(itemstack.getDamageValue() + 1);
+
         if (stack.getDamageValue() >= stack.getMaxDamage()) {
             return ItemStack.EMPTY;
         }
