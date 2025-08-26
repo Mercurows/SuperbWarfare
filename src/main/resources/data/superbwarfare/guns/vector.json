@@ -1,8 +1,8 @@
 {
   "ID": "superbwarfare:vector",
   "Spread": 2.3,
-  "RecoilX": 0,
-  "RecoilY": 0.007,
+  "RecoilX": 0.0005,
+  "RecoilY": 0.015,
   "Damage": 6,
   "Headshot": 1.5,
   "Velocity": 16,

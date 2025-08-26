@@ -50,28 +50,11 @@ public class TaserItemModel extends CustomGunModel<TaserItem> {
         GeoBone gun = getAnimationProcessor().getBone("bone");
         GeoBone shen = getAnimationProcessor().getBone("shen");
 
-        float times = 0.6f * (float) Math.min(Minecraft.getInstance().getTimer().getRealtimeDeltaTicks(), 0.8);
         double zt = ClientEventHandler.zoomTime;
         double zp = ClientEventHandler.zoomPos;
         double zpz = ClientEventHandler.zoomPosZ;
 
-        double fpz = ClientEventHandler.firePosZ * 13 * times;
-        double fp = ClientEventHandler.firePos;
-        double fr = ClientEventHandler.fireRot;
-
-        shen.setPosX((float) (0.75f * ClientEventHandler.recoilHorizon * fpz * fp));
-        shen.setPosY((float) (-0.03f * fp - 0.06f * fr));
-        shen.setPosZ((float) (0.725 * fp + 0.34f * fr + 0.45 * fpz));
-        shen.setRotX((float) (0.03f * fp + 0.02f * fr + 0.02f * fpz));
-        shen.setRotY((float) (0.07f * ClientEventHandler.recoilHorizon * fpz));
-        shen.setRotZ((float) ((0.08f + 0.1 * fr) * ClientEventHandler.recoilHorizon));
-
-        shen.setPosX((float) (shen.getPosX() * (1 - 0.5 * zt)));
-        shen.setPosY((float) (shen.getPosY() * (1 + 0.2 * zt)));
-        shen.setPosZ((float) (shen.getPosZ() * (1 - 0.3 * zt)));
-        shen.setRotX((float) (shen.getRotX() * (1 - 0.9 * zt)));
-        shen.setRotY((float) (shen.getRotY() * (1 - 0.9 * zt)));
-        shen.setRotZ((float) (shen.getRotZ() * (1 - 0.9 * zt)));
+        ClientEventHandler.handleShootAnimation(shen, 0.1f, -0.1f, 0.3f, 0.2f, 0.1f, 0.1f, 0.5f, 0.75f);
 
         CrossHairOverlay.gunRot = shen.getRotZ();
 

@@ -18,9 +18,6 @@ import software.bernie.geckolib.cache.object.GeoBone;
 import static com.atsuishio.superbwarfare.event.ClientEventHandler.isProne;
 
 public class Mk14ItemModel extends CustomGunModel<Mk14Item> {
-
-    public static float fireRotY = 0f;
-    public static float fireRotZ = 0f;
     public static float rotXBipod = 0f;
 
     @Override
@@ -64,15 +61,9 @@ public class Mk14ItemModel extends CustomGunModel<Mk14Item> {
         double zt = ClientEventHandler.zoomTime;
         double zp = ClientEventHandler.zoomPos;
         double zpz = ClientEventHandler.zoomPosZ;
-
-        double fpz = ClientEventHandler.firePosZ * 13 * times;
         double fp = ClientEventHandler.firePos;
-        double fr = ClientEventHandler.fireRot;
 
         int type = GunData.from(stack).attachment.get(AttachmentType.SCOPE);
-        int stockType = GunData.from(stack).attachment.get(AttachmentType.STOCK);
-        int barrelType = GunData.from(stack).attachment.get(AttachmentType.BARREL);
-        int gripType = GunData.from(stack).attachment.get(AttachmentType.GRIP);
 
         float posY = switch (type) {
             case 0 -> 1.68f;
@@ -117,22 +108,7 @@ public class Mk14ItemModel extends CustomGunModel<Mk14Item> {
             };
         }
 
-        fireRotY = (float) Mth.lerp(0.3f * times, fireRotY, 0.2f * ClientEventHandler.recoilHorizon * fpz);
-        fireRotZ = (float) Mth.lerp(2f * times, fireRotZ, (0.4f + 0.5 * fpz) * ClientEventHandler.recoilHorizon);
-
-        shen.setPosX(-0.4f * (float) (ClientEventHandler.recoilHorizon * (0.5 + 0.4 * ClientEventHandler.fireSpread)));
-        shen.setPosY((float) (0.15f * fp + 0.18f * fr));
-        shen.setPosZ((float) (1.935 * fp + 0.13f * fr + 0.725 * fpz));
-        shen.setRotX((float) ((0.015f * fp + 0.12f * fr + 0.015f * fpz)));
-        shen.setRotY(fireRotY);
-        shen.setRotZ(fireRotZ);
-
-        shen.setPosX((float) (shen.getPosX() * (1 - 0.4 * zt)));
-        shen.setPosY((float) (shen.getPosY() * (-1 + 0.8 * zt)));
-        shen.setPosZ((float) (shen.getPosZ() * (1 - 0.6 * zt) * (barrelType == 1 ? 0.8 : 1.0) * (stockType == 2 ? 0.9 : 1.0) * (gripType == 1 ? 0.9 : 1.0) * (isProne(player) && gripType == 3 ? 0.9 : 1.0)));
-        shen.setRotX((float) (shen.getRotX() * (1 - 0.8 * zt) * (barrelType == 1 ? 0.4 : 1.0) * (stockType == 2 ? 0.6 : 1.0) * (gripType == 1 ? 0.7 : 1.0) * (isProne(player) && gripType == 3 ? 0.1 : 1.0)));
-        shen.setRotY((float) (shen.getRotY() * (1 - 0.85 * zt)));
-        shen.setRotZ((float) (shen.getRotZ() * (1 - 0.4 * zt)));
+        ClientEventHandler.handleShootAnimation(shen, 1, -0.4f, 1.2f, 1.3f, 1, 1, 0.5f, 0.7f);
 
         CrossHairOverlay.gunRot = shen.getRotZ();
 

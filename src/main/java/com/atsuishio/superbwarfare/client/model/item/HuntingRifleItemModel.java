@@ -50,14 +50,9 @@ public class HuntingRifleItemModel extends CustomGunModel<HuntingRifleItem> {
         GeoBone gun = getAnimationProcessor().getBone("bone");
         GeoBone fireRoot = getAnimationProcessor().getBone("fireRoot");
 
-        float times = 0.6f * (float) Math.min(Minecraft.getInstance().getTimer().getRealtimeDeltaTicks(), 0.8);
         double zt = ClientEventHandler.zoomTime;
         double zp = ClientEventHandler.zoomPos;
         double zpz = ClientEventHandler.zoomPosZ;
-
-        double fpz = ClientEventHandler.firePosZ * 7 * times;
-        double fp = ClientEventHandler.firePos;
-        double fr = ClientEventHandler.fireRot;
 
         gun.setPosX(1.975f * (float) zp);
         gun.setPosY(1.2f * (float) zp - (float) (0.2f * zpz));
@@ -65,19 +60,7 @@ public class HuntingRifleItemModel extends CustomGunModel<HuntingRifleItem> {
         gun.setRotZ((float) (0.05f * zpz));
         gun.setScaleZ(1f - (0.5f * (float) zp));
 
-        fireRoot.setPosX((float) (0.95f * ClientEventHandler.recoilHorizon * fpz * fp));
-        fireRoot.setPosY((float) (0.4f * fp + 0.44f * fr));
-        fireRoot.setPosZ((float) (2.825 * fp + 0.17f * fr + 1.175 * fpz));
-        fireRoot.setRotX((float) (0.01f * fp + 0.2f * fr + 0.01f * fpz));
-        fireRoot.setRotY((float) (0.1f * ClientEventHandler.recoilHorizon * fpz));
-        fireRoot.setRotZ((float) ((0.08f + 0.1 * fr) * ClientEventHandler.recoilHorizon));
-
-        fireRoot.setPosX((float) (fireRoot.getPosX() * (1 - 0.4 * zt)));
-        fireRoot.setPosY((float) (fireRoot.getPosY() * (1 - 0.5 * zt)));
-        fireRoot.setPosZ((float) (fireRoot.getPosZ() * (1 - 0.7 * zt)));
-        fireRoot.setRotX((float) (fireRoot.getRotX() * (1 - 0.87 * zt)));
-        fireRoot.setRotY((float) (fireRoot.getRotY() * (1 - 0.7 * zt)));
-        fireRoot.setRotZ((float) (fireRoot.getRotZ() * (1 - 0.65 * zt)));
+        ClientEventHandler.handleShootAnimation(fireRoot, 1.25f, 2f, 3f, 2.5f, 1.3f, 1f, 0.4f, 0.55f);
 
         CrossHairOverlay.gunRot = fireRoot.getRotZ();
 

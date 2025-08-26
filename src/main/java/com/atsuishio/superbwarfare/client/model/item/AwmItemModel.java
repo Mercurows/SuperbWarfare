@@ -17,8 +17,6 @@ import static com.atsuishio.superbwarfare.event.ClientEventHandler.isProne;
 
 public class AwmItemModel extends CustomGunModel<AwmItem> {
 
-    public static float fireRotY = 0f;
-    public static float fireRotZ = 0f;
     public static float rotXBipod = 0f;
     public static float rotXSight = 0f;
 
@@ -71,9 +69,6 @@ public class AwmItemModel extends CustomGunModel<AwmItem> {
         double zt = ClientEventHandler.zoomTime;
         double zp = ClientEventHandler.zoomPos;
         double zpz = ClientEventHandler.zoomPosZ;
-        double fpz = ClientEventHandler.firePosZ * 5 * times;
-        double fp = ClientEventHandler.firePos;
-        double fr = ClientEventHandler.fireRot;
 
         float posY = switch (type) {
             case 0 -> 0.15f;
@@ -113,22 +108,7 @@ public class AwmItemModel extends CustomGunModel<AwmItem> {
 
         GeoBone shen = getAnimationProcessor().getBone("fire");
 
-        fireRotY = (float) Mth.lerp(0.3f * times, fireRotY, 0.2f * ClientEventHandler.recoilHorizon * fpz);
-        fireRotZ = (float) Mth.lerp(2f * times, fireRotZ, (0.4f + 0.5 * fpz) * ClientEventHandler.recoilHorizon);
-
-        shen.setPosX(-0.4f * (float) (ClientEventHandler.recoilHorizon * (0.5 + 0.4 * ClientEventHandler.fireSpread)));
-        shen.setPosY((float) (0.4f * fp + 0.44f * fr));
-        shen.setPosZ((float) (2.825 * fp + 0.24f * fr + 1.25 * fpz));
-        shen.setRotX((float) (0.015f * fp + 0.12f * fr + 0.01f * fpz));
-        shen.setRotY(fireRotY);
-        shen.setRotZ(fireRotZ);
-
-        shen.setPosX((float) (shen.getPosX() * (1 - 0.4 * zt)));
-        shen.setPosY((float) (shen.getPosY() * (-1 + 0.8 * zt)));
-        shen.setPosZ((float) (shen.getPosZ() * (1 - 0.2 * zt)));
-        shen.setRotX((float) (shen.getRotX() * (1 - 0.5 * zt)));
-        shen.setRotY((float) (shen.getRotY() * (1 - 0.85 * zt)));
-        shen.setRotZ((float) (shen.getRotZ() * (1 - 0.4 * zt)));
+        ClientEventHandler.handleShootAnimation(shen, 1.25f, 2f, 3f, 2.5f, 1.3f, 1f, 0.4f, 0.55f);
 
         GeoBone l = getAnimationProcessor().getBone("l");
         GeoBone r = getAnimationProcessor().getBone("r");

@@ -23,7 +23,7 @@
 				{
 					"name": "fire",
 					"parent": "bone",
-					"pivot": [0, 0, 10]
+					"pivot": [0, 0, 3]
 				},
 				{
 					"name": "0",

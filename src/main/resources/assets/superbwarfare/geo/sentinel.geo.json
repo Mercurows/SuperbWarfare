@@ -32,7 +32,7 @@
 				{
 					"name": "shen",
 					"parent": "bone",
-					"pivot": [0, 0, 0]
+					"pivot": [0, 0, 7]
 				},
 				{
 					"name": "qiang",

@@ -50,33 +50,17 @@ public class SecondaryCataclysmModel extends CustomGunModel<SecondaryCataclysm> 
         GeoBone gun = getAnimationProcessor().getBone("bone");
         GeoBone shen = getAnimationProcessor().getBone("shen");
 
-        float times = 0.6f * (float) Math.min(Minecraft.getInstance().getTimer().getRealtimeDeltaTicks(), 0.8);
         double zt = ClientEventHandler.zoomTime;
         double zp = ClientEventHandler.zoomPos;
         double zpz = ClientEventHandler.zoomPosZ;
-
-        double fpz = ClientEventHandler.firePosZ * 20 * times;
         double fp = ClientEventHandler.firePos;
-        double fr = ClientEventHandler.fireRot;
 
         gun.setPosX(0.9f * (float) zp);
         gun.setPosY(0.15f * (float) zp - (float) (0.2f * zpz));
         gun.setPosZ(6f * (float) zp + (float) (0.3f * zpz));
         gun.setScaleZ(1f - (0.35f * (float) zp));
 
-        shen.setPosX((float) (0.95f * ClientEventHandler.recoilHorizon * fpz * fp));
-        shen.setPosY((float) (0.4f * fp + 0.44f * fr));
-        shen.setPosZ((float) (2.825 * fp + 0.17f * fr + 1.175 * fpz));
-        shen.setRotX((float) (0.01f * fp + 0.15f * fr + 0.01f * fpz));
-        shen.setRotY((float) (0.1f * ClientEventHandler.recoilHorizon * fpz));
-        shen.setRotZ((float) ((0.08f + 0.1 * fr) * ClientEventHandler.recoilHorizon));
-
-        shen.setPosX((float) (shen.getPosX() * (1 - 0.4 * zt)));
-        shen.setPosY((float) (shen.getPosY() * (1 - 0.5 * zt)));
-        shen.setPosZ((float) (shen.getPosZ() * (1 - 0.7 * zt)));
-        shen.setRotX((float) (shen.getRotX() * (1 - 0.87 * zt)));
-        shen.setRotY((float) (shen.getRotY() * (1 - 0.7 * zt)));
-        shen.setRotZ((float) (shen.getRotZ() * (1 - 0.65 * zt)));
+        ClientEventHandler.handleShootAnimation(shen, 1.25f, 1.7f, 2f, 2.5f, 1.3f, 1f, 0.4f, 0.55f);
 
         CrossHairOverlay.gunRot = shen.getRotZ();
 

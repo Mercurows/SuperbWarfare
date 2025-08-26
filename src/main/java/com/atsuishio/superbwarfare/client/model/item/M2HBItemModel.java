@@ -15,10 +15,6 @@ import software.bernie.geckolib.animation.AnimationState;
 import software.bernie.geckolib.cache.object.GeoBone;
 
 public class M2HBItemModel extends CustomGunModel<M2HBItem> {
-
-    public static float fireRotY = 0f;
-    public static float fireRotZ = 0f;
-
     @Override
     public ResourceLocation getAnimationResource(M2HBItem animatable) {
         return Mod.loc("animations/m_2_hb.animation.json");
@@ -90,24 +86,9 @@ public class M2HBItemModel extends CustomGunModel<M2HBItem> {
             b1.setScaleZ(0);
         }
 
-        float times = 0.6f * (float) Math.min(Minecraft.getInstance().getTimer().getRealtimeDeltaTicks(), 0.8);
-
-        double fpz = ClientEventHandler.firePosZ * 4 * times;
-        double fp = ClientEventHandler.firePos;
-        double fr = ClientEventHandler.fireRot;
-
-
         GeoBone shen = getAnimationProcessor().getBone("fireRootNormal");
 
-        fireRotY = (float) Mth.lerp(0.3f * times, fireRotY, 0.6f * ClientEventHandler.recoilHorizon * fpz);
-        fireRotZ = (float) Mth.lerp(2f * times, fireRotZ, (0.4f + 0.5f * fpz) * ClientEventHandler.recoilHorizon);
-
-        shen.setPosX(-0.7f * (float) (ClientEventHandler.recoilHorizon * (0.5 + 0.4 * ClientEventHandler.fireSpread)));
-        shen.setPosY((float) (0.4f * fp + 0.44f * fr));
-        shen.setPosZ((float) (2.825 * fp + 0.24f * fr + 1.25 * fpz));
-        shen.setRotX((float) (0.01f * fp + 0.08f * fr + 0.01f * fpz));
-        shen.setRotY(fireRotY);
-        shen.setRotZ(fireRotZ);
+        ClientEventHandler.handleShootAnimation(shen, 1.25f, 1.7f, 2f, 1.5f, 1.3f, 1f, 0f, 0.55f);
 
         CrossHairOverlay.gunRot = shen.getRotZ();
 

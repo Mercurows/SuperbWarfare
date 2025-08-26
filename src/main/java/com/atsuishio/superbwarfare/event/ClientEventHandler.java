@@ -88,9 +88,15 @@ public class ClientEventHandler {
     public static double fireRecoilTime = 0;
     public static double firePosTimer = 0;
     public static double fireRotTimer = 0;
+
     public static double firePos = 0;
     public static double firePosZ = 0;
+
     public static double fireRot = 0;
+    public static double fireRotY = 0f;
+    public static double fireRotZ = 0f;
+
+    public static double customAnimSpeed = 1f;
 
     public static double recoilTime = 0;
 
@@ -1193,79 +1199,118 @@ public class ClientEventHandler {
     }
 
     private static void handleWeaponFire(ViewportEvent.ComputeCameraAngles event, LivingEntity entity) {
-        float times = 2f * Math.min(Minecraft.getInstance().getTimer().getRealtimeDeltaTicks(), 0.48f);
-        float yaw = event.getYaw();
-        float pitch = event.getPitch();
-        float roll = event.getRoll();
+        float times = (float) (2f * customAnimSpeed * Math.min(Minecraft.getInstance().getTimer().getRealtimeDeltaTicks(), 0.48f));
         ItemStack stack = entity.getMainHandItem();
 
         var data = GunData.from(stack);
-        double amplitude = 15000 * data.get(GunProp.RECOIL_Y) * data.get(GunProp.RECOIL_X);
+        double amplitude = 25000 * data.get(GunProp.RECOIL_Y) * data.get(GunProp.RECOIL_X);
 
         if (fireRecoilTime > 0) {
             firePosTimer = 0.001;
             fireRotTimer = 0.001;
             fireRecoilTime -= 7 * times;
             fireSpread += 0.1 * times;
-            firePosZ += (0.8 * firePosZ + 0.25) * (4 * Math.random() + 0.85) * times;
+            firePosZ += (0.8 * firePosZ + 0.4) * (4 * Math.random() + 0.85) * times;
             recoilTime = 0.01;
         }
 
         fireSpread = Mth.clamp(fireSpread - 0.1 * (Math.pow(fireSpread, 2) * times), 0, 2);
-        firePosZ = Mth.clamp(firePosZ - 1.2 * (Math.pow(firePosZ, 2) * times), 0, 1.5);
-
-        firePosZ *= 0.96f;
-        firePos *= 0.96f;
-        fireRot *= 0.96f;
+        firePosZ = Mth.clamp(firePosZ - 1.2 * (Math.pow(firePosZ, 2) * times), 0, 2.5);
+        firePosZ *= 0.98f;
 
         if (0 < firePosTimer) {
-            firePosTimer += 0.35 * (1.1 - firePosTimer) * times;
+            firePosTimer += 0.2 * (2.05 - firePosTimer) * times;
         }
-        if (0 < firePosTimer && firePosTimer < 0.454) {
-            firePos = (-18.34) * Math.pow(firePosTimer, 2) + 8.58 * firePosTimer;
-        }
-        if (0.454 <= firePosTimer && firePosTimer < 1) {
-            firePos = 4.34 * Math.pow(firePosTimer, 2) - 6.5 * firePosTimer + 2.167;
-        }
-        if (0 < fireRotTimer && fireRotTimer < 1.732) {
-            fireRotTimer += 0.18 * (1.9 - fireRotTimer) * times;
+        if (0 < fireRotTimer) {
+            fireRotTimer += 0.1 * (3.1 - fireRotTimer) * times;
         }
 
-        double rpm = 1;
-
-        if (stack.is(ModItems.MINIGUN.get())) {
-            rpm = (double) data.get(GunProp.RPM) / 1800;
-        }
-
-        float[] shake = {0, 0};
-        shake[0] = (float) (1.3 * amplitude * (1 / 6.3 * (fireRotTimer - 0.5)) * Math.sin(6.3 * (fireRotTimer - 0.5)) * (3 - Math.pow(fireRotTimer, 2))
-                + 1 * Mth.clamp(0.3 - fireRotTimer, 0, 1) * (2 * Math.random() - 1)) * (float) (DisplayConfig.WEAPON_SCREEN_SHAKE.get() / 100.0);
-        shake[1] = (float) (4.2 * amplitude * (1 / 6.3 * (fireRotTimer - 0.5)) * Math.sin(6.3 * (fireRotTimer - 0.5)) * (3 - Math.pow(fireRotTimer, 2))
-                + 3 * Mth.clamp(0.5 - fireRotTimer, 0, 0.5) * (2 * Math.random() - 1)) * (float) (DisplayConfig.WEAPON_SCREEN_SHAKE.get() / 100.0);
-
-
-        if (firePosTimer >= 1) {
+        if (firePosTimer >= 2) {
             firePosTimer = 0;
         }
-        if (fireRotTimer >= 1.732) {
+        if (fireRotTimer >= 3) {
             fireRotTimer = 0;
-            fireRot = 0;
         }
+
+        firePos = MathTool.decayingOscillation(2.5f,2,0.5f, (float) firePosTimer);
+        fireRot = MathTool.decayingOscillation(0.2f,3,0.5f, (float) fireRotTimer) * Mth.sin((float) fireRotTimer);
+
+        if (fireRot < 0) {
+            fireRot *= 0.5;
+        }
+
+        fireRotZ = MathTool.decayingOscillation((float) (1f * recoilHorizon),3,0.5f, (float) fireRotTimer);
+        fireRotY = MathTool.decayingOscillation((float) (0.1f * recoilHorizon),3,0.5f, (float) fireRotTimer);
 
         if (entity instanceof Player player && player.isSpectator()) return;
 
-        if (0 < fireRotTimer && fireRotTimer < 1.732) {
-            fireRot = 1 / 6.3 * (fireRotTimer - 0.5) * Math.sin(6.3 * (fireRotTimer - 0.5)) * (3 - Math.pow(fireRotTimer, 2));
+        float yaw = event.getYaw();
+        float pitch = event.getPitch();
+
+        if (0 < fireRotTimer) {
+            float shake = (float) (MathTool.decayingOscillation(0.5f,3,0.75f, (float) fireRotTimer) * (1 + amplitude) * (float) (DisplayConfig.WEAPON_SCREEN_SHAKE.get() / 100.0));
             if (recoilY > 0) {
-                event.setYaw((float) (yaw - shake[0] * rpm));
-                event.setPitch((float) (pitch + shake[0] * rpm));
-                event.setRoll((float) (roll + shake[1] * rpm));
+                event.setYaw(yaw - 0.5f * shake);
+                event.setPitch(pitch + shake);
+                cameraRot[2] = shake;
             } else if (recoilY <= 0) {
-                event.setYaw((float) (yaw + shake[0] * rpm));
-                event.setPitch((float) (pitch - shake[0] * rpm));
-                event.setRoll((float) (roll - shake[1] * rpm));
+                event.setYaw(yaw + 0.5f * shake);
+                event.setPitch(pitch - shake);
+                cameraRot[2] = shake;
             }
         }
+    }
+
+    public static void handleShootAnimation(GeoBone bone, float x, float y, float z, float rotX, float rotY, float rotZ, float zoomMultiply, float customSpeed) {
+        Player player = Minecraft.getInstance().player;
+        if (player == null) return;
+        ItemStack stack = player.getMainHandItem();
+        if (!(stack.getItem() instanceof GunItem gunItem)) return;
+
+        customAnimSpeed = customSpeed;
+
+        int barrelType = GunData.from(stack).attachment.get(AttachmentType.BARREL);
+        int gripType = GunData.from(stack).attachment.get(AttachmentType.GRIP);
+
+        float recoil = switch (barrelType) {
+            case 1 -> 0.75f;
+            case 2 -> 0.95f;
+            default -> 1;
+        };
+
+        float gripRecoilX = switch (gripType) {
+            case 1 -> 0.85f;
+            case 2 -> 0.95f;
+            default -> 1;
+        };
+
+        float gripRecoilY = switch (gripType) {
+            case 1 -> 0.95f;
+            case 2 -> 0.85f;
+            default -> 1;
+        };
+
+        float pose = 1;
+        if (player.isShiftKeyDown() && player.getBbHeight() >= 1 && !isProne(player)) {
+            pose = 0.85f;
+        } else if (isProne(player)) {
+            if (GunData.from(stack).attachment.get(AttachmentType.GRIP) == 3 || gunItem.hasBipod(stack)) {
+                pose = 0.5f;
+            } else {
+                pose = 0.75f;
+            }
+        }
+
+        zoomMultiply = Mth.clamp(zoomMultiply, 0, 1);
+
+        float zoom = (float) (1 - zoomMultiply * zoomTime) * pose;
+
+        bone.setPosX(zoom * x * (float) (ClientEventHandler.recoilHorizon * (0.12f * firePos)));
+        bone.setPosY(zoom * y * (float) (0.05f * firePos));
+        bone.setPosZ(zoom * z * (float) (firePos + 0.3f * firePosZ));
+        bone.setRotX(zoom * rotX * (float) (fireRot + 0.03f * firePosZ) * gripRecoilX * recoil * (float) (1 - 0.7 * zoomTime));
+        bone.setRotY(2 * zoom * rotY * (float) fireRotY * gripRecoilY * recoil);
+        bone.setRotZ(zoom * rotZ * (float) fireRotZ * gripRecoilY * recoil);
     }
 
     private static void handleWeaponShell() {
