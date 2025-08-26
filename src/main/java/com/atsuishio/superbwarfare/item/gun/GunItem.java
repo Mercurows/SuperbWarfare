@@ -571,7 +571,7 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
         }
 
         // n连发模式开火数据设置
-        if (data.fireMode.get() == FireMode.BURST) {
+        if (data.selectedFireMode().mode == FireMode.BURST) {
             var amount = data.burstAmount.get();
             data.burstAmount.set(amount == 0 ? data.get(GunProp.BURST_AMOUNT) - 1 : Math.max(0, amount - 1));
         }
@@ -825,7 +825,7 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
     }
 
     public boolean canEditAttachments(ItemStack stack) {
-        return stack.getItem() instanceof GunItem && GunData.from(stack).ammoConsumers.size() > 1;
+        return stack.getItem() instanceof GunItem && GunData.from(stack).get(GunProp.AMMO_CONSUMER).size() > 1;
     }
 
     /**

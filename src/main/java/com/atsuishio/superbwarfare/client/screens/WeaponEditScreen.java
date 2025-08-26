@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.client.screens;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.data.gun.GunData;
+import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModKeyMappings;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
@@ -119,10 +120,10 @@ public class WeaponEditScreen extends Screen {
 
         var currentData = GunData.from(itemStack);
         RenderHelper.preciseBlit(pGuiGraphics, AMMO_TYPE, posX2, posY3, 0, 0, 24, 24, 24, 24);
-        if (currentData.ammoConsumers.size() <= 1) {
+        if (currentData.get(GunProp.AMMO_CONSUMER).size() <= 1) {
             RenderHelper.preciseBlit(pGuiGraphics, INVALID, posX2, posY3, 0, 0, 24, 24, 24, 24);
         } else {
-            int size = currentData.ammoConsumers.size();
+            int size = currentData.get(GunProp.AMMO_CONSUMER).size();
             float offset = 35f;
             int count = size / 2;
 
@@ -256,7 +257,7 @@ public class WeaponEditScreen extends Screen {
                 case 2 -> gunItem.hasCustomGrip(stack);
                 case 3 -> gunItem.hasCustomStock(stack);
                 case 4 -> gunItem.hasCustomMagazine(stack);
-                case 5 -> data.ammoConsumers.size() > 1;
+                case 5 -> data.get(GunProp.AMMO_CONSUMER).size() > 1;
                 default -> false;
             };
         }

@@ -40,7 +40,6 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
     public final CompoundTag attachmentTag;
     public final StringValue propertyOverrideString;
     public final String id;
-    public final List<AmmoConsumer> ammoConsumers;
 
     public static final LoadingCache<ItemStack, GunData> dataCache = CacheBuilder.newBuilder()
             .weakKeys()
@@ -67,7 +66,7 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
         propertyOverrideString = new StringValue(this.data, "Override");
 
         selectedAmmoType = new IntValue(data, "SelectedAmmoType");
-        ammoConsumers = get(GunProp.AMMO_CONSUMER);
+        selectedFireModeIndex = new IntValue(data, "SelectedFireMode");
 
         // 可持久化属性
         reload = new Reload(this);
@@ -82,12 +81,7 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
         ammoSlot = new AmmoSlot(data);
         burstAmount = new IntValue(data, "BurstAmount");
 
-        var defaultFireMode = get(GunProp.DEFAULT_FIRE_MODE);
-        if (defaultFireMode == null) {
-            defaultFireMode = FireMode.SEMI;
-        }
 
-        fireMode = new StringEnumValue<>(data, "FireMode", defaultFireMode, FireMode::fromValue);
         level = new IntValue(data, "Level");
         exp = new DoubleValue(data, "Exp");
         upgradePoint = new DoubleValue(data, "UpgradePoint");
@@ -215,6 +209,7 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
 
     private final StringPropModifier<GunData, DefaultGunData> stringPropModifier = new StringPropModifier<>();
 
+    // TODO 解决频繁递归调用问题
     @SuppressWarnings("unchecked")
     public <T> T get(GunProp<T> prop) {
         var modifier = prop.asModifier(this);
@@ -233,6 +228,11 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
         stringPropModifier.modifyPropertyByString(propertyOverrideString.get(), prop);
         modifier.apply(stringPropModifier.getModifier(prop));
 
+        // FireMode
+        if (prop != GunProp.AVAILABLE_FIRE_MODES) {
+            modifier.apply(selectedFireMode().getModifier(prop));
+        }
+     
         // AmmoConsumer
         if (prop == GunProp.AMMO_CONSUMER) {
             var consumers = (List<AmmoConsumer>) modifier.compute();
@@ -300,11 +300,17 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
     }
 
     public AmmoConsumer selectedAmmoConsumer() {
-        return selectedAmmoConsumer(this.ammoConsumers);
+        return selectedAmmoConsumer(this.get(GunProp.AMMO_CONSUMER));
     }
 
     public void changeAmmoConsumer(int index) {
-        this.selectedAmmoType.set(Mth.clamp(index, 0, this.ammoConsumers.size() - 1));
+        this.selectedAmmoType.set(Mth.clamp(index, 0, this.get(GunProp.AMMO_CONSUMER).size() - 1));
+    }
+
+    public FireModeInfo selectedFireMode() {
+        var fireModes = get(GunProp.AVAILABLE_FIRE_MODES);
+        var index = this.selectedFireModeIndex == null ? 0 : this.selectedFireModeIndex.get();
+        return fireModes.get(Mth.clamp(index, 0, fireModes.size() - 1)).init();
     }
 
     // 开火相关流程开始
@@ -664,7 +670,7 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
     public final AmmoSlot ammoSlot;
 
     public final IntValue burstAmount;
-    public final StringEnumValue<FireMode> fireMode;
+    public final IntValue selectedFireModeIndex;
     public final IntValue level;
     public final DoubleValue exp;
     public final DoubleValue upgradePoint;

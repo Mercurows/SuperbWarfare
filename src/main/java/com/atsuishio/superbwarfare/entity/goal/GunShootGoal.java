@@ -95,7 +95,7 @@ public class GunShootGoal<T extends Mob> extends Goal {
             // cooldown in ms
             long cooldown = Math.round(1000 / rps);
 
-            var fireMode = gunData.fireMode.get();
+            var fireMode = gunData.selectedFireMode().mode;
             // 半自动或连发开火时，添加额外的开火冷却时间
             if (fireMode == FireMode.SEMI || fireMode == FireMode.BURST && gunData.burstAmount.get() == 0) {
                 cooldown += data.semiFireInterval();
