@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.entity.projectile;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.api.event.ProjectileHitEvent;
 import com.atsuishio.superbwarfare.client.particle.BulletDecalOption;
 import com.atsuishio.superbwarfare.client.particle.CustomCloudOption;
 import com.atsuishio.superbwarfare.config.server.ProjectileConfig;
@@ -53,6 +54,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.*;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.entity.PartEntity;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.PlayMessages;
@@ -555,6 +557,9 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
             Direction face = result.getDirection();
             BlockState state = level().getBlockState(pos);
 
+            if (MinecraftForge.EVENT_BUS.post(new ProjectileHitEvent.HitBlock(pos, state, face, this.shooter, this)))
+                return;
+
             double vx = face.getStepX();
             double vy = face.getStepY();
             double vz = face.getStepZ();
@@ -604,6 +609,7 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
 
     protected void onHitEntity(Entity entity, boolean headshot, boolean legShot) {
         if (entity == null) return;
+        if (MinecraftForge.EVENT_BUS.post(new ProjectileHitEvent.HitEntity(entity, this.shooter, this))) return;
 
         if (entity instanceof PartEntity<?> part) {
             entity = part.getParent();
@@ -682,7 +688,6 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
                 .damage((float) ((0.9 * damage) * (1 + 0.1 * heLevel)))
                 .radius((float) ((1.5 + 0.02 * damage) * (1 + 0.05 * heLevel)))
                 .position(hitVec)
-//                .bulletExplode()
                 .explode();
     }
 
