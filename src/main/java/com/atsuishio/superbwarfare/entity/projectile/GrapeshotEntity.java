@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.entity.projectile;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.particle.CustomCloudOption;
-import com.atsuishio.superbwarfare.config.server.ProjectileConfig;
 import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
 import com.atsuishio.superbwarfare.tools.DamageHandler;
@@ -19,14 +18,12 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.BellBlock;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -91,6 +88,7 @@ public class GrapeshotEntity extends FastThrowableProjectile {
 
     @Override
     protected void onHitEntity(EntityHitResult result) {
+        super.onHitEntity(result);
         Entity entity = result.getEntity();
         if (this.getOwner() != null && this.getOwner().getVehicle() != null && entity == this.getOwner().getVehicle())
             return;
@@ -116,46 +114,16 @@ public class GrapeshotEntity extends FastThrowableProjectile {
 
     @Override
     public void onHitBlock(BlockHitResult result) {
+        super.onHitBlock(result);
         BlockPos resultPos = result.getBlockPos();
         BlockState state = this.level().getBlockState(resultPos);
-
-        if (state.getBlock() instanceof BellBlock bell) {
-            bell.attemptToRing(this.level(), resultPos, result.getDirection());
-        }
 
         SoundEvent event = state.getBlock().getSoundType(state, this.level(), resultPos, this).getBreakSound();
         this.level().playSound(null, result.getLocation().x, result.getLocation().y, result.getLocation().z, event, SoundSource.AMBIENT, 1.0F, 1.0F);
         Vec3 hitVec = result.getLocation();
 
-        if (state.getBlock() instanceof BellBlock bell) {
-            bell.attemptToRing(this.level(), resultPos, result.getDirection());
-        }
-
-        if (ProjectileConfig.ALLOW_PROJECTILE_DESTROY_BLOCKS.get() && (state.is(ModTags.Blocks.BULLET_CAN_DESTROY) ||canDestroyBlock(state))) {
-            this.level().destroyBlock(resultPos, false, this.getOwner());
-        }
-
         this.hitBlock(hitVec, result);
-
         this.discard();
-    }
-
-    public boolean canDestroyBlock(BlockState state) {
-        return state.getSoundType() == SoundType.WOOD
-                || state.getSoundType() == SoundType.CHERRY_LEAVES
-                || state.getSoundType() == SoundType.AZALEA_LEAVES
-                || state.getSoundType() == SoundType.BAMBOO
-                || state.getSoundType() == SoundType.BAMBOO_SAPLING
-                || state.getSoundType() == SoundType.BAMBOO_WOOD
-                || state.getSoundType() == SoundType.BAMBOO_WOOD_HANGING_SIGN
-                || state.getSoundType() == SoundType.GLASS
-                || state.getSoundType() == SoundType.WOOL
-                || state.getSoundType() == SoundType.LANTERN
-                || state.getSoundType() == SoundType.CHAIN
-                || state.getSoundType() == SoundType.CHERRY_SAPLING
-                || state.getSoundType() == SoundType.CHERRY_WOOD
-                || state.getSoundType() == SoundType.CHERRY_WOOD_HANGING_SIGN
-                || state.is(BlockTags.LEAVES);
     }
 
     protected void hitBlock(Vec3 location, BlockHitResult result) {

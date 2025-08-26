@@ -67,6 +67,8 @@ public class ModTags {
         public static final TagKey<Block> BULLET_IGNORE = tag("bullet_ignore");
         // 子弹会破坏的方块
         public static final TagKey<Block> BULLET_CAN_DESTROY = tag("bullet_can_destroy");
+        // 炮射霰弹会破坏的反馈过
+        public static final TagKey<Block> CANNON_SHOT_CAN_DESTROY = tag("cannon_shot_can_destroy");
 
         private static TagKey<Block> tag(String name) {
             return BlockTags.create(Mod.loc(name));

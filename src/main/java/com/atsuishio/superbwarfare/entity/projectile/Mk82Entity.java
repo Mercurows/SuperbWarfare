@@ -119,6 +119,7 @@ public class Mk82Entity extends FastThrowableProjectile implements GeoEntity, Ex
 
     @Override
     public void onHitBlock(@NotNull BlockHitResult blockHitResult) {
+        super.onHitBlock(blockHitResult);
         if (this.level() instanceof ServerLevel) {
             ProjectileTool.causeCustomExplode(this, this.explosionDamage, this.explosionRadius, 1.2f);
         }

@@ -180,6 +180,7 @@ public class MortarShellEntity extends FastThrowableProjectile implements GeoEnt
 
     @Override
     public void onHitEntity(@NotNull EntityHitResult entityHitResult) {
+        super.onHitEntity(entityHitResult);
         if (this.tickCount > 1) {
             Entity entity = entityHitResult.getEntity();
             DamageHandler.doDamage(entity, ModDamageTypes.causeProjectileHitDamage(this.level().registryAccess(), this, this.getOwner()), this.damage);
@@ -193,6 +194,7 @@ public class MortarShellEntity extends FastThrowableProjectile implements GeoEnt
 
     @Override
     public void onHitBlock(BlockHitResult blockHitResult) {
+        super.onHitBlock(blockHitResult);
         BlockPos resultPos = blockHitResult.getBlockPos();
         BlockState state = this.level().getBlockState(resultPos);
 

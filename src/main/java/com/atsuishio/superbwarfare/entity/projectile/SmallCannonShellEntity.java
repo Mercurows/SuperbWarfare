@@ -120,6 +120,7 @@ public class SmallCannonShellEntity extends FastThrowableProjectile implements G
 
     @Override
     protected void onHitEntity(EntityHitResult result) {
+        super.onHitEntity(result);
         Entity entity = result.getEntity();
 
         if (this.getOwner() != null && this.getOwner().getVehicle() != null && entity == this.getOwner().getVehicle())
@@ -148,6 +149,7 @@ public class SmallCannonShellEntity extends FastThrowableProjectile implements G
 
     @Override
     public void onHitBlock(BlockHitResult blockHitResult) {
+        super.onHitBlock(blockHitResult);
         BlockPos resultPos = blockHitResult.getBlockPos();
         BlockState state = this.level().getBlockState(resultPos);
 

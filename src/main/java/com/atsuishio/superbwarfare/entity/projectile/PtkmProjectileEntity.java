@@ -98,6 +98,7 @@ public class PtkmProjectileEntity extends FastThrowableProjectile implements Exp
 
     @Override
     public void onHitEntity(@NotNull EntityHitResult entityHitResult) {
+        super.onHitEntity(entityHitResult);
         if (this.level() instanceof ServerLevel) {
             Entity entity = entityHitResult.getEntity();
             if (this.getOwner() != null && entity == this.getOwner().getVehicle())
@@ -128,6 +129,7 @@ public class PtkmProjectileEntity extends FastThrowableProjectile implements Exp
 
     @Override
     public void onHitBlock(@NotNull BlockHitResult blockHitResult) {
+        super.onHitBlock(blockHitResult);
         if (this.level() instanceof ServerLevel) {
             explode(blockHitResult.getLocation());
             this.discard();

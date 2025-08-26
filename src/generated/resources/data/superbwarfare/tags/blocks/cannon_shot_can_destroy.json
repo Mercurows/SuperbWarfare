@@ -1,0 +1,15 @@
+{
+  "values": [
+    "#superbwarfare:bullet_can_destroy",
+    "#minecraft:leaves",
+    "#minecraft:bamboo_blocks",
+    "#minecraft:wool",
+    "#minecraft:signs",
+    "#minecraft:logs",
+    "#minecraft:planks",
+    "#minecraft:saplings",
+    "minecraft:lantern",
+    "minecraft:soul_lantern",
+    "minecraft:chain"
+  ]
+}

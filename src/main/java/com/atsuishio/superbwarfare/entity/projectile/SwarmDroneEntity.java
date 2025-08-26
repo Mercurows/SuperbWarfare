@@ -179,6 +179,7 @@ public class SwarmDroneEntity extends FastThrowableProjectile implements GeoEnti
 
     @Override
     protected void onHitEntity(EntityHitResult result) {
+        super.onHitEntity(result);
         Entity entity = result.getEntity();
         if (entity instanceof SwarmDroneEntity) {
             return;
