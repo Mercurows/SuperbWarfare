@@ -87,18 +87,6 @@ public class Qbz191Item extends GunItem {
             }
         }
 
-        if (player.isSprinting() && player.onGround() && ClientEventHandler.cantSprint == 0 && ClientEventHandler.drawTime < 0.01) {
-            if (ClientEventHandler.tacticalSprint) {
-                return event.setAndContinue(RawAnimation.begin().thenLoop("animation.qbz_191.run_fast"));
-            } else {
-                if (grip) {
-                    return event.setAndContinue(RawAnimation.begin().thenPlay("animation.qbz_191.run_grip"));
-                } else {
-                    return event.setAndContinue(RawAnimation.begin().thenLoop("animation.qbz_191.run"));
-                }
-            }
-        }
-
         if (grip) {
             return event.setAndContinue(RawAnimation.begin().thenLoop("animation.qbz_191.idle_grip"));
         } else {

@@ -63,7 +63,7 @@ public class TaserItemModel extends CustomGunModel<TaserItem> {
         gun.setPosZ((float) zp + (float) (0.5f * zpz));
         gun.setRotZ((float) (0.05f * zpz));
 
-        ClientEventHandler.gunRootMove(getAnimationProcessor());
+        ClientEventHandler.gunRootMove(getAnimationProcessor(), 0, 0, 0, false);
 
         CoreGeoBone camera = getAnimationProcessor().getBone("camera");
         CoreGeoBone main = getAnimationProcessor().getBone("0");

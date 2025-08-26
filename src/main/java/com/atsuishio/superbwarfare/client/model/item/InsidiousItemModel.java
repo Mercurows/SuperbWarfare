@@ -66,7 +66,7 @@ public class InsidiousItemModel extends CustomGunModel<InsidiousItem> {
         ClientEventHandler.handleShootAnimation(shen, 1, -2, 1, 1, 1, 1, 0.75f, 0.8f);
 
         CrossHairOverlay.gunRot = shen.getRotZ();
-        ClientEventHandler.gunRootMove(getAnimationProcessor());
+        ClientEventHandler.gunRootMove(getAnimationProcessor(), 5, 0, 0, false);
 
         CoreGeoBone camera = getAnimationProcessor().getBone("camera");
         CoreGeoBone main = getAnimationProcessor().getBone("0");

@@ -62,7 +62,7 @@ public class JavelinItemModel extends CustomGunModel<JavelinItem> {
 
         CrossHairOverlay.gunRot = shen.getRotZ();
 
-        ClientEventHandler.gunRootMove(getAnimationProcessor());
+        ClientEventHandler.gunRootMove(getAnimationProcessor(), 4, 0, 2, false);
 
         CoreGeoBone camera = getAnimationProcessor().getBone("camera");
         ClientEventHandler.handleReloadShake(Mth.RAD_TO_DEG * camera.getRotX(), Mth.RAD_TO_DEG * camera.getRotY(), Mth.RAD_TO_DEG * camera.getRotZ());

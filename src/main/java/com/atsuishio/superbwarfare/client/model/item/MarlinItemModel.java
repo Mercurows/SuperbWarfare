@@ -71,7 +71,7 @@ public class MarlinItemModel extends CustomGunModel<MarlinItem> {
             jichui.setRotX(-0.52f);
         }
 
-        ClientEventHandler.gunRootMove(getAnimationProcessor());
+        ClientEventHandler.gunRootMove(getAnimationProcessor(), 0, -1, 2, false);
 
         CoreGeoBone camera = getAnimationProcessor().getBone("camera");
         CoreGeoBone main = getAnimationProcessor().getBone("0");

@@ -84,14 +84,6 @@ public class M2HBItem extends GunItem {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m_2_hb.reload_normal"));
         }
 
-        if (player.isSprinting() && player.onGround() && ClientEventHandler.cantSprint == 0 && ClientEventHandler.drawTime < 0.01) {
-            if (ClientEventHandler.tacticalSprint) {
-                return event.setAndContinue(RawAnimation.begin().thenLoop("animation.m_2_hb.run_fast"));
-            } else {
-                return event.setAndContinue(RawAnimation.begin().thenLoop("animation.m_2_hb.run"));
-            }
-        }
-
         return event.setAndContinue(RawAnimation.begin().thenLoop("animation.m_2_hb.idle"));
     }
 

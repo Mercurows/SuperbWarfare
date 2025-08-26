@@ -116,13 +116,13 @@ public class M60ItemModel extends CustomGunModel<M60Item> {
 
         gun.setRotZ(-0.087f * (float) zp + (float) (0.05f * zpz));
 
-        ClientEventHandler.handleShootAnimation(shen, 1, -0.4f, 1.2f, 1.3f, 1, 1, 0.5f, 0.7f);
+        ClientEventHandler.handleShootAnimation(shen, 0.7f, -0.4f, 1.5f, 1.1f, 1, 1, 0.7f, 0.7f);
 
         CrossHairOverlay.gunRot = shen.getRotZ();
 
         tiba.setRotZ((float) (-0.25f * fp + 0.4 * fr));
 
-        ClientEventHandler.gunRootMove(getAnimationProcessor());
+        ClientEventHandler.gunRootMove(getAnimationProcessor(), 3, 0, 0, false);
 
         CoreGeoBone camera = getAnimationProcessor().getBone("camera");
         CoreGeoBone main = getAnimationProcessor().getBone("0");

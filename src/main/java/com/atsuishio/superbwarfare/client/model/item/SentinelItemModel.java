@@ -72,7 +72,7 @@ public class SentinelItemModel extends CustomGunModel<SentinelItem> {
         ClientEventHandler.handleShootAnimation(shen, 1.25f, 2f, 3f, 2.5f, 1.3f, 1f, 0.4f, 0.55f);
 
         CrossHairOverlay.gunRot = shen.getRotZ();
-        ClientEventHandler.gunRootMove(getAnimationProcessor());
+        ClientEventHandler.gunRootMove(getAnimationProcessor(), 0, 0, 0, false);
 
         if (data.currentAvailableShots(player) <= 5) {
             ammo.setScaleX((float) data.currentAvailableShots(player) / 5);

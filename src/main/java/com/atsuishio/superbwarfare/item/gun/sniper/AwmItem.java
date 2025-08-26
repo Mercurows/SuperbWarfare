@@ -63,27 +63,6 @@ public class AwmItem extends GunItem {
         return event.setAndContinue(RawAnimation.begin().thenLoop("animation.awm.idle"));
     }
 
-    private PlayState idlePredicate(AnimationState<AwmItem> event) {
-        LocalPlayer player = Minecraft.getInstance().player;
-        if (player == null) return PlayState.STOP;
-        ItemStack stack = player.getMainHandItem();
-        if (!(stack.getItem() instanceof GunItem)) return PlayState.STOP;
-        if (event.getData(DataTickets.ITEM_RENDER_PERSPECTIVE) != ItemDisplayContext.FIRST_PERSON_RIGHT_HAND)
-            return event.setAndContinue(RawAnimation.begin().thenLoop("animation.awm.idle"));
-
-        if (player.isSprinting() && player.onGround()
-                && ClientEventHandler.cantSprint == 0
-                && !(GunData.from(stack).reload.normal() || GunData.from(stack).reload.empty()) && ClientEventHandler.drawTime < 0.01) {
-            if (ClientEventHandler.tacticalSprint && GunData.from(stack).bolt.actionTimer.get() == 0) {
-                return event.setAndContinue(RawAnimation.begin().thenLoop("animation.awm.run_fast"));
-            } else {
-                return event.setAndContinue(RawAnimation.begin().thenLoop("animation.awm.run"));
-            }
-        }
-
-        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.awm.idle"));
-    }
-
     private PlayState editPredicate(AnimationState<AwmItem> event) {
         if (event.getData(DataTickets.ITEM_RENDER_PERSPECTIVE) != ItemDisplayContext.FIRST_PERSON_RIGHT_HAND)
             return event.setAndContinue(RawAnimation.begin().thenLoop("animation.awm.idle"));
@@ -98,8 +77,6 @@ public class AwmItem extends GunItem {
     public void registerControllers(AnimatableManager.ControllerRegistrar data) {
         var fireAnimController = new AnimationController<>(this, "fireAnimController", 1, this::fireAnimPredicate);
         data.add(fireAnimController);
-        var idleController = new AnimationController<>(this, "idleController", 6, this::idlePredicate);
-        data.add(idleController);
         var editController = new AnimationController<>(this, "editController", 1, this::editPredicate);
         data.add(editController);
     }

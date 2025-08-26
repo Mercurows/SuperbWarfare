@@ -70,7 +70,7 @@ public class RpgItemModel extends CustomGunModel<RpgItem> {
         gun.setRotZ(0.45f * (float) zp + (float) (0.02f * zpz));
         gun.setScaleZ(1f - (0.5f * (float) zp));
 
-        ClientEventHandler.gunRootMove(getAnimationProcessor());
+        ClientEventHandler.gunRootMove(getAnimationProcessor(), 0, 0, 0, true);
 
         CoreGeoBone camera = getAnimationProcessor().getBone("camera");
         CoreGeoBone main = getAnimationProcessor().getBone("0");

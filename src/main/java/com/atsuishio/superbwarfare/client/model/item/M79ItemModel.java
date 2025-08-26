@@ -66,7 +66,7 @@ public class M79ItemModel extends CustomGunModel<M79Item> {
 
         CrossHairOverlay.gunRot = shen.getRotZ();
 
-        ClientEventHandler.gunRootMove(getAnimationProcessor());
+        ClientEventHandler.gunRootMove(getAnimationProcessor(), 0, 0, 0, false);
 
         CoreGeoBone camera = getAnimationProcessor().getBone("camera");
         CoreGeoBone main = getAnimationProcessor().getBone("0");

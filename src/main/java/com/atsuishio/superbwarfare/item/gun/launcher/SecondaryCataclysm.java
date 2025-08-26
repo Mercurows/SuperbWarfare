@@ -137,35 +137,6 @@ public class SecondaryCataclysm extends GunItem {
         return event.setAndContinue(RawAnimation.begin().thenLoop("animation.secondary_cataclysm.idle"));
     }
 
-    private PlayState idlePredicate(AnimationState<SecondaryCataclysm> event) {
-        LocalPlayer player = Minecraft.getInstance().player;
-        if (player == null) return PlayState.STOP;
-        ItemStack stack = player.getMainHandItem();
-        if (!(stack.getItem() instanceof GunItem)) return PlayState.STOP;
-        if (event.getData(DataTickets.ITEM_RENDER_PERSPECTIVE) != ItemDisplayContext.FIRST_PERSON_RIGHT_HAND)
-            return event.setAndContinue(RawAnimation.begin().thenLoop("animation.secondary_cataclysm.idle"));
-
-        var data = GunData.from(stack);
-
-        if (player.isSprinting() && player.onGround()
-                && ClientEventHandler.cantSprint == 0
-                && !(data.tag().getBoolean("is_empty_reloading"))
-                && data.reload.stage() != 1
-                && data.reload.stage() != 2
-                && data.reload.stage() != 3
-                && ClientEventHandler.drawTime < 0.01
-                && ClientEventHandler.gunMelee == 0
-                && !data.reloading()) {
-            if (ClientEventHandler.tacticalSprint) {
-                return event.setAndContinue(RawAnimation.begin().thenLoop("animation.secondary_cataclysm.run_fast"));
-            } else {
-                return event.setAndContinue(RawAnimation.begin().thenLoop("animation.secondary_cataclysm.run"));
-            }
-        }
-
-        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.secondary_cataclysm.idle"));
-    }
-
     private PlayState meleePredicate(AnimationState<SecondaryCataclysm> event) {
         if (event.getData(DataTickets.ITEM_RENDER_PERSPECTIVE) != ItemDisplayContext.FIRST_PERSON_RIGHT_HAND)
             return event.setAndContinue(RawAnimation.begin().thenLoop("animation.secondary_cataclysm.idle"));
@@ -181,8 +152,6 @@ public class SecondaryCataclysm extends GunItem {
     public void registerControllers(AnimatableManager.ControllerRegistrar data) {
         var reloadAnimController = new AnimationController<>(this, "reloadAnimController", 1, this::reloadAnimPredicate);
         data.add(reloadAnimController);
-        var idleController = new AnimationController<>(this, "idleController", 3, this::idlePredicate);
-        data.add(idleController);
         var meleeController = new AnimationController<>(this, "meleeController", 0, this::meleePredicate);
         data.add(meleeController);
     }

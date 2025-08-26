@@ -3,7 +3,6 @@ package com.atsuishio.superbwarfare.item.gun.rifle;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.renderer.gun.InsidiousItemRenderer;
 import com.atsuishio.superbwarfare.data.gun.GunData;
-import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import net.minecraft.client.Minecraft;
@@ -48,13 +47,6 @@ public class InsidiousItem extends GunItem {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.insidious.reload"));
         }
 
-        if (player.isSprinting() && player.onGround() && ClientEventHandler.cantSprint == 0 && ClientEventHandler.drawTime < 0.01) {
-            if (ClientEventHandler.tacticalSprint) {
-                return event.setAndContinue(RawAnimation.begin().thenLoop("animation.insidious.run_fast"));
-            } else {
-                return event.setAndContinue(RawAnimation.begin().thenLoop("animation.insidious.run"));
-            }
-        }
         return event.setAndContinue(RawAnimation.begin().thenLoop("animation.insidious.idle"));
     }
 

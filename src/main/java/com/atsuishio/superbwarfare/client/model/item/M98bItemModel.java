@@ -108,7 +108,7 @@ public class M98bItemModel extends CustomGunModel<M98bItem> {
         button6.setScaleX(1f - (0.8f * (float) zp));
         button7.setScaleX(1f - (0.8f * (float) zp));
 
-        ClientEventHandler.gunRootMove(getAnimationProcessor());
+        ClientEventHandler.gunRootMove(getAnimationProcessor(), 0, 0, 0, false);
 
         CoreGeoBone shen = getAnimationProcessor().getBone("fire");
 

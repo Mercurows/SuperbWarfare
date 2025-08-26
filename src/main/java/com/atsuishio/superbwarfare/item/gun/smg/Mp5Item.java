@@ -63,14 +63,6 @@ public class Mp5Item extends GunItem {
             }
         }
 
-        if (player.isSprinting() && player.onGround() && ClientEventHandler.cantSprint == 0 && ClientEventHandler.drawTime < 0.01) {
-            if (ClientEventHandler.tacticalSprint) {
-                return event.setAndContinue(RawAnimation.begin().thenLoop("animation.mp5.run_fast"));
-            } else {
-                return event.setAndContinue(RawAnimation.begin().thenLoop("animation.mp5.run"));
-            }
-        }
-
         return event.setAndContinue(RawAnimation.begin().thenLoop("animation.mp5.idle"));
     }
 

@@ -89,7 +89,7 @@ public class Glock18ItemModel extends CustomGunModel<Glock18Item> {
             huatao.setPosZ(1.5f);
         }
 
-        ClientEventHandler.gunRootMove(getAnimationProcessor());
+        ClientEventHandler.gunRootMove(getAnimationProcessor(), 4, 2, 3, false);
 
         CoreGeoBone camera = getAnimationProcessor().getBone("camera");
         CoreGeoBone main = getAnimationProcessor().getBone("0");

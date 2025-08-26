@@ -71,7 +71,7 @@ public class Glock17ItemModel extends CustomGunModel<Glock17Item> {
 
         CrossHairOverlay.gunRot = body.getRotZ();
 
-        ClientEventHandler.gunRootMove(getAnimationProcessor());
+        ClientEventHandler.gunRootMove(getAnimationProcessor(), 4, 2, 3, false);
 
         CoreGeoBone camera = getAnimationProcessor().getBone("camera");
         CoreGeoBone main = getAnimationProcessor().getBone("0");

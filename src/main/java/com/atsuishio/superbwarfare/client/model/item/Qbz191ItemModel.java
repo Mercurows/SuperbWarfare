@@ -122,7 +122,7 @@ public class Qbz191ItemModel extends CustomGunModel<Qbz191Item> {
         CoreGeoBone bolt = getAnimationProcessor().getBone("bolt");
         bolt.setPosZ(3f * (float) ClientEventHandler.firePos);
 
-        ClientEventHandler.gunRootMove(getAnimationProcessor());
+        ClientEventHandler.gunRootMove(getAnimationProcessor(), 2, 0, 0, false);
 
         CoreGeoBone camera = getAnimationProcessor().getBone("camera");
         CoreGeoBone main = getAnimationProcessor().getBone("0");

@@ -78,7 +78,7 @@ public class M1911ItemModel extends CustomGunModel<M1911Item> {
             huatao.setPosZ(1.5f);
         }
 
-        ClientEventHandler.gunRootMove(getAnimationProcessor());
+        ClientEventHandler.gunRootMove(getAnimationProcessor(), 2, 2, 3, false);
 
         CoreGeoBone camera = getAnimationProcessor().getBone("camera");
         CoreGeoBone main = getAnimationProcessor().getBone("0");

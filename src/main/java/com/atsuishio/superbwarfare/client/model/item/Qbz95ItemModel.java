@@ -144,8 +144,7 @@ public class Qbz95ItemModel extends CustomGunModel<Qbz95Item> {
         CoreGeoBone flare = getAnimationProcessor().getBone("flare");
         flare.setPosZ(-2);
 
-        ClientEventHandler.gunRootMove(getAnimationProcessor());
-
+        ClientEventHandler.gunRootMove(getAnimationProcessor(), 6, 0, 0, false);
         float numR = (float) (1 - 0.975 * zt);
         float numP = (float) (1 - 0.97 * zt);
 

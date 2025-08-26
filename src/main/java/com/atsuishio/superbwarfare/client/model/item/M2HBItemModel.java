@@ -92,7 +92,7 @@ public class M2HBItemModel extends CustomGunModel<M2HBItem> {
 
         CrossHairOverlay.gunRot = shen.getRotZ();
 
-        ClientEventHandler.gunRootMove(getAnimationProcessor());
+        ClientEventHandler.gunRootMove(getAnimationProcessor(), 4, 0, 0, false);
         CoreGeoBone camera = getAnimationProcessor().getBone("camera");
         AnimationHelper.handleShellsAnimation(getAnimationProcessor(), 1f, 0.45f);
         ClientEventHandler.handleReloadShake(Mth.RAD_TO_DEG * camera.getRotX(), Mth.RAD_TO_DEG * camera.getRotY(), Mth.RAD_TO_DEG * camera.getRotZ());

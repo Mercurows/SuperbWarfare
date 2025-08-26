@@ -58,22 +58,6 @@ public class Trachelium extends GunItem {
         boolean stock = GunData.from(stack).attachment.get(AttachmentType.STOCK) == 2;
         boolean grip = GunData.from(stack).attachment.get(AttachmentType.GRIP) > 0 || GunData.from(stack).attachment.get(AttachmentType.SCOPE) > 0;
 
-        if (ClientEventHandler.firePosTimer > 0 && ClientEventHandler.firePosTimer < 1.7) {
-            if (stock) {
-                if (grip) {
-                    return event.setAndContinue(RawAnimation.begin().thenPlay("animation.trachelium.fire_stock_grip"));
-                } else {
-                    return event.setAndContinue(RawAnimation.begin().thenPlay("animation.trachelium.fire_stock"));
-                }
-            } else {
-                if (grip) {
-                    return event.setAndContinue(RawAnimation.begin().thenPlay("animation.trachelium.fire_grip"));
-                } else {
-                    return event.setAndContinue(RawAnimation.begin().thenPlay("animation.trachelium.fire"));
-                }
-            }
-        }
-
         if (stock) {
             if (grip) {
                 return event.setAndContinue(RawAnimation.begin().thenLoop("animation.trachelium.idle_stock_grip"));
@@ -128,38 +112,6 @@ public class Trachelium extends GunItem {
                     return event.setAndContinue(RawAnimation.begin().thenPlay("animation.trachelium.reload_grip"));
                 } else {
                     return event.setAndContinue(RawAnimation.begin().thenPlay("animation.trachelium.reload"));
-                }
-            }
-        }
-
-        if (player.isSprinting() && player.onGround() && ClientEventHandler.cantSprint == 0 && ClientEventHandler.drawTime < 0.01) {
-            if (stock) {
-                if (grip) {
-                    if (ClientEventHandler.tacticalSprint) {
-                        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.trachelium.run_fast_stock"));
-                    } else {
-                        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.trachelium.run_stock_grip"));
-                    }
-                } else {
-                    if (ClientEventHandler.tacticalSprint) {
-                        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.trachelium.run_fast_stock"));
-                    } else {
-                        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.trachelium.run_stock"));
-                    }
-                }
-            } else {
-                if (grip) {
-                    if (ClientEventHandler.tacticalSprint) {
-                        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.trachelium.run_fast"));
-                    } else {
-                        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.trachelium.run_grip"));
-                    }
-                } else {
-                    if (ClientEventHandler.tacticalSprint) {
-                        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.trachelium.run_fast"));
-                    } else {
-                        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.trachelium.run"));
-                    }
                 }
             }
         }

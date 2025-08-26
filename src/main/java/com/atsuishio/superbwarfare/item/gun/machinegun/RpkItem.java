@@ -85,18 +85,6 @@ public class RpkItem extends GunItem {
             }
         }
 
-        if (player.isSprinting() && player.onGround() && ClientEventHandler.cantSprint == 0 && ClientEventHandler.drawTime < 0.01) {
-            if (ClientEventHandler.tacticalSprint) {
-                return event.setAndContinue(RawAnimation.begin().thenLoop("animation.ak_47.run_fast"));
-            } else {
-                if (grip) {
-                    return event.setAndContinue(RawAnimation.begin().thenPlay("animation.ak_47.run_grip"));
-                } else {
-                    return event.setAndContinue(RawAnimation.begin().thenLoop("animation.ak_47.run"));
-                }
-            }
-        }
-
         if (grip) {
             return event.setAndContinue(RawAnimation.begin().thenLoop("animation.ak_47.idle_grip"));
         } else {
