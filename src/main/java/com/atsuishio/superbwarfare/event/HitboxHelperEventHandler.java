@@ -9,7 +9,7 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 @EventBusSubscriber
-public class HitboxHelperEvent {
+public class HitboxHelperEventHandler {
     @SubscribeEvent(receiveCanceled = true)
     public static void onPlayerTick(PlayerTickEvent.Post event) {
         if (FMLEnvironment.dist == Dist.DEDICATED_SERVER) {

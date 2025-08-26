@@ -103,9 +103,10 @@ public abstract class FastThrowableProjectile extends ThrowableItemProjectile im
         super.onHitEntity(pResult);
         NeoForge.EVENT_BUS.post(
                 new ProjectileHitEvent.HitEntity(
-                        pResult.getEntity(),
                         this.getOwner(),
-                        this
+                        this,
+                        pResult.getEntity(),
+                        pResult.getLocation()
                 )
         );
     }
@@ -119,7 +120,8 @@ public abstract class FastThrowableProjectile extends ThrowableItemProjectile im
                         this.level().getBlockState(pResult.getBlockPos()),
                         pResult.getDirection(),
                         this.getOwner(),
-                        this
+                        this,
+                        pResult.getLocation()
                 )
         );
     }

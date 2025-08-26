@@ -11,7 +11,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 
 @EventBusSubscriber(modid = Mod.MODID)
-public class EntityUseGun {
+public class EntityUseGunEventHandler {
 
     @SubscribeEvent
     public static void entityJoin(EntityJoinLevelEvent event) {

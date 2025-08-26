@@ -1,10 +1,12 @@
 package com.atsuishio.superbwarfare.api.event;
 
+import com.atsuishio.superbwarfare.tools.ExtendedEntityRayTraceResult;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import org.jetbrains.annotations.ApiStatus;
@@ -19,23 +21,44 @@ public class ProjectileHitEvent extends Event implements ICancellableEvent {
     @Nullable
     private final Entity owner;
     private final Projectile projectile;
+    private final Vec3 hitVec;
 
-    private ProjectileHitEvent(@Nullable Entity owner, Projectile projectile) {
+    private ProjectileHitEvent(@Nullable Entity owner, Projectile projectile, Vec3 hitVec) {
         this.owner = owner;
         this.projectile = projectile;
+        this.hitVec = hitVec;
     }
 
     public static class HitEntity extends ProjectileHitEvent {
 
         private final Entity target;
+        private final boolean isHeadshot;
+        private final boolean isLegShot;
 
-        public HitEntity(Entity target, @Nullable Entity owner, Projectile projectile) {
-            super(owner, projectile);
+        public HitEntity(@Nullable Entity owner, Projectile projectile, ExtendedEntityRayTraceResult result) {
+            super(owner, projectile, result.getLocation());
+            this.target = result.getEntity();
+            this.isHeadshot = result.isHeadshot();
+            this.isLegShot = result.isLegShot();
+        }
+
+        public HitEntity(@Nullable Entity owner, Projectile projectile, Entity target, Vec3 hitVec) {
+            super(owner, projectile, hitVec);
             this.target = target;
+            this.isHeadshot = false;
+            this.isLegShot = false;
         }
 
         public Entity getTarget() {
             return target;
+        }
+
+        public boolean isHeadshot() {
+            return isHeadshot;
+        }
+
+        public boolean isLegShot() {
+            return isLegShot;
         }
     }
 
@@ -45,8 +68,8 @@ public class ProjectileHitEvent extends Event implements ICancellableEvent {
         private final BlockState state;
         private final Direction face;
 
-        public HitBlock(BlockPos pos, BlockState state, Direction face, @Nullable Entity owner, Projectile projectile) {
-            super(owner, projectile);
+        public HitBlock(BlockPos pos, BlockState state, Direction face, @Nullable Entity owner, Projectile projectile, Vec3 hitVec) {
+            super(owner, projectile, hitVec);
             this.pos = pos;
             this.state = state;
             this.face = face;
@@ -71,5 +94,9 @@ public class ProjectileHitEvent extends Event implements ICancellableEvent {
 
     public Projectile getProjectile() {
         return projectile;
+    }
+
+    public Vec3 getHitVec() {
+        return hitVec;
     }
 }
