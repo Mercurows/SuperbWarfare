@@ -17,9 +17,6 @@ import software.bernie.geckolib.core.animation.AnimationState;
 import static com.atsuishio.superbwarfare.event.ClientEventHandler.isProne;
 
 public class Ntw20Model extends CustomGunModel<Ntw20Item> {
-
-    public static float fireRotY = 0f;
-    public static float fireRotZ = 0f;
     public static float rotXBipod = 0f;
 
     @Override
@@ -66,9 +63,6 @@ public class Ntw20Model extends CustomGunModel<Ntw20Item> {
         double zp = ClientEventHandler.zoomPos;
         double zpz = ClientEventHandler.zoomPosZ;
 
-        double fpz = ClientEventHandler.firePosZ * 7 * times;
-        double fp = ClientEventHandler.firePos;
-        double fr = ClientEventHandler.fireRot;
 
         int type = GunData.from(stack).attachment.get(AttachmentType.SCOPE);
 
@@ -101,35 +95,9 @@ public class Ntw20Model extends CustomGunModel<Ntw20Item> {
         scope2.setScaleZ(1f - (0.8f * (float) zp));
         scope3.setScaleZ(1f - (0.5f * (float) zp));
 
-        CoreGeoBone shen;
-        if (zt < 0.5) {
-            shen = getAnimationProcessor().getBone("fireRootNormal");
-        } else {
-            shen = switch (type) {
-                case 0 -> getAnimationProcessor().getBone("fireRoot0");
-                case 1 -> getAnimationProcessor().getBone("fireRoot1");
-                case 2 -> getAnimationProcessor().getBone("fireRoot2");
-                case 3 -> getAnimationProcessor().getBone("fireRoot3");
-                default -> getAnimationProcessor().getBone("fireRootNormal");
-            };
-        }
+        CoreGeoBone shen = getAnimationProcessor().getBone("fire");
 
-        fireRotY = (float) Mth.lerp(0.3f * times, fireRotY, 0.6f * ClientEventHandler.recoilHorizon * fpz);
-        fireRotZ = (float) Mth.lerp(2f * times, fireRotZ, (0.4f + 0.5f * fpz) * ClientEventHandler.recoilHorizon);
-
-        shen.setPosX(-0.4f * (float) (ClientEventHandler.recoilHorizon * (0.5 + 0.4 * ClientEventHandler.fireSpread)));
-        shen.setPosY((float) (0.15f * fp + 0.18f * fr));
-        shen.setPosZ((float) (2.935 * fp + 0.23f * fr + 1.325 * fpz));
-        shen.setRotX((float) (0.015f * fp + 0.12f * fr + 0.015f * fpz + 0.15f * (float) ClientEventHandler.actionMove));
-        shen.setRotY(fireRotY);
-        shen.setRotZ(fireRotZ);
-
-        shen.setPosX((float) (shen.getPosX() * (1 - 0.4 * zt)));
-        shen.setPosY((float) (shen.getPosY() * (-1 + 0.8 * zt)));
-        shen.setPosZ((float) (shen.getPosZ() * (1 - 0.6 * zt)));
-        shen.setRotX((float) (shen.getRotX() * (1 - 0.8 * zt)));
-        shen.setRotY((float) (shen.getRotY() * (1 - 0.85 * zt)));
-        shen.setRotZ((float) (shen.getRotZ() * (1 - 0.4 * zt)));
+        ClientEventHandler.handleShootAnimation(shen, 1.25f, 3f, 2.5f, 2.5f, 0.7f, 0.5f, 0.4f, 0.65f);
 
         CrossHairOverlay.gunRot = shen.getRotZ();
 

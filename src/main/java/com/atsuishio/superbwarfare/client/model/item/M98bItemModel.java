@@ -16,9 +16,6 @@ import software.bernie.geckolib.core.animation.AnimationState;
 import static com.atsuishio.superbwarfare.event.ClientEventHandler.isProne;
 
 public class M98bItemModel extends CustomGunModel<M98bItem> {
-
-    public static float fireRotY = 0f;
-    public static float fireRotZ = 0f;
     public static float rotXBipod = 0f;
     public static float rotXSight = 0f;
 
@@ -74,9 +71,6 @@ public class M98bItemModel extends CustomGunModel<M98bItem> {
         double zt = ClientEventHandler.zoomTime;
         double zp = ClientEventHandler.zoomPos;
         double zpz = ClientEventHandler.zoomPosZ;
-        double fpz = ClientEventHandler.firePosZ * 7 * times;
-        double fp = ClientEventHandler.firePos;
-        double fr = ClientEventHandler.fireRot;
 
         posYAlt = Mth.lerp(times, posYAlt, stack.getOrCreateTag().getBoolean("ScopeAlt") ? -0.9f : 0.05f);
         scaleZAlt = Mth.lerp(times, scaleZAlt, stack.getOrCreateTag().getBoolean("ScopeAlt") ? 0.5f : 0.92f);
@@ -118,15 +112,7 @@ public class M98bItemModel extends CustomGunModel<M98bItem> {
 
         CoreGeoBone shen = getAnimationProcessor().getBone("fire");
 
-        fireRotY = (float) Mth.lerp(0.3f * times, fireRotY, 0.2f * ClientEventHandler.recoilHorizon * fpz);
-        fireRotZ = (float) Mth.lerp(2f * times, fireRotZ, (0.4f + 0.5 * fpz) * ClientEventHandler.recoilHorizon);
-
-        shen.setPosX(-0.4f * (float) (ClientEventHandler.recoilHorizon * (0.5 + 0.4 * ClientEventHandler.fireSpread)));
-        shen.setPosY((float) (0.4f * fp + 0.44f * fr));
-        shen.setPosZ((float) (2.825 * fp + 0.24f * fr + 1.25 * fpz));
-        shen.setRotX((float) (0.01f * fp + 0.08f * fr + 0.01f * fpz));
-        shen.setRotY(fireRotY);
-        shen.setRotZ(fireRotZ);
+        ClientEventHandler.handleShootAnimation(shen, 1.25f, 2f, 3f, 2.5f, 1.3f, 1f, 0.4f, 0.55f);
 
         shen.setPosX((float) (shen.getPosX() * (1 - 0.4 * zt)));
         shen.setPosY((float) (shen.getPosY() * (-1 + 0.8 * zt)));

@@ -102,6 +102,8 @@ public class BocekItemModel extends CustomGunModel<BocekItem> {
 
         CoreGeoBone camera = getAnimationProcessor().getBone("camera");
         ClientEventHandler.handleReloadShake(Mth.RAD_TO_DEG * camera.getRotX(), Mth.RAD_TO_DEG * camera.getRotY(), Mth.RAD_TO_DEG * camera.getRotZ());
+
+        ClientEventHandler.handleShootAnimation(shen, 0, 0, 0, 0, 0, 0, 0, 1f);
     }
 
     public static void wingControl(CoreGeoBone coreGeoBone, float m) {

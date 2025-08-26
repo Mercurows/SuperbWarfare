@@ -72,12 +72,7 @@ public class MinigunItemModel extends CustomGunModel<MinigunItem> {
         rotZ += times * -0.14f * ((float) rpm / 1200) * ClientEventHandler.shootDelay;
         gun.setRotZ(rotZ);
 
-        shen.setPosX((float) (0.75f * ClientEventHandler.recoilHorizon * fpz * fp));
-        shen.setPosY((float) (-0.03f * fp - 0.06f * fr));
-        shen.setPosZ((float) (0.625 * fp + 0.34f * fr + 1.15 * fpz));
-        shen.setRotX((float) (0.02f * fp + 0.02f * fr + 0.02f * fpz));
-        shen.setRotY((float) (0.02f * ClientEventHandler.recoilHorizon * fpz));
-        shen.setRotZ((float) ((0.02f + 0.02 * fr) * ClientEventHandler.recoilHorizon));
+        ClientEventHandler.handleShootAnimation(shen, 1, -0.4f, 1.2f, 1.3f, 1, 1, 0f, 0.7f);
 
         CrossHairOverlay.gunRot = shen.getRotZ();
 

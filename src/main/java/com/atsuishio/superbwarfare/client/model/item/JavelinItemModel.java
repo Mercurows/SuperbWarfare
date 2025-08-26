@@ -49,13 +49,8 @@ public class JavelinItemModel extends CustomGunModel<JavelinItem> {
         CoreGeoBone gun = getAnimationProcessor().getBone("bone");
         CoreGeoBone shen = getAnimationProcessor().getBone("shen");
 
-        float times = 0.6f * (float) Math.min(Minecraft.getInstance().getDeltaFrameTime(), 0.8);
         double zp = ClientEventHandler.zoomPos;
         double zpz = ClientEventHandler.zoomPosZ;
-
-        double fpz = ClientEventHandler.firePosZ * 13 * times;
-        double fp = ClientEventHandler.firePos;
-        double fr = ClientEventHandler.fireRot;
 
         gun.setPosX(1.66f * (float) zp + (float) (0.2f * zpz));
         gun.setPosY(5.5f * (float) zp + (float) (0.8f * zpz));
@@ -63,12 +58,7 @@ public class JavelinItemModel extends CustomGunModel<JavelinItem> {
         gun.setScaleZ(1f - (0.8f * (float) zp));
         gun.setRotZ(-4.75f * Mth.DEG_TO_RAD * (float) zp + (float) (0.02f * zpz));
 
-        shen.setPosX((float) (0.75f * ClientEventHandler.recoilHorizon * fpz * fp));
-        shen.setPosY((float) (-0.03f * fp - 0.06f * fr));
-        shen.setPosZ((float) (0.725 * fp + 0.34f * fr + 0.95 * fpz));
-        shen.setRotX((float) (0.03f * fp + 0.02f * fr + 0.02f * fpz));
-        shen.setRotY((float) (0.07f * ClientEventHandler.recoilHorizon * fpz));
-        shen.setRotZ((float) ((0.08f + 0.1 * fr) * ClientEventHandler.recoilHorizon));
+        ClientEventHandler.handleShootAnimation(shen, 1.25f, 1.7f, 2f, 2.5f, 1.3f, 1f, 0.4f, 0.55f);
 
         CrossHairOverlay.gunRot = shen.getRotZ();
 

@@ -19,9 +19,6 @@ import software.bernie.geckolib.core.animation.AnimationState;
 import static com.atsuishio.superbwarfare.event.ClientEventHandler.isProne;
 
 public class Hk416ItemModel extends CustomGunModel<Hk416Item> {
-
-    public static float fireRotY = 0f;
-    public static float fireRotZ = 0f;
     public static float rotXBipod = 0f;
 
     @Override
@@ -67,10 +64,6 @@ public class Hk416ItemModel extends CustomGunModel<Hk416Item> {
         double zt = ClientEventHandler.zoomTime;
         double zp = ClientEventHandler.zoomPos;
         double zpz = ClientEventHandler.zoomPosZ;
-
-        double fpz = ClientEventHandler.firePosZ * 17 * times;
-        double fp = ClientEventHandler.firePos;
-        double fr = ClientEventHandler.fireRot;
 
         int type = GunData.from(stack).attachment.get(AttachmentType.SCOPE);
 
@@ -118,22 +111,7 @@ public class Hk416ItemModel extends CustomGunModel<Hk416Item> {
             };
         }
 
-        fireRotY = (float) Mth.lerp(0.5f * times, fireRotY, 0.2f * ClientEventHandler.recoilHorizon * fpz);
-        fireRotZ = (float) Mth.lerp(2f * times, fireRotZ, (0.2f + 0.3 * fpz) * ClientEventHandler.recoilHorizon);
-
-        shen.setPosX(-0.4f * (float) (ClientEventHandler.recoilHorizon * (0.5 + 0.4 * ClientEventHandler.fireSpread)));
-        shen.setPosY((float) (0.15f * fp + 0.18f * fr));
-        shen.setPosZ((float) (0.375 * fp + 0.44f * fr + 0.75 * fpz));
-        shen.setRotX((float) (0.01f * fp + 0.05f * fr + 0.01f * fpz));
-        shen.setRotY(fireRotY);
-        shen.setRotZ(fireRotZ);
-
-        shen.setPosX((float) (shen.getPosX() * (1 - 0.1 * zt)));
-        shen.setPosY((float) (shen.getPosY() * (-1 + 0.8 * zt)));
-        shen.setPosZ((float) (shen.getPosZ() * (1 - 0.1 * zt)));
-        shen.setRotX((float) (shen.getRotX() * (1 - (type == 3 ? 0.96 : type == 1 ? 0.8 : 0.9) * zt)));
-        shen.setRotY((float) (shen.getRotY() * (1 - (type == 3 ? 0.95 : 0.9) * zt)));
-        shen.setRotZ((float) (shen.getRotZ() * (1 - 0.4 * zt)));
+        ClientEventHandler.handleShootAnimation(shen, 0.95f, -0.95f, 0.85f, 0.8f, 0.9f, 1, 0.5f, 0.75f);
 
         CrossHairOverlay.gunRot = shen.getRotZ();
 

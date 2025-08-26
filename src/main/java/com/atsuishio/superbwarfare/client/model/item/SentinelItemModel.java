@@ -58,10 +58,6 @@ public class SentinelItemModel extends CustomGunModel<SentinelItem> {
         double zp = ClientEventHandler.zoomPos;
         double zpz = ClientEventHandler.zoomPosZ;
 
-        double fpz = ClientEventHandler.firePosZ * 7 * times;
-        double fp = ClientEventHandler.firePos;
-        double fr = ClientEventHandler.fireRot;
-
         gun.setPosX(2.928f * (float) zp);
         gun.setPosY(-0.062f * (float) zp - (float) (0.1f * zpz));
         gun.setPosZ(10f * (float) zp + (float) (0.3f * zpz));
@@ -73,19 +69,7 @@ public class SentinelItemModel extends CustomGunModel<SentinelItem> {
 
         var data = GunData.from(stack);
 
-        shen.setPosX((float) (0.95f * ClientEventHandler.recoilHorizon * fpz * fp));
-        shen.setPosY((float) (0.4f * fp + 0.44f * fr));
-        shen.setPosZ((float) (3.325 * fp + 0.34f * fr + 2.35 * fpz));
-        shen.setRotX((float) (0.01f * fp + 0.15f * fr + 0.01f * fpz));
-        shen.setRotY((float) (0.1f * ClientEventHandler.recoilHorizon * fpz));
-        shen.setRotZ((float) ((0.08f + 0.1 * fr) * ClientEventHandler.recoilHorizon));
-
-        shen.setPosX((float) (shen.getPosX() * (1 - 0.4 * zt)));
-        shen.setPosY((float) (shen.getPosY() * (1 - 0.5 * zt)));
-        shen.setPosZ((float) (shen.getPosZ() * (1 - 0.6 * zt)));
-        shen.setRotX((float) (shen.getRotX() * (1 - 0.87 * zt)));
-        shen.setRotY((float) (shen.getRotY() * (1 - 0.7 * zt)));
-        shen.setRotZ((float) (shen.getRotZ() * (1 - 0.65 * zt)));
+        ClientEventHandler.handleShootAnimation(shen, 1.25f, 2f, 3f, 2.5f, 1.3f, 1f, 0.4f, 0.55f);
 
         CrossHairOverlay.gunRot = shen.getRotZ();
         ClientEventHandler.gunRootMove(getAnimationProcessor());

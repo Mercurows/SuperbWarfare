@@ -15,10 +15,6 @@ import software.bernie.geckolib.core.animatable.model.CoreGeoBone;
 import software.bernie.geckolib.core.animation.AnimationState;
 
 public class Glock17ItemModel extends CustomGunModel<Glock17Item> {
-
-    public static float fireRotY = 0f;
-    public static float fireRotZ = 0f;
-
     @Override
     public ResourceLocation getAnimationResource(Glock17Item animatable) {
         return Mod.loc("animations/glock_17.animation.json");
@@ -54,13 +50,9 @@ public class Glock17ItemModel extends CustomGunModel<Glock17Item> {
         CoreGeoBone gun = getAnimationProcessor().getBone("bone");
         CoreGeoBone bullet = getAnimationProcessor().getBone("bullet");
 
-        float times = 0.6f * (float) Math.min(Minecraft.getInstance().getDeltaFrameTime(), 0.8);
         double zt = ClientEventHandler.zoomTime;
         double zp = ClientEventHandler.zoomPos;
         double zpz = ClientEventHandler.zoomPosZ;
-        double fpz = ClientEventHandler.firePosZ * 13 * times;
-        double fp = ClientEventHandler.firePos;
-        double fr = ClientEventHandler.fireRot;
 
         gun.setPosX(1.23f * (float) zp);
         gun.setPosY(1.43f * (float) zp - (float) (0.2f * zpz));
@@ -69,22 +61,13 @@ public class Glock17ItemModel extends CustomGunModel<Glock17Item> {
 
         CoreGeoBone body = getAnimationProcessor().getBone("gun");
 
-        fireRotY = (float) Mth.lerp(0.3f * times, fireRotY, 0.6f * ClientEventHandler.recoilHorizon * fpz);
-        fireRotZ = (float) Mth.lerp(2f * times, fireRotZ, (0.4f + 0.5 * fpz) * ClientEventHandler.recoilHorizon);
+        ClientEventHandler.handleShootAnimation(body, 1.25f, -2f, 1.35f, 4.5f, 1.3f, 1f, 0.2f, 1);
 
-        body.setPosX(-0.4f * (float) (ClientEventHandler.recoilHorizon * (0.5 + 0.4 * ClientEventHandler.fireSpread)));
-        body.setPosY((float) (0.15f * fp + 0.18f * fr));
-        body.setPosZ((float) (1.935 * fp + 0.16f * fr + 0.925 * fpz));
-        body.setRotX((float) (0.08f * fp + 0.1f * fr + 0.35f * fpz));
-        body.setRotY(fireRotY);
-        body.setRotZ(fireRotZ);
-
-        body.setPosX((float) (body.getPosX() * (1 - 0.4 * zt)));
-        body.setPosY((float) (body.getPosY() * (-1 + 0.5 * zt)));
-        body.setPosZ((float) (body.getPosZ() * (1 - 0.3 * zt)));
-        body.setRotX((float) (body.getRotX() * (1 - 0.8 * zt)));
-        body.setRotY((float) (body.getRotY() * (1 - 0.7 * zt)));
-        body.setRotZ((float) (body.getRotZ() * (1 - 0.65 * zt)));
+        CoreGeoBone huatao = getAnimationProcessor().getBone("huatao");
+        huatao.setPosZ(1.5f * (float) ClientEventHandler.firePos);
+        if (GunData.from(stack).holdOpen.get()) {
+            huatao.setPosZ(1.5f);
+        }
 
         CrossHairOverlay.gunRot = body.getRotZ();
 
