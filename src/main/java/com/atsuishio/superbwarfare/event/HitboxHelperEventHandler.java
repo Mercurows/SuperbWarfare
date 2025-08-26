@@ -8,7 +8,7 @@ import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber
-public class HitboxHelperEvent {
+public class HitboxHelperEventHandler {
 
     @SubscribeEvent(receiveCanceled = true)
     public static void onPlayerTick(TickEvent.PlayerTickEvent event) {

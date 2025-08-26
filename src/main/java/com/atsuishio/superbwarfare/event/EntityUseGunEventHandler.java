@@ -9,9 +9,8 @@ import net.minecraft.world.entity.Mob;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
-
 @net.minecraftforge.fml.common.Mod.EventBusSubscriber(modid = Mod.MODID)
-public class EntityUseGun {
+public class EntityUseGunEventHandler {
 
     @SubscribeEvent
     public static void entityJoin(EntityJoinLevelEvent event) {
