@@ -72,8 +72,10 @@ public class DefaultGunData implements IDBasedData {
     @SerializedName("Weight")
     public double weight;
 
+    @SerializedName("DefaultFireMode")
+    public FireMode defaultFireMode = FireMode.SEMI;
     @SerializedName("AvailableFireModes")
-    public ObjectToList<StringToObject<FireModeInfo>> availableFireModes = new ObjectToList<>(new StringToObject<>(new FireModeInfo()));
+    public Set<FireMode> availableFireModes = Set.of(FireMode.SEMI);
 
     @SerializedName("ReloadTypes")
     public Set<ReloadType> reloadTypes = Set.of(ReloadType.MAGAZINE);

@@ -295,7 +295,7 @@ public class ClickHandler {
                     if (data.useBackpackAmmo() || data.ammo.get() + data.virtualAmmo.get() <= 0) return;
                     Mod.PACKET_HANDLER.sendToServer(UnloadMessage.INSTANCE);
                 }
-                if (data.get(GunProp.AMMO_CONSUMER).size() > 1) {
+                if (data.ammoConsumers.size() > 1) {
                     if (key == ModKeyMappings.CHANGE_AMMO_FORWARD.getKey().getValue()) {
                         Mod.PACKET_HANDLER.sendToServer(new EditMessage(5, false));
                     }
@@ -460,7 +460,7 @@ public class ClickHandler {
                         && !data.bolt.needed.get())
                         && drawTime < 0.01
                 ) {
-                    if (data.selectedFireMode().mode == FireMode.BURST) {
+                    if (data.fireMode.get() == FireMode.BURST) {
                         if (ClientEventHandler.burstFireAmount == 0) {
                             cantSprint = 8;
                             player.setSprinting(false);
