@@ -39,7 +39,7 @@ public enum Ammo {
     Ammo(ChatFormatting color) {
         this.color = color;
 
-        var name = name().toLowerCase(Locale.ENGLISH);
+        var name = name().toLowerCase(Locale.ROOT);
         this.name = name;
         this.translationKey = "item.superbwarfare.ammo." + name;
 
@@ -50,7 +50,7 @@ public enum Ammo {
             if (c == '_') {
                 useUpperCase = true;
             } else if (useUpperCase) {
-                builder.append(String.valueOf(c).toUpperCase(Locale.ENGLISH));
+                builder.append(String.valueOf(c).toUpperCase(Locale.ROOT));
                 useUpperCase = false;
             } else {
                 builder.append(c);

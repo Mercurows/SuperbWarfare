@@ -288,9 +288,9 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
             return switch (name) {
                 case "@sbw:owner" -> NbtUtils.createUUID(uuid);
                 case "@sbw:owner_string_lower" ->
-                        StringTag.valueOf(uuid.toString().replace("-", "").toLowerCase(Locale.ENGLISH));
+                        StringTag.valueOf(uuid.toString().replace("-", "").toLowerCase(Locale.ROOT));
                 case "@sbw:owner_string_upper" ->
-                        StringTag.valueOf(uuid.toString().replace("-", "").toUpperCase(Locale.ENGLISH));
+                        StringTag.valueOf(uuid.toString().replace("-", "").toUpperCase(Locale.ROOT));
                 default -> StringTag.valueOf(name);
             };
         });
@@ -430,9 +430,9 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
                                 return switch (name) {
                                     case "@sbw:owner" -> NbtUtils.createUUID(uuid);
                                     case "@sbw:owner_string_lower" ->
-                                            StringTag.valueOf(uuid.toString().replace("-", "").toLowerCase(Locale.ENGLISH));
+                                            StringTag.valueOf(uuid.toString().replace("-", "").toLowerCase(Locale.ROOT));
                                     case "@sbw:owner_string_upper" ->
-                                            StringTag.valueOf(uuid.toString().replace("-", "").toUpperCase(Locale.ENGLISH));
+                                            StringTag.valueOf(uuid.toString().replace("-", "").toUpperCase(Locale.ROOT));
                                     default -> StringTag.valueOf(name);
                                 };
                             }));

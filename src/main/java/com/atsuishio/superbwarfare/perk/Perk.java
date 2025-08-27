@@ -43,7 +43,7 @@ public class Perk implements GunPropertyModifier {
         boolean isFirst = true;
         for (char c : descriptionId.toCharArray()) {
             if (isFirst || useUpperCase) {
-                builder.append(String.valueOf(c).toUpperCase(Locale.ENGLISH));
+                builder.append(String.valueOf(c).toUpperCase(Locale.ROOT));
                 isFirst = false;
                 useUpperCase = false;
             } else if (c == '_') {

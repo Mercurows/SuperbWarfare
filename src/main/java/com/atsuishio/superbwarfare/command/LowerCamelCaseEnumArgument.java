@@ -42,7 +42,7 @@ public class LowerCamelCaseEnumArgument<T extends Enum<T>> implements ArgumentTy
         if (trimmed.isEmpty()) {
             return input;
         }
-        String[] parts = trimmed.toLowerCase(Locale.ENGLISH).split("_+");
+        String[] parts = trimmed.toLowerCase(Locale.ROOT).split("_+");
 
         StringBuilder result = new StringBuilder();
         result.append(parts[0]);

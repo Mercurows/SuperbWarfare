@@ -30,10 +30,10 @@ public class LaunchableEntityTool {
             case "@sbw:damage" -> DoubleTag.valueOf(data.damage());
             case "@sbw:owner" -> data.shooter() != null ? NbtUtils.createUUID(data.shooter()) : null;
             case "@sbw:owner_string_lower" -> data.shooter() != null
-                    ? StringTag.valueOf(data.shooter().toString().replace("-", "").toLowerCase(Locale.ENGLISH))
+                    ? StringTag.valueOf(data.shooter().toString().replace("-", "").toLowerCase(Locale.ROOT))
                     : null;
             case "@sbw:owner_string_upper" -> data.shooter() != null
-                    ? StringTag.valueOf(data.shooter().toString().replace("-", "").toUpperCase(Locale.ENGLISH))
+                    ? StringTag.valueOf(data.shooter().toString().replace("-", "").toUpperCase(Locale.ROOT))
                     : null;
             case "@sbw:explosion_damage" -> DoubleTag.valueOf(data.explosionDamage());
             case "@sbw:explosion_radius" -> DoubleTag.valueOf(data.explosionRadius());
