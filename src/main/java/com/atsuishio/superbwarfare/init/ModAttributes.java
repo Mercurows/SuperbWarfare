@@ -2,9 +2,6 @@ package com.atsuishio.superbwarfare.init;
 
 import com.atsuishio.superbwarfare.Mod;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.RangedAttribute;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -12,8 +9,6 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityAttributeModificationEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
-
-import java.util.List;
 
 @EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD)
 public class ModAttributes {
@@ -23,13 +18,6 @@ public class ModAttributes {
 
     @SubscribeEvent
     public static void addAttributes(EntityAttributeModificationEvent event) {
-        List<EntityType<? extends LivingEntity>> entityTypes = event.getTypes();
-        entityTypes.forEach((e) -> {
-            // TODO 正确实现添加属性
-            Class<? extends Entity> baseClass = e.getBaseClass();
-            if (baseClass.isAssignableFrom(LivingEntity.class)) {
-                event.add(e, BULLET_RESISTANCE);
-            }
-        });
+        event.getTypes().forEach((e) -> event.add(e, BULLET_RESISTANCE));
     }
 }

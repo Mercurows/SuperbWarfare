@@ -98,7 +98,6 @@ public class DragonTeethBlock extends Block {
     public void stepOn(Level pLevel, BlockPos pPos, BlockState pState, Entity pEntity) {
         super.stepOn(pLevel, pPos, pState, pEntity);
 
-        // TODO 正确实现载具减速
         if (pEntity instanceof VehicleEntity vehicle) {
             vehicle.setDeltaMovement(vehicle.getDeltaMovement().multiply(0.05, 0.05, 0.05));
         }
