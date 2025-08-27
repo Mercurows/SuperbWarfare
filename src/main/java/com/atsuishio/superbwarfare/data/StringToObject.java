@@ -36,7 +36,12 @@ public class StringToObject<T extends DeserializeFromString> {
         }
 
         @Override
-        public void write(JsonWriter jsonWriter, StringToObject<T> obj) {
+        public void write(JsonWriter jsonWriter, StringToObject<T> obj) throws IOException {
+            if (obj == null) {
+                jsonWriter.nullValue();
+                return;
+            }
+
             gson.toJson(obj.value, type, jsonWriter);
         }
 
