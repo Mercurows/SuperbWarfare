@@ -261,4 +261,9 @@ public class SmallRocketEntity extends FastThrowableProjectile implements GeoEnt
     public void setGravity(float gravity) {
         this.gravity = gravity;
     }
+
+    @Override
+    public boolean forceLoadChunk() {
+        return true;
+    }
 }

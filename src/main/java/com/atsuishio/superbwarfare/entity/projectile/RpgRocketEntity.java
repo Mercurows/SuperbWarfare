@@ -252,4 +252,9 @@ public class RpgRocketEntity extends FastThrowableProjectile implements GeoEntit
     public void setGravity(float gravity) {
         this.gravity = gravity;
     }
+
+    @Override
+    public boolean forceLoadChunk() {
+        return true;
+    }
 }
