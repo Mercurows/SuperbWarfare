@@ -138,8 +138,8 @@ public class TargetEntity extends LivingEntity implements GeoEntity {
     }
 
     @Override
-    public @NotNull InteractionResult interact(Player player, @NotNull InteractionHand hand) {
-        if (player.getMainHandItem() != ItemStack.EMPTY && !player.getMainHandItem().is(ModTags.Items.CROWBAR)) {
+    public @NotNull InteractionResult interact(@NotNull Player player, @NotNull InteractionHand hand) {
+        if (!player.getMainHandItem().isEmpty() && !player.getMainHandItem().is(ModTags.Items.CROWBAR)) {
             return InteractionResult.PASS;
         }
 
