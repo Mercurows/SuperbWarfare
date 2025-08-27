@@ -302,7 +302,7 @@ public class DamageModifier {
                         .append(Component.literal(" = " + FormatTool.format2D(damage)).withStyle(ChatFormatting.WHITE));
                 case INVALID -> Component.literal("INVALID!").withStyle(ChatFormatting.RED);
             };
-            var component = Component.translatable("tips.superbwarfare.modify_result." + modify.sourceType.name().toLowerCase(Locale.ENGLISH), sourceString)
+            var component = Component.translatable("tips.superbwarfare.modify_result." + modify.sourceType.name().toLowerCase(Locale.ROOT), sourceString)
                     .withStyle(style -> style.withColor(color));
             return component.append(typeString);
         }
