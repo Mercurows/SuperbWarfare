@@ -37,7 +37,8 @@ public final class GunProp<T> extends Prop<GunData, DefaultGunData, T> {
             .withLimiter(v -> Math.max(0, v));
     public static final GunProp<Integer> PROJECTILE_AMOUNT = new GunProp<Integer>("ProjectileAmount")
             .withLimiter(v -> Math.max(0, v));
-    public static final GunProp<Double> WEIGHT = new GunProp<>("Weight");
+    public static final GunProp<Double> WEIGHT = new GunProp<Double>("Weight")
+            .withLimiter(v -> Math.max(1, v));
     public static final GunProp<FireMode> DEFAULT_FIRE_MODE = new GunProp<>("DefaultFireMode");
     public static final GunProp<Set<FireMode>> AVAILABLE_FIRE_MODES = new GunProp<Set<FireMode>>("AvailableFireModes")
             .withLimiter(v -> v == null ? Set.of() : v);
