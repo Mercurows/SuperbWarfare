@@ -121,7 +121,7 @@ public class Hk416ItemModel extends CustomGunModel<Hk416Item> {
         l.setRotX(rotXBipod * Mth.DEG_TO_RAD);
         r.setRotX(rotXBipod * Mth.DEG_TO_RAD);
 
-        var mode = GunData.from(stack).selectedFireMode().mode;
+        var mode = GunData.from(stack).fireMode.get();
 
         kuaimanji.setRotX(mode == FireMode.AUTO ? 90 * Mth.DEG_TO_RAD : 0);
 
