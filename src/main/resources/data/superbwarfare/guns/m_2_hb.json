@@ -17,8 +17,8 @@
   "RPM": 360,
   "HeatPerShoot": 2,
   "AvailableFireModes": [
-    "Auto",
-    "Semi"
+    "Semi",
+    "Auto"
   ],
   "DamageReduce": {
     "Type": "Heavy"

@@ -17,8 +17,8 @@
   "SoundRadius": 16,
   "RPM": 700,
   "AvailableFireModes": [
-    "Auto",
-    "Semi"
+    "Semi",
+    "Auto"
   ],
   "DamageReduce": {
     "Type": "Rifle"

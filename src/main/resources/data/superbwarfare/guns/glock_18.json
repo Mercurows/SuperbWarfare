@@ -15,8 +15,8 @@
   "SoundRadius": 8,
   "RPM": 1300,
   "AvailableFireModes": [
-    "Auto",
-    "Semi"
+    "Semi",
+    "Auto"
   ],
   "DamageReduce": {
     "Type": "Handgun"
