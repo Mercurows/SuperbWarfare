@@ -5,8 +5,10 @@ import com.atsuishio.superbwarfare.init.ModAttachments;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.tools.Ammo;
 import com.atsuishio.superbwarfare.tools.FormatTool;
+import com.atsuishio.superbwarfare.tools.SoundTool;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -86,7 +88,7 @@ public class AmmoBox extends Item {
     @Override
     @ParametersAreNonnullByDefault
     public boolean onEntitySwing(ItemStack stack, LivingEntity entity, InteractionHand hand) {
-        if (entity instanceof Player player && player.isCrouching()) {
+        if (entity instanceof Player player && player.isCrouching() && player instanceof ServerPlayer serverPlayer) {
             var info = stack.get(ModDataComponents.AMMO_BOX_INFO) == null ? new AmmoBoxInfo("All", false) : stack.get(ModDataComponents.AMMO_BOX_INFO);
             assert info != null;
 
@@ -96,8 +98,7 @@ public class AmmoBox extends Item {
             var typeString = ammoTypeList.get((index + 1) % ammoTypeList.size());
 
             stack.set(ModDataComponents.AMMO_BOX_INFO, new AmmoBoxInfo(typeString, false));
-            entity.playSound(ModSounds.FIRE_RATE.get(), 1f, 1f);
-
+            SoundTool.playLocalSound(serverPlayer, ModSounds.FIRE_RATE.get(), SoundSource.PLAYERS, 1f, 1f);
             var type = Ammo.getType(typeString);
             if (type == null) {
                 player.displayClientMessage(Component.translatable("des.superbwarfare.ammo_box.type.all").withStyle(ChatFormatting.WHITE), true);
