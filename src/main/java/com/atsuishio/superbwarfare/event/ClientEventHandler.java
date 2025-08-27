@@ -80,6 +80,7 @@ public class ClientEventHandler {
     public static double swayX = 0;
     public static double swayY = 0;
     public static double moveTime = 0;
+    public static double sprintTime = 0;
     public static double movePosX = 0;
     public static double movePosY = 0;
     public static double moveRotZ = 0;
@@ -1130,33 +1131,36 @@ public class ClientEventHandler {
                 animSpeed = 0.005;
             }
 
+            float customWeight = data.get(GunProp.WEIGHT).floatValue();
+
             if (!isEditing) {
                 if (!entity.isSprinting() && Minecraft.getInstance().options.keyUp.isDown() && firePosTimer == 0) {
                     moveRotZ = Mth.lerp(0.2f * times, moveRotZ, 0.14) * (1 - zoomTime);
                 } else {
                     moveRotZ = Mth.lerp(0.2f * times, moveRotZ, 0) * (1 - zoomTime);
                 }
-                if (entity.isSprinting() && !data.reloading() && firePosTimer == 0 && !ModKeyMappings.FIRE.isDown() && cantSprint == 0) {
-                    sprintBasicRotX = Mth.lerp(0.1f * times, sprintBasicRotX, 1) * (1 - zoomTime);
-                    sprintBasicRotY = Mth.lerp(0.05f * times, sprintBasicRotY, 1) * (1 - zoomTime);
-                    sprintBasicRotZ = Mth.lerp(0.1f * times, sprintBasicRotZ, 1) * (1 - zoomTime);
+                if (entity.isSprinting() && !data.reloading() && firePosTimer == 0 && !ModKeyMappings.FIRE.isDown() && cantSprint == 0 && zoomTime < 0.1) {
+                    sprintBasicRotX = Mth.lerp(0.3f * times / (customWeight + 4), sprintBasicRotX, 1);
+                    sprintBasicRotY = Mth.lerp(0.18f * times / (customWeight + 4), sprintBasicRotY, 1);
+                    sprintBasicRotZ = Mth.lerp(0.3f * times / (customWeight + 4), sprintBasicRotZ, 1);
 
-                    sprintBasicPosX = Mth.lerp(0.1f * times, sprintBasicPosX, 1) * (1 - zoomTime);
-                    sprintBasicPosY = Mth.lerp(0.1f * times, sprintBasicPosY, 1) * (1 - zoomTime);
-                    sprintBasicPosZ = Mth.lerp(0.1f * times, sprintBasicPosZ, 1) * (1 - zoomTime);
+                    sprintBasicPosX = Mth.lerp(0.8f * times / (customWeight + 4), sprintBasicPosX, 1);
+                    sprintBasicPosY = Mth.lerp(0.25f * times / (customWeight + 4), sprintBasicPosY, 1);
+                    sprintBasicPosZ = Mth.lerp(0.8f * times / (customWeight + 4), sprintBasicPosZ, 1);
                 } else {
-                    sprintBasicRotX = Mth.lerp(0.35f * times, sprintBasicRotX, 0) * (1 - zoomTime);
-                    sprintBasicRotY = Mth.lerp(0.24f * times, sprintBasicRotY, 0) * (1 - zoomTime);
-                    sprintBasicRotZ = Mth.lerp(0.35f * times, sprintBasicRotZ, 0) * (1 - zoomTime);
+                    sprintBasicRotX = Mth.lerp(1.4f * times / customWeight, sprintBasicRotX, 0);
+                    sprintBasicRotY = Mth.lerp(0.96f * times / customWeight, sprintBasicRotY, 0);
+                    sprintBasicRotZ = Mth.lerp(1.4f * times / customWeight, sprintBasicRotZ, 0);
 
-                    sprintBasicPosX = Mth.lerp(0.2f * times, sprintBasicPosX, 0) * (1 - zoomTime);
-                    sprintBasicPosY = Mth.lerp(0.2f * times, sprintBasicPosY, 0) * (1 - zoomTime);
-                    sprintBasicPosZ = Mth.lerp(0.2f * times, sprintBasicPosZ, 0) * (1 - zoomTime);
+                    sprintBasicPosX = Mth.lerp(0.8f * times / customWeight, sprintBasicPosX, 0);
+                    sprintBasicPosY = Mth.lerp(0.8f * times / customWeight, sprintBasicPosY, 0);
+                    sprintBasicPosZ = Mth.lerp(0.8f * times / customWeight, sprintBasicPosZ, 0);
                 }
             }
 
-            if (isMoving() && firePosTimer == 0) {
-                moveTime += 0.15 * animSpeed * times * moveSpeed * (player.isSprinting() ? sprintBasicRotY : 1);
+            if (isMoving()) {
+                moveTime += 0.15 * animSpeed * times * moveSpeed * (firePosTimer != 0 ? 0.4 : 1);
+                sprintTime += 0.15 * animSpeed * times * moveSpeed * (player.isSprinting() ? sprintBasicPosX : 1) * (firePosTimer != 0 ? 0.4 : 1);
                 moveFadeTime = Mth.lerp(0.13 * times, moveFadeTime, 1);
             } else {
                 moveFadeTime = Mth.lerp(0.1 * times, moveFadeTime, 0);
@@ -1169,23 +1173,18 @@ public class ClientEventHandler {
                     sprintFadeTime = Mth.lerp(0.15 * times, sprintFadeTime, 0);
                 }
 
-
-                movePosX = Mth.lerp(0.1 * times, movePosX, 0);
-                movePosY = Mth.lerp(0.1 * times, movePosY, 0);
-
-                sprintPosX = 2 * Math.sin(1 * Math.PI * moveTime) * (1 - 0.95 * zoomTime) * sprintFadeTime;
-                sprintPosY = 1 * Math.sin(2 * Math.PI * moveTime) * (1 - 0.95 * zoomTime) * sprintFadeTime;
+                sprintPosX = 2 * Math.sin(1 * Math.PI * sprintTime) * (1 - 0.95 * zoomTime) * sprintFadeTime;
+                sprintPosY = 1 * Math.sin(2 * Math.PI * sprintTime) * (1 - 0.95 * zoomTime) * sprintFadeTime;
             } else {
-                if (!data.reloading() && firePosTimer == 0 && !ModKeyMappings.FIRE.isDown() && cantSprint == 0){
-                    movePosX = 0.2 * Math.sin(1 * Math.PI * moveTime) * (1 - 0.95 * zoomTime) * moveFadeTime;
-                    movePosY = -0.135 * Math.sin(2 * Math.PI * (moveTime - 0.25)) * (1 - 0.95 * zoomTime) * moveFadeTime;
-                }
 
                 sprintPosX = Mth.lerp(0.1 * times, sprintPosX, 0);
                 sprintPosY = Mth.lerp(0.1 * times, sprintPosY, 0);
 
                 sprintFadeTime = Mth.lerp(0.1 * times, sprintFadeTime, 0);
             }
+
+            movePosX = 0.2 * Math.sin(1 * Math.PI * moveTime) * (1 - 0.95 * zoomTime) * moveFadeTime;
+            movePosY = -0.135 * Math.sin(2 * Math.PI * (moveTime - 0.25)) * (1 - 0.95 * zoomTime) * moveFadeTime;
 
             boolean left = Minecraft.getInstance().options.keyLeft.isDown();
             boolean right = Minecraft.getInstance().options.keyRight.isDown();
@@ -1222,8 +1221,8 @@ public class ClientEventHandler {
 
         int i = useCustomAnim? 0 : 1;
 
-        float basicSprintPosX = (float) (sprintBasicPosX * (1 + customX)) * i;
-        float basicSprintPosY = (float) (sprintBasicPosY * (-2.35 + customY - 10 * AnimationCurves.PARABOLA.apply(sprintBasicPosY))) * i;
+        float basicSprintPosX = (float) (sprintBasicPosX * (1.5 + customX)) * i;
+        float basicSprintPosY = (float) (sprintBasicPosY * (-2.35 + customY - 8 * AnimationCurves.PARABOLA.apply(sprintBasicPosY))) * i;
         float basicSprintPosZ = (float) (sprintBasicPosZ * (-0.55 + customZ)) * i;
 
         float basicSprintRotX = (float) (sprintBasicRotX * 39 * Mth.DEG_TO_RAD) * i;
@@ -1374,8 +1373,8 @@ public class ClientEventHandler {
         bone.setPosX(zoom * x * (float) (ClientEventHandler.recoilHorizon * (0.12f * firePos)));
         bone.setPosY(zoom * y * (float) (0.05f * firePos));
         bone.setPosZ(zoom * z * (float) (firePos + 0.3f * firePosZ));
-        bone.setRotX(zoom * rotX * (float) (fireRot + 0.03f * firePosZ) * gripRecoilX * recoil * (float) (1 - 0.7 * zoomTime));
-        bone.setRotY(2 * zoom * rotY * (float) fireRotY * gripRecoilY * recoil);
+        bone.setRotX(zoom * rotX * (float) (fireRot + 0.03f * firePosZ) * gripRecoilX * recoil * (float) (1 - 0.75 * zoomTime));
+        bone.setRotY(2 * zoom * rotY * (float) fireRotY * gripRecoilY * recoil * (float) (1 - 0.3 * zoomTime));
         bone.setRotZ(zoom * rotZ * (float) fireRotZ * gripRecoilY * recoil);
     }
 
