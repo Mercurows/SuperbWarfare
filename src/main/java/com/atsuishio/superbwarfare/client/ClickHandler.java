@@ -456,6 +456,8 @@ public class ClickHandler {
                 ) {
                     if (data.selectedFireMode().mode == FireMode.BURST) {
                         if (ClientEventHandler.burstFireAmount == 0) {
+                            cantSprint = 8;
+                            player.setSprinting(false);
                             ClientEventHandler.burstFireAmount = data.get(GunProp.BURST_AMOUNT);
                         }
                     } else {

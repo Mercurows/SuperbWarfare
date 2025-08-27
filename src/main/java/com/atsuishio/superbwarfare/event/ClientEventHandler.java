@@ -1160,7 +1160,7 @@ public class ClientEventHandler {
             }
 
             if (isMoving() && firePosTimer == 0) {
-                moveTime += 0.15 * animSpeed * times * moveSpeed;
+                moveTime += 0.15 * animSpeed * times * moveSpeed * (player.isSprinting() ? sprintBasicRotY : 1);
                 moveFadeTime = Mth.lerp(0.13 * times, moveFadeTime, 1);
             } else {
                 moveFadeTime = Mth.lerp(0.1 * times, moveFadeTime, 0);
@@ -1227,7 +1227,7 @@ public class ClientEventHandler {
         int i = useCustomAnim ? 0 : 1;
 
         float basicSprintPosX = (float) (sprintBasicPosX * (1 + customX)) * i;
-        float basicSprintPosY = (float) (sprintBasicPosY * (-2.35 + customY)) * i;
+        float basicSprintPosY = (float) (sprintBasicPosY * (-2.35 + customY - 10 * AnimationCurves.PARABOLA.apply(sprintBasicPosY))) * i;
         float basicSprintPosZ = (float) (sprintBasicPosZ * (-0.55 + customZ)) * i;
 
         float basicSprintRotX = (float) (sprintBasicRotX * 39 * Mth.DEG_TO_RAD) * i;
