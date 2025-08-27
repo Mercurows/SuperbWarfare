@@ -20,8 +20,8 @@
     "Type": "Rifle"
   },
   "AvailableFireModes": [
-    "Semi",
-    "Auto"
+    "Auto",
+    "Semi"
   ],
   "AmmoType": "@RifleAmmo",
   "AvailablePerks": [
