@@ -34,8 +34,6 @@ public enum FireModeMessage {
             var data = GunData.from(stack);
             var tag = data.tag();
 
-            data.clearDefaultCache();
-
             var index = data.selectedFireModeIndex.get();
             index = (index + 1) % data.get(GunProp.AVAILABLE_FIRE_MODES).size();
             data.selectedFireModeIndex.set(index);

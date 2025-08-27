@@ -1,9 +1,9 @@
 package com.atsuishio.superbwarfare.data.gun;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.data.DataLoader;
 import com.atsuishio.superbwarfare.data.DefaultDataSupplier;
 import com.atsuishio.superbwarfare.data.Prop;
+import com.atsuishio.superbwarfare.data.StringPropModifier;
 import com.atsuishio.superbwarfare.data.gun.subdata.*;
 import com.atsuishio.superbwarfare.data.gun.value.*;
 import com.atsuishio.superbwarfare.event.GunEventHandler;
@@ -15,8 +15,6 @@ import com.atsuishio.superbwarfare.tools.InventoryTool;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import com.google.gson.JsonObject;
-import com.google.gson.reflect.TypeToken;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
@@ -161,49 +159,8 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
         return data;
     }
 
-    private DefaultGunData cache = null;
-
-    public void clearDefaultCache() {
-        this.cache = null;
-    }
-
-    // TODO 怎么还是tm算不对数值
     public DefaultGunData getDefault() {
-        if (cache != null) return cache;
-
-        var defaultJsonObj = getDefault(this.id);
-        var defaultJsonStr = DataLoader.GSON.toJson(defaultJsonObj, new TypeToken<DefaultGunData>() {
-        }.getType());
-        var jsonObj = DataLoader.GSON.fromJson(defaultJsonStr, JsonObject.class);
-        var stringPropertyOverride = DataLoader.GSON.fromJson(propertyOverrideString.get(), JsonObject.class);
-
-        merge(jsonObj, stringPropertyOverride);
-
-        // FireMode Override
-        var fireModes = GunProp.AVAILABLE_FIRE_MODES.deserializeFrom(jsonObj);
-        var index = this.selectedFireModeIndex == null ? 0 : this.selectedFireModeIndex.get();
-        var fireModeOverride = fireModes.get(Mth.clamp(index, 0, fireModes.size() - 1)).override;
-
-        merge(jsonObj, fireModeOverride);
-
-        // Ammo Override
-        var consumers = GunProp.AMMO_CONSUMER.deserializeFrom(jsonObj);
-        var ammoOverride = consumers.get(Mth.clamp(this.selectedAmmoType.get(), 0, consumers.size() - 1)).override;
-
-        merge(jsonObj, ammoOverride);
-
-        cache = DataLoader.GSON.fromJson(DataLoader.GSON.toJson(jsonObj), DefaultGunData.class);
-        return cache;
-    }
-
-    private static void merge(JsonObject a, JsonObject... b) {
-        for (var o : b) {
-            if (o == null) continue;
-
-            for (var entry : o.entrySet()) {
-                a.add(entry.getKey(), entry.getValue());
-            }
-        }
+        return getDefault(this.id);
     }
 
     public static DefaultGunData getDefault(ItemStack stack) {
@@ -250,6 +207,9 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
 
     private final Set<GunProp<?>> operatingProps = new HashSet<>();
 
+    private final StringPropModifier<GunData, DefaultGunData> stringPropModifier = new StringPropModifier<>();
+
+    // TODO 解决频繁递归调用问题
     @SuppressWarnings("unchecked")
     public <T> T get(GunProp<T> prop) {
         var modifier = prop.asModifier(this);
@@ -261,14 +221,30 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
 
         operatingProps.add(prop);
 
-        // AmmoConsumer
-        if (prop != GunProp.AMMO_CONSUMER) {
-            modifier.apply(selectedAmmoConsumer().init().getModifier(prop));
-        }
-
         // gun modifiers
-        modifier.apply(this.item);
+        modifier.apply(this.item.getModifier(prop));
 
+        // property override tag
+        stringPropModifier.modifyPropertyByString(propertyOverrideString.get(), prop);
+        modifier.apply(stringPropModifier.getModifier(prop));
+
+        // FireMode
+        if (prop != GunProp.AVAILABLE_FIRE_MODES) {
+            modifier.apply(selectedFireMode().getModifier(prop));
+        }
+     
+        // AmmoConsumer
+        if (prop == GunProp.AMMO_CONSUMER) {
+            var consumers = (List<AmmoConsumer>) modifier.compute();
+            consumers.forEach(c -> {
+                if (!c.initialized()) {
+                    c.init();
+                }
+            });
+            modifier.apply(selectedAmmoConsumer(consumers).getModifier(prop));
+        } else {
+            modifier.apply(selectedAmmoConsumer().getModifier(prop));
+        }
 
         // perk
         if (perk != null) {
@@ -276,7 +252,7 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
                 var instance = perk.get(type);
                 if (instance == null) continue;
 
-                modifier.apply(instance);
+                modifier.apply(instance.getModifier(prop));
             }
         }
 

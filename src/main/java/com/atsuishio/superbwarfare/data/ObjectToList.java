@@ -42,12 +42,7 @@ public class ObjectToList<T> {
         }
 
         @Override
-        public void write(JsonWriter jsonWriter, ObjectToList<T> objectToList) throws IOException {
-            if (objectToList == null || objectToList.list == null) {
-                jsonWriter.beginArray().endArray();
-                return;
-            }
-
+        public void write(JsonWriter jsonWriter, ObjectToList<T> objectToList) {
             if (objectToList.list.size() == 1) {
                 gson.toJson(objectToList.list.get(0), type, jsonWriter);
             } else {

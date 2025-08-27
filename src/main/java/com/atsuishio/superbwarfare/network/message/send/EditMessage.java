@@ -41,7 +41,6 @@ public class EditMessage {
             ItemStack stack = player.getMainHandItem();
             if (!(stack.getItem() instanceof GunItem gunItem)) return;
             var data = GunData.from(stack);
-            data.clearDefaultCache();
 
             switch (message.type) {
                 case 0 -> {

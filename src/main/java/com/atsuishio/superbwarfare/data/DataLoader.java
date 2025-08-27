@@ -49,7 +49,6 @@ public class DataLoader {
         return new GsonBuilder()
                 .setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE)
                 .setLenient()
-                .serializeSpecialFloatingPointValues()
                 .registerTypeAdapterFactory(new ObjectToList.AdapterFactory())
                 .registerTypeAdapterFactory(new StringToObject.AdapterFactory());
     }

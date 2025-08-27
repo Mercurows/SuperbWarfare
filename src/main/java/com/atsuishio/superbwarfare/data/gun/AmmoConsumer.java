@@ -249,7 +249,7 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
     }
 
     @SuppressWarnings("invalid")
-    public AmmoConsumer init() {
+    public void init() {
         parseOverrideValues();
 
         if (this.projectile != null) {
@@ -260,21 +260,18 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
 
         if (ammo == null || ammo.isEmpty() || ammo.toLowerCase(Locale.ROOT).equals("empty")) {
             this.type = AmmoConsumeType.EMPTY;
-            this.initialized = true;
-            return this;
+            return;
         }
 
         if (ammo.toLowerCase(Locale.ROOT).equals("infinity") || ammo.toLowerCase(Locale.ROOT).equals("infinite")) {
             this.type = AmmoConsumeType.INFINITE;
-            this.initialized = true;
-            return this;
+            return;
         }
 
         var matcher = AMMO_PATTERN.matcher(ammo.trim());
         if (!matcher.matches()) {
             Mod.LOGGER.warn("invalid ammo value: {}", ammo);
-            this.initialized = true;
-            return this;
+            return;
         }
 
         var numStr = matcher.group("count").trim();
@@ -288,22 +285,19 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
             this.playerAmmoType = Ammo.getType(id);
             if (this.playerAmmoType == null) {
                 Mod.LOGGER.warn("invalid player ammo type: {}", id);
-                this.initialized = true;
-                return this;
+                return;
             }
             this.type = AmmoConsumeType.PLAYER_AMMO;
         } else {
             var location = ResourceLocation.tryParse(id);
             if (location == null) {
                 Mod.LOGGER.warn("invalid item id: {}", id);
-                this.initialized = true;
-                return this;
+                return;
             }
             var item = ForgeRegistries.ITEMS.getValue(location);
             if (item == null || item == Items.AIR) {
                 Mod.LOGGER.warn("invalid item: {}", id);
-                this.initialized = true;
-                return this;
+                return;
             }
 
             this.stack = new ItemStack(item);
@@ -316,8 +310,7 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
                     this.stack = ItemStack.of(tag);
                 } catch (Exception exception) {
                     Mod.LOGGER.warn("invalid item data {}: {}", data, exception.getMessage());
-                    this.initialized = true;
-                    return this;
+                    return;
                 }
             }
 
@@ -325,7 +318,6 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
         }
 
         this.initialized = true;
-        return this;
     }
 
     @Override
