@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.entity;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.entity.projectile.MineEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
@@ -231,8 +232,8 @@ public class ClaymoreEntity extends Entity implements GeoEntity, OwnableEntity, 
             Entity attacker = EntityFindUtil.findEntity(this.level(), this.entityData.get(LAST_ATTACKER_UUID));
 
             new CustomExplosion.Builder(attacker == null ? this : attacker)
-                    .damage(25)
-                    .radius(5)
+                    .damage(ExplosionConfig.CLAYMORE_EXPLOSION_DAMAGE.get().floatValue() / 5)
+                    .radius(ExplosionConfig.CLAYMORE_EXPLOSION_RADIUS.get())
                     .position(this.position())
                     .causeVanillaExplosion()
                     .withParticleType(ParticleTool.ParticleType.MEDIUM)
@@ -245,8 +246,8 @@ public class ClaymoreEntity extends Entity implements GeoEntity, OwnableEntity, 
     private void triggerExplode() {
         new CustomExplosion.Builder(this)
                 .attacker(this.getOwner())
-                .damage(140)
-                .radius(4)
+                .damage(ExplosionConfig.CLAYMORE_EXPLOSION_DAMAGE.get())
+                .radius(ExplosionConfig.CLAYMORE_EXPLOSION_RADIUS.get())
                 .causeVanillaExplosion()
                 .withParticleType(ParticleTool.ParticleType.MEDIUM)
                 .explode();

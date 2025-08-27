@@ -23,6 +23,9 @@ public class ExplosionConfig {
     public static ForgeConfigSpec.IntValue C4_EXPLOSION_DAMAGE;
     public static ForgeConfigSpec.IntValue C4_EXPLOSION_RADIUS;
 
+    public static ForgeConfigSpec.IntValue CLAYMORE_EXPLOSION_DAMAGE;
+    public static ForgeConfigSpec.IntValue CLAYMORE_EXPLOSION_RADIUS;
+
     public static ForgeConfigSpec.IntValue RPG_EXPLOSION_DAMAGE;
     public static ForgeConfigSpec.IntValue RPG_EXPLOSION_RADIUS;
 
@@ -98,6 +101,16 @@ public class ExplosionConfig {
 
         builder.comment("The explosion radius of C4");
         C4_EXPLOSION_RADIUS = builder.defineInRange("c4_explosion_radius", 10, 1, Integer.MAX_VALUE);
+
+        builder.pop();
+
+        builder.push("Claymore");
+
+        builder.comment("The explosion damage of Claymore");
+        CLAYMORE_EXPLOSION_DAMAGE = builder.defineInRange("claymore_explosion_damage", 140, 1, Integer.MAX_VALUE);
+
+        builder.comment("The explosion radius of Claymore");
+        CLAYMORE_EXPLOSION_RADIUS = builder.defineInRange("claymore_explosion_radius", 4, 1, Integer.MAX_VALUE);
 
         builder.pop();
 
