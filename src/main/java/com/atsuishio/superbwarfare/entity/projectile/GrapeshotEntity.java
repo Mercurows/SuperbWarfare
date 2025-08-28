@@ -174,9 +174,9 @@ public class GrapeshotEntity extends FastThrowableProjectile {
         }
 
         Vec3 vec31 = this.getDeltaMovement();
-        this.setDeltaMovement(vec31.multiply(0.93, 0.93, 0.93));
+        this.setDeltaMovement(vec31.multiply(0.96, 0.96, 0.96));
 
-        if (this.tickCount > 60 || this.isInWater()) {
+        if (this.tickCount > 200 || this.isInWater()) {
             this.discard();
         }
     }

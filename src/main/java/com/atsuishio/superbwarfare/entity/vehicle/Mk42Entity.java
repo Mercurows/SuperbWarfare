@@ -138,6 +138,18 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
                                 .spreadAngle(15)
                                 .sound(ModSounds.CANNON_RELOAD.get())
                                 .icon(Mod.loc("textures/screens/vehicle_weapon/cm_shell.png")),
+                        // GRAPESHOT
+                        new CannonShellWeapon()
+                                .hitDamage(700)
+                                .explosionDamage(VehicleConfig.MK42_AP_EXPLOSION_DAMAGE.get())
+                                .explosionRadius(VehicleConfig.MK42_AP_EXPLOSION_RADIUS.get().floatValue())
+                                .velocity(30)
+                                .type(CannonShellEntity.Type.GRAPE)
+                                .spreadAmount(30)
+                                .spreadAngle(3)
+                                .sound(ModSounds.INTO_CANNON.get())
+                                .ammo(ModItems.GS_5_INCHES.get())
+                                .icon(Mod.loc("textures/screens/vehicle_weapon/grape_shell.png"))
                 }
         };
     }
@@ -196,6 +208,8 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
                     type = 1;
                 } else if (item.is(ModItems.CM_5_INCHES.get())) {
                     type = 2;
+                } else if (item.is(ModItems.GS_5_INCHES.get())) {
+                    type = 3;
                 }
                 setWeaponIndex(0, type);
                 vehicleShoot(player, 0);
@@ -345,6 +359,7 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
             int ammoCount = switch (getWeaponIndex(0)) {
                 case 1 -> countItem(ModItems.HE_5_INCHES.get());
                 case 2 -> countItem(ModItems.CM_5_INCHES.get());
+                case 3 -> countItem(ModItems.GS_5_INCHES.get());
                 default -> countItem(ModItems.AP_5_INCHES.get());
             };
 
@@ -414,6 +429,8 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
             type = 1;
         } else if (stack.is(ModItems.CM_5_INCHES.get())) {
             type = 2;
+        } else if (stack.is(ModItems.GS_5_INCHES.get())) {
+            type = 3;
         }
 
         this.setWeaponIndex(0, type);
@@ -439,6 +456,7 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
                     {
                         case 1 -> ModItems.HE_5_INCHES.get();
                         case 2 -> ModItems.CM_5_INCHES.get();
+                        case 3 -> ModItems.GS_5_INCHES.get();
                         default -> ModItems.AP_5_INCHES.get();
                     };
                     var ammoCount = InventoryTool.countItem(player.getInventory().items, ammo);
@@ -571,6 +589,7 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
             {
                 case 1 -> ModItems.HE_5_INCHES.get();
                 case 2 -> ModItems.CM_5_INCHES.get();
+                case 3 -> ModItems.GS_5_INCHES.get();
                 default -> ModItems.AP_5_INCHES.get();
             };
             playerAmmo = InventoryTool.countItem(player.getInventory().items, ammo);
