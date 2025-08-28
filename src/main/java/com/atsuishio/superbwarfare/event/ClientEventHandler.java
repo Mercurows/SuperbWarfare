@@ -596,7 +596,7 @@ public class ClientEventHandler {
 
         // 开火部分
         double weight = data.get(GunProp.WEIGHT);
-        double speed = 1 - (0.04 * weight);
+        double speed = 5 / (weight + 4);
 
         if (ClientEventHandler.cantSprint == 0 && player.isSprinting() && !zoom && !holdFire) {
             cantFireTime = Mth.clamp(cantFireTime + 3 * times, 0, 24);
@@ -966,7 +966,7 @@ public class ClientEventHandler {
             default -> 0.8;
         };
 
-        double customWeight = data.get(GunProp.WEIGHT);
+        float customWeight = Mth.clamp(data.get(GunProp.WEIGHT).floatValue(), 1, 30);
 
         if (!breath && zoom) {
             float newPitch = (float) (player.getXRot() - 0.01f * Mth.sin((float) (0.03 * player.tickCount)) * pose * Mth.nextDouble(RandomSource.create(), 0.1, 1) * times * sway * (1 - 0.03 * customWeight));
@@ -1135,7 +1135,7 @@ public class ClientEventHandler {
                 animSpeed = 0.005;
             }
 
-            float customWeight = data.get(GunProp.WEIGHT).floatValue();
+            float customWeight = Mth.clamp(data.get(GunProp.WEIGHT).floatValue(), 1, 50);
 
             if (!isEditing) {
                 if (!entity.isSprinting() && Minecraft.getInstance().options.keyUp.isDown() && firePosTimer == 0) {
@@ -1248,7 +1248,7 @@ public class ClientEventHandler {
         float times = 5 * Minecraft.getInstance().getTimer().getRealtimeDeltaTicks();
 
         double weight = data.get(GunProp.WEIGHT);
-        double speed = 1.5 - (0.07 * weight);
+        double speed = 7 / (weight + 2);
 
         if (zoom
                 && !(player.getVehicle() instanceof ArmedVehicleEntity iArmedVehicle && iArmedVehicle.banHand(player))
@@ -1341,6 +1341,7 @@ public class ClientEventHandler {
 
         int barrelType = GunData.from(stack).attachment.get(AttachmentType.BARREL);
         int gripType = GunData.from(stack).attachment.get(AttachmentType.GRIP);
+        int scopeType = GunData.from(stack).attachment.get(AttachmentType.GRIP);
 
         float recoil = switch (barrelType) {
             case 1 -> 0.75f;
@@ -1360,6 +1361,12 @@ public class ClientEventHandler {
             default -> 1;
         };
 
+        float zoomRecoil = switch (scopeType) {
+            case 2 -> 0.55f;
+            case 3 -> 0.25f;
+            default -> 1.25f;
+        };
+
         float pose = 1;
         if (player.isShiftKeyDown() && player.getBbHeight() >= 1 && !isProne(player)) {
             pose = 0.85f;
@@ -1377,10 +1384,10 @@ public class ClientEventHandler {
 
         bone.setPosX(zoom * x * (float) (ClientEventHandler.recoilHorizon * (0.12f * firePos)));
         bone.setPosY(zoom * y * (float) (0.05f * firePos));
-        bone.setPosZ(zoom * z * (float) (firePos + 0.3f * firePosZ));
-        bone.setRotX(zoom * rotX * (float) (fireRot + 0.03f * firePosZ) * gripRecoilX * recoil * (float) (1 - 0.75 * zoomTime));
-        bone.setRotY(2 * zoom * rotY * (float) fireRotY * gripRecoilY * recoil * (float) (1 - 0.3 * zoomTime));
-        bone.setRotZ(zoom * rotZ * (float) fireRotZ * gripRecoilY * recoil);
+        bone.setPosZ(zoom * z * (float) (firePos + 0.3f * firePosZ) * (float) (1 - 0.25 * zoomTime));
+        bone.setRotX(zoom * rotX * (float) (fireRot + 0.03f * firePosZ) * gripRecoilX * recoil * (float) (1 - 0.75 * zoomTime) * zoomRecoil);
+        bone.setRotY(2 * zoom * rotY * (float) fireRotY * gripRecoilY * recoil * (float) (1 - 0.3 * zoomTime) * zoomRecoil);
+        bone.setRotZ(zoom * rotZ * (float) fireRotZ * gripRecoilY * recoil * (float) (1 - 0.25 * zoomTime) * zoomRecoil);
     }
 
     private static void handleWeaponShell() {
@@ -1459,7 +1466,7 @@ public class ClientEventHandler {
         }
 
         // 水平后座
-        float newYaw = player.getYRot() - (float) (0.6 * recoilHorizon * pose * times * (0.5 + fireSpread) * recoil * (1 - 0.06 * customWeight) * gripRecoilX * rpm);
+        float newYaw = player.getYRot() - (float) (0.6 * recoilHorizon * pose * times * (0.5 + fireSpread) * recoil * (4 / (customWeight + 4)) * gripRecoilX * rpm);
         player.setYRot(newYaw);
         player.yRotO = player.getYRot();
 
@@ -1467,7 +1474,7 @@ public class ClientEventHandler {
 
         // 竖直后座
         if (0 < recoilTime && recoilTime < 0.5) {
-            float newPitch = (float) (player.getXRot() - 0.02f * gunRecoilX * times * recoil * (1 - 0.06 * customWeight) * gripRecoilY * rpm);
+            float newPitch = (float) (player.getXRot() - 0.02f * gunRecoilX * times * recoil * (4 / (customWeight + 4)) * gripRecoilY * rpm);
             player.setXRot(newPitch);
             player.xRotO = player.getXRot();
         }
@@ -1483,7 +1490,7 @@ public class ClientEventHandler {
         }
 
         if (0 < recoilTime && recoilTime < 2.5) {
-            float newPitch = player.getXRot() - (float) (1.5 * pose * gunRecoilX * (sinRes + Mth.clamp(0.5 - recoilTime, 0, 0.5)) * times * (0.5 + fireSpread) * recoil * (1 - 0.06 * customWeight) * gripRecoilY * rpm);
+            float newPitch = player.getXRot() - (float) (1.5 * pose * gunRecoilX * (sinRes + Mth.clamp(0.5 - recoilTime, 0, 0.5)) * times * (0.5 + fireSpread) * recoil * (4 / (customWeight + 4)) * gripRecoilY * rpm);
             player.setXRot(newPitch);
             player.xRotO = player.getXRot();
         }
@@ -1780,7 +1787,7 @@ public class ClientEventHandler {
         ItemStack stack = entity.getMainHandItem();
         var data = GunData.from(stack);
         double weight = data.get(GunProp.WEIGHT);
-        double speed = 3.2 - (0.13 * weight);
+        double speed = 20 / (weight + 5);
         drawTime = Math.max(drawTime - Math.max(0.2 * speed * times * drawTime, 0.0008), 0);
     }
 

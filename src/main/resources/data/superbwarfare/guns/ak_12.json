@@ -13,7 +13,7 @@
   "DefaultFireMode": "Auto",
   "NormalReloadTime": 52,
   "EmptyReloadTime": 58,
-  "BypassesArmor": 0.23,
+  "BypassesArmor": 0.3,
   "SoundRadius": 12,
   "RPM": 700,
   "AvailableFireModes": ["Semi", "Auto"],
