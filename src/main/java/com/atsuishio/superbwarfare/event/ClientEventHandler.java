@@ -1140,21 +1140,21 @@ public class ClientEventHandler {
                     moveRotZ = Mth.lerp(0.2f * times, moveRotZ, 0) * (1 - zoomTime);
                 }
                 if (entity.isSprinting() && !data.reloading() && firePosTimer == 0 && !ModKeyMappings.FIRE.isDown() && cantSprint == 0 && zoomTime < 0.1) {
-                    sprintBasicRotX = Mth.lerp(0.3f * times / (customWeight + 4), sprintBasicRotX, 1);
-                    sprintBasicRotY = Mth.lerp(0.18f * times / (customWeight + 4), sprintBasicRotY, 1);
-                    sprintBasicRotZ = Mth.lerp(0.3f * times / (customWeight + 4), sprintBasicRotZ, 1);
+                    sprintBasicRotX = Mth.clamp(Mth.lerp(0.3f * times / (customWeight + 4), sprintBasicRotX, 1), 0, 1);
+                    sprintBasicRotY = Mth.clamp(Mth.lerp(0.18f * times / (customWeight + 4), sprintBasicRotY, 1), 0, 1);
+                    sprintBasicRotZ = Mth.clamp(Mth.lerp(0.3f * times / (customWeight + 4), sprintBasicRotZ, 1), 0, 1);
 
-                    sprintBasicPosX = Mth.lerp(0.8f * times / (customWeight + 4), sprintBasicPosX, 1);
-                    sprintBasicPosY = Mth.lerp(0.25f * times / (customWeight + 4), sprintBasicPosY, 1);
-                    sprintBasicPosZ = Mth.lerp(0.8f * times / (customWeight + 4), sprintBasicPosZ, 1);
+                    sprintBasicPosX = Mth.clamp(Mth.lerp(0.8f * times / (customWeight + 4), sprintBasicPosX, 1), 0, 1);
+                    sprintBasicPosY = Mth.clamp(Mth.lerp(0.25f * times / (customWeight + 4), sprintBasicPosY, 1), 0, 1);
+                    sprintBasicPosZ = Mth.clamp(Mth.lerp(0.8f * times / (customWeight + 4), sprintBasicPosZ, 1), 0, 1);
                 } else {
-                    sprintBasicRotX = Mth.lerp(1.4f * times / customWeight, sprintBasicRotX, 0);
-                    sprintBasicRotY = Mth.lerp(0.96f * times / customWeight, sprintBasicRotY, 0);
-                    sprintBasicRotZ = Mth.lerp(1.4f * times / customWeight, sprintBasicRotZ, 0);
+                    sprintBasicRotX = Mth.clamp(Mth.lerp(1.4f * times / customWeight, sprintBasicRotX, 0), 0, 1);
+                    sprintBasicRotY = Mth.clamp(Mth.lerp(0.96f * times / customWeight, sprintBasicRotY, 0), 0, 1);
+                    sprintBasicRotZ = Mth.clamp(Mth.lerp(1.4f * times / customWeight, sprintBasicRotZ, 0), 0, 1);
 
-                    sprintBasicPosX = Mth.lerp(0.8f * times / customWeight, sprintBasicPosX, 0);
-                    sprintBasicPosY = Mth.lerp(0.8f * times / customWeight, sprintBasicPosY, 0);
-                    sprintBasicPosZ = Mth.lerp(0.8f * times / customWeight, sprintBasicPosZ, 0);
+                    sprintBasicPosX = Mth.clamp(Mth.lerp(0.8f * times / customWeight, sprintBasicPosX, 0), 0, 1);
+                    sprintBasicPosY = Mth.clamp(Mth.lerp(0.8f * times / customWeight, sprintBasicPosY, 0), 0, 1);
+                    sprintBasicPosZ = Mth.clamp(Mth.lerp(0.8f * times / customWeight, sprintBasicPosZ, 0), 0, 1);
                 }
             }
 
@@ -1219,7 +1219,7 @@ public class ClientEventHandler {
         float walkRotY = (float) (0.2f * movePosX);
         float walkRotZ = (float) (0.2f * movePosX);
 
-        int i = useCustomAnim? 0 : 1;
+        int i = useCustomAnim ? 0 : 1;
 
         float basicSprintPosX = (float) (sprintBasicPosX * (1.5 + customX)) * i;
         float basicSprintPosY = (float) (sprintBasicPosY * (-2.35 + customY - 8 * AnimationCurves.PARABOLA.apply(sprintBasicPosY))) * i;
@@ -1229,12 +1229,19 @@ public class ClientEventHandler {
         float basicSprintRotY = (float) (sprintBasicRotY * 35.6 * Mth.DEG_TO_RAD) * i;
         float basicSprintRotZ = (float) (sprintBasicRotZ * 34.7 * Mth.DEG_TO_RAD) * i;
 
-        root.setPosX((float) (walkPosX + basicSprintPosX + sprintPosX * i + 20 * drawTime + 9.3f * movePosHorizon) * (float) (1 - 1 * zoomTime));
-        root.setPosY((float) (walkPosY + basicSprintPosY + sprintPosY * i - 40 * drawTime - 2f * velocityY) * (float) (1 - 1 * zoomTime));
-        root.setPosZ((float) (walkPosZ + basicSprintPosZ) * (float) (1 - 1 * zoomTime));
-        root.setRotX((float) (walkRotX + basicSprintRotX - Mth.DEG_TO_RAD * 60 * drawTime + Mth.DEG_TO_RAD * turnRot[0] - 0.15f * velocityY) * (float) (1 - 1 * zoomTime));
-        root.setRotY((float) (walkRotY + basicSprintRotY + (0.2f * sprintBasicPosX * i) + Mth.DEG_TO_RAD * 300 * drawTime + Mth.DEG_TO_RAD * turnRot[1]) * (float) (1 - 1 * zoomTime));
-        root.setRotZ((float) (walkRotZ + basicSprintRotZ + moveRotZ + Mth.DEG_TO_RAD * 90 * drawTime + 2.7f * movePosHorizon + Mth.DEG_TO_RAD * turnRot[2]) * (float) (1 - 1 * zoomTime));
+        float gunPosX = (float) (walkPosX + basicSprintPosX + sprintPosX * i + 20 * drawTime + 9.3f * movePosHorizon) * (float) (1 - 1 * zoomTime);
+        float gunPosY = (float) (walkPosY + basicSprintPosY + sprintPosY * i - 40 * drawTime - 2f * velocityY) * (float) (1 - 1 * zoomTime);
+        float gunPosZ = (walkPosZ + basicSprintPosZ) * (float) (1 - 1 * zoomTime);
+        float gunRotX = (float) (walkRotX + basicSprintRotX - Mth.DEG_TO_RAD * 60 * drawTime + Mth.DEG_TO_RAD * turnRot[0] - 0.15f * velocityY) * (float) (1 - 1 * zoomTime);
+        float gunRotY = (float) (walkRotY + basicSprintRotY + (0.2f * sprintBasicPosX * i) + Mth.DEG_TO_RAD * 300 * drawTime + Mth.DEG_TO_RAD * turnRot[1]) * (float) (1 - 1 * zoomTime);
+        float gunRotZ = (float) (walkRotZ + basicSprintRotZ + moveRotZ + Mth.DEG_TO_RAD * 90 * drawTime + 2.7f * movePosHorizon + Mth.DEG_TO_RAD * turnRot[2]) * (float) (1 - 1 * zoomTime);
+
+        root.setPosX(gunPosX);
+        root.setPosY(gunPosY);
+        root.setPosZ(gunPosZ);
+        root.setRotX(gunRotX);
+        root.setRotY(gunRotY);
+        root.setRotZ(gunRotZ);
     }
 
     private static void handleWeaponZoom(LivingEntity entity) {
@@ -1297,15 +1304,15 @@ public class ClientEventHandler {
             fireRotTimer = 0;
         }
 
-        firePos = MathTool.decayingOscillation(2.5f,2,0.5f, (float) firePosTimer);
-        fireRot = MathTool.decayingOscillation(0.2f,3,0.5f, (float) fireRotTimer) * Mth.sin((float) fireRotTimer);
+        firePos = MathTool.decayingOscillation(2.5f, 2, 0.5f, (float) firePosTimer);
+        fireRot = MathTool.decayingOscillation(0.2f, 3, 0.5f, (float) fireRotTimer) * Mth.sin((float) fireRotTimer);
 
         if (fireRot < 0) {
             fireRot *= 0.5;
         }
 
-        fireRotZ = MathTool.decayingOscillation((float) (1f * recoilHorizon),3,0.5f, (float) fireRotTimer);
-        fireRotY = MathTool.decayingOscillation((float) (0.1f * recoilHorizon),3,0.5f, (float) fireRotTimer);
+        fireRotZ = MathTool.decayingOscillation((float) (1f * recoilHorizon), 3, 0.5f, (float) fireRotTimer);
+        fireRotY = MathTool.decayingOscillation((float) (0.1f * recoilHorizon), 3, 0.5f, (float) fireRotTimer);
 
         if (entity instanceof Player player && player.isSpectator()) return;
 
@@ -1313,7 +1320,7 @@ public class ClientEventHandler {
         float pitch = event.getPitch();
 
         if (0 < fireRotTimer) {
-            float shake = (float) (MathTool.decayingOscillation(0.5f,3,0.75f, (float) fireRotTimer) * (1 + amplitude) * (float) (DisplayConfig.WEAPON_SCREEN_SHAKE.get() / 100.0));
+            float shake = (float) (MathTool.decayingOscillation(0.5f, 3, 0.75f, (float) fireRotTimer) * (1 + amplitude) * (float) (DisplayConfig.WEAPON_SCREEN_SHAKE.get() / 100.0));
             if (recoilY > 0) {
                 event.setYaw(yaw - 0.5f * shake);
                 event.setPitch(pitch + shake);
