@@ -70,6 +70,9 @@ public class ModTags {
         // 炮射霰弹会破坏的反馈过
         public static final TagKey<Block> CANNON_SHOT_CAN_DESTROY = tag("cannon_shot_can_destroy");
 
+        // 辅助降落可识别的方块
+        public static final TagKey<Block> AUTO_LANDING = tag("auto_landing");
+
         private static TagKey<Block> tag(String name) {
             return BlockTags.create(Mod.loc(name));
         }
