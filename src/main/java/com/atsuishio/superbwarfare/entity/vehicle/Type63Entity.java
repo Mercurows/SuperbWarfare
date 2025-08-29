@@ -29,6 +29,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.entity.EntityTypeTest;
 import net.minecraft.world.phys.AABB;
@@ -226,8 +227,8 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
             }
         }
 
-        if (stack.is(ModTags.Items.CROWBAR)) {
-            // 撬棍发射
+        if (stack.is(ModTags.Items.CROWBAR) || stack.is(Items.FLINT_AND_STEEL)) {
+            // 发射
             if (lookingAtBarrel(player)) {
                 // 精准发射
                 for (int i = 0; i < this.barrel.length; i++) {
