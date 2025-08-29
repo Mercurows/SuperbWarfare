@@ -18,6 +18,7 @@ import com.mojang.math.Axis;
 import it.unimi.dsi.fastutil.Pair;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -250,7 +251,7 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
                 if (passenger2 == null && passenger3 == null && passenger4 == null) {
                     this.entityData.set(POWER, this.entityData.get(POWER) * 0.99f);
                 }
-            } else if (passenger instanceof Player) {
+            } else if (passenger instanceof Player player) {
                 delta_x = ((this.onGround()) ? 0 : 1.5f) * entityData.get(MOUSE_SPEED_Y) * this.entityData.get(PROPELLER_ROT);
                 delta_y = Mth.clamp((this.onGround() ? 0.1f : 2f) * entityData.get(MOUSE_SPEED_X) * this.entityData.get(PROPELLER_ROT) + (this.entityData.get(ENGINE2_DAMAGED) ? 25 : 0) * this.entityData.get(PROPELLER_ROT), -10f, 10f);
                 if (!entityData.get(LANDING_INPUT_DOWN) || findNearestLandingPos(30) == null) {
@@ -270,6 +271,10 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
                 this.setYRot(this.getYRot() + delta_y);
                 if (findNearestLandingPos(30) != null && !onGround() && entityData.get(LANDING_INPUT_DOWN)) {
                     this.updateAutoLanding(findNearestLandingPos(30));
+                }
+
+                if (level().isClientSide && findNearestLandingPos(30) != null && !onGround()) {
+                    player.displayClientMessage(Component.translatable("tips.superbwarfare.press_s_to_landing"), true);
                 }
             }
 

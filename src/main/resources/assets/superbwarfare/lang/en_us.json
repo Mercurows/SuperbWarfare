@@ -653,6 +653,7 @@
   "tips.superbwarfare.ballistics.warn2": "Use Lofted Trajectory Please",
   "tips.superbwarfare.ballistics.warn3": "Exceeding maximum elevation",
   "tips.superbwarfare.mount.onboard": "Press %1$s to Dismount, Hold %1$s to Ejection",
+  "tips.superbwarfare.press_s_to_landing": "Hold S to assist helicopter landing",
 
   "tips.superbwarfare.target.yaw": "Target Yaw: ",
   "tips.superbwarfare.target.pitch": "Target Pitch: ",
