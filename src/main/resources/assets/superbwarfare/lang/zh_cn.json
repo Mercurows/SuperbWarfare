@@ -653,6 +653,7 @@
   "tips.superbwarfare.ballistics.warn2": "请使用传统弹道",
   "tips.superbwarfare.ballistics.warn3": "超过最大仰角",
   "tips.superbwarfare.mount.onboard": "按下%1$s来脱离，按住%1$s弹射",
+  "tips.superbwarfare.press_s_to_landing": "按住S以辅助直升机降落",
 
   "tips.superbwarfare.target.yaw": "目标偏航角: ",
   "tips.superbwarfare.target.pitch": "目标俯仰角: ",
