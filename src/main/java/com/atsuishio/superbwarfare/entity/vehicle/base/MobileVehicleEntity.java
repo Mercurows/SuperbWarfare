@@ -141,12 +141,6 @@ public abstract class MobileVehicleEntity extends VehicleEntity implements Contr
     public float flap3RotO;
     public float gearRotO;
 
-    // 直升机辅助降落这一块
-    private final float MAX_TILT_ANGLE = 15.0f; // 最大倾斜角度(度)
-
-    private float positionTolerance = 0.1f; // 位置容差
-    private float tiltSmoothingFactor = 0.1f; // 倾斜平滑因子
-
     public MobileVehicleEntity(EntityType<?> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
     }
@@ -444,7 +438,6 @@ public abstract class MobileVehicleEntity extends VehicleEntity implements Contr
     }
 
     //用于履带的地形适应
-
     public float[] terrainCompactTrackValue(float w, float l) {
         Matrix4f transform = this.getWheelsTransform(1);
 
@@ -1193,6 +1186,7 @@ public abstract class MobileVehicleEntity extends VehicleEntity implements Contr
 
     /**
      * 查找实体下方半球区域内最近的降落辅助方块位置
+     *
      * @param radius 搜索半径
      * @return 钻石块顶面位置，如果未找到则返回null
      */
@@ -1210,7 +1204,7 @@ public abstract class MobileVehicleEntity extends VehicleEntity implements Contr
                         BlockPos checkPos = entityPos.offset(x, y, z);
 
                         // 检查是否为降落辅助方块
-                        if (world.getBlockState(checkPos).getBlock() == ModBlocks.CHARGING_STATION.get() || world.getBlockState(checkPos).getBlock() == ModBlocks.CREATIVE_CHARGING_STATION.get()) {
+                        if (world.getBlockState(checkPos).is(ModTags.Blocks.AUTO_LANDING)) {
                             landingBlocks.add(checkPos);
                         }
                     }
@@ -1247,6 +1241,10 @@ public abstract class MobileVehicleEntity extends VehicleEntity implements Contr
                 horizontalOffset.normalize() : Vec3.ZERO;
 
         // 如果已经非常接近目标点，保持水平姿态
+        // 位置容差
+        float positionTolerance = 0.1f;
+        // 倾斜平滑因子
+        float tiltSmoothingFactor = 0.1f;
         if (horizontalDistance < positionTolerance) {
             // 平滑过渡到水平姿态
             this.setXRot(lerpAngle(this.getXRot(), 0, tiltSmoothingFactor));
@@ -1255,11 +1253,14 @@ public abstract class MobileVehicleEntity extends VehicleEntity implements Contr
         }
 
         // 计算需要的倾斜角度 (与距离成正比，但有最大限制)
-        float targetTilt = (float) Math.min(MAX_TILT_ANGLE, horizontalDistance * 2);
+        // 直升机辅助降落这一块
+        // 最大倾斜角度(度)
+        float maxTiltAngle = 15.0f;
+        float targetTilt = (float) Math.min(maxTiltAngle, horizontalDistance * 2);
 
         // 将世界方向转换为本地倾斜方向
         // 需要考虑直升机的当前偏航角(yRot)
-        float yawRad = (float) Math.toRadians(-this.getYRot());
+        float yawRad = Math.toRadians(-this.getYRot());
         Vec3 localDirection = new Vec3(
                 horizontalDirection.x * Math.cos(yawRad) - horizontalDirection.z * Math.sin(yawRad),
                 0,
@@ -1273,7 +1274,6 @@ public abstract class MobileVehicleEntity extends VehicleEntity implements Contr
         // 平滑过渡到目标姿态
         this.setXRot(lerpAngle(this.getXRot(), -targetXRot, tiltSmoothingFactor));
         this.setZRot(lerpAngle(this.getRoll(), -targetZRot, tiltSmoothingFactor));
-
     }
 
     // 角度线性插值方法

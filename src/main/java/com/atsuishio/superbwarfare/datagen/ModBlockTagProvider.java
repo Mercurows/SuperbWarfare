@@ -62,6 +62,8 @@ public class ModBlockTagProvider extends BlockTagsProvider {
                 .addTags(ModTags.Blocks.BULLET_CAN_DESTROY, BlockTags.LEAVES, BlockTags.BAMBOO_BLOCKS, BlockTags.WOOL,
                         BlockTags.SIGNS, BlockTags.LOGS, BlockTags.PLANKS, BlockTags.SAPLINGS)
                 .add(Blocks.LANTERN, Blocks.SOUL_LANTERN, Blocks.CHAIN);
+        this.tag(ModTags.Blocks.AUTO_LANDING)
+                .add(ModBlocks.CHARGING_STATION.get(), ModBlocks.CREATIVE_CHARGING_STATION.get());
 
         this.tag(Tags.Blocks.ORES).addTags(cTag("ores/lead"), cTag("ores/tungsten"), cTag("ores/silver"));
         this.tag(cTag("ores/lead")).add(ModBlocks.GALENA_ORE.get(), ModBlocks.DEEPSLATE_GALENA_ORE.get());
