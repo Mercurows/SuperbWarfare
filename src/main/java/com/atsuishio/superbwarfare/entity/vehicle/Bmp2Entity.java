@@ -22,6 +22,7 @@ import com.atsuishio.superbwarfare.tools.Ammo;
 import com.atsuishio.superbwarfare.tools.InventoryTool;
 import com.atsuishio.superbwarfare.tools.OBB;
 import com.atsuishio.superbwarfare.tools.VectorTool;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -50,8 +51,8 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.*;
 import org.joml.Math;
+import org.joml.*;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -581,8 +582,8 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
 
     @OnlyIn(Dist.CLIENT)
     @Override
-    public void renderFirstPersonOverlay(GuiGraphics guiGraphics, Font font, Player player, int screenWidth, int screenHeight, float scale) {
-        super.renderFirstPersonOverlay(guiGraphics, font, player, screenWidth, screenHeight, scale);
+    public void renderFirstPersonOverlay(GuiGraphics guiGraphics, PoseStack poseStack, Font font, Player player, int screenWidth, int screenHeight, float scale, int color) {
+        super.renderFirstPersonOverlay(guiGraphics, poseStack, font, player, screenWidth, screenHeight, scale, color);
 
         if (this.getWeaponIndex(0) == 0) {
             double heat = 1 - this.getEntityData().get(HEAT) / 100.0F;

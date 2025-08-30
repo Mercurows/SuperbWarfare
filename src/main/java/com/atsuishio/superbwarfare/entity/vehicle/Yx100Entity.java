@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.entity.vehicle;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
 import com.atsuishio.superbwarfare.entity.projectile.CannonShellEntity;
@@ -22,6 +23,7 @@ import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage;
 import com.atsuishio.superbwarfare.tools.*;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.CameraType;
@@ -61,8 +63,8 @@ import net.minecraftforge.network.PlayMessages;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.*;
 import org.joml.Math;
+import org.joml.*;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -73,8 +75,6 @@ import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.List;
-
-import static com.atsuishio.superbwarfare.client.RenderHelper.preciseBlit;
 
 public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEntity, LandArmorEntity, WeaponVehicleEntity, OBBEntity {
 
@@ -1083,7 +1083,7 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
 
     @OnlyIn(Dist.CLIENT)
     @Override
-    public void renderFirstPersonOverlay(GuiGraphics guiGraphics, Font font, Player player, int screenWidth, int screenHeight, float scale) {
+    public void renderFirstPersonOverlay(GuiGraphics guiGraphics, PoseStack poseStack, Font font, Player player, int screenWidth, int screenHeight, float scale, int color) {
         float minWH = (float) Math.min(screenWidth, screenHeight);
         float scaledMinWH = Mth.floor(minWH * scale);
         float centerW = ((screenWidth - scaledMinWH) / 2);
@@ -1098,23 +1098,23 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
 
         // 准心
         if (this.getWeapon(0).mainGun) {
-            preciseBlit(guiGraphics, Mod.loc("textures/screens/land/tank_cannon_cross.png"), centerW, centerH, 0, 0.0F, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH);
+            RenderHelper.blit(poseStack, Mod.loc("textures/screens/land/tank_cannon_cross.png"), centerW, centerH, 0, 0.0F, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH, color);
         } else  {
-            preciseBlit(guiGraphics, Mod.loc("textures/screens/land/lav_gun_cross.png"), centerW, centerH, 0, 0.0F, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH);
+            RenderHelper.blit(poseStack, Mod.loc("textures/screens/land/lav_gun_cross.png"), centerW, centerH, 0, 0.0F, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH, color);
         }
 
         // 武器名称
         if (this.getWeaponIndex(0) == 0) {
-            guiGraphics.drawString(font, Component.literal("AP SHELL  " + this.getAmmoCount(player) + " " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getEntityData().get(AMMO))), screenWidth / 2 - 33, screenHeight - 65, 0x66FF00, false);
+            guiGraphics.drawString(font, Component.literal("AP SHELL  " + this.getAmmoCount(player) + " " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getEntityData().get(AMMO))), screenWidth / 2 - 33, screenHeight - 65, color, false);
         } else if (this.getWeaponIndex(0) == 1) {
-            guiGraphics.drawString(font, Component.literal("HE SHELL  " + this.getAmmoCount(player) + " " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getEntityData().get(AMMO))), screenWidth / 2 - 33, screenHeight - 65, 0x66FF00, false);
+            guiGraphics.drawString(font, Component.literal("HE SHELL  " + this.getAmmoCount(player) + " " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getEntityData().get(AMMO))), screenWidth / 2 - 33, screenHeight - 65, color, false);
         } else if (this.getWeaponIndex(0) == 2) {
-            guiGraphics.drawString(font, Component.literal("CM SHELL  " + this.getAmmoCount(player) + " " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getEntityData().get(AMMO))), screenWidth / 2 - 33, screenHeight - 65, 0x66FF00, false);
+            guiGraphics.drawString(font, Component.literal("CM SHELL  " + this.getAmmoCount(player) + " " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getEntityData().get(AMMO))), screenWidth / 2 - 33, screenHeight - 65, color, false);
         } else if (this.getWeaponIndex(0) == 3) {
-            guiGraphics.drawString(font, Component.literal("GRAPESHOT " + this.getAmmoCount(player) + " " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getEntityData().get(AMMO))), screenWidth / 2 - 33, screenHeight - 65, 0x66FF00, false);
+            guiGraphics.drawString(font, Component.literal("GRAPESHOT " + this.getAmmoCount(player) + " " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getEntityData().get(AMMO))), screenWidth / 2 - 33, screenHeight - 65, color, false);
         } else if (this.getWeaponIndex(0) == 4) {
             double heat = 1 - this.getEntityData().get(COAX_HEAT) / 100.0F;
-            guiGraphics.drawString(font, Component.literal(" 12.7MM HMG " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getAmmoCount(player))), screenWidth / 2 - 33, screenHeight - 65, Mth.hsvToRgb((float) heat / 3.745318352059925F, 1.0F, 1.0F), false);
+            guiGraphics.drawString(font, Component.literal(" 12.7MM HMG " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getAmmoCount(player))), screenWidth / 2 - 33, screenHeight - 65, Mth.hsvToRgb((float) heat / (1 / MathTool.rgbToHsv(color)[0]), MathTool.rgbToHsv(color)[1], MathTool.rgbToHsv(color)[2]), false);
         }
     }
 
@@ -1130,6 +1130,7 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
         } else if (this.getWeaponIndex(0) == 3) {
             guiGraphics.drawString(font, Component.literal("GRAPESHOT" + this.getAmmoCount(player) + " " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getEntityData().get(AMMO))), 30, -9, -1, false);
         } else if (this.getWeaponIndex(0) == 4) {
+            //TODO 变色逻辑不对，要逐渐过渡到红色
             double heat2 = this.getEntityData().get(COAX_HEAT) / 100.0F;
             guiGraphics.drawString(font, Component.literal("12.7MM HMG " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getAmmoCount(player))), 30, -9, Mth.hsvToRgb(0F, (float) heat2, 1.0F), false);
         }
@@ -1242,5 +1243,10 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
         Vector4f worldPositionT2 = transformPosition(transformT, 0, 0.40625f, 1.65625f);
         this.obbTurret2.center().set(new Vector3f(worldPositionT2.x, worldPositionT2.y, worldPositionT2.z));
         this.obbTurret2.setRotation(VectorTool.combineRotationsTurret(1, this));
+    }
+
+    @Override
+    public int getHudColor() {
+        return 0x00FFF6;
     }
 }

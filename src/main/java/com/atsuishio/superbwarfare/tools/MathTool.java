@@ -1,5 +1,7 @@
 package com.atsuishio.superbwarfare.tools;
 
+import java.awt.*;
+
 public class MathTool {
     /**
      * 大小逐渐减弱到0的震荡函数
@@ -37,5 +39,14 @@ public class MathTool {
         // 将tick转换为秒（Minecraft中20ticks=1秒）
         float elapsedTime = ticks / 20.0f;
         return decayingOscillation(a, t, c, elapsedTime);
+    }
+
+    public static float[] rgbToHsv(int rgb) {
+        int r = (rgb >> 16) & 0xFF; // 提取红色分量
+        int g = (rgb >> 8) & 0xFF;  // 提取绿色分量
+        int b = rgb & 0xFF;         // 提取蓝色分量
+        float[] hsv = new float[3];
+        Color.RGBtoHSB(r, g, b, hsv); // 转换并填充 hsv 数组
+        return hsv; // 返回格式: [H（0-1）, S（0-1）, V（0-1）]
     }
 }

@@ -1290,4 +1290,8 @@ public abstract class MobileVehicleEntity extends VehicleEntity implements Contr
 
         return current + diff * factor;
     }
+
+    public int getHudColor() {
+        return 0x66FF00;
+    }
 }
