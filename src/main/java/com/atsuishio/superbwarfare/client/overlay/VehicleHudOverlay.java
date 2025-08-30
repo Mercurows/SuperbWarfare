@@ -270,8 +270,8 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
                 mobileVehicle.renderFirstPersonOverlay(guiGraphics, poseStack, mc.font, player, w, h, scale, color);
 
                 // 血量
-                double heal = mobileVehicle.getHealth() / mobileVehicle.getMaxHealth();
-                guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(FormatTool.format0D(100 * heal)), w / 2 - 165, h / 2 - 46, Mth.hsvToRgb((float) heal / (1 / MathTool.rgbToHsv(color)[0]), MathTool.rgbToHsv(color)[1], MathTool.rgbToHsv(color)[2]), false);
+                int heal = (int) (100 - (100 * mobileVehicle.getHealth() / mobileVehicle.getMaxHealth()));
+                guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(FormatTool.format0D(100 * heal)), w / 2 - 165, h / 2 - 46, MathTool.getGradientColor(color, 0xFF0000, bodyHeal, 2), false);
 
                 //诱饵
                 guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("SMOKE " + mobileVehicle.getEntityData().get(DECOY_COUNT)), w / 2 - 165, h / 2 - 36, color, false);
