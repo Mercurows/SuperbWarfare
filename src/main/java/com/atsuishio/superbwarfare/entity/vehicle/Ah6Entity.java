@@ -768,6 +768,11 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
     }
 
     @Override
+    public int getHudColor() {
+        return super.getHudColor();
+    }
+
+    @Override
     public @Nullable ResourceLocation getVehicleItemIcon() {
         return Mod.loc("textures/gui/vehicle/type/aircraft.png");
     }

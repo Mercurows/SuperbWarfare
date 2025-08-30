@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.entity.vehicle;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ContainerMobileVehicleEntity;
@@ -66,7 +67,6 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 import java.util.stream.StreamSupport;
 
-import static com.atsuishio.superbwarfare.client.RenderHelper.preciseBlit;
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 import static com.atsuishio.superbwarfare.tools.SeekTool.baseFilter;
 
@@ -645,7 +645,7 @@ public class PrismTankEntity extends ContainerMobileVehicleEntity implements Geo
         float centerH = ((screenHeight - scaledMinWH) / 2);
 
         // 准心
-        preciseBlit(guiGraphics, Mod.loc("textures/screens/land/lav_missile_cross.png"), centerW, centerH, 0, 0.0F, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH);
+        RenderHelper.blit(poseStack, Mod.loc("textures/screens/land/lav_missile_cross.png"), centerW, centerH, 0, 0.0F, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH, color);
 
         // 武器名称+过热
         double heat = 1 - this.getEntityData().get(HEAT) / 100.0F;
@@ -720,6 +720,11 @@ public class PrismTankEntity extends ContainerMobileVehicleEntity implements Geo
     @Override
     public float getEngineMaxHealth() {
         return 150;
+    }
+
+    @Override
+    public int getHudColor() {
+        return 0x00FFF6;
     }
 
     @Override

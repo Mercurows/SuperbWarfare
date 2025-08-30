@@ -66,6 +66,7 @@ public class AircraftOverlay implements IGuiOverlay {
         if (player.getVehicle() instanceof AircraftEntity aircraftEntity && aircraftEntity instanceof MobileVehicleEntity mobileVehicle && aircraftEntity.isDriver(player) && player.getVehicle() instanceof WeaponVehicleEntity weaponVehicle) {
             poseStack.pushPose();
 
+            int color = mobileVehicle.getHudColor();
             RenderSystem.disableDepthTest();
             RenderSystem.depthMask(false);
             RenderSystem.enableBlend();
@@ -134,43 +135,43 @@ public class AircraftOverlay implements IGuiOverlay {
                     RenderSystem.setShaderColor(1, 1, 1, 1);
 
                     if (mobileVehicle instanceof A10Entity && weaponVehicle.getWeaponIndex(0) == 3) {
-                        preciseBlit(guiGraphics, Mod.loc("textures/screens/aircraft/hud_base_missile.png"), x - 160, y - 160, 0, 0, 320, 320, 320, 320);
+                        RenderHelper.blit(poseStack, Mod.loc("textures/screens/aircraft/hud_base_missile.png"), x - 160, y - 160, 0, 0, 320, 320, 320, 320, color);
                     } else {
-                        preciseBlit(guiGraphics, Mod.loc("textures/screens/aircraft/hud_base.png"), x - 160, y - 160, 0, 0, 320, 320, 320, 320);
+                        RenderHelper.blit(poseStack, Mod.loc("textures/screens/aircraft/hud_base.png"), x - 160, y - 160, 0, 0, 320, 320, 320, 320, color);
                     }
 
                     //指南针
-                    preciseBlit(guiGraphics, Mod.loc("textures/screens/compass.png"), x - 128, y - 122, 128 + ((float) 64 / 45 * mobileVehicle.getYRot()), 0, 256, 16, 512, 16);
-                    preciseBlit(guiGraphics, Mod.loc("textures/screens/aircraft/compass_ind.png"), x - 4, y - 130, 0, 0, 8, 8, 8, 8);
+                    RenderHelper.blit(poseStack, Mod.loc("textures/screens/compass.png"), x - 128, y - 122, 128 + ((float) 64 / 45 * mobileVehicle.getYRot()), 0, 256, 16, 512, 16, color);
+                    RenderHelper.blit(poseStack, Mod.loc("textures/screens/aircraft/compass_ind.png"), x - 4, y - 130, 0, 0, 8, 8, 8, 8, color);
 
                     //滚转指示
                     poseStack.pushPose();
                     poseStack.rotateAround(Axis.ZP.rotationDegrees(aircraftEntity.getRotZ(partialTick)), x, y + 48, 0);
-                    preciseBlit(guiGraphics, Mod.loc("textures/screens/helicopter/roll_ind.png"), x - 4, y + 144, 0, 0, 8, 8, 8, 8);
+                    RenderHelper.blit(poseStack, Mod.loc("textures/screens/helicopter/roll_ind.png"), x - 4, y + 144, 0, 0, 8, 8, 8, 8, color);
                     poseStack.popPose();
 
                     //时速
                     guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(FormatTool.format0D(mobileVehicle.getDeltaMovement().dot(mobileVehicle.getViewVector(1)) * 72)),
-                            (int) x - 105, (int) y - 61, 0x66FF00, false);
+                            (int) x - 105, (int) y - 61, color, false);
                     //高度
                     guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(FormatTool.format0D(mobileVehicle.getY())),
-                            (int) x + 111 - 36, (int) y - 61, 0x66FF00, false);
+                            (int) x + 111 - 36, (int) y - 61, color, false);
                     //框
-                    preciseBlit(guiGraphics, Mod.loc("textures/screens/helicopter/speed_frame.png"), x - 108, y - 64, 0, 0, 36, 12, 36, 12);
-                    preciseBlit(guiGraphics, Mod.loc("textures/screens/helicopter/speed_frame.png"), x + 108 - 36, y - 64, 0, 0, 36, 12, 36, 12);
+                    RenderHelper.blit(poseStack, Mod.loc("textures/screens/helicopter/speed_frame.png"), x - 108, y - 64, 0, 0, 36, 12, 36, 12, color);
+                    RenderHelper.blit(poseStack, Mod.loc("textures/screens/helicopter/speed_frame.png"), x + 108 - 36, y - 64, 0, 0, 36, 12, 36, 12, color);
                     //垂直速度
-                    guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(FormatTool.DECIMAL_FORMAT_1ZZ.format(lerpVy * 20)), (int) x - 96, (int) y + 60, 0x66FF00, false);
+                    guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(FormatTool.DECIMAL_FORMAT_1ZZ.format(lerpVy * 20)), (int) x - 96, (int) y + 60, color, false);
                     //加速度
                     lerpG = (float) Mth.lerp(0.1f * partialTick, lerpG, mobileVehicle.acceleration / 9.8);
-                    guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("M"), (int) x - 105, (int) y + 70, 0x66FF00, false);
-                    guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("0.2"), (int) x - 96, (int) y + 70, 0x66FF00, false);
-                    guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("G"), (int) x - 105, (int) y + 78, 0x66FF00, false);
-                    guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(FormatTool.DECIMAL_FORMAT_1ZZ.format(lerpG)), (int) x - 96, (int) y + 78, 0x66FF00, false);
+                    guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("M"), (int) x - 105, (int) y + 70, color, false);
+                    guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("0.2"), (int) x - 96, (int) y + 70, color, false);
+                    guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("G"), (int) x - 105, (int) y + 78, color, false);
+                    guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(FormatTool.DECIMAL_FORMAT_1ZZ.format(lerpG)), (int) x - 96, (int) y + 78, color, false);
 
                     // 热诱弹
-                    guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("IR FLARES " + aircraftEntity.getDecoy()), (int) x + 72, (int) y, 0x66FF00, false);
+                    guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("IR FLARES " + aircraftEntity.getDecoy()), (int) x + 72, (int) y, color, false);
 
-                    guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("TGT"), (int) x + 76, (int) y + 78, 0x66FF00, false);
+                    guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("TGT"), (int) x + 76, (int) y + 78, color, false);
 
                     if (mobileVehicle instanceof A10Entity a10Entity) {
                         if (weaponVehicle.getWeaponIndex(0) == 0) {
@@ -185,27 +186,27 @@ public class AircraftOverlay implements IGuiOverlay {
                         } else if (weaponVehicle.getWeaponIndex(0) == 1) {
                             String name = "70MM ROCKET";
                             int width = Minecraft.getInstance().font.width(name);
-                            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(name), (int) x - width / 2, (int) y + 67, 0x66FF00, false);
+                            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(name), (int) x - width / 2, (int) y + 67, color, false);
 
                             String count = String.valueOf(aircraftEntity.getAmmoCount(player));
                             int width2 = Minecraft.getInstance().font.width(count);
-                            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(count), (int) x - width2 / 2, (int) y + 76, 0x66FF00, false);
+                            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(count), (int) x - width2 / 2, (int) y + 76, color, false);
                         } else if (weaponVehicle.getWeaponIndex(0) == 2) {
                             String name = "MK82 BOMB";
                             int width = Minecraft.getInstance().font.width(name);
-                            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(name), (int) x - width / 2, (int) y + 67, 0x66FF00, false);
+                            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(name), (int) x - width / 2, (int) y + 67, color, false);
 
                             String count = String.valueOf(aircraftEntity.getAmmoCount(player));
                             int width2 = Minecraft.getInstance().font.width(count);
-                            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(count), (int) x - width2 / 2, (int) y + 76, 0x66FF00, false);
+                            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(count), (int) x - width2 / 2, (int) y + 76, color, false);
                         } else if (weaponVehicle.getWeaponIndex(0) == 3) {
                             String name = "AGM-65";
                             int width = Minecraft.getInstance().font.width(name);
-                            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(name), (int) x - width / 2, (int) y + 67, 0x66FF00, false);
+                            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(name), (int) x - width / 2, (int) y + 67, color, false);
 
                             String count = String.valueOf(aircraftEntity.getAmmoCount(player));
                             int width2 = Minecraft.getInstance().font.width(count);
-                            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(count), (int) x - width2 / 2, (int) y + 76, 0x66FF00, false);
+                            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(count), (int) x - width2 / 2, (int) y + 76, color, false);
                         }
                     }
 
@@ -221,8 +222,8 @@ public class AircraftOverlay implements IGuiOverlay {
 
                     poseStack.rotateAround(Axis.ZP.rotationDegrees(-aircraftEntity.getRotZ(partialTick)), x, y, 0);
                     float pitch = aircraftEntity.getRotX(partialTick);
-                    preciseBlit(guiGraphics, Mod.loc("textures/screens/aircraft/hud_line.png"), x - 96 + diffY, y - 128, 0, 448 + 4.10625f * pitch, 192, 256, 192, 1152);
-                    preciseBlit(guiGraphics, Mod.loc("textures/screens/aircraft/hud_ind.png"), x - 18 + diffY, y - 12, 0, 0, 36, 24, 36, 24);
+                    RenderHelper.blit(poseStack, Mod.loc("textures/screens/aircraft/hud_line.png"), x - 96 + diffY, y - 128, 0, 448 + 4.10625f * pitch, 192, 256, 192, 1152, color);
+                    RenderHelper.blit(poseStack, Mod.loc("textures/screens/aircraft/hud_ind.png"), x - 18 + diffY, y - 12, 0, 0, 36, 24, 36, 24, color);
                     poseStack.popPose();
 
                     // 能量警告
@@ -253,9 +254,9 @@ public class AircraftOverlay implements IGuiOverlay {
                         RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
                         RenderSystem.setShaderColor(1, 1, 1, 1);
 
-                        preciseBlit(guiGraphics, Mod.loc("textures/screens/aircraft/hud_base2.png"), x - 72 + diffY, y - 72 + diffX, 0, 0, 144, 144, 144, 144);
+                        RenderHelper.blit(poseStack, Mod.loc("textures/screens/aircraft/hud_base2.png"), x - 72 + diffY, y - 72 + diffX, 0, 0, 144, 144, 144, 144, color);
 
-                        preciseBlit(guiGraphics, Mod.loc("textures/screens/aircraft/crosshair_ind.png"), x - 16, y - 16, 0, 0, 32, 32, 32, 32);
+                        RenderHelper.blit(poseStack, Mod.loc("textures/screens/aircraft/crosshair_ind.png"), x - 16, y - 16, 0, 0, 32, 32, 32, 32, color);
                         renderKillIndicator(guiGraphics, x - 7.5f + (float) (2 * (Math.random() - 0.5f)), y - 7.5f + (float) (2 * (Math.random() - 0.5f)));
                     } else if (mc.options.getCameraType() == CameraType.THIRD_PERSON_BACK) {
                         poseStack.pushPose();

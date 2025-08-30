@@ -45,8 +45,8 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.*;
 import org.joml.Math;
+import org.joml.*;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -1013,6 +1013,11 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
     @Override
     public boolean isEnclosed(int index) {
         return true;
+    }
+
+    @Override
+    public int getHudColor() {
+       return super.getHudColor();
     }
 
     @OnlyIn(Dist.CLIENT)
