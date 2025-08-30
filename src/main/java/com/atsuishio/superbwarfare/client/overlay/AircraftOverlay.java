@@ -182,14 +182,14 @@ public class AircraftOverlay implements LayeredDraw.Layer {
 
                     if (mobileVehicle instanceof A10Entity a10Entity) {
                         if (weaponVehicle.getWeaponIndex(0) == 0) {
-                            double heat = 1 - a10Entity.getEntityData().get(HEAT) / 100.0F;
+                            int heat = a10Entity.getEntityData().get(HEAT);
                             String name = "30MM CANNON";
                             int width = Minecraft.getInstance().font.width(name);
-                            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(name), (int) x - width / 2, (int) y + 67, Mth.hsvToRgb((float) heat / 3.745318352059925F, 1.0F, 1.0F), false);
+                            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(name), (int) x - width / 2, (int) y + 67, MathTool.getGradientColor(color, 0xFF0000, heat, 2), false);
 
                             String count = InventoryTool.hasCreativeAmmoBox(player) ? "∞" : String.valueOf(aircraftEntity.getAmmoCount(player));
                             int width2 = Minecraft.getInstance().font.width(count);
-                            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(count), (int) x - width2 / 2, (int) y + 76, Mth.hsvToRgb((float) heat / 3.745318352059925F, 1.0F, 1.0F), false);
+                            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(count), (int) x - width2 / 2, (int) y + 76, MathTool.getGradientColor(color, 0xFF0000, heat, 2), false);
                         } else if (weaponVehicle.getWeaponIndex(0) == 1) {
                             String name = "70MM ROCKET";
                             int width = Minecraft.getInstance().font.width(name);

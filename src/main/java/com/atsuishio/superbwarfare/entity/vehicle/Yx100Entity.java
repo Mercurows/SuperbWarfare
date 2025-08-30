@@ -1099,8 +1099,8 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
         } else if (this.getWeaponIndex(0) == 3) {
             guiGraphics.drawString(font, Component.literal("GRAPESHOT " + this.getAmmoCount(player) + " " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getEntityData().get(AMMO))), screenWidth / 2 - 33, screenHeight - 65, color, false);
         } else if (this.getWeaponIndex(0) == 4) {
-            double heat = 1 - this.getEntityData().get(COAX_HEAT) / 100.0F;
-            guiGraphics.drawString(font, Component.literal(" 12.7MM HMG " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getAmmoCount(player))), screenWidth / 2 - 33, screenHeight - 65, Mth.hsvToRgb((float) heat / (1 / MathTool.rgbToHsv(color)[0]), MathTool.rgbToHsv(color)[1], MathTool.rgbToHsv(color)[2]), false);
+            int heat = this.getEntityData().get(COAX_HEAT);
+            guiGraphics.drawString(font, Component.literal(" 12.7MM HMG " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getAmmoCount(player))), screenWidth / 2 - 33, screenHeight - 65, MathTool.getGradientColor(color, 0xFF0000, heat, 2), false);
         }
     }
 
@@ -1116,7 +1116,6 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
         } else if (this.getWeaponIndex(0) == 3) {
             guiGraphics.drawString(font, Component.literal("GRAPESHOT" + this.getAmmoCount(player) + " " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getEntityData().get(AMMO))), 30, -9, -1, false);
         } else if (this.getWeaponIndex(0) == 4) {
-            //TODO 变色逻辑不对，要逐渐过渡到红色
             double heat2 = this.getEntityData().get(COAX_HEAT) / 100.0F;
             guiGraphics.drawString(font, Component.literal("12.7MM HMG " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getAmmoCount(player))), 30, -9, Mth.hsvToRgb(0F, (float) heat2, 1.0F), false);
         }
