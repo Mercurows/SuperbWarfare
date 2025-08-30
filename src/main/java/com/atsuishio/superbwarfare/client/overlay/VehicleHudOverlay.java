@@ -44,7 +44,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import static com.atsuishio.superbwarfare.client.RenderHelper.preciseBlit;
 import static com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay.*;
 import static com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity.DECOY_COUNT;
-import static com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.TURRET_HEALTH;
+import static com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.*;
 
 @OnlyIn(Dist.CLIENT)
 public class VehicleHudOverlay implements IGuiOverlay {
@@ -186,9 +186,8 @@ public class VehicleHudOverlay implements IGuiOverlay {
 
                 // 炮塔
                 ResourceLocation barrel = Mod.loc("textures/screens/land/line.png");
-                //TODO 变色逻辑不对，要逐渐过渡到红色
-                double turretHeal = mobileVehicle.getEntityData().get(TURRET_HEALTH) / mobileVehicle.getTurretMaxHealth();
-                RenderHelper.blit(poseStack, barrel, screenWidth / 2f + 112, screenHeight - 71, 0, 0.0F, 1, 16, 1, 16, Mth.hsvToRgb((float) turretHeal / (1 / MathTool.rgbToHsv(color)[0]), MathTool.rgbToHsv(color)[1], MathTool.rgbToHsv(color)[2]));
+                int turretHeal = (int) (100 - (100 * mobileVehicle.getEntityData().get(TURRET_HEALTH) / mobileVehicle.getTurretMaxHealth()));
+                RenderHelper.blit(poseStack, barrel, screenWidth / 2f + 112, screenHeight - 71, 0, 0.0F, 1, 16, 1, 16, MathTool.getGradientColor(color, 0xFF0000, turretHeal, 2));
 
                 //车身
                 ResourceLocation body= Mod.loc("textures/screens/land/body.png");
@@ -202,15 +201,14 @@ public class VehicleHudOverlay implements IGuiOverlay {
                 // 车身方向
                 poseStack.pushPose();
                 poseStack.rotateAround(Axis.ZP.rotationDegrees(Mth.lerp(partialTick, iLand.turretYRotO(), iLand.turretYRot())), screenWidth / 2f + 112, screenHeight - 56, 0);
-                //TODO 变色逻辑不对，要逐渐过渡到红色
-                double bodyHeal = mobileVehicle.getHealth() / mobileVehicle.getMaxHealth();
-                RenderHelper.blit(poseStack, body, screenWidth / 2f + 96, screenHeight - 72, 0, 0.0F, 32, 32, 32, 32, Mth.hsvToRgb((float) bodyHeal / (1 / MathTool.rgbToHsv(color)[0]), MathTool.rgbToHsv(color)[1], MathTool.rgbToHsv(color)[2]));
-
-                RenderHelper.blit(poseStack, left_wheel, screenWidth / 2f + 96, screenHeight - 72, 0, 0.0F, 32, 32, 32, 32, color);
-
-                RenderHelper.blit(poseStack, right_wheel, screenWidth / 2f + 96, screenHeight - 72, 0, 0.0F, 32, 32, 32, 32, color);
-
-                RenderHelper.blit(poseStack, engine, screenWidth / 2f + 96, screenHeight - 72, 0, 0.0F, 32, 32, 32, 32, color);
+                int bodyHeal = (int) (100 - (100 * mobileVehicle.getHealth() / mobileVehicle.getMaxHealth()));
+                RenderHelper.blit(poseStack, body, screenWidth / 2f + 96, screenHeight - 72, 0, 0.0F, 32, 32, 32, 32, MathTool.getGradientColor(color, 0xFF0000, bodyHeal, 2));
+                int leftWheelHeal = (int) (100 - (100 * mobileVehicle.getEntityData().get(L_WHEEL_HEALTH) / mobileVehicle.getWheelMaxHealth()));
+                RenderHelper.blit(poseStack, left_wheel, screenWidth / 2f + 96, screenHeight - 72, 0, 0.0F, 32, 32, 32, 32, MathTool.getGradientColor(color, 0xFF0000, leftWheelHeal, 2));
+                int rightWheelHeal = (int) (100 - (100 * mobileVehicle.getEntityData().get(R_WHEEL_HEALTH) / mobileVehicle.getWheelMaxHealth()));
+                RenderHelper.blit(poseStack, right_wheel, screenWidth / 2f + 96, screenHeight - 72, 0, 0.0F, 32, 32, 32, 32, MathTool.getGradientColor(color, 0xFF0000, rightWheelHeal, 2));
+                int engineHeal = (int) (100 - (100 * mobileVehicle.getEntityData().get(ENGINE_HEALTH) / mobileVehicle.getEngineMaxHealth()));
+                RenderHelper.blit(poseStack, engine, screenWidth / 2f + 96, screenHeight - 72, 0, 0.0F, 32, 32, 32, 32, MathTool.getGradientColor(color, 0xFF0000, engineHeal, 2));
                 poseStack.popPose();
 
 
