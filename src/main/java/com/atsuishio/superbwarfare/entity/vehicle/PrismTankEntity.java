@@ -648,7 +648,7 @@ public class PrismTankEntity extends ContainerMobileVehicleEntity implements Geo
         float centerH = ((screenHeight - scaledMinWH) / 2);
 
         // 准心
-        preciseBlit(guiGraphics, Mod.loc("textures/screens/land/lav_missile_cross.png"), centerW, centerH, 0, 0.0F, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH);
+        preciseBlit(guiGraphics, Mod.loc("textures/screens/land/lav_missile_cross.png"), centerW, centerH, 0, 0.0F, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH, color);
 
         // 武器名称+过热
         double heat = 1 - this.getEntityData().get(HEAT) / 100.0F;
@@ -723,6 +723,11 @@ public class PrismTankEntity extends ContainerMobileVehicleEntity implements Geo
     @Override
     public float getEngineMaxHealth() {
         return 150;
+    }
+
+    @Override
+    public int getHudColor() {
+        return 0x00FFF6;
     }
 
     @Override

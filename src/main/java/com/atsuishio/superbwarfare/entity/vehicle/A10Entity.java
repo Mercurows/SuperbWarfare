@@ -1011,6 +1011,11 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
         return true;
     }
 
+    @Override
+    public int getHudColor() {
+        return super.getHudColor();
+    }
+
     @OnlyIn(Dist.CLIENT)
     @Nullable
     public Pair<Quaternionf, Quaternionf> getPassengerRotation(Entity entity, float tickDelta) {
