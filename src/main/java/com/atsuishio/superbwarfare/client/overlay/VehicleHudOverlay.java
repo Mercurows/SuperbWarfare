@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.client.overlay;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.config.client.DisplayConfig;
 import com.atsuishio.superbwarfare.entity.vehicle.SpeedboatEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.*;
@@ -44,7 +45,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import static com.atsuishio.superbwarfare.client.RenderHelper.preciseBlit;
 import static com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay.*;
 import static com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity.DECOY_COUNT;
-import static com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.*;
+import static com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.TURRET_HEALTH;
 
 @OnlyIn(Dist.CLIENT)
 public class VehicleHudOverlay implements LayeredDraw.Layer {
@@ -163,6 +164,8 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
                 && iLand instanceof WeaponVehicleEntity
                 && iLand instanceof MobileVehicleEntity mobileVehicle
                 && !(player.getVehicle() instanceof SpeedboatEntity)) {
+            int color = mobileVehicle.getHudColor();
+
             poseStack.pushPose();
 
             poseStack.translate(0, 0 - 0.3 * ClientEventHandler.shakeTime + 3 * ClientEventHandler.cameraRoll, 0);
@@ -184,71 +187,45 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
                 int addW = (w / h) * 48;
                 int addH = (w / h) * 27;
                 preciseBlit(guiGraphics, FRAME, (float) -addW / 2, (float) -addH / 2, 10, 0, 0.0F, w + addW, h + addH, w + addW, h + addH);
-                preciseBlit(guiGraphics, Mod.loc("textures/screens/land/line.png"), w / 2f - 64, h - 56, 0, 0.0F, 128, 1, 128, 1);
+                RenderHelper.preciseBlit(guiGraphics, Mod.loc("textures/screens/land/line.png"), w / 2f - 64, h - 56, 0, 0.0F, 128, 1, 128, 1, color);
 
                 // 指南针
-                preciseBlit(guiGraphics, Mod.loc("textures/screens/compass.png"), (float) w / 2 - 128, (float) 10, 128 + ((float) 64 / 45 * player.getYRot()), 0, 256, 16, 512, 16);
-                preciseBlit(guiGraphics, Mod.loc("textures/screens/helicopter/roll_ind.png"), w / 2f - 8, 30, 0, 0.0F, 16, 16, 16, 16);
+                RenderHelper.preciseBlit(guiGraphics, Mod.loc("textures/screens/compass.png"), (float) w / 2 - 128, (float) 10, 128 + ((float) 64 / 45 * player.getYRot()), 0, 256, 16, 512, 16, color);
+                RenderHelper.preciseBlit(guiGraphics, Mod.loc("textures/screens/helicopter/roll_ind.png"), w / 2f - 8, 30, 0, 0.0F, 16, 16, 16, 16, color);
 
-                // 炮塔方向
-                poseStack.pushPose();
+                // 炮塔
+                ResourceLocation barrel = Mod.loc("textures/screens/land/line.png");
+                //TODO 变色逻辑不对，要逐渐过渡到红色
+                double turretHeal = mobileVehicle.getEntityData().get(TURRET_HEALTH) / mobileVehicle.getTurretMaxHealth();
+                RenderHelper.preciseBlit(guiGraphics, barrel, w / 2f + 112, h - 71, 0, 0.0F, 1, 16, 1, 16, Mth.hsvToRgb((float) turretHeal / (1 / MathTool.rgbToHsv(color)[0]), MathTool.rgbToHsv(color)[1], MathTool.rgbToHsv(color)[2]));
 
                 //车身
-                ResourceLocation body;
-                if (mobileVehicle.getHealth() > 0.4 * mobileVehicle.getMaxHealth()) {
-                    body = Mod.loc("textures/screens/land/body.png");
-                } else if (mobileVehicle.getHealth() > 0.1 * mobileVehicle.getMaxHealth()) {
-                    body = Mod.loc("textures/screens/land/body_warning.png");
-                } else {
-                    body = Mod.loc("textures/screens/land/body_damaged.png");
-                }
+                ResourceLocation body = Mod.loc("textures/screens/land/body.png");
                 //左轮
-                ResourceLocation left_wheel;
-                if (mobileVehicle.getEntityData().get(L_WHEEL_DAMAGED)) {
-                    left_wheel = Mod.loc("textures/screens/land/left_wheel_damaged.png");
-                } else {
-                    left_wheel = Mod.loc("textures/screens/land/left_wheel.png");
-                }
-
+                ResourceLocation left_wheel = Mod.loc("textures/screens/land/left_wheel.png");
                 //右轮
-                ResourceLocation right_wheel;
-                if (mobileVehicle.getEntityData().get(R_WHEEL_DAMAGED)) {
-                    right_wheel = Mod.loc("textures/screens/land/right_wheel_damaged.png");
-                } else {
-                    right_wheel = Mod.loc("textures/screens/land/right_wheel.png");
-                }
-
+                ResourceLocation right_wheel = Mod.loc("textures/screens/land/right_wheel.png");
                 //引擎
-                ResourceLocation engine;
+                ResourceLocation engine = Mod.loc("textures/screens/land/engine.png");
 
-                if (mobileVehicle.getEntityData().get(ENGINE1_DAMAGED)) {
-                    engine = Mod.loc("textures/screens/land/engine_damaged.png");
-                } else {
-                    engine = Mod.loc("textures/screens/land/engine.png");
-                }
-
+                // 车身方向
+                poseStack.pushPose();
                 poseStack.rotateAround(Axis.ZP.rotationDegrees(Mth.lerp(partialTick, iLand.turretYRotO(), iLand.turretYRot())), w / 2f + 112, h - 56, 0);
+                //TODO 变色逻辑不对，要逐渐过渡到红色
+                double bodyHeal = mobileVehicle.getHealth() / mobileVehicle.getMaxHealth();
+                RenderHelper.preciseBlit(guiGraphics, body, w / 2f + 96, h - 72, 0, 0.0F, 32, 32, 32, 32, Mth.hsvToRgb((float) bodyHeal / (1 / MathTool.rgbToHsv(color)[0]), MathTool.rgbToHsv(color)[1], MathTool.rgbToHsv(color)[2]));
 
-                preciseBlit(guiGraphics, body, w / 2f + 96, h - 72, 0, 0.0F, 32, 32, 32, 32);
-                preciseBlit(guiGraphics, left_wheel, w / 2f + 96, h - 72, 0, 0.0F, 32, 32, 32, 32);
-                preciseBlit(guiGraphics, right_wheel, w / 2f + 96, h - 72, 0, 0.0F, 32, 32, 32, 32);
-                preciseBlit(guiGraphics, engine, w / 2f + 96, h - 72, 0, 0.0F, 32, 32, 32, 32);
+                RenderHelper.preciseBlit(guiGraphics, left_wheel, w / 2f + 96, h - 72, 0, 0.0F, 32, 32, 32, 32, color);
 
+                RenderHelper.preciseBlit(guiGraphics, right_wheel, w / 2f + 96, h - 72, 0, 0.0F, 32, 32, 32, 32, color);
+
+                RenderHelper.preciseBlit(guiGraphics, engine, w / 2f + 96, h - 72, 0, 0.0F, 32, 32, 32, 32, color);
                 poseStack.popPose();
 
-                // 炮塔损伤
-                ResourceLocation barrel;
-                if (mobileVehicle.getEntityData().get(TURRET_DAMAGED)) {
-                    barrel = Mod.loc("textures/screens/land/line_damaged.png");
-                } else {
-                    barrel = Mod.loc("textures/screens/land/line.png");
-                }
-
-                preciseBlit(guiGraphics, barrel, w / 2f + 112, h - 71, 0, 0.0F, 1, 16, 1, 16);
 
                 // 时速
                 guiGraphics.drawString(mc.font, Component.literal(FormatTool.format0D(mobileVehicle.getDeltaMovement().dot(mobileVehicle.getViewVector(partialTick)) * 72, " km/h")),
-                        w / 2 + 160, h / 2 - 48, 0x66FF00, false);
+                        w / 2 + 160, h / 2 - 48, color, false);
 
                 // 低电量警告
                 if (mobileVehicle.hasEnergyStorage()) {
@@ -281,25 +258,25 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
                 // 测距
                 if (lookAtEntity) {
                     guiGraphics.drawString(mc.font, Component.literal(FormatTool.format1D(entityRange, "m")),
-                            w / 2 - 6, h - 53, 0x66FF00, false);
+                            w / 2 - 6, h - 53, color, false);
                 } else {
                     if (blockRange > 500) {
-                        guiGraphics.drawString(mc.font, Component.literal("---m"), w / 2 - 6, h - 53, 0x66FF00, false);
+                        guiGraphics.drawString(mc.font, Component.literal("---m"), w / 2 - 6, h - 53, color, false);
                     } else {
                         guiGraphics.drawString(mc.font, Component.literal(FormatTool.format1D(blockRange, "m")),
-                                w / 2 - 6, h - 53, 0x66FF00, false);
+                                w / 2 - 6, h - 53, color, false);
                     }
                 }
 
                 // 载具自定义第一人称渲染
-                mobileVehicle.renderFirstPersonOverlay(guiGraphics, mc.font, player, w, h, scale);
+                mobileVehicle.renderFirstPersonOverlay(guiGraphics, poseStack, mc.font, player, w, h, scale, color);
 
                 // 血量
                 double heal = mobileVehicle.getHealth() / mobileVehicle.getMaxHealth();
-                guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(FormatTool.format0D(100 * heal)), w / 2 - 165, h / 2 - 46, Mth.hsvToRgb((float) heal / 3.745318352059925F, 1.0F, 1.0F), false);
+                guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(FormatTool.format0D(100 * heal)), w / 2 - 165, h / 2 - 46, Mth.hsvToRgb((float) heal / (1 / MathTool.rgbToHsv(color)[0]), MathTool.rgbToHsv(color)[1], MathTool.rgbToHsv(color)[2]), false);
 
-                // 诱饵
-                guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("SMOKE " + mobileVehicle.getEntityData().get(DECOY_COUNT)), w / 2 - 165, h / 2 - 36, 0x66FF00, false);
+                //诱饵
+                guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("SMOKE " + mobileVehicle.getEntityData().get(DECOY_COUNT)), w / 2 - 165, h / 2 - 36, color, false);
 
                 renderKillIndicator(guiGraphics, w, h);
             } else if (Minecraft.getInstance().options.getCameraType() == CameraType.THIRD_PERSON_BACK && !ClientEventHandler.zoomVehicle) {

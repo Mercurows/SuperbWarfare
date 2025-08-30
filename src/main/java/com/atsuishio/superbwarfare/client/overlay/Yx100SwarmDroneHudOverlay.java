@@ -55,6 +55,7 @@ public class Yx100SwarmDroneHudOverlay implements LayeredDraw.Layer {
 
         if (player.getVehicle() instanceof Yx100Entity yx100 && yx100.banHand(player)) {
             if (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON) {
+                int color = yx100.getHudColor();
                 float fovAdjust = (float) 70 / Minecraft.getInstance().options.fov().get();
 
                 float f = (float) Math.min(w, h);
@@ -63,7 +64,7 @@ public class Yx100SwarmDroneHudOverlay implements LayeredDraw.Layer {
                 int j = Mth.floor(f * f1);
                 int k = (w - i) / 2;
                 int l = (h - j) / 2;
-                RenderHelper.preciseBlit(guiGraphics, Mod.loc("textures/screens/land/lav_missile_cross.png"), k, l, 0, 0.0F, i, j, i, j);
+                RenderHelper.preciseBlit(guiGraphics, Mod.loc("textures/screens/land/lav_missile_cross.png"), k, l, 0, 0.0F, i, j, i, j, color);
                 VehicleHudOverlay.renderKillIndicator(guiGraphics, w, h);
                 Entity naerestEntity = SeekTool.seekLivingEntity(player, player.level(), 384, 6);
 

@@ -20,6 +20,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -1773,7 +1774,7 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
      * 务必标记 @OnlyIn(Dist.CLIENT)
      */
     @OnlyIn(Dist.CLIENT)
-    public void renderFirstPersonOverlay(GuiGraphics guiGraphics, Font font, Player player, int screenWidth, int screenHeight, float scale) {
+    public void renderFirstPersonOverlay(GuiGraphics guiGraphics, PoseStack poseStack, Font font, Player player, int screenWidth, int screenHeight, float scale, int color) {
         if (!(this instanceof WeaponVehicleEntity weaponVehicle)) return;
         if (!(player instanceof LocalPlayer)) return;
 

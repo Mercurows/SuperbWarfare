@@ -16,6 +16,7 @@ import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
 import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage;
 import com.atsuishio.superbwarfare.tools.*;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -640,7 +641,7 @@ public class PrismTankEntity extends ContainerMobileVehicleEntity implements Geo
 
     @OnlyIn(Dist.CLIENT)
     @Override
-    public void renderFirstPersonOverlay(GuiGraphics guiGraphics, Font font, Player player, int screenWidth, int screenHeight, float scale) {
+    public void renderFirstPersonOverlay(GuiGraphics guiGraphics, PoseStack poseStack, Font font, Player player, int screenWidth, int screenHeight, float scale, int color) {
         float minWH = (float) Math.min(screenWidth, screenHeight);
         float scaledMinWH = Mth.floor(minWH * scale);
         float centerW = ((screenWidth - scaledMinWH) / 2);

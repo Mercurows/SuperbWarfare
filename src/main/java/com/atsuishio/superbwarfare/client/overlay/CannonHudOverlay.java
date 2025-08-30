@@ -70,7 +70,7 @@ public class CannonHudOverlay implements LayeredDraw.Layer {
             RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
             RenderSystem.setShaderColor(1, 1, 1, 1);
 
-            preciseBlit(guiGraphics, Mod.loc("textures/screens/compass_white.png"), (float) w / 2 - 128, (float) 10, 128 + ((float) 64 / 45 * (Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), cannon.yRotO, cannon.getYRot()))), 0, 256, 16, 512, 16);
+            preciseBlit(guiGraphics, Mod.loc("textures/screens/compass.png"), (float) w / 2 - 128, (float) 10, 128 + ((float) 64 / 45 * (Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), cannon.yRotO, cannon.getYRot()))), 0, 256, 16, 512, 16);
             preciseBlit(guiGraphics, Mod.loc("textures/screens/roll_ind_white.png"), (float) w / 2 - 4, 27, 0, 0.0F, 8, 8, 8, 8);
 
             String angle = FormatTool.DECIMAL_FORMAT_1ZZ.format(Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), cannon.yRotO, cannon.getYRot()));
