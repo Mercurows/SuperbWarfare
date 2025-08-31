@@ -3618,5 +3618,22 @@
         "stream": false
       }
     ]
+  },
+  "waveforce_tower_fire": {
+    "sounds": [
+      {
+        "name": "superbwarfare:waveforce_tower/waveforce_tower_fire_1",
+        "stream": false
+      },      {
+        "name": "superbwarfare:waveforce_tower/waveforce_tower_fire_2",
+        "stream": false
+      },      {
+        "name": "superbwarfare:waveforce_tower/waveforce_tower_fire_3",
+        "stream": false
+      },      {
+        "name": "superbwarfare:waveforce_tower/waveforce_tower_fire_4",
+        "stream": false
+      }
+    ]
   }
 }
