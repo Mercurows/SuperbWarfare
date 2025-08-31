@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.client;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.api.event.RenderPlayerArmEvent;
 import com.atsuishio.superbwarfare.client.renderer.CustomGunRenderer;
 import com.atsuishio.superbwarfare.client.renderer.ModRenderTypes;
 import com.atsuishio.superbwarfare.data.gun.GunData;
@@ -19,9 +20,11 @@ import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.player.PlayerModelPart;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.common.NeoForge;
 import org.joml.Matrix4f;
 import software.bernie.geckolib.animation.AnimationProcessor;
 import software.bernie.geckolib.cache.object.GeoBone;
@@ -189,8 +192,19 @@ public class AnimationHelper {
             RenderUtil.rotateMatrixAroundBone(stack, bone);
             RenderUtil.scaleMatrixForBone(stack, bone);
             RenderUtil.translateAwayFromPivotPoint(stack, bone);
+
+            HumanoidArm arm = "Lefthand".equals(name) ? HumanoidArm.LEFT : HumanoidArm.RIGHT;
+            var renderPlayerArmEvent = new RenderPlayerArmEvent(localPlayer, transformType, stack, arm, bone, currentBuffer, renderType, packedLightIn, useOldHandRender);
+            if (NeoForge.EVENT_BUS.post(renderPlayerArmEvent).isCanceled()) {
+                currentBuffer.getBuffer(renderType); // 用来重置 Render Type，防止后续渲染出错
+                stack.popPose();
+                return;
+            }
+
             ResourceLocation loc = localPlayer.getSkin().texture();
-            if (name.equals("Lefthand")) {
+            VertexConsumer armBuilder = currentBuffer.getBuffer(RenderType.entitySolid(loc));
+            VertexConsumer sleeveBuilder = currentBuffer.getBuffer(RenderType.entityTranslucent(loc));
+            if (arm == HumanoidArm.LEFT) {
                 if (!model.leftArm.visible) {
                     model.leftArm.visible = true;
                 }
@@ -223,7 +237,8 @@ public class AnimationHelper {
                     AnimationHelper.renderPartOverBone2R(model.leftSleeve, bone, stack, currentBuffer.getBuffer(RenderType.entityTranslucent(loc)), packedLightIn, OverlayTexture.NO_OVERLAY);
                 }
             }
-            currentBuffer.getBuffer(renderType);
+
+            currentBuffer.getBuffer(renderType); // 用来重置 Render Type，防止后续渲染出错
             stack.popPose();
         }
     }

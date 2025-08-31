@@ -91,6 +91,61 @@ public class ModItemTagProvider extends ItemTagsProvider {
                 ModItems.CEMENTED_CARBIDE_HAMMER.get(), ModItems.NETHERITE_HAMMER.get());
         this.tag(ModTags.Items.TOOLS_HAMMER).addTag(ModTags.Items.HAMMER);
 
+        // 专门给其他模组添加动画用的枪械武器分类 tag
+        this.tag(ModTags.Items.ANIMATED_PISTOL).add(
+                ModItems.TASER.get(),
+                ModItems.GLOCK_17.get(),
+                ModItems.GLOCK_18.get(),
+                ModItems.MP_443.get(),
+                ModItems.M_1911.get(),
+                ModItems.TRACHELIUM.get());
+
+        this.tag(ModTags.Items.ANIMATED_SNIPER).add(
+                ModItems.MOSIN_NAGANT.get(),
+                ModItems.SVD.get(),
+                ModItems.AWM.get(),
+                ModItems.NTW_20.get());
+
+        this.tag(ModTags.Items.ANIMATED_RIFLE).add(
+                ModItems.AK_47.get(),
+                ModItems.AK_12.get(),
+                ModItems.SKS.get(),
+                ModItems.M_4.get(),
+                ModItems.HK_416.get(),
+                ModItems.QBZ_95.get(),
+                ModItems.QBZ_191.get(),
+                ModItems.INSIDIOUS.get(),
+                ModItems.MK_14.get(),
+                ModItems.MARLIN.get(),
+                ModItems.K_98.get(),
+                ModItems.M_98B.get(),
+                ModItems.SENTINEL.get(),
+                ModItems.HUNTING_RIFLE.get());
+
+        this.tag(ModTags.Items.ANIMATED_SHOTGUN).add(
+                ModItems.HOMEMADE_SHOTGUN.get(),
+                ModItems.M_870.get(),
+                ModItems.AA_12.get(),
+                ModItems.M_79.get(),
+                ModItems.SECONDARY_CATACLYSM.get());
+
+        this.tag(ModTags.Items.ANIMATED_SMG).add(
+                ModItems.MP_5.get(),
+                ModItems.VECTOR.get());
+
+        this.tag(ModTags.Items.ANIMATED_RPG).add(
+                ModItems.RPG.get(),
+                ModItems.JAVELIN.get());
+
+        this.tag(ModTags.Items.ANIMATED_MG).add(
+                ModItems.DEVOTION.get(),
+                ModItems.RPK.get(),
+                ModItems.M_60.get(),
+                ModItems.M_2_HB.get());
+
+        this.tag(ModTags.Items.ANIMATED_MINIGUN).add(
+                ModItems.MINIGUN.get());
+
         // TODO 清理枪械Tag
         ModItems.GUNS.getEntries().forEach(registryObject -> this.tag(ModTags.Items.GUN).add(registryObject.get()));
 
