@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.client;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.api.event.RenderPlayerArmEvent;
 import com.atsuishio.superbwarfare.client.renderer.CustomGunRenderer;
 import com.atsuishio.superbwarfare.client.renderer.ModRenderTypes;
 import com.atsuishio.superbwarfare.data.gun.GunData;
@@ -19,9 +20,11 @@ import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.player.PlayerModelPart;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.common.MinecraftForge;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import software.bernie.geckolib.cache.object.GeoBone;
@@ -176,10 +179,19 @@ public class AnimationHelper {
             RenderUtils.rotateMatrixAroundBone(stack, bone);
             RenderUtils.scaleMatrixForBone(stack, bone);
             RenderUtils.translateAwayFromPivotPoint(stack, bone);
+
+            HumanoidArm arm = "Lefthand".equals(name) ? HumanoidArm.LEFT : HumanoidArm.RIGHT;
+            var renderPlayerArmEvent = new RenderPlayerArmEvent(localPlayer, transformType, stack, arm, bone, currentBuffer, renderType, packedLightIn, useOldHandRender);
+            if (MinecraftForge.EVENT_BUS.post(renderPlayerArmEvent)) {
+                currentBuffer.getBuffer(renderType); // 用来重置 Render Type，防止后续渲染出错
+                stack.popPose();
+                return;
+            }
+
             ResourceLocation loc = localPlayer.getSkinTextureLocation();
             VertexConsumer armBuilder = currentBuffer.getBuffer(RenderType.entitySolid(loc));
             VertexConsumer sleeveBuilder = currentBuffer.getBuffer(RenderType.entityTranslucent(loc));
-            if (name.equals("Lefthand")) {
+            if (arm == HumanoidArm.LEFT) {
                 if (!model.leftArm.visible) {
                     model.leftArm.visible = true;
                 }
@@ -213,7 +225,7 @@ public class AnimationHelper {
                 }
             }
 
-            currentBuffer.getBuffer(renderType);
+            currentBuffer.getBuffer(renderType); // 用来重置 Render Type，防止后续渲染出错
             stack.popPose();
         }
     }

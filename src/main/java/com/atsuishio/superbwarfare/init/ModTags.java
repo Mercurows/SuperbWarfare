@@ -52,6 +52,16 @@ public class ModTags {
         public static final TagKey<Item> WRENCH = commonItemTag("tools/wrench");
         public static final TagKey<Item> CROWBAR = commonItemTag("tools/crowbar");
         public static final TagKey<Item> TOOLS_HAMMER = commonItemTag("tools/hammer");
+
+        // 专门给其他模组添加动画用的枪械武器分类 tag
+        public static final TagKey<Item> ANIMATED_PISTOL = modItemTag("animated/pistol");
+        public static final TagKey<Item> ANIMATED_SNIPER = modItemTag("animated/sniper");
+        public static final TagKey<Item> ANIMATED_RIFLE = modItemTag("animated/rifle");
+        public static final TagKey<Item> ANIMATED_SHOTGUN = modItemTag("animated/shotgun");
+        public static final TagKey<Item> ANIMATED_SMG = modItemTag("animated/smg");
+        public static final TagKey<Item> ANIMATED_RPG = modItemTag("animated/rpg");
+        public static final TagKey<Item> ANIMATED_MG = modItemTag("animated/mg");
+        public static final TagKey<Item> ANIMATED_MINIGUN = modItemTag("animated/minigun");
     }
 
     public static TagKey<Item> modItemTag(String name) {
