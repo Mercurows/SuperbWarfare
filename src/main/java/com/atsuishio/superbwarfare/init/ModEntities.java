@@ -116,6 +116,8 @@ public static final DeferredHolder<EntityType<?>, EntityType<C4Entity>> C_4 = re
             EntityType.Builder.of(AnnihilatorEntity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(3).fireImmune().sized(13f, 4.2f));
     public static final DeferredHolder<EntityType<?>, EntityType<LaserTowerEntity>> LASER_TOWER = register("laser_tower",
             EntityType.Builder.<LaserTowerEntity>of(LaserTowerEntity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).fireImmune().sized(0.9f, 1.65f));
+public static final DeferredHolder<EntityType<?>, EntityType<WaveforceTowerEntity>> WAVEFORCE_TOWER = register("waveforce_tower",
+            EntityType.Builder.<WaveforceTowerEntity>of(WaveforceTowerEntity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).fireImmune().sized(1.75f, 3.3f));
 
     // Boats
     public static final DeferredHolder<EntityType<?>, EntityType<SpeedboatEntity>> SPEEDBOAT = register("speedboat",

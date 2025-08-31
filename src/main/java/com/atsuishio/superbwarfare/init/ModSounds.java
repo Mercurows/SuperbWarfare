@@ -520,5 +520,7 @@ public class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> BL_132_RELOAD = REGISTRY.register("bl_132_reload", () -> SoundEvent.createVariableRangeEvent(Mod.loc("bl_132_reload")));
 
     public static final DeferredHolder<SoundEvent, SoundEvent> PTKM_1R_DEPLOY = REGISTRY.register("ptkm_1r_deploy", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ptkm_1r_deploy")));
+
+    public static final DeferredHolder<SoundEvent, SoundEvent> WAVEFORCE_TOWER_FIRE = REGISTRY.register("waveforce_tower_fire", () -> SoundEvent.createVariableRangeEvent(Mod.loc("waveforce_tower_fire")));
 }
 

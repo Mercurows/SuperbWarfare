@@ -64,5 +64,6 @@ public class ModEntityRenderers {
         event.registerEntityRenderer(ModEntities.BL_132.get(), Bl132Renderer::new);
         event.registerEntityRenderer(ModEntities.GRAPESHOT.get(), GrapeshotRenderer::new);
         event.registerEntityRenderer(ModEntities.VEHICLE_ASSEMBLING_TABLE.get(), VehicleAssemblingTableVehicleRenderer::new);
+        event.registerEntityRenderer(ModEntities.WAVEFORCE_TOWER.get(), WaveforceTowerRenderer::new);
     }
 }
