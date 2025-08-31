@@ -12,7 +12,7 @@ import org.jetbrains.annotations.ApiStatus;
 import software.bernie.geckolib.cache.object.GeoBone;
 
 @Cancelable
-@ApiStatus.AvailableSince("0.8.8")
+@ApiStatus.AvailableSince("0.8.7.1")
 public class RenderPlayerArmEvent extends Event {
     private final LocalPlayer localPlayer;
     private final ItemDisplayContext transformType;
