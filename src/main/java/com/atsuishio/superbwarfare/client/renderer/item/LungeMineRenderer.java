@@ -15,9 +15,6 @@ import software.bernie.geckolib.cache.object.BakedGeoModel;
 import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
 
-import java.util.HashSet;
-import java.util.Set;
-
 public class LungeMineRenderer extends GeoItemRenderer<LungeMine> {
 
     public LungeMineRenderer() {
@@ -34,7 +31,6 @@ public class LungeMineRenderer extends GeoItemRenderer<LungeMine> {
     protected RenderType renderType;
     public ItemDisplayContext transformType;
     protected LungeMine animatable;
-    private final Set<String> hiddenBones = new HashSet<>();
 
     @Override
     public void renderByItem(ItemStack stack, ItemDisplayContext transformType, PoseStack matrixStack, MultiBufferSource bufferIn, int combinedLightIn, int p_239207_6_) {
@@ -65,21 +61,16 @@ public class LungeMineRenderer extends GeoItemRenderer<LungeMine> {
             bone.setHidden(true);
             renderingArms = true;
         } else {
-            bone.setHidden(this.hiddenBones.contains(name));
+            bone.setHidden(false);
         }
 
         var player = mc.player;
         if (player == null) return;
 
-        if (renderingArms) {
-            AnimationHelper.renderArms(player, this.transformType, stack, name, bone, this.currentBuffer, type, packedLightIn, false);
+        if (this.transformType.firstPerson() && renderingArms) {
+            AnimationHelper.renderArms(player, this.renderPerspective, stack, name, bone, buffer, type, packedLightIn, false);
         }
         super.renderRecursively(stack, animatable, bone, type, buffer, bufferIn, isReRender, partialTick, packedLightIn, packedOverlayIn, color);
-    }
-
-    @Override
-    public ResourceLocation getTextureLocation(LungeMine instance) {
-        return super.getTextureLocation(instance);
     }
 }
 
