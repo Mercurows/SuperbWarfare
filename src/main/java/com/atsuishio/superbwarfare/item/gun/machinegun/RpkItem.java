@@ -126,7 +126,7 @@ public class RpkItem extends GunItem {
     public double getCustomZoom(GunData data) {
         int scopeType = data.attachment.get(AttachmentType.SCOPE);
         return switch (scopeType) {
-            case 2 -> 1.15;
+            case 2 -> 1.55;
             case 3 -> GunsTool.getGunDoubleTag(NBTTool.getTag(data.stack), "CustomZoom");
             default -> 0;
         };
