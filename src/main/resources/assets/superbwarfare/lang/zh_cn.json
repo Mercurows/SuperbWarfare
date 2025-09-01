@@ -567,6 +567,7 @@
   "entity.superbwarfare.vehicle_assembling_table": "载具装配台",
   "entity.superbwarfare.ptkm_1r": "PTKM-1R反坦克地雷",
   "entity.superbwarfare.ptkm_projectile": "PTKM-1R反坦克地雷",
+  "entity.superbwarfare.waveforce_tower": "波能塔",
 
   "key.categories.superbwarfare": "卓越前线",
   "key.superbwarfare.hold_zoom": "瞄准(按住)",
@@ -702,6 +703,7 @@
   "info.superbwarfare.tom_6": "汤姆F6F是一款出自动画片《猫和老鼠》的“固定翼飞行器”，能乘坐1人，并携带一枚毁灭性的西瓜炸弹",
   "info.superbwarfare.wheel_chair": "冲刺♿冲刺♿冲",
   "info.superbwarfare.speedboat": "快艇是一款搭载点50口径重机枪的轻型船只，能乘坐5人，在水面上能达到较高的航速",
+  "info.superbwarfare.waveforce_tower": "波能塔是红色警戒3中升阳帝国的先进基地防御建筑，能够以超热能量轰击歼灭地面威胁的固定式炮塔",
 
   "config.superbwarfare.title": "卓越前线",
   "config.superbwarfare.client.reload": "换弹配置",

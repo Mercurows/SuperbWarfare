@@ -567,6 +567,7 @@
   "entity.superbwarfare.vehicle_assembling_table": "Vehicle Assembling Table",
   "entity.superbwarfare.ptkm_1r": "PTKM-1R Anti-tank Mine",
   "entity.superbwarfare.ptkm_projectile": "PTKM-1R Anti-tank Mine",
+  "entity.superbwarfare.waveforce_tower": "Wave-Force Tower",
 
   "key.categories.superbwarfare": "Superb Warfare",
   "key.superbwarfare.hold_zoom": "Zoom (Hold)",
@@ -702,6 +703,7 @@
   "info.superbwarfare.tom_6": "The Tom F6F is a 'fixed-wing aircraft' from the cartoon Tom and Jerry. It seats one pilot and carries a single devastating Watermelon Bomb.",
   "info.superbwarfare.wheel_chair": "Rush♿Rush♿Run",
   "info.superbwarfare.speedboat": "The Speedboat is a light vessel armed with a .50 CAL heavy machine gun. It accommodates 5 crew members and achieves high speeds on water.",
+  "info.superbwarfare.waveforce_tower": "The Wave-Force Tower is an advanced base defense structure for the Empire of the Rising Sun in Red Alert 3. This stationary turret eliminates ground threats with superheated energy barrages.",
 
   "config.superbwarfare.title": "SuperbWarfare: Config",
   "config.superbwarfare.client.reload": "Reload Config",

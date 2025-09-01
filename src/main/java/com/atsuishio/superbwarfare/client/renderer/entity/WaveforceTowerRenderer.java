@@ -1,6 +1,8 @@
 package com.atsuishio.superbwarfare.client.renderer.entity;
 
 import com.atsuishio.superbwarfare.client.RenderHelper;
+import com.atsuishio.superbwarfare.client.layer.vehicle.WaveforceTowerGlowLayer;
+import com.atsuishio.superbwarfare.client.layer.vehicle.WaveforceTowerLaserLayer;
 import com.atsuishio.superbwarfare.client.model.entity.WaveforceTowerModel;
 import com.atsuishio.superbwarfare.entity.vehicle.WaveforceTowerEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -22,8 +24,8 @@ public class WaveforceTowerRenderer extends GeoEntityRenderer<WaveforceTowerEnti
 
     public WaveforceTowerRenderer(EntityRendererProvider.Context renderManager) {
         super(renderManager, new WaveforceTowerModel());
-//        this.addRenderLayer(new WaveforceTowerPowerLayer(this));
-//        this.addRenderLayer(new WaveforceTowerWaveforceLayer(this));
+        this.addRenderLayer(new WaveforceTowerGlowLayer(this));
+        this.addRenderLayer(new WaveforceTowerLaserLayer(this));
     }
 
     @Override
@@ -55,11 +57,11 @@ public class WaveforceTowerRenderer extends GeoEntityRenderer<WaveforceTowerEnti
             bone.setHidden(!pCamera.isVisible(aabb) && !RenderHelper.isInGui());
         }
 
-        if (name.equals("turret")) {
+        if (name.equals("turret") || name.equals("turret2")) {
             bone.setRotY(Mth.lerp(partialTick, animatable.turretYRotO, animatable.getTurretYRot()) * Mth.DEG_TO_RAD);
         }
 
-        if (name.equals("barrel")) {
+        if (name.equals("barrel") || name.equals("barrel2")) {
             bone.setRotX(-Mth.lerp(partialTick, animatable.turretXRotO, animatable.getTurretXRot()) * Mth.DEG_TO_RAD);
         }
 

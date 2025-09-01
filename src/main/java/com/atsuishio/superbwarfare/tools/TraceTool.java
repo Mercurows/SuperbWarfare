@@ -10,10 +10,14 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.*;
+import net.minecraftforge.entity.PartEntity;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.function.Predicate;
 
 import static com.atsuishio.superbwarfare.tools.SeekTool.smokeFilter;
 
@@ -244,5 +248,150 @@ public class TraceTool {
         }
 
         return blocks;
+    }
+
+    /**
+     * 获取从起点开始，沿方向向量射线上的所有实体
+     *
+     * @param world         世界对象
+     * @param start         射线起点
+     * @param direction     方向向量 (不需要标准化，但长度会影响射线速度)
+     * @param maxDistance   射线最大长度
+     * @param filterPredicate 可选的实体过滤器 (例如，排除发射者本身，只选择特定类型的实体)
+     * @return 一个包含射线击中的所有实体的列表，以及它们与射线交点的最近距离。
+     */
+    public static List<RayTraceResultEntity> getEntitiesAlongVector(Level world, Vec3 start, Vec3 direction, double maxDistance, Predicate<Entity> filterPredicate) {
+        List<RayTraceResultEntity> hitEntities = new ArrayList<>();
+
+        // 1. 标准化方向向量并计算终点
+        Vec3 normalizedDirection = direction.normalize();
+        Vec3 end = start.add(normalizedDirection.scale(maxDistance));
+
+        // 2. 创建一个从起点到终点的AABB进行粗筛，减少需要精确检测的实体数量
+        AABB rayBoundingBox = new AABB(start, end).inflate(1.0D); // 适当扩大边界框
+
+        // 3. 获取在这个粗筛AABB内的所有实体。
+        List<Entity> entitiesInWorld = world.getEntities((Entity) null, rayBoundingBox, filterPredicate);
+
+        // 4. 遍历这些实体，进行精确的射线与碰撞箱相交测试
+        for (Entity entity : entitiesInWorld) {
+            // 忽略实体部件（如末影龙的各个部分，它们通常由父实体处理）
+            if (entity instanceof PartEntity) {
+                continue;
+            }
+
+            // 获取实体当前tick的碰撞箱
+            AABB entityBoundingBox = entity.getBoundingBox();
+            // 可选：稍微扩大碰撞箱，避免因精度问题错过
+            entityBoundingBox = entityBoundingBox.inflate(0.3);
+
+            // 进行射线与实体碰撞箱的相交测试
+            Double distanceToHit = rayIntersectsAABB(start, normalizedDirection, entityBoundingBox, maxDistance);
+
+            if (distanceToHit != null) {
+                Vec3 hitVec = start.add(normalizedDirection.scale(distanceToHit)); // 计算实际交点坐标
+                hitEntities.add(new RayTraceResultEntity(entity, distanceToHit, hitVec));
+            }
+        }
+
+        // 5. 根据距离排序，返回从近到远的列表
+        hitEntities.sort(Comparator.comparingDouble(o -> o.distance));
+        return hitEntities;
+    }
+
+    /**
+     * 射线与轴向包围盒（AABB）的相交测试
+     * 使用经典的SLAB方法
+     *
+     * @param start     射线起点
+     * @param dir       标准化后的射线方向
+     * @param box       实体的AABB
+     * @param maxDist   射线最大长度
+     * @return 如果相交，返回相交的最近距离值t；否则返回null
+     */
+    private static Double rayIntersectsAABB(Vec3 start, Vec3 dir, AABB box, double maxDist) {
+        double tMin = 0.0;
+        double tMax = maxDist;
+
+        // 分别检查X轴
+        double invDx = 1.0 / dir.x;
+        double t0x = (box.minX - start.x) * invDx;
+        double t1x = (box.maxX - start.x) * invDx;
+
+        if (invDx < 0.0) {
+            double temp = t0x;
+            t0x = t1x;
+            t1x = temp;
+        }
+
+        tMin = Math.max(tMin, t0x);
+        tMax = Math.min(tMax, t1x);
+
+        if (tMax <= tMin) {
+            return null;
+        }
+
+        // 检查Y轴
+        double invDy = 1.0 / dir.y;
+        double t0y = (box.minY - start.y) * invDy;
+        double t1y = (box.maxY - start.y) * invDy;
+
+        if (invDy < 0.0) {
+            double temp = t0y;
+            t0y = t1y;
+            t1y = temp;
+        }
+
+        tMin = Math.max(tMin, t0y);
+        tMax = Math.min(tMax, t1y);
+
+        if (tMax <= tMin) {
+            return null;
+        }
+
+        // 检查Z轴
+        double invDz = 1.0 / dir.z;
+        double t0z = (box.minZ - start.z) * invDz;
+        double t1z = (box.maxZ - start.z) * invDz;
+
+        if (invDz < 0.0) {
+            double temp = t0z;
+            t0z = t1z;
+            t1z = temp;
+        }
+
+        tMin = Math.max(tMin, t0z);
+        tMax = Math.min(tMax, t1z);
+
+        if (tMax <= tMin) {
+            return null;
+        }
+
+        // 返回最近的交点距离参数t
+        return tMin;
+    }
+
+    /**
+     * 用于存储射线检测结果的数据结构
+     */
+    public static class RayTraceResultEntity {
+        public final Entity entity;
+        public final double distance; // 从起点到交点的距离
+        public final Vec3 hitVec;     // 射线与实体碰撞箱的交点
+
+        public RayTraceResultEntity(Entity entity, double distance, Vec3 hitVec) {
+            this.entity = entity;
+            this.distance = distance;
+            this.hitVec = hitVec;
+        }
+
+        @Override
+        public String toString() {
+            return "RayTraceResultEntity{" +
+                    "entity=" + entity +
+                    ", distance=" + distance +
+                    ", hitVec=" + hitVec +
+                    '}';
+        }
     }
 }

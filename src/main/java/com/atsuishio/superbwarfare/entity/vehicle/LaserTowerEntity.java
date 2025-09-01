@@ -368,6 +368,11 @@ public class LaserTowerEntity extends VehicleEntity implements GeoEntity, Ownabl
     }
 
     @Override
+    public ResourceLocation getVehicleIcon() {
+        return Mod.loc("textures/vehicle_icon/laser_tower_icon.png");
+    }
+
+    @Override
     public @Nullable ResourceLocation getVehicleItemIcon() {
         return Mod.loc("textures/gui/vehicle/type/defense.png");
     }

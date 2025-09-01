@@ -1,0 +1,15 @@
+{
+  "type": "superbwarfare:vehicle_assembling",
+  "category": "defense",
+  "inputs": [
+    "10 #superbwarfare:storage_blocks/steel",
+    "2 superbwarfare:cemented_carbide_block",
+    "8 minecraft:redstone_block",
+    "minecraft:beacon",
+    "2 superbwarfare:medium_battery_pack",
+    "superbwarfare:large_motor"
+  ],
+  "result": {
+    "entity": "superbwarfare:waveforce_tower"
+  }
+}
