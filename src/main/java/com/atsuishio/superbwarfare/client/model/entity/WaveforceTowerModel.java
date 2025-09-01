@@ -8,12 +8,13 @@ import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.model.GeoModel;
 
 import static com.atsuishio.superbwarfare.entity.vehicle.WaveforceTowerEntity.CHARGING_TIME;
+import static com.atsuishio.superbwarfare.entity.vehicle.WaveforceTowerEntity.WAVEFORCE_LENGTH;
 
 public class WaveforceTowerModel extends GeoModel<WaveforceTowerEntity> {
 
     @Override
     public ResourceLocation getAnimationResource(WaveforceTowerEntity entity) {
-        return null;
+        return Mod.loc("animations/waveforce_tower.animation.json");
     }
 
     @Override
@@ -28,8 +29,12 @@ public class WaveforceTowerModel extends GeoModel<WaveforceTowerEntity> {
 
     @Override
     public void setCustomAnimations(WaveforceTowerEntity animatable, long instanceId, AnimationState<WaveforceTowerEntity> animationState) {
-//        GeoBone waveForce = getAnimationProcessor().getBone("waveForce");
-//        waveForce.setScaleZ(10 * animatable.getEntityData().get(WAVEFORCE_LENGTH));
+        GeoBone laser = getAnimationProcessor().getBone("laser");
+        GeoBone glow = getAnimationProcessor().getBone("glow2");
+        laser.setScaleZ(animatable.getEntityData().get(WAVEFORCE_LENGTH));
+        glow.setPosZ(-16 * animatable.getEntityData().get(WAVEFORCE_LENGTH));
+
+
         GeoBone lightOn = getAnimationProcessor().getBone("light_on");
         GeoBone lightOn2 = getAnimationProcessor().getBone("light_on2");
         GeoBone lightOn3 = getAnimationProcessor().getBone("light_on3");
@@ -63,5 +68,8 @@ public class WaveforceTowerModel extends GeoModel<WaveforceTowerEntity> {
         lightOff5.setHidden(!lightOn5.isHidden());
         lightOff6.setHidden(!lightOn6.isHidden());
         lightOff7.setHidden(!lightOn7.isHidden());
+
+        GeoBone charge = getAnimationProcessor().getBone("charge");
+        charge.setScaleZ((float) animatable.getEntityData().get(CHARGING_TIME) / 60);
     }
 }

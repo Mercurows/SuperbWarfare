@@ -12,6 +12,7 @@ import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.common.container.ContainerBlockItem;
 import com.atsuishio.superbwarfare.tools.DamageHandler;
 import com.atsuishio.superbwarfare.tools.EntityFindUtil;
+import com.atsuishio.superbwarfare.tools.TraceTool;
 import com.atsuishio.superbwarfare.tools.VectorTool;
 import com.mojang.math.Axis;
 import net.minecraft.core.particles.ParticleTypes;
@@ -41,17 +42,21 @@ import org.joml.Matrix4f;
 import org.joml.Vector4f;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.animation.*;
+import software.bernie.geckolib.animation.AnimationState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Predicate;
 
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
+import static com.atsuishio.superbwarfare.tools.SeekTool.friendlyToPlayer;
 import static com.atsuishio.superbwarfare.tools.SeekTool.smokeFilter;
 
 public class WaveforceTowerEntity extends VehicleEntity implements GeoEntity, OwnableEntity, AutoAimable, DefenseEntity {
-
+    public static final EntityDataAccessor<Integer> COOL_DOWN = SynchedEntityData.defineId(WaveforceTowerEntity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> CHARGING_TIME = SynchedEntityData.defineId(WaveforceTowerEntity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<String> TARGET_UUID = SynchedEntityData.defineId(WaveforceTowerEntity.class, EntityDataSerializers.STRING);
     public static final EntityDataAccessor<Boolean> ACTIVE = SynchedEntityData.defineId(WaveforceTowerEntity.class, EntityDataSerializers.BOOLEAN);
@@ -81,7 +86,8 @@ public class WaveforceTowerEntity extends VehicleEntity implements GeoEntity, Ow
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
 
-        builder.define(TARGET_UUID, "none")
+        builder.define(COOL_DOWN, 0)
+                .define(TARGET_UUID, "none")
                 .define(OWNER_UUID, Optional.empty())
                 .define(CHARGING_TIME, 0)
                 .define(WAVEFORCE_LENGTH, 0f)
@@ -181,6 +187,10 @@ public class WaveforceTowerEntity extends VehicleEntity implements GeoEntity, Ow
         turretXRotO = this.getTurretXRot();
         super.baseTick();
 
+        if (this.entityData.get(COOL_DOWN) > 0) {
+            this.entityData.set(COOL_DOWN, this.entityData.get(COOL_DOWN) - 1);
+        }
+
         if (this.entityData.get(CHARGING_TIME) < 60) {
             this.entityData.set(CHARGING_TIME, this.entityData.get(CHARGING_TIME) + 1);
         }
@@ -258,32 +268,43 @@ public class WaveforceTowerEntity extends VehicleEntity implements GeoEntity, Ow
             }
 
             Vec3 targetVec = getShootPos(1).vectorTo(target.getEyePosition()).normalize();
-            turretAutoAimFormVector(10, 10, -50, 50, targetVec);
+            if (this.entityData.get(COOL_DOWN) == 0) {
+                turretAutoAimFormVector(10, 10, -50, 50, targetVec);
+            }
 
             if (this.entityData.get(CHARGING_TIME) == 60 && VectorTool.calculateAngle(getBarrelVec(1), targetVec) < 1) {
                 changeTargetTimer++;
             }
 
             if (this.entityData.get(CHARGING_TIME) == 60 && VectorTool.calculateAngle(getBarrelVec(1), targetVec) < 1 && checkNoClip(this, target, getShootPos(1))) {
-
-                if (level() instanceof ServerLevel serverLevel) {
+                if (level() instanceof ServerLevel) {
                     this.level().playSound(this, getOnPos(), ModSounds.WAVEFORCE_TOWER_FIRE.get(), SoundSource.PLAYERS, 6, random.nextFloat() * 0.1f + 1);
-                    sendParticle(serverLevel, ParticleTypes.END_ROD, target.getX(), target.getEyeY(), target.getZ(), 12, 0, 0, 0, 0.05, true);
-                    sendParticle(serverLevel, ParticleTypes.LAVA, target.getX(), target.getEyeY(), target.getZ(), 4, 0, 0, 0, 0.15, true);
                 }
 
-                DamageHandler.doDamage(target, ModDamageTypes.causeLaserStaticDamage(this.level().registryAccess(), this, this.getOwner()), 400);
-                target.invulnerableTime = 0;
-                entityData.set(WAVEFORCE_LENGTH, distanceTo(target));
-                if (Math.random() < 0.25 && target instanceof LivingEntity living) {
-                    living.setRemainingFireTicks(40);
+                Predicate<Entity> filter = entity -> entity != this && !friendlyToPlayer(this.getOwner(), entity);
+                List<TraceTool.RayTraceResultEntity> hitList = TraceTool.getEntitiesAlongVector(level(), getShootPos(1), getBarrelVec(1), getShootPos(1).distanceTo(target.getEyePosition()) + 0.5, filter);
+                for (TraceTool.RayTraceResultEntity hit : hitList) {
+                    Entity entity = hit.entity;
+                    Vec3 hitPos = hit.hitVec;
+                    if (level() instanceof ServerLevel serverLevel) {
+                        sendParticle(serverLevel, ParticleTypes.END_ROD, hitPos.x, hitPos.y, hitPos.z, 12, 0, 0, 0, 0.05, true);
+                        sendParticle(serverLevel, ParticleTypes.LAVA, hitPos.x, hitPos.y, hitPos.z, 4, 0, 0, 0, 0.15, true);
+                    }
+                    DamageHandler.doDamage(entity, ModDamageTypes.causeLaserStaticDamage(this.level().registryAccess(), this, this.getOwner()), 350);
+                    target.invulnerableTime = 0;
+                    if (Math.random() < 0.5 && target instanceof LivingEntity living) {
+                        living.setRemainingFireTicks(5 * 20);
+                    }
                 }
+
+                entityData.set(WAVEFORCE_LENGTH, (float) getLaserPos(1).distanceTo(target.getEyePosition()));
 
                 if (!target.isAlive()) {
                     entityData.set(TARGET_UUID, "none");
                 }
                 this.consumeEnergy(250000);
                 this.entityData.set(CHARGING_TIME, 0);
+                this.entityData.set(COOL_DOWN, 25);
             }
 
         } else {
@@ -295,6 +316,7 @@ public class WaveforceTowerEntity extends VehicleEntity implements GeoEntity, Ow
             changeTargetTimer = 0;
         }
     }
+
 
     @Override
     public boolean basicEnemyFilter(Entity pEntity) {
@@ -354,16 +376,27 @@ public class WaveforceTowerEntity extends VehicleEntity implements GeoEntity, Ow
         return new Vec3(rootPosition.x, rootPosition.y, rootPosition.z);
     }
 
-//    private PlayState movementPredicate(AnimationState<WaveforceTowerEntity> event) {
-//        if (this.entityData.get(CHARGING_TIME) > 10) {
-//            return event.setAndContinue(RawAnimation.begin().thenPlayAndHold("animation.lt.fire"));
-//        }
-//        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.lt.idle"));
-//    }
+    public Vec3 getLaserPos(float pPartialTicks) {
+        Matrix4f transform = getBarrelTransform(pPartialTicks);
+        Vector4f rootPosition = transformPosition(transform, 0, 0.5243625f, 3.02875625f);
+        return new Vec3(rootPosition.x, rootPosition.y, rootPosition.z);
+    }
+
+    private PlayState firePredicate(AnimationState<WaveforceTowerEntity> event) {
+        if (this.entityData.get(COOL_DOWN) > 0) {
+            return event.setAndContinue(RawAnimation.begin().thenPlayAndHold("animation.waveforce_tower.fire"));
+        }
+        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.waveforce_tower.idle"));
+    }
+
+    private PlayState barrelLightPredicate(AnimationState<WaveforceTowerEntity> event) {
+        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.waveforce_tower.idle"));
+    }
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar data) {
-//        data.add(new AnimationController<>(this, "movement", 0, this::movementPredicate));
+        data.add(new AnimationController<>(this, "barrelLight", 0, this::barrelLightPredicate));
+        data.add(new AnimationController<>(this, "fire", 0, this::firePredicate));
     }
 
     @Override
@@ -374,6 +407,11 @@ public class WaveforceTowerEntity extends VehicleEntity implements GeoEntity, Ow
     @Override
     public @Nullable ResourceLocation getVehicleItemIcon() {
         return Mod.loc("textures/gui/vehicle/type/defense.png");
+    }
+
+    @Override
+    public ResourceLocation getVehicleIcon() {
+        return Mod.loc("textures/vehicle_icon/waveforce_tower_icon.png");
     }
 
     @Override

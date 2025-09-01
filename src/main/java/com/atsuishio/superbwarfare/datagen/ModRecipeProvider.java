@@ -1317,6 +1317,15 @@ public class ModRecipeProvider extends RecipeProvider {
                 .require(ModItems.MOTOR.get())
                 .unlockedBy(getHasName(Items.BEACON), has(Items.BEACON))
                 .save(writer, Mod.loc(getEntityTypeName(ModEntities.LASER_TOWER.get())));
+        VehicleAssemblingRecipeBuilder.entity(ModEntities.WAVEFORCE_TOWER.get(), VehicleAssemblingRecipe.Category.DEFENSE)
+                .require(ModTags.Items.STORAGE_BLOCK_STEEL, 10)
+                .require(ModItems.CEMENTED_CARBIDE_BLOCK.get(), 2)
+                .require(Items.REDSTONE_BLOCK, 8)
+                .require(Items.BEACON)
+                .require(ModItems.MEDIUM_BATTERY_PACK.get(), 2)
+                .require(ModItems.LARGE_MOTOR.get())
+                .unlockedBy(getHasName(Items.BEACON), has(Items.BEACON))
+                .save(writer, Mod.loc(getEntityTypeName(ModEntities.WAVEFORCE_TOWER.get())));
         VehicleAssemblingRecipeBuilder.entity(ModEntities.WHEEL_CHAIR.get(), VehicleAssemblingRecipe.Category.CIVILIAN)
                 .require(ModItems.WHEEL.get(), 2)
                 .require(ModItems.CELL.get())

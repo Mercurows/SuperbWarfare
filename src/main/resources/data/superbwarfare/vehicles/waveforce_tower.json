@@ -1,10 +1,10 @@
 {
   "ID": "superbwarfare:waveforce_tower",
   "MaxHealth": 400,
-  "MaxEnergy": 5000000,
+  "MaxEnergy": 10000000,
   "Mass": 10,
   "DamageModifiers": [
-    "All * 0.17",
+    "All * 0.2",
     "minecraft:arrow * 1.5",
     "minecraft:trident * 1.5",
     "minecraft:mob_attack * 2.5",
@@ -16,6 +16,7 @@
     "superbwarfare:custom_explosion * 2",
     "superbwarfare:projectile_explosion * 2",
     "superbwarfare:mine * 0.7",
+    "superbwarfare:laser * 1.5",
     "superbwarfare:lunge_mine * 0.9",
     "superbwarfare:projectile_hit * 1.5",
     "superbwarfare:grapeshot_hit * 0.2",
