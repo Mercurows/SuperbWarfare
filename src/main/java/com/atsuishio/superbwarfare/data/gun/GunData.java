@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.data.gun;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.data.DefaultDataSupplier;
 import com.atsuishio.superbwarfare.data.Prop;
+import com.atsuishio.superbwarfare.data.PropModifier;
 import com.atsuishio.superbwarfare.data.StringPropModifier;
 import com.atsuishio.superbwarfare.data.gun.subdata.*;
 import com.atsuishio.superbwarfare.data.gun.value.*;
@@ -67,7 +68,6 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
         propertyOverrideString = new StringValue(this.data, "Override");
 
         selectedAmmoType = new IntValue(data, "SelectedAmmoType");
-        ammoConsumers = get(GunProp.AMMO_CONSUMER);
 
         // 可持久化属性
         reload = new Reload(this);
@@ -76,18 +76,11 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
         attachment = new Attachment(this);
         perk = new Perks(this);
 
-
         ammo = new IntValue(data, "Ammo");
         virtualAmmo = new IntValue(data, "VirtualAmmo");
         ammoSlot = new AmmoSlot(data);
         burstAmount = new IntValue(data, "BurstAmount");
 
-        var defaultFireMode = get(GunProp.DEFAULT_FIRE_MODE);
-        if (defaultFireMode == null) {
-            defaultFireMode = FireMode.SEMI;
-        }
-
-        fireMode = new StringEnumValue<>(data, "FireMode", defaultFireMode, FireMode::fromValue);
         level = new IntValue(data, "Level");
         exp = new DoubleValue(data, "Exp");
         upgradePoint = new DoubleValue(data, "UpgradePoint");
@@ -103,6 +96,13 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
         sensitivity = new IntValue(data, "Sensitivity");
         heat = new DoubleValue(data, "Heat");
         overHeat = new BooleanValue(data, "OverHeat");
+
+        ammoConsumers = get(GunProp.AMMO_CONSUMER);
+        var defaultFireMode = get(GunProp.DEFAULT_FIRE_MODE);
+        if (defaultFireMode == null) {
+            defaultFireMode = FireMode.SEMI;
+        }
+        fireMode = new StringEnumValue<>(data, "FireMode", defaultFireMode, FireMode::fromValue);
     }
 
     private CompoundTag getOrPut(String name) {
@@ -183,25 +183,25 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
         return id;
     }
 
-    private final Map<GunProp<?>, Prop.PropModifyContext<GunData, ?>> tempModifications = new HashMap<>();
+    private final Map<GunProp<?>, Prop.PropModifyContext<GunData, DefaultGunData, ?>> tempModifications = new HashMap<>();
 
     @SuppressWarnings("unchecked")
-    public <T> void appendTempModification(GunProp<T> prop, @Nullable Prop.PropModifyContext<GunData, T> modifier) {
+    public <T> void appendTempModification(GunProp<T> prop, @Nullable Prop.PropModifyContext<GunData, DefaultGunData, T> modifier) {
         if (modifier == null) return;
 
-        var current = (Prop.PropModifyContext<GunData, T>) tempModifications.get(prop);
+        var current = (Prop.PropModifyContext<GunData, DefaultGunData, T>) tempModifications.get(prop);
 
         if (current == null) {
             setTempProperty(prop, modifier);
         } else {
-            tempModifications.put(prop, (data, v) -> {
-                var value = current.apply(data, (T) v);
-                return modifier.apply(data, value);
+            tempModifications.put(prop, (p, data, v) -> {
+                var value = current.apply((PropModifier<GunData, DefaultGunData, T>) p, data, (T) v);
+                return modifier.apply((PropModifier<GunData, DefaultGunData, T>) p, data, value);
             });
         }
     }
 
-    public <T> void setTempProperty(GunProp<T> prop, @Nullable Prop.PropModifyContext<GunData, T> modifier) {
+    public <T> void setTempProperty(GunProp<T> prop, @Nullable Prop.PropModifyContext<GunData, DefaultGunData, T> modifier) {
         if (modifier == null) return;
 
         tempModifications.put(prop, modifier);
@@ -223,28 +223,17 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
             Mod.LOGGER.warn("recursive computation for property {}", prop.name);
             return modifier.compute();
         }
-
         operatingProps.add(prop);
-
-        // gun modifiers
-        modifier.apply(this.item.getModifier(prop));
 
         // property override tag
         stringPropModifier.modifyPropertyByString(propertyOverrideString.get(), prop);
-        modifier.apply(stringPropModifier.getModifier(prop));
+        modifier.apply(stringPropModifier);
+
+        // gun modifiers
+        modifier.apply(this.item);
 
         // AmmoConsumer
-        if (prop == GunProp.AMMO_CONSUMER) {
-            var consumers = (List<AmmoConsumer>) modifier.compute();
-            consumers.forEach(c -> {
-                if (!c.initialized()) {
-                    c.init();
-                }
-            });
-            modifier.apply(selectedAmmoConsumer(consumers).getModifier(prop));
-        } else {
-            modifier.apply(selectedAmmoConsumer().getModifier(prop));
-        }
+        modifier.apply(selectedAmmoConsumer(modifier.get(GunProp.AMMO_CONSUMER)));
 
         // perk
         if (perk != null) {
@@ -252,12 +241,13 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
                 var instance = perk.get(type);
                 if (instance == null) continue;
 
-                modifier.apply(instance.getModifier(prop));
+                modifier.apply(instance);
             }
         }
 
         // 临时属性修改
-        modifier.apply((Prop.PropModifyContext<GunData, T>) tempModifications.get(prop));
+        // md什么傻逼类型😅
+        modifier.applyMap((Map<Prop<GunData, DefaultGunData, ?>, Prop.PropModifyContext<GunData, DefaultGunData, ?>>) (Object) tempModifications);
 
         operatingProps.remove(prop);
         return modifier.compute();
@@ -673,11 +663,11 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
     public final BooleanValue overHeat;
 
     public boolean canAdjustZoom() {
-        return item.canAdjustZoom(stack);
+        return item.canAdjustZoom(this);
     }
 
     public boolean canSwitchScope() {
-        return item.canSwitchScope(stack);
+        return item.canSwitchScope(this);
     }
 
     public final Reload reload;

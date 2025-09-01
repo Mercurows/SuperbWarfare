@@ -22,9 +22,6 @@ public final class GunProp<T> extends Prop<GunData, DefaultGunData, T> {
     public static final GunProp<Double> DAMAGE = new GunProp<>("Damage");
     public static final GunProp<Double> HEADSHOT = new GunProp<>("Headshot");
     public static final GunProp<Double> VELOCITY = new GunProp<>("Velocity");
-    public static final GunProp<Integer> MAGAZINE = new GunProp<Integer>("Magazine")
-            .withLimiter((data, v) -> data.meleeOnly() ? 0 : Math.max(0, v));
-
     public static final GunProp<Double> MELEE_DAMAGE = new GunProp<>("MeleeDamage");
     public static final GunProp<Integer> MELEE_DURATION = new GunProp<Integer>("MeleeDuration")
             .withLimiter(v -> Math.max(1, v));
@@ -42,6 +39,11 @@ public final class GunProp<T> extends Prop<GunData, DefaultGunData, T> {
     public static final GunProp<FireMode> DEFAULT_FIRE_MODE = new GunProp<>("DefaultFireMode");
     public static final GunProp<Set<FireMode>> AVAILABLE_FIRE_MODES = new GunProp<Set<FireMode>>("AvailableFireModes")
             .withLimiter(v -> v == null ? Set.of() : v);
+
+    public static final GunProp<Integer> MAGAZINE = new GunProp<Integer>("Magazine")
+            // TODO 正确使用modifier判断
+            .withLimiter((modifier, data, v) -> data.meleeOnly() ? 0 : Math.max(0, v));
+
 
     public static final GunProp<Set<ReloadType>> RELOAD_TYPES = new GunProp<Set<ReloadType>>("ReloadTypes")
             .withLimiter(v -> v == null ? Set.of() : v);

@@ -179,81 +179,82 @@ public class Trachelium extends GunItem {
     }
 
     @Override
-    public boolean canSwitchScope(ItemStack stack) {
-        return GunData.from(stack).attachment.get(AttachmentType.SCOPE) == 2;
+    public boolean canSwitchScope(GunData data) {
+        return data.attachment.get(AttachmentType.SCOPE) == 2;
     }
 
-    private boolean useSpecialAttributes(ItemStack stack) {
-        int scopeType = GunData.from(stack).attachment.get(AttachmentType.SCOPE);
-        int gripType = GunData.from(stack).attachment.get(AttachmentType.GRIP);
+    private boolean useSpecialAttributes(GunData data) {
+        int scopeType = data.attachment.get(AttachmentType.SCOPE);
+        int gripType = data.attachment.get(AttachmentType.GRIP);
         return scopeType > 0 || gripType > 0;
     }
 
     @Override
-    public double getCustomDamage(ItemStack stack) {
-        if (useSpecialAttributes(stack)) {
+    public double getCustomDamage(GunData data) {
+        if (useSpecialAttributes(data)) {
             return 3;
         }
-        return super.getCustomDamage(stack);
+        return super.getCustomDamage(data);
     }
 
     @Override
-    public double getCustomZoom(ItemStack stack) {
-        int scopeType = GunData.from(stack).attachment.get(AttachmentType.SCOPE);
+    public double getCustomZoom(GunData data) {
+        var stack = data.stack;
+        int scopeType = data.attachment.get(AttachmentType.SCOPE);
         return scopeType == 2 ? (stack.getOrCreateTag().getBoolean("ScopeAlt") ? 0 : 2.75) : 0;
     }
 
     @Override
-    public double getCustomVelocity(ItemStack stack) {
-        if (useSpecialAttributes(stack)) {
+    public double getCustomVelocity(GunData data) {
+        if (useSpecialAttributes(data)) {
             return 15;
         }
-        return super.getCustomVelocity(stack);
+        return super.getCustomVelocity(data);
     }
 
     @Override
-    public double getCustomHeadshot(ItemStack stack) {
-        if (useSpecialAttributes(stack)) {
+    public double getCustomHeadshot(GunData data) {
+        if (useSpecialAttributes(data)) {
             return 0.5;
         }
-        return super.getCustomHeadshot(stack);
+        return super.getCustomHeadshot(data);
     }
 
     @Override
-    public double getCustomBypassArmor(ItemStack stack) {
-        if (useSpecialAttributes(stack)) {
+    public double getCustomBypassArmor(GunData data) {
+        if (useSpecialAttributes(data)) {
             return 0.1;
         }
-        return super.getCustomBypassArmor(stack);
+        return super.getCustomBypassArmor(data);
     }
 
     @Override
-    public ResourceLocation getGunIcon(ItemStack stack) {
+    public ResourceLocation getGunIcon(GunData data) {
         return Mod.loc("textures/gun_icon/trachelium_icon.png");
     }
 
     @Override
-    public boolean hasCustomBarrel(ItemStack stack) {
+    public boolean hasCustomBarrel(GunData data) {
         return true;
     }
 
     @Override
-    public boolean hasCustomGrip(ItemStack stack) {
+    public boolean hasCustomGrip(GunData data) {
         return true;
     }
 
     @Override
-    public boolean hasCustomScope(ItemStack stack) {
+    public boolean hasCustomScope(GunData data) {
         return true;
     }
 
     @Override
-    public boolean hasCustomStock(ItemStack stack) {
+    public boolean hasCustomStock(GunData data) {
         return true;
     }
 
     @Override
-    public boolean canEditAttachments(ItemStack stack) {
+    public boolean canEditAttachments(GunData data) {
         return true;
     }
 }

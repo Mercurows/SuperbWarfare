@@ -123,8 +123,8 @@ public class SentinelItem extends GunItem {
     }
 
     @Override
-    public double getCustomDamage(ItemStack stack) {
-        var data = GunData.from(stack);
+    public double getCustomDamage(GunData data) {
+        var stack = data.stack;
         return stack.getCapability(ForgeCapabilities.ENERGY)
                 .map(cap -> cap.getEnergyStored() > 0 ? 0.2857142857142857 * data.getDefault().damage : 0)
                 .orElse(0D);
@@ -156,7 +156,7 @@ public class SentinelItem extends GunItem {
     }
 
     @Override
-    public ResourceLocation getGunIcon(ItemStack stack) {
+    public ResourceLocation getGunIcon(GunData data) {
         return Mod.loc("textures/gun_icon/sentinel_icon.png");
     }
 
@@ -166,12 +166,12 @@ public class SentinelItem extends GunItem {
     }
 
     @Override
-    public boolean isOpenBolt(ItemStack stack) {
+    public boolean isOpenBolt(GunData data) {
         return true;
     }
 
     @Override
-    public boolean hasBulletInBarrel(ItemStack stack) {
+    public boolean hasBulletInBarrel(GunData data) {
         return true;
     }
 

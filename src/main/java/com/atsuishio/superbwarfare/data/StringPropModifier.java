@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class StringPropModifier<DATA extends DefaultDataSupplier<DEFAULT_DATA>, DEFAULT_DATA> implements PropertyModifier<DATA, DEFAULT_DATA> {
-    private final Map<Prop<DATA, DEFAULT_DATA, ?>, Prop.PropModifyContext<DATA, ?>> modifiers = new HashMap<>();
+    private final Map<Prop<DATA, DEFAULT_DATA, ?>, Prop.PropModifyContext<DATA, DEFAULT_DATA, ?>> modifiers = new HashMap<>();
     private Pair<String, JsonObject> propertyOverrideCache = new Pair<>("", null);
     private boolean isOverrideValid = true;
 
@@ -19,7 +19,7 @@ public class StringPropModifier<DATA extends DefaultDataSupplier<DEFAULT_DATA>, 
 
     @Override
     @SuppressWarnings("unchecked")
-    public @NotNull Map<Prop<DATA, DEFAULT_DATA, ?>, Prop.PropModifyContext<DATA, ?>> getPropModifiers() {
+    public @NotNull Map<Prop<DATA, DEFAULT_DATA, ?>, Prop.PropModifyContext<DATA, DEFAULT_DATA, ?>> getPropModifiers() {
         return this.modifiers;
     }
 

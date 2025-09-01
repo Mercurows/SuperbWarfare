@@ -79,7 +79,7 @@ public class AmmoBarOverlay implements IGuiOverlay {
             var data = GunData.from(stack);
 
             // 渲染图标
-            guiGraphics.blit(gunItem.getGunIcon(stack),
+            guiGraphics.blit(gunItem.getGunIcon(data),
                     x - 135,
                     y - 40,
                     0,

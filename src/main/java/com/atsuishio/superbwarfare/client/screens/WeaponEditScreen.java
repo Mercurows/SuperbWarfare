@@ -93,28 +93,30 @@ public class WeaponEditScreen extends Screen {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
 
+        var data = GunData.from(stack);
+
         RenderHelper.preciseBlit(pGuiGraphics, BARREL, posX1, posY1, 0, 0, 24, 24, 24, 24);
-        if (!gunItem.hasCustomBarrel(stack)) {
+        if (!gunItem.hasCustomBarrel(data)) {
             RenderHelper.preciseBlit(pGuiGraphics, INVALID, posX1, posY1, 0, 0, 24, 24, 24, 24);
         }
 
         RenderHelper.preciseBlit(pGuiGraphics, SCOPE, posX2, posY1, 0, 0, 24, 24, 24, 24);
-        if (!gunItem.hasCustomScope(stack)) {
+        if (!gunItem.hasCustomScope(data)) {
             RenderHelper.preciseBlit(pGuiGraphics, INVALID, posX2, posY1, 0, 0, 24, 24, 24, 24);
         }
 
         RenderHelper.preciseBlit(pGuiGraphics, GRIP, posX1, posY2, 0, 0, 24, 24, 24, 24);
-        if (!gunItem.hasCustomGrip(stack)) {
+        if (!gunItem.hasCustomGrip(data)) {
             RenderHelper.preciseBlit(pGuiGraphics, INVALID, posX1, posY2, 0, 0, 24, 24, 24, 24);
         }
 
         RenderHelper.preciseBlit(pGuiGraphics, STOCK, posX2, posY2, 0, 0, 24, 24, 24, 24);
-        if (!gunItem.hasCustomStock(stack)) {
+        if (!gunItem.hasCustomStock(data)) {
             RenderHelper.preciseBlit(pGuiGraphics, INVALID, posX2, posY2, 0, 0, 24, 24, 24, 24);
         }
 
         RenderHelper.preciseBlit(pGuiGraphics, MAGAZINE, posX1, posY3, 0, 0, 24, 24, 24, 24);
-        if (!gunItem.hasCustomMagazine(stack)) {
+        if (!gunItem.hasCustomMagazine(data)) {
             RenderHelper.preciseBlit(pGuiGraphics, INVALID, posX1, posY3, 0, 0, 24, 24, 24, 24);
         }
 
@@ -252,11 +254,11 @@ public class WeaponEditScreen extends Screen {
             var data = GunData.from(stack);
 
             return switch (this.type) {
-                case 0 -> gunItem.hasCustomBarrel(stack);
-                case 1 -> gunItem.hasCustomScope(stack);
-                case 2 -> gunItem.hasCustomGrip(stack);
-                case 3 -> gunItem.hasCustomStock(stack);
-                case 4 -> gunItem.hasCustomMagazine(stack);
+                case 0 -> gunItem.hasCustomBarrel(data);
+                case 1 -> gunItem.hasCustomScope(data);
+                case 2 -> gunItem.hasCustomGrip(data);
+                case 3 -> gunItem.hasCustomStock(data);
+                case 4 -> gunItem.hasCustomMagazine(data);
                 case 5 -> data.ammoConsumers.size() > 1;
                 default -> false;
             };

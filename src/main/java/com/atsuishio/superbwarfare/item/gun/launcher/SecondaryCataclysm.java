@@ -189,7 +189,7 @@ public class SecondaryCataclysm extends GunItem {
     }
 
     @Override
-    public ResourceLocation getGunIcon(ItemStack stack) {
+    public ResourceLocation getGunIcon(GunData data) {
         return Mod.loc("textures/gun_icon/secondary_cataclysm_icon.png");
     }
 
@@ -218,8 +218,8 @@ public class SecondaryCataclysm extends GunItem {
         boolean isChargedFire = zoom && hasEnoughEnergy;
 
         if (isChargedFire) {
-            data.setTempProperty(GunProp.DAMAGE, (d, v) -> v * 1.25);
-            data.setTempProperty(GunProp.VELOCITY, (d, v) -> v * 4);
+            data.setTempProperty(GunProp.DAMAGE, (pm, d, v) -> v * 1.25);
+            data.setTempProperty(GunProp.VELOCITY, (pm, d, v) -> v * 4);
         }
 
         if (!super.shootBullet(shooter, level, shootPosition, shootDirection, data, spread, zoom, uuid)) return false;
