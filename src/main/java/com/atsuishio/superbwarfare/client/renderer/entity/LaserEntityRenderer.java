@@ -12,6 +12,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 
@@ -33,12 +34,12 @@ public class LaserEntityRenderer extends AbstractLaserEntityRenderer<LaserEntity
     }
 
     @Override
-    public ResourceLocation getTextureLocation(LaserEntity entity) {
+    public @NotNull ResourceLocation getTextureLocation(@NotNull LaserEntity entity) {
         return TEXTURE;
     }
 
     @Override
-    public void render(LaserEntity beam, float entityYaw, float delta, PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn) {
+    public void render(LaserEntity beam, float entityYaw, float delta, @NotNull PoseStack matrixStackIn, @NotNull MultiBufferSource bufferIn, int packedLightIn) {
         this.playerView = beam.caster instanceof Player && Minecraft.getInstance().player == beam.caster
                 && Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON;
 //        if (this.playerView) return;

@@ -116,11 +116,6 @@ public class ReforgingTableScreen extends AbstractContainerScreen<ReforgingTable
         }
 
         @Override
-        public void render(@NotNull GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
-            super.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
-        }
-
-        @Override
         public void onPress() {
             Mod.PACKET_HANDLER.sendToServer(GunReforgeMessage.INSTANCE);
         }
