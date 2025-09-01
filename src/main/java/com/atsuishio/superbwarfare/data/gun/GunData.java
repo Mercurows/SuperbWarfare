@@ -130,7 +130,7 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
         save();
     }
 
-    public static GunData from(Item item) {
+    public static GunData create(Item item) {
         return from(new ItemStack(item));
     }
 
