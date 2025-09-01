@@ -126,7 +126,7 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
         data.putUUID("UUID", UUID.randomUUID());
     }
 
-    public static GunData from(Item item) {
+    public static GunData create(Item item) {
         return from(new ItemStack(item));
     }
 
