@@ -1,10 +1,7 @@
 package com.atsuishio.superbwarfare.perk;
 
 import com.atsuishio.superbwarfare.data.Prop;
-import com.atsuishio.superbwarfare.data.gun.DamageReduce;
-import com.atsuishio.superbwarfare.data.gun.GunData;
-import com.atsuishio.superbwarfare.data.gun.GunProp;
-import com.atsuishio.superbwarfare.data.gun.GunPropertyModifier;
+import com.atsuishio.superbwarfare.data.gun.*;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.item.PerkItem;
 import net.minecraft.ChatFormatting;
@@ -26,11 +23,11 @@ public class Perk implements GunPropertyModifier {
     public final String name;
     public final Type type;
 
-    public Map<GunProp<?>, Prop.PropModifyContext<GunData, ?>> propertyModifiers = new HashMap<>();
+    public Map<GunProp<?>, Prop.PropModifyContext<GunData, DefaultGunData, ?>> propertyModifiers = new HashMap<>();
 
     @Override
     @SuppressWarnings("unchecked")
-    public @NotNull Map<GunProp<?>, Prop.PropModifyContext<GunData, ?>> getPropModifiers() {
+    public @NotNull Map<GunProp<?>, Prop.PropModifyContext<GunData, DefaultGunData, ?>> getPropModifiers() {
         return this.propertyModifiers;
     }
 

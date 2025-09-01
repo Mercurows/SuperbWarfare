@@ -97,8 +97,8 @@ public class SentinelItem extends GunItem implements EnergyStorageItem {
     }
 
     @Override
-    public double getCustomDamage(ItemStack stack) {
-        var data = GunData.from(stack);
+    public double getCustomDamage(GunData data) {
+        var stack = data.stack;
         var cap = stack.getCapability(Capabilities.EnergyStorage.ITEM);
         if (cap != null && cap.getEnergyStored() > 0) {
             return 0.2857142857142857 * data.getDefault().damage;
@@ -126,7 +126,7 @@ public class SentinelItem extends GunItem implements EnergyStorageItem {
     }
 
     @Override
-    public ResourceLocation getGunIcon(ItemStack stack) {
+    public ResourceLocation getGunIcon(GunData data) {
         return Mod.loc("textures/gun_icon/sentinel_icon.png");
     }
 
@@ -136,12 +136,12 @@ public class SentinelItem extends GunItem implements EnergyStorageItem {
     }
 
     @Override
-    public boolean isOpenBolt(ItemStack stack) {
+    public boolean isOpenBolt(GunData data) {
         return true;
     }
 
     @Override
-    public boolean hasBulletInBarrel(ItemStack stack) {
+    public boolean hasBulletInBarrel(GunData data) {
         return true;
     }
 

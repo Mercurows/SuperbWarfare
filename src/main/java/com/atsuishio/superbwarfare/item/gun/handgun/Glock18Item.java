@@ -68,22 +68,22 @@ public class Glock18Item extends GunItem {
     }
 
     @Override
-    public ResourceLocation getGunIcon(ItemStack stack) {
+    public ResourceLocation getGunIcon(GunData data) {
         return Mod.loc("textures/gun_icon/glock_17_icon.png");
     }
 
     @Override
-    public boolean isOpenBolt(ItemStack stack) {
+    public boolean isOpenBolt(GunData data) {
         return true;
     }
 
     @Override
-    public boolean hasBulletInBarrel(ItemStack stack) {
+    public boolean hasBulletInBarrel(GunData data) {
         return true;
     }
 
     @Override
-    public boolean canEjectShell(ItemStack stack) {
+    public boolean canEjectShell(GunData data) {
         return true;
     }
 

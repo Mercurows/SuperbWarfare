@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.capability.energy.SyncedEntityEnergyStorage;
 import com.atsuishio.superbwarfare.capability.energy.VehicleEnergyStorage;
 import com.atsuishio.superbwarfare.data.Prop;
+import com.atsuishio.superbwarfare.data.vehicle.DefaultVehicleData;
 import com.atsuishio.superbwarfare.data.vehicle.VehicleData;
 import com.atsuishio.superbwarfare.data.vehicle.VehicleProp;
 import com.atsuishio.superbwarfare.data.vehicle.VehiclePropertyModifier;
@@ -146,11 +147,11 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
 
     public @Nullable Player damageDebugResultReceiver = null;
 
-    protected final Map<VehicleProp<?>, Prop.PropModifyContext<VehicleData, ?>> propertyModifiers = new HashMap<>();
+    protected final Map<VehicleProp<?>, Prop.PropModifyContext<VehicleData, DefaultVehicleData, ?>> propertyModifiers = new HashMap<>();
 
     @Override
     @SuppressWarnings("unchecked")
-    public @NotNull Map<VehicleProp<?>, Prop.PropModifyContext<VehicleData, ?>> getPropModifiers() {
+    public @NotNull Map<VehicleProp<?>, Prop.PropModifyContext<VehicleData, DefaultVehicleData, ?>> getPropModifiers() {
         return this.propertyModifiers;
     }
 

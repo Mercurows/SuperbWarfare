@@ -25,8 +25,8 @@ public class MinigunItem extends GunItem {
     }
 
     @Override
-    public int getCustomRPM(ItemStack stack) {
-        return GunData.from(stack).data().getInt("CustomRPM");
+    public int getCustomRPM(GunData data) {
+        return data.data().getInt("CustomRPM");
     }
 
     @Override
@@ -50,7 +50,7 @@ public class MinigunItem extends GunItem {
     }
 
     @Override
-    public ResourceLocation getGunIcon(ItemStack stack) {
+    public ResourceLocation getGunIcon(GunData data) {
         return Mod.loc("textures/gun_icon/minigun_icon.png");
     }
 }

@@ -59,7 +59,7 @@ public class InsidiousItem extends GunItem {
     }
 
     @Override
-    public ResourceLocation getGunIcon(ItemStack stack) {
+    public ResourceLocation getGunIcon(GunData data) {
         return Mod.loc("textures/gun_icon/insidious_icon.png");
     }
 

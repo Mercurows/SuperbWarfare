@@ -59,7 +59,7 @@ public class HuntingRifleItem extends GunItem {
     }
 
     @Override
-    public ResourceLocation getGunIcon(ItemStack stack) {
+    public ResourceLocation getGunIcon(GunData data) {
         return Mod.loc("textures/gun_icon/hunting_rifle_icon.png");
     }
 

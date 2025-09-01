@@ -86,8 +86,8 @@ public class RpgItem extends GunItem {
     }
 
     @Override
-    public ResourceLocation getGunIcon(ItemStack stack) {
-        int i = GunData.from(stack).selectedAmmoType.get();
+    public ResourceLocation getGunIcon(GunData data) {
+        int i = data.selectedAmmoType.get();
         if (i == 0) {
             return Mod.loc("textures/gun_icon/rpg_tbg_icon.png");
         }
@@ -133,7 +133,7 @@ public class RpgItem extends GunItem {
     }
 
     @Override
-    public boolean canEditAttachments(ItemStack stack) {
+    public boolean canEditAttachments(GunData data) {
         return true;
     }
 }

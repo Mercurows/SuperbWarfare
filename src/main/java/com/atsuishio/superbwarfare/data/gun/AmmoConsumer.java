@@ -63,11 +63,11 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
         return this.initialized;
     }
 
-    private transient final Map<GunProp<?>, Prop.PropModifyContext<GunData, ?>> modifiers = new HashMap<>();
+    private transient final Map<GunProp<?>, Prop.PropModifyContext<GunData, DefaultGunData, ?>> modifiers = new HashMap<>();
 
     @Override
     @SuppressWarnings("unchecked")
-    public @NotNull Map<GunProp<?>, Prop.PropModifyContext<GunData, ?>> getPropModifiers() {
+    public @NotNull Map<GunProp<?>, Prop.PropModifyContext<GunData, DefaultGunData, ?>> getPropModifiers() {
         return this.modifiers;
     }
 

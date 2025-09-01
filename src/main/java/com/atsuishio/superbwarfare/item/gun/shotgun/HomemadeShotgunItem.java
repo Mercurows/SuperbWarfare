@@ -71,12 +71,12 @@ public class HomemadeShotgunItem extends GunItem {
     }
 
     @Override
-    public ResourceLocation getGunIcon(ItemStack stack) {
+    public ResourceLocation getGunIcon(GunData data) {
         return Mod.loc("textures/gun_icon/homemade_shotgun_icon.png");
     }
 
     @Override
-    public boolean isOpenBolt(ItemStack stack) {
+    public boolean isOpenBolt(GunData data) {
         return true;
     }
 

@@ -468,7 +468,7 @@ public class ClientEventHandler {
     public static void handleGunMelee(Player player, ItemStack stack) {
         if (stack.getItem() instanceof GunItem gunItem) {
             var data = GunData.from(stack);
-            if (gunItem.hasMeleeAttack(stack) && gunMelee == 0 && drawTime < 0.01
+            if (gunItem.hasMeleeAttack(data) && gunMelee == 0 && drawTime < 0.01
                     && (ModKeyMappings.MELEE.isDown() || (data.meleeOnly() && holdFire))
                     && !(player.getVehicle() instanceof ArmedVehicleEntity iArmedVehicle && iArmedVehicle.banHand(player))
                     && !holdFireVehicle
@@ -852,7 +852,7 @@ public class ClientEventHandler {
                 ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, player)).getBlockPos())));
 
         Mod.queueClientWork((int) (1 + 1.5 * shooterHeight), () -> {
-            if (gunItem.canEjectShell(stack)) {
+            if (gunItem.canEjectShell(data)) {
                 if (data.selectedAmmoConsumer().type == AmmoConsumer.AmmoConsumeType.PLAYER_AMMO) {
                     var ammoType = data.selectedAmmoConsumer().getPlayerAmmoType();
                     switch (ammoType) {
@@ -953,7 +953,7 @@ public class ClientEventHandler {
         if (player.isCrouching() && player.getBbHeight() >= 1 && !isProne(player)) {
             pose = 0.85f;
         } else if (isProne(player)) {
-            pose = (data.attachment.get(AttachmentType.GRIP) == 3 || gunItem.hasBipod(stack)) ? 0 : 0.25f;
+            pose = (data.attachment.get(AttachmentType.GRIP) == 3 || gunItem.hasBipod(data)) ? 0 : 0.25f;
         } else {
             pose = 1;
         }
@@ -1104,7 +1104,7 @@ public class ClientEventHandler {
             if (player.isShiftKeyDown() && player.getBbHeight() >= 1 && isProne(player)) {
                 pose = 0.85;
             } else if (isProne(player)) {
-                pose = (data.attachment.get(AttachmentType.GRIP) == 3 || gunItem.hasBipod(stack)) ? 0 : 0.25f;
+                pose = (data.attachment.get(AttachmentType.GRIP) == 3 || gunItem.hasBipod(data)) ? 0 : 0.25f;
             } else {
                 pose = 1;
             }
@@ -1346,9 +1346,10 @@ public class ClientEventHandler {
 
         customAnimSpeed = customSpeed;
 
-        int barrelType = GunData.from(stack).attachment.get(AttachmentType.BARREL);
-        int gripType = GunData.from(stack).attachment.get(AttachmentType.GRIP);
-        int scopeType = GunData.from(stack).attachment.get(AttachmentType.GRIP);
+        var data = GunData.from(stack);
+        int barrelType = data.attachment.get(AttachmentType.BARREL);
+        int gripType = data.attachment.get(AttachmentType.GRIP);
+        int scopeType = data.attachment.get(AttachmentType.GRIP);
 
         float recoil = switch (barrelType) {
             case 1 -> 0.75f;
@@ -1378,7 +1379,7 @@ public class ClientEventHandler {
         if (player.isShiftKeyDown() && player.getBbHeight() >= 1 && !isProne(player)) {
             pose = 0.85f;
         } else if (isProne(player)) {
-            if (GunData.from(stack).attachment.get(AttachmentType.GRIP) == 3 || gunItem.hasBipod(stack)) {
+            if (data.attachment.get(AttachmentType.GRIP) == 3 || gunItem.hasBipod(data)) {
                 pose = 0.5f;
             } else {
                 pose = 0.75f;
@@ -1465,7 +1466,7 @@ public class ClientEventHandler {
         if (player.isShiftKeyDown() && player.getBbHeight() >= 1 && !isProne(player)) {
             pose = 0.7f;
         } else if (isProne(player)) {
-            if (data.attachment.get(AttachmentType.GRIP) == 3 || gunItem.hasBipod(stack)) {
+            if (data.attachment.get(AttachmentType.GRIP) == 3 || gunItem.hasBipod(data)) {
                 pose = 0.1f;
             } else {
                 pose = 0.5f;

@@ -83,23 +83,23 @@ public class Ntw20Item extends GunItem {
     }
 
     @Override
-    public boolean canAdjustZoom(ItemStack stack) {
-        return GunData.from(stack).attachment.get(AttachmentType.SCOPE) == 3;
+    public boolean canAdjustZoom(GunData data) {
+        return data.attachment.get(AttachmentType.SCOPE) == 3;
     }
 
     @Override
-    public double getCustomZoom(ItemStack stack) {
-        int scopeType = GunData.from(stack).attachment.get(AttachmentType.SCOPE);
+    public double getCustomZoom(GunData data) {
+        int scopeType = data.attachment.get(AttachmentType.SCOPE);
         return switch (scopeType) {
             case 2 -> 2.25;
-            case 3 -> GunsTool.getGunDoubleTag(NBTTool.getTag(stack), "CustomZoom");
+            case 3 -> GunsTool.getGunDoubleTag(NBTTool.getTag(data.stack), "CustomZoom");
             default -> 0;
         };
     }
 
     @Override
-    public int getCustomMagazine(ItemStack stack) {
-        return switch (GunData.from(stack).attachment.get(AttachmentType.MAGAZINE)) {
+    public int getCustomMagazine(GunData data) {
+        return switch (data.attachment.get(AttachmentType.MAGAZINE)) {
             case 1 -> 3;
             case 2 -> 6;
             default -> 0;
@@ -107,37 +107,37 @@ public class Ntw20Item extends GunItem {
     }
 
     @Override
-    public ResourceLocation getGunIcon(ItemStack stack) {
+    public ResourceLocation getGunIcon(GunData data) {
         return Mod.loc("textures/gun_icon/ntw_20_icon.png");
     }
 
     @Override
-    public boolean isOpenBolt(ItemStack stack) {
+    public boolean isOpenBolt(GunData data) {
         return true;
     }
 
     @Override
-    public boolean hasBulletInBarrel(ItemStack stack) {
+    public boolean hasBulletInBarrel(GunData data) {
         return true;
     }
 
     @Override
-    public boolean hasCustomMagazine(ItemStack stack) {
+    public boolean hasCustomMagazine(GunData data) {
         return true;
     }
 
     @Override
-    public boolean hasCustomScope(ItemStack stack) {
+    public boolean hasCustomScope(GunData data) {
         return true;
     }
 
     @Override
-    public boolean hasBipod(ItemStack stack) {
+    public boolean hasBipod(GunData data) {
         return true;
     }
 
     @Override
-    public boolean canEditAttachments(ItemStack stack) {
+    public boolean canEditAttachments(GunData data) {
         return true;
     }
 }

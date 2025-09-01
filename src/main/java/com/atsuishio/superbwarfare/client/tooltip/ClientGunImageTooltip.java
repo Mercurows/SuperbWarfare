@@ -73,7 +73,7 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
 
     protected boolean shouldRenderEditTooltip() {
         if (this.stack.getItem() instanceof GunItem gunItem) {
-            return gunItem.canEditAttachments(stack);
+            return gunItem.canEditAttachments(GunData.from(stack));
         }
         return false;
     }

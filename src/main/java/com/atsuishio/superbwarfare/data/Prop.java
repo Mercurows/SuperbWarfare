@@ -10,6 +10,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public abstract class Prop<DATA extends DefaultDataSupplier<DEFAULT_DATA>, DEFAULT_DATA, FIELD> {
@@ -41,7 +42,7 @@ public abstract class Prop<DATA extends DefaultDataSupplier<DEFAULT_DATA>, DEFAU
     }
 
     public Function<DEFAULT_DATA, FIELD> specialSupplier;
-    public PropModifyContext<DATA, FIELD> limiter;
+    public PropModifyContext<DATA, DEFAULT_DATA, FIELD> limiter;
 
     public Type getFieldType() {
         return this.field.getGenericType();
@@ -53,14 +54,19 @@ public abstract class Prop<DATA extends DefaultDataSupplier<DEFAULT_DATA>, DEFAU
         return (T) this;
     }
 
+    // TODO 解决类型推断问题
     @SuppressWarnings("unchecked")
-    protected <T extends Prop<DATA, DEFAULT_DATA, FIELD>> T withLimiter(Prop.PropModifyContext<DATA, FIELD> limiter) {
+    protected <T extends Prop<DATA, DEFAULT_DATA, FIELD>> T withLimiter(Prop.PropModifyContext<DATA, DEFAULT_DATA, FIELD> limiter) {
         this.limiter = limiter;
         return (T) this;
     }
 
     protected <T extends Prop<DATA, DEFAULT_DATA, FIELD>> T withLimiter(Function<FIELD, FIELD> limiter) {
-        return withLimiter((data, value) -> limiter.apply(value));
+        return withLimiter((prop, data, value) -> limiter.apply(value));
+    }
+
+    protected <T extends Prop<DATA, DEFAULT_DATA, FIELD>> T withLimiter(BiFunction<DATA, FIELD, FIELD> limiter) {
+        return withLimiter((prop, data, value) -> limiter.apply(data, value));
     }
 
     @SuppressWarnings("unchecked")
@@ -77,8 +83,8 @@ public abstract class Prop<DATA extends DefaultDataSupplier<DEFAULT_DATA>, DEFAU
         }
     }
 
-    public PropModifier asModifier(DATA data) {
-        return new PropModifier(data, this.getDefault(data.getDefault()), limiter);
+    public PropModifier<DATA, DEFAULT_DATA, FIELD> asModifier(DATA data) {
+        return new PropModifier<>(this, data, limiter);
     }
 
     @SuppressWarnings("unchecked")
@@ -88,59 +94,8 @@ public abstract class Prop<DATA extends DefaultDataSupplier<DEFAULT_DATA>, DEFAU
 
 
     @FunctionalInterface
-    public interface PropModifyContext<DATA, FIELD> {
-        FIELD apply(@NotNull DATA data, @NotNull FIELD value);
+    public interface PropModifyContext<DATA extends DefaultDataSupplier<DEFAULT_DATA>, DEFAULT_DATA, FIELD> {
+        FIELD apply(@NotNull PropModifier<DATA, ?, FIELD> modifier, @NotNull DATA data, @NotNull FIELD value);
     }
 
-    public class PropModifier {
-        private final DATA data;
-        private final FIELD value;
-        private final PropModifyContext<DATA, FIELD> limiter;
-
-        private final List<PropModifyContext<DATA, FIELD>> modifiers = new ArrayList<>();
-
-        private PropModifier(DATA data, FIELD value, @Nullable PropModifyContext<DATA, FIELD> limiter) {
-            this.data = data;
-            this.value = value;
-            this.limiter = limiter;
-        }
-
-        public PropModifier apply(@Nullable List<PropModifyContext<DATA, FIELD>> modifiers) {
-            if (modifiers == null) return this;
-
-            for (var modifier : modifiers) {
-                apply(modifier);
-            }
-            return this;
-        }
-
-        public PropModifier apply(@Nullable PropModifyContext<DATA, FIELD> modifier) {
-            if (modifier == null) return this;
-
-            modifiers.add(modifier);
-            return this;
-        }
-
-        public PropModifier override(@Nullable FIELD value) {
-            if (value == null) return this;
-
-            modifiers.add((data, v) -> value);
-            return this;
-        }
-
-        @SuppressWarnings("unchecked")
-        public FIELD compute() {
-            var result = value;
-
-            for (var modifier : modifiers) {
-                result = modifier.apply(data, result);
-            }
-
-            if (limiter != null) {
-                result = limiter.apply(data, result);
-            }
-
-            return (FIELD) DataLoader.processValue(result);
-        }
-    }
 }

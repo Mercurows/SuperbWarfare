@@ -121,7 +121,7 @@ public class TaserItem extends GunItem implements EnergyStorageItem {
     }
 
     @Override
-    public ResourceLocation getGunIcon(ItemStack stack) {
+    public ResourceLocation getGunIcon(GunData data) {
         return Mod.loc("textures/gun_icon/taser_icon.png");
     }
 

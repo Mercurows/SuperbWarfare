@@ -41,9 +41,10 @@ public class Mp5Item extends GunItem {
         if (event.getData(DataTickets.ITEM_RENDER_PERSPECTIVE) != ItemDisplayContext.FIRST_PERSON_RIGHT_HAND)
             return event.setAndContinue(RawAnimation.begin().thenLoop("animation.mp5.idle"));
 
-        boolean drum = GunData.from(stack).attachment.get(AttachmentType.MAGAZINE) == 2;
+        var data=GunData.from(stack);
+        boolean drum = data.attachment.get(AttachmentType.MAGAZINE) == 2;
 
-        if (GunData.from(stack).reload.empty()) {
+        if (data.reload.empty()) {
             if (drum) {
                 return event.setAndContinue(RawAnimation.begin().thenPlay("animation.mp5.reload_empty_drum"));
             } else {
@@ -51,7 +52,7 @@ public class Mp5Item extends GunItem {
             }
         }
 
-        if (GunData.from(stack).reload.normal()) {
+        if (data.reload.normal()) {
             if (drum) {
                 return event.setAndContinue(RawAnimation.begin().thenPlay("animation.mp5.reload_normal_drum"));
             } else {
@@ -101,14 +102,14 @@ public class Mp5Item extends GunItem {
     }
 
     @Override
-    public double getCustomZoom(ItemStack stack) {
-        int scopeType = GunData.from(stack).attachment.get(AttachmentType.SCOPE);
+    public double getCustomZoom(GunData data) {
+        int scopeType = data.attachment.get(AttachmentType.SCOPE);
         return scopeType == 2 ? 2.75 : 0;
     }
 
     @Override
-    public int getCustomMagazine(ItemStack stack) {
-        int magType = GunData.from(stack).attachment.get(AttachmentType.MAGAZINE);
+    public int getCustomMagazine(GunData data) {
+        int magType = data.attachment.get(AttachmentType.MAGAZINE);
         return magType == 2 ? 20 : 0;
     }
 
@@ -118,52 +119,52 @@ public class Mp5Item extends GunItem {
     }
 
     @Override
-    public ResourceLocation getGunIcon(ItemStack stack) {
+    public ResourceLocation getGunIcon(GunData data) {
         return Mod.loc("textures/gun_icon/mp_5_icon.png");
     }
 
     @Override
-    public boolean isOpenBolt(ItemStack stack) {
+    public boolean isOpenBolt(GunData data) {
         return true;
     }
 
     @Override
-    public boolean hasBulletInBarrel(ItemStack stack) {
+    public boolean hasBulletInBarrel(GunData data) {
         return true;
     }
 
     @Override
-    public boolean hasCustomBarrel(ItemStack stack) {
+    public boolean hasCustomBarrel(GunData data) {
         return true;
     }
 
     @Override
-    public boolean hasCustomGrip(ItemStack stack) {
+    public boolean hasCustomGrip(GunData data) {
         return true;
     }
 
     @Override
-    public boolean hasCustomMagazine(ItemStack stack) {
+    public boolean hasCustomMagazine(GunData data) {
         return true;
     }
 
     @Override
-    public boolean hasCustomScope(ItemStack stack) {
+    public boolean hasCustomScope(GunData data) {
         return true;
     }
 
     @Override
-    public boolean hasCustomStock(ItemStack stack) {
+    public boolean hasCustomStock(GunData data) {
         return true;
     }
 
     @Override
-    public boolean canEjectShell(ItemStack stack) {
+    public boolean canEjectShell(GunData data) {
         return true;
     }
 
     @Override
-    public boolean canEditAttachments(ItemStack stack) {
+    public boolean canEditAttachments(GunData data) {
         return true;
     }
 }

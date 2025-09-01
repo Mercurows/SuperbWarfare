@@ -82,23 +82,23 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
         addBoltTimeBehavior(this.boltTimeBehaviors);
         SingletonGeoAnimatable.registerSyncedAnimatable(this);
 
-        setProperty(GunProp.DAMAGE, (data, v) -> v + getCustomDamage(data.stack));
-        setProperty(GunProp.HEADSHOT, (data, v) -> v + getCustomHeadshot(data.stack));
-        setProperty(GunProp.BYPASSES_ARMOR, (data, v) -> v + getCustomBypassArmor(data.stack));
-        setProperty(GunProp.MAGAZINE, (data, v) -> v + getCustomMagazine(data.stack));
-        setProperty(GunProp.DEFAULT_ZOOM, (data, v) -> v + getCustomZoom(data.stack));
-        setProperty(GunProp.RPM, (data, v) -> v + getCustomRPM(data.stack));
-        setProperty(GunProp.WEIGHT, (data, v) -> v + getCustomWeight(data.stack));
-        setProperty(GunProp.VELOCITY, (data, v) -> v + getCustomVelocity(data.stack));
-        setProperty(GunProp.SOUND_RADIUS, (data, v) -> v + getCustomSoundRadius(data.stack));
-        setProperty(GunProp.BOLT_ACTION_TIME, (data, v) -> v + getCustomBoltActionTime(data.stack));
+        setProperty(GunProp.DAMAGE, (data, v) -> v + getCustomDamage(data));
+        setProperty(GunProp.HEADSHOT, (data, v) -> v + getCustomHeadshot(data));
+        setProperty(GunProp.BYPASSES_ARMOR, (data, v) -> v + getCustomBypassArmor(data));
+        setProperty(GunProp.MAGAZINE, (data, v) -> v + getCustomMagazine(data));
+        setProperty(GunProp.DEFAULT_ZOOM, (data, v) -> v + getCustomZoom(data));
+        setProperty(GunProp.RPM, (data, v) -> v + getCustomRPM(data));
+        setProperty(GunProp.WEIGHT, (data, v) -> v + getCustomWeight(data));
+        setProperty(GunProp.VELOCITY, (data, v) -> v + getCustomVelocity(data));
+        setProperty(GunProp.SOUND_RADIUS, (data, v) -> v + getCustomSoundRadius(data));
+        setProperty(GunProp.BOLT_ACTION_TIME, (data, v) -> v + getCustomBoltActionTime(data));
     }
 
-    protected final Map<GunProp<?>, Prop.PropModifyContext<GunData, ?>> propertyModifiers = new HashMap<>();
+    protected final Map<GunProp<?>, Prop.PropModifyContext<GunData, DefaultGunData, ?>> propertyModifiers = new HashMap<>();
 
     @Override
     @SuppressWarnings("unchecked")
-    public @NotNull Map<GunProp<?>, Prop.PropModifyContext<GunData, ?>> getPropModifiers() {
+    public @NotNull Map<GunProp<?>, Prop.PropModifyContext<GunData, DefaultGunData, ?>> getPropModifiers() {
         return this.propertyModifiers;
     }
 
@@ -178,6 +178,10 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
     }
 
     public ResourceLocation getGunIcon(ItemStack stack) {
+        return getGunIcon(GunData.from(stack));
+    }
+
+    public ResourceLocation getGunIcon(GunData data) {
         return Mod.loc("textures/gun_icon/default_icon.png");
     }
 
@@ -214,28 +218,22 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
 
     /**
      * 开膛待击
-     *
-     * @param stack 武器物品
      */
-    public boolean isOpenBolt(ItemStack stack) {
+    public boolean isOpenBolt(GunData data) {
         return false;
     }
 
     /**
      * 是否允许额外往枪管里塞入一发子弹
-     *
-     * @param stack 武器物品
      */
-    public boolean hasBulletInBarrel(ItemStack stack) {
+    public boolean hasBulletInBarrel(GunData data) {
         return false;
     }
 
     /**
      * 武器是否能更换枪管配件
-     *
-     * @param stack 武器物品
      */
-    public boolean hasCustomBarrel(ItemStack stack) {
+    public boolean hasCustomBarrel(GunData data) {
         return false;
     }
 
@@ -245,10 +243,8 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
 
     /**
      * 武器是否能更换枪托配件
-     *
-     * @param stack 武器物品
      */
-    public boolean hasCustomGrip(ItemStack stack) {
+    public boolean hasCustomGrip(GunData data) {
         return false;
     }
 
@@ -258,10 +254,8 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
 
     /**
      * 武器是否能更换弹匣配件
-     *
-     * @param stack 武器物品
      */
-    public boolean hasCustomMagazine(ItemStack stack) {
+    public boolean hasCustomMagazine(GunData data) {
         return false;
     }
 
@@ -271,10 +265,8 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
 
     /**
      * 武器是否能更换瞄具配件
-     *
-     * @param stack 武器物品
      */
-    public boolean hasCustomScope(ItemStack stack) {
+    public boolean hasCustomScope(GunData data) {
         return false;
     }
 
@@ -284,10 +276,8 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
 
     /**
      * 武器是否能更换枪托配件
-     *
-     * @param stack 武器物品
      */
-    public boolean hasCustomStock(ItemStack stack) {
+    public boolean hasCustomStock(GunData data) {
         return false;
     }
 
@@ -297,78 +287,72 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
 
     /**
      * 武器是否有脚架
-     *
-     * @param stack 武器物品
      */
-    public boolean hasBipod(ItemStack stack) {
+    public boolean hasBipod(GunData data) {
         return false;
     }
 
     /**
      * 武器是否会抛壳
-     *
-     * @param stack 武器物品
      */
-    public boolean canEjectShell(ItemStack stack) {
+    public boolean canEjectShell(GunData data) {
         return false;
     }
 
     /**
      * 武器是否能进行近战攻击
-     *
-     * @param stack 武器物品
      */
-    public boolean hasMeleeAttack(ItemStack stack) {
-        return GunData.from(stack).get(GunProp.MELEE_DAMAGE) > 0;
+    public boolean hasMeleeAttack(GunData data) {
+        return data.get(GunProp.MELEE_DAMAGE) > 0;
     }
 
     /**
      * 获取额外伤害加成
      */
-    public double getCustomDamage(ItemStack stack) {
+    public double getCustomDamage(GunData data) {
         return 0;
     }
 
     /**
      * 获取额外爆头伤害加成
      */
-    public double getCustomHeadshot(ItemStack stack) {
+    public double getCustomHeadshot(GunData data) {
         return 0;
     }
 
     /**
      * 获取额外护甲穿透加成
      */
-    public double getCustomBypassArmor(ItemStack stack) {
+    public double getCustomBypassArmor(GunData data) {
         return 0;
     }
 
     /**
      * 获取额外弹匣容量加成
      */
-    public int getCustomMagazine(ItemStack stack) {
+    public int getCustomMagazine(GunData data) {
         return 0;
     }
 
     /**
      * 获取额外缩放倍率加成
      */
-    public double getCustomZoom(ItemStack stack) {
+    public double getCustomZoom(GunData data) {
         return 0;
     }
 
     /**
      * 获取额外RPM加成
      */
-    public int getCustomRPM(ItemStack stack) {
+    public int getCustomRPM(GunData data) {
         return 0;
     }
 
     /**
      * 获取额外总重量加成
      */
-    public double getCustomWeight(ItemStack stack) {
-        var attachment = GunData.from(stack).attachment;
+    public double getCustomWeight(GunData data) {
+        var attachment = data.attachment;
 
         double scopeWeight = switch (attachment.get(AttachmentType.SCOPE)) {
             case 1 -> 0.5;
@@ -407,32 +391,32 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
     /**
      * 获取额外弹速加成
      */
-    public double getCustomVelocity(ItemStack stack) {
+    public double getCustomVelocity(GunData data) {
         return 0;
     }
 
     /**
      * 获取额外音效半径加成
      */
-    public double getCustomSoundRadius(ItemStack stack) {
-        return GunData.from(stack).attachment.get(AttachmentType.BARREL) == 2 ? 0.6 : 1;
+    public double getCustomSoundRadius(GunData data) {
+        return data.attachment.get(AttachmentType.BARREL) == 2 ? 0.6 : 1;
     }
 
-    public int getCustomBoltActionTime(ItemStack stack) {
+    public int getCustomBoltActionTime(GunData data) {
         return 0;
     }
 
     /**
      * 是否允许缩放
      */
-    public boolean canAdjustZoom(ItemStack stack) {
+    public boolean canAdjustZoom(GunData data) {
         return false;
     }
 
     /**
      * 是否允许切换瞄具
      */
-    public boolean canSwitchScope(ItemStack stack) {
+    public boolean canSwitchScope(GunData data) {
         return false;
     }
 
@@ -822,8 +806,8 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
         return true;
     }
 
-    public boolean canEditAttachments(ItemStack stack) {
-        return stack.getItem() instanceof GunItem && GunData.from(stack).ammoConsumers.size() > 1;
+    public boolean canEditAttachments(GunData data) {
+        return data.ammoConsumers.size() > 1;
     }
 
     /**
@@ -865,7 +849,7 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
     @OnlyIn(Dist.CLIENT)
     @Override
     public @Nullable Screen getItemScreen(ItemStack stack, Player player, InteractionHand hand) {
-        if (ClientEventHandler.canOpenEditScreen(stack, hand) && canEditAttachments(stack)) {
+        if (ClientEventHandler.canOpenEditScreen(stack, hand) && stack.getItem() instanceof GunItem && canEditAttachments(GunData.from(stack))) {
             return new WeaponEditScreen(stack);
         }
         return null;

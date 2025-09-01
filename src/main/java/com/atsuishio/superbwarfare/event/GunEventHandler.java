@@ -89,7 +89,7 @@ public class GunEventHandler {
      * 完成换弹过程，装填弹药
      */
     private static void finishReload(@Nullable Entity shooter, @NotNull GunData data) {
-        if (data.item.isOpenBolt(data.stack)) {
+        if (data.item.isOpenBolt(data)) {
             if (!data.hasEnoughAmmoToShoot(shooter)) {
                 finishGunEmptyReload(shooter, data);
             } else {
@@ -154,7 +154,7 @@ public class GunEventHandler {
 
             if (canMagazineReload || canClipLoad) {
                 int magazine = data.get(GunProp.MAGAZINE);
-                var extra = (data.item.isOpenBolt(data.stack) && data.item.hasBulletInBarrel(data.stack)) ? 1 : 0;
+                var extra = (data.item.isOpenBolt(data) && data.item.hasBulletInBarrel(data)) ? 1 : 0;
                 var maxAmmo = magazine + extra;
 
                 if (data.ammo.get() < maxAmmo) {
@@ -197,7 +197,7 @@ public class GunEventHandler {
      * 返还多余弹药
      */
     public static void redrawExtraAmmo(@Nullable Entity shooter, @NotNull GunData data) {
-        var hasBulletInBarrel = data.item.hasBulletInBarrel(data.stack);
+        var hasBulletInBarrel = data.item.hasBulletInBarrel(data);
         var ammoCount = data.ammo.get();
         var magazine = data.get(GunProp.MAGAZINE);
 
@@ -269,7 +269,7 @@ public class GunEventHandler {
     private static void startReload(@Nullable Entity shooter, @NotNull GunData data) {
         var reload = data.reload;
 
-        if (data.item.isOpenBolt(data.stack)) {
+        if (data.item.isOpenBolt(data)) {
             if (!data.hasEnoughAmmoToShoot(shooter)) {
                 reload.setTime(data.get(GunProp.EMPTY_RELOAD_TIME) + 1);
                 reload.setState(ReloadState.EMPTY_RELOADING);
@@ -290,7 +290,7 @@ public class GunEventHandler {
         var stack = data.stack();
         var gunItem = data.item();
 
-        data.reloadAmmo(shooter, gunItem.hasBulletInBarrel(stack));
+        data.reloadAmmo(shooter, gunItem.hasBulletInBarrel(data));
         NeoForge.EVENT_BUS.post(new ReloadEvent.Post(shooter, data));
     }
 
