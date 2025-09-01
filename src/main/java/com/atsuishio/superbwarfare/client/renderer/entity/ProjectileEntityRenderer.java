@@ -33,9 +33,6 @@ public class ProjectileEntityRenderer extends GeoEntityRenderer<ProjectileEntity
     @Override
     public void preRender(PoseStack poseStack, ProjectileEntity entity, BakedGeoModel model, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, int color) {
         if (entity.tickCount > 1 && !entity.isInWater() && entity.getDeltaMovement().lengthSqr() > 25) {
-            float scale = 1f;
-            this.scaleHeight = scale;
-            this.scaleWidth = scale;
             super.preRender(poseStack, entity, model, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, color);
         }
     }

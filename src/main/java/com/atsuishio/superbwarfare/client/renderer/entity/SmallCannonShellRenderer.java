@@ -29,9 +29,6 @@ public class SmallCannonShellRenderer extends GeoEntityRenderer<SmallCannonShell
     @Override
     public void preRender(PoseStack poseStack, SmallCannonShellEntity entity, BakedGeoModel model, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, int color) {
         if (entity.tickCount > 0) {
-            float scale = 1f;
-            this.scaleHeight = scale;
-            this.scaleWidth = scale;
             super.preRender(poseStack, entity, model, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, color);
         }
     }
