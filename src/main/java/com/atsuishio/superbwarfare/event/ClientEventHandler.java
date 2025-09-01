@@ -1719,8 +1719,7 @@ public class ClientEventHandler {
     @SubscribeEvent
     public static void setPlayerInvisible(RenderPlayerEvent.Pre event) {
         var otherPlayer = event.getEntity();
-
-        if (otherPlayer.getVehicle() instanceof ArmedVehicleEntity iArmedVehicle && iArmedVehicle.getVehicleEntity().hidePassenger(otherPlayer)) {
+        if (otherPlayer.getVehicle() instanceof VehicleEntity vehicle && vehicle.hidePassenger(otherPlayer)) {
             event.setCanceled(true);
         }
     }
