@@ -405,6 +405,12 @@ public class Lav150Entity extends ContainerMobileVehicleEntity implements GeoEnt
     }
 
     @Override
+    public int passengerSeatLocation(Entity entity) {
+        int i = this.getSeatIndex(entity);
+        return i == 0 ? 1 : 0;
+    }
+
+    @Override
     public void onPassengerTurned(@NotNull Entity entity) {
         this.clampRotation(entity);
     }

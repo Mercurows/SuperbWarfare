@@ -891,6 +891,11 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
         this.clampRotation(entity);
     }
 
+    @Override
+    public int passengerSeatLocation(Entity entity) {
+        return 1;
+    }
+
     private PlayState cannonShootPredicate(AnimationState<Yx100Entity> event) {
         if (this.entityData.get(CANNON_RECOIL_TIME) > 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlayAndHold("animation.yx100.fire"));

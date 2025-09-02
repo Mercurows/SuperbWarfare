@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.client.overlay;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.RenderHelper;
+import com.atsuishio.superbwarfare.entity.vehicle.Bmp2Entity;
 import com.atsuishio.superbwarfare.entity.vehicle.SpeedboatEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.Yx100Entity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.LandArmorEntity;
@@ -122,6 +123,9 @@ public class VehicleMgHudOverlay implements LayeredDraw.Layer {
     private static boolean shouldRenderCrossHair(Player player) {
         if (player == null) return false;
         return !player.isSpectator()
-                && (player.getVehicle() instanceof SpeedboatEntity || (player.getVehicle() instanceof Yx100Entity yx100 && yx100.getNthEntity(1) == player));
+                && (player.getVehicle() instanceof SpeedboatEntity
+                || (player.getVehicle() instanceof Yx100Entity yx100 && yx100.getNthEntity(1) == player)
+                || (player.getVehicle() instanceof Bmp2Entity bmp2 && bmp2.getNthEntity(0) != player)
+        );
     }
 }

@@ -7,6 +7,7 @@ import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
+import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -120,6 +121,11 @@ public class Bmp2Renderer extends GeoEntityRenderer<Bmp2Entity> {
 
             bone.setPosX(r2 * Mth.lerp(partialTick, (float) animatable.recoilShakeO, (float) animatable.getRecoilShake()) * 0.125f);
             bone.setRotZ(r2 * Mth.lerp(partialTick, (float) animatable.recoilShakeO, (float) animatable.getRecoilShake()) * Mth.DEG_TO_RAD * 0.2f);
+        }
+
+        if (name.equals("root")) {
+            Player player = Minecraft.getInstance().player;
+            bone.setHidden(player != null && animatable == player.getVehicle() && animatable.getFirstPassenger() != player && Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON);
         }
 
         for (int i = 0; i < 51; i++) {
