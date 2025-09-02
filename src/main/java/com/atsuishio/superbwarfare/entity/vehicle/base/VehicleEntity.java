@@ -1774,6 +1774,15 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
         return hidePassenger(getSeatIndex(passenger));
     }
 
+    /**
+     * 乘客位置在载具上的部位
+     *
+     * @return 0:车身 1:炮塔
+     */
+    public int passengerSeatLocation(Entity entity) {
+        return 0;
+    }
+
     @Override
     @Nullable
     public ItemStack getPickResult() {

@@ -62,20 +62,38 @@ public class GameRendererMixin {
 
         if (entity != null && entity.getRootVehicle() instanceof VehicleEntity vehicle && (!mainCamera.isDetached() || (vehicle instanceof LandArmorEntity && ClientEventHandler.zoomVehicle))) {
             // rotate camera
-            float a = vehicle.getTurretYaw(tickDelta);
-            float r = (Mth.abs(a) - 90f) / 90f;
-            float r2;
-            if (Mth.abs(a) <= 90f) {
-                r2 = a / 90f;
-            } else {
-                if (a < 0) {
-                    r2 = -(180f + a) / 90f;
-                } else {
-                    r2 = (180f - a) / 90f;
-                }
-            }
 
-            matrices.mulPose(Axis.ZP.rotationDegrees(-r * vehicle.getRoll(tickDelta) + r2 * vehicle.getViewXRot(tickDelta)));
+            if (vehicle.passengerSeatLocation(entity) == 1) {
+                float a = vehicle.getTurretYaw(tickDelta);
+                float r = (Mth.abs(a) - 90f) / 90f;
+                float r2;
+                if (Mth.abs(a) <= 90f) {
+                    r2 = a / 90f;
+                } else {
+                    if (a < 0) {
+                        r2 = -(180f + a) / 90f;
+                    } else {
+                        r2 = (180f - a) / 90f;
+                    }
+                }
+
+                matrices.mulPose(Axis.ZP.rotationDegrees(-r * vehicle.getRoll(tickDelta) + r2 * vehicle.getViewXRot(tickDelta)));
+            } else {
+                float a = Mth.wrapDegrees(entity.getYRot() - vehicle.getYRot());
+                float r = (Mth.abs(a) - 90f) / 90f;
+                float r2;
+                if (Mth.abs(a) <= 90f) {
+                    r2 = a / 90f;
+                } else {
+                    if (a < 0) {
+                        r2 = -(180f + a) / 90f;
+                    } else {
+                        r2 = (180f - a) / 90f;
+                    }
+                }
+
+                matrices.mulPose(Axis.ZP.rotationDegrees(-r * vehicle.getRoll(tickDelta) - r2 * vehicle.getViewXRot(tickDelta)));
+            }
 
             if (!vehicle.useFixedCameraPos(entity)) {
                 // fetch eye offset
