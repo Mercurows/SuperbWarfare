@@ -125,7 +125,7 @@ public class Bmp2Renderer extends GeoEntityRenderer<Bmp2Entity> {
 
         if (name.equals("root")) {
             Player player = Minecraft.getInstance().player;
-            bone.setHidden(player != null && animatable == player.getVehicle() && animatable.getFirstPassenger() != player && Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON);
+            bone.setHidden(player != null && animatable == player.getVehicle() && animatable.getFirstPassenger() != player && (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON || ClientEventHandler.zoomVehicle));
         }
 
         for (int i = 0; i < 51; i++) {
