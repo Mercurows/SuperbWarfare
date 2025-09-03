@@ -318,6 +318,11 @@ public class Tom6Entity extends MobileVehicleEntity implements GeoEntity {
     }
 
     @Override
+    public int passengerSeatLocation(Entity entity) {
+        return 2;
+    }
+
+    @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar data) {
     }
 

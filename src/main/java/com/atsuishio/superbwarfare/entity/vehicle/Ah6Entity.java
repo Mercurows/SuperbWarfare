@@ -675,6 +675,11 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
     }
 
     @Override
+    public int passengerSeatLocation(Entity entity) {
+        return entity == getNthEntity(0) ? 2 : 0;
+    }
+
+    @Override
     public ResourceLocation getVehicleIcon() {
         return Mod.loc("textures/vehicle_icon/ah_6_icon.png");
     }
