@@ -1016,6 +1016,11 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
     }
 
     @Override
+    public int passengerSeatLocation(Entity entity) {
+        return 2;
+    }
+
+    @Override
     public int getHudColor() {
        return super.getHudColor();
     }
