@@ -8,6 +8,7 @@
   "Damage": 500,
   "ExplosionDamage": 120,
   "ExplosionRadius": 9,
+  "Headshot": 0,
   "AmmoType": "superbwarfare:javelin_missile",
   "AvailablePerks": [
     "superbwarfare:powerful_attraction",
