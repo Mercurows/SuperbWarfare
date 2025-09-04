@@ -189,7 +189,7 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, RemoteCont
     }
 
     @Override
-    public float projectileGravity() {
+    public float projectileGravity(Entity entity) {
         return 0.13f;
     }
 

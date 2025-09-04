@@ -108,7 +108,8 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
     public static final EntityDataAccessor<String> OVERRIDE = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.STRING);
     public static final EntityDataAccessor<String> LAST_ATTACKER_UUID = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.STRING);
     public static final EntityDataAccessor<String> LAST_DRIVER_UUID = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.STRING);
-    public static final EntityDataAccessor<String> AI_TARGET_UUID = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.STRING);
+    public static final EntityDataAccessor<String> AI_TURRET_TARGET_UUID = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.STRING);
+    public static final EntityDataAccessor<String> AI_PASSENGER_WEAPON_TARGET_UUID = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.STRING);
 
     public static final EntityDataAccessor<Float> DELTA_ROT = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Float> MOUSE_SPEED_X = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.FLOAT);
@@ -549,7 +550,8 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
         this.entityData.define(LAST_ATTACKER_UUID, "undefined");
         this.entityData.define(LAST_DRIVER_UUID, "undefined");
 
-        this.entityData.define(AI_TARGET_UUID, "undefined");
+        this.entityData.define(AI_TURRET_TARGET_UUID, "undefined");
+        this.entityData.define(AI_PASSENGER_WEAPON_TARGET_UUID, "undefined");
 
         this.entityData.define(DELTA_ROT, 0f);
         this.entityData.define(MOUSE_SPEED_X, 0f);
@@ -1090,8 +1092,14 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
 
         if (getFirstPassenger() instanceof Player) {
             turretAngle();
-        } else {
-            turretAutoAimFormUuid(entityData.get(AI_TARGET_UUID));
+        } else if (getFirstPassenger() instanceof LivingEntity living) {
+            turretAutoAimFormUuid(entityData.get(AI_TURRET_TARGET_UUID), living);
+        }
+
+        if (getNthEntity(1) instanceof Player || getNthEntity(1) == null) {
+            gunnerAngle();
+        } else if (getNthEntity(1) instanceof LivingEntity living) {
+            passengerWeaponAutoAimFormUuid(entityData.get(AI_PASSENGER_WEAPON_TARGET_UUID), living);
         }
 
         this.refreshDimensions();
@@ -1321,7 +1329,7 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
         turretYRotLock = Mth.clamp(0.9f * diffY, min, max);
     }
 
-    public void turretAutoAimFormUuid(String uuid) {
+    public void turretAutoAimFormUuid(String uuid, LivingEntity pLiving) {
         Entity target = EntityFindUtil.findEntity(level(), uuid);
         if (target != null) {
             if (target.getVehicle() != null) {
@@ -1336,7 +1344,7 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
                 targetVel = targetVel.add(0, gravity, 0);
             }
 
-            Vec3 targetVec = RangeTool.calculateFiringSolution(getTurretShootPos(), targetPos, targetVel, projectileVelocity(), projectileGravity());
+            Vec3 targetVec = RangeTool.calculateFiringSolution(getTurretShootPos(pLiving), targetPos, targetVel, projectileVelocity(pLiving), projectileGravity(pLiving));
             turretAutoAimFormVector(targetVec);
         }
     }
@@ -1358,30 +1366,80 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
         return 30;
     }
     // 炮弹发射位置
-    public Vec3 getTurretShootPos() {
+    public Vec3 getTurretShootPos(Entity entity) {
         return getEyePosition();
     }
     // 炮弹发射速度
-    public float projectileVelocity() {
+    public float projectileVelocity(Entity entity) {
         return 10;
     }
     // 炮弹重力
+    public float projectileGravity(Entity entity) {
+        return 0.03f;
+    }
+    // 炮弹重力(固定火炮用)
     public float projectileGravity() {
         return 0.03f;
     }
 
-    public void passengerWeaponAutoAimFormVector(float ySpeed, float xSpeed, float minXAngle, float maxXAngle, Vec3 shootVec) {
+    public void passengerWeaponAutoAimFormUuid(String uuid, LivingEntity pLiving) {
+        Entity target = EntityFindUtil.findEntity(level(), uuid);
+        if (target != null) {
+            if (target.getVehicle() != null) {
+                target = target.getVehicle();
+            }
+
+            Vec3 targetPos = target.getBoundingBox().getCenter();
+            Vec3 targetVel = target.getDeltaMovement();
+
+            if (target instanceof LivingEntity living) {
+                double gravity = living.getAttributeValue(ForgeMod.ENTITY_GRAVITY.get());
+                targetVel = targetVel.add(0, gravity, 0);
+            }
+
+            Vec3 targetVec = RangeTool.calculateFiringSolution(passengerWeaponShootPos(pLiving), targetPos, targetVel, projectileVelocity(pLiving), projectileGravity(pLiving));
+            passengerWeaponAutoAimFormVector(targetVec);
+        }
+    }
+
+    public void passengerWeaponAutoAimFormVector(Vec3 shootVec) {
+        float ySpeed = passengerWeaponYSpeed();
+        float xSpeed = passengerWeaponXSpeed();
         //shootVec是需要让武器站以这个角度发射的向量
         float diffY = (float) Mth.wrapDegrees(-getYRotFromVector(shootVec) + getYRotFromVector(getGunnerVector(1)));
         float diffX = (float) Mth.wrapDegrees(-getXRotFromVector(shootVec) + getXRotFromVector(getGunnerVector(1)));
 
         turretTurnSound(diffX, diffY, 0.95f);
 
-        this.setGunXRot(Mth.clamp(this.getGunXRot() + Mth.clamp(0.5f * diffX, -xSpeed, xSpeed), -maxXAngle, -minXAngle));
+        this.setGunXRot(Mth.clamp(this.getGunXRot() + Mth.clamp(0.5f * diffX, -xSpeed, xSpeed), -passengerWeaponMaxPitch(), -passengerWeaponMinPitch()));
         this.setGunYRot(this.getGunYRot() - Mth.clamp(0.5f * diffY, -ySpeed, ySpeed));
     }
 
-    public void gunnerAngle(float ySpeed, float xSpeed) {
+    // 乘客武器站最大水平旋转速度
+    public float passengerWeaponYSpeed() {
+        return 10;
+    }
+    // 乘客武器站最大俯仰旋转速度
+    public float passengerWeaponXSpeed() {
+        return 5;
+    }
+    // 乘客武器站最小俯角
+    public float passengerWeaponMinPitch() {
+        return -10;
+    }
+    // 乘客武器站最大仰角
+    public float passengerWeaponMaxPitch() {
+        return 30;
+    }
+    // 乘客武器站弹药发射位置
+    public Vec3 passengerWeaponShootPos(Entity entity) {
+        return entity.getEyePosition();
+    }
+
+    public void gunnerAngle() {
+        float ySpeed = passengerWeaponYSpeed();
+        float xSpeed = passengerWeaponXSpeed();
+
         Entity gunner = this.getNthEntity(1);
 
         float diffY = 0;
