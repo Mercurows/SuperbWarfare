@@ -4,11 +4,11 @@ import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkInstance;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.entity.OwnableEntity;
 
 public class FieldDoctor extends Perk {
 
@@ -29,14 +29,25 @@ public class FieldDoctor extends Perk {
 
     public boolean trigger(Entity target, DamageSource source) {
         if (source.getDirectEntity() instanceof ProjectileEntity projectile && !projectile.isZoom()) {
-            Player attacker = null;
-            if (source.getEntity() instanceof Player player) {
-                attacker = player;
+            LivingEntity attacker = null;
+
+            if (source.getEntity() instanceof LivingEntity living) {
+                if (living instanceof ServerPlayer player) {
+                    attacker = player;
+                } else {
+                    attacker = living;
+                }
             }
-            if (source.getDirectEntity() instanceof Projectile p && p.getOwner() instanceof Player player) {
-                attacker = player;
+            if (projectile.getOwner() instanceof LivingEntity living) {
+                if (living instanceof ServerPlayer player) {
+                    attacker = player;
+                } else if (living instanceof OwnableEntity ownableEntity && ownableEntity.getOwner() instanceof ServerPlayer) {
+                    attacker = living;
+                }
             }
-            return attacker != null && target != null && target.isAlliedTo(attacker);
+
+            return attacker != null && target != null &&
+                    (target.isAlliedTo(attacker) || (attacker instanceof OwnableEntity ownableEntity && ownableEntity == target));
         }
         return false;
     }
