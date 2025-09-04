@@ -436,7 +436,7 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
         if (cannotFire) return;
         if (this.getEnergy() < VehicleConfig.HPJ11_SHOOT_COST.get()) return;
 
-        boolean hasCreativeAmmo = (getFirstPassenger() instanceof Player pPlayer && InventoryTool.hasCreativeAmmoBox(pPlayer)) || hasItem(ModItems.CREATIVE_AMMO_BOX.get());
+        boolean hasCreativeAmmo = InventoryTool.hasCreativeAmmoBox(getFirstPassenger()) || hasItem(ModItems.CREATIVE_AMMO_BOX.get());
 
         entityData.set(FIRE_TIME, Math.min(entityData.get(FIRE_TIME) + 3, 5));
 

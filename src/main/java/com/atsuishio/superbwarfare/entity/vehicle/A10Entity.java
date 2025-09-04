@@ -783,7 +783,7 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
         if (getWeaponIndex(0) == 0) {
             if (this.cannotFire) return;
 
-            boolean hasCreativeAmmo = getFirstPassenger() instanceof Player pPlayer && InventoryTool.hasCreativeAmmoBox(pPlayer);
+            boolean hasCreativeAmmo = InventoryTool.hasCreativeAmmoBox(getFirstPassenger());
 
             Vector4f worldPosition = transformPosition(transform, 0.1321625f, -0.56446875f, 7.85210625f);
             Vector4f worldPosition2 = transformPosition(transform, 0.1321625f + 0.01f, -0.56446875f - 0.015f, 8.85210625f);
