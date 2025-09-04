@@ -839,7 +839,7 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
     }
 
     @Override
-    public boolean banHand(Player player) {
+    public boolean banHand(LivingEntity entity) {
         return true;
     }
 

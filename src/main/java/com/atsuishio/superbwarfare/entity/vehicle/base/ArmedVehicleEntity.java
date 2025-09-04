@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.entity.vehicle.base;
 
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
 
 public interface ArmedVehicleEntity {
 
@@ -56,12 +55,12 @@ public interface ArmedVehicleEntity {
     /**
      * 是否禁用玩家手臂
      *
-     * @param player 玩家
+     * @param entity 玩家
      */
-    default boolean banHand(Player player) {
+    default boolean banHand(LivingEntity entity) {
         // 若玩家所在位置有可用武器，则默认禁用手臂
         if (this instanceof VehicleEntity vehicle && this instanceof WeaponVehicleEntity weaponVehicle) {
-            return weaponVehicle.hasWeapon(vehicle.getSeatIndex(player));
+            return weaponVehicle.hasWeapon(vehicle.getSeatIndex(entity));
         }
         return false;
     }

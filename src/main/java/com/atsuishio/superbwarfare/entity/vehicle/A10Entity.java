@@ -947,7 +947,7 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
     }
 
     @Override
-    public boolean banHand(Player player) {
+    public boolean banHand(LivingEntity entity) {
         return true;
     }
 
