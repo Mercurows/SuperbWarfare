@@ -777,7 +777,7 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
     }
 
     @Override
-    public void vehicleShoot(Player player, int type) {
+    public void vehicleShoot(LivingEntity living, int type) {
         Matrix4f transform = getVehicleTransform(1);
 
         if (getWeaponIndex(0) == 0) {
@@ -794,7 +794,7 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
             if (this.entityData.get(AMMO) > 0 || hasCreativeAmmo) {
                 entityData.set(FIRE_TIME, Math.min(entityData.get(FIRE_TIME) + 6, 6));
 
-                var entityToSpawn = ((SmallCannonShellWeapon) getWeapon(0)).create(player);
+                var entityToSpawn = ((SmallCannonShellWeapon) getWeapon(0)).create(living);
 
                 entityToSpawn.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
                 entityToSpawn.shoot(shootVec.x, shootVec.y, shootVec.z, 30, 0.5f);
@@ -813,7 +813,7 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
 
             this.entityData.set(HEAT, this.entityData.get(HEAT) + 2);
         } else if (getWeaponIndex(0) == 1 && this.getEntityData().get(LOADED_ROCKET) > 0) {
-            var heliRocketEntity = ((SmallRocketWeapon) getWeapon(0)).create(player);
+            var heliRocketEntity = ((SmallRocketWeapon) getWeapon(0)).create(living);
 
             Vector4f worldPosition;
             Vector4f worldPosition2;
@@ -840,7 +840,7 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
 
             heliRocketEntity.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
             heliRocketEntity.shoot(shootVec.x, shootVec.y, shootVec.z, 8, 0.5f);
-            player.level().addFreshEntity(heliRocketEntity);
+            living.level().addFreshEntity(heliRocketEntity);
 
             BlockPos pos = BlockPos.containing(new Vec3(worldPosition.x, worldPosition.y, worldPosition.z));
 
@@ -852,7 +852,7 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
 
             reloadCoolDown = 15;
         } else if (getWeaponIndex(0) == 2 && this.getEntityData().get(LOADED_BOMB) > 0) {
-            var Mk82Entity = ((Mk82Weapon) getWeapon(0)).create(player);
+            var Mk82Entity = ((Mk82Weapon) getWeapon(0)).create(living);
 
             Vector4f worldPosition;
 
@@ -866,7 +866,7 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
 
             Mk82Entity.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
             Mk82Entity.shoot(getDeltaMovement().x, getDeltaMovement().y, getDeltaMovement().z, (float) getDeltaMovement().scale(0.75).length(), 0.5f);
-            player.level().addFreshEntity(Mk82Entity);
+            living.level().addFreshEntity(Mk82Entity);
 
             BlockPos pos = BlockPos.containing(new Vec3(worldPosition.x, worldPosition.y, worldPosition.z));
 
@@ -877,7 +877,7 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
             }
             this.entityData.set(LOADED_BOMB, this.getEntityData().get(LOADED_BOMB) - 1);
         } else if (getWeaponIndex(0) == 3 && this.getEntityData().get(LOADED_MISSILE) > 0) {
-            var Agm65Entity = ((Agm65Weapon) getWeapon(0)).create(player);
+            var Agm65Entity = ((Agm65Weapon) getWeapon(0)).create(living);
 
             Vector4f worldPosition;
 
@@ -896,7 +896,7 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
             }
             Agm65Entity.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
             Agm65Entity.shoot(shootVec(1).x, shootVec(1).y, shootVec(1).z, (float) getDeltaMovement().length() + 1, 1);
-            player.level().addFreshEntity(Agm65Entity);
+            living.level().addFreshEntity(Agm65Entity);
 
             BlockPos pos = BlockPos.containing(new Vec3(worldPosition.x, worldPosition.y, worldPosition.z));
 
@@ -919,7 +919,7 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
     }
 
     @Override
-    public int mainGunRpm(Player player) {
+    public int mainGunRpm(LivingEntity living) {
         if (getWeaponIndex(0) == 2) {
             return 600;
         }
@@ -934,7 +934,7 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
     }
 
     @Override
-    public boolean canShoot(Player player) {
+    public boolean canShoot(LivingEntity living) {
         if (getWeaponIndex(0) == 2 || getWeaponIndex(0) == 3) {
             return this.entityData.get(AMMO) > 0;
         }
@@ -942,7 +942,7 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
     }
 
     @Override
-    public int getAmmoCount(Player player) {
+    public int getAmmoCount(LivingEntity living) {
         return this.entityData.get(AMMO);
     }
 
@@ -957,7 +957,7 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
     }
 
     @Override
-    public int getWeaponHeat(Player player) {
+    public int getWeaponHeat(LivingEntity living) {
         return entityData.get(HEAT);
     }
 

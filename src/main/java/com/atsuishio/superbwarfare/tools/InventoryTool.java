@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.item.common.ammo.AmmoSupplierItem;
 import net.minecraft.core.NonNullList;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.capabilities.Capabilities;
@@ -203,6 +204,19 @@ public class InventoryTool {
      */
     public static int consumeItem(@Nullable NonNullList<ItemStack> itemList, Item item, int count) {
         return consumeItem(itemList, stack -> stack.is(item), count);
+    }
+
+    /**
+     * 消耗生物物品列表内指定物品
+     * @param living  物品类型
+     * @param item  物品类型
+     * @param count 要消耗的数量
+     */
+    public static void consumeItem(LivingEntity living, Item item, int count) {
+        var cap = living.getCapability(Capabilities.ItemHandler.ENTITY);
+        if (cap == null) return;
+
+        consumeItem(cap, item, count);
     }
 
 

@@ -434,7 +434,6 @@ public class C4Entity extends Entity implements GeoEntity, OwnableEntity {
                 .damage(ExplosionConfig.C4_EXPLOSION_DAMAGE.get())
                 .radius(ExplosionConfig.C4_EXPLOSION_RADIUS.get())
                 .position(pos)
-                .causeVanillaExplosion()
                 .withParticleType(ParticleTool.ParticleType.HUGE)
                 .explode();
 

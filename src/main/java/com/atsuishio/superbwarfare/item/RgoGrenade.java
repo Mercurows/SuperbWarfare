@@ -82,7 +82,6 @@ public class RgoGrenade extends Item implements ProjectileItem {
                     .attacker(pLivingEntity)
                     .damage(ExplosionConfig.RGO_GRENADE_EXPLOSION_DAMAGE.get())
                     .radius(ExplosionConfig.RGO_GRENADE_EXPLOSION_RADIUS.get())
-                    .causeVanillaExplosion()
                     .damageMultiplier(1.25F)
                     .withParticleType(ParticleTool.ParticleType.MEDIUM)
                     .explode();

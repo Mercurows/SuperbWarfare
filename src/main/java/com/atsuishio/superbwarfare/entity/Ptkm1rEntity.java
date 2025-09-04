@@ -301,7 +301,6 @@ public class Ptkm1rEntity extends Entity implements GeoEntity, OwnableEntity, Mi
                 .damage(100)
                 .radius(6)
                 .attacker(this.getOwner())
-                .causeVanillaExplosion()
                 .withParticleType(ParticleTool.ParticleType.HUGE)
                 .explode();
 

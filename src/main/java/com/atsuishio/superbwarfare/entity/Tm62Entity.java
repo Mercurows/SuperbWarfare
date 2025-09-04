@@ -242,7 +242,6 @@ public class Tm62Entity extends Entity implements GeoEntity, OwnableEntity, Mine
                 .attacker(this.getOwner())
                 .damage(450)
                 .radius(13)
-                .causeVanillaExplosion()
                 .withParticleType(ParticleTool.ParticleType.HUGE)
                 .explode();
 

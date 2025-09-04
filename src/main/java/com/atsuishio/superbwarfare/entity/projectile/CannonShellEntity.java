@@ -249,7 +249,7 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
 
             Entity target = TraceTool.findLookingEntity(this, getDeltaMovement().scale(sparedTime).length());
 
-            if (target != null) {
+            if (target != null && target != this) {
                 releaseClusterMunitions((LivingEntity) getOwner());
             }
         }
@@ -301,7 +301,6 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
                 .damage(explosionDamage)
                 .radius(radius)
                 .position(vec3)
-                .causeVanillaExplosion()
                 .withParticleType(radius > 9 ? ParticleTool.ParticleType.HUGE : ParticleTool.ParticleType.MEDIUM)
                 .explode();
 

@@ -157,7 +157,6 @@ public class SmallRocketEntity extends FastThrowableProjectile implements GeoEnt
                 .damage(explosionDamage)
                 .radius(explosionRadius)
                 .position(vec3)
-                .causeVanillaExplosion()
                 .withParticleType(ParticleTool.ParticleType.MEDIUM)
                 .explode();
     }
@@ -200,7 +199,6 @@ public class SmallRocketEntity extends FastThrowableProjectile implements GeoEnt
                 .damageSource(source)
                 .damage(damage)
                 .radius(radius)
-                .causeVanillaExplosion()
                 .damageMultiplier(damageMultiplier)
                 .withParticleType(ParticleTool.ParticleType.MEDIUM)
                 .explode();

@@ -96,10 +96,6 @@ public class DefaultVehicleData implements IDBasedData {
     public boolean explosionDestroyBlockOnDestroy = true;
 
     @ServerOnly
-    @SerializedName("CauseVanillaExplosion")
-    public boolean causeVanillaExplosion = true;
-
-    @ServerOnly
     @SerializedName("ExplosionParticleType")
     public ParticleTool.ParticleType explosionParticleType = ParticleTool.ParticleType.MINI;
 }

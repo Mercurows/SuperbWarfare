@@ -929,10 +929,6 @@ public class ClientEventHandler {
             if (weapon.sound1p != null) {
                 player.playSound(weapon.sound1p, 1f, pitch);
             }
-        } else {
-            if (weapon.sound3p != null) {
-                player.playSound(weapon.sound3p, 3f, pitch);
-            }
         }
     }
 

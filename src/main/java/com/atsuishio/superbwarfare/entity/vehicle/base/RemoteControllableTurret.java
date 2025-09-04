@@ -25,6 +25,5 @@ public interface RemoteControllableTurret {
 
     double shootVelocity();
 
-    float projectileGravity();
 
 }

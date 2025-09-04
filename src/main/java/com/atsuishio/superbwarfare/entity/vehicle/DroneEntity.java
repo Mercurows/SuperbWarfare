@@ -708,7 +708,6 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
                 .attacker(attacker)
                 .damage(data.explosionDamage)
                 .radius(data.explosionRadius)
-                .causeVanillaExplosion()
                 .withParticleType(ParticleTool.ParticleType.HUGE)
                 .explode();
 

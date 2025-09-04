@@ -40,6 +40,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
@@ -204,7 +205,7 @@ public class PrismTankEntity extends ContainerMobileVehicleEntity implements Geo
     }
 
     @Override
-    public void vehicleShoot(Player player, int type) {
+    public void vehicleShoot(LivingEntity living, int type) {
         Matrix4f transform = getBarrelTransform(1);
         Vector4f worldPosition = transformPosition(transform, 0, 0.5f, 0);
         Vec3 root = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
@@ -212,17 +213,13 @@ public class PrismTankEntity extends ContainerMobileVehicleEntity implements Geo
         if (getWeaponIndex(0) == 0) {
             if (this.cannotFire) return;
 
-            if (!this.canConsume(VehicleConfig.PRISM_TANK_SHOOT_COST_MODE_1.get())) {
+            if (!this.canConsume(VehicleConfig.PRISM_TANK_SHOOT_COST_MODE_1.get()) && living instanceof Player player) {
                 player.displayClientMessage(Component.translatable("tips.superbwarfare.annihilator.energy_not_enough").withStyle(ChatFormatting.RED), true);
                 return;
             }
 
-            Level level = player.level();
-            if (level instanceof ServerLevel) {
-                if (!player.level().isClientSide) {
-                    playShootSound3p(player, 0, 5, 5, 5);
-                }
-
+            if (level() instanceof ServerLevel) {
+                playShootSound3p(living, 0, 5, 5, 5, root);
                 this.entityData.set(HEAT, entityData.get(HEAT) + 55);
                 this.consumeEnergy(VehicleConfig.PRISM_TANK_SHOOT_COST_MODE_1.get());
 
@@ -243,21 +240,18 @@ public class PrismTankEntity extends ContainerMobileVehicleEntity implements Geo
         } else if (getWeaponIndex(0) == 1) {
             if (this.cannotFire) return;
 
-            if (!this.canConsume(VehicleConfig.PRISM_TANK_SHOOT_COST_MODE_2.get())) {
+            if (!this.canConsume(VehicleConfig.PRISM_TANK_SHOOT_COST_MODE_2.get()) && living instanceof Player player) {
                 player.displayClientMessage(Component.translatable("tips.superbwarfare.annihilator.energy_not_enough").withStyle(ChatFormatting.RED), true);
                 return;
             }
 
-            Level level = player.level();
-
             float pitch = entityData.get(HEAT) <= 60 ? 1.1f : (float) (1.1f - 0.011 * Math.abs(60 - entityData.get(HEAT)));
-            SoundTool.playLocalSound(player, ModSounds.PRISM_FIRE_1P_2.get(), 1f, pitch);
+            if (living instanceof Player player) {
+                SoundTool.playLocalSound(player, ModSounds.PRISM_FIRE_1P_2.get(), 1f, pitch);
+            }
 
-            if (level instanceof ServerLevel) {
-                if (!player.level().isClientSide) {
-                    playShootSound3p(player, 0, 4, 4, 4);
-                }
-
+            if (level() instanceof ServerLevel) {
+                playShootSound3p(living, 0, 4, 4, 4, root);
                 this.entityData.set(HEAT, entityData.get(HEAT) + 2);
                 this.consumeEnergy(VehicleConfig.PRISM_TANK_SHOOT_COST_MODE_2.get());
             }
@@ -591,7 +585,7 @@ public class PrismTankEntity extends ContainerMobileVehicleEntity implements Geo
     }
 
     @Override
-    public int mainGunRpm(Player player) {
+    public int mainGunRpm(LivingEntity living) {
         if (getWeaponIndex(0) == 0) {
             return 30;
         } else if (getWeaponIndex(0) == 1) {
@@ -601,7 +595,7 @@ public class PrismTankEntity extends ContainerMobileVehicleEntity implements Geo
     }
 
     @Override
-    public boolean canShoot(Player player) {
+    public boolean canShoot(LivingEntity living) {
         if (getWeaponIndex(0) == 0) {
             return getEnergy() > VehicleConfig.PRISM_TANK_SHOOT_COST_MODE_1.get() && !cannotFire;
         }
@@ -609,7 +603,7 @@ public class PrismTankEntity extends ContainerMobileVehicleEntity implements Geo
     }
 
     @Override
-    public int getAmmoCount(Player player) {
+    public int getAmmoCount(LivingEntity living) {
         var cap = this.getCapability(Capabilities.EnergyStorage.ENTITY, null);
         if (cap == null) return 0;
         return (int) (cap.getEnergyStored() * 100f / this.getMaxEnergy());
@@ -631,7 +625,7 @@ public class PrismTankEntity extends ContainerMobileVehicleEntity implements Geo
     }
 
     @Override
-    public int getWeaponHeat(Player player) {
+    public int getWeaponHeat(LivingEntity living) {
         return entityData.get(HEAT);
     }
 

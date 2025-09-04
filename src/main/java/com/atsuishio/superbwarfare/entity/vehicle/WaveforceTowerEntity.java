@@ -269,7 +269,7 @@ public class WaveforceTowerEntity extends VehicleEntity implements GeoEntity, Ow
 
             Vec3 targetVec = getShootPos(1).vectorTo(target.getEyePosition()).normalize();
             if (this.entityData.get(COOL_DOWN) == 0) {
-                turretAutoAimFormVector(10, 10, -50, 50, targetVec);
+                turretAutoAimFormVector(targetVec);
             }
 
             if (this.entityData.get(CHARGING_TIME) == 60 && VectorTool.calculateAngle(getBarrelVec(1), targetVec) < 1) {
@@ -317,6 +317,25 @@ public class WaveforceTowerEntity extends VehicleEntity implements GeoEntity, Ow
         }
     }
 
+    @Override
+    public float turretYSpeed() {
+        return 8;
+    }
+
+    @Override
+    public float turretXSpeed() {
+        return 12;
+    }
+
+    @Override
+    public float turretMinPitch() {
+        return -45;
+    }
+
+    @Override
+    public float turretMaxPitch() {
+        return 40;
+    }
 
     @Override
     public boolean basicEnemyFilter(Entity pEntity) {

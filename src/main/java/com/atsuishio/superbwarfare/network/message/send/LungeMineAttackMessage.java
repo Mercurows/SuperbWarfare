@@ -63,7 +63,6 @@ public record LungeMineAttackMessage(int msgType, UUID uuid, Vec3 pos) implement
                 new CustomExplosion.Builder(player)
                         .damage(60)
                         .radius(4)
-                        .causeVanillaExplosion()
                         .damageMultiplier(1.25f)
                         .withParticleType(ParticleTool.ParticleType.MEDIUM)
                         .position(message.pos)
@@ -78,10 +77,7 @@ public record LungeMineAttackMessage(int msgType, UUID uuid, Vec3 pos) implement
                 .damage(60)
                 .radius(4)
                 .attacker(attacker)
-                .causeVanillaExplosion()
                 .damageMultiplier(1.25f)
-                .causeVanillaExplosion()
-                .damageMultiplier(1.25F)
                 .withParticleType(ParticleTool.ParticleType.MEDIUM)
                 .explode();
     }

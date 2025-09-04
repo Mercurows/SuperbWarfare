@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.entity.vehicle.weapon;
 
 import com.atsuishio.superbwarfare.entity.projectile.CannonShellEntity;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.LivingEntity;
 
 public class CannonShellWeapon extends VehicleWeapon {
     public float hitDamage, explosionRadius, explosionDamage, fireProbability, velocity, gravity;
@@ -70,9 +70,9 @@ public class CannonShellWeapon extends VehicleWeapon {
         return this;
     }
 
-    public CannonShellEntity create(Player player) {
-        return new CannonShellEntity(player,
-                player.level(),
+    public CannonShellEntity create(LivingEntity living) {
+        return new CannonShellEntity(living,
+                living.level(),
                 this.hitDamage,
                 this.explosionRadius,
                 this.explosionDamage,

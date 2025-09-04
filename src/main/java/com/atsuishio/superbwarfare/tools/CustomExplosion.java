@@ -8,7 +8,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
@@ -76,26 +75,14 @@ public class CustomExplosion extends Explosion {
         this(pLevel, pSource, null, null, damage, pToBlowX, pToBlowY, pToBlowZ, pRadius, pBlockInteraction);
     }
 
-    public CustomExplosion(Level pLevel, @Nullable Entity pSource, @Nullable DamageSource source, float damage, double pToBlowX, double pToBlowY, double pToBlowZ, float pRadius, Explosion.BlockInteraction pBlockInteraction, boolean vanillaExplode) {
-        this(pLevel, pSource, source, null, damage, pToBlowX, pToBlowY, pToBlowZ, pRadius, pBlockInteraction);
-
-        if (pLevel instanceof ServerLevel && vanillaExplode) {
-            pLevel.explode(source == null ? null : source.getEntity(), pToBlowX, pToBlowY, pToBlowZ, 0.4f * pRadius, ExplosionConfig.EXPLOSION_DESTROY.get() ? Level.ExplosionInteraction.BLOCK : Level.ExplosionInteraction.NONE);
-        }
-
-        ShakeClientMessage.sendToNearbyPlayers(level, pToBlowX, pToBlowY, pToBlowZ, 4 * radius, 20 + 0.02 * damage, 3 * pRadius, 50 + 0.05 * damage);
-    }
-
     public CustomExplosion(Level pLevel, @Nullable Entity pSource, @Nullable DamageSource source, float damage, double pToBlowX, double pToBlowY, double pToBlowZ, float pRadius, Explosion.BlockInteraction pBlockInteraction) {
         this(pLevel, pSource, source, null, damage, pToBlowX, pToBlowY, pToBlowZ, pRadius, pBlockInteraction);
-
-        ShakeClientMessage.sendToNearbyPlayers(level, pToBlowX, pToBlowY, pToBlowZ, 4 * radius, 5 + 0.02 * damage, 0.75 * pRadius, 4 + 0.02 * damage);
+        ShakeClientMessage.sendToNearbyPlayers(level, pToBlowX, pToBlowY, pToBlowZ, 4 * radius, 20 + 0.02 * damage, 3 * pRadius, 50 + 0.05 * damage);
     }
 
     public CustomExplosion(Level pLevel, @Nullable Entity pSource, @Nullable DamageSource source, float damage, double pToBlowX, double pToBlowY, double pToBlowZ, float pRadius) {
         this(pLevel, pSource, source, null, damage, pToBlowX, pToBlowY, pToBlowZ, pRadius, BlockInteraction.KEEP);
-
-        ShakeClientMessage.sendToNearbyPlayers(level, pToBlowX, pToBlowY, pToBlowZ, radius, 20 + 0.02 * damage, pRadius, 10 + 0.03 * damage);
+        ShakeClientMessage.sendToNearbyPlayers(level, pToBlowX, pToBlowY, pToBlowZ, radius, 5 + 0.02 * damage, 0.75 * pRadius, 2 + 0.002 * damage);
     }
 
     public CustomExplosion setFireTime(int fireTime) {
@@ -211,7 +198,6 @@ public class CustomExplosion extends Explosion {
         private float radius;
         private @Nullable ParticleTool.ParticleType particleType = ParticleTool.ParticleType.MINI;
         private Supplier<BlockInteraction> destroyBlock = () -> ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP;
-        private boolean causeVanillaExplosion = false;
         private int fireTime = 0;
         private float damageMultiplier = 1;
         private DamageSource damageSource = null;
@@ -266,11 +252,6 @@ public class CustomExplosion extends Explosion {
             return this;
         }
 
-        public Builder causeVanillaExplosion() {
-            this.causeVanillaExplosion = true;
-            return this;
-        }
-
         public Builder fireTime(int fireTime) {
             this.fireTime = fireTime;
             return this;
@@ -303,7 +284,7 @@ public class CustomExplosion extends Explosion {
 
             var customExplosion = new CustomExplosion(level, directSource,
                     source, damage,
-                    position.x, position.y, position.z, radius, destroyBlock.get(), causeVanillaExplosion)
+                    position.x, position.y, position.z, radius, destroyBlock.get())
                     .setFireTime(fireTime)
                     .setDamageMultiplier(damageMultiplier);
             customExplosion.explode();

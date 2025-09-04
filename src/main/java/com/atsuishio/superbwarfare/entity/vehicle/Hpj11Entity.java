@@ -432,7 +432,7 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
     }
 
     @Override
-    public void vehicleShoot(Player player, int type) {
+    public void vehicleShoot(LivingEntity living, int type) {
         if (cannotFire) return;
         if (this.getEnergy() < VehicleConfig.HPJ11_SHOOT_COST.get()) return;
 
@@ -440,7 +440,7 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
 
         entityData.set(FIRE_TIME, Math.min(entityData.get(FIRE_TIME) + 3, 5));
 
-        var entityToSpawn = ((SmallCannonShellWeapon) getWeapon(0)).create(player);
+        var entityToSpawn = ((SmallCannonShellWeapon) getWeapon(0)).create(living);
 
         Matrix4f transform = getBarrelTransform(1);
         Vector4f worldPosition = transformPosition(transform, 0f, 0.4f, 0);
@@ -517,17 +517,17 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
     }
 
     @Override
-    public int mainGunRpm(Player player) {
+    public int mainGunRpm(LivingEntity living) {
         return 0;
     }
 
     @Override
-    public boolean canShoot(Player player) {
+    public boolean canShoot(LivingEntity living) {
         return false;
     }
 
     @Override
-    public int getAmmoCount(Player player) {
+    public int getAmmoCount(LivingEntity living) {
         return this.entityData.get(AMMO);
     }
 
@@ -542,7 +542,7 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
     }
 
     @Override
-    public int getWeaponHeat(Player player) {
+    public int getWeaponHeat(LivingEntity living) {
         return entityData.get(HEAT);
     }
 

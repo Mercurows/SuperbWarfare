@@ -262,7 +262,6 @@ public class MediumRocketEntity extends FastThrowableProjectile implements GeoEn
                 .damage(explosionDamage)
                 .radius(radius)
                 .position(vec3)
-                .causeVanillaExplosion()
                 .withParticleType(radius > 9 ? ParticleTool.ParticleType.HUGE : ParticleTool.ParticleType.MEDIUM)
                 .explode();
 
