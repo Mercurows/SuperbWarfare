@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.event;
 
-import com.atsuishio.superbwarfare.tools.PlayerKillRecord;
+import com.atsuishio.superbwarfare.tools.LivingKillRecord;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -12,13 +12,13 @@ import java.util.Queue;
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class KillMessageHandler {
 
-    public static Queue<PlayerKillRecord> QUEUE = new ArrayDeque<>();
+    public static Queue<LivingKillRecord> QUEUE = new ArrayDeque<>();
 
     @SubscribeEvent
     public static void onClientTick(TickEvent.ClientTickEvent event) {
         if (event.phase != TickEvent.Phase.END) return;
 
-        for (PlayerKillRecord record : QUEUE) {
+        for (LivingKillRecord record : QUEUE) {
             if (record.freeze && record.tick >= 3) {
                 continue;
             }

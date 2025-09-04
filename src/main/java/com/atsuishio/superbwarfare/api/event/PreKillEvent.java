@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.api.event;
 
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.eventbus.api.Cancelable;
 import net.minecraftforge.eventbus.api.Event;
 import org.jetbrains.annotations.ApiStatus;
@@ -15,32 +14,32 @@ import org.jetbrains.annotations.ApiStatus;
 @ApiStatus.AvailableSince("0.8.0")
 public class PreKillEvent extends Event {
 
-    private final Player player;
+    private final LivingEntity entity;
     private final DamageSource source;
     private final LivingEntity target;
 
-    private PreKillEvent(Player player, DamageSource source, LivingEntity target) {
-        this.player = player;
+    private PreKillEvent(LivingEntity entity, DamageSource source, LivingEntity target) {
+        this.entity = entity;
         this.source = source;
         this.target = target;
     }
 
     public static class SendKillMessage extends PreKillEvent {
 
-        public SendKillMessage(Player player, DamageSource source, LivingEntity target) {
+        public SendKillMessage(LivingEntity player, DamageSource source, LivingEntity target) {
             super(player, source, target);
         }
     }
 
     public static class Indicator extends PreKillEvent {
 
-        public Indicator(Player player, DamageSource source, LivingEntity target) {
+        public Indicator(LivingEntity player, DamageSource source, LivingEntity target) {
             super(player, source, target);
         }
     }
 
-    public Player getPlayer() {
-        return player;
+    public LivingEntity getEntity() {
+        return entity;
     }
 
     public DamageSource getSource() {

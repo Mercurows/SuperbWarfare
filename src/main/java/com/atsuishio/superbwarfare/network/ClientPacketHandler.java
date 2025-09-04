@@ -9,12 +9,13 @@ import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.event.KillMessageHandler;
 import com.atsuishio.superbwarfare.menu.EnergyMenu;
 import com.atsuishio.superbwarfare.network.message.receive.*;
-import com.atsuishio.superbwarfare.tools.PlayerKillRecord;
+import com.atsuishio.superbwarfare.tools.LivingKillRecord;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.network.NetworkEvent;
@@ -25,12 +26,12 @@ import java.util.function.Supplier;
 
 public class ClientPacketHandler {
 
-    public static void handlePlayerKillMessage(Player attacker, Entity target, boolean headshot, ResourceKey<DamageType> damageType, Supplier<NetworkEvent.Context> ctx) {
+    public static void handleLivingKillMessage(LivingEntity attacker, Entity target, boolean headshot, ResourceKey<DamageType> damageType, Supplier<NetworkEvent.Context> ctx) {
         if (ctx.get().getDirection().getReceptionSide() == LogicalSide.CLIENT) {
             if (KillMessageHandler.QUEUE.size() >= KillMessageConfig.KILL_MESSAGE_COUNT.get()) {
                 KillMessageHandler.QUEUE.poll();
             }
-            KillMessageHandler.QUEUE.offer(new PlayerKillRecord(attacker, target, attacker.getMainHandItem(), headshot, damageType));
+            KillMessageHandler.QUEUE.offer(new LivingKillRecord(attacker, target, attacker.getMainHandItem(), headshot, damageType));
         }
     }
 

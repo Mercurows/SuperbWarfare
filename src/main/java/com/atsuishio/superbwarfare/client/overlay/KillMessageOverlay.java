@@ -15,7 +15,7 @@ import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.item.curio.DogTagItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.tools.DamageTypeTool;
-import com.atsuishio.superbwarfare.tools.PlayerKillRecord;
+import com.atsuishio.superbwarfare.tools.LivingKillRecord;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
@@ -28,6 +28,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.OwnableEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -106,7 +107,7 @@ public class KillMessageOverlay implements IGuiOverlay {
             }
         }
 
-        var arr = KillMessageHandler.QUEUE.toArray(new PlayerKillRecord[0]);
+        var arr = KillMessageHandler.QUEUE.toArray(new LivingKillRecord[0]);
         var record = arr[0];
 
         if (record.freeze) {
@@ -125,12 +126,12 @@ public class KillMessageOverlay implements IGuiOverlay {
             }
         }
 
-        for (PlayerKillRecord r : KillMessageHandler.QUEUE) {
+        for (LivingKillRecord r : KillMessageHandler.QUEUE) {
             posY = renderKillMessages(r, guiGraphics, partialTick, posX, posY, left, bottom);
         }
     }
 
-    private static float renderKillMessages(PlayerKillRecord record, GuiGraphics guiGraphics, float partialTick, int width, float baseTop, boolean left, boolean bottom) {
+    private static float renderKillMessages(LivingKillRecord record, GuiGraphics guiGraphics, float partialTick, int width, float baseTop, boolean left, boolean bottom) {
         float top = baseTop;
 
         Font font = Minecraft.getInstance().font;
@@ -321,7 +322,7 @@ public class KillMessageOverlay implements IGuiOverlay {
     }
 
     @Nullable
-    private static ResourceLocation getDamageTypeIcon(PlayerKillRecord record) {
+    private static ResourceLocation getDamageTypeIcon(LivingKillRecord record) {
         ResourceLocation icon;
         // 渲染爆头图标
         if (record.headshot) {
@@ -370,26 +371,37 @@ public class KillMessageOverlay implements IGuiOverlay {
     }
 
     public static String getEntityName(Entity entity) {
-        AtomicReference<String> targetName = new AtomicReference<>(entity.getDisplayName().getString());
-        if (!DisplayConfig.DOG_TAG_NAME_VISIBLE.get()) return targetName.get();
-        if (entity instanceof Player targetPlayer) {
-            CuriosApi.getCuriosInventory(targetPlayer).ifPresent(
+        AtomicReference<String> name = new AtomicReference<>(entity.getDisplayName().getString());
+        if (!DisplayConfig.DOG_TAG_NAME_VISIBLE.get()) return name.get();
+        if (entity instanceof LivingEntity living && living instanceof OwnableEntity ownableEntity && ownableEntity.getOwner() instanceof Player player) {
+            CuriosApi.getCuriosInventory(player).ifPresent(
                     c -> c.findFirstCurio(ModItems.DOG_TAG.get()).ifPresent(
                             s -> {
                                 if (s.stack().hasCustomHoverName()) {
-                                    targetName.set(s.stack().getHoverName().getString());
+                                    name.set(s.stack().getHoverName().getString());
+                                }
+                            }
+                    )
+            );
+            name.set(name.get() + " + " + living.getDisplayName().getString());
+        } else if (entity instanceof Player player) {
+            CuriosApi.getCuriosInventory(player).ifPresent(
+                    c -> c.findFirstCurio(ModItems.DOG_TAG.get()).ifPresent(
+                            s -> {
+                                if (s.stack().hasCustomHoverName()) {
+                                    name.set(s.stack().getHoverName().getString());
                                 }
                             }
                     )
             );
         }
-        return targetName.get();
+        return name.get();
     }
 
     @Nullable
-    public static ResourceLocation getWeaponIcon(PlayerKillRecord record) {
-        Player player = record.attacker;
-        if (player != null && player.getVehicle() instanceof VehicleEntity vehicleEntity) {
+    public static ResourceLocation getWeaponIcon(LivingKillRecord record) {
+        LivingEntity attacker = record.attacker;
+        if (attacker instanceof Player player && attacker.getVehicle() instanceof VehicleEntity vehicleEntity) {
             // 载具图标
             if ((vehicleEntity instanceof ArmedVehicleEntity iArmedVehicle && iArmedVehicle.banHand(player)) || record.damageType == ModDamageTypes.VEHICLE_STRIKE) {
                 return vehicleEntity.getVehicleIcon();
