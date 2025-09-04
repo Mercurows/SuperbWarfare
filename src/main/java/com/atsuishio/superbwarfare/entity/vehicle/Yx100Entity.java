@@ -342,12 +342,6 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
         inertiaRotate(1.2f);
         releaseSmokeDecoy(getTurretVector(1));
 
-        if (getNthEntity(0) instanceof LivingEntity living && living.level() instanceof ServerLevel && tickCount % 5 == 0) {
-            vehicleShoot(living, 0);
-        }
-
-        entityData.set(AI_TURRET_TARGET_UUID, entityData.get(LAST_ATTACKER_UUID));
-
         this.refreshDimensions();
     }
 
