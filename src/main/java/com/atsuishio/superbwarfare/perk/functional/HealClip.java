@@ -8,6 +8,7 @@ import com.atsuishio.superbwarfare.tools.DamageTypeTool;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.OwnableEntity;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.Nullable;
 
@@ -60,7 +61,7 @@ public class HealClip extends Perk {
 
         living.heal(12.0f * (0.8f + 0.2f * healClipLevel));
         List<Player> players = entity.level().getEntitiesOfClass(Player.class, entity.getBoundingBox().inflate(5))
-                .stream().filter(p -> p.isAlliedTo(entity)).toList();
+                .stream().filter(p -> p.isAlliedTo(entity) || (entity instanceof OwnableEntity ownableEntity && ownableEntity.getOwner() == p)).toList();
         int finalHealClipLevel = healClipLevel;
         players.forEach(p -> p.heal(6.0f * (0.8f + 0.2f * finalHealClipLevel)));
     }
