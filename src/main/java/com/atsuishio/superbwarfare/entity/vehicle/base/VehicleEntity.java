@@ -1312,7 +1312,7 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
 
     public boolean aiTurretShoot(LivingEntity living) {
         if (this instanceof WeaponVehicleEntity weaponVehicle) {
-            if (aiTurretDiff < 1) {
+            if (aiTurretDiff < 1 && weaponVehicle.canShoot(living)) {
                 weaponVehicle.vehicleShoot(living, 0);
                 return true;
             } else {
@@ -1323,7 +1323,7 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
 
     public boolean aiPassengerWeaponShoot(LivingEntity living) {
         if (this instanceof WeaponVehicleEntity weaponVehicle) {
-            if (aiPassengerDiff < 1) {
+            if (aiPassengerDiff < 1 && weaponVehicle.canShoot(living)) {
                 weaponVehicle.vehicleShoot(living, 1);
                 return true;
             } else {
