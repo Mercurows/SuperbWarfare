@@ -26,6 +26,10 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
     protected final ItemStack stack;
     protected final GunData data;
 
+    protected GunData getGunData() {
+        return GunData.from(stack);
+    }
+
     public ClientGunImageTooltip(GunImageComponent tooltip) {
         this.width = tooltip.width;
         this.height = tooltip.height;
@@ -92,28 +96,28 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
      */
     protected Component getDamageComponent() {
         double damage = data.get(GunProp.DAMAGE);
-        double extraDamage = -1;
-        for (var type : Perk.Type.values()) {
-            var instance = data.perk.getInstance(type);
-            if (instance != null) {
-                if (instance.perk().getExtraDisplayDamage(damage, data, instance) >= 0) {
-                    extraDamage = instance.perk().getExtraDisplayDamage(damage, data, instance);
-                }
-            }
-        }
-        String dmgStr = FormatTool.format1D(damage) + (extraDamage >= 0 ? " + " + FormatTool.format1D(extraDamage) : "");
+        double explosionDamage = data.get(GunProp.EXPLOSION_DAMAGE);
+
+        String dmgStr = FormatTool.format1D(damage);
         if (data.get(GunProp.PROJECTILE_AMOUNT) > 1) {
-            if (extraDamage >= 0) {
-                dmgStr = "(" + dmgStr + ") * " + data.get(GunProp.PROJECTILE_AMOUNT);
-            } else {
-                dmgStr = dmgStr + " * " + data.get(GunProp.PROJECTILE_AMOUNT);
-            }
+            dmgStr = dmgStr + " * " + data.get(GunProp.PROJECTILE_AMOUNT);
         }
 
-        return Component.translatable("des.superbwarfare.guns.damage").withStyle(ChatFormatting.GRAY)
+        var component = Component.translatable("des.superbwarfare.guns.damage").withStyle(ChatFormatting.GRAY)
                 .append(Component.empty().withStyle(ChatFormatting.RESET))
-                .append(Component.literal(dmgStr)
-                        .withStyle(ChatFormatting.GREEN));
+                .append(Component.literal(dmgStr).withStyle(ChatFormatting.GREEN));
+
+        if (explosionDamage > 0) {
+            String expDmgStr = FormatTool.format1D(explosionDamage);
+            if (data.get(GunProp.PROJECTILE_AMOUNT) > 1) {
+                expDmgStr = expDmgStr + " * " + data.get(GunProp.PROJECTILE_AMOUNT);
+            }
+            component = component
+                    .append(Component.empty().withStyle(ChatFormatting.RESET))
+                    .append(Component.literal(" + " + expDmgStr).withStyle(ChatFormatting.GOLD));
+        }
+
+        return component;
     }
 
     /**
