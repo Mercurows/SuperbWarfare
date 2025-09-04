@@ -16,7 +16,7 @@ public class NetworkRegistry {
         playToClient(ShakeClientMessage.TYPE, ShakeClientMessage.STREAM_CODEC, ShakeClientMessage::handler);
         playToClient(ClientMotionSyncMessage.TYPE, ClientMotionSyncMessage.STREAM_CODEC, ClientMotionSyncMessage::handler);
         playToClient(ClientIndicatorMessage.TYPE, ClientIndicatorMessage.STREAM_CODEC, ClientIndicatorMessage::handler);
-        playToClient(PlayerGunKillMessage.TYPE, PlayerGunKillMessage.STREAM_CODEC, PlayerGunKillMessage::handler);
+        playToClient(LivingGunKillMessage.TYPE, LivingGunKillMessage.STREAM_CODEC, LivingGunKillMessage::handler);
         playToClient(GunsDataMessage.TYPE, GunsDataMessage.STREAM_CODEC, GunsDataMessage::handler);
         playToClient(ContainerDataMessage.TYPE, ContainerDataMessage.STREAM_CODEC, ContainerDataMessage::handler);
         playToClient(ShootClientMessage.TYPE, ShootClientMessage.STREAM_CODEC, ShootClientMessage::handler);

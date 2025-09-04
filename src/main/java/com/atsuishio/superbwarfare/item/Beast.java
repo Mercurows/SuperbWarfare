@@ -8,7 +8,7 @@ import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModEnumExtensions;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
-import com.atsuishio.superbwarfare.network.message.receive.PlayerGunKillMessage;
+import com.atsuishio.superbwarfare.network.message.receive.LivingGunKillMessage;
 import com.atsuishio.superbwarfare.tools.TraceTool;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
@@ -86,7 +86,7 @@ public class Beast extends SwordItem {
             );
 
             if (MiscConfig.SEND_KILL_FEEDBACK.get()) {
-                PacketDistributor.sendToAllPlayers(new PlayerGunKillMessage(player.getId(), target.getId(), false, ModDamageTypes.BEAST));
+                PacketDistributor.sendToAllPlayers(new LivingGunKillMessage(player.getId(), target.getId(), false, ModDamageTypes.BEAST));
             }
         }
 

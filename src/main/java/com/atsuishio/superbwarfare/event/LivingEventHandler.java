@@ -19,7 +19,7 @@ import com.atsuishio.superbwarfare.item.common.ammo.box.AmmoBoxInfo;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
 import com.atsuishio.superbwarfare.network.message.receive.DrawClientMessage;
-import com.atsuishio.superbwarfare.network.message.receive.PlayerGunKillMessage;
+import com.atsuishio.superbwarfare.network.message.receive.LivingGunKillMessage;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.tools.*;
 import net.minecraft.network.chat.Component;
@@ -36,6 +36,7 @@ import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.OwnableEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
@@ -443,12 +444,20 @@ public class LivingEventHandler {
 
         ResourceKey<DamageType> damageTypeResourceKey = source.typeHolder().unwrapKey().isPresent() ? source.typeHolder().unwrapKey().get() : DamageTypes.GENERIC;
 
-        ServerPlayer attacker = null;
-        if (source.getEntity() instanceof ServerPlayer player) {
-            attacker = player;
+        LivingEntity attacker = null;
+        if (source.getEntity() instanceof LivingEntity living) {
+            if (living instanceof ServerPlayer player) {
+                attacker = player;
+            } else {
+                attacker = living;
+            }
         }
-        if (source.getDirectEntity() instanceof Projectile projectile && projectile.getOwner() instanceof ServerPlayer player) {
-            attacker = player;
+        if (source.getDirectEntity() instanceof Projectile projectile && projectile.getOwner() instanceof LivingEntity living) {
+            if (living instanceof ServerPlayer player) {
+                attacker = player;
+            } else if (living instanceof OwnableEntity ownableEntity && ownableEntity.getOwner() instanceof ServerPlayer) {
+                attacker = living;
+            }
         }
 
         if (NeoForge.EVENT_BUS.post(new PreKillEvent.SendKillMessage(attacker, source, entity)).isCanceled()) {
@@ -457,9 +466,9 @@ public class LivingEventHandler {
 
         if (attacker != null && MiscConfig.SEND_KILL_FEEDBACK.get()) {
             if (DamageTypeTool.isHeadshotDamage(source)) {
-                PacketDistributor.sendToAllPlayers(new PlayerGunKillMessage(attacker.getId(), entity.getId(), true, damageTypeResourceKey));
+                PacketDistributor.sendToAllPlayers(new LivingGunKillMessage(attacker.getId(), entity.getId(), true, damageTypeResourceKey));
             } else {
-                PacketDistributor.sendToAllPlayers(new PlayerGunKillMessage(attacker.getId(), entity.getId(), false, damageTypeResourceKey));
+                PacketDistributor.sendToAllPlayers(new LivingGunKillMessage(attacker.getId(), entity.getId(), false, damageTypeResourceKey));
             }
         }
     }
