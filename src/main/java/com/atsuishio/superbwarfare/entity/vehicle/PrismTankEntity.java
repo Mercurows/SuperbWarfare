@@ -797,4 +797,9 @@ public class PrismTankEntity extends ContainerMobileVehicleEntity implements Geo
         this.obbTurret.center().set(new Vector3f(worldPositionT.x, worldPositionT.y, worldPositionT.z));
         this.obbTurret.setRotation(VectorTool.combineRotationsTurret(1, this));
     }
+
+    @Override
+    public boolean hasPassengerTurretWeapon() {
+        return false;
+    }
 }

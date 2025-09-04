@@ -1099,10 +1099,12 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
             turretAutoAimFormUuid(entityData.get(AI_TURRET_TARGET_UUID), living);
         }
 
-        if (getNthEntity(1) instanceof Player || getNthEntity(1) == null) {
-            gunnerAngle();
-        } else if (getNthEntity(1) instanceof LivingEntity living) {
-            passengerWeaponAutoAimFormUuid(entityData.get(AI_PASSENGER_WEAPON_TARGET_UUID), living);
+        if (this instanceof LandArmorEntity landArmorEntity && landArmorEntity.hasPassengerTurretWeapon()) {
+            if (getNthEntity(1) instanceof Player || getNthEntity(1) == null) {
+                gunnerAngle();
+            } else if (getNthEntity(1) instanceof LivingEntity living) {
+                passengerWeaponAutoAimFormUuid(entityData.get(AI_PASSENGER_WEAPON_TARGET_UUID), living);
+            }
         }
 
         this.refreshDimensions();
@@ -1254,32 +1256,6 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
     public void playLowHealthParticle(ServerLevel serverLevel) {
         ParticleTool.sendParticle(serverLevel, ParticleTypes.LARGE_SMOKE, this.getX(), this.getY() + 0.7f * getBbHeight(), this.getZ(), 1, 0.35 * this.getBbWidth(), 0.15 * this.getBbHeight(), 0.35 * this.getBbWidth(), 0.01, true);
         ParticleTool.sendParticle(serverLevel, ParticleTypes.CAMPFIRE_COSY_SMOKE, this.getX(), this.getY() + 0.7f * getBbHeight(), this.getZ(), 1, 0.35 * this.getBbWidth(), 0.15 * this.getBbHeight(), 0.35 * this.getBbWidth(), 0.01, true);
-    }
-
-    public void turretAngle(float ySpeed, float xSpeed) {
-        Entity driver = this.getFirstPassenger();
-        if (driver != null) {
-            float turretAngle = -Mth.wrapDegrees(driver.getYHeadRot() - this.getYRot());
-
-            float diffY = Mth.wrapDegrees(turretAngle - getTurretYRot());
-            float diffX = Mth.wrapDegrees(driver.getXRot() - this.getTurretXRot());
-
-            this.turretTurnSound(diffX, diffY, 0.95f);
-
-            if (entityData.get(TURRET_DAMAGED)) {
-                ySpeed *= 0.2f;
-                xSpeed *= 0.2f;
-            }
-
-            float min = -ySpeed + (float) (isInWater() && !onGround() ? 2.5 : 6) * entityData.get(DELTA_ROT);
-            float max = ySpeed + (float) (isInWater() && !onGround() ? 2.5 : 6) * entityData.get(DELTA_ROT);
-
-            this.setTurretXRot(this.getTurretXRot() + Mth.clamp(0.95f * diffX, -xSpeed, xSpeed));
-            this.setTurretYRot(this.getTurretYRot() + Mth.clamp(0.9f * diffY, min, max));
-            turretYRotLock = Mth.clamp(0.9f * diffY, min, max);
-        } else {
-            turretYRotLock = 0;
-        }
     }
 
     public void turretAngle() {

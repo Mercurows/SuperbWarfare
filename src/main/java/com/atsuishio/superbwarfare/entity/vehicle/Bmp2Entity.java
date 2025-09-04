@@ -142,9 +142,9 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
                                 .sound(ModSounds.INTO_CANNON.get())
                                 .icon(Mod.loc("textures/screens/vehicle_weapon/gun_7_62mm.png"))
                                 .sound1p(ModSounds.COAX_FIRE_1P.get())
-                                .sound3p(ModSounds.M_60_FIRE_3P.get())
-                                .sound3pFar(ModSounds.M_60_FAR.get())
-                                .sound3pVeryFar(ModSounds.M_60_VERYFAR.get()),
+                                .sound3p(ModSounds.AK_47_FIRE_3P.get())
+                                .sound3pFar(ModSounds.AK_47_FAR.get())
+                                .sound3pVeryFar(ModSounds.AK_47_VERYFAR.get()),
                 },
                 new VehicleWeapon[]{
                         // 成员机枪
@@ -155,9 +155,9 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
                                 .sound(ModSounds.INTO_CANNON.get())
                                 .icon(Mod.loc("textures/screens/vehicle_weapon/gun_7_62mm.png"))
                                 .sound1p(ModSounds.COAX_FIRE_1P.get())
-                                .sound3p(ModSounds.M_60_FIRE_3P.get())
-                                .sound3pFar(ModSounds.M_60_FAR.get())
-                                .sound3pVeryFar(ModSounds.M_60_VERYFAR.get()),
+                                .sound3p(ModSounds.AK_47_FIRE_3P.get())
+                                .sound3pFar(ModSounds.AK_47_FAR.get())
+                                .sound3pVeryFar(ModSounds.AK_47_VERYFAR.get()),
                 },
                 new VehicleWeapon[]{
                         // 成员机枪
@@ -168,9 +168,9 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
                                 .sound(ModSounds.INTO_CANNON.get())
                                 .icon(Mod.loc("textures/screens/vehicle_weapon/gun_7_62mm.png"))
                                 .sound1p(ModSounds.COAX_FIRE_1P.get())
-                                .sound3p(ModSounds.M_60_FIRE_3P.get())
-                                .sound3pFar(ModSounds.M_60_FAR.get())
-                                .sound3pVeryFar(ModSounds.M_60_VERYFAR.get()),
+                                .sound3p(ModSounds.AK_47_FIRE_3P.get())
+                                .sound3pFar(ModSounds.AK_47_FAR.get())
+                                .sound3pVeryFar(ModSounds.AK_47_VERYFAR.get()),
                 },
                 new VehicleWeapon[]{
                         // 成员机枪
@@ -181,9 +181,9 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
                                 .sound(ModSounds.INTO_CANNON.get())
                                 .icon(Mod.loc("textures/screens/vehicle_weapon/gun_7_62mm.png"))
                                 .sound1p(ModSounds.COAX_FIRE_1P.get())
-                                .sound3p(ModSounds.M_60_FIRE_3P.get())
-                                .sound3pFar(ModSounds.M_60_FAR.get())
-                                .sound3pVeryFar(ModSounds.M_60_VERYFAR.get()),
+                                .sound3p(ModSounds.AK_47_FIRE_3P.get())
+                                .sound3pFar(ModSounds.AK_47_FAR.get())
+                                .sound3pVeryFar(ModSounds.AK_47_VERYFAR.get()),
                 },
                 new VehicleWeapon[]{
                         // 成员机枪
@@ -194,9 +194,9 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
                                 .sound(ModSounds.INTO_CANNON.get())
                                 .icon(Mod.loc("textures/screens/vehicle_weapon/gun_7_62mm.png"))
                                 .sound1p(ModSounds.COAX_FIRE_1P.get())
-                                .sound3p(ModSounds.M_60_FIRE_3P.get())
-                                .sound3pFar(ModSounds.M_60_FAR.get())
-                                .sound3pVeryFar(ModSounds.M_60_VERYFAR.get()),
+                                .sound3p(ModSounds.AK_47_FIRE_3P.get())
+                                .sound3pFar(ModSounds.AK_47_FAR.get())
+                                .sound3pVeryFar(ModSounds.AK_47_VERYFAR.get()),
                 },
                 new VehicleWeapon[]{
                         // 成员机枪
@@ -207,9 +207,9 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
                                 .sound(ModSounds.INTO_CANNON.get())
                                 .icon(Mod.loc("textures/screens/vehicle_weapon/gun_7_62mm.png"))
                                 .sound1p(ModSounds.COAX_FIRE_1P.get())
-                                .sound3p(ModSounds.M_60_FIRE_3P.get())
-                                .sound3pFar(ModSounds.M_60_FAR.get())
-                                .sound3pVeryFar(ModSounds.M_60_VERYFAR.get()),
+                                .sound3p(ModSounds.AK_47_FIRE_3P.get())
+                                .sound3pFar(ModSounds.AK_47_FAR.get())
+                                .sound3pVeryFar(ModSounds.AK_47_VERYFAR.get()),
                 },
                 new VehicleWeapon[]{
                         // 成员机枪
@@ -220,9 +220,9 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
                                 .sound(ModSounds.INTO_CANNON.get())
                                 .icon(Mod.loc("textures/screens/vehicle_weapon/gun_7_62mm.png"))
                                 .sound1p(ModSounds.COAX_FIRE_1P.get())
-                                .sound3p(ModSounds.M_60_FIRE_3P.get())
-                                .sound3pFar(ModSounds.M_60_FAR.get())
-                                .sound3pVeryFar(ModSounds.M_60_VERYFAR.get()),
+                                .sound3p(ModSounds.AK_47_FIRE_3P.get())
+                                .sound3pFar(ModSounds.AK_47_FAR.get())
+                                .sound3pVeryFar(ModSounds.AK_47_VERYFAR.get()),
                 }
         };
     }
@@ -480,13 +480,15 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
                 Vec3 shootPosition = passengerCameraPos(1, living);
 
                 if (this.entityData.get(MG_AMMO) > 0 || hasCreativeAmmo) {
-                    var projectileRight = ((ProjectileWeapon) getWeapon(i)).create(living).setGunItemId(this.getType().getDescriptionId());
+                    var projectile = ((ProjectileWeapon) getWeapon(i)).create(living).setGunItemId(this.getType().getDescriptionId());
 
-                    projectileRight.bypassArmorRate(0.2f);
-                    projectileRight.setPos(shootPosition.x, shootPosition.y - 0.05, shootPosition.z);
-                    projectileRight.shoot(living, living.getLookAngle().x, living.getLookAngle().y + 0.002f, living.getLookAngle().z, 25,
+                    projectile.bypassArmorRate(0.2f);
+                    projectile.setPos(shootPosition.x, shootPosition.y - 0.05, shootPosition.z);
+                    projectile.shoot(living, living.getLookAngle().x, living.getLookAngle().y, living.getLookAngle().z, 25,
                             0.25f);
-                    this.level().addFreshEntity(projectileRight);
+                    this.level().addFreshEntity(projectile);
+
+                    playShootSound3p(living, i, 3, 6, 12, shootPosition);
 
                     if (!hasCreativeAmmo) {
                         ItemStack ammoBox = this.getItemStacks().stream().filter(stack -> {
@@ -503,10 +505,6 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
                         }
                     }
                 }
-
-//            this.entityData.set(COAX_HEAT, this.entityData.get(COAX_HEAT) + 3);
-//            this.entityData.set(FIRE_ANIM, 2);
-                playShootSound3p(living, 0, 3, 6, 12, shootPosition);
             }
         }
     }
@@ -567,21 +565,21 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
             entity.setYBodyRot(getBarrelYRot(1));
         } else if (entity == getNthEntity(1) || entity == getNthEntity(3)) {
             float f = Mth.wrapDegrees(entity.getYRot() - getYRot());
-            float g = Mth.clamp(f, -125.0f, -55.0f);
+            float g = Mth.clamp(f, -140.0f, -40.0f);
             entity.yRotO += g - f;
             entity.setYRot(entity.getYRot() + g - f);
             entity.setYHeadRot(entity.getYRot());
             entity.setYBodyRot(getYRot() - 90);
         } else if (entity == getNthEntity(2) || entity == getNthEntity(4) || entity == getNthEntity(6)) {
             float f = Mth.wrapDegrees(entity.getYRot() - getYRot());
-            float g = Mth.clamp(f, 55.0f, 125.0f);
+            float g = Mth.clamp(f, 40.0f, 140.0f);
             entity.yRotO += g - f;
             entity.setYRot(entity.getYRot() + g - f);
             entity.setYHeadRot(entity.getYRot());
             entity.setYBodyRot(getYRot() + 90);
         } else if (entity == getNthEntity(5)) {
             float f = Mth.wrapDegrees(entity.getYRot() - getYRot() - 180);
-            float g = Mth.clamp(f, -35.0f, 35.0f);
+            float g = Mth.clamp(f, -50.0f, 50.0f);
             entity.yRotO += g - f;
             entity.setYRot(entity.getYRot() + g - f);
             entity.setYHeadRot(entity.getYRot());
@@ -696,8 +694,8 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
             entity.setXRot(entity.getXRot() + f1 - f);
             entity.setYBodyRot(getBarrelYRot(1));
         } else if (entity == getNthEntity(1) || entity == getNthEntity(3)) {
-            float min = -27f - getRoll();
-            float max = 27f - getRoll();
+            float min = -40f - getRoll();
+            float max = 40f - getRoll();
 
             float f = Mth.wrapDegrees(entity.getXRot());
             float f1 = Mth.clamp(f, min, max);
@@ -705,13 +703,13 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
             entity.setXRot(entity.getXRot() + f1 - f);
 
             float f2 = Mth.wrapDegrees(entity.getYRot() - this.getYRot());
-            float f3 = Mth.clamp(f2, -125.0F, -55.0F);
+            float f3 = Mth.clamp(f2, -140.0F, -40.0F);
             entity.yRotO += f3 - f2;
             entity.setYRot(entity.getYRot() + f3 - f2);
             entity.setYBodyRot(getYRot() - 90);
         } else if (entity == getNthEntity(2) || entity == getNthEntity(4) || entity == getNthEntity(6)) {
-            float min = -27f + getRoll();
-            float max = 27f + getRoll();
+            float min = -40f + getRoll();
+            float max = 40f + getRoll();
 
             float f = Mth.wrapDegrees(entity.getXRot());
             float f1 = Mth.clamp(f, min, max);
@@ -719,13 +717,13 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
             entity.setXRot(entity.getXRot() + f1 - f);
 
             float f2 = Mth.wrapDegrees(entity.getYRot() - this.getYRot());
-            float f3 = Mth.clamp(f2, 55.0F, 125.0F);
+            float f3 = Mth.clamp(f2, 40.0F, 140.0F);
             entity.yRotO += f3 - f2;
             entity.setYRot(entity.getYRot() + f3 - f2);
             entity.setYBodyRot(getYRot() + 90);
         } else if (entity == getNthEntity(5)) {
-            float min = -27f + getXRot();
-            float max = 27f + getXRot();
+            float min = -40f + getXRot();
+            float max = 40f + getXRot();
 
             float f = Mth.wrapDegrees(entity.getXRot());
             float f1 = Mth.clamp(f, min, max);
@@ -733,7 +731,7 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
             entity.setXRot(entity.getXRot() + f1 - f);
 
             float f2 = Mth.wrapDegrees(entity.getYRot() - this.getYRot() - 180);
-            float f3 = Mth.clamp(f2, -35, 35);
+            float f3 = Mth.clamp(f2, -50, 50);
             entity.yRotO += f3 - f2;
             entity.setYRot(entity.getYRot() + f3 - f2);
             entity.setYBodyRot(getYRot() - 180);
@@ -752,17 +750,17 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
 
         Vector4f worldPosition;
         if (i == 1) {
-            worldPosition = transformPosition(transformV, 1.703125f, 1.9765625f, -0.8125f);
+            worldPosition = transformPosition(transformV, 1.803125f, 1.9765625f, -0.8125f);
         } else if (i == 2) {
-            worldPosition = transformPosition(transformV, -1.703125f, 1.9765625f, -0.8125f);
+            worldPosition = transformPosition(transformV, -1.803125f, 1.9765625f, -0.8125f);
         } else if (i == 3) {
-            worldPosition = transformPosition(transformV, 1.515625f, 1.9765625f, -2.1875f);
+            worldPosition = transformPosition(transformV, 1.615625f, 1.9765625f, -2.1875f);
         } else if (i == 4) {
-            worldPosition = transformPosition(transformV, -1.515625f, 1.9765625f, -2.1875f);
+            worldPosition = transformPosition(transformV, -1.615625f, 1.9765625f, -2.1875f);
         } else if (i == 5) {
-            worldPosition = transformPosition(transformV, 0.6875f, 1.6015625f, -4f);
+            worldPosition = transformPosition(transformV, 0.6875f, 1.6015625f, -4.1f);
         } else if (i == 6) {
-            worldPosition = transformPosition(transformV, -1.40625f, 1.9765625f, -3.0625f);
+            worldPosition = transformPosition(transformV, -1.50625f, 1.9765625f, -3.0625f);
         } else {
             worldPosition = transformPosition(transformV, 0, 1, 0);
         }
@@ -803,7 +801,7 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
             if (getWeaponIndex(0) == 0) {
                 return 250;
             } else if (getWeaponIndex(0) == 1) {
-                return 750;
+                return 600;
             }
         }
 
@@ -1014,5 +1012,10 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
         Vector4f worldPositionT = transformPosition(transformT, 0, 0.46875f, 0f);
         this.obbTurret.center().set(new Vector3f(worldPositionT.x, worldPositionT.y, worldPositionT.z));
         this.obbTurret.setRotation(VectorTool.combineRotationsTurret(1, this));
+    }
+
+    @Override
+    public boolean hasPassengerTurretWeapon() {
+        return false;
     }
 }

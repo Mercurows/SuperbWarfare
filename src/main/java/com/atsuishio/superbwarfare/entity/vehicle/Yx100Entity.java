@@ -560,7 +560,6 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
             } else if (getWeaponIndex(0) == 4) {
                 if (this.cannotFireCoax) return;
 
-
                 if (this.entityData.get(MG_AMMO) > 0 || hasCreativeAmmo) {
                     var projectileRight = ((ProjectileWeapon) getWeapon(0)).create(living).setGunItemId(this.getType().getDescriptionId() + ".1");
 
@@ -568,6 +567,11 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
                     projectileRight.shoot(living, getBarrelVector(1).x, getBarrelVector(1).y, getBarrelVector(1).z, 36,
                             0.25f);
                     this.level().addFreshEntity(projectileRight);
+
+                    this.entityData.set(COAX_HEAT, this.entityData.get(COAX_HEAT) + 4);
+                    this.entityData.set(FIRE_ANIM, 2);
+
+                    playShootSound3p(living, 0, 4, 12, 24, new Vec3(getTurretShootPos(living).x, getTurretShootPos(living).y, getTurretShootPos(living).z));
 
                     if (!hasCreativeAmmo) {
                         ItemStack ammoBox = this.getItemStacks().stream().filter(stack -> {
@@ -584,11 +588,6 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
                         }
                     }
                 }
-
-                this.entityData.set(COAX_HEAT, this.entityData.get(COAX_HEAT) + 4);
-                this.entityData.set(FIRE_ANIM, 2);
-
-                playShootSound3p(living, 0, 4, 12, 24, new Vec3(getTurretShootPos(living).x, getTurretShootPos(living).y, getTurretShootPos(living).z));
             }
         }
 
@@ -1325,5 +1324,10 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
     @Override
     public int getHudColor() {
         return 0x00FFF6;
+    }
+
+    @Override
+    public boolean hasPassengerTurretWeapon() {
+        return true;
     }
 }

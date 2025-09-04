@@ -126,12 +126,49 @@ public class SpeedboatEntity extends ContainerMobileVehicleEntity implements Geo
             this.handleAmmo();
         }
 
-        this.turretAngle(40, 40);
         this.lowHealthWarning();
         this.inertiaRotate(2);
         this.terrainCompact(2f, 3f);
 
         this.refreshDimensions();
+    }
+
+    // 炮塔最大水平旋转速度
+    @Override
+    public float turretYSpeed() {
+        return 25;
+    }
+    // 炮塔最大俯仰旋转速度
+    @Override
+    public float turretXSpeed() {
+        return 25F;
+    }
+    // 炮塔最小俯角
+    @Override
+    public float turretMinPitch() {
+        return -25f;
+    }
+    // 炮塔最大仰角
+    @Override
+    public float turretMaxPitch() {
+        return 50f;
+    }
+    // 炮弹发射位置
+    @Override
+    public Vec3 getTurretShootPos(Entity entity) {
+        Matrix4f transform = getBarrelTransform(1);
+        Vector4f worldPosition = transformPosition(transform, 0, 0.20106875f, 0);
+        return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
+    }
+    // 炮弹发射速度
+    @Override
+    public float projectileVelocity(Entity entity) {
+        return 20;
+    }
+    // 炮弹重力
+    @Override
+    public float projectileGravity(Entity entity) {
+        return 0.05f;
     }
 
     @Override
@@ -158,24 +195,15 @@ public class SpeedboatEntity extends ContainerMobileVehicleEntity implements Geo
     @Override
     public void vehicleShoot(LivingEntity living, int type) {
         if (this.cannotFire) return;
-
-        Matrix4f transform = getBarrelTransform(1);
-
-        float x = 0f;
-        float y = 0.20106875f;
-        float z = 0f;
-
-        Vector4f worldPosition = transformPosition(transform, x, y, z);
-
         var projectile = ((ProjectileWeapon) getWeapon(0)).create(living).setGunItemId(this.getType().getDescriptionId());
 
         projectile.bypassArmorRate(0.4f);
-        projectile.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
-        projectile.shoot(living, getBarrelVector(1).x, getBarrelVector(1).y, getBarrelVector(1).z, 20,
+        projectile.setPos(getTurretShootPos(living).x, getTurretShootPos(living).y, getTurretShootPos(living).z);
+        projectile.shoot(living, getBarrelVector(1).x, getBarrelVector(1).y, getBarrelVector(1).z, projectileVelocity(living),
                 (float) 0.4);
         this.level().addFreshEntity(projectile);
 
-        playShootSound3p(living, 0, 4, 12, 24, new Vec3(worldPosition.x, worldPosition.y, worldPosition.z));
+        playShootSound3p(living, 0, 4, 12, 24, new Vec3(getTurretShootPos(living).x, getTurretShootPos(living).y, getTurretShootPos(living).z));
 
         ShakeClientMessage.sendToNearbyPlayers(this, 5, 6, 5, 5);
 
@@ -333,8 +361,8 @@ public class SpeedboatEntity extends ContainerMobileVehicleEntity implements Geo
             }
         }
 
-        float min = -50f - r * getXRot() - r2 * getRoll();
-        float max = 25f - r * getXRot() - r2 * getRoll();
+        float min = -turretMaxPitch() - r * getXRot() - r2 * getRoll();
+        float max = -turretMinPitch() - r * getXRot() - r2 * getRoll();
 
         float f = Mth.wrapDegrees(entity.getXRot());
         float f1 = Mth.clamp(f, min, max);
@@ -532,5 +560,10 @@ public class SpeedboatEntity extends ContainerMobileVehicleEntity implements Geo
         Vector4f worldPosition2 = transformPosition(transform, 0, 2.0625f, -0.71875f);
         this.obb2.center().set(new Vector3f(worldPosition2.x, worldPosition2.y, worldPosition2.z));
         this.obb2.setRotation(VectorTool.combineRotations(1, this));
+    }
+
+    @Override
+    public boolean hasPassengerTurretWeapon() {
+        return false;
     }
 }
