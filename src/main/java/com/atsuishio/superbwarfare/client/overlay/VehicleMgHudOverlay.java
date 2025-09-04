@@ -125,7 +125,7 @@ public class VehicleMgHudOverlay implements LayeredDraw.Layer {
         return !player.isSpectator()
                 && (player.getVehicle() instanceof SpeedboatEntity
                 || (player.getVehicle() instanceof Yx100Entity yx100 && yx100.getNthEntity(1) == player)
-                || (player.getVehicle() instanceof Bmp2Entity bmp2 && bmp2.getNthEntity(0) != player)
+                || (player.getVehicle() instanceof Bmp2Entity bmp2 && bmp2.getNthEntity(0) != player && ((Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON || ClientEventHandler.zoomVehicle)))
         );
     }
 }
