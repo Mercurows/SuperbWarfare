@@ -53,8 +53,7 @@ public class SeekTool {
 
     public static List<Entity> getTeammate(Player player, Level level) {
         return StreamSupport.stream(EntityFindUtil.getEntities(level).getAll().spliterator(), false)
-                .filter(e -> friendlyToPlayer(player, e)
-                )
+                .filter(e -> friendlyToPlayer(player, e))
                 .toList();
     }
 
@@ -80,6 +79,8 @@ public class SeekTool {
     }
 
     public static boolean teamFilter(Entity e, Entity entity) {
+        if (e == null) return false;
+        if (entity == null) return false;
         return e == entity || (entity.getTeam() != null && !entity.getTeam().getName().equals("TDM") && entity.getTeam() == e.getTeam());
     }
 
