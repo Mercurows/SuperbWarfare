@@ -158,6 +158,9 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
 
     public int noPassengerTime;
 
+    public double aiTurretDiff;
+    public double aiPassengerDiff;
+
     public @Nullable Player damageDebugResultReceiver = null;
 
     public VehicleEntity(EntityType<?> pEntityType, Level pLevel) {
@@ -1307,6 +1310,28 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
         }
     }
 
+    public boolean aiTurretShoot(LivingEntity living) {
+        if (this instanceof WeaponVehicleEntity weaponVehicle) {
+            if (aiTurretDiff < 1) {
+                weaponVehicle.vehicleShoot(living, 0);
+                return true;
+            } else {
+                return false;
+            }
+        } return false;
+    }
+
+    public boolean aiPassengerWeaponShoot(LivingEntity living) {
+        if (this instanceof WeaponVehicleEntity weaponVehicle) {
+            if (aiPassengerDiff < 1) {
+                weaponVehicle.vehicleShoot(living, 1);
+                return true;
+            } else {
+                return false;
+            }
+        } return false;
+    }
+
     public void turretAutoAimFormVector(Vec3 shootVec) {
         //shootVec是需要让炮塔以这个角度发射的向量
         float ySpeed = turretYSpeed();
@@ -1327,6 +1352,7 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
         this.setTurretXRot(Mth.clamp(this.getTurretXRot() + Mth.clamp(0.5f * diffX, -xSpeed, xSpeed), -turretMaxPitch(), -turretMinPitch()));
         this.setTurretYRot(this.getTurretYRot() - Mth.clamp(0.5f * diffY, min, max));
         turretYRotLock = Mth.clamp(0.9f * diffY, min, max);
+        aiTurretDiff = VectorTool.calculateAngle(shootVec, getBarrelVector(1));
     }
 
     public void turretAutoAimFormUuid(String uuid, LivingEntity pLiving) {
@@ -1413,6 +1439,8 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
 
         this.setGunXRot(Mth.clamp(this.getGunXRot() + Mth.clamp(0.5f * diffX, -xSpeed, xSpeed), -passengerWeaponMaxPitch(), -passengerWeaponMinPitch()));
         this.setGunYRot(this.getGunYRot() - Mth.clamp(0.5f * diffY, -ySpeed, ySpeed));
+
+        aiPassengerDiff = VectorTool.calculateAngle(shootVec, getGunnerVector(1));
     }
 
     // 乘客武器站最大水平旋转速度
