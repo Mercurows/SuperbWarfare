@@ -15,7 +15,6 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.joml.Quaternionf;
@@ -49,23 +48,23 @@ public class GameRendererMixin {
 
     @SuppressWarnings("ConstantValue")
     @Inject(method = "bobHurt(Lcom/mojang/blaze3d/vertex/PoseStack;F)V", at = @At("HEAD"))
-    public void superbWarfare$renderWorld(PoseStack poseStack, float partialTicks, CallbackInfo ci) {
+    public void superbWarfare$renderWorld(PoseStack matrices, float tickDelta, CallbackInfo ci) {
         Entity entity = mainCamera.getEntity();
 
-        poseStack.mulPose(Axis.ZP.rotationDegrees(ClientEventHandler.cameraRoll));
+        matrices.mulPose(Axis.ZP.rotationDegrees(ClientEventHandler.cameraRoll));
 
 
         if (entity instanceof Player player && !player.isSpectator() && player.hasEffect(ModMobEffects.SHOCK)) {
             float shakeStrength = (float) DisplayConfig.SHOCK_SCREEN_SHAKE.get() / 100.0f;
             if (shakeStrength <= 0.0f) return;
-            poseStack.mulPose(Axis.ZP.rotationDegrees((float) Mth.nextDouble(RandomSource.create(), 8, 12) * shakeStrength));
+            matrices.mulPose(Axis.ZP.rotationDegrees((float) Mth.nextDouble(RandomSource.create(), 8, 12) * shakeStrength));
         }
 
-        if (entity != null && entity instanceof LivingEntity living && entity.getRootVehicle() instanceof VehicleEntity vehicle && (!mainCamera.isDetached() || (vehicle instanceof LandArmorEntity && ClientEventHandler.zoomVehicle))) {
+        if (entity != null && entity.getRootVehicle() instanceof VehicleEntity vehicle && (!mainCamera.isDetached() || (vehicle instanceof LandArmorEntity && ClientEventHandler.zoomVehicle))) {
             // rotate camera
 
-            if (vehicle.passengerSeatLocation(entity) == 0) {
-                float a = Mth.wrapDegrees(living.getYRot() - vehicle.getYRot());
+            if (vehicle.passengerSeatLocation(entity) == 1) {
+                float a = vehicle.getTurretYaw(tickDelta);
                 float r = (Mth.abs(a) - 90f) / 90f;
                 float r2;
                 if (Mth.abs(a) <= 90f) {
@@ -78,9 +77,9 @@ public class GameRendererMixin {
                     }
                 }
 
-                poseStack.mulPose(Axis.ZP.rotationDegrees(-r * vehicle.getRoll(partialTicks) - r2 * vehicle.getViewXRot(partialTicks)));
-            } else if (vehicle.passengerSeatLocation(entity) == 1) {
-                float a = vehicle.getTurretYaw(partialTicks);
+                matrices.mulPose(Axis.ZP.rotationDegrees(-r * vehicle.getRoll(tickDelta) + r2 * vehicle.getViewXRot(tickDelta)));
+            } else {
+                float a = Mth.wrapDegrees(entity.getYRot() - vehicle.getYRot());
                 float r = (Mth.abs(a) - 90f) / 90f;
                 float r2;
                 if (Mth.abs(a) <= 90f) {
@@ -93,43 +92,27 @@ public class GameRendererMixin {
                     }
                 }
 
-                poseStack.mulPose(Axis.ZP.rotationDegrees(-r * vehicle.getRoll(partialTicks) + r2 * vehicle.getViewXRot(partialTicks)));
+                matrices.mulPose(Axis.ZP.rotationDegrees(-r * vehicle.getRoll(tickDelta) - r2 * vehicle.getViewXRot(tickDelta)));
+            }
 
-            } else if (vehicle.passengerSeatLocation(entity) == 2) {
-                float a = Mth.wrapDegrees(living.yBodyRot - vehicle.getYRot());
-                float r = (Mth.abs(a) - 90f) / 90f;
-                float r2;
-                if (Mth.abs(a) <= 90f) {
-                    r2 = a / 90f;
-                } else {
-                    if (a < 0) {
-                        r2 = -(180f + a) / 90f;
-                    } else {
-                        r2 = (180f - a) / 90f;
-                    }
-                }
+            if (!vehicle.useFixedCameraPos(entity)) {
+                // fetch eye offset
+                float eye = entity.getEyeHeight();
 
-                poseStack.mulPose(Axis.ZP.rotationDegrees(-r * vehicle.getRoll(partialTicks) + r2 * vehicle.getViewXRot(partialTicks)));
+                // transform eye offset to match aircraft rotation
+                Vector3f offset = new Vector3f(0, -eye, 0);
+                Quaternionf quaternion = Axis.XP.rotationDegrees(0.0f);
+                quaternion.mul(Axis.YP.rotationDegrees(-vehicle.getViewYRot(tickDelta)));
+                quaternion.mul(Axis.XP.rotationDegrees(vehicle.getViewXRot(tickDelta)));
+                quaternion.mul(Axis.ZP.rotationDegrees(vehicle.getRoll(tickDelta)));
+                offset.rotate(quaternion);
 
-                if (!vehicle.useFixedCameraPos(entity)) {
-                    // fetch eye offset
-                    float eye = entity.getEyeHeight();
-
-                    // transform eye offset to match aircraft rotation
-                    Vector3f offset = new Vector3f(0, -eye, 0);
-                    Quaternionf quaternion = Axis.XP.rotationDegrees(0.0f);
-                    quaternion.mul(Axis.YP.rotationDegrees(-vehicle.getViewYRot(partialTicks)));
-                    quaternion.mul(Axis.XP.rotationDegrees(vehicle.getViewXRot(partialTicks)));
-                    quaternion.mul(Axis.ZP.rotationDegrees(vehicle.getRoll(partialTicks)));
-                    offset.rotate(quaternion);
-
-                    // apply camera offset
-                    poseStack.mulPose(Axis.XP.rotationDegrees(mainCamera.getXRot()));
-                    poseStack.mulPose(Axis.YP.rotationDegrees(mainCamera.getYRot() + 180.0f));
-                    poseStack.translate(offset.x(), offset.y() + eye, offset.z());
-                    poseStack.mulPose(Axis.YP.rotationDegrees(-mainCamera.getYRot() - 180.0f));
-                    poseStack.mulPose(Axis.XP.rotationDegrees(-mainCamera.getXRot()));
-                }
+                // apply camera offset
+                matrices.mulPose(Axis.XP.rotationDegrees(mainCamera.getXRot()));
+                matrices.mulPose(Axis.YP.rotationDegrees(mainCamera.getYRot() + 180.0f));
+                matrices.translate(offset.x(), offset.y() + eye, offset.z());
+                matrices.mulPose(Axis.YP.rotationDegrees(-mainCamera.getYRot() - 180.0f));
+                matrices.mulPose(Axis.XP.rotationDegrees(-mainCamera.getXRot()));
             }
         }
     }
