@@ -54,14 +54,14 @@ public class SeekTool {
 
     public static List<Entity> getTeammate(Player player, Level level) {
         return StreamSupport.stream(EntityFindUtil.getEntities(level).getAll().spliterator(), false)
-                .filter(e -> friendlyToPlayer(player, e)
-                )
+                .filter(e -> friendlyToPlayer(player, e))
                 .toList();
     }
 
     public static boolean friendlyToPlayer(Entity e, Entity entity) {
         if (teamFilter(e, entity)) return true;
-        if (entity instanceof OwnableEntity ownableEntity && ownableEntity.getOwner() != null && teamFilter(e, ownableEntity.getOwner())) return true;
+        if (entity instanceof OwnableEntity ownableEntity && ownableEntity.getOwner() != null && teamFilter(e, ownableEntity.getOwner()))
+            return true;
         if (e instanceof Player player && teammateDrone(entity, player)) return true;
 
         List<Entity> entities = entity.getPassengers();
@@ -80,6 +80,8 @@ public class SeekTool {
     }
 
     public static boolean teamFilter(Entity e, Entity entity) {
+        if (e == null) return false;
+        if (entity == null) return false;
         return e == entity || (entity.getTeam() != null && !entity.getTeam().getName().equals("TDM") && entity.getTeam() == e.getTeam());
     }
 
