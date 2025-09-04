@@ -68,13 +68,13 @@ public class Perk implements GunPropertyModifier {
     /**
      * 在背包中每Tick触发
      */
-    public void tick(GunData data, PerkInstance instance, @Nullable Entity living) {
+    public void tick(GunData data, PerkInstance instance, @Nullable Entity entity) {
     }
 
-    public void preReload(GunData data, PerkInstance instance, @Nullable Entity living) {
+    public void preReload(GunData data, PerkInstance instance, @Nullable Entity entity) {
     }
 
-    public void postReload(GunData data, PerkInstance instance, @Nullable Entity living) {
+    public void postReload(GunData data, PerkInstance instance, @Nullable Entity entity) {
     }
 
     public void onKill(GunData data, PerkInstance instance, Entity target, DamageSource source) {

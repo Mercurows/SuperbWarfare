@@ -23,7 +23,7 @@ public class HeadSeeker extends Perk {
     }
 
     @Override
-    public void tick(GunData data, PerkInstance instance, @Nullable Entity living) {
+    public void tick(GunData data, PerkInstance instance, @Nullable Entity entity) {
         data.perk.reduceCooldown(this, "HeadSeeker");
     }
 

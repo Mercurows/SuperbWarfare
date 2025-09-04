@@ -25,7 +25,7 @@ public class MagnificentHowl extends Perk {
     }
 
     @Override
-    public void preReload(GunData data, PerkInstance instance, @Nullable Entity living) {
+    public void preReload(GunData data, PerkInstance instance, @Nullable Entity entity) {
         data.perk.getTag(this).putInt("MagnificentHowlDamageCount", data.perk.getTag(this).getInt("MagnificentHowlCount"));
         data.perk.getTag(this).remove("MagnificentHowlCount");
     }

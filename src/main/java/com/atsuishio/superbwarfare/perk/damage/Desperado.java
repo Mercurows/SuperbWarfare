@@ -22,7 +22,7 @@ public class Desperado extends Perk {
     }
 
     @Override
-    public void tick(GunData data, PerkInstance instance, @Nullable Entity living) {
+    public void tick(GunData data, PerkInstance instance, @Nullable Entity entity) {
         data.perk.reduceCooldown(this, "DesperadoTime");
         data.perk.reduceCooldown(this, "DesperadoTimePost");
     }
@@ -35,7 +35,7 @@ public class Desperado extends Perk {
     }
 
     @Override
-    public void preReload(GunData data, PerkInstance instance, @Nullable Entity living) {
+    public void preReload(GunData data, PerkInstance instance, @Nullable Entity entity) {
         int time = data.perk.getTag(this).getInt("DesperadoTime");
         if (time > 0) {
             data.perk.getTag(this).remove("DesperadoTime");
@@ -46,7 +46,7 @@ public class Desperado extends Perk {
     }
 
     @Override
-    public void postReload(GunData data, PerkInstance instance, @Nullable Entity living) {
+    public void postReload(GunData data, PerkInstance instance, @Nullable Entity entity) {
         if (!data.perk.getTag(this).getBoolean("Desperado")) {
             return;
         }

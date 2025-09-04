@@ -20,7 +20,7 @@ public class HealClip extends Perk {
     }
 
     @Override
-    public void tick(GunData data, PerkInstance instance, @Nullable Entity living) {
+    public void tick(GunData data, PerkInstance instance, @Nullable Entity entity) {
         data.perk.reduceCooldown(this, "HealClipTime");
     }
 
@@ -35,7 +35,7 @@ public class HealClip extends Perk {
     }
 
     @Override
-    public void preReload(GunData data, PerkInstance instance, @Nullable Entity living) {
+    public void preReload(GunData data, PerkInstance instance, @Nullable Entity entity) {
         int time = data.perk.getTag(this).getInt("HealClipTime");
         if (time > 0) {
             data.perk.getTag(this).remove("HealClipTime");
@@ -46,8 +46,8 @@ public class HealClip extends Perk {
     }
 
     @Override
-    public void postReload(GunData data, PerkInstance instance, @Nullable Entity target) {
-        if (!(target instanceof LivingEntity living)) return;
+    public void postReload(GunData data, PerkInstance instance, @Nullable Entity entity) {
+        if (!(entity instanceof LivingEntity living)) return;
 
         if (!data.perk.getTag(this).contains("HealClip")) {
             return;
@@ -59,8 +59,8 @@ public class HealClip extends Perk {
         }
 
         living.heal(12.0f * (0.8f + 0.2f * healClipLevel));
-        List<Player> players = target.level().getEntitiesOfClass(Player.class, target.getBoundingBox().inflate(5))
-                .stream().filter(p -> p.isAlliedTo(target)).toList();
+        List<Player> players = entity.level().getEntitiesOfClass(Player.class, entity.getBoundingBox().inflate(5))
+                .stream().filter(p -> p.isAlliedTo(entity)).toList();
         int finalHealClipLevel = healClipLevel;
         players.forEach(p -> p.heal(6.0f * (0.8f + 0.2f * finalHealClipLevel)));
     }

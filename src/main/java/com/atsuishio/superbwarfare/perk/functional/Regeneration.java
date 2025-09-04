@@ -15,7 +15,7 @@ public class Regeneration extends Perk {
     }
 
     @Override
-    public void tick(GunData data, PerkInstance instance, @Nullable Entity living) {
+    public void tick(GunData data, PerkInstance instance, @Nullable Entity entity) {
         ItemStack stack = data.stack;
         var cap = stack.getCapability(Capabilities.EnergyStorage.ITEM);
         if (cap != null) {

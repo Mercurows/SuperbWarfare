@@ -19,13 +19,13 @@ public class KillClip extends Perk {
     }
 
     @Override
-    public void tick(GunData data, PerkInstance instance, @Nullable Entity living) {
+    public void tick(GunData data, PerkInstance instance, @Nullable Entity entity) {
         data.perk.reduceCooldown(this, "KillClipReloadTime");
         data.perk.reduceCooldown(this, "KillClipTime");
     }
 
     @Override
-    public void preReload(GunData data, PerkInstance instance, @Nullable Entity living) {
+    public void preReload(GunData data, PerkInstance instance, @Nullable Entity entity) {
         int time = data.perk.getTag(this).getInt("KillClipReloadTime");
         if (time > 0) {
             data.perk.getTag(this).remove("KillClipReloadTime");
@@ -36,7 +36,7 @@ public class KillClip extends Perk {
     }
 
     @Override
-    public void postReload(GunData data, PerkInstance instance, @Nullable Entity living) {
+    public void postReload(GunData data, PerkInstance instance, @Nullable Entity entity) {
         if (!data.perk.getTag(this).getBoolean("KillClip")) {
             return;
         }
