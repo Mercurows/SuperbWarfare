@@ -37,9 +37,6 @@ import net.minecraftforge.client.gui.overlay.IGuiOverlay;
 import org.jetbrains.annotations.Nullable;
 import top.theillusivec4.curios.api.CuriosApi;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
-
 @OnlyIn(Dist.CLIENT)
 public class KillMessageOverlay implements IGuiOverlay {
 
@@ -371,31 +368,31 @@ public class KillMessageOverlay implements IGuiOverlay {
     }
 
     public static String getEntityName(Entity entity) {
-        AtomicReference<String> name = new AtomicReference<>(entity.getDisplayName().getString());
-        if (!DisplayConfig.DOG_TAG_NAME_VISIBLE.get()) return name.get();
+        String[] name = {entity.getDisplayName().getString()};
+        if (!DisplayConfig.DOG_TAG_NAME_VISIBLE.get()) return name[0];
         if (entity instanceof LivingEntity living && living instanceof OwnableEntity ownableEntity && ownableEntity.getOwner() instanceof Player player) {
-            CuriosApi.getCuriosInventory(living).ifPresent(
+            CuriosApi.getCuriosInventory(player).ifPresent(
                     c -> c.findFirstCurio(ModItems.DOG_TAG.get()).ifPresent(
                             s -> {
                                 if (s.stack().hasCustomHoverName()) {
-                                    name.set(s.stack().getHoverName().getString());
+                                    name[0] = s.stack().getHoverName().getString();
                                 }
                             }
                     )
             );
-            name.set(player.getDisplayName().getString() + " + " + name.get());
+            name[0] += " + " + entity.getDisplayName().getString();
         } else if (entity instanceof Player player) {
             CuriosApi.getCuriosInventory(player).ifPresent(
                     c -> c.findFirstCurio(ModItems.DOG_TAG.get()).ifPresent(
                             s -> {
                                 if (s.stack().hasCustomHoverName()) {
-                                    name.set(s.stack().getHoverName().getString());
+                                    name[0] = s.stack().getHoverName().getString();
                                 }
                             }
                     )
             );
         }
-        return name.get();
+        return name[0];
     }
 
     @Nullable
@@ -429,18 +426,18 @@ public class KillMessageOverlay implements IGuiOverlay {
     }
 
     public static boolean shouldRenderDogTagIcon(LivingEntity living) {
-        AtomicBoolean flag = new AtomicBoolean(false);
+        boolean[] flag = {false};
         CuriosApi.getCuriosInventory(living).ifPresent(
                 c -> c.findFirstCurio(ModItems.DOG_TAG.get()).ifPresent(
                         s -> {
                             var stack = s.stack();
                             if (ClientDogTagImageTooltip.shouldRenderIcon(stack)) {
-                                flag.set(true);
+                                flag[0] = true;
                             }
                         }
                 )
         );
-        return flag.get() && DisplayConfig.DOG_TAG_ICON_VISIBLE.get();
+        return flag[0] && DisplayConfig.DOG_TAG_ICON_VISIBLE.get();
     }
 
     public static void renderDogTagIcon(GuiGraphics guiGraphics, LivingEntity living, float x, float y) {
