@@ -5,7 +5,7 @@ import com.atsuishio.superbwarfare.capability.energy.ItemEnergyProvider;
 import com.atsuishio.superbwarfare.client.GunRendererBuilder;
 import com.atsuishio.superbwarfare.client.TooltipTool;
 import com.atsuishio.superbwarfare.client.model.item.SecondaryCataclysmModel;
-import com.atsuishio.superbwarfare.client.tooltip.component.SecondaryCataclysmImageComponent;
+import com.atsuishio.superbwarfare.client.tooltip.component.EnergyImageComponent;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
@@ -195,7 +195,7 @@ public class SecondaryCataclysm extends GunItem {
 
     @Override
     public @NotNull Optional<TooltipComponent> getTooltipImage(@NotNull ItemStack pStack) {
-        return Optional.of(new SecondaryCataclysmImageComponent(pStack));
+        return Optional.of(new EnergyImageComponent(pStack));
     }
 
     @Override

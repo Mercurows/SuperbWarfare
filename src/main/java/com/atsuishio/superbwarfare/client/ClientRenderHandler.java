@@ -30,8 +30,6 @@ public class ClientRenderHandler {
         event.register(EnergyImageComponent.class, ClientEnergyImageTooltip::new);
         event.register(CellImageComponent.class, ClientCellImageTooltip::new);
         event.register(SentinelImageComponent.class, ClientSentinelImageTooltip::new);
-        event.register(LauncherImageComponent.class, ClientLauncherImageTooltip::new);
-        event.register(SecondaryCataclysmImageComponent.class, ClientSecondaryCataclysmImageTooltip::new);
         event.register(ChargingStationImageComponent.class, ClientChargingStationImageTooltip::new);
         event.register(DogTagImageComponent.class, ClientDogTagImageTooltip::new);
     }

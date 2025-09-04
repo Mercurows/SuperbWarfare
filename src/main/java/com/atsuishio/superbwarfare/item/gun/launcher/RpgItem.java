@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.item.gun.launcher;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.renderer.gun.RpgItemRenderer;
-import com.atsuishio.superbwarfare.client.tooltip.component.LauncherImageComponent;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModSounds;
@@ -15,7 +14,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
@@ -32,7 +30,6 @@ import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
 
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -95,11 +92,6 @@ public class RpgItem extends GunItem {
             return Mod.loc("textures/gun_icon/rpg_tbg_icon.png");
         }
         return Mod.loc("textures/gun_icon/rpg_standard_icon.png");
-    }
-
-    @Override
-    public @NotNull Optional<TooltipComponent> getTooltipImage(@NotNull ItemStack pStack) {
-        return Optional.of(new LauncherImageComponent(pStack));
     }
 
     @Override
