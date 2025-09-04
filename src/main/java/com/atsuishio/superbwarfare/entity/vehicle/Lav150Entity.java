@@ -509,7 +509,7 @@ public class Lav150Entity extends ContainerMobileVehicleEntity implements GeoEnt
     }
 
     @Override
-    public boolean banHand(Player player) {
+    public boolean banHand(LivingEntity entity) {
         return true;
     }
 

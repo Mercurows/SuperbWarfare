@@ -607,8 +607,8 @@ public class PrismTankEntity extends ContainerMobileVehicleEntity implements Geo
     }
 
     @Override
-    public boolean banHand(Player player) {
-        return player == getFirstPassenger();
+    public boolean banHand(LivingEntity entity) {
+        return entity == getFirstPassenger();
     }
 
     @Override

@@ -401,9 +401,9 @@ public class KillMessageOverlay implements IGuiOverlay {
     @Nullable
     public static ResourceLocation getWeaponIcon(LivingKillRecord record) {
         LivingEntity attacker = record.attacker;
-        if (attacker instanceof Player player && attacker.getVehicle() instanceof VehicleEntity vehicleEntity) {
+        if (attacker.getVehicle() instanceof VehicleEntity vehicleEntity) {
             // 载具图标
-            if ((vehicleEntity instanceof ArmedVehicleEntity iArmedVehicle && iArmedVehicle.banHand(player)) || record.damageType == ModDamageTypes.VEHICLE_STRIKE) {
+            if ((vehicleEntity instanceof ArmedVehicleEntity iArmedVehicle && iArmedVehicle.banHand(attacker)) || record.damageType == ModDamageTypes.VEHICLE_STRIKE) {
                 return vehicleEntity.getVehicleIcon();
             } else {
                 if (record.stack.getItem() instanceof GunItem gunItem) {

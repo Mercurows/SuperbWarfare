@@ -1075,11 +1075,11 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
     }
 
     @Override
-    public boolean banHand(Player player) {
-        if (player == getNthEntity(0) || player == getNthEntity(1)) {
+    public boolean banHand(LivingEntity entity) {
+        if (entity == getNthEntity(0) || entity == getNthEntity(1)) {
             return true;
         }
-        return player == getNthEntity(2) && !player.isShiftKeyDown();
+        return entity == getNthEntity(2) && !entity.isShiftKeyDown();
     }
 
     @Override
