@@ -1,27 +1,17 @@
 package com.atsuishio.superbwarfare.perk.ammo;
 
+import com.atsuishio.superbwarfare.data.PropModifier;
+import com.atsuishio.superbwarfare.data.gun.DefaultGunData;
 import com.atsuishio.superbwarfare.data.gun.GunData;
-import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity;
+import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
-import com.atsuishio.superbwarfare.perk.PerkInstance;
-import net.minecraft.world.entity.Entity;
 
 public class HEBullet extends AmmoPerk {
 
     public HEBullet() {
         super(new AmmoPerk.Builder("he_bullet", Perk.Type.AMMO).bypassArmorRate(-0.3f).damageRate(0.5f).speedRate(0.85f).slug().rgb(240, 20, 10));
-    }
-
-    @Override
-    public void modifyProjectile(GunData data, PerkInstance instance, Entity entity) {
-        super.modifyProjectile(data, instance, entity);
-        if (!(entity instanceof ProjectileEntity projectile)) return;
-        projectile.heBullet(instance.level());
-    }
-
-    @Override
-    public double getExtraDisplayDamage(double damage, GunData data, PerkInstance instance) {
-        return 0.8 * damage * (1 + 0.1 * instance.level());
+        appendModification(GunProp.EXPLOSION_DAMAGE, (pm, data, value) -> (0.9 * ((PropModifier<GunData, DefaultGunData, Double>) pm).get(GunProp.DAMAGE) * 2) * (1 + 0.1 * data.perk.getLevel(this)));
+        appendModification(GunProp.EXPLOSION_RADIUS, (pm, data, value) -> (1.5 + 0.02 * ((PropModifier<GunData, DefaultGunData, Double>) pm).get(GunProp.DAMAGE)) * (1 + 0.05 * data.perk.getLevel(this)));
     }
 }

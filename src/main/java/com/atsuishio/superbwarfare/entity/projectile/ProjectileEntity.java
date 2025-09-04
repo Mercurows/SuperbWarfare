@@ -67,7 +67,7 @@ import java.util.function.Predicate;
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 
 @SuppressWarnings({"unused", "UnusedReturnValue", "SuspiciousNameCombination"})
-public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyncMotionEntity {
+public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyncMotionEntity, ExplosiveProjectile {
 
     public static final EntityDataAccessor<Float> COLOR_R = SynchedEntityData.defineId(ProjectileEntity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Float> COLOR_G = SynchedEntityData.defineId(ProjectileEntity.class, EntityDataSerializers.FLOAT);
@@ -99,8 +99,10 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
     private boolean zoom = false;
     // 子弹的穿甲比例
     private float bypassArmorRate = 0.0f;
-    // 高爆弹等级
-    private int heLevel = 0;
+    // 爆炸伤害（用于高爆弹等）
+    private float explosionDamage = 0.0f;
+    // 爆炸半径（用于高爆弹等）
+    private float explosionRadius = 0.0f;
     // 燃烧弹等级
     private int fireLevel = 0;
     // 是否为龙息弹
@@ -261,8 +263,8 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
             legShot = true;
         }
 
-        if (heLevel > 0) {
-            explosionBullet(this, this.damage, heLevel, hitPos);
+        if (this.explosionDamage > 0) {
+            explosionBullet(this, hitPos);
         }
 
         return new EntityResult(entity, hitPos, headshot, legShot);
@@ -392,8 +394,8 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
             Vec3 hitVec = result.getLocation();
 
             this.onHitBlock(hitVec, blockHitResult);
-            if (heLevel > 0) {
-                explosionBullet(this, this.damage, heLevel, hitVec);
+            if (this.explosionDamage > 0) {
+                explosionBullet(this, hitVec);
             }
             if (fireLevel > 0 && this.level() instanceof ServerLevel serverLevel) {
                 ParticleTool.sendParticle(serverLevel, ParticleTypes.LAVA, hitVec.x, hitVec.y, hitVec.z,
@@ -656,11 +658,11 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
         }
     }
 
-    protected void explosionBullet(Entity projectile, float damage, int heLevel, Vec3 hitVec) {
+    protected void explosionBullet(Entity projectile, Vec3 hitVec) {
         new CustomExplosion.Builder(projectile)
                 .attacker(this.getShooter())
-                .damage((float) ((0.9 * damage) * (1 + 0.1 * heLevel)))
-                .radius((float) ((1.5 + 0.02 * damage) * (1 + 0.05 * heLevel)))
+                .damage(this.explosionDamage)
+                .radius(this.explosionRadius)
                 .position(hitVec)
                 .explode();
     }
@@ -811,6 +813,20 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
         }
     }
 
+    @Override
+    public void setGravity(float gravity) {
+    }
+
+    @Override
+    public void setExplosionDamage(float explosionDamage) {
+        this.explosionDamage = explosionDamage;
+    }
+
+    @Override
+    public void setExplosionRadius(float radius) {
+        this.explosionRadius = radius;
+    }
+
     public static class EntityResult {
         private final Entity entity;
         private final Vec3 hitVec;
@@ -906,11 +922,6 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
 
     public ProjectileEntity beast() {
         this.beast = true;
-        return this;
-    }
-
-    public ProjectileEntity heBullet(int heLevel) {
-        this.heLevel = heLevel;
         return this;
     }
 
