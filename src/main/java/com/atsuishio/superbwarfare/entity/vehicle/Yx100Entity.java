@@ -327,17 +327,117 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
             this.handleAmmo();
         }
 
-        turretAngle(5, 5);
-        gunnerAngle(15, 15);
         lowHealthWarning();
-
         terrainCompact(4.375f, 6.3125f);
-
         inertiaRotate(1.2f);
-
         releaseSmokeDecoy(getTurretVector(1));
 
+        if (getNthEntity(0) instanceof LivingEntity living && living.level() instanceof ServerLevel && tickCount % 5 == 0) {
+            vehicleShoot(living, 0);
+        }
+
+        entityData.set(AI_TURRET_TARGET_UUID, entityData.get(LAST_ATTACKER_UUID));
+
         this.refreshDimensions();
+    }
+
+    // 炮塔最大水平旋转速度
+    @Override
+    public float turretYSpeed() {
+        return 5;
+    }
+
+    // 炮塔最大俯仰旋转速度
+    @Override
+    public float turretXSpeed() {
+        return 5F;
+    }
+
+    // 炮塔最小俯角
+    @Override
+    public float turretMinPitch() {
+        return -10f;
+    }
+
+    // 炮塔最大仰角
+    @Override
+    public float turretMaxPitch() {
+        return 30f;
+    }
+
+    // 炮弹发射位置
+    @Override
+    public Vec3 getTurretShootPos(Entity entity) {
+        Vector4f worldPosition;
+        if (entity == getNthEntity(0)) {
+            Matrix4f transform = getBarrelTransform(1);
+            if (getWeapon(0).mainGun) {
+                worldPosition = transformPosition(transform, 0, 0, 0);
+            } else {
+                worldPosition = transformPosition(transform, -0.12f, 0.15f, 0f);
+            }
+        } else {
+            Matrix4f transform = getGunTransform(1);
+            worldPosition = transformPosition(transform, 0, -0.25f, 0);
+        }
+
+        return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
+    }
+
+    // 炮弹发射速度
+    @Override
+    public float projectileVelocity(Entity entity) {
+        if (entity == getNthEntity(0)) {
+            if (getWeapon(0).mainGun) {
+                var cannonShell = (CannonShellWeapon) getWeapon(0);
+                return cannonShell.velocity;
+            } else {
+                return 20f;
+            }
+        } else {
+            return 20f;
+        }
+    }
+
+    // 炮弹重力
+    @Override
+    public float projectileGravity(Entity entity) {
+        if (getWeapon(0).mainGun && entity == getNthEntity(0)) {
+            var cannonShell = (CannonShellWeapon) getWeapon(0);
+            return cannonShell.gravity;
+        } else {
+            return 0.05f;
+        }
+    }
+
+    // 乘客武器站最大水平旋转速度
+    @Override
+    public float passengerWeaponYSpeed() {
+        return 15;
+    }
+
+    // 乘客武器站最大俯仰旋转速度
+    @Override
+    public float passengerWeaponXSpeed() {
+        return 15;
+    }
+
+    // 乘客武器站最小俯角
+    @Override
+    public float passengerWeaponMinPitch() {
+        return -10;
+    }
+
+    // 乘客武器站最大仰角
+    @Override
+    public float passengerWeaponMaxPitch() {
+        return 60;
+    }
+
+    // 乘客武器站弹药发射位置
+    @Override
+    public Vec3 passengerWeaponShootPos(Entity entity) {
+        return entity.getEyePosition();
     }
 
     @Override
@@ -401,17 +501,14 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
                     return;
                 }
 
-                Matrix4f transform = getBarrelTransform(1);
-                Vector4f worldPosition = transformPosition(transform, 0, 0, 0);
-
                 var cannonShell = (CannonShellWeapon) getWeapon(0);
                 var entityToSpawn = cannonShell.create(living);
 
-                entityToSpawn.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
+                entityToSpawn.setPos(getTurretShootPos(living).x, getTurretShootPos(living).y, getTurretShootPos(living).z);
                 entityToSpawn.shoot(getBarrelVector(1).x, getBarrelVector(1).y, getBarrelVector(1).z, cannonShell.velocity, 0.02f);
                 level().addFreshEntity(entityToSpawn);
 
-                playShootSound3p(living, 0, 8, 16, 32, new Vec3(worldPosition.x, worldPosition.y, worldPosition.z));
+                playShootSound3p(living, 0, 8, 16, 32, new Vec3(getTurretShootPos(living).x, getTurretShootPos(living).y, getTurretShootPos(living).z));
 
                 this.entityData.set(CANNON_RECOIL_TIME, 40);
                 this.entityData.set(LOADED_SHELL, "null");
@@ -428,9 +525,9 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
                             this.getZ() + 5 * getBarrelVector(1).z,
                             300, 6, 0.02, 6, 0.005);
 
-                    double x = worldPosition.x + 9 * getBarrelVector(1).x;
-                    double y = worldPosition.y + 9 * getBarrelVector(1).y;
-                    double z = worldPosition.z + 9 * getBarrelVector(1).z;
+                    double x = getTurretShootPos(living).x + 9 * getBarrelVector(1).x;
+                    double y = getTurretShootPos(living).y + 9 * getBarrelVector(1).y;
+                    double z = getTurretShootPos(living).z + 9 * getBarrelVector(1).z;
 
                     server.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, x, y, z, 10, 0.4, 0.4, 0.4, 0.0075);
                     server.sendParticles(ParticleTypes.CLOUD, x, y, z, 10, 0.4, 0.4, 0.4, 0.0075);
@@ -439,12 +536,13 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
 
                     for (float i = 9.5f; i < 23; i += .5f) {
                         server.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE,
-                                worldPosition.x + i * getBarrelVector(1).x,
-                                worldPosition.y + i * getBarrelVector(1).y,
-                                worldPosition.z + i * getBarrelVector(1).z,
+                                getTurretShootPos(living).x + i * getBarrelVector(1).x,
+                                getTurretShootPos(living).y + i * getBarrelVector(1).y,
+                                getTurretShootPos(living).z + i * getBarrelVector(1).z,
                                 Mth.clamp(count--, 1, 5), 0.15, 0.15, 0.15, 0.0025);
                     }
 
+                    Matrix4f transform = getBarrelTransform(1);
                     Vector4f worldPositionL = transformPosition(transform, -0.35f, 0, 0);
                     Vector4f worldPositionR = transformPosition(transform, 0.35f, 0, 0);
 
@@ -467,13 +565,11 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
             } else if (getWeaponIndex(0) == 4) {
                 if (this.cannotFireCoax) return;
 
-                Matrix4f transform = getBarrelTransform(1);
-                Vector4f worldPosition = transformPosition(transform, -0.12f, 0.15f, 2f);
 
                 if (this.entityData.get(MG_AMMO) > 0 || hasCreativeAmmo) {
                     var projectileRight = ((ProjectileWeapon) getWeapon(0)).create(living).setGunItemId(this.getType().getDescriptionId() + ".1");
 
-                    projectileRight.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
+                    projectileRight.setPos(getTurretShootPos(living).x, getTurretShootPos(living).y, getTurretShootPos(living).z);
                     projectileRight.shoot(living, getBarrelVector(1).x, getBarrelVector(1).y, getBarrelVector(1).z, 36,
                             0.25f);
                     this.level().addFreshEntity(projectileRight);
@@ -497,23 +593,21 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
                 this.entityData.set(COAX_HEAT, this.entityData.get(COAX_HEAT) + 4);
                 this.entityData.set(FIRE_ANIM, 2);
 
-                playShootSound3p(living, 0, 4, 12, 24, new Vec3(worldPosition.x, worldPosition.y, worldPosition.z));
+                playShootSound3p(living, 0, 4, 12, 24, new Vec3(getTurretShootPos(living).x, getTurretShootPos(living).y, getTurretShootPos(living).z));
             }
         }
 
         if (type == 1) {
-            if (this.cannotFire) return;
-            Matrix4f transform = getGunTransform(1);
-            Vector4f worldPosition = transformPosition(transform, 0, -0.25f, 0);
+            if (!canShoot(living)) return;
 
             var projectile = (ProjectileWeapon) getWeapon(1);
             var projectileEntity = projectile.create(living).setGunItemId(this.getType().getDescriptionId() + ".2");
 
-            projectileEntity.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
-            projectileEntity.shoot(getGunnerVector(1).x, getGunnerVector(1).y + 0.01f, getGunnerVector(1).z, 20, 0.3f);
+            projectileEntity.setPos(passengerWeaponShootPos(living).x, passengerWeaponShootPos(living).y, passengerWeaponShootPos(living).z);
+            projectileEntity.shoot(getGunnerVector(1).x, getGunnerVector(1).y, getGunnerVector(1).z, 20, 0.3f);
 
             this.level().addFreshEntity(projectileEntity);
-            playShootSound3p(living, 1, 4, 12, 24, new Vec3(worldPosition.x, worldPosition.y, worldPosition.z));
+            playShootSound3p(living, 1, 4, 12, 24, new Vec3(passengerWeaponShootPos(living).x, passengerWeaponShootPos(living).y, passengerWeaponShootPos(living).z));
 
             this.entityData.set(GUN_FIRE_TIME, 2);
             this.entityData.set(HEAT, this.entityData.get(HEAT) + 4);
@@ -808,8 +902,8 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
                 }
             }
 
-            float min = -30f - r * getXRot() - r2 * getRoll();
-            float max = 10f - r * getXRot() - r2 * getRoll();
+            float min = -turretMaxPitch() - r * getXRot() - r2 * getRoll();
+            float max = -turretMinPitch() - r * getXRot() - r2 * getRoll();
 
             float f = Mth.wrapDegrees(entity.getXRot());
             float f1 = Mth.clamp(f, min, max);
@@ -824,6 +918,7 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
                 entity.setYBodyRot(getBarrelYRot(1));
             }
         } else if (entity == getNthEntity(1)) {
+
             float a = getTurretYaw(1);
             float r = (Mth.abs(a) - 90f) / 90f;
 
@@ -839,8 +934,8 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
                 }
             }
 
-            float min = -60f - r * getXRot() - r2 * getRoll();
-            float max = 10f - r * getXRot() - r2 * getRoll();
+            float min = -passengerWeaponMaxPitch() - r * getXRot() - r2 * getRoll();
+            float max = -passengerWeaponMinPitch() - r * getXRot() - r2 * getRoll();
 
             float f = Mth.wrapDegrees(entity.getXRot());
             float f1 = Mth.clamp(f, min, max);

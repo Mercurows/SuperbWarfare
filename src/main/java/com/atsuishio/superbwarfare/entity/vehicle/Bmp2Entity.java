@@ -316,7 +316,7 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
 
     // 炮弹发射位置
     @Override
-    public Vec3 getTurretShootPos() {
+    public Vec3 getTurretShootPos(Entity entity) {
         Matrix4f transform = getBarrelTransform(1);
         Vector4f worldPosition;
         if (getWeaponIndex(0) == 0) {
@@ -331,7 +331,7 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
 
     // 炮弹发射速度
     @Override
-    public float projectileVelocity() {
+    public float projectileVelocity(Entity entity) {
         if (getWeaponIndex(0) == 0) {
             return 20;
         } else if (getWeaponIndex(0) == 1) {
@@ -343,7 +343,7 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
 
     // 炮弹重力
     @Override
-    public float projectileGravity() {
+    public float projectileGravity(Entity entity) {
         if (getWeaponIndex(0) == 0) {
             return 0.03f;
         } else if (getWeaponIndex(0) == 1) {
@@ -409,13 +409,13 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
                 if (this.cannotFire) return;
                 var smallCannonShell = ((SmallCannonShellWeapon) getWeapon(0)).create(living);
 
-                smallCannonShell.setPos(getTurretShootPos().x, getTurretShootPos().y, getTurretShootPos().z);
-                smallCannonShell.shoot(getBarrelVector(1).x, getBarrelVector(1).y, getBarrelVector(1).z, projectileVelocity(),
+                smallCannonShell.setPos(getTurretShootPos(living).x, getTurretShootPos(living).y, getTurretShootPos(living).z);
+                smallCannonShell.shoot(getBarrelVector(1).x, getBarrelVector(1).y, getBarrelVector(1).z, projectileVelocity(living),
                         0.25f);
                 this.level().addFreshEntity(smallCannonShell);
 
-                sendParticle((ServerLevel) this.level(), ParticleTypes.LARGE_SMOKE, getTurretShootPos().x, getTurretShootPos().y, getTurretShootPos().z, 1, 0.02, 0.02, 0.02, 0, false);
-                playShootSound3p(living, 0, 4, 12, 24, getTurretShootPos());
+                sendParticle((ServerLevel) this.level(), ParticleTypes.LARGE_SMOKE, getTurretShootPos(living).x, getTurretShootPos(living).y, getTurretShootPos(living).z, 1, 0.02, 0.02, 0.02, 0, false);
+                playShootSound3p(living, 0, 4, 12, 24, getTurretShootPos(living));
                 ShakeClientMessage.sendToNearbyPlayers(this, 5, 6, 5, 9);
 
                 this.entityData.set(CANNON_RECOIL_TIME, 40);
@@ -434,8 +434,8 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
                     var projectileRight = ((ProjectileWeapon) getWeapon(0)).create(living).setGunItemId(this.getType().getDescriptionId());
 
                     projectileRight.bypassArmorRate(0.2f);
-                    projectileRight.setPos(getTurretShootPos().x, getTurretShootPos().y, getTurretShootPos().z);
-                    projectileRight.shoot(living, getBarrelVector(1).x, getBarrelVector(1).y, getBarrelVector(1).z, projectileVelocity(),
+                    projectileRight.setPos(getTurretShootPos(living).x, getTurretShootPos(living).y, getTurretShootPos(living).z);
+                    projectileRight.shoot(living, getBarrelVector(1).x, getBarrelVector(1).y, getBarrelVector(1).z, projectileVelocity(living),
                             0.25f);
                     this.level().addFreshEntity(projectileRight);
 
@@ -457,15 +457,15 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
 
                 this.entityData.set(COAX_HEAT, this.entityData.get(COAX_HEAT) + 3);
                 this.entityData.set(FIRE_ANIM, 2);
-                playShootSound3p(living, 0, 3, 6, 12, getTurretShootPos());
+                playShootSound3p(living, 0, 3, 6, 12, getTurretShootPos(living));
 
             } else if (getWeaponIndex(0) == 2 && this.getEntityData().get(LOADED_MISSILE) > 0) {
                 var wgMissileEntity = ((WgMissileWeapon) getWeapon(0)).create(living);
 
-                wgMissileEntity.setPos(getTurretShootPos().x, getTurretShootPos().y, getTurretShootPos().z);
-                wgMissileEntity.shoot(getBarrelVector(1).x, getBarrelVector(1).y, getBarrelVector(1).z, projectileVelocity(), 0f);
+                wgMissileEntity.setPos(getTurretShootPos(living).x, getTurretShootPos(living).y, getTurretShootPos(living).z);
+                wgMissileEntity.shoot(getBarrelVector(1).x, getBarrelVector(1).y, getBarrelVector(1).z, projectileVelocity(living), 0f);
                 living.level().addFreshEntity(wgMissileEntity);
-                playShootSound3p(living, 0, 6, 0, 0, getTurretShootPos());
+                playShootSound3p(living, 0, 6, 0, 0, getTurretShootPos(living));
 
                 this.entityData.set(LOADED_MISSILE, this.getEntityData().get(LOADED_MISSILE) - 1);
                 reloadCoolDown = 160;
