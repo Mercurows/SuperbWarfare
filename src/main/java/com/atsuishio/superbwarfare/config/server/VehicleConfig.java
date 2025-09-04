@@ -20,6 +20,11 @@ public class VehicleConfig {
     public static ModConfigSpec.IntValue REPAIR_COOLDOWN;
     public static ModConfigSpec.DoubleValue REPAIR_AMOUNT;
 
+    public static ModConfigSpec.IntValue SELF_EXPLOSION_DAMAGE;
+    public static ModConfigSpec.IntValue SELF_EXPLOSION_COUNT;
+    public static ModConfigSpec.IntValue AIR_CRASH_EXPLOSION_DAMAGE;
+    public static ModConfigSpec.IntValue AIR_CRASH_EXPLOSION_COUNT;
+
     public static ModConfigSpec.IntValue VEHICLE_INFO_DISPLAY_DISTANCE;
 
     public static ModConfigSpec.IntValue MK42_AP_DAMAGE;
@@ -110,6 +115,8 @@ public class VehicleConfig {
     public static void init(ModConfigSpec.Builder builder) {
         builder.push("vehicle");
 
+        builder.push("collision");
+
         builder.comment("Allows vehicles to destroy soft blocks via collision");
         COLLISION_DESTROY_SOFT_BLOCKS = builder.define("collision_destroy_soft_blocks", false);
 
@@ -122,17 +129,34 @@ public class VehicleConfig {
         builder.comment("Allows vehicles to destroy blocks via collision like a beast");
         COLLISION_DESTROY_BLOCKS_BEASTLY = builder.define("collision_destroy_blocks_beastly", false);
 
+        builder.comment("List of entities that can be damaged by collision");
+        COLLISION_ENTITY_WHITELIST = builder.defineList("collision_entity_whitelist",
+                DEFAULT_COLLISION_ENTITY_WHITELIST,
+                () -> "",
+                e -> e instanceof String);
+
+        builder.pop();
+
         builder.comment("Allow vehicles to pick up items");
         VEHICLE_ITEM_PICKUP = builder.define("vehicle_item_pickup", true);
 
         builder.comment("Allow vehicles to collect drops after killing other entities by crashing");
         COLLECT_DROPS_BY_CRASHING = builder.define("collect_drops_by_crashing", true);
 
-        builder.comment("List of entities that can be damaged by collision");
-        COLLISION_ENTITY_WHITELIST = builder.defineList("collision_entity_whitelist",
-                DEFAULT_COLLISION_ENTITY_WHITELIST,
-                () -> "",
-                e -> e instanceof String);
+        builder.comment("Within this distance, the vehicle info will be displayed at client side");
+        VEHICLE_INFO_DISPLAY_DISTANCE = builder.defineInRange("vehicle_info_display_distance", 512, 0, 1024);
+
+        builder.comment("The damage of self explosion when a vehicle is destroyed");
+        SELF_EXPLOSION_DAMAGE = builder.defineInRange("self_explosion_damage", 114514, 0, Integer.MAX_VALUE);
+
+        builder.comment("The damage count of self explosion when a vehicle is destroyed");
+        SELF_EXPLOSION_COUNT = builder.defineInRange("self_explosion_count", 5, 0, 100);
+
+        builder.comment("The air crash damage when an aircraft is destroyed");
+        AIR_CRASH_EXPLOSION_DAMAGE = builder.defineInRange("air_crash_explosion_damage", 114514, 0, Integer.MAX_VALUE);
+
+        builder.comment("The air crash damage count when an aircraft is destroyed");
+        AIR_CRASH_EXPLOSION_COUNT = builder.defineInRange("air_crash_explosion_count", 5, 0, 100);
 
         builder.push("repair");
 
@@ -141,9 +165,6 @@ public class VehicleConfig {
 
         builder.comment("The default amount of health restored per tick when a vehicle is self-repairing");
         REPAIR_AMOUNT = builder.defineInRange("repair_amount", 0.05d, -100000000, 100000000);
-
-        builder.comment("Within this distance, the vehicle info will be displayed at client side");
-        VEHICLE_INFO_DISPLAY_DISTANCE = builder.defineInRange("vehicle_info_display_distance", 512, 0, 1024);
 
         builder.pop();
 

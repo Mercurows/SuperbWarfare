@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.entity.vehicle.base;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.capability.energy.SyncedEntityEnergyStorage;
 import com.atsuishio.superbwarfare.capability.energy.VehicleEnergyStorage;
+import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.data.Prop;
 import com.atsuishio.superbwarfare.data.vehicle.DefaultVehicleData;
 import com.atsuishio.superbwarfare.data.vehicle.VehicleData;
@@ -1347,17 +1348,11 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
     protected void crashPassengers() {
         for (var entity : this.getPassengers()) {
             if (entity instanceof LivingEntity living) {
-                var tempAttacker = living == getAttacker() ? null : getAttacker();
-
-                living.hurt(ModDamageTypes.causeAirCrashDamage(this.level().registryAccess(), null, tempAttacker), Integer.MAX_VALUE);
-                living.invulnerableTime = 0;
-                living.hurt(ModDamageTypes.causeAirCrashDamage(this.level().registryAccess(), null, tempAttacker), Integer.MAX_VALUE);
-                living.invulnerableTime = 0;
-                living.hurt(ModDamageTypes.causeAirCrashDamage(this.level().registryAccess(), null, tempAttacker), Integer.MAX_VALUE);
-                living.invulnerableTime = 0;
-                living.hurt(ModDamageTypes.causeAirCrashDamage(this.level().registryAccess(), null, tempAttacker), Integer.MAX_VALUE);
-                living.invulnerableTime = 0;
-                living.hurt(ModDamageTypes.causeAirCrashDamage(this.level().registryAccess(), null, tempAttacker), Integer.MAX_VALUE);
+                for (int i = 0; i < VehicleConfig.AIR_CRASH_EXPLOSION_COUNT.get(); i++) {
+                    var tempAttacker = living == getAttacker() ? null : getAttacker();
+                    living.invulnerableTime = 0;
+                    living.hurt(ModDamageTypes.causeAirCrashDamage(this.level().registryAccess(), null, tempAttacker), VehicleConfig.AIR_CRASH_EXPLOSION_DAMAGE.get());
+                }
             }
         }
     }
@@ -1365,17 +1360,11 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
     protected void explodePassengers() {
         for (var entity : this.getPassengers()) {
             if (entity instanceof LivingEntity living) {
-                var tempAttacker = living == getAttacker() ? null : getAttacker();
-
-                living.hurt(ModDamageTypes.causeVehicleExplosionDamage(this.level().registryAccess(), null, tempAttacker), Integer.MAX_VALUE);
-                living.invulnerableTime = 0;
-                living.hurt(ModDamageTypes.causeVehicleExplosionDamage(this.level().registryAccess(), null, tempAttacker), Integer.MAX_VALUE);
-                living.invulnerableTime = 0;
-                living.hurt(ModDamageTypes.causeVehicleExplosionDamage(this.level().registryAccess(), null, tempAttacker), Integer.MAX_VALUE);
-                living.invulnerableTime = 0;
-                living.hurt(ModDamageTypes.causeVehicleExplosionDamage(this.level().registryAccess(), null, tempAttacker), Integer.MAX_VALUE);
-                living.invulnerableTime = 0;
-                living.hurt(ModDamageTypes.causeVehicleExplosionDamage(this.level().registryAccess(), null, tempAttacker), Integer.MAX_VALUE);
+                for (int i = 0; i < VehicleConfig.SELF_EXPLOSION_COUNT.get(); i++) {
+                    var tempAttacker = living == getAttacker() ? null : getAttacker();
+                    living.invulnerableTime = 0;
+                    living.hurt(ModDamageTypes.causeAirCrashDamage(this.level().registryAccess(), null, tempAttacker), VehicleConfig.SELF_EXPLOSION_DAMAGE.get());
+                }
             }
         }
     }
