@@ -248,7 +248,7 @@ public class Lav150Entity extends ContainerMobileVehicleEntity implements GeoEnt
     public void vehicleShoot(LivingEntity living, int type) {
         boolean hasCreativeAmmo = false;
         for (int i = 0; i < getMaxPassengers() - 1; i++) {
-            if (getNthEntity(i) instanceof Player pPlayer && InventoryTool.hasCreativeAmmoBox(pPlayer)) {
+            if (InventoryTool.hasCreativeAmmoBox(getNthEntity(i))) {
                 hasCreativeAmmo = true;
             }
         }

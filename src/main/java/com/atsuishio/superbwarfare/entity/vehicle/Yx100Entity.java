@@ -312,7 +312,7 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
         if (this.level() instanceof ServerLevel) {
             boolean hasCreativeAmmo = false;
             for (int i = 0; i < getMaxPassengers(); i++) {
-                if (getNthEntity(i) instanceof Player pPlayer && InventoryTool.hasCreativeAmmoBox(pPlayer)) {
+                if (InventoryTool.hasCreativeAmmoBox(getNthEntity(i))) {
                     hasCreativeAmmo = true;
                 }
             }
@@ -451,7 +451,7 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
 
         boolean hasCreativeAmmo = false;
         for (int i = 0; i < getMaxPassengers(); i++) {
-            if (getNthEntity(i) instanceof Player pPlayer && InventoryTool.hasCreativeAmmoBox(pPlayer)) {
+            if (InventoryTool.hasCreativeAmmoBox(getNthEntity(i))) {
                 hasCreativeAmmo = true;
             }
         }
@@ -484,7 +484,7 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
     public void vehicleShoot(LivingEntity living, int type) {
         boolean hasCreativeAmmo = false;
         for (int i = 0; i < getMaxPassengers() - 1; i++) {
-            if (getNthEntity(i) instanceof Player pPlayer && InventoryTool.hasCreativeAmmoBox(pPlayer)) {
+            if (InventoryTool.hasCreativeAmmoBox(getNthEntity(i))) {
                 hasCreativeAmmo = true;
             }
         }
