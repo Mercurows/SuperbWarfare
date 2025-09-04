@@ -200,7 +200,6 @@ public class WgMissileEntity extends FastThrowableProjectile implements GeoEntit
                 .damage(explosionDamage)
                 .radius(explosionRadius)
                 .position(vec3)
-                .causeVanillaExplosion()
                 .withParticleType(ParticleTool.ParticleType.HUGE)
                 .explode();
     }

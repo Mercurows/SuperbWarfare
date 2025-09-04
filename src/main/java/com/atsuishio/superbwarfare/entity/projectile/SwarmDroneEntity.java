@@ -277,7 +277,6 @@ public class SwarmDroneEntity extends FastThrowableProjectile implements GeoEnti
                 .damageSource(source)
                 .damage(damage)
                 .radius(radius)
-                .causeVanillaExplosion()
                 .damageMultiplier(1.25F)
                 .withParticleType(ParticleTool.ParticleType.MEDIUM)
                 .explode();

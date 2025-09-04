@@ -690,7 +690,7 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
         return this.damage;
     }
 
-    public void shoot(Player player, double vecX, double vecY, double vecZ, float velocity, float spread) {
+    public void shoot(LivingEntity living, double vecX, double vecY, double vecZ, float velocity, float spread) {
         Vec3 vec3 = (new Vec3(vecX, vecY, vecZ)).normalize().
                 add(this.random.triangle(0.0D, 0.0172275D * (double) spread), this.random.triangle(0.0D, 0.0172275D * (double) spread), this.random.triangle(0.0D, 0.0172275D * (double) spread)).
                 scale(velocity);

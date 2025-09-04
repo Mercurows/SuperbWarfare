@@ -48,8 +48,8 @@ import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.*;
 import org.joml.Math;
+import org.joml.*;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -405,7 +405,6 @@ public class AnnihilatorEntity extends VehicleEntity implements GeoEntity, Canno
                     .damage(300)
                     .radius(15)
                     .position(pos)
-                    .causeVanillaExplosion()
                     .withParticleType(ParticleTool.ParticleType.HUGE)
                     .explode();
         } else {
@@ -414,7 +413,6 @@ public class AnnihilatorEntity extends VehicleEntity implements GeoEntity, Canno
                     .damage(300)
                     .radius(15)
                     .attacker(shooter)
-                    .causeVanillaExplosion()
                     .withParticleType(ParticleTool.ParticleType.HUGE)
                     .position(pos)
                     .explode();
@@ -422,24 +420,24 @@ public class AnnihilatorEntity extends VehicleEntity implements GeoEntity, Canno
     }
 
     @Override
-    public void vehicleShoot(Player player, int type) {
+    public void vehicleShoot(LivingEntity living, int type) {
         if (this.entityData.get(COOL_DOWN) > 0) {
             return;
         }
 
-        if (!this.canConsume(VehicleConfig.ANNIHILATOR_SHOOT_COST.get())) {
+        if (!this.canConsume(VehicleConfig.ANNIHILATOR_SHOOT_COST.get()) && living instanceof Player player) {
             player.displayClientMessage(Component.translatable("tips.superbwarfare.annihilator.energy_not_enough").withStyle(ChatFormatting.RED), true);
             return;
         }
 
-        Level level = player.level();
-        if (level instanceof ServerLevel) {
-            if (player instanceof ServerPlayer serverPlayer) {
+        if (level() instanceof ServerLevel serverLevel) {
+            if (living instanceof ServerPlayer serverPlayer) {
                 SoundTool.playLocalSound(serverPlayer, ModSounds.ANNIHILATOR_FIRE_1P.get(), 1, 1);
-                serverPlayer.level().playSound(null, serverPlayer.getOnPos(), ModSounds.ANNIHILATOR_FIRE_3P.get(), SoundSource.PLAYERS, 6, 1);
-                serverPlayer.level().playSound(null, serverPlayer.getOnPos(), ModSounds.ANNIHILATOR_FAR.get(), SoundSource.PLAYERS, 16, 1);
-                serverPlayer.level().playSound(null, serverPlayer.getOnPos(), ModSounds.ANNIHILATOR_VERYFAR.get(), SoundSource.PLAYERS, 32, 1);
             }
+
+            serverLevel.playSound(null, getOnPos(), ModSounds.ANNIHILATOR_FIRE_3P.get(), SoundSource.PLAYERS, 6, 1);
+            serverLevel.playSound(null, getOnPos(), ModSounds.ANNIHILATOR_FAR.get(), SoundSource.PLAYERS, 16, 1);
+            serverLevel.playSound(null, getOnPos(), ModSounds.ANNIHILATOR_VERYFAR.get(), SoundSource.PLAYERS, 32, 1);
 
             this.entityData.set(COOL_DOWN, 100);
             this.consumeEnergy(VehicleConfig.ANNIHILATOR_SHOOT_COST.get());
@@ -555,17 +553,17 @@ public class AnnihilatorEntity extends VehicleEntity implements GeoEntity, Canno
     }
 
     @Override
-    public int mainGunRpm(Player player) {
+    public int mainGunRpm(LivingEntity living) {
         return 0;
     }
 
     @Override
-    public boolean canShoot(Player player) {
+    public boolean canShoot(LivingEntity living) {
         return true;
     }
 
     @Override
-    public int getAmmoCount(Player player) {
+    public int getAmmoCount(LivingEntity living) {
         return (int) (this.getCapability(ForgeCapabilities.ENERGY).map(IEnergyStorage::getEnergyStored).orElse(0) * 100f / (float) this.getMaxEnergy());
     }
 
@@ -580,7 +578,7 @@ public class AnnihilatorEntity extends VehicleEntity implements GeoEntity, Canno
     }
 
     @Override
-    public int getWeaponHeat(Player player) {
+    public int getWeaponHeat(LivingEntity living) {
         return 0;
     }
 

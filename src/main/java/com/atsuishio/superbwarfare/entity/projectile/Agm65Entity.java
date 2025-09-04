@@ -201,7 +201,6 @@ public class Agm65Entity extends FastThrowableProjectile implements GeoEntity, E
                 .damage(explosionDamage)
                 .radius(explosionRadius)
                 .position(vec3)
-                .causeVanillaExplosion()
                 .withParticleType(ParticleTool.ParticleType.HUGE)
                 .explode();
     }

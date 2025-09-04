@@ -85,7 +85,6 @@ public class HandGrenade extends Item implements DispenserLaunchable {
                     .attacker(pLivingEntity)
                     .damage(ExplosionConfig.M67_GRENADE_EXPLOSION_DAMAGE.get())
                     .radius(ExplosionConfig.M67_GRENADE_EXPLOSION_RADIUS.get())
-                    .causeVanillaExplosion()
                     .damageMultiplier(1.25F)
                     .withParticleType(ParticleTool.ParticleType.MEDIUM)
                     .explode();

@@ -35,6 +35,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -454,36 +455,36 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
     }
 
     @Override
-    public void vehicleShoot(Player player, int type) {
-        shoot(player, false);
+    public void vehicleShoot(LivingEntity living, int type) {
+        shoot(living, false);
     }
 
-    public void shoot(Player player, boolean reset) {
+    public void shoot(LivingEntity living, boolean reset) {
         if (this.entityData.get(COOL_DOWN) > 0) return;
-        if (getFirstPassenger() != null && getFirstPassenger() != player) return;
+        if (getFirstPassenger() != null && getFirstPassenger() != living) return;
 
-        if (player.level() instanceof ServerLevel serverLevel) {
-            if (getAmmoCount(player) == 0 && !InventoryTool.hasCreativeAmmoBox(getFirstPassenger())) return;
+        if (living.level() instanceof ServerLevel serverLevel) {
+            if (getAmmoCount(living) == 0 && !InventoryTool.hasCreativeAmmoBox(getFirstPassenger())) return;
             Matrix4f transform = getVehicleFlatTransform(1);
 
             // 左炮管
 
-            if (!(getAmmoCount(player) == 0 && !InventoryTool.hasCreativeAmmoBox(getFirstPassenger()))) {
+            if (!(getAmmoCount(living) == 0 && !InventoryTool.hasCreativeAmmoBox(getFirstPassenger()))) {
                 Vector4f worldPositionL = transformPosition(transform, 0.486775f, 1.4992625f, 1.52065f);
-                summonShell(new Vec3(worldPositionL.x, worldPositionL.y, worldPositionL.z), player);
+                summonShell(new Vec3(worldPositionL.x, worldPositionL.y, worldPositionL.z), living);
             }
 
             // 右炮管
             Mod.queueServerWork(3, () -> {
-                if (getAmmoCount(player) == 0 && !InventoryTool.hasCreativeAmmoBox(getFirstPassenger())) return;
+                if (getAmmoCount(living) == 0 && !InventoryTool.hasCreativeAmmoBox(getFirstPassenger())) return;
                 Vector4f worldPositionR = transformPosition(transform, -0.486775f, 1.4992625f, 1.52065f);
-                summonShell(new Vec3(worldPositionR.x, worldPositionR.y, worldPositionR.z), player);
+                summonShell(new Vec3(worldPositionR.x, worldPositionR.y, worldPositionR.z), living);
                 this.entityData.set(RIGHT_BARREL_ANIM, 20);
             });
 
 
-            if (player instanceof ServerPlayer serverPlayer) {
-                if (player == getFirstPassenger()) {
+            if (living instanceof ServerPlayer serverPlayer) {
+                if (serverPlayer == getFirstPassenger()) {
                     Mod.queueServerWork(44, () -> SoundTool.playLocalSound(serverPlayer, ModSounds.CANNON_RELOAD.get(), 2, 1));
                 }
             }
@@ -504,9 +505,9 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
         }
     }
 
-    public void summonShell(Vec3 pos, Player player) {
-        if (player.level() instanceof ServerLevel level) {
-            var entityToSpawnLeft = ((CannonShellWeapon) getWeapon(0)).create(player);
+    public void summonShell(Vec3 pos, LivingEntity living) {
+        if (living.level() instanceof ServerLevel level) {
+            var entityToSpawnLeft = ((CannonShellWeapon) getWeapon(0)).create(living);
 
             entityToSpawnLeft.setPos(pos.x, pos.y, pos.z);
             entityToSpawnLeft.shoot(this.getLookAngle().x, this.getLookAngle().y, this.getLookAngle().z, 15, 0.05f);
@@ -535,8 +536,8 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
                         Mth.clamp(count--, 1, 5), 0.15, 0.15, 0.15, 0.0025);
             }
 
-            if (player instanceof ServerPlayer serverPlayer) {
-                if (player == getFirstPassenger()) {
+            if (living instanceof ServerPlayer serverPlayer) {
+                if (serverPlayer == getFirstPassenger()) {
                     SoundTool.playLocalSound(serverPlayer, ModSounds.MK_42_FIRE_1P.get(), 2, 1);
                 }
             }
@@ -547,13 +548,13 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
                 this.level().playSound(null, this.getX(), this.getY(), this.getZ(), ModSounds.MK_42_VERYFAR.get(), SoundSource.PLAYERS, 96f, 1f);
             }
 
-            consumeAmmo(player);
+            consumeAmmo(living);
         }
     }
 
-    public void consumeAmmo(Player player) {
-        if (player == getFirstPassenger()) {
-            if (InventoryTool.hasCreativeAmmoBox(player)) return;
+    public void consumeAmmo(LivingEntity living) {
+        if (living == getFirstPassenger()) {
+            if (InventoryTool.hasCreativeAmmoBox(living)) return;
 
             if (entityData.get(AMMO_COUNT) > 0) {
                 this.items.get(0).shrink(1);
@@ -565,10 +566,10 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
                     case 3 -> ModItems.GS_5_INCHES.get();
                     default -> ModItems.AP_5_INCHES.get();
                 };
-                var ammoCount = InventoryTool.countItem(player.getInventory().items, ammo);
+                var ammoCount = InventoryTool.countItem(living, ammo);
 
                 if (ammoCount <= 0) return;
-                InventoryTool.consumeItem(player.getInventory().items, ammo, 1);
+                InventoryTool.consumeItem(living, ammo, 1);
             }
         } else {
             this.items.get(0).shrink(1);
@@ -630,19 +631,19 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
     }
 
     @Override
-    public int mainGunRpm(Player player) {
+    public int mainGunRpm(LivingEntity living) {
         return 0;
     }
 
     @Override
-    public boolean canShoot(Player player) {
+    public boolean canShoot(LivingEntity living) {
         return true;
     }
 
     @Override
-    public int getAmmoCount(Player player) {
+    public int getAmmoCount(LivingEntity living) {
         int playerAmmo = 0;
-        if (player == getFirstPassenger()) {
+        if (living == getFirstPassenger()) {
             Item ammo = switch (getWeaponIndex(0))
             {
                 case 1 -> ModItems.HE_5_INCHES.get();
@@ -650,7 +651,7 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
                 case 3 -> ModItems.GS_5_INCHES.get();
                 default -> ModItems.AP_5_INCHES.get();
             };
-            playerAmmo = InventoryTool.countItem(player.getInventory().items, ammo);
+            playerAmmo = InventoryTool.countItem(living, ammo);
         }
 
         return playerAmmo + entityData.get(AMMO_COUNT);
@@ -672,7 +673,7 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
     }
 
     @Override
-    public int getWeaponHeat(Player player) {
+    public int getWeaponHeat(LivingEntity living) {
         return 0;
     }
 

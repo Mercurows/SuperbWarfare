@@ -75,6 +75,7 @@ import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.FakePlayer;
@@ -107,6 +108,8 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
     public static final EntityDataAccessor<String> OVERRIDE = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.STRING);
     public static final EntityDataAccessor<String> LAST_ATTACKER_UUID = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.STRING);
     public static final EntityDataAccessor<String> LAST_DRIVER_UUID = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.STRING);
+    public static final EntityDataAccessor<String> AI_TARGET_UUID = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.STRING);
+
     public static final EntityDataAccessor<Float> DELTA_ROT = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Float> MOUSE_SPEED_X = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Float> MOUSE_SPEED_Y = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.FLOAT);
@@ -545,6 +548,9 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
         this.entityData.define(OVERRIDE, "");
         this.entityData.define(LAST_ATTACKER_UUID, "undefined");
         this.entityData.define(LAST_DRIVER_UUID, "undefined");
+
+        this.entityData.define(AI_TARGET_UUID, "undefined");
+
         this.entityData.define(DELTA_ROT, 0f);
         this.entityData.define(MOUSE_SPEED_X, 0f);
         this.entityData.define(MOUSE_SPEED_Y, 0f);
@@ -1082,6 +1088,12 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
         entityData.set(MOUSE_SPEED_X, entityData.get(MOUSE_SPEED_X) * 0.95f);
         entityData.set(MOUSE_SPEED_Y, entityData.get(MOUSE_SPEED_Y) * 0.95f);
 
+        if (getFirstPassenger() instanceof Player) {
+            turretAngle();
+        } else {
+            turretAutoAimFormUuid(entityData.get(AI_TARGET_UUID));
+        }
+
         this.refreshDimensions();
     }
 
@@ -1259,8 +1271,38 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
         }
     }
 
-    public void turretAutoAimFormVector(float ySpeed, float xSpeed, float minXAngle, float maxXAngle, Vec3 shootVec) {
+    public void turretAngle() {
+        float ySpeed = turretYSpeed();
+        float xSpeed = turretXSpeed();
+        Entity driver = this.getFirstPassenger();
+        if (driver != null) {
+            float turretAngle = -Mth.wrapDegrees(driver.getYHeadRot() - this.getYRot());
+
+            float diffY = Mth.wrapDegrees(turretAngle - getTurretYRot());
+            float diffX = Mth.wrapDegrees(driver.getXRot() - this.getTurretXRot());
+
+            this.turretTurnSound(diffX, diffY, 0.95f);
+
+            if (entityData.get(TURRET_DAMAGED)) {
+                ySpeed *= 0.2f;
+                xSpeed *= 0.2f;
+            }
+
+            float min = -ySpeed + (float) (isInWater() && !onGround() ? 2.5 : 6) * entityData.get(DELTA_ROT);
+            float max = ySpeed + (float) (isInWater() && !onGround() ? 2.5 : 6) * entityData.get(DELTA_ROT);
+
+            this.setTurretXRot(this.getTurretXRot() + Mth.clamp(0.95f * diffX, -xSpeed, xSpeed));
+            this.setTurretYRot(this.getTurretYRot() + Mth.clamp(0.9f * diffY, min, max));
+            turretYRotLock = Mth.clamp(0.9f * diffY, min, max);
+        } else {
+            turretYRotLock = 0;
+        }
+    }
+
+    public void turretAutoAimFormVector(Vec3 shootVec) {
         //shootVec是需要让炮塔以这个角度发射的向量
+        float ySpeed = turretYSpeed();
+        float xSpeed = turretXSpeed();
         float diffY = (float) Mth.wrapDegrees(-getYRotFromVector(shootVec) + getYRotFromVector(getBarrelVec(1)));
         float diffX = (float) Mth.wrapDegrees(-getXRotFromVector(shootVec) + getXRotFromVector(getBarrelVec(1)));
 
@@ -1274,9 +1316,58 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
         float min = -ySpeed + (float) (isInWater() && !onGround() ? 2.5 : 6) * entityData.get(DELTA_ROT);
         float max = ySpeed + (float) (isInWater() && !onGround() ? 2.5 : 6) * entityData.get(DELTA_ROT);
 
-        this.setTurretXRot(Mth.clamp(this.getTurretXRot() + Mth.clamp(0.5f * diffX, -xSpeed, xSpeed), -maxXAngle, -minXAngle));
+        this.setTurretXRot(Mth.clamp(this.getTurretXRot() + Mth.clamp(0.5f * diffX, -xSpeed, xSpeed), -turretMaxPitch(), -turretMinPitch()));
         this.setTurretYRot(this.getTurretYRot() - Mth.clamp(0.5f * diffY, min, max));
         turretYRotLock = Mth.clamp(0.9f * diffY, min, max);
+    }
+
+    public void turretAutoAimFormUuid(String uuid) {
+        Entity target = EntityFindUtil.findEntity(level(), uuid);
+        if (target != null) {
+            if (target.getVehicle() != null) {
+                target = target.getVehicle();
+            }
+
+            Vec3 targetPos = target.getBoundingBox().getCenter();
+            Vec3 targetVel = target.getDeltaMovement();
+
+            if (target instanceof LivingEntity living) {
+                double gravity = living.getAttributeValue(ForgeMod.ENTITY_GRAVITY.get());
+                targetVel = targetVel.add(0, gravity, 0);
+            }
+
+            Vec3 targetVec = RangeTool.calculateFiringSolution(getTurretShootPos(), targetPos, targetVel, projectileVelocity(), projectileGravity());
+            turretAutoAimFormVector(targetVec);
+        }
+    }
+
+    // 炮塔最大水平旋转速度
+    public float turretYSpeed() {
+        return 5;
+    }
+    // 炮塔最大俯仰旋转速度
+    public float turretXSpeed() {
+        return 5;
+    }
+    // 炮塔最小俯角
+    public float turretMinPitch() {
+        return -10;
+    }
+    // 炮塔最大仰角
+    public float turretMaxPitch() {
+        return 30;
+    }
+    // 炮弹发射位置
+    public Vec3 getTurretShootPos() {
+        return getEyePosition();
+    }
+    // 炮弹发射速度
+    public float projectileVelocity() {
+        return 10;
+    }
+    // 炮弹重力
+    public float projectileGravity() {
+        return 0.03f;
     }
 
     public void passengerWeaponAutoAimFormVector(float ySpeed, float xSpeed, float minXAngle, float maxXAngle, Vec3 shootVec) {
@@ -1324,16 +1415,12 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
         if (radius > 0) {
             var damage = data.get(VehicleProp.EXPLOSION_DAMAGE);
             var particleType = data.get(VehicleProp.EXPLOSION_PARTICLE_TYPE);
-            var causeVanillaExplosion = data.get(VehicleProp.CAUSE_VANILLA_EXPLOSION);
 
             var explosion = createCustomExplosion()
                     .radius(radius)
                     .damage(damage)
                     .withParticleType(particleType);
 
-            if (causeVanillaExplosion) {
-                explosion.causeVanillaExplosion();
-            }
             if (!data.get(VehicleProp.EXPLOSION_DESTROY_BLOCK_ON_DESTROY)) {
                 explosion.keepBlock();
             }

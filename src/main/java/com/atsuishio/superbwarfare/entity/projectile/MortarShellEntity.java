@@ -247,7 +247,6 @@ public class MortarShellEntity extends FastThrowableProjectile implements GeoEnt
                 .damage(explosionDamage)
                 .radius(radius)
                 .position(vec3)
-                .causeVanillaExplosion()
                 .withParticleType(ParticleTool.ParticleType.MEDIUM)
                 .damageMultiplier(1.25F)
                 .explode();

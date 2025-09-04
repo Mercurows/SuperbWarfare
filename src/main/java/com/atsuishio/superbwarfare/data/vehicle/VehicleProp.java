@@ -35,7 +35,6 @@ public class VehicleProp<T> extends Prop<VehicleData, DefaultVehicleData, T> {
 
     public static final VehicleProp<Float> EXPLOSION_DAMAGE = new VehicleProp<>("ExplosionDamage");
     public static final VehicleProp<Float> EXPLOSION_RADIUS = new VehicleProp<>("ExplosionRadius");
-    public static final VehicleProp<Boolean> CAUSE_VANILLA_EXPLOSION = new VehicleProp<>("CauseVanillaExplosion");
 
     public static final VehicleProp<ParticleTool.ParticleType> EXPLOSION_PARTICLE_TYPE = new VehicleProp<>("ExplosionParticleType");
 

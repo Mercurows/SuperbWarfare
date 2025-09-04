@@ -184,7 +184,6 @@ public class RpgRocketEntity extends FastThrowableProjectile implements GeoEntit
                 .damage(explosionDamage)
                 .radius(explosionRadius)
                 .position(vec3)
-                .causeVanillaExplosion()
                 .withParticleType(explosionRadius >= 10 ? ParticleTool.ParticleType.HUGE : ParticleTool.ParticleType.MEDIUM)
                 .explode();
     }

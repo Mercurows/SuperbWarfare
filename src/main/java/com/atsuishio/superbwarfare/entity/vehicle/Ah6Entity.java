@@ -522,7 +522,7 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
     }
 
     @Override
-    public void vehicleShoot(Player player, int type) {
+    public void vehicleShoot(LivingEntity living, int type) {
         boolean hasCreativeAmmo = false;
         for (int i = 0; i < getMaxPassengers() - 1; i++) {
             if (getNthEntity(i) instanceof Player pPlayer && InventoryTool.hasCreativeAmmoBox(pPlayer)) {
@@ -531,9 +531,6 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
         }
 
         Matrix4f transform = getVehicleTransform(1);
-        float x;
-        float y;
-        float z;
 
         if (getWeaponIndex(0) == 0) {
             if (this.cannotFire) return;
@@ -554,7 +551,7 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
             Vec3 shootVec = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z).vectorTo(new Vec3(worldPosition2.x, worldPosition2.y, worldPosition2.z)).normalize();
 
             if (this.entityData.get(AMMO) > 0 || hasCreativeAmmo) {
-                var entityToSpawn = ((SmallCannonShellWeapon) getWeapon(0)).create(player);
+                var entityToSpawn = ((SmallCannonShellWeapon) getWeapon(0)).create(living);
 
                 entityToSpawn.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
                 entityToSpawn.shoot(shootVec.x, shootVec.y, shootVec.z, 20, 0.15f);
@@ -581,13 +578,12 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
 
             this.entityData.set(HEAT, this.entityData.get(HEAT) + 4);
 
-            if (!player.level().isClientSide) {
-                playShootSound3p(player, 0, 4, 12, 24);
-            }
+            playShootSound3p(living, 0, 4, 12, 24, shootVec);
+
 
         } else if (getWeaponIndex(0) == 1 && this.getEntityData().get(LOADED_ROCKET) > 0) {
 
-            var heliRocketEntity = ((SmallRocketWeapon) getWeapon(0)).create(player);
+            var heliRocketEntity = ((SmallRocketWeapon) getWeapon(0)).create(living);
 
             Vector4f worldPosition;
             Vector4f worldPosition2;
@@ -606,11 +602,9 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
 
             heliRocketEntity.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
             heliRocketEntity.shoot(shootVec.x, shootVec.y, shootVec.z, 7, 0.25f);
-            player.level().addFreshEntity(heliRocketEntity);
+            living.level().addFreshEntity(heliRocketEntity);
 
-            if (!player.level().isClientSide) {
-                playShootSound3p(player, 0, 6, 6, 6);
-            }
+            playShootSound3p(living, 0, 6, 6, 6, shootVec);
 
             this.entityData.set(LOADED_ROCKET, this.getEntityData().get(LOADED_ROCKET) - 1);
             reloadCoolDown = 30;
@@ -618,14 +612,14 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
     }
 
     @Override
-    public int mainGunRpm(Player player) {
+    public int mainGunRpm(LivingEntity living) {
         return 500;
     }
 
     @Override
-    public boolean canShoot(Player player) {
+    public boolean canShoot(LivingEntity living) {
         if (getWeaponIndex(0) == 0) {
-            return (this.entityData.get(AMMO) > 0 || InventoryTool.hasCreativeAmmoBox(player)) && !cannotFire;
+            return (this.entityData.get(AMMO) > 0 || InventoryTool.hasCreativeAmmoBox(living)) && !cannotFire;
         } else if (getWeaponIndex(0) == 1) {
             return this.entityData.get(AMMO) > 0;
         }
@@ -633,7 +627,7 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
     }
 
     @Override
-    public int getAmmoCount(Player player) {
+    public int getAmmoCount(LivingEntity living) {
         return this.entityData.get(AMMO);
     }
 
@@ -643,7 +637,7 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
     }
 
     @Override
-    public int getWeaponHeat(Player player) {
+    public int getWeaponHeat(LivingEntity living) {
         return entityData.get(HEAT);
     }
 

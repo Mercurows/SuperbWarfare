@@ -2,8 +2,10 @@ package com.atsuishio.superbwarfare.entity.vehicle.base;
 
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.VehicleWeapon;
 import it.unimi.dsi.fastutil.ints.IntList;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
 
@@ -147,20 +149,20 @@ public interface WeaponVehicleEntity extends ArmedVehicleEntity {
         vehicle.getEntityData().set(VehicleEntity.SELECTED_WEAPON, IntList.of(selectedWeapons));
     }
 
-    default void playShootSound3p (Player player, int seat, int radius, int radius2, int radius3) {
+    default void playShootSound3p (LivingEntity living, int seat, int radius, int radius2, int radius3, Vec3 pos) {
         var weapons = getAvailableWeapons(seat);
         var weapon = weapons.get(getWeaponIndex(seat));
-        float pitch = getWeaponHeat(player) <= 60 ? 1 : (float) (1 - 0.011 * java.lang.Math.abs(60 - getWeaponHeat(player)));
+        float pitch = getWeaponHeat(living) <= 60 ? 1 : (float) (1 - 0.011 * java.lang.Math.abs(60 - getWeaponHeat(living)));
 
-        if (player instanceof ServerPlayer serverPlayer) {
+        if (living.level() instanceof ServerLevel serverLevel) {
             if (weapon.sound3p != null) {
-                serverPlayer.playSound(weapon.sound3p, radius, pitch);
+                serverLevel.playSound(null, pos.x, pos.y, pos.z, weapon.sound3p, SoundSource.PLAYERS, radius, pitch);
             }
             if (weapon.sound3pFar != null) {
-                serverPlayer.playSound(weapon.sound3pFar, radius2, pitch);
+                serverLevel.playSound(null, pos.x, pos.y, pos.z, weapon.sound3pFar, SoundSource.PLAYERS, radius2, pitch);
             }
             if (weapon.sound3pVeryFar != null) {
-                serverPlayer.playSound(weapon.sound3pVeryFar, radius3, pitch);
+                serverLevel.playSound(null, pos.x, pos.y, pos.z, weapon.sound3pVeryFar, SoundSource.PLAYERS, radius3, pitch);
             }
         }
     }

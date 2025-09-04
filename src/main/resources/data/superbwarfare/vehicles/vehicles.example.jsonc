@@ -62,8 +62,6 @@
   "ExplosionRadius": 0,
   // Should blocks be destroyed by explosion when vehicle been destroyed
   "ExplosionDestroyBlockOnDestroy": true,
-  // Should cause an extra vanilla explosion when vehicle been destroyed
-  "CauseVanillaExplosion": true,
   // Which particle type should be used when vehicle been destroyed
   // can be "Mini", "Small", "Medium", "Huge" and "Giant"
   "ExplosionParticleType": "Mini"

@@ -24,6 +24,7 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -34,8 +35,8 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.*;
 import org.joml.Math;
+import org.joml.*;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -155,7 +156,7 @@ public class SpeedboatEntity extends ContainerMobileVehicleEntity implements Geo
      * 机枪塔开火
      */
     @Override
-    public void vehicleShoot(Player player, int type) {
+    public void vehicleShoot(LivingEntity living, int type) {
         if (this.cannotFire) return;
 
         Matrix4f transform = getBarrelTransform(1);
@@ -166,17 +167,15 @@ public class SpeedboatEntity extends ContainerMobileVehicleEntity implements Geo
 
         Vector4f worldPosition = transformPosition(transform, x, y, z);
 
-        var projectile = ((ProjectileWeapon) getWeapon(0)).create(player).setGunItemId(this.getType().getDescriptionId());
+        var projectile = ((ProjectileWeapon) getWeapon(0)).create(living).setGunItemId(this.getType().getDescriptionId());
 
         projectile.bypassArmorRate(0.4f);
-        projectile.setPos(worldPosition.x + 0.5 * this.getDeltaMovement().x, worldPosition.y, worldPosition.z + 0.5 * this.getDeltaMovement().z);
-        projectile.shoot(player, getBarrelVector(1).x, getBarrelVector(1).y, getBarrelVector(1).z, 20,
+        projectile.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
+        projectile.shoot(living, getBarrelVector(1).x, getBarrelVector(1).y, getBarrelVector(1).z, 20,
                 (float) 0.4);
         this.level().addFreshEntity(projectile);
 
-        if (!player.level().isClientSide) {
-            playShootSound3p(player, 0, 4, 12, 24);
-        }
+        playShootSound3p(living, 0, 4, 12, 24, new Vec3(worldPosition.x, worldPosition.y, worldPosition.z));
 
         ShakeClientMessage.sendToNearbyPlayers(this, 5, 6, 5, 5);
 
@@ -448,18 +447,18 @@ public class SpeedboatEntity extends ContainerMobileVehicleEntity implements Geo
     }
 
     @Override
-    public int mainGunRpm(Player player) {
+    public int mainGunRpm(LivingEntity living) {
         return 500;
     }
 
     @Override
-    public boolean canShoot(Player player) {
-        return (this.entityData.get(AMMO) > 0 || InventoryTool.hasCreativeAmmoBox(player))
+    public boolean canShoot(LivingEntity living) {
+        return (this.entityData.get(AMMO) > 0 || InventoryTool.hasCreativeAmmoBox(living))
                 && !cannotFire;
     }
 
     @Override
-    public int getAmmoCount(Player player) {
+    public int getAmmoCount(LivingEntity living) {
         return this.entityData.get(AMMO);
     }
 
@@ -469,7 +468,7 @@ public class SpeedboatEntity extends ContainerMobileVehicleEntity implements Geo
     }
 
     @Override
-    public int getWeaponHeat(Player player) {
+    public int getWeaponHeat(LivingEntity living) {
         return entityData.get(HEAT);
     }
 

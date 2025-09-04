@@ -35,6 +35,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -438,17 +439,16 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
     }
 
     @Override
-    public void vehicleShoot(Player player, int type) {
-        shoot(player, type, false);
+    public void vehicleShoot(LivingEntity living, int type) {
+        shoot(living, type, false);
     }
 
-    public void shoot(Player player, int type, boolean reset) {
+    public void shoot(LivingEntity living, int type, boolean reset) {
         if (this.entityData.get(COOL_DOWN) > 0) return;
-        if (getFirstPassenger() != null && getFirstPassenger() != player) return;
+        if (getFirstPassenger() != null && getFirstPassenger() != living) return;
 
-        Level level = player.level();
-        if (level instanceof ServerLevel server) {
-            if (!InventoryTool.hasCreativeAmmoBox(player) && player == getFirstPassenger()) {
+        if (level() instanceof ServerLevel server) {
+            if (!InventoryTool.hasCreativeAmmoBox(living) && living == getFirstPassenger()) {
                 if (entityData.get(AMMO_COUNT) > 0) {
                     this.items.get(0).shrink(1);
                 } else {
@@ -459,28 +459,28 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
                         case 3 -> ModItems.GS_5_INCHES.get();
                         default -> ModItems.AP_5_INCHES.get();
                     };
-                    var ammoCount = InventoryTool.countItem(player.getInventory().items, ammo);
+                    var ammoCount = InventoryTool.countItem(living, ammo);
 
                     if (ammoCount <= 0) return;
-                    InventoryTool.consumeItem(player.getInventory().items, ammo, 1);
+                    InventoryTool.consumeItem(living, ammo, 1);
                 }
             }
 
-            if (getFirstPassenger() != player) {
+            if (getFirstPassenger() != living) {
                 this.clearContent();
             }
 
-            var entityToSpawn = ((CannonShellWeapon) getWeapon(0)).create(player);
+            var entityToSpawn = ((CannonShellWeapon) getWeapon(0)).create(living);
 
             Matrix4f transform = getVehicleFlatTransform(1);
             Vector4f worldPosition = transformPosition(transform, 0f, 2.16f, 0.5175f);
 
             entityToSpawn.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
             entityToSpawn.shoot(getLookAngle().x, getLookAngle().y, getLookAngle().z, 15, 0.05f);
-            level.addFreshEntity(entityToSpawn);
+            level().addFreshEntity(entityToSpawn);
 
-            if (player instanceof ServerPlayer serverPlayer) {
-                if (player == getFirstPassenger()) {
+            if (living instanceof ServerPlayer serverPlayer) {
+                if (serverPlayer == getFirstPassenger()) {
                     SoundTool.playLocalSound(serverPlayer, ModSounds.MK_42_FIRE_1P.get(), 2, 1);
                     SoundTool.playLocalSound(serverPlayer, ModSounds.CANNON_RELOAD.get(), 2, 1);
                 }
@@ -572,19 +572,19 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
     }
 
     @Override
-    public int mainGunRpm(Player player) {
+    public int mainGunRpm(LivingEntity living) {
         return 0;
     }
 
     @Override
-    public boolean canShoot(Player player) {
+    public boolean canShoot(LivingEntity living) {
         return true;
     }
 
     @Override
-    public int getAmmoCount(Player player) {
+    public int getAmmoCount(LivingEntity living) {
         int playerAmmo = 0;
-        if (player == getFirstPassenger()) {
+        if (living == getFirstPassenger()) {
             Item ammo = switch (getWeaponIndex(0))
             {
                 case 1 -> ModItems.HE_5_INCHES.get();
@@ -592,7 +592,7 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
                 case 3 -> ModItems.GS_5_INCHES.get();
                 default -> ModItems.AP_5_INCHES.get();
             };
-            playerAmmo = InventoryTool.countItem(player.getInventory().items, ammo);
+            playerAmmo = InventoryTool.countItem(living, ammo);
         }
 
         return playerAmmo + entityData.get(AMMO_COUNT);
@@ -609,7 +609,7 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
     }
 
     @Override
-    public int getWeaponHeat(Player player) {
+    public int getWeaponHeat(LivingEntity living) {
         return 0;
     }
 
