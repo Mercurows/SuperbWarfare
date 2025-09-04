@@ -38,7 +38,6 @@ import org.jetbrains.annotations.Nullable;
 import top.theillusivec4.curios.api.CuriosApi;
 
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.concurrent.atomic.AtomicReference;
 
 import static com.atsuishio.superbwarfare.client.RenderHelper.preciseBlit;
 
@@ -374,19 +373,19 @@ public class KillMessageOverlay implements LayeredDraw.Layer {
     }
 
     public static String getEntityName(Entity entity) {
-        AtomicReference<String> name = new AtomicReference<>(entity.getDisplayName().getString());
-        if (!DisplayConfig.DOG_TAG_NAME_VISIBLE.get()) return name.get();
+        String[] name = {entity.getDisplayName().getString()};
+        if (!DisplayConfig.DOG_TAG_NAME_VISIBLE.get()) return name[0];
         if (entity instanceof LivingEntity living && living instanceof OwnableEntity ownableEntity && ownableEntity.getOwner() instanceof Player player) {
-            CuriosApi.getCuriosInventory(living).flatMap(c -> c.findFirstCurio(ModItems.DOG_TAG.get())).ifPresent(s -> {
-                name.set(s.stack().getHoverName().getString());
+            CuriosApi.getCuriosInventory(player).flatMap(c -> c.findFirstCurio(ModItems.DOG_TAG.get())).ifPresent(s -> {
+                name[0] = s.stack().getHoverName().getString();
             });
-            name.set(name.get() + " + " + living.getDisplayName().getString());
+            name[0] += " + " + entity.getDisplayName().getString();
         } else if (entity instanceof Player player) {
             CuriosApi.getCuriosInventory(player).flatMap(c -> c.findFirstCurio(ModItems.DOG_TAG.get())).ifPresent(s -> {
-                name.set(s.stack().getHoverName().getString());
+                name[0] = s.stack().getHoverName().getString();
             });
         }
-        return name.get();
+        return name[0];
     }
 
     @Nullable
@@ -416,11 +415,13 @@ public class KillMessageOverlay implements LayeredDraw.Layer {
     }
 
     public static boolean shouldRenderDogTagIcon(LivingEntity living) {
-        return CuriosApi.getCuriosInventory(living)
-                .flatMap(c -> c.findFirstCurio(ModItems.DOG_TAG.get()))
-                .map(s -> ClientDogTagImageTooltip.shouldRenderIcon(s.stack()))
-                .orElse(false)
-                && DisplayConfig.DOG_TAG_ICON_VISIBLE.get();
+        boolean[] flag = {false};
+        CuriosApi.getCuriosInventory(living).flatMap(c -> c.findFirstCurio(ModItems.DOG_TAG.get())).ifPresent(s -> {
+            if (ClientDogTagImageTooltip.shouldRenderIcon(s.stack())) {
+                flag[0] = true;
+            }
+        });
+        return flag[0] && DisplayConfig.DOG_TAG_ICON_VISIBLE.get();
     }
 
     public static void renderDogTagIcon(GuiGraphics guiGraphics, LivingEntity living, float x, float y) {
