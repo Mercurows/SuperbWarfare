@@ -793,11 +793,7 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
         entity.invulnerableTime = 0;
 
         float headShotModifier = isHeadshot ? this.headShot : 1;
-        if (normalDamage > 0) {
-            entity.hurt(isHeadshot ? ModDamageTypes.causeGunFireHeadshotDamage(this.level().registryAccess(), this, this.shooter)
-                    : ModDamageTypes.causeGunFireDamage(this.level().registryAccess(), this, this.shooter), normalDamage * headShotModifier);
-            entity.invulnerableTime = 0;
-        }
+        // 先造成穿甲伤害
         if (absoluteDamage > 0) {
             DamageHandler.doDamage(entity, isHeadshot ? ModDamageTypes.causeGunFireHeadshotAbsoluteDamage(this.level().registryAccess(), this, this.shooter)
                     : ModDamageTypes.causeGunFireAbsoluteDamage(this.level().registryAccess(), this, this.shooter), absoluteDamage * headShotModifier);
@@ -807,6 +803,11 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
             if (entity instanceof VehicleEntity vehicle && this.bypassArmorRate > 1) {
                 vehicle.hurt(ModDamageTypes.causeGunFireAbsoluteDamage(this.level().registryAccess(), this, this.shooter), absoluteDamage * (this.bypassArmorRate - 1) * 0.5f);
             }
+        }
+        if (normalDamage > 0) {
+            entity.hurt(isHeadshot ? ModDamageTypes.causeGunFireHeadshotDamage(this.level().registryAccess(), this, this.shooter)
+                    : ModDamageTypes.causeGunFireDamage(this.level().registryAccess(), this, this.shooter), normalDamage * headShotModifier);
+            entity.invulnerableTime = 0;
         }
     }
 
