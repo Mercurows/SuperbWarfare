@@ -121,7 +121,7 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
     @Override
     @ParametersAreNonnullByDefault
     public void inventoryTick(ItemStack stack, Level level, Entity entity, int slot, boolean selected) {
-        if (!(stack.getItem() instanceof GunItem)) return;
+        if (!(stack.getItem() instanceof GunItem) || level.isClientSide) return;
 
         if (level instanceof ServerLevel serverLevel) {
             GeoItem.getOrAssignId(stack, serverLevel);

@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.tools;
 
 import com.atsuishio.superbwarfare.init.ModItems;
+import com.atsuishio.superbwarfare.item.common.ammo.AmmoSupplierItem;
 import net.minecraft.core.NonNullList;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
@@ -65,6 +66,57 @@ public class InventoryTool {
         if (cap == null) return 0;
 
         return countItem(cap, item);
+    }
+
+    public static int countAmmoItem(@Nullable IItemHandler handler, @Nullable Ammo type) {
+        if (handler == null || type == null) return 0;
+
+        int count = 0;
+        for (int i = 0; i < handler.getSlots(); i++) {
+            var stack = handler.getStackInSlot(i);
+            if (stack.getItem() instanceof AmmoSupplierItem ammoSupplierItem && ammoSupplierItem.type == type) {
+                count += ammoSupplierItem.ammoToAdd * stack.getCount();
+            }
+        }
+
+        return count;
+    }
+
+    public static int countAmmoItem(@Nullable Entity entity, @Nullable Ammo type) {
+        if (entity == null || type == null) return 0;
+        var cap = entity.getCapability(Capabilities.ItemHandler.ENTITY);
+        if (cap == null) return 0;
+
+        return countAmmoItem(cap, type);
+    }
+
+    public static int consumeAmmoItem(@Nullable Entity entity, @Nullable Ammo type, int count) {
+        if (entity == null || type == null || count <= 0) return 0;
+        var cap = entity.getCapability(Capabilities.ItemHandler.ENTITY);
+        if (cap == null) return 0;
+
+        return consumeAmmoItem(cap, type, count);
+    }
+
+    public static int consumeAmmoItem(@Nullable IItemHandler handler, @Nullable Ammo type, int count) {
+        if (handler == null || type == null) return 0;
+
+        int initialCount = count;
+        for (int i = 0; i < handler.getSlots(); i++) {
+            var stack = handler.getStackInSlot(i);
+            if (!(stack.getItem() instanceof AmmoSupplierItem ammoSupplierItem && ammoSupplierItem.type == type))
+                continue;
+
+            var supplyCount = ammoSupplierItem.ammoToAdd;
+            var required = (count % supplyCount == 0) ? count / supplyCount : count / supplyCount + 1;
+
+            var countToShrink = Math.min(stack.getCount(), required);
+            stack.shrink(countToShrink);
+            count -= countToShrink * supplyCount;
+            if (count <= 0) break;
+        }
+
+        return initialCount - count;
     }
 
     /**
