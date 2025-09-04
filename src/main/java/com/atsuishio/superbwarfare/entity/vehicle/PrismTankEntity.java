@@ -55,8 +55,8 @@ import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Math;
 import org.joml.*;
+import org.joml.Math;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.AnimatableManager;
@@ -69,8 +69,6 @@ import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 import static com.atsuishio.superbwarfare.tools.SeekTool.baseFilter;
 
 public class PrismTankEntity extends ContainerMobileVehicleEntity implements GeoEntity, LandArmorEntity, WeaponVehicleEntity, OBBEntity {
-
-    public static final EntityDataAccessor<Integer> CANNON_FIRE_TIME = SynchedEntityData.defineId(PrismTankEntity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Float> LASER_LENGTH = SynchedEntityData.defineId(PrismTankEntity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Float> LASER_SCALE = SynchedEntityData.defineId(PrismTankEntity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Float> LASER_SCALE_O = SynchedEntityData.defineId(PrismTankEntity.class, EntityDataSerializers.FLOAT);
@@ -107,6 +105,8 @@ public class PrismTankEntity extends ContainerMobileVehicleEntity implements Geo
                                 .sound3p(ModSounds.PRISM_FIRE_3P.get()),
                         new LaserWeapon()
                                 .sound(ModSounds.INTO_CANNON.get())
+                                .sound1p(ModSounds.PRISM_FIRE_1P_2.get())
+                                .sound3p(ModSounds.PRISM_FIRE_3P_2.get()),
                 }
         };
     }
@@ -119,8 +119,7 @@ public class PrismTankEntity extends ContainerMobileVehicleEntity implements Geo
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
-        builder.define(CANNON_FIRE_TIME, 0)
-                .define(LASER_LENGTH, 0f)
+        builder.define(LASER_LENGTH, 0f)
                 .define(LASER_SCALE, 0f)
                 .define(LASER_SCALE_O, 0f);
     }
@@ -177,18 +176,57 @@ public class PrismTankEntity extends ContainerMobileVehicleEntity implements Geo
             this.entityData.set(LASER_LENGTH, 0f);
         }
 
-        turretAngle(10, 12.5f);
         this.terrainCompact(4.6375f, 5.171875f);
         inertiaRotate(1);
 
         releaseSmokeDecoy(getTurretVector(1));
 
-        if (this.getFirstPassenger() instanceof Player player && fireInputDown && getWeaponIndex(0) == 1 && getEnergy() > VehicleConfig.PRISM_TANK_SHOOT_COST_MODE_2.get() && !cannotFire) {
-            vehicleShoot(player, 0);
-        }
-
         lowHealthWarning();
         this.refreshDimensions();
+    }
+
+    // 炮塔最大水平旋转速度
+    @Override
+    public float turretYSpeed() {
+        return 15;
+    }
+
+    // 炮塔最大俯仰旋转速度
+    @Override
+    public float turretXSpeed() {
+        return 15F;
+    }
+
+    // 炮塔最小俯角
+    @Override
+    public float turretMinPitch() {
+        return -15f;
+    }
+
+    // 炮塔最大仰角
+    @Override
+    public float turretMaxPitch() {
+        return 32.5f;
+    }
+
+    // 炮弹发射位置
+    @Override
+    public Vec3 getTurretShootPos(Entity entity) {
+        Matrix4f transform = getBarrelTransform(1);
+        Vector4f worldPosition = transformPosition(transform, 0, 0.5f, 0);
+        return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
+    }
+
+    // 炮弹发射速度
+    @Override
+    public float projectileVelocity(Entity entity) {
+        return 114514;
+    }
+
+    // 炮弹重力
+    @Override
+    public float projectileGravity(Entity entity) {
+        return 0;
     }
 
     @Override
@@ -220,9 +258,7 @@ public class PrismTankEntity extends ContainerMobileVehicleEntity implements Geo
 
             if (level() instanceof ServerLevel) {
                 playShootSound3p(living, 0, 5, 5, 5, root);
-                this.entityData.set(HEAT, entityData.get(HEAT) + 55);
                 this.consumeEnergy(VehicleConfig.PRISM_TANK_SHOOT_COST_MODE_1.get());
-
                 ShakeClientMessage.sendToNearbyPlayers(this, 5, 8, 4, 7);
             }
 
@@ -236,6 +272,7 @@ public class PrismTankEntity extends ContainerMobileVehicleEntity implements Geo
             }
 
             this.entityData.set(LASER_SCALE, 3f);
+            this.entityData.set(HEAT, entityData.get(HEAT) + 55);
 
         } else if (getWeaponIndex(0) == 1) {
             if (this.cannotFire) return;
@@ -252,7 +289,6 @@ public class PrismTankEntity extends ContainerMobileVehicleEntity implements Geo
 
             if (level() instanceof ServerLevel) {
                 playShootSound3p(living, 0, 4, 4, 4, root);
-                this.entityData.set(HEAT, entityData.get(HEAT) + 2);
                 this.consumeEnergy(VehicleConfig.PRISM_TANK_SHOOT_COST_MODE_2.get());
             }
 
@@ -266,6 +302,7 @@ public class PrismTankEntity extends ContainerMobileVehicleEntity implements Geo
             }
 
             this.entityData.set(LASER_SCALE, 1f);
+            this.entityData.set(HEAT, entityData.get(HEAT) + 2);
         }
     }
 
@@ -539,8 +576,8 @@ public class PrismTankEntity extends ContainerMobileVehicleEntity implements Geo
                 }
             }
 
-            float min = -32.5f - r * getXRot() - r2 * getRoll();
-            float max = 15f - r * getXRot() - r2 * getRoll();
+            float min = -turretMaxPitch() - r * getXRot() - r2 * getRoll();
+            float max = -turretMinPitch() - r * getXRot() - r2 * getRoll();
 
             float f = Mth.wrapDegrees(entity.getXRot());
             float f1 = Mth.clamp(f, min, max);
@@ -588,18 +625,18 @@ public class PrismTankEntity extends ContainerMobileVehicleEntity implements Geo
     public int mainGunRpm(LivingEntity living) {
         if (getWeaponIndex(0) == 0) {
             return 30;
-        } else if (getWeaponIndex(0) == 1) {
-            return 0;
+        } else {
+            return 1200;
         }
-        return 30;
     }
 
     @Override
     public boolean canShoot(LivingEntity living) {
         if (getWeaponIndex(0) == 0) {
             return getEnergy() > VehicleConfig.PRISM_TANK_SHOOT_COST_MODE_1.get() && !cannotFire;
+        } else {
+            return getEnergy() > VehicleConfig.PRISM_TANK_SHOOT_COST_MODE_2.get() && !cannotFire;
         }
-        return false;
     }
 
     @Override

@@ -1303,23 +1303,29 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
     public boolean aiTurretShoot(LivingEntity living) {
         if (this instanceof WeaponVehicleEntity weaponVehicle) {
             if (aiTurretDiff < 1 && weaponVehicle.canShoot(living)) {
-                weaponVehicle.vehicleShoot(living, 0);
+                if (living.level() instanceof ServerLevel) {
+                    weaponVehicle.vehicleShoot(living, 0);
+                }
                 return true;
             } else {
                 return false;
             }
-        } return false;
+        }
+        return false;
     }
 
     public boolean aiPassengerWeaponShoot(LivingEntity living) {
         if (this instanceof WeaponVehicleEntity weaponVehicle) {
             if (aiPassengerDiff < 1 && weaponVehicle.canShoot(living)) {
-                weaponVehicle.vehicleShoot(living, 1);
+                if (living.level() instanceof ServerLevel) {
+                    weaponVehicle.vehicleShoot(living, 1);
+                }
                 return true;
             } else {
                 return false;
             }
-        } return false;
+        }
+        return false;
     }
 
     public void turretAutoAimFormVector(Vec3 shootVec) {
