@@ -17,7 +17,7 @@ public class KillingTally extends Perk {
     }
 
     @Override
-    public void preReload(GunData data, PerkInstance instance, @Nullable Entity living) {
+    public void preReload(GunData data, PerkInstance instance, @Nullable Entity entity) {
         data.perk.getTag(this).remove("KillingTally");
     }
 

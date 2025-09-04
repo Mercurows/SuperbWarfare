@@ -476,12 +476,12 @@ public class LivingEventHandler {
         DamageSource source = event.getSource();
         if (!DamageTypeTool.isGunDamage(source)) return;
 
-        Player attacker = null;
-        if (source.getEntity() instanceof Player player) {
-            attacker = player;
+        LivingEntity attacker = null;
+        if (source.getEntity() instanceof LivingEntity living) {
+            attacker = living;
         }
-        if (source.getDirectEntity() instanceof Projectile projectile && projectile.getOwner() instanceof Player player) {
-            attacker = player;
+        if (source.getDirectEntity() instanceof Projectile projectile && projectile.getOwner() instanceof LivingEntity living) {
+            attacker = living;
         }
         if (attacker == null) {
             return;
@@ -510,12 +510,12 @@ public class LivingEventHandler {
         DamageSource source = event.getSource();
         if (!DamageTypeTool.isGunDamage(source)) return;
 
-        Player attacker = null;
-        if (source.getEntity() instanceof Player player) {
-            attacker = player;
+        LivingEntity attacker = null;
+        if (source.getEntity() instanceof LivingEntity living) {
+            attacker = living;
         }
-        if (source.getDirectEntity() instanceof Projectile projectile && projectile.getOwner() instanceof Player player) {
-            attacker = player;
+        if (source.getDirectEntity() instanceof Projectile projectile && projectile.getOwner() instanceof LivingEntity living) {
+            attacker = living;
         }
         if (attacker == null) {
             return;
