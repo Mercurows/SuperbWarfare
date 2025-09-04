@@ -396,7 +396,7 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
         var loadAmount = consumer.loadAmount;
         if (count % loadAmount != 0) {
             var required = (count / loadAmount) + 1;
-            var consumed = consumer.consume(entity, required);
+            var consumed = consumer.consume(this, entity, required);
             count -= consumed * loadAmount;
 
             // 迫真过载装填
@@ -404,7 +404,7 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
                 this.virtualAmmo.add(-count);
             }
         } else {
-            consumer.consume(entity, count / loadAmount);
+            consumer.consume(this, entity, count / loadAmount);
         }
     }
 
@@ -426,7 +426,7 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
 
         if (count % loadAmount != 0) {
             var required = (count / loadAmount) + 1;
-            var consumed = consumer.consume(handler, required);
+            var consumed = consumer.consume(this, handler, required);
             count -= consumed * loadAmount;
 
             // 迫真过载装填
@@ -434,7 +434,7 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
                 this.virtualAmmo.add(-count);
             }
         } else {
-            consumer.consume(handler, count / loadAmount);
+            consumer.consume(this, handler, count / loadAmount);
         }
     }
 
