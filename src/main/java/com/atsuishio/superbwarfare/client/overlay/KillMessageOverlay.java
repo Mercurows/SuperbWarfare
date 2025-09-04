@@ -374,7 +374,7 @@ public class KillMessageOverlay implements IGuiOverlay {
         AtomicReference<String> name = new AtomicReference<>(entity.getDisplayName().getString());
         if (!DisplayConfig.DOG_TAG_NAME_VISIBLE.get()) return name.get();
         if (entity instanceof LivingEntity living && living instanceof OwnableEntity ownableEntity && ownableEntity.getOwner() instanceof Player player) {
-            CuriosApi.getCuriosInventory(player).ifPresent(
+            CuriosApi.getCuriosInventory(living).ifPresent(
                     c -> c.findFirstCurio(ModItems.DOG_TAG.get()).ifPresent(
                             s -> {
                                 if (s.stack().hasCustomHoverName()) {
@@ -383,7 +383,7 @@ public class KillMessageOverlay implements IGuiOverlay {
                             }
                     )
             );
-            name.set(name.get() + " + " + living.getDisplayName().getString());
+            name.set(player.getDisplayName().getString() + " + " + name.get());
         } else if (entity instanceof Player player) {
             CuriosApi.getCuriosInventory(player).ifPresent(
                     c -> c.findFirstCurio(ModItems.DOG_TAG.get()).ifPresent(
