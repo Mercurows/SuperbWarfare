@@ -7,6 +7,7 @@
   "Projectile": "superbwarfare:rpg_rocket",
   "ExplosionDamage": 150,
   "ExplosionRadius": 11,
+  "Headshot": 0,
   "Velocity": 4,
   "Magazine": 1,
   "Weight": 7,
