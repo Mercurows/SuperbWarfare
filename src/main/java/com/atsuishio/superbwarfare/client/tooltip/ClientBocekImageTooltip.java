@@ -31,19 +31,11 @@ public class ClientBocekImageTooltip extends ClientGunImageTooltip {
             return super.getDamageComponent();
         } else {
             double shotDamage = damage * 0.1;
-            double extraDamage = -1;
-            for (var type : Perk.Type.values()) {
-                var instance = data.perk.getInstance(type);
-                if (instance != null) {
-                    if (instance.perk().getExtraDisplayDamage(shotDamage, data, instance) >= 0) {
-                        extraDamage = instance.perk().getExtraDisplayDamage(shotDamage, data, instance);
-                    }
-                }
-            }
+            double explosionDamage = data.get(GunProp.EXPLOSION_DAMAGE) * 0.1;
 
             return Component.translatable("des.superbwarfare.guns.damage").withStyle(ChatFormatting.GRAY)
                     .append(Component.empty().withStyle(ChatFormatting.RESET))
-                    .append(Component.literal(extraDamage >= 0 ? ("(" + FormatTool.format1D(shotDamage) + " + " + FormatTool.format1D(extraDamage) + ") * 10")
+                    .append(Component.literal(explosionDamage > 0 ? ("(" + FormatTool.format1D(shotDamage) + " + " + FormatTool.format1D(explosionDamage) + ") * 10")
                                     : FormatTool.format1D(shotDamage, " * 10"))
                             .withStyle(ChatFormatting.GREEN))
                     .append(Component.literal(" / ").withStyle(ChatFormatting.RESET))

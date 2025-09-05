@@ -104,13 +104,6 @@ public class Perk implements GunPropertyModifier {
     }
 
     /**
-     * 用于武器额外伤害信息显示，默认为负数
-     */
-    public double getExtraDisplayDamage(double damage, GunData data, PerkInstance instance) {
-        return -1;
-    }
-
-    /**
      * 用于处理武器伤害衰减比率
      */
     public double getModifiedDamageReduceRate(DamageReduce reduce) {

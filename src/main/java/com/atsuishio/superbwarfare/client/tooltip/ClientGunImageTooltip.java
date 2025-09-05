@@ -26,10 +26,6 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
     protected final ItemStack stack;
     protected final GunData data;
 
-    protected GunData getGunData() {
-        return GunData.from(stack);
-    }
-
     public ClientGunImageTooltip(GunImageComponent tooltip) {
         this.width = tooltip.width;
         this.height = tooltip.height;
