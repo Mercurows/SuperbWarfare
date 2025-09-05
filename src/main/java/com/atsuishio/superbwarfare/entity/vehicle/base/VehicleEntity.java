@@ -1348,7 +1348,7 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
                 targetVel = targetVel.multiply(2, 1, 2);
             }
 
-            Vec3 targetVec = RangeTool.calculateFiringSolution(getTurretShootPos(pLiving), targetPos, targetVel, projectileVelocity(pLiving), projectileGravity(pLiving));
+            Vec3 targetVec = RangeTool.calculateFiringSolution(getTurretShootPos(pLiving, 1), targetPos, targetVel, projectileVelocity(pLiving), projectileGravity(pLiving));
             turretAutoAimFormVector(targetVec);
 
             if (this instanceof WeaponVehicleEntity weaponVehicle) {
@@ -1392,7 +1392,7 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
      * @param entity 操控载具的实体
      * @return 炮弹发射位置
      */
-    public Vec3 getTurretShootPos(Entity entity) {
+    public Vec3 getTurretShootPos(Entity entity, float ticks) {
         return this.getEyePosition();
     }
 
@@ -1446,7 +1446,7 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
                 targetVel = targetVel.multiply(2, 1, 2);
             }
 
-            Vec3 targetVec = RangeTool.calculateFiringSolution(passengerWeaponShootPos(pLiving), targetPos, targetVel, projectileVelocity(pLiving), projectileGravity(pLiving));
+            Vec3 targetVec = RangeTool.calculateFiringSolution(passengerWeaponShootPos(pLiving, 1), targetPos, targetVel, projectileVelocity(pLiving), projectileGravity(pLiving));
             passengerWeaponAutoAimFormVector(targetVec);
 
             if (this instanceof WeaponVehicleEntity weaponVehicle) {
@@ -1509,7 +1509,7 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
      * @param entity 乘客
      * @return 乘客武器站弹药发射位置
      */
-    public Vec3 passengerWeaponShootPos(Entity entity) {
+    public Vec3 passengerWeaponShootPos(Entity entity, float ticks) {
         return entity.getEyePosition();
     }
 

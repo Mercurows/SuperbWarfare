@@ -211,7 +211,7 @@ public class PrismTankEntity extends ContainerMobileVehicleEntity implements Geo
 
     // 炮弹发射位置
     @Override
-    public Vec3 getTurretShootPos(Entity entity) {
+    public Vec3 getTurretShootPos(Entity entity, float ticks) {
         Matrix4f transform = getBarrelTransform(1);
         Vector4f worldPosition = transformPosition(transform, 0, 0.5f, 0);
         return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);

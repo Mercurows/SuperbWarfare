@@ -81,7 +81,14 @@ public class VehicleMgHudOverlay implements LayeredDraw.Layer {
                 RenderHelper.preciseBlit(guiGraphics, Mod.loc("textures/screens/cannon/cannon_crosshair_notzoom.png"), k, l, 0, 0.0F, i, j, i, j);
                 VehicleHudOverlay.renderKillIndicator(guiGraphics, w, h);
             } else if (Minecraft.getInstance().options.getCameraType() == CameraType.THIRD_PERSON_BACK && !ClientEventHandler.zoomVehicle) {
-                Vec3 pos = cameraPos.add(iLand.getGunVec(deltaTracker.getGameTimeDeltaPartialTick(true)).scale(192));
+                Vec3 pos;
+                var partialTick = deltaTracker.getGameTimeDeltaPartialTick(true);
+                if (player.getVehicle() instanceof SpeedboatEntity) {
+                    pos = mobileVehicle.getTurretShootPos(player, partialTick).add(iLand.getGunVec(partialTick).scale(192));
+                } else {
+                    pos = mobileVehicle.passengerWeaponShootPos(player, partialTick).add(iLand.getGunVec(partialTick).scale(192));
+                }
+
                 Vec3 p = VectorUtil.worldToScreen(pos);
 
                 if (VectorUtil.canSee(pos)) {

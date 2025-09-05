@@ -175,7 +175,7 @@ public class Lav150Entity extends ContainerMobileVehicleEntity implements GeoEnt
 
     // 炮弹发射位置
     @Override
-    public Vec3 getTurretShootPos(Entity entity) {
+    public Vec3 getTurretShootPos(Entity entity, float ticks) {
         Matrix4f transform = getBarrelTransform(1);
         Vector4f worldPosition;
         if (getWeaponIndex(0) == 0) {
@@ -254,13 +254,13 @@ public class Lav150Entity extends ContainerMobileVehicleEntity implements GeoEnt
 
             var smallCannonShell = ((SmallCannonShellWeapon) getWeapon(0)).create(living);
 
-            smallCannonShell.setPos(getTurretShootPos(living).x, getTurretShootPos(living).y, getTurretShootPos(living).z);
+            smallCannonShell.setPos(getTurretShootPos(living, 1).x, getTurretShootPos(living, 1).y, getTurretShootPos(living, 1).z);
             smallCannonShell.shoot(getBarrelVector(1).x, getBarrelVector(1).y, getBarrelVector(1).z, 35,
                     0.25f);
             this.level().addFreshEntity(smallCannonShell);
 
-            sendParticle((ServerLevel) this.level(), ParticleTypes.LARGE_SMOKE, getTurretShootPos(living).x, getTurretShootPos(living).y, getTurretShootPos(living).z, 1, 0.02, 0.02, 0.02, 0, false);
-            playShootSound3p(living, 0, 4, 12, 24, new Vec3(getTurretShootPos(living).x, getTurretShootPos(living).y, getTurretShootPos(living).z));
+            sendParticle((ServerLevel) this.level(), ParticleTypes.LARGE_SMOKE, getTurretShootPos(living, 1).x, getTurretShootPos(living, 1).y, getTurretShootPos(living, 1).z, 1, 0.02, 0.02, 0.02, 0, false);
+            playShootSound3p(living, 0, 4, 12, 24, new Vec3(getTurretShootPos(living, 1).x, getTurretShootPos(living, 1).y, getTurretShootPos(living, 1).z));
 
             ShakeClientMessage.sendToNearbyPlayers(this, 5, 6, 5, 9);
 
@@ -280,7 +280,7 @@ public class Lav150Entity extends ContainerMobileVehicleEntity implements GeoEnt
                 var projectile = ((ProjectileWeapon) getWeapon(0)).create(living).setGunItemId(this.getType().getDescriptionId());
 
                 projectile.bypassArmorRate(0.2f);
-                projectile.setPos(getTurretShootPos(living).x, getTurretShootPos(living).y, getTurretShootPos(living).z);
+                projectile.setPos(getTurretShootPos(living, 1).x, getTurretShootPos(living, 1).y, getTurretShootPos(living, 1).z);
                 projectile.shoot(living, getBarrelVector(1).x, getBarrelVector(1).y, getBarrelVector(1).z, 36,
                         0.25f);
                 this.level().addFreshEntity(projectile);
@@ -303,7 +303,7 @@ public class Lav150Entity extends ContainerMobileVehicleEntity implements GeoEnt
 
             this.entityData.set(COAX_HEAT, this.entityData.get(COAX_HEAT) + 3);
             this.entityData.set(FIRE_ANIM, 2);
-            playShootSound3p(living, 0, 3, 6, 12, new Vec3(getTurretShootPos(living).x, getTurretShootPos(living).y, getTurretShootPos(living).z));
+            playShootSound3p(living, 0, 3, 6, 12, new Vec3(getTurretShootPos(living, 1).x, getTurretShootPos(living, 1).y, getTurretShootPos(living, 1).z));
         }
     }
 

@@ -181,7 +181,7 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, RemoteCont
     }
 
     @Override
-    public float projectileGravity(Entity entity) {
+    public float projectileGravity() {
         return 0.13f;
     }
 
@@ -225,7 +225,7 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, RemoteCont
             setTarget(player.getMainHandItem(), player);
         }
         if (player.getOffhandItem().getItem() == ModItems.FIRING_PARAMETERS.get()) {
-            setTarget(player.getMainHandItem(), player);
+            setTarget(player.getOffhandItem(), player);
         }
 
         if (player.isShiftKeyDown()) {
