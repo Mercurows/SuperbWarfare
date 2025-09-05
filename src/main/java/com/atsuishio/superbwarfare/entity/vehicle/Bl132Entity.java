@@ -376,10 +376,16 @@ public class Bl132Entity extends VehicleEntity implements GeoEntity, CannonEntit
                     target = target.getVehicle();
                 }
                 Vec3 targetVel = target.getDeltaMovement();
+
                 if (target instanceof LivingEntity living) {
                     double gravity = living.getAttributeValue(Attributes.GRAVITY);
                     targetVel = targetVel.add(0, gravity, 0);
                 }
+
+                if (target instanceof Player) {
+                    targetVel = targetVel.multiply(2, 1, 2);
+                }
+
                 Vec3 launchVector = RangeTool.calculateFiringSolution(getEyePosition(), target.getBoundingBox().getCenter(), targetVel, 15, projectileGravity());
 
                 entityData.set(PITCH, (float) -getXRotFromVector(launchVector));

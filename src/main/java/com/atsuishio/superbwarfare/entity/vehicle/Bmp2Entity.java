@@ -42,6 +42,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -497,7 +498,19 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
                         if (target.getVehicle() != null) {
                             target = target.getVehicle();
                         }
-                        shootVec = RangeTool.calculateFiringSolution(shootPosition, target.getBoundingBox().getCenter(), target.getDeltaMovement(), 18, 0.05);
+
+                        Vec3 targetVel = target.getDeltaMovement();
+
+                        if (target instanceof LivingEntity pLiving) {
+                            double gravity = pLiving.getAttributeValue(Attributes.GRAVITY);
+                            targetVel = targetVel.add(0, gravity, 0);
+                        }
+
+                        if (target instanceof Player) {
+                            targetVel = targetVel.multiply(2, 1, 2);
+                        }
+
+                        shootVec = RangeTool.calculateFiringSolution(shootPosition, target.getBoundingBox().getCenter(), targetVel, 18, 0.05);
                         spread = 1.2f;
 
                         double angle = VectorTool.calculateAngle(shootVec, getPassengerVec(living, i));
