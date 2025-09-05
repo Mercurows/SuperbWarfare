@@ -12,7 +12,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fml.ModList;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class TACZGunEventHandler {
 
@@ -30,13 +29,13 @@ public class TACZGunEventHandler {
 
     public static boolean compatCondition() {
         if (hasMod() && ModList.get().getModFileById("tacz") != null) {
-            AtomicBoolean flag = new AtomicBoolean(false);
+            boolean[] flag = {false};
             VERSIONS.forEach(version -> {
                 if (ModList.get().getModFileById("tacz").versionString().startsWith(version)) {
-                    flag.set(true);
+                    flag[0] = true;
                 }
             });
-            return flag.get();
+            return flag[0];
         }
         return false;
     }

@@ -38,7 +38,6 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
 public class SentinelItem extends GunItem {
@@ -57,21 +56,21 @@ public class SentinelItem extends GunItem {
             return false;
         }
 
-        AtomicInteger energy = new AtomicInteger(0);
+        int[] energy = {0};
         pStack.getCapability(ForgeCapabilities.ENERGY).ifPresent(
-                e -> energy.set(e.getEnergyStored())
+                e -> energy[0] = e.getEnergyStored()
         );
-        return energy.get() != 0;
+        return energy[0] != 0;
     }
 
     @Override
     public int getBarWidth(@NotNull ItemStack pStack) {
-        AtomicInteger energy = new AtomicInteger(0);
+        int[] energy = {0};
         pStack.getCapability(ForgeCapabilities.ENERGY).ifPresent(
-                e -> energy.set(e.getEnergyStored())
+                e -> energy[0] = e.getEnergyStored()
         );
 
-        return Math.round((float) energy.get() * 13.0F / 24000F);
+        return Math.round((float) energy[0] * 13.0F / 24000F);
     }
 
     @Override

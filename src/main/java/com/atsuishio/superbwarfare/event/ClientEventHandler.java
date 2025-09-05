@@ -67,7 +67,6 @@ import software.bernie.geckolib.core.animatable.model.CoreGeoBone;
 import software.bernie.geckolib.core.animation.AnimationProcessor;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 
 @net.minecraftforge.fml.common.Mod.EventBusSubscriber(bus = net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
@@ -809,13 +808,13 @@ public class ClientEventHandler {
         String name = origin.substring(origin.lastIndexOf(".") + 1);
 
         if (stack.getItem() == ModItems.SENTINEL.get()) {
-            AtomicBoolean charged = new AtomicBoolean(false);
+            boolean[] charged = {false};
 
             stack.getCapability(ForgeCapabilities.ENERGY).ifPresent(
-                    e -> charged.set(e.getEnergyStored() > 0)
+                    e -> charged[0] = e.getEnergyStored() > 0
             );
 
-            if (charged.get()) {
+            if (charged[0]) {
                 player.playSound(ModSounds.SENTINEL_CHARGE_FIRE_1P.get(), 2f, (float) ((2 * org.joml.Math.random() - 1) * 0.05f + 1.0f));
                 return;
             }

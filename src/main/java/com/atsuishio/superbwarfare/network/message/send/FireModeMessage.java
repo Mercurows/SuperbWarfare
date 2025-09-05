@@ -13,7 +13,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.network.NetworkEvent;
 
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 
 public enum FireModeMessage {
@@ -85,12 +84,12 @@ public enum FireModeMessage {
 
                 for (var cell : player.getInventory().items) {
                     if (cell.is(ModItems.CELL.get())) {
-                        AtomicBoolean flag = new AtomicBoolean(false);
+                        boolean[] flag = {false};
                         cell.getCapability(ForgeCapabilities.ENERGY).ifPresent(
-                                iEnergyStorage -> flag.set(iEnergyStorage.getEnergyStored() >= 0)
+                                iEnergyStorage -> flag[0] = iEnergyStorage.getEnergyStored() >= 0
                         );
 
-                        if (flag.get()) {
+                        if (flag[0]) {
                             data.charge.starter.markStart();
                         }
                     }

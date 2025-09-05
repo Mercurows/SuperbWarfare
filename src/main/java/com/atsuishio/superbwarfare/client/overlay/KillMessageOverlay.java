@@ -371,6 +371,7 @@ public class KillMessageOverlay implements IGuiOverlay {
         String[] name = {entity.getDisplayName().getString()};
         if (entity instanceof LivingEntity living && living instanceof OwnableEntity ownableEntity && ownableEntity.getOwner() instanceof Player player) {
             if (DisplayConfig.DOG_TAG_NAME_VISIBLE.get()) {
+                name[0] = player.getDisplayName().getString() + " + " + name[0];
                 CuriosApi.getCuriosInventory(player).ifPresent(
                         c -> c.findFirstCurio(ModItems.DOG_TAG.get()).ifPresent(
                                 s -> {

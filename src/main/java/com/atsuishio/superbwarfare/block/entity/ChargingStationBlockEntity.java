@@ -36,8 +36,6 @@ import net.minecraftforge.items.wrapper.SidedInvWrapper;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Energy Data Slot Code based on @GoryMoon's Chargers
@@ -68,9 +66,9 @@ public class ChargingStationBlockEntity extends BlockEntity implements WorldlyCo
                 case 0 -> ChargingStationBlockEntity.this.fuelTick;
                 case 1 -> ChargingStationBlockEntity.this.maxFuelTick;
                 case 2 -> {
-                    AtomicInteger energy = new AtomicInteger();
-                    ChargingStationBlockEntity.this.getCapability(ForgeCapabilities.ENERGY).ifPresent(consumer -> energy.set(consumer.getEnergyStored()));
-                    yield energy.get();
+                    int[] energy = {0};
+                    ChargingStationBlockEntity.this.getCapability(ForgeCapabilities.ENERGY).ifPresent(consumer -> energy[0] = consumer.getEnergyStored());
+                    yield energy[0];
                 }
                 case 3 -> ChargingStationBlockEntity.this.showRange ? 1 : 0;
                 default -> 0;
@@ -133,13 +131,13 @@ public class ChargingStationBlockEntity extends BlockEntity implements WorldlyCo
                 }
             });
         } else if (!blockEntity.getItem(SLOT_FUEL).isEmpty()) {
-            AtomicBoolean flag = new AtomicBoolean(false);
+            boolean[] flag = {false};
             blockEntity.energyHandler.ifPresent(handler -> {
                 if (handler.getEnergyStored() >= handler.getMaxEnergyStored()) {
-                    flag.set(true);
+                    flag[0] = true;
                 }
             });
-            if (flag.get()) return;
+            if (flag[0]) return;
 
             ItemStack fuel = blockEntity.getItem(SLOT_FUEL);
             int burnTime = ForgeHooks.getBurnTime(fuel, RecipeType.SMELTING);
